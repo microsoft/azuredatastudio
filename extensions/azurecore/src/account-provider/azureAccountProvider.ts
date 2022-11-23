@@ -56,7 +56,10 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	}
 
 	clearTokenCache(): Thenable<void> {
-		return this.getAuthMethod().deleteAllCache();
+		return this.authLibrary === Constants.AuthLibrary.MSAL
+			? this.getAuthMethod().deleteAllCacheMsal()
+			// fallback to ADAL as default
+			: this.getAuthMethod().deleteAllCache();
 	}
 
 	private handleAuthMapping(metadata: AzureAccountProviderMetadata, tokenCache: SimpleTokenCache, context: vscode.ExtensionContext, uriEventHandler: vscode.EventEmitter<vscode.Uri>) {

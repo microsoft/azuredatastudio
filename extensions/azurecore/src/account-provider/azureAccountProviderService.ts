@@ -44,14 +44,6 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	constructor(private _context: vscode.ExtensionContext,
 		private _userStoragePath: string,
 		private _authLibrary: string) {
-
-		// vscode.workspace.onDidChangeConfiguration((changeEvent) => {
-		// 	const impactLibrary = changeEvent.affectsConfiguration(Constants.AzureAuthenticationLibrarySection);
-		// 	if (impactLibrary === true) {
-		// 		this.authLibrary = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.AuthenticationLibrarySection);
-		// 		Logger.info(`AzureAccountProviderService: Registered Auth Library for use: ${this.authLibrary}`);
-		// 	}
-		// });
 		this._disposables.push(vscode.window.registerUriHandler(this._uriEventHandler));
 	}
 
@@ -60,10 +52,10 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		let self = this;
 
 		// Register commands
-		this._context.subscriptions.push(vscode.commands.registerCommand(Constants.ClearTokenCacheCommand,
-			() => { self._event.emit(Constants.ClearTokenCacheCommand); }
+		this._context.subscriptions.push(vscode.commands.registerCommand(Constants.AccountsClearTokenCacheCommand,
+			() => { self._event.emit(Constants.AccountsClearTokenCacheCommand); }
 		));
-		this._event.on(Constants.ClearTokenCacheCommand, () => { void self.onClearTokenCache(); });
+		this._event.on(Constants.AccountsClearTokenCacheCommand, () => { void self.onClearTokenCache(); });
 
 		// 1) Get a credential provider
 		// 2a) Store the credential provider for use later

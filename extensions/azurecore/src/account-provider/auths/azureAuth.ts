@@ -359,21 +359,19 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return await this.clientApplication.acquireTokenSilent(tokenRequest);
 		} catch (e) {
 			Logger.error('Failed to acquireTokenSilent', e);
-			if (e instanceof InteractionRequiredAuthError && e.errorCode !== 'invalid_grant') {
+			if (e instanceof InteractionRequiredAuthError) {
 				// build refresh token request
 				const tenant: Tenant = {
-					id: account.tenantId,
+					id: tenantId,
 					displayName: ''
 				};
-				const authResult = await this.loginMsal(tenant, resource);
-				return authResult.response;
+				return this.handleInteractionRequiredMsal(tenant, resource);
 			} else if (e.name === 'ClientAuthError') {
 				Logger.error(e.message);
 			}
 			Logger.error('Failed to silently acquire token, not InteractionRequiredAuthError');
 			return null;
 		}
-
 	}
 
 	public async getToken(tenant: Tenant, resource: Resource, postData: AuthorizationCodePostData | TokenPostData | RefreshTokenPostData): Promise<OAuthTokenResponse | undefined> {
@@ -623,6 +621,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		// The user wants to ignore this tenant.
 		if (getTenantConfigurationSet().has(tenant.id)) {
+			Logger.info(`Tenant ${tenant.id} found in the ignore list, authentication will not be attempted.`);
 			return false;
 		}
 

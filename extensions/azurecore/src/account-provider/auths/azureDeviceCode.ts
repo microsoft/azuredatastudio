@@ -23,7 +23,7 @@ import { Deferred } from '../interfaces';
 import { AuthenticationResult, DeviceCodeRequest, PublicClientApplication } from '@azure/msal-node';
 import { SimpleTokenCache } from '../simpleTokenCache';
 import { Logger } from '../../utils/Logger';
-import * as Constants from '../../constants';
+
 const localize = nls.loadMessageBundle();
 
 interface DeviceCodeLogin { // https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code
@@ -145,7 +145,7 @@ export class AzureDeviceCode extends AzureAuth {
 		try {
 			const uri = `${this.loginEndpointUrl}/${this.commonTenant}/oauth2/token`;
 			const postData: DeviceCodeCheckPostData = {
-				grant_type: Constants.DeviceCodeGrantType,
+				grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
 				client_id: this.clientId,
 				tenant: this.commonTenant.id,
 				code: info.device_code

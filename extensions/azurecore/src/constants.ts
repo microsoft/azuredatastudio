@@ -21,7 +21,7 @@ export const ClearTokenCacheCommand = 'clearTokenCache';
 
 export const ConfigSection = 'config';
 
-export const AccountsClearTokenCacheSection = AccountsSection + '.' + ClearTokenCacheCommand;
+export const AccountsClearTokenCacheCommand = AccountsSection + '.' + ClearTokenCacheCommand;
 
 export const AccountsAzureAuthSection = AccountsSection + '.' + AzureSection + '.' + AuthSection;
 
@@ -44,14 +44,10 @@ export const AccountVersion = '2.0';
 
 export const Bearer = 'Bearer';
 
-export const DeviceCodeGrantType = 'urn:ietf:params:oauth:grant-type:device_code';
-
 /**
  * Use SHA-256 algorithm
  */
 export const S256_CODE_CHALLENGE_METHOD = 'S256';
-
-export const AUTHORIZATION_CODE_GRANT_TYPE = 'authorization_code';
 
 export const SELECT_ACCOUNT = 'select_account';
 
