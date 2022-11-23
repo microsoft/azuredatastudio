@@ -563,6 +563,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						callbacks.onConnectReject(connectionNotAcceptedError);
 					}
 					if (connectionResult.errorCode === Constants.sqlPasswordErrorCode) {
+						// Need to save URI to verify connection params in STS.
 						connectionResult.uriForPasswordChange = uri;
 					}
 					return connectionResult;
