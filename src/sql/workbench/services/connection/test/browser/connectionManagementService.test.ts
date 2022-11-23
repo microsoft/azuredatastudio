@@ -1686,7 +1686,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		let testToken = 'testToken';
 		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
 			token: testToken,
-			tokenType: Constants.Bearer
+			tokenType: 'Bearer'
 		}));
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === Constants.AuthenticationType.AzureMFA))).returns(profile => Promise.resolve({
 			profile: profile,
@@ -1715,13 +1715,13 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		const expiredToken = {
 			token: 'expiredToken',
-			tokenType: Constants.Bearer,
+			tokenType: 'Bearer',
 			expiresOn: 0,
 		};
 
 		const freshToken = {
 			token: 'freshToken',
-			tokenType: Constants.Bearer,
+			tokenType: 'Bearer',
 			expiresOn: new Date().getTime() / 1000 + 7200,
 		};
 
@@ -1812,7 +1812,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			]);
 		});
 
-		let returnedToken = { token: 'testToken', tokenType: Constants.Bearer };
+		let returnedToken = { token: 'testToken', tokenType: 'Bearer' };
 		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(returnedToken));
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === Constants.AuthenticationType.AzureMFA))).returns(profile => Promise.resolve({
 			profile: profile,
