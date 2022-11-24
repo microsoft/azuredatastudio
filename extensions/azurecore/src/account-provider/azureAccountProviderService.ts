@@ -147,8 +147,8 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		const platform = os.platform();
 		const tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
 		const lockOptions = {
-			retryNumber: 100,
-			retryDelay: 50
+			retryNumber: 500,
+			retryDelay: 150
 		}
 
 		try {

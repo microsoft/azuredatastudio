@@ -446,6 +446,30 @@ declare module 'azdata' {
 		showOnConnectionDialog?: boolean;
 	}
 
+	// Object Explorer interfaces  --------------------------------
+	export interface ObjectExplorerSession {
+		/**
+		 * Access token used in current session.
+		 */
+		token?: string | undefined;
+		/**
+		 * Expiry time of the access token.
+		 */
+		expiresOn?: string | undefined;
+	}
+
+	export interface ExpandNodeInfo {
+		/**
+		 * Access token used in current session.
+		 */
+		token?: string | undefined;
+		/**
+		 * Expiry time of the access token.
+		 */
+		expiresOn?: string | undefined;
+	}
+	// End Object Explorer interfaces  ----------------------------
+
 	export interface TaskInfo {
 		targetLocation?: string;
 	}
