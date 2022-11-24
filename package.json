@@ -1,6 +1,11 @@
 {
   "type": "module",
+  "scripts": {
+    "validate": "node ./scripts/validateGalleries.js"
+  },
   "devDependencies": {
-    "got": "^11.8.2"
+    "got": "^12.0.4",
+    "stream": "^0.0.2",
+    "yauzl-promise": "^2.1.3"
   }
 }

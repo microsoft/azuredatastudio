@@ -2,8 +2,14 @@ pool:
   vmImage: 'windows-latest'
 
 trigger:
-- release/extensions
-- extensions/rc1
+  branches:
+    include:
+    - release/extensions
+    - extensions/rc1
+  paths:
+    include:
+      - extensionsGallery.json
+      - extensionsGallery-insider.json
 
 steps:
 - task: AzureFileCopy@4
