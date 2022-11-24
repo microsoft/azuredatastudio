@@ -262,6 +262,7 @@ suite('SQL Object Explorer Service tests', () => {
 		connectionManagementService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 		connectionManagementService.setup(x => x.getConnectionGroups()).returns(() => [conProfGroup]);
 		connectionManagementService.setup(x => x.getActiveConnections()).returns(() => [connection]);
+		connectionManagementService.setup(x => x.refreshAzureAccountTokenIfNecessary(TypeMoq.It.isAny())).returns(async () => true);
 		connectionManagementService.setup(x => x.addSavedPassword(TypeMoq.It.isAny())).returns(() => new Promise<ConnectionProfile>((resolve) => {
 			resolve(connection);
 		}));

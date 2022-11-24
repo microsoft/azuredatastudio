@@ -45,9 +45,8 @@ export class RefreshAction extends Action {
 	}
 	public override async run(): Promise<void> {
 		let treeNode: TreeNode | undefined = undefined;
-		let connection: ConnectionProfile;
 		if (this.element instanceof ConnectionProfile) {
-			connection = this.element;
+			let connection: ConnectionProfile = this.element;
 			if (this._connectionManagementService.isConnected(undefined, connection)) {
 				treeNode = this._objectExplorerService.getObjectExplorerNode(connection);
 				if (treeNode === undefined) {
