@@ -40,9 +40,6 @@
     <trans-unit id="azureAuth.unidentifiedError">
       <source xml:lang="en">Unidentified error with azure authentication</source>
     </trans-unit>
-    <trans-unit id="azureWorkAccountDisplayName">
-      <source xml:lang="en">Work or school account</source>
-    </trans-unit>
     <trans-unit id="azurecore.consentDialog.body">
       <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
     </trans-unit>
@@ -430,6 +427,12 @@
     <trans-unit id="azurecore.reload">
       <source xml:lang="en">Reload</source>
     </trans-unit>
+    <trans-unit id="azurecore.reloadChoice">
+      <source xml:lang="en">Reload Azure Data Studio</source>
+    </trans-unit>
+    <trans-unit id="azurecore.reloadPrompt">
+      <source xml:lang="en">Authentication Library has changed, please reload Azure Data Studio.</source>
+    </trans-unit>
     <trans-unit id="azurecore.requiresReload">
       <source xml:lang="en">Modifying this setting requires reloading the window for all changes to take effect.</source>
     </trans-unit>
@@ -560,6 +563,9 @@
     </trans-unit>
     <trans-unit id="azure.title">
       <source xml:lang="en">Azure</source>
+    </trans-unit>
+    <trans-unit id="config.authenticationLibrary">
+      <source xml:lang="en">The library used for the AAD auth flow. Please restart ADS after changing this option.</source>
     </trans-unit>
     <trans-unit id="config.azureAccountConfigurationSection">
       <source xml:lang="en">Azure Account Configuration</source>
