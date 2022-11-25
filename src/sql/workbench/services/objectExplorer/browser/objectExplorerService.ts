@@ -600,9 +600,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		let connection = parentTree.getConnectionProfile();
 		if (connection) {
 			// Refresh access token on connection if needed.
-			await this._connectionManagementService.refreshAzureAccountTokenIfNecessary(connection);
-			session.token = connection.options['azureAccountToken'];
-			session.expiresOn = connection.options['expiresOn'];
+			let refreshResult = await this._connectionManagementService.refreshAzureAccountTokenIfNecessary(connection);
+			if (refreshResult) {
+				session.token = connection.options['azureAccountToken'];
+				session.expiresOn = connection.options['expiresOn'];
+			}
 		}
 		const providerName = connection?.providerName;
 		if (!providerName) {
