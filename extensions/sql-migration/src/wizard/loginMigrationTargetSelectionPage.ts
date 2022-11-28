@@ -51,7 +51,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
 		this._view = view;
 
-		const dataMigrationInfoBox = this._view.modelBuilder.infoBox()
+		const loginMigrationInfoBox = this._view.modelBuilder.infoBox()
 			.withProps({
 				style: 'information',
 				text: constants.LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DATA_MIGRATION_WARNING,
@@ -74,7 +74,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 
 		const form = this._view.modelBuilder.formContainer()
 			.withFormItems([
-				{ component: dataMigrationInfoBox },
+				{ component: loginMigrationInfoBox },
 				{ component: permissionsInfoBox },
 				{ component: this._pageDescription },
 				{ component: this.createAzureSqlTargetTypeDropdown() },
@@ -105,10 +105,9 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			}
 			if (!this.migrationStateModel._targetServerInstance || !this.migrationStateModel._targetUserName || !this.migrationStateModel._targetPassword) {
 				this.wizard.message = {
-					// TODO AKMA: Change to logins
 					text: constants.SELECT_DATABASE_TO_CONTINUE,
 					level: azdata.window.MessageLevel.Error
-				};
+				}; ``
 				return false;
 			}
 			return true;
@@ -275,7 +274,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			},
 		}).component();
 
-		this._azureSqlTargetTypeDropdown.values = [constants.LOGIN_MIGRATIONS_DB_TEXT, constants.LOGIN_MIGRATIONS_MI_TEXT, constants.LOGIN_MIGRATIONS_VM_TEXT];
+		this._azureSqlTargetTypeDropdown.values = [/* constants.LOGIN_MIGRATIONS_DB_TEXT, */ constants.LOGIN_MIGRATIONS_MI_TEXT, constants.LOGIN_MIGRATIONS_VM_TEXT];
 
 		this._disposables.push(this._azureSqlTargetTypeDropdown.onValueChanged(async (value) => {
 			switch (value) {
@@ -522,7 +521,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			this._targetUserNameInputBox.onTextChanged(
 				(value: string) => {
 					this.migrationStateModel._targetUserName = value ?? '';
-					console.log('AKMA DEBUG LOG: target username: ', this.migrationStateModel._targetUserName);
 					this._updateConnectionButtonState();
 				}));
 
@@ -550,7 +548,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			this._targetPasswordInputBox.onTextChanged(
 				(value: string) => {
 					this.migrationStateModel._targetPassword = value ?? '';
-					console.log('AKMA DEBUG LOG: target password: ', this.migrationStateModel._targetPassword);
 					this._updateConnectionButtonState();
 				}));
 
@@ -723,7 +720,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 							const selectedVm = this.migrationStateModel._targetSqlVirtualMachines.find(vm => vm.name === value);
 							if (selectedVm) {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(selectedVm)! as SqlVMServer;
-								console.log('AKMA DEBUG LOG: selectedVm: ', this.migrationStateModel._targetServerInstance);
 							}
 							break;
 						case MigrationTargetType.SQLMI:
@@ -733,7 +729,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 
 							if (selectedMi) {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(selectedMi)! as azureResource.AzureSqlManagedInstance;
-								console.log('AKMA DEBUG LOG: selectedMi: ', this.migrationStateModel._targetServerInstance);
 
 								this.wizard.message = { text: '' };
 								if (this.migrationStateModel._targetServerInstance.properties.state !== 'Ready') {
@@ -752,7 +747,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 
 							if (sqlDatabaseServer) {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(sqlDatabaseServer)! as AzureSqlDatabaseServer;
-								console.log('AKMA DEBUG LOG: selectedDB: ', sqlDatabaseServer);
 								this.wizard.message = { text: '' };
 								if (this.migrationStateModel._targetServerInstance.properties.state === 'Ready') {
 									this._targetUserNameInputBox.value = this.migrationStateModel._targetServerInstance.properties.administratorLogin;
