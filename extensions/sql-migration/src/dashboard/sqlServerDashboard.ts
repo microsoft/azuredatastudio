@@ -485,22 +485,11 @@ export class DashboardWidget {
 			if (api) {
 				this.stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration);
 				this._context.subscriptions.push(this.stateModel);
-				const savedInfo = this.checkSavedInfo(serverName);
-				if (savedInfo) {
-					this.stateModel.savedInfo = savedInfo;
-					this.stateModel.serverName = serverName;
-					const savedAssessmentDialog = new SavedAssessmentDialog(
-						this._context,
-						this.stateModel,
-						this._onServiceContextChanged);
-					await savedAssessmentDialog.openDialog();
-				} else {
-					const wizardController = new WizardController(
-						this._context,
-						this.stateModel,
-						this._onServiceContextChanged);
-					await wizardController.openLoginWizard(connectionId);
-				}
+				const wizardController = new WizardController(
+					this._context,
+					this.stateModel,
+					this._onServiceContextChanged);
+				await wizardController.openLoginWizard(connectionId);
 			}
 		}
 	}
