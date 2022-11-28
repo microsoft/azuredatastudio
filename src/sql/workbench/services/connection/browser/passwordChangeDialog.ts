@@ -36,7 +36,7 @@ const confirmPasswordText: string = localize('passwordChangeDialog.confirmPasswo
 const connectCheckboxText: string = localize('passwordChangeDialog.connectText', 'Connect?:');
 const connectCheckboxLabel: string = localize('passwordChangeDialog.connectLabel', 'Connect upon close and save if needed');
 const passwordMismatchText: string = localize('passwordChangeDialog.passwordMismatch', 'Passwords do not match');
-const passwordChangeLoadText: string = localize('passwordChangeDialog.loading', "Attempting to change password.");
+const passwordChangeLoadText: string = localize('passwordChangeDialog.loading', "Attempting to connect to server");
 
 export class PasswordChangeDialog extends Modal {
 
