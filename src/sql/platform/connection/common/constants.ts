@@ -68,9 +68,9 @@ export const gen3Version = 12;
 
 /* SQL Server Password Reset Constants */
 export const sqlPasswordErrorCode = 18488;
-export const sqlPasswordDNMReqs = 'password does not meet operating system policy requirements'
-export const sqlPasswordDNMReqsRetry = 'Press OK to input a new password that meets operating system policy requirements.'
+export const sqlPasswordDNMReqs = 'password does not meet operating system policy requirements';
+export const sqlPasswordDNMReqsRetry = 'Press OK to input a new password that meets operating system policy requirements.';
 export const sqlPasswordEmpty = 'New password cannot be empty';
 export const sqlPasswordEmptyRetry = 'Press OK to input a new password that is not empty.';
 export const sqlPasswordCannotBeUsed = 'password cannot be used at this time';
-export const sqlPasswordCannotBeUsedRetry = 'Press OK to input a different password.'
+export const sqlPasswordCannotBeUsedRetry = 'Press OK to input a different password.';
