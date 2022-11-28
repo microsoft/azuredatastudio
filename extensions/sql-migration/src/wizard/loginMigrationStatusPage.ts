@@ -58,7 +58,6 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			return true;
 		});
 
-		this.wizard.backButton.label = "Test"
 		this.wizard.backButton.enabled = false;
 		this.wizard.backButton.hidden = true;
 		this.wizard.doneButton.enabled = false;

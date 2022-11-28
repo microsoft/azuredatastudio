@@ -117,6 +117,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 			return;
 		}
+
 		switch (this.migrationStateModel._targetType) {
 			case MigrationTargetType.SQLMI:
 				this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_MI_CARD_TEXT);
