@@ -48,18 +48,19 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 
 	public async onPageEnter(): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
-			this.wizard.message = {
-				text: '',
-				level: azdata.window.MessageLevel.Error
-			};
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
-				return true;
+				this.wizard.message = {
+					text: constants.LOGIN_MIGRATIONS_STATUS_PAGE_PREVIOUS_BUTTON_ERROR,
+					level: azdata.window.MessageLevel.Error
+				};
+				return false;
 			}
 			return true;
 		});
 
 		this.wizard.backButton.enabled = false;
 		this.wizard.backButton.hidden = true;
+		this.wizard.backButton.label = constants.LOGIN_MIGRATIONS_STATUS_PAGE_PREVIOUS_BUTTON_TITLE;
 		this.wizard.doneButton.enabled = false;
 
 		await this._loadMigratingLoginsList(this.migrationStateModel);

@@ -316,6 +316,8 @@ export function LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(numLogins: number, targ
 export function LOGIN_MIGRATIONS_COMPLETED_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
 	return localize('sql.migration.login.status.page.description', "Completed migrating {0} logins to target {1} '{2}'", numLogins, targetType, targetName);
 }
+export const LOGIN_MIGRATIONS_STATUS_PAGE_PREVIOUS_BUTTON_TITLE = localize('sql.migration.login.status.page.previous.button.title', "Previous (Disabled)");
+export const LOGIN_MIGRATIONS_STATUS_PAGE_PREVIOUS_BUTTON_ERROR = localize('sql.migration.login.status.page.previous.button.error', "Login migration has already been initiated and going back to prior page is disabled.");
 export const LOGIN_MIGRATIONS_GET_LOGINS_QUERY = localize('sql.migration.login.get.logins.query',
 	"SELECT sp.name as login, sp.type_desc as login_type, sp.default_database_name, case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status FROM sys.server_principals sp  LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN ('SQL_LOGIN', 'WINDOWS_LOGIN') ORDER BY sp.name;");
 export function LOGIN_MIGRATIONS_GET_LOGINS_ERROR_TITLE(targetType: string): string {
