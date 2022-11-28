@@ -128,17 +128,26 @@ export class PasswordChangeDialog extends Modal {
 
 	private handleOkButtonClick(): void {
 		// Verify passwords match before changing the password.
+		this._okButton.enabled = false;
+		this._cancelButton.enabled = false;
 		if (this._passwordValueText.value === this._confirmValueText.value) {
 			if (this._verifyBox.style.display === 'block') {
 				this._verifyBox.style.display = 'none';
 			}
 			this.connectionDialogService.changePasswordFunction(this._profile, this._params, this._uri, this._passwordValueText.value, this._connectOnClose.checked).then(
-				() => { this.hide('ok'); /* password changed successfully */ },
-				() => { undefined /* ignore, user must try again */ }
+				() => {
+					this.hide('ok'); /* password changed successfully */
+				},
+				() => {
+					this._okButton.enabled = true; /* ignore, user must try again */
+					this._cancelButton.enabled = true;
+				}
 			);
 		}
 		else {
 			this._verifyBox.style.display = 'block';
+			this._okButton.enabled = true;
+			this._cancelButton.enabled = true;
 		}
 	}
 }
