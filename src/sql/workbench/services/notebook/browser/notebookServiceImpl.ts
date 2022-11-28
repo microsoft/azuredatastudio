@@ -50,7 +50,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { IEditorPane, IUntypedFileEditorInput } from 'vs/workbench/common/editor';
 import { isINotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { DEFAULT_NOTEBOOK_FILETYPE, INTERACTIVE_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
+import { DEFAULT_NOTEBOOK_FILETYPE, NotebookLanguage } from 'sql/workbench/common/constants';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SqlSerializationProvider } from 'sql/workbench/services/notebook/browser/sql/sqlSerializationProvider';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
@@ -263,22 +263,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		return uri;
 	}
 
-	public async createNotebookInputFromContents(providerId: string, contents?: nb.INotebookContents, resource?: UriComponents): Promise<EditorInput> {
-		let uri: URI;
-		if (resource) {
-			uri = URI.revive(resource);
-		} else {
-			uri = this.getUntitledFileUri();
-			resource = uri;
-		}
-
-		let options: INotebookShowOptions = {
-			providerId: providerId,
-			initialContent: contents
-		};
-		return this.createNotebookInput(options, resource);
-	}
-
 	private async createNotebookInput(options: INotebookShowOptions, resource?: UriComponents): Promise<EditorInput | undefined> {
 		let uri: URI;
 		if (resource) {
@@ -292,7 +276,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
 		let fileInput: EditorInput;
-		let languageId = options.providerId === INTERACTIVE_PROVIDER_ID ? NotebookLanguage.Interactive : NotebookLanguage.Notebook;
+		let languageId = NotebookLanguage.Notebook;
 		let initialStringContents: string;
 		if (options.initialContent) {
 			if (typeof options.initialContent === 'string') {
@@ -355,12 +339,42 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	public async openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined> {
+		// Append a numbered suffix if an untitled notebook is already open with the same path
+		if (resource.scheme === Schemas.untitled) {
+			if (!resource.path || this.untitledEditorTitleExists(resource.path)) {
+				resource.path = this.createPrefixedNotebookFilePath(resource.path);
+			}
+		}
+
 		const editorOptions: ITextEditorOptions = {
 			preserveFocus: options.preserveFocus,
 			pinned: !options.preview
 		};
 		let input = await this.createNotebookInput(options, resource);
-		return await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
+		return this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
+	}
+
+	private untitledEditorTitleExists(filePath: string): boolean {
+		return !!this._untitledEditorService.get(URI.from({ scheme: Schemas.untitled, path: filePath }));
+	}
+
+	private createPrefixedNotebookFilePath(prefix?: string): string {
+		if (!prefix) {
+			prefix = 'Notebook';
+		}
+		let prefixFileName = (counter: number): string => {
+			return `${prefix}-${counter}`;
+		};
+
+		let counter = 1;
+		// Get document name and check if it exists
+		let filePath = prefixFileName(counter);
+		while (this.untitledEditorTitleExists(filePath)) {
+			counter++;
+			filePath = prefixFileName(counter);
+		}
+
+		return filePath;
 	}
 
 	/**
@@ -383,19 +397,6 @@ export class NotebookService extends Disposable implements INotebookService {
 			nextVal++;
 		}
 		return title;
-	}
-
-	public getNotebookURIForCell(cellUri: URI): URI | undefined {
-		for (let editor of this.listNotebookEditors()) {
-			if (editor.cells) {
-				for (let cell of editor.cells) {
-					if (cell.cellUri === cellUri) {
-						return editor.notebookParams.notebookUri;
-					}
-				}
-			}
-		}
-		return undefined;
 	}
 
 	private updateSQLRegistrationWithConnectionProviders() {
@@ -439,12 +440,6 @@ export class NotebookService extends Disposable implements INotebookService {
 				this._executeProviders.set(p.id, new ExecuteProviderDescriptor(p.id));
 			}
 			this.addStandardKernels(registration, registration.fileExtensions);
-		} else {
-			// Standard kernels might get registered later for VSCode notebooks, so add a descriptor to wait on
-			if (!this._providerToStandardKernels.has(p.id)) {
-				let descriptor = new StandardKernelsDescriptor(p.id);
-				this._providerToStandardKernels.set(p.id.toUpperCase(), descriptor);
-			}
 		}
 
 		// Emit activation event if the provider is not one of the default options

@@ -45,25 +45,6 @@ declare module 'azdata' {
 			 * The list of languages that are supported for this kernel.
 			 */
 			supportedLanguages?: string[];
-			/**
-			 * The original name for this kernel.
-			 */
-			oldName?: string;
-			/**
-			 * The original display name for this kernel.
-			 */
-			oldDisplayName?: string;
-			/**
-			 * The original language name for this kernel.
-			 */
-			oldLanguage?: string;
-		}
-
-		export interface ILanguageInfo {
-			/**
-			 * The original name for this language.
-			 */
-			oldName?: string;
 		}
 
 		export interface IStandardKernel {
@@ -97,21 +78,9 @@ declare module 'azdata' {
 
 		export interface IExecuteRequest {
 			/**
-			 * URI of the notebook document that is sending this execute request.
-			 */
-			notebookUri: vscode.Uri;
-			/**
-			 * URI of the notebook cell that is sending this execute request.
-			 */
-			cellUri: vscode.Uri;
-			/**
 			 * The language of the notebook document that is executing this request.
 			 */
 			language: string;
-			/**
-			 * The index of the cell which the code being executed is from.
-			 */
-			cellIndex: number;
 		}
 
 		export interface INotebookMetadata {
@@ -531,6 +500,13 @@ declare module 'azdata' {
 		payload?: IConnectionProfile;
 		childProvider?: string;
 		type?: ExtensionNodeType;
+	}
+
+	export interface AccountKey {
+		/**
+		 * Auth Library used to add the account
+		 */
+		authLibrary?: string;
 	}
 
 	export namespace workspace {

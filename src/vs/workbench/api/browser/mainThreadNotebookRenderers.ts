@@ -8,7 +8,7 @@ import { ExtHostContext, ExtHostNotebookRenderersShape, MainThreadNotebookRender
 import { IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { INotebookRendererMessagingService } from 'vs/workbench/contrib/notebook/common/notebookRendererMessagingService';
 
-// @extHostNamedCustomer(MainContext.MainThreadNotebookRenderers) {{SQL CARBON EDIT}}
+// @extHostNamedCustomer(MainContext.MainThreadNotebookRenderers) {{SQL CARBON EDIT}} Disable VS Code notebooks
 export class MainThreadNotebookRenderers extends Disposable implements MainThreadNotebookRenderersShape {
 	private readonly proxy: ExtHostNotebookRenderersShape;
 

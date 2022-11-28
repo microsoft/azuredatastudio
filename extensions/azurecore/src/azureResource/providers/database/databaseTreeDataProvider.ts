@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { AzureResourceItemType } from '../../../azureResource/constants';
+import { AzureResourceItemType, mssqlProvider } from '../../../azureResource/constants';
 import { generateGuid } from '../../utils';
 import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
@@ -25,6 +25,7 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 	) {
 		super(databaseService);
 	}
+
 	protected getTreeItemForResource(database: azureResource.AzureResourceDatabase, account: AzureAccount): TreeItem {
 		return {
 			id: `databaseServer_${database.serverFullName}.database_${database.name}`,
@@ -46,7 +47,7 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: 'MSSQL',
+				providerName: mssqlProvider,
 				saveProfile: false,
 				options: {},
 				azureAccount: account.key.accountId,
@@ -54,7 +55,7 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 				azureTenantId: database.tenant,
 				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
-			childProvider: 'MSSQL',
+			childProvider: mssqlProvider,
 			type: ExtensionNodeType.Database
 		};
 	}

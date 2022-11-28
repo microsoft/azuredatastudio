@@ -8,14 +8,16 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/common/keychain": {
-			"keychainWriteError": "将登录信息写入钥匙串失败，错误\"{0}\"。",
-			"troubleshooting": "故障排除指南"
-		},
 		"dist/githubServer": {
-			"signingIn": "$(mark-github)正在登录到 github.com…",
-			"status.git.signIn.name": "GitHub 登录",
-			"validUri": "请从 GitHub 登录页输入有效的 URI。"
+			"code.detail": "要完成身份验证，请导航到 GitHub 并粘贴以上一次性代码。",
+			"code.title": "代码: {0}",
+			"no": "否",
+			"otherReasonMessage": "尚未完成授权此扩展使用 GitHub 的操作。是否要继续尝试",
+			"progress": "在新选项卡中打开 [{0}]({0})，并粘贴一次性代码: {1}",
+			"signingIn": "正在登录到 github.com...",
+			"signingInAnotherWay": "正在登录到 github.com...",
+			"userCancelledMessage": "登录时遇到问题? 是否要尝试其他方式?",
+			"yes": "是"
 		},
 		"package": {
 			"description": "GitHub 身份验证提供程序",

@@ -66,23 +66,25 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 			if (subscriptions.length === 0) {
 				return [AzureResourceMessageTreeNode.create(AzureResourceAccountTreeNode.noSubscriptionsLabel, this)];
 			} else {
-				// Filter out everything that we can't authenticate to.
-				const hasTokenResults = await Promise.all(subscriptions.map(async s => {
-					let token: azdata.accounts.AccountSecurityToken | undefined = undefined;
-					let errMsg = '';
-					try {
-						token = await azdata.accounts.getAccountSecurityToken(this.account, s.tenant!, azdata.AzureResource.ResourceManagement);
-					} catch (err) {
-						errMsg = AzureResourceErrorMessageUtil.getErrorMessage(err);
-					}
-					if (!token) {
-						void vscode.window.showWarningMessage(localize('azure.unableToAccessSubscription', "Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}", s.name, s.id, errMsg));
-						return false;
-					}
-					return true;
-				}));
-				subscriptions = subscriptions.filter((_s, i) => hasTokenResults[i]);
-
+				const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+				if (authLibrary === 'ADAL') {
+					// Filter out everything that we can't authenticate to.
+					const hasTokenResults = await Promise.all(subscriptions.map(async s => {
+						let token: azdata.accounts.AccountSecurityToken | undefined = undefined;
+						let errMsg = '';
+						try {
+							token = await azdata.accounts.getAccountSecurityToken(this.account, s.tenant!, azdata.AzureResource.ResourceManagement);
+						} catch (err) {
+							errMsg = AzureResourceErrorMessageUtil.getErrorMessage(err);
+						}
+						if (!token) {
+							void vscode.window.showWarningMessage(localize('azure.unableToAccessSubscription', "Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}", s.name, s.id, errMsg));
+							return false;
+						}
+						return true;
+					}));
+					subscriptions = subscriptions.filter((_s, i) => hasTokenResults[i]);
+				}
 				let subTreeNodes = await Promise.all(subscriptions.map(async (subscription) => {
 					return new AzureResourceSubscriptionTreeNode(this.account, subscription, subscription.tenant!, this.appContext, this.treeChangeHandler, this);
 				}));
@@ -164,4 +166,9 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 	private _selectedSubscriptionCount = 0;
 
 	private static readonly noSubscriptionsLabel = localize('azure.resource.tree.accountTreeNode.noSubscriptionsLabel', "No Subscriptions found.");
+
+	sleep(ms: number) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+
 }

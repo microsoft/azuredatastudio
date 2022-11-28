@@ -20,6 +20,7 @@ import { AzureAccount, azureResource } from 'azurecore';
 import { AzureResourceService } from '../resourceService';
 import { AzureResourceResourceTreeNode } from '../resourceTreeNode';
 import { AzureResourceErrorMessageUtil } from '../utils';
+import { Logger } from '../../utils/Logger';
 
 export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 	public constructor(
@@ -178,14 +179,24 @@ class FlatAccountTreeNodeLoader {
 			}
 		}, 500);
 		try {
+
+			// Authenticate to tenants to filter out subscriptions that are not accessible.
+
+			let tenants = this._account.properties.tenants;
+			// Filter out tenants that we can't authenticate to.
+			tenants = tenants.filter(async tenant => {
+				const token = await azdata.accounts.getAccountSecurityToken(this._account, tenant.id, azdata.AzureResource.ResourceManagement);
+				return token !== undefined;
+			});
+
 			let subscriptions: azureResource.AzureResourceSubscription[] = (await getSubscriptionInfo(this._account, this._subscriptionService, this._subscriptionFilterService)).subscriptions;
 
 			if (subscriptions.length !== 0) {
-				// Filter out everything that we can't authenticate to.
+				// Filter out subscriptions that don't belong to the tenants we filtered above.
 				subscriptions = subscriptions.filter(async s => {
-					const token = await azdata.accounts.getAccountSecurityToken(this._account, s.tenant!, azdata.AzureResource.ResourceManagement);
-					if (!token) {
-						console.info(`Account does not have permissions to view subscription ${JSON.stringify(s)}.`);
+					const tenant = tenants.find(t => t.id === s.tenant);
+					if (!tenant) {
+						Logger.info(`Account does not have permissions to view subscription ${JSON.stringify(s)}.`);
 						return false;
 					}
 					return true;
@@ -195,10 +206,10 @@ class FlatAccountTreeNodeLoader {
 			const resourceProviderIds = await this._resourceService.listResourceProviderIds();
 			for (const subscription of subscriptions) {
 				for (const providerId of resourceProviderIds) {
-					const resourceTypes = await this._resourceService.getRootChildren(providerId, this._account, subscription, subscription.tenant!);
+					const resourceTypes = await this._resourceService.getRootChildren(providerId, this._account, subscription);
 					for (const resourceType of resourceTypes) {
 						const resources = await this._resourceService.getChildren(providerId, resourceType.resourceNode, true);
-						if (resources.length > 0) {
+						if (resources?.length > 0) {
 							this._nodes.push(...resources.map(dr => new AzureResourceResourceTreeNode(dr, this._accountNode, this.appContext)));
 							this._nodes = this.nodes.sort((a, b) => {
 								return a.getNodeInfo().label.localeCompare(b.getNodeInfo().label);

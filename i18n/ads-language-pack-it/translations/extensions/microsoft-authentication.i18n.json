@@ -11,10 +11,6 @@
 		"dist/AADHelper": {
 			"signOut": "Si è stati disconnessi perché la lettura delle informazioni di autenticazione archiviate non è riuscita."
 		},
-		"dist/keychain": {
-			"keychainWriteError": "La scrittura delle informazioni di accesso al keychain non è riuscita. Errore: '{0}'.",
-			"troubleshooting": "Guida alla risoluzione dei problemi"
-		},
 		"package": {
 			"description": "Provider di autenticazione Microsoft",
 			"displayName": "Account Microsoft",

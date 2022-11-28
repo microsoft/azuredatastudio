@@ -11,6 +11,7 @@
 		"dist/configurationEditingMain": {
 			"cwd": "启动时任务运行程序的当前工作目录",
 			"defaultBuildTask": "默认生成任务的名称。如果没有单个默认生成任务，则将显示快速选取以选择生成任务。",
+			"extensionInstallFolder": "安装扩展的路径。",
 			"file": "当前打开的文件",
 			"fileBasename": "当前打开的文件的文件名",
 			"fileBasenameNoExtension": "当前打开的文件的文件名 (不包含文件扩展名)",
@@ -52,8 +53,6 @@
 			"folderLabel": "按名称的文件夹(任意位置)",
 			"folderName": "文件所在工作区文件夹的名称 (例如 myFolder)",
 			"folderPath": "文件所在工作区文件夹的路径 (例如 /Users/Development/myFolder)",
-			"languageSpecificEditorSettings": "特定语言编辑器设置",
-			"languageSpecificEditorSettingsDescription": "替代语言编辑器设置",
 			"remoteName": "例如 SSH",
 			"rootName": "工作区名称 (例如 myFolder 或 myWorkspace)",
 			"rootPath": "工作区路径 (例如 /Users/Development/myWorkspace)",
