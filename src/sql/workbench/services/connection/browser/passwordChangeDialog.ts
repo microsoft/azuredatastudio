@@ -34,7 +34,7 @@ const TitleIconClass: string = 'icon filterLabel';
 const newPasswordText: string = localize('passwordChangeDialog.newPassword', 'New password for SQL Server Login:');
 const confirmPasswordText: string = localize('passwordChangeDialog.confirmPassword', 'Confirm password:');
 const connectCheckboxText: string = localize('passwordChangeDialog.connectText', 'Connect?:');
-const connectCheckboxLabel: string = localize('passwordChangeDialog.connectLabel', 'Connect upon close and save if needed');
+const connectCheckboxLabel: string = localize('passwordChangeDialog.connectLabel', 'Connect upon close and save if enabled on profile');
 const passwordMismatchText: string = localize('passwordChangeDialog.passwordMismatch', 'Passwords do not match');
 const passwordChangeLoadText: string = localize('passwordChangeDialog.loading', "Attempting to connect to server");
 
