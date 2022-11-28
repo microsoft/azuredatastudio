@@ -229,14 +229,6 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 		};
 
 		try {
-			this.client.onNotification(contracts.LoginMigrationNotification.type, e => {
-				console.log(e.completedStep, " : ", e.elapsedTime);
-			});
-
-			this.client.onNotification(contracts.ProfilerSessionCreatedNotification.type, e => {
-				console.log(e.ownerUri, " : ", e.sessionName);
-			});
-
 			return this.client.sendRequest(contracts.MigrateServerRolesAndSetPermissionsRequest.type, params);
 		}
 		catch (e) {

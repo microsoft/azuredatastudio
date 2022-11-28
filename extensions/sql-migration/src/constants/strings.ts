@@ -294,31 +294,31 @@ export function TIME_IN_MINUTES(val: number): number {
 	return val * 60000;
 }
 
-// Login
+// Login Migrations
 export function LOGIN_WIZARD_TITLE(instanceName: string): string {
 	return localize('sql-migration.login.wizard.title', "Migrate logins from '{0}' to Azure SQL (PREVIEW)", instanceName);
 }
-export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DESCRIPTION = localize('sql.migration.login.wizard.target.description', "Select the target Azure SQL Managed Instance, Azure SQL VM, or Azure SQL database(s) where you want to migrate your logins.");
-export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DATA_MIGRATION_WARNING = localize('sql.migration.login.wizard.target.data.migration.warning', "You must successfully migrate all your database(s) to the target before starting the login migration else the migration will fail. Also if the source and target database names are not same then some permissions may not be applied properly. Learn more");
+export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DESCRIPTION = localize('sql.login.migration.wizard.target.description', "Select the target Azure SQL Managed Instance, Azure SQL VM, or Azure SQL database(s) where you want to migrate your logins.");
+export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DATA_MIGRATION_WARNING = localize('sql.login.migration.wizard.target.data.migration.warning', "You must successfully migrate all your database(s) to the target before starting the login migration else the migration will fail. Also if the source and target database names are not same then some permissions may not be applied properly. Learn more");
 export function LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PERMISSIONS_WARNING(userName: string, instanceName: string): string {
-	return localize('sql.migration.login.wizard.target.permission.warning', "Please ensure that the current user ({0}) has enough permissions to get all login information for the current instance ({1}).", userName, instanceName);
+	return localize('sql.login.migration.wizard.target.permission.warning', "Please ensure that the current user ({0}) has enough permissions to get all login information for the current instance ({1}).", userName, instanceName);
 }
-export const LOGIN_MIGRATIONS_TARGET_TYPE_SELECTION_TITLE = localize('sql.migration.login.wizard.target.type.title', "Azure SQL target type");
-export const LOGIN_MIGRATIONS_MI_TEXT = localize('sql.migration.login.mi.title', "Azure SQL Managed Instance");
-export const LOGIN_MIGRATIONS_DB_TEXT = localize('sql.migration.login.db.title', "Azure SQL Database");
-export const LOGIN_MIGRATIONS_VM_TEXT = localize('sql.migration.login.vm.title', "SQL Server on Azure Virtual Machine");
-export const LOGIN_MIGRATIONS_AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.login.target.title', "Azure SQL target (PREVIEW)");
-export const LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE = localize('sql.migration.login.select.page.title', "Select login(s) to migrate (PREVIEW)");
-export const LOGIN_MIGRATIONS_STATUS_PAGE_TITLE = localize('sql.migration.login.status.page.title', "Migration Status (PREVIEW)");
+export const LOGIN_MIGRATIONS_TARGET_TYPE_SELECTION_TITLE = localize('sql.login.migration.wizard.target.type.title', "Azure SQL target type");
+export const LOGIN_MIGRATIONS_MI_TEXT = localize('sql.login.migration.mi.title', "Azure SQL Managed Instance");
+export const LOGIN_MIGRATIONS_DB_TEXT = localize('sql.login.migration.db.title', "Azure SQL Database");
+export const LOGIN_MIGRATIONS_VM_TEXT = localize('sql.login.migration.vm.title', "SQL Server on Azure Virtual Machine");
+export const LOGIN_MIGRATIONS_AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.login.migration.target.title', "Azure SQL target (PREVIEW)");
+export const LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE = localize('sql.login.migration.select.page.title', "Select login(s) to migrate (PREVIEW)");
+export const LOGIN_MIGRATIONS_STATUS_PAGE_TITLE = localize('sql.login.migration.status.page.title', "Migration Status (PREVIEW)");
 export function LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
-	return localize('sql.migration.login.status.page.description', "Migrating {0} logins to target {1} '{2}'", numLogins, targetType, targetName);
+	return localize('sql.login.migration.status.page.description', "Migrating {0} logins to target {1} '{2}'", numLogins, targetType, targetName);
 }
 export function LOGIN_MIGRATIONS_COMPLETED_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
-	return localize('sql.migration.login.status.page.description', "Completed migrating {0} logins to target {1} '{2}'", numLogins, targetType, targetName);
+	return localize('sql.login.migration.status.page.description', "Completed migrating {0} logins to target {1} '{2}'", numLogins, targetType, targetName);
 }
-export const LOGIN_MIGRATIONS_STATUS_PAGE_PREVIOUS_BUTTON_TITLE = localize('sql.migration.login.status.page.previous.button.title', "Previous (Disabled)");
-export const LOGIN_MIGRATIONS_STATUS_PAGE_PREVIOUS_BUTTON_ERROR = localize('sql.migration.login.status.page.previous.button.error', "Login migration has already been initiated and going back to prior page is disabled.");
-export const LOGIN_MIGRATIONS_GET_LOGINS_QUERY = localize('sql.migration.login.get.logins.query',
+export const LOGIN_MIGRATIONS_STATUS_PAGE_PREVIOUS_BUTTON_TITLE = localize('sql.login.migration.status.page.previous.button.title', "Previous (Disabled)");
+export const LOGIN_MIGRATIONS_STATUS_PAGE_PREVIOUS_BUTTON_ERROR = localize('sql.login.migration.status.page.previous.button.error', "Login migration has already been initiated and going back to prior page is disabled.");
+export const LOGIN_MIGRATIONS_GET_LOGINS_QUERY = localize('sql.login.migration.get.logins.query',
 	"SELECT sp.name as login, sp.type_desc as login_type, sp.default_database_name, case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status FROM sys.server_principals sp  LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN ('SQL_LOGIN', 'WINDOWS_LOGIN') ORDER BY sp.name;");
 export function LOGIN_MIGRATIONS_GET_LOGINS_ERROR_TITLE(targetType: string): string {
 	return localize('sql.migration.wizard.login.error.title', "An error occurred while trying to get {0} login information.", targetType);
@@ -329,15 +329,15 @@ export function LOGIN_MIGRATIONS_GET_LOGINS_ERROR(message: string): string {
 export const SELECT_LOGIN_TO_CONTINUE = localize('sql.migration.select.database.to.continue', "Please select 1 or more logins for migration");
 export const LOGIN_MIGRATE_BUTTON_TEXT = localize('sql.migration.start.login.migration.button', "Migrate");
 export function LOGIN_MIGRATIONS_GET_CONNECTION_STRING(dataSource: string, id: string, pass: string): string {
-	return localize('sql.migration.login.get.connection.string', "data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;", dataSource, id, pass);
+	return localize('sql.login.migration.get.connection.string', "data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;", dataSource, id, pass);
 }
-export const LOGIN_MIGRATION_IN_PROGRESS = localize('sql.migration.login.in.progress', "Login migration in progress");
-export const LOGIN_MIGRATION_REFRESHING_LOGIN_DATA = localize('sql.migration.login.select.in.progress', "Refreshing login list from source and target");
+export const LOGIN_MIGRATION_IN_PROGRESS = localize('sql.login.migration.in.progress', "Login migration in progress");
+export const LOGIN_MIGRATION_REFRESHING_LOGIN_DATA = localize('sql.login.migration.select.in.progress', "Refreshing login list from source and target");
 export function LOGIN_MIGRATION_REFRESH_LOGIN_DATA_SUCCESSFUL(numSourceLogins: number, numTargetLogins: number): string {
-	return localize('sql.migration.login.refresh.login.data.successful', "Refreshing login list was successful. Source logins found {0}, Target logins found {1}", numSourceLogins, numTargetLogins);
+	return localize('sql.login.migration.refresh.login.data.successful', "Refreshing login list was successful. Source logins found {0}, Target logins found {1}", numSourceLogins, numTargetLogins);
 }
-export const LOGIN_MIGRATION_REFRESH_SOURCE_LOGIN_DATA_FAILED = localize('sql.migration.login.refresh.source.login.data.failed', "Refreshing login list from source failed");
-export const LOGIN_MIGRATION_REFRESH_TARGET_LOGIN_DATA_FAILED = localize('sql.migration.login.refresh.target.login.data.failed', "Refreshing login list from target failed");
+export const LOGIN_MIGRATION_REFRESH_SOURCE_LOGIN_DATA_FAILED = localize('sql.login.migration.refresh.source.login.data.failed', "Refreshing login list from source failed");
+export const LOGIN_MIGRATION_REFRESH_TARGET_LOGIN_DATA_FAILED = localize('sql.login.migration.refresh.target.login.data.failed', "Refreshing login list from target failed");
 export const STARTING_LOGIN_MIGRATION = localize('sql.migration.starting.login', "Validating and migrating logins are in progress");
 export const ESTABLISHING_USER_MAPPINGS = localize('sql.login.migration.establish.user.mappings', "Validating and migrating logins completed.\n\nEstablishing user mappings.");
 export const MIGRATE_SERVER_ROLES_AND_SET_PERMISSIONS = localize('sql.login.migration.migrate.server.roles.and.set.permissions', "Establishing user mappings completed.\n\nCurrently, migrating server roles, establishing server mappings and setting permissions. This will take some time.");
@@ -855,11 +855,11 @@ export const DATABASE = localize('sql.migration.database', "Database");
 export const SRC_DATABASE = localize('sql.migration.src.database', "Source database");
 export const SRC_SERVER = localize('sql.migration.src.server', "Source name");
 export const SOURCE_LOGIN = localize('sql.migration.source.login', "Source login");
-export const LOGIN_TYPE = localize('sql.migration.login.type', "Login type");
+export const LOGIN_TYPE = localize('sql.login.migration.type', "Login type");
 export const DEFAULT_DATABASE = localize('sql.migration.default.database', "Default database");
-export const LOGIN_STATUS_COLUMN = localize('sql.migration.login.status.column', "Status");
-export const LOGIN_TARGET_STATUS_COLUMN = localize('sql.migration.login.target.status.column', "Target Status");
-export const LOGIN_MIGRATION_STATUS_COLUMN = localize('sql.migration.login.migration.status.column', "Migration Status");
+export const LOGIN_STATUS_COLUMN = localize('sql.login.migration.status.column', "Status");
+export const LOGIN_TARGET_STATUS_COLUMN = localize('sql.login.migration.target.status.column', "Target Status");
+export const LOGIN_MIGRATION_STATUS_COLUMN = localize('sql.login.migration.migration.status.column', "Migration Status");
 
 export const STATUS_COLUMN = localize('sql.migration.database.status.column', "Migration status");
 export const DATABASE_MIGRATION_SERVICE = localize('sql.migration.database.migration.service', "Database Migration Service");
@@ -1009,7 +1009,7 @@ export const USERNAME = localize('sql.migration.username', "User name");
 export const SIZE = localize('sql.migration.size', "Size (MB)");
 export const DATABASE_MIGRATE_TEXT = localize('sql.migrate.text', "Select the databases that you want to migrate to Azure SQL.");
 export const OFFLINE_CAPS = localize('sql.migration.offline.caps', "OFFLINE");
-export const SELECT_DATABASE_TO_CONTINUE = localize('sql.migration.select.login.to.continue', "Please select 1 or more databases to assess for migration");
+export const SELECT_DATABASE_TO_CONTINUE = localize('sql.migration.select.database.to.continue', "Please select 1 or more databases to assess for migration");
 
 //Assessment Dialog
 export const ISSUES = localize('sql.migration.issues', "Issues");
@@ -1049,7 +1049,7 @@ export function DATABASES_SELECTED(selectedCount: number, totalCount: number): s
 	return localize('sql.migration.databases.selected', "{0}/{1} databases selected", selectedCount, totalCount);
 }
 export function LOGINS_SELECTED(selectedCount: number, totalCount: number): string {
-	return localize('sql.migration.logins.selected', "{0}/{1} logins selected", selectedCount, totalCount);
+	return localize('sql.login.migrations.selected', "{0}/{1} logins selected", selectedCount, totalCount);
 }
 export function NUMBER_LOGINS_MIGRATING(displayedMigratingCount: number, totalMigratingCount: number): string {
 	return localize('sql.migration.number.logins.migrating', "{0}/{1} migrating logins displayed", displayedMigratingCount, totalMigratingCount);
