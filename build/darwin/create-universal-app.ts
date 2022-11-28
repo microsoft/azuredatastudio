@@ -87,8 +87,9 @@ async function main() {
 	});
 	await fs.writeJson(productJsonPath, productJson);
 
-	// Verify if native module architecture is correct
-	const findOutput = await spawn('find', [outAppPath, '-name', 'keytar.node']);
+	// {{SQL CARBON EDIT}}
+	// Verify if native module architecture is correct (lookup only in unpacked node_modules)
+	const findOutput = await spawn('find', [outAppPath, '-name', 'keytar.node', '-regex', '.*node_modules.asar.unpacked.*',]);
 	const lipoOutput = await spawn('lipo', ['-archs', findOutput.replace(/\n$/, '')]);
 	if (lipoOutput.replace(/\n$/, '') !== 'x86_64 arm64') {
 		throw new Error(`Invalid arch, got : ${lipoOutput}`);
