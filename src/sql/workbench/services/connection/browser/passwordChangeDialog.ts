@@ -24,6 +24,7 @@ import { IConnectionDialogService } from 'sql/workbench/services/connection/comm
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 
 
 const OkText: string = localize('passwordChangeDialog.ok', "OK");
@@ -34,8 +35,8 @@ const newPasswordText: string = localize('passwordChangeDialog.newPassword', 'Ne
 const confirmPasswordText: string = localize('passwordChangeDialog.confirmPassword', 'Confirm password:');
 const connectCheckboxText: string = localize('passwordChangeDialog.connectText', 'Connect?:');
 const connectCheckboxLabel: string = localize('passwordChangeDialog.connectLabel', 'Connect upon close and save if needed');
-const passwordMismatchText: string = localize('passwordChangeDialog.passwordMismatch', 'Passwords do not match')
-
+const passwordMismatchText: string = localize('passwordChangeDialog.passwordMismatch', 'Passwords do not match');
+const passwordChangeLoadText: string = localize('passwordChangeDialog.loading', "Attempting to change password.");
 
 export class PasswordChangeDialog extends Modal {
 
@@ -48,6 +49,7 @@ export class PasswordChangeDialog extends Modal {
 	private _confirmValueText: InputBox;
 	private _connectOnClose: Checkbox;
 	private _verifyBox: HTMLElement;
+	private _loadingSpinner: LoadingSpinner;
 
 
 	constructor(
@@ -90,6 +92,10 @@ export class PasswordChangeDialog extends Modal {
 
 	protected renderBody(container: HTMLElement) {
 		const body = DOM.append(container, DOM.$('.change-password-dialog'));
+
+		this._loadingSpinner = new LoadingSpinner(container, { showText: true });
+		this._loadingSpinner.loadingMessage = passwordChangeLoadText;
+
 		const passwordRow = DOM.append(body, DOM.$('tr'));
 		DOM.append(passwordRow, DOM.$('td')).innerText = newPasswordText;
 		this._passwordValueText = new InputBox(DOM.append(passwordRow, DOM.$('.password-text')), this.contextViewService, {});
@@ -130,6 +136,7 @@ export class PasswordChangeDialog extends Modal {
 		// Verify passwords match before changing the password.
 		this._okButton.enabled = false;
 		this._cancelButton.enabled = false;
+		this._loadingSpinner.loading = true;
 		if (this._passwordValueText.value === this._confirmValueText.value) {
 			if (this._verifyBox.style.display === 'block') {
 				this._verifyBox.style.display = 'none';
@@ -141,6 +148,7 @@ export class PasswordChangeDialog extends Modal {
 				() => {
 					this._okButton.enabled = true; /* ignore, user must try again */
 					this._cancelButton.enabled = true;
+					this._loadingSpinner.loading = false;
 				}
 			);
 		}
@@ -148,6 +156,7 @@ export class PasswordChangeDialog extends Modal {
 			this._verifyBox.style.display = 'block';
 			this._okButton.enabled = true;
 			this._cancelButton.enabled = true;
+			this._loadingSpinner.loading = false;
 		}
 	}
 }
