@@ -88,7 +88,8 @@ async function main() {
 	await fs.writeJson(productJsonPath, productJson);
 
 	// {{SQL CARBON EDIT}}
-	// Verify if native module architecture is correct (lookup only in unpacked node_modules)
+	// Verify if native module architecture is correct
+	// Lookup only in node_modules.asar.unpacked hierarchy (containing core modules) as extensions might also contain this file as a dependency.
 	const findOutput = await spawn('find', [outAppPath, '-name', 'keytar.node', '-regex', '.*node_modules.asar.unpacked.*',]);
 	const lipoOutput = await spawn('lipo', ['-archs', findOutput.replace(/\n$/, '')]);
 	if (lipoOutput.replace(/\n$/, '') !== 'x86_64 arm64') {
