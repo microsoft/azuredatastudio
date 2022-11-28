@@ -36,6 +36,8 @@ import Severity from 'vs/base/common/severity';
 import { ConnectionStringOptions } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isFalsyOrWhitespace } from 'vs/base/common/strings';
 import { AuthenticationType } from 'sql/platform/connection/common/constants';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { AuthLibrary, filterAccounts } from 'sql/workbench/services/accountManagement/browser/accountDialog';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
@@ -107,6 +109,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		color: undefined,
 		description: undefined,
 	};
+	private readonly configurationService: IConfigurationService;
 	constructor(options: azdata.ConnectionOption[],
 		callbacks: IConnectionComponentCallbacks,
 		providerName: string,
@@ -115,7 +118,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@ILogService protected _logService: ILogService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService
+		@IErrorMessageService private _errorMessageService: IErrorMessageService,
+		@IConfigurationService configurationService: IConfigurationService
 	) {
 		super();
 		this._callbacks = callbacks;
@@ -135,6 +139,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		}
 		this._providerName = providerName;
 		this._connectionStringOptions = this._connectionManagementService.getProviderProperties(this._providerName).connectionStringOptions;
+		this.configurationService = configurationService;
 	}
 
 	protected getAuthTypeDefault(option: azdata.ConnectionOption, os: OperatingSystem): string {
@@ -591,7 +596,12 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private async fillInAzureAccountOptions(): Promise<void> {
 		let oldSelection = this._azureAccountDropdown.value;
 		const accounts = await this._accountManagementService.getAccounts();
-		this._azureAccountList = accounts.filter(a => a.key.providerId.startsWith('azure'));
+		const updatedAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
+		const authLibrary: AuthLibrary = this.configurationService.getValue('azure.authenticationLibrary');
+		if (authLibrary) {
+			this._azureAccountList = filterAccounts(updatedAccounts, authLibrary);
+		}
+
 		let accountDropdownOptions: SelectOptionItemSQL[] = this._azureAccountList.map(account => {
 			return {
 				text: account.displayInfo.displayName,
@@ -676,17 +686,15 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	private onAzureTenantSelected(tenantIndex: number): void {
-		this._azureTenantId = undefined;
 		let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 		if (account && account.properties.tenants) {
 			let tenant = account.properties.tenants[tenantIndex];
 			if (tenant) {
-				this._azureTenantId = tenant.id;
 				this._callbacks.onAzureTenantSelection(tenant.id);
 			}
 			else {
 				// This should ideally never ever happen!
-				this._logService.error(`onAzureTenantSelected : Could not find tenant with ID ${this._azureTenantId} for account ${account.displayInfo.displayName}`);
+				this._logService.error(`onAzureTenantSelected : Tenant list not found as expected, missing tenant on index ${tenantIndex}`);
 			}
 		}
 	}
