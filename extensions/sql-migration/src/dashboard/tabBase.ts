@@ -95,10 +95,6 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 		}
 	}
 
-	// TODO AKMA
-	// Change this to a dropdown. for now creating a migrate login button.
-	// Dropbdown component doesn't exist. would take some work to set up.
-	// Need to link to correct login migraiton wizard
 	protected createNewLoginMigrationButton(): azdata.ButtonComponent {
 		const newLoginMigrationButton = this.view.modelBuilder.button()
 			.withProps({

@@ -212,7 +212,7 @@ export class WizardController {
 					const lastPage = pageChangeInfo.lastPage;
 					this.sendPageButtonClickEvent(pageChangeInfo)
 						.catch(e => logError(
-							TelemetryViews.MigrationWizardController,
+							TelemetryViews.LoginMigrationWizardController,
 							'ErrorSendingPageButtonClick', e));
 					await pages[lastPage]?.onPageLeave(pageChangeInfo);
 					await pages[newPage]?.onPageEnter(pageChangeInfo);
@@ -233,7 +233,7 @@ export class WizardController {
 		this._disposables.push(
 			this._wizardObject.cancelButton.onClick(e => {
 				sendSqlMigrationActionEvent(
-					TelemetryViews.SqlMigrationWizard,
+					TelemetryViews.LoginMigrationWizard,
 					TelemetryAction.PageButtonClick,
 					{
 						...this.getTelemetryProps(),

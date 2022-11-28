@@ -314,7 +314,7 @@ export function LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(numLogins: number, targ
 	return localize('sql.login.migration.status.page.description', "Migrating {0} logins to target {1} '{2}'", numLogins, targetType, targetName);
 }
 export function LOGIN_MIGRATIONS_COMPLETED_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
-	return localize('sql.login.migration.status.page.description', "Completed migrating {0} logins to target {1} '{2}'", numLogins, targetType, targetName);
+	return localize('sql.login.migration.status.page.description', "Completed migrating {0} logins to {1} '{2}'", numLogins, targetType, targetName);
 }
 export const LOGIN_MIGRATIONS_STATUS_PAGE_PREVIOUS_BUTTON_TITLE = localize('sql.login.migration.status.page.previous.button.title', "Previous (Disabled)");
 export const LOGIN_MIGRATIONS_STATUS_PAGE_PREVIOUS_BUTTON_ERROR = localize('sql.login.migration.status.page.previous.button.error', "Login migration has already been initiated and going back to prior page is disabled.");

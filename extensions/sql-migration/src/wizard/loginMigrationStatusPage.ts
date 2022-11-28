@@ -304,8 +304,8 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 				login.loginType,
 				login.defaultDatabaseName,
 				<azdata.HyperlinkColumnCellValue>{
-					icon: getPipelineStatusImage(status), // TODO AKMA : change to new method
-					title: title, // TODO AKMA : Change hardcoding
+					icon: getPipelineStatusImage(status),
+					title: title,
 				},
 			];
 		}) || [];
@@ -330,9 +330,8 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 		this._progressLoader.loading = true;
 
 		if (this.migrationStateModel._targetServerInstance) {
-			// TODO AKMA : remove debug below and pretty-ify this.migrationStateModel._targetType with proper spacing
 			await this._migrationProgress.updateProperties({
-				'text': constants.LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(this._getTotalNumberOfLogins(), this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance.name)
+				'text': constants.LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(this._getTotalNumberOfLogins(), this.migrationStateModel.GetTargetType(), this.migrationStateModel._targetServerInstance.name)
 			});
 		}
 
@@ -359,9 +358,8 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 		});
 
 		if (this.migrationStateModel._targetServerInstance) {
-			// TODO AKMA : remove debug below and pretty-ify this.migrationStateModel._targetType with proper spacing
 			await this._migrationProgress.updateProperties({
-				'text': constants.LOGIN_MIGRATIONS_COMPLETED_STATUS_PAGE_DESCRIPTION(this._getTotalNumberOfLogins(), this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance.name),
+				'text': constants.LOGIN_MIGRATIONS_COMPLETED_STATUS_PAGE_DESCRIPTION(this._getTotalNumberOfLogins(), this.migrationStateModel.GetTargetType(), this.migrationStateModel._targetServerInstance.name),
 				'style': 'success',
 			});
 		} else {

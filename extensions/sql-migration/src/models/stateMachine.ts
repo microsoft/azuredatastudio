@@ -440,36 +440,17 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._skuRecommendationResults;
 	}
 
-	public async getSourceServerName(): Promise<string> {
-		return (await this.getSourceConnectionProfile()).serverName!;
-	}
-
-	public async getSourceUserName(): Promise<string> {
-		const connectionProfile = await this.getSourceConnectionProfile();
-		const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
-		const query = 'select SUSER_NAME()';
-		const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection(this.sourceConnectionId)), query);
-		return results.rows[0][0].displayValue;
-	}
-
-	public async getSourceCreds(): Promise<string> {
-		return (await azdata.connection.getCredentials(this.sourceConnectionId)).password;
-	}
-
-	// public async getSourceAuthType(): Promise<MigrationSourceAuthenticationType> {
-	// 	const connectionProfile = await this.getSourceConnectionProfile();
-	// 	return connectionProfile.authenticationType === AuthenticationType.SqlLogin
-	// 		? MigrationSourceAuthenticationType.Sql
-	// 		: connectionProfile.authenticationType === AuthenticationType.Integrated
-	// 			? MigrationSourceAuthenticationType.Integrated
-	// 			: undefined!;
-	// }
 
 	public async getSourceConnectionString(): Promise<string> {
 		return await azdata.connection.getConnectionString(this._sourceConnectionId, true);
 	}
 
 	public async setTargetServerName(): Promise<void> {
+		// If target server name has already been set, we can skip this part
+		if (this._targetServerName) {
+			return;
+		}
+
 		if (isSqlManagedInstance(this._targetServerInstance) || isAzureSqlDatabaseServer(this._targetServerInstance)) {
 			this._targetServerName = this._targetServerName ?? this._targetServerInstance.properties.fullyQualifiedDomainName;
 		}
@@ -501,46 +482,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		}
 	}
 
-	// public async startLoginMigration(): Promise<Boolean> {
-	// 	try {
-	// 		const sourceConnectionString = await this.getSourceConnectionString();
-	// 		const targetConnectionString = await this.getTargetConnectionString();
-	// 		console.log('AKMA DEBUG LOG: startLoginMIgration sourceConnectionString: ', sourceConnectionString);
-	// 		console.log('AKMA DEBUG LOG: startLoginMIgration targetConnectionString: ', targetConnectionString);
-	// 		console.log('AKMA DEBUG LOG: startLoginMIgration this._loginsForMigration: ', this._loginsForMigration);
-	// 		console.log('AKMA DEBUG LOG: startLoginMIgration this._loginsForMigration: ', this._loginsForMigration.map(row => row.loginName));
-
-	// 		console.log('Starting Login Migration at: ', new Date());
-
-	// 		const response = (await this.migrationService.startLoginMigration(
-	// 			sourceConnectionString,
-	// 			targetConnectionString, // change to target once we get
-	// 			this._loginsForMigration.map(row => row.loginName),
-	// 			this._aadDomainName
-	// 		))!;
-	// 		console.log('Ending Login Migration at: ', new Date());
-	// 		this._didLoginMigrationsSucceed = true;
-	// 		this._loginMigrationsResult = response;
-
-	// 		console.log('AKMA DEBUG response: ', response);
-	// 	} catch (error) {
-	// 		console.log('Failed Login Migration at: ', new Date());
-	// 		logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
-	// 	}
-
-	// 	// TODO AKMA : emit telemetry
-	// 	return true;
-	// }
-
 	public async migrateLogins(): Promise<Boolean> {
 		try {
 			const sourceConnectionString = await this.getSourceConnectionString();
 			const targetConnectionString = await this.getTargetConnectionString();
-			console.log('AKMA DEBUG LOG: startLoginMIgration sourceConnectionString: ', sourceConnectionString);
-			console.log('AKMA DEBUG LOG: startLoginMIgration targetConnectionString: ', targetConnectionString);
-			console.log('AKMA DEBUG LOG: startLoginMIgration this._loginsForMigration: ', this._loginsForMigration);
-			console.log('AKMA DEBUG LOG: startLoginMIgration this._loginsForMigration: ', this._loginsForMigration.map(row => row.loginName));
-
 			console.log('Starting Login Migration at: ', new Date());
 
 			console.time("migrateLogins")
@@ -575,7 +520,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				this._aadDomainName
 			))!;
 			console.timeEnd("establishUserMapping")
-			// console.log('Login migration response after establishUserMapping: ', response);
 
 			this.updateLoginMigrationResults(response)
 		} catch (error) {
@@ -600,10 +544,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				this._aadDomainName
 			))!;
 			console.timeEnd("migrateServerRolesAndSetPermissions")
-			// console.log('Login migration response after migrateServerRolesAndSetPermissions: ', response);
 
 			this.updateLoginMigrationResults(response)
-			// console.log('Login migration result: ', this._loginMigrationsResult);
 
 			console.log('Ending Login Migration at: ', new Date());
 			console.log('Login migration response: ', response);
@@ -1374,6 +1316,18 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		} catch {
 			return false;
 		}
+	}
+
+	public GetTargetType(): string {
+		switch (this._targetType) {
+			case MigrationTargetType.SQLMI:
+				return constants.LOGIN_MIGRATIONS_MI_TEXT;
+			case MigrationTargetType.SQLVM:
+				return constants.LOGIN_MIGRATIONS_VM_TEXT;
+			case MigrationTargetType.SQLDB:
+				return constants.LOGIN_MIGRATIONS_DB_TEXT;
+		}
+		return "";
 	}
 }
 

@@ -78,8 +78,6 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	}
 
 	public async onPageLeave(): Promise<void> {
-		// TODO AKMA : should i run login migration here? or on the next page
-
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			return true;
 		});
@@ -120,11 +118,11 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			tableRows = this._loginTableValues
 				.filter(row => {
 					const searchText = value?.toLowerCase();
-					return row[1]?.toLowerCase()?.indexOf(searchText) > -1	// source login
-						|| row[2]?.toLowerCase()?.indexOf(searchText) > -1	// login type
-						|| row[3]?.toLowerCase()?.indexOf(searchText) > -1  // default database
-						|| row[4]?.title.toLowerCase()?.indexOf(searchText) > -1  // status
-						|| row[5]?.toLowerCase()?.indexOf(searchText) > -1;	// target status
+					return row[1]?.toLowerCase()?.indexOf(searchText) > -1			// source login
+						|| row[2]?.toLowerCase()?.indexOf(searchText) > -1			// login type
+						|| row[3]?.toLowerCase()?.indexOf(searchText) > -1  		// default database
+						|| row[4]?.title.toLowerCase()?.indexOf(searchText) > -1  	// status
+						|| row[5]?.toLowerCase()?.indexOf(searchText) > -1;			// target status
 				});
 		}
 
@@ -277,7 +275,6 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				'margin': '0px 28px 0px 28px'
 			}
 		}).component();
-		// flex.addItem(this._refreshLoading);
 		flex.addItem(refreshContainer);
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._loginCount, { flex: '0 0 auto' });
@@ -300,7 +297,6 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		// execute a query against the source to get the logins
 		try {
 			sourceLogins.push(...await collectSourceLogins(stateMachine.sourceConnectionId));
-			console.log('AKMA DEBUG LOG: ', sourceLogins);
 		} catch (error) {
 			this._refreshLoading.loading = false;
 			this._refreshResultsInfoBox.style = 'error';
@@ -316,11 +312,9 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		try {
 			if (this.isTargetInstanceSet()) {
 				targetLogins.push(...await collectTargetLogins(stateMachine._targetServerInstance as AzureSqlDatabaseServer, stateMachine._targetUserName, stateMachine._targetPassword));
-				console.log('AKMA DEBUG LOG: ', targetLogins);
 			}
-			// TODO AKMA : Remove following 3 lines
 			else {
-				console.log('AKMA DEBUG LOG: Target info is empty.');
+				// TODO AKMA : Emit telemetry here saying target info is empty
 			}
 		} catch (error) {
 			this._refreshLoading.loading = false;
