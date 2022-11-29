@@ -600,6 +600,47 @@ export async function getVirtualMachines(account?: Account, subscription?: azure
 	return virtualMachines;
 }
 
+export async function getVirtualMachinesDropdownValues(virtualMachines: azure.SqlVMServer[], location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<CategoryValue[]> {
+	let virtualMachinesValues: CategoryValue[] = [];
+	if (location && resourceGroup) {
+		virtualMachines.forEach((virtualMachine) => {
+			if (virtualMachine.location.toLowerCase() === location.name.toLowerCase() && azure.getResourceGroupFromId(virtualMachine.id).toLowerCase() === resourceGroup.name.toLowerCase()) {
+				let virtualMachineValue: CategoryValue;
+
+
+				virtualMachineValue = {
+					name: virtualMachine.id,
+					displayName: constants.UNAVAILABLE_TARGET_PREFIX(virtualMachine.name)
+				};
+
+
+				// if (virtualMachine.properties.state === 'Ready') {
+				// 	virtualMachineValue = {
+				// 		name: virtualMachine.id,
+				// 		displayName: virtualMachine.name
+				// 	};
+				// } else {
+				// 	virtualMachineValue = {
+				// 		name: virtualMachine.id,
+				// 		displayName: constants.UNAVAILABLE_TARGET_PREFIX(virtualMachine.name)
+				// 	};
+				// }
+				virtualMachinesValues.push(virtualMachineValue);
+			}
+		});
+	}
+
+	if (virtualMachinesValues.length === 0) {
+		virtualMachinesValues = [
+			{
+				displayName: constants.NO_MANAGED_INSTANCE_FOUND,
+				name: ''
+			}
+		];
+	}
+	return virtualMachinesValues;
+}
+
 export async function getStorageAccounts(account?: Account, subscription?: azureResource.AzureResourceSubscription): Promise<azure.StorageAccount[]> {
 	let storageAccounts: azure.StorageAccount[] = [];
 	try {

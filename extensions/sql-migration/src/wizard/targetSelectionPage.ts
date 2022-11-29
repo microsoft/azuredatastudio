@@ -152,15 +152,25 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					if (!targetMi || resourceDropdownValue === constants.NO_MANAGED_INSTANCE_FOUND) {
 						errors.push(constants.INVALID_MANAGED_INSTANCE_ERROR);
 					}
+
+					////
 					if (targetMi?.properties?.state !== 'Ready') {
 						errors.push(constants.MI_NOT_READY_ERROR(targetMi.name, targetMi.properties.state));
 					}
+					////
 					break;
 				case MigrationTargetType.SQLVM:
 					const targetVm = this.migrationStateModel._targetServerInstance as SqlVMServer;
 					if (!targetVm || resourceDropdownValue === constants.NO_VIRTUAL_MACHINE_FOUND) {
 						errors.push(constants.INVALID_VIRTUAL_MACHINE_ERROR);
 					}
+
+					////
+					// if () {
+
+					// }
+					////
+
 					break;
 				case MigrationTargetType.SQLDB:
 					const targetSqlDB = this.migrationStateModel._targetServerInstance as AzureSqlDatabaseServer;
@@ -905,6 +915,14 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._location,
 						this.migrationStateModel._resourceGroup?.name,
 						constants.NO_VIRTUAL_MACHINE_FOUND);
+
+					//////
+					this._azureResourceDropdown.values = await utils.getVirtualMachinesDropdownValues(
+						this.migrationStateModel._targetSqlVirtualMachines,
+						this.migrationStateModel._location,
+						this.migrationStateModel._resourceGroup);
+					//////
+
 					break;
 				case MigrationTargetType.SQLDB:
 					this._azureResourceDropdown.values = utils.getAzureResourceDropdownValues(
