@@ -403,7 +403,6 @@ suite('SQL Connection Tree Action tests', () => {
 			resolve(connection);
 		}));
 		connectionManagementService.setup(x => x.isConnected(undefined, TypeMoq.It.isAny())).returns(() => isConnectedReturnValue);
-		connectionManagementService.setup(x => x.refreshAzureAccountTokenIfNecessary(TypeMoq.It.isAny())).returns(async () => true);
 
 		let objectExplorerSession = {
 			success: true,
@@ -450,7 +449,6 @@ suite('SQL Connection Tree Action tests', () => {
 
 		return refreshAction.run().then((value) => {
 			connectionManagementService.verify(x => x.isConnected(undefined, TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
-			connectionManagementService.verify(x => x.refreshAzureAccountTokenIfNecessary(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 			objectExplorerService.verify(x => x.getObjectExplorerNode(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 			objectExplorerService.verify(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
 			tree.verify(x => x.refresh(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
