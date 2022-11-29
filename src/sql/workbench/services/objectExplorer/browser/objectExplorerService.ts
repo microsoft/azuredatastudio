@@ -441,8 +441,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							self.callExpandOrRefreshFromProvider(provider, {
 								sessionId: session.sessionId!,
 								nodePath: node.nodePath,
-								token: session.token,
-								expiresOn: session.expiresOn
+								token: session.token
 							}, refresh).then(isExpanding => {
 								if (!isExpanding) {
 									// The provider stated it's not going to expand the node, therefore do not need to track when merging results
@@ -602,8 +601,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			// Refresh access token on connection if needed.
 			let refreshResult = await this._connectionManagementService.refreshAzureAccountTokenIfNecessary(connection);
 			if (refreshResult) {
-				session.token = connection.options['azureAccountToken'];
-				session.expiresOn = connection.options['expiresOn'];
+				session.token = {
+					token: connection.options['azureAccountToken'],
+					expiresOn: connection.options['expiresOn']
+				};
 			}
 		}
 		const providerName = connection?.providerName;

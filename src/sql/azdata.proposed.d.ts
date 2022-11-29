@@ -449,24 +449,16 @@ declare module 'azdata' {
 	// Object Explorer interfaces  --------------------------------
 	export interface ObjectExplorerSession {
 		/**
-		 * Access token used in current session.
+		 * Authentication token for the current session.
 		 */
-		token?: string | undefined;
-		/**
-		 * Expiry time of the access token.
-		 */
-		expiresOn?: string | undefined;
+		token?: accounts.AccountSecurityToken | undefined;
 	}
 
 	export interface ExpandNodeInfo {
 		/**
-		 * Access token used in current session.
+		 * Authentication token for the current session.
 		 */
-		token?: string | undefined;
-		/**
-		 * Expiry time of the access token.
-		 */
-		expiresOn?: string | undefined;
+		token?: accounts.AccountSecurityToken | undefined;
 	}
 	// End Object Explorer interfaces  ----------------------------
 
