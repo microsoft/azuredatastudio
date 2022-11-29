@@ -270,7 +270,7 @@ export interface IModelViewDialogDetails {
 	dialogProperties: IDialogProperties;
 	loading: boolean;
 	loadingText: string;
-	loadingCompleteText: string;
+	loadingCompletedText: string;
 }
 
 export interface IModelViewTabDetails {
@@ -312,7 +312,7 @@ export interface IModelViewWizardDetails {
 	width: DialogWidth;
 	loading: boolean;
 	loadingText: string;
-	loadingCompleteText: string;
+	loadingCompletedText: string;
 }
 
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number | string;

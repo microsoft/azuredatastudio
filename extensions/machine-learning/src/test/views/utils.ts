@@ -309,7 +309,7 @@ export function createViewContext(): ViewTestContext {
 		valid: true,
 		loading: false,
 		loadingText: '',
-		loadingCompleteText: ''
+		loadingCompletedText: ''
 	};
 	let wizard: azdata.window.Wizard = {
 		title: '',
@@ -333,7 +333,7 @@ export function createViewContext(): ViewTestContext {
 		registerOperation: () => { },
 		loading: false,
 		loadingText: '',
-		loadingCompleteText: ''
+		loadingCompletedText: ''
 	};
 	let wizardPage: azdata.window.WizardPage = {
 		title: '',

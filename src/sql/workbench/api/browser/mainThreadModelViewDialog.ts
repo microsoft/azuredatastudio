@@ -146,7 +146,7 @@ export class MainThreadModelViewDialog extends Disposable implements MainThreadM
 		dialog.message = details.message;
 		dialog.loading = details.loading;
 		dialog.loadingText = dialog.loadingText;
-		dialog.loadingCompleteText = dialog.loadingCompleteText;
+		dialog.loadingCompletedText = dialog.loadingCompletedText;
 
 		return Promise.resolve();
 	}
@@ -228,7 +228,7 @@ export class MainThreadModelViewDialog extends Disposable implements MainThreadM
 		wizard.message = details.message;
 		wizard.loading = details.loading;
 		wizard.loadingText = details.loadingText;
-		wizard.loadingCompleteText = details.loadingCompleteText;
+		wizard.loadingCompletedText = details.loadingCompletedText;
 		return Promise.resolve();
 	}
 

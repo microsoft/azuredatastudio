@@ -136,7 +136,7 @@ declare module 'azdata' {
 
 	export interface LoadingComponentBase {
 		/**
-		* When true, the wizard will show a loading spinner at the bottom left of the footer.
+		* When true, the component will display a loading spinner.
 		*/
 		loading?: boolean;
 
@@ -149,7 +149,7 @@ declare module 'azdata' {
 		 * The text to display while loading is set to false. Will also be announced through screen readers
 		 * once loading is completed.
 		 */
-		loadingCompleteText?: string;
+		loadingCompletedText?: string;
 	}
 
 	/**

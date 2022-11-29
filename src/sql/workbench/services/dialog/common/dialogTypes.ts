@@ -55,13 +55,13 @@ export class Dialog extends ModelViewPane {
 	public readonly onMessageChange = this._onMessageChange.event;
 	private _loading: boolean = false;
 	private _loadingText: string;
-	private _loadingCompleteText: string;
+	private _loadingCompletedText: string;
 	private _onLoadingChange = new Emitter<boolean | undefined>();
 	private _onLoadingTextChange = new Emitter<string | undefined>();
-	private _onLoadingCompleteTextChange = new Emitter<string | undefined>();
+	private _onLoadingCompletedTextChange = new Emitter<string | undefined>();
 	public readonly onLoadingChange = this._onLoadingChange.event;
 	public readonly onLoadingTextChange = this._onLoadingTextChange.event;
-	public readonly onLoadingCompleteTextChange = this._onLoadingCompleteTextChange.event;
+	public readonly onLoadingCompletedTextChange = this._onLoadingCompletedTextChange.event;
 
 	private _message: DialogMessage | undefined;
 	private _closeValidator: CloseValidator | undefined;
@@ -119,14 +119,14 @@ export class Dialog extends ModelViewPane {
 		}
 	}
 
-	public get loadingCompleteText(): string | undefined {
-		return this._loadingCompleteText;
+	public get loadingCompletedText(): string | undefined {
+		return this._loadingCompletedText;
 	}
 
-	public set loadingCompleteText(value: string | undefined) {
-		if (this._loadingCompleteText !== value) {
-			this._loadingCompleteText = value;
-			this._onLoadingCompleteTextChange.fire(this._loadingCompleteText);
+	public set loadingCompletedText(value: string | undefined) {
+		if (this._loadingCompletedText !== value) {
+			this._loadingCompletedText = value;
+			this._onLoadingCompletedTextChange.fire(this._loadingCompletedText);
 		}
 	}
 
@@ -292,13 +292,13 @@ export class Wizard {
 	public width: DialogWidth | undefined;
 	private _loading: boolean = false;
 	private _loadingText: string;
-	private _loadingCompleteText: string;
+	private _loadingCompletedText: string;
 	private _onLoadingChange = new Emitter<boolean | undefined>();
 	private _onLoadingTextChange = new Emitter<string | undefined>();
-	private _onLoadingCompleteTextChange = new Emitter<string | undefined>();
+	private _onLoadingCompletedTextChange = new Emitter<string | undefined>();
 	public readonly onLoadingChange = this._onLoadingChange.event;
 	public readonly onLoadingTextChange = this._onLoadingTextChange.event;
-	public readonly onLoadingCompleteTextChange = this._onLoadingCompleteTextChange.event;
+	public readonly onLoadingCompletedTextChange = this._onLoadingCompletedTextChange.event;
 
 	constructor(public title: string,
 		public readonly name: string,
@@ -404,14 +404,14 @@ export class Wizard {
 		}
 	}
 
-	public get loadingCompleteText(): string | undefined {
-		return this._loadingCompleteText;
+	public get loadingCompletedText(): string | undefined {
+		return this._loadingCompletedText;
 	}
 
-	public set loadingCompleteText(value: string | undefined) {
-		if (this._loadingCompleteText !== value) {
-			this._loadingCompleteText = value;
-			this._onLoadingCompleteTextChange.fire(this._loadingCompleteText);
+	public set loadingCompletedText(value: string | undefined) {
+		if (this._loadingCompletedText !== value) {
+			this._loadingCompletedText = value;
+			this._onLoadingCompletedTextChange.fire(this._loadingCompletedText);
 		}
 	}
 

@@ -139,7 +139,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 			message: undefined,
 			loading: false,
 			loadingText: undefined,
-			loadingCompleteText: undefined,
+			loadingCompletedText: undefined,
 		};
 
 		// Set up the wizard details
@@ -189,7 +189,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 			width: 'wide',
 			loading: false,
 			loadingText: undefined,
-			loadingCompleteText: undefined
+			loadingCompletedText: undefined
 		};
 
 		// Register the buttons, tabs, and dialog

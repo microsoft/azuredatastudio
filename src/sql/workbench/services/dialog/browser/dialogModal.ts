@@ -101,8 +101,8 @@ export class DialogModal extends Modal {
 			this._modalOptions.spinnerTitle = loadingText;
 
 		}));
-		this._register(this._dialog.onLoadingCompleteTextChange((loadingCompleteText) => {
-			this._modalOptions.onSpinnerHideText = loadingCompleteText;
+		this._register(this._dialog.onLoadingCompletedTextChange((loadingCompletedText) => {
+			this._modalOptions.onSpinnerHideText = loadingCompletedText;
 		}));
 	}
 

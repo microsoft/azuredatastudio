@@ -108,8 +108,8 @@ export class WizardModal extends Modal {
 			this._modalOptions.spinnerTitle = loadingText;
 
 		}));
-		this._register(this._wizard.onLoadingCompleteTextChange((loadingCompleteText) => {
-			this._modalOptions.onSpinnerHideText = loadingCompleteText;
+		this._register(this._wizard.onLoadingCompletedTextChange((loadingCompletedText) => {
+			this._modalOptions.onSpinnerHideText = loadingCompletedText;
 		}));
 	}
 

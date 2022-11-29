@@ -135,7 +135,7 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 	private _dialogProperties: IDialogProperties;
 	private _loading: boolean;
 	private _loadingText: string;
-	private _loadingCompleteText: string;
+	private _loadingCompletedText: string;
 
 	private _onClosed = new Emitter<azdata.window.CloseReason>();
 	public onClosed = this._onClosed.event;
@@ -237,12 +237,12 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 		this._extHostModelViewDialog.updateDialogContent(this);
 	}
 
-	public get loadingCompleteText(): string {
-		return this._loadingCompleteText;
+	public get loadingCompletedText(): string {
+		return this._loadingCompletedText;
 	}
 
-	public set loadingCompleteText(value: string) {
-		this._loadingCompleteText = value;
+	public set loadingCompletedText(value: string) {
+		this._loadingCompletedText = value;
 		this._extHostModelViewDialog.updateDialogContent(this);
 	}
 
@@ -475,7 +475,7 @@ class WizardImpl implements azdata.window.Wizard {
 	private _message: azdata.window.DialogMessage;
 	private _loading: boolean;
 	private _loadingText: string;
-	private _loadingCompleteText: string;
+	private _loadingCompletedText: string;
 	private _displayPageTitles: boolean = true;
 	private _operationHandler: BackgroundOperationHandler;
 	private _width: DialogWidth;
@@ -538,12 +538,12 @@ class WizardImpl implements azdata.window.Wizard {
 		this._extHostModelViewDialog.updateWizard(this);
 	}
 
-	public get loadingCompleteText(): string {
-		return this._loadingCompleteText;
+	public get loadingCompletedText(): string {
+		return this._loadingCompletedText;
 	}
 
-	public set loadingCompleteText(value: string) {
-		this._loadingCompleteText = value;
+	public set loadingCompletedText(value: string) {
+		this._loadingCompletedText = value;
 		this._extHostModelViewDialog.updateWizard(this);
 	}
 
@@ -860,7 +860,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			message: dialog.message,
 			loading: dialog.loading,
 			loadingText: dialog.loadingText,
-			loadingCompleteText: dialog.loadingCompleteText
+			loadingCompletedText: dialog.loadingCompletedText
 		});
 	}
 
@@ -1010,7 +1010,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			displayPageTitles: wizard.displayPageTitles,
 			loading: wizard.loading,
 			loadingText: wizard.loadingText,
-			loadingCompleteText: wizard.loadingCompleteText,
+			loadingCompletedText: wizard.loadingCompletedText,
 		});
 	}
 
