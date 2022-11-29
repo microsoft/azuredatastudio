@@ -93,17 +93,17 @@ export class DialogModal extends Modal {
 		};
 
 		messageChangeHandler(this._dialog.message);
-		this._dialog.onMessageChange(message => messageChangeHandler(message));
-		this._dialog.onLoadingChange((loadingState) => {
+		this._register(this._dialog.onMessageChange(message => messageChangeHandler(message)));
+		this._register(this._dialog.onLoadingChange((loadingState) => {
 			this.spinner = loadingState;
-		});
-		this._dialog.onLoadingTextChange((loadingText) => {
+		}));
+		this._register(this._dialog.onLoadingTextChange((loadingText) => {
 			this._modalOptions.spinnerTitle = loadingText;
 
-		});
-		this._dialog.onLoadingCompleteTextChange((loadingCompleteText) => {
+		}));
+		this._register(this._dialog.onLoadingCompleteTextChange((loadingCompleteText) => {
 			this._modalOptions.onSpinnerHideText = loadingCompleteText;
-		});
+		}));
 	}
 
 	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true, requireDialogValid: boolean = false): Button {

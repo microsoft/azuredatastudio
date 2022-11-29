@@ -134,6 +134,24 @@ declare module 'azdata' {
 		}
 	}
 
+	export interface LoadingComponentBase {
+		/**
+		* When true, the wizard will show a loading spinner at the bottom left of the footer.
+		*/
+		loading?: boolean;
+
+		/**
+		 * This sets the alert text which gets announced when the loading spinner is shown.
+		 */
+		loadingText?: string;
+
+		/**
+		 * The text to display while loading is set to false. Will also be announced through screen readers
+		 * once loading is completed.
+		 */
+		loadingCompleteText?: string;
+	}
+
 	/**
 	 * The column information of a data set.
 	 */
@@ -1688,40 +1706,10 @@ declare module 'azdata' {
 	}
 
 	export namespace window {
-		export interface Wizard {
-			/**
-			 * When true, the wizard will show a loading spinner at the bottom left of the footer.
-			 */
-			loading: boolean;
-
-			/**
-			 * This sets the alert text which gets announced when the loading spinner is shown.
-			 */
-			loadingText: string;
-
-			/**
-			 * The text to display while loading is set to false. Will also be announced through screen readers
-			 * once loading is completed.
-			 */
-			loadingCompleteText: string;
+		export interface Wizard extends LoadingComponentBase {
 		}
 
-		export interface Dialog {
-			/**
-			 * When true, the wizard will show a loading spinner at the bottom left of the footer.
-			 */
-			loading: boolean;
-
-			/**
-			 * This sets the alert text which gets announced when the loading spinner is shown.
-			 */
-			loadingText: string;
-
-			/**
-			 * The text to display while loading is set to false. Will also be announced through screen readers
-			 * once loading is completed.
-			 */
-			loadingCompleteText: string;
+		export interface Dialog extends LoadingComponentBase {
 		}
 	}
 }

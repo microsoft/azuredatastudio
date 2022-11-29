@@ -96,21 +96,21 @@ export class WizardModal extends Modal {
 		};
 
 		messageChangeHandler(this._wizard.message);
-		this._wizard.onMessageChange(message => messageChangeHandler(message));
+		this._register(this._wizard.onMessageChange(message => messageChangeHandler(message)));
 
-		this._wizard.onLoadingChange((loadingState) => {
+		this._register(this._wizard.onLoadingChange((loadingState) => {
 			this.spinner = loadingState;
-		});
-		this._wizard.onLoadingChange((loadingState) => {
+		}));
+		this._register(this._wizard.onLoadingChange((loadingState) => {
 			this.spinner = loadingState;
-		});
-		this._wizard.onLoadingTextChange((loadingText) => {
+		}));
+		this._register(this._wizard.onLoadingTextChange((loadingText) => {
 			this._modalOptions.spinnerTitle = loadingText;
 
-		});
-		this._wizard.onLoadingCompleteTextChange((loadingCompleteText) => {
+		}));
+		this._register(this._wizard.onLoadingCompleteTextChange((loadingCompleteText) => {
 			this._modalOptions.onSpinnerHideText = loadingCompleteText;
-		});
+		}));
 	}
 
 	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true, requirePageValid: boolean = false, index?: number): Button {
