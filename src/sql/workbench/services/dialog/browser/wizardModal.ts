@@ -98,9 +98,18 @@ export class WizardModal extends Modal {
 		messageChangeHandler(this._wizard.message);
 		this._wizard.onMessageChange(message => messageChangeHandler(message));
 
-		this._wizard.onLoadingChange((loading) => {
-			this.spinner = loading.loadingState;
-			this._modalOptions.spinnerTitle = loading.loadingMessage;
+		this._wizard.onLoadingChange((loadingState) => {
+			this.spinner = loadingState;
+		});
+		this._wizard.onLoadingChange((loadingState) => {
+			this.spinner = loadingState;
+		});
+		this._wizard.onLoadingTextChange((loadingText) => {
+			this._modalOptions.spinnerTitle = loadingText;
+
+		});
+		this._wizard.onLoadingCompleteTextChange((loadingCompleteText) => {
+			this._modalOptions.onSpinnerHideText = loadingCompleteText;
 		});
 	}
 

@@ -54,12 +54,14 @@ export class Dialog extends ModelViewPane {
 	private _onMessageChange = new Emitter<DialogMessage | undefined>();
 	public readonly onMessageChange = this._onMessageChange.event;
 	private _loading: boolean = false;
-	private _loadingMessage: string;
-	private _onLoadingChange = new Emitter<{
-		loadingState: boolean,
-		loadingMessage: string
-	}>();
+	private _loadingText: string;
+	private _loadingCompleteText: string;
+	private _onLoadingChange = new Emitter<boolean | undefined>();
+	private _onLoadingTextChange = new Emitter<string | undefined>();
+	private _onLoadingCompleteTextChange = new Emitter<string | undefined>();
 	public readonly onLoadingChange = this._onLoadingChange.event;
+	public readonly onLoadingTextChange = this._onLoadingTextChange.event;
+	public readonly onLoadingCompleteTextChange = this._onLoadingCompleteTextChange.event;
 
 	private _message: DialogMessage | undefined;
 	private _closeValidator: CloseValidator | undefined;
@@ -102,19 +104,30 @@ export class Dialog extends ModelViewPane {
 	public set loading(value: boolean) {
 		if (this.loading !== value) {
 			this._loading = value;
-			this._onLoadingChange.fire({
-				loadingState: this._loading,
-				loadingMessage: this._loadingMessage
-			});
+			this._onLoadingChange.fire(this._loading);
 		}
 	}
 
-	public get loadingMessage(): string | undefined {
-		return this._loadingMessage;
+	public get loadingText(): string | undefined {
+		return this._loadingText;
 	}
 
-	public set loadingMessage(value: string | undefined) {
-		this._loadingMessage = value;
+	public set loadingText(value: string | undefined) {
+		if (this.loadingText !== value) {
+			this._loadingText = value;
+			this._onLoadingTextChange.fire(this._loadingText);
+		}
+	}
+
+	public get loadingCompleteText(): string | undefined {
+		return this._loadingCompleteText;
+	}
+
+	public set loadingCompleteText(value: string | undefined) {
+		if (this._loadingCompleteText !== value) {
+			this._loadingCompleteText = value;
+			this._onLoadingCompleteTextChange.fire(this._loadingCompleteText);
+		}
 	}
 
 	public registerCloseValidator(validator: CloseValidator): void {
@@ -278,12 +291,14 @@ export class Wizard {
 	public displayPageTitles: boolean = false;
 	public width: DialogWidth | undefined;
 	private _loading: boolean = false;
-	private _loadingMessage: string;
-	private _onLoadingChange = new Emitter<{
-		loadingState: boolean,
-		loadingMessage: string
-	}>();
+	private _loadingText: string;
+	private _loadingCompleteText: string;
+	private _onLoadingChange = new Emitter<boolean | undefined>();
+	private _onLoadingTextChange = new Emitter<string | undefined>();
+	private _onLoadingCompleteTextChange = new Emitter<string | undefined>();
 	public readonly onLoadingChange = this._onLoadingChange.event;
+	public readonly onLoadingTextChange = this._onLoadingTextChange.event;
+	public readonly onLoadingCompleteTextChange = this._onLoadingCompleteTextChange.event;
 
 	constructor(public title: string,
 		public readonly name: string,
@@ -374,18 +389,31 @@ export class Wizard {
 	public set loading(value: boolean) {
 		if (this.loading !== value) {
 			this._loading = value;
-			this._onLoadingChange.fire({
-				loadingState: this._loading,
-				loadingMessage: this._loadingMessage
-			});
+			this._onLoadingChange.fire(this._loading);
 		}
 	}
 
-	public get loadingMessage(): string | undefined {
-		return this._loadingMessage;
+	public get loadingText(): string | undefined {
+		return this._loadingText;
 	}
 
-	public set loadingMessage(value: string | undefined) {
-		this._loadingMessage = value;
+	public set loadingText(value: string | undefined) {
+		if (this.loadingText !== value) {
+			this._loadingText = value;
+			this._onLoadingTextChange.fire(this._loadingText);
+		}
 	}
+
+	public get loadingCompleteText(): string | undefined {
+		return this._loadingCompleteText;
+	}
+
+	public set loadingCompleteText(value: string | undefined) {
+		if (this._loadingCompleteText !== value) {
+			this._loadingCompleteText = value;
+			this._onLoadingCompleteTextChange.fire(this._loadingCompleteText);
+		}
+	}
+
+
 }

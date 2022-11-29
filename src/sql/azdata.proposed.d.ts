@@ -1697,7 +1697,13 @@ declare module 'azdata' {
 			/**
 			 * This sets the alert text which gets announced when the loading spinner is shown.
 			 */
-			loadingMessage: string;
+			loadingText: string;
+
+			/**
+			 * The text to display while loading is set to false. Will also be announced through screen readers
+			 * once loading is completed.
+			 */
+			loadingCompleteText: string;
 		}
 
 		export interface Dialog {
@@ -1709,7 +1715,13 @@ declare module 'azdata' {
 			/**
 			 * This sets the alert text which gets announced when the loading spinner is shown.
 			 */
-			loadingMessage: string;
+			loadingText: string;
+
+			/**
+			 * The text to display while loading is set to false. Will also be announced through screen readers
+			 * once loading is completed.
+			 */
+			loadingCompleteText: string;
 		}
 	}
 }

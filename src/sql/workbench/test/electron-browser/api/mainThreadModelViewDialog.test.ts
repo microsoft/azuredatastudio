@@ -138,7 +138,8 @@ suite('MainThreadModelViewDialog Tests', () => {
 			customButtons: [button1Handle, button2Handle],
 			message: undefined,
 			loading: false,
-			loadingMessage: undefined,
+			loadingText: undefined,
+			loadingCompleteText: undefined,
 		};
 
 		// Set up the wizard details
@@ -187,7 +188,8 @@ suite('MainThreadModelViewDialog Tests', () => {
 			displayPageTitles: false,
 			width: 'wide',
 			loading: false,
-			loadingMessage: undefined
+			loadingText: undefined,
+			loadingCompleteText: undefined
 		};
 
 		// Register the buttons, tabs, and dialog

@@ -132,8 +132,6 @@ export class MainThreadModelViewDialog extends Disposable implements MainThreadM
 		} else {
 			dialog.title = details.title;
 			dialog.width = details.width;
-			dialog.loading = details.loading;
-			dialog.loadingMessage = dialog.loadingMessage;
 		}
 
 		if (details.content && typeof details.content !== 'string') {
@@ -146,6 +144,9 @@ export class MainThreadModelViewDialog extends Disposable implements MainThreadM
 			dialog.customButtons = details.customButtons.map(buttonHandle => this.getButton(buttonHandle));
 		}
 		dialog.message = details.message;
+		dialog.loading = details.loading;
+		dialog.loadingText = dialog.loadingText;
+		dialog.loadingCompleteText = dialog.loadingCompleteText;
 
 		return Promise.resolve();
 	}
@@ -226,7 +227,8 @@ export class MainThreadModelViewDialog extends Disposable implements MainThreadM
 		}
 		wizard.message = details.message;
 		wizard.loading = details.loading;
-		wizard.loadingMessage = details.loadingMessage;
+		wizard.loadingText = details.loadingText;
+		wizard.loadingCompleteText = details.loadingCompleteText;
 		return Promise.resolve();
 	}
 

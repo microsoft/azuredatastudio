@@ -94,9 +94,15 @@ export class DialogModal extends Modal {
 
 		messageChangeHandler(this._dialog.message);
 		this._dialog.onMessageChange(message => messageChangeHandler(message));
-		this._dialog.onLoadingChange((loading) => {
-			this.spinner = loading.loadingState;
-			this._modalOptions.spinnerTitle = loading.loadingMessage;
+		this._dialog.onLoadingChange((loadingState) => {
+			this.spinner = loadingState;
+		});
+		this._dialog.onLoadingTextChange((loadingText) => {
+			this._modalOptions.spinnerTitle = loadingText;
+
+		});
+		this._dialog.onLoadingCompleteTextChange((loadingCompleteText) => {
+			this._modalOptions.onSpinnerHideText = loadingCompleteText;
 		});
 	}
 
