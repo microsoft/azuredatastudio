@@ -11,12 +11,8 @@ import * as os from "os";
 import { Logger } from '../../utils/Logger';
 
 export class MsalCachePluginProvider {
-	constructor(private _msalCachePath: string,
-		private _maxRetries: number = 500,
-		private _retryDelay: number = 100
-	) {
+	constructor(private _msalCachePath: string) {
 		Logger.verbose(`MsalCachePluginProvider: Using cache path ${_msalCachePath}`);
-		Logger.verbose(`MsalCachePluginProvider: Using Max retries ${_maxRetries}, retry delay ${_retryDelay}ms.`);
 	}
 
 	private getCrypto(): Cryptr {
@@ -30,59 +26,33 @@ export class MsalCachePluginProvider {
 	public getCachePlugin(): ICachePlugin {
 		const cachePath = this.getMsalCachePath();
 		const beforeCacheAccess = async (cacheContext: TokenCacheContext): Promise<void> => {
-			let retryAttempt = 0;
-			let retryable = true;
-			while (retryable) {
-				let exists = true;
+			let exists = true;
+			try {
+				await fsPromises.access(cachePath, constants.R_OK | constants.W_OK);
+			} catch {
+				exists = false;
+			}
+			if (exists) {
 				try {
-					await fsPromises.access(cachePath, constants.R_OK | constants.W_OK);
-				} catch {
-					exists = false;
-				}
-				if (exists) {
-					try {
-						const cache = await fsPromises.readFile(cachePath, "utf-8"); // works with " " not ' '
-						cacheContext.tokenCache.deserialize(this.getCrypto().decrypt(cache));
-						Logger.verbose(`MsalCachePlugin: Token read from cache successfully.`);
-						retryable = false;
-					} catch (e) {
-						if (retryAttempt < this._maxRetries) {
-							retryable = true;
-							retryAttempt++;
-							await new Promise(resolve => setTimeout(resolve, this._retryDelay));
-							continue;
-						} else {
-							retryable = false;
-							Logger.error(`MsalCachePlugin: Failed to read from cache file after ${retryAttempt} attempts`);
-							throw e;
-						}
-					}
+					const cache = await fsPromises.readFile(cachePath, "utf-8"); // works with " " not ' '
+					cacheContext.tokenCache.deserialize(this.getCrypto().decrypt(cache));
+					Logger.verbose(`MsalCachePlugin: Token read from cache successfully.`);
+				} catch (e) {
+					Logger.error(`MsalCachePlugin: Failed to read from cache file.`);
+					throw e;
 				}
 			}
 		};
 
 		const afterCacheAccess = async (cacheContext: TokenCacheContext): Promise<void> => {
 			if (cacheContext.cacheHasChanged) {
-				let retryAttempt = 0;
-				let retryable = true;
-				while (retryable) {
-					try {
-						const data = this.getCrypto().encrypt(cacheContext.tokenCache.serialize());
-						await fsPromises.writeFile(cachePath, data);
-						Logger.verbose(`MsalCachePlugin: Token written to cache successfully.`);
-						retryable = false;
-					} catch (e) {
-						if (retryAttempt < this._maxRetries) {
-							retryable = true;
-							retryAttempt++;
-							await new Promise(resolve => setTimeout(resolve, this._retryDelay));
-							continue;
-						} else {
-							retryable = false;
-							Logger.error(`MsalCachePlugin: Failed to write to cache file after ${retryAttempt} attempts`);
-							throw e;
-						}
-					}
+				try {
+					const data = this.getCrypto().encrypt(cacheContext.tokenCache.serialize());
+					await fsPromises.writeFile(cachePath, data);
+					Logger.verbose(`MsalCachePlugin: Token written to cache successfully.`);
+				} catch (e) {
+					Logger.error(`MsalCachePlugin: Failed to write to cache file.`);
+					throw e;
 				}
 			}
 		};

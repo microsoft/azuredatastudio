@@ -447,7 +447,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return result;
 	}
 
-
 	public async getTenantsMsal(token: string): Promise<Tenant[]> {
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
