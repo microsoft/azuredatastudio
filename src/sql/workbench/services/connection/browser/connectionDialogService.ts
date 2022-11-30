@@ -299,7 +299,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 		let passwordChangeResult = await this._connectionManagementService.sendChangePassword(connection, uri, newPassword);
 		if (!passwordChangeResult.result) {
-			let detailMessage = passwordChangeResult.messages;
+			let detailMessage = passwordChangeResult.errorDetails;
 			if (detailMessage.indexOf(Constants.sqlPasswordDNMReqs) !== -1) {
 				detailMessage += '\n\n ' + Constants.sqlPasswordDNMReqsRetry;
 			}
