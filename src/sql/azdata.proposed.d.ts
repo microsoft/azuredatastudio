@@ -134,6 +134,24 @@ declare module 'azdata' {
 		}
 	}
 
+	export interface LoadingComponentBase {
+		/**
+		* When true, the component will display a loading spinner.
+		*/
+		loading?: boolean;
+
+		/**
+		 * This sets the alert text which gets announced when the loading spinner is shown.
+		 */
+		loadingText?: string;
+
+		/**
+		 * The text to display while loading is set to false. Will also be announced through screen readers
+		 * once loading is completed.
+		 */
+		loadingCompletedText?: string;
+	}
+
 	/**
 	 * The column information of a data set.
 	 */
@@ -1724,5 +1742,13 @@ declare module 'azdata' {
 		 * under the database, the nodeType is Folder, the objectType is be Tables.
 		 */
 		objectType?: string;
+	}
+
+	export namespace window {
+		export interface Wizard extends LoadingComponentBase {
+		}
+
+		export interface Dialog extends LoadingComponentBase {
+		}
 	}
 }
