@@ -24,5 +24,5 @@ export interface IConnectionDialogService {
 	/**
 	 * Changes the password for a connection profile, then connects if enabled.
 	 */
-	changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, oldPassword: string, newPassword: string, connectOnClose: boolean): Promise<void>;
+	changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, oldPassword: string, newPassword: string): Promise<void>;
 }

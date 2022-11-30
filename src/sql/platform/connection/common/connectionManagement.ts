@@ -71,7 +71,7 @@ export interface IConnectionResult {
 	callStack: string;
 	errorHandled?: boolean;
 	connectionProfile?: IConnectionProfile;
-	uriForPasswordChange?: string;
+	connectionUri?: string;
 }
 
 export interface IConnectionCallbacks {

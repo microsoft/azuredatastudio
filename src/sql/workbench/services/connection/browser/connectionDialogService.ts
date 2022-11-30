@@ -278,7 +278,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this._logService.debug(`ConnectionDialogService: Error handled and connection reset - Error: ${connectionResult.errorMessage}`);
 			} else if (connection.providerName === Constants.mssqlProviderName && connectionResult.errorCode === Constants.sqlPasswordErrorCode) {
 				this._connectionDialog.resetConnection();
-				this.launchChangePasswordDialog(connection, params, connectionResult.uriForPasswordChange);
+				this.launchChangePasswordDialog(connection, params, connectionResult.connectionUri);
 			} else {
 				this._connectionDialog.resetConnection();
 				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack, connectionResult.errorCode);
@@ -292,7 +292,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 	}
 
-	public async changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, oldPassword: string, newPassword: string, connectOnClose: boolean): Promise<void> {
+	public async changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, oldPassword: string, newPassword: string): Promise<void> {
 		if (oldPassword !== newPassword) {
 			this.showErrorDialog(Severity.Error, Constants.sqlPasswordMismatchHeader, Constants.sqlPasswordMismatchDetail);
 			return Promise.reject(new Error(Constants.sqlPasswordMismatchHeader));
@@ -313,10 +313,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this.showErrorDialog(Severity.Error, passwordChangeResult.errorMessage, detailMessage);
 			return Promise.reject(new Error(passwordChangeResult.errorMessage));
 		}
-		if (connectOnClose) {
-			connection.options['password'] = newPassword;
-			await this.handleDefaultOnConnect(params, connection);
-		}
+		connection.options['password'] = newPassword;
+		await this.handleDefaultOnConnect(params, connection);
 	}
 
 	private get uiController(): IConnectionComponentController {

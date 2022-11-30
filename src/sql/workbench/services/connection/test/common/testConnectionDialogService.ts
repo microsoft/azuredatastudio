@@ -26,7 +26,7 @@ export class TestConnectionDialogService implements IConnectionDialogService {
 		return Promise.resolve(undefined);
 	}
 
-	public async changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, oldPassword: string, newPassword: string, connectOnClose: boolean): Promise<void> {
+	public async changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, oldPassword: string, newPassword: string): Promise<void> {
 		return Promise.resolve(undefined);
 	}
 }

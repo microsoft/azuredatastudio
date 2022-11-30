@@ -563,7 +563,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					}
 					if (connectionResult.errorCode === Constants.sqlPasswordErrorCode) {
 						// Need to save URI to verify connection params in STS.
-						connectionResult.uriForPasswordChange = uri;
+						connectionResult.connectionUri = uri;
 					}
 					return connectionResult;
 				}
