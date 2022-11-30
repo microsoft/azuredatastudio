@@ -28,7 +28,6 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 const okText: string = localize('passwordChangeDialog.ok', "OK");
 const cancelText: string = localize('passwordChangeDialog.cancel', "Cancel");
 const dialogTitle: string = localize('passwordChangeDialog.title', "Change Password");
-const titleIconClass: string = 'icon filterLabel';
 const newPasswordText: string = localize('passwordChangeDialog.newPassword', 'New password for SQL Server Login:');
 const confirmPasswordText: string = localize('passwordChangeDialog.confirmPassword', 'Confirm password:');
 const passwordChangeLoadText: string = localize('passwordChangeDialog.loading', "Attempting to connect to server");
@@ -54,7 +53,7 @@ export class PasswordChangeDialog extends Modal {
 		@IConnectionDialogService private connectionDialogService: IConnectionDialogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super('', '', telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasSpinner: true, spinnerTitle: passwordChangeLoadText, dialogStyle: 'normal', hasTitleIcon: true });
+		super('', '', telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasSpinner: true, spinnerTitle: passwordChangeLoadText, dialogStyle: 'flyout', dialogPosition: 'left', width: 'narrow' });
 	}
 
 	public open(profile: IConnectionProfile, params: INewConnectionParams, uri: string) {
@@ -73,7 +72,6 @@ export class PasswordChangeDialog extends Modal {
 	public override render() {
 		super.render();
 		this.title = dialogTitle;
-		this.titleIconClassName = titleIconClass;
 		this._register(attachModalDialogStyler(this, this._themeService));
 		this._okButton = this.addFooterButton(okText, () => this.handleOkButtonClick());
 		this._cancelButton = this.addFooterButton(cancelText, () => this.hide('cancel'), 'right', true);
@@ -85,13 +83,15 @@ export class PasswordChangeDialog extends Modal {
 		const body = DOM.append(container, DOM.$('.change-password-dialog'));
 
 		const passwordRow = DOM.append(body, DOM.$('tr'));
-		DOM.append(passwordRow, DOM.$('td')).innerText = newPasswordText;
+		let passwordRowEntry = DOM.append(passwordRow, DOM.$('td'));
+		DOM.append(passwordRowEntry, DOM.$('.password-row-box')).innerText = newPasswordText;
 		this._passwordValueText = new InputBox(DOM.append(passwordRow, DOM.$('.password-text')), this.contextViewService, {});
 		this._passwordValueText.inputElement.type = 'password';
 		this._register(attachInputBoxStyler(this._passwordValueText, this._themeService));
 
 		const confirmPasswordRow = DOM.append(body, DOM.$('tr'));
-		DOM.append(confirmPasswordRow, DOM.$('td')).innerText = confirmPasswordText;
+		let confirmRowEntry = DOM.append(confirmPasswordRow, DOM.$('td'));
+		DOM.append(confirmRowEntry, DOM.$('.confirm-row-box')).innerText = confirmPasswordText;
 		this._confirmValueText = new InputBox(DOM.append(confirmPasswordRow, DOM.$('.confirm-text')), this.contextViewService, {});
 		this._confirmValueText.inputElement.type = 'password';
 		this._register(attachInputBoxStyler(this._confirmValueText, this._themeService));
