@@ -292,8 +292,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 	}
 
-	public async changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, password: string, connectOnClose: boolean): Promise<void> {
-		let passwordChangeResult = await this._connectionManagementService.sendChangePassword(connection, uri, password);
+	public async changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, oldPassword: string, newPassword: string, connectOnClose: boolean): Promise<void> {
+		if (oldPassword !== newPassword) {
+			this.showErrorDialog(Severity.Error, Constants.sqlPasswordMismatchHeader, Constants.sqlPasswordMismatchDetail);
+			return Promise.reject(new Error(Constants.sqlPasswordMismatchHeader));
+		}
+		let passwordChangeResult = await this._connectionManagementService.sendChangePassword(connection, uri, newPassword);
 		if (!passwordChangeResult.result) {
 			let detailMessage = passwordChangeResult.messages;
 			if (detailMessage.indexOf(Constants.sqlPasswordDNMReqs) !== -1) {
@@ -310,7 +314,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			return Promise.reject(new Error(passwordChangeResult.errorMessage));
 		}
 		if (connectOnClose) {
-			connection.options['password'] = password;
+			connection.options['password'] = newPassword;
 			await this.handleDefaultOnConnect(params, connection);
 		}
 	}

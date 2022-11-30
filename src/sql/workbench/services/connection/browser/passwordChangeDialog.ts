@@ -24,7 +24,6 @@ import { IConnectionDialogService } from 'sql/workbench/services/connection/comm
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
-import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 
 
 const okText: string = localize('passwordChangeDialog.ok', "OK");
@@ -35,7 +34,6 @@ const newPasswordText: string = localize('passwordChangeDialog.newPassword', 'Ne
 const confirmPasswordText: string = localize('passwordChangeDialog.confirmPassword', 'Confirm password:');
 const connectCheckboxText: string = localize('passwordChangeDialog.connectText', 'Connect?:');
 const connectCheckboxLabel: string = localize('passwordChangeDialog.connectLabel', 'Connect upon close and save if enabled on profile');
-const passwordMismatchText: string = localize('passwordChangeDialog.passwordMismatch', 'Passwords do not match');
 const passwordChangeLoadText: string = localize('passwordChangeDialog.loading', "Attempting to connect to server");
 
 export class PasswordChangeDialog extends Modal {
@@ -48,8 +46,6 @@ export class PasswordChangeDialog extends Modal {
 	private _passwordValueText: InputBox;
 	private _confirmValueText: InputBox;
 	private _connectOnClose: Checkbox;
-	private _verifyBox: HTMLElement;
-	private _loadingSpinner: LoadingSpinner;
 
 
 	constructor(
@@ -63,7 +59,7 @@ export class PasswordChangeDialog extends Modal {
 		@IConnectionDialogService private connectionDialogService: IConnectionDialogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super('', '', telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
+		super('', '', telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasSpinner: true, spinnerTitle: passwordChangeLoadText, dialogStyle: 'normal', hasTitleIcon: true });
 	}
 
 	public open(profile: IConnectionProfile, params: INewConnectionParams, uri: string) {
@@ -93,9 +89,6 @@ export class PasswordChangeDialog extends Modal {
 	protected renderBody(container: HTMLElement) {
 		const body = DOM.append(container, DOM.$('.change-password-dialog'));
 
-		this._loadingSpinner = new LoadingSpinner(container, { showText: true });
-		this._loadingSpinner.loadingMessage = passwordChangeLoadText;
-
 		const passwordRow = DOM.append(body, DOM.$('tr'));
 		DOM.append(passwordRow, DOM.$('td')).innerText = newPasswordText;
 		this._passwordValueText = new InputBox(DOM.append(passwordRow, DOM.$('.password-text')), this.contextViewService, {});
@@ -112,10 +105,6 @@ export class PasswordChangeDialog extends Modal {
 		DOM.append(saveAndCloseCheckboxRow, DOM.$('td')).innerText = connectCheckboxText;
 		this._connectOnClose = new Checkbox(DOM.append(saveAndCloseCheckboxRow, DOM.$('.connect-check')), { label: connectCheckboxLabel });
 		this._register(attachCheckboxStyler(this._connectOnClose, this._themeService));
-
-		this._verifyBox = DOM.append(body, DOM.$('.verify-status'));
-		this._verifyBox.innerText = passwordMismatchText;
-		this._verifyBox.style.display = 'none';
 	}
 
 	protected layout(height?: number): void {
@@ -136,27 +125,16 @@ export class PasswordChangeDialog extends Modal {
 		// Verify passwords match before changing the password.
 		this._okButton.enabled = false;
 		this._cancelButton.enabled = false;
-		this._loadingSpinner.loading = true;
-		if (this._passwordValueText.value === this._confirmValueText.value) {
-			if (this._verifyBox.style.display === 'block') {
-				this._verifyBox.style.display = 'none';
+		this.spinner = true;
+		this.connectionDialogService.changePasswordFunction(this._profile, this._params, this._uri, this._passwordValueText.value, this._confirmValueText.value, this._connectOnClose.checked).then(
+			() => {
+				this.hide('ok'); /* password changed successfully */
+			},
+			() => {
+				this._okButton.enabled = true; /* ignore, user must try again */
+				this._cancelButton.enabled = true;
+				this.spinner = false;
 			}
-			this.connectionDialogService.changePasswordFunction(this._profile, this._params, this._uri, this._passwordValueText.value, this._connectOnClose.checked).then(
-				() => {
-					this.hide('ok'); /* password changed successfully */
-				},
-				() => {
-					this._okButton.enabled = true; /* ignore, user must try again */
-					this._cancelButton.enabled = true;
-					this._loadingSpinner.loading = false;
-				}
-			);
-		}
-		else {
-			this._verifyBox.style.display = 'block';
-			this._okButton.enabled = true;
-			this._cancelButton.enabled = true;
-			this._loadingSpinner.loading = false;
-		}
+		);
 	}
 }

@@ -74,3 +74,5 @@ export const sqlPasswordEmpty = 'New password cannot be empty';
 export const sqlPasswordEmptyRetry = 'Press OK to input a new password that is not empty.';
 export const sqlPasswordCannotBeUsed = 'password cannot be used at this time';
 export const sqlPasswordCannotBeUsedRetry = 'Press OK to input a different password.';
+export const sqlPasswordMismatchHeader = 'Passwords entered do not match';
+export const sqlPasswordMismatchDetail = 'Press OK and enter the exact same password in both boxes.';
