@@ -27,10 +27,10 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 
 
-const OkText: string = localize('passwordChangeDialog.ok', "OK");
-const CancelText: string = localize('passwordChangeDialog.cancel', "Cancel");
-const DialogTitle: string = localize('passwordChangeDialog.title', "Change Password");
-const TitleIconClass: string = 'icon filterLabel';
+const okText: string = localize('passwordChangeDialog.ok', "OK");
+const cancelText: string = localize('passwordChangeDialog.cancel', "Cancel");
+const dialogTitle: string = localize('passwordChangeDialog.title', "Change Password");
+const titleIconClass: string = 'icon filterLabel';
 const newPasswordText: string = localize('passwordChangeDialog.newPassword', 'New password for SQL Server Login:');
 const confirmPasswordText: string = localize('passwordChangeDialog.confirmPassword', 'Confirm password:');
 const connectCheckboxText: string = localize('passwordChangeDialog.connectText', 'Connect?:');
@@ -81,11 +81,11 @@ export class PasswordChangeDialog extends Modal {
 
 	public override render() {
 		super.render();
-		this.title = DialogTitle;
-		this.titleIconClassName = TitleIconClass;
+		this.title = dialogTitle;
+		this.titleIconClassName = titleIconClass;
 		this._register(attachModalDialogStyler(this, this._themeService));
-		this._okButton = this.addFooterButton(OkText, () => this.handleOkButtonClick());
-		this._cancelButton = this.addFooterButton(CancelText, () => this.hide('cancel'), 'right', true);
+		this._okButton = this.addFooterButton(okText, () => this.handleOkButtonClick());
+		this._cancelButton = this.addFooterButton(cancelText, () => this.hide('cancel'), 'right', true);
 		this._register(attachButtonStyler(this._okButton, this._themeService));
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));
 	}
