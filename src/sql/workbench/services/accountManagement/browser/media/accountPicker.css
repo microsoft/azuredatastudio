@@ -57,10 +57,10 @@
 }
 
 .account-list-container .list-row .codicon {
-	flex: 0 0 35px;
-	height: 35px;
-	width: 35px;
-	background-size: 35px;
+	flex: 0 0 32px;
+	height: 32px;
+	width: 32px;
+	background-size: 32px;
 }
 
 .account-list-container .list-row .codicon .badge {
