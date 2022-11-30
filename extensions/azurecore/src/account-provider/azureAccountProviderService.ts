@@ -17,7 +17,7 @@ import * as loc from '../localizedConstants';
 import { Configuration, PublicClientApplication } from '@azure/msal-node';
 import * as path from "path";
 import * as Constants from '../constants';
-import { Logger, LogLevel } from '../utils/Logger';
+import { Logger } from '../utils/Logger';
 import { ILoggerCallback, LogLevel as MsalLogLevel } from "@azure/msal-common";
 
 let localize = nls.loadMessageBundle();
