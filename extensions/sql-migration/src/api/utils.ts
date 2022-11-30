@@ -600,40 +600,46 @@ export async function getVirtualMachines(account?: Account, subscription?: azure
 	return virtualMachines;
 }
 
-export async function getVirtualMachinesDropdownValues(virtualMachines: azure.SqlVMServer[], location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<CategoryValue[]> {
+export async function getVirtualMachinesDropdownValues(virtualMachines: azure.SqlVMServer[], location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup, account: Account, subscription: azureResource.AzureResourceSubscription): Promise<CategoryValue[]> {
 	let virtualMachinesValues: CategoryValue[] = [];
 	if (location && resourceGroup) {
-		virtualMachines.forEach((virtualMachine) => {
+		for (const virtualMachine of virtualMachines) {
 			if (virtualMachine.location.toLowerCase() === location.name.toLowerCase() && azure.getResourceGroupFromId(virtualMachine.id).toLowerCase() === resourceGroup.name.toLowerCase()) {
 				let virtualMachineValue: CategoryValue;
 
+				// 1) check if VM is on by querying underlying compute resource's instance view
+				let vmInstanceView = await azure.getVMInstanceView(virtualMachine, account, subscription);
+				if (!vmInstanceView.statuses.some(status => status.code == "PowerState/running")) {
+					virtualMachineValue = {
+						name: virtualMachine.id,
+						displayName: constants.UNAVAILABLE_TARGET_PREFIX(virtualMachine.name)
+					}
+				}
 
-				virtualMachineValue = {
-					name: virtualMachine.id,
-					displayName: constants.UNAVAILABLE_TARGET_PREFIX(virtualMachine.name)
-				};
+				// 2) check for IaaS extension in Full mode
+				else if (virtualMachine.properties.sqlManagement != "Full") {
+					virtualMachineValue = {
+						name: virtualMachine.id,
+						displayName: constants.UNAVAILABLE_TARGET_PREFIX(virtualMachine.name)
+					}
+				}
 
+				else {
+					virtualMachineValue = {
+						name: virtualMachine.id,
+						displayName: virtualMachine.name
+					};
+				}
 
-				// if (virtualMachine.properties.state === 'Ready') {
-				// 	virtualMachineValue = {
-				// 		name: virtualMachine.id,
-				// 		displayName: virtualMachine.name
-				// 	};
-				// } else {
-				// 	virtualMachineValue = {
-				// 		name: virtualMachine.id,
-				// 		displayName: constants.UNAVAILABLE_TARGET_PREFIX(virtualMachine.name)
-				// 	};
-				// }
 				virtualMachinesValues.push(virtualMachineValue);
 			}
-		});
+		}
 	}
 
 	if (virtualMachinesValues.length === 0) {
 		virtualMachinesValues = [
 			{
-				displayName: constants.NO_MANAGED_INSTANCE_FOUND,
+				displayName: constants.NO_VIRTUAL_MACHINE_FOUND,
 				name: ''
 			}
 		];
