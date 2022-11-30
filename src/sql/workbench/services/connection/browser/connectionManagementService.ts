@@ -938,7 +938,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Refresh Azure access token if it's expired.
 	 * @param uriOrConnectionProfile connection uri or connection profile
-	 * @returns true if no need to refresh or successfully refreshed token
+	 * @returns true if no need to refresh or successfully refreshed token, false if refresh fails or auth mode is not AzureMFA
 	 */
 	public async refreshAzureAccountTokenIfNecessary(uriOrConnectionProfile: string | ConnectionProfile): Promise<boolean> {
 		if (!uriOrConnectionProfile) {
@@ -1009,8 +1009,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			} else {
 				this._logService.warn(`Invalid expiry time ${expiry} for connection ${connectionProfile.id} with uri ${uri}`);
 			}
+			return true;
 		}
-		return true;
+		else
+			return false;
 	}
 
 	// Request Senders

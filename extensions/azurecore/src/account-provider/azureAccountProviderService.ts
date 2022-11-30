@@ -146,10 +146,6 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		const noSystemKeychain = vscode.workspace.getConfiguration(Constants.AzureSection).get<boolean>(Constants.NoSystemKeyChainSection);
 		const platform = os.platform();
 		const tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
-		const lockOptions = {
-			retryNumber: 100,
-			retryDelay: 50
-		}
 
 		try {
 			if (!this._credentialProvider) {
@@ -176,7 +172,12 @@ export class AzureAccountProviderService implements vscode.Disposable {
 				throw new Error('Unable to intialize persistence for access token cache. Tokens will not persist in system memory for future use.');
 			}
 
-			let persistenceCachePlugin: PersistenceCachePlugin = new PersistenceCachePlugin(this.persistence, lockOptions); // or any of the other ones.
+			let persistenceCachePlugin: PersistenceCachePlugin = new PersistenceCachePlugin(
+				this.persistence, {
+				retryNumber: 500,
+				retryDelay: 150
+			});
+
 			const MSAL_CONFIG = {
 				auth: {
 					clientId: provider.metadata.settings.clientId,

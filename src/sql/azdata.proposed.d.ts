@@ -469,6 +469,22 @@ declare module 'azdata' {
 		showOnConnectionDialog?: boolean;
 	}
 
+	// Object Explorer interfaces  --------------------------------
+	export interface ObjectExplorerSession {
+		/**
+		 * Authentication token for the current session.
+		 */
+		token?: accounts.AccountSecurityToken | undefined;
+	}
+
+	export interface ExpandNodeInfo {
+		/**
+		 * Authentication token for the current session.
+		 */
+		token?: accounts.AccountSecurityToken | undefined;
+	}
+	// End Object Explorer interfaces  ----------------------------
+
 	export interface TaskInfo {
 		targetLocation?: string;
 	}
