@@ -16,7 +16,6 @@ import { URI } from 'vs/base/common/uri';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
-// import { localize } from 'vs/nls'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IResourceEditorInput } from 'vs/platform/editor/common/editor';
@@ -24,12 +23,12 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { Memento } from 'vs/workbench/common/memento';
-import { notebookRendererExtensionPoint } from 'vs/workbench/contrib/notebook/browser/extensionPoint'; // {{SQL CARBON EDIT}} Remove INotebookEditorContribution, notebooksExtensionPoint
+import { INotebookEditorContribution, notebookRendererExtensionPoint, notebooksExtensionPoint } from 'vs/workbench/contrib/notebook/browser/extensionPoint';
 import { INotebookEditorOptions } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { NotebookDiffEditorInput } from 'vs/workbench/contrib/notebook/browser/notebookDiffEditorInput';
 import { NotebookCellTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookCellTextModel';
 import { NotebookTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookTextModel';
-import { ACCESSIBLE_NOTEBOOK_DISPLAY_ORDER, CellUri, NotebookSetting, INotebookContributionData, INotebookExclusiveDocumentFilter, INotebookRendererInfo, INotebookTextModel, IOrderedMimeType, IOutputDto, MimeTypeDisplayOrder, NotebookData, NotebookRendererMatch, NOTEBOOK_DISPLAY_ORDER, RENDERER_EQUIVALENT_EXTENSIONS, RENDERER_NOT_AVAILABLE, TransientOptions, NotebookExtensionDescription } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { ACCESSIBLE_NOTEBOOK_DISPLAY_ORDER, CellUri, NotebookSetting, INotebookContributionData, INotebookExclusiveDocumentFilter, INotebookRendererInfo, INotebookTextModel, IOrderedMimeType, IOutputDto, MimeTypeDisplayOrder, NotebookData, NotebookEditorPriority, NotebookRendererMatch, NOTEBOOK_DISPLAY_ORDER, RENDERER_EQUIVALENT_EXTENSIONS, RENDERER_NOT_AVAILABLE, TransientOptions, NotebookExtensionDescription } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { NotebookEditorInput } from 'vs/workbench/contrib/notebook/common/notebookEditorInput';
 import { INotebookEditorModelResolverService } from 'vs/workbench/contrib/notebook/common/notebookEditorModelResolverService';
 import { updateEditorTopPadding } from 'vs/workbench/contrib/notebook/common/notebookOptions';
@@ -38,7 +37,7 @@ import { NotebookEditorDescriptor, NotebookProviderInfo } from 'vs/workbench/con
 import { ComplexNotebookProviderInfo, INotebookContentProvider, INotebookSerializer, INotebookService, SimpleNotebookProviderInfo } from 'vs/workbench/contrib/notebook/common/notebookService';
 import { DiffEditorInputFactoryFunction, EditorInputFactoryFunction, IEditorResolverService, IEditorType, RegisteredEditorInfo, RegisteredEditorPriority, UntitledEditorInputFactoryFunction } from 'vs/workbench/services/editor/common/editorResolverService';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-// import { IExtensionPointUser } from 'vs/workbench/services/extensions/common/extensionsRegistry'; {{SQL CARBON EDIT}} Disable VS Code notebooks
+import { IExtensionPointUser } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 
 export class NotebookProviderInfoStore extends Disposable {
 
@@ -79,7 +78,7 @@ export class NotebookProviderInfoStore extends Disposable {
 			}
 		}));
 
-		// notebooksExtensionPoint.setHandler(extensions => this._setupHandler(extensions)); {{SQL CARBON EDIT}} Disable VS Code notebooks
+		notebooksExtensionPoint.setHandler(extensions => this._setupHandler(extensions));
 	}
 
 	override dispose(): void {
@@ -87,7 +86,6 @@ export class NotebookProviderInfoStore extends Disposable {
 		super.dispose();
 	}
 
-	/* 	// {{SQL CARBON EDIT}} Disable VS Code notebooks
 	private _setupHandler(extensions: readonly IExtensionPointUser<INotebookEditorContribution[]>[]) {
 		this._handled = true;
 		const builtins: NotebookProviderInfo[] = [...this._contributedEditors.values()].filter(info => !info.extension);
@@ -153,7 +151,6 @@ export class NotebookProviderInfoStore extends Disposable {
 		return RegisteredEditorPriority.option;
 
 	}
-	*/
 
 	private _registerContributionPoint(notebookProviderInfo: NotebookProviderInfo): IDisposable {
 
@@ -220,6 +217,7 @@ export class NotebookProviderInfoStore extends Disposable {
 
 		return disposables;
 	}
+
 
 	private _clear(): void {
 		this._contributedEditors.clear();
@@ -518,7 +516,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	clearEditorCache(): void {
-		// this.notebookProviderInfoStore.clearEditorCache(); // {{SQL CARBON EDIT}} - method disabled
+		this.notebookProviderInfoStore.clearEditorCache();
 	}
 
 	private _postDocumentOpenActivation(viewType: string) {

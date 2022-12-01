@@ -6,9 +6,9 @@
 import { Emitter, Event } from 'vs/base/common/event';
 import { DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
 import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
-import { IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers'; // {{SQL CARBON EDIT}} Remove unused
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { INotebookKernelService, INotebookProxyKernel, INotebookProxyKernelChangeEvent, ProxyKernelState, NotebookKernelType } from 'vs/workbench/contrib/notebook/common/notebookKernelService';
-import { ExtHostContext, ExtHostNotebookProxyKernelsShape, INotebookProxyKernelDto, MainThreadNotebookProxyKernelsShape } from '../common/extHost.protocol'; // {{SQL CARBON EDIT}} Remove unused
+import { ExtHostContext, ExtHostNotebookProxyKernelsShape, INotebookProxyKernelDto, MainContext, MainThreadNotebookProxyKernelsShape } from '../common/extHost.protocol';
 import { onUnexpectedError } from 'vs/base/common/errors';
 
 abstract class MainThreadProxyKernel implements INotebookProxyKernel {
@@ -64,7 +64,7 @@ abstract class MainThreadProxyKernel implements INotebookProxyKernel {
 	abstract resolveKernel(): Promise<string | null>;
 }
 
-// @extHostNamedCustomer(MainContext.MainThreadNotebookProxyKernels) {{SQL CARBON EDIT}} Disable VS Code notebooks
+@extHostNamedCustomer(MainContext.MainThreadNotebookProxyKernels)
 export class MainThreadNotebookProxyKernels implements MainThreadNotebookProxyKernelsShape {
 
 	private readonly _disposables = new DisposableStore();
