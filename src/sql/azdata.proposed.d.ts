@@ -405,7 +405,7 @@ declare module 'azdata' {
 
 	export interface ConnectionProvider extends DataProvider {
 		/**
-		 * Changes the password for a connection profile.
+		 * Changes the password for a connection profile (in case of the password expiration scenario)
 		 */
 		changePassword(connectionUri: string, connectionInfo: ConnectionInfo, newPassword: string): Thenable<PasswordChangeResult>;
 	}
