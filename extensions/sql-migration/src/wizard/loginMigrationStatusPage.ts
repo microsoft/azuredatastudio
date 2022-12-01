@@ -86,7 +86,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			this.wizard.message = {
 				text: constants.LOGIN_MIGRATIONS_FAILED,
 				level: azdata.window.MessageLevel.Error,
-				description: constants.LOGIN_MIGRATIONS_ERROR(this.migrationStateModel._loginMigrationsError),
+				description: constants.LOGIN_MIGRATIONS_ERROR(this.migrationStateModel._loginMigrationsError.message),
 			};
 
 			this._progressLoader.loading = false;
