@@ -405,9 +405,9 @@ declare module 'azdata' {
 
 	export interface ConnectionProvider extends DataProvider {
 		/**
-		 * Changes the password for a connection profile (in case of the password expiration scenario)
+		 * Changes the password for a connection profile (for Azure Data Studio use only)
 		 */
-		changePassword(connectionUri: string, connectionInfo: ConnectionInfo, newPassword: string): Thenable<PasswordChangeResult>;
+		changePassword?(connectionUri: string, connectionInfo: ConnectionInfo, newPassword: string): Thenable<PasswordChangeResult>;
 	}
 
 	// Password Change Request ----------------------------------------------------------------------

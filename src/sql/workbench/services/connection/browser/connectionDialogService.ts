@@ -299,18 +299,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 		let passwordChangeResult = await this._connectionManagementService.sendChangePassword(connection, uri, newPassword);
 		if (!passwordChangeResult.result) {
-			let detailMessage = passwordChangeResult.errorMessage;
-			if (detailMessage.indexOf(Constants.sqlPasswordDNMReqs) !== -1) {
-				detailMessage += '\n\n' + Constants.sqlPasswordDNMReqsRetry;
-			}
-			else if (detailMessage.indexOf(Constants.sqlPasswordCannotBeUsed) !== -1) {
-				detailMessage += '\n\n' + Constants.sqlPasswordCannotBeUsedRetry;
-			}
-			else if (detailMessage === Constants.sqlPasswordEmpty) {
-				detailMessage += '\n\n' + Constants.sqlPasswordEmptyRetry;
-			}
-
-			this.showErrorDialog(Severity.Error, Constants.sqlPasswordChangeErrorHeader, detailMessage);
+			this.showErrorDialog(Severity.Error, Constants.sqlPasswordChangeErrorHeader, passwordChangeResult.errorMessage);
 			return Promise.reject(new Error(passwordChangeResult.errorMessage));
 		}
 		connection.options['password'] = newPassword;
