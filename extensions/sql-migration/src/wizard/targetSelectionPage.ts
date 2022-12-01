@@ -171,8 +171,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					// }
 
 					// validate IaaS extension mode
-					if (targetVm.properties.sqlManagement != "Full") {
-						errors.push("IaaS extension");
+					if (targetVm.properties.sqlManagement !== 'Full') {
+						errors.push(constants.VM_NOT_READY_IAAS_EXTENSION_ERROR(targetVm.name, targetVm.properties.sqlManagement));
 					}
 					break;
 				case MigrationTargetType.SQLDB:
@@ -645,16 +645,16 @@ export class TargetSelectionPage extends MigrationWizardPage {
 								let vmInstanceView = await getVMInstanceView(this.migrationStateModel._targetServerInstance, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription);
 
 								this.wizard.message = { text: '' };
-								if (!vmInstanceView.statuses.some(status => status.code == "PowerState/running")) {
+								if (!vmInstanceView.statuses.some(status => status.code === 'PowerState/running')) {
 									this.wizard.message = {
-										text: "power state",
+										text: constants.VM_NOT_READY_POWER_STATE_ERROR(this.migrationStateModel._targetServerInstance.name),
 										level: azdata.window.MessageLevel.Error
 									};
 								}
 
-								if (this.migrationStateModel._targetServerInstance.properties.sqlManagement != "Full") {
+								if (this.migrationStateModel._targetServerInstance.properties.sqlManagement !== "Full") {
 									this.wizard.message = {
-										text: "iaas extension",
+										text: constants.VM_NOT_READY_IAAS_EXTENSION_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.sqlManagement),
 										level: azdata.window.MessageLevel.Error
 									};
 								}
