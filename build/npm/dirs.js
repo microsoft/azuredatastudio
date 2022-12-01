@@ -29,6 +29,7 @@ exports.dirs = [
 	'extensions/image-preview',
 	'extensions/import',
 	'extensions/integration-tests',
+	'extensions/ipynb',
 	'extensions/json-language-features',
 	'extensions/json-language-features/server',
 	'extensions/kusto',
@@ -39,6 +40,7 @@ exports.dirs = [
 	'extensions/microsoft-authentication',
 	'extensions/mssql',
 	'extensions/notebook',
+	'extensions/notebook-renderers',
 	'extensions/profiler',
 	'extensions/python',
 	'extensions/query-history',
@@ -51,6 +53,7 @@ exports.dirs = [
 	'extensions/sql-bindings',
 	'extensions/sql-database-projects',
 	'extensions/sql-migration',
+	'extensions/vscode-notebook-tests',
 	'extensions/vscode-test-resolver',
 	'extensions/xml-language-features',
 	// {{SQL CARBON EDIT}} - End
