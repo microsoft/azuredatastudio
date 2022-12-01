@@ -119,12 +119,6 @@ export class WizardController {
 				}));
 
 		this._wizardObject.registerNavigationValidator(async validator => {
-			// const lastPage = validator.lastPage;
-
-			// const canLeave = await pages[lastPage]?.canLeave() ?? true;
-			// const canEnter = await pages[lastPage]?.canEnter() ?? true;
-
-			// return canEnter && canLeave;
 			return true;
 		});
 
@@ -219,12 +213,6 @@ export class WizardController {
 				}));
 
 		this._wizardObject.registerNavigationValidator(async validator => {
-			// const lastPage = validator.lastPage;
-
-			// const canLeave = await pages[lastPage]?.canLeave() ?? true;
-			// const canEnter = await pages[lastPage]?.canEnter() ?? true;
-
-			// return canEnter && canLeave;
 			return true;
 		});
 
@@ -232,6 +220,8 @@ export class WizardController {
 
 		this._disposables.push(
 			this._wizardObject.cancelButton.onClick(e => {
+				// TODO AKMA: add dialog prompting confirmation of cancel if migration is in progress
+
 				sendSqlMigrationActionEvent(
 					TelemetryViews.LoginMigrationWizard,
 					TelemetryAction.PageButtonClick,
