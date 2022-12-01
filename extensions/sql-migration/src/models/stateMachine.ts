@@ -226,10 +226,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _perfDataCollectionErrors!: string[];
 	public _perfDataCollectionIsCollecting!: boolean;
 
-	public _didLoginMigrationsSucceed!: boolean;
 	public _loginsForMigration!: LoginTableInfo[];
 	public _aadDomainName!: string;
 	public _loginMigrationsResult!: mssql.StartLoginMigrationResult;
+	public _loginMigrationsError: any;
 
 	public readonly _refreshGetSkuRecommendationIntervalInMinutes = 10;
 	public readonly _performanceDataQueryIntervalInSeconds = 30;
@@ -501,6 +501,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		} catch (error) {
 			console.log('Failed Login Migration at: ', new Date());
 			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
+			this._loginMigrationsError = error;
+			return false;
 		}
 
 		// TODO AKMA : emit telemetry
@@ -525,6 +527,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		} catch (error) {
 			console.log('Failed Login Migration at: ', new Date());
 			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
+			this._loginMigrationsError = error;
+			return false;
 		}
 
 		// TODO AKMA : emit telemetry
@@ -549,12 +553,13 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			console.log('Ending Login Migration at: ', new Date());
 			console.log('Login migration response: ', response);
-			this._didLoginMigrationsSucceed = true;
 
 			console.log('AKMA DEBUG response: ', response);
 		} catch (error) {
 			console.log('Failed Login Migration at: ', new Date());
 			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
+			this._loginMigrationsError = error;
+			return false;
 		}
 
 		// TODO AKMA : emit telemetry

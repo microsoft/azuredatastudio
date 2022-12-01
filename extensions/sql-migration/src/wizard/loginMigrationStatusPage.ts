@@ -68,7 +68,30 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 		// load unfiltered table list
 		await this._filterTableList('');
 
-		await this._runLoginMigrations();
+		var result = await this._runLoginMigrations();
+
+		if (!result) {
+			if (this.migrationStateModel._targetServerInstance) {
+				await this._migrationProgress.updateProperties({
+					'text': constants.LOGIN_MIGRATIONS_FAILED_STATUS_PAGE_DESCRIPTION(this._getTotalNumberOfLogins(), this.migrationStateModel.GetTargetType(), this.migrationStateModel._targetServerInstance.name),
+					'style': 'error',
+				});
+			} else {
+				await this._migrationProgress.updateProperties({
+					'text': constants.LOGIN_MIGRATIONS_FAILED,
+					'style': 'error',
+				});
+			}
+
+			this.wizard.message = {
+				text: constants.LOGIN_MIGRATIONS_FAILED,
+				level: azdata.window.MessageLevel.Error,
+				description: constants.LOGIN_MIGRATIONS_ERROR(this.migrationStateModel._loginMigrationsError),
+			};
+
+			this._progressLoader.loading = false;
+		}
+
 		await this._loadMigratingLoginsList(this.migrationStateModel);
 		await this._filterTableList('');
 	}
@@ -204,7 +227,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 						name: constants.SOURCE_LOGIN,
 						value: 'sourceLogin',
 						type: azdata.ColumnType.text,
-						width: 360,
+						width: 250,
 						cssClass: cssClass,
 						headerCssClass: cssClass,
 					},
@@ -212,7 +235,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 						name: constants.LOGIN_TYPE,
 						value: 'loginType',
 						type: azdata.ColumnType.text,
-						width: 80,
+						width: 90,
 						cssClass: cssClass,
 						headerCssClass: cssClass,
 					},
@@ -220,14 +243,14 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 						name: constants.DEFAULT_DATABASE,
 						value: 'defaultDatabase',
 						type: azdata.ColumnType.text,
-						width: 80,
+						width: 100,
 						cssClass: cssClass,
 						headerCssClass: cssClass,
 					},
 					<azdata.HyperlinkColumn>{
 						name: constants.LOGIN_MIGRATION_STATUS_COLUMN,
 						value: 'migrationStatus',
-						width: 200,
+						width: 120,
 						type: azdata.ColumnType.hyperlink,
 						icon: IconPathHelper.inProgressMigration,
 						showText: true,
@@ -289,7 +312,10 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 
 			var status = "InProgress";
 			var title = "In progress";
-			if (stateMachine._didLoginMigrationsSucceed && stateMachine._loginMigrationsResult) {
+			if (stateMachine._loginMigrationsError) {
+				status = "Failed"
+				title = "Failed"
+			} else if (stateMachine._loginMigrationsResult) {
 				status = "Succeeded";
 				title = "Succeeded";
 				var didLoginFail = Object.keys(stateMachine._loginMigrationsResult.exceptionMap).some(key => key.toLocaleLowerCase() === loginName.toLocaleLowerCase());
@@ -317,7 +343,6 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 
 	private async updateDisplayedLoginCount() {
 		await this._loginCount.updateProperties({
-			// 'value': constants.NUMBER_LOGINS_MIGRATING(this._migratingLoginsTable.data?.length || 0)
 			'value': constants.NUMBER_LOGINS_MIGRATING(this._getNumberOfDisplayedLogins(), this._getTotalNumberOfLogins())
 		});
 	}
@@ -341,17 +366,41 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 
 		var result = await this.migrationStateModel.migrateLogins();
 
+		if (!result) {
+			await this._migrationProgressDetails.updateProperties({
+				'value': constants.STARTING_LOGIN_MIGRATION_FAILED
+			});
+
+			return false;
+		}
+
 		await this._migrationProgressDetails.updateProperties({
 			'value': constants.ESTABLISHING_USER_MAPPINGS
 		});
 
 		result = await this.migrationStateModel.establishUserMappings();
 
+		if (!result) {
+			await this._migrationProgressDetails.updateProperties({
+				'value': constants.ESTABLISHING_USER_MAPPINGS_FAILED
+			});
+
+			return false;
+		}
+
 		await this._migrationProgressDetails.updateProperties({
-			'value': constants.ESTABLISHING_USER_MAPPINGS
+			'value': constants.MIGRATE_SERVER_ROLES_AND_SET_PERMISSIONS
 		});
 
 		result = await this.migrationStateModel.migrateServerRolesAndSetPermissions();
+
+		if (!result) {
+			await this._migrationProgressDetails.updateProperties({
+				'value': constants.MIGRATE_SERVER_ROLES_AND_SET_PERMISSIONS_FAILED
+			});
+
+			return false;
+		}
 
 		await this._migrationProgressDetails.updateProperties({
 			'CSSStyles': { 'display': 'none' },
@@ -371,7 +420,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 
 		this._progressLoader.loading = false;
 
-		this.wizard.doneButton.enabled = false;
+		this.wizard.doneButton.enabled = true;
 		return result;
 	}
 }

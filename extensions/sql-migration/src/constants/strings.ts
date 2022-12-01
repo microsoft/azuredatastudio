@@ -309,12 +309,16 @@ export const LOGIN_MIGRATIONS_DB_TEXT = localize('sql.login.migration.db.title',
 export const LOGIN_MIGRATIONS_VM_TEXT = localize('sql.login.migration.vm.title', "SQL Server on Azure Virtual Machine");
 export const LOGIN_MIGRATIONS_AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.login.migration.target.title', "Azure SQL target (PREVIEW)");
 export const LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE = localize('sql.login.migration.select.page.title', "Select login(s) to migrate (PREVIEW)");
+export const LOGIN_MIGRATIONS_SELECT_LOGINS_WINDOWS_AUTH_WARNING = localize('sql.login.migration.select.logins.windows.auth.warning', "Please note that this wizard does not display windows authentication login types because migrating that type is currently not supported. Capability for migrating windows authentication logins is coming soon.");
 export const LOGIN_MIGRATIONS_STATUS_PAGE_TITLE = localize('sql.login.migration.status.page.title', "Migration Status (PREVIEW)");
 export function LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
 	return localize('sql.login.migration.status.page.description', "Migrating {0} logins to target {1} '{2}'", numLogins, targetType, targetName);
 }
 export function LOGIN_MIGRATIONS_COMPLETED_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
-	return localize('sql.login.migration.status.page.description', "Completed migrating {0} logins to {1} '{2}'", numLogins, targetType, targetName);
+	return localize('sql.login.migration.status.page.description.completed', "Completed migrating {0} logins to {1} '{2}'", numLogins, targetType, targetName);
+}
+export function LOGIN_MIGRATIONS_FAILED_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
+	return localize('sql.login.migration.status.page.description.failed', "Failed migrating {0} logins to {1} '{2}'", numLogins, targetType, targetName);
 }
 export const LOGIN_MIGRATIONS_STATUS_PAGE_PREVIOUS_BUTTON_TITLE = localize('sql.login.migration.status.page.previous.button.title', "Previous (Disabled)");
 export const LOGIN_MIGRATIONS_STATUS_PAGE_PREVIOUS_BUTTON_ERROR = localize('sql.login.migration.status.page.previous.button.error', "Login migration has already been initiated and going back to prior page is disabled.");
@@ -339,9 +343,16 @@ export function LOGIN_MIGRATION_REFRESH_LOGIN_DATA_SUCCESSFUL(numSourceLogins: n
 export const LOGIN_MIGRATION_REFRESH_SOURCE_LOGIN_DATA_FAILED = localize('sql.login.migration.refresh.source.login.data.failed', "Refreshing login list from source failed");
 export const LOGIN_MIGRATION_REFRESH_TARGET_LOGIN_DATA_FAILED = localize('sql.login.migration.refresh.target.login.data.failed', "Refreshing login list from target failed");
 export const STARTING_LOGIN_MIGRATION = localize('sql.migration.starting.login', "Validating and migrating logins are in progress");
+export const STARTING_LOGIN_MIGRATION_FAILED = localize('sql.migration.starting.login.failed', "Validating and migrating logins failed");
 export const ESTABLISHING_USER_MAPPINGS = localize('sql.login.migration.establish.user.mappings', "Validating and migrating logins completed.\n\nEstablishing user mappings.");
+export const ESTABLISHING_USER_MAPPINGS_FAILED = localize('sql.login.migration.establish.user.mappings.failed', "Establishing user mappings failed");
 export const MIGRATE_SERVER_ROLES_AND_SET_PERMISSIONS = localize('sql.login.migration.migrate.server.roles.and.set.permissions', "Establishing user mappings completed.\n\nCurrently, migrating server roles, establishing server mappings and setting permissions. This will take some time.");
+export const MIGRATE_SERVER_ROLES_AND_SET_PERMISSIONS_FAILED = localize('sql.login.migration.migrate.server.roles.and.set.permissions.failed', "Migrating server roles, establishing server mappings and setting permissions failed.");
 export const LOGIN_MIGRATIONS_COMPLETE = localize('sql.login.migration.complete', "Completed migrating logins");
+export const LOGIN_MIGRATIONS_FAILED = localize('sql.login.migration.failed', "Migrating logins failed");
+export function LOGIN_MIGRATIONS_ERROR(message: string): string {
+	return localize('sql.login.migration..error', "Login migration error: {0}", message);
+}
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");

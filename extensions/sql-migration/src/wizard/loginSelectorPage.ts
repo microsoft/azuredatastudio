@@ -35,18 +35,34 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
 		this._view = view;
 
+		// const loginMigrationInfoBox = this._view.modelBuilder.infoBox()
+		// 	.withProps({
+		// 		style: 'information',
+		// 		text: constants.LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DATA_MIGRATION_WARNING,
+		// 		CSSStyles: { ...styles.BODY_CSS }
+		// 	}).component();
+
 		const flex = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'row',
+			flexFlow: 'column',
 			height: '100%',
 			width: '100%'
 		}).component();
 		flex.addItem(await this.createRootContainer(view), { flex: '1 1 auto' });
+
+		// const form = this._view.modelBuilder.formContainer()
+		// 	.withFormItems([
+		// 		{ component: loginMigrationInfoBox },
+		// 		{ component: flex },
+		// 	]).withProps({
+		// 		CSSStyles: { 'padding-top': '0' }
+		// 	}).component();
 
 		this._disposables.push(this._view.onClosed(e => {
 			this._disposables.forEach(
 				d => { try { d.dispose(); } catch { } });
 		}));
 
+		// await view.initializeModel(form);
 		await view.initializeModel(flex);
 	}
 
@@ -141,6 +157,13 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
 
+		const windowsAuthInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				style: 'information',
+				text: constants.LOGIN_MIGRATIONS_SELECT_LOGINS_WINDOWS_AUTH_WARNING,
+				CSSStyles: { ...styles.BODY_CSS }
+			}).component();
+
 		this._refreshButton = this._view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
@@ -219,7 +242,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 						name: constants.SOURCE_LOGIN,
 						value: 'sourceLogin',
 						type: azdata.ColumnType.text,
-						width: 360,
+						width: 250,
 						cssClass: cssClass,
 						headerCssClass: cssClass,
 					},
@@ -227,7 +250,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 						name: constants.LOGIN_TYPE,
 						value: 'loginType',
 						type: azdata.ColumnType.text,
-						width: 80,
+						width: 90,
 						cssClass: cssClass,
 						headerCssClass: cssClass,
 					},
@@ -235,7 +258,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 						name: constants.DEFAULT_DATABASE,
 						value: 'defaultDatabase',
 						type: azdata.ColumnType.text,
-						width: 80,
+						width: 130,
 						cssClass: cssClass,
 						headerCssClass: cssClass,
 					},
@@ -243,14 +266,14 @@ export class LoginSelectorPage extends MigrationWizardPage {
 						name: constants.LOGIN_STATUS_COLUMN,
 						value: 'status',
 						type: azdata.ColumnType.text,
-						width: 130,
+						width: 90,
 						cssClass: cssClass,
 						headerCssClass: cssClass,
 					},
 					<azdata.HyperlinkColumn>{
 						name: constants.LOGIN_TARGET_STATUS_COLUMN,
 						value: 'targetStatus',
-						width: 200,
+						width: 150,
 						type: azdata.ColumnType.hyperlink,
 						icon: IconPathHelper.inProgressMigration,
 						showText: true,
@@ -275,7 +298,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				'margin': '0px 28px 0px 28px'
 			}
 		}).component();
-		flex.addItem(refreshContainer);
+		flex.addItem(windowsAuthInfoBox, { flex: '0 0 auto' });
+		flex.addItem(refreshContainer, { flex: '0 0 auto' });
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._loginCount, { flex: '0 0 auto' });
 		flex.addItem(this._loginSelectorTable);
