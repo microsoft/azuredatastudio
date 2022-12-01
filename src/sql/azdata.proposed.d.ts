@@ -417,7 +417,7 @@ declare module 'azdata' {
 		 */
 		result: boolean;
 		/**
-		 * Brief description for a failed password change
+		 * Error message for a failed password change
 		 */
 		errorMessage?: string | undefined;
 	}
