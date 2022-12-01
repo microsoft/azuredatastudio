@@ -364,7 +364,6 @@
     "@azure/storage-blob": "^12.6.0",
     "axios": "^0.27.2",
     "crypto": "^1.0.1",
-    "lockfile": "1.0.4",
     "msal": "^1.4.16",
     "node-fetch": "^2.6.7",
     "qs": "^6.9.1",
@@ -375,9 +374,7 @@
   "devDependencies": {
     "@microsoft/azdata-test": "^2.0.3",
     "@microsoft/vscodetestcover": "^1.2.1",
-    "@types/cryptr": "^4.0.1",
     "@types/keytar": "4.4.0",
-    "@types/lockfile": "^1.0.2",
     "@types/mocha": "^7.0.2",
     "@types/node": "^12.20.55",
     "@types/qs": "^6.9.1",

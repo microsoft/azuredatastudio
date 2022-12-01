@@ -15,7 +15,6 @@ import { ProviderSettings } from './interfaces';
 import { MsalCachePluginProvider } from './utils/msalCachePlugin';
 import * as loc from '../localizedConstants';
 import { Configuration, PublicClientApplication } from '@azure/msal-node';
-import * as path from "path";
 import * as Constants from '../constants';
 import { Logger } from '../utils/Logger';
 import { ILoggerCallback, LogLevel as MsalLogLevel } from "@azure/msal-common";
@@ -145,19 +144,18 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf(Constants.Saw) > 0;
 		const noSystemKeychain = vscode.workspace.getConfiguration(Constants.AzureSection).get<boolean>(Constants.NoSystemKeyChainSection);
 		const tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
-
+		const tokenCacheKeyMsal = `azureTokenCacheMsal-${provider.metadata.id}`;
 		try {
 			if (!this._credentialProvider) {
 				throw new Error('Credential provider not registered');
 			}
 
-			// ADAL Cache
+			// ADAL Token Cache
 			let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, noSystemKeychain, this._credentialProvider);
 			await simpleTokenCache.init();
 
 			// MSAL Cache Plugin
-			let msalFilePath = path.join(this._userStoragePath, Constants.ConfigFilePath);
-			this._cachePluginProvider = new MsalCachePluginProvider(msalFilePath, this._credentialProvider);
+			this._cachePluginProvider = new MsalCachePluginProvider(tokenCacheKeyMsal, this._userStoragePath);
 
 			const msalConfiguration: Configuration = {
 				auth: {
