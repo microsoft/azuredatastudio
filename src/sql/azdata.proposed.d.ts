@@ -417,7 +417,7 @@ declare module 'azdata' {
 		 */
 		result: boolean;
 		/**
-		 * Error message for a failed password change
+		 * Error message if the password change was unsuccessful
 		 */
 		errorMessage?: string | undefined;
 	}
@@ -462,6 +462,13 @@ declare module 'azdata' {
 			 */
 			None = 'None'
 		}
+
+		/**
+		 * Attempts to change password for the given connection profile on the server.
+		 * @param connectionProfile The {@link IConnectionProfile} containing the information for the connection
+		 * @param newPassword Password to change the connection profile's account to
+		 */
+		export function changePassword(connectionProfile: IConnectionProfile, newPassword: string): Thenable<PasswordChangeResult>;
 	}
 
 	/*
