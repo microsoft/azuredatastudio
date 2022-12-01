@@ -419,7 +419,7 @@ declare module 'azdata' {
 		/**
 		 * Error message if the password change was unsuccessful
 		 */
-		errorMessage?: string | undefined;
+		errorMessage?: string;
 	}
 
 	export interface IConnectionProfile extends ConnectionInfo {
@@ -462,7 +462,6 @@ declare module 'azdata' {
 			 */
 			None = 'None'
 		}
-
 	}
 
 	/*
