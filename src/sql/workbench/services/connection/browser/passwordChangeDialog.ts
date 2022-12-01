@@ -30,7 +30,7 @@ const cancelText: string = localize('passwordChangeDialog.cancel', "Cancel");
 const dialogTitle: string = localize('passwordChangeDialog.title', "Change Password");
 const newPasswordText: string = localize('passwordChangeDialog.newPassword', 'New password for SQL Server Login:');
 const confirmPasswordText: string = localize('passwordChangeDialog.confirmPassword', 'Confirm password:');
-const passwordChangeLoadText: string = localize('passwordChangeDialog.loading', "Attempting to connect to server");
+const passwordChangeLoadText: string = localize('passwordChangeDialog.connecting', "Connecting");
 
 export class PasswordChangeDialog extends Modal {
 
