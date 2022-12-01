@@ -1205,7 +1205,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 		};
 
 		return <typeof vscode>{
-			version: initData.version,
+			// {{SQL CARBON EDIT}} - Expose the VS Code version here for extensions that rely on it
+			version: initData.vscodeVersion,
 			// namespaces
 			authentication,
 			commands,
