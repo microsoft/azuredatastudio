@@ -294,23 +294,23 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	public async changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, oldPassword: string, newPassword: string): Promise<void> {
 		if (oldPassword !== newPassword) {
-			this.showErrorDialog(Severity.Error, Constants.sqlPasswordMismatchHeader, Constants.sqlPasswordMismatchDetail);
-			return Promise.reject(new Error(Constants.sqlPasswordMismatchHeader));
+			this.showErrorDialog(Severity.Error, Constants.sqlPasswordChangeErrorHeader, Constants.sqlPasswordMismatchMessage);
+			return Promise.reject(new Error(Constants.sqlPasswordChangeErrorHeader));
 		}
 		let passwordChangeResult = await this._connectionManagementService.sendChangePassword(connection, uri, newPassword);
 		if (!passwordChangeResult.result) {
-			let detailMessage = passwordChangeResult.errorDetails;
+			let detailMessage = passwordChangeResult.errorMessage;
 			if (detailMessage.indexOf(Constants.sqlPasswordDNMReqs) !== -1) {
-				detailMessage += '\n\n ' + Constants.sqlPasswordDNMReqsRetry;
+				detailMessage += '\n\n' + Constants.sqlPasswordDNMReqsRetry;
 			}
 			else if (detailMessage.indexOf(Constants.sqlPasswordCannotBeUsed) !== -1) {
-				detailMessage += '\n\n ' + Constants.sqlPasswordCannotBeUsedRetry;
+				detailMessage += '\n\n' + Constants.sqlPasswordCannotBeUsedRetry;
 			}
 			else if (detailMessage === Constants.sqlPasswordEmpty) {
-				detailMessage += '\n\n ' + Constants.sqlPasswordEmptyRetry;
+				detailMessage += '\n\n' + Constants.sqlPasswordEmptyRetry;
 			}
 
-			this.showErrorDialog(Severity.Error, passwordChangeResult.errorMessage, detailMessage);
+			this.showErrorDialog(Severity.Error, Constants.sqlPasswordChangeErrorHeader, detailMessage);
 			return Promise.reject(new Error(passwordChangeResult.errorMessage));
 		}
 		connection.options['password'] = newPassword;
