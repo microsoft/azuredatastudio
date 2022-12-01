@@ -27,7 +27,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 
 const okText: string = localize('passwordChangeDialog.ok', "OK");
 const cancelText: string = localize('passwordChangeDialog.cancel', "Cancel");
-const dialogTitle: string = localize('passwordChangeDialog.title', "Change Password");
+const dialogTitle: string = localize('passwordChangeDialog.title', "Change your expired password");
 const newPasswordText: string = localize('passwordChangeDialog.newPassword', 'New password for SQL Server Login:');
 const confirmPasswordText: string = localize('passwordChangeDialog.confirmPassword', 'Confirm password:');
 const passwordChangeLoadText: string = localize('passwordChangeDialog.connecting', "Connecting");
