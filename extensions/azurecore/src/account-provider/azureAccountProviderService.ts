@@ -45,7 +45,6 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		private _userStoragePath: string,
 		private _authLibrary: string) {
 		this._disposables.push(vscode.window.registerUriHandler(this._uriEventHandler));
-		this._cachePluginProvider = new MsalCachePluginProvider(path.join(this._userStoragePath, Constants.ConfigFilePath));
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -152,8 +151,13 @@ export class AzureAccountProviderService implements vscode.Disposable {
 				throw new Error('Credential provider not registered');
 			}
 
+			// ADAL Cache
 			let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, noSystemKeychain, this._credentialProvider);
 			await simpleTokenCache.init();
+
+			// MSAL Cache Plugin
+			let msalFilePath = path.join(this._userStoragePath, Constants.ConfigFilePath);
+			this._cachePluginProvider = new MsalCachePluginProvider(msalFilePath, this._credentialProvider);
 
 			const msalConfiguration: Configuration = {
 				auth: {
@@ -163,8 +167,8 @@ export class AzureAccountProviderService implements vscode.Disposable {
 				system: {
 					loggerOptions: {
 						loggerCallback: this.getLoggerCallback(),
-						logLevel: MsalLogLevel.Verbose,
-						piiLoggingEnabled: false,
+						logLevel: MsalLogLevel.Trace,
+						piiLoggingEnabled: true,
 					},
 				},
 				cache: {
@@ -197,6 +201,8 @@ export class AzureAccountProviderService implements vscode.Disposable {
 						Logger.verbose(message);
 						break;
 				}
+			} else {
+				Logger.verbose(message);
 			}
 		}
 	}
