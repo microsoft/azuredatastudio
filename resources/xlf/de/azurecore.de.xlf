@@ -54,10 +54,6 @@
         <source xml:lang="en">Unidentified error with azure authentication</source>
         <target state="translated">Unbekannter Fehler bei der Azure-Authentifizierung.</target>
       </trans-unit>
-      <trans-unit id="azureWorkAccountDisplayName">
-        <source xml:lang="en">Work or school account</source>
-        <target state="translated">Geschäfts-, Schul- oder Unikonto</target>
-      </trans-unit>
       <trans-unit id="azurecore.consentDialog.body">
         <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
         <target state="translated">Für Ihren Mandanten "{0} ({1})" müssen Sie sich erneut authentifizieren, um auf {2}-Ressourcen zuzugreifen. Klicken Sie auf "Öffnen", um den Authentifizierungsvorgang zu starten.</target>
@@ -611,6 +607,14 @@
         <source xml:lang="en">Reload</source>
         <target state="translated">Neu laden</target>
       </trans-unit>
+      <trans-unit id="azurecore.reloadChoice">
+        <source xml:lang="en">Reload Azure Data Studio</source>
+        <target state="translated">Azure Data Studio neu laden</target>
+      </trans-unit>
+      <trans-unit id="azurecore.reloadPrompt">
+        <source xml:lang="en">Authentication Library has changed, please reload Azure Data Studio.</source>
+        <target state="translated">Die Authentifizierungsbibliothek wurde geändert, bitte laden Sie Azure Data Studio neu.</target>
+      </trans-unit>
       <trans-unit id="azurecore.requiresReload">
         <source xml:lang="en">Modifying this setting requires reloading the window for all changes to take effect.</source>
         <target state="translated">Bei Änderung dieser Einstellung muss das Fenster neu geladen werden, damit alle Änderungen wirksam werden.</target>
@@ -786,6 +790,10 @@
       <trans-unit id="azure.title">
         <source xml:lang="en">Azure</source>
         <target state="translated">Azure</target>
+      </trans-unit>
+      <trans-unit id="config.authenticationLibrary">
+        <source xml:lang="en">The library used for the AAD auth flow. Please restart ADS after changing this option.</source>
+        <target state="translated">Die Bibliothek, die für den AAD-Authentifizierungsfluss verwendet wird. Bitte starten Sie ADS neu, nachdem Sie diese Option geändert haben.</target>
       </trans-unit>
       <trans-unit id="config.azureAccountConfigurationSection">
         <source xml:lang="en">Azure Account Configuration</source>

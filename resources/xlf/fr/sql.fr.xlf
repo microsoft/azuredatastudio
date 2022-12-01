@@ -186,15 +186,15 @@
     <body>
       <trans-unit id="table.resizeColumn">
         <source xml:lang="en">Provide new column width</source>
-        <target state="new">Provide new column width</target>
+        <target state="translated">Fournir une nouvelle largeur de colonne</target>
       </trans-unit>
       <trans-unit id="table.resizeColumn.invalid">
         <source xml:lang="en">Invalid column width</source>
-        <target state="new">Invalid column width</target>
+        <target state="translated">Largeur de colonne non valides</target>
       </trans-unit>
       <trans-unit id="table.resizeColumn.negativeSize">
         <source xml:lang="en">Size cannot be 0 or negative</source>
-        <target state="new">Size cannot be 0 or negative</target>
+        <target state="translated">La taille ne peut pas être 0 ou négative.</target>
       </trans-unit>
     </body>
   </file>
@@ -256,10 +256,6 @@
         <source xml:lang="en">Enable automatic update checks. Azure Data Studio will check for updates automatically and periodically.</source>
         <target state="translated">Activez la recherche de mises à jour automatique pour que Azure Data Studio recherche les mises à jour automatiquement et régulièrement.</target>
       </trans-unit>
-      <trans-unit id="docNotFoundForUriError">
-        <source xml:lang="en">Could not open a notebook document for the specified URI.</source>
-        <target state="translated">Impossible d’ouvrir un document de notebook pour l’URI spécifié</target>
-      </trans-unit>
       <trans-unit id="enable locally">
         <source xml:lang="en">Please reload Azure Data Studio to enable this extension locally.</source>
         <target state="translated">Rechargez Azure Data Studio pour activer cette extension localement.</target>
@@ -310,10 +306,6 @@
       <trans-unit id="notebook.cellTitle">
         <source xml:lang="en">The notebook cell title menu</source>
         <target state="translated">Menu titre de la cellule du bloc-notes</target>
-      </trans-unit>
-      <trans-unit id="notebook.cellToolbarLocation.compatibilityDescription">
-        <source xml:lang="en">Where the cell toolbar should be shown, or whether it should be hidden. Note: This setting is only enabled for extension compatibility purposes, and so does not affect anything.</source>
-        <target state="translated">Où la barre d'outils de la cellule doit être affichée ou si elle doit être masquée. Remarque : Ce paramètre n'est activé qu'à des fins de compatibilité d'extension et n'affecte donc rien.</target>
       </trans-unit>
       <trans-unit id="notebook.title">
         <source xml:lang="en">The notebook title menu</source>
@@ -465,17 +457,9 @@ Commandes ignorées par défaut :
         <source xml:lang="en">Would you like to change Azure Data Studio's UI language to {0} and restart?</source>
         <target state="translated">Souhaitez-vous changer la langue de l’interface d’Azure Data Studio en {0} et redémarrer ?</target>
       </trans-unit>
-      <trans-unit id="vscodeDocCreationFailedError">
-        <source xml:lang="en">Failed to create notebook document.</source>
-        <target state="translated">Échec de la création du document notebook</target>
-      </trans-unit>
-      <trans-unit id="vscodeFunctionalityNotSupportedError">
-        <source xml:lang="en">This VS Code functionality is not supported in Azure Data Studio.</source>
-        <target state="translated">Cette fonctionnalité VS Code n’est pas prise en charge dans Azure Data Studio.</target>
-      </trans-unit>
-      <trans-unit id="vscodeInvalidArgumentsError">
-        <source xml:lang="en">Invalid arguments.</source>
-        <target state="translated">Arguments non valides</target>
+      <trans-unit id="vscodeNotebooksNotSupportedError">
+        <source xml:lang="en">VS Code notebook extensions are not supported in Azure Data Studio.</source>
+        <target state="translated">Les extensions de notebook VS Code ne sont pas prises en charge dans Azure Data Studio.</target>
       </trans-unit>
       <trans-unit id="watermark.newNotebook">
         <source xml:lang="en">New Notebook</source>
@@ -1004,14 +988,6 @@ Commandes ignorées par défaut :
       <trans-unit id="navigationProviderRequired">
         <source xml:lang="en">A NavigationProvider with valid providerId must be passed to this method</source>
         <target state="translated">Un NavigationProvider avec un providerId valide doit être passé à cette méthode.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/api/common/notebooks/vscodeExecuteProvider" source-language="en" datatype="plaintext" target-language="fr">
-    <body>
-      <trans-unit id="errorStartBeforeReady">
-        <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
-        <target state="translated">Impossible de démarrer une session, le gestionnaire n'est pas encore initialisé</target>
       </trans-unit>
     </body>
   </file>
@@ -3543,8 +3519,8 @@ Commandes ignorées par défaut :
         <target state="translated">Réinitialiser le zoom</target>
       </trans-unit>
       <trans-unit id="epCompare.zoomToFit">
-        <source xml:lang="en">Zoom to fit</source>
-        <target state="translated">Zoomer pour ajuster</target>
+        <source xml:lang="en">Zoom to Fit</source>
+        <target state="translated">Zoom pour ajuster</target>
       </trans-unit>
       <trans-unit id="executionPlanComparison.bottomPlanDiagram.name">
         <source xml:lang="en">Bottom execution Plan {0}</source>
@@ -3635,11 +3611,11 @@ Commandes ignorées par défaut :
         <target state="translated">Quand la valeur est True, active les info-bulles sur pointage pour le plan d’exécution. Quand la valeur est False, les info-bulles sont affichées lors d’un clic de nœud ou d’une touche F3.</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareCommandOriginalValue">
-        <source xml:lang="en">Compare execution plans</source>
+        <source xml:lang="en">Compare Execution Plans</source>
         <target state="translated">Comparer les plans d'exécution</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareCommandValue">
-        <source xml:lang="en">Compare execution plans</source>
+        <source xml:lang="en">Compare Execution Plans</source>
         <target state="translated">Comparer les plans d'exécution</target>
       </trans-unit>
       <trans-unit id="executionPlanConfigurationTitle">
@@ -3767,7 +3743,7 @@ Commandes ignorées par défaut :
         <target state="translated">Plan d'exécution {0}</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareExecutionPlanAction">
-        <source xml:lang="en">Compare execution plan</source>
+        <source xml:lang="en">Compare Execution Plan</source>
         <target state="translated">Comparer le plan d'exécution</target>
       </trans-unit>
       <trans-unit id="executionPlanContextMenuDisableTooltip">
@@ -3791,8 +3767,8 @@ Commandes ignorées par défaut :
         <target state="translated">Info-bulles activées</target>
       </trans-unit>
       <trans-unit id="executionPlanFitGraphLabel">
-        <source xml:lang="en">Zoom to fit</source>
-        <target state="translated">Zoomer pour ajuster</target>
+        <source xml:lang="en">Zoom to Fit</source>
+        <target state="translated">Zoom pour ajuster</target>
       </trans-unit>
       <trans-unit id="executionPlanHighlightExpensiveOperationAction">
         <source xml:lang="en">Highlight Expensive Operation</source>
@@ -5113,6 +5089,10 @@ Erreur : {1}</target>
       <trans-unit id="notebook.maxRichTextUndoHistory">
         <source xml:lang="en">The maximum number of changes stored in the undo history for the notebook Rich Text editor.</source>
         <target state="translated">Nombre maximal de modifications stockées dans l’historique des annulations pour l’éditeur de texte enrichi de bloc-notes.</target>
+      </trans-unit>
+      <trans-unit id="notebook.renderTablesInHtml">
+        <source xml:lang="en">Display and save tables in HTML format in text cells instead of converting to markdown tables.</source>
+        <target state="translated">Affichez et enregistrez les tableaux au format HTML dans les cellules de texte au lieu de les convertir en tableaux Markdown.</target>
       </trans-unit>
       <trans-unit id="notebook.richTextModeDescription">
         <source xml:lang="en">Text is displayed as Rich Text (also known as WYSIWYG).</source>
@@ -6830,7 +6810,7 @@ Erreur : {1}</target>
     <body>
       <trans-unit id="notifyEncryption.message">
         <source xml:lang="en">Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.</source>
-        <target state="new">Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.</target>
+        <target state="translated">Azure Data Studio a maintenant activé le chiffrement par défaut pour toutes les connexions SQL Server. Cela peut avoir pour conséquence que vos connexions existantes ne fonctionnent plus, à moins que certaines propriétés de connexion liées au chiffrement ne soient modifiées.{0}Nous vous recommandons de consulter le lien ci-dessous pour plus de détails.</target>
       </trans-unit>
       <trans-unit id="notifyEncryption.moreInfoLink">
         <source xml:lang="en">More information</source>
@@ -8383,10 +8363,6 @@ Remarque : un certificat auto-signé offre une protection limitée uniquement e
       <trans-unit id="carbon.extension.contributes.notebook.standardKernels">
         <source xml:lang="en">What kernels should be standard with this notebook provider</source>
         <target state="translated">Noyaux devant être standard avec ce fournisseur de notebooks</target>
-      </trans-unit>
-      <trans-unit id="providerNotInRegistryError">
-        <source xml:lang="en">The specified provider '{0}' is not present in the notebook registry.</source>
-        <target state="translated">Le fournisseur spécifié « {0} » n’est pas présent dans le registre de notebooks.</target>
       </trans-unit>
       <trans-unit id="vscode.extension.contributes.notebook.languagemagics">
         <source xml:lang="en">Contributes notebook language.</source>

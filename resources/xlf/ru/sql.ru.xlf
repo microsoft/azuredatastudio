@@ -256,10 +256,6 @@
         <source xml:lang="en">Enable automatic update checks. Azure Data Studio will check for updates automatically and periodically.</source>
         <target state="translated">Включение автоматических проверок обновлений. Azure Data Studio будет периодически проверять наличие обновлений в автоматическом режиме.</target>
       </trans-unit>
-      <trans-unit id="docNotFoundForUriError">
-        <source xml:lang="en">Could not open a notebook document for the specified URI.</source>
-        <target state="translated">Не удалось открыть документ записной книжки для указанного универсального кода ресурса (URI).</target>
-      </trans-unit>
       <trans-unit id="enable locally">
         <source xml:lang="en">Please reload Azure Data Studio to enable this extension locally.</source>
         <target state="translated">Перезапустите Azure Data Studio, чтобы включить это расширение локально.</target>
@@ -310,10 +306,6 @@
       <trans-unit id="notebook.cellTitle">
         <source xml:lang="en">The notebook cell title menu</source>
         <target state="translated">Меню заголовка ячейки записной книжки</target>
-      </trans-unit>
-      <trans-unit id="notebook.cellToolbarLocation.compatibilityDescription">
-        <source xml:lang="en">Where the cell toolbar should be shown, or whether it should be hidden. Note: This setting is only enabled for extension compatibility purposes, and so does not affect anything.</source>
-        <target state="translated">Где следует отображать панель инструментов ячейки (или следует ли ее скрыть). Примечание. Этот параметр включен только в целях совместимости расширений, он ни на что не влияет.</target>
       </trans-unit>
       <trans-unit id="notebook.title">
         <source xml:lang="en">The notebook title menu</source>
@@ -465,17 +457,9 @@ Default Skipped Commands:
         <source xml:lang="en">Would you like to change Azure Data Studio's UI language to {0} and restart?</source>
         <target state="translated">Хотите изменить язык пользовательского интерфейса Azure Data Studio на {0} и выполнить перезапуск?</target>
       </trans-unit>
-      <trans-unit id="vscodeDocCreationFailedError">
-        <source xml:lang="en">Failed to create notebook document.</source>
-        <target state="translated">Не удалось создать документ записной книжки.</target>
-      </trans-unit>
-      <trans-unit id="vscodeFunctionalityNotSupportedError">
-        <source xml:lang="en">This VS Code functionality is not supported in Azure Data Studio.</source>
-        <target state="translated">Этот VS Code не поддерживается в Azure Data Studio.</target>
-      </trans-unit>
-      <trans-unit id="vscodeInvalidArgumentsError">
-        <source xml:lang="en">Invalid arguments.</source>
-        <target state="translated">Недопустимые аргументы.</target>
+      <trans-unit id="vscodeNotebooksNotSupportedError">
+        <source xml:lang="en">VS Code notebook extensions are not supported in Azure Data Studio.</source>
+        <target state="translated">Расширения записной книжки VS Code не поддерживаются в Azure Data Studio.</target>
       </trans-unit>
       <trans-unit id="watermark.newNotebook">
         <source xml:lang="en">New Notebook</source>
@@ -1004,14 +988,6 @@ Default Skipped Commands:
       <trans-unit id="navigationProviderRequired">
         <source xml:lang="en">A NavigationProvider with valid providerId must be passed to this method</source>
         <target state="translated">В качестве параметра этого метода необходимо указать NavigationProvider с действительным providerId</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/api/common/notebooks/vscodeExecuteProvider" source-language="en" datatype="plaintext" target-language="ru">
-    <body>
-      <trans-unit id="errorStartBeforeReady">
-        <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
-        <target state="translated">Не удается запустить сеанс, диспетчер еще не инициализирован</target>
       </trans-unit>
     </body>
   </file>
@@ -3543,8 +3519,8 @@ Default Skipped Commands:
         <target state="translated">Сбросить масштаб</target>
       </trans-unit>
       <trans-unit id="epCompare.zoomToFit">
-        <source xml:lang="en">Zoom to fit</source>
-        <target state="translated">Масштаб по размеру экрана</target>
+        <source xml:lang="en">Zoom to Fit</source>
+        <target state="translated">Масштабировать по размеру</target>
       </trans-unit>
       <trans-unit id="executionPlanComparison.bottomPlanDiagram.name">
         <source xml:lang="en">Bottom execution Plan {0}</source>
@@ -3635,12 +3611,12 @@ Default Skipped Commands:
         <target state="translated">Если значение равно true, при наведении указателя на план выполнения включает всплывающие подсказки. Если значение равно false, подсказки отображаются при щелчке по узлу или при нажатии клавиши F3.</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareCommandOriginalValue">
-        <source xml:lang="en">Compare execution plans</source>
-        <target state="translated">Сравнение планов выполнения</target>
+        <source xml:lang="en">Compare Execution Plans</source>
+        <target state="translated">Сравнить планы выполнения</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareCommandValue">
-        <source xml:lang="en">Compare execution plans</source>
-        <target state="translated">Сравнение планов выполнения</target>
+        <source xml:lang="en">Compare Execution Plans</source>
+        <target state="translated">Сравнить планы выполнения</target>
       </trans-unit>
       <trans-unit id="executionPlanConfigurationTitle">
         <source xml:lang="en">Execution Plan</source>
@@ -3767,8 +3743,8 @@ Default Skipped Commands:
         <target state="translated">План выполнения {0}</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareExecutionPlanAction">
-        <source xml:lang="en">Compare execution plan</source>
-        <target state="translated">Сравнение плана выполнения</target>
+        <source xml:lang="en">Compare Execution Plan</source>
+        <target state="translated">Сравнение планов выполнения</target>
       </trans-unit>
       <trans-unit id="executionPlanContextMenuDisableTooltip">
         <source xml:lang="en">Disable Tooltips</source>
@@ -3791,8 +3767,8 @@ Default Skipped Commands:
         <target state="translated">Подсказки включены</target>
       </trans-unit>
       <trans-unit id="executionPlanFitGraphLabel">
-        <source xml:lang="en">Zoom to fit</source>
-        <target state="translated">Масштаб по размеру экрана</target>
+        <source xml:lang="en">Zoom to Fit</source>
+        <target state="translated">Масштабировать по размеру</target>
       </trans-unit>
       <trans-unit id="executionPlanHighlightExpensiveOperationAction">
         <source xml:lang="en">Highlight Expensive Operation</source>
@@ -5113,6 +5089,10 @@ Error: {1}</source>
       <trans-unit id="notebook.maxRichTextUndoHistory">
         <source xml:lang="en">The maximum number of changes stored in the undo history for the notebook Rich Text editor.</source>
         <target state="translated">Максимальное количество изменений, сохраняемых в журнале отмены для редактора форматированного текста записной книжки.</target>
+      </trans-unit>
+      <trans-unit id="notebook.renderTablesInHtml">
+        <source xml:lang="en">Display and save tables in HTML format in text cells instead of converting to markdown tables.</source>
+        <target state="translated">Отображение и сохранение таблиц в формате HTML в текстовых ячейках вместо преобразования в таблицы Markdown.</target>
       </trans-unit>
       <trans-unit id="notebook.richTextModeDescription">
         <source xml:lang="en">Text is displayed as Rich Text (also known as WYSIWYG).</source>
@@ -8383,10 +8363,6 @@ Error: {1}</source>
       <trans-unit id="carbon.extension.contributes.notebook.standardKernels">
         <source xml:lang="en">What kernels should be standard with this notebook provider</source>
         <target state="translated">Какие ядра следует использовать в качестве стандартных для этого поставщика записных книжек</target>
-      </trans-unit>
-      <trans-unit id="providerNotInRegistryError">
-        <source xml:lang="en">The specified provider '{0}' is not present in the notebook registry.</source>
-        <target state="translated">Указанный поставщик, "{0}", отсутствует в реестре записных книжек.</target>
       </trans-unit>
       <trans-unit id="vscode.extension.contributes.notebook.languagemagics">
         <source xml:lang="en">Contributes notebook language.</source>

@@ -54,10 +54,6 @@
         <source xml:lang="en">Unidentified error with azure authentication</source>
         <target state="translated">使用 Azure 身份验证时出现不明错误</target>
       </trans-unit>
-      <trans-unit id="azureWorkAccountDisplayName">
-        <source xml:lang="en">Work or school account</source>
-        <target state="translated">工作或学校帐户</target>
-      </trans-unit>
       <trans-unit id="azurecore.consentDialog.body">
         <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
         <target state="translated">你的租户“{0} ({1})”需要你重新进行身份验证才能访问 {2} 资源。请按“打开”启动身份验证过程。</target>
@@ -611,6 +607,14 @@
         <source xml:lang="en">Reload</source>
         <target state="translated">重载</target>
       </trans-unit>
+      <trans-unit id="azurecore.reloadChoice">
+        <source xml:lang="en">Reload Azure Data Studio</source>
+        <target state="translated">重新加载 Azure Data Studio</target>
+      </trans-unit>
+      <trans-unit id="azurecore.reloadPrompt">
+        <source xml:lang="en">Authentication Library has changed, please reload Azure Data Studio.</source>
+        <target state="translated">身份验证库已更改，请重新加载 Azure Data Studio。</target>
+      </trans-unit>
       <trans-unit id="azurecore.requiresReload">
         <source xml:lang="en">Modifying this setting requires reloading the window for all changes to take effect.</source>
         <target state="translated">修改此设置需要重新加载窗口，以使所有更改生效。</target>
@@ -786,6 +790,10 @@
       <trans-unit id="azure.title">
         <source xml:lang="en">Azure</source>
         <target state="translated">Azure</target>
+      </trans-unit>
+      <trans-unit id="config.authenticationLibrary">
+        <source xml:lang="en">The library used for the AAD auth flow. Please restart ADS after changing this option.</source>
+        <target state="translated">用于 AAD 身份验证流的库。请在更改此选项后重新启动 ADS。</target>
       </trans-unit>
       <trans-unit id="config.azureAccountConfigurationSection">
         <source xml:lang="en">Azure Account Configuration</source>

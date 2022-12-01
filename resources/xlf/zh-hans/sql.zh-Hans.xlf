@@ -256,10 +256,6 @@
         <source xml:lang="en">Enable automatic update checks. Azure Data Studio will check for updates automatically and periodically.</source>
         <target state="translated">启用自动更新检查。Azure Data Studio 将定期自动检查更新。</target>
       </trans-unit>
-      <trans-unit id="docNotFoundForUriError">
-        <source xml:lang="en">Could not open a notebook document for the specified URI.</source>
-        <target state="translated">无法打开指定的 URI 的笔记本文档。</target>
-      </trans-unit>
       <trans-unit id="enable locally">
         <source xml:lang="en">Please reload Azure Data Studio to enable this extension locally.</source>
         <target state="translated">请重新加载 Azure Data Studio 以在本地启用此扩展。</target>
@@ -310,10 +306,6 @@
       <trans-unit id="notebook.cellTitle">
         <source xml:lang="en">The notebook cell title menu</source>
         <target state="translated">笔记本单元格标题菜单</target>
-      </trans-unit>
-      <trans-unit id="notebook.cellToolbarLocation.compatibilityDescription">
-        <source xml:lang="en">Where the cell toolbar should be shown, or whether it should be hidden. Note: This setting is only enabled for extension compatibility purposes, and so does not affect anything.</source>
-        <target state="translated">应在何处显示单元格工具栏，或者是否应隐藏该工具栏。注意：此设置仅出于扩展兼容性目的而启用，因此不会产生任何影响。</target>
       </trans-unit>
       <trans-unit id="notebook.title">
         <source xml:lang="en">The notebook title menu</source>
@@ -465,17 +457,9 @@ Default Skipped Commands:
         <source xml:lang="en">Would you like to change Azure Data Studio's UI language to {0} and restart?</source>
         <target state="translated">是否要将 Azure Data Studio 的 UI 语言更改为 {0} 并重启?</target>
       </trans-unit>
-      <trans-unit id="vscodeDocCreationFailedError">
-        <source xml:lang="en">Failed to create notebook document.</source>
-        <target state="translated">未能创建笔记本文档。</target>
-      </trans-unit>
-      <trans-unit id="vscodeFunctionalityNotSupportedError">
-        <source xml:lang="en">This VS Code functionality is not supported in Azure Data Studio.</source>
-        <target state="translated">Azure Data Studio 中不支持此 VS Code 功能。</target>
-      </trans-unit>
-      <trans-unit id="vscodeInvalidArgumentsError">
-        <source xml:lang="en">Invalid arguments.</source>
-        <target state="translated">参数无效。</target>
+      <trans-unit id="vscodeNotebooksNotSupportedError">
+        <source xml:lang="en">VS Code notebook extensions are not supported in Azure Data Studio.</source>
+        <target state="translated">Azure Data Studio 不支持 VS Code 笔记本扩展。</target>
       </trans-unit>
       <trans-unit id="watermark.newNotebook">
         <source xml:lang="en">New Notebook</source>
@@ -1004,14 +988,6 @@ Default Skipped Commands:
       <trans-unit id="navigationProviderRequired">
         <source xml:lang="en">A NavigationProvider with valid providerId must be passed to this method</source>
         <target state="translated">必须向此方法传递具有有效 providerId 的 NavigationProvider</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/api/common/notebooks/vscodeExecuteProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="errorStartBeforeReady">
-        <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
-        <target state="translated">无法启动会话，管理器尚未初始化</target>
       </trans-unit>
     </body>
   </file>
@@ -3543,7 +3519,7 @@ Default Skipped Commands:
         <target state="translated">重置缩放</target>
       </trans-unit>
       <trans-unit id="epCompare.zoomToFit">
-        <source xml:lang="en">Zoom to fit</source>
+        <source xml:lang="en">Zoom to Fit</source>
         <target state="translated">缩放到合适大小</target>
       </trans-unit>
       <trans-unit id="executionPlanComparison.bottomPlanDiagram.name">
@@ -3635,11 +3611,11 @@ Default Skipped Commands:
         <target state="translated">如果为 true，则为执行计划启用悬停时工具提示。如果为 false，则在节点单击或按 F3 键时显示工具提示。</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareCommandOriginalValue">
-        <source xml:lang="en">Compare execution plans</source>
+        <source xml:lang="en">Compare Execution Plans</source>
         <target state="translated">比较执行计划</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareCommandValue">
-        <source xml:lang="en">Compare execution plans</source>
+        <source xml:lang="en">Compare Execution Plans</source>
         <target state="translated">比较执行计划</target>
       </trans-unit>
       <trans-unit id="executionPlanConfigurationTitle">
@@ -3767,7 +3743,7 @@ Default Skipped Commands:
         <target state="translated">执行计划 {0}</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareExecutionPlanAction">
-        <source xml:lang="en">Compare execution plan</source>
+        <source xml:lang="en">Compare Execution Plan</source>
         <target state="translated">比较执行计划</target>
       </trans-unit>
       <trans-unit id="executionPlanContextMenuDisableTooltip">
@@ -3791,7 +3767,7 @@ Default Skipped Commands:
         <target state="translated">已启用工具提示</target>
       </trans-unit>
       <trans-unit id="executionPlanFitGraphLabel">
-        <source xml:lang="en">Zoom to fit</source>
+        <source xml:lang="en">Zoom to Fit</source>
         <target state="translated">缩放到合适大小</target>
       </trans-unit>
       <trans-unit id="executionPlanHighlightExpensiveOperationAction">
@@ -5113,6 +5089,10 @@ Error: {1}</source>
       <trans-unit id="notebook.maxRichTextUndoHistory">
         <source xml:lang="en">The maximum number of changes stored in the undo history for the notebook Rich Text editor.</source>
         <target state="translated">笔记本格式文本编辑器的撤消历史记录中存储的最大更改数。</target>
+      </trans-unit>
+      <trans-unit id="notebook.renderTablesInHtml">
+        <source xml:lang="en">Display and save tables in HTML format in text cells instead of converting to markdown tables.</source>
+        <target state="translated">在文本单元格中以 HTML 格式显示和保存表，而不是转换为 Markdown 表。</target>
       </trans-unit>
       <trans-unit id="notebook.richTextModeDescription">
         <source xml:lang="en">Text is displayed as Rich Text (also known as WYSIWYG).</source>
@@ -8383,10 +8363,6 @@ Error: {1}</source>
       <trans-unit id="carbon.extension.contributes.notebook.standardKernels">
         <source xml:lang="en">What kernels should be standard with this notebook provider</source>
         <target state="translated">此笔记本提供程序应标配哪些内核</target>
-      </trans-unit>
-      <trans-unit id="providerNotInRegistryError">
-        <source xml:lang="en">The specified provider '{0}' is not present in the notebook registry.</source>
-        <target state="translated">笔记本注册表中不存在指定的提供程序 "{0}"。</target>
       </trans-unit>
       <trans-unit id="vscode.extension.contributes.notebook.languagemagics">
         <source xml:lang="en">Contributes notebook language.</source>

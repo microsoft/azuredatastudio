@@ -54,10 +54,6 @@
         <source xml:lang="en">Unidentified error with azure authentication</source>
         <target state="translated">Azure 認証で不明なエラーが発生しました</target>
       </trans-unit>
-      <trans-unit id="azureWorkAccountDisplayName">
-        <source xml:lang="en">Work or school account</source>
-        <target state="translated">職場または学校アカウント</target>
-      </trans-unit>
       <trans-unit id="azurecore.consentDialog.body">
         <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
         <target state="translated">テナント '{0} ({1})' では、{2} リソースにアクセスするために、もう一度再認証する必要があります。[開く] をクリックして、認証プロセスを開始してください。</target>
@@ -611,6 +607,14 @@
         <source xml:lang="en">Reload</source>
         <target state="translated">再読み込み</target>
       </trans-unit>
+      <trans-unit id="azurecore.reloadChoice">
+        <source xml:lang="en">Reload Azure Data Studio</source>
+        <target state="translated">Azure Data Studio の再読み込み</target>
+      </trans-unit>
+      <trans-unit id="azurecore.reloadPrompt">
+        <source xml:lang="en">Authentication Library has changed, please reload Azure Data Studio.</source>
+        <target state="translated">認証ライブラリが変更されました。Azure Data Studio を再読み込みしてください。</target>
+      </trans-unit>
       <trans-unit id="azurecore.requiresReload">
         <source xml:lang="en">Modifying this setting requires reloading the window for all changes to take effect.</source>
         <target state="translated">この設定を変更するには、すべての変更を有効にするためにウィンドウを再読み込みする必要があります。</target>
@@ -786,6 +790,10 @@
       <trans-unit id="azure.title">
         <source xml:lang="en">Azure</source>
         <target state="translated">Azure</target>
+      </trans-unit>
+      <trans-unit id="config.authenticationLibrary">
+        <source xml:lang="en">The library used for the AAD auth flow. Please restart ADS after changing this option.</source>
+        <target state="translated">AAD 認証フローに使用されるライブラリ。このオプションを変更した後は ADS を再起動してください。</target>
       </trans-unit>
       <trans-unit id="config.azureAccountConfigurationSection">
         <source xml:lang="en">Azure Account Configuration</source>
