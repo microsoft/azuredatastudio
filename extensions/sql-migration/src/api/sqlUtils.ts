@@ -66,7 +66,10 @@ const query_login_tables_sql = `
 		case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status
 	FROM sys.server_principals sp
 	LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id
-	WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN ('SQL_LOGIN', 'WINDOWS_LOGIN')
+	WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN (
+		'SQL_LOGIN'
+		--, 'WINDOWS_LOGIN'
+	) AND sp.name NOT LIKE '##%##'
 	ORDER BY sp.name;`;
 
 export const excludeDatabases: string[] = [
