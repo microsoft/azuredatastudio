@@ -60,7 +60,7 @@ Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConf
 		'workbench.useVSCodeNotebooks': {
 			'type': 'boolean',
 			'default': false,
-			'description': nls.localize('useVSCodeNotebooks', "Use VS Code notebooks as the default notebook experience. Note: Azure Data Studio will need to be restarted to enable this setting.")
+			'description': nls.localize('useVSCodeNotebooks', "(Preview) Use VS Code notebooks as the default notebook experience. Note: Azure Data Studio will need to be restarted to enable this setting.")
 		}
 	}
 });
