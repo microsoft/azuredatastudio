@@ -426,7 +426,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
-	 * Changes password of the SQL Server connection profile.
+	 * Changes password of the connection profile's user.
 	 */
 	public changePassword(connection: interfaces.IConnectionProfile, uri: string, newPassword: string):
 		Promise<azdata.PasswordChangeResult> {

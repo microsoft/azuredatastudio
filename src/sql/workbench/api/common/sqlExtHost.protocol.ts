@@ -68,7 +68,7 @@ export abstract class ExtHostDataProtocolShape {
 	$disconnect(handle: number, connectionUri: string): Thenable<boolean> { throw ni(); }
 
 	/**
-	 * Change password for SQL Server connection profile.
+	 * Changes password of the connection profile's user.
 	 */
 	$changePassword(handle: number, connectionUri: string, connection: azdata.ConnectionInfo, newPassword: string): Thenable<azdata.PasswordChangeResult> { throw ni(); }
 

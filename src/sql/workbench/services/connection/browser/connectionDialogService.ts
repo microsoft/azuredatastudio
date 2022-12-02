@@ -243,6 +243,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	public async callDefaultOnConnect(connection: IConnectionProfile, params: INewConnectionParams): Promise<void> {
+		// Needed for password reset dialog to connect after changing password.
 		return this.handleDefaultOnConnect(params, connection);
 	}
 
