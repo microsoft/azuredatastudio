@@ -11317,9 +11317,9 @@
 			"rowDetailView.loadError": "Chargement de l'erreur..."
 		},
 		"sql/base/browser/ui/table/table": {
-			"table.resizeColumn": "Provide new column width",
-			"table.resizeColumn.invalid": "Invalid column width",
-			"table.resizeColumn.negativeSize": "Size cannot be 0 or negative"
+			"table.resizeColumn": "Fournir une nouvelle largeur de colonne",
+			"table.resizeColumn.invalid": "Largeur de colonne non valides",
+			"table.resizeColumn.negativeSize": "La taille ne peut pas être 0 ou négative."
 		},
 		"sql/base/browser/ui/taskbar/overflowActionbar": {
 			"toggleMore": "Afficher/masquer plus"
@@ -11337,7 +11337,6 @@
 			"dataExplorer.context": "Menu contextuel de l’élément dataexplorer",
 			"dataGrid.context": "Menu contextuel de l’élément de grille de données",
 			"default": "Activez la recherche de mises à jour automatique pour que Azure Data Studio recherche les mises à jour automatiquement et régulièrement.",
-			"docNotFoundForUriError": "Impossible d’ouvrir un document de notebook pour l’URI spécifié",
 			"enable locally": "Rechargez Azure Data Studio pour activer cette extension localement.",
 			"enable remote": "Rechargez Azure Data Studio pour activer cette extension dans {0}",
 			"enableWindowsBackgroundUpdates": "Activer pour télécharger et installer les nouvelles versions de Azure Data Studio en arrière-plan sur Windows",
@@ -11350,7 +11349,6 @@
 			"miinstallVsix": "Installer l’extension à partir du package VSIX",
 			"newQuery": "Nouvelle requête",
 			"notebook.cellTitle": "Menu titre de la cellule du bloc-notes",
-			"notebook.cellToolbarLocation.compatibilityDescription": "Où la barre d'outils de la cellule doit être affichée ou si elle doit être masquée. Remarque : Ce paramètre n'est activé qu'à des fins de compatibilité d'extension et n'affecte donc rien.",
 			"notebook.title": "Menu titre du bloc-notes",
 			"notebook.toolbar": "Menu de la barre d’outils du bloc-notes",
 			"objectExplorer.context": "Menu contextuel de l’élément de l’Explorateur d’objets",
@@ -11377,9 +11375,7 @@
 			"terminal.integrated.inheritEnv": "Indique si les nouveaux interpréteurs de commandes doivent hériter leur environnement d’Azure Data Studio, qui peut se procurer un interpréteur de connexion pour garantir l’initialisation de $PATH et d’autres variables de développement. Cela n’a aucun effet sur Windows.",
 			"uninstallExtensionComplete": "Rechargez Azure Data Studio pour désinstaller de l’extension {0}.",
 			"updateLocale": "Souhaitez-vous changer la langue de l’interface d’Azure Data Studio en {0} et redémarrer ?",
-			"vscodeDocCreationFailedError": "Échec de la création du document notebook",
-			"vscodeFunctionalityNotSupportedError": "Cette fonctionnalité VS Code n’est pas prise en charge dans Azure Data Studio.",
-			"vscodeInvalidArgumentsError": "Arguments non valides",
+			"vscodeNotebooksNotSupportedError": "Les extensions de notebook VS Code ne sont pas prises en charge dans Azure Data Studio.",
 			"watermark.newNotebook": "Nouveau notebook",
 			"watermark.newSqlFile": "Nouveau fichier SQL",
 			"workspace.trust.description": "Contrôle si l'approbation de l'espace de travail est activée dans Azure Data Studio.",
@@ -11530,9 +11526,6 @@
 		},
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
 			"navigationProviderRequired": "Un NavigationProvider avec un providerId valide doit être passé à cette méthode."
-		},
-		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "Impossible de démarrer une session, le gestionnaire n'est pas encore initialisé"
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "Effacer tous les comptes enregistrés",
@@ -12268,7 +12261,7 @@
 			"epCompare.zoomInAction": "Zoom avant",
 			"epCompare.zoomOutAction": "Zoom arrière",
 			"epCompare.zoomReset": "Réinitialiser le zoom",
-			"epCompare.zoomToFit": "Zoomer pour ajuster",
+			"epCompare.zoomToFit": "Zoom pour ajuster",
 			"executionPlanComparison.bottomPlanDiagram.name": "Plan d’exécution inférieur {0}",
 			"executionPlanComparison.topPlanDiagram.name": "Ajouter un plan d'exécution {0} principal",
 			"executionPlanDisableTooltip": "Info-bulles désactivées",
@@ -12339,7 +12332,7 @@
 			"executionPlanCustomZoom": "Zoom personnalisé",
 			"executionPlanDisableTooltip": "Info-bulles désactivées",
 			"executionPlanEnableTooltip": "Info-bulles activées",
-			"executionPlanFitGraphLabel": "Zoomer pour ajuster",
+			"executionPlanFitGraphLabel": "Zoom pour ajuster",
 			"executionPlanHighlightExpensiveOperationAction": "Mettre en surbrillance l’opération coûteuse",
 			"executionPlanOpenGraphFile": "Afficher le code XML du plan de requête",
 			"executionPlanPropertiesActionLabel": "Propriétés",
@@ -12702,6 +12695,7 @@
 			"notebook.markdownModeDescription": "Le texte s’affiche sous forme de Markdown.",
 			"notebook.markdownPreviewLineHeight": "Contrôle la hauteur de ligne utilisée dans l'aperçu Markdown du notebook. Ce nombre est relatif à la taille de police.",
 			"notebook.maxRichTextUndoHistory": "Nombre maximal de modifications stockées dans l’historique des annulations pour l’éditeur de texte enrichi de bloc-notes.",
+			"notebook.renderTablesInHtml": "Affichez et enregistrez les tableaux au format HTML dans les cellules de texte au lieu de les convertir en tableaux Markdown.",
 			"notebook.richTextModeDescription": "Le texte est affiché sous forme de texte enrichi (également appelé WYSIWYG).",
 			"notebook.saveConnectionName": "(Préversion) Enregistrez le nom de connexion dans les métadonnées du notebook.",
 			"notebook.showAllKernels": "(Préversion) Affichez tous les noyaux du fournisseur de notebook actuel.",
@@ -13186,7 +13180,7 @@
 			"enablePreviewFeatures.yes": "Oui (recommandé)"
 		},
 		"sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog": {
-			"notifyEncryption.message": "Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.",
+			"notifyEncryption.message": "Azure Data Studio a maintenant activé le chiffrement par défaut pour toutes les connexions SQL Server. Cela peut avoir pour conséquence que vos connexions existantes ne fonctionnent plus, à moins que certaines propriétés de connexion liées au chiffrement ne soient modifiées.{0}Nous vous recommandons de consulter le lien ci-dessous pour plus de détails.",
 			"notifyEncryption.moreInfoLink": "Plus d'informations",
 			"notifyEncryption.title": "Mise à jour importante"
 		},
@@ -13626,7 +13620,6 @@
 			"carbon.extension.contributes.notebook.magic": "Nom de la cellule magique, par exemple, '%%sql'.",
 			"carbon.extension.contributes.notebook.provider": "Identificateur du fournisseur de notebooks.",
 			"carbon.extension.contributes.notebook.standardKernels": "Noyaux devant être standard avec ce fournisseur de notebooks",
-			"providerNotInRegistryError": "Le fournisseur spécifié « {0} » n’est pas présent dans le registre de notebooks.",
 			"vscode.extension.contributes.notebook.languagemagics": "Ajoute un langage de notebook.",
 			"vscode.extension.contributes.notebook.providersDescriptions": "Contribue à la description des fournisseurs de blocs-notes."
 		},

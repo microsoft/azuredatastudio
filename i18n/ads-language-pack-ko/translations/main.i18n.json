@@ -11337,7 +11337,6 @@
 			"dataExplorer.context": "dataexplorer 항목 상황에 맞는 메뉴",
 			"dataGrid.context": "데이터 약식 표 항목 상황에 맞는 메뉴",
 			"default": "자동 업데이트 확인을 사용하도록 설정합니다. Azure Data Studio에서 정기적으로 업데이트를 자동 확인합니다.",
-			"docNotFoundForUriError": "지정한 URI의 Notebook 문서를 열 수 없습니다.",
 			"enable locally": "이 확장을 로컬에서 사용하려면 Azure Data Studio를 다시 로드하세요.",
 			"enable remote": "{0}에서 이 확장을 사용하도록 설정하려면 Azure Data Studio를 다시 로드하세요.",
 			"enableWindowsBackgroundUpdates": "새로운 Azure Data Studio 버전을 Windows 백그라운드에 다운로드 및 설치하려면 사용하도록 설정",
@@ -11350,7 +11349,6 @@
 			"miinstallVsix": "VSIX 패키지에서 확장 설치",
 			"newQuery": "새 쿼리",
 			"notebook.cellTitle": "전자 필기장 셀 제목 메뉴",
-			"notebook.cellToolbarLocation.compatibilityDescription": "셀 도구 모음을 표시할지 또는 숨길지 여부입니다. 참고: 이 설정은 확장 호환성 용도로만 사용하도록 설정되었으므로 아무 영향을 주지 않습니다.",
 			"notebook.title": "전자 필기장 제목 메뉴",
 			"notebook.toolbar": "전자 필기장 도구 모음 메뉴",
 			"objectExplorer.context": "개체 탐색기 항목 상황에 맞는 메뉴",
@@ -11377,9 +11375,7 @@
 			"terminal.integrated.inheritEnv": "새 셸에서 $PATH 및 기타 개발 변수가 초기화되도록 로그인 셸을 제공할 수 있는 Azure Data Studio에서 환경을 상속해야 하는지 여부입니다. 이는 Windows에는 영향을 주지 않습니다.",
 			"uninstallExtensionComplete": "Azure Data Studio를 다시 로드하여 이 확장 {0}의 제거를 완료하세요.",
 			"updateLocale": "Azure Data Studio의 UI 언어를 {0}(으)로 변경하고 다시 시작하시겠습니까?",
-			"vscodeDocCreationFailedError": "Notebook 문서를 만들지 못했습니다.",
-			"vscodeFunctionalityNotSupportedError": "이 VS Code 기능은 Azure Data Studio에서 지원되지 않습니다.",
-			"vscodeInvalidArgumentsError": "잘못된 인수입니다.",
+			"vscodeNotebooksNotSupportedError": "Azure Data Studio에서 VS Code Notebook 확장이 지원되지 않습니다.",
 			"watermark.newNotebook": "새 Notebook",
 			"watermark.newSqlFile": "새 SQL 파일",
 			"workspace.trust.description": "Azure Data Studio 내에서 작업 영역 신뢰를 사용할지 여부를 제어합니다.",
@@ -11530,9 +11526,6 @@
 		},
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
 			"navigationProviderRequired": "유효한 providerId가 있는 NavigationProvider가 이 메서드에 전달되어야 합니다."
-		},
-		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "세션을 시작할 수 없습니다. 관리자가 아직 초기화되지 않았습니다."
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "저장된 모든 계정 지우기",
@@ -12339,7 +12332,7 @@
 			"executionPlanCustomZoom": "사용자 지정 확대/축소",
 			"executionPlanDisableTooltip": "도구 설명 사용 안 함",
 			"executionPlanEnableTooltip": "도구 설명 활성화함",
-			"executionPlanFitGraphLabel": "크기에 맞게",
+			"executionPlanFitGraphLabel": "크기에 맞게 확대/축소",
 			"executionPlanHighlightExpensiveOperationAction": "비용이 많이 드는 작업 강조 표시",
 			"executionPlanOpenGraphFile": "쿼리 계획 XML 표시",
 			"executionPlanPropertiesActionLabel": "속성",
@@ -12702,6 +12695,7 @@
 			"notebook.markdownModeDescription": "텍스트가 Markdown으로 표시됩니다.",
 			"notebook.markdownPreviewLineHeight": "Notebook markdown 미리 보기에서 사용되는 줄 높이를 제어합니다. 해당 숫자는 글꼴 크기에 상대적입니다.",
 			"notebook.maxRichTextUndoHistory": "전자 필기장 서식 있는 텍스트 편집기의 실행 취소 기록에 저장된 최대 변경 내용 수입니다.",
+			"notebook.renderTablesInHtml": "Markdown 표로 변환하는 대신 텍스트 셀에 표를 HTML 형식으로 표시하고 저장합니다.",
 			"notebook.richTextModeDescription": "텍스트는 서식 있는 텍스트로 표시됩니다(이 텍스트는 WYSIWYG라고도 함).",
 			"notebook.saveConnectionName": "(미리 보기) 연결 이름을 Notebook 메타데이터에 저장합니다.",
 			"notebook.showAllKernels": "(미리 보기) 현재 Notebook 공급자의 모든 커널을 표시합니다.",
@@ -13626,7 +13620,6 @@
 			"carbon.extension.contributes.notebook.magic": "'%%sql'과(와) 같은 셀 매직의 이름입니다.",
 			"carbon.extension.contributes.notebook.provider": "Notebook 공급자의 식별자입니다.",
 			"carbon.extension.contributes.notebook.standardKernels": "이 Notebook 공급자에서 표준이어야 하는 커널",
-			"providerNotInRegistryError": "지정된 공급자 '{0}'이(가) 전자 필기장 레지스트리에 없습니다.",
 			"vscode.extension.contributes.notebook.languagemagics": "Notebook 언어를 적용합니다.",
 			"vscode.extension.contributes.notebook.providersDescriptions": "전자 필기장 공급자 설명을 제공합니다."
 		},

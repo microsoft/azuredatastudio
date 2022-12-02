@@ -11337,7 +11337,6 @@
 			"dataExplorer.context": "dataexplorer 项上下文菜单",
 			"dataGrid.context": "数据网格项上下文菜单",
 			"default": "启用自动更新检查。Azure Data Studio 将定期自动检查更新。",
-			"docNotFoundForUriError": "无法打开指定的 URI 的笔记本文档。",
 			"enable locally": "请重新加载 Azure Data Studio 以在本地启用此扩展。",
 			"enable remote": "请重新加载 Azure Data Studio 以在 {0} 中启用此扩展。",
 			"enableWindowsBackgroundUpdates": "启用在 Windows 上后台下载和安装新的 Azure Data Studio 版本",
@@ -11350,7 +11349,6 @@
 			"miinstallVsix": "从 VSIX 包安装扩展",
 			"newQuery": "新建查询",
 			"notebook.cellTitle": "笔记本单元格标题菜单",
-			"notebook.cellToolbarLocation.compatibilityDescription": "应在何处显示单元格工具栏，或者是否应隐藏该工具栏。注意：此设置仅出于扩展兼容性目的而启用，因此不会产生任何影响。",
 			"notebook.title": "笔记本标题菜单",
 			"notebook.toolbar": "笔记本工具栏菜单",
 			"objectExplorer.context": "对象资源管理器项上下文菜单",
@@ -11377,9 +11375,7 @@
 			"terminal.integrated.inheritEnv": "新 shell 是否应从 Azure Data Studio 继承其环境，这可能会生成登录 shell，以确保初始化 $PATH 和其他开发变量。这不会对 Windows 造成影响。",
 			"uninstallExtensionComplete": "请重新加载 Azure Data Studio 以完成扩展 {0} 的卸载。",
 			"updateLocale": "是否要将 Azure Data Studio 的 UI 语言更改为 {0} 并重启?",
-			"vscodeDocCreationFailedError": "未能创建笔记本文档。",
-			"vscodeFunctionalityNotSupportedError": "Azure Data Studio 中不支持此 VS Code 功能。",
-			"vscodeInvalidArgumentsError": "参数无效。",
+			"vscodeNotebooksNotSupportedError": "Azure Data Studio 不支持 VS Code 笔记本扩展。",
 			"watermark.newNotebook": "新建笔记本",
 			"watermark.newSqlFile": "新建 SQL 文件",
 			"workspace.trust.description": "控制是否在 Azure Data Studio 内启用工作区信任。",
@@ -11530,9 +11526,6 @@
 		},
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
 			"navigationProviderRequired": "必须向此方法传递具有有效 providerId 的 NavigationProvider"
-		},
-		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "无法启动会话，管理器尚未初始化"
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "清除所有保存的帐户",
@@ -12702,6 +12695,7 @@
 			"notebook.markdownModeDescription": "文本显示为 Markdown。",
 			"notebook.markdownPreviewLineHeight": "控制笔记本 Markdown 预览中使用的行高。此数字与字号相关。",
 			"notebook.maxRichTextUndoHistory": "笔记本格式文本编辑器的撤消历史记录中存储的最大更改数。",
+			"notebook.renderTablesInHtml": "在文本单元格中以 HTML 格式显示和保存表，而不是转换为 Markdown 表。",
 			"notebook.richTextModeDescription": "文本显示为格式文本(也称为 \"WSIWYG\")。",
 			"notebook.saveConnectionName": "(预览)在笔记本元数据中保存连接名称。",
 			"notebook.showAllKernels": "(预览)显示当前笔记本提供程序的所有内核。",
@@ -13626,7 +13620,6 @@
 			"carbon.extension.contributes.notebook.magic": "单元格魔术方法的名称，如 \"%%sql\"。",
 			"carbon.extension.contributes.notebook.provider": "笔记本提供程序的标识符。",
 			"carbon.extension.contributes.notebook.standardKernels": "此笔记本提供程序应标配哪些内核",
-			"providerNotInRegistryError": "笔记本注册表中不存在指定的提供程序 \"{0}\"。",
 			"vscode.extension.contributes.notebook.languagemagics": "提供笔记本语言。",
 			"vscode.extension.contributes.notebook.providersDescriptions": "提供笔记本提供程序说明。"
 		},
