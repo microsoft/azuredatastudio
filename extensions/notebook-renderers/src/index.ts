@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import type { ActivationFunction, OutputItem, RendererContext } from 'vscode-notebook-renderer';
 import { truncatedArrayOfString } from './textHelper';
 
@@ -167,20 +166,6 @@ function renderText(outputInfo: OutputItem, container: HTMLElement, ctx: Rendere
 }
 
 export const activate: ActivationFunction<void> = (ctx) => {
-	// {{SQL CARBON EDIT}}
-	const useVSCodeNotebooks = vscode.workspace.getConfiguration('workbench.useVSCodeNotebooks');
-	if (!useVSCodeNotebooks) {
-		const unsupportedError = 'Method not supported. VS Code notebooks are currently disabled.'
-		return {
-			renderOutputItem: () => {
-				throw new Error(unsupportedError);
-			},
-			disposeOutputItem: () => {
-				throw new Error(unsupportedError);
-			}
-		};
-	}
-
 	const disposables = new Map<string, IDisposable>();
 	const latestContext = ctx as (RendererContext<void> & { readonly settings: { readonly lineLimit: number } });
 
