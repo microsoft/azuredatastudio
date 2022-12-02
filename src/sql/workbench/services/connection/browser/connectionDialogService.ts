@@ -242,6 +242,10 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 	}
 
+	public async callDefaultOnConnect(connection: IConnectionProfile, params: INewConnectionParams): Promise<void> {
+		return this.handleDefaultOnConnect(params, connection);
+	}
+
 	private async handleDefaultOnConnect(params: INewConnectionParams, connection: IConnectionProfile): Promise<void> {
 		if (this.ignoreNextConnect) {
 			this._connectionDialog.resetConnection();
@@ -278,7 +282,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this._logService.debug(`ConnectionDialogService: Error handled and connection reset - Error: ${connectionResult.errorMessage}`);
 			} else if (connection.providerName === Constants.mssqlProviderName && connectionResult.errorCode === Constants.sqlPasswordErrorCode) {
 				this._connectionDialog.resetConnection();
-				this.launchChangePasswordDialog(connection, params, connectionResult.connectionUri);
+				this.launchChangePasswordDialog(connection, params);
 			} else {
 				this._connectionDialog.resetConnection();
 				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack, connectionResult.errorCode);
@@ -290,20 +294,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this.showErrorDialog(Severity.Error, this._connectionErrorTitle, err);
 			this._logService.debug(`ConnectionDialogService: Error encountered while connecting ${err}`);
 		}
-	}
-
-	public async changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, oldPassword: string, newPassword: string): Promise<void> {
-		if (oldPassword !== newPassword) {
-			this.showErrorDialog(Severity.Error, Constants.sqlPasswordChangeErrorHeader, Constants.sqlPasswordMismatchMessage);
-			return Promise.reject(new Error(Constants.sqlPasswordChangeErrorHeader));
-		}
-		let passwordChangeResult = await this._connectionManagementService.sendChangePassword(connection, uri, newPassword);
-		if (!passwordChangeResult.result) {
-			this.showErrorDialog(Severity.Error, Constants.sqlPasswordChangeErrorHeader, passwordChangeResult.errorMessage);
-			return Promise.reject(new Error(passwordChangeResult.errorMessage));
-		}
-		connection.options['password'] = newPassword;
-		await this.handleDefaultOnConnect(params, connection);
 	}
 
 	private get uiController(): IConnectionComponentController {
@@ -513,9 +503,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		recentConnections.forEach(conn => conn.dispose());
 	}
 
-	public launchChangePasswordDialog(profile: IConnectionProfile, params: INewConnectionParams, uri: string): void {
+	public launchChangePasswordDialog(profile: IConnectionProfile, params: INewConnectionParams): void {
 		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
-		dialog.open(profile, params, uri);
+		dialog.open(profile, params);
 	}
 
 

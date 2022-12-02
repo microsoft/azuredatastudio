@@ -68,5 +68,3 @@ export const gen3Version = 12;
 
 /* SQL Server Password Reset Constants */
 export const sqlPasswordErrorCode = 18488;
-export const sqlPasswordChangeErrorHeader = 'Failure when attempting to change password'
-export const sqlPasswordMismatchMessage = 'Passwords entered do not match\n\nPress OK and enter the exact same password in both boxes.';

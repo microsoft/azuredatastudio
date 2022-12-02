@@ -71,7 +71,6 @@ export interface IConnectionResult {
 	callStack: string;
 	errorHandled?: boolean;
 	connectionProfile?: IConnectionProfile;
-	connectionUri?: string;
 }
 
 export interface IConnectionCallbacks {
@@ -123,7 +122,7 @@ export interface IConnectionManagementService {
 	/**
 	 * Changes password for a SQL Server connection profile.
 	 */
-	sendChangePassword(connection: IConnectionProfile, uri: string, newPassword: string): Promise<azdata.PasswordChangeResult>;
+	changePassword(connection: IConnectionProfile, uri: string, newPassword: string): Promise<azdata.PasswordChangeResult>;
 
 	/**
 	 * Replaces a connectioninfo's associated uri with a new uri.

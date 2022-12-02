@@ -22,7 +22,7 @@ export interface IConnectionDialogService {
 	openDialogAndWait(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult, doConnect?: boolean): Promise<IConnectionProfile>;
 
 	/**
-	 * Changes the password for a connection profile, then connects if enabled.
+	 * Calls the default connect function
 	 */
-	changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, oldPassword: string, newPassword: string): Promise<void>;
+	callDefaultOnConnect(connection: IConnectionProfile, params: INewConnectionParams): Promise<void>;
 }

@@ -428,7 +428,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Changes password of the SQL Server connection profile.
 	 */
-	public sendChangePassword(connection: interfaces.IConnectionProfile, uri: string, newPassword: string):
+	public changePassword(connection: interfaces.IConnectionProfile, uri: string, newPassword: string):
 		Promise<azdata.PasswordChangeResult> {
 		return this.sendChangePasswordRequest(connection, uri, newPassword);
 	}
@@ -560,10 +560,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				} else {
 					if (callbacks.onConnectReject) {
 						callbacks.onConnectReject(connectionNotAcceptedError);
-					}
-					if (connectionResult.errorCode === Constants.sqlPasswordErrorCode) {
-						// Need to save URI to verify connection params in STS.
-						connectionResult.connectionUri = uri;
 					}
 					return connectionResult;
 				}
