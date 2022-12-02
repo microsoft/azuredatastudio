@@ -30,6 +30,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	private _networkShareButton!: azdata.RadioButtonComponent;
 	private _blobContainerButton!: azdata.RadioButtonComponent;
+	private _sqlVmPageBlobInfoBox!: azdata.TextComponent;
 
 	private _sourceConnectionContainer!: azdata.FlexContainer;
 	private _networkShareContainer!: azdata.FlexContainer;
@@ -147,11 +148,26 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 			}));
 
+		this._sqlVmPageBlobInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				text: constants.DATABASE_BACKUP_SQL_VM_PAGE_BLOB_INFO,
+				style: 'information',
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: { ...styles.BODY_CSS, 'display': 'none' },
+				links: [
+					{
+						text: constants.DATABASE_BACKUP_SQL_VM_PAGE_BLOB_URL_LABEL,
+						url: 'https://learn.microsoft.com/en-us/sql/relational-databases/backup-restore/sql-server-backup-to-url'
+					}
+				]
+			}).component();
+
 		const flexContainer = this._view.modelBuilder.flexContainer()
 			.withItems([
 				selectLocationText,
 				this._networkShareButton,
-				this._blobContainerButton])
+				this._blobContainerButton,
+				this._sqlVmPageBlobInfoBox])
 			.withLayout({ flexFlow: 'column' })
 			.component();
 
@@ -698,6 +714,16 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				await this._loadTableData();
 			}
 			try {
+				const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
+				if (this.migrationStateModel._targetType === MigrationTargetType.SQLVM && sqlServerInfo.serverMajorVersion! <= 12) {		// block SQL VM file share scenario for SQL Server <= 2014
+					this._networkShareButton.enabled = false;
+					this.migrationStateModel._databaseBackup.networkContainerType = NetworkContainerType.BLOB_CONTAINER
+					this._blobContainerButton.checked = true;
+					await this._sqlVmPageBlobInfoBox.updateCssStyles({ 'display': 'block' });
+
+					await this._blobContainerButton.focus();
+				}
+
 				const isOfflineMigration = this.migrationStateModel._databaseBackup?.migrationMode === MigrationMode.OFFLINE;
 				const lastBackupFileColumnIndex = this._blobContainerTargetDatabaseNamesTable.columns.length - 1;
 				this._blobContainerTargetDatabaseNamesTable.columns[lastBackupFileColumnIndex].hidden = !isOfflineMigration;
