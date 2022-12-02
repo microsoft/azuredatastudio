@@ -86,7 +86,7 @@ import 'vs/workbench/contrib/notebook/browser/contrib/undoRedo/notebookUndoRedo'
 import 'vs/workbench/contrib/notebook/browser/contrib/cellCommands/cellCommands';
 import 'vs/workbench/contrib/notebook/browser/contrib/viewportCustomMarkdown/viewportCustomMarkdown';
 import 'vs/workbench/contrib/notebook/browser/contrib/troubleshoot/layout';
-import 'vs/workbench/contrib/notebook/browser/contrib/breakpoints/notebookBreakpoints';
+// import 'vs/workbench/contrib/notebook/browser/contrib/breakpoints/notebookBreakpoints'; {{SQL CARBON EDIT}}
 import 'vs/workbench/contrib/notebook/browser/contrib/execute/executionEditorProgress';
 
 // Diff Editor Contribution
