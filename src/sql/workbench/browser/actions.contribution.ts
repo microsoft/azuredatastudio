@@ -53,14 +53,14 @@ Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConf
 });
 
 Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConfiguration({
-	'id': 'enableVSCodeNotebooks',
-	'title': nls.localize('enableVSCodeNotebooksTitle', "Enable VS Code notebooks"),
+	'id': 'useVSCodeNotebooks',
+	'title': nls.localize('useVSCodeNotebooksTitle', "Use VS Code notebooks"),
 	'type': 'object',
 	'properties': {
 		'workbench.useVSCodeNotebooks': {
 			'type': 'boolean',
 			'default': false,
-			'description': nls.localize('enableVSCodeNotebooks', "Use VS Code notebooks as the default notebook experience")
+			'description': nls.localize('useVSCodeNotebooks', "Use VS Code notebooks as the default notebook experience")
 		}
 	}
 });
