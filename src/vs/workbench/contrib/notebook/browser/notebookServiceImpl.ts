@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CONFIG_WORKBENCH_USEVSCODENOTEBOOKS } from 'sql/workbench/common/constants';
+import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES, CONFIG_WORKBENCH_USEVSCODENOTEBOOKS } from 'sql/workbench/common/constants';
 import { PixelRatio } from 'vs/base/browser/browser';
 import { Emitter, Event } from 'vs/base/common/event';
 import * as glob from 'vs/base/common/glob';
@@ -80,8 +80,9 @@ export class NotebookProviderInfoStore extends Disposable {
 		}));
 
 		// {{SQL CARBON EDIT}} Disable file associations here if we're not using VS Code notebooks by default
+		const usePreviewFeatures = this._configurationService.getValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES);
 		const useVSCodeNotebooks = this._configurationService.getValue(CONFIG_WORKBENCH_USEVSCODENOTEBOOKS);
-		if (useVSCodeNotebooks) {
+		if (usePreviewFeatures && useVSCodeNotebooks) {
 			notebooksExtensionPoint.setHandler(extensions => this._setupHandler(extensions));
 		}
 	}
@@ -425,8 +426,9 @@ export class NotebookService extends Disposable implements INotebookService {
 		super();
 
 		// {{SQL CARBON EDIT}} Disable renderer associations here if we're not using VS Code notebooks by default
+		const usePreviewFeatures = this._configurationService.getValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES);
 		const useVSCodeNotebooks = this._configurationService.getValue(CONFIG_WORKBENCH_USEVSCODENOTEBOOKS);
-		if (useVSCodeNotebooks) {
+		if (usePreviewFeatures && useVSCodeNotebooks) {
 			notebookRendererExtensionPoint.setHandler((renderers) => {
 				this._notebookRenderersInfoStore.clear();
 

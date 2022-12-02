@@ -94,7 +94,7 @@ import { combinedDisposable } from 'vs/base/common/lifecycle';
 import { checkProposedApiEnabled, ExtensionIdentifierSet, isProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
 import { DebugConfigurationProviderTriggerKind } from 'vs/workbench/contrib/debug/common/debug';
 import { ExtHostNotebookProxyKernels } from 'vs/workbench/api/common/extHostNotebookProxyKernels';
-import { CONFIG_WORKBENCH_USEVSCODENOTEBOOKS } from 'sql/workbench/common/constants';
+import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES, CONFIG_WORKBENCH_USEVSCODENOTEBOOKS } from 'sql/workbench/common/constants';
 
 export interface IExtensionRegistries {
 	mine: ExtensionDescriptionRegistry;
@@ -211,9 +211,11 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	return function (extension: IExtensionDescription, extensionInfo: IExtensionRegistries, configProvider: ExtHostConfigProvider): typeof vscode {
 		// {{SQL CARBON EDIT}}
 		const checkVSCodeNotebooksEnabled = (extension: IExtensionDescription) => {
+			const usePreviewFeatures = configProvider.getConfiguration(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES);
 			const useVSCodeNotebooks = configProvider.getConfiguration(CONFIG_WORKBENCH_USEVSCODENOTEBOOKS);
-			if (!useVSCodeNotebooks) {
-				throw new Error(`Notebook extension '${extension.identifier.value}' is not supported. VS Code notebook functionality is currently disabled via user settings.`);
+			const notebooksEnabled = usePreviewFeatures && useVSCodeNotebooks;
+			if (!notebooksEnabled) {
+				throw new Error(`Notebook extension '${extension.identifier.value}' is not supported. VS Code notebook functionality is currently disabled.`);
 			}
 		}
 

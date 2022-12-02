@@ -37,7 +37,7 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { KernelsLanguage } from 'sql/workbench/services/notebook/common/notebookConstants';
 import { INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { Schemas } from 'vs/base/common/network';
-import { CONFIG_WORKBENCH_USEVSCODENOTEBOOKS } from 'sql/workbench/common/constants';
+import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES, CONFIG_WORKBENCH_USEVSCODENOTEBOOKS } from 'sql/workbench/common/constants';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 
 const msgLoading = localize('loading', "Loading kernels...");
@@ -858,8 +858,9 @@ export class NewNotebookAction extends Action {
 			.withConnectionInfo(context?.connectionProfile)
 			.send();
 
+		const usePreviewFeatures = this._configurationService.getValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES);
 		const useVSCodeNotebooks = this._configurationService.getValue(CONFIG_WORKBENCH_USEVSCODENOTEBOOKS);
-		if (useVSCodeNotebooks) {
+		if (usePreviewFeatures && useVSCodeNotebooks) {
 			await this._commandService.executeCommand('ipynb.newUntitledIpynb');
 		} else {
 			let connProfile: azdata.IConnectionProfile;
