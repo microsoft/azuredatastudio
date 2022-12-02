@@ -94,6 +94,7 @@ import { combinedDisposable } from 'vs/base/common/lifecycle';
 import { checkProposedApiEnabled, ExtensionIdentifierSet, isProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
 import { DebugConfigurationProviderTriggerKind } from 'vs/workbench/contrib/debug/common/debug';
 import { ExtHostNotebookProxyKernels } from 'vs/workbench/api/common/extHostNotebookProxyKernels';
+import { CONFIG_WORKBENCH_USEVSCODENOTEBOOKS } from 'sql/workbench/common/constants';
 
 export interface IExtensionRegistries {
 	mine: ExtensionDescriptionRegistry;
@@ -208,6 +209,13 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	ExtHostApiCommands.register(extHostCommands);
 
 	return function (extension: IExtensionDescription, extensionInfo: IExtensionRegistries, configProvider: ExtHostConfigProvider): typeof vscode {
+		// {{SQL CARBON EDIT}}
+		const checkVSCodeNotebooksEnabled = (extension: IExtensionDescription) => {
+			const useVSCodeNotebooks = configProvider.getConfiguration(CONFIG_WORKBENCH_USEVSCODENOTEBOOKS);
+			if (!useVSCodeNotebooks) {
+				throw new Error(`Notebook extension '${extension.identifier.value}' is not supported. VS Code notebook functionality is currently disabled via user settings.`);
+			}
+		}
 
 		// Check document selectors for being overly generic. Technically this isn't a problem but
 		// in practice many extensions say they support `fooLang` but need fs-access to do so. Those
@@ -789,6 +797,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			},
 			showNotebookDocument(uriOrDocument, options?) {
 				checkProposedApiEnabled(extension, 'notebookEditor');
+				checkVSCodeNotebooksEnabled(extension); // {{SQL CARBON EDIT}}
 				return extHostNotebook.showNotebookDocument(uriOrDocument, options);
 			},
 			registerExternalUriOpener(id: string, opener: vscode.ExternalUriOpener, metadata: vscode.ExternalUriOpenerMetadata) {
@@ -917,6 +926,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				return extHostNotebook.notebookDocuments.map(d => d.apiNotebook);
 			},
 			async openNotebookDocument(uriOrType?: URI | string, content?: vscode.NotebookData) {
+				checkVSCodeNotebooksEnabled(extension); // {{SQL CARBON EDIT}}
 				let uri: URI;
 				if (URI.isUri(uriOrType)) {
 					uri = uriOrType;

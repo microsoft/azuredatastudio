@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { CONFIG_WORKBENCH_USEVSCODENOTEBOOKS } from 'sql/workbench/common/constants';
 import { PixelRatio } from 'vs/base/browser/browser';
 import { Emitter, Event } from 'vs/base/common/event';
 import * as glob from 'vs/base/common/glob';
@@ -78,7 +79,11 @@ export class NotebookProviderInfoStore extends Disposable {
 			}
 		}));
 
-		notebooksExtensionPoint.setHandler(extensions => this._setupHandler(extensions));
+		// {{SQL CARBON EDIT}} Disable file associations here if we're not using VS Code notebooks by default
+		const useVSCodeNotebooks = this._configurationService.getValue(CONFIG_WORKBENCH_USEVSCODENOTEBOOKS);
+		if (useVSCodeNotebooks) {
+			notebooksExtensionPoint.setHandler(extensions => this._setupHandler(extensions));
+		}
 	}
 
 	override dispose(): void {
@@ -419,35 +424,39 @@ export class NotebookService extends Disposable implements INotebookService {
 	) {
 		super();
 
-		notebookRendererExtensionPoint.setHandler((renderers) => {
-			this._notebookRenderersInfoStore.clear();
+		// {{SQL CARBON EDIT}} Disable renderer associations here if we're not using VS Code notebooks by default
+		const useVSCodeNotebooks = this._configurationService.getValue(CONFIG_WORKBENCH_USEVSCODENOTEBOOKS);
+		if (useVSCodeNotebooks) {
+			notebookRendererExtensionPoint.setHandler((renderers) => {
+				this._notebookRenderersInfoStore.clear();
 
-			for (const extension of renderers) {
-				for (const notebookContribution of extension.value) {
-					if (!notebookContribution.entrypoint) { // avoid crashing
-						extension.collector.error(`Notebook renderer does not specify entry point`);
-						continue;
+				for (const extension of renderers) {
+					for (const notebookContribution of extension.value) {
+						if (!notebookContribution.entrypoint) { // avoid crashing
+							extension.collector.error(`Notebook renderer does not specify entry point`);
+							continue;
+						}
+
+						const id = notebookContribution.id;
+						if (!id) {
+							extension.collector.error(`Notebook renderer does not specify id-property`);
+							continue;
+						}
+
+						this._notebookRenderersInfoStore.add(new NotebookOutputRendererInfo({
+							id,
+							extension: extension.description,
+							entrypoint: notebookContribution.entrypoint,
+							displayName: notebookContribution.displayName,
+							mimeTypes: notebookContribution.mimeTypes || [],
+							dependencies: notebookContribution.dependencies,
+							optionalDependencies: notebookContribution.optionalDependencies,
+							requiresMessaging: notebookContribution.requiresMessaging,
+						}));
 					}
-
-					const id = notebookContribution.id;
-					if (!id) {
-						extension.collector.error(`Notebook renderer does not specify id-property`);
-						continue;
-					}
-
-					this._notebookRenderersInfoStore.add(new NotebookOutputRendererInfo({
-						id,
-						extension: extension.description,
-						entrypoint: notebookContribution.entrypoint,
-						displayName: notebookContribution.displayName,
-						mimeTypes: notebookContribution.mimeTypes || [],
-						dependencies: notebookContribution.dependencies,
-						optionalDependencies: notebookContribution.optionalDependencies,
-						requiresMessaging: notebookContribution.requiresMessaging,
-					}));
 				}
-			}
-		});
+			});
+		}
 
 		const updateOrder = () => {
 			this._displayOrder = new MimeTypeDisplayOrder(

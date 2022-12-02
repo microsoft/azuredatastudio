@@ -27,6 +27,20 @@ type NotebookMetadata = {
 };
 
 export function activate(context: vscode.ExtensionContext) {
+	// {{SQL CARBON EDIT}}
+	const useVSCodeNotebooks = vscode.workspace.getConfiguration('workbench.useVSCodeNotebooks');
+	if (!useVSCodeNotebooks) {
+		const unsupportedError = 'Method not supported. VS Code notebooks are currently disabled.'
+		return {
+			exportNotebook: () => {
+				throw new Error(unsupportedError);
+			},
+			setNotebookMetadata: () => {
+				throw new Error(unsupportedError);
+			}
+		};
+	}
+
 	const serializer = new NotebookSerializer(context);
 	ensureAllNewCellsHaveCellIds(context);
 	context.subscriptions.push(vscode.workspace.registerNotebookSerializer('jupyter-notebook', serializer, {
