@@ -353,6 +353,11 @@ export const LOGIN_MIGRATIONS_FAILED = localize('sql.login.migration.failed', "M
 export function LOGIN_MIGRATIONS_ERROR(message: string): string {
 	return localize('sql.login.migration..error', "Login migration error: {0}", message);
 }
+export const LOGINS_FOUND = localize('sql.login.migration.logins.found', "Login found");
+export const LOGINS_NOT_FOUND = localize('sql.login.migration.logins.not.found', "Login not found");
+export const LOGIN_MIGRATION_STATUS_SUCCEEDED = localize('sql.login.migration.status.succeeded', "Succeeded");
+export const LOGIN_MIGRATION_STATUS_FAILED = localize('sql.login.migration.status.failed', "Failed");
+export const LOGIN_MIGRATION_STATUS_IN_PROGRESS = localize('sql.login.migration.status.in.progress', "In progress");
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");

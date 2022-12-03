@@ -297,9 +297,9 @@ export function getMigrationStatusWithErrors(migration: azure.DatabaseMigration)
 
 export function getLoginStatusMessage(loginFound: boolean): string {
 	if (loginFound) {
-		return 'Login found';
+		return constants.LOGINS_FOUND;
 	} else {
-		return 'Login not found';
+		return constants.LOGINS_NOT_FOUND;
 	}
 }
 

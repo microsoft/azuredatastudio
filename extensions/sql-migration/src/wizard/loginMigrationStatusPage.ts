@@ -12,6 +12,7 @@ import { debounce, getPipelineStatusImage } from '../api/utils';
 import * as styles from '../constants/styles';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { EOL } from 'os';
+import { LoginMigrationStatusCodes } from '../constants/helper';
 
 export class LoginMigrationStatusPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -288,6 +289,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 
 						const unique_errors = new Set(errors);
 
+						// TODO AKMA: Make errors prettier (spacing between errors is weird)
 						this.showDialogMessage(
 							constants.DATABASE_MIGRATION_STATUS_TITLE,
 							statusMessage,
@@ -321,18 +323,18 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 		this._loginsTableValues = loginList.map(login => {
 			const loginName = login.loginName;
 
-			var status = "InProgress";
-			var title = "In progress";
+			var status = LoginMigrationStatusCodes.InProgress;
+			var title = constants.LOGIN_MIGRATION_STATUS_IN_PROGRESS;
 			if (stateMachine._loginMigrationsError) {
-				status = "Failed"
-				title = "Failed"
+				status = LoginMigrationStatusCodes.Failed;
+				title = constants.LOGIN_MIGRATION_STATUS_FAILED;
 			} else if (stateMachine._loginMigrationsResult) {
-				status = "Succeeded";
-				title = "Succeeded";
+				status = LoginMigrationStatusCodes.Succeeded;
+				title = constants.LOGIN_MIGRATION_STATUS_SUCCEEDED;
 				var didLoginFail = Object.keys(stateMachine._loginMigrationsResult.exceptionMap).some(key => key.toLocaleLowerCase() === loginName.toLocaleLowerCase());
 				if (didLoginFail) {
-					status = "Failed"
-					title = "Failed"
+					status = LoginMigrationStatusCodes.Failed;
+					title = constants.LOGIN_MIGRATION_STATUS_FAILED;
 				}
 			}
 
