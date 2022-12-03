@@ -161,6 +161,14 @@ export class PlaywrightDriver {
 		await this.page.mouse.click(x + (xoffset ? xoffset : 0), y + (yoffset ? yoffset : 0));
 	}
 
+	// {{ SQL CARBON EDIT }} - defined doubleClick method
+	async doubleClick(selector: string) {
+		await this.click(selector, 0, 0);
+		await this.timeout(60);
+		await this.click(selector, 0, 0);
+		await this.timeout(100);
+	}
+
 	async setValue(selector: string, text: string) {
 		return this.page.evaluate(([driver, selector, text]) => driver.setValue(selector, text), [await this.getDriverHandle(), selector, text] as const);
 	}

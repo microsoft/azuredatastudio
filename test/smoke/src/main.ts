@@ -320,6 +320,7 @@ function createOptions(): ApplicationOptions {
 		waitTime: parseInt(opts['wait-time'] || '0') || 20,
 		logger: new MultiLogger(loggers),
 		verbose: opts.verbose,
+		logsPath: logPath ?? '',
 		log,
 		screenshotsPath,
 		remote: opts.remote,

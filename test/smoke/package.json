@@ -15,7 +15,8 @@
     "mkdirp": "^1.0.4",
     "ncp": "^2.0.0",
     "node-fetch": "^2.6.7",
-    "rimraf": "3.0.2"
+    "rimraf": "3.0.2",
+    "vscode-test": "^1.6.1"
   },
   "devDependencies": {
     "@types/mkdirp": "^1.0.1",

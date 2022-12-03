@@ -19,7 +19,7 @@ import { KeybindingsEditor } from './keybindings';
 import { Editors } from './editors';
 import { Code } from './code';
 import { Terminal } from './terminal';
-import { Notebook } from './notebook';
+// import { Notebook } from './notebook'; // {{SQL CARBON EDIT}} This isn't a SQL notebook
 import { Localization } from './localization';
 
 // {{SQL CARBON EDIT}}
@@ -57,7 +57,7 @@ export class Workbench {
 	readonly settingsEditor: SettingsEditor;
 	readonly keybindingsEditor: KeybindingsEditor;
 	readonly terminal: Terminal;
-	readonly notebook: Notebook;
+	// readonly notebook: Notebook; // {{SQL CARBON EDIT}} - This isn't a SQL notebook
 	readonly localization: Localization;
 
 	// {{SQL CARBON EDIT}}
@@ -103,7 +103,7 @@ export class Workbench {
 		this.addRemoteBookDialog = new AddRemoteBookDialog(code);
 		this.taskPanel = new TaskPanel(code, this.quickaccess);
 		// {{END}}
-		this.notebook = new Notebook(this.quickaccess, code);
+		// this.notebook = new Notebook(this.quickaccess, code); // {{SQL CARBON EDIT}} - This isn't a SQL notebook
 		this.localization = new Localization(code);
 	}
 }
