@@ -11,6 +11,7 @@ import * as constants from '../constants/strings';
 import { debounce, getPipelineStatusImage } from '../api/utils';
 import * as styles from '../constants/styles';
 import { IconPathHelper } from '../constants/iconPathHelper';
+import { EOL } from 'os';
 
 export class LoginMigrationStatusPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -268,19 +269,29 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 						const loginName = this._migratingLoginsTable!.data[rowState.row][0];
 						const status = this._migratingLoginsTable!.data[rowState.row][3].title;
 						const statusMessage = constants.DATABASE_MIGRATION_STATUS_LABEL(status);
-						var errors = "";
+						var errors = [];
 
 						if (this.migrationStateModel._loginMigrationsResult?.exceptionMap) {
 							const exception_key = Object.keys(this.migrationStateModel._loginMigrationsResult.exceptionMap).find(key => key.toLocaleLowerCase() === loginName.toLocaleLowerCase());
 							if (exception_key) {
-								errors = this.migrationStateModel._loginMigrationsResult.exceptionMap[exception_key][0].Message;
+								for (var exception of this.migrationStateModel._loginMigrationsResult.exceptionMap[exception_key]) {
+									if (Array.isArray(exception)) {
+										for (var inner_exception of exception) {
+											errors.push(inner_exception.Message);
+										}
+									} else {
+										errors.push(exception.Message);
+									}
+								}
 							}
 						}
+
+						const unique_errors = new Set(errors);
 
 						this.showDialogMessage(
 							constants.DATABASE_MIGRATION_STATUS_TITLE,
 							statusMessage,
-							errors);
+							[...unique_errors].join(EOL));
 						break;
 				}
 			}));
