@@ -242,6 +242,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 	}
 
+	/**
+	 * Calls the default connect function (used by password reset dialog)
+	 */
 	public async callDefaultOnConnect(connection: IConnectionProfile, params: INewConnectionParams): Promise<void> {
 		// Needed for password reset dialog to connect after changing password.
 		return this.handleDefaultOnConnect(params, connection);

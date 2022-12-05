@@ -66,7 +66,6 @@ export class PasswordChangeDialog extends Modal {
 	public open(profile: IConnectionProfile, params: INewConnectionParams) {
 		this._profile = profile;
 		this._params = params;
-		//this._connectionService = connectionService;
 		this._uri = this.connectionManagementService.getConnectionUri(profile);
 		this.render();
 		this.show();
@@ -131,7 +130,7 @@ export class PasswordChangeDialog extends Modal {
 		);
 	}
 
-	public async changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, oldPassword: string, newPassword: string): Promise<void> {
+	private async changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, oldPassword: string, newPassword: string): Promise<void> {
 		// Verify passwords match before changing the password.
 		if (oldPassword !== newPassword) {
 			this.errorMessageService.showDialog(Severity.Error, errorHeader, errorPasswordMismatchMessage);

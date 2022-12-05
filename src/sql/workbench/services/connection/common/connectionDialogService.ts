@@ -22,7 +22,7 @@ export interface IConnectionDialogService {
 	openDialogAndWait(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult, doConnect?: boolean): Promise<IConnectionProfile>;
 
 	/**
-	 * Calls the default connect function
+	 * Calls the default connect function (used by password reset dialog)
 	 */
 	callDefaultOnConnect(connection: IConnectionProfile, params: INewConnectionParams): Promise<void>;
 }
