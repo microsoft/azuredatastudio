@@ -442,11 +442,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 			authLibrary: this._authLibrary
 		};
 
-		await this.saveToken(tenant, resource, accountKey, result);
+		await this.saveTokenAdal(tenant, resource, accountKey, result);
 
 		return result;
 	}
-
 
 	public async getTenantsMsal(token: string): Promise<Tenant[]> {
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
@@ -527,7 +526,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	//#endregion
 
 	//#region token management
-	private async saveToken(tenant: Tenant, resource: Resource, accountKey: azdata.AccountKey, { accessToken, refreshToken, expiresOn }: OAuthTokenResponse) {
+	private async saveTokenAdal(tenant: Tenant, resource: Resource, accountKey: azdata.AccountKey, { accessToken, refreshToken, expiresOn }: OAuthTokenResponse) {
 		const msg = localize('azure.cacheErrorAdd', "Error when adding your account to the cache.");
 		if (!tenant.id || !resource.id) {
 			Logger.pii('Tenant ID or resource ID was undefined', [], [], tenant, resource);

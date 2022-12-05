@@ -488,14 +488,14 @@ declare module 'azdata' {
 		/**
 		 * Authentication token for the current session.
 		 */
-		token?: accounts.AccountSecurityToken | undefined;
+		securityToken?: accounts.AccountSecurityToken | undefined;
 	}
 
 	export interface ExpandNodeInfo {
 		/**
 		 * Authentication token for the current session.
 		 */
-		token?: accounts.AccountSecurityToken | undefined;
+		securityToken?: accounts.AccountSecurityToken | undefined;
 	}
 	// End Object Explorer interfaces  ----------------------------
 
