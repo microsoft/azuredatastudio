@@ -109,7 +109,6 @@ const ENVAR_STANDALONE_SERVER_USERNAME_2019 = 'STANDALONE_SQL_USERNAME_2019';
 const ENVAR_STANDALONE_SERVER_PASSWORD_2019 = 'STANDALONE_SQL_PWD_2019';
 const ENVAR_PYTHON_INSTALL_PATH = 'PYTHON_TEST_PATH';
 const ENVAR_RUN_PYTHON3_TEST = 'RUN_PYTHON3_TEST';
-const ENVAR_RUN_PYSPARK_TEST = 'RUN_PYSPARK_TEST';
 
 // Mapping between AKV secret and the environment variable names
 const SecretEnVarMapping = [];
@@ -126,7 +125,6 @@ SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_PASSWORD_2019, ENVAR_STANDALON
 // Set the values that are not stored in AKV here
 process.env[ENVAR_PYTHON_INSTALL_PATH] = NOTEBOOK_PYTHON_INSTALL_PATH;
 process.env[ENVAR_RUN_PYTHON3_TEST] = '1';
-process.env[ENVAR_RUN_PYSPARK_TEST] = '0';
 
 const credential = new DefaultAzureCredential();
 const client = new SecretClient(AKV_URL, credential);

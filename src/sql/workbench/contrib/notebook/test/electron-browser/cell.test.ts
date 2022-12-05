@@ -95,23 +95,6 @@ suite('Cell Model', function (): void {
 		assert.strictEqual(cell.language, 'python');
 	});
 
-	test('Should set cell language to python if defined as pyspark in languageInfo', async function (): Promise<void> {
-		let cellData: nb.ICellContents = {
-			cell_type: CellTypes.Code,
-			source: 'print(\'1\')',
-			metadata: { language: 'python' },
-			execution_count: 1
-		};
-
-		let notebookModel = new NotebookModelStub({
-			name: 'pyspark',
-			version: '',
-			mimetype: ''
-		});
-		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		assert.strictEqual(cell.language, 'python');
-	});
-
 	test('Should keep cell language as python if cell has language override', async function (): Promise<void> {
 		let cellData: nb.ICellContents = {
 			cell_type: CellTypes.Code,
