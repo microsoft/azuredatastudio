@@ -228,21 +228,6 @@ suite('Notebook integration test suite', function () {
 	}
 
 	/* After https://github.com/microsoft/azuredatastudio/issues/5598 is fixed, enable these tests.
-	test('scala language test', async function () {
-		let language = 'scala';
-		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title, language, {
-			'kernelspec': {
-				'name': '',
-				'display_name': ''
-			},
-			'language_info': {
-				name: language,
-				version: '',
-				mimetype: ''
-			}
-		});
-	});
-
 	test('empty language test', async function () {
 		let language = '';
 		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title, language, {

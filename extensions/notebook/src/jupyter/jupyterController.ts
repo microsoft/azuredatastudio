@@ -88,7 +88,7 @@ export class JupyterController {
 	}
 
 	private saveProfileAndCreateNotebook(profile: azdata.IConnectionProfile): Promise<void> {
-		return this.handleNewNotebookTask(undefined, profile);
+		return this.handleNewNotebookTask(profile);
 	}
 
 	// EVENT HANDLERS //////////////////////////////////////////////////////
@@ -121,7 +121,7 @@ export class JupyterController {
 		}
 	}
 
-	private async handleNewNotebookTask(oeContext?: azdata.ObjectExplorerContext, profile?: azdata.IConnectionProfile): Promise<void> {
+	private async handleNewNotebookTask(profile?: azdata.IConnectionProfile): Promise<void> {
 		await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }), {
 			connectionProfile: profile,
 			providerId: constants.jupyterNotebookProviderId,

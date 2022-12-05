@@ -104,7 +104,7 @@ suite('Cell Model', function (): void {
 		};
 
 		let notebookModel = new NotebookModelStub({
-			name: 'scala',
+			name: 'powershell',
 			version: '',
 			mimetype: ''
 		});
@@ -543,7 +543,7 @@ suite('Cell Model', function (): void {
 				notebook: new NotebookModelStub({
 					name: '',
 					version: '',
-					mimetype: 'x-scala'
+					mimetype: ''
 				}),
 				isTrusted: false
 			});
