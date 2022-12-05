@@ -51,8 +51,6 @@ export const S256_CODE_CHALLENGE_METHOD = 'S256';
 
 export const SELECT_ACCOUNT = 'select_account';
 
-export const ConfigFilePath = './cache.json'
-
 export const Saw = 'saw';
 
 export const ViewType = 'view';
