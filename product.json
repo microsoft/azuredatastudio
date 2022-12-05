@@ -52,7 +52,7 @@
 		"Microsoft.agent",
 		"Microsoft.arc",
 		"Microsoft.azcli",
-		"microsoft.azuredatastudio-mysql",
+		"Microsoft.azuredatastudio-mysql",
 		"Microsoft.azuredatastudio-postgresql",
 		"Microsoft.cms",
 		"Microsoft.dacpac",
