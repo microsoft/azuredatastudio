@@ -88,7 +88,11 @@ async function main() {
 	await fs.writeJson(productJsonPath, productJson);
 
 	// Verify if native module architecture is correct
-	const findOutput = await spawn('find', [outAppPath, '-name', 'keytar.node']);
+	// {{SQL CARBON EDIT}} Some of our extensions have their own keytar so lookup
+	//   only in core modules since this code doesn't work with multiple found modules.
+	//   We're assuming here the intent is just to check a single file for validation and not
+	//   needing to check any others since this currently is ignoring all other native modules.
+	const findOutput = await spawn('find', [outAppPath, '-name', 'keytar.node', '-regex', '.*node_modules.asar.unpacked.*',]);
 	const lipoOutput = await spawn('lipo', ['-archs', findOutput.replace(/\n$/, '')]);
 	if (lipoOutput.replace(/\n$/, '') !== 'x86_64 arm64') {
 		throw new Error(`Invalid arch, got : ${lipoOutput}`);

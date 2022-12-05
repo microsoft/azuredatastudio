@@ -1147,7 +1147,6 @@
 				"extensions/azuremonitor/src/prompts/**",
 				"extensions/azuremonitor/src/typings/findRemove.d.ts",
 				"extensions/kusto/src/prompts/**",
-				"extensions/mssql/src/hdfs/webhdfs.ts",
 				"extensions/mssql/src/prompts/**",
 				"extensions/mssql/src/typings/bufferStreamReader.d.ts",
 				"extensions/mssql/src/typings/findRemove.d.ts",

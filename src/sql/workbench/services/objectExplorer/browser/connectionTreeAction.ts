@@ -48,7 +48,6 @@ export class RefreshAction extends Action {
 		if (this.element instanceof ConnectionProfile) {
 			let connection: ConnectionProfile = this.element;
 			if (this._connectionManagementService.isConnected(undefined, connection)) {
-				await this._connectionManagementService.refreshAzureAccountTokenIfNecessary(connection);
 				treeNode = this._objectExplorerService.getObjectExplorerNode(connection);
 				if (treeNode === undefined) {
 					await this._objectExplorerService.updateObjectExplorerNodes(connection.toIConnectionProfile());
@@ -56,8 +55,6 @@ export class RefreshAction extends Action {
 				}
 			}
 		} else if (this.element instanceof TreeNode) {
-			let connection: ConnectionProfile = this.element.getConnectionProfile();
-			this._connectionManagementService.refreshAzureAccountTokenIfNecessary(connection);
 			treeNode = this.element;
 		}
 

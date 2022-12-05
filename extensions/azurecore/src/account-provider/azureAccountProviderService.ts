@@ -7,18 +7,17 @@ import * as azdata from 'azdata';
 import * as events from 'events';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
-import * as os from 'os';
 import { SimpleTokenCache } from './simpleTokenCache';
 import providerSettings from './providerSettings';
 import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider';
 import { AzureAccountProviderMetadata } from 'azurecore';
 import { ProviderSettings } from './interfaces';
+import { MsalCachePluginProvider } from './utils/msalCachePlugin';
 import * as loc from '../localizedConstants';
-import { PublicClientApplication } from '@azure/msal-node';
-import { DataProtectionScope, PersistenceCachePlugin, FilePersistenceWithDataProtection, KeychainPersistence, LibSecretPersistence } from '@azure/msal-node-extensions';
-import * as path from 'path';
-import { Logger } from '../utils/Logger';
+import { Configuration, PublicClientApplication } from '@azure/msal-node';
 import * as Constants from '../constants';
+import { Logger } from '../utils/Logger';
+import { ILoggerCallback, LogLevel as MsalLogLevel } from "@azure/msal-common";
 
 let localize = nls.loadMessageBundle();
 
@@ -34,12 +33,12 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private _accountDisposals: { [accountProviderId: string]: vscode.Disposable } = {};
 	private _accountProviders: { [accountProviderId: string]: azdata.AccountProvider } = {};
 	private _credentialProvider: azdata.CredentialProvider | undefined = undefined;
+	private _cachePluginProvider: MsalCachePluginProvider | undefined = undefined;
 	private _configChangePromiseChain: Thenable<void> = Promise.resolve();
 	private _currentConfig: vscode.WorkspaceConfiguration | undefined = undefined;
 	private _event: events.EventEmitter = new events.EventEmitter();
 	private readonly _uriEventHandler: UriEventHandler = new UriEventHandler();
 	public clientApplication!: PublicClientApplication;
-	public persistence: FilePersistenceWithDataProtection | KeychainPersistence | LibSecretPersistence | undefined;
 
 	constructor(private _context: vscode.ExtensionContext,
 		private _userStoragePath: string,
@@ -144,56 +143,65 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private async registerAccountProvider(provider: ProviderSettings): Promise<void> {
 		const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf(Constants.Saw) > 0;
 		const noSystemKeychain = vscode.workspace.getConfiguration(Constants.AzureSection).get<boolean>(Constants.NoSystemKeyChainSection);
-		const platform = os.platform();
 		const tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
-		const lockOptions = {
-			retryNumber: 100,
-			retryDelay: 50
-		}
-
+		const tokenCacheKeyMsal = `azureTokenCacheMsal-${provider.metadata.id}`;
 		try {
 			if (!this._credentialProvider) {
 				throw new Error('Credential provider not registered');
 			}
 
+			// ADAL Token Cache
 			let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, noSystemKeychain, this._credentialProvider);
 			await simpleTokenCache.init();
-			const cachePath = path.join(this._userStoragePath, Constants.ConfigFilePath);
 
-			switch (platform) {
-				case Constants.Platform.Windows:
-					const dataProtectionScope = DataProtectionScope.CurrentUser;
-					const optionalEntropy = "";
-					this.persistence = await FilePersistenceWithDataProtection.create(cachePath, dataProtectionScope, optionalEntropy);
-					break;
-				case Constants.Platform.Mac:
-				case Constants.Platform.Linux:
-					this.persistence = await KeychainPersistence.create(cachePath, Constants.ServiceName, Constants.Account);
-					break;
-			}
-			if (!this.persistence) {
-				Logger.error('Unable to intialize persistence for access token cache. Tokens will not persist in system memory for future use.');
-				throw new Error('Unable to intialize persistence for access token cache. Tokens will not persist in system memory for future use.');
-			}
+			// MSAL Cache Plugin
+			this._cachePluginProvider = new MsalCachePluginProvider(tokenCacheKeyMsal, this._userStoragePath);
 
-			let persistenceCachePlugin: PersistenceCachePlugin = new PersistenceCachePlugin(this.persistence, lockOptions); // or any of the other ones.
-			const MSAL_CONFIG = {
+			const msalConfiguration: Configuration = {
 				auth: {
 					clientId: provider.metadata.settings.clientId,
-					redirect_uri: `${provider.metadata.settings.redirectUri}/redirect`
+					authority: 'https://login.windows.net/common'
+				},
+				system: {
+					loggerOptions: {
+						loggerCallback: this.getLoggerCallback(),
+						logLevel: MsalLogLevel.Trace,
+						piiLoggingEnabled: true,
+					},
 				},
 				cache: {
-					cachePlugin: persistenceCachePlugin
+					cachePlugin: this._cachePluginProvider?.getCachePlugin()
 				}
 			}
 
-			this.clientApplication = new PublicClientApplication(MSAL_CONFIG);
+			this.clientApplication = new PublicClientApplication(msalConfiguration);
 			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata,
 				simpleTokenCache, this._context, this.clientApplication, this._uriEventHandler, this._authLibrary, isSaw);
 			this._accountProviders[provider.metadata.id] = accountProvider;
 			this._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
 		} catch (e) {
 			console.error(`Failed to register account provider, isSaw: ${isSaw}: ${e}`);
+		}
+	}
+
+	private getLoggerCallback(): ILoggerCallback {
+		return (level: number, message: string, containsPii: boolean) => {
+			if (!containsPii) {
+				switch (level) {
+					case MsalLogLevel.Error:
+						Logger.error(message);
+						break;
+					case MsalLogLevel.Info:
+						Logger.info(message);
+						break;
+					case MsalLogLevel.Verbose:
+					default:
+						Logger.verbose(message);
+						break;
+				}
+			} else {
+				Logger.verbose(message);
+			}
 		}
 	}
 

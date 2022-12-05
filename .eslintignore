@@ -24,8 +24,6 @@
 **/node_modules/**
 **/extensions/**/out/**
 **/extensions/**/build/**
-/extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts
-/extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts
 **/extensions/**/colorize-fixtures/**
 **/extensions/html-language-features/server/lib/jquery.d.ts
 /extensions/markdown-language-features/media/**

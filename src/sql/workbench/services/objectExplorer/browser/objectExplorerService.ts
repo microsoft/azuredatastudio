@@ -440,7 +440,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						allProviders.forEach(provider => {
 							self.callExpandOrRefreshFromProvider(provider, {
 								sessionId: session.sessionId!,
-								nodePath: node.nodePath
+								nodePath: node.nodePath,
+								securityToken: session.securityToken
 							}, refresh).then(isExpanding => {
 								if (!isExpanding) {
 									// The provider stated it's not going to expand the node, therefore do not need to track when merging results
@@ -595,7 +596,18 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		session: azdata.ObjectExplorerSession,
 		parentTree: TreeNode,
 		refresh: boolean = false): Promise<TreeNode[]> {
-		const providerName = parentTree.getConnectionProfile()?.providerName;
+		let connection = parentTree.getConnectionProfile();
+		if (connection) {
+			// Refresh access token on connection if needed.
+			let refreshResult = await this._connectionManagementService.refreshAzureAccountTokenIfNecessary(connection);
+			if (refreshResult) {
+				session.securityToken = {
+					token: connection.options['azureAccountToken'],
+					expiresOn: connection.options['expiresOn']
+				};
+			}
+		}
+		const providerName = connection?.providerName;
 		if (!providerName) {
 			throw new Error('Failed to expand node - no provider name');
 		}

@@ -442,11 +442,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 			authLibrary: this._authLibrary
 		};
 
-		await this.saveToken(tenant, resource, accountKey, result);
+		await this.saveTokenAdal(tenant, resource, accountKey, result);
 
 		return result;
 	}
-
 
 	public async getTenantsMsal(token: string): Promise<Tenant[]> {
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
@@ -475,6 +474,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				const homeTenant = tenants.splice(homeTenantIndex, 1);
 				tenants.unshift(homeTenant[0]);
 			}
+			Logger.verbose(`Filtered Tenants: ${tenantList}`);
 			return tenants;
 		} catch (ex) {
 			Logger.error(`Error fetching tenants :${ex}`);
@@ -527,7 +527,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	//#endregion
 
 	//#region token management
-	private async saveToken(tenant: Tenant, resource: Resource, accountKey: azdata.AccountKey, { accessToken, refreshToken, expiresOn }: OAuthTokenResponse) {
+	private async saveTokenAdal(tenant: Tenant, resource: Resource, accountKey: azdata.AccountKey, { accessToken, refreshToken, expiresOn }: OAuthTokenResponse) {
 		const msg = localize('azure.cacheErrorAdd', "Error when adding your account to the cache.");
 		if (!tenant.id || !resource.id) {
 			Logger.pii('Tenant ID or resource ID was undefined', [], [], tenant, resource);
@@ -677,10 +677,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 	//#region data modeling
 
 	public createAccount(tokenClaims: TokenClaims, key: string, tenants: Tenant[]): AzureAccount {
-		Logger.verbose(`Token Claims: ${tokenClaims.name}`);
+		Logger.verbose(`Token Claims acccount: ${tokenClaims.name}, TID: ${tokenClaims.tid}`);
 		tenants.forEach((tenant) => {
 			Logger.verbose(`Tenant ID: ${tenant.id}, Tenant Name: ${tenant.displayName}`);
 		});
+
 		// Determine if this is a microsoft account
 		let accountIssuer = 'unknown';
 
@@ -695,9 +696,14 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const name = tokenClaims.name ?? tokenClaims.email ?? tokenClaims.unique_name ?? tokenClaims.preferred_username;
 		const email = tokenClaims.email ?? tokenClaims.unique_name ?? tokenClaims.preferred_username;
 
+		let owningTenant: Tenant = this.commonTenant; // default to common tenant
+
 		// Read more about tid > https://learn.microsoft.com/azure/active-directory/develop/id-tokens
-		const owningTenant = tenants.find(t => t.id === tokenClaims.tid)
-			?? { 'id': tokenClaims.tid, 'displayName': 'Microsoft Account' };
+		if (tokenClaims.tid) {
+			owningTenant = tenants.find(t => t.id === tokenClaims.tid) ?? { 'id': tokenClaims.tid, 'displayName': 'Microsoft Account' };
+		} else {
+			Logger.info('Could not find tenant information from tokenClaims, falling back to common Tenant.');
+		}
 
 		let displayName = name;
 		if (email) {
