@@ -16,10 +16,6 @@ export class NotebookUtils {
 
 	constructor() { }
 
-	public async newNotebook(options?: azdata.nb.NotebookShowOptions): Promise<azdata.nb.NotebookEditor> {
-		return azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }), options);
-	}
-
 	public async openNotebook(): Promise<void> {
 		try {
 			let filter: { [key: string]: Array<string> } = {};

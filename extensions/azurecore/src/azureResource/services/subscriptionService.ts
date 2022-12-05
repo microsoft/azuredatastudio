@@ -28,7 +28,6 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 		const subscriptions: azureResource.AzureResourceSubscription[] = [];
 		let gotSubscriptions = false;
 		const errors: Error[] = [];
-
 		for (const tenantId of tenantIds ?? account.properties.tenants.map(t => t.id)) {
 			try {
 				const token = await azdata.accounts.getAccountSecurityToken(account, tenantId, azdata.AzureResource.ResourceManagement);
@@ -42,6 +41,7 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 							tenant: tenantId
 						};
 					}));
+					Logger.verbose(`AzureResourceSubscriptionService.getSubscriptions: Retrieved ${newSubs.length} subscriptions for tenant ${tenantId} / account ${account.displayInfo.displayName}`);
 					gotSubscriptions = true;
 				}
 				else if (!account.isStale) {

@@ -2,7 +2,7 @@
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
   "description": "Enables users to develop and publish database schemas for MSSQL Databases",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
@@ -219,7 +219,7 @@
         },
         {
           "command": "sqlDatabaseProjects.generateProjectFromOpenApiSpec",
-          "when": "view == dataworkspace.views.main && config.workbench.enablePreviewFeatures",
+          "when": "view == dataworkspace.views.main && config.workbench.enablePreviewFeatures || config.sqlDatabaseProjects.enablePreviewFeatures",
           "group": "1_currentWorkspace@3"
         }
       ],
@@ -325,7 +325,7 @@
         },
         {
           "command": "sqlDatabaseProjects.generateProjectFromOpenApiSpec",
-          "when": "config.workbench.enablePreviewFeatures"
+          "when": "config.workbench.enablePreviewFeatures || config.sqlDatabaseProjects.enablePreviewFeatures"
         }
       ],
       "view/item/context": [

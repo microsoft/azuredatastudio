@@ -19,7 +19,7 @@ import { FlatAccountTreeNode } from './tree/flatAccountTreeNode';
 import { ConnectionDialogTreeProvider } from './tree/connectionDialogTreeProvider';
 import { AzureResourceErrorMessageUtil } from './utils';
 
-export function registerAzureResourceCommands(appContext: AppContext, azureViewTree: AzureResourceTreeProvider, connectionDialogTree: ConnectionDialogTreeProvider): void {
+export function registerAzureResourceCommands(appContext: AppContext, azureViewTree: AzureResourceTreeProvider, connectionDialogTree: ConnectionDialogTreeProvider, authLibrary: string): void {
 	const trees = [azureViewTree, connectionDialogTree];
 	vscode.commands.registerCommand('azure.resource.startterminal', async (node?: TreeNode) => {
 		try {

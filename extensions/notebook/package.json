@@ -95,14 +95,6 @@
     },
     "commands": [
       {
-        "command": "_notebook.command.new",
-        "title": "%notebook.command.new%",
-        "icon": {
-          "dark": "resources/dark/new_notebook_inverse.svg",
-          "light": "resources/light/new_notebook.svg"
-        }
-      },
-      {
         "command": "notebook.command.open",
         "title": "%notebook.command.open%"
       },
@@ -334,10 +326,6 @@
     ],
     "menus": {
       "commandPalette": [
-        {
-          "command": "_notebook.command.new",
-          "when": "false"
-        },
         {
           "command": "notebook.command.open"
         },
