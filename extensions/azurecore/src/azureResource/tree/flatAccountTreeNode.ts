@@ -206,10 +206,10 @@ class FlatAccountTreeNodeLoader {
 			const resourceProviderIds = await this._resourceService.listResourceProviderIds();
 			for (const subscription of subscriptions) {
 				for (const providerId of resourceProviderIds) {
-					const resourceTypes = await this._resourceService.getRootChildren(providerId, this._account, subscription, subscription.tenant!);
+					const resourceTypes = await this._resourceService.getRootChildren(providerId, this._account, subscription);
 					for (const resourceType of resourceTypes) {
 						const resources = await this._resourceService.getChildren(providerId, resourceType.resourceNode, true);
-						if (resources.length > 0) {
+						if (resources?.length > 0) {
 							this._nodes.push(...resources.map(dr => new AzureResourceResourceTreeNode(dr, this._accountNode, this.appContext)));
 							this._nodes = this.nodes.sort((a, b) => {
 								return a.getNodeInfo().label.localeCompare(b.getNodeInfo().label);
