@@ -6,18 +6,8 @@
 	"json.schemas.schema.desc": "The schema definition for the given URL. The schema only needs to be provided to avoid accesses to the schema URL.",
 	"json.format.enable.desc": "Enable/disable default JSON formatter (requires restart)",
 
-	"notebook.command.new": "New Notebook",
-	"notebook.command.open": "Open Notebook",
-
-	"title.tasks": "Tasks",
-	"title.installPackages": "Install Packages",
-	"title.configurePython": "Configure Python for Notebooks",
-
 	"title.searchServers": "Search: Servers",
 	"title.clearSearchServerResult": "Search: Clear Search Server Results",
-
-	"title.endpoints": "Service Endpoints",
-	"title.books": "Notebooks",
 
 	"title.showLogFile": "Show Log File",
 
