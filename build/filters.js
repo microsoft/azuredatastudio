@@ -200,7 +200,6 @@ module.exports.copyrightFilter = [
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/kusto/src/prompts/**',
 	'!extensions/mssql/sqltoolsservice/**',
-	'!extensions/mssql/src/hdfs/webhdfs.ts',
 	'!extensions/mssql/src/prompts/**',
 	'!extensions/notebook/resources/jupyter_config/**',
 	'!extensions/notebook/src/intellisense/text.ts',

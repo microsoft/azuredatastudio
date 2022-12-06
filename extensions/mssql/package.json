@@ -45,82 +45,6 @@
         }
       },
       {
-        "command": "mssqlCluster.uploadFiles",
-        "title": "%mssqlCluster.uploadFiles%"
-      },
-      {
-        "command": "mssqlCluster.mkdir",
-        "title": "%mssqlCluster.mkdir%"
-      },
-      {
-        "command": "mssqlCluster.deleteFiles",
-        "title": "%mssqlCluster.deleteFiles%"
-      },
-      {
-        "command": "mssqlCluster.previewFile",
-        "title": "%mssqlCluster.previewFile%"
-      },
-      {
-        "command": "mssqlCluster.saveFile",
-        "title": "%mssqlCluster.saveFile%"
-      },
-      {
-        "command": "mssqlCluster.copyPath",
-        "title": "%mssqlCluster.copyPath%"
-      },
-      {
-        "command": "mssqlCluster.manageAccess",
-        "title": "%mssqlCluster.manageAccess%"
-      },
-      {
-        "command": "mssqlCluster.task.newNotebook",
-        "title": "%notebook.command.new%",
-        "icon": {
-          "dark": "resources/dark/new_notebook.svg",
-          "light": "resources/light/new_notebook.svg"
-        }
-      },
-      {
-        "command": "mssqlCluster.task.openNotebook",
-        "title": "%notebook.command.open%",
-        "icon": {
-          "dark": "resources/dark/open_notebook_inverse.svg",
-          "light": "resources/light/open_notebook.svg"
-        }
-      },
-      {
-        "command": "mssqlCluster.livy.cmd.submitSparkJob",
-        "title": "%title.submitSparkJob%"
-      },
-      {
-        "command": "mssqlCluster.livy.task.submitSparkJob",
-        "title": "%title.newSparkJob%",
-        "icon": {
-          "dark": "resources/dark/new_spark_job_inverse.svg",
-          "light": "resources/light/new_spark_job.svg"
-        }
-      },
-      {
-        "command": "mssqlCluster.task.openClusterDashboard",
-        "title": "%title.openClusterDashboard%",
-        "icon": {
-          "dark": "resources/dark/cluster_status_inverse.svg",
-          "light": "resources/light/cluster_status.svg"
-        }
-      },
-      {
-        "command": "mssqlCluster.livy.task.openYarnHistory",
-        "title": "%title.openYarnHistory%",
-        "icon": {
-          "dark": "resources/light/hadoop.svg",
-          "light": "resources/light/hadoop.svg"
-        }
-      },
-      {
-        "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
-        "title": "%title.submitSparkJob%"
-      },
-      {
         "command": "mssql.searchServers",
         "title": "%title.searchServers%"
       },
@@ -435,54 +359,6 @@
           "when": "false"
         },
         {
-          "command": "mssqlCluster.uploadFiles",
-          "when": "false"
-        },
-        {
-          "command": "mssqlCluster.mkdir",
-          "when": "false"
-        },
-        {
-          "command": "mssqlCluster.deleteFiles",
-          "when": "false"
-        },
-        {
-          "command": "mssqlCluster.previewFile",
-          "when": "false"
-        },
-        {
-          "command": "mssqlCluster.saveFile",
-          "when": "false"
-        },
-        {
-          "command": "mssqlCluster.copyPath",
-          "when": "false"
-        },
-        {
-          "command": "mssqlCluster.manageAccess",
-          "when": "false"
-        },
-        {
-          "command": "mssqlCluster.task.newNotebook",
-          "when": "false"
-        },
-        {
-          "command": "mssqlCluster.task.openNotebook",
-          "when": "false"
-        },
-        {
-          "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
-          "when": "false"
-        },
-        {
-          "command": "mssqlCluster.livy.task.submitSparkJob",
-          "when": "false"
-        },
-        {
-          "command": "mssqlCluster.task.openClusterDashboard",
-          "when": "false"
-        },
-        {
           "command": "mssql.newTable",
           "when": "false"
         },
@@ -492,51 +368,6 @@
         }
       ],
       "objectExplorer/item/context": [
-        {
-          "command": "mssqlCluster.uploadFiles",
-          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:message && nodeType != mssqlCluster:file && nodeSubType=~/^(?!:mount).*$/",
-          "group": "1mssqlCluster@1"
-        },
-        {
-          "command": "mssqlCluster.mkdir",
-          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:message && nodeType != mssqlCluster:file && nodeSubType=~/^(?!:mount).*$/",
-          "group": "1mssqlCluster@1"
-        },
-        {
-          "command": "mssqlCluster.saveFile",
-          "when": "nodeType == mssqlCluster:file",
-          "group": "1mssqlCluster@1"
-        },
-        {
-          "command": "mssqlCluster.previewFile",
-          "when": "nodeType == mssqlCluster:file",
-          "group": "1mssqlCluster@2"
-        },
-        {
-          "command": "mssqlCluster.copyPath",
-          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:connection && nodeType != mssqlCluster:message && nodeType != mssqlCluster:hdfs",
-          "group": "1mssqlCluster@3"
-        },
-        {
-          "command": "mssqlCluster.manageAccess",
-          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:connection && nodeType != mssqlCluster:message",
-          "group": "1mssqlCluster@3"
-        },
-        {
-          "command": "mssqlCluster.deleteFiles",
-          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:hdfs && nodeType != mssqlCluster:connection && viewItem != mssqlCluster:connection && nodeType != mssqlCluster:message && nodeSubType=~/^(?!:mount).*$/",
-          "group": "1mssqlCluster@4"
-        },
-        {
-          "command": "mssqlCluster.livy.cmd.submitSparkJob",
-          "when": "nodeType == mssqlCluster:hdfs",
-          "group": "1mssqlCluster@7"
-        },
-        {
-          "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
-          "when": "nodeType == mssqlCluster:file && nodeSubType =~/:spark:/",
-          "group": "1mssqlCluster@6"
-        },
         {
           "command": "mssql.designTable",
           "when": "connectionProvider == MSSQL && nodeType == Table && nodeSubType != LedgerDropped",
