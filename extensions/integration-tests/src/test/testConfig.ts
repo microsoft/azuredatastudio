@@ -40,7 +40,6 @@ export enum ConnectionProvider {
 export enum EngineType {
 	Standalone,
 	Azure,
-	BigDataCluster
 }
 
 let connectionProviderMapping: { [key: string]: { name: string; displayName: string } } = {};

@@ -1338,7 +1338,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			serverEdition: 'test_edition',
 			azureVersion: 0,
 			osVersion: 'test_version',
-			options: { isBigDataCluster: 'test' },
+			options: {},
 			isCloud: true,
 			cpuCount: 0,
 			physicalMemoryInMb: 0
