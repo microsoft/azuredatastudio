@@ -13,8 +13,9 @@
 			"darkPlusColorThemeLabel": "Più scuro (predefinito scuro)",
 			"description": "I temi dark e light predefiniti in Visual Studio",
 			"displayName": "Tema predefinito",
-			"hcColorThemeLabel": "Contrasto elevato",
+			"hcColorThemeLabel": "Contrasto elevato scuro",
 			"lightColorThemeLabel": "Chiaro (Visual Studio)",
+			"lightHcColorThemeLabel": "Contrasto elevato chiaro",
 			"lightPlusColorThemeLabel": "Più chiaro (predefinito chiaro)",
 			"minimalIconThemeLabel": "Minimo (Visual Studio Code)"
 		}

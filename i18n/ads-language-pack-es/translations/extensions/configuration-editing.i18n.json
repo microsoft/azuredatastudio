@@ -11,6 +11,7 @@
 		"dist/configurationEditingMain": {
 			"cwd": "El directorio de trabajo del ejecutor de tarea en el arranque",
 			"defaultBuildTask": "El nombre de la tarea de compilación predeterminada. Si no hay una única tarea de compilación predeterminada se muestra una selección rápida para elegir la tarea de compilación.",
+			"extensionInstallFolder": "Ruta de acceso en que se instala una extensión.",
 			"file": "El archivo abierto actualmente",
 			"fileBasename": "Nombre base del archivo abierto actual ",
 			"fileBasenameNoExtension": "Nombre base del archivo abierto actual sin extensión de archivo ",
@@ -52,8 +53,6 @@
 			"folderLabel": "Carpeta por nombre (cualquier ubicación)",
 			"folderName": "nombre de la carpeta del área de trabajo en la que el archivo está contenido (p. ej. myFolder)",
 			"folderPath": "ruta de acceso de archivo de la carpeta del área de trabajo en la que el archivo está contenido (p. ej. /Users/Development/myFolder)",
-			"languageSpecificEditorSettings": "Configuración del editor específica del lenguaje",
-			"languageSpecificEditorSettingsDescription": "Reemplazar configuración del editor para lenguaje",
 			"remoteName": "por ejemplo, SSH",
 			"rootName": "nombre del área de trabajo (p. ej. myFolder o myWorkspace)",
 			"rootPath": "ruta del archivo del área de trabajo (p. ej. /Users/Development/myWorkspace)",
