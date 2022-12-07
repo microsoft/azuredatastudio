@@ -45,6 +45,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 	public init(grid: Slick.Grid<T>) {
 		this.grid = grid;
 		this._handler.subscribe(this.grid.onKeyDown, (e: DOMEvent) => this.handleKeyDown(e as KeyboardEvent));
+		this._handler.subscribe(this.grid.onAfterKeyboardNavigation, (e: Event) => this.handleAfterKeyboardNavigationEvent());
 		this._handler.subscribe(this.grid.onClick, (e: DOMEvent, args: Slick.OnClickEventArgs<T>) => this.handleCellClick(e as MouseEvent, args));
 		this._handler.subscribe(this.grid.onHeaderClick, (e: DOMEvent, args: Slick.OnHeaderClickEventArgs<T>) => this.handleHeaderClick(e as MouseEvent, args));
 		this.grid.registerPlugin(this.selector);
@@ -332,6 +333,13 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 
 			e.preventDefault();
 			e.stopPropagation();
+		}
+	}
+
+	private handleAfterKeyboardNavigationEvent(): void {
+		const activeCell = this.grid.getActiveCell();
+		if (activeCell) {
+			this.setSelectedRanges([new Slick.Range(activeCell.row, activeCell.cell)]);
 		}
 	}
 }
