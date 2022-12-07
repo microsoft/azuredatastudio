@@ -17,7 +17,6 @@ exports.dirs = [
 	'extensions/azurecore',
 	'extensions/azurehybridtoolkit',
 	'extensions/azuremonitor',
-	'extensions/big-data-cluster',
 	'extensions/cms',
 	'extensions/configuration-editing',
 	'extensions/dacpac',

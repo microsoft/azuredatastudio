@@ -128,7 +128,7 @@
           "azure.authenticationLibrary": {
             "type": "string",
             "description": "%config.authenticationLibrary%",
-            "default": "ADAL",
+            "default": "MSAL",
             "enum": [
               "ADAL",
               "MSAL"

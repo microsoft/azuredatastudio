@@ -464,7 +464,7 @@ export class RunParametersAction extends TooltipFromLabelAction {
 			return;
 		}
 		const editor = this._notebookService.findNotebookEditor(context);
-		// Only run action for kernels that are supported (Python, PySpark, PowerShell)
+		// Only run action for kernels that are supported (Python, PowerShell)
 		let supportedKernels: string[] = [KernelsLanguage.Python, KernelsLanguage.PowerShell];
 		if (!supportedKernels.includes(editor.model.languageInfo.name)) {
 			// If the kernel is not supported indicate to user to use supported kernels
