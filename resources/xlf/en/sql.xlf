@@ -5541,6 +5541,35 @@ Error: {1}</source>
       <source xml:lang="en">Unsaved Connections</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/connection/browser/passwordChangeDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="passwordChangeDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.confirmPassword">
+      <source xml:lang="en">Confirm password:</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.connecting">
+      <source xml:lang="en">Connecting</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.errorHeader">
+      <source xml:lang="en">Failure when attempting to change password</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.errorPasswordMismatchErrorMessage">
+      <source xml:lang="en">Passwords entered do not match</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.errorPasswordMismatchRecoveryInstructions">
+      <source xml:lang="en">Press OK and enter the exact same password in both boxes.</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.newPassword">
+      <source xml:lang="en">New password:</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.ok">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.title">
+      <source xml:lang="en">Change Password</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl" source-language="en" datatype="plaintext"><body>
     <trans-unit id="newDashboardTab.cancel">
       <source xml:lang="en">Cancel</source>

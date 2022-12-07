@@ -35,7 +35,8 @@ const newPasswordText: string = localize('passwordChangeDialog.newPassword', 'Ne
 const confirmPasswordText: string = localize('passwordChangeDialog.confirmPassword', 'Confirm password:');
 const passwordChangeLoadText: string = localize('passwordChangeDialog.connecting', "Connecting");
 const errorHeader: string = localize('passwordChangeDialog.errorHeader', "Failure when attempting to change password");
-const errorPasswordMismatchMessage = localize('passwordChangeDialog.errorPasswordMismatchMessage', "Passwords entered do not match\n\nPress OK and enter the exact same password in both boxes.");
+const errorPasswordMismatchErrorMessage = localize('passwordChangeDialog.errorPasswordMismatchErrorMessage', "Passwords entered do not match");
+const errorPasswordMismatchRecoveryInstructions = localize('passwordChangeDialog.errorPasswordMismatchRecoveryInstructions', "Press OK and enter the exact same password in both boxes.");
 
 export class PasswordChangeDialog extends Modal {
 
@@ -133,8 +134,8 @@ export class PasswordChangeDialog extends Modal {
 	private async changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, oldPassword: string, newPassword: string): Promise<void> {
 		// Verify passwords match before changing the password.
 		if (oldPassword !== newPassword) {
-			this.errorMessageService.showDialog(Severity.Error, errorHeader, errorPasswordMismatchMessage);
-			return Promise.reject(new Error(errorPasswordMismatchMessage));
+			this.errorMessageService.showDialog(Severity.Error, errorHeader, errorPasswordMismatchErrorMessage + '\n\n' + errorPasswordMismatchRecoveryInstructions);
+			return Promise.reject(new Error(errorPasswordMismatchErrorMessage));
 		}
 		let passwordChangeResult = await this.connectionManagementService.changePassword(connection, uri, newPassword);
 		if (!passwordChangeResult.result) {
