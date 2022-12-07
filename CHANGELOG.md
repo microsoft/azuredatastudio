@@ -31,7 +31,7 @@
 | VS Code merge | VS Code merges to version 1.67. Read [their release notes](https://code.visualstudio.com/updates/v1_67) to learn more. |
 | SQL Database Projects | Adds SQL projects support for syntax introduced in SQL Server 2022.|
 
-## Bug fixes in 1.39.0
+## Bug fixes in 1.40.0
 | New Item | Details |
 |----------|---------|
 | Connections | Fixed bug that occurred when trying to connect to the Dedicated Admin Connection (DAC) on SQL Server. |
