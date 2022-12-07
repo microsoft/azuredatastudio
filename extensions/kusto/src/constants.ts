@@ -21,9 +21,6 @@ export const kustoProviderName = 'KUSTO';
 
 export const UNTITLED_SCHEMA = 'untitled';
 
-export const clusterEndpointsProperty = 'clusterEndpoints';
-export const hdfsRootPath = '/';
-
 // SERVICE NAMES //////////////////////////////////////////////////////////
 export const ObjectExplorerService = 'objectexplorer';
 export const objectExplorerPrefix: string = 'objectexplorer://';
