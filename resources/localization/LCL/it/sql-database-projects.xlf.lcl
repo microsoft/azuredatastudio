@@ -3285,10 +3285,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.dotnetInstallLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Full path to .NET SDK on the machine.]]></Val>
+          <Val><![CDATA[Full path to .NET SDK on the machine. For example, if dotnet.exe is located at C:\folder1\dotnet\dotnet.exe, set the path for this setting to C:\folder1\dotnet]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Percorso completo a .NET SDK nel computer.]]></Val>
+            <Val><![CDATA[Percorso completo di .NET SDK nel computer. Ad esempio, se dotnet.exe si trova in C:\folder1\dotnet\dotnet.exe, impostare il percorso di questa impostazione su C:\folder1\dotnet]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Full path to .NET SDK on the machine.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
