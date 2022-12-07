@@ -7945,7 +7945,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Zoom to Fit]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ウィンドウのサイズに合わせて大きさを変更]]></Val>
+            <Val><![CDATA[拡大して合わせる]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Zoom to fit]]></Val>
@@ -8202,8 +8202,8 @@
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanCompareExecutionPlanAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Compare Execution Plan]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[比較実行プラン]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[実行プランの比較]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Compare execution plan]]></Val>
@@ -8260,7 +8260,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Zoom to Fit]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ウィンドウのサイズに合わせて大きさを変更]]></Val>
+            <Val><![CDATA[拡大して合わせる]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Zoom to fit]]></Val>
