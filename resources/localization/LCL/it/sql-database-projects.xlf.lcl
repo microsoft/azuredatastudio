@@ -2316,10 +2316,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.publishToNewAzureServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Publish to new Azure SQL logical server]]></Val>
+          <Val><![CDATA[Publish to new Azure SQL logical server (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Pubblica nel nuovo server logico di Azure SQL]]></Val>
+            <Val><![CDATA[Pubblica nel nuovo server logico di Azure SQL (anteprima)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Publish to new Azure SQL logical server]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3304,6 +3307,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.enablePreviewFeatures" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enable preview SQL Database Projects features]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Abilita funzionalità di anteprima di progetti di database SQL]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.exclude" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Exclude from project]]></Val>
@@ -3324,10 +3336,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.microsoftBuildSqlVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.3-preview]]></Val>
+          <Val><![CDATA[Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.7-preview]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Versione di Microsoft.Build.Sql SDK da usare per la compilazione di progetti SQL legacy. Esempio: 0.1.3-preview]]></Val>
+            <Val><![CDATA[Versione di Microsoft.Build.Sql SDK da usare per la compilazione di progetti SQL legacy. Esempio: 0.1.7-preview]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.3-preview]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
