@@ -383,7 +383,7 @@ export class ExtHostNotebookKernels implements ExtHostNotebookKernelsShape {
 }
 
 
-export enum NotebookCellExecutionTaskState { // {{SQL CARBON EDIT}} Use for our Notebook executions
+enum NotebookCellExecutionTaskState {
 	Init,
 	Started,
 	Resolved

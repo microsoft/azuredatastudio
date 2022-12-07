@@ -15,12 +15,8 @@ import { LocalContentManager } from 'sql/workbench/services/notebook/common/loca
 import { Deferred } from 'sql/base/common/promise';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
-import { Registry } from 'vs/platform/registry/common/platform';
-import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
-
-const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebook)
 export class MainThreadNotebook extends Disposable implements MainThreadNotebookShape {
@@ -100,14 +96,6 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 		if (future) {
 			future.onDone(done);
 		}
-	}
-
-	public $updateProviderKernels(providerId: string, languages: azdata.nb.IStandardKernel[]): void {
-		notebookRegistry.updateProviderKernels(providerId, languages);
-	}
-
-	public $updateKernelLanguages(providerId: string, kernelName: string, languages: string[]): void {
-		notebookRegistry.updateKernelLanguages(providerId, kernelName, languages);
 	}
 	//#endregion
 }

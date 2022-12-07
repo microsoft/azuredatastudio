@@ -24,7 +24,6 @@ import { TestNotificationService } from 'vs/platform/notification/test/common/te
 import { ICommandService, NullCommandService } from 'vs/platform/commands/common/commands';
 import { ControlType, IChartOption } from 'sql/workbench/contrib/charts/browser/chartOptions';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
-import { ICellMetadata } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IModelContentChangedEvent } from 'vs/editor/common/textModelEvents';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
@@ -1532,47 +1531,5 @@ suite('Cell Model', function (): void {
 		cellModel.isEditMode = true;
 		assert.strictEqual(cellModel.currentMode, CellEditModes.MARKDOWN, 'Should persist lastEditMode and be in markdown only');
 
-	});
-
-	test('should set .NET Interactive cell metadata when converting to JSON', async function () {
-		let notebookModel = new NotebookModelStub({
-			name: '',
-			version: '',
-			mimetype: ''
-		});
-		let contents: nb.ICellContents = {
-			cell_type: CellTypes.Code,
-			source: '',
-			metadata: {
-				language: 'dotnet-interactive.csharp'
-			}
-		};
-		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
-		assert((model.metadata as ICellMetadata).dotnet_interactive === undefined, 'dotnet_interactive field should not be set in cell metadata before converting to JSON');
-		let cellJson = model.toJSON();
-		assert((cellJson.metadata as ICellMetadata).dotnet_interactive !== undefined, 'dotnet_interactive field should be set in JSON cell metadata');
-		assert.strictEqual((cellJson.metadata as ICellMetadata).dotnet_interactive.language, 'csharp', 'Expected dotnet_interactive language field to be csharp');
-	});
-
-	test('should overwrite pre-existing .NET Interactive cell metadata when converting to JSON', async function () {
-		let notebookModel = new NotebookModelStub({
-			name: '',
-			version: '',
-			mimetype: ''
-		});
-		let contents: nb.ICellContents = {
-			cell_type: CellTypes.Code,
-			source: '',
-			metadata: {
-				language: 'dotnet-interactive.csharp'
-			}
-		};
-		(contents.metadata as ICellMetadata).dotnet_interactive = { language: 'fsharp' };
-
-		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
-		assert((model.metadata as ICellMetadata).dotnet_interactive !== undefined, 'dotnet_interactive field should exist in cell metadata');
-		let cellJson = model.toJSON();
-		assert((cellJson.metadata as ICellMetadata).dotnet_interactive !== undefined, 'dotnet_interactive field should be set in JSON cell metadata');
-		assert.strictEqual((cellJson.metadata as ICellMetadata).dotnet_interactive.language, 'csharp', 'Expected dotnet_interactive language field to be csharp');
 	});
 });

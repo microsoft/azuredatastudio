@@ -1333,8 +1333,6 @@ export interface IModelAddedData {
 	EOL: string;
 	languageId: string;
 	isDirty: boolean;
-	// {{SQL CARBON EDIT}}
-	notebookUri?: URI;
 }
 export interface ExtHostDocumentsShape {
 	$acceptModelLanguageChanged(strURL: UriComponents, newLanguageId: string): void;
