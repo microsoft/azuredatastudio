@@ -732,6 +732,9 @@
     <trans-unit id="publishToDockerContainer">
       <source xml:lang="en">Publish to new {0} local development container</source>
     </trans-unit>
+    <trans-unit id="publishToDockerContainerPreview">
+      <source xml:lang="en">Publish to new {0} local development container (Preview)</source>
+    </trans-unit>
     <trans-unit id="publishToExistingServer">
       <source xml:lang="en">Publish to an existing {0}</source>
     </trans-unit>
