@@ -17,6 +17,7 @@ import { IAzureResourceSubscriptionFilterService, IAzureResourceSubscriptionServ
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
 import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
 import providerSettings from '../account-provider/providerSettings';
+import * as Constants from '../constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -540,4 +541,19 @@ export function getProviderMetadataForAccount(account: AzureAccount): AzureAccou
 	}
 
 	return provider.metadata;
+}
+
+// Filter accounts based on currently selected Auth Library:
+// if the account key is present, filter based on current auth library
+// if there is no account key (pre-MSAL account), then it is an ADAL account and
+// should be displayed as long as ADAL is the currently selected auth library
+export function filterAccounts(accounts: azdata.Account[], authLibrary: string): azdata.Account[] {
+	let filteredAccounts = accounts.filter(account => {
+		if (account.key.authLibrary) {
+			return account.key.authLibrary === authLibrary;
+		} else {
+			return authLibrary === Constants.AuthLibrary.ADAL;
+		}
+	});
+	return filteredAccounts;
 }
