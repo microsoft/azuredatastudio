@@ -31,7 +31,7 @@
 	"sqlDatabaseProjects.openContainingFolder": "Open Containing Folder",
 	"sqlDatabaseProjects.editProjectFile": "Edit .sqlproj File",
 	"sqlDatabaseProjects.changeTargetPlatform": "Change Target Platform",
-	"sqlDatabaseProjects.generateProjectFromOpenApiSpec": "Generate SQL Project from OpenAPI/Swagger spec",
+	"sqlDatabaseProjects.generateProjectFromOpenApiSpec": "Generate SQL Project from OpenAPI/Swagger spec (Preview)",
 	"sqlDatabaseProjects.convertToSdkStyleProject": "Convert to SDK-style project",
 	"sqlDatabaseProjects.openInDesigner": "Open in Designer",
 
