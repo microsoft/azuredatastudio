@@ -267,14 +267,22 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				let customOptionsContainer = DialogHelper.appendRow(this._tableContainer, option.displayName, 'connection-label', 'connection-input', 'custom-connection-options', false, option.description, 100);
 				switch (option.valueType) {
 					case ServiceOptionType.boolean:
-						// Convert 'defaultValue' to string for comparison as it can be boolean here.
-						let optionValue = (option.defaultValue.toString() === true.toString()) ? this._trueInputValue : this._falseInputValue;
-						this._customOptionWidgets[i] = new SelectBox([this._trueInputValue, this._falseInputValue], optionValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
-						DialogHelper.appendInputSelectBox(customOptionsContainer, this._customOptionWidgets[i] as SelectBox);
-						this._register(styler.attachSelectBoxStyler(this._customOptionWidgets[i] as SelectBox, this._themeService));
-						break;
 					case ServiceOptionType.category:
-						this._customOptionWidgets[i] = new SelectBox(option.categoryValues.map(c => c.displayName), option.defaultValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
+						let selectedValue = option.defaultValue;
+
+						let options = option.valueType === ServiceOptionType.category
+							? option.categoryValues.map<SelectOptionItemSQL>(v => {
+								return { text: v.displayName, value: v.name } as SelectOptionItemSQL;
+							})
+							:
+							[ // Handle boolean options so we can map displaynames to values.
+								{ displayName: this._trueInputValue, value: 'true' },
+								{ displayName: this._falseInputValue, value: 'false' }
+							].map<SelectOptionItemSQL>(v => {
+								return { text: v.displayName, value: v.value } as SelectOptionItemSQL;
+							});
+
+						this._customOptionWidgets[i] = new SelectBox(options, selectedValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
 						DialogHelper.appendInputSelectBox(customOptionsContainer, this._customOptionWidgets[i] as SelectBox);
 						this._register(styler.attachSelectBoxStyler(this._customOptionWidgets[i] as SelectBox, this._themeService));
 						break;
