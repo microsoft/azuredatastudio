@@ -27,11 +27,6 @@ declare module 'mssql' {
 		 * Path to the root of the SQL Tools Service folder
 		 */
 		readonly sqlToolsServicePath: string;
-		/**
-		 * Gets the object explorer API that supports querying over the connections supported by this extension
-		 *
-		 */
-		getMssqlObjectExplorerBrowser(): MssqlObjectExplorerBrowser;
 
 		/**
 		 * Get the Cms Service APIs to communicate with CMS connections supported by this extension
