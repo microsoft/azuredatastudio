@@ -40,8 +40,8 @@ const formatFiles = (some) => {
 		});
 	});
 	return gulp.src(some, {
-			base: '.'
-		})
+		base: '.'
+	})
 		.pipe(filter(f => !f.stat.isDirectory()))
 		.pipe(formatting);
 
@@ -102,19 +102,19 @@ gulp.task('package-external-extensions', task.series(
 			const extensionName = path.basename(extensionPath);
 			return { name: extensionName, path: extensionPath };
 		})
-		.filter(element => ext.vscodeExternalExtensions.indexOf(element.name) === -1) // VS Code external extensions are bundled into ADS so no need to create a normal VSIX for them
-		.map(element => {
-			const pkgJson = require(path.join(element.path, 'package.json'));
-			const vsixDirectory = path.join(root, '.build', 'extensions');
-			mkdirp.sync(vsixDirectory);
-			const packagePath = path.join(vsixDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
-			console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
-			return vsce.createVSIX({
-				cwd: element.path,
-				packagePath: packagePath,
-				useYarn: true
+			.filter(element => ext.vscodeExternalExtensions.indexOf(element.name) === -1) // VS Code external extensions are bundled into ADS so no need to create a normal VSIX for them
+			.map(element => {
+				const pkgJson = require(path.join(element.path, 'package.json'));
+				const vsixDirectory = path.join(root, '.build', 'extensions');
+				mkdirp.sync(vsixDirectory);
+				const packagePath = path.join(vsixDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
+				console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
+				return vsce.createVSIX({
+					cwd: element.path,
+					packagePath: packagePath,
+					useYarn: true
+				});
 			});
-		});
 		// Wait for all the initial VSIXes to be completed before making the VS Code ones since we'll be overwriting
 		// values in the package.json for those.
 		await Promise.all(vsixes);
@@ -133,15 +133,26 @@ gulp.task('package-external-extensions', task.series(
 						// And now use gulp-json-editor to modify the contents
 						const updateData = JSON.parse(fs.readFileSync(vscodeManifestFullPath)); // Read in the set of values to replace from package.vscode.json
 						Object.keys(updateData).forEach(key => {
-							data[key] = updateData[key];
+							if (key !== 'contributes') {
+								data[key] = updateData[key];
+							}
 						});
-						if(data.contributes?.menus){
+						if (data.contributes?.menus) {
 							// Remove ADS-only menus. This is a subset of the menus listed in https://github.com/microsoft/azuredatastudio/blob/main/src/vs/workbench/api/common/menusExtensionPoint.ts
 							// More can be added to the list as needed.
 							['objectExplorer/item/context', 'dataExplorer/context', 'dashboard/toolbar'].forEach(menu => {
 								delete data.contributes.menus[menu];
 							});
 						}
+
+						// Add any configuration properties from the package.vscode.json
+						// Currently only supports bringing over properties in the first config object found and doesn't support modifying the title
+						if (updateData.contributes?.configuration[0]?.properties) {
+							Object.keys(updateData.contributes.configuration[0].properties).forEach(key => {
+								data.contributes.configuration[0].properties[key] = updateData.contributes.configuration[0].properties[key];
+							});
+						}
+
 						return data;
 					}, { beautify: false }))
 					.pipe(gulp.dest(packageDir));
