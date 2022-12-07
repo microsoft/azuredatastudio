@@ -474,6 +474,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				const homeTenant = tenants.splice(homeTenantIndex, 1);
 				tenants.unshift(homeTenant[0]);
 			}
+			Logger.verbose(`Filtered Tenants: ${tenantList}`);
 			return tenants;
 		} catch (ex) {
 			Logger.error(`Error fetching tenants :${ex}`);
@@ -676,7 +677,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 	//#region data modeling
 
 	public createAccount(tokenClaims: TokenClaims, key: string, tenants: Tenant[]): AzureAccount {
-		Logger.verbose(`Token Claims: ${tokenClaims.name}`);
+		Logger.verbose(`Token Claims: ${tokenClaims.name}, Tenant ID: ${tokenClaims.tid}`);
+		Logger.pii('Token Claims response: ', [{ name: 'tokenClaims', objOrArray: JSON.stringify(tokenClaims) }], []);
 		tenants.forEach((tenant) => {
 			Logger.verbose(`Tenant ID: ${tenant.id}, Tenant Name: ${tenant.displayName}`);
 		});
@@ -697,6 +699,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 		// Read more about tid > https://learn.microsoft.com/azure/active-directory/develop/id-tokens
 		const owningTenant = tenants.find(t => t.id === tokenClaims.tid)
 			?? { 'id': tokenClaims.tid, 'displayName': 'Microsoft Account' };
+
+		if (!owningTenant) {
+			Logger.info('Could not find owning tenant for account, found: {0}', tokenClaims.tid);
+		}
 
 		let displayName = name;
 		if (email) {
