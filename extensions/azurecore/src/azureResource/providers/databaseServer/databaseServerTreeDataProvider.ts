@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { connection, ExtensionNodeType, TreeItem } from 'azdata';
+import { ExtensionNodeType, TreeItem } from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -25,7 +25,6 @@ export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDat
 		super(databaseServerService);
 	}
 
-
 	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
 			id: `databaseServer_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
@@ -43,7 +42,7 @@ export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDat
 				databaseName: databaseServer.defaultDatabaseName,
 				userName: databaseServer.loginName,
 				password: '',
-				authenticationType: connection.AuthenticationType.AzureMFA,
+				authenticationType: '',
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',

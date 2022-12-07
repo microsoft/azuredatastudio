@@ -126,7 +126,7 @@ class ResourceLoader {
 			for (const tenant of account.properties.tenants) {
 				for (const subscription of await this.subscriptionService.getSubscriptions(account, [tenant.id])) {
 					for (const providerId of await this.resourceService.listResourceProviderIds()) {
-						for (const group of await this.resourceService.getRootChildren(providerId, account, subscription, subscription.tenant!)) {
+						for (const group of await this.resourceService.getRootChildren(providerId, account, subscription)) {
 							const children = await this.resourceService.getChildren(providerId, group.resourceNode);
 							let groupNode: AzureResourceResourceTreeNode | undefined = this.resourceGroups.get(group.resourceProviderId);
 							if (groupNode) {
