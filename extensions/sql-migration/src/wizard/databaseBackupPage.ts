@@ -722,6 +722,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this._blobContainerButton.checked = true;
 					await this._sqlVmPageBlobInfoBox.updateCssStyles({ 'display': 'block' });
 					await this._blobContainerButton.focus();
+				} else {
+					this._networkShareButton.enabled = true;
+					this._blobContainerButton.checked = false;
+					await this._sqlVmPageBlobInfoBox.updateCssStyles({ 'display': 'none' });
 				}
 
 				const isOfflineMigration = this.migrationStateModel._databaseBackup?.migrationMode === MigrationMode.OFFLINE;
