@@ -5,7 +5,8 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { Kind, validateIrDatabaseMigrationSettings, validateIrSqlDatabaseMigrationSettings, ValidationError } from '../../api/azure';
+import * as constants from '../../constants/strings';
+import { validateIrDatabaseMigrationSettings, validateIrSqlDatabaseMigrationSettings } from '../../api/azure';
 import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import { EOL } from 'os';
 import { IconPathHelper } from '../../constants/iconPathHelper';
@@ -41,15 +42,16 @@ export class ValidateIrDialog {
 	private _model!: MigrationStateModel;
 	private _resultsTable!: azdata.TableComponent;
 	private _startLoader!: azdata.LoadingComponent;
+	private _startButton!: azdata.ButtonComponent;
 	private _cancelButton!: azdata.ButtonComponent;
 	private _copyButton!: azdata.ButtonComponent;
 	private _validationResult: any[][] = [];
 	private _valdiationErrors: string[] = [];
-	private _onClosed: (result: ValidationResult[]) => void;
+	private _onClosed: () => void;
 
 	constructor(
 		model: MigrationStateModel,
-		onClosed: (result: ValidationResult[]) => void) {
+		onClosed: () => void) {
 		this._model = model;
 		this._onClosed = onClosed;
 
@@ -75,7 +77,7 @@ export class ValidateIrDialog {
 		return new Promise<void>((resolve, reject) => {
 			dialog.registerContent(async (view) => {
 				try {
-					dialog.okButton.label = 'Done';
+					dialog.okButton.label = constants.VALIDATE_IR_DONE_BUTTON;
 					dialog.okButton.position = 'left';
 					dialog.okButton.enabled = false;
 					dialog.cancelButton.position = 'left';
@@ -84,18 +86,17 @@ export class ValidateIrDialog {
 						dialog.cancelButton.onClick(
 							e => {
 								this._canceled = true;
-								this._onClosed(
-									this._validationResults());
+								this._saveResults();
+								this._onClosed();
 							}));
 
 					this._disposables.push(
 						dialog.okButton.onClick(
-							e => this._onClosed(
-								this._validationResults())));
+							e => this._onClosed()));
 
 					const headingText = view.modelBuilder.text()
 						.withProps({
-							value: 'We are validating the following',
+							value: constants.VALIDATE_IR_HEADING,
 							CSSStyles: {
 								'font-size': '13px',
 								'font-weight': '400',
@@ -103,41 +104,38 @@ export class ValidateIrDialog {
 							},
 						})
 						.component();
+					this._startLoader = view.modelBuilder.loadingComponent()
+						.withProps({
+							loading: false,
+							CSSStyles: { 'margin': '5px 0 0 10px' }
+						})
+						.component();
+					const headingContainer = view.modelBuilder.flexContainer()
+						.withLayout({
+							flexFlow: 'row',
+							justifyContent: 'flex-start',
+						})
+						.withItems([headingText, this._startLoader], { flex: '0 0 auto' })
+						.component();
 
 					this._resultsTable = await this._createResultsTable(view);
 
-					const startButton = view.modelBuilder.button()
+					this._startButton = view.modelBuilder.button()
 						.withProps({
 							iconPath: IconPathHelper.restartDataCollection,
 							iconHeight: 18,
 							iconWidth: 18,
-							// height: 24,
 							width: 100,
-							label: 'Start validation',
+							label: constants.VALIDATE_IR_START_VALIDATION,
 						}).component();
-					this._startLoader = view.modelBuilder.loadingComponent()
-						.withItem(startButton)
-						.withProps({
-							loading: false,
-							CSSStyles: {
-								'height': '8px',
-								'width': '104px',
-								'line-height': '14px',
-								// 'line-height': '18px',
-								'margin': '4px 0',
-							}
-						})
-						.component();
-
 
 					this._cancelButton = view.modelBuilder.button()
 						.withProps({
 							iconPath: IconPathHelper.stop,
 							iconHeight: 18,
 							iconWidth: 18,
-							// height: 24,
 							width: 100,
-							label: 'Stop validation',
+							label: constants.VALIDATE_IR_STOP_VALIDATION,
 							enabled: false,
 						}).component();
 					this._copyButton = view.modelBuilder.button()
@@ -146,12 +144,12 @@ export class ValidateIrDialog {
 							iconHeight: 18,
 							iconWidth: 18,
 							width: 150,
-							label: 'Copy validation results',
+							label: constants.VALIDATE_IR_COPY_RESULTS,
 							enabled: false,
 						}).component();
 
 					this._disposables.push(
-						startButton.onDidClick(
+						this._startButton.onDidClick(
 							async (e) => await this._runValidation()));
 					this._disposables.push(
 						this._cancelButton.onDidClick(
@@ -166,14 +164,14 @@ export class ValidateIrDialog {
 
 					const toolbar = view.modelBuilder.toolbarContainer()
 						.withToolbarItems([
-							{ component: this._startLoader },
+							{ component: this._startButton },
 							{ component: this._cancelButton },
 							{ component: this._copyButton }])
 						.component();
 
 					const resultsHeading = view.modelBuilder.text()
 						.withProps({
-							value: 'Validation step details',
+							value: constants.VALIDATE_IR_RESULTS_HEADING,
 							CSSStyles: {
 								'font-size': '16px',
 								'font-weight': '600',
@@ -196,7 +194,7 @@ export class ValidateIrDialog {
 
 					const flex = view.modelBuilder.flexContainer()
 						.withItems([
-							headingText,
+							headingContainer,
 							toolbar,
 							this._resultsTable,
 							resultsHeading,
@@ -223,6 +221,21 @@ export class ValidateIrDialog {
 		});
 	}
 
+	private _saveResults(): void {
+		const results = this._validationResults();
+		switch (this._model._targetType) {
+			case MigrationTargetType.SQLDB:
+				this._model._validateIrSqlDb = results;
+				break;
+			case MigrationTargetType.SQLMI:
+				this._model._validateIrSqlMi = results;
+				break;
+			case MigrationTargetType.SQLVM:
+				this._model._validateIrSqlVm = results;
+				break;
+		}
+	}
+
 	private _validationResults(): ValidationResult[] {
 		return this._validationResult.map(
 			result => {
@@ -243,28 +256,29 @@ export class ValidateIrDialog {
 	private async _runValidation(results?: ValidationResult[]): Promise<void> {
 		try {
 			this._startLoader.loading = true;
+			this._startButton.enabled = false;
 			this._cancelButton.enabled = true;
 			this._copyButton.enabled = false;
 			this._dialog!.okButton.enabled = false;
-
-			if (results && results.length > 0) {
+			if (this._model.isIrTargetValidated) {
 				await this._initializeResults(results);
 			} else {
 				await this._validate();
 			}
 		} finally {
 			this._startLoader.loading = false;
+			this._startButton.enabled = true;
 			this._cancelButton.enabled = false;
 			this._copyButton.enabled = true;
-			this._dialog!.okButton.enabled = this._valdiationErrors.length === 0;
+			this._dialog!.okButton.enabled = this._model.isIrTargetValidated;
 		}
 	}
 
 	private async _copyValidationResults(): Promise<void> {
 		const errorsText = this._valdiationErrors.join(EOL);
 		const msg = errorsText.length === 0
-			? `Validation completed successfully.`
-			: `Validation completed with the following error(s):${EOL}${errorsText}`;
+			? constants.VALIDATE_IR_VALIDATION_COMPLETED
+			: constants.VALIDATE_IR_VALIDATION_COMPLETED_ERRORS(errorsText);
 		return vscode.env.clipboard.writeText(msg);
 	}
 
@@ -275,12 +289,10 @@ export class ValidateIrDialog {
 			for (let i = 0; i < selectedRows.length; i++) {
 				const row = selectedRows[i];
 				const results: any[] = this._validationResult[row];
-				const errors = results[Result.errors];
 				const status = results[Result.status];
-				const msg = errors.length > 0
-					? `Validation status: ${status}${EOL}${errors.join(EOL)}`
-					: `Validation status: ${status}`;
-				statusMessages.push(msg);
+				const errors = results[Result.errors];
+				statusMessages.push(
+					constants.VALIDATE_IR_VALIDATION_STATUS(status, errors));
 			}
 		}
 
@@ -296,7 +308,7 @@ export class ValidateIrDialog {
 				columns: [
 					{
 						value: 'test',
-						name: 'Validation steps',
+						name: constants.VALIDATE_IR_COLUMN_VALIDATION_STEPS,
 						type: azdata.ColumnType.text,
 						width: 420,
 						headerCssClass: 'no-borders',
@@ -312,7 +324,7 @@ export class ValidateIrDialog {
 					},
 					{
 						value: 'message',
-						name: 'Status',
+						name: constants.VALIDATE_IR_COLUMN_STATUS,
 						type: azdata.ColumnType.text,
 						width: 110,
 						headerCssClass: 'no-borders',
@@ -350,6 +362,8 @@ export class ValidateIrDialog {
 		} else {
 			await this._validateDatabaseMigration();
 		}
+
+		this._saveResults();
 	}
 
 	private async _validateDatabaseMigration(): Promise<void> {
@@ -361,7 +375,6 @@ export class ValidateIrDialog {
 		const databaseCount = this._model._databasesForMigration.length;
 		const sourceDatabaseName = this._model._databasesForMigration[0];
 		const networkShare = this._model._databaseBackup.networkShares[0];
-		const startTimer = Date.now();
 
 		try {
 			await this._updateValidateIrResults(0, ValidateIrState.Running);
@@ -378,7 +391,7 @@ export class ValidateIrDialog {
 				false);
 			if (response?.errors?.length > 0) {
 				const errors = response.errors.map(
-					error => this._formatValidationError(
+					error => constants.VALIDATE_IR_VALIDATION_RESULT_ERROR(
 						sourceDatabaseName,
 						networkShare.networkShareLocation,
 						error));
@@ -387,12 +400,9 @@ export class ValidateIrDialog {
 				await this._updateValidateIrResults(0, ValidateIrState.Succeeded);
 			}
 		} catch (error) {
-			await this._updateValidateIrResults(0, ValidateIrState.Failed, [this._formatValidationApiError(sourceDatabaseName, error)]);
-		} finally {
-			console.log(` ** Validate ${this._model._targetType === MigrationTargetType.SQLMI ? Kind.SQLMI : Kind.SQLVM
-				} IR response TIME: ${((Date.now() - startTimer) / 1000)} `);
+			await this._updateValidateIrResults(0, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
 		}
-		const startTimer2 = Date.now();
+
 		try {
 			await this._updateValidateIrResults(1, ValidateIrState.Running);
 
@@ -409,7 +419,7 @@ export class ValidateIrDialog {
 				true);
 			if (response?.errors?.length > 0) {
 				const errors = response.errors.map(
-					error => this._formatValidationError(
+					error => constants.VALIDATE_IR_VALIDATION_RESULT_ERROR(
 						sourceDatabaseName,
 						networkShare.networkShareLocation,
 						error));
@@ -418,9 +428,7 @@ export class ValidateIrDialog {
 				await this._updateValidateIrResults(1, ValidateIrState.Succeeded);
 			}
 		} catch (error) {
-			await this._updateValidateIrResults(1, ValidateIrState.Failed, [this._formatValidationApiError(sourceDatabaseName, error)]);
-		} finally {
-			console.log(` ** Validate ${this._model._targetType === MigrationTargetType.SQLMI ? Kind.SQLMI : Kind.SQLVM} blob container access response TIME: ${((Date.now() - startTimer2) / 1000)} `);
+			await this._updateValidateIrResults(1, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
 		}
 
 		for (let i = 0; i < databaseCount; i++) {
@@ -431,7 +439,6 @@ export class ValidateIrDialog {
 
 			const sourceDatabaseName = this._model._databasesForMigration[i];
 			const networkShare = this._model._databaseBackup.networkShares[i];
-			const startTimer2 = Date.now();
 			try {
 				await this._updateValidateIrResults(i + 2, ValidateIrState.Running);
 				// validate source connectivity
@@ -448,7 +455,7 @@ export class ValidateIrDialog {
 					false);
 				if (response?.errors?.length > 0) {
 					const errors = response.errors.map(
-						error => this._formatValidationError(
+						error => constants.VALIDATE_IR_VALIDATION_RESULT_ERROR(
 							sourceDatabaseName,
 							networkShare.networkShareLocation,
 							error));
@@ -457,9 +464,7 @@ export class ValidateIrDialog {
 					await this._updateValidateIrResults(i + 2, ValidateIrState.Succeeded);
 				}
 			} catch (error) {
-				await this._updateValidateIrResults(i + 2, ValidateIrState.Failed, [this._formatValidationApiError(sourceDatabaseName, error)]);
-			} finally {
-				console.log(` ** Validate ${this._model._targetType === MigrationTargetType.SQLMI ? Kind.SQLMI : Kind.SQLVM} no - IR response TIME: ${((Date.now() - startTimer2) / 1000)} `);
+				await this._updateValidateIrResults(i + 2, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
 			}
 		}
 	}
@@ -476,7 +481,6 @@ export class ValidateIrDialog {
 
 		// validate IR is online
 		await this._updateValidateIrResults(0, ValidateIrState.Running);
-		const startTimer = Date.now();
 		try {
 			const response = await validateIrSqlDatabaseMigrationSettings(
 				this._model,
@@ -489,7 +493,7 @@ export class ValidateIrDialog {
 				false);
 			if (response?.errors?.length > 0) {
 				const errors = response.errors.map(
-					error => this._formatSqlDbValidationError(
+					error => constants.VALIDATE_IR_SQLDB_VALIDATION_RESULT_ERROR(
 						sourceDatabaseName,
 						targetDatabaseName,
 						error));
@@ -499,10 +503,8 @@ export class ValidateIrDialog {
 				await this._updateValidateIrResults(0, ValidateIrState.Succeeded);
 			}
 		} catch (error) {
-			await this._updateValidateIrResults(0, ValidateIrState.Failed, [this._formatValidationApiError(sourceDatabaseName, error)]);
+			await this._updateValidateIrResults(0, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
 			return;
-		} finally {
-			console.log(` ** validate SQLDB IR response TIME: ${(Date.now() - startTimer) / 1000} `);
 		}
 
 		for (let i = 0; i < databaseCount; i++) {
@@ -513,7 +515,6 @@ export class ValidateIrDialog {
 			const sourceDatabaseName = this._model._databasesForMigration[i];
 			const targetDatabaseName = this._model._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? '';
 			await this._updateValidateIrResults(i + 1, ValidateIrState.Running);
-			const startTimer2 = Date.now();
 			try {
 				// validate source connectivity
 				// validate target connectivity
@@ -528,7 +529,7 @@ export class ValidateIrDialog {
 					true);
 				if (response?.errors?.length > 0) {
 					const errors = response.errors.map(
-						error => this._formatSqlDbValidationError(
+						error => constants.VALIDATE_IR_SQLDB_VALIDATION_RESULT_ERROR(
 							sourceDatabaseName,
 							targetDatabaseName,
 							error));
@@ -538,9 +539,7 @@ export class ValidateIrDialog {
 					await this._updateValidateIrResults(i + 1, ValidateIrState.Succeeded);
 				}
 			} catch (error) {
-				await this._updateValidateIrResults(i + 1, ValidateIrState.Failed, [this._formatValidationApiError(sourceDatabaseName, error)]);
-			} finally {
-				console.log(` ** validate SQLDB no - IR response TIME: ${(Date.now() - startTimer2) / 1000} `);
+				await this._updateValidateIrResults(i + 1, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
 			}
 		}
 	}
@@ -548,12 +547,14 @@ export class ValidateIrDialog {
 	private async _initTestIrResults(results?: ValidationResult[]): Promise<void> {
 		this._validationResult = [];
 
-		this._addValidationResult('Validating SHIR connectivity');
-		this._addValidationResult('Validating Azure storage connectivity');
+		this._addValidationResult(constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_SHIR);
+		this._addValidationResult(constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_STORAGE);
 
 		this._model._databasesForMigration
 			.forEach(sourceDatabaseName =>
-				this._addValidationResult(`Database configuration '${sourceDatabaseName}'`));
+				this._addValidationResult(
+					constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_DATABASE(
+						sourceDatabaseName)));
 
 		if (results && results.length > 0) {
 			for (let row = 0; row < results.length; row++) {
@@ -571,11 +572,13 @@ export class ValidateIrDialog {
 
 	private async _initSqlDbIrResults(results?: ValidationResult[]): Promise<void> {
 		this._validationResult = [];
-		this._addValidationResult('Validating SHIR connectivity');
+		this._addValidationResult(constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_SHIR);
 
 		this._model._databasesForMigration
 			.forEach(sourceDatabaseName =>
-				this._addValidationResult(`Validating database '${sourceDatabaseName}' configration`));
+				this._addValidationResult(
+					constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_DATABASE(
+						sourceDatabaseName)));
 
 		if (results && results.length > 0) {
 			for (let row = 0; row < results.length; row++) {
@@ -655,23 +658,5 @@ export class ValidateIrDialog {
 			default:
 				return IconPathHelper.notStartedMigration;
 		}
-	}
-
-	private _formatValidationApiError(sourceDatabaseName: string, error: Error): string {
-		const message = `Validation check error${EOL}Database:${sourceDatabaseName}${EOL} Error: ${error.name}${EOL}${error.message} `;
-		console.log(` ** validation error:  ${message} `);
-		return message;
-	}
-
-	private _formatValidationError(sourceDatabaseName: string, networkShareLocation: string, error: ValidationError): string {
-		const message = `Validation check error${EOL}Source database: ${sourceDatabaseName}${EOL}File share path: ${networkShareLocation}${EOL} Error: ${error.code}${EOL}${error.message} `;
-		console.log(` ** validation error:  ${message} `);
-		return message;
-	}
-
-	private _formatSqlDbValidationError(sourceDatabaseName: string, targetDatabaseName: string, error: ValidationError,): string {
-		const message = `Validation check error${EOL}Source database: ${sourceDatabaseName}${EOL}Target database: ${targetDatabaseName}${EOL} Error: ${error.code}${EOL}${error.message} `;
-		console.log(` ** validation error:  ${message} `);
-		return message;
 	}
 }

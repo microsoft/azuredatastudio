@@ -132,8 +132,6 @@ export class SummaryPage extends MigrationWizardPage {
 		}
 
 		this._flexContainer.addItems([
-
-
 			await createHeadingTextComponent(
 				this._view,
 				constants.IR_PAGE_TITLE),

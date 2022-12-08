@@ -34,6 +34,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _refresh2!: azdata.ButtonComponent;
 	private _onlineButton!: azdata.RadioButtonComponent;
 	private _offlineButton!: azdata.RadioButtonComponent;
+	private _modeContainer!: azdata.FlexContainer;
 	private _radioButtonContainer!: azdata.FlexContainer;
 	private _networkShareButton!: azdata.RadioButtonComponent;
 	private _blobContainerButton!: azdata.RadioButtonComponent;
@@ -61,10 +62,11 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			.component();
 
 		this._radioButtonContainer = this.createBackupLocationComponent();
+		this._modeContainer = this.migrationModeContainer();
 
 		const form = view.modelBuilder.formContainer()
 			.withFormItems([
-				{ component: this.migrationModeContainer() },
+				{ component: this._modeContainer },
 				{ component: this._radioButtonContainer },
 				{ component: this.migrationServiceDropdownContainer() },
 				{ component: this._dmsInfoContainer }])
@@ -175,8 +177,9 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		const flexContainer = this._view.modelBuilder.flexContainer()
 			.withItems([
 				selectLocationText,
+				this._blobContainerButton,
 				this._networkShareButton,
-				this._blobContainerButton])
+			])
 			.withLayout({ flexFlow: 'column' })
 			.component();
 
@@ -190,12 +193,12 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
 		const isNetworkShare = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE;
+		await utils.updateControlDisplay(this._modeContainer, !isSqlDbTarget);
 		this._onlineButton.enabled = !isSqlDbTarget;
 
 		if (isSqlDbTarget) {
 			this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.OFFLINE;
 			this._offlineButton.checked = true;
-			await this._offlineButton.focus();
 		}
 		this._originalMigrationMode = this.migrationStateModel._databaseBackup.migrationMode;
 
@@ -223,7 +226,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			if (!isSqlDbTarget && !this._networkShareButton.checked && !this._blobContainerButton.checked) {
 				this.wizard.message = {
 					level: azdata.window.MessageLevel.Error,
-					text: 'Please select the location of your database backup files before continuing.',
+					text: constants.SERVICE_SELECTION_LOCATION_MESSAGE,
 				};
 				return false;
 			}
@@ -338,12 +341,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				async (value) => {
 					if (value && value !== 'undefined' && value !== constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR) {
 						this.wizard.message = { text: '' };
-
-						await utils.updateControlDisplay(
-							this._dmsInfoContainer,
-							this.migrationStateModel._targetType === MigrationTargetType.SQLDB ||
-							this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE);
-
 						const resourceGroupName = this.migrationStateModel._sqlMigrationServiceResourceGroup.name.toLowerCase();
 						const selectedDms = this.migrationStateModel._sqlMigrationServices.find(
 							dms => dms.name === value
@@ -353,6 +350,11 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 							this.migrationStateModel._sqlMigrationService = selectedDms;
 							await this.loadStatus();
 						}
+
+						await utils.updateControlDisplay(
+							this._dmsInfoContainer,
+							this.migrationStateModel._targetType === MigrationTargetType.SQLDB ||
+							this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE);
 					} else {
 						this.migrationStateModel._sqlMigrationService = undefined;
 						await utils.updateControlDisplay(this._dmsInfoContainer, false);
@@ -422,7 +424,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		this._disposables.push(
 			this._refreshButton.onDidClick(
-				async (e) => this.loadStatus()));
+				async (e) => await this.loadStatus()));
 
 		const connectionLabelContainer = this._view.modelBuilder.flexContainer()
 			.component();

@@ -8,6 +8,7 @@ import * as nls from 'vscode-nls';
 import { EOL } from 'os';
 import { MigrationSourceAuthenticationType } from '../models/stateMachine';
 import { formatNumber, ParallelCopyTypeCodes, PipelineStatusCodes } from './helper';
+import { ValidationError } from '../api/azure';
 const localize = nls.loadMessageBundle();
 
 // mirrors MigrationState as defined in RP
@@ -55,6 +56,7 @@ export const RESUME_TITLE = localize('sql.migration.resume.title', "Run migratio
 export const START_NEW_SESSION = localize('sql.migration.start.session', "Start a new session");
 export const RESUME_SESSION = localize('sql.migration.resume.session', "Resume previously saved session");
 export const OPEN_SAVED_INFO_ERROR = localize("sql.migration.invalid.savedInfo", 'Cannot retrieve saved session. Try again by selecting new session.');
+export const RUN_VALIDATION = localize('sql.migration.run.validation', "Run validation");
 
 // Databases for assessment
 export const DATABASE_FOR_ASSESSMENT_PAGE_TITLE = localize('sql.migration.database.assessment.title', "Databases for assessment");
@@ -534,14 +536,29 @@ export function TABLE_SELECTED_COUNT(selectedCount: number, rowCount: number): s
 export function MISSING_TARGET_TABLES_COUNT(tables: number): string {
 	return localize('sql.migration.table.missing.count', "Missing target tables excluded from list: {0}", tables);
 }
-export const DATABASE_MISSING_TABLES = localize('sql.migratino.database.missing.tables', "0 tables found.");
-export const DATABASE_LOADING_TABLES = localize('sql.migratino.database.loading.tables', "Loading tables list...");
-export const TABLE_SELECTION_FILTER = localize('sql.migratino.table.selection.filter', "Filter tables");
-export const TABLE_SELECTION_UPDATE_BUTTON = localize('sql.migratino.table.selection.update.button', "Update");
-export const TABLE_SELECTION_CANCEL_BUTTON = localize('sql.migratino.table.selection.update.cancel', "Cancel");
+export const DATABASE_MISSING_TABLES = localize('sql.migration.database.missing.tables', "0 tables found.");
+export const DATABASE_LOADING_TABLES = localize('sql.migration.database.loading.tables', "Loading tables list...");
+export const TABLE_SELECTION_FILTER = localize('sql.migration.table.selection.filter', "Filter tables");
+export const TABLE_SELECTION_UPDATE_BUTTON = localize('sql.migration.table.selection.update.button', "Update");
+export const TABLE_SELECTION_CANCEL_BUTTON = localize('sql.migration.table.selection.update.cancel', "Cancel");
 
-export const TABLE_SELECTION_TABLENAME_COLUMN = localize('sql.migratino.table.selection.tablename.column', "Table name");
-export const TABLE_SELECTION_HASROWS_COLUMN = localize('sql.migratino.table.selection.status.column', "Has rows");
+export const TABLE_SELECTION_TABLENAME_COLUMN = localize('sql.migration.table.selection.tablename.column', "Table name");
+export const TABLE_SELECTION_HASROWS_COLUMN = localize('sql.migration.table.selection.status.column', "Has rows");
+
+export const VALIDATION_DIALOG_TITLE = localize('sql.migration.validation.dialog.title', "Running Validation");
+export const VALIDATION_MESSAGE_SUCCESS = localize('sql.migration.validation.success', "Validation completd successfully.  Please click next to proceed with the migration.");
+export function VALIDATION_MESSAGE_CANCELED_ERRORS(errors: string[]): string {
+	return localize(
+		'sql.migration.validation.canceled.errors',
+		"Validation was canceled with the following errors:{0}{1}", EOL, errors?.join(EOL));
+}
+export function VALIDATION_MESSAGE_COMPLETED_ERRORS(errors: string[]): string {
+	return localize(
+		'sql.migration.validation.completed.errors',
+		"Validation completed with the following errors:{0}{1}", EOL, errors?.join(EOL));
+}
+export const VALIDATION_MESSAGE_CANCELED = localize('sql.migration.validation.canceled', "Validation was canceled. Please run and valdiate the migration settings to continue.");
+export const VALIDATION_MESSAGE_NOT_RUN = localize('sql.migration.validation.not.run', "Validation has not been run. Please run and valdiate the migration settings to continue.");
 
 // integration runtime page
 export const SELECT_RESOURCE_GROUP = localize('sql.migration.blob.resourceGroup.select', "Select a resource group.");
@@ -610,6 +627,77 @@ export const RESOURCE_GROUP_DESCRIPTION = localize('sql.migration.resource.group
 export const NAME_OF_NEW_RESOURCE_GROUP = localize('sql.migration.name.of.new.rg', "Name of new resource group");
 export const DATA_UPLOADED_INFO = localize('sql.migration.data.uploaded.info', "Comparison of the actual amount of data read from the source and the actual amount of data uploaded to the target.");
 export const COPY_THROUGHPUT_INFO = localize('sql.migration.copy.throughput.info', "Data movement throughput achieved during the migration of your database backups to Azure. This is the rate of data transfer, calculated by data read divided by duration of backups migration to Azure.");
+export const SERVICE_SELECTION_LOCATION_MESSAGE = localize('sql.migration.service.selection.location.msg', "Please select the location of your database backup files before continuing.");
+
+// Validate IR dialog
+export const VALIDATE_IR_DONE_BUTTON = localize('sql.migration.validate.ir.done.button', "Done");
+export const VALIDATE_IR_HEADING = localize('sql.migration.validate.ir.heading', "We are validating the following");
+export const VALIDATE_IR_START_VALIDATION = localize('sql.migration.validate.ir.start.validation', "Start validation");
+export const VALIDATE_IR_STOP_VALIDATION = localize('sql.migration.validate.ir.stop.validation', "Stop validation");
+export const VALIDATE_IR_COPY_RESULTS = localize('sql.migration.validate.ir.copy.results', "Copy validation results");
+export const VALIDATE_IR_RESULTS_HEADING = localize('sql.migration.validate.ir.results.heading', "Validation step details");
+export const VALIDATE_IR_VALIDATION_COMPLETED = localize('sql.migration.validate.ir.validation.completed', "Validation completed successfully.");
+
+export function VALIDATE_IR_VALIDATION_COMPLETED_ERRORS(msg: string): string {
+	return localize(
+		'sql.migration.validate.ir.completed.errors',
+		"Validation completed with the following error(s):{0}{1}", EOL, msg);
+}
+export function VALIDATE_IR_VALIDATION_STATUS(state: string, errors?: string[]): string {
+	if (errors && errors.length > 0) {
+		return localize(
+			'sql.migration.validate.ir.status.errors',
+			"Validation status: {0}{1}{2}", state, EOL, errors.join(EOL));
+	} else {
+		return localize(
+			'sql.migration.validate.ir.status',
+			"Validation status: {0}", state);
+	}
+}
+
+export const VALIDATE_IR_COLUMN_VALIDATION_STEPS = localize('sql.migration.validate.ir.column.validation.steps', "Validation steps");
+export const VALIDATE_IR_COLUMN_STATUS = localize('sql.migration.validate.ir.column.status', "Status");
+export const VALIDATE_IR_VALIDATION_RESULT_LABEL_SHIR = localize('sql.migration.validate.ir.validation.result.label.shir', "Validating SHIR connectivity");
+export const VALIDATE_IR_VALIDATION_RESULT_LABEL_STORAGE = localize('sql.migration.validate.ir.validation.result.label.storage', "Validating Azure storage connectivity");
+
+export function VALIDATE_IR_VALIDATION_RESULT_LABEL_DATABASE(databaseName: string): string {
+	return localize(
+		'sql.migration.validate.ir.validation.result.label.database',
+		"Validating database '{0}' configuration", databaseName);
+}
+
+export function VALIDATE_IR_VALIDATION_RESULT_API_ERROR(databaseName: string, error: Error): string {
+	return localize(
+		'sql.migration.validate.ir.validation.result.api.error',
+		"Validation check error{0}Database:{1}{0}Error: {2} - {3}",
+		EOL,
+		databaseName,
+		error.name,
+		error.message);
+}
+
+export function VALIDATE_IR_VALIDATION_RESULT_ERROR(sourceDatabaseName: string, networkShareLocation: string, error: ValidationError): string {
+	return localize(
+		'sql.migration.validate.ir.validation.result.error',
+		"Validation check error{0}Source database: {1}{0}File share path: {2}{0}Error: {3} - {4}",
+		EOL,
+		sourceDatabaseName,
+		networkShareLocation,
+		error.code,
+		error.message);
+}
+
+export function VALIDATE_IR_SQLDB_VALIDATION_RESULT_ERROR(sourceDatabaseName: string, targetDatabaseName: string, error: ValidationError,): string {
+	return localize(
+		'sql.migration.validate.ir.sqldb.validation.result.error',
+		"Validation check error{0}Source database: {1}{0}Target database: {2}{0}Error: {3} - {4}",
+		EOL,
+		sourceDatabaseName,
+		targetDatabaseName,
+		error.code,
+		error.message);
+}
+
 // common strings
 export const WARNING = localize('sql.migration.warning', "Warning");
 export const ERROR = localize('sql.migration.error', "Error");

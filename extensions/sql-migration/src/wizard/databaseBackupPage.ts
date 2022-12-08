@@ -633,7 +633,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		this.wizard.customButtons[VALIDATE_IR_BUTTON].hidden = false;
+		this.wizard.customButtons[VALIDATE_IR_BUTTON].hidden = !this.migrationStateModel.isIrMigration;
 		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 			return;
 		}
@@ -967,9 +967,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 
 			await this.validateFields();
-
-			// todo add logic aroundd validation
-			this.wizard.nextButton.enabled = true;
+			this.updateValidationResultUI(true);
 		}
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
@@ -1058,7 +1056,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			if (errors.length > 0) {
 				return false;
 			}
-			return true;
+
+			if (this.migrationStateModel.isIrMigration) {
+				this.wizard.nextButton.enabled = this.migrationStateModel.isIrTargetValidated;
+				this.updateValidationResultUI();
+				return this.migrationStateModel.isIrTargetValidated;
+			} else {
+				return true;
+			}
 		});
 	}
 
@@ -1066,7 +1071,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this.wizard.message = { text: '' };
 		const dialog = new ValidateIrDialog(
 			this.migrationStateModel,
-			(result) => this._checkValdiationResult(result));
+			() => this.updateValidationResultUI());
 
 		let results: ValidationResult[] = [];
 		switch (this.migrationStateModel._targetType) {
@@ -1081,77 +1086,70 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				break;
 		}
 
-		await dialog.openDialog('Running Validation', results);
+		await dialog.openDialog(constants.VALIDATION_DIALOG_TITLE, results);
 	}
 
-	private _checkValdiationResult(results: ValidationResult[]): void {
-		switch (this.migrationStateModel._targetType) {
-			case MigrationTargetType.SQLDB:
-				this.migrationStateModel._validateIrSqlDb = results;
-				break;
-			case MigrationTargetType.SQLMI:
-				this.migrationStateModel._validateIrSqlMi = results;
-				break;
-			case MigrationTargetType.SQLVM:
-				this.migrationStateModel._validateIrSqlVm = results;
-				break;
+	public updateValidationResultUI(initializing?: boolean): void {
+		if (this.migrationStateModel.isIrMigration) {
+			const succeeded = this.migrationStateModel.isIrTargetValidated;
+			if (succeeded) {
+				this.wizard.message = {
+					level: azdata.window.MessageLevel.Information,
+					text: constants.VALIDATION_MESSAGE_SUCCESS,
+				};
+			} else {
+				const results = this.migrationStateModel.validationTargetResults;
+				const hasResults = results.length > 0;
+				if (initializing && !hasResults) {
+					return;
+				}
+
+				const canceled = results.some(result => result.state === ValidateIrState.Canceled);
+				const errors: string[] = results.flatMap(result => result.errors) ?? [];
+				const hasErrors = errors.length > 0;
+				const msg = hasResults
+					? hasErrors
+						? canceled
+							? constants.VALIDATION_MESSAGE_CANCELED_ERRORS(errors)
+							: constants.VALIDATION_MESSAGE_COMPLETED_ERRORS(errors)
+						: constants.VALIDATION_MESSAGE_CANCELED
+					: constants.VALIDATION_MESSAGE_NOT_RUN;
+
+				this.wizard.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: msg,
+				};
+			}
 		}
-
-		const succeeded = results.every(result => result.state === ValidateIrState.Succeeded);
-		if (succeeded) {
-			this.wizard.message = {
-				level: azdata.window.MessageLevel.Information,
-				text: 'Validation completd successfully.  Please click next to proceed with the migration.',
-			};
-		} else {
-			const canceled = results.some(result => result.state === ValidateIrState.Canceled);
-			const errors: string[] = results.flatMap(result => result.errors) ?? [];
-			const hasErrors = errors.length > 0;
-
-			const msg = hasErrors
-				? canceled
-					? `Validation was canceled with the following errors:${EOL}${errors.join(EOL)}`
-					: `Validation completed with the following errors:${EOL}${errors.join(EOL)}`
-				: `Validation was canceled. Please run and valdiate the migration settings to continue`;
-
-			this.wizard.message = {
-				level: azdata.window.MessageLevel.Error,
-				text: msg,
-			};
-		}
-		this.wizard.nextButton.enabled = succeeded;
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		try {
-			if (pageChangeInfo.newPage > pageChangeInfo.lastPage) {
-				switch (this.migrationStateModel._databaseBackup.networkContainerType) {
-					case NetworkContainerType.BLOB_CONTAINER:
-						for (let i = 0; i < this.migrationStateModel._databaseBackup.blobs.length; i++) {
-							const storageAccount = this.migrationStateModel._databaseBackup.blobs[i].storageAccount;
-							this.migrationStateModel._databaseBackup.blobs[i].storageKey = (await getStorageAccountAccessKeys(
-								this.migrationStateModel._azureAccount,
-								this.migrationStateModel._databaseBackup.subscription,
-								storageAccount)).keyName1;
-						}
-						break;
-					case NetworkContainerType.NETWORK_SHARE:
-						// All network share migrations use the same storage account
-						const storageAccount = this.migrationStateModel._databaseBackup.networkShares[0]?.storageAccount;
-						const storageKey = (await getStorageAccountAccessKeys(
+		this.wizard.message = { text: '' };
+		this.wizard.customButtons[VALIDATE_IR_BUTTON].hidden = true;
+
+		if (pageChangeInfo.newPage > pageChangeInfo.lastPage) {
+			switch (this.migrationStateModel._databaseBackup.networkContainerType) {
+				case NetworkContainerType.BLOB_CONTAINER:
+					for (let i = 0; i < this.migrationStateModel._databaseBackup.blobs.length; i++) {
+						const storageAccount = this.migrationStateModel._databaseBackup.blobs[i].storageAccount;
+						this.migrationStateModel._databaseBackup.blobs[i].storageKey = (await getStorageAccountAccessKeys(
 							this.migrationStateModel._azureAccount,
 							this.migrationStateModel._databaseBackup.subscription,
 							storageAccount)).keyName1;
-						for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
-							this.migrationStateModel._databaseBackup.networkShares[i].storageKey = storageKey;
-						}
-						break;
-				}
+					}
+					break;
+				case NetworkContainerType.NETWORK_SHARE:
+					// All network share migrations use the same storage account
+					const storageAccount = this.migrationStateModel._databaseBackup.networkShares[0]?.storageAccount;
+					const storageKey = (await getStorageAccountAccessKeys(
+						this.migrationStateModel._azureAccount,
+						this.migrationStateModel._databaseBackup.subscription,
+						storageAccount)).keyName1;
+					for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
+						this.migrationStateModel._databaseBackup.networkShares[i].storageKey = storageKey;
+					}
+					break;
 			}
-		} finally {
-			this.wizard.customButtons[VALIDATE_IR_BUTTON].hidden = true;
-			this.wizard.message = { text: '' };
-			this.wizard.registerNavigationValidator((pageChangeInfo) => true);
 		}
 	}
 

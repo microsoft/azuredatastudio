@@ -15,7 +15,7 @@ import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError 
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 import { excludeDatabases, TargetDatabaseInfo } from '../api/sqlUtils';
-import { ValidationResult } from '../dialog/validationResults/valideIRDialog';
+import { ValidateIrState, ValidationResult } from '../dialog/validationResults/valideIRDialog';
 const localize = nls.loadMessageBundle();
 
 export enum State {
@@ -272,6 +272,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._databaseBackup = {} as DatabaseBackupModel;
 		this._databaseBackup.networkShares = [];
 		this._databaseBackup.blobs = [];
+		this._databaseBackup.networkContainerType = NetworkContainerType.BLOB_CONTAINER;
 		this._targetDatabaseNames = [];
 		this._assessmentReportFilePath = '';
 		this._skuRecommendationReportFilePaths = [];
@@ -281,6 +282,32 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._skuTargetPercentile = 95;
 		this._skuEnablePreview = false;
 		this._skuEnableElastic = false;
+	}
+
+	public get validationTargetResults(): ValidationResult[] {
+		switch (this._targetType) {
+			case MigrationTargetType.SQLDB:
+				return this._validateIrSqlDb;
+			case MigrationTargetType.SQLMI:
+				return this._validateIrSqlMi;
+			case MigrationTargetType.SQLVM:
+				return this._validateIrSqlVm;
+			default:
+				return [];
+		}
+	}
+
+	public get isIrTargetValidated(): boolean {
+		const results = this.validationTargetResults;
+		return results.length > 1
+			&& results.every(r =>
+				r.errors.length === 0 &&
+				r.state === ValidateIrState.Succeeded)
+	}
+
+	public get isIrMigration(): boolean {
+		return this._targetType === MigrationTargetType.SQLDB
+			|| this._databaseBackup?.networkContainerType === NetworkContainerType.NETWORK_SHARE;
 	}
 
 	public get sourceConnectionId(): string {
@@ -910,7 +937,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						requestBody.properties.backupConfiguration = {
 							targetLocation: undefined!,
 							sourceLocation: {
-								fileStorageType: 'AzureBlob',
+								fileStorageType: FileStorageType.AzureBlob,
 								azureBlob: {
 									storageAccountResourceId: this._databaseBackup.blobs[i].storageAccount.id,
 									accountKey: this._databaseBackup.blobs[i].storageKey,
@@ -933,7 +960,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 								accountKey: this._databaseBackup.networkShares[i].storageKey,
 							},
 							sourceLocation: {
-								fileStorageType: 'FileShare',
+								fileStorageType: FileStorageType.FileShare,
 								fileShare: {
 									path: this._databaseBackup.networkShares[i].networkShareLocation,
 									username: this._databaseBackup.networkShares[i].windowsUser,
@@ -1164,7 +1191,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			this._sourceDatabaseNames = this._databasesForMigration;
 			this._targetDatabaseNames = this.savedInfo.targetDatabaseNames;
-			this._databaseBackup.networkContainerType = this.savedInfo.networkContainerType || undefined!;
+			this._databaseBackup.networkContainerType = this.savedInfo.networkContainerType ?? NetworkContainerType.BLOB_CONTAINER;
 			this._databaseBackup.networkShares = this.savedInfo.networkShares;
 			this._databaseBackup.blobs = this.savedInfo.blobs;
 			this._databaseBackup.subscription = this.savedInfo.subscription || undefined!;

@@ -49,6 +49,9 @@ export class WizardController {
 		this._wizardObject.generateScriptButton.hidden = true;
 		this._wizardObject.nextButton.position = 'left';
 		this._wizardObject.nextButton.secondary = false;
+		this._wizardObject.doneButton.label = loc.START_MIGRATION_TEXT;
+		this._wizardObject.doneButton.position = 'left';
+		this._wizardObject.doneButton.secondary = false;
 		this._wizardObject.backButton.position = 'left';
 		this._wizardObject.backButton.secondary = true;
 		this._wizardObject.cancelButton.position = 'left';
@@ -60,8 +63,8 @@ export class WizardController {
 		saveAndCloseButton.secondary = true;
 
 		const validateButton = azdata.window.createButton(
-			'Run validation', // todo: loc string
-			'right');
+			loc.RUN_VALIDATION,
+			'left');
 		validateButton.secondary = false;
 		validateButton.hidden = true;
 
@@ -151,8 +154,6 @@ export class WizardController {
 					},
 					{});
 			}));
-
-		this._wizardObject.doneButton.label = loc.START_MIGRATION_TEXT;
 
 		this._disposables.push(
 			this._wizardObject.doneButton.onClick(async (e) => {

@@ -608,9 +608,6 @@ export async function validateIrSqlDatabaseMigrationSettings(
 		}
 	};
 
-	console.log(` ** API request path:  ${path}`);
-	console.log(` ** API request body:  ${JSON.stringify(requestBody)}`);
-
 	const response = await api.makeAzureRestRequest(
 		account,
 		subscription,
@@ -620,10 +617,8 @@ export async function validateIrSqlDatabaseMigrationSettings(
 		true);
 
 	if (response.errors.length > 0) {
-		console.log(` ** API request error(s):  ${response.errors.map(e => e.message).join(',')}`);
 		throw new Error(response.errors.map(e => e.message).join(','));
 	}
-	console.log(` ** API response:  ${JSON.stringify(response.response.data)}`);
 	return response.response.data;
 }
 
@@ -677,9 +672,6 @@ export async function validateIrDatabaseMigrationSettings(
 		}
 	};
 
-	console.log(` ** API request path:  ${path}`);
-	console.log(` ** API request body:  ${JSON.stringify(requestBody)}`);
-
 	const response = await api.makeAzureRestRequest(
 		account,
 		subscription,
@@ -689,10 +681,8 @@ export async function validateIrDatabaseMigrationSettings(
 		true);
 
 	if (response.errors.length > 0) {
-		console.log(` ** API request error(s):  ${response.errors.map(e => e.message).join(',')}`);
 		throw new Error(response.errors.map(e => e.message).join(','));
 	}
-	console.log(` ** API response:  ${JSON.stringify(response.response.data)}`);
 	return response.response.data;
 }
 
@@ -702,10 +692,10 @@ export function sortResourceArrayByName(resourceArray: SortableAzureResources[])
 		return;
 	}
 	resourceArray.sort((a: SortableAzureResources, b: SortableAzureResources) => {
-		if (a.name.toLowerCase() < b.name.toLowerCase()) {
+		if (a?.name?.toLowerCase() < b?.name?.toLowerCase()) {
 			return -1;
 		}
-		if (a.name.toLowerCase() > b.name.toLowerCase()) {
+		if (a?.name?.toLowerCase() > b?.name?.toLowerCase()) {
 			return 1;
 		}
 		return 0;

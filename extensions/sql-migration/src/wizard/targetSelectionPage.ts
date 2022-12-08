@@ -125,52 +125,9 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			this.migrationStateModel._resourceGroup = undefined!;
 			this.migrationStateModel._targetServerInstance = undefined!;
 
-			// await this._azureResourceDropdown.updateProperty('values', []);
-			// // await this._azureResourceDropdown.updateProperty('value', undefined);
-
-			// await this._azureResourceGroupDropdown.updateProperty('values', []);
-			// // await this._azureResourceGroupDropdown.updateProperty('value', undefined);
-
-			// await this._azureLocationDropdown.updateProperty('values', []);
-			// // await this._azureLocationDropdown.updateProperty('value', undefined);
-
-			// await this._azureSubscriptionDropdown.updateProperty('values', []);
-			// // await this._azureSubscriptionDropdown.updateProperty('value', undefined);
-
-			// await this._accountTenantDropdown.updateProperty('values', []);
-			// // await this._accountTenantDropdown.updateProperty('value', undefined);
-
-			// await this._azureAccountsDropdown.updateProperty('values', []);
-			// // await this._azureAccountsDropdown.updateProperty('value', undefined);
-
-			console.log(` ** onPageEnter =>  clear dropwdown values`);
 			const clearDropDown = async (dropDown: azdata.DropDownComponent): Promise<void> => {
-				// const fireOnTextChange = dropDown.fireOnTextChange;
-				// dropDown.fireOnTextChange = false;
-				//dropDown.value = undefined;
-				//await dropDown.updateProperty('values', []);
-
-				///// NOT WORK /////
-				// await dropDown.updateProperties({ 'values': [], 'value': undefined });
-
-				// dropDown.value = undefined;
-				// await dropDown.updateProperty('values', []);
-
-				// const fireOnTextChange = dropDown.fireOnTextChange;
-				// dropDown.fireOnTextChange = false;
-				// await dropDown.updateProperties({ 'values': [], 'value': undefined });
-				// await dropDown.updateProperty('value', undefined);
-				// dropDown.fireOnTextChange = fireOnTextChange;
-				///// NOT WORK /////
-
 				dropDown.values = [];
 				dropDown.value = undefined;
-				// await dropDown.updateProperty('value', undefined);
-
-				///// THIS WORKS /////
-				// dropDown.values = [];
-				// dropDown.value = undefined;
-				///// THIS WORKS /////
 			};
 			await clearDropDown(this._azureAccountsDropdown);
 			await clearDropDown(this._accountTenantDropdown);
@@ -178,27 +135,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			await clearDropDown(this._azureLocationDropdown);
 			await clearDropDown(this._azureResourceGroupDropdown);
 			await clearDropDown(this._azureResourceDropdown);
-
-			// // this._azureResourceDropdown.value = undefined!;
-			// this._azureResourceDropdown.values = [];
-
-			// // this._azureResourceGroupDropdown.value = undefined!;
-			// this._azureResourceGroupDropdown.values = [];
-
-			// // this._azureLocationDropdown.value = undefined!;
-			// this._azureLocationDropdown.values = [];
-
-			// // this._azureSubscriptionDropdown.value = undefined!;
-			// this._azureSubscriptionDropdown.values = [];
-
-			// // this._accountTenantDropdown.value = undefined!;
-			// this._accountTenantDropdown.values = [];
-
-			// // this._azureAccountsDropdown.value = undefined!;
-			// this._azureAccountsDropdown.values = [];
 		}
 
-		console.log(` ** onPageEnter =>  await this.populateAzureAccountsDropdown();`);
 		await this.populateAzureAccountsDropdown();
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
@@ -310,8 +248,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}).component();
 		this._disposables.push(
 			this._azureAccountsDropdown.onValueChanged(async (value) => {
-				console.log(` ** this._azureAccountsDropdown.onValueChanged = > '${value}' => await this.populateTenantsDropdown();`);
-
 				if (value && value !== 'undefined') {
 					const selectedAccount = this.migrationStateModel._azureAccounts?.find(account => account.displayInfo.displayName === value);
 					this.migrationStateModel._azureAccount = (selectedAccount)
@@ -364,8 +300,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 		this._disposables.push(
 			this._accountTenantDropdown.onValueChanged(async (value) => {
-				console.log(` ** this._accountTenantDropdown.onValueChanged = > '${value}' => await this.populateSubscriptionDropdown();`);
-
 				if (value && value !== 'undefined') {
 					/**
 					 * Replacing all the tenants in azure account with the tenant user has selected.
@@ -442,8 +376,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}).component();
 		this._disposables.push(
 			this._azureLocationDropdown.onValueChanged(async (value) => {
-				console.log(` ** this._azureLocationDropdown.onValueChanged = > '${value}' => await this.populateResourceGroupDropdown();`);
-
 				if (value && value !== 'undefined' && value !== constants.NO_LOCATION_FOUND) {
 					const selectedLocation = this.migrationStateModel._locations?.find(location => location.displayName === value);
 					this.migrationStateModel._location = (selectedLocation)
@@ -671,8 +603,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}).component();
 		this._disposables.push(
 			this._azureResourceGroupDropdown.onValueChanged(async (value) => {
-				console.log(` ** this._azureResourceGroupDropdown.onValueChanged = > '${value}' => await this.populateResourceInstanceDropdown();`);
-
 				if (value && value !== 'undefined' && value !== constants.RESOURCE_GROUP_NOT_FOUND) {
 					const selectedResourceGroup = this.migrationStateModel._resourceGroups?.find(rg => rg.name === value);
 					this.migrationStateModel._resourceGroup = (selectedResourceGroup)
@@ -703,8 +633,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}).component();
 		this._disposables.push(
 			this._azureResourceDropdown.onValueChanged(async (value) => {
-				console.log(` ** this._azureResourceDropdown.onValueChanged = > '${value}' => await this._validateFields();`);
-
 				const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
 				if (value && value !== 'undefined' &&
 					value !== constants.NO_MANAGED_INSTANCE_FOUND &&
@@ -856,7 +784,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			this._azureAccountsDropdown.loading = true;
 			this.migrationStateModel._azureAccounts = await utils.getAzureAccounts();
 
-			// this._azureAccountsDropdown.value = undefined;
 			this._azureAccountsDropdown.values = await utils.getAzureAccountsDropdownValues(this.migrationStateModel._azureAccounts);
 		} finally {
 			this._azureAccountsDropdown.loading = false;
@@ -878,7 +805,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				this.migrationStateModel._azureAccount?.properties?.tenants?.length > 0) {
 				this.migrationStateModel._accountTenants = utils.getAzureTenants(this.migrationStateModel._azureAccount);
 
-				// this._accountTenantDropdown.value = undefined;
 				this._accountTenantDropdown.values = await utils.getAzureTenantsDropdownValues(this.migrationStateModel._accountTenants);
 			}
 			const tenantId =
@@ -904,8 +830,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		try {
 			this._azureSubscriptionDropdown.loading = true;
 			this.migrationStateModel._subscriptions = await utils.getAzureSubscriptions(this.migrationStateModel._azureAccount);
-
-			// this._azureSubscriptionDropdown.value = undefined;
 			this._azureSubscriptionDropdown.values = await utils.getAzureSubscriptionsDropdownValues(this.migrationStateModel._subscriptions);
 		} catch (e) {
 			console.log(e);
@@ -954,7 +878,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._targetSqlDatabaseServers);
 					break;
 			}
-			// this._azureLocationDropdown.value = undefined;
 			this._azureLocationDropdown.values = await utils.getAzureLocationsDropdownValues(this.migrationStateModel._locations);
 		} catch (e) {
 			console.log(e);
@@ -991,7 +914,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._location);
 					break;
 			}
-			// this._azureResourceGroupDropdown.value = undefined;
 			this._azureResourceGroupDropdown.values = utils.getResourceDropdownValues(
 				this.migrationStateModel._resourceGroups,
 				constants.RESOURCE_GROUP_NOT_FOUND);
@@ -1010,8 +932,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	private async populateResourceInstanceDropdown(): Promise<void> {
 		try {
 			this._azureResourceDropdown.loading = true;
-			// this._azureResourceDropdown.value = undefined;
-
 			switch (this.migrationStateModel._targetType) {
 				case MigrationTargetType.SQLMI:
 					this._azureResourceDropdown.values = await utils.getManagedInstancesDropdownValues(
