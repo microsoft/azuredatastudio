@@ -1219,3 +1219,18 @@ export namespace ExecutionPlanComparisonRequest {
 }
 
 // ------------------------------- < Execution Plan > ------------------------------------
+
+// ------------------------------- < Tde Migration > ------------------------------------
+
+export namespace TdeMigrateRequest {
+	export const type = new RequestType<TdeMigrationParams, mssql.TdeMigrationResult, void, void>('migration/tdemigration');
+}
+
+export interface TdeMigrationParams {
+	encryptedDatabases: string[];
+	sourceSqlConnectionString: string;
+	targetSubscriptionId: string;
+	targetResourceGroupName: string;
+	targetManagedInstanceName: string;
+}
+// ------------------------------- < Tde Migration > ------------------------------------

@@ -45,6 +45,8 @@ declare module 'mssql' {
 		readonly sqlMigration: ISqlMigrationService;
 
 		readonly azureBlob: IAzureBlobService;
+
+		readonly tdeMigration: ITdeMigrationService;
 	}
 
 	/**
@@ -814,4 +816,28 @@ declare module 'mssql' {
 		 */
 		createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Promise<CreateSasResponse>;
 	}
+
+	// SqlMigration interfaces  BEGIN -----------------------------------------------------------------------
+	export interface TdeMigrationRequest {
+		encryptedDatabases: string[];
+		sourceSqlConnectionString: string;
+		targetSubscriptionId: string;
+		targetResourceGroupName: string;
+		targetManagedInstanceName: string;
+	}
+
+	export interface TdeMigrationEntryResult {
+		dbName: string;
+		success: boolean;
+		errorMessage: string;
+	}
+
+	export interface TdeMigrationResult {
+		migrationStatuses: TdeMigrationEntryResult[];
+	}
+
+	export interface ITdeMigrationService {
+		migrateCertificate(encryptedDatabases: string[], sourceSqlConnectionString: string, targetSubscriptionId: string, targetResourceGroupName: string, targetManagedInstanceName: string): Promise<TdeMigrationResult>;
+	}
+	// SqlMigration interfaces END -----------------------------------------------------------------------
 }
