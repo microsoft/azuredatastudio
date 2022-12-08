@@ -157,7 +157,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				links: [
 					{
 						text: constants.DATABASE_BACKUP_SQL_VM_PAGE_BLOB_URL_LABEL,
-						url: 'https://learn.microsoft.com/en-us/sql/relational-databases/backup-restore/sql-server-backup-to-url'
+						url: 'https://learn.microsoft.com/en-us/azure/dms/known-issues-azure-sql-migration-azure-data-studio#azure-sql-managed-instance-and-sql-server-on-azure-virtual-machine-known-issues-and-limitations'
 					}
 				]
 			}).component();
@@ -715,7 +715,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 			try {
 				const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
-				if (this.migrationStateModel._targetType === MigrationTargetType.SQLVM && sqlServerInfo.serverMajorVersion! <= 12) {		// block SQL VM file share scenario for SQL Server <= 2014
+				if (this.migrationStateModel._targetType === MigrationTargetType.SQLVM && utils.isSqlServerVersion2014OrBelow(sqlServerInfo)) {		// block SQL VM file share scenario for SQL Server <= 2014
 					this._networkShareButton.enabled = false;
 					this.migrationStateModel._databaseBackup.networkContainerType = NetworkContainerType.BLOB_CONTAINER
 					this._blobContainerButton.checked = true;
