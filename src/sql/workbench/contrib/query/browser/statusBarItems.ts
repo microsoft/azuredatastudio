@@ -307,9 +307,9 @@ export class QueryResultSelectionSummaryStatusBarContribution extends Disposable
 
 		// When there are more than 1 numeric values:
 		//   Text: Average, Count, Sum
-		//   Tooltip: Average, Count, Distinct Count, Max, Min, Sum
+		//   Tooltip: Average, Count, Distinct Count, Max, Min,Null Count, Sum
 		// Otherwise:
-		//   Text: Count, Distinct Count
+		//   Text: Count, Distinct Count, Null Count
 		const values = selectedCells.map(cell => cell.invariantCultureDisplayValue || cell.displayValue);
 		const distinctValues = new Set(values);
 		const numericValues = selectedCells.map(cell => cell.invariantCultureDisplayValue || cell.displayValue).filter(value => !Number.isNaN(Number(value))).map(value => Number(value));
