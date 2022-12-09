@@ -630,11 +630,11 @@ export const COPY_THROUGHPUT_INFO = localize('sql.migration.copy.throughput.info
 export const SERVICE_SELECTION_LOCATION_MESSAGE = localize('sql.migration.service.selection.location.msg', "Please select the location of your database backup files before continuing.");
 
 // Validate IR dialog
-export const VALIDATION_STATE_CANCELED = localize('sql.migration.validation.state.canceled', "* Canceled");
-export const VALIDATION_STATE_PENDING = localize('sql.migration.validation.state.pending', "* Pending");
-export const VALIDATION_STATE_RUNNING = localize('sql.migration.validation.state.running', "* Running");
-export const VALIDATION_STATE_SUCCEEDED = localize('sql.migration.validation.state.succeeded', "* Succeeded");
-export const VALIDATION_STATE_FAILED = localize('sql.migration.validation.state.failed', "* Failed");
+export const VALIDATION_STATE_CANCELED = localize('sql.migration.validation.state.canceled', "Canceled");
+export const VALIDATION_STATE_PENDING = localize('sql.migration.validation.state.pending', "Pending");
+export const VALIDATION_STATE_RUNNING = localize('sql.migration.validation.state.running', "Running");
+export const VALIDATION_STATE_SUCCEEDED = localize('sql.migration.validation.state.succeeded', "Succeeded");
+export const VALIDATION_STATE_FAILED = localize('sql.migration.validation.state.failed', "Failed");
 
 export const VALIDATE_IR_DONE_BUTTON = localize('sql.migration.validate.ir.done.button', "Done");
 export const VALIDATE_IR_HEADING = localize('sql.migration.validate.ir.heading', "We are validating the following");

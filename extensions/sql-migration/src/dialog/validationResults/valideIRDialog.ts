@@ -594,9 +594,9 @@ export class ValidateIrDialog {
 			message,
 			<azdata.IconColumnCellValue>{
 				icon: IconPathHelper.notStartedMigration,
-				title: ValidateIrState.Pending,
+				title: ValidationStatusLookup[ValidateIrState.Pending],
 			},
-			ValidateIrState.Pending,
+			ValidationStatusLookup[ValidateIrState.Pending],
 			[],
 			ValidateIrState.Pending]);
 	}
