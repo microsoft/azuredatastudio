@@ -20,7 +20,7 @@ import { ValidateIrDialog } from '../dialog/validationResults/validateIrDialog';
 
 const WIZARD_TABLE_COLUMN_WIDTH = '200px';
 const WIZARD_TABLE_COLUMN_WIDTH_SMALL = '170px';
-const VALIDATE_IR_BUTTON = 0;
+const VALIDATE_IR_CUSTOM_BUTTON_INDEX = 0;
 
 const blobResourceGroupErrorStrings = [constants.RESOURCE_GROUP_NOT_FOUND];
 const blobStorageAccountErrorStrings = [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP_PROMPT];
@@ -86,7 +86,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._migrationTableSection = this._migrationTableSelectionContainer();
 
 		this._disposables.push(
-			this.wizard.customButtons[VALIDATE_IR_BUTTON].onClick(
+			this.wizard.customButtons[VALIDATE_IR_CUSTOM_BUTTON_INDEX].onClick(
 				async e => await this._validateIr()));
 
 		const form = this._view.modelBuilder.formContainer()
@@ -633,7 +633,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		this.wizard.customButtons[VALIDATE_IR_BUTTON].hidden = !this.migrationStateModel.isIrMigration;
+		this.wizard.customButtons[VALIDATE_IR_CUSTOM_BUTTON_INDEX].hidden = !this.migrationStateModel.isIrMigration;
 		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 			return;
 		}
@@ -1105,12 +1105,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 				const canceled = results.some(result => result.state === ValidateIrState.Canceled);
 				const errors: string[] = results.flatMap(result => result.errors) ?? [];
+				const errorsMessage: string = errors.join(EOL);
 				const hasErrors = errors.length > 0;
 				const msg = hasResults
 					? hasErrors
 						? canceled
-							? constants.VALIDATION_MESSAGE_CANCELED_ERRORS(errors)
-							: constants.VALIDATION_MESSAGE_COMPLETED_ERRORS(errors)
+							? constants.VALIDATION_MESSAGE_CANCELED_ERRORS(errorsMessage)
+							: constants.VALIDATE_IR_VALIDATION_COMPLETED_ERRORS(errorsMessage)
 						: constants.VALIDATION_MESSAGE_CANCELED
 					: constants.VALIDATION_MESSAGE_NOT_RUN;
 
@@ -1124,7 +1125,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.message = { text: '' };
-		this.wizard.customButtons[VALIDATE_IR_BUTTON].hidden = true;
+		this.wizard.customButtons[VALIDATE_IR_CUSTOM_BUTTON_INDEX].hidden = true;
 
 		if (pageChangeInfo.newPage > pageChangeInfo.lastPage) {
 			switch (this.migrationStateModel._databaseBackup.networkContainerType) {
