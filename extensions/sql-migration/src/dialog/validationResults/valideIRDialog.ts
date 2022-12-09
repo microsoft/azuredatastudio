@@ -7,19 +7,11 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../../constants/strings';
 import { validateIrDatabaseMigrationSettings, validateIrSqlDatabaseMigrationSettings } from '../../api/azure';
-import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
+import { MigrationStateModel, MigrationTargetType, ValidateIrState, ValidationResult } from '../../models/stateMachine';
 import { EOL } from 'os';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 
 const DialogName = 'ValidateIrDialog';
-
-export enum ValidateIrState {
-	Pending = 'Pending',
-	Running = 'Running',
-	Succeeded = 'Succeeded',
-	Failed = 'Failed',
-	Canceled = 'Canceled',
-}
 
 enum Result {
 	message = 0,
@@ -29,10 +21,14 @@ enum Result {
 	state = 4,
 }
 
-export interface ValidationResult {
-	errors: string[];
-	state: ValidateIrState;
-}
+export const ValidationStatusLookup: constants.LookupTable<string | undefined> = {
+	[ValidateIrState.Canceled]: constants.VALIDATION_STATE_CANCELED,
+	[ValidateIrState.Failed]: constants.VALIDATION_STATE_FAILED,
+	[ValidateIrState.Pending]: constants.VALIDATION_STATE_PENDING,
+	[ValidateIrState.Running]: constants.VALIDATION_STATE_RUNNING,
+	[ValidateIrState.Succeeded]: constants.VALIDATION_STATE_SUCCEEDED,
+	default: undefined
+};
 
 export class ValidateIrDialog {
 	private _canceled: boolean = true;
@@ -54,7 +50,6 @@ export class ValidateIrDialog {
 		onClosed: () => void) {
 		this._model = model;
 		this._onClosed = onClosed;
-
 	}
 
 	public async openDialog(dialogTitle: string, results?: ValidationResult[]): Promise<void> {
@@ -292,7 +287,7 @@ export class ValidateIrDialog {
 				const status = results[Result.status];
 				const errors = results[Result.errors];
 				statusMessages.push(
-					constants.VALIDATE_IR_VALIDATION_STATUS(status, errors));
+					constants.VALIDATE_IR_VALIDATION_STATUS(ValidationStatusLookup[status], errors));
 			}
 		}
 
@@ -625,12 +620,13 @@ export class ValidateIrDialog {
 
 	private async _updateResults(row: number, state: ValidateIrState, errors: string[] = []): Promise<void> {
 		const result = this._validationResult[row];
+		const status = ValidationStatusLookup[state];
 		const statusMsg = state === ValidateIrState.Failed && errors.length > 0
-			? `${state.toString()} - error(s) ${errors.length} `
-			: state.toString();
+			? constants.VALIDATE_IR_VALIDATION_STATUS_ERROR_COUNT(status, errors.length)
+			: status;
 
 		const statusMessage = errors.length > 0
-			? `${statusMsg}${EOL}${errors.join(EOL)} `
+			? constants.VALIDATE_IR_VALIDATION_STATUS_ERROR(status, errors)
 			: statusMsg;
 
 		this._validationResult[row] = [

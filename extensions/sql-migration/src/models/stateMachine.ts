@@ -15,8 +15,21 @@ import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError 
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 import { excludeDatabases, TargetDatabaseInfo } from '../api/sqlUtils';
-import { ValidateIrState, ValidationResult } from '../dialog/validationResults/valideIRDialog';
+
 const localize = nls.loadMessageBundle();
+
+export enum ValidateIrState {
+	Pending = 'Pending',
+	Running = 'Running',
+	Succeeded = 'Succeeded',
+	Failed = 'Failed',
+	Canceled = 'Canceled',
+}
+
+export interface ValidationResult {
+	errors: string[];
+	state: ValidateIrState;
+}
 
 export enum State {
 	INIT,
@@ -298,7 +311,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 	public get isIrTargetValidated(): boolean {
-		const results = this.validationTargetResults;
+		const results = this.validationTargetResults ?? [];
 		return results.length > 1
 			&& results.every(r =>
 				r.errors.length === 0 &&

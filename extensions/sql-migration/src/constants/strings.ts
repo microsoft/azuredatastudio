@@ -630,6 +630,12 @@ export const COPY_THROUGHPUT_INFO = localize('sql.migration.copy.throughput.info
 export const SERVICE_SELECTION_LOCATION_MESSAGE = localize('sql.migration.service.selection.location.msg', "Please select the location of your database backup files before continuing.");
 
 // Validate IR dialog
+export const VALIDATION_STATE_CANCELED = localize('sql.migration.validation.state.canceled', "* Canceled");
+export const VALIDATION_STATE_PENDING = localize('sql.migration.validation.state.pending', "* Pending");
+export const VALIDATION_STATE_RUNNING = localize('sql.migration.validation.state.running', "* Running");
+export const VALIDATION_STATE_SUCCEEDED = localize('sql.migration.validation.state.succeeded', "* Succeeded");
+export const VALIDATION_STATE_FAILED = localize('sql.migration.validation.state.failed', "* Failed");
+
 export const VALIDATE_IR_DONE_BUTTON = localize('sql.migration.validate.ir.done.button', "Done");
 export const VALIDATE_IR_HEADING = localize('sql.migration.validate.ir.heading', "We are validating the following");
 export const VALIDATE_IR_START_VALIDATION = localize('sql.migration.validate.ir.start.validation', "Start validation");
@@ -643,16 +649,36 @@ export function VALIDATE_IR_VALIDATION_COMPLETED_ERRORS(msg: string): string {
 		'sql.migration.validate.ir.completed.errors',
 		"Validation completed with the following error(s):{0}{1}", EOL, msg);
 }
-export function VALIDATE_IR_VALIDATION_STATUS(state: string, errors?: string[]): string {
+export function VALIDATE_IR_VALIDATION_STATUS(state: string | undefined, errors?: string[]): string {
+	const status = state ?? '';
 	if (errors && errors.length > 0) {
 		return localize(
 			'sql.migration.validate.ir.status.errors',
-			"Validation status: {0}{1}{2}", state, EOL, errors.join(EOL));
+			"Validation status: {0}{1}{2}", status, EOL, errors.join(EOL));
 	} else {
 		return localize(
 			'sql.migration.validate.ir.status',
-			"Validation status: {0}", state);
+			"Validation status: {0}", status);
 	}
+}
+
+export function VALIDATE_IR_VALIDATION_STATUS_ERROR_COUNT(state: string | undefined, errorCount: number): string {
+	const status = state ?? '';
+	return localize(
+		'sql.migration.validate.ir.status.error.count',
+		"{0} - error(s) {errors.length} ",
+		status,
+		errorCount);
+}
+
+export function VALIDATE_IR_VALIDATION_STATUS_ERROR(state: string | undefined, errors: string[]): string {
+	const status = state ?? '';
+	return localize(
+		'sql.migration.validate.ir.status.error',
+		"{0}{1}{2}",
+		status,
+		EOL,
+		errors.join(EOL));
 }
 
 export const VALIDATE_IR_COLUMN_VALIDATION_STEPS = localize('sql.migration.validate.ir.column.validation.steps', "Validation steps");

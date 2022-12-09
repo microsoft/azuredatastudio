@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { getStorageAccountAccessKeys } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { Blob, MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, NetworkShare, StateChangeEvent } from '../models/stateMachine';
+import { Blob, MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, NetworkShare, StateChangeEvent, ValidateIrState, ValidationResult } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
@@ -16,7 +16,7 @@ import * as utils from '../api/utils';
 import { logError, TelemetryViews } from '../telemtery';
 import * as styles from '../constants/styles';
 import { TableMigrationSelectionDialog } from '../dialog/tableMigrationSelection/tableMigrationSelectionDialog';
-import { ValidateIrDialog, ValidateIrState, ValidationResult } from '../dialog/validationResults/valideIRDialog';
+import { ValidateIrDialog } from '../dialog/validationResults/valideIRDialog';
 
 const WIZARD_TABLE_COLUMN_WIDTH = '200px';
 const WIZARD_TABLE_COLUMN_WIDTH_SMALL = '170px';
@@ -977,67 +977,66 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 			this.wizard.message = { text: '' };
 			const errors: string[] = [];
-			switch (this.migrationStateModel._databaseBackup.networkContainerType) {
-				case NetworkContainerType.NETWORK_SHARE:
-					if ((<azdata.CategoryValue>this._networkShareStorageAccountResourceGroupDropdown.value)?.displayName === constants.RESOURCE_GROUP_NOT_FOUND) {
-						errors.push(constants.INVALID_RESOURCE_GROUP_ERROR);
-					}
-					if ((<azdata.CategoryValue>this._networkShareContainerStorageAccountDropdown.value)?.displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
-						errors.push(constants.INVALID_STORAGE_ACCOUNT_ERROR);
-					}
-					break;
-				case NetworkContainerType.BLOB_CONTAINER:
-					this._blobContainerResourceGroupDropdowns.forEach((v, index) => {
-						if (this.shouldDisplayBlobDropdownError(v, [constants.RESOURCE_GROUP_NOT_FOUND])) {
-							errors.push(constants.INVALID_BLOB_RESOURCE_GROUP_ERROR(this.migrationStateModel._databasesForMigration[index]));
-						}
-					});
-					this._blobContainerStorageAccountDropdowns.forEach((v, index) => {
-						if (this.shouldDisplayBlobDropdownError(v, [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP_PROMPT])) {
-							errors.push(constants.INVALID_BLOB_STORAGE_ACCOUNT_ERROR(this.migrationStateModel._databasesForMigration[index]));
-						}
-					});
-					this._blobContainerDropdowns.forEach((v, index) => {
-						if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBCONTAINERS_FOUND, constants.SELECT_STORAGE_ACCOUNT])) {
-							errors.push(constants.INVALID_BLOB_CONTAINER_ERROR(this.migrationStateModel._databasesForMigration[index]));
-						}
-					});
 
-					if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
-						this._blobContainerLastBackupFileDropdowns.forEach((v, index) => {
-							if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBFILES_FOUND, constants.SELECT_BLOB_CONTAINER])) {
-								errors.push(constants.INVALID_BLOB_LAST_BACKUP_FILE_ERROR(this.migrationStateModel._databasesForMigration[index]));
-							}
-						});
-					}
-
-					if (errors.length > 0) {
-						const duplicates: Map<string, number[]> = new Map();
-						for (let i = 0; i < this.migrationStateModel._targetDatabaseNames.length; i++) {
-							const blobContainerId = this.migrationStateModel._databaseBackup.blobs[i].blobContainer?.id;
-							if (duplicates.has(blobContainerId)) {
-								duplicates.get(blobContainerId)?.push(i);
-							} else {
-								duplicates.set(blobContainerId, [i]);
-							}
+			const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
+			if (isSqlDbTarget) {
+				if (!this._validateTableSelection()) {
+					errors.push(constants.DATABASE_TABLE_VALIDATE_SELECTION_MESSAGE);
+				}
+			} else {
+				switch (this.migrationStateModel._databaseBackup.networkContainerType) {
+					case NetworkContainerType.NETWORK_SHARE:
+						if ((<azdata.CategoryValue>this._networkShareStorageAccountResourceGroupDropdown.value)?.displayName === constants.RESOURCE_GROUP_NOT_FOUND) {
+							errors.push(constants.INVALID_RESOURCE_GROUP_ERROR);
 						}
-						duplicates.forEach((d) => {
-							if (d.length > 1) {
-								const dupString = `${d.map(index => this.migrationStateModel._databasesForMigration[index]).join(', ')}`;
-								errors.push(constants.PROVIDE_UNIQUE_CONTAINERS + dupString);
-							}
-						});
-					}
-					break;
-				default:
-					const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
-					if (isSqlDbTarget) {
-						if (!this._validateTableSelection()) {
-							errors.push(constants.DATABASE_TABLE_VALIDATE_SELECTION_MESSAGE);
+						if ((<azdata.CategoryValue>this._networkShareContainerStorageAccountDropdown.value)?.displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
+							errors.push(constants.INVALID_STORAGE_ACCOUNT_ERROR);
 						}
 						break;
-					}
-					return false;
+					case NetworkContainerType.BLOB_CONTAINER:
+						this._blobContainerResourceGroupDropdowns.forEach((v, index) => {
+							if (this.shouldDisplayBlobDropdownError(v, [constants.RESOURCE_GROUP_NOT_FOUND])) {
+								errors.push(constants.INVALID_BLOB_RESOURCE_GROUP_ERROR(this.migrationStateModel._databasesForMigration[index]));
+							}
+						});
+						this._blobContainerStorageAccountDropdowns.forEach((v, index) => {
+							if (this.shouldDisplayBlobDropdownError(v, [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP_PROMPT])) {
+								errors.push(constants.INVALID_BLOB_STORAGE_ACCOUNT_ERROR(this.migrationStateModel._databasesForMigration[index]));
+							}
+						});
+						this._blobContainerDropdowns.forEach((v, index) => {
+							if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBCONTAINERS_FOUND, constants.SELECT_STORAGE_ACCOUNT])) {
+								errors.push(constants.INVALID_BLOB_CONTAINER_ERROR(this.migrationStateModel._databasesForMigration[index]));
+							}
+						});
+
+						if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
+							this._blobContainerLastBackupFileDropdowns.forEach((v, index) => {
+								if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBFILES_FOUND, constants.SELECT_BLOB_CONTAINER])) {
+									errors.push(constants.INVALID_BLOB_LAST_BACKUP_FILE_ERROR(this.migrationStateModel._databasesForMigration[index]));
+								}
+							});
+						}
+
+						if (errors.length > 0) {
+							const duplicates: Map<string, number[]> = new Map();
+							for (let i = 0; i < this.migrationStateModel._targetDatabaseNames.length; i++) {
+								const blobContainerId = this.migrationStateModel._databaseBackup.blobs[i].blobContainer?.id;
+								if (duplicates.has(blobContainerId)) {
+									duplicates.get(blobContainerId)?.push(i);
+								} else {
+									duplicates.set(blobContainerId, [i]);
+								}
+							}
+							duplicates.forEach((d) => {
+								if (d.length > 1) {
+									const dupString = `${d.map(index => this.migrationStateModel._databasesForMigration[index]).join(', ')}`;
+									errors.push(constants.PROVIDE_UNIQUE_CONTAINERS + dupString);
+								}
+							});
+						}
+						break;
+				}
 			}
 
 			if (this.migrationStateModel._targetType === MigrationTargetType.SQLMI) {
