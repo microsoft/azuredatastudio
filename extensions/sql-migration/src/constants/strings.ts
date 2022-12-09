@@ -632,12 +632,13 @@ export const VALIDATION_STATE_SUCCEEDED = localize('sql.migration.validation.sta
 export const VALIDATION_STATE_FAILED = localize('sql.migration.validation.state.failed', "Failed");
 
 export const VALIDATE_IR_DONE_BUTTON = localize('sql.migration.validate.ir.done.button', "Done");
-export const VALIDATE_IR_HEADING = localize('sql.migration.validate.ir.heading', "We are validating the following");
+export const VALIDATE_IR_HEADING = localize('sql.migration.validate.ir.heading', "We are validating the following:");
 export const VALIDATE_IR_START_VALIDATION = localize('sql.migration.validate.ir.start.validation', "Start validation");
 export const VALIDATE_IR_STOP_VALIDATION = localize('sql.migration.validate.ir.stop.validation', "Stop validation");
 export const VALIDATE_IR_COPY_RESULTS = localize('sql.migration.validate.ir.copy.results', "Copy validation results");
 export const VALIDATE_IR_RESULTS_HEADING = localize('sql.migration.validate.ir.results.heading', "Validation step details");
 export const VALIDATE_IR_VALIDATION_COMPLETED = localize('sql.migration.validate.ir.validation.completed', "Validation completed successfully.");
+export const VALIDATE_IR_VALIDATION_CANCELED = localize('sql.migration.validate.ir.validation.camceled', "Validation check canceled");
 
 export function VALIDATE_IR_VALIDATION_COMPLETED_ERRORS(msg: string): string {
 	return localize(
@@ -678,7 +679,7 @@ export function VALIDATE_IR_VALIDATION_STATUS_ERROR(state: string | undefined, e
 
 export const VALIDATE_IR_COLUMN_VALIDATION_STEPS = localize('sql.migration.validate.ir.column.validation.steps', "Validation steps");
 export const VALIDATE_IR_COLUMN_STATUS = localize('sql.migration.validate.ir.column.status', "Status");
-export const VALIDATE_IR_VALIDATION_RESULT_LABEL_SHIR = localize('sql.migration.validate.ir.validation.result.label.shir', "Validating SHIR connectivity");
+export const VALIDATE_IR_VALIDATION_RESULT_LABEL_SHIR = localize('sql.migration.validate.ir.validation.result.label.shir', "Validating integration runtime connectivity");
 export const VALIDATE_IR_VALIDATION_RESULT_LABEL_STORAGE = localize('sql.migration.validate.ir.validation.result.label.storage', "Validating Azure storage connectivity");
 
 export function VALIDATE_IR_VALIDATION_RESULT_LABEL_DATABASE(databaseName: string): string {

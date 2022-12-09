@@ -13,7 +13,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 
 const DialogName = 'ValidateIrDialog';
 
-enum Result {
+enum ValidationResultIndex {
 	message = 0,
 	icon = 1,
 	status = 2,
@@ -232,20 +232,19 @@ export class ValidateIrDialog {
 	}
 
 	private _validationResults(): ValidationResult[] {
-		return this._validationResult.map(
-			result => {
-				const state = result[Result.state];
-				const finalState = this._canceled
-					? state === ValidateIrState.Running || state === ValidateIrState.Pending
-						? ValidateIrState.Canceled
-						: state
-					: state;
-				const errors = result[Result.errors] ?? [];
-				return {
-					errors: errors,
-					state: finalState,
-				};
-			});
+		return this._validationResult.map(result => {
+			const state = result[ValidationResultIndex.state];
+			const finalState = this._canceled
+				? state === ValidateIrState.Running || state === ValidateIrState.Pending
+					? ValidateIrState.Canceled
+					: state
+				: state;
+			const errors = result[ValidationResultIndex.errors] ?? [];
+			return {
+				errors: errors,
+				state: finalState,
+			};
+		});
 	}
 
 	private async _runValidation(results?: ValidationResult[]): Promise<void> {
@@ -284,8 +283,8 @@ export class ValidateIrDialog {
 			for (let i = 0; i < selectedRows.length; i++) {
 				const row = selectedRows[i];
 				const results: any[] = this._validationResult[row];
-				const status = results[Result.status];
-				const errors = results[Result.errors];
+				const status = results[ValidationResultIndex.status];
+				const errors = results[ValidationResultIndex.errors];
 				statusMessages.push(
 					constants.VALIDATE_IR_VALIDATION_STATUS(ValidationStatusLookup[status], errors));
 			}
@@ -370,10 +369,11 @@ export class ValidateIrDialog {
 		const databaseCount = this._model._databasesForMigration.length;
 		const sourceDatabaseName = this._model._databasesForMigration[0];
 		const networkShare = this._model._databaseBackup.networkShares[0];
+		let testNumber: number = 0;
 
 		try {
-			await this._updateValidateIrResults(0, ValidateIrState.Running);
 			// validate IR is online
+			await this._updateValidateIrResults(testNumber, ValidateIrState.Running);
 			const response = await validateIrDatabaseMigrationSettings(
 				this._model,
 				sourceServerName,
@@ -390,16 +390,19 @@ export class ValidateIrDialog {
 						sourceDatabaseName,
 						networkShare.networkShareLocation,
 						error));
-				await this._updateValidateIrResults(0, ValidateIrState.Failed, errors);
+				await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, errors);
+				return;
 			} else {
-				await this._updateValidateIrResults(0, ValidateIrState.Succeeded);
+				await this._updateValidateIrResults(testNumber, ValidateIrState.Succeeded);
 			}
 		} catch (error) {
-			await this._updateValidateIrResults(0, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
+			await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
+			return;
 		}
 
+		testNumber++;
 		try {
-			await this._updateValidateIrResults(1, ValidateIrState.Running);
+			await this._updateValidateIrResults(testNumber, ValidateIrState.Running);
 
 			// validate blob container connectivity
 			const response = await validateIrDatabaseMigrationSettings(
@@ -418,24 +421,27 @@ export class ValidateIrDialog {
 						sourceDatabaseName,
 						networkShare.networkShareLocation,
 						error));
-				await this._updateValidateIrResults(1, ValidateIrState.Failed, errors);
+				await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, errors);
+				return;
 			} else {
-				await this._updateValidateIrResults(1, ValidateIrState.Succeeded);
+				await this._updateValidateIrResults(testNumber, ValidateIrState.Succeeded);
 			}
 		} catch (error) {
-			await this._updateValidateIrResults(1, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
+			await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
+			return;
 		}
 
 		for (let i = 0; i < databaseCount; i++) {
+			testNumber++;
 			if (this._canceled) {
-				await this._updateValidateIrResults(i + 2, ValidateIrState.Canceled, [`Validation check canceled`])
+				await this._updateValidateIrResults(testNumber, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED])
 				break;
 			}
 
 			const sourceDatabaseName = this._model._databasesForMigration[i];
 			const networkShare = this._model._databaseBackup.networkShares[i];
 			try {
-				await this._updateValidateIrResults(i + 2, ValidateIrState.Running);
+				await this._updateValidateIrResults(testNumber, ValidateIrState.Running);
 				// validate source connectivity
 				// validate network share path connectivity
 				const response = await validateIrDatabaseMigrationSettings(
@@ -454,12 +460,12 @@ export class ValidateIrDialog {
 							sourceDatabaseName,
 							networkShare.networkShareLocation,
 							error));
-					await this._updateValidateIrResults(i + 2, ValidateIrState.Failed, errors);
+					await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, errors);
 				} else {
-					await this._updateValidateIrResults(i + 2, ValidateIrState.Succeeded);
+					await this._updateValidateIrResults(testNumber, ValidateIrState.Succeeded);
 				}
 			} catch (error) {
-				await this._updateValidateIrResults(i + 2, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
+				await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
 			}
 		}
 	}
@@ -473,9 +479,10 @@ export class ValidateIrDialog {
 		const databaseCount = this._model._databasesForMigration.length;
 		const sourceDatabaseName = this._model._databasesForMigration[0];
 		const targetDatabaseName = this._model._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? '';
+		let testNumber: number = 0;
 
 		// validate IR is online
-		await this._updateValidateIrResults(0, ValidateIrState.Running);
+		await this._updateValidateIrResults(testNumber, ValidateIrState.Running);
 		try {
 			const response = await validateIrSqlDatabaseMigrationSettings(
 				this._model,
@@ -492,24 +499,26 @@ export class ValidateIrDialog {
 						sourceDatabaseName,
 						targetDatabaseName,
 						error));
-				await this._updateValidateIrResults(0, ValidateIrState.Failed, errors);
+				await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, errors);
 				return;
 			} else {
-				await this._updateValidateIrResults(0, ValidateIrState.Succeeded);
+				await this._updateValidateIrResults(testNumber, ValidateIrState.Succeeded);
 			}
 		} catch (error) {
-			await this._updateValidateIrResults(0, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
+			await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
 			return;
 		}
 
 		for (let i = 0; i < databaseCount; i++) {
+			testNumber++;
 			if (this._canceled) {
+				await this._updateValidateIrResults(testNumber, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED]);
 				break;
 			}
 
 			const sourceDatabaseName = this._model._databasesForMigration[i];
 			const targetDatabaseName = this._model._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? '';
-			await this._updateValidateIrResults(i + 1, ValidateIrState.Running);
+			await this._updateValidateIrResults(testNumber, ValidateIrState.Running);
 			try {
 				// validate source connectivity
 				// validate target connectivity
@@ -529,12 +538,12 @@ export class ValidateIrDialog {
 							targetDatabaseName,
 							error));
 
-					await this._updateValidateIrResults(i + 1, ValidateIrState.Failed, errors);
+					await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, errors);
 				} else {
-					await this._updateValidateIrResults(i + 1, ValidateIrState.Succeeded);
+					await this._updateValidateIrResults(testNumber, ValidateIrState.Succeeded);
 				}
 			} catch (error) {
-				await this._updateValidateIrResults(i + 1, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
+				await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
 			}
 		}
 	}
@@ -561,7 +570,10 @@ export class ValidateIrDialog {
 			}
 		}
 
-		const data = this._validationResult.map(row => [row[Result.message], row[Result.icon], row[Result.status]]);
+		const data = this._validationResult.map(row => [
+			row[ValidationResultIndex.message],
+			row[ValidationResultIndex.icon],
+			row[ValidationResultIndex.status]]);
 		await this._resultsTable.updateProperty('data', data);
 	}
 
@@ -585,7 +597,10 @@ export class ValidateIrDialog {
 			}
 		}
 
-		const data = this._validationResult.map(row => [row[Result.message], row[Result.icon], row[Result.status]]);
+		const data = this._validationResult.map(row => [
+			row[ValidationResultIndex.message],
+			row[ValidationResultIndex.icon],
+			row[ValidationResultIndex.status]]);
 		await this._resultsTable.updateProperty('data', data);
 	}
 
@@ -611,7 +626,10 @@ export class ValidateIrDialog {
 		}
 
 		if (updateTable) {
-			const data = this._validationResult.map(row => [row[Result.message], row[Result.icon], row[Result.status]]);
+			const data = this._validationResult.map(row => [
+				row[ValidationResultIndex.message],
+				row[ValidationResultIndex.icon],
+				row[ValidationResultIndex.status]]);
 			await this._resultsTable.updateProperty('data', data);
 		}
 
@@ -630,7 +648,7 @@ export class ValidateIrDialog {
 			: statusMsg;
 
 		this._validationResult[row] = [
-			result[Result.message],
+			result[ValidationResultIndex.message],
 			<azdata.IconColumnCellValue>{
 				icon: this._getValidationStateImage(state),
 				title: statusMessage,

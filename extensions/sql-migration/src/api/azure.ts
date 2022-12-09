@@ -895,8 +895,8 @@ export interface ValdiateIrDatabaseMigrationResponse {
 	sourceDatabaseName: string,
 	sourceSqlConnection: {
 		testConnectivity: boolean,
-		"encryptConnection": true,
-		"trustServerCertificate": false,
+		encryptConnection: true,
+		trustServerCertificate: false,
 		dataSource: string,
 	},
 	backupConfiguration: {
