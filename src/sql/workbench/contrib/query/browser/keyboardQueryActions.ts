@@ -302,7 +302,7 @@ export class RefreshIntellisenseKeyboardAction extends Action {
 		if (editor instanceof QueryEditorInput) {
 			this.connectionManagementService.rebuildIntelliSenseCache(editor.uri);
 		} else if (editor instanceof NotebookInput && editor.notebookModel?.activeCell) {
-			this.connectionManagementService.rebuildIntelliSenseCache(editor.notebookModel?.activeCell?.cellUri.toString(true));
+			this.connectionManagementService.rebuildIntelliSenseCache(editor.notebookModel.activeCell.cellUri.toString(true));
 		}
 		return Promise.resolve(null);
 	}
