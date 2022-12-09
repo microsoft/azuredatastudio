@@ -24,11 +24,6 @@ const product = require('../product.json');
 
 const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
 
-// {{SQL CARBON EDIT}} - TODO: Import needs to be updated to work with langpacks.
-const sqlLocalizedExtensions = [
-	'import',
-];
-
 // {{SQL CARBON EDIT}} Not doing this for us right now
 // To save 250ms for each gulp startup, we are caching the result here
 const compilations = glob.sync('**/tsconfig.json', {
