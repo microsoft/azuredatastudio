@@ -5541,6 +5541,35 @@ Error: {1}</source>
       <source xml:lang="en">Unsaved Connections</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/connection/browser/passwordChangeDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="passwordChangeDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.confirmPassword">
+      <source xml:lang="en">Confirm password:</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.connecting">
+      <source xml:lang="en">Connecting</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.errorHeader">
+      <source xml:lang="en">Failure when attempting to change password</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.errorPasswordMismatchErrorMessage">
+      <source xml:lang="en">Passwords entered do not match</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.errorPasswordMismatchRecoveryInstructions">
+      <source xml:lang="en">Press OK and enter the exact same password in both boxes.</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.newPassword">
+      <source xml:lang="en">New password:</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.ok">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.title">
+      <source xml:lang="en">Change Password</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl" source-language="en" datatype="plaintext"><body>
     <trans-unit id="newDashboardTab.cancel">
       <source xml:lang="en">Cancel</source>
@@ -5867,6 +5896,9 @@ Error: {1}</source>
     <trans-unit id="kernelRequiresConnection">
       <source xml:lang="en">Please select a connection to run cells for this kernel</source>
     </trans-unit>
+    <trans-unit id="savedKernelNotSupported">
+      <source xml:lang="en">This notebook's '{0}' kernel is not supported. Defaulting to SQL kernel instead.</source>
+    </trans-unit>
     <trans-unit id="shutdownClientSessionError">
       <source xml:lang="en">A client session error occurred when closing the notebook: {0}</source>
     </trans-unit>
@@ -5948,13 +5980,13 @@ Error: {1}</source>
 </body></file>
   <file original="src/sql/workbench/services/notebook/common/notebookRegistry" source-language="en" datatype="plaintext"><body>
     <trans-unit id="carbon.extension.contributes.notebook.executionTarget">
-      <source xml:lang="en">Optional execution target this magic indicates, for example Spark vs SQL</source>
+      <source xml:lang="en">Optional execution target this magic indicates, for example Python vs SQL</source>
     </trans-unit>
     <trans-unit id="carbon.extension.contributes.notebook.fileExtensions">
       <source xml:lang="en">What file extensions should be registered to this notebook provider</source>
     </trans-unit>
     <trans-unit id="carbon.extension.contributes.notebook.kernels">
-      <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, pyspark, sql</source>
+      <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, sql</source>
     </trans-unit>
     <trans-unit id="carbon.extension.contributes.notebook.language">
       <source xml:lang="en">The cell language to be used if this cell magic is included in the cell</source>

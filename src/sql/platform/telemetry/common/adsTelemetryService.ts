@@ -60,7 +60,6 @@ class TelemetryEventImpl implements ITelemetryEvent {
 				serverVersion: serverInfo?.serverVersion ?? '',
 				serverEdition: serverInfo?.serverEdition ?? '',
 				serverEngineEdition: serverInfo?.engineEditionId ?? '',
-				isBigDataCluster: serverInfo?.options?.isBigDataCluster ?? false,
 			});
 		return this;
 	}
