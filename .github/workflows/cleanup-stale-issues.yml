@@ -1,0 +1,20 @@
+name: Close old issues that need reply
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close old issues that need reply
+        uses: dwieeb/needs-reply@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-label: |
+            Needs Logs
+            Needs Logs - Azure
+          days-before-close: 7
+          close-comment: "This issue hasn't had any recent activity and we are marking it as closed. If you are still experiencing this issue, please reopen this issue"
+
