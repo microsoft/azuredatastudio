@@ -16,7 +16,7 @@ import * as utils from '../api/utils';
 import { logError, TelemetryViews } from '../telemtery';
 import * as styles from '../constants/styles';
 import { TableMigrationSelectionDialog } from '../dialog/tableMigrationSelection/tableMigrationSelectionDialog';
-import { ValidateIrDialog } from '../dialog/validationResults/valideIRDialog';
+import { ValidateIrDialog } from '../dialog/validationResults/validateIrDialog';
 
 const WIZARD_TABLE_COLUMN_WIDTH = '200px';
 const WIZARD_TABLE_COLUMN_WIDTH_SMALL = '170px';

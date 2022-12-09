@@ -545,8 +545,8 @@ export const TABLE_SELECTION_CANCEL_BUTTON = localize('sql.migration.table.selec
 export const TABLE_SELECTION_TABLENAME_COLUMN = localize('sql.migration.table.selection.tablename.column', "Table name");
 export const TABLE_SELECTION_HASROWS_COLUMN = localize('sql.migration.table.selection.status.column', "Has rows");
 
-export const VALIDATION_DIALOG_TITLE = localize('sql.migration.validation.dialog.title', "Running Validation");
-export const VALIDATION_MESSAGE_SUCCESS = localize('sql.migration.validation.success', "Validation completd successfully.  Please click next to proceed with the migration.");
+export const VALIDATION_DIALOG_TITLE = localize('sql.migration.validation.dialog.title', "Running validation");
+export const VALIDATION_MESSAGE_SUCCESS = localize('sql.migration.validation.success', "Validation completed successfully.  Please click Next to proceed with the migration.");
 export function VALIDATION_MESSAGE_CANCELED_ERRORS(errors: string[]): string {
 	return localize(
 		'sql.migration.validation.canceled.errors',
@@ -557,8 +557,8 @@ export function VALIDATION_MESSAGE_COMPLETED_ERRORS(errors: string[]): string {
 		'sql.migration.validation.completed.errors',
 		"Validation completed with the following errors:{0}{1}", EOL, errors?.join(EOL));
 }
-export const VALIDATION_MESSAGE_CANCELED = localize('sql.migration.validation.canceled', "Validation was canceled. Please run and valdiate the migration settings to continue.");
-export const VALIDATION_MESSAGE_NOT_RUN = localize('sql.migration.validation.not.run', "Validation has not been run. Please run and valdiate the migration settings to continue.");
+export const VALIDATION_MESSAGE_CANCELED = localize('sql.migration.validation.canceled', "Validation was canceled. Please run and validate the migration settings to continue.");
+export const VALIDATION_MESSAGE_NOT_RUN = localize('sql.migration.validation.not.run', "Validation has not been run. Please run and validate the migration settings to continue.");
 
 // integration runtime page
 export const SELECT_RESOURCE_GROUP = localize('sql.migration.blob.resourceGroup.select', "Select a resource group.");

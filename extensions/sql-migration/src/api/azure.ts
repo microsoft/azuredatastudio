@@ -580,13 +580,14 @@ export async function validateIrSqlDatabaseMigrationSettings(
 	const account = migration._azureAccount;
 	const subscription = migration._targetSubscription;
 	const serviceId = migration._sqlMigrationService?.id;
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	const path = encodeURI(`${serviceId}/validateIr?api-version=${DMSV2_API_VERSION}`);
 	const targetDatabaseServer = migration._targetServerInstance as AzureSqlDatabaseServer;
 
-	const requestBody: validateIrSqlDatabaseMigraionRequest = {
+	const requestBody: ValidateIrSqlDatabaseMigrationRequest = {
 		sourceDatabaseName: sourceDatabaseName,
 		targetDatabaseName: targetDatabaseName,
-		kind: Kind.SQLDB,
+		kind: AzureResourceKind.SQLDB,
 		validateIntegrationRuntimeOnline: testIrOnline,
 		sourceSqlConnection: {
 			testConnectivity: testSourceConnectivity,
@@ -614,7 +615,8 @@ export async function validateIrSqlDatabaseMigrationSettings(
 		path,
 		azurecore.HttpRequestMethod.POST,
 		requestBody,
-		true);
+		true,
+		host);
 
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.map(e => e.message).join(','));
@@ -637,14 +639,15 @@ export async function validateIrDatabaseMigrationSettings(
 	const account = migration._azureAccount;
 	const subscription = migration._targetSubscription;
 	const serviceId = migration._sqlMigrationService?.id;
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	const path = encodeURI(`${serviceId}/validateIr?api-version=${DMSV2_API_VERSION}`);
 	const storage = await getStorageAccountAccessKeys(account, subscription, networkShare.storageAccount);
 
 	const requestBody: ValdiateIrDatabaseMigrationRequest = {
 		sourceDatabaseName: sourceDatabaseName ?? '',
 		kind: migration._targetType === MigrationTargetType.SQLMI
-			? Kind.SQLMI
-			: Kind.SQLVM,
+			? AzureResourceKind.SQLMI
+			: AzureResourceKind.SQLVM,
 		validateIntegrationRuntimeOnline: testIrOnline,
 		backupConfiguration: {
 			sourceLocation: {
@@ -678,7 +681,8 @@ export async function validateIrDatabaseMigrationSettings(
 		path,
 		azurecore.HttpRequestMethod.POST,
 		requestBody,
-		true);
+		true,
+		host);
 
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.map(e => e.message).join(','));
@@ -820,13 +824,13 @@ export interface StartDatabaseMigrationResponse {
 	asyncUrl: string,
 }
 
-export enum Kind {
+export enum AzureResourceKind {
 	SQLDB = 'SqlDb',
 	SQLMI = 'SqlMi',
 	SQLVM = 'SqlVm',
 }
 
-export interface validateIrSqlDatabaseMigraionRequest {
+export interface ValidateIrSqlDatabaseMigrationRequest {
 	sourceDatabaseName: string,
 	targetDatabaseName: string,
 	kind: string,

@@ -373,7 +373,7 @@ export class ValidateIrDialog {
 
 		try {
 			await this._updateValidateIrResults(0, ValidateIrState.Running);
-			// valdiate IR is online
+			// validate IR is online
 			const response = await validateIrDatabaseMigrationSettings(
 				this._model,
 				sourceServerName,
