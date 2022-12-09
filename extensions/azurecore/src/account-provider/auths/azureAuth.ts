@@ -677,11 +677,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 	//#region data modeling
 
 	public createAccount(tokenClaims: TokenClaims, key: string, tenants: Tenant[]): AzureAccount {
-		Logger.verbose(`Token Claims: ${tokenClaims.name}, Tenant ID: ${tokenClaims.tid}`);
-		Logger.pii('Token Claims response: ', [{ name: 'tokenClaims', objOrArray: JSON.stringify(tokenClaims) }], []);
+		Logger.verbose(`Token Claims acccount: ${tokenClaims.name}, TID: ${tokenClaims.tid}`);
 		tenants.forEach((tenant) => {
 			Logger.verbose(`Tenant ID: ${tenant.id}, Tenant Name: ${tenant.displayName}`);
 		});
+
 		// Determine if this is a microsoft account
 		let accountIssuer = 'unknown';
 
@@ -696,12 +696,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const name = tokenClaims.name ?? tokenClaims.email ?? tokenClaims.unique_name ?? tokenClaims.preferred_username;
 		const email = tokenClaims.email ?? tokenClaims.unique_name ?? tokenClaims.preferred_username;
 
-		// Read more about tid > https://learn.microsoft.com/azure/active-directory/develop/id-tokens
-		const owningTenant = tenants.find(t => t.id === tokenClaims.tid)
-			?? { 'id': tokenClaims.tid, 'displayName': 'Microsoft Account' };
+		let owningTenant: Tenant = this.commonTenant; // default to common tenant
 
-		if (!owningTenant) {
-			Logger.info('Could not find owning tenant for account, found: {0}', tokenClaims.tid);
+		// Read more about tid > https://learn.microsoft.com/azure/active-directory/develop/id-tokens
+		if (tokenClaims.tid) {
+			owningTenant = tenants.find(t => t.id === tokenClaims.tid) ?? { 'id': tokenClaims.tid, 'displayName': 'Microsoft Account' };
+		} else {
+			Logger.info('Could not find tenant information from tokenClaims, falling back to common Tenant.');
 		}
 
 		let displayName = name;
