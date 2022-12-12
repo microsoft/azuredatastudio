@@ -1140,6 +1140,10 @@ export function DATABASE_MIGRATION_STATUS_LABEL(status?: string): string {
 	return localize('sql.migration.database.migration.status.label', 'Database migration status: {0}', status ?? '');
 }
 
+export function LOGIN_MIGRATION_STATUS_LABEL(status?: string): string {
+	return localize('sql.migration.database.migration.status.label', 'Login migration status: {0}', status ?? '');
+}
+
 export function TABLE_MIGRATION_STATUS_LABEL(status?: string): string {
 	return localize('sql.migration.table.migration.status.label', 'Table migration status: {0}', status ?? '');
 }

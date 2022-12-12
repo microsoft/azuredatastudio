@@ -129,8 +129,8 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 				CSSStyles: {
 					...styles.PAGE_TITLE_CSS,
 					'margin-right': '20px',
-					'font-size': '14px',
-					'line-height': '17px'
+					'font-size': '13px',
+					'line-height': '16px'
 				}
 			}).component();
 
@@ -269,7 +269,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 					case 3:
 						const loginName = this._migratingLoginsTable!.data[rowState.row][0];
 						const status = this._migratingLoginsTable!.data[rowState.row][3].title;
-						const statusMessage = constants.DATABASE_MIGRATION_STATUS_LABEL(status);
+						const statusMessage = constants.LOGIN_MIGRATION_STATUS_LABEL(status);
 						var errors = [];
 
 						if (this.migrationStateModel._loginMigrationsResult?.exceptionMap) {
