@@ -4585,6 +4585,12 @@ Error: {1}</source>
     <trans-unit id="status.query.summaryText">
       <source xml:lang="en">Average: {0}  Count: {1}  Sum: {2}</source>
     </trans-unit>
+    <trans-unit id="status.query.summaryTextNonNumeric">
+      <source xml:lang="en">Count: {0}  Distinct Count: {1}  Null Count: {2}</source>
+    </trans-unit>
+    <trans-unit id="status.query.summaryTooltip">
+      <source xml:lang="en">Average: {0}  Count: {1}  Distinct Count: {2}  Max: {3}  Min: {4}  Null Count: {5}  Sum: {6}</source>
+    </trans-unit>
     <trans-unit id="status.query.timeElapsed">
       <source xml:lang="en">Time Elapsed</source>
     </trans-unit>
