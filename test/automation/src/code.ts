@@ -24,9 +24,9 @@ export interface LaunchOptions {
 	readonly extensionsPath: string;
 	readonly logger: Logger;
 	logsPath: string;
-	waitTime: number; // {{SQL CARBON EDIT}} - Adding back waitTime to launchOptions interface
-	readonly log?: string; // {{SQL CARBON EDIT}} - Adding back log to launchOptions interface
-	readonly screenshotsPath: string | null; // {{SQL CARBON EDIT}} - Adding back screenshotsPath to launchOptions interface
+	// waitTime: number; // {{SQL CARBON EDIT}} - Adding back waitTime to launchOptions interface
+	// readonly log?: string; // {{SQL CARBON EDIT}} - Adding back log to launchOptions interface
+	// readonly screenshotsPath: string | null; // {{SQL CARBON EDIT}} - Adding back screenshotsPath to launchOptions interface
 	readonly verbose?: boolean;
 	readonly extraArgs?: string[];
 	readonly remote?: boolean;
@@ -78,7 +78,7 @@ export async function launch(options: LaunchOptions): Promise<Code> {
 		throw new Error('Smoke test process has terminated, refusing to spawn Code');
 	}
 
-	// await measureAndLog(copyExtension(rootPath, options.extensionsPath, 'vscode-notebook-tests'), 'copyExtension(vscode-notebook-tests)', options.logger); // {{SQL CARBON EDIT}} - This isn't testing SQL notebooks
+	// await measureAndLog(copyExtension(rootPath, options.extensionsPath, 'vscode-notebook-tests'), 'copyExtension(vscode-notebook-tests)', options.logger); // {{SQL CARBON EDIT}} - This is testing VSCode notebooks and not SQL notebooks
 
 	// Browser smoke tests
 	if (options.web) {

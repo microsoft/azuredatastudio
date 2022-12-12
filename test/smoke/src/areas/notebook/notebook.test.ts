@@ -25,7 +25,7 @@ export function setup(logger: Logger) {
 			cp.execSync('git reset --hard HEAD --quiet', { cwd: app.workspacePathOrFolder });
 		});
 		/*
-		{{SQL CARBON EDIT}} Commenting these out since they're using vscode notebooks and not SQL notebooks.
+		{{SQL CARBON EDIT}} START - Commenting these out since they're using vscode notebooks and not SQL notebooks.
 		it.skip('inserts/edits code cell', async function () { // TODO@rebornix https://github.com/microsoft/vscode/issues/139672
 			const app = this.app as Application;
 			await app.workbench.notebook.openNotebook();
@@ -71,6 +71,7 @@ export function setup(logger: Logger) {
 			await app.workbench.notebook.executeCellAction('.notebook-editor .monaco-list-row.focused div.monaco-toolbar .codicon-debug');
 			await app.workbench.notebook.waitForActiveCellEditorContents('test');
 		});
+		{{ SQL CARBON EDIT }} END
 		*/
 	});
 }
