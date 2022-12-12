@@ -225,6 +225,14 @@ steps:
     displayName: 'Publish Artifact: drop'
     condition: always()
 
+  - task: PublishPipelineArtifact@0
+    inputs:
+      targetPath: .build/logs
+      artifactName: logs-macos-$(VSCODE_ARCH)-$(System.JobAttempt)
+    displayName: "Publish Log Files"
+    continueOnError: true
+    condition: succeededOrFailed()
+
   - task: PublishTestResults@2
     displayName: 'Publish Test Results'
     inputs:
