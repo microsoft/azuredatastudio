@@ -77,7 +77,7 @@ const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ES
 // performant than trying to parse the string to object.
 // Regex explaination: after removing the trailing whitespaces, the string must start with '[' (to support arrays)
 // or '{'. And there must be a '}' to match the '{'.
-const IsJsonRegex = /^\s*\[*\s*{.*?}/g;
+const IsJsonRegex = /({(.|\s)*?})|(\[(.|\s)*?\])/g;
 
 export class GridPanel extends Disposable {
 	private container = document.createElement('div');
