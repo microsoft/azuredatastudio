@@ -51,6 +51,13 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
 		this._view = view;
 
+		const loginMigrationPreviewInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				style: 'information',
+				text: constants.LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PREVIEW_WARNING,
+				CSSStyles: { ...styles.BODY_CSS }
+			}).component();
+
 		const loginMigrationInfoBox = this._view.modelBuilder.infoBox()
 			.withProps({
 				style: 'information',
@@ -74,6 +81,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 
 		const form = this._view.modelBuilder.formContainer()
 			.withFormItems([
+				{ component: loginMigrationPreviewInfoBox },
 				{ component: loginMigrationInfoBox },
 				{ component: permissionsInfoBox },
 				{ component: this._pageDescription },
