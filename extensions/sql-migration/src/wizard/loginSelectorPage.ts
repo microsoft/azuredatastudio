@@ -35,13 +35,6 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
 		this._view = view;
 
-		// const loginMigrationInfoBox = this._view.modelBuilder.infoBox()
-		// 	.withProps({
-		// 		style: 'information',
-		// 		text: constants.LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DATA_MIGRATION_WARNING,
-		// 		CSSStyles: { ...styles.BODY_CSS }
-		// 	}).component();
-
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			height: '100%',
@@ -49,20 +42,11 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		}).component();
 		flex.addItem(await this.createRootContainer(view), { flex: '1 1 auto' });
 
-		// const form = this._view.modelBuilder.formContainer()
-		// 	.withFormItems([
-		// 		{ component: loginMigrationInfoBox },
-		// 		{ component: flex },
-		// 	]).withProps({
-		// 		CSSStyles: { 'padding-top': '0' }
-		// 	}).component();
-
 		this._disposables.push(this._view.onClosed(e => {
 			this._disposables.forEach(
 				d => { try { d.dispose(); } catch { } });
 		}));
 
-		// await view.initializeModel(form);
 		await view.initializeModel(flex);
 	}
 
@@ -137,8 +121,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 					return row[1]?.toLowerCase()?.indexOf(searchText) > -1			// source login
 						|| row[2]?.toLowerCase()?.indexOf(searchText) > -1			// login type
 						|| row[3]?.toLowerCase()?.indexOf(searchText) > -1  		// default database
-						|| row[4]?.title.toLowerCase()?.indexOf(searchText) > -1  	// status
-						|| row[5]?.toLowerCase()?.indexOf(searchText) > -1;			// target status
+						|| row[4]?.toLowerCase()?.indexOf(searchText) > -1  	// status
+						|| row[5]?.title?.toLowerCase()?.indexOf(searchText) > -1;			// target status
 				});
 		}
 
