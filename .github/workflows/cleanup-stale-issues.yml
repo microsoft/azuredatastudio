@@ -15,6 +15,7 @@ jobs:
           issue-label: |
             Needs Logs
             Needs Logs - Azure
+            Needs More Info
           days-before-close: 7
           close-comment: "This issue hasn't had any recent activity and we are marking it as closed. If you are still experiencing this issue, please reopen this issue"
 

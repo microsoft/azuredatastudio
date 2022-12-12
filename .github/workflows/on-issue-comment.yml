@@ -20,6 +20,7 @@ jobs:
           labels: |
             Needs Logs
             Needs Logs - Azure
+            Needs More Info
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
