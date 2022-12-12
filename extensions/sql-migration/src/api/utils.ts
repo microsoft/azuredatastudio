@@ -694,6 +694,10 @@ export function getAzureResourceDropdownValues(
 }
 
 export function getResourceDropdownValues(resources: { id: string, name: string }[], resourceNotFoundMessage: string): CategoryValue[] {
+	if (!resources || !resources.length) {
+		return [{ name: '', displayName: resourceNotFoundMessage }];
+	}
+
 	return resources?.map(resource => { return { name: resource.id, displayName: resource.name }; })
 		|| [{ name: '', displayName: resourceNotFoundMessage }];
 }
@@ -704,6 +708,10 @@ export async function getAzureTenantsDropdownValues(tenants: Tenant[]): Promise<
 }
 
 export async function getAzureLocationsDropdownValues(locations: azureResource.AzureLocation[]): Promise<CategoryValue[]> {
+	if (!locations || !locations.length) {
+		return [{ name: '', displayName: constants.NO_LOCATION_FOUND }];
+	}
+
 	return locations?.map(location => { return { name: location.name, displayName: location.displayName }; })
 		|| [{ name: '', displayName: constants.NO_LOCATION_FOUND }];
 }
