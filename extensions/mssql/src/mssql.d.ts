@@ -135,7 +135,7 @@ declare module 'mssql' {
 		connectionName?: string;
 		projectFilePath: string;
 		targetScripts: string[];
-		folderStructure: string;
+		folderStructure: ExtractTarget;
 		dataSchemaProvider: string;
 	}
 
@@ -228,7 +228,8 @@ declare module 'mssql' {
 		flat = 2,
 		objectType = 3,
 		schema = 4,
-		schemaObjectType = 5
+		schemaObjectType = 5,
+		none = 6
 	}
 
 	export interface IDacFxService {
