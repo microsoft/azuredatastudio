@@ -26,6 +26,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	private _refreshResultsInfoBox!: azdata.InfoBoxComponent;
 	private _refreshButton!: azdata.ButtonComponent;
 	private _refreshLoading!: azdata.LoadingComponent;
+	private _filterTableValue!: string;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE), migrationStateModel);
@@ -111,6 +112,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 	@debounce(500)
 	private async _filterTableList(value: string, selectedList?: LoginTableInfo[]): Promise<void> {
+		this._filterTableValue = value;
 		const selectedRows: number[] = [];
 		const selectedLogins = selectedList || this.selectedLogins();
 		let tableRows = this._loginTableValues ?? [];
@@ -354,6 +356,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			];
 		}) || [];
 
+		await this._filterTableList(this._filterTableValue);
 		this._refreshLoading.loading = false;
 		this._refreshResultsInfoBox.text = constants.LOGIN_MIGRATION_REFRESH_LOGIN_DATA_SUCCESSFUL(sourceLogins.length, targetLogins.length);
 		this._refreshResultsInfoBox.style = 'success';
