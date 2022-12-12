@@ -8,14 +8,25 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Close old issues that need reply
+      - name: Close old issues labeled 'Need logs' that need reply.
         uses: dwieeb/needs-reply@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          issue-label: |
-            Needs Logs
-            Needs Logs - Azure
-            Needs More Info
+          issue-label: Needs Logs
+          days-before-close: 7
+          close-comment: "This issue hasn't had any recent activity and we are marking it as closed. If you are still experiencing this issue, please reopen this issue"
+      - name: Close old issues labeled 'Need Logs - Azure ' that need reply.
+        uses: dwieeb/needs-reply@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-label: Needs Logs - Azure
+          days-before-close: 7
+          close-comment: "This issue hasn't had any recent activity and we are marking it as closed. If you are still experiencing this issue, please reopen this issue"
+      - name: Close old issues labeled 'Need More Info' that need reply.
+        uses: dwieeb/needs-reply@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-label: Needs More Info
           days-before-close: 7
           close-comment: "This issue hasn't had any recent activity and we are marking it as closed. If you are still experiencing this issue, please reopen this issue"
 
