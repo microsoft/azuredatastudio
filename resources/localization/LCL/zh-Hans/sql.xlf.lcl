@@ -13413,6 +13413,18 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/statusBarItems.status.query.summaryTextNonNumeric" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Count: {0}  Distinct Count: {1}  Null Count: {2}]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/statusBarItems.status.query.summaryTooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Average: {0}  Count: {1}  Distinct Count: {2}  Max: {3}  Min: {4}  Null Count: {5}  Sum: {6}]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/statusBarItems.status.query.timeElapsed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Time Elapsed]]></Val>
@@ -16722,6 +16734,9 @@
       <Item ItemId=";src/sql/workbench/services/notebook/browser/models/notebookModel.savedKernelNotSupported" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This notebook's '{0}' kernel is not supported. Defaulting to SQL kernel instead.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[不支持此笔记本的 "{0}" 内核。正在改为默认的 SQL 内核。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
