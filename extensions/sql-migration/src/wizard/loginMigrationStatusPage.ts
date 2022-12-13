@@ -130,7 +130,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 					...styles.PAGE_TITLE_CSS,
 					'margin-right': '20px',
 					'font-size': '13px',
-					'line-height': '16px'
+					'line-height': '126%'
 				}
 			}).component();
 
