@@ -16740,6 +16740,9 @@
       <Item ItemId=";src/sql/workbench/services/notebook/browser/models/notebookModel.savedKernelNotSupported" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This notebook's '{0}' kernel is not supported. Defaulting to SQL kernel instead.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[不支援此筆記本的 '{0}' 核心。改為預設為 SQL 核心。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
