@@ -151,7 +151,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._disposables.push(
 			this._sqlSourceUsernameInput.onTextChanged(
-				value => this.migrationStateModel._sqlServerUsername = value));
+				value => {
+					this.migrationStateModel._sqlServerUsername = value;
+					this._resetValidationUI();
+				}));
 
 		const sqlPasswordLabel = this._view.modelBuilder.text()
 			.withProps({
@@ -169,7 +172,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._disposables.push(
 			this._sqlSourcePassword.onTextChanged(
-				value => this.migrationStateModel._sqlServerPassword = value));
+				value => {
+					this.migrationStateModel._sqlServerPassword = value;
+					this._resetValidationUI();
+				}));
 
 		return this._view.modelBuilder.flexContainer()
 			.withItems([
@@ -238,6 +244,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
 					this.migrationStateModel._databaseBackup.networkShares[i].windowsUser = value;
 				}
+				this._resetValidationUI();
 			}));
 
 		const passwordLabel = this._view.modelBuilder.text()
@@ -260,6 +267,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
 					this.migrationStateModel._databaseBackup.networkShares[i].password = value;
 				}
+				this._resetValidationUI();
 			}));
 
 		return this._view.modelBuilder.flexContainer()
@@ -274,6 +282,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withLayout({ flexFlow: 'column' })
 			.withProps({ display: 'none' })
 			.component();
+	}
+
+	private _resetValidationUI(): void {
+		if (this.wizard.message.level === azdata.window.MessageLevel.Information) {
+			this.wizard.message = { text: '' };
+		}
+		this.migrationStateModel.resetIrValidationResults();
 	}
 
 	private createBlobContainer(): azdata.FlexContainer {
@@ -563,6 +578,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
 							this.migrationStateModel._databaseBackup.networkShares[i].storageAccount = selectedStorageAccount;
 						}
+						this.migrationStateModel.resetIrValidationResults();
 					}
 				}
 			}));
@@ -770,7 +786,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this._disposables.push(
 						targetDatabaseInput.onTextChanged(async (value) => {
 							this.migrationStateModel._targetDatabaseNames[index] = value.trim();
-							await this.validateFields();
+							this._resetValidationUI();
+							await this.validateFields(targetDatabaseInput);
 						}));
 					targetDatabaseInput.value = this.migrationStateModel._targetDatabaseNames[index];
 					this._networkShareTargetDatabaseNames.push(targetDatabaseInput);
@@ -794,7 +811,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this._disposables.push(
 						networkShareLocationInput.onTextChanged(async (value) => {
 							this.migrationStateModel._databaseBackup.networkShares[index].networkShareLocation = value.trim();
-							await this.validateFields();
+							this._resetValidationUI();
+							await this.validateFields(networkShareLocationInput);
 						}));
 					networkShareLocationInput.value = this.migrationStateModel._databaseBackup.networkShares[index]?.networkShareLocation;
 					this._networkShareLocations.push(networkShareLocationInput);
@@ -822,7 +840,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						}).component();
 					this._disposables.push(
 						blobTargetDatabaseInput.onTextChanged(
-							(value) => { this.migrationStateModel._targetDatabaseNames[index] = value.trim(); }));
+							(value) => {
+								this.migrationStateModel._targetDatabaseNames[index] = value.trim();
+								this._resetValidationUI();
+							}));
 
 					targetDatabaseInput.value = this.migrationStateModel._targetDatabaseNames[index];
 					this._blobContainerTargetDatabaseNames.push(blobTargetDatabaseInput);
@@ -1171,7 +1192,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		return false;
 	}
 
-	private async validateFields(): Promise<void> {
+	private async validateFields(component?: azdata.Component): Promise<void> {
 		await this._sqlSourceUsernameInput?.validate();
 		await this._sqlSourcePassword?.validate();
 		await this._windowsUserAccountText?.validate();
@@ -1192,6 +1213,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				await this._blobContainerLastBackupFileDropdowns[i]?.validate();
 			}
 		}
+		await component?.validate();
 	}
 
 	private async getSubscriptionValues(): Promise<void> {

@@ -254,7 +254,8 @@ export class ValidateIrDialog {
 			this._cancelButton.enabled = true;
 			this._copyButton.enabled = false;
 			this._dialog!.okButton.enabled = false;
-			if (this._model.isIrTargetValidated) {
+			this._dialog!.cancelButton.enabled = true;
+			if (this._model.isIrTargetValidated && results) {
 				await this._initializeResults(results);
 			} else {
 				await this._validate();
@@ -265,6 +266,7 @@ export class ValidateIrDialog {
 			this._cancelButton.enabled = false;
 			this._copyButton.enabled = true;
 			this._dialog!.okButton.enabled = this._model.isIrTargetValidated;
+			this._dialog!.cancelButton.enabled = !this._model.isIrTargetValidated;
 		}
 	}
 
@@ -304,7 +306,7 @@ export class ValidateIrDialog {
 						value: 'test',
 						name: constants.VALIDATE_IR_COLUMN_VALIDATION_STEPS,
 						type: azdata.ColumnType.text,
-						width: 420,
+						width: 380,
 						headerCssClass: 'no-borders',
 						cssClass: 'no-borders align-with-header',
 					},
@@ -320,7 +322,7 @@ export class ValidateIrDialog {
 						value: 'message',
 						name: constants.VALIDATE_IR_COLUMN_STATUS,
 						type: azdata.ColumnType.text,
-						width: 110,
+						width: 150,
 						headerCssClass: 'no-borders',
 						cssClass: 'no-borders align-with-header',
 					},

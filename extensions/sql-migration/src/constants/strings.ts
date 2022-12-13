@@ -553,7 +553,7 @@ export function VALIDATION_MESSAGE_CANCELED_ERRORS(msg: string): string {
 		"Validation was canceled with the following error(s):{0}{1}", EOL, msg);
 }
 export const VALIDATION_MESSAGE_CANCELED = localize('sql.migration.validation.canceled', "Validation was canceled. Please run and validate the migration settings to continue.");
-export const VALIDATION_MESSAGE_NOT_RUN = localize('sql.migration.validation.not.run', "Validation has not been run. Please run and validate the migration settings to continue.");
+export const VALIDATION_MESSAGE_NOT_RUN = localize('sql.migration.validation.not.run', "Validation has not been run for the current configuration. Please run and validate the migration settings to continue.");
 
 // integration runtime page
 export const SELECT_RESOURCE_GROUP = localize('sql.migration.blob.resourceGroup.select', "Select a resource group.");
@@ -662,7 +662,7 @@ export function VALIDATE_IR_VALIDATION_STATUS_ERROR_COUNT(state: string | undefi
 	const status = state ?? '';
 	return localize(
 		'sql.migration.validate.ir.status.error.count',
-		"{0} - error(s) {errors.length} ",
+		"{0} - error(s) {1} ",
 		status,
 		errorCount);
 }

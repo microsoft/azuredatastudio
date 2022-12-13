@@ -310,6 +310,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		}
 	}
 
+	public resetIrValidationResults(): void {
+		if (this.isIrMigration) {
+			this._validateIrSqlDb = [];
+			this._validateIrSqlMi = [];
+			this._validateIrSqlVm = [];
+		}
+	}
+
 	public get isIrTargetValidated(): boolean {
 		const results = this.validationTargetResults ?? [];
 		return results.length > 1
