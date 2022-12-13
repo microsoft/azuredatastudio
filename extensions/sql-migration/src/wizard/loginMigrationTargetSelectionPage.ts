@@ -14,7 +14,7 @@ import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as utils from '../api/utils';
 import { azureResource } from 'azurecore';
 import { AzureSqlDatabaseServer, SqlVMServer } from '../api/azure';
-import { collectTargetDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
+import { collectTargetDatabaseInfo, TargetDatabaseInfo, isSysAdmin } from '../api/sqlUtils';
 
 export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -65,13 +65,20 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
+		const hasSysAdminPermissions: boolean = await isSysAdmin(this.migrationStateModel.sourceConnectionId);
 		const connectionProfile: azdata.connection.ConnectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
 		const permissionsInfoBox = this._view.modelBuilder.infoBox()
 			.withProps({
-				style: 'information',
+				style: 'warning',
 				text: constants.LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PERMISSIONS_WARNING(connectionProfile.userName, connectionProfile.serverName),
-				CSSStyles: { ...styles.BODY_CSS }
+				CSSStyles: { ...styles.BODY_CSS },
 			}).component();
+
+		if (hasSysAdminPermissions) {
+			await permissionsInfoBox.updateProperties({
+				'CSSStyles': { 'display': 'none' },
+			});
+		}
 
 		this._pageDescription = this._view.modelBuilder.text()
 			.withProps({

@@ -72,6 +72,8 @@ const query_login_tables_sql = `
 	) AND sp.name NOT LIKE '##%##'
 	ORDER BY sp.name;`;
 
+const query_is_sys_admin_sql = `SELECT IS_SRVROLEMEMBER('sysadmin');`;
+
 export const excludeDatabases: string[] = [
 	'master',
 	'tempdb',
@@ -387,4 +389,17 @@ export async function collectTargetLogins(
 	}
 
 	throw new Error(result.errorMessage);
+}
+
+export async function isSysAdmin(sourceConnectionId: string): Promise<boolean> {
+	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
+	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+		'MSSQL',
+		azdata.DataProviderType.QueryProvider);
+
+	const results = await queryProvider.runQueryAndReturn(
+		ownerUri,
+		query_is_sys_admin_sql);
+
+	return getSqlBoolean(results.rows[0][0]);
 }
