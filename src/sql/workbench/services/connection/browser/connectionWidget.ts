@@ -1091,9 +1091,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						model.groupId = this.findGroupId(model.groupFullName);
 					}
 				}
-				if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
-					model.azureTenantId = this._azureTenantId;
-				}
 			}
 		}
 		return validInputs;
