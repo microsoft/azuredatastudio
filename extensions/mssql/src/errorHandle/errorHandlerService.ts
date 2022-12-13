@@ -7,6 +7,7 @@ import { AppContext } from '../appContext';
 import { SqlOpsDataClient, ISqlOpsFeature, SqlOpsFeature } from 'dataprotocol-client';
 import { ClientCapabilities, ServerCapabilities } from 'vscode-languageclient';
 import { Disposable } from 'vscode';
+import * as Contracts from './contracts';
 export class ErrorHandlerService extends SqlOpsFeature<any> {
 
 
@@ -35,4 +36,7 @@ export class ErrorHandlerService extends SqlOpsFeature<any> {
 
 	protected registerProvider(options: any): Disposable { return undefined; }
 
+	protected async getToken(request: Contracts.ErrorHandlerParameters): Promise<Contracts.errorCodes | undefined> {
+		return Promise.resolve(undefined);
+	}
 }
