@@ -131,7 +131,7 @@ export class SchemaCompareMainWindow {
 				projectFilePath: '',
 				targetScripts: [],
 				dataSchemaProvider: '',
-				folderStructure: mssql.ExtractTarget.none
+				folderStructure: mssql.ExtractTarget.schemaObjectType
 			};
 		} else if (sourceDacpac) {
 			source = {
@@ -145,7 +145,7 @@ export class SchemaCompareMainWindow {
 				projectFilePath: '',
 				targetScripts: [],
 				dataSchemaProvider: '',
-				folderStructure: mssql.ExtractTarget.none
+				folderStructure: mssql.ExtractTarget.schemaObjectType
 			};
 		} else if (sourceProject) {
 			source = {
@@ -159,7 +159,7 @@ export class SchemaCompareMainWindow {
 				projectFilePath: sourceProject,
 				targetScripts: [],
 				dataSchemaProvider: undefined,
-				folderStructure: mssql.ExtractTarget.none
+				folderStructure: mssql.ExtractTarget.schemaObjectType
 			};
 		}
 

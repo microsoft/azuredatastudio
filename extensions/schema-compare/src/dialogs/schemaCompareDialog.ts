@@ -118,7 +118,7 @@ export class SchemaCompareDialog {
 				ownerUri: ownerUri,
 				projectFilePath: '',
 				targetScripts: [],
-				folderStructure: mssql.ExtractTarget.none,
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				packageFilePath: '',
 				dataSchemaProvider: '',
 				connectionDetails: undefined,
@@ -133,7 +133,7 @@ export class SchemaCompareDialog {
 				ownerUri: '',
 				projectFilePath: '',
 				targetScripts: [],
-				folderStructure: mssql.ExtractTarget.none,
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				dataSchemaProvider: '',
 				packageFilePath: this.sourceTextBox.value,
 				connectionDetails: undefined
@@ -144,7 +144,7 @@ export class SchemaCompareDialog {
 				projectFilePath: this.sourceTextBox.value,
 				targetScripts: await this.getProjectScriptFiles(this.sourceTextBox.value),
 				dataSchemaProvider: await this.getDatabaseSchemaProvider(this.sourceTextBox.value),
-				folderStructure: mssql.ExtractTarget.none,
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				serverDisplayName: '',
 				serverName: '',
 				databaseName: '',
@@ -165,7 +165,7 @@ export class SchemaCompareDialog {
 				databaseName: this.targetDatabaseDropdown.value.toString(),
 				ownerUri: ownerUri,
 				projectFilePath: '',
-				folderStructure: mssql.ExtractTarget.none,
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				targetScripts: [],
 				packageFilePath: '',
 				dataSchemaProvider: '',
@@ -180,7 +180,7 @@ export class SchemaCompareDialog {
 				databaseName: '',
 				ownerUri: '',
 				projectFilePath: '',
-				folderStructure: mssql.ExtractTarget.none,
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				targetScripts: [],
 				dataSchemaProvider: '',
 				packageFilePath: this.targetTextBox.value,
@@ -1026,7 +1026,7 @@ export function mapExtractTargetEnum(inputTarget: string): mssql.ExtractTarget {
 		case loc.flat: return mssql.ExtractTarget.flat;
 		case loc.objectType: return mssql.ExtractTarget.objectType;
 		case loc.schema: return mssql.ExtractTarget.schema;
-		case loc.schemaObjectType: return mssql.ExtractTarget.schemaObjectType;
-		default: return mssql.ExtractTarget.none;
+		case loc.schemaObjectType:
+		default: return mssql.ExtractTarget.schemaObjectType;
 	}
 }

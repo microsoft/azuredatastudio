@@ -538,7 +538,7 @@ export class UpdateProjectFromDatabaseDialog {
 			connectionDetails: connectionDetails,
 			ownerUri: ownerUri,
 			projectFilePath: '',
-			folderStructure: mssql.ExtractTarget.none,
+			folderStructure: mssql.ExtractTarget.schemaObjectType,
 			targetScripts: [],
 			dataSchemaProvider: '',
 			packageFilePath: '',

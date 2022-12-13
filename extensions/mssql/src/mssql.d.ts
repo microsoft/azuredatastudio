@@ -228,8 +228,7 @@ declare module 'mssql' {
 		flat = 2,
 		objectType = 3,
 		schema = 4,
-		schemaObjectType = 5,
-		none = 6
+		schemaObjectType = 5
 	}
 
 	export interface IDacFxService {
