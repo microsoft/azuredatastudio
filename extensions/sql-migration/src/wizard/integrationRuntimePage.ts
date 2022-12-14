@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationMode, MigrationStateModel, MigrationTargetType, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
+import { MigrationMode, MigrationStateModel, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
 import { CreateSqlMigrationServiceDialog } from '../dialog/createSqlMigrationService/createSqlMigrationServiceDialog';
 import * as constants from '../constants/strings';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
@@ -45,7 +45,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		super(wizard, azdata.window.createWizardPage(constants.IR_PAGE_TITLE), migrationStateModel);
 		this.migrationStateModel._databaseBackup.migrationMode =
 			this.migrationStateModel._databaseBackup.migrationMode ||
-				this.migrationStateModel._targetType === MigrationTargetType.SQLDB
+				this.migrationStateModel.isSqlDbTarget
 				? MigrationMode.OFFLINE
 				: MigrationMode.ONLINE;
 	}
@@ -146,7 +146,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			.withProps({
 				name: buttonGroup,
 				label: constants.DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL,
-				checked: this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE,
+				checked: this.migrationStateModel.isBackupContainerNetworkShare,
 				CSSStyles: { ...styles.BODY_CSS, 'margin': '0' }
 			}).component();
 
@@ -191,8 +191,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			return;
 		}
 
-		const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
-		const isNetworkShare = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE;
+		const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
+		const isNetworkShare = this.migrationStateModel.isBackupContainerNetworkShare;
 		await utils.updateControlDisplay(this._modeContainer, !isSqlDbTarget);
 		this._onlineButton.enabled = !isSqlDbTarget;
 
@@ -202,7 +202,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		}
 		this._originalMigrationMode = this.migrationStateModel._databaseBackup.migrationMode;
 
-		this._networkShareButton.checked = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE;
+		this._networkShareButton.checked = this.migrationStateModel.isBackupContainerNetworkShare;
 		this._blobContainerButton.checked = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER;
 		await utils.updateControlDisplay(
 			this._radioButtonContainer,
@@ -222,7 +222,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
 			}
-			const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
+			const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
 			if (!isSqlDbTarget && !this._networkShareButton.checked && !this._blobContainerButton.checked) {
 				this.wizard.message = {
 					level: azdata.window.MessageLevel.Error,
@@ -353,8 +353,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 						await utils.updateControlDisplay(
 							this._dmsInfoContainer,
-							this.migrationStateModel._targetType === MigrationTargetType.SQLDB ||
-							this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE);
+							this.migrationStateModel.isSqlDbTarget ||
+							this.migrationStateModel.isBackupContainerNetworkShare);
 					} else {
 						this.migrationStateModel._sqlMigrationService = undefined;
 						await utils.updateControlDisplay(this._dmsInfoContainer, false);

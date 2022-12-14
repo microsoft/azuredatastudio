@@ -41,10 +41,10 @@ export class SummaryPage extends MigrationWizardPage {
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		const targetDatabaseSummary = new TargetDatabaseSummaryDialog(this.migrationStateModel);
-		const isSqlVmTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLVM;
-		const isSqlMiTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLMI;
-		const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
-		const isNetworkShare = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE;
+		const isSqlVmTarget = this.migrationStateModel.isSqlVmTarget;
+		const isSqlMiTarget = this.migrationStateModel.isSqlMiTarget;
+		const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
+		const isNetworkShare = this.migrationStateModel.isBackupContainerNetworkShare;
 
 		const targetDatabaseHyperlink = this._view.modelBuilder.hyperlink()
 			.withProps({

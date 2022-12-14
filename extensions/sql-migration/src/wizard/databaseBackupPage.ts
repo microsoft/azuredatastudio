@@ -230,7 +230,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS, 'margin-top': '-1em' }
 			})
 			.withValidation((component) => {
-				if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
+				if (this.migrationStateModel.isBackupContainerNetworkShare) {
 					if (component.value) {
 						if (!/^[A-Za-z0-9\\\._-]{7,}$/.test(component.value)) {
 							return false;
@@ -626,7 +626,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	private async _updatePageControlsVisibility(containerType: NetworkContainerType): Promise<void> {
-		const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
+		const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
 		const isNetworkShare = containerType === NetworkContainerType.NETWORK_SHARE;
 		const isBlobContainer = containerType === NetworkContainerType.BLOB_CONTAINER;
 
@@ -650,13 +650,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.customButtons[VALIDATE_IR_CUSTOM_BUTTON_INDEX].hidden = !this.migrationStateModel.isIrMigration;
-		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
-			return;
-		}
 		if (this.migrationStateModel.refreshDatabaseBackupPage) {
 			await this._updatePageControlsVisibility(this.migrationStateModel._databaseBackup.networkContainerType);
 
-			const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
+			const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
 			if (isSqlDbTarget) {
 				this.wizardPage.title = constants.DATABASE_TABLE_SELECTION_LABEL;
 				this.wizardPage.description = constants.DATABASE_TABLE_SELECTION_LABEL;
@@ -711,7 +708,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				this._blobContainerDropdowns = [];
 				this._blobContainerLastBackupFileDropdowns = [];
 
-				if (this.migrationStateModel._targetType === MigrationTargetType.SQLMI) {
+				if (this.migrationStateModel.isSqlMiTarget) {
 					this._existingDatabases = await this.migrationStateModel.getManagedDatabases();
 				}
 
@@ -773,7 +770,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 								return false;
 							}
 							// Making sure if database with same name is not present on the target Azure SQL
-							if (this.migrationStateModel._targetType === MigrationTargetType.SQLMI && this._existingDatabases.includes(c.value!)) {
+							if (this.migrationStateModel.isSqlMiTarget && this._existingDatabases.includes(c.value!)) {
 								c.validationErrorMessage = constants.DATABASE_ALREADY_EXISTS_MI(c.value!, this.migrationStateModel._targetServerInstance.name);
 								return false;
 							}
@@ -799,7 +796,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							validationErrorMessage: constants.INVALID_NETWORK_SHARE_LOCATION,
 							width: '300px'
 						}).withValidation(c => {
-							if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
+							if (this.migrationStateModel.isBackupContainerNetworkShare) {
 								if (c.value) {
 									if (!/^[\\\/]{2,}[^\\\/]+[\\\/]+[^\\\/]+/.test(c.value)) {
 										return false;
@@ -828,7 +825,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 								return false;
 							}
 							// Making sure if database with same name is not present on the target Azure SQL
-							if (this.migrationStateModel._targetType === MigrationTargetType.SQLMI && this._existingDatabases.includes(c.value!)) {
+							if (this.migrationStateModel.isSqlMiTarget && this._existingDatabases.includes(c.value!)) {
 								c.validationErrorMessage = constants.DATABASE_ALREADY_EXISTS_MI(c.value!, this.migrationStateModel._targetServerInstance.name);
 								return false;
 							}
@@ -999,7 +996,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this.wizard.message = { text: '' };
 			const errors: string[] = [];
 
-			const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
+			const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
 			if (isSqlDbTarget) {
 				if (!this._validateTableSelection()) {
 					errors.push(constants.DATABASE_TABLE_VALIDATE_SELECTION_MESSAGE);
@@ -1060,7 +1057,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 			}
 
-			if (this.migrationStateModel._targetType === MigrationTargetType.SQLMI) {
+			if (this.migrationStateModel.isSqlMiTarget) {
 				this.migrationStateModel._targetDatabaseNames.forEach(t => {
 					// Making sure if database with same name is not present on the target Azure SQL
 					if (this._existingDatabases.includes(t)) {
@@ -1212,6 +1209,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 				await this._blobContainerLastBackupFileDropdowns[i]?.validate();
 			}
+		}
+		if (this.migrationStateModel.isIrMigration) {
+			if (this.migrationStateModel.isSqlDbTarget) {
+				await this._databaseTable?.validate();
+			}
+		}
+		if (this.migrationStateModel.isBackupContainerNetworkShare) {
+			await this._networkShareTargetDatabaseNamesTable.validate();
 		}
 		await component?.validate();
 	}
@@ -1442,6 +1447,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						icon: IconPathHelper.edit,
 					},
 				],
+			})
+			.withValidation(table => {
+				if (this.migrationStateModel.isSqlDbTarget) {
+					return this._validateTableSelection();
+				}
+				return true;
 			})
 			.component();
 

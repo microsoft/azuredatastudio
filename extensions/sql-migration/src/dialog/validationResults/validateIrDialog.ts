@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../../constants/strings';
 import { validateIrDatabaseMigrationSettings, validateIrSqlDatabaseMigrationSettings } from '../../api/azure';
-import { MigrationStateModel, MigrationTargetType, ValidateIrState, ValidationResult } from '../../models/stateMachine';
+import { MigrationStateModel, MigrationTargetType, NetworkShare, ValidateIrState, ValidationResult } from '../../models/stateMachine';
 import { EOL } from 'os';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 
@@ -340,7 +340,7 @@ export class ValidateIrDialog {
 
 	private async _initializeResults(results?: ValidationResult[]): Promise<void> {
 		this._valdiationErrors = [];
-		if (this._model._targetType === MigrationTargetType.SQLDB) {
+		if (this._model.isSqlDbTarget) {
 			// initialize validation results view for sqldb target
 			await this._initSqlDbIrResults(results);
 		} else {
@@ -353,7 +353,7 @@ export class ValidateIrDialog {
 		this._canceled = false;
 		await this._initializeResults();
 
-		if (this._model._targetType === MigrationTargetType.SQLDB) {
+		if (this._model.isSqlDbTarget) {
 			await this._validateSqlDbMigration();
 		} else {
 			await this._validateDatabaseMigration();
@@ -373,102 +373,73 @@ export class ValidateIrDialog {
 		const networkShare = this._model._databaseBackup.networkShares[0];
 		let testNumber: number = 0;
 
-		try {
-			// validate IR is online
-			await this._updateValidateIrResults(testNumber, ValidateIrState.Running);
-			const response = await validateIrDatabaseMigrationSettings(
-				this._model,
-				sourceServerName,
-				trustServerCertificate,
-				sourceDatabaseName,
-				networkShare,
-				true,
-				false,
-				false,
-				false);
-			if (response?.errors?.length > 0) {
-				const errors = response.errors.map(
-					error => constants.VALIDATE_IR_VALIDATION_RESULT_ERROR(
-						sourceDatabaseName,
-						networkShare.networkShareLocation,
-						error));
-				await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, errors);
-				return;
-			} else {
-				await this._updateValidateIrResults(testNumber, ValidateIrState.Succeeded);
+		const validate = async (
+			sourceDatabase: string,
+			network: NetworkShare,
+			testIrOnline: boolean,
+			testSourceLocationConnectivity: boolean,
+			testSourceConnectivity: boolean,
+			testBlobConnectivity: boolean): Promise<boolean> => {
+			try {
+				await this._updateValidateIrResults(testNumber, ValidateIrState.Running);
+				const response = await validateIrDatabaseMigrationSettings(
+					this._model,
+					sourceServerName,
+					trustServerCertificate,
+					sourceDatabase,
+					network,
+					testIrOnline,
+					testSourceLocationConnectivity,
+					testSourceConnectivity,
+					testBlobConnectivity);
+				if (response?.errors?.length > 0) {
+					const errors = response.errors.map(
+						error => constants.VALIDATE_IR_VALIDATION_RESULT_ERROR(
+							sourceDatabase,
+							network.networkShareLocation,
+							error));
+					await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, errors);
+				} else {
+					await this._updateValidateIrResults(testNumber, ValidateIrState.Succeeded);
+					return true;
+				}
+			} catch (error) {
+				await this._updateValidateIrResults(
+					testNumber,
+					ValidateIrState.Failed,
+					[constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabase, error)]);
 			}
-		} catch (error) {
-			await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
+			return false;
+		};
+
+		// validate integration runtime (IR) is online
+		if (!await validate(sourceDatabaseName, networkShare, true, false, false, false)) {
 			return;
 		}
-
 		testNumber++;
-		try {
-			await this._updateValidateIrResults(testNumber, ValidateIrState.Running);
 
-			// validate blob container connectivity
-			const response = await validateIrDatabaseMigrationSettings(
-				this._model,
-				sourceServerName,
-				trustServerCertificate,
-				sourceDatabaseName,
-				networkShare,
-				false,
-				false,
-				false,
-				true);
-			if (response?.errors?.length > 0) {
-				const errors = response.errors.map(
-					error => constants.VALIDATE_IR_VALIDATION_RESULT_ERROR(
-						sourceDatabaseName,
-						networkShare.networkShareLocation,
-						error));
-				await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, errors);
-				return;
-			} else {
-				await this._updateValidateIrResults(testNumber, ValidateIrState.Succeeded);
-			}
-		} catch (error) {
-			await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
+		// validate blob container connectivity
+		if (!await validate(sourceDatabaseName, networkShare, false, false, false, true)) {
 			return;
 		}
 
 		for (let i = 0; i < databaseCount; i++) {
+			const sourceDatabaseName = this._model._databasesForMigration[i];
+			const networkShare = this._model._databaseBackup.networkShares[i];
 			testNumber++;
 			if (this._canceled) {
 				await this._updateValidateIrResults(testNumber, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED])
 				break;
 			}
-
-			const sourceDatabaseName = this._model._databasesForMigration[i];
-			const networkShare = this._model._databaseBackup.networkShares[i];
-			try {
-				await this._updateValidateIrResults(testNumber, ValidateIrState.Running);
-				// validate source connectivity
-				// validate network share path connectivity
-				const response = await validateIrDatabaseMigrationSettings(
-					this._model,
-					sourceServerName,
-					trustServerCertificate,
-					sourceDatabaseName,
-					networkShare,
-					false,
-					true,
-					true,
-					false);
-				if (response?.errors?.length > 0) {
-					const errors = response.errors.map(
-						error => constants.VALIDATE_IR_VALIDATION_RESULT_ERROR(
-							sourceDatabaseName,
-							networkShare.networkShareLocation,
-							error));
-					await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, errors);
-				} else {
-					await this._updateValidateIrResults(testNumber, ValidateIrState.Succeeded);
-				}
-			} catch (error) {
-				await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
+			// validate source connectivity
+			await validate(sourceDatabaseName, networkShare, false, false, true, false);
+			testNumber++;
+			if (this._canceled) {
+				await this._updateValidateIrResults(testNumber, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED])
+				break;
 			}
+			// valdiate source location / network share connectivity
+			await validate(sourceDatabaseName, networkShare, false, true, false, false);
 		}
 	}
 
@@ -483,69 +454,65 @@ export class ValidateIrDialog {
 		const targetDatabaseName = this._model._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? '';
 		let testNumber: number = 0;
 
-		// validate IR is online
-		await this._updateValidateIrResults(testNumber, ValidateIrState.Running);
-		try {
-			const response = await validateIrSqlDatabaseMigrationSettings(
-				this._model,
-				sourceServerName,
-				trustServerCertificate,
-				sourceDatabaseName,
-				targetDatabaseName,
-				true,
-				false,
-				false);
-			if (response?.errors?.length > 0) {
-				const errors = response.errors.map(
-					error => constants.VALIDATE_IR_SQLDB_VALIDATION_RESULT_ERROR(
-						sourceDatabaseName,
-						targetDatabaseName,
-						error));
-				await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, errors);
-				return;
-			} else {
-				await this._updateValidateIrResults(testNumber, ValidateIrState.Succeeded);
-			}
-		} catch (error) {
-			await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
-			return;
-		}
+		const validate = async (
+			sourceDatabase: string,
+			targetDatabase: string,
+			testIrOnline: boolean,
+			testSourceConnectivity: boolean,
+			testTargetConnectivity: boolean): Promise<boolean> => {
 
-		for (let i = 0; i < databaseCount; i++) {
-			testNumber++;
-			if (this._canceled) {
-				await this._updateValidateIrResults(testNumber, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED]);
-				break;
-			}
-
-			const sourceDatabaseName = this._model._databasesForMigration[i];
-			const targetDatabaseName = this._model._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? '';
 			await this._updateValidateIrResults(testNumber, ValidateIrState.Running);
 			try {
-				// validate source connectivity
-				// validate target connectivity
 				const response = await validateIrSqlDatabaseMigrationSettings(
 					this._model,
 					sourceServerName,
 					trustServerCertificate,
-					sourceDatabaseName,
-					targetDatabaseName,
-					false,
-					true,
-					true);
+					sourceDatabase,
+					targetDatabase,
+					testIrOnline,
+					testSourceConnectivity,
+					testTargetConnectivity);
 				if (response?.errors?.length > 0) {
 					const errors = response.errors.map(
 						error => constants.VALIDATE_IR_SQLDB_VALIDATION_RESULT_ERROR(
-							sourceDatabaseName,
-							targetDatabaseName,
+							sourceDatabase,
+							targetDatabase,
 							error));
-
 					await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, errors);
 				} else {
 					await this._updateValidateIrResults(testNumber, ValidateIrState.Succeeded);
+					return true;
 				}
 			} catch (error) {
-				await this._updateValidateIrResults(testNumber, ValidateIrState.Failed, [constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabaseName, error)]);
+				await this._updateValidateIrResults(
+					testNumber,
+					ValidateIrState.Failed,
+					[constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabase, error)]);
+			}
+			return false;
+		};
+
+		// validate IR is online
+		if (await validate(sourceDatabaseName, targetDatabaseName, true, false, false)) {
+			for (let i = 0; i < databaseCount; i++) {
+				const sourceDatabaseName = this._model._databasesForMigration[i];
+				const targetDatabaseName = this._model._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? '';
+
+				testNumber++;
+				if (this._canceled) {
+					await this._updateValidateIrResults(testNumber, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED]);
+					break;
+				}
+				// validate source connectivity
+				await validate(sourceDatabaseName, targetDatabaseName, false, true, false);
+
+				testNumber++;
+				if (this._canceled) {
+					await this._updateValidateIrResults(testNumber, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED]);
+					break;
+				}
+				// validate target connectivity
+				await validate(sourceDatabaseName, targetDatabaseName, false, false, true);
 			}
 		}
 	}
@@ -556,11 +523,17 @@ export class ValidateIrDialog {
 		this._addValidationResult(constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_SHIR);
 		this._addValidationResult(constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_STORAGE);
 
-		this._model._databasesForMigration
-			.forEach(sourceDatabaseName =>
-				this._addValidationResult(
-					constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_DATABASE(
-						sourceDatabaseName)));
+		for (let i = 0; i < this._model._databasesForMigration.length; i++) {
+			const sourceDatabaseName = this._model._databasesForMigration[i];
+			const networkShare = this._model._databaseBackup.networkShares[i];
+
+			this._addValidationResult(
+				constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_SOURCE_DATABASE(
+					sourceDatabaseName));
+			this._addValidationResult(
+				constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_NETWORK_SHARE(
+					networkShare.networkShareLocation));
+		}
 
 		if (results && results.length > 0) {
 			for (let row = 0; row < results.length; row++) {
@@ -584,10 +557,16 @@ export class ValidateIrDialog {
 		this._addValidationResult(constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_SHIR);
 
 		this._model._databasesForMigration
-			.forEach(sourceDatabaseName =>
+			.forEach(sourceDatabaseName => {
 				this._addValidationResult(
-					constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_DATABASE(
-						sourceDatabaseName)));
+					constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_SOURCE_DATABASE(
+						sourceDatabaseName));
+
+				const targetDatabaseName = this._model._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? '';
+				this._addValidationResult(
+					constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_TARGET_DATABASE(
+						targetDatabaseName));
+			});
 
 		if (results && results.length > 0) {
 			for (let row = 0; row < results.length; row++) {

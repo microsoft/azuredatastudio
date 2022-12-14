@@ -9,7 +9,7 @@ import * as azurecore from 'azurecore';
 import * as constants from '../constants/strings';
 import { getSessionIdHeader } from './utils';
 import { URL } from 'url';
-import { MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkShare } from '../models/stateMachine';
+import { MigrationSourceAuthenticationType, MigrationStateModel, NetworkShare } from '../models/stateMachine';
 
 const ARM_MGMT_API_VERSION = '2021-04-01';
 const SQL_VM_API_VERSION = '2021-11-01-preview';
@@ -645,7 +645,7 @@ export async function validateIrDatabaseMigrationSettings(
 
 	const requestBody: ValdiateIrDatabaseMigrationRequest = {
 		sourceDatabaseName: sourceDatabaseName ?? '',
-		kind: migration._targetType === MigrationTargetType.SQLMI
+		kind: migration.isSqlMiTarget
 			? AzureResourceKind.SQLMI
 			: AzureResourceKind.SQLVM,
 		validateIntegrationRuntimeOnline: testIrOnline,

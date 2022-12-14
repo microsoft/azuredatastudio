@@ -302,7 +302,7 @@ export function AZURE_SQL_TARGET_PAGE_DESCRIPTION(targetInstance: string = 'inst
 	return localize('sql.migration.wizard.target.description', "Select an Azure account and your target {0}.", targetInstance);
 }
 
-export const AZURE_SQL_TARGET_CONNECTION_ERROR_TITLE = localize('sql.migration.wizard.connection.error.title', "An error occurred while conneting to the target server.");
+export const AZURE_SQL_TARGET_CONNECTION_ERROR_TITLE = localize('sql.migration.wizard.connection.error.title', "An error occurred while connecting to the target server.");
 export function SQL_TARGET_CONNECTION_ERROR(message: string): string {
 	return localize('sql.migration.wizard.target.connection.error', "Connection error: {0}", message);
 }
@@ -679,13 +679,25 @@ export function VALIDATE_IR_VALIDATION_STATUS_ERROR(state: string | undefined, e
 
 export const VALIDATE_IR_COLUMN_VALIDATION_STEPS = localize('sql.migration.validate.ir.column.validation.steps', "Validation steps");
 export const VALIDATE_IR_COLUMN_STATUS = localize('sql.migration.validate.ir.column.status', "Status");
-export const VALIDATE_IR_VALIDATION_RESULT_LABEL_SHIR = localize('sql.migration.validate.ir.validation.result.label.shir', "Validating integration runtime connectivity");
-export const VALIDATE_IR_VALIDATION_RESULT_LABEL_STORAGE = localize('sql.migration.validate.ir.validation.result.label.storage', "Validating Azure storage connectivity");
+export const VALIDATE_IR_VALIDATION_RESULT_LABEL_SHIR = localize('sql.migration.validate.ir.validation.result.label.shir', "Integration runtime connectivity");
+export const VALIDATE_IR_VALIDATION_RESULT_LABEL_STORAGE = localize('sql.migration.validate.ir.validation.result.label.storage', "Azure storage connectivity");
 
-export function VALIDATE_IR_VALIDATION_RESULT_LABEL_DATABASE(databaseName: string): string {
+export function VALIDATE_IR_VALIDATION_RESULT_LABEL_SOURCE_DATABASE(databaseName: string): string {
 	return localize(
-		'sql.migration.validate.ir.validation.result.label.database',
-		"Validating database '{0}' configuration", databaseName);
+		'sql.migration.validate.ir.validation.result.label.source.database',
+		"Source database connectivity: '{0}'", databaseName);
+}
+
+export function VALIDATE_IR_VALIDATION_RESULT_LABEL_NETWORK_SHARE(shareName: string): string {
+	return localize(
+		'sql.migration.validate.ir.validation.result.label.networkshare',
+		"Network share connectivity: '{0}' ", shareName);
+}
+
+export function VALIDATE_IR_VALIDATION_RESULT_LABEL_TARGET_DATABASE(databaseName: string): string {
+	return localize(
+		'sql.migration.validate.ir.validation.result.label.target.database',
+		"Target database connectivity: '{0}'", databaseName);
 }
 
 export function VALIDATE_IR_VALIDATION_RESULT_API_ERROR(databaseName: string, error: Error): string {
