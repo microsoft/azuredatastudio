@@ -17,6 +17,7 @@ import { IconPathHelper } from '../common/iconHelper';
 import { UpdateProjectDataModel, UpdateProjectAction } from '../models/api/updateProject';
 import { exists, getAzdataApi, getDataWorkspaceExtensionApi } from '../common/utils';
 import * as path from 'path';
+import { mapExtractTargetEnum } from './utils';
 
 export class UpdateProjectFromDatabaseDialog {
 	public dialog: azdata.window.Dialog;
@@ -537,7 +538,7 @@ export class UpdateProjectFromDatabaseDialog {
 			connectionDetails: connectionDetails,
 			ownerUri: ownerUri,
 			projectFilePath: '',
-			folderStructure: '',
+			folderStructure: mssql.ExtractTarget.schemaObjectType,
 			targetScripts: [],
 			dataSchemaProvider: '',
 			packageFilePath: '',
@@ -547,7 +548,7 @@ export class UpdateProjectFromDatabaseDialog {
 		const targetEndpointInfo: mssql.SchemaCompareEndpointInfo = {
 			endpointType: mssql.SchemaCompareEndpointType.Project,
 			projectFilePath: this.projectFileTextBox!.value!,
-			folderStructure: this.folderStructureDropDown!.value as string,
+			folderStructure: mapExtractTargetEnum(<string>this.folderStructureDropDown!.value),
 			targetScripts: [],
 			dataSchemaProvider: '',
 			connectionDetails: connectionDetails,
