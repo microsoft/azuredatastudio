@@ -10,7 +10,7 @@ import { exists, getVscodeMssqlApi } from '../common/utils';
 import { IConnectionInfo } from 'vscode-mssql';
 import { defaultProjectNameFromDb, defaultProjectSaveLocation } from '../tools/newProjectTool';
 import { ImportDataModel } from '../models/api/import';
-import { mapExtractTargetEnum } from './createProjectFromDatabaseDialog';
+import { mapExtractTargetEnum } from './utils';
 
 import { getSDKStyleProjectInfo } from './quickpickHelper';
 

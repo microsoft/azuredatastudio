@@ -55,7 +55,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			databaseName: '',
 			ownerUri: '',
 			projectFilePath: '',
-			folderStructure: '',
+			folderStructure: mssql.ExtractTarget.schemaObjectType,
 			targetScripts: [],
 			dataSchemaProvider: '',
 			connectionDetails: undefined
@@ -68,7 +68,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			databaseName: '',
 			ownerUri: '',
 			projectFilePath: '',
-			folderStructure: '',
+			folderStructure: mssql.ExtractTarget.schemaObjectType,
 			targetScripts: [],
 			dataSchemaProvider: '',
 			connectionDetails: undefined
@@ -123,7 +123,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				databaseName: sourceDB,
 				ownerUri: ownerUri,
 				projectFilePath: '',
-				folderStructure: '',
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				targetScripts: [],
 				dataSchemaProvider: '',
 				connectionDetails: undefined
@@ -136,7 +136,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				databaseName: targetDB,
 				ownerUri: ownerUri,
 				projectFilePath: '',
-				folderStructure: '',
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				targetScripts: [],
 				dataSchemaProvider: '',
 				connectionDetails: undefined
@@ -196,7 +196,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				databaseName: '',
 				ownerUri: ownerUri,
 				projectFilePath: '',
-				folderStructure: '',
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				targetScripts: [],
 				dataSchemaProvider: '',
 				connectionDetails: undefined
@@ -209,7 +209,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				databaseName: targetDB,
 				ownerUri: ownerUri,
 				projectFilePath: '',
-				folderStructure: '',
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				targetScripts: [],
 				dataSchemaProvider: '',
 				connectionDetails: undefined
@@ -256,7 +256,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			databaseName: '',
 			ownerUri: '',
 			projectFilePath: '',
-			folderStructure: '',
+			folderStructure: mssql.ExtractTarget.schemaObjectType,
 			targetScripts: [],
 			dataSchemaProvider: '',
 			connectionDetails: undefined
@@ -269,7 +269,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			databaseName: '',
 			ownerUri: '',
 			projectFilePath: '',
-			folderStructure: '',
+			folderStructure: mssql.ExtractTarget.schemaObjectType,
 			targetScripts: [],
 			dataSchemaProvider: '',
 			connectionDetails: undefined
@@ -330,7 +330,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				databaseName: '',
 				ownerUri: ownerUri,
 				projectFilePath: '',
-				folderStructure: '',
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				targetScripts: [],
 				dataSchemaProvider: '',
 				connectionDetails: undefined
@@ -343,7 +343,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				databaseName: targetDB,
 				ownerUri: ownerUri,
 				projectFilePath: '',
-				folderStructure: '',
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				targetScripts: [],
 				dataSchemaProvider: '',
 				connectionDetails: undefined
@@ -413,7 +413,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				databaseName: '',
 				ownerUri: ownerUri,
 				projectFilePath: '',
-				folderStructure: '',
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				targetScripts: [],
 				dataSchemaProvider: '',
 				connectionDetails: undefined
@@ -426,7 +426,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				databaseName: targetDB,
 				ownerUri: ownerUri,
 				projectFilePath: '',
-				folderStructure: '',
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				targetScripts: [],
 				dataSchemaProvider: '',
 				connectionDetails: undefined
@@ -484,7 +484,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				databaseName: '',
 				ownerUri: ownerUri,
 				projectFilePath: '',
-				folderStructure: '',
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				targetScripts: [],
 				dataSchemaProvider: '',
 				connectionDetails: undefined
@@ -497,7 +497,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				databaseName: targetDB,
 				ownerUri: ownerUri,
 				projectFilePath: '',
-				folderStructure: '',
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				targetScripts: [],
 				dataSchemaProvider: '',
 				connectionDetails: undefined
