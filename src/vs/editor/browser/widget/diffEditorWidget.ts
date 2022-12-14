@@ -46,7 +46,7 @@ import { EditorExtensionsRegistry, IDiffEditorContributionDescription } from 'vs
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IEditorProgressService, IProgressRunner } from 'vs/platform/progress/common/progress';
 import { ElementSizeObserver } from 'vs/editor/browser/config/elementSizeObserver';
-import { reverseLineChanges } from 'sql/editor/browser/diffEditorHelper'; // {{SQL CARBON EDIT}}
+import { reverseDecorations, setOverviewZonesColor } from 'sql/editor/browser/diffEditorHelper'; // {{SQL CARBON EDIT}}
 import { Codicon } from 'vs/base/common/codicons';
 import { MOUSE_CURSOR_TEXT_CSS_CLASS_NAME } from 'vs/base/browser/ui/mouseCursor/mouseCursor';
 import { IViewLineTokens } from 'vs/editor/common/tokens/lineTokens';
@@ -1397,19 +1397,17 @@ abstract class DiffEditorWidgetStyle extends Disposable {
 		});
 		const zones = this._getViewZones(lineChanges, originalWhitespaces, modifiedWhitespaces, renderIndicators);
 
-		// {{SQL CARBON EDIT}}
-		if (reverse) {
-			lineChanges = reverseLineChanges(lineChanges);
-			[originalEditor, modifiedEditor] = [modifiedEditor, originalEditor];
-		}
-
-		// {{SQL CARBON EDIT}}
 		// Get decorations & overview ruler zones
 		let originalDecorations = this._getOriginalEditorDecorations(zones, lineChanges, ignoreTrimWhitespace, renderIndicators);
 		let modifiedDecorations = this._getModifiedEditorDecorations(zones, lineChanges, ignoreTrimWhitespace, renderIndicators);
-		// {{SQL CARBON EDIT}}
+
+		// {{SQL CARBON EDIT}} - reverse decorations
 		if (reverse) {
-			[originalDecorations, modifiedDecorations] = [modifiedDecorations, originalDecorations];
+			reverseDecorations(originalDecorations.decorations);
+			reverseDecorations(modifiedDecorations.decorations);
+
+			originalDecorations.overviewZones = setOverviewZonesColor(originalDecorations.overviewZones, String(this._insertColor));
+			modifiedDecorations.overviewZones = setOverviewZonesColor(modifiedDecorations.overviewZones, String(this._removeColor));
 		}
 
 		return {
@@ -1742,7 +1740,8 @@ function createDecoration(startLineNumber: number, startColumn: number, endLineN
 	};
 }
 
-const DECORATIONS = {
+// {{SQL CARBON EDIT}} - export DECORATIONS so it can be used in diffEditorHelper
+export const DECORATIONS = {
 
 	charDelete: ModelDecorationOptions.register({
 		description: 'diff-editor-char-delete',
