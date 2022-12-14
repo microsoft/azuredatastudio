@@ -36,7 +36,16 @@ export class ErrorHandlerService extends SqlOpsFeature<any> {
 
 	protected registerProvider(options: any): Disposable { return undefined; }
 
-	protected async getToken(request: Contracts.ErrorHandlerParameters): Promise<Contracts.errorCodes | undefined> {
-		return Promise.resolve(undefined);
+	getErrorHandleStatus(errorCode: number, errorMessage: string, providerName: string, ownerUri: string): Thenable<Contracts.errorCodes> {
+		let params: Contracts.ErrorHandlerParameters = { errorCode: errorCode, errorMessage: errorMessage, providerName: providerName, ownerUri: ownerUri };
+		return this.client.sendRequest(Contracts.ErrorHandlerRequest.type, params).then(
+			r => {
+				return undefined;
+			},
+			e => {
+				this.client.logFailedRequest(Contracts.ErrorHandlerRequest.type, e);
+				return Promise.reject(new Error(e.message));
+			}
+		);
 	}
 }

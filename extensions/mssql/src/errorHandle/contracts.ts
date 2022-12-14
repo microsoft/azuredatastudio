@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import { RequestType } from 'vscode-languageclient';
 
 export interface ErrorHandlerParameters {
 	/**
@@ -30,3 +31,6 @@ export enum errorCodes {
 	passwordReset = 1,
 }
 
+export namespace ErrorHandlerRequest {
+	export const type = new RequestType<ErrorHandlerParameters, errorCodes, void, void>('cms/listRegisteredServers');
+}
