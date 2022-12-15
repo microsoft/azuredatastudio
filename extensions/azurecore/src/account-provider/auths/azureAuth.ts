@@ -828,6 +828,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				return await this.deleteAccountCacheAdal(account);
 			}
 		} catch (ex) {
+			// We need not prompt user for error if token could not be removed from cache.
 			Logger.error('Error when removing token from cache: ', ex);
 		}
 	}
