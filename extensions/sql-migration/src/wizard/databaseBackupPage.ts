@@ -625,10 +625,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.component();
 	}
 
-	private async _updatePageControlsVisibility(containerType: NetworkContainerType): Promise<void> {
+	private async _updatePageControlsVisibility(): Promise<void> {
 		const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
-		const isNetworkShare = containerType === NetworkContainerType.NETWORK_SHARE;
-		const isBlobContainer = containerType === NetworkContainerType.BLOB_CONTAINER;
+		const isNetworkShare = this.migrationStateModel.isBackupContainerNetworkShare;
+		const isBlobContainer = this.migrationStateModel.isBackupContainerBlobContainer;
 
 		await utils.updateControlDisplay(this._sourceConnectionContainer, isSqlDbTarget || isNetworkShare);
 		await utils.updateControlDisplay(this._migrationTableSection, isSqlDbTarget);
@@ -636,23 +636,22 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		await utils.updateControlDisplay(this._targetDatabaseContainer, !isSqlDbTarget);
 		await utils.updateControlDisplay(this._networkShareStorageAccountDetails, !isSqlDbTarget);
 
-		await utils.updateControlDisplay(this._networkShareContainer, isNetworkShare);
-		await utils.updateControlDisplay(this._networkShareStorageAccountDetails, isNetworkShare);
-		await utils.updateControlDisplay(this._networkTableContainer, isNetworkShare);
-		await utils.updateControlDisplay(this._blobContainer, isBlobContainer);
-		await utils.updateControlDisplay(this._blobTableContainer, isBlobContainer);
+		await utils.updateControlDisplay(this._networkShareContainer, isNetworkShare && !isSqlDbTarget);
+		await utils.updateControlDisplay(this._networkShareStorageAccountDetails, isNetworkShare && !isSqlDbTarget);
+		await utils.updateControlDisplay(this._networkTableContainer, isNetworkShare && !isSqlDbTarget);
+		await utils.updateControlDisplay(this._blobContainer, isBlobContainer && !isSqlDbTarget);
+		await utils.updateControlDisplay(this._blobTableContainer, isBlobContainer && !isSqlDbTarget);
 
-		await this._windowsUserAccountText.updateProperties({ required: isNetworkShare });
-		await this._passwordText.updateProperties({ required: isNetworkShare });
+		await this._windowsUserAccountText.updateProperties({ required: isNetworkShare && !isSqlDbTarget });
+		await this._passwordText.updateProperties({ required: isNetworkShare && !isSqlDbTarget });
 		await this._sqlSourceUsernameInput.updateProperties({ required: isNetworkShare || isSqlDbTarget });
 		await this._sqlSourcePassword.updateProperties({ required: isNetworkShare || isSqlDbTarget });
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.customButtons[VALIDATE_IR_CUSTOM_BUTTON_INDEX].hidden = !this.migrationStateModel.isIrMigration;
+		await this._updatePageControlsVisibility();
 		if (this.migrationStateModel.refreshDatabaseBackupPage) {
-			await this._updatePageControlsVisibility(this.migrationStateModel._databaseBackup.networkContainerType);
-
 			const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
 			if (isSqlDbTarget) {
 				this.wizardPage.title = constants.DATABASE_TABLE_SELECTION_LABEL;
@@ -1146,27 +1145,29 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this.wizard.customButtons[VALIDATE_IR_CUSTOM_BUTTON_INDEX].hidden = true;
 
 		if (pageChangeInfo.newPage > pageChangeInfo.lastPage) {
-			switch (this.migrationStateModel._databaseBackup.networkContainerType) {
-				case NetworkContainerType.BLOB_CONTAINER:
-					for (let i = 0; i < this.migrationStateModel._databaseBackup.blobs.length; i++) {
-						const storageAccount = this.migrationStateModel._databaseBackup.blobs[i].storageAccount;
-						this.migrationStateModel._databaseBackup.blobs[i].storageKey = (await getStorageAccountAccessKeys(
+			if (!this.migrationStateModel.isSqlDbTarget) {
+				switch (this.migrationStateModel._databaseBackup.networkContainerType) {
+					case NetworkContainerType.BLOB_CONTAINER:
+						for (let i = 0; i < this.migrationStateModel._databaseBackup.blobs.length; i++) {
+							const storageAccount = this.migrationStateModel._databaseBackup.blobs[i].storageAccount;
+							this.migrationStateModel._databaseBackup.blobs[i].storageKey = (await getStorageAccountAccessKeys(
+								this.migrationStateModel._azureAccount,
+								this.migrationStateModel._databaseBackup.subscription,
+								storageAccount)).keyName1;
+						}
+						break;
+					case NetworkContainerType.NETWORK_SHARE:
+						// All network share migrations use the same storage account
+						const storageAccount = this.migrationStateModel._databaseBackup.networkShares[0]?.storageAccount;
+						const storageKey = (await getStorageAccountAccessKeys(
 							this.migrationStateModel._azureAccount,
 							this.migrationStateModel._databaseBackup.subscription,
 							storageAccount)).keyName1;
-					}
-					break;
-				case NetworkContainerType.NETWORK_SHARE:
-					// All network share migrations use the same storage account
-					const storageAccount = this.migrationStateModel._databaseBackup.networkShares[0]?.storageAccount;
-					const storageKey = (await getStorageAccountAccessKeys(
-						this.migrationStateModel._azureAccount,
-						this.migrationStateModel._databaseBackup.subscription,
-						storageAccount)).keyName1;
-					for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
-						this.migrationStateModel._databaseBackup.networkShares[i].storageKey = storageKey;
-					}
-					break;
+						for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
+							this.migrationStateModel._databaseBackup.networkShares[i].storageKey = storageKey;
+						}
+						break;
+				}
 			}
 		}
 	}

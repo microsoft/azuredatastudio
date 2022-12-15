@@ -155,6 +155,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				if (checked) {
 					this.migrationStateModel._databaseBackup.networkContainerType = NetworkContainerType.NETWORK_SHARE;
 					await utils.updateControlDisplay(this._dmsInfoContainer, true);
+					this.migrationStateModel.refreshDatabaseBackupPage = true;
 				}
 			}));
 
@@ -171,6 +172,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				if (checked) {
 					this.migrationStateModel._databaseBackup.networkContainerType = NetworkContainerType.BLOB_CONTAINER;
 					await utils.updateControlDisplay(this._dmsInfoContainer, false);
+					this.migrationStateModel.refreshDatabaseBackupPage = true;
 				}
 			}));
 

@@ -342,6 +342,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._databaseBackup?.networkContainerType === NetworkContainerType.NETWORK_SHARE;
 	}
 
+	public get isBackupContainerBlobContainer(): boolean {
+		return this._databaseBackup?.networkContainerType === NetworkContainerType.BLOB_CONTAINER;
+	}
+
 	public get isIrMigration(): boolean {
 		return this.isSqlDbTarget
 			|| this.isBackupContainerNetworkShare;
