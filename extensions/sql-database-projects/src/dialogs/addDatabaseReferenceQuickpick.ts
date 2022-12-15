@@ -46,7 +46,7 @@ export async function addDatabaseReferenceQuickpick(project: Project): Promise<A
 		case constants.systemDatabase:
 			return addSystemDatabaseReference(project);
 		case constants.dacpacText:
-			return addDacpacReference();
+			return addDacpacReference(project);
 		default:
 			console.log(`Unknown reference type ${referenceType}`);
 			return undefined;
@@ -130,7 +130,7 @@ async function addSystemDatabaseReference(project: Project): Promise<ISystemData
 	};
 }
 
-async function addDacpacReference(): Promise<IDacpacReferenceSettings | undefined> {
+async function addDacpacReference(project: Project): Promise<IDacpacReferenceSettings | undefined> {
 	// (steps continued from addDatabaseReferenceQuickpick)
 	// 2. Prompt for location
 	const location = await promptLocation();
@@ -152,6 +152,12 @@ async function addDacpacReference(): Promise<IDacpacReferenceSettings | undefine
 	if (!dacPacLocation) {
 		// User cancelled
 		return undefined;
+	}
+
+	const projectDrive = path.parse(project.projectFilePath).root;
+	const dacpacDrive = path.parse(dacPacLocation.fsPath).root;
+	if (projectDrive !== dacpacDrive) {
+		void vscode.window.showErrorMessage(constants.dacpacNotOnSameDrive(project.projectFilePath));
 	}
 
 	// 4. Prompt for db/server values
