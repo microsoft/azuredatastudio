@@ -324,7 +324,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return null;
 		}
 		let account: AccountInfo | null = await this.getAccountFromMsalCache(accountId);
-		// if the accountId is a home ID, it will include a "." character
 		if (!account) {
 			Logger.error('Error: Could not fetch account when acquiring token');
 			return null;
@@ -372,6 +371,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 
 		let account: AccountInfo | null = null;
+		// if the accountId is a home ID, it will include a "." character
 		if (accountId.includes(".")) {
 			account = await cache.getAccountByHomeId(accountId);
 		} else {
