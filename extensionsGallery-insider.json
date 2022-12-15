@@ -4309,7 +4309,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/Microsoft"
+									"value": "https://github.com/Microsoft/azuredatastudio"
 								}
 							]
 						}
@@ -4374,7 +4374,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/Microsoft"
+									"value": "https://github.com/Microsoft/azuredatastudio"
 								}
 							]
 						}
@@ -4439,7 +4439,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/Microsoft"
+									"value": "https://github.com/Microsoft/azuredatastudio"
 								}
 							]
 						}
@@ -4565,7 +4565,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/Microsoft"
+									"value": "https://github.com/Microsoft/azuredatastudio"
 								}
 							]
 						}
