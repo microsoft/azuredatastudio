@@ -13061,6 +13061,8 @@
 			"status.query.selection-summary": "Resumo da Seleção",
 			"status.query.status": "Status de Execução",
 			"status.query.summaryText": "Média: {0}  Contagem: {1}  Soma: {2}",
+			"status.query.summaryTextNonNumeric": "Contagem: {0}  Contagem distinta: {1}  Contagem nula: {2}",
+			"status.query.summaryTooltip": "Média: {0}  Contagem: {1}  Contagem Distinta: {2}  Máx: {3}  Mín: {4}  Contagem Nula: {5}  Soma: {6}",
 			"status.query.timeElapsed": "Tempo Decorrido"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13577,6 +13579,7 @@
 			"deleteCellFailed": "Falha ao excluir a célula.",
 			"injectedParametersMsg": "# Injected-Parameters\r\n",
 			"kernelRequiresConnection": "Selecione uma conexão para executar células para este kernel",
+			"savedKernelNotSupported": "Não há suporte para o kernel '{0}' deste notebook. Em vez disso, o padrão é o kernel do SQL.",
 			"shutdownClientSessionError": "Ocorreu um erro de sessão de cliente ao fechar o notebook: {0}",
 			"startSessionFailed": "Não foi possível iniciar a sessão: {0}"
 		},
@@ -13613,9 +13616,9 @@
 			"unknownCellType": "Tipo de célula {0} desconhecido"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "Destino de execução opcional que essa mágic indica, por exemplo, Spark versus SQL",
+			"carbon.extension.contributes.notebook.executionTarget": "Alvo de execução opcional que essa mágica indica, por exemplo, Python versus SQL",
 			"carbon.extension.contributes.notebook.fileExtensions": "Quais extensões de arquivo devem ser registradas para este provedor de notebook?",
-			"carbon.extension.contributes.notebook.kernels": "Conjunto opcional de kernels que é válido para, por exemplo, python3, pyspark, SQL",
+			"carbon.extension.contributes.notebook.kernels": "Conjunto opcional de kernels para o qual isso é válido, por exemplo, python3, SQL",
 			"carbon.extension.contributes.notebook.language": "A linguagem de célula a ser usada se esta magic da célula estiver incluída na célula",
 			"carbon.extension.contributes.notebook.magic": "Nome do magic da célula, como '%%sql'.",
 			"carbon.extension.contributes.notebook.provider": "Identificador do provedor de notebook.",
@@ -13893,6 +13896,17 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "I&&ntrodução",
 			"showReleaseNotes": "Mostrar Introdução"
+		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "Cancelar",
+			"passwordChangeDialog.confirmPassword": "Confirmar senha:",
+			"passwordChangeDialog.connecting": "Conectando",
+			"passwordChangeDialog.errorHeader": "Falha ao tentar alterar a senha",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "As senhas digitadas não correspondem",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Pressione OK e insira exatamente a mesma senha nas duas caixas.",
+			"passwordChangeDialog.newPassword": "Nova senha:",
+			"passwordChangeDialog.ok": "OK",
+			"passwordChangeDialog.title": "Alterar Senha"
 		}
 	}
 }

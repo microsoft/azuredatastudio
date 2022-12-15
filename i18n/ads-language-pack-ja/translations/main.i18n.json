@@ -13061,6 +13061,8 @@
 			"status.query.selection-summary": "選択の要約",
 			"status.query.status": "実行状態",
 			"status.query.summaryText": "平均: {0}  数: {1}  合計: {2}",
+			"status.query.summaryTextNonNumeric": "カウント: {0} 個別カウント: {1} Null カウント: {2}",
+			"status.query.summaryTooltip": "平均: {0} カウント: {1} Distinct Count: {2} Max : {3} 最小値: {4} Null カウント: {5} 合計: {6}",
 			"status.query.timeElapsed": "経過時間"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13577,6 +13579,7 @@
 			"deleteCellFailed": "セルの削除に失敗しました。",
 			"injectedParametersMsg": "# Injected-Parameters\r\n",
 			"kernelRequiresConnection": "このカーネルのセルを実行する接続を選択してください",
+			"savedKernelNotSupported": "このノートブックの '{0}' カーネルはサポートされていません。代わりに SQL カーネルに既定値を設定します。",
 			"shutdownClientSessionError": "ノートブックを閉じるときにクライアント セッション エラーが発生しました: {0}",
 			"startSessionFailed": "セッションを開始できませんでした: {0}"
 		},
@@ -13613,7 +13616,7 @@
 			"unknownCellType": "セルの種類 {0} が不明"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "Spark / SQL など、このマジックが示すオプションの実行対象",
+			"carbon.extension.contributes.notebook.executionTarget": "このマジックが示すオプションの実行ターゲット (Python vs SQL など)",
 			"carbon.extension.contributes.notebook.fileExtensions": "このノートブック プロバイダーにどのファイル拡張子を登録する必要があるか",
 			"carbon.extension.contributes.notebook.kernels": "これが有効なカーネルのオプションのセット (python3、pyspark、sql など)",
 			"carbon.extension.contributes.notebook.language": "このセル マジックがセルに含まれる場合に使用されるセルの言語",
@@ -13893,6 +13896,17 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "はじめに(&&S)",
 			"showReleaseNotes": "「はじめに」を表示する"
+		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "キャンセル",
+			"passwordChangeDialog.confirmPassword": "パスワードの確認入力:",
+			"passwordChangeDialog.connecting": "接続しています",
+			"passwordChangeDialog.errorHeader": "パスワードを変更しようとしたときにエラーが発生しました",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "入力されたパスワードが一致しません",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "[OK] を押し、両方のボックスにまったく同じパスワードを入力します。",
+			"passwordChangeDialog.newPassword": "新しいパスワード:",
+			"passwordChangeDialog.ok": "OK",
+			"passwordChangeDialog.title": "パスワードの変更"
 		}
 	}
 }

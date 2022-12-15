@@ -13061,6 +13061,8 @@
 			"status.query.selection-summary": "Сводка по выбранным элементам",
 			"status.query.status": "Состояние выполнения",
 			"status.query.summaryText": "Среднее значение: {0}  Количество: {1}  Сумма: {2}",
+			"status.query.summaryTextNonNumeric": "Количество: {0}, число уникальных значений: {1}, число значений NULL: {2}",
+			"status.query.summaryTooltip": "Среднее: {0}, количество: {1}, число уникальных значений: {2}, максимум: {3}, минимум: {4}, число значений NULL: {5}, сумма: {6}",
 			"status.query.timeElapsed": "Прошедшее время"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13577,6 +13579,7 @@
 			"deleteCellFailed": "Не удалось удалить ячейку.",
 			"injectedParametersMsg": "Число внедренных параметров\r\n",
 			"kernelRequiresConnection": "Выберите подключение, на котором будут выполняться ячейки для этого ядра",
+			"savedKernelNotSupported": "Ядро \"{0} этой записной книжки не поддерживается. По умолчанию для ядра SQL.",
 			"shutdownClientSessionError": "При закрытии записной книжки произошла ошибка сеанса клиента: {0}",
 			"startSessionFailed": "Не удалось запустить сеанс: {0}"
 		},
@@ -13613,9 +13616,9 @@
 			"unknownCellType": "Неизвестный тип ячейки {0}"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "Необязательная цель выполнения, указанная в этой магической команде, например, Spark vs SQL",
+			"carbon.extension.contributes.notebook.executionTarget": "Необязательная цель выполнения, указанная в этой магической команде, например Python vs SQL",
 			"carbon.extension.contributes.notebook.fileExtensions": "Расширения файлов, которые должны быть зарегистрированы для этого поставщика записных книжек",
-			"carbon.extension.contributes.notebook.kernels": "Необязательный набор ядер, для которых это действительно, например, python3, pyspark, sql",
+			"carbon.extension.contributes.notebook.kernels": "Необязательный набор ядер, для которых это действительно, например python3, sql",
 			"carbon.extension.contributes.notebook.language": "Язык ячейки, который будет использоваться, если эта магическая команда ячейки включена в ячейку",
 			"carbon.extension.contributes.notebook.magic": "Название магической команды ячейки, например, \"%%sql\".",
 			"carbon.extension.contributes.notebook.provider": "Идентификатор поставщика записных книжек.",
@@ -13893,6 +13896,17 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "Начало р&&аботы",
 			"showReleaseNotes": "Показать раздел \"Начало работы\""
+		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "Отмена",
+			"passwordChangeDialog.confirmPassword": "Подтверждение пароля:",
+			"passwordChangeDialog.connecting": "Идет подключение",
+			"passwordChangeDialog.errorHeader": "Сбой при попытке изменить пароль",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "Введенные пароли не совпадают",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Нажмите \"ОК\" и введите в обоих полях одинаковый пароль.",
+			"passwordChangeDialog.newPassword": "Новый пароль:",
+			"passwordChangeDialog.ok": "OK",
+			"passwordChangeDialog.title": "Смена пароля"
 		}
 	}
 }

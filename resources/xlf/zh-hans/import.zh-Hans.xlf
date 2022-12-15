@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/import/out/common/constants" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="extensions/import/dist/common/constants" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="flatFile.InvalidFileLocation">
         <source xml:lang="en">Invalid file location. Please try a different input file</source>
@@ -16,7 +16,7 @@
       </trans-unit>
       <trans-unit id="flatFileImport.columnName">
         <source xml:lang="en">Column Name</source>
-        <target state="translated">列名</target>
+        <target state="translated">列名称</target>
       </trans-unit>
       <trans-unit id="flatFileImport.columnTableTitle">
         <source xml:lang="en">Column</source>
@@ -152,7 +152,7 @@
       </trans-unit>
       <trans-unit id="flatFileImport.specifyDerivedColNameTitle">
         <source xml:lang="en">Column Name</source>
-        <target state="translated">列名称</target>
+        <target state="translated">列名</target>
       </trans-unit>
       <trans-unit id="flatFileImport.specifyTransformation">
         <source xml:lang="en">Specify Transformation</source>
@@ -200,7 +200,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/import/out/services/serviceClient" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="extensions/import/dist/services/serviceClient" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="downloadingService">
         <source xml:lang="en">Downloading {0}</source>

@@ -13061,6 +13061,8 @@
 			"status.query.selection-summary": "Zusammenfassung der Auswahl",
 			"status.query.status": "Ausführungsstatus",
 			"status.query.summaryText": "Durchschnitt: {0}, Anzahl: {1}, Summe: {2}",
+			"status.query.summaryTextNonNumeric": "Anzahl: {0} Diskrete Anzahl: {1} NULL-Anzahl: {2}",
+			"status.query.summaryTooltip": "Mittelwert: {0}: {1} Diskrete Anzahl: {2} Max: {3} Min: {4} NULL-Anzahl: {5} Summe: {6}",
 			"status.query.timeElapsed": "Verstrichene Zeit"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13577,6 +13579,7 @@
 			"deleteCellFailed": "Fehler beim Löschen der Zelle.",
 			"injectedParametersMsg": "# Eingefügte Parameter\r\n",
 			"kernelRequiresConnection": "Wählen Sie eine Verbindung zum Ausführen von Zellen für diesen Kernel aus.",
+			"savedKernelNotSupported": "Der Kernel \"{0}\" dieses Notebooks wird nicht unterstützt. Stattdessen wird der SQL-Kernel verwendet.",
 			"shutdownClientSessionError": "Clientsitzungsfehler beim Schließen des Notebooks \"{0}\".",
 			"startSessionFailed": "Sitzung konnte nicht gestartet werden: {0}"
 		},
@@ -13613,9 +13616,9 @@
 			"unknownCellType": "Unbekannter Zellentyp \"{0}\"."
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "Optionales Ausführungsziel, das von diesem Magic-Befehl angegeben wird, z. B. Spark oder SQL",
+			"carbon.extension.contributes.notebook.executionTarget": "Optionales Ausführungsziel, das von diesem Magic-Befehl angegeben wird, z. B. Python oder SQL",
 			"carbon.extension.contributes.notebook.fileExtensions": "Gibt an, welche Dateierweiterungen für diesen Notebook-Anbieter registriert werden sollen.",
-			"carbon.extension.contributes.notebook.kernels": "Optionaler Kernelsatz, auf den dies zutrifft, z. B. python3, pyspark, sql",
+			"carbon.extension.contributes.notebook.kernels": "Optionaler Satz von Kernels, auf den dies zutrifft, z. B. python3, sql",
 			"carbon.extension.contributes.notebook.language": "Die zu verwendende Zellensprache, wenn dieser Zellen-Magic-Befehl in der Zelle enthalten ist.",
 			"carbon.extension.contributes.notebook.magic": "Name des Magic-Befehls für die Zelle, z. B. \"%%sql\".",
 			"carbon.extension.contributes.notebook.provider": "Bezeichner des Notebook-Anbieters.",
@@ -13893,6 +13896,17 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "Erste &&Schritte",
 			"showReleaseNotes": "\"Erste Schritte\" anzeigen"
+		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "Abbrechen",
+			"passwordChangeDialog.confirmPassword": "Kennwort bestätigen:",
+			"passwordChangeDialog.connecting": "Verbindung wird hergestellt",
+			"passwordChangeDialog.errorHeader": "Fehler beim Versuch, das Kennwort zu ändern",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "Eingegebene Kennwörter stimmen nicht überein",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Drücken Sie OK, und geben Sie in beiden Feldern das genau gleiche Kennwort ein.",
+			"passwordChangeDialog.newPassword": "Neues Kennwort:",
+			"passwordChangeDialog.ok": "OK",
+			"passwordChangeDialog.title": "Kennwort ändern"
 		}
 	}
 }

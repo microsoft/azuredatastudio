@@ -13061,6 +13061,8 @@
 			"status.query.selection-summary": "Riepilogo selezioni",
 			"status.query.status": "Stato esecuzione",
 			"status.query.summaryText": "Media: {0}  Conteggio: {1}  Somma: {2}",
+			"status.query.summaryTextNonNumeric": "Conteggio: {0}  Conteggio valori distinti: {1}  Conteggio valori Null: {2}",
+			"status.query.summaryTooltip": "Media: {0}  Conteggio: {1}  Conteggio valori distinti: {2}  Max: {3}  Min: {4}  Conteggio valori Null: {5}  Somma: {6}",
 			"status.query.timeElapsed": "Tempo trascorso"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13577,6 +13579,7 @@
 			"deleteCellFailed": "Non è stato possibile eliminare la cella.",
 			"injectedParametersMsg": "N. parametri inseriti\r\n",
 			"kernelRequiresConnection": "Selezionare una connessione per eseguire le celle per questo kernel",
+			"savedKernelNotSupported": "Il kernel '{0}' di questo notebook non è supportato. Verrà invece impostato il kernel SQL per impostazione predefinita.",
 			"shutdownClientSessionError": "Si è verificato un errore della sessione client durante la chiusura del notebook: {0}",
 			"startSessionFailed": "Non è stato possibile avviare la sessione: {0}"
 		},
@@ -13613,9 +13616,9 @@
 			"unknownCellType": "Il tipo di cella {0} è sconosciuto"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "Destinazione di esecuzione facoltativa indicata da questo comando magic, ad esempio Spark rispetto a SQL",
+			"carbon.extension.contributes.notebook.executionTarget": "Destinazione di esecuzione facoltativa indicata da questo comando magic, ad esempio Python rispetto a SQL",
 			"carbon.extension.contributes.notebook.fileExtensions": "Indica le estensioni di file da registrare in questo provider di notebook",
-			"carbon.extension.contributes.notebook.kernels": "Set facoltativo di kernel per cui è valida questa impostazione, ad esempio python3, pyspark, sql",
+			"carbon.extension.contributes.notebook.kernels": "Set facoltativo di kernel per cui è valida questa impostazione, ad esempio python3, sql",
 			"carbon.extension.contributes.notebook.language": "Lingua da usare per la cella se questo comando magic è incluso nella cella",
 			"carbon.extension.contributes.notebook.magic": "Nome del comando magic per la cella, ad esempio '%%sql'.",
 			"carbon.extension.contributes.notebook.provider": "Identificatore del provider di notebook.",
@@ -13893,6 +13896,17 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "&&Introduzione",
 			"showReleaseNotes": "Mostra introduzione"
+		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "Annulla",
+			"passwordChangeDialog.confirmPassword": "Conferma password:",
+			"passwordChangeDialog.connecting": "Connessione",
+			"passwordChangeDialog.errorHeader": "Errore durante il tentativo di cambiare la password",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "Le password inserite non sono uguali",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Premere OK e immettere la stessa password in entrambe le caselle.",
+			"passwordChangeDialog.newPassword": "Nuova password:",
+			"passwordChangeDialog.ok": "OK",
+			"passwordChangeDialog.title": "Cambia password"
 		}
 	}
 }

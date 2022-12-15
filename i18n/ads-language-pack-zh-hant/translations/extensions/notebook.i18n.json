@@ -75,7 +75,6 @@
 			"newMarkdown": "新增 Markdown (預覽)",
 			"newNotebook": "新筆記本 (預覽)",
 			"newSection": "新增區段 (預覽)",
-			"noBDCConnectionError": "Spark 核心需要對 SQL Server 巨量資料叢集主要執行個體的連線。",
 			"noBooksSelected": "目前未在 Viewlet 中選取任何 Jupyter 書籍。",
 			"onGitHub": "GitHub",
 			"onsharedFile": "共用的檔案",
@@ -87,7 +86,6 @@
 			"openNotebookCommand": "開啟 Notebook",
 			"openNotebookError": "無法開啟筆記本 {0}: {1}",
 			"openUntitledNotebookError": "無法將未命名的書籍 {0} 以未命名開啟: {1}",
-			"providerNotValidError": "Spark 核心不支援非 MSSQL 提供者。",
 			"readBookError": "無法讀取 Jupyter 書籍 {0}: {1}",
 			"releases": "版本",
 			"repoUrl": "存放庫 URL",
@@ -101,7 +99,6 @@
 			"version": "版本"
 		},
 		"dist/common/notebookUtils": {
-			"msgSampleCodeDataFrame": "這個範例程式碼會將檔案載入資料框架，並顯示前 10 個結果。",
 			"noNotebookVisible": "沒有任何正在使用的筆記本編輯器",
 			"notebookFiles": "Notebooks"
 		},
@@ -219,12 +216,7 @@
 			"shutdownError": "無法關閉 Notebook 伺服器: {0}"
 		},
 		"dist/jupyter/jupyterSessionManager": {
-			"bdcConnectError": "錯誤: {0}。 ",
-			"clusterControllerConnectionRequired": "必須連線至叢集控制器，才能執行 Spark 作業",
-			"errorStartBeforeReady": "無法啟動工作階段，管理員尚未初始化",
-			"notebook.couldNotFindKnoxGateway": "找不到 Knox 閘道端點",
-			"promptBDCPassword": "請提供密碼以連線至 BDC 控制器",
-			"promptBDCUsername": "{0}請提供使用者名稱以連線至 BDC 控制器:"
+			"errorStartBeforeReady": "無法啟動工作階段，管理員尚未初始化"
 		},
 		"dist/jupyter/pypiClient": {
 			"managePackages.packageRequestError": "套件資訊要求失敗。錯誤: {0} {1}"

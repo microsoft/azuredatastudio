@@ -13061,6 +13061,8 @@
 			"status.query.selection-summary": "Resumen de la selección",
 			"status.query.status": "Estado de ejecución",
 			"status.query.summaryText": "Promedio: {0}; recuento: {1}; suma: {2}",
+			"status.query.summaryTextNonNumeric": "Recuento: {0} Recuento distinto: {1} Recuento nulo: {2}",
+			"status.query.summaryTooltip": "Promedio: {0} Recuento: {1} Recuento distinto: {2} Máx.: {3} Mín.: {4} Recuento nulo: {5} Suma: {6}",
 			"status.query.timeElapsed": "Tiempo transcurrido"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13577,6 +13579,7 @@
 			"deleteCellFailed": "No se pudo eliminar la celda.",
 			"injectedParametersMsg": "N.º de parámetros insertados\r\n",
 			"kernelRequiresConnection": "Seleccione una conexión para ejecutar celdas para este kernel",
+			"savedKernelNotSupported": "No se admite el kernel \"{0}\" de este cuaderno. En su lugar, el valor predeterminado es kernel de SQL.",
 			"shutdownClientSessionError": "Se ha producido un error en la sesión del cliente al cerrar el cuaderno: {0}",
 			"startSessionFailed": "No se pudo iniciar sesión: {0}"
 		},
@@ -13613,9 +13616,9 @@
 			"unknownCellType": "Celda de tipo {0} desconocido"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "Objetivo de ejecución opcional indicado por este magic, por ejemplo Spark vs SQL",
+			"carbon.extension.contributes.notebook.executionTarget": "Objetivo de ejecución opcional indicado por este magic, por ejemplo Python vs SQL",
 			"carbon.extension.contributes.notebook.fileExtensions": "Extensiones de archivo que deben estar registradas en este proveedor de cuadernos",
-			"carbon.extension.contributes.notebook.kernels": "Conjunto opcional de kernels para los que esto es válido, por ejemplo python3, pyspark, sql",
+			"carbon.extension.contributes.notebook.kernels": "Conjunto opcional de kernels para los que esto es válido, por ejemplo, python3 y sql",
 			"carbon.extension.contributes.notebook.language": "El lenguaje de celda que se usará si este magic de celda se incluye en la celda",
 			"carbon.extension.contributes.notebook.magic": "Nombre del magic de celda, como \"%%sql\".",
 			"carbon.extension.contributes.notebook.provider": "Identificador del proveedor del cuaderno.",
@@ -13893,6 +13896,17 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "I&&ntroducción",
 			"showReleaseNotes": "Ver introducción"
+		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "Cancelar",
+			"passwordChangeDialog.confirmPassword": "Confirmar contraseña:",
+			"passwordChangeDialog.connecting": "Conexión en curso",
+			"passwordChangeDialog.errorHeader": "Error al intentar cambiar la contraseña",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "Las contraseñas introducidas no coinciden",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Presione Aceptar y escriba exactamente la misma contraseña en ambos cuadros.",
+			"passwordChangeDialog.newPassword": "Nueva contraseña:",
+			"passwordChangeDialog.ok": "Aceptar",
+			"passwordChangeDialog.title": "Cambiar contraseña"
 		}
 	}
 }

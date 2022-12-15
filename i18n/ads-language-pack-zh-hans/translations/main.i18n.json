@@ -13061,6 +13061,8 @@
 			"status.query.selection-summary": "选择摘要",
 			"status.query.status": "执行状态",
 			"status.query.summaryText": "平均值: {0} 计数: {1} 总和: {2}",
+			"status.query.summaryTextNonNumeric": "计数: {0}  非重复计数: {1}  Null 计数: {2}",
+			"status.query.summaryTooltip": "平均值: {0}  计数: {1}  非重复计数: {2} 最大值: {3}  最小值: {4}  Null 计数: {5}  总和: {6}",
 			"status.query.timeElapsed": "已用时间"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13577,6 +13579,7 @@
 			"deleteCellFailed": "未能删除单元格。",
 			"injectedParametersMsg": "# 个注入参数\r\n",
 			"kernelRequiresConnection": "请选择一个连接来运行此内核的单元格",
+			"savedKernelNotSupported": "不支持此笔记本的 \"{0}\" 内核。正在改为默认的 SQL 内核。",
 			"shutdownClientSessionError": "关闭笔记本时发生客户端会话错误: {0}",
 			"startSessionFailed": "无法启动会话: {0}"
 		},
@@ -13613,9 +13616,9 @@
 			"unknownCellType": "单元格类型 {0} 未知"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "此魔术方法指示的可选执行目标，例如 Spark 和 SQL",
+			"carbon.extension.contributes.notebook.executionTarget": "此魔术方法指示的可选执行目标，例如 Python 和 SQL",
 			"carbon.extension.contributes.notebook.fileExtensions": "应向此笔记本提供程序注册哪些文件扩展名",
-			"carbon.extension.contributes.notebook.kernels": "可选内核集，对于 python3、pyspark 和 sql 等有效",
+			"carbon.extension.contributes.notebook.kernels": "可选内核集，对于 python3 和 sql 等有效",
 			"carbon.extension.contributes.notebook.language": "单元格中包含此单元格魔术方法时要使用的单元格语言",
 			"carbon.extension.contributes.notebook.magic": "单元格魔术方法的名称，如 \"%%sql\"。",
 			"carbon.extension.contributes.notebook.provider": "笔记本提供程序的标识符。",
@@ -13893,6 +13896,17 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "入门(&&S)",
 			"showReleaseNotes": "显示入门指南"
+		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "取消",
+			"passwordChangeDialog.confirmPassword": "确认密码:",
+			"passwordChangeDialog.connecting": "正在连接",
+			"passwordChangeDialog.errorHeader": "尝试更改密码时失败",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "输入的密码不匹配",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "请按“确定”并在两个框中输入完全相同的密码。",
+			"passwordChangeDialog.newPassword": "新密码:",
+			"passwordChangeDialog.ok": "确定",
+			"passwordChangeDialog.title": "更改密码"
 		}
 	}
 }

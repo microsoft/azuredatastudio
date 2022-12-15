@@ -13061,6 +13061,8 @@
 			"status.query.selection-summary": "選取摘要",
 			"status.query.status": "執行狀態",
 			"status.query.summaryText": "平均: {0} 計數: {1} 總和: {2}",
+			"status.query.summaryTextNonNumeric": "計數: {0}  相異計數: {1}  Null 計數: {2}",
+			"status.query.summaryTooltip": "平均: {0}  計數: {1}  相異計數: {2}  最大值: {3}  最小值: {4}  Null 計數:  {5}  總和: {6}",
 			"status.query.timeElapsed": "已耗用時間"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13577,6 +13579,7 @@
 			"deleteCellFailed": "無法刪除資料格。",
 			"injectedParametersMsg": "# 個插入的參數\r\n",
 			"kernelRequiresConnection": "請選取要為此核心執行資料格的連線",
+			"savedKernelNotSupported": "不支援此筆記本的 '{0}' 核心。改為預設為 SQL 核心。",
 			"shutdownClientSessionError": "關閉筆記本時發生用戶端工作階段錯誤: {0}",
 			"startSessionFailed": "無法啟動工作階段: {0}"
 		},
@@ -13613,9 +13616,9 @@
 			"unknownCellType": "資料格類型 {0} 不明"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "這個 magic 指示的選擇性執行目標，例如 Spark vs SQL",
+			"carbon.extension.contributes.notebook.executionTarget": "這個 magic 指示的選擇性執行目標，例如 Python vs SQL",
 			"carbon.extension.contributes.notebook.fileExtensions": "應向此筆記本提供者註冊的檔案副檔名",
-			"carbon.extension.contributes.notebook.kernels": "適用於像是 python3、pyspark、sql 等等的選擇性核心集",
+			"carbon.extension.contributes.notebook.kernels": "適用於像是 Python3、SQL 等等的選擇性核心集",
 			"carbon.extension.contributes.notebook.language": "資料格中包含此資料格 magic 時，要使用的資料格語言",
 			"carbon.extension.contributes.notebook.magic": "資料格 magic 的名稱，例如 '%%sql'。",
 			"carbon.extension.contributes.notebook.provider": "筆記本提供者的識別碼。",
@@ -13893,6 +13896,17 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "開始使用(&&S)",
 			"showReleaseNotes": "顯示入門指南"
+		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "取消",
+			"passwordChangeDialog.confirmPassword": "確認密碼:",
+			"passwordChangeDialog.connecting": "正在連線",
+			"passwordChangeDialog.errorHeader": "嘗試變更密碼時失敗",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "輸入的密碼不相符",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "請按 [確定]，然後在兩個方塊中輸入完全相同的密碼。",
+			"passwordChangeDialog.newPassword": "新密碼:",
+			"passwordChangeDialog.ok": "確定",
+			"passwordChangeDialog.title": "變更密碼"
 		}
 	}
 }

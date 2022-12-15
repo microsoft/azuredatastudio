@@ -13061,6 +13061,8 @@
 			"status.query.selection-summary": "선택 요약",
 			"status.query.status": "실행 상태",
 			"status.query.summaryText": "평균: {0} 개수: {1} 합계: {2}",
+			"status.query.summaryTextNonNumeric": "개수: {0}  고유 카운트: {1} null 개수: {2}",
+			"status.query.summaryTooltip": "평균: {0} 개수: {1} 고유 카운트: {2} 최대 {3} 최소: {4} null 개수: {5} 합계: {6}",
 			"status.query.timeElapsed": "경과 시간"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13577,6 +13579,7 @@
 			"deleteCellFailed": "셀을 삭제하지 못했습니다.",
 			"injectedParametersMsg": "# 삽입된 매개 변수\r\n",
 			"kernelRequiresConnection": "이 커널에 대해 셀을 실행하려면 연결을 선택하세요.",
+			"savedKernelNotSupported": "이 Notebook의 '{0}' 커널은 지원되지 않습니다. 대신 SQL 커널을 기본값으로 설정합니다.",
 			"shutdownClientSessionError": "Notebook을 닫는 동안 클라이언트 세션 오류가 발생했습니다. {0}",
 			"startSessionFailed": "{0} 세션을 시작할 수 없습니다."
 		},
@@ -13613,9 +13616,9 @@
 			"unknownCellType": "알 수 없는 셀 형식 {0}"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "이 매직이 나타내는 선택적 실행 대상(예: Spark 및 SQL)",
+			"carbon.extension.contributes.notebook.executionTarget": "이 매직이 나타내는 선택적 실행 대상(예: Python 및 SQL)",
 			"carbon.extension.contributes.notebook.fileExtensions": "이 Notebook 공급자에 등록해야 하는 파일 확장명",
-			"carbon.extension.contributes.notebook.kernels": "유효한 선택적 커널 세트(예: python3, pyspark, sql)",
+			"carbon.extension.contributes.notebook.kernels": "유효한 선택적 커널 집합(예: python3, sql)",
 			"carbon.extension.contributes.notebook.language": "이 셀 매직이 셀에 포함되는 경우 사용되는 셀 언어",
 			"carbon.extension.contributes.notebook.magic": "'%%sql'과(와) 같은 셀 매직의 이름입니다.",
 			"carbon.extension.contributes.notebook.provider": "Notebook 공급자의 식별자입니다.",
@@ -13893,6 +13896,17 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "시작(&S)",
 			"showReleaseNotes": "시작 표시"
+		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "취소",
+			"passwordChangeDialog.confirmPassword": "암호 확인:",
+			"passwordChangeDialog.connecting": "연결 중",
+			"passwordChangeDialog.errorHeader": "암호를 변경하는 동안 오류가 발생했습니다.",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "입력한 암호가 일치하지 않습니다.",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "확인을 누르고 두 상자에 정확히 동일한 암호를 입력하세요.",
+			"passwordChangeDialog.newPassword": "새 암호:",
+			"passwordChangeDialog.ok": "확인",
+			"passwordChangeDialog.title": "암호 변경"
 		}
 	}
 }
