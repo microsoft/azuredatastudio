@@ -558,6 +558,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					options.showFirewallRuleOnError = false;
 					return this.connectWithOptions(connection, uri, options, callbacks);
 				} else {
+					// Do something with the error code here.
 					if (callbacks.onConnectReject) {
 						callbacks.onConnectReject(connectionNotAcceptedError);
 					}

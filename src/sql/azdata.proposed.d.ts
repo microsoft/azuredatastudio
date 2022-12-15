@@ -432,6 +432,13 @@ declare module 'azdata' {
 		azurePortalEndpoint?: string;
 	}
 
+	/**
+	 * Adds additional handling for other errors.
+	 */
+	export interface ResourceProvider {
+		handleOtherError(errorCode: number, errorMessage: string, connection: IConnectionProfile, resourceProviderId: string): Thenable<boolean>;
+	}
+
 	export namespace connection {
 		/**
 		 * Well-known Authentication types commonly supported by connection providers.

@@ -32,5 +32,5 @@ export enum errorCodes {
 }
 
 export namespace ErrorHandlerRequest {
-	export const type = new RequestType<ErrorHandlerParameters, errorCodes, void, void>('cms/listRegisteredServers');
+	export const type = new RequestType<ErrorHandlerParameters, errorCodes, void, void>('errorHandle/errorHandler');
 }

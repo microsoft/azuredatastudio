@@ -85,6 +85,28 @@ export class ResourceProviderService implements IResourceProviderService {
 	}
 
 	/**
+	 * Handle a firewall rule
+	 */
+	public async handleOtherError(errorCode: number, errorMessage: string, connection: IConnectionProfile, resourceProviderId: string): Promise<boolean> {
+		const promises = [];
+		if (this._providers) {
+			for (const key in this._providers) {
+				const provider = this._providers[key];
+				// promises.push(provider.handleFirewallRule(errorCode, errorMessage, connectionTypeId)
+				// 	.then(response => {
+				// 		if (response.result) {
+				// 		}
+				// 	}, () => { /* Swallow failures at getting accounts, we'll just hide that provider */
+				// 	}));
+			}
+		}
+
+		await Promise.all(promises);
+		return true;
+	}
+
+
+	/**
 	 * Register a resource provider
 	 */
 	public registerProvider(providerId: string, provider: azdata.ResourceProvider): void {

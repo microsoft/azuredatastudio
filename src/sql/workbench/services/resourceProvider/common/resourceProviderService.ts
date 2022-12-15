@@ -45,4 +45,9 @@ export interface IResourceProviderService {
 	 * Show firewall rule dialog
 	 */
 	showFirewallRuleDialog(connection: IConnectionProfile, ipAddress: string, resourceProviderId: string): Promise<boolean>;
+
+	/**
+	 * handles any other error that may be thrown, including change password.
+	 */
+	handleOtherError?(errorCode: number, errorMessage: string, connection: IConnectionProfile, resourceProviderId: string): Promise<boolean>
 }
