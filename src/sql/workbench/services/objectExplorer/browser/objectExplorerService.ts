@@ -364,7 +364,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 			const result = await createNewSession();
 			return result;
-
 		} else {
 			throw new Error(`Provider doesn't exist. id: ${providerId}`);
 		}
