@@ -41,7 +41,7 @@ const LocalizedStrings = {
 	TO: localize('to', "To"),
 	OK: localize('firewall.ok', "OK"),
 	Cancel: localize('firewall.cancel', "Cancel"),
-	RuleName: localize('firewall.ruleName', "Rule Name"),
+	RuleName: localize('firewall.ruleName', "Rule name"),
 	CreateNewFirewallRule: localize('createNewFirewallRule', "Create new firewall rule"),
 	FirewallRuleLabel: localize('filewallRule', "Firewall rule"),
 	FirewallRuleDescription: localize('firewallRuleDescription',
@@ -267,6 +267,11 @@ export class FirewallRuleDialog extends Modal {
 		this._register(attachInputBoxStyler(this._fromRangeinputBox!, this._themeService));
 		this._register(attachInputBoxStyler(this._toRangeinputBox!, this._themeService));
 
+		// handler for firewall rule name change events
+		this._register(this._ruleNameInpuBox!.onDidChange(ruleName => {
+			this.firewallRuleNameChanged(ruleName);
+		}));
+
 		// handler for from subnet ip range change events
 		this._register(this._fromRangeinputBox!.onDidChange(IPAddress => {
 			this.fromRangeInputChanged(IPAddress);
@@ -276,6 +281,10 @@ export class FirewallRuleDialog extends Modal {
 		this._register(this._toRangeinputBox!.onDidChange(IPAddress => {
 			this.toRangeInputChanged(IPAddress);
 		}));
+	}
+
+	private firewallRuleNameChanged(ruleName: string) {
+		this.viewModel.firewallRuleName = ruleName;
 	}
 
 	private fromRangeInputChanged(IPAddress: string) {

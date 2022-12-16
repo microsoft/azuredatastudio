@@ -14,6 +14,7 @@ export class FirewallRuleViewModel {
 	public selectedTenantId: string | undefined;
 
 	private _defaultFirewallRuleName: string;
+	private _firewallRuleName: string;
 	private _defaultIPAddress?: string;
 	private _defaultFromSubnetIPRange?: string;
 	private _defaultToSubnetIPRange?: string;
@@ -30,6 +31,14 @@ export class FirewallRuleViewModel {
 
 	public get defaultFirewallRuleName(): string | undefined {
 		return this._defaultFirewallRuleName;
+	}
+
+	public set firewallRuleName(ruleName: string) {
+		this._firewallRuleName = ruleName;
+	}
+
+	public get firewallRuleName(): string | undefined {
+		return this._firewallRuleName;
 	}
 
 	public get defaultIPAddress(): string | undefined {
@@ -69,13 +78,29 @@ export class FirewallRuleViewModel {
 	}
 
 	public updateDefaultValues(ipAddress: string): void {
-		const dateTimeFormatOptions: Intl.DateTimeFormatOptions = {
-			year: 'numeric', month: '2-digit', day: '2-digit',
-			hour: '2-digit', minute: '2-digit', second: '2-digit'
-		};
+		function padTo2Digits(num: number) {
+			return num.toString().padStart(2, '0');
+		}
+
+		// format as "YYYY-MM-DD_hh-mm-ss" (default Azure rulename format)
+		function formatDate(date: Date) {
+			return (
+				[
+					date.getFullYear(),
+					padTo2Digits(date.getMonth() + 1),
+					padTo2Digits(date.getDate()),
+				].join('-') +
+				'_' +
+				[
+					padTo2Digits(date.getHours()),
+					padTo2Digits(date.getMinutes()),
+					padTo2Digits(date.getSeconds()),
+				].join('-')
+			);
+		}
 
 		// Use default rule name format as Azure portal.
-		this._defaultFirewallRuleName = `ClientIPAddress_${new Date().toLocaleString(undefined, dateTimeFormatOptions)}`;
+		this._defaultFirewallRuleName = `ClientIPAddress_${formatDate(new Date())}`;
 		this._defaultIPAddress = ipAddress;
 		this._defaultFromSubnetIPRange = ipAddress.replace(/\.[0-9]+$/g, '.0');
 		this._defaultToSubnetIPRange = ipAddress.replace(/\.[0-9]+$/g, '.255');
