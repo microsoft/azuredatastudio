@@ -964,7 +964,7 @@ export class Project implements ISqlProject {
 		const toDeleteFolders: FileProjectEntry[] = this._files.filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.Folder);
 
 		await Promise.all(toDeleteFiles.map(x => fs.unlink(x.fsUri.fsPath)));
-		await Promise.all(toDeleteFolders.map(x => fs.rmdir(x.fsUri.fsPath, { recursive: true })));
+		await Promise.all(toDeleteFolders.map(x => fs.rm(x.fsUri.fsPath, { recursive: true, force: true })));
 
 		await this.exclude(entry);
 	}
