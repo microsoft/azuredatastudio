@@ -130,4 +130,24 @@ suite('Noteboook Link Handler', function (): void {
 			assert.strictEqual(notebookLinkHandler.getEncodedLinkUrl(), `/Notebooks/Test_Paths/My%2520File.ipynb`, '% in file path failed to be encoded');
 		});
 	});
+	test('getLinkUrl should return relativePath correctly', () => {
+		test('when given an relative link with file protocol', () => {
+			let node = Object.assign(document.createElement('a'), { href: '/tmp//notebook1.ipynb', attributes: { href: { nodeValue: '/tmp/.\\notebook1.ipynb' } } });
+			node.setAttribute("protocol", 'file:');
+			node.setAttribute("is-absolute", 'false');
+			node.setAttribute("is-markdown", 'true');
+			let notebookLinkHandler = new NotebookLinkHandler(notebookUri, node, configurationService);
+			let expectedResult = `.${path.join(path.sep, 'notebook1.ipynb')}`
+			assert.strictEqual(notebookLinkHandler.getLinkUrl(), expectedResult, 'File relative link is wrong');
+		});
+		test('when given an relative link with vscode-file protocol', () => {
+			let node = Object.assign(document.createElement('a'), { href: '/tmp//notebook1.ipynb', attributes: { href: { nodeValue: '/tmp/.\\notebook1.ipynb' } } });
+			node.setAttribute("protocol", 'vscode-file:');
+			node.setAttribute("is-absolute", 'false');
+			node.setAttribute("is-markdown", 'true');
+			let notebookLinkHandler = new NotebookLinkHandler(notebookUri, node, configurationService);
+			let expectedResult = `.${path.join(path.sep, 'notebook1.ipynb')}`
+			assert.strictEqual(notebookLinkHandler.getLinkUrl(), expectedResult, 'File relative link is wrong');
+		});
+	});
 });
