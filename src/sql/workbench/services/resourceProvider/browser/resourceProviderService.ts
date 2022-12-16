@@ -88,21 +88,18 @@ export class ResourceProviderService implements IResourceProviderService {
 	 * Handle a firewall rule
 	 */
 	public async handleOtherError(errorCode: number, errorMessage: string, connection: IConnectionProfile, resourceProviderId: string): Promise<boolean> {
-		const promises = [];
-		if (this._providers) {
-			for (const key in this._providers) {
-				const provider = this._providers[key];
-				// promises.push(provider.handleFirewallRule(errorCode, errorMessage, connectionTypeId)
-				// 	.then(response => {
-				// 		if (response.result) {
-				// 		}
-				// 	}, () => { /* Swallow failures at getting accounts, we'll just hide that provider */
-				// 	}));
+		return new Promise<boolean>((resolve, reject) => {
+			const provider = this._providers[resourceProviderId];
+			if (provider) {
+				provider.handleOtherError(errorCode, errorMessage, connection, resourceProviderId).then(result => {
+					resolve(result);
+				}, error => {
+					reject(error);
+				});
+			} else {
+				reject(false);
 			}
-		}
-
-		await Promise.all(promises);
-		return true;
+		});
 	}
 
 

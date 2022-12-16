@@ -47,6 +47,10 @@ class FireWallFeature extends SqlOpsFeature<any> {
 			return client.sendRequest(HandleFirewallRuleRequest.type, params);
 		};
 
+		let handleOtherError = (errorCode: number, errorMessage: string, connection: azdata.IConnectionProfile, resourceProviderId: string): Thenable<boolean> => {
+			return Promise.resolve(false);
+		}
+
 		return azdata.resources.registerResourceProvider({
 			displayName: 'Azure SQL Resource Provider', // TODO Localize
 			id: 'Microsoft.Azure.SQL.ResourceProvider',
@@ -55,7 +59,8 @@ class FireWallFeature extends SqlOpsFeature<any> {
 			}
 		}, {
 			handleFirewallRule,
-			createFirewallRule
+			createFirewallRule,
+			handleOtherError
 		});
 	}
 }
