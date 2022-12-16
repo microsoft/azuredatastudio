@@ -53,11 +53,11 @@ export class NotebookLinkHandler {
 			this.isMarkdown = this._link.attributes['is-markdown']?.nodeValue === 'true' ? true : false;
 			this.isEncoded = this._link.attributes['is-encoded']?.nodeValue === 'true' ? true : false;
 			this._isFile = this._link.protocol === `${Schemas.file}:` || this._link.protocol === `${Schemas.vscodeFileResource}:`;
-			// For local files paths use pathname to get the filepath of the link since the nodeValue is as follows '/PathToParentFolder/ ./fiename.ipynb'.
 			// Given an anchor element for windows href link will need to use nodeValue instead as that does not encode the url
 			if (isWindows) {
 				this._href = this.isMarkdown || this.isEncoded ? this._link.href?.replace(/%5C/g, '\\') : this._link.attributes['href']?.nodeValue;
 			} else {
+				// For local files paths use pathname to get the filepath of the link since the nodeValue is as follows '/PathToParentFolder/ ./fiename.ipynb'.
 				this._href = this._isFile ? this._link.pathname : this._link.attributes['href']?.nodeValue;
 			}
 			this._notebookUriLink = this._href ? URI.parse(encodeURI(this._href)) : undefined;
