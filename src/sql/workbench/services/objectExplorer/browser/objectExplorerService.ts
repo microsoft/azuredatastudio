@@ -349,7 +349,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		const provider = this._providers[providerId];
 		if (provider) {
 			const self = this;
-			const waitTimeBeforeNextInvocationInMs = 2000;
+			const waitTimeBeforeNextInvocationInMs = 1000;
 			const invokeImmediately = true;
 			const createNewSession = debounce(async () => {
 				const result = await provider.createNewSession(connection.toConnectionInfo());
