@@ -80,65 +80,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
-			return;
-		}
-		switch (this.migrationStateModel._targetType) {
-			case MigrationTargetType.SQLMI:
-				this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_MI_CARD_TEXT);
-				this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
-				this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
-				break;
-			case MigrationTargetType.SQLVM:
-				this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_VM_CARD_TEXT);
-				this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
-				this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
-				break;
-			case MigrationTargetType.SQLDB:
-				this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_SQLDB_CARD_TEXT);
-				this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE;
-				this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE;
-				this._updateConnectionButtonState();
-				if (this.migrationStateModel._didUpdateDatabasesForMigration) {
-					await this._resetTargetMapping();
-					this.migrationStateModel._didUpdateDatabasesForMigration = false;
-				}
-				break;
-		}
-
-		const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
-		await this._targetUserNameInputBox.updateProperties({ required: isSqlDbTarget });
-		await this._targetPasswordInputBox.updateProperties({ required: isSqlDbTarget });
-		await utils.updateControlDisplay(this._resourceAuthenticationContainer, isSqlDbTarget);
-
-		if (this._migrationTargetPlatform !== this.migrationStateModel._targetType) {
-			// if the user had previously selected values on this page, then went back to change the migration target platform
-			// and came back, forcibly reload the location/resource group/resource values since they will now be different
-			this._migrationTargetPlatform = this.migrationStateModel._targetType;
-
-			this._targetPasswordInputBox.value = '';
-			this.migrationStateModel._sqlMigrationServices = undefined!;
-			this.migrationStateModel._azureAccount = undefined!;
-			this.migrationStateModel._azureTenant = undefined!;
-			this.migrationStateModel._targetSubscription = undefined!;
-			this.migrationStateModel._location = undefined!;
-			this.migrationStateModel._resourceGroup = undefined!;
-			this.migrationStateModel._targetServerInstance = undefined!;
-
-			const clearDropDown = async (dropDown: azdata.DropDownComponent): Promise<void> => {
-				dropDown.values = [];
-				dropDown.value = undefined;
-			};
-			await clearDropDown(this._azureAccountsDropdown);
-			await clearDropDown(this._accountTenantDropdown);
-			await clearDropDown(this._azureSubscriptionDropdown);
-			await clearDropDown(this._azureLocationDropdown);
-			await clearDropDown(this._azureResourceGroupDropdown);
-			await clearDropDown(this._azureResourceDropdown);
-		}
-
-		await this.populateAzureAccountsDropdown();
-
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = { text: '' };
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
@@ -219,10 +160,70 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}
 			return true;
 		});
+
+		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+			return;
+		}
+		switch (this.migrationStateModel._targetType) {
+			case MigrationTargetType.SQLMI:
+				this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_MI_CARD_TEXT);
+				this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
+				this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
+				break;
+			case MigrationTargetType.SQLVM:
+				this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_VM_CARD_TEXT);
+				this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
+				this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
+				break;
+			case MigrationTargetType.SQLDB:
+				this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_SQLDB_CARD_TEXT);
+				this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE;
+				this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE;
+				this._updateConnectionButtonState();
+				if (this.migrationStateModel._didUpdateDatabasesForMigration) {
+					await this._resetTargetMapping();
+					this.migrationStateModel._didUpdateDatabasesForMigration = false;
+				}
+				break;
+		}
+
+		const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
+		await this._targetUserNameInputBox.updateProperties({ required: isSqlDbTarget });
+		await this._targetPasswordInputBox.updateProperties({ required: isSqlDbTarget });
+		await utils.updateControlDisplay(this._resourceAuthenticationContainer, isSqlDbTarget);
+
+		if (this._migrationTargetPlatform !== this.migrationStateModel._targetType) {
+			// if the user had previously selected values on this page, then went back to change the migration target platform
+			// and came back, forcibly reload the location/resource group/resource values since they will now be different
+			this._migrationTargetPlatform = this.migrationStateModel._targetType;
+
+			this._targetPasswordInputBox.value = '';
+			this.migrationStateModel._sqlMigrationServices = undefined!;
+			this.migrationStateModel._azureAccount = undefined!;
+			this.migrationStateModel._azureTenant = undefined!;
+			this.migrationStateModel._targetSubscription = undefined!;
+			this.migrationStateModel._location = undefined!;
+			this.migrationStateModel._resourceGroup = undefined!;
+			this.migrationStateModel._targetServerInstance = undefined!;
+
+			const clearDropDown = async (dropDown: azdata.DropDownComponent): Promise<void> => {
+				dropDown.values = [];
+				dropDown.value = undefined;
+			};
+			await clearDropDown(this._azureAccountsDropdown);
+			await clearDropDown(this._accountTenantDropdown);
+			await clearDropDown(this._azureSubscriptionDropdown);
+			await clearDropDown(this._azureLocationDropdown);
+			await clearDropDown(this._azureResourceGroupDropdown);
+			await clearDropDown(this._azureResourceDropdown);
+		}
+
+		await this.populateAzureAccountsDropdown();
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		this.wizard.registerNavigationValidator(async (pageChangeInfo) => true);
+		this.wizard.registerNavigationValidator(pageChangeInfo => true);
+		this.wizard.message = { text: '' };
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {

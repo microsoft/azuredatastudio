@@ -649,8 +649,104 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizard.registerNavigationValidator((pageChangeInfo) => {
+			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+				return true;
+			}
+
+			this.wizard.message = { text: '' };
+			const errors: string[] = [];
+
+			const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
+			if (isSqlDbTarget) {
+				if (!this._validateTableSelection()) {
+					errors.push(constants.DATABASE_TABLE_VALIDATE_SELECTION_MESSAGE);
+				}
+			} else {
+				switch (this.migrationStateModel._databaseBackup.networkContainerType) {
+					case NetworkContainerType.NETWORK_SHARE:
+						if ((<azdata.CategoryValue>this._networkShareStorageAccountResourceGroupDropdown.value)?.displayName === constants.RESOURCE_GROUP_NOT_FOUND) {
+							errors.push(constants.INVALID_RESOURCE_GROUP_ERROR);
+						}
+						if ((<azdata.CategoryValue>this._networkShareContainerStorageAccountDropdown.value)?.displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
+							errors.push(constants.INVALID_STORAGE_ACCOUNT_ERROR);
+						}
+						break;
+					case NetworkContainerType.BLOB_CONTAINER:
+						this._blobContainerResourceGroupDropdowns.forEach((v, index) => {
+							if (this.shouldDisplayBlobDropdownError(v, [constants.RESOURCE_GROUP_NOT_FOUND])) {
+								errors.push(constants.INVALID_BLOB_RESOURCE_GROUP_ERROR(this.migrationStateModel._databasesForMigration[index]));
+							}
+						});
+						this._blobContainerStorageAccountDropdowns.forEach((v, index) => {
+							if (this.shouldDisplayBlobDropdownError(v, [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP_PROMPT])) {
+								errors.push(constants.INVALID_BLOB_STORAGE_ACCOUNT_ERROR(this.migrationStateModel._databasesForMigration[index]));
+							}
+						});
+						this._blobContainerDropdowns.forEach((v, index) => {
+							if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBCONTAINERS_FOUND, constants.SELECT_STORAGE_ACCOUNT])) {
+								errors.push(constants.INVALID_BLOB_CONTAINER_ERROR(this.migrationStateModel._databasesForMigration[index]));
+							}
+						});
+
+						if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
+							this._blobContainerLastBackupFileDropdowns.forEach((v, index) => {
+								if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBFILES_FOUND, constants.SELECT_BLOB_CONTAINER])) {
+									errors.push(constants.INVALID_BLOB_LAST_BACKUP_FILE_ERROR(this.migrationStateModel._databasesForMigration[index]));
+								}
+							});
+						}
+
+						if (errors.length > 0) {
+							const duplicates: Map<string, number[]> = new Map();
+							for (let i = 0; i < this.migrationStateModel._targetDatabaseNames.length; i++) {
+								const blobContainerId = this.migrationStateModel._databaseBackup.blobs[i].blobContainer?.id;
+								if (duplicates.has(blobContainerId)) {
+									duplicates.get(blobContainerId)?.push(i);
+								} else {
+									duplicates.set(blobContainerId, [i]);
+								}
+							}
+							duplicates.forEach((d) => {
+								if (d.length > 1) {
+									const dupString = `${d.map(index => this.migrationStateModel._databasesForMigration[index]).join(', ')}`;
+									errors.push(constants.PROVIDE_UNIQUE_CONTAINERS + dupString);
+								}
+							});
+						}
+						break;
+				}
+			}
+
+			if (this.migrationStateModel.isSqlMiTarget) {
+				this.migrationStateModel._targetDatabaseNames.forEach(t => {
+					// Making sure if database with same name is not present on the target Azure SQL
+					if (this._existingDatabases.includes(t)) {
+						errors.push(constants.DATABASE_ALREADY_EXISTS_MI(t, this.migrationStateModel._targetServerInstance.name));
+					}
+				});
+			}
+
+			this.wizard.message = {
+				text: errors.join(EOL),
+				level: azdata.window.MessageLevel.Error
+			};
+			if (errors.length > 0) {
+				return false;
+			}
+
+			if (this.migrationStateModel.isIrMigration) {
+				this.wizard.nextButton.enabled = this.migrationStateModel.isIrTargetValidated;
+				this.updateValidationResultUI();
+				return this.migrationStateModel.isIrTargetValidated;
+			} else {
+				return true;
+			}
+		});
+
 		this.wizard.customButtons[VALIDATE_IR_CUSTOM_BUTTON_INDEX].hidden = !this.migrationStateModel.isIrMigration;
 		await this._updatePageControlsVisibility();
+
 		if (this.migrationStateModel.refreshDatabaseBackupPage) {
 			const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
 			if (isSqlDbTarget) {
@@ -661,7 +757,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			try {
 				const isOfflineMigration = this.migrationStateModel._databaseBackup?.migrationMode === MigrationMode.OFFLINE;
 				const lastBackupFileColumnIndex = this._blobContainerTargetDatabaseNamesTable.columns.length - 1;
-				this._blobContainerTargetDatabaseNamesTable.columns[lastBackupFileColumnIndex].hidden = !isOfflineMigration;
+				const oldHidden = this._blobContainerTargetDatabaseNamesTable.columns[lastBackupFileColumnIndex].hidden;
+				const newHidden = !isOfflineMigration;
+				if (oldHidden !== newHidden) {
+					// clear values prior to hiding columns if changing column visibility
+					//  to prevent null DeclarativeTableComponent - exception / _view null
+					await this._blobContainerTargetDatabaseNamesTable.setDataValues([]);
+				}
+
+				this._blobContainerTargetDatabaseNamesTable.columns[lastBackupFileColumnIndex].hidden = newHidden;
 				this._blobContainerTargetDatabaseNamesTable.columns.forEach(column => {
 					column.width = isOfflineMigration
 						? WIZARD_TABLE_COLUMN_WIDTH_SMALL
@@ -673,10 +777,16 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					(await this.migrationStateModel.getSourceConnectionProfile()).providerId,
 					azdata.DataProviderType.QueryProvider);
 
-				const query = 'select SUSER_NAME()';
-				const ownerUri = await azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId);
-				const results = await queryProvider.runQueryAndReturn(ownerUri, query);
-				const username = results.rows[0][0].displayValue;
+				let username = '';
+				try {
+					const query = 'select SUSER_NAME()';
+					const ownerUri = await azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId);
+					const results = await queryProvider.runQueryAndReturn(ownerUri, query);
+					username = results.rows[0][0]?.displayValue;
+				} catch (e) {
+					username = connectionProfile.userName;
+				}
+
 				this.migrationStateModel._authenticationType =
 					connectionProfile.authenticationType === azdata.connection.AuthenticationType.SqlLogin
 						? MigrationSourceAuthenticationType.Sql
@@ -958,8 +1068,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						{ value: this._blobContainerStorageAccountDropdowns[index] },
 						{ value: this._blobContainerDropdowns[index] },
 						{ value: this._blobContainerLastBackupFileDropdowns[index] }]);
+				await this._blobContainerTargetDatabaseNamesTable.setDataValues([]);
 				await this._blobContainerTargetDatabaseNamesTable.setDataValues(blobContainerTargetData);
-
 				await this.getSubscriptionValues();
 				// clear change tracking flags
 				this.migrationStateModel.refreshDatabaseBackupPage = false;
@@ -969,7 +1079,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				this.migrationStateModel._validateIrSqlDb = [];
 				this.migrationStateModel._validateIrSqlMi = [];
 				this.migrationStateModel._validateIrSqlVm = [];
-
 			} catch (error) {
 				console.log(error);
 				let errorText = error?.message;
@@ -986,101 +1095,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			await this.validateFields();
 			this.updateValidationResultUI(true);
 		}
-
-		this.wizard.registerNavigationValidator((pageChangeInfo) => {
-			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
-				return true;
-			}
-
-			this.wizard.message = { text: '' };
-			const errors: string[] = [];
-
-			const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
-			if (isSqlDbTarget) {
-				if (!this._validateTableSelection()) {
-					errors.push(constants.DATABASE_TABLE_VALIDATE_SELECTION_MESSAGE);
-				}
-			} else {
-				switch (this.migrationStateModel._databaseBackup.networkContainerType) {
-					case NetworkContainerType.NETWORK_SHARE:
-						if ((<azdata.CategoryValue>this._networkShareStorageAccountResourceGroupDropdown.value)?.displayName === constants.RESOURCE_GROUP_NOT_FOUND) {
-							errors.push(constants.INVALID_RESOURCE_GROUP_ERROR);
-						}
-						if ((<azdata.CategoryValue>this._networkShareContainerStorageAccountDropdown.value)?.displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
-							errors.push(constants.INVALID_STORAGE_ACCOUNT_ERROR);
-						}
-						break;
-					case NetworkContainerType.BLOB_CONTAINER:
-						this._blobContainerResourceGroupDropdowns.forEach((v, index) => {
-							if (this.shouldDisplayBlobDropdownError(v, [constants.RESOURCE_GROUP_NOT_FOUND])) {
-								errors.push(constants.INVALID_BLOB_RESOURCE_GROUP_ERROR(this.migrationStateModel._databasesForMigration[index]));
-							}
-						});
-						this._blobContainerStorageAccountDropdowns.forEach((v, index) => {
-							if (this.shouldDisplayBlobDropdownError(v, [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP_PROMPT])) {
-								errors.push(constants.INVALID_BLOB_STORAGE_ACCOUNT_ERROR(this.migrationStateModel._databasesForMigration[index]));
-							}
-						});
-						this._blobContainerDropdowns.forEach((v, index) => {
-							if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBCONTAINERS_FOUND, constants.SELECT_STORAGE_ACCOUNT])) {
-								errors.push(constants.INVALID_BLOB_CONTAINER_ERROR(this.migrationStateModel._databasesForMigration[index]));
-							}
-						});
-
-						if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
-							this._blobContainerLastBackupFileDropdowns.forEach((v, index) => {
-								if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBFILES_FOUND, constants.SELECT_BLOB_CONTAINER])) {
-									errors.push(constants.INVALID_BLOB_LAST_BACKUP_FILE_ERROR(this.migrationStateModel._databasesForMigration[index]));
-								}
-							});
-						}
-
-						if (errors.length > 0) {
-							const duplicates: Map<string, number[]> = new Map();
-							for (let i = 0; i < this.migrationStateModel._targetDatabaseNames.length; i++) {
-								const blobContainerId = this.migrationStateModel._databaseBackup.blobs[i].blobContainer?.id;
-								if (duplicates.has(blobContainerId)) {
-									duplicates.get(blobContainerId)?.push(i);
-								} else {
-									duplicates.set(blobContainerId, [i]);
-								}
-							}
-							duplicates.forEach((d) => {
-								if (d.length > 1) {
-									const dupString = `${d.map(index => this.migrationStateModel._databasesForMigration[index]).join(', ')}`;
-									errors.push(constants.PROVIDE_UNIQUE_CONTAINERS + dupString);
-								}
-							});
-						}
-						break;
-				}
-			}
-
-			if (this.migrationStateModel.isSqlMiTarget) {
-				this.migrationStateModel._targetDatabaseNames.forEach(t => {
-					// Making sure if database with same name is not present on the target Azure SQL
-					if (this._existingDatabases.includes(t)) {
-						errors.push(constants.DATABASE_ALREADY_EXISTS_MI(t, this.migrationStateModel._targetServerInstance.name));
-					}
-				});
-			}
-
-			this.wizard.message = {
-				text: errors.join(EOL),
-				level: azdata.window.MessageLevel.Error
-			};
-			if (errors.length > 0) {
-				return false;
-			}
-
-			if (this.migrationStateModel.isIrMigration) {
-				this.wizard.nextButton.enabled = this.migrationStateModel.isIrTargetValidated;
-				this.updateValidationResultUI();
-				return this.migrationStateModel.isIrTargetValidated;
-			} else {
-				return true;
-			}
-		});
 	}
 
 	private async _validateIr(): Promise<void> {
@@ -1141,6 +1155,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizard.registerNavigationValidator(pageChangeInfo => true);
 		this.wizard.message = { text: '' };
 		this.wizard.customButtons[VALIDATE_IR_CUSTOM_BUTTON_INDEX].hidden = true;
 
@@ -1305,66 +1320,75 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	private loadBlobStorageDropdown(index: number): void {
-		try {
-			this._blobContainerStorageAccountDropdowns[index].loading = true;
-			this._blobContainerStorageAccountDropdowns[index].values = utils.getAzureResourceDropdownValues(
-				this.migrationStateModel._storageAccounts,
-				this.migrationStateModel._location,
-				this.migrationStateModel._databaseBackup.blobs[index]?.resourceGroup?.name,
-				constants.NO_STORAGE_ACCOUNT_FOUND);
+		const dropDown = this._blobContainerStorageAccountDropdowns[index];
+		if (dropDown) {
+			try {
+				dropDown.loading = true;
+				dropDown.values = utils.getAzureResourceDropdownValues(
+					this.migrationStateModel._storageAccounts,
+					this.migrationStateModel._location,
+					this.migrationStateModel._databaseBackup.blobs[index]?.resourceGroup?.name,
+					constants.NO_STORAGE_ACCOUNT_FOUND);
 
-			utils.selectDefaultDropdownValue(
-				this._blobContainerStorageAccountDropdowns[index],
-				this.migrationStateModel._databaseBackup?.blobs[index]?.storageAccount?.id,
-				false);
-		} catch (error) {
-			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobStorageDropdown', error);
-		} finally {
-			this._blobContainerStorageAccountDropdowns[index].loading = false;
+				utils.selectDefaultDropdownValue(
+					dropDown,
+					this.migrationStateModel._databaseBackup?.blobs[index]?.storageAccount?.id,
+					false);
+			} catch (error) {
+				logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobStorageDropdown', error);
+			} finally {
+				dropDown.loading = false;
+			}
 		}
 	}
 
 	private async loadBlobContainerDropdown(index: number): Promise<void> {
-		try {
-			this._blobContainerDropdowns[index].loading = true;
-			this.migrationStateModel._blobContainers = await utils.getBlobContainer(
-				this.migrationStateModel._azureAccount,
-				this.migrationStateModel._databaseBackup.subscription,
-				this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount);
+		const dropDown = this._blobContainerDropdowns[index];
+		if (dropDown) {
+			try {
+				dropDown.loading = true;
+				this.migrationStateModel._blobContainers = await utils.getBlobContainer(
+					this.migrationStateModel._azureAccount,
+					this.migrationStateModel._databaseBackup.subscription,
+					this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount);
 
-			this._blobContainerDropdowns[index].values = utils.getResourceDropdownValues(
-				this.migrationStateModel._blobContainers,
-				constants.NO_BLOBCONTAINERS_FOUND);
+				dropDown.values = utils.getResourceDropdownValues(
+					this.migrationStateModel._blobContainers,
+					constants.NO_BLOBCONTAINERS_FOUND);
 
-			utils.selectDefaultDropdownValue(
-				this._blobContainerDropdowns[index],
-				this.migrationStateModel._databaseBackup?.blobs[index]?.blobContainer?.id,
-				false);
-		} catch (error) {
-			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobContainers', error);
-		} finally {
-			this._blobContainerDropdowns[index].loading = false;
+				utils.selectDefaultDropdownValue(
+					dropDown,
+					this.migrationStateModel._databaseBackup?.blobs[index]?.blobContainer?.id,
+					false);
+			} catch (error) {
+				logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobContainers', error);
+			} finally {
+				dropDown.loading = false;
+			}
 		}
 	}
 
 	private async loadBlobLastBackupFileDropdown(index: number): Promise<void> {
-		try {
-			this._blobContainerLastBackupFileDropdowns[index].loading = true;
-			this.migrationStateModel._lastFileNames = await utils.getBlobLastBackupFileNames(
-				this.migrationStateModel._azureAccount,
-				this.migrationStateModel._databaseBackup.subscription,
-				this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount,
-				this.migrationStateModel._databaseBackup.blobs[index]?.blobContainer);
-			this._blobContainerLastBackupFileDropdowns[index].values = await utils.getBlobLastBackupFileNamesValues(
-				this.migrationStateModel._lastFileNames);
-			utils.selectDefaultDropdownValue(
-				this._blobContainerLastBackupFileDropdowns[index],
-				this.migrationStateModel._databaseBackup?.blobs[index]?.lastBackupFile,
-				false);
-		} catch (error) {
-			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobLastBackupFiles', error);
-		} finally {
-			this._blobContainerLastBackupFileDropdowns[index].loading = false;
+		const dropDown = this._blobContainerLastBackupFileDropdowns[index];
+		if (dropDown) {
+			try {
+				dropDown.loading = true;
+				this.migrationStateModel._lastFileNames = await utils.getBlobLastBackupFileNames(
+					this.migrationStateModel._azureAccount,
+					this.migrationStateModel._databaseBackup.subscription,
+					this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount,
+					this.migrationStateModel._databaseBackup.blobs[index]?.blobContainer);
+				dropDown.values = await utils.getBlobLastBackupFileNamesValues(
+					this.migrationStateModel._lastFileNames);
+				utils.selectDefaultDropdownValue(
+					dropDown,
+					this.migrationStateModel._databaseBackup?.blobs[index]?.lastBackupFile,
+					false);
+			} catch (error) {
+				logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobLastBackupFiles', error);
+			} finally {
+				dropDown.loading = false;
+			}
 		}
 	}
 

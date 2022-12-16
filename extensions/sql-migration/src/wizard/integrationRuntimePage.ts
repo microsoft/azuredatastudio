@@ -99,6 +99,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			this._onlineButton.onDidChangeCheckedState(checked => {
 				if (checked) {
 					this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.ONLINE;
+					this.migrationStateModel.refreshDatabaseBackupPage = true;
 				}
 			}));
 
@@ -118,6 +119,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			this._offlineButton.onDidChangeCheckedState(checked => {
 				if (checked) {
 					this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.OFFLINE;
+					this.migrationStateModel.refreshDatabaseBackupPage = true;
 				}
 			}));
 
@@ -189,36 +191,9 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
-			return;
-		}
-
 		const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
 		const isNetworkShare = this.migrationStateModel.isBackupContainerNetworkShare;
-		await utils.updateControlDisplay(this._modeContainer, !isSqlDbTarget);
-		this._onlineButton.enabled = !isSqlDbTarget;
 
-		if (isSqlDbTarget) {
-			this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.OFFLINE;
-			this._offlineButton.checked = true;
-		}
-		this._originalMigrationMode = this.migrationStateModel._databaseBackup.migrationMode;
-
-		this._networkShareButton.checked = this.migrationStateModel.isBackupContainerNetworkShare;
-		this._blobContainerButton.checked = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER;
-		await utils.updateControlDisplay(
-			this._radioButtonContainer,
-			!isSqlDbTarget);
-
-		this._subscription.value = this.migrationStateModel._targetSubscription.name;
-		this._location.value = await getLocationDisplayName(
-			this.migrationStateModel._targetServerInstance.location);
-
-		await utils.updateControlDisplay(
-			this._dmsInfoContainer,
-			isSqlDbTarget || isNetworkShare);
-
-		await this.loadResourceGroupDropdown();
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = { text: '' };
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
@@ -250,13 +225,43 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			}
 			return true;
 		});
+
+		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+			return;
+		}
+
+		await utils.updateControlDisplay(this._modeContainer, !isSqlDbTarget);
+		this._onlineButton.enabled = !isSqlDbTarget;
+
+		if (isSqlDbTarget) {
+			this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.OFFLINE;
+			this._offlineButton.checked = true;
+		}
+		this._originalMigrationMode = this.migrationStateModel._databaseBackup.migrationMode;
+
+		this._networkShareButton.checked = this.migrationStateModel.isBackupContainerNetworkShare;
+		this._blobContainerButton.checked = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER;
+		await utils.updateControlDisplay(
+			this._radioButtonContainer,
+			!isSqlDbTarget);
+
+		this._subscription.value = this.migrationStateModel._targetSubscription.name;
+		this._location.value = await getLocationDisplayName(
+			this.migrationStateModel._targetServerInstance.location);
+
+		await utils.updateControlDisplay(
+			this._dmsInfoContainer,
+			isSqlDbTarget || isNetworkShare);
+
+		await this.loadResourceGroupDropdown();
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizard.registerNavigationValidator(pageChangeInfo => true);
+		this.wizard.message = { text: '' };
 		if (this._originalMigrationMode !== this.migrationStateModel._databaseBackup.migrationMode) {
 			this.migrationStateModel.refreshDatabaseBackupPage = true;
 		}
-		this.wizard.registerNavigationValidator((pageChangeInfo) => true);
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {

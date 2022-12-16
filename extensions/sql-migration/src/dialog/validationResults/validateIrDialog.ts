@@ -414,12 +414,15 @@ export class ValidateIrDialog {
 
 		// validate integration runtime (IR) is online
 		if (!await validate(sourceDatabaseName, networkShare, true, false, false, false)) {
+			this._canceled = true;
+			await this._updateValidateIrResults(testNumber + 1, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED])
 			return;
 		}
 		testNumber++;
 
 		// validate blob container connectivity
 		if (!await validate(sourceDatabaseName, networkShare, false, false, false, true)) {
+			await this._updateValidateIrResults(testNumber + 1, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED])
 			return;
 		}
 
@@ -493,27 +496,31 @@ export class ValidateIrDialog {
 		};
 
 		// validate IR is online
-		if (await validate(sourceDatabaseName, targetDatabaseName, true, false, false)) {
-			for (let i = 0; i < databaseCount; i++) {
-				const sourceDatabaseName = this._model._databasesForMigration[i];
-				const targetDatabaseName = this._model._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? '';
+		if (!await validate(sourceDatabaseName, targetDatabaseName, true, false, false)) {
+			this._canceled = true;
+			await this._updateValidateIrResults(testNumber + 1, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED]);
+			return;
+		}
 
-				testNumber++;
-				if (this._canceled) {
-					await this._updateValidateIrResults(testNumber, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED]);
-					break;
-				}
-				// validate source connectivity
-				await validate(sourceDatabaseName, targetDatabaseName, false, true, false);
+		for (let i = 0; i < databaseCount; i++) {
+			const sourceDatabaseName = this._model._databasesForMigration[i];
+			const targetDatabaseName = this._model._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? '';
 
-				testNumber++;
-				if (this._canceled) {
-					await this._updateValidateIrResults(testNumber, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED]);
-					break;
-				}
-				// validate target connectivity
-				await validate(sourceDatabaseName, targetDatabaseName, false, false, true);
+			testNumber++;
+			if (this._canceled) {
+				await this._updateValidateIrResults(testNumber, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED]);
+				break;
 			}
+			// validate source connectivity
+			await validate(sourceDatabaseName, targetDatabaseName, false, true, false);
+
+			testNumber++;
+			if (this._canceled) {
+				await this._updateValidateIrResults(testNumber, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED]);
+				break;
+			}
+			// validate target connectivity
+			await validate(sourceDatabaseName, targetDatabaseName, false, false, true);
 		}
 	}
 

@@ -39,14 +39,11 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		this.wizard.registerNavigationValidator((pageChangeInfo) => {
-			return true;
-		});
+		this.wizard.registerNavigationValidator(pageChangeInfo => true);
 	}
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		this.wizard.registerNavigationValidator((pageChangeInfo) => {
-			return true;
-		});
+		this.wizard.registerNavigationValidator(pageChangeInfo => true);
+		this.wizard.message = { text: '' };
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {

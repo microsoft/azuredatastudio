@@ -40,6 +40,8 @@ export class SummaryPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizard.registerNavigationValidator(pageChangeInfo => true);
+
 		const targetDatabaseSummary = new TargetDatabaseSummaryDialog(this.migrationStateModel);
 		const isSqlVmTarget = this.migrationStateModel.isSqlVmTarget;
 		const isSqlMiTarget = this.migrationStateModel.isSqlMiTarget;
@@ -164,8 +166,9 @@ export class SummaryPage extends MigrationWizardPage {
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizard.registerNavigationValidator(pageChangeInfo => true);
+		this.wizard.message = { text: '' };
 		this._flexContainer.clearItems();
-		this.wizard.registerNavigationValidator(async (pageChangeInfo) => true);
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
