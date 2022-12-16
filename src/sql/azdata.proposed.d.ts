@@ -134,6 +134,24 @@ declare module 'azdata' {
 		}
 	}
 
+	export interface LoadingComponentBase {
+		/**
+		* When true, the component will display a loading spinner.
+		*/
+		loading?: boolean;
+
+		/**
+		 * This sets the alert text which gets announced when the loading spinner is shown.
+		 */
+		loadingText?: string;
+
+		/**
+		 * The text to display while loading is set to false. Will also be announced through screen readers
+		 * once loading is completed.
+		 */
+		loadingCompletedText?: string;
+	}
+
 	/**
 	 * The column information of a data set.
 	 */
@@ -385,6 +403,25 @@ declare module 'azdata' {
 		title: string;
 	}
 
+	export interface ConnectionProvider extends DataProvider {
+		/**
+		 * Changes a user's password for the scenario of password expiration during SQL Authentication. (for Azure Data Studio use only)
+		 */
+		changePassword?(connectionUri: string, connectionInfo: ConnectionInfo, newPassword: string): Thenable<PasswordChangeResult>;
+	}
+
+	// Password Change Request ----------------------------------------------------------------------
+	export interface PasswordChangeResult {
+		/**
+		 * Whether the password change was successful
+		 */
+		result: boolean;
+		/**
+		 * Error message if the password change was unsuccessful
+		 */
+		errorMessage?: string;
+	}
+
 	export interface IConnectionProfile extends ConnectionInfo {
 		/**
 		 * The type of authentication to use when connecting
@@ -451,14 +488,14 @@ declare module 'azdata' {
 		/**
 		 * Authentication token for the current session.
 		 */
-		token?: accounts.AccountSecurityToken | undefined;
+		securityToken?: accounts.AccountSecurityToken | undefined;
 	}
 
 	export interface ExpandNodeInfo {
 		/**
 		 * Authentication token for the current session.
 		 */
-		token?: accounts.AccountSecurityToken | undefined;
+		securityToken?: accounts.AccountSecurityToken | undefined;
 	}
 	// End Object Explorer interfaces  ----------------------------
 
@@ -1701,5 +1738,13 @@ declare module 'azdata' {
 		 * under the database, the nodeType is Folder, the objectType is be Tables.
 		 */
 		objectType?: string;
+	}
+
+	export namespace window {
+		export interface Wizard extends LoadingComponentBase {
+		}
+
+		export interface Dialog extends LoadingComponentBase {
+		}
 	}
 }

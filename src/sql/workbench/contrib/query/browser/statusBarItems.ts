@@ -15,7 +15,7 @@ import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment } from 'vs/workbench/services/statusbar/browser/statusbar';
+import { IStatusbarEntryAccessor, IStatusbarService, ShowTooltipCommand, StatusbarAlignment } from 'vs/workbench/services/statusbar/browser/statusbar';
 export class TimeElapsedStatusBarContributions extends Disposable implements IWorkbenchContribution {
 
 	private static readonly ID = 'status.query.timeElapsed';
@@ -299,18 +299,36 @@ export class QueryResultSelectionSummaryStatusBarContribution extends Disposable
 	}
 
 	private onCellSelectionChanged(selectedCells: ICellValue[]): void {
-		const numericValues = selectedCells?.map(cell => cell.invariantCultureDisplayValue || cell.displayValue).filter(value => !Number.isNaN(Number(value))).map(value => Number(value));
-		if (numericValues?.length < 2) {
+		// Only show the summary when there are more than 1 selected cells.
+		if (!selectedCells || selectedCells.length <= 1) {
 			this.hide();
 			return;
 		}
 
-		const sum = numericValues.reduce((previous, current, idx, array) => previous + current);
-		const summaryText = localize('status.query.summaryText', "Average: {0}  Count: {1}  Sum: {2}", Number((sum / numericValues.length).toFixed(3)), selectedCells.length, sum);
+		// When there are more than 1 numeric values:
+		//   Text: Average, Count, Sum
+		//   Tooltip: Average, Count, Distinct Count, Max, Min,Null Count, Sum
+		// Otherwise:
+		//   Text: Count, Distinct Count, Null Count
+		const values = selectedCells.map(cell => cell.invariantCultureDisplayValue || cell.displayValue);
+		const distinctValues = new Set(values);
+		const numericValues = selectedCells.map(cell => cell.invariantCultureDisplayValue || cell.displayValue).filter(value => !Number.isNaN(Number(value))).map(value => Number(value));
+		const nullCount = selectedCells.filter(cell => cell.isNull).length;
+		let summaryText, tooltipText;
+		if (numericValues.length >= 2) {
+			const sum = numericValues.reduce((previous, current, idx, array) => previous + current);
+			summaryText = localize('status.query.summaryText', "Average: {0}  Count: {1}  Sum: {2}", Number((sum / numericValues.length).toFixed(3)), selectedCells.length, sum);
+			tooltipText = localize('status.query.summaryTooltip', "Average: {0}  Count: {1}  Distinct Count: {2}  Max: {3}  Min: {4}  Null Count: {5}  Sum: {6}",
+				Number((sum / numericValues.length).toFixed(3)), selectedCells.length, distinctValues.size, Math.max(...numericValues), Math.min(...numericValues), nullCount, sum);
+		} else {
+			summaryText = summaryText = localize('status.query.summaryTextNonNumeric', "Count: {0}  Distinct Count: {1}  Null Count: {2}", selectedCells.length, distinctValues.size, nullCount);
+		}
 		this.statusItem.update({
 			name: this.name,
 			text: summaryText,
-			ariaLabel: summaryText
+			ariaLabel: summaryText,
+			tooltip: tooltipText,
+			command: tooltipText ? ShowTooltipCommand : undefined
 		});
 		this.show();
 	}

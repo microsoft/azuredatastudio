@@ -18,9 +18,6 @@ export namespace nbversion {
 export enum KernelsLanguage {
 	SQL = 'sql',
 	Python = 'python',
-	PySpark = 'python',
-	SparkScala = 'scala',
-	SparkR = 'sparkr',
 	PowerShell = 'powershell',
 	CSharp = 'csharp',
 	FSharp = 'fsharp'

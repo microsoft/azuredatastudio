@@ -88,7 +88,6 @@ export class FileDatabase {
 		this.isDirty = true;
 	}
 
-
 	public async initialize(): Promise<void> {
 		this.isInitialized = true;
 		this.saveInterval = setInterval(() => this.save(), 20 * 1000);

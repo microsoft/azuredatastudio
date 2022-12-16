@@ -12,9 +12,6 @@ const withDefaults = require('../shared.webpack.config');
 module.exports = withDefaults({
 	context: __dirname,
 	entry: {
-		extension: './src/extension.ts'
-	},
-	externals: {
-		'@microsoft/ads-kerberos': 'commonjs @microsoft/ads-kerberos'
+		main: './src/main.ts'
 	}
 });
