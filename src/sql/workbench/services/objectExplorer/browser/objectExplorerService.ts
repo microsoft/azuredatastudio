@@ -23,6 +23,7 @@ import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/
 import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import debounce = require('debounce')
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -347,12 +348,23 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public async createNewSession(providerId: string, connection: ConnectionProfile): Promise<azdata.ObjectExplorerSessionResponse> {
 		const provider = this._providers[providerId];
 		if (provider) {
-			const result = await provider.createNewSession(connection.toConnectionInfo());
-			this._sessions[result.sessionId] = {
-				connection: connection,
-				nodes: {}
-			};
+			const self = this;
+			const waitTimeBeforeNextInvocationInMs = 2000;
+			const invokeImmediately = true;
+			const createNewSession = debounce(async () => {
+				const result = await provider.createNewSession(connection.toConnectionInfo());
+
+				self._sessions[result.sessionId] = {
+					connection: connection,
+					nodes: {}
+				};
+
+				return result;
+			}, waitTimeBeforeNextInvocationInMs, invokeImmediately);
+
+			const result = await createNewSession();
 			return result;
+
 		} else {
 			throw new Error(`Provider doesn't exist. id: ${providerId}`);
 		}
