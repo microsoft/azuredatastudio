@@ -662,7 +662,9 @@ export function VALIDATE_IR_VALIDATION_STATUS_ERROR_COUNT(state: string | undefi
 	const status = state ?? '';
 	return localize(
 		'sql.migration.validate.ir.status.error.count',
-		"{0} - error(s) {1} ",
+		errorCount > 1
+			? "{0} - {1} errors"
+			: "{0} - {1} error",
 		status,
 		errorCount);
 }
