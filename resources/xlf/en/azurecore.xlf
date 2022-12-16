@@ -13,9 +13,6 @@
     <trans-unit id="azure.cacheErrorParse">
       <source xml:lang="en">Error when parsing your account from the cache</source>
     </trans-unit>
-    <trans-unit id="azure.cacheErrrorRemove">
-      <source xml:lang="en">Error when removing your account from the cache.</source>
-    </trans-unit>
     <trans-unit id="azure.microsoftAccountDisplayName">
       <source xml:lang="en">Microsoft Account</source>
     </trans-unit>
