@@ -204,10 +204,11 @@ export function selectDefaultDropdownValue(dropDown: DropDownComponent, value?: 
 	if (dropDown.values && dropDown.values.length > 0) {
 		let selectedIndex;
 		if (value) {
+			const searchValue = value.toLowerCase();
 			if (useDisplayName) {
-				selectedIndex = dropDown.values.findIndex((v: any) => (v as CategoryValue)?.displayName?.toLowerCase() === value.toLowerCase());
+				selectedIndex = dropDown.values.findIndex((v: any) => (v as CategoryValue)?.displayName?.toLowerCase() === searchValue);
 			} else {
-				selectedIndex = dropDown.values.findIndex((v: any) => (v as CategoryValue)?.name?.toLowerCase() === value.toLowerCase());
+				selectedIndex = dropDown.values.findIndex((v: any) => (v as CategoryValue)?.name?.toLowerCase() === searchValue);
 			}
 		} else {
 			selectedIndex = -1;
@@ -220,7 +221,7 @@ export function selectDefaultDropdownValue(dropDown: DropDownComponent, value?: 
 
 export function selectDropDownIndex(dropDown: DropDownComponent, index: number): void {
 	if (dropDown.values && dropDown.values.length > 0) {
-		if (index >= 0 && index <= dropDown.values.length - 1) {
+		if (index >= 0 && index < dropDown.values.length) {
 			dropDown.value = dropDown.values[index] as CategoryValue;
 			return;
 		}
