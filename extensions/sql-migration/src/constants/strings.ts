@@ -660,13 +660,16 @@ export function VALIDATE_IR_VALIDATION_STATUS(state: string | undefined, errors?
 
 export function VALIDATE_IR_VALIDATION_STATUS_ERROR_COUNT(state: string | undefined, errorCount: number): string {
 	const status = state ?? '';
-	return localize(
-		'sql.migration.validate.ir.status.error.count',
-		errorCount > 1
-			? "{0} - {1} errors"
-			: "{0} - {1} error",
-		status,
-		errorCount);
+	return errorCount > 1
+		? localize(
+			'sql.migration.validate.ir.status.error.count.many',
+			"{0} - {1} errors",
+			status,
+			errorCount)
+		: localize(
+			'sql.migration.validate.ir.status.error.count.one',
+			"{0} - 1 error",
+			status);
 }
 
 export function VALIDATE_IR_VALIDATION_STATUS_ERROR(state: string | undefined, errors: string[]): string {
