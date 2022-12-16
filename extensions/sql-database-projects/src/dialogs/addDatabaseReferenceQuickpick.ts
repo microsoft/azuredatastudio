@@ -141,23 +141,34 @@ async function addDacpacReference(project: Project): Promise<IDacpacReferenceSet
 
 	// 3. Prompt for dacpac location
 	// Show quick pick with just browse option to give user context about what the file dialog is for (since that doesn't always have a title)
-	const browseSelected = await vscode.window.showQuickPick(
-		[constants.browseEllipsisWithIcon],
-		{ title: constants.selectDacpac, ignoreFocusOut: true });
-	if (!browseSelected) {
-		return undefined;
-	}
+	let dacPacLocation;
+	while (!dacPacLocation) {
+		const browseSelected = await vscode.window.showQuickPick(
+			[constants.browseEllipsisWithIcon],
+			{
+				title: constants.selectDacpac,
+				ignoreFocusOut: true,
+				placeHolder: constants.dacpacMustBeOnSameDrive
+			});
+		if (!browseSelected) {
+			return undefined;
+		}
 
-	const dacPacLocation = (await promptDacpacLocation())?.[0];
-	if (!dacPacLocation) {
-		// User cancelled
-		return undefined;
-	}
+		dacPacLocation = (await promptDacpacLocation())?.[0];
+		if (!dacPacLocation) {
+			// User cancelled
+			return undefined;
+		}
 
-	const projectDrive = path.parse(project.projectFilePath).root;
-	const dacpacDrive = path.parse(dacPacLocation.fsPath).root;
-	if (projectDrive !== dacpacDrive) {
-		void vscode.window.showErrorMessage(constants.dacpacNotOnSameDrive(project.projectFilePath));
+		// only support adding dacpacs that are on the same drive as the sqlproj
+		const projectDrive = path.parse(project.projectFilePath).root;
+		const dacpacDrive = path.parse(dacPacLocation.fsPath).root;
+		if (projectDrive !== dacpacDrive) {
+			void vscode.window.showErrorMessage(constants.dacpacNotOnSameDrive(project.projectFilePath));
+
+			// set dacPacLocation to undefined so that the browse quickpick will show again
+			dacPacLocation = undefined;
+		}
 	}
 
 	// 4. Prompt for db/server values
