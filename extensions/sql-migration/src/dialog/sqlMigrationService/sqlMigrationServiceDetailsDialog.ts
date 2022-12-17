@@ -55,6 +55,8 @@ export class SqlMigrationServiceDetailsDialog {
 
 		this._dialog.okButton.label = constants.SQL_MIGRATION_SERVICE_DETAILS_BUTTON_LABEL;
 		this._dialog.okButton.focused = true;
+		this._dialog.okButton.position = 'left';
+
 		this._dialog.cancelButton.hidden = true;
 		azdata.window.openDialog(this._dialog);
 	}

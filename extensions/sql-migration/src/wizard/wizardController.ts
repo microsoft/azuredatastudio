@@ -13,7 +13,6 @@ import { DatabaseBackupPage } from './databaseBackupPage';
 import { TargetSelectionPage } from './targetSelectionPage';
 import { IntergrationRuntimePage } from './integrationRuntimePage';
 import { SummaryPage } from './summaryPage';
-import { MigrationModePage } from './migrationModePage';
 import { DatabaseSelectorPage } from './databaseSelectorPage';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
 import * as styles from '../constants/styles';
@@ -48,23 +47,41 @@ export class WizardController {
 
 		this._wizardObject.generateScriptButton.enabled = false;
 		this._wizardObject.generateScriptButton.hidden = true;
-		const saveAndCloseButton = azdata.window.createButton(loc.SAVE_AND_CLOSE);
-		this._wizardObject.customButtons = [saveAndCloseButton];
+		this._wizardObject.nextButton.position = 'left';
+		this._wizardObject.nextButton.secondary = false;
+		this._wizardObject.doneButton.label = loc.START_MIGRATION_TEXT;
+		this._wizardObject.doneButton.position = 'left';
+		this._wizardObject.doneButton.secondary = false;
+		this._wizardObject.backButton.position = 'left';
+		this._wizardObject.backButton.secondary = true;
+		this._wizardObject.cancelButton.position = 'left';
+		this._wizardObject.cancelButton.secondary = true;
+
+		const saveAndCloseButton = azdata.window.createButton(
+			loc.SAVE_AND_CLOSE,
+			'right');
+		saveAndCloseButton.secondary = true;
+
+		const validateButton = azdata.window.createButton(
+			loc.RUN_VALIDATION,
+			'left');
+		validateButton.secondary = false;
+		validateButton.hidden = true;
+
+		this._wizardObject.customButtons = [validateButton, saveAndCloseButton];
 		const databaseSelectorPage = new DatabaseSelectorPage(this._wizardObject, stateModel);
 		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
 		const targetSelectionPage = new TargetSelectionPage(this._wizardObject, stateModel);
-		const migrationModePage = new MigrationModePage(this._wizardObject, stateModel);
-		const databaseBackupPage = new DatabaseBackupPage(this._wizardObject, stateModel);
 		const integrationRuntimePage = new IntergrationRuntimePage(this._wizardObject, stateModel);
+		const databaseBackupPage = new DatabaseBackupPage(this._wizardObject, stateModel);
 		const summaryPage = new SummaryPage(this._wizardObject, stateModel);
 
 		const pages: MigrationWizardPage[] = [
 			databaseSelectorPage,
 			skuRecommendationPage,
 			targetSelectionPage,
-			migrationModePage,
-			databaseBackupPage,
 			integrationRuntimePage,
+			databaseBackupPage,
 			summaryPage];
 
 		this._wizardObject.pages = pages.map(p => p.getwizardPage());
@@ -80,15 +97,15 @@ export class WizardController {
 		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
 		wizardSetupPromises.push(this._wizardObject.open());
 		if (this._model.retryMigration || this._model.resumeAssessment) {
-			if (this._model.savedInfo.closedPage >= Page.MigrationMode) {
+			if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime) {
 				this._model.refreshDatabaseBackupPage = true;
 			}
 
 			// if the user selected network share and selected save & close afterwards, it should always return to the database backup page so that
 			// the user can input their password again
-			if (this._model.savedInfo.closedPage >= Page.DatabaseBackup &&
+			if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime &&
 				this._model.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
-				wizardSetupPromises.push(this._wizardObject.setCurrentPage(Page.DatabaseBackup));
+				wizardSetupPromises.push(this._wizardObject.setCurrentPage(Page.IntegrationRuntime));
 			} else {
 				wizardSetupPromises.push(this._wizardObject.setCurrentPage(this._model.savedInfo.closedPage));
 			}
@@ -107,15 +124,7 @@ export class WizardController {
 					await pages[newPage]?.onPageEnter(pageChangeInfo);
 				}));
 
-		this._wizardObject.registerNavigationValidator(async validator => {
-			// const lastPage = validator.lastPage;
-
-			// const canLeave = await pages[lastPage]?.canLeave() ?? true;
-			// const canEnter = await pages[lastPage]?.canEnter() ?? true;
-
-			// return canEnter && canLeave;
-			return true;
-		});
+		this._wizardObject.registerNavigationValidator(async validator => true);
 
 		await Promise.all(wizardSetupPromises);
 		this._model.extensionContext.subscriptions.push(
@@ -145,8 +154,6 @@ export class WizardController {
 					},
 					{});
 			}));
-
-		this._wizardObject.doneButton.label = loc.START_MIGRATION_TEXT;
 
 		this._disposables.push(
 			this._wizardObject.doneButton.onClick(async (e) => {
