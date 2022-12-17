@@ -37,6 +37,13 @@ export const PipelineStatusCodes = {
 	Cancelled: 'Cancelled',
 };
 
+export const LoginMigrationStatusCodes = {
+	// status codes: 'InProgress' | 'Failed' | 'Succeeded'
+	InProgress: 'InProgress',
+	Succeeded: 'Succeeded',
+	Failed: 'Failed',
+};
+
 const _dateFormatter = new Intl.DateTimeFormat(
 	undefined, {
 	year: 'numeric',
