@@ -53,6 +53,7 @@ export function ShowStatusMessageDialog(
 	dialog.okButton.hidden = true;
 	dialog.cancelButton.focused = true;
 	dialog.cancelButton.label = constants.CLOSE;
+	dialog.cancelButton.position = 'left';
 
 	azdata.window.openDialog(dialog);
 }
