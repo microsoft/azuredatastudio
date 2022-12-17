@@ -15,6 +15,10 @@ export namespace HandleFirewallRuleRequest {
 	export const type = new RequestType<HandleFirewallRuleParams, HandleFirewallRuleResponse, void, void>('resource/handleFirewallRule');
 }
 
+export namespace HandleOtherErrorRequest {
+	export const type = new RequestType<HandleOtherErrorParams, boolean, void, void>('resource/handleOtherError');
+}
+
 // Firewall rule interfaces
 export interface CreateFirewallRuleParams {
 	account: azdata.Account;
@@ -38,4 +42,10 @@ export interface HandleFirewallRuleParams {
 interface HandleFirewallRuleResponse {
 	result: boolean;
 	ipAddress: string;
+}
+
+export interface HandleOtherErrorParams {
+	errorCode: number;
+	errorMessage: string;
+	connection: azdata.IConnectionProfile;
 }

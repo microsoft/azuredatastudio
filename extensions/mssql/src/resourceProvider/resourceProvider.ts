@@ -9,7 +9,7 @@ import { SqlOpsDataClient, SqlOpsFeature, ClientOptions } from 'dataprotocol-cli
 import { ServerCapabilities, ClientCapabilities, RPCMessageType, ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { Disposable } from 'vscode';
-import { CreateFirewallRuleRequest, HandleFirewallRuleRequest, CreateFirewallRuleParams, HandleFirewallRuleParams } from './contracts';
+import { CreateFirewallRuleRequest, HandleFirewallRuleRequest, HandleOtherErrorRequest, CreateFirewallRuleParams, HandleFirewallRuleParams, HandleOtherErrorParams } from './contracts';
 import * as Constants from './constants';
 import * as Utils from '../utils';
 
@@ -48,7 +48,8 @@ class FireWallFeature extends SqlOpsFeature<any> {
 		};
 
 		let handleOtherError = (errorCode: number, errorMessage: string, connection: azdata.IConnectionProfile): Thenable<boolean> => {
-			return Promise.resolve(false);
+			let params: HandleOtherErrorParams = { errorCode: errorCode, errorMessage: errorMessage, connection: connection };
+			return client.sendRequest(HandleOtherErrorRequest.type, params)
 		}
 
 		return azdata.resources.registerResourceProvider({
