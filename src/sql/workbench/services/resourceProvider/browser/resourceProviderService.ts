@@ -91,7 +91,7 @@ export class ResourceProviderService implements IResourceProviderService {
 		return new Promise<boolean>((resolve, reject) => {
 			const provider = this._providers[resourceProviderId];
 			if (provider) {
-				provider.handleOtherError(errorCode, errorMessage, connection, resourceProviderId).then(result => {
+				provider.handleOtherError(errorCode, errorMessage, connection).then(result => {
 					resolve(result);
 				}, error => {
 					reject(error);

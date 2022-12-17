@@ -436,7 +436,7 @@ declare module 'azdata' {
 	 * Adds additional handling for other errors.
 	 */
 	export interface ResourceProvider {
-		handleOtherError(errorCode: number, errorMessage: string, connection: IConnectionProfile, resourceProviderId: string): Thenable<boolean>;
+		handleOtherError(errorCode: number, errorMessage: string, connection: IConnectionProfile): Thenable<boolean>;
 	}
 
 	export namespace connection {
