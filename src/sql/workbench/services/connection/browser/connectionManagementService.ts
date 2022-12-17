@@ -426,6 +426,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
+	 * Changes password of the connection profile's user.
+	 */
+	public changePassword(connection: interfaces.IConnectionProfile, uri: string, newPassword: string):
+		Promise<azdata.PasswordChangeResult> {
+		return this.sendChangePasswordRequest(connection, uri, newPassword);
+	}
+
+	/**
 	 * Opens a new connection and saves the profile in the settings.
 	 * This method doesn't load the password because it only gets called from the
 	 * connection dialog and password should be already in the profile
@@ -848,7 +856,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			'pbidedicated.windows.net',
 			'pbidedicated.cloudapi.de',
 			'pbidedicated.usgovcloudapi.net',
-			'pbidedicated.chinacloudapi.cn'
+			'pbidedicated.chinacloudapi.cn',
+			'pbidedicated.windows-int.net'
 		];
 		let serverName = connection.serverName.toLowerCase();
 		return !!powerBiDomains.find(d => serverName.indexOf(d) >= 0);
@@ -890,7 +899,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		const azureAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 		if (azureAccounts && azureAccounts.length > 0) {
 			let accountId = (connection.authenticationType === Constants.AuthenticationType.AzureMFA || connection.authenticationType === Constants.AuthenticationType.AzureMFAAndUser) ? connection.azureAccount : connection.userName;
-			let account = azureAccounts.find(account => account.key.accountId === accountId);
+			// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
+			// The OR case can be removed once we no longer support ADAL
+			let account = azureAccounts.find(account => account.key.accountId === accountId || account.key.accountId.split('.')[0] === accountId);
 			if (account) {
 				this._logService.debug(`Getting security token for Azure account ${account.key.accountId}`);
 				if (account.isStale) {
@@ -926,7 +937,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Refresh Azure access token if it's expired.
 	 * @param uriOrConnectionProfile connection uri or connection profile
-	 * @returns true if no need to refresh or successfully refreshed token
+	 * @returns true if no need to refresh or successfully refreshed token, false if refresh fails or auth mode is not AzureMFA
 	 */
 	public async refreshAzureAccountTokenIfNecessary(uriOrConnectionProfile: string | ConnectionProfile): Promise<boolean> {
 		if (!uriOrConnectionProfile) {
@@ -997,8 +1008,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			} else {
 				this._logService.warn(`Invalid expiry time ${expiry} for connection ${connectionProfile.id} with uri ${uri}`);
 			}
+			return true;
 		}
-		return true;
+		else
+			return false;
 	}
 
 	// Request Senders
@@ -1031,6 +1044,18 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._providers.get(providerId).onReady.then(provider => {
 			provider.disconnect(uri);
 			return true;
+		});
+	}
+
+	private async sendChangePasswordRequest(connection: interfaces.IConnectionProfile, uri: string, newPassword: string): Promise<azdata.PasswordChangeResult> {
+		let connectionInfo = Object.assign({}, {
+			options: connection.options
+		});
+
+		return this._providers.get(connection.providerName).onReady.then((provider) => {
+			return provider.changePassword(uri, connectionInfo, newPassword).then(result => {
+				return result;
+			})
 		});
 	}
 

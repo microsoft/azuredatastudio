@@ -180,6 +180,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return new Promise<IConnectionResult>(() => true);
 	}
 
+	changePassword(connection: IConnectionProfile, uri: string, newPassword: string): Promise<azdata.PasswordChangeResult> {
+		return Promise.resolve(undefined!);
+	}
+
 	disconnectEditor(owner: IConnectableInput): Promise<boolean> {
 		return new Promise<boolean>(() => true);
 	}

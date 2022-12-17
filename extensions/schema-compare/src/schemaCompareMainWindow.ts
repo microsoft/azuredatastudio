@@ -131,7 +131,7 @@ export class SchemaCompareMainWindow {
 				projectFilePath: '',
 				targetScripts: [],
 				dataSchemaProvider: '',
-				folderStructure: ''
+				folderStructure: mssql.ExtractTarget.schemaObjectType
 			};
 		} else if (sourceDacpac) {
 			source = {
@@ -145,7 +145,7 @@ export class SchemaCompareMainWindow {
 				projectFilePath: '',
 				targetScripts: [],
 				dataSchemaProvider: '',
-				folderStructure: ''
+				folderStructure: mssql.ExtractTarget.schemaObjectType
 			};
 		} else if (sourceProject) {
 			source = {
@@ -159,7 +159,7 @@ export class SchemaCompareMainWindow {
 				projectFilePath: sourceProject,
 				targetScripts: [],
 				dataSchemaProvider: undefined,
-				folderStructure: ''
+				folderStructure: mssql.ExtractTarget.schemaObjectType
 			};
 		}
 
@@ -1152,7 +1152,7 @@ export class SchemaCompareMainWindow {
 				projectFilePath: endpoint.projectFilePath,
 				targetScripts: [],
 				dataSchemaProvider: '',
-				folderStructure: loc.schemaObjectType			// TODO: Pick this automatically from the scmp file, after issue #20332 is resolved (check dsp as well)
+				folderStructure: mssql.ExtractTarget.schemaObjectType			// TODO: Pick this automatically from the scmp file, after issue #20332 is resolved (check dsp as well)
 			};
 		} else {
 			// need to do this instead of just setting it to the endpoint because some fields are null which will cause an error when sending the compare request

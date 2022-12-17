@@ -1693,34 +1693,13 @@ export class ProjectsController {
 	 * @param folderStructure folder structure to use when updating the target project
 	 * @returns
 	 */
-	public async schemaComparePublishProjectChanges(operationId: string, projectFilePath: string, folderStructure: string): Promise<mssql.SchemaComparePublishProjectResult> {
+	public async schemaComparePublishProjectChanges(operationId: string, projectFilePath: string, folderStructure: mssql.ExtractTarget): Promise<mssql.SchemaComparePublishProjectResult> {
 		const ext = vscode.extensions.getExtension(mssql.extension.name)!;
 		const service = (await ext.activate() as mssql.IExtension).schemaCompare;
 
 		const projectPath = path.dirname(projectFilePath);
 
-		let fs: mssql.ExtractTarget;
-
-		switch (folderStructure) {
-			case constants.file:
-				fs = mssql.ExtractTarget.file;
-				break;
-			case constants.flat:
-				fs = mssql.ExtractTarget.flat;
-				break;
-			case constants.objectType:
-				fs = mssql.ExtractTarget.objectType;
-				break;
-			case constants.schema:
-				fs = mssql.ExtractTarget.schema;
-				break;
-			case constants.schemaObjectType:
-			default:
-				fs = mssql.ExtractTarget.schemaObjectType;
-				break;
-		}
-
-		const result: mssql.SchemaComparePublishProjectResult = await service.schemaComparePublishProjectChanges(operationId, projectPath, fs, utils.getAzdataApi()!.TaskExecutionMode.execute);
+		const result: mssql.SchemaComparePublishProjectResult = await service.schemaComparePublishProjectChanges(operationId, projectPath, folderStructure, utils.getAzdataApi()!.TaskExecutionMode.execute);
 
 		if (!result.errorMessage) {
 			const project = await Project.openProject(projectFilePath);

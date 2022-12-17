@@ -18,12 +18,12 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
-	"capabilities": {
+  "capabilities": {
     "virtualWorkspaces": false,
     "untrustedWorkspaces": {
       "supported": true
     }
-	},
+  },
   "contributes": {
     "resourceViewResources": [
       {
@@ -128,7 +128,7 @@
           "azure.authenticationLibrary": {
             "type": "string",
             "description": "%config.authenticationLibrary%",
-            "default": "ADAL",
+            "default": "MSAL",
             "enum": [
               "ADAL",
               "MSAL"
@@ -360,10 +360,10 @@
   "dependencies": {
     "@azure/arm-resourcegraph": "^4.0.0",
     "@azure/arm-subscriptions": "^3.0.0",
-    "@azure/storage-blob": "^12.6.0",
     "@azure/msal-node": "^1.9.0",
-    "@azure/msal-node-extensions": "^1.0.0-alpha.25",
+    "@azure/storage-blob": "^12.6.0",
     "axios": "^0.27.2",
+    "crypto": "^1.0.1",
     "msal": "^1.4.16",
     "node-fetch": "^2.6.7",
     "qs": "^6.9.1",
@@ -372,9 +372,11 @@
     "ws": "^7.4.6"
   },
   "devDependencies": {
+    "@microsoft/azdata-test": "^2.0.3",
+    "@microsoft/vscodetestcover": "^1.2.1",
     "@types/keytar": "4.4.0",
     "@types/mocha": "^7.0.2",
-    "@types/node": "^12.11.7",
+    "@types/node": "^12.20.55",
     "@types/qs": "^6.9.1",
     "@types/request": "^2.48.1",
     "@types/sinon": "^9.0.4",
@@ -382,8 +384,6 @@
     "mocha": "^7.1.1",
     "should": "^13.2.1",
     "sinon": "^9.0.2",
-    "typemoq": "^2.1.0",
-    "@microsoft/vscodetestcover": "^1.2.1",
-    "@microsoft/azdata-test": "^2.0.3"
+    "typemoq": "^2.1.0"
   }
 }

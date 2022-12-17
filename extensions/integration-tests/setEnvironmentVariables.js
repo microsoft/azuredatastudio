@@ -90,9 +90,6 @@ const AKV_URL = 'https://sqltoolssecretstore.vault.azure.net/';
 const SECRET_AZURE_SERVER = 'ads-integration-test-azure-server';
 const SECRET_AZURE_SERVER_USERNAME = 'ads-integration-test-azure-server-username';
 const SECRET_AZURE_SERVER_PASSWORD = 'ads-integration-test-azure-server-password';
-const SECRET_BDC_SERVER = 'ads-integration-test-bdc-server';
-const SECRET_BDC_SERVER_USERNAME = 'ads-integration-test-bdc-server-username';
-const SECRET_BDC_SERVER_PASSWORD = 'ads-integration-test-bdc-server-password';
 const SECRET_STANDALONE_SERVER = 'ads-integration-test-standalone-server';
 const SECRET_STANDALONE_SERVER_USERNAME = 'ads-integration-test-standalone-server-username';
 const SECRET_STANDALONE_SERVER_PASSWORD = 'ads-integration-test-standalone-server-password';
@@ -104,9 +101,6 @@ const SECRET_STANDALONE_SERVER_PASSWORD_2019 = 'ads-integration-test-standalone-
 const ENVAR_AZURE_SERVER = 'AZURE_SQL';
 const ENVAR_AZURE_SERVER_USERNAME = 'AZURE_SQL_USERNAME';
 const ENVAR_AZURE_SERVER_PASSWORD = 'AZURE_SQL_PWD';
-const ENVAR_BDC_SERVER = 'BDC_BACKEND_HOSTNAME';
-const ENVAR_BDC_SERVER_USERNAME = 'BDC_BACKEND_USERNAME';
-const ENVAR_BDC_SERVER_PASSWORD = 'BDC_BACKEND_PWD';
 const ENVAR_STANDALONE_SERVER = 'STANDALONE_SQL';
 const ENVAR_STANDALONE_SERVER_USERNAME = 'STANDALONE_SQL_USERNAME';
 const ENVAR_STANDALONE_SERVER_PASSWORD = 'STANDALONE_SQL_PWD';
@@ -115,16 +109,12 @@ const ENVAR_STANDALONE_SERVER_USERNAME_2019 = 'STANDALONE_SQL_USERNAME_2019';
 const ENVAR_STANDALONE_SERVER_PASSWORD_2019 = 'STANDALONE_SQL_PWD_2019';
 const ENVAR_PYTHON_INSTALL_PATH = 'PYTHON_TEST_PATH';
 const ENVAR_RUN_PYTHON3_TEST = 'RUN_PYTHON3_TEST';
-const ENVAR_RUN_PYSPARK_TEST = 'RUN_PYSPARK_TEST';
 
 // Mapping between AKV secret and the environment variable names
 const SecretEnVarMapping = [];
 SecretEnVarMapping.push([SECRET_AZURE_SERVER, ENVAR_AZURE_SERVER]);
 SecretEnVarMapping.push([SECRET_AZURE_SERVER_PASSWORD, ENVAR_AZURE_SERVER_PASSWORD]);
 SecretEnVarMapping.push([SECRET_AZURE_SERVER_USERNAME, ENVAR_AZURE_SERVER_USERNAME]);
-SecretEnVarMapping.push([SECRET_BDC_SERVER, ENVAR_BDC_SERVER]);
-SecretEnVarMapping.push([SECRET_BDC_SERVER_PASSWORD, ENVAR_BDC_SERVER_PASSWORD]);
-SecretEnVarMapping.push([SECRET_BDC_SERVER_USERNAME, ENVAR_BDC_SERVER_USERNAME]);
 SecretEnVarMapping.push([SECRET_STANDALONE_SERVER, ENVAR_STANDALONE_SERVER]);
 SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_PASSWORD, ENVAR_STANDALONE_SERVER_PASSWORD]);
 SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_USERNAME, ENVAR_STANDALONE_SERVER_USERNAME]);
@@ -135,7 +125,6 @@ SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_PASSWORD_2019, ENVAR_STANDALON
 // Set the values that are not stored in AKV here
 process.env[ENVAR_PYTHON_INSTALL_PATH] = NOTEBOOK_PYTHON_INSTALL_PATH;
 process.env[ENVAR_RUN_PYTHON3_TEST] = '1';
-process.env[ENVAR_RUN_PYSPARK_TEST] = '0';
 
 const credential = new DefaultAzureCredential();
 const client = new SecretClient(AKV_URL, credential);

@@ -128,9 +128,6 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addtext', async () => {
 		await appContext.notebookUtils.addCell('markdown');
 	}));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.analyzeNotebook', async (explorerContext: azdata.ObjectExplorerContext) => {
-		await appContext.notebookUtils.analyzeNotebook(explorerContext);
-	}));
 	extensionContext.subscriptions.push(vscode.window.registerUriHandler(new NotebookUriHandler()));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('books.command.openLocalizedBooks', async () => {
