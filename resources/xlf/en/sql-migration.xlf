@@ -16,27 +16,6 @@
     <trans-unit id="sql.migrate.text">
       <source xml:lang="en">Select the databases that you want to migrate to Azure SQL.</source>
     </trans-unit>
-    <trans-unit id="sql.migratino.database.loading.tables">
-      <source xml:lang="en">Loading tables list...</source>
-    </trans-unit>
-    <trans-unit id="sql.migratino.database.missing.tables">
-      <source xml:lang="en">0 tables found.</source>
-    </trans-unit>
-    <trans-unit id="sql.migratino.table.selection.filter">
-      <source xml:lang="en">Filter tables</source>
-    </trans-unit>
-    <trans-unit id="sql.migratino.table.selection.status.column">
-      <source xml:lang="en">Has rows</source>
-    </trans-unit>
-    <trans-unit id="sql.migratino.table.selection.tablename.column">
-      <source xml:lang="en">Table name</source>
-    </trans-unit>
-    <trans-unit id="sql.migratino.table.selection.update.button">
-      <source xml:lang="en">Update</source>
-    </trans-unit>
-    <trans-unit id="sql.migratino.table.selection.update.cancel">
-      <source xml:lang="en">Cancel</source>
-    </trans-unit>
     <trans-unit id="sql.migration.account.credentials.refresh.required">
       <source xml:lang="en">{0} (requires credentials refresh)</source>
     </trans-unit>
@@ -414,6 +393,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.database.loading">
       <source xml:lang="en">Loading database table list..</source>
     </trans-unit>
+    <trans-unit id="sql.migration.database.loading.tables">
+      <source xml:lang="en">Loading tables list...</source>
+    </trans-unit>
     <trans-unit id="sql.migration.database.migration.mode.description">
       <source xml:lang="en">To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.</source>
     </trans-unit>
@@ -446,6 +428,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.migration.status.label">
       <source xml:lang="en">Database migration status: {0}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.missing.tables">
+      <source xml:lang="en">0 tables found.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.page.description">
       <source xml:lang="en">Select the location of the database backups to use during migration.</source>
@@ -1038,6 +1023,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.rg.created">
       <source xml:lang="en">Resource group created</source>
     </trans-unit>
+    <trans-unit id="sql.migration.run.validation">
+      <source xml:lang="en">Run validation</source>
+    </trans-unit>
     <trans-unit id="sql.migration.save.assessment.report">
       <source xml:lang="en">Save assessment report</source>
     </trans-unit>
@@ -1202,6 +1190,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.service.ready">
       <source xml:lang="en">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on the node - {1}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.service.selection.location.msg">
+      <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
     </trans-unit>
     <trans-unit id="sql.migration.service.status.refresh.error">
       <source xml:lang="en">An error occurred while refreshing the migration service creation status.</source>
@@ -1821,6 +1812,21 @@ This may take some time.</source>
     <trans-unit id="sql.migration.table.selection.edit">
       <source xml:lang="en">Edit</source>
     </trans-unit>
+    <trans-unit id="sql.migration.table.selection.filter">
+      <source xml:lang="en">Filter tables</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.table.selection.status.column">
+      <source xml:lang="en">Has rows</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.table.selection.tablename.column">
+      <source xml:lang="en">Table name</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.table.selection.update.button">
+      <source xml:lang="en">Update</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.table.selection.update.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
     <trans-unit id="sql.migration.target">
       <source xml:lang="en">Target</source>
     </trans-unit>
@@ -1878,6 +1884,108 @@ This may take some time.</source>
     <trans-unit id="sql.migration.username.placeholder">
       <source xml:lang="en">Enter the target user name</source>
     </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.column.status">
+      <source xml:lang="en">Status</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.column.validation.steps">
+      <source xml:lang="en">Validation steps</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.completed.errors">
+      <source xml:lang="en">Validation completed with the following error(s):{0}{1}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.copy.results">
+      <source xml:lang="en">Copy validation results</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.done.button">
+      <source xml:lang="en">Done</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.heading">
+      <source xml:lang="en">We are validating the following:</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.results.heading">
+      <source xml:lang="en">Validation step details</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.sqldb.validation.result.error">
+      <source xml:lang="en">Validation check error{0}Source database: {1}{0}Target database: {2}{0}Error: {3} - {4}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.start.validation">
+      <source xml:lang="en">Start validation</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.status">
+      <source xml:lang="en">Validation status: {0}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.status.error">
+      <source xml:lang="en">{0}{1}{2}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.status.error.count.many">
+      <source xml:lang="en">{0} - {1} errors</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.status.error.count.one">
+      <source xml:lang="en">{0} - 1 error</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.status.errors">
+      <source xml:lang="en">Validation status: {0}{1}{2}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.stop.validation">
+      <source xml:lang="en">Stop validation</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.validation.camceled">
+      <source xml:lang="en">Validation check canceled</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.validation.completed">
+      <source xml:lang="en">Validation completed successfully.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.validation.result.api.error">
+      <source xml:lang="en">Validation check error{0}Database:{1}{0}Error: {2} - {3}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.validation.result.error">
+      <source xml:lang="en">Validation check error{0}Source database: {1}{0}File share path: {2}{0}Error: {3} - {4}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.validation.result.label.networkshare">
+      <source xml:lang="en">Network share connectivity: '{0}' </source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.validation.result.label.shir">
+      <source xml:lang="en">Integration runtime connectivity</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.validation.result.label.source.database">
+      <source xml:lang="en">Source database connectivity: '{0}'</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.validation.result.label.storage">
+      <source xml:lang="en">Azure storage connectivity</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.validation.result.label.target.database">
+      <source xml:lang="en">Target database connectivity: '{0}'</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.canceled">
+      <source xml:lang="en">Validation was canceled. Please run and validate the migration settings to continue.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.canceled.errors">
+      <source xml:lang="en">Validation was canceled with the following error(s):{0}{1}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.dialog.title">
+      <source xml:lang="en">Running validation</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.not.run">
+      <source xml:lang="en">Validation has not been run for the current configuration. Please run and validate the migration settings to continue.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.state.canceled">
+      <source xml:lang="en">Canceled</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.state.failed">
+      <source xml:lang="en">Failed</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.state.pending">
+      <source xml:lang="en">Pending</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.state.running">
+      <source xml:lang="en">Running</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.state.succeeded">
+      <source xml:lang="en">Succeeded</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.success">
+      <source xml:lang="en">Validation completed successfully.  Please click Next to proceed with the migration.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.view.all">
       <source xml:lang="en">All database migrations</source>
     </trans-unit>
@@ -1918,7 +2026,7 @@ This may take some time.</source>
       <source xml:lang="en">Azure account</source>
     </trans-unit>
     <trans-unit id="sql.migration.wizard.connection.error.title">
-      <source xml:lang="en">An error occurred while conneting to the target server.</source>
+      <source xml:lang="en">An error occurred while connecting to the target server.</source>
     </trans-unit>
     <trans-unit id="sql.migration.wizard.perfCollection.error">
       <source xml:lang="en">Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:
