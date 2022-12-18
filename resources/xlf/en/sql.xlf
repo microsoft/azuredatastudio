@@ -6253,11 +6253,14 @@ Error: {1}</source>
     <trans-unit id="firewall.ok">
       <source xml:lang="en">OK</source>
     </trans-unit>
-    <trans-unit id="firewallRuleDialogDescription">
-      <source xml:lang="en">Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.</source>
+    <trans-unit id="firewall.ruleName">
+      <source xml:lang="en">Rule name</source>
     </trans-unit>
-    <trans-unit id="firewallRuleHelpDescription">
-      <source xml:lang="en">Learn more about firewall settings</source>
+    <trans-unit id="firewallRuleDescription">
+      <source xml:lang="en">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</source>
+    </trans-unit>
+    <trans-unit id="firewallRuleHelpLink">
+      <source xml:lang="en">Learn more about firewall rules</source>
     </trans-unit>
     <trans-unit id="from">
       <source xml:lang="en">From</source>
