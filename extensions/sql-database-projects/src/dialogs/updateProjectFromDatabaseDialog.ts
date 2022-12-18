@@ -365,12 +365,12 @@ export class UpdateProjectFromDatabaseDialog {
 	private createProjectLocationRow(view: azdata.ModelView): azdata.FlexContainer {
 		const browseFolderButton: azdata.Component = this.createBrowseFileButton(view);
 
-		const value = this.project ? this.project.projectFilePath : '';
-
 		let values: string[] = [];
 		this.workspaceProjects.forEach(projectUri => {
 			values.push(projectUri.fsPath as string);
 		});
+
+		const value = this.project ? this.project.projectFilePath : (values[0] ? values[0] : '');
 
 		this.projectFileDropdown = view.modelBuilder.dropDown().withProps({
 			editable: true,
