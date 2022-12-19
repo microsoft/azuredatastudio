@@ -884,6 +884,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			let dstsAccounts = accounts.filter(a => a.key.providerId.startsWith('dstsAuth'));
 			if (dstsAccounts.length <= 0) {
 				connection.options['azureAccountToken'] = undefined;
+				connection.options['expiresOn'] = undefined;
 				return false;
 			}
 
