@@ -873,6 +873,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			&& connection.authenticationType !== Constants.AuthenticationType.AzureMFAAndUser
 			&& connection.authenticationType !== Constants.AuthenticationType.DSTSAuth) {
 			connection.options['azureAccountToken'] = undefined;
+			connection.options['expiresOn'] = undefined;
 			return true;
 		}
 
