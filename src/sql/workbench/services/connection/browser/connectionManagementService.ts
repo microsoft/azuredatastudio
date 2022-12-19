@@ -873,6 +873,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			&& connection.authenticationType !== Constants.AuthenticationType.AzureMFAAndUser
 			&& connection.authenticationType !== Constants.AuthenticationType.DSTSAuth) {
 			connection.options['azureAccountToken'] = undefined;
+			connection.options['expiresOn'] = undefined;
 			return true;
 		}
 
@@ -883,6 +884,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			let dstsAccounts = accounts.filter(a => a.key.providerId.startsWith('dstsAuth'));
 			if (dstsAccounts.length <= 0) {
 				connection.options['azureAccountToken'] = undefined;
+				connection.options['expiresOn'] = undefined;
 				return false;
 			}
 
