@@ -11,9 +11,12 @@ import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SKURecommendationPage } from './skuRecommendationPage';
 import { DatabaseBackupPage } from './databaseBackupPage';
 import { TargetSelectionPage } from './targetSelectionPage';
+import { LoginMigrationTargetSelectionPage } from './loginMigrationTargetSelectionPage';
 import { IntergrationRuntimePage } from './integrationRuntimePage';
 import { SummaryPage } from './summaryPage';
+import { LoginMigrationStatusPage } from './loginMigrationStatusPage';
 import { DatabaseSelectorPage } from './databaseSelectorPage';
+import { LoginSelectorPage } from './loginSelectorPage';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
 import * as styles from '../constants/styles';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
@@ -35,6 +38,14 @@ export class WizardController {
 		if (api) {
 			this.extensionContext.subscriptions.push(this._model);
 			await this.createWizard(this._model);
+		}
+	}
+
+	public async openLoginWizard(connectionId: string): Promise<void> {
+		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
+		if (api) {
+			this.extensionContext.subscriptions.push(this._model);
+			await this.createLoginWizard(this._model);
 		}
 	}
 
@@ -173,6 +184,66 @@ export class WizardController {
 						},
 						{});
 				}
+			}));
+	}
+
+	private async createLoginWizard(stateModel: MigrationStateModel): Promise<void> {
+		const serverName = (await stateModel.getSourceConnectionProfile()).serverName;
+		this._wizardObject = azdata.window.createWizard(
+			loc.LOGIN_WIZARD_TITLE(serverName),
+			'LoginMigrationWizard',
+			'wide');
+
+		this._wizardObject.generateScriptButton.enabled = false;
+		this._wizardObject.generateScriptButton.hidden = true;
+		const targetSelectionPage = new LoginMigrationTargetSelectionPage(this._wizardObject, stateModel);
+		const loginSelectorPage = new LoginSelectorPage(this._wizardObject, stateModel);
+		const migrationStatusPage = new LoginMigrationStatusPage(this._wizardObject, stateModel);
+
+		const pages: MigrationWizardPage[] = [
+			targetSelectionPage,
+			loginSelectorPage,
+			migrationStatusPage
+		];
+
+		this._wizardObject.pages = pages.map(p => p.getwizardPage());
+
+		const wizardSetupPromises: Thenable<void>[] = [];
+		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
+		wizardSetupPromises.push(this._wizardObject.open());
+
+		this._model.extensionContext.subscriptions.push(
+			this._wizardObject.onPageChanged(
+				async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
+					const newPage = pageChangeInfo.newPage;
+					const lastPage = pageChangeInfo.lastPage;
+					this.sendPageButtonClickEvent(pageChangeInfo)
+						.catch(e => logError(
+							TelemetryViews.LoginMigrationWizardController,
+							'ErrorSendingPageButtonClick', e));
+					await pages[lastPage]?.onPageLeave(pageChangeInfo);
+					await pages[newPage]?.onPageEnter(pageChangeInfo);
+				}));
+
+		this._wizardObject.registerNavigationValidator(async validator => {
+			return true;
+		});
+
+		await Promise.all(wizardSetupPromises);
+
+		this._disposables.push(
+			this._wizardObject.cancelButton.onClick(e => {
+				// TODO AKMA: add dialog prompting confirmation of cancel if migration is in progress
+
+				sendSqlMigrationActionEvent(
+					TelemetryViews.LoginMigrationWizard,
+					TelemetryAction.PageButtonClick,
+					{
+						...this.getTelemetryProps(),
+						'buttonPressed': TelemetryAction.Cancel,
+						'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
+					},
+					{});
 			}));
 	}
 

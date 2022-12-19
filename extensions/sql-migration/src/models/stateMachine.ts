@@ -7,15 +7,14 @@ import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
-import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer } from '../api/azure';
+import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, isSqlManagedInstance, isAzureSqlDatabaseServer } from '../api/azure';
 import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
-import { excludeDatabases, TargetDatabaseInfo } from '../api/sqlUtils';
-
+import { excludeDatabases, getConnectionProfile, LoginTableInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 const localize = nls.loadMessageBundle();
 
 export enum ValidateIrState {
@@ -200,6 +199,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _sourceDatabaseNames!: string[];
 	public _targetDatabaseNames!: string[];
 
+	public _targetServerName!: string;
 	public _targetUserName!: string;
 	public _targetPassword!: string;
 	public _sourceTargetMapping: Map<string, TargetDatabaseInfo | undefined> = new Map();
@@ -241,6 +241,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _perfDataCollectionMessages!: string[];
 	public _perfDataCollectionErrors!: string[];
 	public _perfDataCollectionIsCollecting!: boolean;
+
+	public _loginsForMigration!: LoginTableInfo[];
+	public _aadDomainName!: string;
+	public _loginMigrationsResult!: mssql.StartLoginMigrationResult;
+	public _loginMigrationsError: any;
 
 	public readonly _refreshGetSkuRecommendationIntervalInMinutes = 10;
 	public readonly _performanceDataQueryIntervalInSeconds = 30;
@@ -504,6 +509,132 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this.generateSkuRecommendationTelemetry().catch(e => console.error(e));
 
 		return this._skuRecommendationResults;
+	}
+
+
+	public async getSourceConnectionString(): Promise<string> {
+		return await azdata.connection.getConnectionString(this._sourceConnectionId, true);
+	}
+
+	public async setTargetServerName(): Promise<void> {
+		// If target server name has already been set, we can skip this part
+		if (this._targetServerName) {
+			return;
+		}
+
+		if (isSqlManagedInstance(this._targetServerInstance) || isAzureSqlDatabaseServer(this._targetServerInstance)) {
+			this._targetServerName = this._targetServerName ?? this._targetServerInstance.properties.fullyQualifiedDomainName;
+		}
+	}
+
+	public async getTargetConnectionString(): Promise<string> {
+		await this.setTargetServerName();
+		const connectionProfile = getConnectionProfile(
+			this._targetServerName,
+			this._targetServerInstance.id,
+			this._targetUserName,
+			this._targetPassword);
+
+		const result = await azdata.connection.connect(connectionProfile, false, false);
+		if (result.connected && result.connectionId) {
+			return azdata.connection.getConnectionString(result.connectionId, true);
+		}
+
+		return '';
+	}
+
+	private updateLoginMigrationResults(newResult: mssql.StartLoginMigrationResult): void {
+		if (this._loginMigrationsResult && this._loginMigrationsResult.exceptionMap) {
+			for (var key in newResult.exceptionMap) {
+				this._loginMigrationsResult.exceptionMap[key] = [...this._loginMigrationsResult.exceptionMap[key] || [], newResult.exceptionMap[key]]
+			}
+		} else {
+			this._loginMigrationsResult = newResult;
+		}
+	}
+
+	public async migrateLogins(): Promise<Boolean> {
+		try {
+			const sourceConnectionString = await this.getSourceConnectionString();
+			const targetConnectionString = await this.getTargetConnectionString();
+			console.log('Starting Login Migration at: ', new Date());
+
+			console.time("migrateLogins")
+			var response = (await this.migrationService.migrateLogins(
+				sourceConnectionString,
+				targetConnectionString,
+				this._loginsForMigration.map(row => row.loginName),
+				this._aadDomainName
+			))!;
+			console.timeEnd("migrateLogins")
+
+			this.updateLoginMigrationResults(response)
+		} catch (error) {
+			console.log('Failed Login Migration at: ', new Date());
+			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
+			this._loginMigrationsError = error;
+			return false;
+		}
+
+		// TODO AKMA : emit telemetry
+		return true;
+	}
+
+	public async establishUserMappings(): Promise<Boolean> {
+		try {
+			const sourceConnectionString = await this.getSourceConnectionString();
+			const targetConnectionString = await this.getTargetConnectionString();
+
+			console.time("establishUserMapping")
+			var response = (await this.migrationService.establishUserMapping(
+				sourceConnectionString,
+				targetConnectionString,
+				this._loginsForMigration.map(row => row.loginName),
+				this._aadDomainName
+			))!;
+			console.timeEnd("establishUserMapping")
+
+			this.updateLoginMigrationResults(response)
+		} catch (error) {
+			console.log('Failed Login Migration at: ', new Date());
+			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
+			this._loginMigrationsError = error;
+			return false;
+		}
+
+		// TODO AKMA : emit telemetry
+		return true;
+	}
+
+	public async migrateServerRolesAndSetPermissions(): Promise<Boolean> {
+		try {
+			const sourceConnectionString = await this.getSourceConnectionString();
+			const targetConnectionString = await this.getTargetConnectionString();
+
+			console.time("migrateServerRolesAndSetPermissions")
+			var response = (await this.migrationService.migrateServerRolesAndSetPermissions(
+				sourceConnectionString,
+				targetConnectionString,
+				this._loginsForMigration.map(row => row.loginName),
+				this._aadDomainName
+			))!;
+			console.timeEnd("migrateServerRolesAndSetPermissions")
+
+			this.updateLoginMigrationResults(response)
+
+			console.log('Ending Login Migration at: ', new Date());
+			console.log('Login migration response: ', response);
+
+			console.log('AKMA DEBUG response: ', response);
+		} catch (error) {
+			console.log('Failed Login Migration at: ', new Date());
+			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
+			this._loginMigrationsError = error;
+			return false;
+		}
+
+		// TODO AKMA : emit telemetry
+		return true;
 	}
 
 	private async generateSkuRecommendationTelemetry(): Promise<void> {
@@ -1259,6 +1390,18 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		} catch {
 			return false;
 		}
+	}
+
+	public GetTargetType(): string {
+		switch (this._targetType) {
+			case MigrationTargetType.SQLMI:
+				return constants.LOGIN_MIGRATIONS_MI_TEXT;
+			case MigrationTargetType.SQLVM:
+				return constants.LOGIN_MIGRATIONS_VM_TEXT;
+			case MigrationTargetType.SQLDB:
+				return constants.LOGIN_MIGRATIONS_DB_TEXT;
+		}
+		return "";
 	}
 }
 
