@@ -87,8 +87,8 @@ export class ResourceProviderService implements IResourceProviderService {
 	/**
 	 * Handle a firewall rule
 	 */
-	public async handleOtherError(errorCode: number, errorMessage: string, connection: IConnectionProfile, resourceProviderId: string): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
+	public async handleOtherError(errorCode: number, errorMessage: string, connection: IConnectionProfile, resourceProviderId: string): Promise<azdata.errorHandling.ErrorCodes> {
+		return new Promise<azdata.errorHandling.ErrorCodes>((resolve, reject) => {
 			const provider = this._providers[resourceProviderId];
 			if (provider) {
 				provider.handleOtherError(errorCode, errorMessage, connection).then(result => {
@@ -97,7 +97,7 @@ export class ResourceProviderService implements IResourceProviderService {
 					reject(error);
 				});
 			} else {
-				reject(false);
+				reject();
 			}
 		});
 	}

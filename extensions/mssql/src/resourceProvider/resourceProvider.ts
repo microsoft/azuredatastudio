@@ -47,7 +47,7 @@ class FireWallFeature extends SqlOpsFeature<any> {
 			return client.sendRequest(HandleFirewallRuleRequest.type, params);
 		};
 
-		let handleOtherError = (errorCode: number, errorMessage: string, connection: azdata.IConnectionProfile): Thenable<boolean> => {
+		let handleOtherError = (errorCode: number, errorMessage: string, connection: azdata.IConnectionProfile): Thenable<azdata.errorHandling.ErrorCodes> => {
 			let params: HandleOtherErrorParams = { errorCode: errorCode, errorMessage: errorMessage, connection: connection };
 			return client.sendRequest(HandleOtherErrorRequest.type, params)
 		}

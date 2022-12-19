@@ -609,7 +609,7 @@ export abstract class ExtHostResourceProviderShape {
 	/**
 	 * Handle other error types
 	 */
-	$handleOtherError(handle: number, errorCode: number, errorMessage: string, connection: IConnectionProfile): Thenable<boolean> { throw ni(); }
+	$handleOtherError(handle: number, errorCode: number, errorMessage: string, connection: IConnectionProfile): Thenable<azdata.errorHandling.ErrorCodes> { throw ni(); }
 
 }
 

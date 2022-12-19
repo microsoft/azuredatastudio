@@ -102,6 +102,12 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostWorkspace = rpcProtocol.set(SqlExtHostContext.ExtHostWorkspace, new ExtHostWorkspace(rpcProtocol));
 	return {
 		azdata: function (extension: IExtensionDescription): typeof azdata {
+			// namespace: errorHandler
+			const errorHandling: typeof azdata.errorHandling = {
+				// "azdata" API definition
+				ErrorCodes: sqlExtHostTypes.errorHandling.ErrorCodes,
+			}
+
 			// namespace: connection
 			const connection: typeof azdata.connection = {
 				// "azdata" API definition
@@ -666,6 +672,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				TextType: sqlExtHostTypes.TextType,
 				designers: designers,
 				executionPlan: executionPlan,
+				errorHandling: errorHandling,
 				env
 			};
 		}

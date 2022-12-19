@@ -8,6 +8,7 @@ import { SqlOpsDataClient, ISqlOpsFeature, SqlOpsFeature } from 'dataprotocol-cl
 import { ClientCapabilities, ServerCapabilities } from 'vscode-languageclient';
 import { Disposable } from 'vscode';
 import * as Contracts from './contracts';
+import * as azdata from 'azdata';
 export class ErrorHandlerService extends SqlOpsFeature<any> {
 
 
@@ -36,7 +37,7 @@ export class ErrorHandlerService extends SqlOpsFeature<any> {
 
 	protected registerProvider(options: any): Disposable { return undefined; }
 
-	getErrorHandleStatus(errorCode: number, errorMessage: string, providerName: string, ownerUri: string): Thenable<Contracts.errorCodes> {
+	getErrorHandleStatus(errorCode: number, errorMessage: string, providerName: string, ownerUri: string): Thenable<azdata.errorHandling.ErrorCodes> {
 		let params: Contracts.ErrorHandlerParameters = { errorCode: errorCode, errorMessage: errorMessage, providerName: providerName, ownerUri: ownerUri };
 		return this.client.sendRequest(Contracts.ErrorHandlerRequest.type, params).then(
 			r => {

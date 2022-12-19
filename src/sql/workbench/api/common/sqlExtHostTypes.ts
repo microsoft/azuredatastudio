@@ -1059,6 +1059,16 @@ export namespace executionPlan {
 	}
 }
 
+export namespace errorHandling {
+	/**
+	 * The error codes returned to indicate what kind of error is being thrown.
+	 */
+	export enum ErrorCodes {
+		noErrorOrUnsupported = 0,
+		passwordReset = 1,
+	}
+}
+
 export namespace env {
 	/**
 	 * Well-known app quality values

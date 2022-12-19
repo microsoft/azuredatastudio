@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { RequestType } from 'vscode-languageclient';
+import { errorHandling } from 'azdata';
 
 export interface ErrorHandlerParameters {
 	/**
@@ -23,14 +24,6 @@ export interface ErrorHandlerParameters {
 	ownerUri: string;
 }
 
-/**
- * The error codes returned to indicate what kind of error is being thrown.
- */
-export enum errorCodes {
-	noErrorOrUnsupported = 0,
-	passwordReset = 1,
-}
-
 export namespace ErrorHandlerRequest {
-	export const type = new RequestType<ErrorHandlerParameters, errorCodes, void, void>('errorHandle/errorHandler');
+	export const type = new RequestType<ErrorHandlerParameters, errorHandling.ErrorCodes, void, void>('errorHandle/errorHandler');
 }
