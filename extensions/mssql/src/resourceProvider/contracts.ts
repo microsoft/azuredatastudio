@@ -110,5 +110,5 @@ interface HandleFirewallRuleResponse {
 export interface HandleOtherErrorParams {
 	errorCode: number;
 	errorMessage: string;
-	connection: azdata.IConnectionProfile;
+	connectionTypeId: string;
 }

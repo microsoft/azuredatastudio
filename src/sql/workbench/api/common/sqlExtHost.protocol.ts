@@ -26,7 +26,6 @@ import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
 import { DataTransferDTO } from 'vs/workbench/api/common/shared/dataTransfer';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 export abstract class ExtHostAzureBlobShape {
 	public $createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse> { throw ni(); }
@@ -609,7 +608,7 @@ export abstract class ExtHostResourceProviderShape {
 	/**
 	 * Handle other error types
 	 */
-	$handleOtherError(handle: number, errorCode: number, errorMessage: string, connection: IConnectionProfile): Thenable<azdata.errorHandling.ErrorCodes> { throw ni(); }
+	$handleOtherError(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.errorHandling.ErrorCodes> { throw ni(); }
 
 }
 

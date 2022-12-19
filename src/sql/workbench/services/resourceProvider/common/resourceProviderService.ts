@@ -49,5 +49,5 @@ export interface IResourceProviderService {
 	/**
 	 * handles any other error that may be thrown, including change password.
 	 */
-	handleOtherError?(errorCode: number, errorMessage: string, connection: IConnectionProfile, resourceProviderId: string): Promise<azdata.errorHandling.ErrorCodes>
+	handleOtherError?(errorCode: number, errorMessage: string, resourceProviderId: string): Promise<azdata.errorHandling.ErrorCodes>
 }
