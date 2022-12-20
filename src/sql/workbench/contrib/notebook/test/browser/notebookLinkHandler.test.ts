@@ -131,11 +131,10 @@ suite('Noteboook Link Handler', function (): void {
 		});
 	});
 	test('getLinkUrl should return relativePath correctly', () => {
-		test('when given an relative link with file protocol', () => {
+		test('when given an relative link with file protocol and useAbsoluteFilePaths set to true', () => {
 			let node = Object.assign(document.createElement('a'), { href: '/tmp//notebook1.ipynb', attributes: { href: { nodeValue: '/tmp/.\\notebook1.ipynb' } } });
+			configurationService.updateValue('notebook.useAbsoluteFilePaths', true, ConfigurationTarget.USER);
 			node.setAttribute("protocol", 'file:');
-			node.setAttribute("is-absolute", 'false');
-			node.setAttribute("is-markdown", 'true');
 			let notebookLinkHandler = new NotebookLinkHandler(notebookUri, node, configurationService);
 			let expectedResult = `.${path.join(path.sep, 'notebook1.ipynb')}`
 			assert.strictEqual(notebookLinkHandler.getLinkUrl(), expectedResult, 'File relative link is wrong');
@@ -143,8 +142,6 @@ suite('Noteboook Link Handler', function (): void {
 		test('when given an relative link with vscode-file protocol', () => {
 			let node = Object.assign(document.createElement('a'), { href: '/tmp//notebook1.ipynb', attributes: { href: { nodeValue: '/tmp/.\\notebook1.ipynb' } } });
 			node.setAttribute("protocol", 'vscode-file:');
-			node.setAttribute("is-absolute", 'false');
-			node.setAttribute("is-markdown", 'true');
 			let notebookLinkHandler = new NotebookLinkHandler(notebookUri, node, configurationService);
 			let expectedResult = `.${path.join(path.sep, 'notebook1.ipynb')}`
 			assert.strictEqual(notebookLinkHandler.getLinkUrl(), expectedResult, 'File relative link is wrong');
