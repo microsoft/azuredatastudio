@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { isWindows } from 'vs/base/common/platform';
-import * as fs from 'fs';
 
 /**
  * Due to marked js parsing returning an invalid path (ex. ....\) we must format the path to ensure directories are formatted properly (ex. ..\..\).
@@ -24,20 +23,4 @@ export function replaceInvalidLinkPath(href: string): string {
 		// returns original path since it is valid
 		return href;
 	}
-}
-
-/**
- * Check if a given file path is valid
- * @param href the filepath as string
- * @returns true if a file path is valid
- */
-export function isFilepathValid(href: string): boolean {
-	fs.stat(href, (error, stats) => {
-		if (error || !stats.isFile()) {
-			return false;
-		} else {
-			return true;
-		}
-	});
-	return true;
 }

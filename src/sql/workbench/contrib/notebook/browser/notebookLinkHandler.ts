@@ -7,9 +7,10 @@ import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
 import { Schemas } from 'vs/base/common/network';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { replaceInvalidLinkPath, isFilepathValid } from 'sql/workbench/contrib/notebook/common/utils';
+import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
 import { isWindows } from 'vs/base/common/platform';
 import { containsEncodedUriComponentReservedCharacters } from 'sql/base/common/network';
+import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 
 const useAbsolutePathConfigName = 'notebook.useAbsoluteFilePaths';
 export class NotebookLinkHandler {
@@ -56,7 +57,7 @@ export class NotebookLinkHandler {
 			// since the nodeValue results are ambiguous depending on OS ex: '/PathToParentFolder/ ./fiename.ipynb'.
 			if (this._isFile) {
 				// check if nodevalue is valid
-				if (isFilepathValid(this._link.attributes['href']?.nodeValue)) {
+				if (notebookUtils.isFilepathValid(this._link.attributes['href']?.nodeValue)) {
 					this._href = this._link.attributes['href']?.nodeValue;
 				} else {
 					this._href = this._link.pathname;
