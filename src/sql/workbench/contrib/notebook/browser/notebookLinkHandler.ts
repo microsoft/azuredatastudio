@@ -10,9 +10,9 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
 import { isWindows } from 'vs/base/common/platform';
 import { containsEncodedUriComponentReservedCharacters } from 'sql/base/common/network';
+import * as fs from 'fs';
 
 const useAbsolutePathConfigName = 'notebook.useAbsoluteFilePaths';
-
 export class NotebookLinkHandler {
 	private _notebookUriLink: URI;
 	private _href: string;
@@ -53,12 +53,22 @@ export class NotebookLinkHandler {
 			this.isMarkdown = this._link.attributes['is-markdown']?.nodeValue === 'true' ? true : false;
 			this.isEncoded = this._link.attributes['is-encoded']?.nodeValue === 'true' ? true : false;
 			this._isFile = this._link.protocol === `${Schemas.file}:` || this._link.protocol === `${Schemas.vscodeFileResource}:`;
-			// Given an anchor element for windows href link will need to use nodeValue instead as that does not encode the url
-			if (isWindows) {
+			// When editing on richtext, for local files paths use pathname to get the filepath of the link
+			// since the nodeValue results are ambiguous depending on OS ex: '/PathToParentFolder/ ./fiename.ipynb'.
+			if (this._isFile) {
+				let pathname = this._link.pathname;
+				this._href = this._link.attributes['href']?.nodeValue;
+				// check if nodevalue is valid
+				fs.stat(this._link.attributes['href']?.nodeValue, (error, stats) => {
+					if (error || !stats.isFile()) {
+						this._href = pathname;
+					}
+				});
+			} else if (isWindows) {
+				// Given an anchor element for windows href link will need to use nodeValue instead as that does not encode the url
 				this._href = this.isMarkdown || this.isEncoded ? this._link.href?.replace(/%5C/g, '\\') : this._link.attributes['href']?.nodeValue;
 			} else {
-				// When editing on richtext, for local files paths use pathname to get the filepath of the link since the nodeValue is as follows '/PathToParentFolder/ ./fiename.ipynb'.
-				this._href = this._isFile && this.isMarkdown ? this._link.pathname : this._link.attributes['href']?.nodeValue;
+				this._href = this._link.attributes['href']?.nodeValue;
 			}
 			this._notebookUriLink = this._href ? URI.parse(encodeURI(this._href)) : undefined;
 			this._isAnchorLink = this._notebookUriLink?.fragment ? true : false;
