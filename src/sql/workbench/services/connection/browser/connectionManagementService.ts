@@ -55,6 +55,7 @@ import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/b
 import { ViewContainerLocation } from 'vs/workbench/common/views';
 import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { errorHandling } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -558,11 +559,17 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					options.showFirewallRuleOnError = false;
 					return this.connectWithOptions(connection, uri, options, callbacks);
 				} else {
-					// Do something with the error code here.
-					if (callbacks.onConnectReject) {
-						callbacks.onConnectReject(connectionNotAcceptedError);
-					}
-					return connectionResult;
+					return this.handleOtherError(connection, connectionResult).then(success => {
+						if (success) {
+							return this.connectWithOptions(connection, uri, options, callbacks);
+						}
+						else {
+							if (callbacks.onConnectReject) {
+								callbacks.onConnectReject(connectionNotAcceptedError);
+							}
+							return connectionResult;
+						}
+					});
 				}
 			});
 		} else {
@@ -578,6 +585,19 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			if (response.canHandleFirewallRule) {
 				connectionResult.errorHandled = true;
 				return this._resourceProviderService.showFirewallRuleDialog(connection, response.ipAddress, response.resourceProviderId);
+			} else {
+				return false;
+			}
+		});
+	}
+
+	private handleOtherError(connection: interfaces.IConnectionProfile, connectionResult: IConnectionResult): Promise<boolean> {
+		return this._resourceProviderService.handleOtherError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName).then(response => {
+			if (response === errorHandling.ErrorCodes.passwordReset) {
+				this._logService.info(`password reset error code returned!`);
+				//connectionResult.errorHandled = true;
+				return false;
+				//return this._resourceProviderService.showFirewallRuleDialog(connection, response.ipAddress, response.resourceProviderId);
 			} else {
 				return false;
 			}

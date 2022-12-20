@@ -13,6 +13,7 @@ import { FirewallRuleDialogController } from 'sql/workbench/services/resourcePro
 import * as azdata from 'azdata';
 import { invalidProvider } from 'sql/base/common/errors';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { errorHandling } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ResourceProviderService implements IResourceProviderService {
 
@@ -87,19 +88,22 @@ export class ResourceProviderService implements IResourceProviderService {
 	/**
 	 * Handle a firewall rule
 	 */
-	public async handleOtherError(errorCode: number, errorMessage: string, resourceProviderId: string): Promise<azdata.errorHandling.ErrorCodes> {
-		return new Promise<azdata.errorHandling.ErrorCodes>((resolve, reject) => {
-			const provider = this._providers[resourceProviderId];
-			if (provider) {
-				provider.handleOtherError(errorCode, errorMessage, resourceProviderId).then(result => {
-					resolve(result);
-				}, error => {
-					reject(error);
-				});
-			} else {
-				reject();
+	public async handleOtherError(errorCode: number, errorMessage: string, resourceProviderId: string): Promise<errorHandling.ErrorCodes> {
+		let errorCodeResult = errorHandling.ErrorCodes.noErrorOrUnsupported;
+		const promises = [];
+		if (this._providers) {
+			for (const key in this._providers) {
+				const provider = this._providers[key];
+				promises.push(provider.handleOtherError(errorCode, errorMessage, resourceProviderId).then(result => {
+					if (errorCodeResult === errorHandling.ErrorCodes.noErrorOrUnsupported) {
+						errorCodeResult = result;
+					}
+				}, () => { /* Swallow failures at getting accounts, we'll just hide that provider */
+				}));
 			}
-		});
+		}
+		await Promise.all(promises);
+		return errorCodeResult
 	}
 
 
