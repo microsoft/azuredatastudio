@@ -70,7 +70,7 @@
 			"currentTargetPlatform": "專案 {0} 的目標平台現在已{1}",
 			"dacpacFileLocationRequired": "需要 Dacpac 檔案位置才能將參考新增到資料庫",
 			"dacpacFiles": "dacpac 檔案",
-			"dacpacNotOnSameDrive": "Dacpac 參考必須位於與專案檔相同的磁碟機上。專案檔位於 {0}",
+			"dacpacNotOnSameDrive": "Dacpac 參考必須位於與專案檔相同的磁碟機上。",
 			"dacpacReferenceElement": "Dacpac 参考",
 			"dacpacText": "資料層應用程式 (.dacpac)",
 			"dataSource": "資料來源",

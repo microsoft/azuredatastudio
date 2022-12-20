@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "將您的帳戶新增至快取時發生錯誤。",
 			"azure.cacheErrorGet": "從快取取得您的帳戶時發生錯誤",
 			"azure.cacheErrorParse": "從快取剖析您的帳戶時發生錯誤",
-			"azure.cacheErrrorRemove": "從快取移除您的帳戶時發生錯誤。",
 			"azure.microsoftAccountDisplayName": "Microsoft 帳戶",
 			"azure.microsoftCorpAccount": "Microsoft Corp.",
 			"azure.noBaseToken": "驗證失敗，或您的權杖已從系統中刪除。請嘗試再次將帳戶新增至 Azure Data Studio。",

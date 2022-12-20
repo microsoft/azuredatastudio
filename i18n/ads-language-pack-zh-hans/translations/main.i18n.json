@@ -13720,8 +13720,9 @@
 			"filewallRule": "防火墙规则",
 			"firewall.cancel": "取消",
 			"firewall.ok": "确定",
-			"firewallRuleDialogDescription": "你的客户端 IP 地址无权访问此服务器。请登录到 Azure 帐户，然后新建一个防火墙规则以启用访问。",
-			"firewallRuleHelpDescription": "详细了解防火墙设置",
+			"firewall.ruleName": "Rule name",
+			"firewallRuleDescription": "A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.",
+			"firewallRuleHelpLink": "Learn more about firewall rules",
 			"from": "从",
 			"to": "到"
 		},

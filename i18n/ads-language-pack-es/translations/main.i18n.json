@@ -13720,8 +13720,9 @@
 			"filewallRule": "Regla de firewall",
 			"firewall.cancel": "Cancelar",
 			"firewall.ok": "Aceptar",
-			"firewallRuleDialogDescription": "La dirección IP del cliente no tiene acceso al servidor. Inicie sesión en una cuenta de Azure y cree una regla de firewall para habilitar el acceso.",
-			"firewallRuleHelpDescription": "Más información sobre configuración de firewall",
+			"firewall.ruleName": "Rule name",
+			"firewallRuleDescription": "A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.",
+			"firewallRuleHelpLink": "Learn more about firewall rules",
 			"from": "De",
 			"to": "A"
 		},

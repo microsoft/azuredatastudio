@@ -18,10 +18,6 @@
         <source xml:lang="en">Error when parsing your account from the cache</source>
         <target state="translated">Erro ao analisar a sua conta do cache</target>
       </trans-unit>
-      <trans-unit id="azure.cacheErrrorRemove">
-        <source xml:lang="en">Error when removing your account from the cache.</source>
-        <target state="translated">Erro ao remover a sua conta do cache.</target>
-      </trans-unit>
       <trans-unit id="azure.microsoftAccountDisplayName">
         <source xml:lang="en">Microsoft Account</source>
         <target state="translated">Conta Microsoft</target>

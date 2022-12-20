@@ -13720,8 +13720,9 @@
 			"filewallRule": "Правило брандмауэра",
 			"firewall.cancel": "Отмена",
 			"firewall.ok": "OK",
-			"firewallRuleDialogDescription": "Ваш клиентский IP-адрес не имеет доступа к серверу. Войдите в учетную запись Azure и создайте правило брандмауэра, чтобы разрешить доступ.",
-			"firewallRuleHelpDescription": "Дополнительные сведения о параметрах брандмауэра",
+			"firewall.ruleName": "Rule name",
+			"firewallRuleDescription": "A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.",
+			"firewallRuleHelpLink": "Learn more about firewall rules",
 			"from": "С",
 			"to": "До"
 		},

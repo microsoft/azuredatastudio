@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "将帐户添加到缓存时出错。",
 			"azure.cacheErrorGet": "从缓存获取帐户时出错",
 			"azure.cacheErrorParse": "在缓存中分析帐户时出错",
-			"azure.cacheErrrorRemove": "从缓存中删除帐户时出错。",
 			"azure.microsoftAccountDisplayName": "Microsoft 帐户",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "身份验证失败，或者你的令牌已从系统中删除。请尝试再次将帐户添加到 Azure Data Studio。",

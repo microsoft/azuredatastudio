@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "Fehler beim Hinzufügen Ihres Kontos zum Cache.",
 			"azure.cacheErrorGet": "Fehler beim Abrufen Ihres Kontos aus dem Cache.",
 			"azure.cacheErrorParse": "Fehler beim Analysieren Ihres Kontos aus dem Cache.",
-			"azure.cacheErrrorRemove": "Fehler beim Entfernen Ihres Kontos aus dem Cache.",
 			"azure.microsoftAccountDisplayName": "Microsoft-Konto",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Bei der Authentifizierung ist ein Fehler aufgetreten, oder Ihre Token wurden aus dem System gelöscht. Versuchen Sie erneut, Ihr Konto in Azure Data Studio hinzuzufügen.",

@@ -70,7 +70,7 @@
 			"currentTargetPlatform": "项目 {0} 的目标平台现已 {1}",
 			"dacpacFileLocationRequired": "添加对数据库的引用时需要 Dacpac 文件位置",
 			"dacpacFiles": "dacpac 文件",
-			"dacpacNotOnSameDrive": "Dacpac 引用需要位于项目文件所在的同一驱动器上。项目文件位于 {0}",
+			"dacpacNotOnSameDrive": "Dacpac 引用需要位于项目文件所在的同一驱动器上。",
 			"dacpacReferenceElement": "Dacpac 引用",
 			"dacpacText": "数据层应用程序(.dacpac)",
 			"dataSource": "数据源",

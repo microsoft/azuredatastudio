@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "계정을 캐시에 추가하는 동안 오류가 발생했습니다.",
 			"azure.cacheErrorGet": "캐시에서 계정을 가져올 때 오류 발생",
 			"azure.cacheErrorParse": "캐시에서 계정을 구문 분석하는 동안 오류 발생",
-			"azure.cacheErrrorRemove": "캐시에서 계정을 제거하는 동안 오류가 발생했습니다.",
 			"azure.microsoftAccountDisplayName": "Microsoft 계정",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "인증 관련 오류가 발생했거나 토큰이 시스템에서 삭제되었습니다. 계정을 다시 Azure Data Studio에 추가해 보세요.",

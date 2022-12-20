@@ -13720,8 +13720,9 @@
 			"filewallRule": "ファイアウォール規則",
 			"firewall.cancel": "キャンセル",
 			"firewall.ok": "OK",
-			"firewallRuleDialogDescription": "このクライアント IP アドレスではサーバーにアクセスできません。アクセスできるようにするには、Azure アカウントにサインインし、新しいファイアウォール規則を作成します。",
-			"firewallRuleHelpDescription": "ファイアウォール設定の詳細情報",
+			"firewall.ruleName": "Rule name",
+			"firewallRuleDescription": "A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.",
+			"firewallRuleHelpLink": "Learn more about firewall rules",
 			"from": "開始",
 			"to": "終了"
 		},

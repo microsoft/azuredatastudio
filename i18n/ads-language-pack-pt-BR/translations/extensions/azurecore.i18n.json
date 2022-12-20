@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "Erro ao adicionar a sua conta ao cache.",
 			"azure.cacheErrorGet": "Erro ao obter a sua conta do cache",
 			"azure.cacheErrorParse": "Erro ao analisar a sua conta do cache",
-			"azure.cacheErrrorRemove": "Erro ao remover a sua conta do cache.",
 			"azure.microsoftAccountDisplayName": "Conta Microsoft",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Ocorreu um erro com a autenticação ou os tokens foram excluídos do sistema. Tente adicionar a sua conta no Azure Data Studio novamente.",

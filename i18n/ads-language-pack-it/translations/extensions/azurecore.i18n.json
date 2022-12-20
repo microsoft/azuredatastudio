@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "Si è verificato un errore durante l'aggiunta dell'account alla cache.",
 			"azure.cacheErrorGet": "Si è verificato un errore durante il recupero dell'account dalla cache",
 			"azure.cacheErrorParse": "Si è verificato un errore durante l'analisi dell'account dalla cache",
-			"azure.cacheErrrorRemove": "Si è verificato un errore durante la rimozione dell'account dalla cache.",
 			"azure.microsoftAccountDisplayName": "Account Microsoft",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Si è verificato un errore durante l'autenticazione oppure i token sono stati eliminati dal sistema. Provare ad aggiungere di nuovo l'account ad Azure Data Studio.",

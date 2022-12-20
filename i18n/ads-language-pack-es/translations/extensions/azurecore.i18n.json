@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "Error al agregar la cuenta a la memoria caché.",
 			"azure.cacheErrorGet": "Error al obtener la cuenta de la memoria caché.",
 			"azure.cacheErrorParse": "Error al analizar la cuenta desde la memoria caché.",
-			"azure.cacheErrrorRemove": "Error al quitar la cuenta de la memoria caché.",
 			"azure.microsoftAccountDisplayName": "Cuenta de Microsoft",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Ha habido algún error problema con la autenticación, o bien los tokens se han eliminado del sistema. Pruebe a volver a agregar la cuenta de Azure Data Studio.",

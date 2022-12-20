@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "Erreur pendant l'ajout de votre compte au cache.",
 			"azure.cacheErrorGet": "Erreur pendant l'obtention de votre compte à partir du cache",
 			"azure.cacheErrorParse": "Erreur pendant l'analyse de votre compte à partir du cache",
-			"azure.cacheErrrorRemove": "Erreur pendant la suppression de votre compte du cache.",
 			"azure.microsoftAccountDisplayName": "Compte Microsoft",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Une erreur s'est produite pendant l'authentification ou vos jetons ont été supprimés du système. Essayez de rajouter votre compte à Azure Data Studio.",

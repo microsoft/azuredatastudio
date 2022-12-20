@@ -70,7 +70,7 @@
 			"currentTargetPlatform": "Die Zielplattform des Projekts \"{0}\" ist jetzt \"{1}\"",
 			"dacpacFileLocationRequired": "Der Speicherort der DACPAC-Datei ist zum Hinzufügen eines Verweises zu einer Datenbank erforderlich",
 			"dacpacFiles": "DACPAC-Dateien",
-			"dacpacNotOnSameDrive": "Dacpac-Verweise müssen sich auf demselben Laufwerk wie die Projektdatei befinden. Die Projektdatei befindet sich unter {0}",
+			"dacpacNotOnSameDrive": "Dacpac references need to be located on the same drive as the project file.",
 			"dacpacReferenceElement": "Dacpac-Referenz",
 			"dacpacText": "Datenebenenanwendung (.dacpac)",
 			"dataSource": "Datenquelle",

@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "Ошибка при добавлении учетной записи в кэш.",
 			"azure.cacheErrorGet": "Ошибка при получении учетной записи из кэша.",
 			"azure.cacheErrorParse": "Ошибка при анализе учетной записи из кэша.",
-			"azure.cacheErrrorRemove": "Ошибка при удалении учетной записи из кэша.",
 			"azure.microsoftAccountDisplayName": "Учетная запись Майкрософт",
 			"azure.microsoftCorpAccount": "Корпорация Майкрософт",
 			"azure.noBaseToken": "Произошла ошибка при проверке подлинности, или ваши токены были удалены из системы. Попробуйте добавить учетную запись в Azure Data Studio еще раз.",

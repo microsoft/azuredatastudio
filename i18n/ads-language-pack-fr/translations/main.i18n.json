@@ -13720,8 +13720,9 @@
 			"filewallRule": "Règle de pare-feu",
 			"firewall.cancel": "Annuler",
 			"firewall.ok": "OK",
-			"firewallRuleDialogDescription": "L'adresse IP de votre client n'a pas accès au serveur. Connectez-vous à un compte Azure et créez une règle de pare-feu pour autoriser l'accès.",
-			"firewallRuleHelpDescription": "En savoir plus sur les paramètres de pare-feu",
+			"firewall.ruleName": "Rule name",
+			"firewallRuleDescription": "A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.",
+			"firewallRuleHelpLink": "Learn more about firewall rules",
 			"from": "De",
 			"to": "À"
 		},

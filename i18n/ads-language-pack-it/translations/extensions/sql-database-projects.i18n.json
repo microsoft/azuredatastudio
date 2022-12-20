@@ -70,7 +70,7 @@
 			"currentTargetPlatform": "La piattaforma di destinazione del progetto {0} è ora {1}",
 			"dacpacFileLocationRequired": "Il percorso del file Dacpac è necessario per aggiungere un riferimento a un database",
 			"dacpacFiles": "File dacpac",
-			"dacpacNotOnSameDrive": "I riferimenti dacpac devono trovarsi nella stessa unità del file di progetto. Il file di progetto si trova in {0}",
+			"dacpacNotOnSameDrive": "Dacpac references need to be located on the same drive as the project file.",
 			"dacpacReferenceElement": "Dizionari ed enciclopedie Dacpac",
 			"dacpacText": "Applicazione livello dati (.dacpac)",
 			"dataSource": "Origine dati",

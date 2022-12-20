@@ -70,7 +70,7 @@
 			"currentTargetPlatform": "이제 프로젝트 {0}의 대상 플랫폼이 {1}입니다.",
 			"dacpacFileLocationRequired": "데이터베이스에 대한 참조를 추가하려면 Dacpac 파일 위치가 필요합니다.",
 			"dacpacFiles": "DACPAC 파일",
-			"dacpacNotOnSameDrive": "Dacpac 참조는 프로젝트 파일과 동일한 드라이브에 있어야 합니다. 프로젝트 파일이 {0}에 있습니다.",
+			"dacpacNotOnSameDrive": "Dacpac references need to be located on the same drive as the project file.",
 			"dacpacReferenceElement": "Dacpac 참조",
 			"dacpacText": "데이터 계층 애플리케이션(.dacpac)",
 			"dataSource": "데이터 원본",

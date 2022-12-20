@@ -70,7 +70,7 @@
 			"currentTargetPlatform": "Текущая целевая платформа проекта {0}: {1}",
 			"dacpacFileLocationRequired": "Для добавления ссылки на базу данных требуется расположение файла DACPAC",
 			"dacpacFiles": "Файлы DACPAC",
-			"dacpacNotOnSameDrive": "Ссылки DACPAC должны располагаться на том же диске, что и файл проекта. Файл проекта расположен в {0}",
+			"dacpacNotOnSameDrive": "Ссылки DACPAC должны располагаться на том же диске, что и файл проекта.",
 			"dacpacReferenceElement": "Ссылка на DACPAC",
 			"dacpacText": "Приложение уровня данных (.dacpac)",
 			"dataSource": "Источник данных",
