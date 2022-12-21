@@ -10,7 +10,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
 import { isWindows } from 'vs/base/common/platform';
 import { containsEncodedUriComponentReservedCharacters } from 'sql/base/common/network';
-import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 
 const useAbsolutePathConfigName = 'notebook.useAbsoluteFilePaths';
 export class NotebookLinkHandler {
@@ -55,13 +54,8 @@ export class NotebookLinkHandler {
 			this._isFile = this._link.protocol === `${Schemas.file}:` || this._link.protocol === `${Schemas.vscodeFileResource}:`;
 			// When editing on richtext, for local files paths use pathname to get the filepath of the link
 			// since the nodeValue results are ambiguous depending on OS ex: '/PathToParentFolder/ ./fiename.ipynb'.
-			if (this._isFile) {
-				// check if nodevalue is valid
-				if (notebookUtils.isFilepathValid(this._link.attributes['href']?.nodeValue)) {
-					this._href = this._link.attributes['href']?.nodeValue;
-				} else {
-					this._href = this._link.pathname;
-				}
+			if (this._isFile && this.isMarkdown) {
+				this._href = this._link.pathname;
 			} else if (isWindows) {
 				// Given an anchor element for windows href link will need to use nodeValue instead as that does not encode the url
 				this._href = this.isMarkdown || this.isEncoded ? this._link.href?.replace(/%5C/g, '\\') : this._link.attributes['href']?.nodeValue;

@@ -7,7 +7,6 @@ import * as path from 'vs/base/common/path';
 import { nb } from 'azdata';
 import { DEFAULT_NOTEBOOK_PROVIDER, INotebookService, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { DEFAULT_NOTEBOOK_FILETYPE, NotebookLanguage } from 'sql/workbench/common/constants';
-import * as fs from 'fs';
 
 /**
  * Test whether an output is from a stream.
@@ -72,20 +71,4 @@ export async function asyncForEach(array: any[], callback: Function): Promise<an
 			await callback(array[index], index, array);
 		}
 	}
-}
-
-/**
- * Check if a given file path is valid
- * @param href the filepath as string
- * @returns true if a file path is valid
- */
-export function isFilepathValid(href: string): boolean {
-	fs.stat(href, (error, stats) => {
-		if (error || !stats.isFile()) {
-			return false;
-		} else {
-			return true;
-		}
-	});
-	return true;
 }
