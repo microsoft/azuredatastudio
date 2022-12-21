@@ -6,21 +6,21 @@
 import { ExtensionContext } from 'vscode';
 
 import { azureResource } from 'azurecore';
-import { AzureResourceDatabaseTreeDataProvider } from './databaseTreeDataProvider';
+import { AzureResourceSynapseWorkspaceTreeDataProvider } from './synapseWorkspaceTreeDataProvider';
 import { IAzureResourceService } from '../../interfaces';
 
-export class AzureResourceDatabaseProvider implements azureResource.IAzureResourceProvider {
+export class AzureResourceSynapseWorkspaceProvider implements azureResource.IAzureResourceProvider {
 	public constructor(
-		private _databaseService: IAzureResourceService<azureResource.AzureResourceDatabase>,
+		private _synapseWorkspaceService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
 		private _extensionContext: ExtensionContext
 	) {
 	}
 
 	public getTreeDataProvider(): azureResource.IAzureResourceTreeDataProvider {
-		return new AzureResourceDatabaseTreeDataProvider(this._databaseService, this._extensionContext);
+		return new AzureResourceSynapseWorkspaceTreeDataProvider(this._synapseWorkspaceService, this._extensionContext);
 	}
 
 	public get providerId(): string {
-		return 'azure.resource.providers.database';
+		return 'azure.resource.providers.synapseWorkspace';
 	}
 }
