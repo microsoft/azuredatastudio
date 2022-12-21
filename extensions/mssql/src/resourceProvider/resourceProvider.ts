@@ -17,7 +17,8 @@ class FireWallFeature extends SqlOpsFeature<any> {
 
 	private static readonly messagesTypes: RPCMessageType[] = [
 		CreateFirewallRuleRequest.type,
-		HandleFirewallRuleRequest.type
+		HandleFirewallRuleRequest.type,
+		HandleOtherErrorRequest.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
