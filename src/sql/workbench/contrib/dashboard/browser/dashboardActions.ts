@@ -105,14 +105,12 @@ export class OEManageConnectionAction extends Action {
 			}
 		}
 		else if (!actionContext) {
-
 			const globalProfile = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService);
 			connectionProfile = globalProfile ? ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, globalProfile) : undefined;
 		}
 
 		if (!connectionProfile) {
-			// This should never happen. There should be always a valid connection if the manage action is called for
-			// an OE node or a database node
+			// No valid connection (e.g. This was triggered without an active context to get the connection from) so just return early
 			return true;
 		}
 
