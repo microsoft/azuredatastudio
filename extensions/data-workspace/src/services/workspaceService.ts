@@ -41,7 +41,6 @@ export class WorkspaceService implements IWorkspaceService {
 				return true;
 			}
 		}
-
 		Logger.log(`No project providers found. Total time = ${new Date().getTime() - startTime}ms`);
 		return false;
 	}
@@ -285,13 +284,11 @@ export class WorkspaceService implements IWorkspaceService {
 				}
 
 				if (projFilesInWorkspace?.length > 0) {
+					// only try to activate the extension if the workspace has a project with that extension
 					await extension.activate();
 				} else {
 					return;
 				}
-				// don't try to activate the extension
-				// only try to activate the extension if the workspace has a project with that extension
-				// await extension.activate();
 			}
 		} catch (err) {
 			Logger.error(constants.ExtensionActivationError(extension.id, err));

@@ -11,7 +11,6 @@ import { SqlDatabaseProjectProvider } from './projectProvider/projectProvider';
 let controllers: MainController[] = [];
 
 export function activate(context: vscode.ExtensionContext): Promise<SqlDatabaseProjectProvider> {
-	console.error('activating sql database projects');
 	void vscode.commands.executeCommand('setContext', 'azdataAvailable', !!getAzdataApi());
 	// Start the main controller
 	const mainController = new MainController(context);
