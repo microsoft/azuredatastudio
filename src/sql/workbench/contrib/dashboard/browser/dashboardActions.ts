@@ -92,7 +92,7 @@ export class OEManageConnectionAction extends Action {
 
 	private async doManage(actionContext: ObjectExplorerActionsContext): Promise<boolean> {
 		let treeNode: TreeNode = undefined;
-		let connectionProfile: ConnectionProfile = undefined;
+		let connectionProfile: ConnectionProfile | undefined;
 
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			// Must use a real connection profile for this action due to lookup
