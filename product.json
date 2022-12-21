@@ -30,7 +30,7 @@
 	"privacyStatementUrl": "https://privacy.microsoft.com/privacystatement",
 	"telemetryOptOutUrl": "https://github.com/Microsoft/azuredatastudio/wiki/How-to-Disable-Telemetry-Reporting",
 	"urlProtocol": "azuredatastudio-oss",
-	"enableTelemetry": false,
+	"enableTelemetry": true,
 	"webviewContentExternalBaseUrlTemplate": "https://{{uuid}}.vscode-webview.net/insider/69df0500a8963fc469161c038a14a39384d5a303/out/vs/workbench/contrib/webview/browser/pre/",
 	"npsSurveyUrl": "https://aka.ms/azuredatastudio-nps",
 	"aiConfig": {
