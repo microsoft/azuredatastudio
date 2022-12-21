@@ -13,8 +13,8 @@
   "icon": "images/sqlDatabaseProjects.png",
   "aiKey": "29a207bb14f84905966a8f22524cb730-25407f35-11b6-4d4e-8114-ab9e843cb52f-7380",
   "activationEvents": [
-    "onCommand:sqlDatabaseProjects.new",
-    "onCommand:sqlDatabaseProjects.open",
+    "onCommand:projects.new",
+    "onCommand:projects.open",
     "onCommand:sqlDatabaseProjects.createProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.updateProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.generateProjectFromOpenApiSpec",

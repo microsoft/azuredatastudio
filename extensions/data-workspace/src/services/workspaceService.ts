@@ -278,7 +278,20 @@ export class WorkspaceService implements IWorkspaceService {
 	private async handleProjectProviderExtension(extension: vscode.Extension<any>): Promise<void> {
 		try {
 			if (!extension.isActive) {
-				await extension.activate();
+				const projectTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.projects as string[];
+				let projFilesInWorkspace: vscode.Uri[] = [];
+				for (const projType of projectTypes) {
+					(await vscode.workspace.findFiles(`**/*.${projType}`)).forEach(f => projFilesInWorkspace.push(f));
+				}
+
+				if (projFilesInWorkspace?.length > 0) {
+					await extension.activate();
+				} else {
+					return;
+				}
+				// don't try to activate the extension
+				// only try to activate the extension if the workspace has a project with that extension
+				// await extension.activate();
 			}
 		} catch (err) {
 			Logger.error(constants.ExtensionActivationError(extension.id, err));

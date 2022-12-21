@@ -35,6 +35,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(async () => {
 		await workspaceTreeDataProvider.refresh();
 	}));
+
 	Logger.log(`WorkspaceTreeDataProvider constructor took ${new Date().getTime() - workspaceTreeDataProviderStartTime}ms`);
 
 	const dataWorkspaceExtensionStartTime = new Date().getTime();

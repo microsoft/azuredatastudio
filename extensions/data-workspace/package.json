@@ -158,8 +158,7 @@
           "id": "dataworkspace.views.main",
           "name": "%main-view-name%",
           "contextualTitle": "%data-workspace-view-container-name%",
-          "icon": "images/data-workspace.svg",
-          "when": "isProjectProviderAvailable"
+          "icon": "images/data-workspace.svg"
         }
       ]
     },
