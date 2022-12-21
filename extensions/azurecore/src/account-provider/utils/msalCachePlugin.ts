@@ -5,6 +5,7 @@
 
 import { ICachePlugin, TokenCacheContext } from '@azure/msal-node';
 import { constants, promises as fsPromises } from 'fs';
+import * as lockFile from 'lockfile';
 import * as path from 'path';
 import { Logger } from '../../utils/Logger';
 
@@ -18,28 +19,45 @@ export class MsalCachePluginProvider {
 		Logger.verbose(`MsalCachePluginProvider: Using cache path ${_msalFilePath} and serviceName ${_serviceName}`);
 	}
 
+	private getLockfilePath(): string {
+		return this._msalFilePath + '.lock';
+	}
+
 	public getCachePlugin(): ICachePlugin {
+		const lockFilePath = this.getLockfilePath();
 		const beforeCacheAccess = async (cacheContext: TokenCacheContext): Promise<void> => {
-			let exists = true;
+			let isAccessible = true;
+			await this.WaitAndLock(lockFilePath);
 			try {
-				await fsPromises.access(this._msalFilePath, constants.R_OK | constants.W_OK);
-			} catch {
-				exists = false;
-			}
-			if (exists) {
 				try {
+					await fsPromises.access(this._msalFilePath, constants.R_OK | constants.W_OK);
+				} catch {
+					Logger.error(`MsalCachePlugin: Cache file is not accessible.`);
+					isAccessible = false;
+				}
+				if (isAccessible) {
 					const cache = await fsPromises.readFile(this._msalFilePath, { encoding: 'utf8' });
 					cacheContext.tokenCache.deserialize(cache);
 					Logger.verbose(`MsalCachePlugin: Token read from cache successfully.`);
-				} catch (e) {
-					Logger.error(`MsalCachePlugin: Failed to read from cache file. ${e}`);
+				}
+			} catch (e) {
+				Logger.error(`MsalCachePlugin: Failed to read from cache file: ${e}`);
+				// Handle JSON syntax error in cache file in case anything goes wrong.
+				if (e.stack.includes('SyntaxError')) {
+					// Clearing cache here will ensure account is marked stale so re-authentication can be triggered.
+					Logger.verbose(`MsalCachePlugin: Cache file contents will be cleeared.`);
+					await fsPromises.writeFile(this._msalFilePath, '', { encoding: 'utf8' });
+				} else {
 					throw e;
 				}
+			} finally {
+				lockFile.unlockSync(lockFilePath);
 			}
-		};
+		}
 
 		const afterCacheAccess = async (cacheContext: TokenCacheContext): Promise<void> => {
 			if (cacheContext.cacheHasChanged) {
+				await this.WaitAndLock(lockFilePath);
 				try {
 					const data = cacheContext.tokenCache.serialize();
 					await fsPromises.writeFile(this._msalFilePath, data, { encoding: 'utf8' });
@@ -47,6 +65,8 @@ export class MsalCachePluginProvider {
 				} catch (e) {
 					Logger.error(`MsalCachePlugin: Failed to write to cache file. ${e}`);
 					throw e;
+				} finally {
+					lockFile.unlockSync(lockFilePath);
 				}
 			}
 		};
@@ -60,5 +80,29 @@ export class MsalCachePluginProvider {
 			beforeCacheAccess,
 			afterCacheAccess,
 		};
+	}
+
+	async WaitAndLock(lockFilePath: string) {
+		// Make 500 retry attempts with 100ms wait time between each attempt to allow enough time for the lock to be released.
+		const retries = 500;
+		const retryWait = 100;
+
+		let retryAttempt = -1;
+		while (retryAttempt < retries) {
+			try {
+				// Use lockfile.lockSync() to ensure only one process is accessing the cache at a time.
+				// lockfile.lock() does not wait for async callback promise to resolve.
+				lockFile.lockSync(lockFilePath);
+				break;
+			} catch (e) {
+				if (retryAttempt === retries) {
+					Logger.error(`MsalCachePlugin: Failed to acquire lock on cache file after ${retries} attempts.`);
+					throw e;
+				}
+				retryAttempt++;
+				Logger.verbose(`MsalCachePlugin: Failed to acquire lock on cache file. Retrying in ${retryWait} ms.`);
+				await new Promise(resolve => setTimeout(resolve, retryWait));
+			}
+		}
 	}
 }
