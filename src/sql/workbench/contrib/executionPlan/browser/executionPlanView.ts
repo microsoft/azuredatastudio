@@ -441,12 +441,11 @@ export class SavePlanFile extends Action {
 	public override async run(context: ExecutionPlanView): Promise<void> {
 		const workspaceFolders = await context.workspaceContextService.getWorkspace().folders;
 		const defaultFileName = 'plan';
-		let currentWorkSpaceFolder: URI;
+		let defaultSaveUri: URI;
 		if (workspaceFolders.length !== 0) {
-			currentWorkSpaceFolder = workspaceFolders[0].uri;
-			currentWorkSpaceFolder = URI.joinPath(currentWorkSpaceFolder, defaultFileName); //appending default file name to workspace uri
+			defaultSaveUri = URI.joinPath(workspaceFolders[0].uri, defaultFileName); //appending default file name to workspace uri
 		} else {
-			currentWorkSpaceFolder = URI.file(path.join(os.homedir(), defaultFileName)); // giving default name
+			defaultSaveUri = URI.file(path.join(os.homedir(), defaultFileName)); // giving default name
 		}
 		const saveFileUri = await context.fileDialogService.showSaveDialog({
 			filters: [
@@ -455,7 +454,7 @@ export class SavePlanFile extends Action {
 					name: localize('executionPlan.SaveFileDescription', 'Execution Plan Files') //TODO: Get the names from providers.
 				}
 			],
-			defaultUri: currentWorkSpaceFolder // If no workspaces are opened this will be undefined
+			defaultUri: defaultSaveUri
 		});
 		if (saveFileUri) {
 			await context.fileService.writeFile(saveFileUri, VSBuffer.fromString(context.model.graphFile.graphFileContent));
