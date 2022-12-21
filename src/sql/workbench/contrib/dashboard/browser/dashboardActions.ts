@@ -104,7 +104,7 @@ export class OEManageConnectionAction extends Action {
 				}
 			}
 		}
-		else if (actionContext === undefined || actionContext === null) {
+		else if (!actionContext) {
 			connectionProfile = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService) as ConnectionProfile;
 		}
 
