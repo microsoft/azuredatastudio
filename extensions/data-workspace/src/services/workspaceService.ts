@@ -41,6 +41,7 @@ export class WorkspaceService implements IWorkspaceService {
 				return true;
 			}
 		}
+
 		Logger.log(`No project providers found. Total time = ${new Date().getTime() - startTime}ms`);
 		return false;
 	}
