@@ -5,6 +5,8 @@
 
 import * as azdata from 'azdata';
 import * as DOM from 'vs/base/browser/dom';
+import * as os from 'os';
+import * as path from 'path';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import { ExecutionPlanPropertiesView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
@@ -444,7 +446,7 @@ export class SavePlanFile extends Action {
 			currentWorkSpaceFolder = workspaceFolders[0].uri;
 			currentWorkSpaceFolder = URI.joinPath(currentWorkSpaceFolder, defaultFileName); //appending default file name to workspace uri
 		} else {
-			currentWorkSpaceFolder = URI.parse(defaultFileName); // giving default name
+			currentWorkSpaceFolder = URI.file(path.join(os.homedir(), defaultFileName)); // giving default name
 		}
 		const saveFileUri = await context.fileDialogService.showSaveDialog({
 			filters: [
