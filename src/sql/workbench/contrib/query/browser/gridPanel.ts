@@ -746,7 +746,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}
 	}
 
-	private async onTableKeyDown(event: ITableKeyboardEvent) {
+	private onTableKeyDown(event: ITableKeyboardEvent): void {
 		this.table.setActiveCell(event.cell.row, event.cell.cell);
 	}
 
