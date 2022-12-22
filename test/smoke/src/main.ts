@@ -66,24 +66,6 @@ const opts = minimist(args, {
 	}
 });
 
-// {{ SQL CARBON EDIT }} START - get rootPath and define logsRootPath
-const rootPath = path.join(__dirname, '..', '..', '..');
-const logsRootPath = (() => {
-	const logsParentPath = path.join(rootPath, '.build', 'logs');
-
-	let logsName: string;
-	if (opts.web) {
-		logsName = 'smoke-tests-browser';
-	} else if (opts.remote) {
-		logsName = 'smoke-tests-remote';
-	} else {
-		logsName = 'smoke-tests-electron';
-	}
-
-	return path.join(logsParentPath, logsName);
-})();
-// {{ SQL CARBON EDIT }} END
-
 const testRepoUrl = 'https://github.com/Microsoft/azuredatastudio-smoke-test-repo.git';
 const workspacePath = path.join(testDataPath, 'azuredatastudio-smoke-test-repo');
 // {{SQL CARBON EDIT}} Let callers control extensions dir for non-packaged extensions
@@ -322,12 +304,12 @@ function createOptions(): ApplicationOptions {
 		loggers.push(new ConsoleLogger());
 	}
 
-	// Prepare logs root path
-	fs.rmSync(logsRootPath, { recursive: true, force: true, maxRetries: 3 });
-	mkdirp.sync(logsRootPath);
+	let log: string | undefined = undefined;
 
-	// Always log to log file
-	loggers.push(new FileLogger(path.join(logsRootPath, 'smoke-test-runner.log')));
+	if (opts.log) {
+		loggers.push(new FileLogger(opts.log));
+		log = 'trace';
+	}
 
 	return {
 		quality,
@@ -337,12 +319,11 @@ function createOptions(): ApplicationOptions {
 		extensionsPath,
 		waitTime: parseInt(opts['wait-time'] || '0') || 20,
 		logger: new MultiLogger(loggers),
-		logsPath: path.join(logsRootPath, 'suite_unknown'),
-		screenshotsPath,
 		verbose: opts.verbose,
+		log,
+		screenshotsPath,
 		remote: opts.remote,
 		web: opts.web,
-		tracing: opts.tracing,
 		headless: opts.headless,
 		browser: opts.browser,
 		extraArgs: (opts.electronArgs || '').split(' ').map(a => a.trim()).filter(a => !!a)
