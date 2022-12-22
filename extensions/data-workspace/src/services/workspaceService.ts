@@ -278,7 +278,10 @@ export class WorkspaceService implements IWorkspaceService {
 	private async handleProjectProviderExtension(extension: vscode.Extension<any>): Promise<void> {
 		try {
 			if (!extension.isActive) {
-				const projectTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.projects as string[];
+				const projectTypes = extension.packageJSON.contributes?.projects as string[] | undefined;
+				if (!projectTypes) {
+					return;
+				}
 				let projFilesInWorkspace: vscode.Uri[] = [];
 				for (const projType of projectTypes) {
 					(await vscode.workspace.findFiles(`**/*.${projType}`)).forEach(f => projFilesInWorkspace.push(f));
