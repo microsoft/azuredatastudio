@@ -22,8 +22,7 @@ export const synapseSqlPoolsQuery = `where type == "${azureResource.AzureResourc
 
 /**
  * Lists all Sql Servers excluding Synapse Pool Servers
- * (they have different properties and need to be handled separately,
- * see databaseServerService.ts for more details)
+ * (they have different properties and need to be handled separately)
  */
 export const sqlServerQuery = `where type == "${azureResource.AzureResourceType.sqlServer}" and kind != "v12.0,analytics"`;
 

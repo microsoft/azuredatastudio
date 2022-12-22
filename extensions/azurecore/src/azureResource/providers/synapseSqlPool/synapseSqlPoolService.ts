@@ -54,7 +54,6 @@ export class AzureResourceSynapseService implements IAzureResourceService<azureR
 						name: db.name,
 						id: db.id,
 						serverName: server.name,
-						// Determine if server object is for Synapse Workspace or not and get the needed property from the correct place.
 						serverFullName: server.properties.connectivityEndpoints?.sql,
 						loginName: server.properties.sqlAdministratorLogin,
 						subscription: {

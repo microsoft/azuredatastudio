@@ -8,6 +8,7 @@ import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { GraphData, queryGraphResources } from '../resourceTreeDataProviderBase';
 import { azureResource, AzureAccount } from 'azurecore';
 import { IAzureResourceService } from '../../interfaces';
+import { synapseWorkspacesQuery } from '../queryStringConstants';
 
 /**
  * Properties returned by the Synapse query are different from the server ones and have to be treated differently.
@@ -33,7 +34,7 @@ export interface SynapseWorkspaceGraphData extends GraphData {
 export class AzureResourceSynapseWorkspaceService implements IAzureResourceService<azureResource.AzureResourceDatabaseServer> {
 
 	protected get query(): string {
-		return `where type == "${azureResource.AzureResourceType.sqlSynapseWorkspace}"`;
+		return synapseWorkspacesQuery;
 	}
 
 	public async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: ServiceClientCredentials, account: AzureAccount): Promise<azureResource.AzureResourceDatabaseServer[]> {
