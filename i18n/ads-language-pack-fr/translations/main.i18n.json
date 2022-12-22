@@ -13720,9 +13720,9 @@
 			"filewallRule": "Règle de pare-feu",
 			"firewall.cancel": "Annuler",
 			"firewall.ok": "OK",
-			"firewall.ruleName": "Rule name",
+			"firewall.ruleName": "Nom de la règle",
 			"firewallRuleDescription": "A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.",
-			"firewallRuleHelpLink": "Learn more about firewall rules",
+			"firewallRuleHelpLink": "En savoir plus sur les règles de pare-feu",
 			"from": "De",
 			"to": "À"
 		},

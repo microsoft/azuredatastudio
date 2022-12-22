@@ -8762,15 +8762,15 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
       </trans-unit>
       <trans-unit id="firewall.ruleName">
         <source xml:lang="en">Rule name</source>
-        <target state="new">Rule name</target>
+        <target state="translated">Nome regola</target>
       </trans-unit>
       <trans-unit id="firewallRuleDescription">
         <source xml:lang="en">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</source>
-        <target state="new">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</target>
+        <target state="translated">Per accedere all'istanza di SQL Server è necessaria una regola del firewall. Fare clic sul collegamento seguente per creare una nuova regola del firewall.</target>
       </trans-unit>
       <trans-unit id="firewallRuleHelpLink">
         <source xml:lang="en">Learn more about firewall rules</source>
-        <target state="new">Learn more about firewall rules</target>
+        <target state="translated">Altre informazioni sulle regole del firewall</target>
       </trans-unit>
       <trans-unit id="from">
         <source xml:lang="en">From</source>

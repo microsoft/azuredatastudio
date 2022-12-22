@@ -70,7 +70,7 @@
 			"currentTargetPlatform": "La plateforme cible du projet {0} est désormais {1}",
 			"dacpacFileLocationRequired": "L’emplacement du fichier dacpac est requis pour l’ajout d’une référence à une base de données",
 			"dacpacFiles": "Fichiers dacpac",
-			"dacpacNotOnSameDrive": "Dacpac references need to be located on the same drive as the project file.",
+			"dacpacNotOnSameDrive": "Les références DACPAC doivent se trouver sur le même lecteur que le fichier projet.",
 			"dacpacReferenceElement": "Référence Dacpac",
 			"dacpacText": "Application de la couche Données (.dacpac)",
 			"dataSource": "Source de données",

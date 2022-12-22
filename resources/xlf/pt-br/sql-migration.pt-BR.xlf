@@ -32,7 +32,7 @@
       </trans-unit>
       <trans-unit id="sql.login.migration.db.title">
         <source xml:lang="en">Azure SQL Database</source>
-        <target state="new">Azure SQL Database</target>
+        <target state="translated">Banco de Dados SQL do Azure</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.establish.user.mappings">
         <source xml:lang="en">Validating and migrating logins completed.
@@ -72,7 +72,7 @@ Establishing user mappings.</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.mi.title">
         <source xml:lang="en">Azure SQL Managed Instance</source>
-        <target state="new">Azure SQL Managed Instance</target>
+        <target state="translated">Instância Gerenciada de SQL do Azure</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.migrate.server.roles.and.set.permissions">
         <source xml:lang="en">Establishing user mappings completed.
@@ -88,7 +88,7 @@ Currently, migrating server roles, establishing server mappings and setting perm
       </trans-unit>
       <trans-unit id="sql.login.migration.migration.status.column">
         <source xml:lang="en">Migration Status</source>
-        <target state="new">Migration Status</target>
+        <target state="translated">Status de Migração</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.refresh.login.data.successful">
         <source xml:lang="en">Refreshing login list was successful. Source logins found {0}, Target logins found {1}</source>
@@ -116,15 +116,15 @@ Currently, migrating server roles, establishing server mappings and setting perm
       </trans-unit>
       <trans-unit id="sql.login.migration.status.column">
         <source xml:lang="en">Status</source>
-        <target state="new">Status</target>
+        <target state="translated">Status</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.failed">
         <source xml:lang="en">Failed</source>
-        <target state="new">Failed</target>
+        <target state="translated">Com falha</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.in.progress">
         <source xml:lang="en">In progress</source>
-        <target state="new">In progress</target>
+        <target state="translated">Em andamento</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.page.description">
         <source xml:lang="en">Migrating {0} logins to target {1} '{2}'</source>
@@ -148,11 +148,11 @@ Currently, migrating server roles, establishing server mappings and setting perm
       </trans-unit>
       <trans-unit id="sql.login.migration.status.page.title">
         <source xml:lang="en">Migration Status</source>
-        <target state="new">Migration Status</target>
+        <target state="translated">Status de Migração</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.succeeded">
         <source xml:lang="en">Succeeded</source>
-        <target state="new">Succeeded</target>
+        <target state="translated">Com êxito</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.target.status.column">
         <source xml:lang="en">Target Status</source>
@@ -160,15 +160,15 @@ Currently, migrating server roles, establishing server mappings and setting perm
       </trans-unit>
       <trans-unit id="sql.login.migration.target.title">
         <source xml:lang="en">Azure SQL target</source>
-        <target state="new">Azure SQL target</target>
+        <target state="translated">SQL do Azure de destino</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.type">
         <source xml:lang="en">Login type</source>
-        <target state="new">Login type</target>
+        <target state="translated">Tipo de logon</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.vm.title">
         <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
-        <target state="new">SQL Server on Azure Virtual Machine</target>
+        <target state="translated">SQL Server na Máquina Virtual do Azure</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.wizard.target.connection.success">
         <source xml:lang="en">Connection was successful.</source>
@@ -824,7 +824,7 @@ Isto pode levar algum tempo.</target>
       </trans-unit>
       <trans-unit id="sql.migration.default.database">
         <source xml:lang="en">Default database</source>
-        <target state="new">Default database</target>
+        <target state="translated">Banco de dados padrão</target>
       </trans-unit>
       <trans-unit id="sql.migration.description">
         <source xml:lang="en">Description</source>
@@ -2400,7 +2400,7 @@ Isto pode levar algum tempo.</target>
       </trans-unit>
       <trans-unit id="sql.migration.start.login.migration.button">
         <source xml:lang="en">Migrate</source>
-        <target state="new">Migrate</target>
+        <target state="translated">Migrar</target>
       </trans-unit>
       <trans-unit id="sql.migration.start.migration.button">
         <source xml:lang="en">Start migration</source>

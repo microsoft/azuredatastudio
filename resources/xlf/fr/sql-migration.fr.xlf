@@ -32,7 +32,7 @@
       </trans-unit>
       <trans-unit id="sql.login.migration.db.title">
         <source xml:lang="en">Azure SQL Database</source>
-        <target state="new">Azure SQL Database</target>
+        <target state="translated">Azure SQL Database</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.establish.user.mappings">
         <source xml:lang="en">Validating and migrating logins completed.
@@ -72,7 +72,7 @@ Establishing user mappings.</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.mi.title">
         <source xml:lang="en">Azure SQL Managed Instance</source>
-        <target state="new">Azure SQL Managed Instance</target>
+        <target state="translated">Azure SQL Managed Instance</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.migrate.server.roles.and.set.permissions">
         <source xml:lang="en">Establishing user mappings completed.
@@ -88,7 +88,7 @@ Currently, migrating server roles, establishing server mappings and setting perm
       </trans-unit>
       <trans-unit id="sql.login.migration.migration.status.column">
         <source xml:lang="en">Migration Status</source>
-        <target state="new">Migration Status</target>
+        <target state="translated">État de la migration</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.refresh.login.data.successful">
         <source xml:lang="en">Refreshing login list was successful. Source logins found {0}, Target logins found {1}</source>
@@ -116,15 +116,15 @@ Currently, migrating server roles, establishing server mappings and setting perm
       </trans-unit>
       <trans-unit id="sql.login.migration.status.column">
         <source xml:lang="en">Status</source>
-        <target state="new">Status</target>
+        <target state="translated">État</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.failed">
         <source xml:lang="en">Failed</source>
-        <target state="new">Failed</target>
+        <target state="translated">Échec</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.in.progress">
         <source xml:lang="en">In progress</source>
-        <target state="new">In progress</target>
+        <target state="translated">En cours</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.page.description">
         <source xml:lang="en">Migrating {0} logins to target {1} '{2}'</source>
@@ -148,11 +148,11 @@ Currently, migrating server roles, establishing server mappings and setting perm
       </trans-unit>
       <trans-unit id="sql.login.migration.status.page.title">
         <source xml:lang="en">Migration Status</source>
-        <target state="new">Migration Status</target>
+        <target state="translated">État de la migration</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.succeeded">
         <source xml:lang="en">Succeeded</source>
-        <target state="new">Succeeded</target>
+        <target state="translated">Réussite</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.target.status.column">
         <source xml:lang="en">Target Status</source>
@@ -160,15 +160,15 @@ Currently, migrating server roles, establishing server mappings and setting perm
       </trans-unit>
       <trans-unit id="sql.login.migration.target.title">
         <source xml:lang="en">Azure SQL target</source>
-        <target state="new">Azure SQL target</target>
+        <target state="translated">Cible Azure SQL</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.type">
         <source xml:lang="en">Login type</source>
-        <target state="new">Login type</target>
+        <target state="translated">Type de connexion</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.vm.title">
         <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
-        <target state="new">SQL Server on Azure Virtual Machine</target>
+        <target state="translated">SQL Server dans une machine virtuelle Azure</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.wizard.target.connection.success">
         <source xml:lang="en">Connection was successful.</source>
@@ -824,7 +824,7 @@ Cela peut prendre un certain temps.</target>
       </trans-unit>
       <trans-unit id="sql.migration.default.database">
         <source xml:lang="en">Default database</source>
-        <target state="new">Default database</target>
+        <target state="translated">Base de données par défaut</target>
       </trans-unit>
       <trans-unit id="sql.migration.description">
         <source xml:lang="en">Description</source>
@@ -1788,7 +1788,7 @@ Cela peut prendre un certain temps.</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.selection.location.msg">
         <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
-        <target state="new">Please select the location of your database backup files before continuing.</target>
+        <target state="translated">Veuillez sélectionner l’emplacement de vos fichiers de sauvegarde de base de données avant de continuer.</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.status.refresh.error">
         <source xml:lang="en">An error occurred while refreshing the migration service creation status.</source>
@@ -2400,7 +2400,7 @@ Cela peut prendre un certain temps.</target>
       </trans-unit>
       <trans-unit id="sql.migration.start.login.migration.button">
         <source xml:lang="en">Migrate</source>
-        <target state="new">Migrate</target>
+        <target state="translated">Migrer</target>
       </trans-unit>
       <trans-unit id="sql.migration.start.migration.button">
         <source xml:lang="en">Start migration</source>
@@ -2740,15 +2740,15 @@ Cela peut prendre un certain temps.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.column.validation.steps">
         <source xml:lang="en">Validation steps</source>
-        <target state="new">Validation steps</target>
+        <target state="translated">Étapes de validation</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.completed.errors">
         <source xml:lang="en">Validation completed with the following error(s):{0}{1}</source>
-        <target state="new">Validation completed with the following error(s):{0}{1}</target>
+        <target state="translated">La validation s’est terminée avec les erreurs suivantes :{0}{1}</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.copy.results">
         <source xml:lang="en">Copy validation results</source>
-        <target state="new">Copy validation results</target>
+        <target state="translated">Copie des résultats de la validation</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.done.button">
         <source xml:lang="en">Done</source>
@@ -2756,15 +2756,15 @@ Cela peut prendre un certain temps.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.heading">
         <source xml:lang="en">We are validating the following:</source>
-        <target state="new">We are validating the following:</target>
+        <target state="translated">Nous validons les éléments suivants :</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.results.heading">
         <source xml:lang="en">Validation step details</source>
-        <target state="new">Validation step details</target>
+        <target state="translated">Détails de l’étape de validation</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.sqldb.validation.result.error">
         <source xml:lang="en">Validation check error{0}Source database: {1}{0}Target database: {2}{0}Error: {3} - {4}</source>
-        <target state="new">Validation check error{0}Source database: {1}{0}Target database: {2}{0}Error: {3} - {4}</target>
+        <target state="translated">Erreur de vérification de validation{0}Base de données source : {1}{0}Base de données cible : {2}{0}Erreur : {3} – {4}</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.start.validation">
         <source xml:lang="en">Start validation</source>
@@ -2772,7 +2772,7 @@ Cela peut prendre un certain temps.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.status">
         <source xml:lang="en">Validation status: {0}</source>
-        <target state="new">Validation status: {0}</target>
+        <target state="translated">Statut de validation : {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.status.error">
         <source xml:lang="en">{0}{1}{2}</source>
@@ -2780,23 +2780,23 @@ Cela peut prendre un certain temps.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.status.error.count.many">
         <source xml:lang="en">{0} - {1} errors</source>
-        <target state="new">{0} - {1} errors</target>
+        <target state="translated">{0} – {1} erreurs</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.status.error.count.one">
         <source xml:lang="en">{0} - 1 error</source>
-        <target state="new">{0} - 1 error</target>
+        <target state="translated">{0} – 1 erreur</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.status.errors">
         <source xml:lang="en">Validation status: {0}{1}{2}</source>
-        <target state="new">Validation status: {0}{1}{2}</target>
+        <target state="translated">Statut de validation : {0}{1}{2}</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.stop.validation">
         <source xml:lang="en">Stop validation</source>
-        <target state="new">Stop validation</target>
+        <target state="translated">Arrêter la validation</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.camceled">
         <source xml:lang="en">Validation check canceled</source>
-        <target state="new">Validation check canceled</target>
+        <target state="translated">Vérification de validation annulée</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.completed">
         <source xml:lang="en">Validation completed successfully.</source>
@@ -2804,39 +2804,39 @@ Cela peut prendre un certain temps.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.result.api.error">
         <source xml:lang="en">Validation check error{0}Database:{1}{0}Error: {2} - {3}</source>
-        <target state="new">Validation check error{0}Database:{1}{0}Error: {2} - {3}</target>
+        <target state="translated">Erreur de vérification de validation{0}Base de données :{1}{0}Erreur : {2} – {3}</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.result.error">
         <source xml:lang="en">Validation check error{0}Source database: {1}{0}File share path: {2}{0}Error: {3} - {4}</source>
-        <target state="new">Validation check error{0}Source database: {1}{0}File share path: {2}{0}Error: {3} - {4}</target>
+        <target state="translated">Erreur de vérification de validation{0}Base de données source : {1}{0}Chemin d’accès du partage de fichiers : {2}{0}Erreur : {3} – {4}</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.result.label.networkshare">
         <source xml:lang="en">Network share connectivity: '{0}' </source>
-        <target state="new">Network share connectivity: '{0}' </target>
+        <target state="translated">Connectivité du partage réseau : '{0}' </target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.result.label.shir">
         <source xml:lang="en">Integration runtime connectivity</source>
-        <target state="new">Integration runtime connectivity</target>
+        <target state="translated">Connectivité du runtime d’intégration</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.result.label.source.database">
         <source xml:lang="en">Source database connectivity: '{0}'</source>
-        <target state="new">Source database connectivity: '{0}'</target>
+        <target state="translated">Connexion de base de données source : '{0}'</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.result.label.storage">
         <source xml:lang="en">Azure storage connectivity</source>
-        <target state="new">Azure storage connectivity</target>
+        <target state="translated">Connectivité du stockage Azure</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.result.label.target.database">
         <source xml:lang="en">Target database connectivity: '{0}'</source>
-        <target state="new">Target database connectivity: '{0}'</target>
+        <target state="translated">Connectivité de base de données : '{0}'</target>
       </trans-unit>
       <trans-unit id="sql.migration.validation.canceled">
         <source xml:lang="en">Validation was canceled. Please run and validate the migration settings to continue.</source>
-        <target state="new">Validation was canceled. Please run and validate the migration settings to continue.</target>
+        <target state="translated">La validation a été annulée. Veuillez exécuter et valider les paramètres de migration pour continuer.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validation.canceled.errors">
         <source xml:lang="en">Validation was canceled with the following error(s):{0}{1}</source>
-        <target state="new">Validation was canceled with the following error(s):{0}{1}</target>
+        <target state="translated">La validation a été annulée avec la ou les erreurs suivantes :{0}{1}</target>
       </trans-unit>
       <trans-unit id="sql.migration.validation.dialog.title">
         <source xml:lang="en">Running validation</source>
@@ -2844,7 +2844,7 @@ Cela peut prendre un certain temps.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validation.not.run">
         <source xml:lang="en">Validation has not been run for the current configuration. Please run and validate the migration settings to continue.</source>
-        <target state="new">Validation has not been run for the current configuration. Please run and validate the migration settings to continue.</target>
+        <target state="translated">La validation n’a pas été exécutée pour la configuration actuelle. Veuillez exécuter et valider les paramètres de migration pour continuer.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validation.state.canceled">
         <source xml:lang="en">Canceled</source>
@@ -2868,7 +2868,7 @@ Cela peut prendre un certain temps.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validation.success">
         <source xml:lang="en">Validation completed successfully.  Please click Next to proceed with the migration.</source>
-        <target state="new">Validation completed successfully.  Please click Next to proceed with the migration.</target>
+        <target state="translated">La validation s’est terminée correctement. Veuillez cliquer sur Suivant pour poursuivre la migration.</target>
       </trans-unit>
       <trans-unit id="sql.migration.view.all">
         <source xml:lang="en">All database migrations</source>
@@ -2924,7 +2924,7 @@ Cela peut prendre un certain temps.</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.connection.error.title">
         <source xml:lang="en">An error occurred while connecting to the target server.</source>
-        <target state="new">An error occurred while connecting to the target server.</target>
+        <target state="translated">Une erreur s'est produite lors de la connexion au serveur cible.</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.login.error.title">
         <source xml:lang="en">An error occurred while trying to get {0} login information.</source>

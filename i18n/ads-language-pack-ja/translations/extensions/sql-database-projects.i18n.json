@@ -70,7 +70,7 @@
 			"currentTargetPlatform": "{0} プロジェクトのターゲットプラットフォームは現在 {1}",
 			"dacpacFileLocationRequired": "データベースに参照を追加するには DACPAC ファイルの場所が必要です",
 			"dacpacFiles": "DACPAC ファイル",
-			"dacpacNotOnSameDrive": "Dacpac references need to be located on the same drive as the project file.",
+			"dacpacNotOnSameDrive": "DACPAC 参照は、プロジェクト ファイルと同じドライブに配置されている必要があります。",
 			"dacpacReferenceElement": "Dacpac 参照",
 			"dacpacText": "データ層アプリケーション (.dacpac)",
 			"dataSource": "データ ソース",

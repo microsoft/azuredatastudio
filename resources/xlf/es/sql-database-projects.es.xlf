@@ -248,7 +248,7 @@
       </trans-unit>
       <trans-unit id="dacpacNotOnSameDrive">
         <source xml:lang="en">Dacpac references need to be located on the same drive as the project file.</source>
-        <target state="new">Dacpac references need to be located on the same drive as the project file.</target>
+        <target state="translated">Las referencias de Dacpac deben encontrarse en la misma unidad que el archivo de proyecto.</target>
       </trans-unit>
       <trans-unit id="dacpacReferenceElement">
         <source xml:lang="en">Dacpac reference</source>

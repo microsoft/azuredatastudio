@@ -8762,7 +8762,7 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="firewall.ruleName">
         <source xml:lang="en">Rule name</source>
-        <target state="new">Rule name</target>
+        <target state="translated">ルール名</target>
       </trans-unit>
       <trans-unit id="firewallRuleDescription">
         <source xml:lang="en">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</source>
@@ -8770,7 +8770,7 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="firewallRuleHelpLink">
         <source xml:lang="en">Learn more about firewall rules</source>
-        <target state="new">Learn more about firewall rules</target>
+        <target state="translated">ファイアウォール規則の詳細</target>
       </trans-unit>
       <trans-unit id="from">
         <source xml:lang="en">From</source>

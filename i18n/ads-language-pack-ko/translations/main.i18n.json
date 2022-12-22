@@ -13720,9 +13720,9 @@
 			"filewallRule": "방화벽 규칙",
 			"firewall.cancel": "취소",
 			"firewall.ok": "확인",
-			"firewall.ruleName": "Rule name",
+			"firewall.ruleName": "규칙 이름",
 			"firewallRuleDescription": "A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.",
-			"firewallRuleHelpLink": "Learn more about firewall rules",
+			"firewallRuleHelpLink": "방화벽 규칙에 대한 자세한 정보",
 			"from": "시작",
 			"to": "끝"
 		},

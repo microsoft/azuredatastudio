@@ -12,7 +12,7 @@
       </trans-unit>
       <trans-unit id="sql-migration.login.wizard.title">
         <source xml:lang="en">Migrate logins from '{0}' to Azure SQL</source>
-        <target state="new">Migrate logins from '{0}' to Azure SQL</target>
+        <target state="translated">Eseguire la migrazione degli account di accesso da '{0}' a Azure SQL</target>
       </trans-unit>
       <trans-unit id="sql-migration.wizard.title">
         <source xml:lang="en">Migrate '{0}' to Azure SQL</source>
@@ -24,175 +24,175 @@
       </trans-unit>
       <trans-unit id="sql.login.migration..error">
         <source xml:lang="en">Login migration error: {0}</source>
-        <target state="new">Login migration error: {0}</target>
+        <target state="translated">Errore di migrazione dell'account di accesso: {0}</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.complete">
         <source xml:lang="en">Completed migrating logins</source>
-        <target state="new">Completed migrating logins</target>
+        <target state="translated">La migrazione degli account di accesso è stata completata</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.db.title">
         <source xml:lang="en">Azure SQL Database</source>
-        <target state="new">Azure SQL Database</target>
+        <target state="translated">Database SQL di Azure</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.establish.user.mappings">
         <source xml:lang="en">Validating and migrating logins completed.
 
 Establishing user mappings.</source>
-        <target state="new">Validating and migrating logins completed.
+        <target state="translated">Convalida e migrazione degli account di accesso completate.
 
-Establishing user mappings.</target>
+Definizione dei mapping utente.</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.establish.user.mappings.failed">
         <source xml:lang="en">Establishing user mappings failed</source>
-        <target state="new">Establishing user mappings failed</target>
+        <target state="translated">La definizione dei mapping utente non è riuscita</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.failed">
         <source xml:lang="en">Migrating logins failed</source>
-        <target state="new">Migrating logins failed</target>
+        <target state="translated">La migrazione degli account di accesso non è riuscita</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.get.connection.string">
         <source xml:lang="en">data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;</source>
-        <target state="new">data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;</target>
+        <target state="translated">data source={0};initial catalog=master;user id={1};password={2}; TrustServerCertificate=True;Integrated Security=false;</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.get.logins.query">
         <source xml:lang="en">SELECT sp.name as login, sp.type_desc as login_type, sp.default_database_name, case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status FROM sys.server_principals sp  LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN ('SQL_LOGIN', 'WINDOWS_LOGIN') ORDER BY sp.name;</source>
-        <target state="new">SELECT sp.name as login, sp.type_desc as login_type, sp.default_database_name, case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status FROM sys.server_principals sp  LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN ('SQL_LOGIN', 'WINDOWS_LOGIN') ORDER BY sp.name;</target>
+        <target state="translated">SELECT sp.name as login, sp.type_desc as login_type, sp.default_database_name, case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status FROM sys.server_principals sp LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN ('SQL_LOGIN', 'WINDOWS_LOGIN') ORDER BY sp.name;</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.in.progress">
         <source xml:lang="en">Login migration in progress</source>
-        <target state="new">Login migration in progress</target>
+        <target state="translated">Migrazione dell'account di accesso in corso</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.logins.found">
         <source xml:lang="en">Login found</source>
-        <target state="new">Login found</target>
+        <target state="translated">Account di accesso trovato</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.logins.not.found">
         <source xml:lang="en">Login not found</source>
-        <target state="new">Login not found</target>
+        <target state="translated">Account di accesso non trovato</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.mi.title">
         <source xml:lang="en">Azure SQL Managed Instance</source>
-        <target state="new">Azure SQL Managed Instance</target>
+        <target state="translated">Istanza gestita di SQL di Azure</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.migrate.server.roles.and.set.permissions">
         <source xml:lang="en">Establishing user mappings completed.
 
 Currently, migrating server roles, establishing server mappings and setting permissions. This will take some time.</source>
-        <target state="new">Establishing user mappings completed.
+        <target state="translated">Definizione dei mapping utente completata.
 
-Currently, migrating server roles, establishing server mappings and setting permissions. This will take some time.</target>
+È in corso la migrazione dei ruoli del server, la creazione di mapping del server e l'impostazione delle autorizzazioni. L'operazione richiederà qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.migrate.server.roles.and.set.permissions.failed">
         <source xml:lang="en">Migrating server roles, establishing server mappings and setting permissions failed.</source>
-        <target state="new">Migrating server roles, establishing server mappings and setting permissions failed.</target>
+        <target state="translated">La migrazione dei ruoli del server, la creazione di mapping del server e l'impostazione delle autorizzazioni non sono riuscite.</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.migration.status.column">
         <source xml:lang="en">Migration Status</source>
-        <target state="new">Migration Status</target>
+        <target state="translated">Stato di migrazione</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.refresh.login.data.successful">
         <source xml:lang="en">Refreshing login list was successful. Source logins found {0}, Target logins found {1}</source>
-        <target state="new">Refreshing login list was successful. Source logins found {0}, Target logins found {1}</target>
+        <target state="translated">L'aggiornamento dell'elenco di accesso è riuscito. Account di accesso di origine trovati {0}. Account di accesso di destinazione trovati {1}</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.refresh.source.login.data.failed">
         <source xml:lang="en">Refreshing login list from source failed</source>
-        <target state="new">Refreshing login list from source failed</target>
+        <target state="translated">Aggiornamento dell'elenco di accesso dall'origine non è riuscito</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.refresh.target.login.data.failed">
         <source xml:lang="en">Refreshing login list from target failed</source>
-        <target state="new">Refreshing login list from target failed</target>
+        <target state="translated">L'aggiornamento dell'elenco di accesso dalla destinazione non è riuscito</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.select.in.progress">
         <source xml:lang="en">Refreshing login list from source and target</source>
-        <target state="new">Refreshing login list from source and target</target>
+        <target state="translated">Aggiornamento dell'elenco di accesso dall'origine e dalla destinazione</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.select.logins.windows.auth.warning">
         <source xml:lang="en">Please note that this wizard does not display windows authentication login types because migrating that type is currently not supported. Capability for migrating windows authentication logins is coming soon.</source>
-        <target state="new">Please note that this wizard does not display windows authentication login types because migrating that type is currently not supported. Capability for migrating windows authentication logins is coming soon.</target>
+        <target state="translated">Questa procedura guidata non visualizza i tipi di accesso per l'autenticazione di Windows perché la migrazione di questo tipo non è attualmente supportata. La funzionalità per la migrazione degli account di accesso per l'autenticazione di Windows sarà presto disponibile.</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.select.page.title">
         <source xml:lang="en">Select login(s) to migrate</source>
-        <target state="new">Select login(s) to migrate</target>
+        <target state="translated">Selezionare gli account di accesso di cui eseguire la migrazione</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.column">
         <source xml:lang="en">Status</source>
-        <target state="new">Status</target>
+        <target state="translated">Stato</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.failed">
         <source xml:lang="en">Failed</source>
-        <target state="new">Failed</target>
+        <target state="translated">Non riuscita</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.in.progress">
         <source xml:lang="en">In progress</source>
-        <target state="new">In progress</target>
+        <target state="translated">In corso</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.page.description">
         <source xml:lang="en">Migrating {0} logins to target {1} '{2}'</source>
-        <target state="new">Migrating {0} logins to target {1} '{2}'</target>
+        <target state="translated">La migrazione degli account di accesso {0} alla destinazione {1} '{2}'</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.page.description.completed">
         <source xml:lang="en">Completed migrating {0} logins to {1} '{2}'</source>
-        <target state="new">Completed migrating {0} logins to {1} '{2}'</target>
+        <target state="translated">La migrazione degli account di accesso {0} a {1} '{2}' è stata completata</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.page.description.failed">
         <source xml:lang="en">Failed migrating {0} logins to {1} '{2}'</source>
-        <target state="new">Failed migrating {0} logins to {1} '{2}'</target>
+        <target state="translated">La migrazione degli account di accesso {0} a {1} '{2}' non è riuscita</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.page.previous.button.error">
         <source xml:lang="en">Login migration has already been initiated and going back to prior page is disabled.</source>
-        <target state="new">Login migration has already been initiated and going back to prior page is disabled.</target>
+        <target state="translated">La migrazione degli account di accesso è già stata avviata e il ritorno alla pagina precedente è disabilitato.</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.page.previous.button.title">
         <source xml:lang="en">Previous (Disabled)</source>
-        <target state="new">Previous (Disabled)</target>
+        <target state="translated">Precedente (disabilitato)</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.page.title">
         <source xml:lang="en">Migration Status</source>
-        <target state="new">Migration Status</target>
+        <target state="translated">Stato di migrazione</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.succeeded">
         <source xml:lang="en">Succeeded</source>
-        <target state="new">Succeeded</target>
+        <target state="translated">Riuscita</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.target.status.column">
         <source xml:lang="en">Target Status</source>
-        <target state="new">Target Status</target>
+        <target state="translated">Stato di destinazione</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.target.title">
         <source xml:lang="en">Azure SQL target</source>
-        <target state="new">Azure SQL target</target>
+        <target state="translated">Destinazione di Azure SQL</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.type">
         <source xml:lang="en">Login type</source>
-        <target state="new">Login type</target>
+        <target state="translated">Tipo di account di accesso</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.vm.title">
         <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
-        <target state="new">SQL Server on Azure Virtual Machine</target>
+        <target state="translated">SQL Server per la macchina virtuale di Azure</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.wizard.target.connection.success">
         <source xml:lang="en">Connection was successful.</source>
-        <target state="new">Connection was successful.</target>
+        <target state="translated">Connessione riuscita.</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.wizard.target.data.migration.warning">
         <source xml:lang="en">Please note that login migration feature is in private preview mode.</source>
-        <target state="new">Please note that login migration feature is in private preview mode.</target>
+        <target state="translated">Si noti che la funzionalità di migrazione degli account di accesso è in modalità di anteprima privata.</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.wizard.target.description">
         <source xml:lang="en">Select the target Azure SQL Managed Instance, Azure SQL VM, or Azure SQL database(s) where you want to migrate your logins.</source>
-        <target state="new">Select the target Azure SQL Managed Instance, Azure SQL VM, or Azure SQL database(s) where you want to migrate your logins.</target>
+        <target state="translated">Selezionare l’Istanza gestita di SQL di Azure di destinazione, VM di Azure SQL o Database SQL di Azure o in cui si vuole eseguire la migrazione degli account di accesso.</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.wizard.target.permission.warning">
         <source xml:lang="en">Please ensure that the current user has sysadmin permissions to get all login information for the current instance ({0}).</source>
-        <target state="new">Please ensure that the current user has sysadmin permissions to get all login information for the current instance ({0}).</target>
+        <target state="translated">Assicurarsi che l'utente corrente disponga delle autorizzazioni sysadmin per ottenere tutte le informazioni di accesso per l'istanza corrente ({0}).</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.wizard.target.type.title">
         <source xml:lang="en">Azure SQL target type</source>
-        <target state="new">Azure SQL target type</target>
+        <target state="translated">Tipo di destinazione di Azure SQL</target>
       </trans-unit>
       <trans-unit id="sql.login.migrations.selected">
         <source xml:lang="en">{0}/{1} logins selected</source>
-        <target state="new">{0}/{1} logins selected</target>
+        <target state="translated">{0}/{1} account di accesso selezionati</target>
       </trans-unit>
       <trans-unit id="sql.migrate.text">
         <source xml:lang="en">Select the databases that you want to migrate to Azure SQL.</source>
@@ -648,11 +648,11 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.login.migrate.task.button">
         <source xml:lang="en">Migrate logins to Azure SQL</source>
-        <target state="new">Migrate logins to Azure SQL</target>
+        <target state="translated">Eseguire la migrazione degli account di accesso a Azure SQL</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.login.migrate.task.button.description">
         <source xml:lang="en">Migrate SQL Server logins to Azure SQL.</source>
-        <target state="new">Migrate SQL Server logins to Azure SQL.</target>
+        <target state="translated">Eseguire la migrazione degli account a Azure SQL.</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.migrate.task.button">
         <source xml:lang="en">Migrate to Azure SQL</source>
@@ -824,7 +824,7 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.default.database">
         <source xml:lang="en">Default database</source>
-        <target state="new">Default database</target>
+        <target state="translated">Database predefinito</target>
       </trans-unit>
       <trans-unit id="sql.migration.description">
         <source xml:lang="en">Description</source>
@@ -1408,7 +1408,7 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.number.logins.migrating">
         <source xml:lang="en">{0}/{1} migrating logins displayed</source>
-        <target state="new">{0}/{1} migrating logins displayed</target>
+        <target state="translated">{0}/{1} la migrazione degli account di accesso è visualizzata</target>
       </trans-unit>
       <trans-unit id="sql.migration.object.details">
         <source xml:lang="en">Object details</source>
@@ -1620,7 +1620,7 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.database.to.continue">
         <source xml:lang="en">Please select 1 or more logins for migration</source>
-        <target state="new">Please select 1 or more logins for migration</target>
+        <target state="translated">Selezionare 1 o più account di accesso per la migrazione</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.database.to.migrate">
         <source xml:lang="en">Select the databases to migrate.</source>
@@ -1700,7 +1700,7 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.service.select.target.type.">
         <source xml:lang="en">Select target Azure SQL Type</source>
-        <target state="new">Select target Azure SQL Type</target>
+        <target state="translated">Selezionare il tipo di Azure SQL di destinazione</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.service.select.tenant.error">
         <source xml:lang="en">An error occurred while loading available Azure account tenants.</source>
@@ -1788,7 +1788,7 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.selection.location.msg">
         <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
-        <target state="new">Please select the location of your database backup files before continuing.</target>
+        <target state="translated">Selezionare il percorso dei file di backup del database prima di continuare.</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.status.refresh.error">
         <source xml:lang="en">An error occurred while refreshing the migration service creation status.</source>
@@ -2316,7 +2316,7 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.source.login">
         <source xml:lang="en">Source login</source>
-        <target state="new">Source login</target>
+        <target state="translated">Accesso di origine</target>
       </trans-unit>
       <trans-unit id="sql.migration.source.server">
         <source xml:lang="en">Source server</source>
@@ -2400,7 +2400,7 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.start.login.migration.button">
         <source xml:lang="en">Migrate</source>
-        <target state="new">Migrate</target>
+        <target state="translated">Esegui la migrazione</target>
       </trans-unit>
       <trans-unit id="sql.migration.start.migration.button">
         <source xml:lang="en">Start migration</source>
@@ -2416,11 +2416,11 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.starting.login">
         <source xml:lang="en">Validating and migrating logins are in progress</source>
-        <target state="new">Validating and migrating logins are in progress</target>
+        <target state="translated">La convalida e la migrazione degli account di accesso sono in corso</target>
       </trans-unit>
       <trans-unit id="sql.migration.starting.login.failed">
         <source xml:lang="en">Validating and migrating logins failed</source>
-        <target state="new">Validating and migrating logins failed</target>
+        <target state="translated">Convalida e migrazione degli account di accesso non riuscita</target>
       </trans-unit>
       <trans-unit id="sql.migration.status">
         <source xml:lang="en">Status</source>
@@ -2580,11 +2580,11 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.tab.button.login.migration.description">
         <source xml:lang="en">Migrate logins to Azure SQL</source>
-        <target state="new">Migrate logins to Azure SQL</target>
+        <target state="translated">Eseguire la migrazione degli account di accesso a Azure SQL</target>
       </trans-unit>
       <trans-unit id="sql.migration.tab.button.login.migration.label">
         <source xml:lang="en">New login migration (PREVIEW)</source>
-        <target state="new">New login migration (PREVIEW)</target>
+        <target state="translated">Nuova migrazione dell'account di accesso (ANTEPRIMA)</target>
       </trans-unit>
       <trans-unit id="sql.migration.tab.button.migration.description">
         <source xml:lang="en">Migrate to Azure SQL</source>
@@ -2740,15 +2740,15 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.column.validation.steps">
         <source xml:lang="en">Validation steps</source>
-        <target state="new">Validation steps</target>
+        <target state="translated">Passaggi di convalida</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.completed.errors">
         <source xml:lang="en">Validation completed with the following error(s):{0}{1}</source>
-        <target state="new">Validation completed with the following error(s):{0}{1}</target>
+        <target state="translated">Convalida completata con gli errori seguenti:{0}{1}</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.copy.results">
         <source xml:lang="en">Copy validation results</source>
-        <target state="new">Copy validation results</target>
+        <target state="translated">Copia risultati di convalida</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.done.button">
         <source xml:lang="en">Done</source>
@@ -2756,15 +2756,15 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.heading">
         <source xml:lang="en">We are validating the following:</source>
-        <target state="new">We are validating the following:</target>
+        <target state="translated">Stiamo convalidando quanto segue:</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.results.heading">
         <source xml:lang="en">Validation step details</source>
-        <target state="new">Validation step details</target>
+        <target state="translated">Dettagli passaggio di convalida</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.sqldb.validation.result.error">
         <source xml:lang="en">Validation check error{0}Source database: {1}{0}Target database: {2}{0}Error: {3} - {4}</source>
-        <target state="new">Validation check error{0}Source database: {1}{0}Target database: {2}{0}Error: {3} - {4}</target>
+        <target state="translated">Errore di controllo di convalida{0}database di origine: {1}{0}Database di destinazione: {2}{0}Errore: {3} - {4}</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.start.validation">
         <source xml:lang="en">Start validation</source>
@@ -2772,7 +2772,7 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.status">
         <source xml:lang="en">Validation status: {0}</source>
-        <target state="new">Validation status: {0}</target>
+        <target state="translated">Stato di convalida: {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.status.error">
         <source xml:lang="en">{0}{1}{2}</source>
@@ -2780,23 +2780,23 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.status.error.count.many">
         <source xml:lang="en">{0} - {1} errors</source>
-        <target state="new">{0} - {1} errors</target>
+        <target state="translated">{0} - {1} errori</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.status.error.count.one">
         <source xml:lang="en">{0} - 1 error</source>
-        <target state="new">{0} - 1 error</target>
+        <target state="translated">{0} - 1 errore</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.status.errors">
         <source xml:lang="en">Validation status: {0}{1}{2}</source>
-        <target state="new">Validation status: {0}{1}{2}</target>
+        <target state="translated">Stato di convalidas: {0}{1}{2}</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.stop.validation">
         <source xml:lang="en">Stop validation</source>
-        <target state="new">Stop validation</target>
+        <target state="translated">Interrompi convalida</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.camceled">
         <source xml:lang="en">Validation check canceled</source>
-        <target state="new">Validation check canceled</target>
+        <target state="translated">Controllo di convalida annullato</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.completed">
         <source xml:lang="en">Validation completed successfully.</source>
@@ -2804,39 +2804,39 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.result.api.error">
         <source xml:lang="en">Validation check error{0}Database:{1}{0}Error: {2} - {3}</source>
-        <target state="new">Validation check error{0}Database:{1}{0}Error: {2} - {3}</target>
+        <target state="translated">Errore di controllo di convalida{0}Database:{1}{0}Errore: {2} - {3}</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.result.error">
         <source xml:lang="en">Validation check error{0}Source database: {1}{0}File share path: {2}{0}Error: {3} - {4}</source>
-        <target state="new">Validation check error{0}Source database: {1}{0}File share path: {2}{0}Error: {3} - {4}</target>
+        <target state="translated">Errore di controllo di convalida{0}database di origine: {1}{0}Percorso condivisione file: {2}{0}Errore: {3} - {4}</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.result.label.networkshare">
         <source xml:lang="en">Network share connectivity: '{0}' </source>
-        <target state="new">Network share connectivity: '{0}' </target>
+        <target state="translated">Connettività condivisione di rete: '{0}' </target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.result.label.shir">
         <source xml:lang="en">Integration runtime connectivity</source>
-        <target state="new">Integration runtime connectivity</target>
+        <target state="translated">Connettività del runtime di integrazione</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.result.label.source.database">
         <source xml:lang="en">Source database connectivity: '{0}'</source>
-        <target state="new">Source database connectivity: '{0}'</target>
+        <target state="translated">Connessione database di origine: '{0}'</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.result.label.storage">
         <source xml:lang="en">Azure storage connectivity</source>
-        <target state="new">Azure storage connectivity</target>
+        <target state="translated">Connettività di Archiviazione di Azure</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.result.label.target.database">
         <source xml:lang="en">Target database connectivity: '{0}'</source>
-        <target state="new">Target database connectivity: '{0}'</target>
+        <target state="translated">Connettività del database di destinazione: '{0}'</target>
       </trans-unit>
       <trans-unit id="sql.migration.validation.canceled">
         <source xml:lang="en">Validation was canceled. Please run and validate the migration settings to continue.</source>
-        <target state="new">Validation was canceled. Please run and validate the migration settings to continue.</target>
+        <target state="translated">Convalida annullata. Per continuare, eseguire e convalidare le impostazioni di migrazione.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validation.canceled.errors">
         <source xml:lang="en">Validation was canceled with the following error(s):{0}{1}</source>
-        <target state="new">Validation was canceled with the following error(s):{0}{1}</target>
+        <target state="translated">Convalida annullata con gli errori seguenti: {0}{1}</target>
       </trans-unit>
       <trans-unit id="sql.migration.validation.dialog.title">
         <source xml:lang="en">Running validation</source>
@@ -2844,7 +2844,7 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validation.not.run">
         <source xml:lang="en">Validation has not been run for the current configuration. Please run and validate the migration settings to continue.</source>
-        <target state="new">Validation has not been run for the current configuration. Please run and validate the migration settings to continue.</target>
+        <target state="translated">La convalida non è stata eseguita per la configurazione corrente. Eseguire e convalidare le impostazioni di migrazione per continuare.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validation.state.canceled">
         <source xml:lang="en">Canceled</source>
@@ -2868,7 +2868,7 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validation.success">
         <source xml:lang="en">Validation completed successfully.  Please click Next to proceed with the migration.</source>
-        <target state="new">Validation completed successfully.  Please click Next to proceed with the migration.</target>
+        <target state="translated">Convalida completata.  Fare clic su Avanti per procedere con la migrazione.</target>
       </trans-unit>
       <trans-unit id="sql.migration.view.all">
         <source xml:lang="en">All database migrations</source>
@@ -2924,11 +2924,11 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.connection.error.title">
         <source xml:lang="en">An error occurred while connecting to the target server.</source>
-        <target state="new">An error occurred while connecting to the target server.</target>
+        <target state="translated">Errore durante la connessione al server di destinazione.</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.login.error.title">
         <source xml:lang="en">An error occurred while trying to get {0} login information.</source>
-        <target state="new">An error occurred while trying to get {0} login information.</target>
+        <target state="translated">Si è verificato un errore durante il tentativo di ottenere {0} informazioni di accesso.</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.perfCollection.error">
         <source xml:lang="en">Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:
@@ -2992,7 +2992,7 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.target.login.error">
         <source xml:lang="en">Error getting login information: {0}</source>
-        <target state="new">Error getting login information: {0}</target>
+        <target state="translated">Errore durante il recupero delle informazioni di accesso: {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.target.mapping.error.duplicate">
         <source xml:lang="en">Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.</source>
