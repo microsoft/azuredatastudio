@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/gridPanel';
 
-import { ITableStyles, ITableMouseEvent, FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
+import { ITableStyles, ITableMouseEvent, FilterableColumn, ITableKeyboardEvent } from 'sql/base/browser/ui/table/interfaces';
 import { attachTableFilterStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, IColumn, ICellValue } from 'sql/workbench/services/query/common/query';
@@ -537,6 +537,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this._register(this.dataProvider.onFilterStateChange(() => { this.layout(); }));
 		this._register(this.table.onContextMenu(this.contextMenu, this));
 		this._register(this.table.onClick(this.onTableClick, this));
+		this._register(this.table.onKeyDown(this.onTableKeyDown, this));
 		this._register(this.dataProvider.onFilterStateChange(() => {
 			const columns = this.table.columns as FilterableColumn<T>[];
 			this.state.columnFilters = columns.filter((column) => column.filterValues?.length > 0).map(column => {
@@ -743,6 +744,10 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				}
 			}
 		}
+	}
+
+	private async onTableKeyDown(event: ITableKeyboardEvent) {
+		this.table.setActiveCell(event.cell.row, event.cell.cell);
 	}
 
 	public updateResult(resultSet: ResultSetSummary) {
