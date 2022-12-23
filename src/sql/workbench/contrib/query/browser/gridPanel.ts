@@ -746,8 +746,12 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}
 	}
 
-	private onTableKeyDown(event: ITableKeyboardEvent): void {
-		this.table.setActiveCell(event.cell.row, event.cell.cell);
+	private onTableKeyDown(evt: ITableKeyboardEvent): void {
+		if (!(evt.event.key === 'ArrowLeft' || evt.event.key === 'ArrowRight' || evt.event.key === 'ArrowUp' || evt.event.key === 'ArrowDown' || evt.event.key === 'Home' || evt.event.key === 'End' || evt.event.key === 'PageUp' || evt.event.key === 'PageDown')) {
+			return;
+		}
+
+		this.table.setActiveCell(evt.cell.row, evt.cell.cell);
 	}
 
 	public updateResult(resultSet: ResultSetSummary) {
