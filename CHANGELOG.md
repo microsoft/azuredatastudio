@@ -1,5 +1,12 @@
 # Change Log
 
+## Version 1.40.2
+* Release date: December 27, 2022
+* Release status: General Availability
+
+### Bug fixes in 1.40.2
+  * Fix potential elevation of privilege issue using Bash shell on Windows.  VS Code issue [#160827](https://github.com/microsoft/vscode/issues/160827)
+
 ## Version 1.40.1
 * Release date: November 22, 2022
 * Release status: General Availability
