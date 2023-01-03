@@ -5,8 +5,6 @@
 
 import * as azdata from 'azdata';
 import * as DOM from 'vs/base/browser/dom';
-import * as os from 'os';
-import * as path from 'vs/base/common/path';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import { ExecutionPlanPropertiesView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
@@ -41,6 +39,9 @@ import { QueryResultsView } from 'sql/workbench/contrib/query/browser/queryResul
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/browser/format';
 import { HighlightExpensiveOperationWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/highlightExpensiveNodeWidget';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { joinPath, dirname } from 'vs/base/common/resources';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
+import { Schemas } from 'vs/base/common/network';
 
 export class ExecutionPlanView extends Disposable implements IHorizontalSashLayoutProvider {
 
@@ -167,7 +168,7 @@ export class ExecutionPlanView extends Disposable implements IHorizontalSashLayo
 
 		this.actionBarToggleTopTip = this._register(new ActionBarToggleTooltip());
 		const actionBarActions = [
-			this._register(new SavePlanFile()),
+			this._register(this._instantiationService.createInstance(SavePlanFile)),
 			this._register(new OpenPlanFile()),
 			this._register(this._instantiationService.createInstance(OpenQueryAction, 'ActionBar')),
 			this._register(new Separator()),
@@ -185,7 +186,7 @@ export class ExecutionPlanView extends Disposable implements IHorizontalSashLayo
 		// Setting up context menu
 		this.contextMenuToggleTooltipAction = this._register(new ContextMenuTooltipToggle());
 		const contextMenuAction = [
-			this._register(new SavePlanFile()),
+			this._register(this._instantiationService.createInstance(SavePlanFile)),
 			this._register(new OpenPlanFile()),
 			this._register(this._instantiationService.createInstance(OpenQueryAction, 'ContextMenu')),
 			this._register(new Separator()),
@@ -433,31 +434,48 @@ export class ZoomToFitAction extends Action {
 export class SavePlanFile extends Action {
 	public static ID = 'ep.saveXML';
 	public static LABEL = localize('executionPlanSavePlanXML', "Save Plan File");
+	private static readonly LAST_USED_EXECUTION_PLAN_SAVE_PATH_STORAGE_KEY = 'qp.explorer.savePath';
 
-	constructor() {
+	constructor(
+		@IFileDialogService private readonly fileDialogService: IFileDialogService,
+		@IStorageService private readonly storageService: IStorageService
+	) {
 		super(SavePlanFile.ID, SavePlanFile.LABEL, constants.savePlanIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
-		const workspaceFolders = await context.workspaceContextService.getWorkspace().folders;
+		const workspaceFolders = context.workspaceContextService.getWorkspace().folders;
 		const defaultFileName = 'plan';
-		let defaultSaveUri: URI;
-		if (workspaceFolders.length !== 0) {
-			defaultSaveUri = URI.joinPath(workspaceFolders[0].uri, defaultFileName); //appending default file name to workspace uri
+		let defaultUri: URI;
+
+		const lastUsedSavePath = this.storageService.get(SavePlanFile.LAST_USED_EXECUTION_PLAN_SAVE_PATH_STORAGE_KEY, StorageScope.GLOBAL);
+
+		if (lastUsedSavePath) {
+			defaultUri = joinPath(URI.file(lastUsedSavePath), defaultFileName);
 		} else {
-			defaultSaveUri = URI.file(path.join(os.homedir(), defaultFileName)); // giving default name
+			if (workspaceFolders.length !== 0) {
+				defaultUri = URI.joinPath(workspaceFolders[0].uri, defaultFileName); // appending default file name to workspace uri
+			} else {
+				defaultUri = URI.joinPath(await this.fileDialogService.defaultFolderPath(Schemas.file), defaultFileName);
+			}
 		}
-		const saveFileUri = await context.fileDialogService.showSaveDialog({
+
+		const destination = await this.fileDialogService.showSaveDialog({
 			filters: [
 				{
 					extensions: ['sqlplan'], //TODO: Get this extension from provider
 					name: localize('executionPlan.SaveFileDescription', 'Execution Plan Files') //TODO: Get the names from providers.
 				}
 			],
-			defaultUri: defaultSaveUri
+			defaultUri
 		});
-		if (saveFileUri) {
-			await context.fileService.writeFile(saveFileUri, VSBuffer.fromString(context.model.graphFile.graphFileContent));
+
+		if (destination) {
+			// Remember as last used save folder
+			this.storageService.store(SavePlanFile.LAST_USED_EXECUTION_PLAN_SAVE_PATH_STORAGE_KEY, dirname(destination).fsPath, StorageScope.GLOBAL, StorageTarget.MACHINE);
+
+			// Perform save
+			await context.fileService.writeFile(destination, VSBuffer.fromString(context.model.graphFile.graphFileContent));
 		}
 	}
 }
