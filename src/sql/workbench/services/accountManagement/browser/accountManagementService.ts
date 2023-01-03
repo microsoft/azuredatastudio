@@ -66,13 +66,13 @@ export class AccountManagementService implements IAccountManagementService {
 		this._mementoContext = new Memento(AccountManagementService.ACCOUNT_MEMENTO, this._storageService);
 		const mementoObj = this._mementoContext.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE);
 		this._accountStore = this._instantiationService.createInstance(AccountStore, mementoObj);
-		this._authLibrary = this.configurationService.getValue('azure.authenticationLibrary');
 
 		// Setup the event emitters
 		this._addAccountProviderEmitter = new Emitter<AccountProviderAddedEventParams>();
 		this._removeAccountProviderEmitter = new Emitter<azdata.AccountProviderMetadata>();
 		this._updateAccountListEmitter = new Emitter<UpdateAccountListEventParams>();
 		this.configurationService = configurationService;
+		this._authLibrary = this.configurationService.getValue('azure.authenticationLibrary');
 
 		_storageService.onWillSaveState(() => this.shutdown());
 		this.registerListeners();
