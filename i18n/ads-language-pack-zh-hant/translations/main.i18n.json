@@ -13721,7 +13721,7 @@
 			"firewall.cancel": "取消",
 			"firewall.ok": "確定",
 			"firewall.ruleName": "規則名稱",
-			"firewallRuleDescription": "A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.",
+			"firewallRuleDescription": "需要防火牆規則才能存取 SQL Server 執行個體。按一下下方連結以建立新的防火牆規則。",
 			"firewallRuleHelpLink": "深入了解防火牆規則",
 			"from": "從",
 			"to": "至"

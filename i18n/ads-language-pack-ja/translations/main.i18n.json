@@ -13721,7 +13721,7 @@
 			"firewall.cancel": "キャンセル",
 			"firewall.ok": "OK",
 			"firewall.ruleName": "ルール名",
-			"firewallRuleDescription": "A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.",
+			"firewallRuleDescription": "SQL Server インスタンスにアクセスするには、ファイアウォール規則が必要です。新しいファイアウォール規則を作成するには、下のリンクをクリックしてください。",
 			"firewallRuleHelpLink": "ファイアウォール規則の詳細",
 			"from": "開始",
 			"to": "終了"

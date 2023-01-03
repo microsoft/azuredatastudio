@@ -8766,7 +8766,7 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="firewallRuleDescription">
         <source xml:lang="en">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</source>
-        <target state="new">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</target>
+        <target state="translated">SQL Server 인스턴스에 액세스하려면 방화벽 규칙이 필요합니다. 새 방화벽 규칙을 만들려면 아래 링크를 클릭하세요.</target>
       </trans-unit>
       <trans-unit id="firewallRuleHelpLink">
         <source xml:lang="en">Learn more about firewall rules</source>

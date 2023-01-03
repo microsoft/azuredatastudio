@@ -8766,7 +8766,7 @@ Remarque : un certificat auto-signé offre une protection limitée uniquement e
       </trans-unit>
       <trans-unit id="firewallRuleDescription">
         <source xml:lang="en">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</source>
-        <target state="new">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</target>
+        <target state="translated">Une règle de pare-feu est nécessaire pour accéder à l’instance SQL Server. Cliquez sur le lien ci-dessous pour créer une règle de pare-feu.</target>
       </trans-unit>
       <trans-unit id="firewallRuleHelpLink">
         <source xml:lang="en">Learn more about firewall rules</source>

@@ -8766,7 +8766,7 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
       </trans-unit>
       <trans-unit id="firewallRuleDescription">
         <source xml:lang="en">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</source>
-        <target state="new">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</target>
+        <target state="translated">Für den Zugriff auf die SQL Server-Instanz ist eine Firewallregel erforderlich. Klicken Sie auf den link unten, um eine neue Firewallregel zu erstellen.</target>
       </trans-unit>
       <trans-unit id="firewallRuleHelpLink">
         <source xml:lang="en">Learn more about firewall rules</source>

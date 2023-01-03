@@ -13721,7 +13721,7 @@
 			"firewall.cancel": "Отмена",
 			"firewall.ok": "OK",
 			"firewall.ruleName": "Имя правила",
-			"firewallRuleDescription": "A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.",
+			"firewallRuleDescription": "Для доступа к экземпляру SQL Server требуется правило брандмауэра. Щелкните ссылку ниже, чтобы создать правило брандмауэра.",
 			"firewallRuleHelpLink": "Дополнительные сведения о правилах брандмауэра",
 			"from": "С",
 			"to": "До"

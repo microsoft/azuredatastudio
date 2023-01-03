@@ -8766,7 +8766,7 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="firewallRuleDescription">
         <source xml:lang="en">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</source>
-        <target state="new">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</target>
+        <target state="translated">Для доступа к экземпляру SQL Server требуется правило брандмауэра. Щелкните ссылку ниже, чтобы создать правило брандмауэра.</target>
       </trans-unit>
       <trans-unit id="firewallRuleHelpLink">
         <source xml:lang="en">Learn more about firewall rules</source>
