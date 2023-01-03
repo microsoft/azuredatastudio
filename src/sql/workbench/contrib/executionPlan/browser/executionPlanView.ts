@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as DOM from 'vs/base/browser/dom';
 import * as os from 'os';
-import * as path from 'path';
+import * as path from 'vs/base/common/path';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import { ExecutionPlanPropertiesView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
