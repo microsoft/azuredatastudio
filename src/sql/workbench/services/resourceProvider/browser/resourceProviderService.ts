@@ -86,7 +86,7 @@ export class ResourceProviderService implements IResourceProviderService {
 	}
 
 	/**
-	 * Handle a firewall rule
+	 * Handle a non firewall error to identify what action needs to be taken.
 	 */
 	public async handleOtherError(errorCode: number, errorMessage: string, resourceProviderId: string): Promise<errorHandling.ErrorCodes> {
 		let errorCodeResult = errorHandling.ErrorCodes.noErrorOrUnsupported;
@@ -104,6 +104,20 @@ export class ResourceProviderService implements IResourceProviderService {
 		}
 		await Promise.all(promises);
 		return errorCodeResult
+	}
+
+	/**
+	 * Call change password on the provider.
+	 */
+	public async changePassword(connectionUri: string, connectionInfo: IConnectionProfile, newPassword: string, resourceProviderId: string): Promise<boolean> {
+		const promises = [];
+		if (this._providers) {
+			for (const key in this._providers) {
+				const provider = this._providers[key];
+			}
+		}
+		await Promise.all(promises);
+		return false;
 	}
 
 

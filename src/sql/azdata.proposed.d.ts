@@ -432,10 +432,10 @@ declare module 'azdata' {
 		azurePortalEndpoint?: string;
 	}
 
-	/**
-	 * Adds additional handling for other errors.
-	 */
 	export interface ResourceProvider {
+		/**
+		 * Adds additional handling for other errors.
+		 */
 		handleOtherError(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<errorHandling.ErrorCodes>;
 	}
 
