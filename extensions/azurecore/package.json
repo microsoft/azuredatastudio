@@ -288,22 +288,22 @@
         },
         {
           "command": "azure.resource.azureview.refresh",
-          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer)$/",
+          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer|synapseSqlPoolContainer|synapseWorkspaceContainer)$/",
           "group": "inline"
         },
         {
           "command": "azure.resource.azureview.refresh",
-          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer)$/",
+          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer|synapseSqlPoolContainer|synapseWorkspaceContainer)$/",
           "group": "azurecore"
         },
         {
           "command": "azure.resource.connectsqlserver",
-          "when": "viewItem == azure.resource.itemType.databaseServer || viewItem == azure.resource.itemType.database || viewItem == azure.resource.itemType.sqlInstance",
+          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:database|databaseServer|synapseSqlPool|synapseWorkspace|sqlInstance)$/",
           "group": "inline"
         },
         {
           "command": "azure.resource.connectsqlserver",
-          "when": "viewItem == azure.resource.itemType.databaseServer || viewItem == azure.resource.itemType.database || viewItem == azure.resource.itemType.sqlInstance",
+          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:database|databaseServer|synapseSqlPool|synapseWorkspace|sqlInstance)$/",
           "group": "azurecore"
         },
         {
@@ -385,5 +385,8 @@
     "should": "^13.2.1",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0"
+  },
+  "resolutions": {
+    "jsonwebtoken": "9.0.0"
   }
 }

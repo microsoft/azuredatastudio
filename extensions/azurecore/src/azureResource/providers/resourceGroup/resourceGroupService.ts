@@ -6,11 +6,12 @@
 import { DbServerGraphData } from '../databaseServer/databaseServerService';
 import { azureResource } from 'azurecore';
 import { ResourceServiceBase } from '../resourceTreeDataProviderBase';
+import { resourceGroupQuery } from '../queryStringConstants';
 
 export class AzureResourceGroupService extends ResourceServiceBase<DbServerGraphData, azureResource.AzureResourceResourceGroup> {
 
 	protected get query(): string {
-		return `ResourceContainers | where type=="${azureResource.AzureResourceType.resourceGroup}"`;
+		return resourceGroupQuery;
 	}
 
 	protected convertResource(resource: DbServerGraphData): azureResource.AzureResourceResourceGroup {
