@@ -28,6 +28,7 @@ export const MenuCommands = {
 	CancelMigration: 'sqlmigration.cancel.migration',
 	RetryMigration: 'sqlmigration.retry.migration',
 	StartMigration: 'sqlmigration.start',
+	StartLoginMigration: 'sqlmigration.login.start',
 	IssueReporter: 'workbench.action.openIssueReporter',
 	OpenNotebooks: 'sqlmigration.openNotebooks',
 	NewSupportRequest: 'sqlmigration.newsupportrequest',
@@ -204,10 +205,11 @@ export function selectDefaultDropdownValue(dropDown: DropDownComponent, value?: 
 	if (dropDown.values && dropDown.values.length > 0) {
 		let selectedIndex;
 		if (value) {
+			const searchValue = value.toLowerCase();
 			if (useDisplayName) {
-				selectedIndex = dropDown.values.findIndex((v: any) => (v as CategoryValue)?.displayName?.toLowerCase() === value.toLowerCase());
+				selectedIndex = dropDown.values.findIndex((v: any) => (v as CategoryValue)?.displayName?.toLowerCase() === searchValue);
 			} else {
-				selectedIndex = dropDown.values.findIndex((v: any) => (v as CategoryValue)?.name?.toLowerCase() === value.toLowerCase());
+				selectedIndex = dropDown.values.findIndex((v: any) => (v as CategoryValue)?.name?.toLowerCase() === searchValue);
 			}
 		} else {
 			selectedIndex = -1;
@@ -220,7 +222,7 @@ export function selectDefaultDropdownValue(dropDown: DropDownComponent, value?: 
 
 export function selectDropDownIndex(dropDown: DropDownComponent, index: number): void {
 	if (dropDown.values && dropDown.values.length > 0) {
-		if (index >= 0 && index <= dropDown.values.length - 1) {
+		if (index >= 0 && index < dropDown.values.length) {
 			dropDown.value = dropDown.values[index] as CategoryValue;
 			return;
 		}
@@ -292,6 +294,22 @@ export function getMigrationStatusWithErrors(migration: azure.DatabaseMigration)
 	warningCount += (properties.migrationStatusWarnings?.completeRestoreErrorMessage ?? '').length > 0 ? 1 : 0;
 
 	return constants.STATUS_VALUE(migrationStatus) + (constants.STATUS_WARNING_COUNT(migrationStatus, warningCount) ?? '');
+}
+
+export function getLoginStatusMessage(loginFound: boolean): string {
+	if (loginFound) {
+		return constants.LOGINS_FOUND;
+	} else {
+		return constants.LOGINS_NOT_FOUND;
+	}
+}
+
+export function getLoginStatusImage(loginFound: boolean): IconPath {
+	if (loginFound) {
+		return IconPathHelper.completedMigration;
+	} else {
+		return IconPathHelper.notFound;
+	}
 }
 
 export function getPipelineStatusImage(status: string | undefined): IconPath {
@@ -676,6 +694,10 @@ export function getAzureResourceDropdownValues(
 }
 
 export function getResourceDropdownValues(resources: { id: string, name: string }[], resourceNotFoundMessage: string): CategoryValue[] {
+	if (!resources || !resources.length) {
+		return [{ name: '', displayName: resourceNotFoundMessage }];
+	}
+
 	return resources?.map(resource => { return { name: resource.id, displayName: resource.name }; })
 		|| [{ name: '', displayName: resourceNotFoundMessage }];
 }
@@ -686,6 +708,10 @@ export async function getAzureTenantsDropdownValues(tenants: Tenant[]): Promise<
 }
 
 export async function getAzureLocationsDropdownValues(locations: azureResource.AzureLocation[]): Promise<CategoryValue[]> {
+	if (!locations || !locations.length) {
+		return [{ name: '', displayName: constants.NO_LOCATION_FOUND }];
+	}
+
 	return locations?.map(location => { return { name: location.name, displayName: location.displayName }; })
 		|| [{ name: '', displayName: constants.NO_LOCATION_FOUND }];
 }

@@ -112,10 +112,6 @@ export class ConnectionController implements IConnectionComponentController {
 		if (this._model.azureTenantId !== azureTenantId) {
 			this._model.azureTenantId = azureTenantId;
 		}
-
-		if (this._model.options.azureTenantId !== azureTenantId) {
-			this._model.azureTenantId = azureTenantId;
-		}
 	}
 
 	protected handleOnAdvancedProperties(): void {
