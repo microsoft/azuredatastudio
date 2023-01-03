@@ -36,6 +36,7 @@ export class AccountManagementService implements IAccountManagementService {
 	public _providers: { [id: string]: AccountProviderWithMetadata } = {};
 	public _serviceBrand: undefined;
 	private _accountStore: AccountStore;
+	private _authLibrary: AuthLibrary;
 	private _accountDialogController?: AccountDialogController;
 	private _autoOAuthDialogController?: AutoOAuthDialogController;
 	private _mementoContext?: Memento;
@@ -65,6 +66,7 @@ export class AccountManagementService implements IAccountManagementService {
 		this._mementoContext = new Memento(AccountManagementService.ACCOUNT_MEMENTO, this._storageService);
 		const mementoObj = this._mementoContext.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE);
 		this._accountStore = this._instantiationService.createInstance(AccountStore, mementoObj);
+		this._authLibrary = this.configurationService.getValue('azure.authenticationLibrary');
 
 		// Setup the event emitters
 		this._addAccountProviderEmitter = new Emitter<AccountProviderAddedEventParams>();
@@ -221,9 +223,11 @@ export class AccountManagementService implements IAccountManagementService {
 		let self = this;
 
 		// 1) Get the accounts from the store
-		// 2) Update our local cache of accounts
+		// 2) Filter the accounts based on the auth library
+		// 3) Update our local cache of accounts
 		return this.doWithProvider(providerId, provider => {
 			return self._accountStore.getAccountsByProvider(provider.metadata.id)
+				.then(accounts => this._authLibrary ? filterAccounts(accounts, this._authLibrary) : accounts)
 				.then(accounts => {
 					self._providers[providerId].accounts = accounts;
 					return accounts;
@@ -232,10 +236,11 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	/**
-	 * Retrieves all the accounts registered with ADS.
+	 * Retrieves all the accounts registered with ADS based on auth library in use.
 	 */
 	public getAccounts(): Promise<azdata.Account[]> {
-		return this._accountStore.getAllAccounts();
+		return this._accountStore.getAllAccounts()
+			.then(accounts => this._authLibrary ? filterAccounts(accounts, this._authLibrary) : accounts);
 	}
 
 	/**
