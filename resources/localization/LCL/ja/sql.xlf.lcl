@@ -17679,20 +17679,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/services/resourceProvider/browser/firewallRuleDialog.firewallRuleDialogDescription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/services/resourceProvider/browser/firewallRuleDialog.firewall.ruleName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.]]></Val>
+          <Val><![CDATA[Rule name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[このクライアント IP アドレスではサーバーにアクセスできません。アクセスできるようにするには、Azure アカウントにサインインし、新しいファイアウォール規則を作成します。]]></Val>
+            <Val><![CDATA[ルール名]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/services/resourceProvider/browser/firewallRuleDialog.firewallRuleHelpDescription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/services/resourceProvider/browser/firewallRuleDialog.firewallRuleDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Learn more about firewall settings]]></Val>
+          <Val><![CDATA[A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ファイアウォール設定の詳細情報]]></Val>
+            <Val><![CDATA[SQL Server インスタンスにアクセスするには、ファイアウォール規則が必要です。新しいファイアウォール規則を作成するには、下のリンクをクリックしてください。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/resourceProvider/browser/firewallRuleDialog.firewallRuleHelpLink" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Learn more about firewall rules]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ファイアウォール規則の詳細]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

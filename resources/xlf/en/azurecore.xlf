@@ -198,6 +198,16 @@
       <source xml:lang="en">SQL managed instance – Azure Arc</source>
     </trans-unit>
 </body></file>
+  <file original="extensions/azurecore/dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel">
+      <source xml:lang="en">Dedicated SQL Pools</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/azurecore/dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel">
+      <source xml:lang="en">Azure Synapse Analytics</source>
+    </trans-unit>
+</body></file>
   <file original="extensions/azurecore/dist/azureResource/resourceTreeNode" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.resourceTreeNode.noResourcesLabel">
       <source xml:lang="en">No Resources found</source>
