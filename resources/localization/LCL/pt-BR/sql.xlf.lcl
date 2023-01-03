@@ -17691,6 +17691,9 @@
       <Item ItemId=";src/sql/workbench/services/resourceProvider/browser/firewallRuleDialog.firewallRuleDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[É necessária uma regra de firewall para acessar a instância do SQL Server. Clique no link abaixo para criar uma nova regra de firewall.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
