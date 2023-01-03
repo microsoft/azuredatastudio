@@ -72,6 +72,9 @@ export class AccountManagementService implements IAccountManagementService {
 		this._removeAccountProviderEmitter = new Emitter<azdata.AccountProviderMetadata>();
 		this._updateAccountListEmitter = new Emitter<UpdateAccountListEventParams>();
 		this.configurationService = configurationService;
+
+		// Determine authentication library in use, to support filtering accounts respectively.
+		// This is a global setting, hence need not be handled on API level.
 		this._authLibrary = this.configurationService.getValue('azure.authenticationLibrary');
 
 		_storageService.onWillSaveState(() => this.shutdown());
