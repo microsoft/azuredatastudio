@@ -367,10 +367,10 @@ export class UpdateProjectFromDatabaseDialog {
 
 		let values: string[] = [];
 		this.workspaceProjects.forEach(projectUri => {
-			values.push(projectUri.fsPath as string);
+			values.push(projectUri.fsPath);
 		});
 
-		const value = this.project ? this.project.projectFilePath : (values[0] ? values[0] : '');
+		const value = this.project ? this.project.projectFilePath : (values[0] ?? '');
 
 		this.projectFileDropdown = view.modelBuilder.dropDown().withProps({
 			editable: true,
