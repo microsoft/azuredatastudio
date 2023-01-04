@@ -292,16 +292,13 @@ export class WorkspaceService implements IWorkspaceService {
 						return;
 					}
 
-					let projFilesInWorkspace: vscode.Uri[] = [];
 					for (const projType of projectTypes) {
-						(await vscode.workspace.findFiles(`**/*.${projType}`)).forEach(f => projFilesInWorkspace.push(f));
-					}
-
-					if (projFilesInWorkspace?.length > 0) {
-						// only try to activate the extension if the workspace has a project with that extension
-						await extension.activate();
-					} else {
-						return;
+						const projFilesInWorkspace = await vscode.workspace.findFiles(`**/*.${projType}`);
+						if (projFilesInWorkspace.length > 0) {
+							// only try to activate the extension if the workspace has at least one project with that extension
+							await extension.activate();
+							break;
+						}
 					}
 				}
 			}
