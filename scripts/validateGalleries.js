@@ -30,20 +30,22 @@ const INSIDERS = 'extensionsGallery-insider';
 const INSIDERS_DOWNLOADED_EXT_DIR = path.join(DOWNLOADED_EXT_DIR, INSIDERS);
 
 const STABLE_GALLERY_PATH = path.join(ROOT_DIR, 'extensionsGallery.json');
-let STABLE_GALLERY_JSON;
-try {
-    STABLE_GALLERY_JSON = JSON.parse(fs.readFileSync(STABLE_GALLERY_PATH).toString());
-} catch (err) {
-    throw new Error(`Unable to parse extension gallery file ${STABLE_GALLERY_PATH} : ${err}`);
-}
+const STABLE_GALLERY_JSON = parseGalleryJson(STABLE_GALLERY_PATH);
 const INSIDERS_GALLERY_PATH = path.join(ROOT_DIR, 'extensionsGallery-insider.json');
-let INSIDERS_GALLERY_JSON;
-try {
-    INSIDERS_GALLERY_JSON = JSON.parse(fs.readFileSync(INSIDERS_GALLERY_PATH).toString());
-} catch (err) {
-    throw new Error(`Unable to parse extension gallery file ${INSIDERS_GALLERY_PATH} : ${err}`);
-}
+const INSIDERS_GALLERY_JSON = parseGalleryJson(INSIDERS_GALLERY_PATH);
 
+/**
+ * Parses the gallery file into a JSON object, throwing an Error if it is unable to parse the file into valid JSON.
+ * @param {string} galleryPath
+ * @returns The parsed gallery JSON
+ */
+function parseGalleryJson(galleryPath) {
+    try {
+        return JSON.parse(fs.readFileSync(galleryPath).toString());
+    } catch (err) {
+        throw new Error(`Unable to parse extension gallery file ${galleryPath} : ${err}`);
+    }
+}
 /**
  * Extensions that have been deprecated and removed from the galleries.
  */
@@ -247,6 +249,13 @@ async function validateVersion(galleryFilePath, extensionName, extensionJson, ex
     }
 }
 
+/**
+ * Parses an extension version, throwing an Error if the version could not be parsed (was not a valid SemVer version)
+ * @param {string} galleryFilePath The path to the gallery file the version is from
+ * @param {string} extensionName The name of the extension whose version is being parsed
+ * @param {string} version The version to parse
+ * @returns The parsed SemVer object if parsing was successful
+ */
 function parseVersion(galleryFilePath, extensionName, version) {
     const parsedVersion = semver.parse(version);
     if (!parsedVersion) {
@@ -518,10 +527,10 @@ function validateResultMetadata(galleryFilePath, extensionCount, resultMetadataJ
 }
 
 /**
- *
- * @param {*} galleryJson
- * @param {string} extensionName
- * @returns
+ * Finds the extension with the specified name from the specified gallery JSON
+ * @param {*} galleryJson The gallery JSON to search
+ * @param {string} extensionName The name of the extension to find
+ * @returns The extension JSON
  */
 function findExtension(galleryJson, extensionName) {
     return galleryJson.results[0].extensions.find(e => e.extensionName === extensionName);
