@@ -127,7 +127,8 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 }
 
 function getCellDisplayValue(cellValue: string): string {
-	let valueToDisplay = cellValue.replace(/(\r\n|\n|\r)/g, ' ');
+	// allow-any-unicode-next-line
+	let valueToDisplay = cellValue.replace(/(\r\n|\n|\r)/g, '↵');
 	return escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
 }
 
