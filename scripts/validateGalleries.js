@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+// @ts-check
+
 'use strict';
 
 import * as path from 'path';
@@ -66,41 +68,95 @@ const deprecatedExtension = ['dotnet-interactive-vscode', 'jupyter'];
  */
 
 /**
- * Validate the extension gallery json according to
- * interface IRawGalleryQueryResult {
- *    results: {
- *        extensions: IRawGalleryExtension[];
- *        resultMetadata: {
- *            metadataType: string;
- *            metadataItems: {
- *                name: string;
- *                count: number;
- *            }[];
- *        }[]
- *    }[];
- * }
+ * Typings for the gallery and package.json objects being validated.
+ * Gallery typings are from https://github.com/Microsoft/azuredatastudio/blob/main/src/vs/platform/extensionManagement/common/extensionGalleryService.ts
+ *
+ * @typedef {{
+ *      results: IRawGalleryQueryResult[]
+ * }} IRawGalleryQueryResults
+ *
+ * @typedef {{
+ *      extensions: IRawGalleryExtension[],
+ *      resultMetadata:  IResultMetadata[]
+ * }} IRawGalleryQueryResult
+ *
+ * @typedef {{
+ *      metadataType: string;
+ *      metadataItems: {
+ *          name: string,
+ *          count: number
+ *      }[]
+ * }} IResultMetadata
+ *
+ * @typedef {{
+ *      extensionId: string,
+ *      extensionName: string,
+ *      displayName: string,
+ *      shortDescription: string,
+ *      publisher: {
+ *          displayName: string,
+ *          publisherId: string,
+ *          publisherName: string
+ *      },
+ *      versions: IRawGalleryExtensionVersion[],
+ *      statistics: IRawGalleryExtensionStatistics[],
+ *      flags: string;
+ * }} IRawGalleryExtension
+ *
+ * @typedef {{
+ *      statisticName: string,
+ *      value: number
+ * }} IRawGalleryExtensionStatistics
+ *
+ * @typedef {{
+ *     version: string,
+ *     lastUpdated: string,
+ *     assetUri: string,
+ *     fallbackAssetUri: string,
+ *     files: IRawGalleryExtensionFile[],
+ *     properties?: IRawGalleryExtensionProperty[]
+ * }} IRawGalleryExtensionVersion
+ *
+ * @typedef {{
+ *     assetType: string,
+ *     source: string
+ * }} IRawGalleryExtensionFile
+ *
+ * @typedef {{
+ *     key: string,
+ *     value: string
+ * }} IRawGalleryExtensionProperty
+ *
+ * @typedef {{
+ *      name: string,
+ *      publisher: string,
+ *      version: string,
+ *      engines: {
+ *          vscode?: string,
+ *          azdata?: string
+ *      },
+ *      preview?: boolean
+ * }} IPackageJson
+ */
+
+/**
+ * Validate an IRawGalleryQueryResults object
+ * @param {string} galleryFilePath
+ * @param {IRawGalleryQueryResults} galleryJson
  */
 async function validateExtensionGallery(galleryFilePath, galleryJson) {
     if (!galleryJson.results || !galleryJson.results[0]) {
         throw new Error(`${galleryFilePath} - results invalid`);
     }
-    await validateResults(galleryFilePath, galleryJson.results[0]);
+    await validateResult(galleryFilePath, galleryJson.results[0]);
 }
 
 /**
- * Validate results blob according to
- * {
- *     extensions: IRawGalleryExtension[];
- *     resultMetadata: {
- *         metadataType: string;
- *         metadataItems: {
- *             name: string;
- *             count: number;
- *         }[];
- *     }[]
- * }
+ * Validate an IRawGalleryQueryResult object
+ * @param {string} galleryFilePath
+ * @param {IRawGalleryQueryResult} resultsJson
  */
-async function validateResults(galleryFilePath, resultsJson) {
+async function validateResult(galleryFilePath, resultsJson) {
     if (!resultsJson.extensions || !resultsJson.extensions.length) {
         throw new Error(`${galleryFilePath} - No extensions\n${JSON.stringify(resultsJson)}`)
     }
@@ -113,17 +169,9 @@ async function validateResults(galleryFilePath, resultsJson) {
 }
 
 /**
- * Validate extension blob according to
- * interface IRawGalleryExtension {
- * 	extensionId: string;
- * 	extensionName: string;
- * 	displayName: string;
- * 	shortDescription: string;
- * 	publisher: { displayName: string, publisherId: string, publisherName: string; };
- * 	versions: IRawGalleryExtensionVersion[];
- * 	statistics: IRawGalleryExtensionStatistics[];
- * 	flags: string;
- * }
+ * Validate an IRawGalleryExtension object
+ * @param {string} galleryFilePath
+ * @param {IRawGalleryExtension} extensionJson
  */
 async function validateExtension(galleryFilePath, extensionJson) {
     if (!extensionJson.extensionId) {
@@ -171,12 +219,10 @@ async function validateExtension(galleryFilePath, extensionJson) {
 }
 
 /**
- * Validate an extension statistics blob according to
- *
- * interface IRawGalleryExtensionStatistics {
- *      statisticName: string;
- *      value: number;
- *  }
+ * Validate an IRawGalleryExtensionStatistics object
+ * @param {string} galleryFilePath
+ * @param {string} extensionName
+ * @param {IRawGalleryExtensionStatistics} extensionStatisticsJson
  */
 function validateExtensionStatistics(galleryFilePath, extensionName, extensionStatisticsJson) {
     if (!extensionStatisticsJson.statisticName) {
@@ -188,15 +234,11 @@ function validateExtensionStatistics(galleryFilePath, extensionName, extensionSt
 }
 
 /**
- * Validate an extension version blob according to
- * interface IRawGalleryExtensionVersion {
- *     version: string;
- *     lastUpdated: string;
- *     assetUri: string;
- *     fallbackAssetUri: string;
- *     files: IRawGalleryExtensionFile[];
- *     properties?: IRawGalleryExtensionProperty[];
- * }
+ * Validate an IRawGalleryExtensionVersion object
+ * @param {string} galleryFilePath
+ * @param {string} extensionName
+ * @param {IRawGalleryExtension} extensionJson
+ * @param {IRawGalleryExtensionVersion} extensionVersionJson
  */
 async function validateVersion(galleryFilePath, extensionName, extensionJson, extensionVersionJson) {
     if (!extensionVersionJson.version) {
@@ -268,6 +310,9 @@ function parseVersion(galleryFilePath, extensionName, version) {
  * Validates that an extension version has the expected files for displaying in the gallery.
  * There are some existing 3rd party extensions that don't have all the files, but that's ok for now.
  * Going forward all new extensions should provide these files.
+ * @param {string} galleryFilePath
+ * @param {string} extensionName
+ * @param {IRawGalleryExtensionFile[]} filesJson
  */
 function validateHasRequiredAssets(galleryFilePath, extensionName, filesJson) {
     // VSIXPackage or DownloadPage
@@ -308,11 +353,10 @@ function validateHasRequiredAssets(galleryFilePath, extensionName, filesJson) {
 }
 
 /**
- * Validate an extension property blob according to
- * interface IRawGalleryExtensionProperty {
- *     key: string;
- *     value: string;
- * }
+ * Validate an IRawGalleryExtensionProperty object
+ * @param {string} galleryFilePath
+ * @param {string} extensionName
+ * @param {IRawGalleryExtensionProperty} extensionPropertyJson
  */
 function validateExtensionProperty(galleryFilePath, extensionName, extensionPropertyJson) {
     if (!extensionPropertyJson.key) {
@@ -339,13 +383,14 @@ const allowedHosts = [
 ];
 
 /**
- * Validate an extension file blob according to
- * interface IRawGalleryExtensionFile {
- *     assetType: string;
- *     source: string;
- * }
+ * Validate an IRawGalleryExtensionFile object
  * Will also validate that the source URL provided is valid, and if it's a direct VSIX link that the
  * package metadata matches what's in the gallery.
+ * @param {string} galleryFilePath
+ * @param {string} extensionName
+ * @param {IRawGalleryExtension} extensionJson
+ * @param {IRawGalleryExtensionFile} extensionFileJson
+ * @returns Promise that will complete when it's done validating the extension files
  */
 async function validateExtensionFile(galleryFilePath, extensionName, extensionJson, extensionFileJson) {
     if (!extensionFileJson.assetType) {
@@ -386,7 +431,7 @@ async function validateExtensionFile(galleryFilePath, extensionName, extensionJs
                 if (entry.fileName == 'extension/package.json') {
                     await mkdir(path.dirname(packageJsonWritePath), { recursive: true });
                     const entryWriteStream = fs.createWriteStream(packageJsonWritePath);
-                    const entryReadStream = await entry.openReadStream({ autoClose: true });
+                    const entryReadStream = await entry.openReadStream();
                     await pipeline(entryReadStream, entryWriteStream);
                     entryWriteStream.close();
                 }
@@ -397,7 +442,7 @@ async function validateExtensionFile(galleryFilePath, extensionName, extensionJs
 
         // Validate that the package.json metadata matches the gallery metadata
         try {
-            const packageJson = JSON.parse(fs.readFileSync(packageJsonWritePath));
+            const packageJson = JSON.parse(fs.readFileSync(packageJsonWritePath).toString());
             validatePackageJson(extensionJson, packageJson);
         } catch (err) {
             throw new Error(`${galleryFilePath} - ${extensionName} - Error validating package.json. ${err}`);
@@ -424,8 +469,8 @@ const publisherMappings = {
 /**
  * Validates that the entries in the package.json for the given extension matches those specified in the extension gallery.
  *
- * @param extensionJson The JSON object for this extension from the gallery
- * @param packageJson The JSON object for this extension from the package.json of the extension
+ * @param {IRawGalleryExtension} extensionJson The JSON object for this extension from the gallery
+ * @param {IPackageJson} packageJson The JSON object for this extension from the package.json of the extension
  */
 function validatePackageJson(extensionJson, packageJson) {
     // Check names match
@@ -445,12 +490,12 @@ function validatePackageJson(extensionJson, packageJson) {
     }
 
     // Check vs code engine matches
-    const extensionVsCodeEngine = extensionJson.versions[0].properties.find(p => p.key === MICROSOFT_VISUALSTUDIO_CODE_ENGINE)?.value;
+    const extensionVsCodeEngine = extensionJson.versions[0].properties?.find(p => p.key === MICROSOFT_VISUALSTUDIO_CODE_ENGINE)?.value;
     const packageVsCodeEngine = packageJson.engines?.vscode;
     validateEngineVersionMatches(MICROSOFT_VISUALSTUDIO_CODE_ENGINE, 'vscode', extensionVsCodeEngine, packageVsCodeEngine);
 
     // Check azdata engine matches
-    const extensionAzdataEngine = extensionJson.versions[0].properties.find(p => p.key === MICROSOFT_AZDATAENGINE)?.value;
+    const extensionAzdataEngine = extensionJson.versions[0].properties?.find(p => p.key === MICROSOFT_AZDATAENGINE)?.value;
     const packageAzdataEngine = packageJson.engines?.azdata;
     validateEngineVersionMatches(MICROSOFT_AZDATAENGINE, 'azdata', extensionAzdataEngine, packageAzdataEngine);
 
@@ -467,6 +512,13 @@ function validatePackageJson(extensionJson, packageJson) {
     }
 }
 
+/**
+ * Checks that the engine versions match between the gallery and the package.json for an extension
+ * @param {string} extensionGalleryEngineName
+ * @param {string} packageEngineName
+ * @param {string | undefined} extensionGalleryVersion
+ * @param {string | undefined} packageVersion
+ */
 function validateEngineVersionMatches(extensionGalleryEngineName, packageEngineName, extensionGalleryVersion, packageVersion) {
     // Normalize the engine versions since both ^ and >= are supported
     const normalizedExtensionGalleryVersion = extensionGalleryVersion?.replace(">=", "^");
@@ -497,13 +549,10 @@ function validateEngineVersionMatches(extensionGalleryEngineName, packageEngineN
 }
 
 /**
- * Validate a result metadata blob according to
- * {
- *     metadataType: string;
- *     metadataItems: {
- *         name: string;
- *         count: number;
- * }
+ * Validate an IResultMetadata object
+ * @param {string} galleryFilePath
+ * @param {number} extensionCount
+ * @param {IResultMetadata} resultMetadataJson
  */
 function validateResultMetadata(galleryFilePath, extensionCount, resultMetadataJson) {
     if (!resultMetadataJson.metadataType) {
@@ -528,7 +577,7 @@ function validateResultMetadata(galleryFilePath, extensionCount, resultMetadataJ
 
 /**
  * Finds the extension with the specified name from the specified gallery JSON
- * @param {*} galleryJson The gallery JSON to search
+ * @param {IRawGalleryQueryResults} galleryJson The gallery JSON to search
  * @param {string} extensionName The name of the extension to find
  * @returns The extension JSON
  */
@@ -536,6 +585,10 @@ function findExtension(galleryJson, extensionName) {
     return galleryJson.results[0].extensions.find(e => e.extensionName === extensionName);
 }
 
+/**
+ * Cleans the downloaded extension folder, removing anything currently in it.
+ * @param {string} downloadedExtDir
+ */
 async function cleanDownloadedExtensionFolder(downloadedExtDir) {
     // Delete folder if it exists
     try {
