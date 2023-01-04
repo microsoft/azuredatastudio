@@ -23,9 +23,10 @@ export class ErrorHandlingService implements IErrorHandlingService {
 				const provider = this._providers[key];
 				promises.push(provider.handleErrorCode(errorCode, errorMessage, connectionTypeId)
 					.then(response => {
-						result = response;
-					}, () => { /* Swallow failures at getting accounts, we'll just hide that provider */
-					}));
+						if (result === errorHandling.ErrorCodes.noErrorOrUnsupported) {
+							result = response;
+						}
+					}, () => { }));
 			}
 		}
 
