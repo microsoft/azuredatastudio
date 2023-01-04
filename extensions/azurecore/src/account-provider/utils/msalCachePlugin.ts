@@ -5,8 +5,10 @@
 
 import { ICachePlugin, TokenCacheContext } from '@azure/msal-node';
 import { promises as fsPromises } from 'fs';
+
 import * as lockFile from 'lockfile';
 import * as path from 'path';
+import { AccountsClearTokenCacheCommand } from '../../constants';
 import { Logger } from '../../utils/Logger';
 
 export class MsalCachePluginProvider {
@@ -41,8 +43,14 @@ export class MsalCachePluginProvider {
 				}
 				Logger.verbose(`MsalCachePlugin: Token read from cache successfully.`);
 			} catch (e) {
-				Logger.error(`MsalCachePlugin: Failed to read from cache file: ${e}`);
-				throw e;
+				if (e.code === 'ENOENT') {
+					// File doesn't exist, log and continue
+					Logger.verbose(`MsalCachePlugin: Cache file not found on disk: ${e.code}`);
+				}
+				else {
+					Logger.error(`MsalCachePlugin: Failed to read from cache file: ${e}`);
+					throw e;
+				}
 			} finally {
 				lockFile.unlockSync(lockFilePath);
 				this._lockTaken = false;
@@ -100,7 +108,7 @@ export class MsalCachePluginProvider {
 			} catch (e) {
 				if (retryAttempt === retries) {
 					Logger.error(`MsalCachePlugin: Failed to acquire lock on cache file after ${retries} attempts.`);
-					throw e;
+					throw new Error(`Failed to acquire lock on cache file after ${retries} attempts. Please attempt command: '${AccountsClearTokenCacheCommand}' to clear access token cache.`);
 				}
 				retryAttempt++;
 				Logger.verbose(`MsalCachePlugin: Failed to acquire lock on cache file. Retrying in ${retryWait} ms.`);
