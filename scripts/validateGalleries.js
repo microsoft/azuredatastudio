@@ -234,7 +234,7 @@ async function validateVersion(galleryFilePath, extensionName, extensionJson, ex
     validateHasRequiredAssets(galleryFilePath, extensionName, extensionVersionJson.files);
 
     for (const file of extensionVersionJson.files) {
-        // await validateExtensionFile(galleryFilePath, extensionName, extensionJson, file);
+        await validateExtensionFile(galleryFilePath, extensionName, extensionJson, file);
     }
     if (extensionVersionJson.properties && extensionVersionJson.properties.length) {
         extensionVersionJson.properties.forEach(property => validateExtensionProperty(galleryFilePath, extensionName, property));
