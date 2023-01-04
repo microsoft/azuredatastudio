@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ICachePlugin, TokenCacheContext } from '@azure/msal-node';
-import { constants, promises as fsPromises } from 'fs';
+import { promises as fsPromises } from 'fs';
 import * as lockFile from 'lockfile';
 import * as path from 'path';
 import { Logger } from '../../utils/Logger';
@@ -12,12 +12,14 @@ import { Logger } from '../../utils/Logger';
 export class MsalCachePluginProvider {
 	constructor(
 		private readonly _serviceName: string,
-		private readonly _msalFilePath: string
+		private readonly _msalFilePath: string,
 	) {
 		this._msalFilePath = path.join(this._msalFilePath, this._serviceName);
 		this._serviceName = this._serviceName.replace(/-/, '_');
 		Logger.verbose(`MsalCachePluginProvider: Using cache path ${_msalFilePath} and serviceName ${_serviceName}`);
 	}
+
+	private _lockTaken: boolean = false;
 
 	private getLockfilePath(): string {
 		return this._msalFilePath + '.lock';
@@ -26,31 +28,24 @@ export class MsalCachePluginProvider {
 	public getCachePlugin(): ICachePlugin {
 		const lockFilePath = this.getLockfilePath();
 		const beforeCacheAccess = async (cacheContext: TokenCacheContext): Promise<void> => {
-			let isAccessible = true;
 			await this.waitAndLock(lockFilePath);
 			try {
+				const cache = await fsPromises.readFile(this._msalFilePath, { encoding: 'utf8' });
 				try {
-					await fsPromises.access(this._msalFilePath, constants.R_OK | constants.W_OK);
-				} catch {
-					Logger.error(`MsalCachePlugin: Cache file is not accessible.`);
-					isAccessible = false;
+					cacheContext.tokenCache.deserialize(cache);
+				} catch (e) {
+					// Handle deserialization error in cache file in case file gets corrupted.
+					// Clearing cache here will ensure account is marked stale so re-authentication can be triggered.
+					Logger.verbose(`MsalCachePlugin: Error occurred when trying to read cache file, file contents will be cleared: ${e.message}`);
+					await fsPromises.writeFile(this._msalFilePath, '', { encoding: 'utf8' });
 				}
-				if (isAccessible) {
-					const cache = await fsPromises.readFile(this._msalFilePath, { encoding: 'utf8' });
-					try {
-						cacheContext.tokenCache.deserialize(cache);
-					} catch (e) { // Handle deserialization error in cache file in case file gets corrupted.
-						// Clearing cache here will ensure account is marked stale so re-authentication can be triggered.
-						Logger.verbose(`MsalCachePlugin: Cache file contents will be cleeared.`);
-						await fsPromises.writeFile(this._msalFilePath, '', { encoding: 'utf8' });
-					}
-					Logger.verbose(`MsalCachePlugin: Token read from cache successfully.`);
-				}
+				Logger.verbose(`MsalCachePlugin: Token read from cache successfully.`);
 			} catch (e) {
 				Logger.error(`MsalCachePlugin: Failed to read from cache file: ${e}`);
 				throw e;
 			} finally {
 				lockFile.unlockSync(lockFilePath);
+				this._lockTaken = false;
 			}
 		}
 
@@ -66,6 +61,7 @@ export class MsalCachePluginProvider {
 					throw e;
 				} finally {
 					lockFile.unlockSync(lockFilePath);
+					this._lockTaken = false;
 				}
 			}
 		};
@@ -86,12 +82,20 @@ export class MsalCachePluginProvider {
 		const retries = 500;
 		const retryWait = 100;
 
+		// We cannot rely on lockfile.lockSync() to clear stale lockfile,
+		// so we check if the lockfile exists and if it does, calling unlockSync() will clear it.
+		if (lockFile.checkSync(lockFilePath) && !this._lockTaken) {
+			lockFile.unlockSync(lockFilePath);
+			Logger.verbose(`MsalCachePlugin: Stale lockfile found and has been removed.`);
+		}
+
 		let retryAttempt = 0;
 		while (retryAttempt <= retries) {
 			try {
 				// Use lockfile.lockSync() to ensure only one process is accessing the cache at a time.
 				// lockfile.lock() does not wait for async callback promise to resolve.
 				lockFile.lockSync(lockFilePath);
+				this._lockTaken = true;
 				break;
 			} catch (e) {
 				if (retryAttempt === retries) {
