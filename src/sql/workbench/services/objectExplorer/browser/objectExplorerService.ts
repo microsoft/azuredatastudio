@@ -212,7 +212,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public async updateObjectExplorerNodes(connection: IConnectionProfile): Promise<void> {
 		const withPassword = await this._connectionManagementService.addSavedPassword(connection);
 		const connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, withPassword);
-		return this.updateNewObjectExplorerNode(connectionProfile);
+		return this.updateNewObjectExplorerNode(connectionProfile); // lewis-trace 1.15    lewis-trace 2.12
 	}
 
 	public async deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void> {
@@ -333,7 +333,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			this.sendUpdateNodeEvent(connection);
 		} else {
 			try {
-				await this.createNewSession(connection.providerName, connection);
+				await this.createNewSession(connection.providerName, connection); // lewis-trace 1.16    lewis-trace 2.13
 			} catch (err) {
 				this.sendUpdateNodeEvent(connection, err);
 				throw err;
@@ -352,7 +352,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			const waitTimeBeforeNextInvocationInMs = 1000;
 			const invokeImmediately = true;
 			const createNewSession = debounce(async () => {
-				const result = await provider.createNewSession(connection.toConnectionInfo());
+				const result = await provider.createNewSession(connection.toConnectionInfo()); // lewis-trace 1.17    lewis-trace 2.14 *** TOP OF CALL STACK
 
 				self._sessions[result.sessionId] = {
 					connection: connection,

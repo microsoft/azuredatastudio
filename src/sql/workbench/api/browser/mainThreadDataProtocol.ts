@@ -565,7 +565,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 
 	// Connection Management handlers
 	public $onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
-		this._connectionManagementService.onConnectionComplete(handle, connectionInfoSummary);
+		this._connectionManagementService.onConnectionComplete(handle, connectionInfoSummary); // lewis-trace 2.1.1
 	}
 
 	public $onIntelliSenseCacheComplete(handle: number, connectionUri: string): void {

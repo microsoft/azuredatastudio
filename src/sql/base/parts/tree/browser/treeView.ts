@@ -534,7 +534,7 @@ export class TreeView extends HeightMap {
 
 		this.viewListeners.push(DOM.addDisposableListener(this.domNode, 'keydown', (e) => this.onKeyDown(e)));
 		this.viewListeners.push(DOM.addDisposableListener(this.domNode, 'keyup', (e) => this.onKeyUp(e)));
-		this.viewListeners.push(DOM.addDisposableListener(this.domNode, 'mousedown', (e) => this.onMouseDown(e)));
+		this.viewListeners.push(DOM.addDisposableListener(this.domNode, 'mousedown', (e) => this.onMouseDown(e))); // lewis-trace 1.1
 		this.viewListeners.push(DOM.addDisposableListener(this.domNode, 'mouseup', (e) => this.onMouseUp(e)));
 		this.viewListeners.push(DOM.addDisposableListener(this.wrapper, 'auxclick', (e: MouseEvent) => {
 			if (e && e.button === 1) {
@@ -1161,7 +1161,7 @@ export class TreeView extends HeightMap {
 			return;
 		}
 
-		this.context.controller!.onMouseDown!(this.context.tree, item.model.getElement(), event);
+		this.context.controller!.onMouseDown!(this.context.tree, item.model.getElement(), event); // lewis-trace 1.2
 	}
 
 	private onMouseUp(e: MouseEvent): void {

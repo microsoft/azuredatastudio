@@ -35,7 +35,7 @@ export class ServerTreeController extends treedefaults.DefaultController {
 	}
 
 	protected override onLeftClick(tree: ITree, element: any, event: IMouseEvent, origin: string = 'mouse'): boolean {
-		return super.onLeftClick(tree, element, event, origin);
+		return super.onLeftClick(tree, element, event, origin); // lewis-trace 1.4
 	}
 
 	// Do not allow left / right to expand and collapse groups #7848

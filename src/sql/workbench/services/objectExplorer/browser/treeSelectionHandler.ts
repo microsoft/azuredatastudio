@@ -56,7 +56,7 @@ export class TreeSelectionHandler {
 				this._lastClicked = undefined;
 			}
 			if (!TreeUpdateUtils.isInDragAndDrop) {
-				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, capabilitiesService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback);
+				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, capabilitiesService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback); // lewis-trace 1.12   lewis-trace 2.9   *** CALL STACKS MERGE HERE
 			}
 		});
 
@@ -81,13 +81,13 @@ export class TreeSelectionHandler {
 			}
 			this._lastClicked = selection;
 
-			this._clickTimer = setTimeout(() => {
-				sendSelectionEvent(event, selection, false, true);
+			this._clickTimer = setTimeout(() => { // lewis-trace 1.10
+				sendSelectionEvent(event, selection, false, true); // lewis-trace 1.11
 			}, 400);
 		} else {
 			clearTimeout(this._otherTimer);
-			this._otherTimer = setTimeout(() => {
-				sendSelectionEvent(event, selection, false, false);
+			this._otherTimer = setTimeout(() => { // lewis-trace 2.7
+				sendSelectionEvent(event, selection, false, false); // lewis-trace 2.8
 			}, 400);
 		}
 	}
@@ -131,7 +131,7 @@ export class TreeSelectionHandler {
 				if (connectionProfile) {
 					this.onTreeActionStateChange(true);
 
-					TreeUpdateUtils.connectAndCreateOeSession(connectionProfile, options, connectionManagementService, objectExplorerService, tree).then(sessionCreated => {
+					TreeUpdateUtils.connectAndCreateOeSession(connectionProfile, options, connectionManagementService, objectExplorerService, tree).then(sessionCreated => { // lewis-trace 1.13   lewis-trace 2.10
 						if (!sessionCreated) {
 							this.onTreeActionStateChange(false);
 						}

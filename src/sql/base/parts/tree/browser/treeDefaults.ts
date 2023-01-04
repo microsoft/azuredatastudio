@@ -146,7 +146,7 @@ export class DefaultController implements _.IController {
 			}
 
 			// Propagate to onLeftClick now
-			return this.onLeftClick(tree, element, event, origin);
+			return this.onLeftClick(tree, element, event, origin); // lewis-trace 1.3
 		}
 
 		return false;
@@ -188,7 +188,7 @@ export class DefaultController implements _.IController {
 			eventish.stopPropagation();
 
 			tree.domFocus();
-			tree.setSelection([element], payload);
+			tree.setSelection([element], payload); // lewis-trace 1.5
 			tree.setFocus(element, payload);
 
 			if (this.shouldToggleExpansion(element, event, origin)) {

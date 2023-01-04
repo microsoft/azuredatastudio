@@ -126,7 +126,7 @@ export class TreeUpdateUtils {
 			let treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
 			if (treeInput) {
 				const originalInput = tree.getInput();
-				if (treeInput !== originalInput) {
+				if (treeInput !== originalInput) { // lewis-trace 2.1.9
 					return tree.setInput(treeInput).then(async () => {
 						if (originalInput && isDisposable(originalInput)) {
 							originalInput.dispose();
@@ -136,7 +136,7 @@ export class TreeUpdateUtils {
 							await tree.expandAll(targetsToExpand);
 						}
 						if (selectedElement) {
-							tree.select(selectedElement);
+							tree.select(selectedElement); // lewis-trace 2.1.10
 						}
 						tree.getFocus();
 					}, onUnexpectedError);
@@ -231,7 +231,7 @@ export class TreeUpdateUtils {
 
 			let rootNode: TreeNode | undefined = objectExplorerService.getObjectExplorerNode(connectedConnection);
 			if (!rootNode) {
-				await objectExplorerService.updateObjectExplorerNodes(connectedConnection);
+				await objectExplorerService.updateObjectExplorerNodes(connectedConnection); // lewis-trace 1.14    lewis-trace 2.11
 				return true;
 				// The oe request is sent. an event will be raised when the session is created
 			} else {
