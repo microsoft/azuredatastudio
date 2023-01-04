@@ -439,6 +439,13 @@ declare module 'azdata' {
 		handleOtherError(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<errorHandling.ErrorCodes>;
 	}
 
+	/**
+	 * An interface for interpreting an error code from a provider.
+	 */
+	export interface ErrorHandler {
+		handleErrorCode(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<errorHandling.ErrorCodes>;
+	}
+
 	export namespace errorHandling {
 		/**
 		 * The error codes returned to indicate what kind of error is being thrown.

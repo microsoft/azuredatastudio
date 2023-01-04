@@ -613,6 +613,16 @@ export abstract class ExtHostResourceProviderShape {
 }
 
 /**
+ * ResourceProvider extension host class.
+ */
+export abstract class ExtHostErrorHandlerShape {
+	/**
+	 * Handle other error types
+	 */
+	$handleErrorCode(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.errorHandling.ErrorCodes> { throw ni(); }
+}
+
+/**
  * Credential Management extension host class.
  */
 export abstract class ExtHostCredentialManagementShape {
@@ -649,6 +659,11 @@ export interface MainThreadAzureBlobShape extends IDisposable {
 export interface MainThreadResourceProviderShape extends IDisposable {
 	$registerResourceProvider(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any>;
 	$unregisterResourceProvider(handle: number): Thenable<any>;
+}
+
+export interface MainThreadErrorHandlerShape extends IDisposable {
+	$registerErrorHandler(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any>;
+	$unregisterErrorHandler(handle: number): Thenable<any>;
 }
 
 export interface MainThreadDataProtocolShape extends IDisposable {
