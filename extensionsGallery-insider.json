@@ -4787,7 +4787,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"https://github.com/mongodb-js/vscode/blob/v0.9.3/images/mongodb.png"
+									"source": "https://github.com/mongodb-js/vscode/blob/v0.9.3/images/mongodb.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
