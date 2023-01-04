@@ -4650,14 +4650,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.2.4",
-							"lastUpdated": "11/23/2022",
+							"version": "0.2.5",
+							"lastUpdated": "01/04/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/mysql/azuredatastudio-mysql-0.2.4.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/mysql/azuredatastudio-mysql-0.2.5.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
