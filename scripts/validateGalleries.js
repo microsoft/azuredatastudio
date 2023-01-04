@@ -12,8 +12,9 @@ import got from 'got';
 import * as stream from 'stream';
 import { promisify } from 'util';
 const pipeline = promisify(stream.pipeline);
-import { mkdir, rm, rmdir } from 'fs/promises';
+import { mkdir, rm } from 'fs/promises';
 import yauzl from 'yauzl-promise';
+import semver from 'semver';
 
 const ROOT_DIR = path.join(path.dirname(url.fileURLToPath(import.meta.url)), '..');
 const DOWNLOADED_EXT_DIR = path.join(ROOT_DIR, '.downloaded-extensions');
@@ -27,6 +28,28 @@ const STABLE = 'extensionsGallery';
 const STABLE_DOWNLOADED_EXT_DIR = path.join(DOWNLOADED_EXT_DIR, STABLE);
 const INSIDERS = 'extensionsGallery-insider';
 const INSIDERS_DOWNLOADED_EXT_DIR = path.join(DOWNLOADED_EXT_DIR, INSIDERS);
+
+const STABLE_GALLERY_PATH = path.join(ROOT_DIR, 'extensionsGallery.json');
+const STABLE_GALLERY_JSON = parseGalleryJson(STABLE_GALLERY_PATH);
+const INSIDERS_GALLERY_PATH = path.join(ROOT_DIR, 'extensionsGallery-insider.json');
+const INSIDERS_GALLERY_JSON = parseGalleryJson(INSIDERS_GALLERY_PATH);
+
+/**
+ * Parses the gallery file into a JSON object, throwing an Error if it is unable to parse the file into valid JSON.
+ * @param {string} galleryPath
+ * @returns The parsed gallery JSON
+ */
+function parseGalleryJson(galleryPath) {
+    try {
+        return JSON.parse(fs.readFileSync(galleryPath).toString());
+    } catch (err) {
+        throw new Error(`Unable to parse extension gallery file ${galleryPath} : ${err}`);
+    }
+}
+/**
+ * Extensions that have been deprecated and removed from the galleries.
+ */
+const deprecatedExtension = ['dotnet-interactive-vscode', 'jupyter'];
 
 /**
  * This file is for validating the extension gallery files to ensure that they adhere to the expected schema defined in
@@ -57,13 +80,7 @@ const INSIDERS_DOWNLOADED_EXT_DIR = path.join(DOWNLOADED_EXT_DIR, INSIDERS);
  *    }[];
  * }
  */
-async function validateExtensionGallery(galleryFilePath) {
-    let galleryJson;
-    try {
-        galleryJson = JSON.parse(fs.readFileSync(galleryFilePath).toString());
-    } catch (err) {
-        throw new Error(`Unable to parse extension gallery file ${galleryFilePath} : ${err}`);
-    }
+async function validateExtensionGallery(galleryFilePath, galleryJson) {
     if (!galleryJson.results || !galleryJson.results[0]) {
         throw new Error(`${galleryFilePath} - results invalid`);
     }
@@ -132,9 +149,7 @@ async function validateExtension(galleryFilePath, extensionJson) {
     if (extensionJson.versions.length !== 1) {
         throw new Error(`${galleryFilePath} - Only one version is currently supported\n${JSON.stringify(extensionJson)}`)
     }
-    for (const version of extensionJson.versions) {
-        await validateVersion(galleryFilePath, extensionName, extensionJson, version);
-    }
+    await validateVersion(galleryFilePath, extensionName, extensionJson, extensionJson.versions[0]);
 
     if (!extensionJson.statistics || extensionJson.statistics.length === undefined) {
         throw new Error(`${galleryFilePath} - Invalid statistics\n${JSON.stringify(extensionJson)}`)
@@ -143,6 +158,15 @@ async function validateExtension(galleryFilePath, extensionJson) {
 
     if (extensionJson.flags === undefined) {
         throw new Error(`${galleryFilePath} - No flags\n${JSON.stringify(extensionJson)}`)
+    }
+
+    // Check active extensions to make sure they're in insiders if they exist in stable. We don't want to have an extension only be in stable, they
+    // should always be released in insiders first (or at the same time).
+    if (galleryFilePath === STABLE_GALLERY_PATH && !deprecatedExtension.includes(extensionName)) {
+        const insidersExtensionJson = findExtension(INSIDERS_GALLERY_JSON, extensionName);
+        if (!insidersExtensionJson) {
+            throw new Error(`${galleryFilePath} - Extension ${extensionName} exists in the stable gallery but not in the insiders gallery. An extension must always be in both if it's in the stable gallery.`);
+        }
     }
 }
 
@@ -178,6 +202,21 @@ async function validateVersion(galleryFilePath, extensionName, extensionJson, ex
     if (!extensionVersionJson.version) {
         throw new Error(`${galleryFilePath} - ${extensionName} - No version\n${JSON.stringify(extensionVersionJson)}`)
     }
+    if (galleryFilePath === INSIDERS_GALLERY_PATH) {
+        const stableExtensionJson = findExtension(STABLE_GALLERY_JSON, extensionName);
+        // It's ok if there's no matching extension in stable, insiders can have extensions that aren't published to stable yet
+        if (stableExtensionJson) {
+            // We've already validated the stable gallery fully so can expect it's well formed
+            const stableVersion = stableExtensionJson.versions[0].version;
+            const stableVersionSemver = parseVersion(STABLE_GALLERY_PATH, extensionName, stableVersion);
+            const insidersVersion = extensionVersionJson.version;
+            const insidersVersionSemver = parseVersion(INSIDERS_GALLERY_PATH, extensionName, insidersVersion);
+            const isValid = semver.lte(stableVersionSemver, insidersVersionSemver);
+            if (!isValid) {
+                throw new Error(`${galleryFilePath} - ${extensionName} - Version in stable gallery (${stableVersion}) must be <= version in insiders (${insidersVersion})`)
+            }
+        }
+    }
     if (extensionVersionJson.lastUpdated === undefined) {
         throw new Error(`${galleryFilePath} - ${extensionName} - No last updated\n${JSON.stringify(extensionVersionJson)}`)
     }
@@ -208,6 +247,21 @@ async function validateVersion(galleryFilePath, extensionName, extensionJson, ex
     } else {
         throw new Error(`${galleryFilePath} - ${extensionName} - No properties, extensions must have an AzDataEngine version defined`)
     }
+}
+
+/**
+ * Parses an extension version, throwing an Error if the version could not be parsed (was not a valid SemVer version)
+ * @param {string} galleryFilePath The path to the gallery file the version is from
+ * @param {string} extensionName The name of the extension whose version is being parsed
+ * @param {string} version The version to parse
+ * @returns The parsed SemVer object if parsing was successful
+ */
+function parseVersion(galleryFilePath, extensionName, version) {
+    const parsedVersion = semver.parse(version);
+    if (!parsedVersion) {
+        throw new Error(`${galleryFilePath} - ${extensionName} - Failed to parse version ${version}.`)
+    }
+    return parsedVersion;
 }
 
 /**
@@ -472,6 +526,16 @@ function validateResultMetadata(galleryFilePath, extensionCount, resultMetadataJ
     })
 }
 
+/**
+ * Finds the extension with the specified name from the specified gallery JSON
+ * @param {*} galleryJson The gallery JSON to search
+ * @param {string} extensionName The name of the extension to find
+ * @returns The extension JSON
+ */
+function findExtension(galleryJson, extensionName) {
+    return galleryJson.results[0].extensions.find(e => e.extensionName === extensionName);
+}
+
 async function cleanDownloadedExtensionFolder(downloadedExtDir) {
     // Delete folder if it exists
     try {
@@ -488,6 +552,6 @@ await cleanDownloadedExtensionFolder(STABLE_DOWNLOADED_EXT_DIR);
 await cleanDownloadedExtensionFolder(INSIDERS_DOWNLOADED_EXT_DIR);
 
 await Promise.all([
-    validateExtensionGallery(path.join(ROOT_DIR, 'extensionsGallery.json')),
-    validateExtensionGallery(path.join(ROOT_DIR, 'extensionsGallery-insider.json'))
+    validateExtensionGallery(STABLE_GALLERY_PATH, STABLE_GALLERY_JSON),
+    validateExtensionGallery(INSIDERS_GALLERY_PATH, INSIDERS_GALLERY_JSON)
 ]);
