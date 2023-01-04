@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IErrorHandlingService } from 'sql/workbench/services/errorHandling/common/errorHandlingService';
 import { errorHandling } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as azdata from 'azdata';
@@ -14,26 +13,24 @@ export class ErrorHandlingService implements IErrorHandlingService {
 	private _providers: { [handle: string]: azdata.ErrorHandler; } = Object.create(null);
 
 	constructor(
-		@IInstantiationService private _instantiationService: IInstantiationService
 	) { }
 
 	public async checkErrorCode(errorCode: number, errorMessage: string, connectionTypeId: string): Promise<errorHandling.ErrorCodes> {
+		let result = errorHandling.ErrorCodes.noErrorOrUnsupported
 		const promises = [];
 		if (this._providers) {
 			for (const key in this._providers) {
 				const provider = this._providers[key];
-				// promises.push(provider.handleFirewallRule(errorCode, errorMessage, connectionTypeId)
-				// 	.then(response => {
-				// 		if (response.result) {
-				// 			handleFirewallRuleResult = { canHandleFirewallRule: response.result, ipAddress: response.ipAddress, resourceProviderId: key };
-				// 		}
-				// 	}, () => { /* Swallow failures at getting accounts, we'll just hide that provider */
-				// 	}));
+				promises.push(provider.handleErrorCode(errorCode, errorMessage, connectionTypeId)
+					.then(response => {
+						result = response;
+					}, () => { /* Swallow failures at getting accounts, we'll just hide that provider */
+					}));
 			}
 		}
 
 		await Promise.all(promises);
-		return errorHandling.ErrorCodes.noErrorOrUnsupported
+		return result;
 	}
 
 	/**

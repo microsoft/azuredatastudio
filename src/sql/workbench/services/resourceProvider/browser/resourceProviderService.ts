@@ -107,21 +107,6 @@ export class ResourceProviderService implements IResourceProviderService {
 	}
 
 	/**
-	 * Call change password on the provider.
-	 */
-	public async changePassword(connectionUri: string, connectionInfo: IConnectionProfile, newPassword: string, resourceProviderId: string): Promise<boolean> {
-		const promises = [];
-		if (this._providers) {
-			for (const key in this._providers) {
-				const provider = this._providers[key];
-			}
-		}
-		await Promise.all(promises);
-		return false;
-	}
-
-
-	/**
 	 * Register a resource provider
 	 */
 	public registerProvider(providerId: string, provider: azdata.ResourceProvider): void {

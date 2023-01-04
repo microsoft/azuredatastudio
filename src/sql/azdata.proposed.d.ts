@@ -454,7 +454,14 @@ declare module 'azdata' {
 			noErrorOrUnsupported = 0,
 			passwordReset = 1,
 		}
+
+		/**
+		 * Registers a error handler that can support a provider.
+		 */
+		export function registerErrorHandler(providerMetadata: ResourceProviderMetadata, provider: ErrorHandler): vscode.Disposable;
 	}
+
+
 
 	export namespace connection {
 		/**
