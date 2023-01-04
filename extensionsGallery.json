@@ -4638,34 +4638,34 @@
 					},
 					"versions": [
 						{
-							"version": "3.0.5",
-							"lastUpdated": "12/01/2022",
+							"version": "3.0.7",
+							"lastUpdated": "01/04/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.5/azuredatastudio-dma-oracle-3.0.5.vsix"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.7/azuredatastudio-dma-oracle-3.0.7.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.5/extension.png"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.7/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.5/README.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.7/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.5/CHANGELOG.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.7/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.5/package.json"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.7/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.5/LICENSE.rtf"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.7/LICENSE.rtf"
 								}
 							],
 							"properties": [
