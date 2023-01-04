@@ -4763,9 +4763,8 @@
 					],
 					"statistics": [],
 					"flags": ""
-				}
-			],
-
+				},
+				{
 					"extensionId": "95",
 					"extensionName": "mongodb-ads-extension",
 					"displayName": "MongoDB for Azure Data Studio",
@@ -4829,7 +4828,8 @@
 					],
 					"statistics": [],
 					"flags": "preview"
-				},
+				}
+			],
 			"resultMetadata": [
 				{
 					"metadataType": "ResultCount",
