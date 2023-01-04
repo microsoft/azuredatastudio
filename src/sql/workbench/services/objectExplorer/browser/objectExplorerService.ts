@@ -23,7 +23,7 @@ import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/
 import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-import debounce = require('debounce')
+import debounce = require('debounce');
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
