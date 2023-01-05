@@ -1059,7 +1059,7 @@ export namespace executionPlan {
 	}
 }
 
-export namespace errorHandling {
+export namespace diagnostics {
 	/**
 	 * The error codes returned to indicate what kind of error is being thrown.
 	 */

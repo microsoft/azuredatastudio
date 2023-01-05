@@ -34,7 +34,7 @@ export class MainThreadErrorHandler extends Disposable implements MainThreadErro
 
 		//Create the error handler that interfaces with the extension via the proxy and register it
 		let errorHandler: azdata.ErrorHandler = {
-			handleErrorCode(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.errorHandling.ErrorCodes> {
+			handleErrorCode(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.diagnostics.ErrorCodes> {
 				return self._proxy.$handleErrorCode(handle, errorCode, errorMessage, connectionTypeId);
 			}
 		};

@@ -23,7 +23,7 @@ export namespace HandleFirewallRuleRequest {
 }
 
 export namespace HandleOtherErrorRequest {
-	export const type = new RequestType<HandleOtherErrorParams, azdata.errorHandling.ErrorCodes, void, void>('resource/handleOtherError');
+	export const type = new RequestType<HandleOtherErrorParams, azdata.diagnostics.ErrorCodes, void, void>('resource/handleOtherError');
 }
 
 /**

@@ -25,7 +25,7 @@ export class ExtHostErrorHandler extends ExtHostErrorHandlerShape {
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	// - MAIN THREAD AVAILABLE METHODS /////////////////////////////////////
-	public override $handleErrorCode(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.errorHandling.ErrorCodes> {
+	public override $handleErrorCode(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.diagnostics.ErrorCodes> {
 		return this._withProvider(handle, (provider: azdata.ErrorHandler) => provider.handleErrorCode(errorCode, errorMessage, connectionTypeId));
 	}
 

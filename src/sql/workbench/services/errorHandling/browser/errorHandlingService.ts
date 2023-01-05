@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IErrorHandlingService } from 'sql/workbench/services/errorHandling/common/errorHandlingService';
-import { errorHandling } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { diagnostics } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as azdata from 'azdata';
 
 export class ErrorHandlingService implements IErrorHandlingService {
@@ -15,15 +15,15 @@ export class ErrorHandlingService implements IErrorHandlingService {
 	constructor(
 	) { }
 
-	public async checkErrorCode(errorCode: number, errorMessage: string, connectionTypeId: string): Promise<errorHandling.ErrorCodes> {
-		let result = errorHandling.ErrorCodes.noErrorOrUnsupported
+	public async checkErrorCode(errorCode: number, errorMessage: string, connectionTypeId: string): Promise<diagnostics.ErrorCodes> {
+		let result = diagnostics.ErrorCodes.noErrorOrUnsupported
 		const promises = [];
 		if (this._providers) {
 			for (const key in this._providers) {
 				const provider = this._providers[key];
 				promises.push(provider.handleErrorCode(errorCode, errorMessage, connectionTypeId)
 					.then(response => {
-						if (result === errorHandling.ErrorCodes.noErrorOrUnsupported) {
+						if (result === diagnostics.ErrorCodes.noErrorOrUnsupported) {
 							result = response;
 						}
 					}, () => { }));

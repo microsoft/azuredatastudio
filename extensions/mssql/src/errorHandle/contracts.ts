@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { RequestType } from 'vscode-languageclient';
-import { errorHandling } from 'azdata';
+import { diagnostics } from 'azdata';
 
 export interface ErrorHandlerParameters {
 	/**
@@ -25,5 +25,5 @@ export interface ErrorHandlerParameters {
 }
 
 export namespace ErrorHandlerRequest {
-	export const type = new RequestType<ErrorHandlerParameters, errorHandling.ErrorCodes, void, void>('errorHandle/errorHandler');
+	export const type = new RequestType<ErrorHandlerParameters, diagnostics.ErrorCodes, void, void>('errorHandle/errorHandler');
 }

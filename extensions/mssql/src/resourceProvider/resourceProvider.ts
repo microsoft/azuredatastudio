@@ -48,7 +48,7 @@ class ErrorHandleFeature extends SqlOpsFeature<any> {
 			return client.sendRequest(HandleFirewallRuleRequest.type, params);
 		};
 
-		let handleOtherError = (errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.errorHandling.ErrorCodes> => {
+		let handleOtherError = (errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.diagnostics.ErrorCodes> => {
 			let params: HandleOtherErrorParams = { errorCode: errorCode, errorMessage: errorMessage, connectionTypeId: connectionTypeId };
 			return client.sendRequest(HandleOtherErrorRequest.type, params)
 		}

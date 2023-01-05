@@ -217,10 +217,10 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				}
 			};
 
-			// namespace: errorHandler
-			const errorHandling: typeof azdata.errorHandling = {
+			// namespace: diagnostics
+			const diagnostics: typeof azdata.diagnostics = {
 				// "azdata" API definition
-				ErrorCodes: sqlExtHostTypes.errorHandling.ErrorCodes,
+				ErrorCodes: sqlExtHostTypes.diagnostics.ErrorCodes,
 				registerErrorHandler: (providerMetadata: azdata.ResourceProviderMetadata, provider: azdata.ErrorHandler): vscode.Disposable => {
 					return extHostErrorHandler.$registerErrorHandler(providerMetadata, provider);
 				}
@@ -677,7 +677,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				TextType: sqlExtHostTypes.TextType,
 				designers: designers,
 				executionPlan: executionPlan,
-				errorHandling,
+				diagnostics: diagnostics,
 				env
 			};
 		}

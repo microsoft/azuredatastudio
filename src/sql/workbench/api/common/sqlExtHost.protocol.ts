@@ -608,7 +608,7 @@ export abstract class ExtHostResourceProviderShape {
 	/**
 	 * Handle other error types
 	 */
-	$handleOtherError(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.errorHandling.ErrorCodes> { throw ni(); }
+	$handleOtherError(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.diagnostics.ErrorCodes> { throw ni(); }
 
 }
 
@@ -619,7 +619,7 @@ export abstract class ExtHostErrorHandlerShape {
 	/**
 	 * Handle other error types
 	 */
-	$handleErrorCode(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.errorHandling.ErrorCodes> { throw ni(); }
+	$handleErrorCode(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.diagnostics.ErrorCodes> { throw ni(); }
 }
 
 /**
