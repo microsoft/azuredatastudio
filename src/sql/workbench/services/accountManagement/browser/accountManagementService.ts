@@ -36,6 +36,7 @@ export class AccountManagementService implements IAccountManagementService {
 	public _providers: { [id: string]: AccountProviderWithMetadata } = {};
 	public _serviceBrand: undefined;
 	private _accountStore: AccountStore;
+	private _authLibrary: AuthLibrary;
 	private _accountDialogController?: AccountDialogController;
 	private _autoOAuthDialogController?: AutoOAuthDialogController;
 	private _mementoContext?: Memento;
@@ -71,6 +72,10 @@ export class AccountManagementService implements IAccountManagementService {
 		this._removeAccountProviderEmitter = new Emitter<azdata.AccountProviderMetadata>();
 		this._updateAccountListEmitter = new Emitter<UpdateAccountListEventParams>();
 		this.configurationService = configurationService;
+
+		// Determine authentication library in use, to support filtering accounts respectively.
+		// When this value is changed a restart is required so there isn't a need to dynamically update this value at runtime.
+		this._authLibrary = this.configurationService.getValue('azure.authenticationLibrary');
 
 		_storageService.onWillSaveState(() => this.shutdown());
 		this.registerListeners();
@@ -221,9 +226,11 @@ export class AccountManagementService implements IAccountManagementService {
 		let self = this;
 
 		// 1) Get the accounts from the store
-		// 2) Update our local cache of accounts
+		// 2) Filter the accounts based on the auth library
+		// 3) Update our local cache of accounts
 		return this.doWithProvider(providerId, provider => {
 			return self._accountStore.getAccountsByProvider(provider.metadata.id)
+				.then(accounts => this._authLibrary ? filterAccounts(accounts, this._authLibrary) : accounts)
 				.then(accounts => {
 					self._providers[providerId].accounts = accounts;
 					return accounts;
@@ -232,10 +239,11 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	/**
-	 * Retrieves all the accounts registered with ADS.
+	 * Retrieves all the accounts registered with ADS based on auth library in use.
 	 */
 	public getAccounts(): Promise<azdata.Account[]> {
-		return this._accountStore.getAllAccounts();
+		return this._accountStore.getAllAccounts()
+			.then(accounts => this._authLibrary ? filterAccounts(accounts, this._authLibrary) : accounts);
 	}
 
 	/**
