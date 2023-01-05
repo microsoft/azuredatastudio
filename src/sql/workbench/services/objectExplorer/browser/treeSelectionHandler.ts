@@ -109,6 +109,7 @@ export class TreeSelectionHandler {
 	 * @param selection
 	 * @param tree
 	 * @param connectionCompleteCallback A function that gets called after a connection is established due to the selection, if needed
+	 * @param requestStatus Used to identify if a new session should be created or not to avoid creating back to back sessions
 	 */
 	private handleTreeItemSelected(connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, capabilitiesService: ICapabilitiesService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: AsyncServerTree | ITree, connectionCompleteCallback: () => void, requestStatus: ObjectExplorerRequestStatus | undefined): void {
 		if (tree instanceof AsyncServerTree) {
