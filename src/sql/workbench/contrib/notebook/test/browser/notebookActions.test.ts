@@ -472,7 +472,7 @@ suite('Notebook Actions', function (): void {
 	});
 
 	test('Should inform user kernel is not supported if Run with Parameters Action is run with unsupported kernels', async function (): Promise<void> {
-		// Kernels that are supported (Python, PySpark, PowerShell)
+		// Kernels that are supported (Python, PowerShell)
 
 		const testContents: azdata.nb.INotebookContents = {
 			cells: [{
@@ -517,7 +517,7 @@ suite('Notebook Actions', function (): void {
 	});
 
 	test('Should inform user that run with parameters is not supported for untitled notebooks', async function (): Promise<void> {
-		// Kernels that are supported (Python, PySpark, PowerShell)
+		// Kernels that are supported (Python, PowerShell)
 		const untitledUri = URI.parse('untitled:Notebook-0');
 		const testContents: azdata.nb.INotebookContents = {
 			cells: [{

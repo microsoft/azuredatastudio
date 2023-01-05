@@ -10,23 +10,9 @@ import * as os from 'os';
 import * as path from 'path';
 import * as utils from '../../common/utils';
 import { MockOutputChannel } from './stubs';
-import * as azdata from 'azdata';
 import { sleep } from './testUtils';
 
 describe('Utils Tests', function () {
-
-	it('getKnoxUrl', () => {
-		const host = '127.0.0.1';
-		const port = '8080';
-		should(utils.getKnoxUrl(host, port)).endWith('/gateway');
-	});
-
-	it('getLivyUrl', () => {
-		const host = '127.0.0.1';
-		const port = '8080';
-		should(utils.getLivyUrl(host, port)).endWith('/gateway/default/livy/v1/');
-	});
-
 	it('ensureDir', async () => {
 		const dirPath = path.join(os.tmpdir(), uuid.v4());
 		await should(fs.stat(dirPath)).be.rejected();
@@ -273,63 +259,6 @@ describe('Utils Tests', function () {
 		});
 	});
 
-	describe('getClusterEndpoints', () => {
-		const baseServerInfo: azdata.ServerInfo = {
-			serverMajorVersion: -1,
-			serverMinorVersion: -1,
-			serverReleaseVersion: -1,
-			engineEditionId: -1,
-			serverVersion: '',
-			serverLevel: '',
-			serverEdition: '',
-			isCloud: false,
-			azureVersion: -1,
-			osVersion: '',
-			options: {},
-			cpuCount: -1,
-			physicalMemoryInMb: -1
-		};
-		it('empty endpoints does not error', () => {
-			const serverInfo = Object.assign({}, baseServerInfo);
-			serverInfo.options['clusterEndpoints'] = [];
-			should(utils.getClusterEndpoints(serverInfo).length).equal(0);
-		});
-
-		it('endpoints without endpoint field are created successfully', () => {
-			const serverInfo = Object.assign({}, baseServerInfo);
-			const ipAddress = 'localhost';
-			const port = '123';
-			serverInfo.options['clusterEndpoints'] = [{ ipAddress: ipAddress, port: port }];
-			const endpoints = utils.getClusterEndpoints(serverInfo);
-			should(endpoints.length).equal(1);
-			should(endpoints[0].endpoint).equal('https://localhost:123');
-		});
-
-		it('endpoints with endpoint field are created successfully', () => {
-			const endpoint = 'https://myActualEndpoint:8080';
-			const serverInfo = Object.assign({}, baseServerInfo);
-			serverInfo.options['clusterEndpoints'] = [{ endpoint: endpoint, ipAddress: 'localhost', port: '123' }];
-			const endpoints = utils.getClusterEndpoints(serverInfo);
-			should(endpoints.length).equal(1);
-			should(endpoints[0].endpoint).equal(endpoint);
-		});
-	});
-
-	describe('getHostAndPortFromEndpoint', () => {
-		it('valid endpoint is parsed correctly', () => {
-			const host = 'localhost';
-			const port = '123';
-			const hostAndIp = utils.getHostAndPortFromEndpoint(`https://${host}:${port}`);
-			should(hostAndIp).deepEqual({ host: host, port: port });
-		});
-
-		it('invalid endpoint is returned as is', () => {
-			const host = 'localhost';
-			const hostAndIp = utils.getHostAndPortFromEndpoint(`https://${host}`);
-			should(hostAndIp).deepEqual({ host: host, port: undefined });
-		});
-	});
-
 	describe('exists', () => {
 		it('runs as expected', async () => {
 			const filename = path.join(os.tmpdir(), `NotebookUtilsTest_${uuid.v4()}`);
@@ -342,12 +271,6 @@ describe('Utils Tests', function () {
 					await fs.unlink(filename);
 				} catch { /* no-op */ }
 			}
-		});
-	});
-
-	describe('getIgnoreSslVerificationConfigSetting', () => {
-		it('runs as expected', async () => {
-			should(utils.getIgnoreSslVerificationConfigSetting()).be.true();
 		});
 	});
 

@@ -116,8 +116,6 @@ See [NotebookWizardInfo](https://github.com/microsoft/azuredatastudio/blob/main/
 
 ### WizardInfoBase
 
-`type` - **OPTIONAL** This is an internal type only used for BDC deployment wizards. Any other deployment providers can leave it out.
-
 `doneAction`
 
 `scriptAction` - **OPTIONAL**
@@ -220,7 +218,7 @@ This object defines a set of options for a field, similar to the arrays that can
 `source` - OPTIONAL If set defines the [Options Source Provider](#options-source-provider) to use for populating the options dynamically.
 
 ### Dynamic Options
-This enables you to dynamically change what options for a field are displayed to the user based on a previous selection they made. 
+This enables you to dynamically change what options for a field are displayed to the user based on a previous selection they made.
 For example, if a user selects "Cookies" over "Cakes" in the first field, the second field will show options ["Chocolate chip", "Snickerdoodle"] instead of ["Red velvet", "Cheesecake", "Black forest"], and vice versa.
 
 **NOTE** This is currently only enabled for radio buttons. This works with [CategoryValue](#fieldinfo) values as well.

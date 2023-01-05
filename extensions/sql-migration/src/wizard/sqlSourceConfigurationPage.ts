@@ -39,14 +39,11 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		this.wizard.registerNavigationValidator((pageChangeInfo) => {
-			return true;
-		});
+		this.wizard.registerNavigationValidator(pageChangeInfo => true);
 	}
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		this.wizard.registerNavigationValidator((pageChangeInfo) => {
-			return true;
-		});
+		this.wizard.registerNavigationValidator(pageChangeInfo => true);
+		this.wizard.message = { text: '' };
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
@@ -59,9 +56,9 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 		const query = 'select SUSER_NAME()';
 		const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId)), query);
 		const username = results.rows[0][0].displayValue;
-		this.migrationStateModel._authenticationType = connectionProfile.authenticationType === 'SqlLogin'
+		this.migrationStateModel._authenticationType = connectionProfile.authenticationType === azdata.connection.AuthenticationType.SqlLogin
 			? MigrationSourceAuthenticationType.Sql
-			: connectionProfile.authenticationType === 'Integrated'
+			: connectionProfile.authenticationType === azdata.connection.AuthenticationType.Integrated
 				? MigrationSourceAuthenticationType.Integrated
 				: undefined!;
 
