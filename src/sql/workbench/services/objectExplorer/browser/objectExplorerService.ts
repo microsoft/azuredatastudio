@@ -23,7 +23,7 @@ import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/
 import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-import debounce = require('debounce');
+import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -88,7 +88,7 @@ export interface IObjectExplorerService {
 
 	getObjectExplorerNode(connection: IConnectionProfile): TreeNode | undefined;
 
-	updateObjectExplorerNodes(connectionProfile: IConnectionProfile): Promise<void>;
+	updateObjectExplorerNodes(connectionProfile: IConnectionProfile, requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<void>;
 
 	deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void>;
 
@@ -209,10 +209,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._onSelectionOrFocusChange.event;
 	}
 
-	public async updateObjectExplorerNodes(connection: IConnectionProfile): Promise<void> {
+	public async updateObjectExplorerNodes(connection: IConnectionProfile, requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<void> {
 		const withPassword = await this._connectionManagementService.addSavedPassword(connection);
 		const connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, withPassword);
-		return this.updateNewObjectExplorerNode(connectionProfile); // lewis-trace 1.15    lewis-trace 2.12
+		return this.updateNewObjectExplorerNode(connectionProfile, requestStatus); // lewis-trace 1.15    lewis-trace 2.12
 	}
 
 	public async deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void> {
@@ -328,12 +328,14 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._onUpdateObjectExplorerNodes.fire(eventArgs);
 	}
 
-	private async updateNewObjectExplorerNode(connection: ConnectionProfile): Promise<void> {
+	private async updateNewObjectExplorerNode(connection: ConnectionProfile, requestStatus: ObjectExplorerRequestStatus | undefined): Promise<void> {
 		if (this._activeObjectExplorerNodes[connection.id]) {
 			this.sendUpdateNodeEvent(connection);
 		} else {
 			try {
-				await this.createNewSession(connection.providerName, connection); // lewis-trace 1.16    lewis-trace 2.13
+				if (!requestStatus) {
+					await this.createNewSession(connection.providerName, connection); // lewis-trace 1.16    lewis-trace 2.13
+				}
 			} catch (err) {
 				this.sendUpdateNodeEvent(connection, err);
 				throw err;
@@ -348,21 +350,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public async createNewSession(providerId: string, connection: ConnectionProfile): Promise<azdata.ObjectExplorerSessionResponse> {
 		const provider = this._providers[providerId];
 		if (provider) {
-			const self = this;
-			const waitTimeBeforeNextInvocationInMs = 1000;
-			const invokeImmediately = true;
-			const createNewSession = debounce(async () => {
-				const result = await provider.createNewSession(connection.toConnectionInfo()); // lewis-trace 1.17    lewis-trace 2.14 *** TOP OF CALL STACK
+			const result = await provider.createNewSession(connection.toConnectionInfo()); // lewis-trace 1.17    lewis-trace 2.14 *** TOP OF CALL STACK
+			this._sessions[result.sessionId] = {
+				connection: connection,
+				nodes: {}
+			};
 
-				self._sessions[result.sessionId] = {
-					connection: connection,
-					nodes: {}
-				};
-
-				return result;
-			}, waitTimeBeforeNextInvocationInMs, invokeImmediately);
-
-			const result = await createNewSession();
 			return result;
 		} else {
 			throw new Error(`Provider doesn't exist. id: ${providerId}`);
