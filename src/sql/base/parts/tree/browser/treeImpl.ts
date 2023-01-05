@@ -221,7 +221,7 @@ export class Tree implements _.ITree {
 	}
 
 	public setSelection(elements: any[], eventPayload?: any): void {
-		this.model.setSelection(elements, eventPayload); // lewis-trace 1.6
+		this.model.setSelection(elements, eventPayload);
 	}
 
 	public getSelection(): any[] {
@@ -290,7 +290,7 @@ export class Tree implements _.ITree {
 	}
 
 	public select(element: any, eventPayload?: any): void {
-		this.model.select(element, eventPayload); // lewis-trace 2.2
+		this.model.select(element, eventPayload);
 	}
 
 	public deselect(element: any, eventPayload?: any): void {

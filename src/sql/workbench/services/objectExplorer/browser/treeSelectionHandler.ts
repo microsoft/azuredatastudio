@@ -61,7 +61,7 @@ export class TreeSelectionHandler {
 				this._lastClicked = undefined;
 			}
 			if (!TreeUpdateUtils.isInDragAndDrop) {
-				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, capabilitiesService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback, requestStatus); // lewis-trace 1.12   lewis-trace 2.9   *** CALL STACKS MERGE HERE
+				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, capabilitiesService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback, requestStatus);
 			}
 		});
 
@@ -86,15 +86,15 @@ export class TreeSelectionHandler {
 			}
 			this._lastClicked = selection;
 
-			this._clickTimer = setTimeout(() => { // lewis-trace 1.10
+			this._clickTimer = setTimeout(() => {
 				// Sets request status object when timer is executed
 				this._requestStatus = { inProgress: true };
-				sendSelectionEvent(event, selection, false, true); // lewis-trace 1.11
+				sendSelectionEvent(event, selection, false, true);
 			}, 400);
 		} else {
 			clearTimeout(this._otherTimer);
-			this._otherTimer = setTimeout(() => { // lewis-trace 2.7
-				sendSelectionEvent(event, selection, false, false, this._requestStatus); // lewis-trace 2.8
+			this._otherTimer = setTimeout(() => {
+				sendSelectionEvent(event, selection, false, false, this._requestStatus);
 			}, 400);
 		}
 	}
@@ -138,7 +138,7 @@ export class TreeSelectionHandler {
 				if (connectionProfile) {
 					this.onTreeActionStateChange(true);
 
-					TreeUpdateUtils.connectAndCreateOeSession(connectionProfile, options, connectionManagementService, objectExplorerService, tree, requestStatus).then(sessionCreated => { // lewis-trace 1.13   lewis-trace 2.10
+					TreeUpdateUtils.connectAndCreateOeSession(connectionProfile, options, connectionManagementService, objectExplorerService, tree, requestStatus).then(sessionCreated => {
 						// Clears request status object that was created when the first timeout callback is executed.
 						if (this._requestStatus) {
 							this._requestStatus = undefined;

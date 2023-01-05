@@ -514,8 +514,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						matcher = (a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile) => a.id === options.params.oldProfileId;
 					}
 
-					await this.saveToSettings(uri, connection, matcher).then(value => { // lewis-trace 2.1.4
-						this._onAddConnectionProfile.fire(connection); // lewis-trace 2.1.5
+					await this.saveToSettings(uri, connection, matcher).then(value => {
+						this._onAddConnectionProfile.fire(connection);
 						this.doActionsAfterConnectionComplete(value, options);
 					});
 				} else {
@@ -1117,7 +1117,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			connection.serverInfo = info.serverInfo;
 			connection.extensionTimer.stop();
 
-			connection.connectHandler(true); // lewis-trace 2.1.2
+			connection.connectHandler(true);
 			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.DatabaseConnected)
 				.withConnectionInfo(connection.connectionProfile)
 				.withServerInfo(connection.serverInfo)
@@ -1283,7 +1283,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						if (connectionMngInfo.serverInfo) {
 							connection.options.isCloud = connectionMngInfo.serverInfo.isCloud;
 						}
-						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection }); // lewis-trace 2.1.3
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
 					}
 				}
 			});

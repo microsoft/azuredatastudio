@@ -1144,13 +1144,13 @@ export class TreeModel {
 	}
 
 	public select(element: any, eventPayload?: any): void {
-		this.selectAll([element], eventPayload); // lewis-trace 2.3
+		this.selectAll([element], eventPayload);
 	}
 
 	public selectAll(elements: any[], eventPayload?: any): void {
 		this.addTraits('selected', elements);
 		let eventData: _.ISelectionEvent = { selection: this.getSelection(), payload: eventPayload };
-		this._onDidSelect.fire(eventData); // lewis-trace 2.4
+		this._onDidSelect.fire(eventData);
 	}
 
 	public deselect(element: any, eventPayload?: any): void {
@@ -1166,7 +1166,7 @@ export class TreeModel {
 	public setSelection(elements: any[], eventPayload?: any): void {
 		this.setTraits('selected', elements);
 		let eventData: _.ISelectionEvent = { selection: this.getSelection(), payload: eventPayload };
-		this._onDidSelect.fire(eventData); // lewis-trace 1.7
+		this._onDidSelect.fire(eventData);
 	}
 
 	public isSelected(element: any): boolean {

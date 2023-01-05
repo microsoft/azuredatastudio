@@ -162,7 +162,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 
 		const horizontalScrollEnabled: boolean = this._configurationService.getValue(horizontalScrollingKey) || false;
 		this._tree = this._register(TreeCreationUtils.createServersTree(container, this._instantiationService, this._configurationService, horizontalScrollEnabled));
-		this._register(this._tree.onDidChangeSelection((event: ISelectionEvent | ITreeEvent<ServerTreeElement>) => this.onSelected(event))); // lewis-trace 1.8    lewis-trace 2.5
+		this._register(this._tree.onDidChangeSelection((event: ISelectionEvent | ITreeEvent<ServerTreeElement>) => this.onSelected(event)));
 		this._register(this._tree.onDidBlur(() => this._onSelectionOrFocusChange.fire()));
 		this._register(this._tree.onDidChangeFocus(() => this._onSelectionOrFocusChange.fire()));
 		if (this._tree instanceof AsyncServerTree) {
@@ -191,7 +191,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 
 		// Refresh Tree when these events are emitted
 		this._register(this._connectionManagementService.onAddConnectionProfile((newProfile: IConnectionProfile) => {
-			this.handleAddConnectionProfile(newProfile).catch(errors.onUnexpectedError); // lewis-trace 2.1.6
+			this.handleAddConnectionProfile(newProfile).catch(errors.onUnexpectedError);
 		}));
 		this._register(this._connectionManagementService.onDeleteConnectionProfile(() => {
 			this.refreshTree().catch(errors.onUnexpectedError);
@@ -291,7 +291,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			if (newProfile && currentSelectedElement && !newProfileIsSelected) {
 				this._tree!.clearSelection();
 			}
-			await this.refreshTree(); // lewis-trace 2.1.7
+			await this.refreshTree();
 			if (newProfile && !newProfileIsSelected) {
 				await this._tree!.reveal(newProfile);
 				this._tree!.select(newProfile);
@@ -375,7 +375,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		hide(this.messages!);
 		this._viewKey.set(ServerTreeViewView.all);
 		this._hasConnectionsKey.set(this._connectionManagementService.hasRegisteredServers());
-		return TreeUpdateUtils.registeredServerUpdate(this._tree!, this._connectionManagementService); // lewis-trace 2.1.8
+		return TreeUpdateUtils.registeredServerUpdate(this._tree!, this._connectionManagementService);
 	}
 
 	public async refreshElement(element: ServerTreeElement): Promise<void> {
@@ -538,7 +538,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	}
 
 	private onSelected(event: any): void {
-		this._treeSelectionHandler.onTreeSelect(event, this._tree!, this._connectionManagementService, this._objectExplorerService, this._capabilitiesService, () => this._onSelectionOrFocusChange.fire()); // lewis-trace 1.9    lewis-trace 2.6
+		this._treeSelectionHandler.onTreeSelect(event, this._tree!, this._connectionManagementService, this._objectExplorerService, this._capabilitiesService, () => this._onSelectionOrFocusChange.fire());
 		this._onSelectionOrFocusChange.fire();
 	}
 
