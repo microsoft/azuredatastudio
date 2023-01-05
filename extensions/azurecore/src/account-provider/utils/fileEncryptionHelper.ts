@@ -15,6 +15,7 @@ export class FileEncryptionHelper {
 	private _keyBuffer: Buffer | undefined;
 
 	async init(): Promise<void> {
+		// TODO: this line is causing the keychain prompts on mac,
 		const iv = await this._credentialService.readCredential(`${this._fileName}-iv`);
 		const key = await this._credentialService.readCredential(`${this._fileName}-key`);
 		if (!iv?.password || !key?.password) {

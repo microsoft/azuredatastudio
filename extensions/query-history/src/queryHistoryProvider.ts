@@ -119,6 +119,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 
 		let iv: Buffer | undefined;
 		try {
+			// TODO: this line triggers mac keychain prompt
 			let ivString = await this._context.secrets.get(STORAGE_IV_KEY);
 			if (!ivString) {
 				iv = crypto.randomBytes(16);
@@ -136,6 +137,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 
 		let key: string | undefined;
 		try {
+			// TODO: this line triggers mac keychain prompt
 			key = await this._context.secrets.get(STORAGE_KEY_KEY);
 			if (!key) {
 				// Generate a random key - this is internal to the extension so the user doesn't need to know it
