@@ -50,6 +50,10 @@ import { AzureResourceGroupService } from './azureResource/providers/resourceGro
 import { Logger } from './utils/Logger';
 import { ConnectionDialogTreeProvider } from './azureResource/tree/connectionDialogTreeProvider';
 import { AzureDataGridProvider } from './azureDataGridProvider';
+import { AzureResourceSynapseSqlPoolProvider } from './azureResource/providers/synapseSqlPool/synapseSqlPoolProvider';
+import { AzureResourceSynapseWorkspaceProvider } from './azureResource/providers/synapseWorkspace/synapseWorkspaceProvider';
+import { AzureResourceSynapseWorkspaceService } from './azureResource/providers/synapseWorkspace/synapseWorkspaceService';
+import { AzureResourceSynapseService } from './azureResource/providers/synapseSqlPool/synapseSqlPoolService';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -139,6 +143,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 				new AzureMonitorProvider(new AzureMonitorResourceService(), extensionContext),
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), extensionContext),
 				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), extensionContext),
+				new AzureResourceSynapseSqlPoolProvider(new AzureResourceSynapseService(), extensionContext),
+				new AzureResourceSynapseWorkspaceProvider(new AzureResourceSynapseWorkspaceService(), extensionContext),
 				new SqlInstanceProvider(new SqlInstanceResourceService(), extensionContext),
 				new PostgresServerProvider(new PostgresServerService(), extensionContext),
 				new CosmosDbMongoProvider(new CosmosDbMongoService(), extensionContext),

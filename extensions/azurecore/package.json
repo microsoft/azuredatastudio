@@ -288,22 +288,22 @@
         },
         {
           "command": "azure.resource.azureview.refresh",
-          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer)$/",
+          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer|synapseSqlPoolContainer|synapseWorkspaceContainer)$/",
           "group": "inline"
         },
         {
           "command": "azure.resource.azureview.refresh",
-          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer)$/",
+          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer|synapseSqlPoolContainer|synapseWorkspaceContainer)$/",
           "group": "azurecore"
         },
         {
           "command": "azure.resource.connectsqlserver",
-          "when": "viewItem == azure.resource.itemType.databaseServer || viewItem == azure.resource.itemType.database || viewItem == azure.resource.itemType.sqlInstance",
+          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:database|databaseServer|synapseSqlPool|synapseWorkspace|sqlInstance)$/",
           "group": "inline"
         },
         {
           "command": "azure.resource.connectsqlserver",
-          "when": "viewItem == azure.resource.itemType.databaseServer || viewItem == azure.resource.itemType.database || viewItem == azure.resource.itemType.sqlInstance",
+          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:database|databaseServer|synapseSqlPool|synapseWorkspace|sqlInstance)$/",
           "group": "azurecore"
         },
         {
@@ -364,6 +364,7 @@
     "@azure/storage-blob": "^12.6.0",
     "axios": "^0.27.2",
     "crypto": "^1.0.1",
+    "lockfile": "1.0.4",
     "msal": "^1.4.16",
     "node-fetch": "^2.6.7",
     "qs": "^6.9.1",
@@ -375,6 +376,7 @@
     "@microsoft/azdata-test": "^2.0.3",
     "@microsoft/vscodetestcover": "^1.2.1",
     "@types/keytar": "4.4.0",
+    "@types/lockfile": "^1.0.2",
     "@types/mocha": "^7.0.2",
     "@types/node": "^12.20.55",
     "@types/qs": "^6.9.1",
@@ -385,5 +387,8 @@
     "should": "^13.2.1",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0"
+  },
+  "resolutions": {
+    "jsonwebtoken": "9.0.0"
   }
 }

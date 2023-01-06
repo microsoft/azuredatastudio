@@ -6,6 +6,7 @@
 
 import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
 import { azureResource } from 'azurecore';
+import { mysqlFlexibleServerQuery } from '../queryStringConstants';
 
 
 interface DbServerGraphData extends GraphData {
@@ -15,12 +16,10 @@ interface DbServerGraphData extends GraphData {
 	};
 }
 
-const serversQuery = `where type == "${azureResource.AzureResourceType.mysqlFlexibleServer}"`;
-
 export class MysqlFlexibleServerService extends ResourceServiceBase<DbServerGraphData, azureResource.AzureResourceDatabaseServer> {
 
 	protected get query(): string {
-		return serversQuery;
+		return mysqlFlexibleServerQuery;
 	}
 
 	protected convertResource(resource: DbServerGraphData): azureResource.AzureResourceDatabaseServer {
