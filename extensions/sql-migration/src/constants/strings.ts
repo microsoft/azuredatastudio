@@ -410,6 +410,21 @@ export function SQL_TARGET_CONNECTION_SOURCE_NOT_MAPPED(sourceDatabaseName: stri
 		sourceDatabaseName);
 }
 
+//`Database mapping error.  Source database collation ({0}) is not same to target database collation ({1}). Source database: {2}; Target database: {3}.`
+export function SQL_TARGET_SOURCE_COLLATION_NOT_SAME(
+	sourceDatabaseName: string,
+	targetDatabaseName: string,
+	sourceDatabaseCollation: string,
+	targetDatabaseCollation: string): string {
+	return localize(
+		'sql.migration.wizard.target.source.collation.error',
+		"Database mapping error.  Source database collation ({0}) is not same to target database collation ({1}). Source database: {2}; Target database: {3}.",
+		sourceDatabaseCollation,
+		targetDatabaseCollation,
+		sourceDatabaseName,
+		targetDatabaseName);
+}
+
 // Managed Instance
 export const AZURE_SQL_DATABASE_MANAGED_INSTANCE = localize('sql.migration.azure.sql.database.managed.instance', "Azure SQL Managed Instance");
 export const NO_MANAGED_INSTANCE_FOUND = localize('sql.migration.no.managedInstance.found', "No managed instances found.");

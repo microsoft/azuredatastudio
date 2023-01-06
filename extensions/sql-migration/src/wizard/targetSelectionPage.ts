@@ -1048,8 +1048,11 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		} else {
 			for (let i = 0; i < this.migrationStateModel._databasesForMigration.length; i++) {
 				const sourceDatabaseName = this.migrationStateModel._databasesForMigration[i];
+				const sourceDatabaseInfo = this.migrationStateModel._databaseInfosForMigration.get(sourceDatabaseName);
 				const targetDatabaseInfo = this.migrationStateModel._sourceTargetMapping.get(sourceDatabaseName);
 				const targetDatabaseName = targetDatabaseInfo?.databaseName;
+				const sourceDatabaseCollation = sourceDatabaseInfo?.databaseCollation;
+				const targetDatabaseCollation = targetDatabaseInfo?.databaseCollation;
 				if (targetDatabaseName && targetDatabaseName.length > 0) {
 					if (!targetDatabaseKeys.has(targetDatabaseName)) {
 						targetDatabaseKeys.set(targetDatabaseName, sourceDatabaseName);
@@ -1062,6 +1065,20 @@ export class TargetSelectionPage extends MigrationWizardPage {
 								targetDatabaseName,
 								sourceDatabaseName,
 								mappedSourceDatabaseName));
+					}
+
+					// Collation validation
+					if (sourceDatabaseCollation &&
+						sourceDatabaseCollation.length > 0 &&
+						targetDatabaseCollation &&
+						targetDatabaseCollation.length > 0 &&
+						sourceDatabaseCollation !== targetDatabaseCollation) {
+						errors.push(
+							constants.SQL_TARGET_SOURCE_COLLATION_NOT_SAME(
+								sourceDatabaseName,
+								targetDatabaseName,
+								sourceDatabaseInfo?.databaseCollation,
+								targetDatabaseInfo?.databaseCollation));
 					}
 				} else {
 					// source/target has mapping

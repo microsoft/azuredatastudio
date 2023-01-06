@@ -11,7 +11,7 @@ import * as constants from '../constants/strings';
 import { debounce } from '../api/utils';
 import * as styles from '../constants/styles';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { getDatabasesList, excludeDatabases } from '../api/sqlUtils';
+import { getDatabasesList, excludeDatabases, SourceDatabaseInfo } from '../api/sqlUtils';
 
 export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -240,6 +240,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		this._databaseTableValues = databaseList.map(database => {
 			const databaseName = database.options.name;
 			this._dbNames.push(databaseName);
+			stateMachine._databaseInfosForMigration.set(databaseName, this.getSourceDatabaseInfo(database));
 			return [
 				selectedDatabases?.indexOf(databaseName) > -1,
 				<azdata.IconColumnCellValue>{
@@ -270,5 +271,14 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				this._databaseSelectorTable.data?.length || 0)
 		});
 		this.migrationStateModel._databasesForAssessment = selectedDatabases;
+	}
+
+	private getSourceDatabaseInfo(database: azdata.DatabaseInfo): SourceDatabaseInfo {
+		return {
+			databaseName: database.options.name,
+			databaseCollation: database.options.collation,
+			databaseSizeInMB: database.options.size,
+			databaseState: database.options.state
+		};
 	}
 }
