@@ -46,10 +46,16 @@ export class WizardController {
 			'MigrationWizard',
 			'wide');
 
+		const tdeMigrateButton = azdata.window.createButton(
+			loc.TDE_MIGRATE_BUTTON,
+			'right');
+		tdeMigrateButton.secondary = false;
+		tdeMigrateButton.hidden = true;
+
 		this._wizardObject.generateScriptButton.enabled = false;
 		this._wizardObject.generateScriptButton.hidden = true;
 		const saveAndCloseButton = azdata.window.createButton(loc.SAVE_AND_CLOSE);
-		this._wizardObject.customButtons = [saveAndCloseButton];
+		this._wizardObject.customButtons = [saveAndCloseButton, tdeMigrateButton];
 		const databaseSelectorPage = new DatabaseSelectorPage(this._wizardObject, stateModel);
 		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
 		const targetSelectionPage = new TargetSelectionPage(this._wizardObject, stateModel);
@@ -151,7 +157,6 @@ export class WizardController {
 		this._disposables.push(
 			this._wizardObject.doneButton.onClick(async (e) => {
 				try {
-					return;
 					await stateModel.startMigration();
 					await this.updateServiceContext(stateModel, this._serviceContextChangedEvent);
 				} catch (e) {

@@ -15,6 +15,11 @@ import * as utils from '../api/utils';
 import { azureResource } from 'azurecore';
 import { AzureSqlDatabaseServer, SqlVMServer } from '../api/azure';
 import { collectTargetDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
+import { TdeMigrationDialog } from '../dialog/tdeConfiguration/tdeMigrationDialog';
+import { TdeMigrationState } from '../models/tdeModels';
+
+
+const TDE_MIGRATION_BUTTON_INDEX = 1;
 
 export class TargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -38,6 +43,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	private _testConectionButton!: azdata.ButtonComponent;
 	private _connectionResultsInfoBox!: azdata.InfoBoxComponent;
 	private _migrationTargetPlatform!: MigrationTargetType;
+
 
 	constructor(
 		wizard: azdata.window.Wizard,
@@ -72,7 +78,57 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				this._disposables.forEach(
 					d => { try { d.dispose(); } catch { } });
 			}));
+
+		this._disposables.push(
+			this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].onClick(
+				async e => await this._startTdeMigration()));
+
 		await this._view.initializeModel(form);
+	}
+
+	private async _startTdeMigration(): Promise<void> {
+		const dialog = new TdeMigrationDialog(
+			this.migrationStateModel,
+			() => this.updateTdeMigrationResultUI());
+
+		await dialog.openDialog();
+	}
+
+	private updateTdeMigrationResultUI(): void {
+		const succeeded = this.migrationStateModel.tdeMigrationConfig.tdeMigrationCompleted();
+		if (succeeded) {
+			this.wizard.message = {
+				level: azdata.window.MessageLevel.Information,
+				text: constants.TDE_MIGRATE_MESSAGE_SUCCESS,
+			};
+		} else {
+			const results = this.migrationStateModel.tdeMigrationConfig.lastTdeMigrationResult();
+			switch (results.state) {
+				case TdeMigrationState.Canceled: {
+					this.wizard.message = {
+						level: azdata.window.MessageLevel.Warning,
+						text: constants.TDE_MIGRATE_MESSAGE_CANCELED,
+					};
+					break;
+				}
+				case TdeMigrationState.Failed: {
+					const errors: string[] = results.dbList.map(db => `DB ${db.name} failed with error ${db.error}`);
+					const errorsMessage: string = errors.join(EOL);
+					this.wizard.message = {
+						level: azdata.window.MessageLevel.Error,
+						text: constants.TDE_MIGRATE_MESSAGE_CANCELED_ERRORS(errorsMessage),
+					};
+					break;
+				}
+				default: { //Pending and newly added states. Success is already taken care of before getting here.
+					this.wizard.message = {
+						level: azdata.window.MessageLevel.Warning,
+						text: constants.TDE_MIGRATE_MESSAGE_NOT_RUN,
+					};
+					break;
+				}
+			}
+		}
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
@@ -120,6 +176,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			this.migrationStateModel._location = undefined!;
 			await this.populateLocationDropdown();
 		}
+
+		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].hidden = !this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates();
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = { text: '' };
@@ -199,6 +257,14 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				};
 				return false;
 			}
+
+			if (this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates()) {
+				this.wizard.nextButton.enabled = this.migrationStateModel.tdeMigrationConfig.tdeMigrationCompleted();
+				return this.migrationStateModel.tdeMigrationConfig.tdeMigrationCompleted();
+			} else {
+				this.wizard.nextButton.enabled = true;
+			}
+
 			return true;
 		});
 	}
@@ -235,6 +301,9 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					this.migrationStateModel._azureAccount = (selectedAccount)
 						? utils.deepClone(selectedAccount)!
 						: undefined!;
+
+					var testToken = await azdata.accounts.getAccountSecurityToken(this.migrationStateModel._azureAccount, this.migrationStateModel._azureAccount.properties.tenants[0].id, azdata.AzureResource.ResourceManagement);
+					console.log(testToken);
 				}
 				await this.populateTenantsDropdown();
 			}));

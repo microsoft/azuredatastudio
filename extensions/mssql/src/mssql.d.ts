@@ -837,7 +837,7 @@ declare module 'mssql' {
 	}
 
 	export interface ITdeMigrationService {
-		migrateCertificate(encryptedDatabases: string[], sourceSqlConnectionString: string, targetSubscriptionId: string, targetResourceGroupName: string, targetManagedInstanceName: string): Promise<TdeMigrationResult>;
+		migrateCertificate(encryptedDatabases: string[], sourceSqlConnectionString: string, targetSubscriptionId: string, targetResourceGroupName: string, targetManagedInstanceName: string, networkSharePath: string, networkShareDomain: string, networkShareUserName: string, networkSharePassword: string): Promise<TdeMigrationResult>;
 	}
 	// SqlMigration interfaces END -----------------------------------------------------------------------
 }

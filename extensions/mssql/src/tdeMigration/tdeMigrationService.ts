@@ -29,13 +29,17 @@ export class TdeMigrationService implements mssql.ITdeMigrationService {
 		context.registerService(constants.TdeMigrationService, this);
 	}
 
-	async migrateCertificate(tdeEnabledDatabases: string[], sourceSqlConnectionString: string, targetSubscriptionId: string, targetResourceGroupName: string, targetManagedInstanceName: string): Promise<mssql.TdeMigrationResult> {
+	async migrateCertificate(tdeEnabledDatabases: string[], sourceSqlConnectionString: string, targetSubscriptionId: string, targetResourceGroupName: string, targetManagedInstanceName: string, networkSharePath: string, networkShareDomain: string, networkShareUserName: string, networkSharePassword: string): Promise<mssql.TdeMigrationResult> {
 		let params: contracts.TdeMigrationParams = {
 			encryptedDatabases: tdeEnabledDatabases,
 			sourceSqlConnectionString: sourceSqlConnectionString,
 			targetSubscriptionId: targetSubscriptionId,
 			targetResourceGroupName: targetResourceGroupName,
-			targetManagedInstanceName: targetManagedInstanceName
+			targetManagedInstanceName: targetManagedInstanceName,
+			networkSharePath: networkSharePath,
+			networkShareDomain: networkShareDomain,
+			networkShareUserName: networkShareUserName,
+			networkSharePassword: networkSharePassword
 		};
 
 		try {

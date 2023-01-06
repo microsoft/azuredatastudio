@@ -1232,5 +1232,9 @@ export interface TdeMigrationParams {
 	targetSubscriptionId: string;
 	targetResourceGroupName: string;
 	targetManagedInstanceName: string;
+	networkSharePath: string;
+	networkShareDomain: string;
+	networkShareUserName: string;
+	networkSharePassword: string;
 }
 // ------------------------------- < Tde Migration > ------------------------------------

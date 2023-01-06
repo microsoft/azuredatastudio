@@ -15,6 +15,7 @@ import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError 
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 import { excludeDatabases, TargetDatabaseInfo } from '../api/sqlUtils';
+import { TdeMigrationModel } from './tdeModels';
 const localize = nls.loadMessageBundle();
 
 export enum State {
@@ -882,27 +883,29 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			errors: []
 		};
 
-		if (this.tdeMigrationConfig.getTdeEnabledDatabasesCount() > 1) {
-			try {
+		try {
+			let tdeEnabledDatabases = this.tdeMigrationConfig.getTdeEnabledDatabases();
+			const connectionString = await azdata.connection.getConnectionString(this.sourceConnectionId, true);
 
-				let tdeEnabledDatabases = this.tdeMigrationConfig.getTdeEnabledDatabases();
-				const connectionString = await azdata.connection.getConnectionString(this.sourceConnectionId, true);
+			const migrationResult = await this.tdeMigrationService.migrateCertificate(
+				tdeEnabledDatabases,
+				connectionString,
+				this._targetSubscription?.id,
+				this._resourceGroup?.name,
+				this._targetServerInstance.name,
+				this.tdeMigrationConfig._networkPath,
+				this.tdeMigrationConfig._domain,
+				this.tdeMigrationConfig._username,
+				this.tdeMigrationConfig._password);
 
-				const migrationResult = await this.tdeMigrationService.migrateCertificate(
-					tdeEnabledDatabases,
-					connectionString,
-					this._targetSubscription?.id,
-					this._resourceGroup?.name,
-					this._targetServerInstance.name);
+			result.errors = migrationResult.migrationStatuses
+				.filter(entry => !entry.success)
+				.map(entry => constants.TDE_MIGRATION_ERROR_DB(entry.dbName, entry.errorMessage));
 
-				result.errors = migrationResult.migrationStatuses
-					.filter(entry => !entry.success)
-					.map(entry => constants.TDE_MIGRATION_ERROR_DB(entry.dbName, entry.errorMessage));
-
-			} catch (e) {
-				result.errors = [constants.TDE_MIGRATION_ERROR(e.message)];
-			}
+		} catch (e) {
+			result.errors = [constants.TDE_MIGRATION_ERROR(e.message)];
 		}
+
 
 		result.success = result.errors.length === 0; //Set success when there are no errors.
 		return result;
@@ -1249,97 +1252,4 @@ export interface SkuRecommendation {
 export interface OperationResult {
 	success: boolean;
 	errors: string[];
-}
-
-export class TdeMigrationModel {
-	public _exportUsingADS?: boolean | undefined;
-	public _adsExportConfirmation: boolean;
-	public _encryptedDbCount: number;
-	public _configurationCompleted: boolean;
-	public _shownBefore: boolean;
-	public _encryptedDbs: string[];
-
-	constructor(
-	) {
-		this._encryptedDbCount = 0;
-		this._adsExportConfirmation = false;
-		this._configurationCompleted = false;
-		this._shownBefore = false;
-		this._encryptedDbs = [];
-	}
-
-	//If the configuration dialog was shown already.
-	public shownBefore(): boolean {
-		return this._shownBefore;
-	}
-
-	//If the configuration dialog was shown already.
-	public configurationShown(): void {
-		this._shownBefore = true;
-	}
-
-	//The number of encrypted databaes
-	public getTdeEnabledDatabasesCount(): number {
-		return this._encryptedDbCount;
-	}
-
-	//The list of encrypted databaes
-	public getTdeEnabledDatabases(): string[] {
-		return this._encryptedDbs;
-	}
-
-	//Sets the databases that are
-	public setTdeEnabledDatabasesCount(encryptedDbs: string[]): void {
-		this._encryptedDbs = encryptedDbs;
-		this._encryptedDbCount = encryptedDbs.length;
-	}
-
-	//Sets the certificate migration method
-	public setTdeMigrationMethod(useAds: boolean): void {
-		if (useAds) {
-			this._exportUsingADS = true;
-		} else {
-			this._exportUsingADS = false;
-			this._adsExportConfirmation = false;
-		}
-	}
-
-	//When a migration configuration was configured and accepted on the configuration blade.
-	public setConfigurationCompleted(): void {
-		this._configurationCompleted = true;
-	}
-
-	//When ADS is configured to do the certificates migration
-	public shouldAdsMigrateCertificates(): boolean {
-		return this._encryptedDbCount > 0 && this._configurationCompleted && this.isTdeMigrationMethodAdsConfirmed();
-	}
-
-	//When any valid method is properly set.
-	public isTdeMigrationMethodSet(): boolean {
-		return this.isTdeMigrationMethodAdsConfirmed() || this.isTdeMigrationMethodManual();
-	}
-
-	//When Ads is selected as method. may still need confirmation.
-	public isTdeMigrationMethodAds(): boolean {
-		return this._exportUsingADS === true;
-	}
-
-	//When ads migration method is confirmed
-	public isTdeMigrationMethodAdsConfirmed(): boolean {
-		return this.isTdeMigrationMethodAds() && this._adsExportConfirmation === true;
-	}
-
-	//When manual method is selected
-	public isTdeMigrationMethodManual(): boolean {
-		return this._exportUsingADS === false;
-	}
-
-	//When the confirmation is set, for ADS certificate migration method
-	public setAdsConfirmation(status: boolean): void {
-		if (status && this.isTdeMigrationMethodAds()) {
-			this._adsExportConfirmation = true;
-		} else {
-			this._adsExportConfirmation = false;
-		}
-	}
 }

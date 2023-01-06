@@ -20,6 +20,7 @@ import * as styles from '../constants/styles';
 import { SkuEditParametersDialog } from '../dialog/skuRecommendationResults/skuEditParametersDialog';
 import { logError, TelemetryViews } from '../telemtery';
 import { TdeConfigurationDialog } from '../dialog/tdeConfiguration/tdeConfigurationDialog';
+import { TdeMigrationModel } from '../models/tdeModels';
 
 export interface Product {
 	type: MigrationTargetType;
@@ -76,6 +77,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _tdeInfoContainer!: azdata.FlexContainer;
 	private _disposables: vscode.Disposable[] = [];
 	private _tdeConfigurationDialog!: TdeConfigurationDialog;
+	private _previousMiTdeMigrationConfig: TdeMigrationModel = new TdeMigrationModel(); // avoid null checks
 
 	private _serverName: string = '';
 	private _supportedProducts: Product[] = [
@@ -213,6 +215,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		await this._view.initializeModel(this._rootContainer);
 	}
 
+
 	private createStatusComponent(view: azdata.ModelView): azdata.TextComponent {
 		const component = view.modelBuilder.text()
 			.withProps({
@@ -339,6 +342,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (value) {
 				this.assessmentGroupContainer.display = 'inline';
 				this.changeTargetType(value.cardId);
+				await this.refreshTdeView();
 			}
 		}));
 
@@ -784,43 +788,66 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._rbgLoader.loading = false;
 	}
 
+
+	private _resetTdeConfiguration() {
+		this._previousMiTdeMigrationConfig = this.migrationStateModel.tdeMigrationConfig;
+		this.migrationStateModel.tdeMigrationConfig = new TdeMigrationModel();
+	}
+
 	private async refreshTdeView() {
 
 		if (this.migrationStateModel._targetType !== MigrationTargetType.SQLMI) {
 
 			//Reset the encrypted databases counter on the model to ensure the certificates migration is ignored.
-			this.migrationStateModel.tdeMigrationConfig.setTdeEnabledDatabasesCount([]);
+			this._resetTdeConfiguration();
 
-			return;
-		}
-
-		const encryptedDbCount = this.migrationStateModel._assessmentResults.databaseAssessments
-			.filter(
-				db => this.migrationStateModel._databasesForMigration.findIndex(dba => dba === db.name) >= 0 &&
-					db.issues.findIndex(iss => iss.ruleId === constants.TDE_RULE_ID && iss.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) >= 0
-			)
-			.map(db => db.name);
-
-		const hasencryptedDb = encryptedDbCount.length > 0;
-
-		//Set encrypted databases
-		this.migrationStateModel.tdeMigrationConfig.setTdeEnabledDatabasesCount(encryptedDbCount);
-
-		if (hasencryptedDb) {
-			//Set the text when there are encrypted databases.
-
-			const tdeMsg = (this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAdsConfirmed) ? constants.TDE_WIZARD_MSG_TDE : constants.TDE_WIZARD_MSG_MANUAL;
-			this._tdedatabaseSelectedHelperText.value = constants.TDE_MSG_DATABASES_SELECTED(encryptedDbCount.length, tdeMsg);
-
-			if (!this.migrationStateModel.tdeMigrationConfig.shownBefore()) {
-				await this._tdeConfigurationDialog.openDialog();
-			}
 		} else {
-			this._tdedatabaseSelectedHelperText.value = constants.TDE_WIZARD_MSG_EMPTY;
+
+			const encryptedDbCount = this.migrationStateModel._assessmentResults.databaseAssessments
+				.filter(
+					db => this.migrationStateModel._databasesForMigration.findIndex(dba => dba === db.name) >= 0 &&
+						db.issues.findIndex(iss => iss.ruleId === constants.TDE_RULE_ID && iss.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) >= 0
+				)
+				.map(db => db.name);
+
+			if (this._matchWithEncryptedDatabases(encryptedDbCount)) {
+				this.migrationStateModel.tdeMigrationConfig = this._previousMiTdeMigrationConfig;
+			} else {
+
+				//Set encrypted databases
+				this.migrationStateModel.tdeMigrationConfig.setTdeEnabledDatabasesCount(encryptedDbCount);
+
+				if (this.migrationStateModel.tdeMigrationConfig.hasTdeEnabledDatabases()) {
+					//Set the text when there are encrypted databases.
+
+					const tdeMsg = (this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAdsConfirmed) ? constants.TDE_WIZARD_MSG_TDE : constants.TDE_WIZARD_MSG_MANUAL;
+					this._tdedatabaseSelectedHelperText.value = constants.TDE_MSG_DATABASES_SELECTED(encryptedDbCount.length, tdeMsg);
+
+					if (!this.migrationStateModel.tdeMigrationConfig.shownBefore()) {
+						await this._tdeConfigurationDialog.openDialog();
+					}
+				} else {
+					this._tdedatabaseSelectedHelperText.value = constants.TDE_WIZARD_MSG_EMPTY;
+				}
+
+			}
 		}
 
-		await utils.updateControlDisplay(this._tdeInfoContainer, hasencryptedDb);
+		await utils.updateControlDisplay(this._tdeInfoContainer, this.migrationStateModel.tdeMigrationConfig.hasTdeEnabledDatabases());
 	}
+	private _matchWithEncryptedDatabases(encryptedDbCount: string[]): boolean {
+		var currentTdeDbs = this._previousMiTdeMigrationConfig.getTdeEnabledDatabases();
+
+		if (encryptedDbCount.length === 0 || encryptedDbCount.length !== currentTdeDbs.length)
+			return false;
+
+		if (encryptedDbCount.filter(db => currentTdeDbs.findIndex(dba => dba === db) < 0).length > 0)
+			return false; //There is at least one element that is not in the other array. There should be no risk of duplicates table names
+
+
+		return true;
+	}
+
 
 	public async startCardLoading(): Promise<void> {
 		// TO-DO: ideally the short SKU recommendation loading time should have a spinning indicator,

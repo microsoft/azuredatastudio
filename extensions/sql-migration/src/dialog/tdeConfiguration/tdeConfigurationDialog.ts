@@ -23,6 +23,11 @@ export class TdeConfigurationDialog {
 	private _adsConfirmationCheckBox!: azdata.CheckBoxComponent;
 	private _manualMethodWarningContainer!: azdata.FlexContainer;
 
+	private _networkPathText!: azdata.InputBoxComponent;
+	private _domainText!: azdata.InputBoxComponent;
+	private _usernameText!: azdata.InputBoxComponent;
+	private _passwordText!: azdata.InputBoxComponent;
+
 	constructor(public skuRecommendationPage: SKURecommendationPage, public wizard: azdata.window.Wizard, public migrationStateModel: MigrationStateModel) {
 	}
 
@@ -55,7 +60,7 @@ export class TdeConfigurationDialog {
 		}).component();
 		const encryptedDescriptionText = constants.TDE_WIZARD_DATABASES_SELECTED(
 			this.migrationStateModel.tdeMigrationConfig.getTdeEnabledDatabasesCount(),
-			this.migrationStateModel._assessedDatabaseList.length);
+			this.migrationStateModel._databasesForMigration.length);
 
 		const encrypted_description1 = _view.modelBuilder.text().withProps({
 			value: encryptedDescriptionText,
@@ -193,23 +198,127 @@ export class TdeConfigurationDialog {
 			}
 		}).component();
 
+		const adsMethodInfoMessage = _view.modelBuilder.infoBox()
+			.withProps({
+				text: constants.TDE_WIZARD_ADS_CERTS_INFO,
+				style: 'information',
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'margin': '4px 14px 0px 14px'
+				}
+			}).component();
+
+		const networkPathLabel = _view.modelBuilder.text()
+			.withProps({
+				value: constants.TDE_WIZARD_CERTS_NETWORK_SHARE_LABEL,
+				description: constants.TDE_WIZARD_CERTS_NETWORK_SHARE_INFO,
+				requiredIndicator: true,
+				CSSStyles: {
+					...styles.LABEL_CSS,
+					'margin': '4px 0 14px 45px'
+				}
+			}).component();
+		this._networkPathText = _view.modelBuilder.inputBox()
+			.withProps({
+				value: '\\\\JUNIMSLAPTOP\\MSSQL\\cert\\',
+				width: '300px',
+				placeHolder: constants.TDE_WIZARD_CERTS_NETWORK_SHARE_PLACEHOLDER,
+				required: true,
+				CSSStyles: { ...styles.BODY_CSS, 'margin-top': '-1em', 'margin-left': '45px' }
+			}).component();
+
+
+		const domainLabel = _view.modelBuilder.text()
+			.withProps({
+				value: constants.TDE_WIZARD_CERTS_DOMAIN_LABEL,
+				description: constants.TDE_WIZARD_CERTS_DOMAIN_INFO,
+				requiredIndicator: true,
+				CSSStyles: {
+					...styles.LABEL_CSS,
+					'margin': '0px 0 0px 45px'
+				}
+			}).component();
+		this._domainText = _view.modelBuilder.inputBox()
+			.withProps({
+				value: 'JUNIMSLAPTOP',
+				width: '300px',
+				placeHolder: constants.TDE_WIZARD_CERTS_DOMAIN_PLACEHOLDER,
+				required: true,
+				CSSStyles: { ...styles.BODY_CSS, 'margin-top': '-1em', 'margin-left': '45px' }
+			}).component();
+
+
+		const usernameLabel = _view.modelBuilder.text()
+			.withProps({
+				value: constants.TDE_WIZARD_CERTS_USERNAME_LABEL,
+				description: constants.TDE_WIZARD_CERTS_USERNAME_INFO,
+				requiredIndicator: true,
+				CSSStyles: {
+					...styles.LABEL_CSS,
+					'margin': '4px 0 14px 45px'
+				}
+			}).component();
+		this._usernameText = _view.modelBuilder.inputBox()
+			.withProps({
+				value: 'test_user',
+				width: '300px',
+				placeHolder: constants.TDE_WIZARD_CERTS_USERNAME_PLACEHOLDER,
+				required: true,
+				CSSStyles: { ...styles.BODY_CSS, 'margin-top': '-1em', 'margin-left': '45px' }
+			}).component();
+
+		const passwordLabel = _view.modelBuilder.text()
+			.withProps({
+				value: constants.TDE_WIZARD_CERTS_PASSWORD_LABEL,
+				description: constants.TDE_WIZARD_CERTS_PASSWORD_INFO,
+				requiredIndicator: true,
+				CSSStyles: {
+					...styles.LABEL_CSS,
+					'margin': '4px 0 14px 45px'
+				}
+			}).component();
+		this._passwordText = _view.modelBuilder.inputBox()
+			.withProps({
+				value: 'cder234t@Password#01a',
+				inputType: 'password',
+				width: '300px',
+				placeHolder: constants.TDE_WIZARD_CERTS_PASSWORD_PLACEHOLDER,
+				required: true,
+				CSSStyles: { ...styles.BODY_CSS, 'margin-top': '-1em', 'margin-left': '45px' }
+			}).component();
+
 		this._adsConfirmationCheckBox = _view.modelBuilder.checkBox()
 			.withProps({
 				label: constants.TDE_WIZARD_MIGRATION_OPTION_ADS_CONFIRM,
 				checked: this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAdsConfirmed(),
 				CSSStyles: {
 					...styles.BODY_CSS,
-					'margin': '4px 0 14px 14px'
+					'margin': '10px 0 14px 15px'
 				}
 			}).component();
 		this._disposables.push(
 			this._adsConfirmationCheckBox.onChanged(async checked => {
-				this.migrationStateModel.tdeMigrationConfig.setAdsConfirmation(checked);
+				this.migrationStateModel.tdeMigrationConfig.setAdsConfirmation(
+					checked,
+					this._networkPathText.value ?? '',
+					this._domainText.value ?? '',
+					this._usernameText.value ?? '',
+					this._passwordText.value ?? '');
 				await this.updateUI();
 			}));
 
 		container.addItems([
+			adsMethodInfoMessage,
+			networkPathLabel,
+			this._networkPathText,
+			domainLabel,
+			this._domainText,
+			usernameLabel,
+			this._usernameText,
+			passwordLabel,
+			this._passwordText,
 			this._adsConfirmationCheckBox]);
+
 		return container;
 	}
 
@@ -252,6 +361,11 @@ export class TdeConfigurationDialog {
 		await utils.updateControlDisplay(this._manualMethodWarningContainer, useManual);
 
 		this.dialog!.okButton.enabled = this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodSet();
+
+		this._networkPathText.required = useAds;
+		this._domainText.required = useAds;
+		this._usernameText.required = useAds;
+		this._passwordText.required = useAds;
 	}
 
 	public async openDialog(dialogName?: string) {
