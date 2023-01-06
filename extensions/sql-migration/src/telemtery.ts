@@ -36,6 +36,8 @@ export enum TelemetryViews {
 	DataCollectionWizard = 'GetAzureRecommendationDialog',
 	SelectMigrationServiceDialog = 'SelectMigrationServiceDialog',
 	Utils = 'Utils',
+	LoginMigrationWizardController = 'LoginMigrationWizardController',
+	LoginMigrationWizard = 'LoginMigrationWizard',
 	TdeConfigurationDialog = 'TdeConfigurationDialog',
 }
 

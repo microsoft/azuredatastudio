@@ -185,11 +185,13 @@ export class TableMigrationSelectionDialog {
 				600);
 
 			this._dialog.okButton.label = constants.TABLE_SELECTION_UPDATE_BUTTON;
+			this._dialog.okButton.position = 'left';
 			this._disposables.push(
 				this._dialog.okButton.onClick(
 					async () => this._save()));
 
 			this._dialog.cancelButton.label = constants.TABLE_SELECTION_CANCEL_BUTTON;
+			this._dialog.cancelButton.position = 'left';
 			this._disposables.push(
 				this._dialog.cancelButton.onClick(
 					async () => this._isOpen = false));

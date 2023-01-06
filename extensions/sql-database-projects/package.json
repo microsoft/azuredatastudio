@@ -13,8 +13,6 @@
   "icon": "images/sqlDatabaseProjects.png",
   "aiKey": "29a207bb14f84905966a8f22524cb730-25407f35-11b6-4d4e-8114-ab9e843cb52f-7380",
   "activationEvents": [
-    "onCommand:sqlDatabaseProjects.new",
-    "onCommand:sqlDatabaseProjects.open",
     "onCommand:sqlDatabaseProjects.createProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.updateProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.generateProjectFromOpenApiSpec",
@@ -482,7 +480,7 @@
     }
   },
   "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^1.3.1",
+    "@microsoft/ads-extension-telemetry": "^1.3.2",
     "@xmldom/xmldom": "0.8.4",
     "axios": "^0.27.2",
     "extract-zip": "^2.0.1",

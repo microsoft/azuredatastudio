@@ -873,6 +873,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			&& connection.authenticationType !== Constants.AuthenticationType.AzureMFAAndUser
 			&& connection.authenticationType !== Constants.AuthenticationType.DSTSAuth) {
 			connection.options['azureAccountToken'] = undefined;
+			connection.options['expiresOn'] = undefined;
 			return true;
 		}
 
@@ -883,6 +884,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			let dstsAccounts = accounts.filter(a => a.key.providerId.startsWith('dstsAuth'));
 			if (dstsAccounts.length <= 0) {
 				connection.options['azureAccountToken'] = undefined;
+				connection.options['expiresOn'] = undefined;
 				return false;
 			}
 
@@ -899,7 +901,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		const azureAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 		if (azureAccounts && azureAccounts.length > 0) {
 			let accountId = (connection.authenticationType === Constants.AuthenticationType.AzureMFA || connection.authenticationType === Constants.AuthenticationType.AzureMFAAndUser) ? connection.azureAccount : connection.userName;
-			let account = azureAccounts.find(account => account.key.accountId === accountId);
+			// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
+			// The OR case can be removed once we no longer support ADAL
+			let account = azureAccounts.find(account => account.key.accountId === accountId || account.key.accountId.split('.')[0] === accountId);
 			if (account) {
 				this._logService.debug(`Getting security token for Azure account ${account.key.accountId}`);
 				if (account.isStale) {
