@@ -37,7 +37,7 @@ export class DiagnosticsService extends SqlOpsFeature<any> {
 
 	protected registerProvider(options: any): Disposable { return undefined; }
 
-	getErrorHandleStatus(errorCode: number, errorMessage: string, providerName: string, ownerUri: string): Thenable<azdata.diagnostics.ErrorCodes> {
+	getErrorDiagnosticStatus(errorCode: number, errorMessage: string, providerName: string, ownerUri: string): Thenable<azdata.diagnostics.ErrorCodes> {
 		let params: Contracts.DiagnosticsParameters = { errorCode: errorCode, errorMessage: errorMessage, providerName: providerName, ownerUri: ownerUri };
 		return this.client.sendRequest(Contracts.DiagnosticsRequest.type, params).then(
 			r => {

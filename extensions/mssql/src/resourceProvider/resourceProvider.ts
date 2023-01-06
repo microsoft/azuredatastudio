@@ -13,7 +13,7 @@ import { CreateFirewallRuleRequest, HandleFirewallRuleRequest, CreateFirewallRul
 import * as Constants from './constants';
 import * as Utils from '../utils';
 
-class FirewallFeature extends SqlOpsFeature<any> {
+class FireWallFeature extends SqlOpsFeature<any> {
 
 	private static readonly messagesTypes: RPCMessageType[] = [
 		CreateFirewallRuleRequest.type,
@@ -21,7 +21,7 @@ class FirewallFeature extends SqlOpsFeature<any> {
 	];
 
 	constructor(client: SqlOpsDataClient) {
-		super(client, FirewallFeature.messagesTypes);
+		super(client, FireWallFeature.messagesTypes);
 	}
 
 	fillClientCapabilities(capabilities: ClientCapabilities): void {
@@ -85,7 +85,7 @@ export class AzureResourceProvider {
 	public async start(): Promise<void> {
 		let clientOptions: ClientOptions = {
 			providerId: Constants.providerId,
-			features: [FirewallFeature]
+			features: [FireWallFeature]
 		};
 		const serverPath = await Utils.getOrDownloadServer(this._config);
 		let serverOptions = this.generateServerOptions(serverPath);
