@@ -277,7 +277,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		return {
 			databaseName: database.options.name,
 			databaseCollation: database.options.collation,
-			databaseSizeInMB: database.options.size,
+			databaseSizeInMB: database.options.sizeInMB,
 			databaseState: database.options.state
 		};
 	}
