@@ -20,6 +20,6 @@ import './mainThreadNotebookDocumentsAndEditors';
 import './mainThreadObjectExplorer';
 import './mainThreadQueryEditor';
 import './mainThreadResourceProvider';
-import './mainThreadErrorHandler';
+import './mainThreadErrorDiagnostics';
 import './mainThreadTasks';
 import './mainThreadWorkspace';

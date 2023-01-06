@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IErrorHandlingService } from 'sql/workbench/services/errorHandling/common/errorHandlingService';
+import { IDiagnosticsService } from 'sql/workbench/services/diagnostics/common/diagnosticsService';
 import { diagnostics } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as azdata from 'azdata';
 
-export class ErrorHandlingService implements IErrorHandlingService {
+export class DiagnosticsService implements IDiagnosticsService {
 
 	_serviceBrand: undefined;
-	private _providers: { [handle: string]: azdata.ErrorHandler; } = Object.create(null);
+	private _providers: { [handle: string]: azdata.Diagnostics; } = Object.create(null);
 
 	constructor(
 	) { }
@@ -35,16 +35,16 @@ export class ErrorHandlingService implements IErrorHandlingService {
 	}
 
 	/**
-	 * Register an errorHandler
+	 * Register a diagnostics object for a provider
 	 */
-	public registerErrorHandler(providerId: string, provider: azdata.ErrorHandler): void {
-		this._providers[providerId] = provider;
+	public registerDiagnostics(providerId: string, diagnostics: azdata.Diagnostics): void {
+		this._providers[providerId] = diagnostics;
 	}
 
 	/**
-	 * Unregister an errorHandler
+	 * Unregister a diagnostics object for a provider
 	 */
-	public unregisterErrorHandler(providerId: string): void {
+	public unregisterDiagnostics(providerId: string): void {
 		delete this._providers[providerId];
 	}
 }

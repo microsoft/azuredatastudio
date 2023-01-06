@@ -7,21 +7,21 @@ import { diagnostics } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as azdata from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
-export const SERVICE_ID = 'errorHandlerService';
-export const IErrorHandlingService = createDecorator<IErrorHandlingService>(SERVICE_ID);
+export const SERVICE_ID = 'diagnosticsService';
+export const IDiagnosticsService = createDecorator<IDiagnosticsService>(SERVICE_ID);
 
-export interface IErrorHandlingService {
+export interface IDiagnosticsService {
 	_serviceBrand: undefined;
 
 	/**
-	 * Register an error handler for a provider
+	 * Register a Diagnostics object for a provider
 	 */
-	registerErrorHandler(providerId: string, provider: azdata.ErrorHandler): void;
+	registerDiagnostics(providerId: string, diagnostics: azdata.Diagnostics): void;
 
 	/**
-	 * Unregister an error handler for a provider
+	 * Unregister a Diagnostics object for a provider
 	 */
-	unregisterErrorHandler(ProviderId: string): void;
+	unregisterDiagnostics(ProviderId: string): void;
 
 	/**
 	 * Shows error dialog with given parameters

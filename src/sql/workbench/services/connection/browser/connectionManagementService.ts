@@ -592,16 +592,17 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	private handleOtherError(connection: interfaces.IConnectionProfile, connectionResult: IConnectionResult): Promise<boolean> {
-		return this._resourceProviderService.handleOtherError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName).then(response => {
-			if (response === diagnostics.ErrorCodes.passwordReset) {
-				this._logService.info(`password reset error code returned!`);
-				//connectionResult.errorHandled = true;
-				return false;
-				//return this._resourceProviderService.showFirewallRuleDialog(connection, response.ipAddress, response.resourceProviderId);
-			} else {
-				return false;
-			}
-		});
+		// return this._resourceProviderService.handleOtherError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName).then(response => {
+		// 	if (response === diagnostics.ErrorCodes.passwordReset) {
+		// 		this._logService.info(`password reset error code returned!`);
+		// 		//connectionResult.errorHandled = true;
+		// 		return false;
+		// 		//return this._resourceProviderService.showFirewallRuleDialog(connection, response.ipAddress, response.resourceProviderId);
+		// 	} else {
+		// 		return false;
+		// 	}
+		// });
+		return Promise.resolve(false);
 	}
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {

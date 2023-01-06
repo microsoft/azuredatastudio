@@ -13,7 +13,6 @@ import { FirewallRuleDialogController } from 'sql/workbench/services/resourcePro
 import * as azdata from 'azdata';
 import { invalidProvider } from 'sql/base/common/errors';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { diagnostics } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ResourceProviderService implements IResourceProviderService {
 
@@ -83,27 +82,6 @@ export class ResourceProviderService implements IResourceProviderService {
 
 		await Promise.all(promises);
 		return handleFirewallRuleResult;
-	}
-
-	/**
-	 * Handle a non firewall error to identify what action needs to be taken.
-	 */
-	public async handleOtherError(errorCode: number, errorMessage: string, resourceProviderId: string): Promise<diagnostics.ErrorCodes> {
-		let errorCodeResult = diagnostics.ErrorCodes.noErrorOrUnsupported;
-		const promises = [];
-		if (this._providers) {
-			for (const key in this._providers) {
-				const provider = this._providers[key];
-				promises.push(provider.handleOtherError(errorCode, errorMessage, resourceProviderId).then(result => {
-					if (errorCodeResult === diagnostics.ErrorCodes.noErrorOrUnsupported) {
-						errorCodeResult = result;
-					}
-				}, () => { /* Swallow failures at getting accounts, we'll just hide that provider */
-				}));
-			}
-		}
-		await Promise.all(promises);
-		return errorCodeResult
 	}
 
 	/**

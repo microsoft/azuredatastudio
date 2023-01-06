@@ -39,9 +39,6 @@ export class MainThreadResourceProvider extends Disposable implements MainThread
 			},
 			handleFirewallRule(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.HandleFirewallRuleResponse> {
 				return self._proxy.$handleFirewallRule(handle, errorCode, errorMessage, connectionTypeId);
-			},
-			handleOtherError(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.diagnostics.ErrorCodes> {
-				return self._proxy.$handleOtherError(handle, errorCode, errorMessage, connectionTypeId);
 			}
 		};
 		this._resourceProviderService.registerProvider(providerMetadata.id, resourceProvider);

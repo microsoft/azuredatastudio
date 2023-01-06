@@ -22,10 +22,6 @@ export namespace HandleFirewallRuleRequest {
 	export const type = new RequestType<HandleFirewallRuleParams, HandleFirewallRuleResponse, void, void>('resource/handleFirewallRule');
 }
 
-export namespace HandleOtherErrorRequest {
-	export const type = new RequestType<HandleOtherErrorParams, azdata.diagnostics.ErrorCodes, void, void>('resource/handleOtherError');
-}
-
 /**
  * Firewall rule creation parameters
  */
@@ -105,10 +101,4 @@ interface HandleFirewallRuleResponse {
 	 * If handled, the default IP address to send back; so users can tell what their blocked IP is.
 	 */
 	ipAddress: string;
-}
-
-export interface HandleOtherErrorParams {
-	errorCode: number;
-	errorMessage: string;
-	connectionTypeId: string;
 }

@@ -4,48 +4,48 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { IErrorHandlingService } from 'sql/workbench/services/errorHandling/common/errorHandlingService';
+import { IDiagnosticsService } from 'sql/workbench/services/diagnostics/common/diagnosticsService';
 import { Disposable } from 'vs/base/common/lifecycle';
 import {
-	ExtHostErrorHandlerShape,
-	MainThreadErrorHandlerShape
+	ExtHostErrorDiagnosticsShape,
+	MainThreadErrorDiagnosticsShape
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
-@extHostNamedCustomer(SqlMainContext.MainThreadErrorHandler)
-export class MainThreadErrorHandler extends Disposable implements MainThreadErrorHandlerShape {
+@extHostNamedCustomer(SqlMainContext.MainThreadErrorDiagnostics)
+export class MainThreadErrorDiagnostics extends Disposable implements MainThreadErrorDiagnosticsShape {
 	private _providerMetadata: { [handle: number]: azdata.AccountProviderMetadata };
-	private _proxy: ExtHostErrorHandlerShape;
+	private _proxy: ExtHostErrorDiagnosticsShape;
 
 	constructor(
 		extHostContext: IExtHostContext,
-		@IErrorHandlingService private _errorHandlingService: IErrorHandlingService
+		@IDiagnosticsService private _diagnosticsService: IDiagnosticsService
 	) {
 		super();
 		this._providerMetadata = {};
 		if (extHostContext) {
-			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostErrorHandler);
+			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostErrorDiagnostics);
 		}
 	}
 
-	public $registerErrorHandler(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any> {
+	public $registerDiagnostics(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any> {
 		let self = this;
 
 		//Create the error handler that interfaces with the extension via the proxy and register it
-		let errorHandler: azdata.ErrorHandler = {
+		let diagnostics: azdata.Diagnostics = {
 			handleErrorCode(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.diagnostics.ErrorCodes> {
 				return self._proxy.$handleErrorCode(handle, errorCode, errorMessage, connectionTypeId);
 			}
 		};
-		this._errorHandlingService.registerErrorHandler(providerMetadata.id, errorHandler);
+		this._diagnosticsService.registerDiagnostics(providerMetadata.id, diagnostics);
 		this._providerMetadata[handle] = providerMetadata;
 
 		return Promise.resolve(null);
 	}
 
-	public $unregisterErrorHandler(handle: number): Thenable<any> {
-		this._errorHandlingService.unregisterErrorHandler(this._providerMetadata[handle].id);
+	public $unregisterDiagnostics(handle: number): Thenable<any> {
+		this._diagnosticsService.unregisterDiagnostics(this._providerMetadata[handle].id);
 		return Promise.resolve(null);
 	}
 }

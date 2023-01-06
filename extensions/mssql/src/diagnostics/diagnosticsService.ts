@@ -9,12 +9,12 @@ import { ClientCapabilities, ServerCapabilities } from 'vscode-languageclient';
 import { Disposable } from 'vscode';
 import * as Contracts from './contracts';
 import * as azdata from 'azdata';
-export class ErrorHandlerService extends SqlOpsFeature<any> {
+export class DiagnosticsService extends SqlOpsFeature<any> {
 
 
 
 	public static asFeature(context: AppContext): ISqlOpsFeature {
-		return class extends ErrorHandlerService {
+		return class extends DiagnosticsService {
 			constructor(client: SqlOpsDataClient) {
 				super(context, client);
 			}
@@ -38,13 +38,13 @@ export class ErrorHandlerService extends SqlOpsFeature<any> {
 	protected registerProvider(options: any): Disposable { return undefined; }
 
 	getErrorHandleStatus(errorCode: number, errorMessage: string, providerName: string, ownerUri: string): Thenable<azdata.diagnostics.ErrorCodes> {
-		let params: Contracts.ErrorHandlerParameters = { errorCode: errorCode, errorMessage: errorMessage, providerName: providerName, ownerUri: ownerUri };
-		return this.client.sendRequest(Contracts.ErrorHandlerRequest.type, params).then(
+		let params: Contracts.DiagnosticsParameters = { errorCode: errorCode, errorMessage: errorMessage, providerName: providerName, ownerUri: ownerUri };
+		return this.client.sendRequest(Contracts.DiagnosticsRequest.type, params).then(
 			r => {
 				return undefined;
 			},
 			e => {
-				this.client.logFailedRequest(Contracts.ErrorHandlerRequest.type, e);
+				this.client.logFailedRequest(Contracts.DiagnosticsRequest.type, e);
 				return Promise.reject(new Error(e.message));
 			}
 		);

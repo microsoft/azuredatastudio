@@ -432,17 +432,10 @@ declare module 'azdata' {
 		azurePortalEndpoint?: string;
 	}
 
-	export interface ResourceProvider {
-		/**
-		 * Adds additional handling for other errors.
-		 */
-		handleOtherError(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<diagnostics.ErrorCodes>;
-	}
-
 	/**
-	 * An interface for interpreting an error code from a provider.
+	 * An interface for receiving diagnostic data from a provider.
 	 */
-	export interface ErrorHandler {
+	export interface Diagnostics {
 		handleErrorCode(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<diagnostics.ErrorCodes>;
 	}
 
@@ -456,9 +449,9 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * Registers a error handler that can support a provider.
+		 * Registers a Diagnostics object that can support a provider.
 		 */
-		export function registerErrorHandler(providerMetadata: ResourceProviderMetadata, provider: ErrorHandler): vscode.Disposable;
+		export function registerDiagnostics(providerMetadata: ResourceProviderMetadata, diagnostics: Diagnostics): vscode.Disposable;
 	}
 
 

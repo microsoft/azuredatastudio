@@ -5,7 +5,7 @@
 import { RequestType } from 'vscode-languageclient';
 import { diagnostics } from 'azdata';
 
-export interface ErrorHandlerParameters {
+export interface DiagnosticsParameters {
 	/**
 	 * The error code returned from the connection result in case an error happened.
 	 */
@@ -24,6 +24,6 @@ export interface ErrorHandlerParameters {
 	ownerUri: string;
 }
 
-export namespace ErrorHandlerRequest {
-	export const type = new RequestType<ErrorHandlerParameters, diagnostics.ErrorCodes, void, void>('errorHandle/errorHandler');
+export namespace DiagnosticsRequest {
+	export const type = new RequestType<DiagnosticsParameters, diagnostics.ErrorCodes, void, void>('diagnostics/codeCheck');
 }

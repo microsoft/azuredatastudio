@@ -10,7 +10,7 @@ import { ExtHostAccountManagement } from 'sql/workbench/api/common/extHostAccoun
 import { ExtHostCredentialManagement } from 'sql/workbench/api/common/extHostCredentialManagement';
 import { ExtHostDataProtocol } from 'sql/workbench/api/common/extHostDataProtocol';
 import { ExtHostResourceProvider } from 'sql/workbench/api/common/extHostResourceProvider';
-import { ExtHostErrorHandler } from 'sql/workbench/api/common/extHostErrorHandler';
+import { ExtHostErrorDiagnostics } from 'sql/workbench/api/common/extHostErrorDiagnostics';
 import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ExtHostModalDialogs } from 'sql/workbench/api/common/extHostModalDialog';
 import { ExtHostTasks } from 'sql/workbench/api/common/extHostTasks';
@@ -88,7 +88,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostDataProvider = rpcProtocol.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(rpcProtocol, uriTransformer));
 	const extHostObjectExplorer = rpcProtocol.set(SqlExtHostContext.ExtHostObjectExplorer, new ExtHostObjectExplorer(rpcProtocol, commands));
 	const extHostResourceProvider = rpcProtocol.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(rpcProtocol));
-	const extHostErrorHandler = rpcProtocol.set(SqlExtHostContext.ExtHostErrorHandler, new ExtHostErrorHandler(rpcProtocol));
+	const extHostErrorDiagnostics = rpcProtocol.set(SqlExtHostContext.ExtHostErrorDiagnostics, new ExtHostErrorDiagnostics(rpcProtocol));
 	const extHostModalDialogs = rpcProtocol.set(SqlExtHostContext.ExtHostModalDialogs, new ExtHostModalDialogs(rpcProtocol));
 	const extHostTasks = rpcProtocol.set(SqlExtHostContext.ExtHostTasks, new ExtHostTasks(rpcProtocol, extHostLogService));
 	const extHostBackgroundTaskManagement = rpcProtocol.set(SqlExtHostContext.ExtHostBackgroundTaskManagement, new ExtHostBackgroundTaskManagement(rpcProtocol));
@@ -221,8 +221,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			const diagnostics: typeof azdata.diagnostics = {
 				// "azdata" API definition
 				ErrorCodes: sqlExtHostTypes.diagnostics.ErrorCodes,
-				registerErrorHandler: (providerMetadata: azdata.ResourceProviderMetadata, provider: azdata.ErrorHandler): vscode.Disposable => {
-					return extHostErrorHandler.$registerErrorHandler(providerMetadata, provider);
+				registerDiagnostics: (providerMetadata: azdata.ResourceProviderMetadata, diagnostics: azdata.Diagnostics): vscode.Disposable => {
+					return extHostErrorDiagnostics.$registerDiagnostics(providerMetadata, diagnostics);
 				}
 			}
 
