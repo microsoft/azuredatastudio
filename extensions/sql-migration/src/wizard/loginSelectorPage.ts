@@ -110,6 +110,39 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		return searchContainer;
 	}
 
+	private createAadDomainNameComponent(): azdata.FlexContainer {
+		// target user name
+		const aadDomainNameLabel = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_LABEL,
+				requiredIndicator: true,
+				CSSStyles: { ...styles.LABEL_CSS, 'margin-top': '-1em' }
+			}).component();
+
+		const aadDomainNameInputBox = this._view.modelBuilder.inputBox()
+			.withProps({
+				width: '300px',
+				inputType: 'text',
+				placeHolder: constants.LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_PLACEHOLDER,
+				required: false,
+				CSSStyles: { 'margin-top': '-1em' },
+			}).component();
+
+		this._disposables.push(
+			aadDomainNameInputBox.onTextChanged(
+				(value: string) => {
+					this.migrationStateModel._aadDomainName = value ?? '';
+				}));
+
+		return this._view.modelBuilder.flexContainer()
+			.withItems([
+				aadDomainNameLabel,
+				aadDomainNameInputBox])
+			.withLayout({ flexFlow: 'column' })
+			.withProps({ CSSStyles: { 'margin': '10px 0 10px 0' } })
+			.component();
+	}
+
 	@debounce(500)
 	private async _filterTableList(value: string, selectedList?: LoginTableInfo[]): Promise<void> {
 		this._filterTableValue = value;
@@ -143,12 +176,12 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
 
-		const windowsAuthInfoBox = this._view.modelBuilder.infoBox()
-			.withProps({
-				style: 'information',
-				text: constants.LOGIN_MIGRATIONS_SELECT_LOGINS_WINDOWS_AUTH_WARNING,
-				CSSStyles: { ...styles.BODY_CSS }
-			}).component();
+		// const windowsAuthInfoBox = this._view.modelBuilder.infoBox()
+		// 	.withProps({
+		// 		style: 'information',
+		// 		text: constants.LOGIN_MIGRATIONS_SELECT_LOGINS_WINDOWS_AUTH_WARNING,
+		// 		CSSStyles: { ...styles.BODY_CSS }
+		// 	}).component();
 
 		this._refreshButton = this._view.modelBuilder.button()
 			.withProps({
@@ -158,7 +191,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				iconPath: IconPathHelper.refresh,
 				label: constants.DATABASE_TABLE_REFRESH_LABEL,
 				width: 70,
-				CSSStyles: { 'margin': '15px 0 0 0' },
+				CSSStyles: { 'margin': '0 0 0 0' },
 			})
 			.component();
 
@@ -170,7 +203,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			.withItem(this._refreshButton)
 			.withProps({
 				loading: false,
-				CSSStyles: { 'margin-right': '20px', 'margin-top': '15px' }
+				CSSStyles: { 'margin-right': '20px', 'margin-top': '0px' }
 			})
 			.component();
 
@@ -284,11 +317,12 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				'margin': '0px 28px 0px 28px'
 			}
 		}).component();
-		flex.addItem(windowsAuthInfoBox, { flex: '0 0 auto' });
+		// flex.addItem(windowsAuthInfoBox, { flex: '0 0 auto' });
 		flex.addItem(refreshContainer, { flex: '0 0 auto' });
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._loginCount, { flex: '0 0 auto' });
 		flex.addItem(this._loginSelectorTable);
+		flex.addItem(this.createAadDomainNameComponent(), { flex: '0 0 auto' });
 		return flex;
 	}
 
