@@ -115,7 +115,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		const aadDomainNameLabel = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_LABEL,
-				requiredIndicator: true,
+				requiredIndicator: false,
 				CSSStyles: { ...styles.LABEL_CSS, 'margin-top': '-1em' }
 			}).component();
 
@@ -183,6 +183,14 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		// 		CSSStyles: { ...styles.BODY_CSS }
 		// 	}).component();
 
+
+		// const loginSelectorTableLabel = this._view.modelBuilder.text()
+		// 	.withProps({
+		// 		value: constants.LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_LABEL,
+		// 		requiredIndicator: true,
+		// 		CSSStyles: { ...styles.LABEL_CSS, 'margin-top': '-1em' }
+		// 	}).component();
+
 		this._refreshButton = this._view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
@@ -191,7 +199,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				iconPath: IconPathHelper.refresh,
 				label: constants.DATABASE_TABLE_REFRESH_LABEL,
 				width: 70,
-				CSSStyles: { 'margin': '0 0 0 0' },
+				CSSStyles: { 'margin': '15px 0 0 0' },
 			})
 			.component();
 
@@ -203,7 +211,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			.withItem(this._refreshButton)
 			.withProps({
 				loading: false,
-				CSSStyles: { 'margin-right': '20px', 'margin-top': '0px' }
+				CSSStyles: { 'margin-right': '20px', 'margin-top': '15px' }
 			})
 			.component();
 
@@ -314,10 +322,11 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			height: '100%',
 		}).withProps({
 			CSSStyles: {
-				'margin': '0px 28px 0px 28px'
+				'margin': '-15px 28px 0px 28px'
 			}
 		}).component();
 		// flex.addItem(windowsAuthInfoBox, { flex: '0 0 auto' });
+		// flex.addItem(loginSelectorTableLabel, { flex: '0 0 auto' });
 		flex.addItem(refreshContainer, { flex: '0 0 auto' });
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._loginCount, { flex: '0 0 auto' });
@@ -422,7 +431,6 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		});
 
 		this.migrationStateModel._loginsForMigration = selectedLogins;
-		this.migrationStateModel._aadDomainName = "";
 		this.updateNextButton();
 	}
 

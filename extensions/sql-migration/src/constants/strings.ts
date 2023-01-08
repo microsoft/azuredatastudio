@@ -364,7 +364,7 @@ export const LOGINS_NOT_FOUND = localize('sql.login.migration.logins.not.found',
 export const LOGIN_MIGRATION_STATUS_SUCCEEDED = localize('sql.login.migration.status.succeeded', "Succeeded");
 export const LOGIN_MIGRATION_STATUS_FAILED = localize('sql.login.migration.status.failed', "Failed");
 export const LOGIN_MIGRATION_STATUS_IN_PROGRESS = localize('sql.login.migration.status.in.progress', "In progress");
-export const LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_LABEL = localize('sql.login.migration.aad.domain.name.input.box.label', "Azure Active Directory Domain Name (required to migrate Windows Authenication Logins)");
+export const LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_LABEL = localize('sql.login.migration.aad.domain.name.input.box.label', "Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)");
 export const LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_PLACEHOLDER = localize('sql.login.migration.aad.domain.name.input.box.placeholder', "Enter AAD Domain Name");
 
 // Azure SQL Target
