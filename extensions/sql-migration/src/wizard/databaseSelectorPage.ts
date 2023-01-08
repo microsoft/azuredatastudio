@@ -207,9 +207,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 
 		this._disposables.push(
 			(this._databaseSelectorTable.onCellAction)(
-				async (e: azdata.ICellActionEventArgs) => {
-					await this.updateValuesOnSelection();
-				}));
+				async (e) => await this.updateValuesOnSelection()));
 
 
 		// load unfiltered table list and pre-select list of databases saved in state
