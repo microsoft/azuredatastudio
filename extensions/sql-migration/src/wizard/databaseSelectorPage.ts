@@ -206,8 +206,11 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			}).component();
 
 		this._disposables.push(
-			this._databaseSelectorTable.onRowSelected(
-				async (e) => await this.updateValuesOnSelection()));
+			(this._databaseSelectorTable.onCellAction)(
+				async (e: azdata.ICellActionEventArgs) => {
+					await this.updateValuesOnSelection();
+				}));
+
 
 		// load unfiltered table list and pre-select list of databases saved in state
 		await this._filterTableList('', this.migrationStateModel._databasesForAssessment);
@@ -256,6 +259,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	public selectedDbs(): string[] {
 		const rows = this._databaseSelectorTable?.data || [];
 		const databases = this._databaseSelectorTable?.selectedRows || [];
+		return rows.filter(row => row[0]).map(row => row[2]);
 		return databases
 			.filter(row => row < rows.length)
 			.map(row => rows[row][2])

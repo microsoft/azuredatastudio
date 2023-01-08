@@ -445,6 +445,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			}, index));
 
 			this._register(this._checkboxColumns.get(col.value).onChange((state) => {
+				this.data[state.row][state.column] = state.checked;
+				this.data = this.data; // We need this line to update the actual properties value that is exposed to the extensions.
 				this.fireEvent({
 					eventType: ComponentEventType.onCellAction,
 					args: {

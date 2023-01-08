@@ -4161,7 +4161,7 @@ declare module 'azdata' {
 
 	export interface TableComponent extends Component, TableComponentProperties {
 		onRowSelected: vscode.Event<any>;
-		onCellAction?: vscode.Event<ICellActionEventArgs> | undefined;
+		onCellAction: vscode.Event<ICellActionEventArgs>;
 	}
 
 	export interface FileBrowserTreeComponent extends Component, FileBrowserTreeProperties {
