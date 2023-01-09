@@ -236,11 +236,12 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 
 		databaseList.sort((a, b) => a.options.name.localeCompare(b.options.name));
 		this._dbNames = [];
+		stateMachine._databaseInfosForMigration = [];
 
 		this._databaseTableValues = databaseList.map(database => {
 			const databaseName = database.options.name;
 			this._dbNames.push(databaseName);
-			stateMachine._databaseInfosForMigration.set(databaseName, this.getSourceDatabaseInfo(database));
+			stateMachine._databaseInfosForMigration.push(this.getSourceDatabaseInfo(database));
 			return [
 				selectedDatabases?.indexOf(databaseName) > -1,
 				<azdata.IconColumnCellValue>{

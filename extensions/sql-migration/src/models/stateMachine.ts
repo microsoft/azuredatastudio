@@ -143,7 +143,7 @@ export interface SavedInfo {
 	closedPage: number;
 	databaseAssessment: string[];
 	databaseList: string[];
-	databaseInfoList: Map<string, SourceDatabaseInfo | undefined>;
+	databaseInfoList: SourceDatabaseInfo[];
 	migrationTargetType: MigrationTargetType | null;
 	azureAccount: azdata.Account | null;
 	azureTenant: azurecore.Tenant | null;
@@ -219,7 +219,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public mementoString: string;
 
 	public _databasesForMigration: string[] = [];
-	public _databaseInfosForMigration: Map<string, SourceDatabaseInfo | undefined> = new Map();
+	public _databaseInfosForMigration: SourceDatabaseInfo[] = [];
 	public _didUpdateDatabasesForMigration: boolean = false;
 	public _didDatabaseMappingChange: boolean = false;
 	public _vmDbs: string[] = [];
@@ -1270,7 +1270,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			closedPage: currentPage,
 			databaseAssessment: [],
 			databaseList: [],
-			databaseInfoList: new Map<string, SourceDatabaseInfo>(),
+			databaseInfoList: [],
 			migrationTargetType: null,
 			azureAccount: null,
 			azureTenant: null,
@@ -1308,12 +1308,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				saveInfo.resourceGroup = this._resourceGroup;
 				saveInfo.targetServerInstance = this._targetServerInstance;
 				saveInfo.databaseList = this._databasesForMigration;
-				saveInfo.databaseInfoList = this._databaseInfosForMigration;
 
 			case Page.SKURecommendation:
 				saveInfo.migrationTargetType = this._targetType;
 				saveInfo.databaseList = this._databasesForMigration;
-				saveInfo.databaseInfoList = this._databaseInfosForMigration;
 				saveInfo.serverAssessment = this._assessmentResults;
 
 				if (this._skuRecommendationPerformanceDataSource) {
@@ -1338,10 +1336,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async loadSavedInfo(): Promise<Boolean> {
 		try {
 			this._targetType = this.savedInfo.migrationTargetType || undefined!;
-
 			this._databasesForAssessment = this.savedInfo.databaseAssessment;
 			this._databasesForMigration = this.savedInfo.databaseList;
-			this._databaseInfosForMigration = this.savedInfo.databaseInfoList;
 			this._didUpdateDatabasesForMigration = true;
 			this._didDatabaseMappingChange = true;
 			this.refreshDatabaseBackupPage = true;

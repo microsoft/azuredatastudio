@@ -410,15 +410,15 @@ export function SQL_TARGET_CONNECTION_SOURCE_NOT_MAPPED(sourceDatabaseName: stri
 		sourceDatabaseName);
 }
 
-//`Database mapping error.  Source database collation ({0}) is not same to target database collation ({1}). Source database: {2}; Target database: {3}.`
+//`Database mapping error. Source database ({0}) collation ({1}) does not match target database ({2}) collation ({3}). Please select a target database with the same collation to the source database.`
 export function SQL_TARGET_SOURCE_COLLATION_NOT_SAME(
 	sourceDatabaseName: string,
 	targetDatabaseName: string,
-	sourceDatabaseCollation: string,
-	targetDatabaseCollation: string): string {
+	sourceDatabaseCollation: string | undefined,
+	targetDatabaseCollation: string | undefined): string {
 	return localize(
 		'sql.migration.wizard.target.source.collation.error',
-		"Database mapping error.  Source database collation ({0}) is not same to target database collation ({1}). Source database: {2}; Target database: {3}.",
+		"Database mapping error.  Source database ({0}) collation ({1}) does not match target database ({2}) collation ({3}). Please select a target database with the same collation to the source database.",
 		sourceDatabaseCollation,
 		targetDatabaseCollation,
 		sourceDatabaseName,
