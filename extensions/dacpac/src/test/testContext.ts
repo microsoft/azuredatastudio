@@ -199,6 +199,7 @@ export function createViewContext(): ViewTestContext {
 		data: [] as any[][],
 		columns: [] as string[],
 		onRowSelected: onClick.event,
+		onCellAction: onClick.event,
 		appendData: (data: any[][]) => undefined,
 	});
 
