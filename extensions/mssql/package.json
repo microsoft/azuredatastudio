@@ -577,6 +577,7 @@
     "connectionProvider": {
       "providerId": "MSSQL",
       "displayName": "%mssql.provider.displayName%",
+      "isExecutionPlanProvider": true,
       "supportedExecutionPlanFileExtensions": [
         "sqlplan"
       ],
