@@ -456,6 +456,19 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 						name: name
 					}
 				});
+				if (checkboxAction === ActionOnCheck.selectRow) {
+					const selectedRows: number[] = [];
+					this.data.forEach((row, index) => {
+						if (row[state.column]) {
+							selectedRows.push(index);
+						}
+					});
+					this.selectedRows = selectedRows;
+					this.fireEvent({
+						eventType: ComponentEventType.onSelectedRowChanged,
+						args: selectedRows
+					});
+				}
 			}));
 		}
 	}

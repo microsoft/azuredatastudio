@@ -206,7 +206,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			}).component();
 
 		this._disposables.push(
-			(this._databaseSelectorTable.onCellAction)(
+			this._databaseSelectorTable.onRowSelected(
 				async (e) => await this.updateValuesOnSelection()));
 
 
@@ -257,7 +257,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	public selectedDbs(): string[] {
 		const rows = this._databaseSelectorTable?.data || [];
 		const databases = this._databaseSelectorTable?.selectedRows || [];
-		return rows.filter(row => row[0]).map(row => row[2]);
+		//return rows.filter(row => row[0]).map(row => row[2]);
 		return databases
 			.filter(row => row < rows.length)
 			.map(row => rows[row][2])
