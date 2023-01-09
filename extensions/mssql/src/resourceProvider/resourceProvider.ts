@@ -9,20 +9,19 @@ import { SqlOpsDataClient, SqlOpsFeature, ClientOptions } from 'dataprotocol-cli
 import { ServerCapabilities, ClientCapabilities, RPCMessageType, ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { Disposable } from 'vscode';
-import { CreateFirewallRuleRequest, HandleFirewallRuleRequest, HandleOtherErrorRequest, CreateFirewallRuleParams, HandleFirewallRuleParams, HandleOtherErrorParams } from './contracts';
+import { CreateFirewallRuleRequest, HandleFirewallRuleRequest, CreateFirewallRuleParams, HandleFirewallRuleParams } from './contracts';
 import * as Constants from './constants';
 import * as Utils from '../utils';
 
-class ErrorHandleFeature extends SqlOpsFeature<any> {
+class FireWallFeature extends SqlOpsFeature<any> {
 
 	private static readonly messagesTypes: RPCMessageType[] = [
 		CreateFirewallRuleRequest.type,
-		HandleFirewallRuleRequest.type,
-		HandleOtherErrorRequest.type
+		HandleFirewallRuleRequest.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
-		super(client, ErrorHandleFeature.messagesTypes);
+		super(client, FireWallFeature.messagesTypes);
 	}
 
 	fillClientCapabilities(capabilities: ClientCapabilities): void {
@@ -48,11 +47,6 @@ class ErrorHandleFeature extends SqlOpsFeature<any> {
 			return client.sendRequest(HandleFirewallRuleRequest.type, params);
 		};
 
-		let handleOtherError = (errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.errorHandling.ErrorCodes> => {
-			let params: HandleOtherErrorParams = { errorCode: errorCode, errorMessage: errorMessage, connectionTypeId: connectionTypeId };
-			return client.sendRequest(HandleOtherErrorRequest.type, params)
-		}
-
 		return azdata.resources.registerResourceProvider({
 			displayName: 'Azure SQL Resource Provider', // TODO Localize
 			id: 'Microsoft.Azure.SQL.ResourceProvider',
@@ -61,8 +55,7 @@ class ErrorHandleFeature extends SqlOpsFeature<any> {
 			}
 		}, {
 			handleFirewallRule,
-			createFirewallRule,
-			handleOtherError
+			createFirewallRule
 		});
 	}
 }
@@ -92,7 +85,7 @@ export class AzureResourceProvider {
 	public async start(): Promise<void> {
 		let clientOptions: ClientOptions = {
 			providerId: Constants.providerId,
-			features: [ErrorHandleFeature]
+			features: [FireWallFeature]
 		};
 		const serverPath = await Utils.getOrDownloadServer(this._config);
 		let serverOptions = this.generateServerOptions(serverPath);

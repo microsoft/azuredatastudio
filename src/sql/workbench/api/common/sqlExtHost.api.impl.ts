@@ -10,6 +10,7 @@ import { ExtHostAccountManagement } from 'sql/workbench/api/common/extHostAccoun
 import { ExtHostCredentialManagement } from 'sql/workbench/api/common/extHostCredentialManagement';
 import { ExtHostDataProtocol } from 'sql/workbench/api/common/extHostDataProtocol';
 import { ExtHostResourceProvider } from 'sql/workbench/api/common/extHostResourceProvider';
+import { ExtHostErrorDiagnostics } from 'sql/workbench/api/common/extHostErrorDiagnostics';
 import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ExtHostModalDialogs } from 'sql/workbench/api/common/extHostModalDialog';
 import { ExtHostTasks } from 'sql/workbench/api/common/extHostTasks';
@@ -87,6 +88,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostDataProvider = rpcProtocol.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(rpcProtocol, uriTransformer));
 	const extHostObjectExplorer = rpcProtocol.set(SqlExtHostContext.ExtHostObjectExplorer, new ExtHostObjectExplorer(rpcProtocol, commands));
 	const extHostResourceProvider = rpcProtocol.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(rpcProtocol));
+	const extHostErrorDiagnostics = rpcProtocol.set(SqlExtHostContext.ExtHostErrorDiagnostics, new ExtHostErrorDiagnostics(rpcProtocol));
 	const extHostModalDialogs = rpcProtocol.set(SqlExtHostContext.ExtHostModalDialogs, new ExtHostModalDialogs(rpcProtocol));
 	const extHostTasks = rpcProtocol.set(SqlExtHostContext.ExtHostTasks, new ExtHostTasks(rpcProtocol, extHostLogService));
 	const extHostBackgroundTaskManagement = rpcProtocol.set(SqlExtHostContext.ExtHostBackgroundTaskManagement, new ExtHostBackgroundTaskManagement(rpcProtocol));
@@ -102,12 +104,6 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostWorkspace = rpcProtocol.set(SqlExtHostContext.ExtHostWorkspace, new ExtHostWorkspace(rpcProtocol));
 	return {
 		azdata: function (extension: IExtensionDescription): typeof azdata {
-			// namespace: errorHandler
-			const errorHandling: typeof azdata.errorHandling = {
-				// "azdata" API definition
-				ErrorCodes: sqlExtHostTypes.errorHandling.ErrorCodes,
-			}
-
 			// namespace: connection
 			const connection: typeof azdata.connection = {
 				// "azdata" API definition
@@ -220,6 +216,15 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 					return extHostResourceProvider.$registerResourceProvider(providerMetadata, provider);
 				}
 			};
+
+			// namespace: diagnostics
+			const diagnostics: typeof azdata.diagnostics = {
+				// "azdata" API definition
+				ErrorCodes: sqlExtHostTypes.diagnostics.ErrorCodes,
+				registerDiagnostics: (providerMetadata: azdata.ResourceProviderMetadata, diagnostics: azdata.Diagnostics): vscode.Disposable => {
+					return extHostErrorDiagnostics.$registerDiagnostics(providerMetadata, diagnostics);
+				}
+			}
 
 			let registerConnectionProvider = (provider: azdata.ConnectionProvider): vscode.Disposable => {
 				// Connection callbacks
@@ -672,7 +677,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				TextType: sqlExtHostTypes.TextType,
 				designers: designers,
 				executionPlan: executionPlan,
-				errorHandling: errorHandling,
+				diagnostics: diagnostics,
 				env
 			};
 		}

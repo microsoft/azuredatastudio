@@ -7,37 +7,34 @@ import * as azdata from 'azdata';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import {
-	ExtHostResourceProviderShape,
-	MainThreadResourceProviderShape,
+	ExtHostErrorDiagnosticsShape,
+	MainThreadErrorDiagnosticsShape,
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { values } from 'vs/base/common/collections';
 import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
-export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
+export class ExtHostErrorDiagnostics extends ExtHostErrorDiagnosticsShape {
 	private _handlePool: number = 0;
-	private _proxy: MainThreadResourceProviderShape;
-	private _providers: { [handle: number]: ResourceProviderWithMetadata } = {};
+	private _proxy: MainThreadErrorDiagnosticsShape;
+	private _providers: { [handle: number]: DiagnosticsWithMetadata } = {};
 
 	constructor(mainContext: IMainContext) {
 		super();
-		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadResourceProvider);
+		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadErrorDiagnostics);
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	// - MAIN THREAD AVAILABLE METHODS /////////////////////////////////////
-	public override $createFirewallRule(handle: number, account: azdata.Account, firewallRuleInfo: azdata.FirewallRuleInfo): Thenable<azdata.CreateFirewallRuleResponse> {
-		return this._withProvider(handle, (provider: azdata.ResourceProvider) => provider.createFirewallRule(account, firewallRuleInfo));
-	}
-	public override $handleFirewallRule(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.HandleFirewallRuleResponse> {
-		return this._withProvider(handle, (provider: azdata.ResourceProvider) => provider.handleFirewallRule(errorCode, errorMessage, connectionTypeId));
+	public override $handleErrorCode(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.diagnostics.ErrorCodes> {
+		return this._withProvider(handle, (provider: azdata.Diagnostics) => provider.handleErrorCode(errorCode, errorMessage, connectionTypeId));
 	}
 
 	// - EXTENSION HOST AVAILABLE METHODS //////////////////////////////////
-	public $registerResourceProvider(providerMetadata: azdata.ResourceProviderMetadata, provider: azdata.ResourceProvider): Disposable {
+	public $registerDiagnostics(providerMetadata: azdata.ResourceProviderMetadata, diagnostics: azdata.Diagnostics): Disposable {
 		let self = this;
 
 		// Look for any account providers that have the same provider ID
-		let matchingProviderIndex = values(this._providers).findIndex((provider: ResourceProviderWithMetadata) => {
+		let matchingProviderIndex = values(this._providers).findIndex((provider: DiagnosticsWithMetadata) => {
 			return provider.metadata.id === providerMetadata.id;
 		});
 		if (matchingProviderIndex >= 0) {
@@ -48,16 +45,16 @@ export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 		let handle: number = this._nextHandle();
 		this._providers[handle] = {
 			metadata: providerMetadata,
-			provider: provider
+			provider: diagnostics
 		};
 
 		// Register the provider in the main thread via the proxy
-		this._proxy.$registerResourceProvider(providerMetadata, handle);
+		this._proxy.$registerDiagnostics(providerMetadata, handle);
 
 		// Return a disposable to cleanup the provider
 		return new Disposable(() => {
 			delete self._providers[handle];
-			self._proxy.$unregisterResourceProvider(handle);
+			self._proxy.$unregisterDiagnostics(handle);
 		});
 	}
 
@@ -74,7 +71,7 @@ export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 		return this._handlePool++;
 	}
 
-	private _withProvider<R>(handle: number, callback: (provider: azdata.ResourceProvider) => Thenable<R>): Thenable<R> {
+	private _withProvider<R>(handle: number, callback: (provider: azdata.Diagnostics) => Thenable<R>): Thenable<R> {
 		let provider = this._providers[handle];
 		if (provider === undefined) {
 			return Promise.reject(new Error(`Provider ${handle} not found.`));
@@ -83,7 +80,7 @@ export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 	}
 }
 
-interface ResourceProviderWithMetadata {
+interface DiagnosticsWithMetadata {
 	metadata: azdata.ResourceProviderMetadata;
-	provider: azdata.ResourceProvider;
+	provider: azdata.Diagnostics;
 }

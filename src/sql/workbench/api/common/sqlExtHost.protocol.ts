@@ -604,22 +604,16 @@ export abstract class ExtHostResourceProviderShape {
 	 * Handle firewall rule
 	 */
 	$handleFirewallRule(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.HandleFirewallRuleResponse> { throw ni(); }
-
-	/**
-	 * Handle other error types
-	 */
-	$handleOtherError(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.errorHandling.ErrorCodes> { throw ni(); }
-
 }
 
 /**
  * ResourceProvider extension host class.
  */
-export abstract class ExtHostErrorHandlerShape {
+export abstract class ExtHostErrorDiagnosticsShape {
 	/**
 	 * Handle other error types
 	 */
-	$handleErrorCode(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.errorHandling.ErrorCodes> { throw ni(); }
+	$handleErrorCode(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.diagnostics.ErrorCodes> { throw ni(); }
 }
 
 /**
@@ -661,9 +655,9 @@ export interface MainThreadResourceProviderShape extends IDisposable {
 	$unregisterResourceProvider(handle: number): Thenable<any>;
 }
 
-export interface MainThreadErrorHandlerShape extends IDisposable {
-	$registerErrorHandler(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any>;
-	$unregisterErrorHandler(handle: number): Thenable<any>;
+export interface MainThreadErrorDiagnosticsShape extends IDisposable {
+	$registerDiagnostics(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any>;
+	$unregisterDiagnostics(handle: number): Thenable<any>;
 }
 
 export interface MainThreadDataProtocolShape extends IDisposable {

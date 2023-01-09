@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { RequestType } from 'vscode-languageclient';
-import { errorHandling } from 'azdata';
+import { diagnostics } from 'azdata';
 
-export interface ErrorHandlerParameters {
+export interface DiagnosticsParameters {
 	/**
 	 * The error code returned from the connection result in case an error happened.
 	 */
@@ -24,6 +24,6 @@ export interface ErrorHandlerParameters {
 	ownerUri: string;
 }
 
-export namespace ErrorHandlerRequest {
-	export const type = new RequestType<ErrorHandlerParameters, errorHandling.ErrorCodes, void, void>('errorHandle/errorHandler');
+export namespace DiagnosticsRequest {
+	export const type = new RequestType<DiagnosticsParameters, diagnostics.ErrorCodes, void, void>('diagnostics/codeCheck');
 }
