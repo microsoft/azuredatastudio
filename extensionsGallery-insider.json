@@ -4771,7 +4771,7 @@
 					"shortDescription": "Connect to MongoDB and Atlas directly from your Azure Data Studio environment, navigate your databases and collections, inspect your schema and use playgrounds to prototype queries and aggregations.",
 					"publisher": {
 						"displayName": "MongoDB",
-						"publisherId": "MongoDB",
+						"publisherId": "mongodb",
 						"publisherName": "MongoDB"
 					},
 					"versions": [
