@@ -4767,7 +4767,7 @@
 				{
 					"extensionId": "95",
 					"extensionName": "mongodb-ads-extension",
-					"displayName": "MongoDB for Azure Data Studio",
+					"displayName": "MongoDB Atlas for Azure Data Studio",
 					"shortDescription": "Connect to MongoDB and Atlas directly from your VS Code environment, navigate your databases and collections, inspect your schema and use playgrounds to prototype queries and aggregations.",
 					"publisher": {
 						"displayName": "MongoDB",
