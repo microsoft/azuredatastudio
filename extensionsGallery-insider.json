@@ -4766,12 +4766,12 @@
 				},
 				{
 					"extensionId": "95",
-					"extensionName": "mongodb-ads-extension",
-					"displayName": "MongoDB for Azure Data Studio",
-					"shortDescription": "Connect to MongoDB and Atlas directly from your VS Code environment, navigate your databases and collections, inspect your schema and use playgrounds to prototype queries and aggregations.",
+					"extensionName": "mongodb-vscode",
+					"displayName": "MongoDB Atlas for Azure Data Studio",
+					"shortDescription": "Connect to MongoDB and Atlas directly from your Azure Data Studio environment, navigate your databases and collections, inspect your schema and use playgrounds to prototype queries and aggregations.",
 					"publisher": {
 						"displayName": "MongoDB",
-						"publisherId": "MongoDB",
+						"publisherId": "mongodb",
 						"publisherName": "MongoDB"
 					},
 					"versions": [
@@ -4782,8 +4782,8 @@
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
-									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/mongodb-js/vscode/releases/v0.9.3"
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/mongodb/mongodb.mongodb-vscode-0.9.3.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4813,11 +4813,11 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": "*"
+									"value": "^1.65.2"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.40.0"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
