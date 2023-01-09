@@ -689,6 +689,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				}
 			}
 			else {
+				this._azureTenantId = selectedAccount.properties.tenants[0].id;
 				this.onAzureTenantSelected(0);
 			}
 
@@ -859,6 +860,13 @@ export class ConnectionWidget extends lifecycle.Disposable {
 							this._logService.error(`fillInConnectionInputs : Could not find tenant with ID ${this._azureTenantId} for account ${accountName}`);
 						}
 						this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
+					}
+					else if (account && account.properties.tenants && account.properties.tenants.length === 1) {
+						this._azureTenantId = account.properties.tenants[0].id;
+						this.onAzureTenantSelected(0);
+					}
+					else {
+						this._logService.error(`fillInConnectionInputs : Could not find any tenants for account ${accountName}`);
 					}
 				}).catch(err => this._logService.error(`Unexpected error populating initial Azure Account options : ${err}`));
 			}

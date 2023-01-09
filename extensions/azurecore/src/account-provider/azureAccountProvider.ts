@@ -146,6 +146,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		if (azureAuth) {
 			Logger.pii(`Getting account security token for ${JSON.stringify(account.key)} (tenant ${tenantId}). Auth Method = ${azureAuth.userFriendlyName}`, [], []);
 			if (this.authLibrary === Constants.AuthLibrary.MSAL) {
+				tenantId = tenantId || account.properties.owningTenant.id;
 				let authResult = await azureAuth.getTokenMsal(account.key.accountId, resource, tenantId);
 				if (!authResult || !authResult.account || !authResult.account.idTokenClaims) {
 					Logger.error(`MSAL: getToken call failed`);
