@@ -4782,8 +4782,8 @@
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
-									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/mongodb-js/vscode/releases/v0.9.3"
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://github.com/mongodb-js/vscode/releases/download/v0.9.3/mongodb-vscode-0.9.3.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
