@@ -13416,12 +13416,18 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/statusBarItems.status.query.summaryTextNonNumeric" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Count: {0}  Distinct Count: {1}  Null Count: {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Conteggio: {0}  Conteggio valori distinti: {1}  Conteggio valori Null: {2}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/statusBarItems.status.query.summaryTooltip" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Average: {0}  Count: {1}  Distinct Count: {2}  Max: {3}  Min: {4}  Null Count: {5}  Sum: {6}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Media: {0}  Conteggio: {1}  Conteggio valori distinti: {2}  Max: {3}  Min: {4}  Conteggio valori Null: {5}  Somma: {6}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
