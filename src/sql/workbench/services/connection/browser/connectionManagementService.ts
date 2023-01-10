@@ -258,8 +258,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Load the password for the profile
 	 * @param connectionProfile Connection Profile
 	 */
-	public async addSavedPassword(connectionProfile: interfaces.IConnectionProfile): Promise<interfaces.IConnectionProfile> {
-		await this.fillInOrClearToken(connectionProfile);
+	public async addSavedPassword(connectionProfile: interfaces.IConnectionProfile, skipAccessToken: boolean = false): Promise<interfaces.IConnectionProfile> {
+		if (!skipAccessToken) {
+			await this.fillInOrClearToken(connectionProfile);
+		}
 		return this._connectionStore.addSavedPassword(connectionProfile).then(result => result.profile);
 	}
 
