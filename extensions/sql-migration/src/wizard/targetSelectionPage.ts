@@ -81,7 +81,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
-			this.wizard.message = { text: '' }
+			this.wizard.message = { text: '' };
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
 			}
@@ -122,10 +122,10 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					}
 
 					// validate power state from VM instance view
-					// const vmInstanceView = await getVMInstanceView(targetVm, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription)
-					// if (!vmInstanceView.statuses.some(status => status.code == "PowerState/running")) {
-					// 	errors.push("power state")
-					// }
+					const vmInstanceView = this.migrationStateModel._vmInstanceView;
+					if (!vmInstanceView.statuses.some(status => status.code === 'PowerState/running')) {
+						errors.push(constants.VM_NOT_READY_POWER_STATE_ERROR(targetVm.name));
+					}
 
 					// validate IaaS extension mode
 					if (targetVm.properties.sqlManagement !== 'Full') {
@@ -658,18 +658,17 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 							if (selectedVm) {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(selectedVm)! as SqlVMServer;
-
-								let vmInstanceView = await getVMInstanceView(this.migrationStateModel._targetServerInstance, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription);
+								this.migrationStateModel._vmInstanceView = await getVMInstanceView(this.migrationStateModel._targetServerInstance, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription);
 
 								this.wizard.message = { text: '' };
-								if (!vmInstanceView.statuses.some(status => status.code === 'PowerState/running')) {
+								if (!this.migrationStateModel._vmInstanceView.statuses.some(status => status.code === 'PowerState/running')) {
 									this.wizard.message = {
 										text: constants.VM_NOT_READY_POWER_STATE_ERROR(this.migrationStateModel._targetServerInstance.name),
 										level: azdata.window.MessageLevel.Error
 									};
 								}
 
-								if (this.migrationStateModel._targetServerInstance.properties.sqlManagement !== "Full") {
+								if (this.migrationStateModel._targetServerInstance.properties.sqlManagement !== 'Full') {
 									this.wizard.message = {
 										text: constants.VM_NOT_READY_IAAS_EXTENSION_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.sqlManagement),
 										level: azdata.window.MessageLevel.Error
@@ -971,21 +970,12 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._resourceGroup);
 					break;
 				case MigrationTargetType.SQLVM:
-					// this._azureResourceDr opdown.values = utils.getAzureResourceDropdownValues(
-					// 	this.migrationStateModel._targetSqlVirtualMachines,
-					// 	this.migrationStateModel._location,
-					// 	this.migrationStateModel._resourceGroup?.name,
-					// 	constants.NO_VIRTUAL_MACHINE_FOUND);
-
-					//////
 					this._azureResourceDropdown.values = await utils.getVirtualMachinesDropdownValues(
 						this.migrationStateModel._targetSqlVirtualMachines,
 						this.migrationStateModel._location,
 						this.migrationStateModel._resourceGroup,
 						this.migrationStateModel._azureAccount,
 						this.migrationStateModel._targetSubscription);
-					//////
-
 					break;
 				case MigrationTargetType.SQLDB:
 					this._azureResourceDropdown.values = utils.getAzureResourceDropdownValues(

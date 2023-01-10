@@ -627,7 +627,7 @@ export async function getVirtualMachinesDropdownValues(virtualMachines: azure.Sq
 
 				// 1) check if VM is on by querying underlying compute resource's instance view
 				let vmInstanceView = await azure.getVMInstanceView(virtualMachine, account, subscription);
-				if (!vmInstanceView.statuses.some(status => status.code == "PowerState/running")) {
+				if (!vmInstanceView.statuses.some(status => status.code === 'PowerState/running')) {
 					virtualMachineValue = {
 						name: virtualMachine.id,
 						displayName: constants.UNAVAILABLE_TARGET_PREFIX(virtualMachine.name)
@@ -635,7 +635,7 @@ export async function getVirtualMachinesDropdownValues(virtualMachines: azure.Sq
 				}
 
 				// 2) check for IaaS extension in Full mode
-				else if (virtualMachine.properties.sqlManagement != "Full") {
+				else if (virtualMachine.properties.sqlManagement !== 'Full') {
 					virtualMachineValue = {
 						name: virtualMachine.id,
 						displayName: constants.UNAVAILABLE_TARGET_PREFIX(virtualMachine.name)
