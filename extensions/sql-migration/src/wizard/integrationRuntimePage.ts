@@ -261,8 +261,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			this._radioButtonContainer,
 			!isSqlDbTarget);
 
-		//
-
 		// block SQL VM file share scenario for SQL Server <= 2014
 		const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
 		if (this.migrationStateModel._targetType === MigrationTargetType.SQLVM && utils.isSqlServerVersion2014OrBelow(sqlServerInfo)) {
@@ -276,8 +274,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			this._blobContainerButton.checked = false;
 			await this._sqlVmPageBlobInfoBox.updateCssStyles({ 'display': 'none' });
 		}
-
-		//
 
 		this._subscription.value = this.migrationStateModel._targetSubscription.name;
 		this._location.value = await getLocationDisplayName(
