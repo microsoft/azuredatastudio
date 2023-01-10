@@ -464,8 +464,8 @@ export class SavePlanFile extends Action {
 		let planNumber = 1;
 		while (await context.fileService.exists(defaultUri)) {
 			defaultUri = joinPath(URI.file(lastUsedSavePath), `${defaultFileName}${planNumber}.${fileExtension}`);
+			planNumber++;
 		}
-
 
 		const destination = await this.fileDialogService.showSaveDialog({
 			filters: [
