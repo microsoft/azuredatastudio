@@ -659,8 +659,9 @@ export class TargetSelectionPage extends MigrationWizardPage {
 							if (selectedVm) {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(selectedVm)! as SqlVMServer;
 								this.migrationStateModel._vmInstanceView = await getVMInstanceView(this.migrationStateModel._targetServerInstance, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription);
-
 								this.wizard.message = { text: '' };
+
+								// validate power state from VM instance view
 								if (!this.migrationStateModel._vmInstanceView.statuses.some(status => status.code.toLowerCase() === 'PowerState/running'.toLowerCase())) {
 									this.wizard.message = {
 										text: constants.VM_NOT_READY_POWER_STATE_ERROR(this.migrationStateModel._targetServerInstance.name),
@@ -668,6 +669,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 									};
 								}
 
+								// validate IaaS extension mode
 								if (this.migrationStateModel._targetServerInstance.properties.sqlManagement.toLowerCase() !== 'Full'.toLowerCase()) {
 									this.wizard.message = {
 										text: constants.VM_NOT_READY_IAAS_EXTENSION_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.sqlManagement),
@@ -683,8 +685,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 							if (selectedMi) {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(selectedMi)! as azureResource.AzureSqlManagedInstance;
-
 								this.wizard.message = { text: '' };
+
 								if (this.migrationStateModel._targetServerInstance.properties.state.toLowerCase() !== 'Ready'.toLowerCase()) {
 									this.wizard.message = {
 										text: constants.MI_NOT_READY_ERROR(
