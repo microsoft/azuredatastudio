@@ -280,7 +280,6 @@ export async function getAvailableSqlVMs(account: azdata.Account, subscription: 
 	return response.response.data.value;
 }
 
-///
 export async function getVMInstanceView(sqlVm: SqlVMServer, account: azdata.Account, subscription: Subscription): Promise<VirtualMachineInstanceView> {
 	const api = await getAzureCoreAPI();
 	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${getResourceGroupFromId(sqlVm.id)}/providers/Microsoft.Compute/virtualMachines/${sqlVm.name}/instanceView?api-version=2022-08-01`);

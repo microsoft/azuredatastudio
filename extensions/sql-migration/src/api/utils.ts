@@ -548,7 +548,7 @@ export async function getManagedInstancesDropdownValues(managedInstances: azureR
 		managedInstances.forEach((managedInstance) => {
 			if (managedInstance.location.toLowerCase() === location.name.toLowerCase() && managedInstance.resourceGroup?.toLowerCase() === resourceGroup.name.toLowerCase()) {
 				let managedInstanceValue: CategoryValue;
-				if (managedInstance.properties.state === 'Ready') {
+				if (managedInstance.properties.state.toLowerCase() === 'Ready'.toLowerCase()) {
 					managedInstanceValue = {
 						name: managedInstance.id,
 						displayName: managedInstance.name
@@ -627,7 +627,7 @@ export async function getVirtualMachinesDropdownValues(virtualMachines: azure.Sq
 
 				// 1) check if VM is on by querying underlying compute resource's instance view
 				let vmInstanceView = await azure.getVMInstanceView(virtualMachine, account, subscription);
-				if (!vmInstanceView.statuses.some(status => status.code === 'PowerState/running')) {
+				if (!vmInstanceView.statuses.some(status => status.code.toLowerCase() === 'PowerState/running'.toLowerCase())) {
 					virtualMachineValue = {
 						name: virtualMachine.id,
 						displayName: constants.UNAVAILABLE_TARGET_PREFIX(virtualMachine.name)
@@ -635,7 +635,7 @@ export async function getVirtualMachinesDropdownValues(virtualMachines: azure.Sq
 				}
 
 				// 2) check for IaaS extension in Full mode
-				else if (virtualMachine.properties.sqlManagement !== 'Full') {
+				else if (virtualMachine.properties.sqlManagement.toLowerCase() !== 'Full'.toLowerCase()) {
 					virtualMachineValue = {
 						name: virtualMachine.id,
 						displayName: constants.UNAVAILABLE_TARGET_PREFIX(virtualMachine.name)

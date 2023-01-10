@@ -111,7 +111,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					if (!targetMi || resourceDropdownValue === constants.NO_MANAGED_INSTANCE_FOUND) {
 						errors.push(constants.INVALID_MANAGED_INSTANCE_ERROR);
 					}
-					if (targetMi && targetMi.properties?.state !== 'Ready') {
+					if (targetMi && targetMi.properties?.state.toLowerCase() !== 'Ready'.toLowerCase()) {
 						errors.push(constants.MI_NOT_READY_ERROR(targetMi.name, targetMi.properties?.state));
 					}
 					break;
@@ -123,12 +123,12 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 					// validate power state from VM instance view
 					const vmInstanceView = this.migrationStateModel._vmInstanceView;
-					if (!vmInstanceView.statuses.some(status => status.code === 'PowerState/running')) {
+					if (!vmInstanceView.statuses.some(status => status.code.toLowerCase() === 'PowerState/running'.toLowerCase())) {
 						errors.push(constants.VM_NOT_READY_POWER_STATE_ERROR(targetVm.name));
 					}
 
 					// validate IaaS extension mode
-					if (targetVm.properties.sqlManagement !== 'Full') {
+					if (targetVm.properties.sqlManagement.toLowerCase() !== 'Full'.toLowerCase()) {
 						errors.push(constants.VM_NOT_READY_IAAS_EXTENSION_ERROR(targetVm.name, targetVm.properties.sqlManagement));
 					}
 					break;
@@ -138,7 +138,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						errors.push(constants.INVALID_SQL_DATABASE_ERROR);
 					}
 					// TODO: verify what state check is needed/possible?
-					if (targetSqlDB && targetSqlDB.properties?.state !== 'Ready') {
+					if (targetSqlDB && targetSqlDB.properties?.state.toLowerCase() !== 'Ready'.toLowerCase()) {
 						errors.push(constants.SQLDB_NOT_READY_ERROR(targetSqlDB.name, targetSqlDB.properties.state));
 					}
 
@@ -661,14 +661,14 @@ export class TargetSelectionPage extends MigrationWizardPage {
 								this.migrationStateModel._vmInstanceView = await getVMInstanceView(this.migrationStateModel._targetServerInstance, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription);
 
 								this.wizard.message = { text: '' };
-								if (!this.migrationStateModel._vmInstanceView.statuses.some(status => status.code === 'PowerState/running')) {
+								if (!this.migrationStateModel._vmInstanceView.statuses.some(status => status.code.toLowerCase() === 'PowerState/running'.toLowerCase())) {
 									this.wizard.message = {
 										text: constants.VM_NOT_READY_POWER_STATE_ERROR(this.migrationStateModel._targetServerInstance.name),
 										level: azdata.window.MessageLevel.Error
 									};
 								}
 
-								if (this.migrationStateModel._targetServerInstance.properties.sqlManagement !== 'Full') {
+								if (this.migrationStateModel._targetServerInstance.properties.sqlManagement.toLowerCase() !== 'Full'.toLowerCase()) {
 									this.wizard.message = {
 										text: constants.VM_NOT_READY_IAAS_EXTENSION_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.sqlManagement),
 										level: azdata.window.MessageLevel.Error
@@ -685,7 +685,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(selectedMi)! as azureResource.AzureSqlManagedInstance;
 
 								this.wizard.message = { text: '' };
-								if (this.migrationStateModel._targetServerInstance.properties.state !== 'Ready') {
+								if (this.migrationStateModel._targetServerInstance.properties.state.toLowerCase() !== 'Ready'.toLowerCase()) {
 									this.wizard.message = {
 										text: constants.MI_NOT_READY_ERROR(
 											this.migrationStateModel._targetServerInstance.name,
@@ -702,7 +702,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 							if (sqlDatabaseServer) {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(sqlDatabaseServer)! as AzureSqlDatabaseServer;
 								this.wizard.message = { text: '' };
-								if (this.migrationStateModel._targetServerInstance.properties.state === 'Ready') {
+								if (this.migrationStateModel._targetServerInstance.properties.state.toLowerCase() === 'Ready'.toLowerCase()) {
 									this._targetUserNameInputBox.value = this.migrationStateModel._targetServerInstance.properties.administratorLogin;
 								} else {
 									this.wizard.message = {
