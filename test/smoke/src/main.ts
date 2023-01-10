@@ -102,6 +102,27 @@ function parseVersion(version: string): { major: number, minor: number, patch: n
 	return { major: parseInt(major), minor: parseInt(minor), patch: parseInt(patch) };
 }
 
+function parseQuality(): Quality {
+	if (process.env.VSCODE_DEV === '1') {
+		return Quality.Dev;
+	}
+
+	const quality = process.env.VSCODE_QUALITY ?? '';
+
+	switch (quality) {
+		case 'stable':
+			return Quality.Stable;
+		case 'insider':
+			return Quality.Insiders;
+		case 'exploration':
+			return Quality.Exploration;
+		case 'oss':
+			return Quality.OSS;
+		default:
+			return Quality.Dev;
+	}
+}
+
 //
 // #### Electron Smoke Tests ####
 //
@@ -167,13 +188,7 @@ if (!opts.web) {
 		fail(`Can't find VSCode at ${electronPath}.`);
 	}
 
-	if (process.env.VSCODE_DEV === '1') {
-		quality = Quality.Dev;
-	} else if (electronPath.indexOf('Code - Insiders') >= 0 /* macOS/Windows */ || electronPath.indexOf('code-insiders') /* Linux */ >= 0) {
-		quality = Quality.Insiders;
-	} else {
-		quality = Quality.Stable;
-	}
+	quality = parseQuality();
 
 	console.log(`Running desktop smoke tests against ${electronPath}`);
 }
@@ -200,12 +215,10 @@ else {
 		console.log(`Running web smoke out of sources`);
 	}
 
-	if (process.env.VSCODE_DEV === '1') {
-		quality = Quality.Dev;
-	} else {
-		quality = Quality.Insiders;
-	}
+	quality = parseQuality();
 }
+
+logger.log(`VS Code product quality: ${quality}.`);
 
 const userDataDir = path.join(testDataPath, 'd');
 
@@ -378,9 +391,9 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	setupDataLanguagesTests(opts);
 	setupDataEditorTests(opts);
 	setupDataStatusbarTests(opts);
-	setupDataExtensionTests(opts);
+	if (quality !== Quality.Dev) { setupExtensionTests(logger); }
 	if (!opts.web) { setupDataMultirootTests(opts); }
-	if (!opts.web) { setupDataLocalizationTests(opts); }
+	if (!opts.web && !opts.remote && quality !== Quality.Dev) { setupLocalizationTests(logger); }
 	if (!opts.web) { setupLaunchTests(); }
 	*/
 });

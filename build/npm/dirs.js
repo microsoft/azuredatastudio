@@ -7,7 +7,6 @@
 exports.dirs = [
 	'',
 	'build',
-	'build/lib/watch',
 	'extensions',
 	// {{SQL CARBON EDIT}} Add ADS extensions and remove VSCode ones
 	'extensions/admin-tool-ext-win',

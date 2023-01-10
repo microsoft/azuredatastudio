@@ -342,7 +342,7 @@ export class ExtensionEditor extends EditorPane {
 					this.instantiationService.createInstance(InstallAnotherVersionAction),
 				]
 			]),
-			// this.instantiationService.createInstance(SwitchToPreReleaseVersionAction),
+			// this.instantiationService.createInstance(SwitchToPreReleaseVersionAction), //{{SQL CARBON EDIT}} - disable actions
 			// this.instantiationService.createInstance(SwitchToReleasedVersionAction),
 			this.instantiationService.createInstance(ToggleSyncExtensionAction),
 			new ExtensionEditorManageExtensionAction(this.scopedContextKeyService || this.contextKeyService, this.instantiationService),
@@ -660,7 +660,7 @@ export class ExtensionEditor extends EditorPane {
 			}
 		};
 		reset(template.recommendation);
-		if (extension.state === ExtensionState.Installed) {
+		if (extension.deprecationInfo || extension.state === ExtensionState.Installed) {
 			return;
 		}
 		updateRecommendationText(false);
@@ -746,10 +746,15 @@ export class ExtensionEditor extends EditorPane {
 				return Promise.resolve(null);
 			}
 
-			const webview = this.contentDisposables.add(this.webviewService.createWebviewOverlay(generateUuid(), {
-				enableFindWidget: true,
-				tryRestoreScrollPosition: true,
-			}, {}, undefined));
+			const webview = this.contentDisposables.add(this.webviewService.createWebviewOverlay({
+				id: generateUuid(),
+				options: {
+					enableFindWidget: true,
+					tryRestoreScrollPosition: true,
+				},
+				contentOptions: {},
+				extension: undefined,
+			}));
 
 			webview.initialScrollProgress = this.initialScrollProgress.get(webviewIndex) || 0;
 

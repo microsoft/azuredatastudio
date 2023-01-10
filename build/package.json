@@ -63,6 +63,7 @@
     "jsonc-parser": "^2.3.0",
     "mime": "^1.4.1",
     "mkdirp": "^1.0.4",
+    "node-fetch": "2",
     "p-limit": "^3.1.0",
     "plist": "^3.0.5",
     "rollup": "^1.20.3",
@@ -80,6 +81,11 @@
     "npmCheckJs": "tsc --noEmit"
   },
   "dependencies": {},
+  "optionalDependencies": {
+    "tree-sitter": "https://github.com/joaomoreno/node-tree-sitter/releases/download/v0.20.0/tree-sitter-0.20.0.tgz",
+    "tree-sitter-typescript": "^0.20.1",
+    "vscode-gulp-watch": "^5.0.3"
+  }
   "resolutions": {
     "json-schema": "0.4.0",
     "jsonwebtoken": "9.0.0"

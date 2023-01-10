@@ -291,9 +291,20 @@ export const enum StatisticType {
 	Uninstall = 'uninstall'
 }
 
+export interface IDeprecationInfo {
+	readonly disallowInstall?: boolean;
+	readonly extension?: {
+		readonly id: string;
+		readonly displayName: string;
+		readonly autoMigrate?: { readonly storage: boolean };
+		readonly preRelease?: boolean;
+	};
+	readonly settings?: readonly string[];
+}
+
 export interface IExtensionsControlManifest {
-	malicious: IExtensionIdentifier[];
-	unsupportedPreReleaseExtensions?: IStringDictionary<{ id: string; displayName: string; migrateStorage?: boolean }>;
+	readonly malicious: IExtensionIdentifier[];
+	readonly deprecated: IStringDictionary<IDeprecationInfo>;
 }
 
 export const enum InstallOperation {
@@ -358,7 +369,7 @@ export interface DidUninstallExtensionEvent {
 
 export enum ExtensionManagementErrorCode {
 	Unsupported = 'Unsupported',
-	UnsupportedPreRelease = 'UnsupportedPreRelease',
+	Deprecated = 'Deprecated',
 	Malicious = 'Malicious',
 	Incompatible = 'Incompatible',
 	IncompatiblePreRelease = 'IncompatiblePreRelease',

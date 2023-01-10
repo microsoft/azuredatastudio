@@ -218,7 +218,7 @@ suite.skip('ExtensionRecommendationsService Test', () => { // {{SQL CARBON EDIT}
 			onDidUninstallExtension: didUninstallEvent.event,
 			async getInstalled() { return []; },
 			async canInstall() { return true; },
-			async getExtensionsControlManifest() { return { malicious: [] }; },
+			async getExtensionsControlManifest() { return { malicious: [], deprecated: {} }; },
 			async getTargetPlatform() { return getTargetPlatform(platform, arch); }
 		});
 		instantiationService.stub(IExtensionService, <Partial<IExtensionService>>{
