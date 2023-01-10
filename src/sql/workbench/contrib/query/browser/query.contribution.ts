@@ -442,6 +442,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.openAfterSave', "Whether to open the file in Azure Data Studio after the result is saved."),
 			'default': true
 		},
+		'queryEditor.results.showActionBar': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.showActionBar', "Configuration options for showing the action bar in the Results View"),
+			'default': true
+		},
 		'queryEditor.messages.showBatchTime': {
 			'type': 'boolean',
 			'description': localize('queryEditor.messages.showBatchTime', "Should execution time be shown for individual batches"),

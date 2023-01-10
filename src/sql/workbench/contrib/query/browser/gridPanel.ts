@@ -478,18 +478,12 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	// actionsOrientation controls the orientation (horizontal or vertical) of the actionBar
 	private build(): void {
-		let actionBarContainer = document.createElement('div');
-
-		// Create a horizontal actionbar if orientation passed in is HORIZONTAL
-		if (this.options.actionOrientation === ActionsOrientation.HORIZONTAL) {
-			actionBarContainer.className = 'grid-panel action-bar horizontal';
-			this.container.appendChild(actionBarContainer);
-		}
-
 		this.tableContainer = document.createElement('div');
 		this.tableContainer.className = 'grid-panel';
 		this.tableContainer.style.display = 'inline-block';
-		this.tableContainer.style.width = `calc(100% - ${ACTIONBAR_WIDTH}px)`;
+
+		let actionBarWidth = this.showActionBar ? ACTIONBAR_WIDTH : 0;
+		this.tableContainer.style.width = `calc(100% - ${actionBarWidth}px)`;
 
 		this.container.appendChild(this.tableContainer);
 
@@ -563,12 +557,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		if (this.styles) {
 			this.table.style(this.styles);
 		}
-		// If the actionsOrientation passed in is "VERTICAL" (or no actionsOrientation is passed in at all), create a vertical actionBar
-		if (this.options.actionOrientation === ActionsOrientation.VERTICAL) {
-			actionBarContainer.className = 'grid-panel action-bar vertical';
-			actionBarContainer.style.width = ACTIONBAR_WIDTH + 'px';
-			this.container.appendChild(actionBarContainer);
-		}
+
 		let context: IGridActionContext = {
 			gridDataProvider: this.gridDataProvider,
 			table: this.table,
@@ -576,14 +565,15 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			batchId: this.resultSet.batchId,
 			resultId: this.resultSet.id
 		};
-		this.actionBar = new ActionBar(actionBarContainer, {
-			orientation: this.options.actionOrientation, context: context
-		});
+		this.initializeActionBar(context);
+
 		// update context before we run an action
 		this.selectionModel.onSelectedRangesChanged.subscribe(e => {
 			this.actionBar.context = this.generateContext();
 		});
+
 		this.rebuildActionBar();
+
 		this.selectionModel.onSelectedRangesChanged.subscribe(async e => {
 			if (this.state) {
 				this.state.selection = this.selectionModel.getSelectedRanges();
@@ -626,6 +616,26 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			}
 			return false;
 		}));
+	}
+
+	private initializeActionBar(context: IGridActionContext): void {
+		let actionBarContainer = document.createElement('div');
+
+		// Create a horizontal actionbar if orientation passed in is HORIZONTAL
+		if (this.options.actionOrientation === ActionsOrientation.HORIZONTAL) {
+			actionBarContainer.className = 'grid-panel action-bar horizontal';
+			this.container.appendChild(actionBarContainer);
+		}
+		// if the actionsOrientation passed in is "VERTICAL" (or no actionsOrientation is passed in at all), create a vertical actionBar
+		else {
+			actionBarContainer.className = 'grid-panel action-bar vertical';
+			actionBarContainer.style.width = ACTIONBAR_WIDTH + 'px';
+			this.container.appendChild(actionBarContainer);
+		}
+
+		this.actionBar = new ActionBar(actionBarContainer, {
+			orientation: this.options.actionOrientation, context: context
+		});
 	}
 
 	private restoreScrollState() {
@@ -932,7 +942,7 @@ class GridTable<T> extends GridTableBase<T> {
 		super(state, resultSet, {
 			actionOrientation: ActionsOrientation.VERTICAL,
 			inMemoryDataProcessing: true,
-			showActionBar: true,
+			showActionBar: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.showActionBar,
 			inMemoryDataCountThreshold: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.inMemoryDataProcessingThreshold,
 		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
