@@ -16,6 +16,7 @@ import { IconPathHelper } from '../../common/iconHelper';
 import { FileProjectEntry } from '../projectEntry';
 import { EntryType } from 'sqldbproj';
 import { DBProjectConfigurationKey } from '../../tools/netcoreTool';
+import { SqlCmdVariablesTreeItem } from './sqlcmdVariableTreeItem';
 
 /**
  * TreeNode root that represents an entire project
@@ -23,6 +24,7 @@ import { DBProjectConfigurationKey } from '../../tools/netcoreTool';
 export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	dataSourceNode: DataSourcesTreeItem;
 	databaseReferencesNode: DatabaseReferencesTreeItem;
+	sqlCmdVariablesNode: SqlCmdVariablesTreeItem;
 	fileChildren: { [childName: string]: (fileTree.FolderNode | fileTree.FileNode) } = {};
 	project: Project;
 	fileSystemUri: vscode.Uri;
@@ -34,7 +36,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 		this.fileSystemUri = vscode.Uri.file(project.projectFilePath);
 		this.dataSourceNode = new DataSourcesTreeItem(this);
 		this.databaseReferencesNode = new DatabaseReferencesTreeItem(this);
-
+		this.sqlCmdVariablesNode = new SqlCmdVariablesTreeItem(this);
 		this.construct();
 	}
 
@@ -43,6 +45,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 		// [8/31/2020] Hiding Data source for Preview since we do not have a way to add or update those.
 		// output.push(this.dataSourceNode);
 		output.push(this.databaseReferencesNode);
+		output.push(this.sqlCmdVariablesNode);
 
 		return output.concat(Object.values(this.fileChildren).sort(fileTree.sortFileFolderNodes));
 	}

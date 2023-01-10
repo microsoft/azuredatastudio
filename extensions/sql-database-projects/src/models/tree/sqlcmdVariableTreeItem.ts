@@ -10,7 +10,6 @@ import * as constants from '../../common/constants';
 import { BaseProjectTreeItem } from './baseTreeItem';
 import { ProjectRootTreeItem } from './projectTreeItem';
 import { IconPathHelper } from '../../common/iconHelper';
-import { IDatabaseReferenceProjectEntry } from 'sqldbproj';
 
 /**
  * Folder for containing sqlcmd variable nodes in the tree
@@ -19,14 +18,14 @@ export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
 	private sqlcmdVariables: SqlCmdVariableTreeItem[] = [];
 
 	constructor(project: ProjectRootTreeItem) {
-		super(vscode.Uri.file(path.join(project.projectUri.fsPath, constants.databaseReferencesNodeName)), project);
+		super(vscode.Uri.file(path.join(project.projectUri.fsPath, 'SqlCmd Variables')), project);
 
 		this.construct();
 	}
 
 	private construct() {
-		for (const reference of (this.parent as ProjectRootTreeItem).project.databaseReferences) {
-			this.sqlcmdVariables.push(new SqlCmdVariableTreeItem(reference, this));
+		for (const sqlCmdVariable of Object.keys((this.parent as ProjectRootTreeItem).project.sqlCmdVariables)) {
+			this.sqlcmdVariables.push(new SqlCmdVariableTreeItem(sqlCmdVariable, this));
 		}
 	}
 
@@ -44,8 +43,8 @@ export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
 }
 
 export class SqlCmdVariableTreeItem extends BaseProjectTreeItem {
-	constructor(private reference: IDatabaseReferenceProjectEntry, referencesTreeItem: SqlCmdVariableTreeItem) {
-		super(vscode.Uri.file(path.join(referencesTreeItem.projectUri.fsPath, reference.databaseName)), referencesTreeItem);
+	constructor(private sqlcmdVar: string, sqlcmdVarsTreeItem: SqlCmdVariablesTreeItem) {
+		super(vscode.Uri.file(path.join(sqlcmdVarsTreeItem.projectUri.fsPath, sqlcmdVar)), sqlcmdVarsTreeItem);
 	}
 
 	public get children(): BaseProjectTreeItem[] {
@@ -54,7 +53,7 @@ export class SqlCmdVariableTreeItem extends BaseProjectTreeItem {
 
 	public get treeItem(): vscode.TreeItem {
 		const refItem = new vscode.TreeItem(this.projectUri, vscode.TreeItemCollapsibleState.None);
-		refItem.label = this.reference.databaseName;
+		refItem.label = this.sqlcmdVar;
 		refItem.contextValue = constants.DatabaseProjectItemType.reference;
 		refItem.iconPath = IconPathHelper.referenceDatabase;
 
