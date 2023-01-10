@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+// @ts-check
+
 'use strict';
 
 import * as path from 'path';
@@ -12,8 +14,9 @@ import got from 'got';
 import * as stream from 'stream';
 import { promisify } from 'util';
 const pipeline = promisify(stream.pipeline);
-import { mkdir, rm, rmdir } from 'fs/promises';
+import { mkdir, rm } from 'fs/promises';
 import yauzl from 'yauzl-promise';
+import semver from 'semver';
 
 const ROOT_DIR = path.join(path.dirname(url.fileURLToPath(import.meta.url)), '..');
 const DOWNLOADED_EXT_DIR = path.join(ROOT_DIR, '.downloaded-extensions');
@@ -27,6 +30,28 @@ const STABLE = 'extensionsGallery';
 const STABLE_DOWNLOADED_EXT_DIR = path.join(DOWNLOADED_EXT_DIR, STABLE);
 const INSIDERS = 'extensionsGallery-insider';
 const INSIDERS_DOWNLOADED_EXT_DIR = path.join(DOWNLOADED_EXT_DIR, INSIDERS);
+
+const STABLE_GALLERY_PATH = path.join(ROOT_DIR, 'extensionsGallery.json');
+const STABLE_GALLERY_JSON = parseGalleryJson(STABLE_GALLERY_PATH);
+const INSIDERS_GALLERY_PATH = path.join(ROOT_DIR, 'extensionsGallery-insider.json');
+const INSIDERS_GALLERY_JSON = parseGalleryJson(INSIDERS_GALLERY_PATH);
+
+/**
+ * Parses the gallery file into a JSON object, throwing an Error if it is unable to parse the file into valid JSON.
+ * @param {string} galleryPath
+ * @returns The parsed gallery JSON
+ */
+function parseGalleryJson(galleryPath) {
+    try {
+        return JSON.parse(fs.readFileSync(galleryPath).toString());
+    } catch (err) {
+        throw new Error(`Unable to parse extension gallery file ${galleryPath} : ${err}`);
+    }
+}
+/**
+ * Extensions that have been deprecated and removed from the galleries.
+ */
+const deprecatedExtension = ['dotnet-interactive-vscode', 'jupyter'];
 
 /**
  * This file is for validating the extension gallery files to ensure that they adhere to the expected schema defined in
@@ -43,47 +68,95 @@ const INSIDERS_DOWNLOADED_EXT_DIR = path.join(DOWNLOADED_EXT_DIR, INSIDERS);
  */
 
 /**
- * Validate the extension gallery json according to
- * interface IRawGalleryQueryResult {
- *    results: {
- *        extensions: IRawGalleryExtension[];
- *        resultMetadata: {
- *            metadataType: string;
- *            metadataItems: {
- *                name: string;
- *                count: number;
- *            }[];
- *        }[]
- *    }[];
- * }
+ * Typings for the gallery and package.json objects being validated.
+ * Gallery typings are from https://github.com/Microsoft/azuredatastudio/blob/main/src/vs/platform/extensionManagement/common/extensionGalleryService.ts
+ *
+ * @typedef {{
+ *      results: IRawGalleryQueryResult[]
+ * }} IRawGalleryQueryResults
+ *
+ * @typedef {{
+ *      extensions: IRawGalleryExtension[],
+ *      resultMetadata:  IResultMetadata[]
+ * }} IRawGalleryQueryResult
+ *
+ * @typedef {{
+ *      metadataType: string;
+ *      metadataItems: {
+ *          name: string,
+ *          count: number
+ *      }[]
+ * }} IResultMetadata
+ *
+ * @typedef {{
+ *      extensionId: string,
+ *      extensionName: string,
+ *      displayName: string,
+ *      shortDescription: string,
+ *      publisher: {
+ *          displayName: string,
+ *          publisherId: string,
+ *          publisherName: string
+ *      },
+ *      versions: IRawGalleryExtensionVersion[],
+ *      statistics: IRawGalleryExtensionStatistics[],
+ *      flags: string;
+ * }} IRawGalleryExtension
+ *
+ * @typedef {{
+ *      statisticName: string,
+ *      value: number
+ * }} IRawGalleryExtensionStatistics
+ *
+ * @typedef {{
+ *     version: string,
+ *     lastUpdated: string,
+ *     assetUri: string,
+ *     fallbackAssetUri: string,
+ *     files: IRawGalleryExtensionFile[],
+ *     properties?: IRawGalleryExtensionProperty[]
+ * }} IRawGalleryExtensionVersion
+ *
+ * @typedef {{
+ *     assetType: string,
+ *     source: string
+ * }} IRawGalleryExtensionFile
+ *
+ * @typedef {{
+ *     key: string,
+ *     value: string
+ * }} IRawGalleryExtensionProperty
+ *
+ * @typedef {{
+ *      name: string,
+ *      publisher: string,
+ *      version: string,
+ *      engines: {
+ *          vscode?: string,
+ *          azdata?: string
+ *      },
+ *      preview?: boolean
+ * }} IPackageJson
  */
-async function validateExtensionGallery(galleryFilePath) {
-    let galleryJson;
-    try {
-        galleryJson = JSON.parse(fs.readFileSync(galleryFilePath).toString());
-    } catch (err) {
-        throw new Error(`Unable to parse extension gallery file ${galleryFilePath} : ${err}`);
-    }
+
+/**
+ * Validate an IRawGalleryQueryResults object
+ * @param {string} galleryFilePath
+ * @param {IRawGalleryQueryResults} galleryJson
+ */
+async function validateExtensionGallery(galleryFilePath, galleryJson) {
     if (!galleryJson.results || !galleryJson.results[0]) {
         throw new Error(`${galleryFilePath} - results invalid`);
     }
-    await validateResults(galleryFilePath, galleryJson.results[0]);
+    await validateResult(galleryFilePath, galleryJson.results[0]);
 }
 
 /**
- * Validate results blob according to
- * {
- *     extensions: IRawGalleryExtension[];
- *     resultMetadata: {
- *         metadataType: string;
- *         metadataItems: {
- *             name: string;
- *             count: number;
- *         }[];
- *     }[]
- * }
+ * Validate an IRawGalleryQueryResult object
+ * @param {string} galleryFilePath
+ * @param {IRawGalleryQueryResult} resultsJson
  */
-async function validateResults(galleryFilePath, resultsJson) {
+async function validateResult(galleryFilePath, resultsJson) {
     if (!resultsJson.extensions || !resultsJson.extensions.length) {
         throw new Error(`${galleryFilePath} - No extensions\n${JSON.stringify(resultsJson)}`)
     }
@@ -96,17 +169,9 @@ async function validateResults(galleryFilePath, resultsJson) {
 }
 
 /**
- * Validate extension blob according to
- * interface IRawGalleryExtension {
- * 	extensionId: string;
- * 	extensionName: string;
- * 	displayName: string;
- * 	shortDescription: string;
- * 	publisher: { displayName: string, publisherId: string, publisherName: string; };
- * 	versions: IRawGalleryExtensionVersion[];
- * 	statistics: IRawGalleryExtensionStatistics[];
- * 	flags: string;
- * }
+ * Validate an IRawGalleryExtension object
+ * @param {string} galleryFilePath
+ * @param {IRawGalleryExtension} extensionJson
  */
 async function validateExtension(galleryFilePath, extensionJson) {
     if (!extensionJson.extensionId) {
@@ -132,9 +197,7 @@ async function validateExtension(galleryFilePath, extensionJson) {
     if (extensionJson.versions.length !== 1) {
         throw new Error(`${galleryFilePath} - Only one version is currently supported\n${JSON.stringify(extensionJson)}`)
     }
-    for (const version of extensionJson.versions) {
-        await validateVersion(galleryFilePath, extensionName, extensionJson, version);
-    }
+    await validateVersion(galleryFilePath, extensionName, extensionJson, extensionJson.versions[0]);
 
     if (!extensionJson.statistics || extensionJson.statistics.length === undefined) {
         throw new Error(`${galleryFilePath} - Invalid statistics\n${JSON.stringify(extensionJson)}`)
@@ -144,15 +207,22 @@ async function validateExtension(galleryFilePath, extensionJson) {
     if (extensionJson.flags === undefined) {
         throw new Error(`${galleryFilePath} - No flags\n${JSON.stringify(extensionJson)}`)
     }
+
+    // Check active extensions to make sure they're in insiders if they exist in stable. We don't want to have an extension only be in stable, they
+    // should always be released in insiders first (or at the same time).
+    if (galleryFilePath === STABLE_GALLERY_PATH && !deprecatedExtension.includes(extensionName)) {
+        const insidersExtensionJson = findExtension(INSIDERS_GALLERY_JSON, extensionName);
+        if (!insidersExtensionJson) {
+            throw new Error(`${galleryFilePath} - Extension ${extensionName} exists in the stable gallery but not in the insiders gallery. An extension must always be in both if it's in the stable gallery.`);
+        }
+    }
 }
 
 /**
- * Validate an extension statistics blob according to
- *
- * interface IRawGalleryExtensionStatistics {
- *      statisticName: string;
- *      value: number;
- *  }
+ * Validate an IRawGalleryExtensionStatistics object
+ * @param {string} galleryFilePath
+ * @param {string} extensionName
+ * @param {IRawGalleryExtensionStatistics} extensionStatisticsJson
  */
 function validateExtensionStatistics(galleryFilePath, extensionName, extensionStatisticsJson) {
     if (!extensionStatisticsJson.statisticName) {
@@ -164,19 +234,30 @@ function validateExtensionStatistics(galleryFilePath, extensionName, extensionSt
 }
 
 /**
- * Validate an extension version blob according to
- * interface IRawGalleryExtensionVersion {
- *     version: string;
- *     lastUpdated: string;
- *     assetUri: string;
- *     fallbackAssetUri: string;
- *     files: IRawGalleryExtensionFile[];
- *     properties?: IRawGalleryExtensionProperty[];
- * }
+ * Validate an IRawGalleryExtensionVersion object
+ * @param {string} galleryFilePath
+ * @param {string} extensionName
+ * @param {IRawGalleryExtension} extensionJson
+ * @param {IRawGalleryExtensionVersion} extensionVersionJson
  */
 async function validateVersion(galleryFilePath, extensionName, extensionJson, extensionVersionJson) {
     if (!extensionVersionJson.version) {
         throw new Error(`${galleryFilePath} - ${extensionName} - No version\n${JSON.stringify(extensionVersionJson)}`)
+    }
+    if (galleryFilePath === INSIDERS_GALLERY_PATH) {
+        const stableExtensionJson = findExtension(STABLE_GALLERY_JSON, extensionName);
+        // It's ok if there's no matching extension in stable, insiders can have extensions that aren't published to stable yet
+        if (stableExtensionJson) {
+            // We've already validated the stable gallery fully so can expect it's well formed
+            const stableVersion = stableExtensionJson.versions[0].version;
+            const stableVersionSemver = parseVersion(STABLE_GALLERY_PATH, extensionName, stableVersion);
+            const insidersVersion = extensionVersionJson.version;
+            const insidersVersionSemver = parseVersion(INSIDERS_GALLERY_PATH, extensionName, insidersVersion);
+            const isValid = semver.lte(stableVersionSemver, insidersVersionSemver);
+            if (!isValid) {
+                throw new Error(`${galleryFilePath} - ${extensionName} - Version in stable gallery (${stableVersion}) must be <= version in insiders (${insidersVersion})`)
+            }
+        }
     }
     if (extensionVersionJson.lastUpdated === undefined) {
         throw new Error(`${galleryFilePath} - ${extensionName} - No last updated\n${JSON.stringify(extensionVersionJson)}`)
@@ -211,9 +292,27 @@ async function validateVersion(galleryFilePath, extensionName, extensionJson, ex
 }
 
 /**
+ * Parses an extension version, throwing an Error if the version could not be parsed (was not a valid SemVer version)
+ * @param {string} galleryFilePath The path to the gallery file the version is from
+ * @param {string} extensionName The name of the extension whose version is being parsed
+ * @param {string} version The version to parse
+ * @returns The parsed SemVer object if parsing was successful
+ */
+function parseVersion(galleryFilePath, extensionName, version) {
+    const parsedVersion = semver.parse(version);
+    if (!parsedVersion) {
+        throw new Error(`${galleryFilePath} - ${extensionName} - Failed to parse version ${version}.`)
+    }
+    return parsedVersion;
+}
+
+/**
  * Validates that an extension version has the expected files for displaying in the gallery.
  * There are some existing 3rd party extensions that don't have all the files, but that's ok for now.
  * Going forward all new extensions should provide these files.
+ * @param {string} galleryFilePath
+ * @param {string} extensionName
+ * @param {IRawGalleryExtensionFile[]} filesJson
  */
 function validateHasRequiredAssets(galleryFilePath, extensionName, filesJson) {
     // VSIXPackage or DownloadPage
@@ -254,11 +353,10 @@ function validateHasRequiredAssets(galleryFilePath, extensionName, filesJson) {
 }
 
 /**
- * Validate an extension property blob according to
- * interface IRawGalleryExtensionProperty {
- *     key: string;
- *     value: string;
- * }
+ * Validate an IRawGalleryExtensionProperty object
+ * @param {string} galleryFilePath
+ * @param {string} extensionName
+ * @param {IRawGalleryExtensionProperty} extensionPropertyJson
  */
 function validateExtensionProperty(galleryFilePath, extensionName, extensionPropertyJson) {
     if (!extensionPropertyJson.key) {
@@ -285,13 +383,14 @@ const allowedHosts = [
 ];
 
 /**
- * Validate an extension file blob according to
- * interface IRawGalleryExtensionFile {
- *     assetType: string;
- *     source: string;
- * }
+ * Validate an IRawGalleryExtensionFile object
  * Will also validate that the source URL provided is valid, and if it's a direct VSIX link that the
  * package metadata matches what's in the gallery.
+ * @param {string} galleryFilePath
+ * @param {string} extensionName
+ * @param {IRawGalleryExtension} extensionJson
+ * @param {IRawGalleryExtensionFile} extensionFileJson
+ * @returns Promise that will complete when it's done validating the extension files
  */
 async function validateExtensionFile(galleryFilePath, extensionName, extensionJson, extensionFileJson) {
     if (!extensionFileJson.assetType) {
@@ -332,7 +431,7 @@ async function validateExtensionFile(galleryFilePath, extensionName, extensionJs
                 if (entry.fileName == 'extension/package.json') {
                     await mkdir(path.dirname(packageJsonWritePath), { recursive: true });
                     const entryWriteStream = fs.createWriteStream(packageJsonWritePath);
-                    const entryReadStream = await entry.openReadStream({ autoClose: true });
+                    const entryReadStream = await entry.openReadStream();
                     await pipeline(entryReadStream, entryWriteStream);
                     entryWriteStream.close();
                 }
@@ -343,7 +442,7 @@ async function validateExtensionFile(galleryFilePath, extensionName, extensionJs
 
         // Validate that the package.json metadata matches the gallery metadata
         try {
-            const packageJson = JSON.parse(fs.readFileSync(packageJsonWritePath));
+            const packageJson = JSON.parse(fs.readFileSync(packageJsonWritePath).toString());
             validatePackageJson(extensionJson, packageJson);
         } catch (err) {
             throw new Error(`${galleryFilePath} - ${extensionName} - Error validating package.json. ${err}`);
@@ -370,8 +469,8 @@ const publisherMappings = {
 /**
  * Validates that the entries in the package.json for the given extension matches those specified in the extension gallery.
  *
- * @param extensionJson The JSON object for this extension from the gallery
- * @param packageJson The JSON object for this extension from the package.json of the extension
+ * @param {IRawGalleryExtension} extensionJson The JSON object for this extension from the gallery
+ * @param {IPackageJson} packageJson The JSON object for this extension from the package.json of the extension
  */
 function validatePackageJson(extensionJson, packageJson) {
     // Check names match
@@ -391,12 +490,12 @@ function validatePackageJson(extensionJson, packageJson) {
     }
 
     // Check vs code engine matches
-    const extensionVsCodeEngine = extensionJson.versions[0].properties.find(p => p.key === MICROSOFT_VISUALSTUDIO_CODE_ENGINE)?.value;
+    const extensionVsCodeEngine = extensionJson.versions[0].properties?.find(p => p.key === MICROSOFT_VISUALSTUDIO_CODE_ENGINE)?.value;
     const packageVsCodeEngine = packageJson.engines?.vscode;
     validateEngineVersionMatches(MICROSOFT_VISUALSTUDIO_CODE_ENGINE, 'vscode', extensionVsCodeEngine, packageVsCodeEngine);
 
     // Check azdata engine matches
-    const extensionAzdataEngine = extensionJson.versions[0].properties.find(p => p.key === MICROSOFT_AZDATAENGINE)?.value;
+    const extensionAzdataEngine = extensionJson.versions[0].properties?.find(p => p.key === MICROSOFT_AZDATAENGINE)?.value;
     const packageAzdataEngine = packageJson.engines?.azdata;
     validateEngineVersionMatches(MICROSOFT_AZDATAENGINE, 'azdata', extensionAzdataEngine, packageAzdataEngine);
 
@@ -413,6 +512,13 @@ function validatePackageJson(extensionJson, packageJson) {
     }
 }
 
+/**
+ * Checks that the engine versions match between the gallery and the package.json for an extension
+ * @param {string} extensionGalleryEngineName
+ * @param {string} packageEngineName
+ * @param {string | undefined} extensionGalleryVersion
+ * @param {string | undefined} packageVersion
+ */
 function validateEngineVersionMatches(extensionGalleryEngineName, packageEngineName, extensionGalleryVersion, packageVersion) {
     // Normalize the engine versions since both ^ and >= are supported
     const normalizedExtensionGalleryVersion = extensionGalleryVersion?.replace(">=", "^");
@@ -443,13 +549,10 @@ function validateEngineVersionMatches(extensionGalleryEngineName, packageEngineN
 }
 
 /**
- * Validate a result metadata blob according to
- * {
- *     metadataType: string;
- *     metadataItems: {
- *         name: string;
- *         count: number;
- * }
+ * Validate an IResultMetadata object
+ * @param {string} galleryFilePath
+ * @param {number} extensionCount
+ * @param {IResultMetadata} resultMetadataJson
  */
 function validateResultMetadata(galleryFilePath, extensionCount, resultMetadataJson) {
     if (!resultMetadataJson.metadataType) {
@@ -472,6 +575,20 @@ function validateResultMetadata(galleryFilePath, extensionCount, resultMetadataJ
     })
 }
 
+/**
+ * Finds the extension with the specified name from the specified gallery JSON
+ * @param {IRawGalleryQueryResults} galleryJson The gallery JSON to search
+ * @param {string} extensionName The name of the extension to find
+ * @returns The extension JSON
+ */
+function findExtension(galleryJson, extensionName) {
+    return galleryJson.results[0].extensions.find(e => e.extensionName === extensionName);
+}
+
+/**
+ * Cleans the downloaded extension folder, removing anything currently in it.
+ * @param {string} downloadedExtDir
+ */
 async function cleanDownloadedExtensionFolder(downloadedExtDir) {
     // Delete folder if it exists
     try {
@@ -488,6 +605,6 @@ await cleanDownloadedExtensionFolder(STABLE_DOWNLOADED_EXT_DIR);
 await cleanDownloadedExtensionFolder(INSIDERS_DOWNLOADED_EXT_DIR);
 
 await Promise.all([
-    validateExtensionGallery(path.join(ROOT_DIR, 'extensionsGallery.json')),
-    validateExtensionGallery(path.join(ROOT_DIR, 'extensionsGallery-insider.json'))
+    validateExtensionGallery(STABLE_GALLERY_PATH, STABLE_GALLERY_JSON),
+    validateExtensionGallery(INSIDERS_GALLERY_PATH, INSIDERS_GALLERY_JSON)
 ]);
