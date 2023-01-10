@@ -288,6 +288,22 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel">
+        <source xml:lang="en">Dedicated SQL Pools</source>
+        <target state="translated">Pool de SQL Dedicados</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel">
+        <source xml:lang="en">Azure Synapse Analytics</source>
+        <target state="translated">Azure Synapse Analytics</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/azurecore/dist/azureResource/resourceTreeNode" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="azure.resource.resourceTreeNode.noResourcesLabel">
