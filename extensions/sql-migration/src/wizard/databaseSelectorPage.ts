@@ -64,6 +64,9 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	}
 
 	public async onPageLeave(): Promise<void> {
+		this.wizard.registerNavigationValidator(pageChangeInfo => true);
+		this.wizard.message = { text: '' };
+
 		const assessedDatabases = this.migrationStateModel._assessedDatabaseList ?? [];
 		const selectedDatabases = this.migrationStateModel._databasesForAssessment;
 		// run assessment if
@@ -75,15 +78,6 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			|| assessedDatabases.length === 0
 			|| assessedDatabases.length !== selectedDatabases.length
 			|| assessedDatabases.some(db => selectedDatabases.indexOf(db) < 0);
-
-		this.wizard.message = {
-			text: '',
-			level: azdata.window.MessageLevel.Error
-		};
-
-		this.wizard.registerNavigationValidator((pageChangeInfo) => {
-			return true;
-		});
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {

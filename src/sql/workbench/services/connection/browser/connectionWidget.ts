@@ -627,7 +627,10 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	private updateRefreshCredentialsLink(): void {
-		let chosenAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
+		// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
+		// The OR case can be removed once we no longer support ADAL
+		let chosenAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value
+			|| account.key.accountId.split('.')[0] === this._azureAccountDropdown.value);
 		if (chosenAccount && chosenAccount.isStale) {
 			this._tableContainer.classList.remove('hide-refresh-link');
 		} else {
@@ -648,7 +651,10 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			await this.fillInAzureAccountOptions();
 
 			// If a new account was added find it and select it, otherwise select the first account
-			let newAccount = this._azureAccountList.find(option => !oldAccountIds.some(oldId => oldId === option.key.accountId));
+			// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
+			// The OR case can be removed once we no longer support ADAL
+			let newAccount = this._azureAccountList.find(option => !oldAccountIds.some(oldId => oldId === option.key.accountId
+				|| oldId.split('.')[0] === option.key.accountId));
 			if (newAccount) {
 				this._azureAccountDropdown.selectWithOptionName(newAccount.key.accountId);
 			} else {
@@ -660,7 +666,10 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 		// Display the tenant select box if needed
 		const hideTenantsClassName = 'hide-azure-tenants';
-		let selectedAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
+		// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
+		// The OR case can be removed once we no longer support ADAL
+		let selectedAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value
+			|| account.key.accountId.split('.')[0] === this._azureAccountDropdown.value);
 		if (selectedAccount && selectedAccount.properties.tenants && selectedAccount.properties.tenants.length > 1) {
 			// There are multiple tenants available so let the user select one
 			let options = selectedAccount.properties.tenants.map(tenant => tenant.displayName);
@@ -680,6 +689,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				}
 			}
 			else {
+				this._azureTenantId = selectedAccount.properties.tenants[0].id;
 				this.onAzureTenantSelected(0);
 			}
 
@@ -834,9 +844,12 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					let tenantId = connectionInfo.azureTenantId;
 					let accountName = (this.authType === AuthenticationType.AzureMFA)
 						? connectionInfo.azureAccount : connectionInfo.userName;
-					this._azureAccountDropdown.selectWithOptionName(this.getModelValue(accountName));
+					// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
+					// The OR case can be removed once we no longer support ADAL
+					let account = this._azureAccountList.find(account => account.key.accountId === this.getModelValue(accountName)
+						|| account.key.accountId.split('.')[0] === this.getModelValue(accountName));
+					this._azureAccountDropdown.selectWithOptionName(account.key.accountId);
 					await this.onAzureAccountSelected();
-					let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 					if (account && account.properties.tenants && account.properties.tenants.length > 1) {
 						let tenant = account.properties.tenants.find(tenant => tenant.id === tenantId);
 						if (tenant) {
@@ -847,6 +860,13 @@ export class ConnectionWidget extends lifecycle.Disposable {
 							this._logService.error(`fillInConnectionInputs : Could not find tenant with ID ${this._azureTenantId} for account ${accountName}`);
 						}
 						this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
+					}
+					else if (account && account.properties.tenants && account.properties.tenants.length === 1) {
+						this._azureTenantId = account.properties.tenants[0].id;
+						this.onAzureTenantSelected(0);
+					}
+					else {
+						this._logService.error(`fillInConnectionInputs : Could not find any tenants for account ${accountName}`);
 					}
 				}).catch(err => this._logService.error(`Unexpected error populating initial Azure Account options : ${err}`));
 			}
@@ -1090,9 +1110,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						model.saveProfile = true;
 						model.groupId = this.findGroupId(model.groupFullName);
 					}
-				}
-				if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
-					model.azureTenantId = this._azureTenantId;
 				}
 			}
 		}

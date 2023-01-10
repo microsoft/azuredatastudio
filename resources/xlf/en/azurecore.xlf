@@ -13,9 +13,6 @@
     <trans-unit id="azure.cacheErrorParse">
       <source xml:lang="en">Error when parsing your account from the cache</source>
     </trans-unit>
-    <trans-unit id="azure.cacheErrrorRemove">
-      <source xml:lang="en">Error when removing your account from the cache.</source>
-    </trans-unit>
     <trans-unit id="azure.microsoftAccountDisplayName">
       <source xml:lang="en">Microsoft Account</source>
     </trans-unit>
@@ -199,6 +196,16 @@
   <file original="extensions/azurecore/dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.providers.sqlInstanceArcContainerLabel">
       <source xml:lang="en">SQL managed instance – Azure Arc</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/azurecore/dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel">
+      <source xml:lang="en">Dedicated SQL Pools</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/azurecore/dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel">
+      <source xml:lang="en">Azure Synapse Analytics</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/resourceTreeNode" source-language="en" datatype="plaintext"><body>

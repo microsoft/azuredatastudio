@@ -290,10 +290,13 @@ export class GetAzureRecommendationDialog {
 				'narrow');
 
 			this.dialog.okButton.label = GetAzureRecommendationDialog.StartButtonText;
+			this.dialog.okButton.position = 'left';
+
 			this._disposables.push(
 				this.dialog.okButton.onClick(
 					async () => await this.execute()));
 
+			this.dialog.cancelButton.position = 'left';
 			this._disposables.push(
 				this.dialog.cancelButton.onClick(
 					() => this._isOpen = false));

@@ -200,10 +200,10 @@
     "@microsoft/applicationinsights-shims" "^2.0.2"
     "@microsoft/dynamicproto-js" "^1.1.7"
 
-"@microsoft/ads-extension-telemetry@^1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@microsoft/ads-extension-telemetry/-/ads-extension-telemetry-1.3.1.tgz#fa757ee88eac91b21c3a68562da6441c2ad15c39"
-  integrity sha512-8Zd7RwwN7ZufMoWFmc1bwzmQc1RV7/jf/Ua33YL1+P0ZwHoWFOhf/b0lwvAVzi9TB/7oD5zA5yv7A/i2sSTn6Q==
+"@microsoft/ads-extension-telemetry@^1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-extension-telemetry/-/ads-extension-telemetry-1.3.2.tgz#d9cfb4bc7099df73e000b7bafa48bb748db924fe"
+  integrity sha512-TG1TE7FPp5rBA9zYPVjralZut8Bq/b5XCgm0kmkLyoQyn3c9ntmWXFuNQPOXmgbIemg5YY1/7DHKrfNcO/igkQ==
   dependencies:
     "@vscode/extension-telemetry" "^0.6.2"
 
@@ -593,9 +593,9 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#1.3.1":
-  version "1.3.1"
-  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/2df6982e07c0208c2b8a5f8cd4b3d65944138d15"
+"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#1.3.2":
+  version "1.3.2"
+  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/e3be16cffbac882ef545e4da9654a82dc010d1b7"
   dependencies:
     vscode-languageclient "5.2.1"
 
@@ -1182,11 +1182,9 @@ json-stringify-safe@~5.0.1:
   integrity sha1-Epai1Y/UXxmg9s4B1lcB4sc1tus=
 
 json5@^2.1.2:
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/json5/-/json5-2.1.3.tgz#c9b0f7fa9233bfe5807fe66fcf3a5617ed597d43"
-  integrity sha512-KXPvOm8K9IJKFM0bmdn8QXh7udDh1g/giieX0NLCaMnb4hEiVFqnop2ImTXCc5e0/oHz3LTqmHGtExn5hfMkOA==
-  dependencies:
-    minimist "^1.2.5"
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/json5/-/json5-2.2.3.tgz#78cd6f1a19bdc12b73db5ad0c61efd66c1e29283"
+  integrity sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==
 
 jsprim@^1.2.2:
   version "1.4.2"

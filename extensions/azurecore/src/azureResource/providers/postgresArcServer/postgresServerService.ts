@@ -5,6 +5,7 @@
 
 import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
 import { azureResource } from 'azurecore';
+import { postgresArcServerQuery } from '../queryStringConstants';
 
 export interface PostgresArcServerGraphData extends GraphData {
 	properties: {
@@ -12,12 +13,10 @@ export interface PostgresArcServerGraphData extends GraphData {
 	};
 }
 
-export const serversQuery = `where type == "${azureResource.AzureResourceType.azureArcPostgresServer}"`;
-
 export class PostgresServerArcService extends ResourceServiceBase<PostgresArcServerGraphData, azureResource.AzureResourceDatabaseServer> {
 
 	protected get query(): string {
-		return serversQuery;
+		return postgresArcServerQuery;
 	}
 
 	protected convertResource(resource: PostgresArcServerGraphData): azureResource.AzureResourceDatabaseServer {

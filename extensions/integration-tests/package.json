@@ -43,5 +43,8 @@
     "mocha": "^7.1.1",
     "@microsoft/vscodetestcover": "^1.2.1",
     "@microsoft/azdata-test": "^2.0.3"
+  },
+  "resolutions": {
+    "jsonwebtoken": "9.0.0"
   }
 }

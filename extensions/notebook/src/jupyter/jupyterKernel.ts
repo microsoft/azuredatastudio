@@ -60,12 +60,6 @@ export class JupyterKernel implements nb.IKernel {
 		return true;
 	}
 
-	public get requiresConnection(): boolean {
-		// TODO would be good to have a smarter way to do this.
-		// for now only Spark kernels need a connection
-		return !!(this.kernelImpl.name && this.kernelImpl.name.toLowerCase().indexOf('spark') > -1);
-	}
-
 	public get isReady(): boolean {
 		return this.kernelImpl.isReady;
 	}

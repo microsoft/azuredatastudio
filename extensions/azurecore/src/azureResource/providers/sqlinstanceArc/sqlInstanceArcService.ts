@@ -5,6 +5,7 @@
 
 import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
 import { azureResource } from 'azurecore';
+import { sqlInstanceArcQuery } from '../queryStringConstants';
 
 export interface SqlInstanceArcGraphData extends GraphData {
 	properties: {
@@ -13,11 +14,10 @@ export interface SqlInstanceArcGraphData extends GraphData {
 	};
 }
 
-const instanceQuery = `where type == "${azureResource.AzureResourceType.azureArcSqlManagedInstance}"`;
 export class SqlInstanceArcResourceService extends ResourceServiceBase<SqlInstanceArcGraphData, azureResource.AzureResourceDatabaseServer> {
 
 	protected get query(): string {
-		return instanceQuery;
+		return sqlInstanceArcQuery;
 	}
 
 	protected convertResource(resource: SqlInstanceArcGraphData): azureResource.AzureResourceDatabaseServer {

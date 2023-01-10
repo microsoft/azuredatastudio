@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.41.0",
-  "distro": "c6da977529b6719ff1974faa53a73abe01ec13ac",
+  "distro": "a58380f8678270cb60e90ca5edd8c407908f8108",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -104,7 +104,7 @@
     "rxjs": "5.4.0",
     "sanitize-html": "1.19.1",
     "semver-umd": "^5.5.7",
-    "slickgrid": "github:Microsoft/SlickGrid.ADS#2.3.40",
+    "slickgrid": "github:Microsoft/SlickGrid.ADS#2.3.41",
     "spdlog": "^0.13.0",
     "tas-client-umd": "0.1.4",
     "turndown": "^7.0.0",
