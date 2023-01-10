@@ -659,7 +659,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	 */
 	private isCheckboxColumnsUsedForSelection(): boolean {
 		return this.columns.some(c => {
-			const checkboxAction = <ActionOnCheck>(c.options ? (<any>c.options).actionOnCheckbox : c.action);
+			const checkboxAction = <ActionOnCheck>(c.options ? (<azdata.CheckboxColumnOption>c.options).actionOnCheckbox : c.action);
 			return checkboxAction === ActionOnCheck.selectRow
 		});
 	}
