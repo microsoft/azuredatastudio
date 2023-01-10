@@ -56,6 +56,7 @@ import { ViewContainerLocation } from 'vs/workbench/common/views';
 import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { diagnostics } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -95,6 +96,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IQuickInputService private _quickInputService: IQuickInputService,
 		@INotificationService private _notificationService: INotificationService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
+		@IErrorDiagnosticsService private _errorDiagnosticsService: IErrorDiagnosticsService,
 		@IAngularEventingService private _angularEventing: IAngularEventingService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@ILogService private _logService: ILogService,
@@ -592,17 +594,16 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	private handleOtherError(connection: interfaces.IConnectionProfile, connectionResult: IConnectionResult): Promise<boolean> {
-		// return this._resourceProviderService.handleOtherError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName).then(response => {
-		// 	if (response === diagnostics.ErrorCodes.passwordReset) {
-		// 		this._logService.info(`password reset error code returned!`);
-		// 		//connectionResult.errorHandled = true;
-		// 		return false;
-		// 		//return this._resourceProviderService.showFirewallRuleDialog(connection, response.ipAddress, response.resourceProviderId);
-		// 	} else {
-		// 		return false;
-		// 	}
-		// });
-		return Promise.resolve(false);
+		return this._errorDiagnosticsService.checkErrorCode(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName).then(response => {
+			if (response === diagnostics.ErrorCodes.passwordReset) {
+				this._logService.info(`password reset error code returned!`);
+				//connectionResult.errorHandled = true;
+				return false;
+				//return this._resourceProviderService.showFirewallRuleDialog(connection, response.ipAddress, response.resourceProviderId);
+			} else {
+				return false;
+			}
+		});
 	}
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {

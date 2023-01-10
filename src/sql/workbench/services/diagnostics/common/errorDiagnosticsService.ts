@@ -7,10 +7,10 @@ import { diagnostics } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as azdata from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
-export const SERVICE_ID = 'diagnosticsService';
-export const IDiagnosticsService = createDecorator<IDiagnosticsService>(SERVICE_ID);
+export const SERVICE_ID = 'errorDiagnosticsService';
+export const IErrorDiagnosticsService = createDecorator<IErrorDiagnosticsService>(SERVICE_ID);
 
-export interface IDiagnosticsService {
+export interface IErrorDiagnosticsService {
 	_serviceBrand: undefined;
 
 	/**

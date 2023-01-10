@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDiagnosticsService } from 'sql/workbench/services/diagnostics/common/diagnosticsService';
+import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import { diagnostics } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as azdata from 'azdata';
 
-export class DiagnosticsService implements IDiagnosticsService {
+export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 
 	_serviceBrand: undefined;
 	private _providers: { [handle: string]: azdata.Diagnostics; } = Object.create(null);

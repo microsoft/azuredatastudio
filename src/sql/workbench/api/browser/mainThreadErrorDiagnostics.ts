@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { IDiagnosticsService } from 'sql/workbench/services/diagnostics/common/diagnosticsService';
+import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import { Disposable } from 'vs/base/common/lifecycle';
 import {
 	ExtHostErrorDiagnosticsShape,
@@ -20,7 +20,7 @@ export class MainThreadErrorDiagnostics extends Disposable implements MainThread
 
 	constructor(
 		extHostContext: IExtHostContext,
-		@IDiagnosticsService private _diagnosticsService: IDiagnosticsService
+		@IErrorDiagnosticsService private _errorDiagnosticsService: IErrorDiagnosticsService
 	) {
 		super();
 		this._providerMetadata = {};
@@ -38,14 +38,14 @@ export class MainThreadErrorDiagnostics extends Disposable implements MainThread
 				return self._proxy.$handleErrorCode(handle, errorCode, errorMessage, connectionTypeId);
 			}
 		};
-		this._diagnosticsService.registerDiagnostics(providerMetadata.id, diagnostics);
+		this._errorDiagnosticsService.registerDiagnostics(providerMetadata.id, diagnostics);
 		this._providerMetadata[handle] = providerMetadata;
 
 		return Promise.resolve(null);
 	}
 
 	public $unregisterDiagnostics(handle: number): Thenable<any> {
-		this._diagnosticsService.unregisterDiagnostics(this._providerMetadata[handle].id);
+		this._errorDiagnosticsService.unregisterDiagnostics(this._providerMetadata[handle].id);
 		return Promise.resolve(null);
 	}
 }
