@@ -12,8 +12,6 @@ export const msgNo = localize('msgNo', "No");
 
 // Jupyter Constants ///////////////////////////////////////////////////////
 export const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample code loads the file into a data frame and shows the first 10 results.");
-export const noBDCConnectionError = localize('noBDCConnectionError', "Spark kernels require a connection to a SQL Server Big Data Cluster master instance.");
-export const providerNotValidError = localize('providerNotValidError', "Non-MSSQL providers are not supported for spark kernels.");
 
 //  Book view-let constants
 export const allFiles = localize('allFiles', "All Files");

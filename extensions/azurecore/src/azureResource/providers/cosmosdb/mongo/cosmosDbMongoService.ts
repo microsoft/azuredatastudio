@@ -6,6 +6,7 @@
 
 import { ResourceServiceBase, GraphData } from '../../resourceTreeDataProviderBase';
 import { azureResource } from 'azurecore';
+import { cosmosMongoDbQuery } from '../../queryStringConstants';
 
 
 interface DbServerGraphData extends GraphData {
@@ -15,12 +16,10 @@ interface DbServerGraphData extends GraphData {
 	};
 }
 
-const serversQuery = `where type == "${azureResource.AzureResourceType.cosmosDbAccount}" and kind == "MongoDB"`;
-
 export class CosmosDbMongoService extends ResourceServiceBase<DbServerGraphData, azureResource.AzureResourceDatabaseServer> {
 
 	protected get query(): string {
-		return serversQuery;
+		return cosmosMongoDbQuery;
 	}
 
 	protected convertResource(resource: DbServerGraphData): azureResource.AzureResourceDatabaseServer {

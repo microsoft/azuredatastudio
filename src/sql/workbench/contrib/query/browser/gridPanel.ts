@@ -75,9 +75,9 @@ const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ES
 // 2. when user clicks a cell, whether the cell content should be displayed in a new text editor as json.
 // Based on the requirements, the solution doesn't need to be very accurate, a simple regex is enough since it is more
 // performant than trying to parse the string to object.
-// Regex explaination: after removing the trailing whitespaces, the string must start with '[' (to support arrays)
-// or '{'. And there must be a '}' to match the '{'.
-const IsJsonRegex = /^\s*\[*\s*{.*?}/g;
+// Regex explaination: after removing the trailing whitespaces and line breaks, the string must start with '[' (to support arrays)
+// or '{', and there must be a '}' or ']' to close it.
+const IsJsonRegex = /^\s*[\{|\[][\S\s]*[\}\]]\s*$/g;
 
 export class GridPanel extends Disposable {
 	private container = document.createElement('div');

@@ -25,4 +25,8 @@ export class TestConnectionDialogService implements IConnectionDialogService {
 		params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<IConnectionProfile> {
 		return Promise.resolve(undefined);
 	}
+
+	public callDefaultOnConnect(connection: IConnectionProfile, params: INewConnectionParams): Promise<void> {
+		return Promise.resolve(undefined);
+	}
 }

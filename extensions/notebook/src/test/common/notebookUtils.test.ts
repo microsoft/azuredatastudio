@@ -203,39 +203,4 @@ describe('notebookUtils Tests', function (): void {
 			should(notebookEditor.document.cells[0].contents.cell_type).equal(CellTypes.Markdown);
 		});
 	});
-
-	describe('analyzeNotebook', function () {
-		it('creates cell when oeContext exists', async function (): Promise<void> {
-			await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
-			const notebookEditor = azdata.nb.activeNotebookEditor;
-			sinon.replaceGetter(azdata.nb, 'activeNotebookEditor', () => notebookEditor);
-			sinon.stub(azdata.nb, 'showNotebookDocument').returns(Promise.resolve(notebookEditor));
-			const oeContext: azdata.ObjectExplorerContext = {
-				connectionProfile: undefined,
-				isConnectionNode: true,
-				nodeInfo: {
-					nodePath: 'path/HDFS/path2',
-					errorMessage: undefined,
-					isLeaf: false,
-					label: 'fakeLabel',
-					metadata: undefined,
-					nodeStatus: undefined,
-					nodeSubType: undefined,
-					nodeType: undefined
-				}
-			};
-			await notebookUtils.analyzeNotebook(oeContext);
-			should(notebookEditor.document.cells.length).equal(1, 'One cell should exist');
-			should(notebookEditor.document.cells[0].contents.cell_type).equal(CellTypes.Code, 'Cell was created with incorrect type');
-		});
-
-		it('does not create new cell when oeContext does not exist', async function (): Promise<void> {
-			await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
-			const notebookEditor = azdata.nb.activeNotebookEditor;
-			sinon.replaceGetter(azdata.nb, 'activeNotebookEditor', () => notebookEditor);
-			sinon.stub(azdata.nb, 'showNotebookDocument').returns(Promise.resolve(notebookEditor));
-			await notebookUtils.analyzeNotebook();
-			should(notebookEditor.document.cells.length).equal(0, 'No cells should exist');
-		});
-	});
 });

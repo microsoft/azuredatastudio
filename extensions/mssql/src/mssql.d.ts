@@ -27,11 +27,6 @@ declare module 'mssql' {
 		 * Path to the root of the SQL Tools Service folder
 		 */
 		readonly sqlToolsServicePath: string;
-		/**
-		 * Gets the object explorer API that supports querying over the connections supported by this extension
-		 *
-		 */
-		getMssqlObjectExplorerBrowser(): MssqlObjectExplorerBrowser;
 
 		/**
 		 * Get the Cms Service APIs to communicate with CMS connections supported by this extension
@@ -140,7 +135,7 @@ declare module 'mssql' {
 		connectionName?: string;
 		projectFilePath: string;
 		targetScripts: string[];
-		folderStructure: string;
+		folderStructure: ExtractTarget;
 		dataSchemaProvider: string;
 	}
 
@@ -711,6 +706,11 @@ declare module 'mssql' {
 		startPerfDataCollection(ownerUri: string, dataFolder: string, perfQueryIntervalInSec: number, staticQueryIntervalInSec: number, numberOfIterations: number): Promise<StartPerfDataCollectionResult | undefined>;
 		stopPerfDataCollection(): Promise<StopPerfDataCollectionResult | undefined>;
 		refreshPerfDataCollection(lastRefreshedTime: Date): Promise<RefreshPerfDataCollectionResult | undefined>;
+		startLoginMigration(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
+		validateLoginMigration(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
+		migrateLogins(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
+		establishUserMapping(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
+		migrateServerRolesAndSetPermissions(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
 	}
 
 	// SqlMigration interfaces  -----------------------------------------------------------------------
@@ -818,5 +818,21 @@ declare module 'mssql' {
 		 * @returns A created shared access signature token
 		 */
 		createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Promise<CreateSasResponse>;
+	}
+
+	export enum LoginMigrationStep {
+		StartValidations = 0,
+		MigrateLogins = 1,
+		EstablishUserMapping = 2,
+		MigrateServerRoles = 3,
+		EstablishServerRoleMapping = 4,
+		SetLoginPermissions = 5,
+		SetServerRolePermissions = 6,
+	}
+
+	export interface StartLoginMigrationResult {
+		exceptionMap: { [login: string]: any };
+		completedStep: LoginMigrationStep;
+		elapsedTime: string;
 	}
 }

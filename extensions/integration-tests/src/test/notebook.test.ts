@@ -8,7 +8,7 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getTempFilePath, pySparkNotebookContent, pySparkKernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent, notebookContentForCellLanguageTest, sqlKernelSpec, pythonKernelSpec, pySparkKernelSpec, CellTypes } from './notebook.util';
+import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getTempFilePath, pythonKernelMetadata, sqlNotebookMultipleCellsContent, notebookContentForCellLanguageTest, sqlKernelSpec, pythonKernelSpec, CellTypes, pythonNotebookContent, powershellKernelSpec } from './notebook.util';
 import { getConfigValue, EnvironmentVariable_PYTHON_PATH, TestServerProfile, getStandaloneServer } from './testConfig';
 import { connectToServer, sleep, testServerProfileToIConnectionProfile } from './utils';
 import * as fs from 'fs';
@@ -149,7 +149,7 @@ suite('Notebook integration test suite', function () {
 
 	if (process.env['RUN_PYTHON3_TEST'] === '1') {
 		test('Python3 notebook test', async function () {
-			let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata, this.test.title);
+			let notebook = await openNotebook(pythonNotebookContent, pythonKernelMetadata, this.test.title);
 			await runCell(notebook);
 			let cellOutputs = notebook.document.cells[0].contents.outputs;
 			console.log('Got cell outputs ---');
@@ -161,7 +161,7 @@ suite('Notebook integration test suite', function () {
 		});
 
 		test('Clear all outputs - Python3 notebook ', async function () {
-			let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata, this.test.title);
+			let notebook = await openNotebook(pythonNotebookContent, pythonKernelMetadata, this.test.title);
 			await runCell(notebook);
 			await verifyClearAllOutputs(notebook);
 		});
@@ -197,7 +197,7 @@ suite('Notebook integration test suite', function () {
 		});
 
 		test('Change kernel different provider Python to SQL to Python', async function () {
-			let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata, this.test.title);
+			let notebook = await openNotebook(pythonNotebookContent, pythonKernelMetadata, this.test.title);
 			await runCell(notebook);
 			assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
 			assert(notebook.document.kernelSpec.name === 'python3', `Expected first kernel name: python3, Actual: ${notebook.document.kernelSpec.name}`);
@@ -211,48 +211,23 @@ suite('Notebook integration test suite', function () {
 			assert(kernelChanged && notebook.document.kernelSpec.name === 'python3', `Expected third kernel name: python3, Actual: ${notebook.document.kernelSpec.name}`);
 		});
 
-		test('Change kernel same provider Python to PySpark to Python', async function () {
-			let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata, this.test.title);
-		await runCell(notebook);
-		assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
-		assert(notebook.document.kernelSpec.name === 'python3', `Expected first kernel name: python3, Actual: ${notebook.document.kernelSpec.name}`);
-
-		let kernelChanged = await notebook.changeKernel(pySparkKernelSpec);
-		assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
-		assert(kernelChanged && notebook.document.kernelSpec.name === 'pysparkkernel', `Expected second kernel name: pysparkkernel, Actual: ${notebook.document.kernelSpec.name}`);
-
-		kernelChanged = await notebook.changeKernel(pythonKernelSpec);
-		assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
-		assert(kernelChanged && notebook.document.kernelSpec.name === 'python3', `Expected third kernel name: python3, Actual: ${notebook.document.kernelSpec.name}`);
-		});
-	}
-
-	if (process.env['RUN_PYSPARK_TEST'] === '1') {
-		test('PySpark notebook test', async function () {
-			let notebook = await openNotebook(pySparkNotebookContent, pySparkKernelMetadata, this.test.title);
+		test('Change kernel same provider Python to Powershell to Python', async function () {
+			let notebook = await openNotebook(pythonNotebookContent, pythonKernelMetadata, this.test.title);
 			await runCell(notebook);
-			let cellOutputs = notebook.document.cells[0].contents.outputs;
-			let sparkResult = (<azdata.nb.IStreamResult>cellOutputs[3]).text;
-			assert(sparkResult === '2', `Expected spark result: 2, Actual: ${sparkResult}`);
+			assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
+			assert(notebook.document.kernelSpec.name === 'python3', `Expected first kernel name: python3, Actual: ${notebook.document.kernelSpec.name}`);
+
+			let kernelChanged = await notebook.changeKernel(powershellKernelSpec);
+			assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
+			assert(kernelChanged && notebook.document.kernelSpec.name === 'powershell', `Expected second kernel name: powershell, Actual: ${notebook.document.kernelSpec.name}`);
+
+			kernelChanged = await notebook.changeKernel(pythonKernelSpec);
+			assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
+			assert(kernelChanged && notebook.document.kernelSpec.name === 'python3', `Expected third kernel name: python3, Actual: ${notebook.document.kernelSpec.name}`);
 		});
 	}
 
 	/* After https://github.com/microsoft/azuredatastudio/issues/5598 is fixed, enable these tests.
-	test('scala language test', async function () {
-		let language = 'scala';
-		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title, language, {
-			'kernelspec': {
-				'name': '',
-				'display_name': ''
-			},
-			'language_info': {
-				name: language,
-				version: '',
-				mimetype: ''
-			}
-		});
-	});
-
 	test('empty language test', async function () {
 		let language = '';
 		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title, language, {

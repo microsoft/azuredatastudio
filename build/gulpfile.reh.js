@@ -448,7 +448,7 @@ function packagePkgTask(platform, arch, pkgTarget) {
 			// rebuild extensions that contain native npm modules or have conditional webpack rules
 			// when building with the web .yarnrc settings (e.g. runtime=node, etc.)
 			// this is needed to have correct module set published with desired ABI
-			const rebuildExtensions = ['big-data-cluster', 'mssql', 'notebook'];
+			const rebuildExtensions = ['mssql', 'notebook'];
 			const EXTENSIONS = path.join(REPO_ROOT, 'extensions');
 			function exec(cmdLine, cwd) {
 				console.log(cmdLine);

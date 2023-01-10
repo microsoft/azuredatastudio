@@ -39,6 +39,8 @@ import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { ConsoleLogger, LogService } from 'vs/platform/log/common/log';
 import { TestAccessibilityService } from 'vs/platform/accessibility/test/common/testAccessibilityService';
+import { TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -77,6 +79,12 @@ suite('SQL Connection Tree Action tests', () => {
 		return connectionManagementService;
 	}
 
+	function createEditorService(): TypeMoq.Mock<IEditorService> {
+		let editorService = TypeMoq.Mock.ofType<IEditorService>(TestEditorService, TypeMoq.MockBehavior.Strict);
+
+		return editorService;
+	}
+
 	function createObjectExplorerService(connectionManagementService: TestConnectionManagementService, getTreeNodeReturnVal: TreeNode): TypeMoq.Mock<ObjectExplorerService> {
 		let objectExplorerService = TypeMoq.Mock.ofType(ObjectExplorerService, TypeMoq.MockBehavior.Strict, connectionManagementService);
 		objectExplorerService.callBase = true;
@@ -107,6 +115,7 @@ suite('SQL Connection Tree Action tests', () => {
 			id: 'testId'
 		});
 		let connectionManagementService = createConnectionManagementService(isConnectedReturnValue, connection);
+		let editorService: TypeMoq.Mock<IEditorService> = createEditorService();
 		let objectExplorerService = createObjectExplorerService(connectionManagementService.object, undefined);
 		let treeSelectionMock = TypeMoq.Mock.ofType(TreeSelectionHandler);
 		let instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
@@ -163,6 +172,7 @@ suite('SQL Connection Tree Action tests', () => {
 			OEManageConnectionAction.ID,
 			OEManageConnectionAction.LABEL,
 			connectionManagementService.object,
+			editorService.object,
 			capabilitiesService,
 			instantiationService.object,
 			objectExplorerService.object,
@@ -196,6 +206,7 @@ suite('SQL Connection Tree Action tests', () => {
 		let treeNode = new TreeNode(NodeType.Database, '', 'db node', false, '', '', '', undefined, undefined, undefined, undefined);
 		treeNode.connection = connection;
 		let connectionManagementService = createConnectionManagementService(isConnectedReturnValue, connection);
+		let editorService = createEditorService();
 		let objectExplorerService = createObjectExplorerService(connectionManagementService.object, treeNode);
 		let treeSelectionMock = TypeMoq.Mock.ofType(TreeSelectionHandler);
 		let instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
@@ -207,6 +218,7 @@ suite('SQL Connection Tree Action tests', () => {
 			OEManageConnectionAction.ID,
 			OEManageConnectionAction.LABEL,
 			connectionManagementService.object,
+			editorService.object,
 			capabilitiesService,
 			instantiationService.object,
 			objectExplorerService.object,
@@ -403,7 +415,6 @@ suite('SQL Connection Tree Action tests', () => {
 			resolve(connection);
 		}));
 		connectionManagementService.setup(x => x.isConnected(undefined, TypeMoq.It.isAny())).returns(() => isConnectedReturnValue);
-		connectionManagementService.setup(x => x.refreshAzureAccountTokenIfNecessary(TypeMoq.It.isAny())).returns(async () => true);
 
 		let objectExplorerSession = {
 			success: true,
@@ -450,7 +461,6 @@ suite('SQL Connection Tree Action tests', () => {
 
 		return refreshAction.run().then((value) => {
 			connectionManagementService.verify(x => x.isConnected(undefined, TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
-			connectionManagementService.verify(x => x.refreshAzureAccountTokenIfNecessary(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 			objectExplorerService.verify(x => x.getObjectExplorerNode(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 			objectExplorerService.verify(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
 			tree.verify(x => x.refresh(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());

@@ -1338,7 +1338,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			serverEdition: 'test_edition',
 			azureVersion: 0,
 			osVersion: 'test_version',
-			options: { isBigDataCluster: 'test' },
+			options: {},
 			isCloud: true,
 			cpuCount: 0,
 			physicalMemoryInMb: 0
@@ -1373,8 +1373,6 @@ suite('SQL ConnectionManagementService tests', () => {
 				if (connection.providerName === 'MSSQL') {
 					if (serverInfo.isCloud) {
 						iconName = 'mssql:cloud';
-					} else if (serverInfo.options['isBigDataCluster']) {
-						iconName = 'mssql:cluster';
 					}
 				}
 				called = true;
@@ -1771,6 +1769,81 @@ suite('SQL ConnectionManagementService tests', () => {
 		// second refresh should be a no-op
 		const newProfile2 = connectionStatusManager.getConnectionProfile(uri);
 		assert.strictEqual(newProfile2.options['expiresOn'], freshToken.expiresOn);
+	});
+
+	test('refreshAzureAccountTokenIfNecessary does not refresh Azure access token for non-Azure authentication', async () => {
+		const uri: string = 'Editor Uri';
+		// Set up a connection profile that uses Azure
+		const sqlAuthConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
+		sqlAuthConnectionProfile.authenticationType = Constants.AuthenticationType.SqlLogin;
+		sqlAuthConnectionProfile.userName = 'testuser';
+		sqlAuthConnectionProfile.password = 'testpassword';
+
+		// For mocking purpose only.
+		const username = 'testuser@microsoft.com';
+		const providerId = 'azure_PublicCloud';
+
+		const expiredToken = {
+			token: 'expiredToken',
+			tokenType: 'Bearer',
+			expiresOn: 0,
+		};
+
+		const freshToken = {
+			token: 'freshToken',
+			tokenType: 'Bearer',
+			expiresOn: new Date().getTime() / 1000 + 7200,
+		};
+
+		// every connectionStatusManager.connect will call accountManagementService.getAccountSecurityToken twice
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(expiredToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(expiredToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(freshToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(freshToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(expiredToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(expiredToken));
+
+		accountManagementService.setup(x => x.getAccounts()).returns(() => {
+			return Promise.resolve<azdata.Account[]>([
+				{
+					key: {
+						accountId: username,
+						providerId: providerId
+					},
+					displayInfo: undefined,
+					isStale: false,
+					properties: undefined
+				}
+			]);
+		});
+
+		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === Constants.AuthenticationType.AzureMFA))).returns(profile => Promise.resolve({
+			profile: profile,
+			savedCred: false
+		}));
+
+		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
+		await connect(uri, undefined, false, sqlAuthConnectionProfile);
+
+		const oldProfile = connectionStatusManager.getConnectionProfile(uri);
+		assert.strictEqual(oldProfile.options['expiresOn'], undefined);
+		assert.strictEqual(oldProfile.options['azureAccountToken'], undefined);
+
+		const refreshRes1 = await connectionManagementService.refreshAzureAccountTokenIfNecessary(uri);
+		assert.strictEqual(refreshRes1, false);
+
+		// refresh should not populate expiresOn or token
+		const newProfile1 = connectionStatusManager.getConnectionProfile(uri);
+		assert.strictEqual(newProfile1.options['expiresOn'], undefined);
+		assert.strictEqual(newProfile1.options['azureAccountToken'], undefined);
+
+		const refreshRes2 = await connectionManagementService.refreshAzureAccountTokenIfNecessary(uri);
+		assert.strictEqual(refreshRes2, false);
+
+		// second refresh should be a no-op - no change on properties
+		const newProfile2 = connectionStatusManager.getConnectionProfile(uri);
+		assert.strictEqual(newProfile2.options['expiresOn'], undefined);
+		assert.strictEqual(newProfile1.options['azureAccountToken'], undefined);
 	});
 
 	test('addSavedPassword fills in Azure access token for selected tenant', async () => {
