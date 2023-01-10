@@ -49,6 +49,7 @@ export class TdeMigrationModel {
 
 	constructor(
 	) {
+		this._exportUsingADS = true;
 		this._adsExportConfirmation = false;
 		this._configurationCompleted = false;
 		this._shownBefore = false;

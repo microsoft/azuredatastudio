@@ -1266,5 +1266,18 @@ export interface TdeMigrationParams {
 	networkShareDomain: string;
 	networkShareUserName: string;
 	networkSharePassword: string;
+	accessToken: string;
 }
+
+export namespace TdeMigrateProgressEvent {
+	export const type = new NotificationType<TdeMigrateProgressParams, void>('migration/tdemigrationprogress');
+}
+
+
+export interface TdeMigrateProgressParams {
+	name: string;
+	success: boolean;
+	error: string;
+}
+
 // ------------------------------- < Tde Migration > ------------------------------------

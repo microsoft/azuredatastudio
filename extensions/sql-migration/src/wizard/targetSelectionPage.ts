@@ -161,25 +161,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				break;
 		}
 
-		const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
-		await this._targetUserNameInputBox.updateProperty('required', isSqlDbTarget);
-		await this._targetPasswordInputBox.updateProperty('required', isSqlDbTarget);
-		await utils.updateControlDisplay(this._resourceAuthenticationContainer, isSqlDbTarget);
-		await this.populateAzureAccountsDropdown();
-
-		if (this._migrationTargetPlatform !== this.migrationStateModel._targetType) {
-			// if the user had previously selected values on this page, then went back to change the migration target platform
-			// and came back, forcibly reload the location/resource group/resource values since they will now be different
-			this._migrationTargetPlatform = this.migrationStateModel._targetType;
-
-			this._targetPasswordInputBox.value = '';
-			this.migrationStateModel._sqlMigrationServices = undefined!;
-			this.migrationStateModel._targetServerInstance = undefined!;
-			this.migrationStateModel._resourceGroup = undefined!;
-			this.migrationStateModel._location = undefined!;
-			await this.populateLocationDropdown();
-		}
-
 		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].hidden = !this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates();
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
@@ -364,9 +345,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					this.migrationStateModel._azureAccount = (selectedAccount)
 						? utils.deepClone(selectedAccount)!
 						: undefined!;
-
-					var testToken = await azdata.accounts.getAccountSecurityToken(this.migrationStateModel._azureAccount, this.migrationStateModel._azureAccount.properties.tenants[0].id, azdata.AzureResource.ResourceManagement);
-					console.log(testToken);
 				}
 				await this.populateTenantsDropdown();
 			}));

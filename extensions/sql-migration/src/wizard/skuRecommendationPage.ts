@@ -630,6 +630,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		});
 		await this.constructDetails();
 		this.wizard.nextButton.enabled = this.migrationStateModel._assessmentResults !== undefined;
+		this._previousMiTdeMigrationConfig = this.migrationStateModel.tdeMigrationConfig;
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {

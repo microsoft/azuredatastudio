@@ -172,6 +172,7 @@ export interface SkuRecommendationSavedInfo {
 }
 
 export class MigrationStateModel implements Model, vscode.Disposable {
+
 	public _azureAccounts!: azdata.Account[];
 	public _azureAccount!: azdata.Account;
 	public _accountTenants!: azurecore.Tenant[];
@@ -272,7 +273,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _sessionId: string = uuidv4();
 	public serverName!: string;
 
-	public tdeMigrationConfig: TdeMigrationModel;
+	public tdeMigrationConfig: TdeMigrationModel = new TdeMigrationModel();
 
 	private _stateChangeEventEmitter = new vscode.EventEmitter<StateChangeEvent>();
 	private _currentState: State;
@@ -304,8 +305,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._skuTargetPercentile = 95;
 		this._skuEnablePreview = false;
 		this._skuEnableElastic = false;
-
-		this.tdeMigrationConfig = new TdeMigrationModel();
 	}
 
 	public get validationTargetResults(): ValidationResult[] {
@@ -1080,7 +1079,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		).map(t => t.name);
 	}
 
-	public async startTdeMigration(): Promise<OperationResult> {
+	public async startTdeMigration(
+		accessToken: string,
+		reportUpdate: (dbName: string, succeeded: boolean, error: string) => Promise<void>): Promise<OperationResult> {
+
 		const result: OperationResult = {
 			success: false,
 			errors: []
@@ -1099,7 +1101,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				this.tdeMigrationConfig._networkPath,
 				this.tdeMigrationConfig._domain,
 				this.tdeMigrationConfig._username,
-				this.tdeMigrationConfig._password);
+				this.tdeMigrationConfig._password,
+				accessToken,
+				reportUpdate);
 
 			result.errors = migrationResult.migrationStatuses
 				.filter(entry => !entry.success)
@@ -1108,7 +1112,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		} catch (e) {
 			result.errors = [constants.TDE_MIGRATION_ERROR(e.message)];
 		}
-
 
 		result.success = result.errors.length === 0; //Set success when there are no errors.
 		return result;

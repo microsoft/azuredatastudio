@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../../constants/strings';
-//import { logError, TelemetryErrorName, TelemetryViews } from '../../telemtery';
+import { logError, TelemetryErrorName, TelemetryViews } from '../../telemtery';
 import { EOL } from 'os';
 import { MigrationStateModel } from '../../models/stateMachine';
 import { IconPathHelper } from '../../constants/iconPathHelper';
@@ -41,11 +41,11 @@ export class TdeMigrationDialog {
 	private _model!: MigrationStateModel;
 	private _resultsTable!: azdata.TableComponent;
 	private _startMigrationLoader!: azdata.LoadingComponent;
-	private _startMigrationButton!: azdata.ButtonComponent;
-	private _cancelMigrationButton!: azdata.ButtonComponent;
+	private _retryMigrationButton!: azdata.ButtonComponent;
 	private _copyButton!: azdata.ButtonComponent;
 	private _headingText!: azdata.TextComponent;
 	private _validationResult: any[][] = [];
+	private _dbRowsMap: Map<string, number> = new Map<string, number>();
 	private _tdeMigrationResult: TdeMigrationResult = {
 		state: TdeMigrationState.Pending,
 		dbList: []
@@ -127,23 +127,13 @@ export class TdeMigrationDialog {
 
 					this._resultsTable = await this._createResultsTable(view);
 
-					this._startMigrationButton = view.modelBuilder.button()
+					this._retryMigrationButton = view.modelBuilder.button()
 						.withProps({
 							iconPath: IconPathHelper.restartDataCollection,
 							iconHeight: 18,
 							iconWidth: 18,
 							width: 100,
-							label: constants.TDE_MIGRATE_START_VALIDATION,
-						}).component();
-
-					this._cancelMigrationButton = view.modelBuilder.button()
-						.withProps({
-							iconPath: IconPathHelper.stop,
-							iconHeight: 18,
-							iconWidth: 18,
-							width: 100,
-							label: constants.TDE_MIGRATE_STOP_VALIDATION,
-							enabled: false,
+							label: constants.TDE_MIGRATE_RETRY_VALIDATION,
 						}).component();
 					this._copyButton = view.modelBuilder.button()
 						.withProps({
@@ -155,15 +145,9 @@ export class TdeMigrationDialog {
 							enabled: false,
 						}).component();
 
-					// this._disposables.push(
-					// 	this._startMigrationButton.onDidClick(
-					// 		async (e) => await this._runValidation()));
 					this._disposables.push(
-						this._cancelMigrationButton.onDidClick(
-							e => {
-								this._cancelMigrationButton.enabled = false;
-								//this._canceled = true;
-							}));
+						this._retryMigrationButton.onDidClick(
+							async (e) => await this._runTdeMigration()));
 
 					this._disposables.push(
 						this._copyButton.onDidClick(
@@ -171,9 +155,9 @@ export class TdeMigrationDialog {
 
 					const toolbar = view.modelBuilder.toolbarContainer()
 						.withToolbarItems([
-							{ component: this._startMigrationButton },
-							{ component: this._cancelMigrationButton },
-							{ component: this._copyButton }])
+							{ component: this._retryMigrationButton }
+							//{ component: this._copyButton }
+						])
 						.component();
 
 					const resultsHeading = view.modelBuilder.text()
@@ -276,8 +260,7 @@ export class TdeMigrationDialog {
 				));
 
 			this._startMigrationLoader.loading = true;
-			this._startMigrationButton.enabled = false;
-			this._cancelMigrationButton.enabled = true;
+			this._retryMigrationButton.enabled = false;
 			this._copyButton.enabled = false;
 			this._dialog!.okButton.enabled = false;
 			this._dialog!.cancelButton.enabled = true;
@@ -285,8 +268,7 @@ export class TdeMigrationDialog {
 			//It already ran. Just load the previous status.
 			this._headingText.value = constants.TDE_MIGRATE_RESULTS_HEADING_PREVIOUS;
 			this._startMigrationLoader.loading = false;
-			this._startMigrationButton.enabled = true;
-			this._cancelMigrationButton.enabled = true;
+			this._retryMigrationButton.enabled = true;
 			this._copyButton.enabled = true;
 			this._dialog!.okButton.enabled = true;
 			this._dialog!.cancelButton.enabled = true;
@@ -303,10 +285,40 @@ export class TdeMigrationDialog {
 
 	private async _runTdeMigration(): Promise<void> {
 		//Update the UI buttons
+		this._startMigrationLoader.loading = true;
+		this._retryMigrationButton.enabled = false;
+		this._copyButton.enabled = false;
+		this._dialog!.okButton.enabled = false;
+		this._dialog!.cancelButton.enabled = true;
 
 		//Send the external command
+		try {
 
-		//Catch any exception and failed any pending table.
+			//Get access token
+			const accessToken = await azdata.accounts.getAccountSecurityToken(this._model._azureAccount, this._model._azureAccount.properties.tenants[0].id, azdata.AzureResource.ResourceManagement);
+			// if (accessToken === undefined) {
+			// 	throw new Error('Could not generate token to connect to Azure.');
+			// }
+
+			if (this._model.tdeMigrationConfig.shouldAdsMigrateCertificates()) {
+
+				const operationResult = await this._model.startTdeMigration(accessToken!.token, this._updateTableResultRow.bind(this));
+
+				if (!operationResult.success) {
+					const errorDetails = operationResult.errors.join(EOL);
+
+					logError(TelemetryViews.MigrationLocalStorage, TelemetryErrorName.StartMigrationFailed, errorDetails);
+				}
+			}
+
+		} catch (error) {
+			//Catch any exception and failed any pending table.
+			this._startMigrationLoader.loading = false;
+			this._retryMigrationButton.enabled = true;
+			this._copyButton.enabled = false;
+			this._dialog!.okButton.enabled = false;
+			this._dialog!.cancelButton.enabled = true;
+		}
 	}
 
 	private async _copyValidationResults(): Promise<void> {
@@ -387,12 +399,24 @@ export class TdeMigrationDialog {
 	// 	this._saveResults();
 	// }
 
-	// private async _updateTableResultRow(dbName: string, succeeded: boolean, error: string) {
-	// 	//Update the model
-	// 	//Update the local result
+	private async _updateTableResultRow(dbName: string, succeeded: boolean, error: string): Promise<void> {
+		if (!this._dbRowsMap.has(dbName)) {
+			return; //Table not found
+		}
 
-	// 	//Update the table
-	// }
+		const rowResultsIndex = this._dbRowsMap.get(dbName)!; //Checked already at the beginning of the method
+		const tmpRow = this._buildRow({
+			name: dbName,
+			dbState: (succeeded) ? TdeDatabaseMigrationState.Succeeded : TdeDatabaseMigrationState.Failed,
+			error: error
+		});
+
+		// Update the local result
+		this._validationResult[rowResultsIndex] = tmpRow;
+
+		// Update the table
+		await this._updateTableData();
+	}
 
 	private async _updateTableData() {
 		const data = this._validationResult.map(row => [
@@ -405,81 +429,14 @@ export class TdeMigrationDialog {
 	private async _populateTableResults(): Promise<void> {
 		//Create the local result from the model.
 		this._validationResult = this._tdeMigrationResult.dbList.map(db => this._buildRow(db));
+		this._dbRowsMap = this._validationResult.reduce(function (map: Map<string, number>, row: any[], currentIndex) {
+			const dbName = row[TdeValidationResultIndex.name];
+			map.set(dbName, currentIndex);
+			return map;
+		}, new Map<string, number>());
 
 		//Update the table.
 		await this._updateTableData();
-
-		//_tdeMigrationResult
-
-
-		// const sqlConnections = await azdata.connection.getConnections();
-		// const currentConnection = sqlConnections.find(
-		// 	value => value.connectionId === this._model.sourceConnectionId);
-		// const sourceServerName = currentConnection?.serverName!;
-		// const trustServerCertificate = currentConnection?.options?.trustServerCertificate === true;
-		// const databaseCount = this._model._databasesForMigration.length;
-		// const sourceDatabaseName = this._model._databasesForMigration[0];
-		// const networkShare = this._model._databaseBackup.networkShares[0];
-		// let testNumber: number = 0;
-
-		// const validate = async (
-		// 	sourceDatabase: string,
-		// 	network: NetworkShare,
-		// 	testIrOnline: boolean,
-		// 	testSourceLocationConnectivity: boolean,
-		// 	testSourceConnectivity: boolean,
-		// 	testBlobConnectivity: boolean): Promise<boolean> => {
-		// 	try {
-		// 		await this._updateValidateIrResults(testNumber, TdeMigrationState.Running);
-		// 		const response = await validateIrDatabaseMigrationSettings(
-		// 			this._model,
-		// 			sourceServerName,
-		// 			trustServerCertificate,
-		// 			sourceDatabase,
-		// 			network,
-		// 			testIrOnline,
-		// 			testSourceLocationConnectivity,
-		// 			testSourceConnectivity,
-		// 			testBlobConnectivity);
-		// 		if (response?.errors?.length > 0) {
-		// 			const errors = response.errors.map(
-		// 				error => constants.VALIDATE_IR_VALIDATION_RESULT_ERROR(
-		// 					sourceDatabase,
-		// 					network.networkShareLocation,
-		// 					error));
-		// 			await this._updateValidateIrResults(testNumber, TdeMigrationState.Failed, errors);
-		// 		} else {
-		// 			await this._updateValidateIrResults(testNumber, TdeMigrationState.Succeeded);
-		// 			return true;
-		// 		}
-		// 	} catch (error) {
-		// 		await this._updateValidateIrResults(
-		// 			testNumber,
-		// 			TdeMigrationState.Failed,
-		// 			[constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabase, error)]);
-		// 	}
-		// 	return false;
-		// };
-
-
-		// for (let i = 0; i < databaseCount; i++) {
-		// 	const sourceDatabaseName = this._model._databasesForMigration[i];
-		// 	const networkShare = this._model._databaseBackup.networkShares[i];
-		// 	testNumber++;
-		// 	if (this._canceled) {
-		// 		await this._updateValidateIrResults(testNumber, TdeMigrationState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED])
-		// 		break;
-		// 	}
-		// 	// validate source connectivity
-		// 	await validate(sourceDatabaseName, networkShare, false, false, true, false);
-		// 	testNumber++;
-		// 	if (this._canceled) {
-		// 		await this._updateValidateIrResults(testNumber, TdeMigrationState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED])
-		// 		break;
-		// 	}
-		// 	// valdiate source location / network share connectivity
-		// 	await validate(sourceDatabaseName, networkShare, false, true, false, false);
-		// }
 	}
 
 	private _buildRow(db: TdeMigrationDbState): any[] {
@@ -504,206 +461,6 @@ export class TdeMigrationDialog {
 		return row;
 	}
 
-	// private async _validateSqlDbMigration(): Promise<void> {
-	// 	const sqlConnections = await azdata.connection.getConnections();
-	// 	const currentConnection = sqlConnections.find(
-	// 		value => value.connectionId === this._model.sourceConnectionId);
-	// 	const sourceServerName = currentConnection?.serverName!;
-	// 	const trustServerCertificate = currentConnection?.options['trustServerCertificate'] === true;
-	// 	const databaseCount = this._model._databasesForMigration.length;
-	// 	const sourceDatabaseName = this._model._databasesForMigration[0];
-	// 	const targetDatabaseName = this._model._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? '';
-	// 	let testNumber: number = 0;
-
-	// 	const validate = async (
-	// 		sourceDatabase: string,
-	// 		targetDatabase: string,
-	// 		testIrOnline: boolean,
-	// 		testSourceConnectivity: boolean,
-	// 		testTargetConnectivity: boolean): Promise<boolean> => {
-
-	// 		await this._updateValidateIrResults(testNumber, TdeMigrationState.Running);
-	// 		try {
-	// 			const response = await validateIrSqlDatabaseMigrationSettings(
-	// 				this._model,
-	// 				sourceServerName,
-	// 				trustServerCertificate,
-	// 				sourceDatabase,
-	// 				targetDatabase,
-	// 				testIrOnline,
-	// 				testSourceConnectivity,
-	// 				testTargetConnectivity);
-	// 			if (response?.errors?.length > 0) {
-	// 				const errors = response.errors.map(
-	// 					error => constants.VALIDATE_IR_SQLDB_VALIDATION_RESULT_ERROR(
-	// 						sourceDatabase,
-	// 						targetDatabase,
-	// 						error));
-	// 				await this._updateValidateIrResults(testNumber, TdeMigrationState.Failed, errors);
-	// 			} else {
-	// 				await this._updateValidateIrResults(testNumber, TdeMigrationState.Succeeded);
-	// 				return true;
-	// 			}
-	// 		} catch (error) {
-	// 			await this._updateValidateIrResults(
-	// 				testNumber,
-	// 				TdeMigrationState.Failed,
-	// 				[constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabase, error)]);
-	// 		}
-	// 		return false;
-	// 	};
-
-	// 	// validate IR is online
-	// 	if (!await validate(sourceDatabaseName, targetDatabaseName, true, false, false)) {
-	// 		this._canceled = true;
-	// 		await this._updateValidateIrResults(testNumber + 1, TdeMigrationState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED]);
-	// 		return;
-	// 	}
-
-	// 	for (let i = 0; i < databaseCount; i++) {
-	// 		const sourceDatabaseName = this._model._databasesForMigration[i];
-	// 		const targetDatabaseName = this._model._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? '';
-
-	// 		testNumber++;
-	// 		if (this._canceled) {
-	// 			await this._updateValidateIrResults(testNumber, TdeMigrationState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED]);
-	// 			break;
-	// 		}
-	// 		// validate source connectivity
-	// 		await validate(sourceDatabaseName, targetDatabaseName, false, true, false);
-
-	// 		testNumber++;
-	// 		if (this._canceled) {
-	// 			await this._updateValidateIrResults(testNumber, TdeMigrationState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED]);
-	// 			break;
-	// 		}
-	// 		// validate target connectivity
-	// 		await validate(sourceDatabaseName, targetDatabaseName, false, false, true);
-	// 	}
-	// }
-
-	// private async _initTestIrResults(results?: TdeMigrationResult[]): Promise<void> {
-	// 	this._validationResult = [];
-
-	// 	this._addValidationResult(constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_SHIR);
-	// 	this._addValidationResult(constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_STORAGE);
-
-	// 	for (let i = 0; i < this._model._databasesForMigration.length; i++) {
-	// 		const sourceDatabaseName = this._model._databasesForMigration[i];
-	// 		const networkShare = this._model._databaseBackup.networkShares[i];
-
-	// 		this._addValidationResult(
-	// 			constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_SOURCE_DATABASE(
-	// 				sourceDatabaseName));
-	// 		this._addValidationResult(
-	// 			constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_NETWORK_SHARE(
-	// 				networkShare.networkShareLocation));
-	// 	}
-
-	// 	if (results && results.length > 0) {
-	// 		for (let row = 0; row < results.length; row++) {
-	// 			await this._updateValidateIrResults(
-	// 				row,
-	// 				results[row].state,
-	// 				results[row].errors,
-	// 				false);
-	// 		}
-	// 	}
-	// 	//const data = this._tdeMigrationResult.dbList.map(row => [
-	// 	const data = this._validationResult.map(row => [
-	// 		row[ValidationResultIndex.message],
-	// 		row[ValidationResultIndex.icon],
-	// 		row[ValidationResultIndex.status]]);
-	// 	await this._resultsTable.updateProperty('data', data);
-	// }
-
-	// private async _initSqlDbIrResults(results?: TdeMigrationResult[]): Promise<void> {
-	// 	this._validationResult = [];
-	// 	this._addValidationResult(constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_SHIR);
-
-	// 	this._model._databasesForMigration
-	// 		.forEach(sourceDatabaseName => {
-	// 			this._addValidationResult(
-	// 				constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_SOURCE_DATABASE(
-	// 					sourceDatabaseName));
-
-	// 			const targetDatabaseName = this._model._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? '';
-	// 			this._addValidationResult(
-	// 				constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_TARGET_DATABASE(
-	// 					targetDatabaseName));
-	// 		});
-
-	// 	if (results && results.length > 0) {
-	// 		for (let row = 0; row < results.length; row++) {
-	// 			await this._updateValidateIrResults(
-	// 				row,
-	// 				results[row].state,
-	// 				results[row].errors,
-	// 				false);
-	// 		}
-	// 	}
-
-	// 	const data = this._validationResult.map(row => [
-	// 		row[ValidationResultIndex.message],
-	// 		row[ValidationResultIndex.icon],
-	// 		row[ValidationResultIndex.status]]);
-	// 	await this._resultsTable.updateProperty('data', data);
-	// }
-
-	// private _addValidationResult(message: string): void {
-	// 	this._validationResult.push([
-	// 		message,
-	// 		<azdata.IconColumnCellValue>{
-	// 			icon: IconPathHelper.notStartedMigration,
-	// 			title: ValidationStatusLookup[TdeMigrationState.Pending],
-	// 		},
-	// 		ValidationStatusLookup[TdeMigrationState.Pending],
-	// 		[],
-	// 		TdeMigrationState.Pending]);
-	// }
-
-	// private async _updateValidateIrResults(row: number, state: TdeMigrationState, errors: string[] = [], updateTable: boolean = true): Promise<void> {
-	// 	if (state === TdeMigrationState.Canceled) {
-	// 		for (let cancelRow = row; cancelRow < this._validationResult.length; cancelRow++) {
-	// 			await this._updateResults(cancelRow, state, errors);
-	// 		}
-	// 	} else {
-	// 		await this._updateResults(row, state, errors);
-	// 	}
-
-	// 	if (updateTable) {
-	// 		const data = this._validationResult.map(row => [
-	// 			row[ValidationResultIndex.message],
-	// 			row[ValidationResultIndex.icon],
-	// 			row[ValidationResultIndex.status]]);
-	// 		await this._resultsTable.updateProperty('data', data);
-	// 	}
-
-	// 	this._valdiationErrors.push(...errors);
-	// }
-
-	// private async _updateResults(row: number, state: TdeMigrationState, errors: string[] = []): Promise<void> {
-	// 	const result = this._validationResult[row];
-	// 	const status = ValidationStatusLookup[state];
-	// 	const statusMsg = state === TdeMigrationState.Failed && errors.length > 0
-	// 		? constants.VALIDATE_IR_VALIDATION_STATUS_ERROR_COUNT(status, errors.length)
-	// 		: status;
-
-	// 	const statusMessage = errors.length > 0
-	// 		? constants.VALIDATE_IR_VALIDATION_STATUS_ERROR(status, errors)
-	// 		: statusMsg;
-
-	// 	this._validationResult[row] = [
-	// 		result[ValidationResultIndex.message],
-	// 		<azdata.IconColumnCellValue>{
-	// 			icon: this._getValidationStateImage(state),
-	// 			title: statusMessage,
-	// 		},
-	// 		statusMsg,
-	// 		errors,
-	// 		state];
-	// }
-
 	private _getValidationStateImage(state: TdeDatabaseMigrationState): azdata.IconPath {
 		switch (state) {
 			case TdeDatabaseMigrationState.Canceled:
@@ -720,23 +477,5 @@ export class TdeMigrationDialog {
 	}
 
 
-	// private async _startTdeMigration(): Promise<any> {
-	// 	return;
-	// 	if (this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates()) {
 
-	// 		const operationResult = await this.migrationStateModel.startTdeMigration();
-
-	// 		if (!operationResult.success) {
-	// 			const errorDetails = operationResult.errors.join(EOL);
-
-	// 			logError(TelemetryViews.MigrationLocalStorage, TelemetryErrorName.StartMigrationFailed, errorDetails);
-
-	// 			this.wizard.message = {
-	// 				text: errorDetails,
-	// 				level: azdata.window.MessageLevel.Error
-	// 			};
-	// 			return false;
-	// 		}
-	// 	}
-	// }
 }

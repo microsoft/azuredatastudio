@@ -11,6 +11,8 @@ import * as constants from '../constants';
 import * as contracts from '../contracts';
 
 export class TdeMigrationService implements mssql.ITdeMigrationService {
+	private _reportUpdate: (dbName: string, succeeded: boolean, error: string) => void = undefined;
+
 	public static asFeature(context: AppContext): ISqlOpsFeature {
 		return class extends TdeMigrationService {
 			constructor(client: SqlOpsDataClient) {
@@ -21,6 +23,12 @@ export class TdeMigrationService implements mssql.ITdeMigrationService {
 			}
 
 			initialize(): void {
+				this.client.onNotification(contracts.TdeMigrateProgressEvent.type, e => {
+					if (this._reportUpdate === undefined) {
+						return;
+					}
+					this._reportUpdate(e.name, e.success, e.error);
+				});
 			}
 		};
 	}
@@ -29,7 +37,50 @@ export class TdeMigrationService implements mssql.ITdeMigrationService {
 		context.registerService(constants.TdeMigrationService, this);
 	}
 
-	async migrateCertificate(tdeEnabledDatabases: string[], sourceSqlConnectionString: string, targetSubscriptionId: string, targetResourceGroupName: string, targetManagedInstanceName: string, networkSharePath: string, networkShareDomain: string, networkShareUserName: string, networkSharePassword: string): Promise<mssql.TdeMigrationResult> {
+	ClearUpdatesListeners() {
+		this._reportUpdate = undefined; // No more updates
+	}
+
+	RegisterForUpdates(reportUpdate: (dbName: string, succeeded: boolean, error: string) => void): void {
+		this._reportUpdate = reportUpdate;
+	}
+
+	// sleep = async (waitTime: number) => new Promise(resolve => setTimeout(resolve, waitTime));
+
+	// async migrateCertificate(tdeEnabledDatabases: string[], sourceSqlConnectionString: string, targetSubscriptionId: string, targetResourceGroupName: string, targetManagedInstanceName: string, networkSharePath: string, networkShareDomain: string, networkShareUserName: string, networkSharePassword: string): Promise<mssql.TdeMigrationResult> {
+	// 	let number = 2;
+	// 	try {
+
+	// 		while (true) {
+	// 			number += 2;
+	// 			await this.sleep(2000);
+	// 			if (this._reportUpdate !== undefined && number === 6) {
+	// 				this._reportUpdate(tdeEnabledDatabases[0], true, '');
+	// 			}
+	// 		}
+
+	// 	}
+	// 	catch (e) {
+	// 		this.client.logFailedRequest(contracts.TdeMigrateRequest.type, e);
+	// 	}
+
+	// 	return undefined;
+	// }
+
+	async migrateCertificate(
+		tdeEnabledDatabases: string[],
+		sourceSqlConnectionString: string,
+		targetSubscriptionId: string,
+		targetResourceGroupName: string,
+		targetManagedInstanceName: string,
+		networkSharePath: string,
+		networkShareDomain: string,
+		networkShareUserName: string,
+		networkSharePassword: string,
+		accessToken: string,
+		reportUpdate: (dbName: string, succeeded: boolean, error: string) => void): Promise<mssql.TdeMigrationResult> {
+
+		this._reportUpdate = reportUpdate;
 		let params: contracts.TdeMigrationParams = {
 			encryptedDatabases: tdeEnabledDatabases,
 			sourceSqlConnectionString: sourceSqlConnectionString,
@@ -39,7 +90,8 @@ export class TdeMigrationService implements mssql.ITdeMigrationService {
 			networkSharePath: networkSharePath,
 			networkShareDomain: networkShareDomain,
 			networkShareUserName: networkShareUserName,
-			networkSharePassword: networkSharePassword
+			networkSharePassword: networkSharePassword,
+			accessToken: accessToken
 		};
 
 		try {
@@ -47,6 +99,8 @@ export class TdeMigrationService implements mssql.ITdeMigrationService {
 		}
 		catch (e) {
 			this.client.logFailedRequest(contracts.TdeMigrateRequest.type, e);
+		} finally {
+
 		}
 
 		return undefined;

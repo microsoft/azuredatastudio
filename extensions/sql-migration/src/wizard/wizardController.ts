@@ -56,12 +56,6 @@ export class WizardController {
 			'MigrationWizard',
 			'wide');
 
-		const tdeMigrateButton = azdata.window.createButton(
-			loc.TDE_MIGRATE_BUTTON,
-			'right');
-		tdeMigrateButton.secondary = false;
-		tdeMigrateButton.hidden = true;
-
 		this._wizardObject.generateScriptButton.enabled = false;
 		this._wizardObject.generateScriptButton.hidden = true;
 		this._wizardObject.nextButton.position = 'left';
@@ -84,6 +78,12 @@ export class WizardController {
 			'left');
 		validateButton.secondary = false;
 		validateButton.hidden = true;
+
+		const tdeMigrateButton = azdata.window.createButton(
+			loc.TDE_MIGRATE_BUTTON,
+			'left');
+		tdeMigrateButton.secondary = false;
+		tdeMigrateButton.hidden = true;
 
 		this._wizardObject.customButtons = [validateButton, tdeMigrateButton, saveAndCloseButton];
 		const databaseSelectorPage = new DatabaseSelectorPage(this._wizardObject, stateModel);

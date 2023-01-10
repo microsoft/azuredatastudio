@@ -1321,7 +1321,7 @@ export function TDE_WIZARD_DATABASES_SELECTED(encryptedCount: number, totalCount
 }
 
 
-export const TDE_WIZARD_MIGRATION_OPTION_MANUAL_WARNING = localize('sql.migration.tde.wizard.optionmanual.warning', "You must migrate the credentials before proceeding with the migration otherwise the migration will fail. {0}.");
+export const TDE_WIZARD_MIGRATION_OPTION_MANUAL_WARNING = localize('sql.migration.tde.wizard.optionmanual.warning', "You must migrate the certificates before proceeding with the migration otherwise the migration will fail. {0}.");
 
 export const TDE_WIZARD_ADS_CERTS_INFO = localize('sql.migration.network.share.header.text', "Please enter a location where the SQL server will export the certificates and credentials with access to that path");
 
@@ -1350,19 +1350,18 @@ export const TDE_MIGRATE_STATE_RUNNING = localize('sql.migration.tde.migrate.sta
 export const TDE_MIGRATE_STATE_SUCCEEDED = localize('sql.migration.tde.migrate.state.succeeded', "Succeeded");
 export const TDE_MIGRATE_STATE_FAILED = localize('sql.migration.tde.migrate.state.failed', "Failed");
 
-export const TDE_MIGRATEDIALOG_TITLE = localize('sql.migration.validation.dialog.title', "TDE Migration");
+export const TDE_MIGRATEDIALOG_TITLE = localize('sql.migration.validation.dialog.title', "Certificates Migration");
 export const TDE_MIGRATE_DONE_BUTTON = localize('sql.migration.tde.migrate.done.button', "Done");
 export const TDE_MIGRATE_HEADING = localize('sql.migration.tde.migrate.heading', "Migrating the certificates following databases:");
 
 
 export const TDE_MIGRATE_COLUMN_DATABASES = localize('sql.migration.tde.migrate.column.databases', "Databases");
 export const TDE_MIGRATE_COLUMN_STATUS = localize('sql.migration.tde.migrate.column.status', "Status");
-export const TDE_MIGRATE_START_VALIDATION = localize('sql.migration.tde.migrate.start.validation', "Start migration");
-export const TDE_MIGRATE_STOP_VALIDATION = localize('sql.migration.tde.migrate.stop.validation', "Stop migration");
+export const TDE_MIGRATE_RETRY_VALIDATION = localize('sql.migration.tde.migrate.start.validation', "Retry migration");
 export const TDE_MIGRATE_COPY_RESULTS = localize('sql.migration.tde.migrate.copy.results', "Copy migration results");
-export const TDE_MIGRATE_RESULTS_HEADING = localize('sql.migration.tde.migrate.results.heading', "Migration progress details:");
-export const TDE_MIGRATE_RESULTS_HEADING_PREVIOUS = localize('sql.migration.tde.migrate.results.heading.previous', "Previous TDE migration results:");
-export const TDE_MIGRATE_RESULTS_HEADING_COMPLETED = localize('sql.migration.tde.migrate.results.heading.completed', "TDE migration results:");
+export const TDE_MIGRATE_RESULTS_HEADING = localize('sql.migration.tde.migrate.results.heading', "Certificates migration progress details:");
+export const TDE_MIGRATE_RESULTS_HEADING_PREVIOUS = localize('sql.migration.tde.migrate.results.heading.previous', "Previous certificates migration results:");
+export const TDE_MIGRATE_RESULTS_HEADING_COMPLETED = localize('sql.migration.tde.migrate.results.heading.completed', "Certificates migration results:");
 export const TDE_MIGRATE_VALIDATION_COMPLETED = localize('sql.migration.tde.migrate.validation.completed', "Migration completed successfully.");
 export const TDE_MIGRATE_VALIDATION_CANCELED = localize('sql.migration.tde.migrate.validation.camceled', "Migration canceled");
 
