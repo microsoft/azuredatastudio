@@ -553,6 +553,8 @@ export enum DatabaseProjectItemType {
 	referencesRoot = 'databaseProject.itemType.referencesRoot',
 	reference = 'databaseProject.itemType.reference',
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
+	sqlcmdVariablesRoot = 'databaseProject.itemType.sqlcmdVariablesRoot',
+	sqlcmdVariable = 'databaseProject.itemType.sqlcmdVariable'
 }
 
 // AutoRest

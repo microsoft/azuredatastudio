@@ -831,6 +831,18 @@ export class ProjectsController {
 		}
 	}
 
+	public async editSqlCmdVariable(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const node = context.element as BaseProjectTreeItem;
+		const project = this.getProjectFromContext(node);
+
+		await vscode.window.showInputBox(
+			{
+				title: constants.enterNewValueForVar('oneTable'),
+				value: 'oneTable',
+				ignoreFocusOut: true
+			});
+	}
+
 	private getDatabaseReference(project: Project, context: BaseProjectTreeItem): IDatabaseReferenceProjectEntry | undefined {
 		const root = context.root as ProjectRootTreeItem;
 		const databaseReference = context as DatabaseReferenceTreeItem;

@@ -35,8 +35,8 @@ export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
 
 	public get treeItem(): vscode.TreeItem {
 		const refFolderItem = new vscode.TreeItem(this.projectUri, vscode.TreeItemCollapsibleState.Collapsed);
-		refFolderItem.contextValue = constants.DatabaseProjectItemType.referencesRoot;
-		refFolderItem.iconPath = IconPathHelper.referenceGroup;
+		refFolderItem.contextValue = constants.DatabaseProjectItemType.sqlcmdVariablesRoot;
+		refFolderItem.iconPath = IconPathHelper.referenceGroup; // TODO: needs icon
 
 		return refFolderItem;
 	}
@@ -54,8 +54,8 @@ export class SqlCmdVariableTreeItem extends BaseProjectTreeItem {
 	public get treeItem(): vscode.TreeItem {
 		const refItem = new vscode.TreeItem(this.projectUri, vscode.TreeItemCollapsibleState.None);
 		refItem.label = this.sqlcmdVar;
-		refItem.contextValue = constants.DatabaseProjectItemType.reference;
-		refItem.iconPath = IconPathHelper.referenceDatabase;
+		refItem.contextValue = constants.DatabaseProjectItemType.sqlcmdVariable;
+		refItem.iconPath = IconPathHelper.referenceDatabase; // TODO: needs icon
 
 		return refItem;
 	}
