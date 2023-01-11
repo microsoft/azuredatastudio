@@ -122,7 +122,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		}
 
 		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].hidden = !this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates();
-		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].enabled = false;
+		this._updateTdeMigrationButtonStatus();
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = { text: '' };
@@ -991,8 +991,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._location,
 						this.migrationStateModel._resourceGroup);
 
-					this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].enabled = (this._azureResourceDropdown.values.length > 1) || (this._azureResourceDropdown.values[0].displayName !== constants.NO_MANAGED_INSTANCE_FOUND);
-
+					this._updateTdeMigrationButtonStatus();
 					break;
 				case MigrationTargetType.SQLVM:
 					this._azureResourceDropdown.values = utils.getAzureResourceDropdownValues(
@@ -1029,6 +1028,12 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				targetName,
 				true);
 		}
+	}
+
+	private _updateTdeMigrationButtonStatus() {
+
+		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].enabled = this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates() &&
+			this.migrationStateModel._targetManagedInstances.length > 0;
 	}
 
 	private async _populateResourceMappingTable(targetDatabases: TargetDatabaseInfo[]): Promise<void> {

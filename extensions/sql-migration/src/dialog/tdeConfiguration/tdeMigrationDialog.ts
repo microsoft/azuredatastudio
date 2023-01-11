@@ -45,6 +45,7 @@ export class TdeMigrationDialog {
 	private _retryMigrationButton!: azdata.ButtonComponent;
 	private _copyButton!: azdata.ButtonComponent;
 	private _headingText!: azdata.TextComponent;
+	private _progressReportText!: azdata.TextComponent;
 	private _validationResult: any[][] = [];
 	private _dbRowsMap: Map<string, number> = new Map<string, number>();
 	private _tdeMigrationResult: TdeMigrationResult = {
@@ -52,6 +53,7 @@ export class TdeMigrationDialog {
 		dbList: []
 	};
 	private _valdiationErrors: string[] = [];
+	private _completedDatabasesCount: number = 0;
 
 	constructor(
 		model: MigrationStateModel) {
@@ -104,12 +106,24 @@ export class TdeMigrationDialog {
 							CSSStyles: { 'margin': '5px 0 0 10px' }
 						})
 						.component();
+					this._progressReportText = view.modelBuilder.text()
+						.withProps({
+							value: constants.EMPTY_STRING,
+							CSSStyles: {
+								'font-size': '13px',
+								'font-weight': '400',
+								'margin-bottom': '10px',
+								'margin-left': '5px'
+							},
+						})
+						.component();
+
 					const headingContainer = view.modelBuilder.flexContainer()
 						.withLayout({
 							flexFlow: 'row',
 							justifyContent: 'flex-start',
 						})
-						.withItems([this._headingText, this._startMigrationLoader], { flex: '0 0 auto' })
+						.withItems([this._headingText, this._progressReportText, this._startMigrationLoader], { flex: '0 0 auto' })
 						.component();
 
 					this._resultsTable = await this._createResultsTable(view);
@@ -203,6 +217,7 @@ export class TdeMigrationDialog {
 
 	private async _loadMigrationResults(): Promise<void> {
 		const tdeMigrationResult = this._model.tdeMigrationConfig.lastTdeMigrationResult();
+		this._progressReportText.value = constants.EMPTY_STRING;
 
 		if (tdeMigrationResult.state === TdeMigrationState.Pending) {
 			//First time it is called. Should auto start.
@@ -213,7 +228,7 @@ export class TdeMigrationDialog {
 				db => ({
 					name: db,
 					dbState: TdeDatabaseMigrationState.Running,
-					error: ''
+					message: constants.EMPTY_STRING
 				}
 				));
 
@@ -247,7 +262,7 @@ export class TdeMigrationDialog {
 			db => ({
 				name: db,
 				dbState: TdeDatabaseMigrationState.Running,
-				error: ''
+				message: constants.EMPTY_STRING
 			}
 			));
 
@@ -261,6 +276,10 @@ export class TdeMigrationDialog {
 		await this._runTdeMigration();
 	}
 
+	private _updateProgressText(): void {
+		this._progressReportText.value = constants.TDE_COMPLETED_STATUS(this._completedDatabasesCount, this._model.tdeMigrationConfig.getTdeEnabledDatabasesCount());
+	}
+
 	private async _runTdeMigration(): Promise<void> {
 		//Update the UI buttons
 		this._headingText.value = constants.TDE_MIGRATE_RESULTS_HEADING;
@@ -270,8 +289,11 @@ export class TdeMigrationDialog {
 		this._dialog!.okButton.enabled = false;
 		this._dialog!.cancelButton.enabled = true;
 
+
 		//Send the external command
 		try {
+			this._completedDatabasesCount = 0;
+			this._updateProgressText();
 
 			//Get access token
 			const accessToken = await azdata.accounts.getAccountSecurityToken(this._model._azureAccount, this._model._azureAccount.properties.tenants[0].id, azdata.AzureResource.ResourceManagement);
@@ -289,7 +311,7 @@ export class TdeMigrationDialog {
 						db => ({
 							name: db.name,
 							dbState: TdeDatabaseMigrationState.Succeeded,
-							error: db.error
+							message: db.message
 						}
 						))
 				};
@@ -307,12 +329,16 @@ export class TdeMigrationDialog {
 			this._retryMigrationButton.enabled = true;
 			this._copyButton.enabled = true;
 
+			this._completedDatabasesCount = this._model.tdeMigrationConfig.getTdeEnabledDatabasesCount(); //Force the total to match
+			this._updateProgressText();
+
 		} catch (error) {
 			//Catch any exception and failed any pending table.
 			this._startMigrationLoader.loading = false;
 			this._retryMigrationButton.enabled = true;
 			this._copyButton.enabled = false;
 			this._dialog!.okButton.enabled = false;
+			this._progressReportText.value = constants.EMPTY_STRING;
 		}
 
 		this._headingText.value = constants.TDE_MIGRATE_RESULTS_HEADING_COMPLETED;
@@ -342,7 +368,7 @@ export class TdeMigrationDialog {
 
 		const msg = statusMessages.length > 0
 			? statusMessages.join(EOL)
-			: '';
+			: constants.EMPTY_STRING;
 		text.value = msg;
 	}
 
@@ -360,7 +386,7 @@ export class TdeMigrationDialog {
 					},
 					{
 						value: 'image',
-						name: '',
+						name: constants.EMPTY_STRING,
 						type: azdata.ColumnType.icon,
 						width: 20,
 						headerCssClass: 'no-borders display-none',
@@ -397,7 +423,7 @@ export class TdeMigrationDialog {
 
 			if (!currentRow[TdeValidationResultIndex.updated]) {
 				anyRowUpdated = true;
-				this._updateValidationResultRow(element.name, element.success, element.error);
+				this._updateValidationResultRow(element.name, element.success, element.message);
 			}
 		});
 
@@ -407,23 +433,29 @@ export class TdeMigrationDialog {
 		}
 	}
 
-	private async _updateTableResultRow(dbName: string, succeeded: boolean, error: string): Promise<void> {
+	private async _updateTableResultRow(dbName: string, succeeded: boolean, message: string): Promise<void> {
 		if (!this._dbRowsMap.has(dbName)) {
 			return; //Table not found
 		}
 
-		this._updateValidationResultRow(dbName, succeeded, error);
+		this._updateValidationResultRow(dbName, succeeded, message);
 
 		// Update the table
 		await this._updateTableData();
+
+		// When the updates come after the method finished. Thread related, out of our control.
+		if (this._completedDatabasesCount < this._model.tdeMigrationConfig.getTdeEnabledDatabasesCount()) {
+			this._completedDatabasesCount++; // Increase the completed count
+			this._updateProgressText();
+		}
 	}
 
-	private _updateValidationResultRow(dbName: string, succeeded: boolean, error: string) {
+	private _updateValidationResultRow(dbName: string, succeeded: boolean, message: string) {
 		const rowResultsIndex = this._dbRowsMap.get(dbName)!; //Checked already at the beginning of the method
 		const tmpRow = this._buildRow({
 			name: dbName,
 			dbState: (succeeded) ? TdeDatabaseMigrationState.Succeeded : TdeDatabaseMigrationState.Failed,
-			error: error
+			message: message
 		},
 			true);
 
@@ -458,7 +490,7 @@ export class TdeMigrationDialog {
 		const statusMsg = ValidationStatusLookup[db.dbState];
 
 		const statusMessage = (db.dbState === TdeDatabaseMigrationState.Failed || db.dbState === TdeDatabaseMigrationState.Canceled)
-			? constants.TDE_MIGRATE_STATUS_ERROR(db.dbState, db.error)
+			? constants.TDE_MIGRATE_STATUS_ERROR(db.dbState, db.message)
 			: statusMsg;
 
 		const row: any[] = [
@@ -468,7 +500,7 @@ export class TdeMigrationDialog {
 				title: statusMessage,
 			},
 			ValidationStatusLookup[db.dbState],
-			db.error,
+			db.message,
 			statusMsg,
 			updated
 		];

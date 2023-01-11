@@ -48,6 +48,7 @@ export function WIZARD_TITLE(instanceName: string): string {
 	return localize('sql-migration.wizard.title', "Migrate '{0}' to Azure SQL", instanceName);
 }
 // //#endregion
+export const EMPTY_STRING = localize('sql.migration.text.empty', "");
 
 // Save and close
 export const SAVE_AND_CLOSE = localize('sql.migration.save.close', "Save and close");
@@ -1323,7 +1324,7 @@ export function TDE_WIZARD_DATABASES_SELECTED(encryptedCount: number, totalCount
 
 export const TDE_WIZARD_MIGRATION_OPTION_MANUAL_WARNING = localize('sql.migration.tde.wizard.optionmanual.warning', "You must migrate the certificates before proceeding with the migration otherwise the migration will fail. {0}.");
 
-export const TDE_WIZARD_ADS_CERTS_INFO = localize('sql.migration.network.share.header.text', "Please enter a location where the SQL server will export the certificates and credentials with access to that path");
+export const TDE_WIZARD_ADS_CERTS_INFO = localize('sql.migration.network.share.header.text', "Please enter a location where the SQL server will export the certificates. Please ensure the SQL server service has access access to this path. The current user should have administrator privileges on the computer where this network path is.");
 
 export const TDE_WIZARD_CERTS_NETWORK_SHARE_LABEL = localize('sql.migration.tde.wizard.network.share.label', "Network path for certificate");
 export const TDE_WIZARD_CERTS_NETWORK_SHARE_PLACEHOLDER = localize('sql.migration.tde.wizard.network.share.placeholder', "Enter network path");
@@ -1394,4 +1395,8 @@ export function TDE_MIGRATE_STATUS_ERROR(state: string, error: string): string {
 		status,
 		EOL,
 		error);
+}
+
+export function TDE_COMPLETED_STATUS(completed: number, total: number): string {
+	return localize('sql.migration.tde.progress.update', `${completed} of ${total} completed`);
 }

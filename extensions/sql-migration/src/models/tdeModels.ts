@@ -21,7 +21,7 @@ export enum TdeDatabaseMigrationState {
 export interface TdeMigrationDbState {
 	name: string;
 	dbState: TdeDatabaseMigrationState;
-	error: string;
+	message: string;
 }
 
 export interface TdeMigrationResult {
@@ -33,7 +33,7 @@ export interface TdeMigrationResult {
 export interface TdeMigrationDbResult {
 	name: string;
 	success: boolean;
-	error: string;
+	message: string;
 }
 
 
@@ -50,9 +50,6 @@ export class TdeMigrationModel {
 	};
 
 	public _networkPath: string;
-	public _domain: string;
-	public _username: string;
-	public _password: string;
 
 	constructor(
 	) {
@@ -63,9 +60,6 @@ export class TdeMigrationModel {
 		this._encryptedDbs = [];
 
 		this._networkPath = '';
-		this._domain = '';
-		this._username = '';
-		this._password = '';
 		this._tdeMigrationCompleted = false;
 	}
 
@@ -167,14 +161,11 @@ export class TdeMigrationModel {
 	}
 
 	// When the confirmation is set, for ADS certificate migration method
-	public setAdsConfirmation(status: boolean, networkPath: string, domain: string, username: string, password: string): void {
+	public setAdsConfirmation(status: boolean, networkPath: string): void {
 		if (status && this.isTdeMigrationMethodAds()) {
 			this._adsExportConfirmation = true;
 
 			this._networkPath = networkPath;
-			this._domain = domain;
-			this._username = username;
-			this._password = password;
 		} else {
 			this._adsExportConfirmation = false;
 		}

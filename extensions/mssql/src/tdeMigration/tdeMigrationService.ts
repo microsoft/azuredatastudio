@@ -27,7 +27,7 @@ export class TdeMigrationService implements mssql.ITdeMigrationService {
 					if (this._reportUpdate === undefined) {
 						return;
 					}
-					this._reportUpdate(e.name, e.success, e.error);
+					this._reportUpdate(e.name, e.success, e.message);
 				});
 			}
 		};
@@ -37,28 +37,6 @@ export class TdeMigrationService implements mssql.ITdeMigrationService {
 		context.registerService(constants.TdeMigrationService, this);
 	}
 
-	// sleep = async (waitTime: number) => new Promise(resolve => setTimeout(resolve, waitTime));
-
-	// async migrateCertificate(tdeEnabledDatabases: string[], sourceSqlConnectionString: string, targetSubscriptionId: string, targetResourceGroupName: string, targetManagedInstanceName: string, networkSharePath: string, networkShareDomain: string, networkShareUserName: string, networkSharePassword: string): Promise<mssql.TdeMigrationResult> {
-	// 	let number = 2;
-	// 	try {
-
-	// 		while (true) {
-	// 			number += 2;
-	// 			await this.sleep(2000);
-	// 			if (this._reportUpdate !== undefined && number === 6) {
-	// 				this._reportUpdate(tdeEnabledDatabases[0], true, '');
-	// 			}
-	// 		}
-
-	// 	}
-	// 	catch (e) {
-	// 		this.client.logFailedRequest(contracts.TdeMigrateRequest.type, e);
-	// 	}
-
-	// 	return undefined;
-	// }
-
 	async migrateCertificate(
 		tdeEnabledDatabases: string[],
 		sourceSqlConnectionString: string,
@@ -66,11 +44,8 @@ export class TdeMigrationService implements mssql.ITdeMigrationService {
 		targetResourceGroupName: string,
 		targetManagedInstanceName: string,
 		networkSharePath: string,
-		networkShareDomain: string,
-		networkShareUserName: string,
-		networkSharePassword: string,
 		accessToken: string,
-		reportUpdate: (dbName: string, succeeded: boolean, error: string) => void): Promise<mssql.TdeMigrationResult> {
+		reportUpdate: (dbName: string, succeeded: boolean, message: string) => void): Promise<mssql.TdeMigrationResult> {
 
 		this._reportUpdate = reportUpdate;
 		let params: contracts.TdeMigrationParams = {
@@ -80,9 +55,9 @@ export class TdeMigrationService implements mssql.ITdeMigrationService {
 			targetResourceGroupName: targetResourceGroupName,
 			targetManagedInstanceName: targetManagedInstanceName,
 			networkSharePath: networkSharePath,
-			networkShareDomain: networkShareDomain,
-			networkShareUserName: networkShareUserName,
-			networkSharePassword: networkSharePassword,
+			networkShareDomain: 'a', // Will remove this on the next STS version
+			networkShareUserName: 'b',
+			networkSharePassword: 'c',
 			accessToken: accessToken
 		};
 

@@ -850,7 +850,7 @@ declare module 'mssql' {
 	export interface TdeMigrationEntryResult {
 		dbName: string;
 		success: boolean;
-		errorMessage: string;
+		message: string;
 	}
 
 	export interface TdeMigrationResult {
@@ -865,11 +865,8 @@ declare module 'mssql' {
 			targetResourceGroupName: string,
 			targetManagedInstanceName: string,
 			networkSharePath: string,
-			networkShareDomain: string,
-			networkShareUserName: string,
-			networkSharePassword: string,
 			accessToken: string,
-			reportUpdate: (dbName: string, succeeded: boolean, error: string) => void): Promise<TdeMigrationResult>;
+			reportUpdate: (dbName: string, succeeded: boolean, message: string) => void): Promise<TdeMigrationResult>;
 	}
 	// SqlMigration interfaces END -----------------------------------------------------------------------
 }

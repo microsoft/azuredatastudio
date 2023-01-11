@@ -1277,7 +1277,7 @@ export namespace TdeMigrateProgressEvent {
 export interface TdeMigrateProgressParams {
 	name: string;
 	success: boolean;
-	error: string;
+	message: string;
 }
 
 // ------------------------------- < Tde Migration > ------------------------------------

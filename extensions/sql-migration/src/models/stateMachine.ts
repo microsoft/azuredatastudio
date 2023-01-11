@@ -300,6 +300,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._assessmentReportFilePath = '';
 		this._skuRecommendationReportFilePaths = [];
 		this.mementoString = 'sqlMigration.assessmentResults';
+		this._targetManagedInstances = [];
 
 		this._skuScalingFactor = 100;
 		this._skuTargetPercentile = 95;
@@ -1081,7 +1082,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async startTdeMigration(
 		accessToken: string,
-		reportUpdate: (dbName: string, succeeded: boolean, error: string) => Promise<void>): Promise<OperationResult<TdeMigrationDbResult[]>> {
+		reportUpdate: (dbName: string, succeeded: boolean, message: string) => Promise<void>): Promise<OperationResult<TdeMigrationDbResult[]>> {
 
 		const tdeEnabledDatabases = this.tdeMigrationConfig.getTdeEnabledDatabases();
 		const connectionString = await azdata.connection.getConnectionString(this.sourceConnectionId, true);
@@ -1094,7 +1095,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 		try {
 
-
 			const migrationResult = await this.tdeMigrationService.migrateCertificate(
 				tdeEnabledDatabases,
 				connectionString,
@@ -1102,20 +1102,17 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				this._resourceGroup?.name,
 				this._targetServerInstance.name,
 				this.tdeMigrationConfig._networkPath,
-				this.tdeMigrationConfig._domain,
-				this.tdeMigrationConfig._username,
-				this.tdeMigrationConfig._password,
 				accessToken,
 				reportUpdate);
 
 			opResult.errors = migrationResult.migrationStatuses
 				.filter(entry => !entry.success)
-				.map(entry => constants.TDE_MIGRATION_ERROR_DB(entry.dbName, entry.errorMessage));
+				.map(entry => constants.TDE_MIGRATION_ERROR_DB(entry.dbName, entry.message));
 
 			opResult.result = migrationResult.migrationStatuses.map(m => ({
 				name: m.dbName,
 				success: m.success,
-				error: m.errorMessage
+				message: m.message
 			}));
 
 		} catch (e) {
@@ -1124,7 +1121,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			opResult.result = tdeEnabledDatabases.map(m => ({
 				name: m,
 				success: false,
-				error: e.message
+				message: e.message
 			}));
 		}
 
