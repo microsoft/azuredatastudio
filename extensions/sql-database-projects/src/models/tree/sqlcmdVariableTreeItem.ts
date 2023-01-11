@@ -9,16 +9,15 @@ import * as constants from '../../common/constants';
 
 import { BaseProjectTreeItem } from './baseTreeItem';
 import { ProjectRootTreeItem } from './projectTreeItem';
-import { IconPathHelper } from '../../common/iconHelper';
 
 /**
- * Folder for containing sqlcmd variable nodes in the tree
+ * Folder for containing SQLCMD variable nodes in the tree
  */
 export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
 	private sqlcmdVariables: SqlCmdVariableTreeItem[] = [];
 
 	constructor(project: ProjectRootTreeItem) {
-		super(vscode.Uri.file(path.join(project.projectUri.fsPath, 'SqlCmd Variables')), project);
+		super(vscode.Uri.file(path.join(project.projectUri.fsPath, constants.sqlcmdVariablesNodeName)), project);
 
 		this.construct();
 	}
@@ -34,14 +33,17 @@ export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		const refFolderItem = new vscode.TreeItem(this.projectUri, vscode.TreeItemCollapsibleState.Collapsed);
-		refFolderItem.contextValue = constants.DatabaseProjectItemType.sqlcmdVariablesRoot;
-		refFolderItem.iconPath = IconPathHelper.referenceGroup; // TODO: needs icon
+		const sqlCmdVariableFolderItem = new vscode.TreeItem(this.projectUri, vscode.TreeItemCollapsibleState.Collapsed);
+		sqlCmdVariableFolderItem.contextValue = constants.DatabaseProjectItemType.sqlcmdVariablesRoot;
+		// sqlCmdVariableFolderItem.iconPath = IconPathHelper.referenceGroup; // TODO: needs icon
 
-		return refFolderItem;
+		return sqlCmdVariableFolderItem;
 	}
 }
 
+/**
+ * Represents a SQLCMD variable in a .sqlproj
+ */
 export class SqlCmdVariableTreeItem extends BaseProjectTreeItem {
 	constructor(private sqlcmdVar: string, sqlcmdVarsTreeItem: SqlCmdVariablesTreeItem) {
 		super(vscode.Uri.file(path.join(sqlcmdVarsTreeItem.projectUri.fsPath, sqlcmdVar)), sqlcmdVarsTreeItem);
@@ -52,11 +54,11 @@ export class SqlCmdVariableTreeItem extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		const refItem = new vscode.TreeItem(this.projectUri, vscode.TreeItemCollapsibleState.None);
-		refItem.label = this.sqlcmdVar;
-		refItem.contextValue = constants.DatabaseProjectItemType.sqlcmdVariable;
-		refItem.iconPath = IconPathHelper.referenceDatabase; // TODO: needs icon
+		const sqlcmdVariableItem = new vscode.TreeItem(this.projectUri, vscode.TreeItemCollapsibleState.None);
+		sqlcmdVariableItem.label = this.sqlcmdVar;
+		sqlcmdVariableItem.contextValue = constants.DatabaseProjectItemType.sqlcmdVariable;
+		// sqlcmdVariableItem.iconPath = IconPathHelper.referenceDatabase; // TODO: needs icon
 
-		return refItem;
+		return sqlcmdVariableItem;
 	}
 }

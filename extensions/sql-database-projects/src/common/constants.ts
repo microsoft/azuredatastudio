@@ -79,6 +79,7 @@ export const refreshDataWorkspaceCommand = 'dataworkspace.refresh';
 // UI Strings
 export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources");
 export const databaseReferencesNodeName = localize('databaseReferencesNodeName', "Database References");
+export const sqlcmdVariablesNodeName = localize('sqlcmdVariablesNodeName', "SQLCMD Variables");
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
 export const yesString = localize('yesString', "Yes");
 export const openEulaString = localize('openEulaString', "Open License Agreement");
