@@ -23,6 +23,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { getChartMaxRowCount, notifyMaxRowCountExceeded } from 'sql/workbench/contrib/charts/browser/utils';
 import { IEncodingSupport } from 'vs/workbench/services/textfile/common/textfiles';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
@@ -106,16 +107,31 @@ export class CopyResultAction extends Action {
 	public static COPYWITHHEADERS_ID = 'grid.copyWithHeaders';
 	public static COPYWITHHEADERS_LABEL = localize('copyWithHeaders', "Copy With Headers");
 
+	public static COPYHEADERS_ID = 'grid.copyHeaders';
+	public static COPYHEADERS_LABEL = localize('copyHeaders', 'Copy Headers');
+
 	constructor(
 		id: string,
 		label: string,
 		private copyHeader: boolean,
-		@IConfigurationService private configurationService: IConfigurationService
+		private copyHeadersOnly: boolean,
+		@IConfigurationService private configurationService: IConfigurationService,
+		@IClipboardService private clipboardService: IClipboardService
 	) {
 		super(id, label);
 	}
 
 	public override async run(context: IGridActionContext): Promise<void> {
+		if (this.copyHeadersOnly) {
+			// Starting at index 1 to ignore the first column of row numbers
+			let columnHeaders = context.table.columns.slice(1, context.table.columns.length)
+				.map(c => c.name ? c.name : '')
+				.join(', ');
+
+			await this.clipboardService.writeText(columnHeaders);
+			return;
+		}
+
 		const selection = mapForNumberColumn(context.selection);
 		const includeHeader = this.configurationService.getValue<boolean>('queryEditor.results.copyIncludeHeaders') || this.copyHeader;
 		await context.gridDataProvider.copyResults(selection, includeHeader, context.table.getData());

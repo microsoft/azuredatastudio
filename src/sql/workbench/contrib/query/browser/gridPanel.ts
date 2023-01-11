@@ -621,7 +621,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			const selectedRanges = this.table.getSelectedRanges();
 			// Only do copy if the grid is the current active grid.
 			if (this.container.contains(document.activeElement) && selectedRanges && selectedRanges.length !== 0) {
-				this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false).run(this.generateContext());
+				this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false, false).run(this.generateContext());
 				return true;
 			}
 			return false;
@@ -853,8 +853,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					actions.push(new Separator());
 				}
 				actions.push(
-					this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false),
-					this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true)
+					this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false, false),
+					this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true, false),
+					this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPYHEADERS_ID, CopyResultAction.COPYHEADERS_LABEL, false, true)
 				);
 
 				if (this.state.canBeMaximized) {
