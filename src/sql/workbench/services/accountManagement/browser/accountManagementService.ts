@@ -26,7 +26,7 @@ import { INotificationService, Severity, INotification } from 'vs/platform/notif
 import { Action } from 'vs/base/common/actions';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { AuthLibrary, filterAccounts } from 'sql/workbench/services/accountManagement/browser/accountDialog';
+import { ADAL_AUTH_LIBRARY, AuthLibrary, filterAccounts, MSAL_AUTH_LIBRARY } from 'sql/workbench/services/accountManagement/browser/accountDialog';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -165,6 +165,28 @@ export class AccountManagementService implements IAccountManagementService {
 			} finally {
 				notificationHandler.close();
 			}
+		});
+	}
+
+	/**
+	 * Adds an account to the account store without prompting the user
+	 * @param account account to add
+	 */
+	public addAccountWithoutPrompt(account: azdata.Account): Promise<void> {
+		return this.doWithProvider(account.key.providerId, async (provider) => {
+			let result = await this._accountStore.addOrUpdate(account);
+			if (!result) {
+				this._logService.error('adding account failed');
+			}
+			if (result.accountAdded) {
+				// Add the account to the list
+				provider.accounts.push(result.changedAccount);
+			}
+			if (result.accountModified) {
+				this.spliceModifiedAccount(provider, result.changedAccount);
+			}
+
+			this.fireAccountListUpdate(provider, result.accountAdded);
 		});
 	}
 
@@ -504,34 +526,58 @@ export class AccountManagementService implements IAccountManagementService {
 	private registerListeners(): void {
 		this.disposables.add(this.configurationService.onDidChangeConfiguration(async e => {
 			if (e.affectsConfiguration('azure.authenticationLibrary')) {
-				const authLibrary: AuthLibrary = this.configurationService.getValue('azure.authenticationLibrary');
-				if (authLibrary) {
-					let accounts = await this._accountStore.getAllAccounts();
-					if (accounts) {
-						let updatedAccounts = filterAccounts(accounts, authLibrary);
-						let eventArg: UpdateAccountListEventParams;
-						if (updatedAccounts.length > 0) {
-							updatedAccounts.forEach(account => {
-								if (account.key.authLibrary === 'MSAL') {
-									account.isStale = false;
-								}
-							});
-							eventArg = {
-								providerId: updatedAccounts[0].key.providerId,
-								accountList: updatedAccounts
-							};
-
-						} else { // default to public cloud if no accounts
-							eventArg = {
-								providerId: 'azure_publicCloud',
-								accountList: updatedAccounts
-							};
-						}
-						this._updateAccountListEmitter.fire(eventArg);
+				const authLibrary: AuthLibrary = this.configurationService.getValue('azure.authenticationLibrary') ?? MSAL_AUTH_LIBRARY;
+				let accounts = await this._accountStore.getAllAccounts();
+				if (accounts) {
+					let updatedAccounts = await this.filterAndMergeAccounts(accounts, authLibrary);
+					let eventArg: UpdateAccountListEventParams;
+					if (updatedAccounts.length > 0) {
+						updatedAccounts.forEach(account => {
+							if (account.key.authLibrary === MSAL_AUTH_LIBRARY) {
+								account.isStale = false;
+							}
+						});
+						eventArg = {
+							providerId: updatedAccounts[0].key.providerId,
+							accountList: updatedAccounts
+						};
+					} else { // default to public cloud if no accounts
+						eventArg = {
+							providerId: 'azure_publicCloud',
+							accountList: updatedAccounts
+						};
 					}
+					this._updateAccountListEmitter.fire(eventArg);
 				}
 			}
 		}));
+	}
+
+	// Filters and merges accounts from both authentication libraries
+	private async filterAndMergeAccounts(accounts: azdata.Account[], currenAuthLibrary: AuthLibrary): Promise<azdata.Account[]> {
+		// Fetch accounts for alternate authenticationLibrary
+		const altLibrary = currenAuthLibrary === MSAL_AUTH_LIBRARY ? ADAL_AUTH_LIBRARY : MSAL_AUTH_LIBRARY;
+		const altLibraryAccounts = filterAccounts(accounts, altLibrary);
+
+		// Fetch accounts for current authenticationLibrary
+		const currentLibraryAccounts = filterAccounts(accounts, currenAuthLibrary);
+
+		// In the list of alternate accounts, check if the accounts are present in the current library cache,
+		// if not, add the account and mark it stale. The original account is marked as taken so its not picked again.
+		for (let account of altLibraryAccounts) {
+			await this.removeAccount(account.key);
+			if (currentLibraryAccounts.find(a => account.displayInfo.email === a.displayInfo.email)) {
+				continue;
+			} else {
+				// TODO: Refresh access token for the account if feasible.
+				account.isStale = true;
+				account.key.accountVersion = currenAuthLibrary === MSAL_AUTH_LIBRARY ? '2.0' : '1.0'; // toggle account version
+				account.key.authLibrary = currenAuthLibrary;
+				currentLibraryAccounts.push(account);
+				await this.addAccountWithoutPrompt(account);
+			}
+		}
+		return currentLibraryAccounts;
 	}
 }
 
