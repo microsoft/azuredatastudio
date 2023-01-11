@@ -111,7 +111,7 @@ export class CopyResultAction extends Action {
 		id: string,
 		label: string,
 		private copyHeader: boolean,
-		@IConfigurationService private configurationService: IConfigurationService,
+		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super(id, label);
 	}
