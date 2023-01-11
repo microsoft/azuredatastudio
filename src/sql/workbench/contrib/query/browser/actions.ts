@@ -107,34 +107,39 @@ export class CopyResultAction extends Action {
 	public static COPYWITHHEADERS_ID = 'grid.copyWithHeaders';
 	public static COPYWITHHEADERS_LABEL = localize('copyWithHeaders', "Copy With Headers");
 
-	public static COPYHEADERS_ID = 'grid.copyHeaders';
-	public static COPYHEADERS_LABEL = localize('copyHeaders', 'Copy Headers');
-
 	constructor(
 		id: string,
 		label: string,
 		private copyHeader: boolean,
-		private onlyCopyHeaders: boolean,
 		@IConfigurationService private configurationService: IConfigurationService,
-		@IClipboardService private clipboardService: IClipboardService
 	) {
 		super(id, label);
 	}
 
 	public override async run(context: IGridActionContext): Promise<void> {
-		if (this.onlyCopyHeaders) {
-			// Starting at index 1 to ignore the first column of row numbers
-			const columnHeaders = context.table.columns.slice(1, context.table.columns.length)
-				.map(c => c.name ? c.name : '')
-				.join(', ');
-
-			await this.clipboardService.writeText(columnHeaders);
-			return;
-		}
-
 		const selection = mapForNumberColumn(context.selection);
 		const includeHeader = this.configurationService.getValue<boolean>('queryEditor.results.copyIncludeHeaders') || this.copyHeader;
 		await context.gridDataProvider.copyResults(selection, includeHeader, context.table.getData());
+	}
+}
+
+export class CopyHeadersAction extends Action {
+	private static ID = 'grid.copyHeaders';
+	private static LABEL = localize('copyHeaders', 'Copy Headers');
+
+	constructor(
+		@IClipboardService private clipboardService: IClipboardService
+	) {
+		super(CopyHeadersAction.ID, CopyHeadersAction.LABEL);
+	}
+
+	public override async run(context: IGridActionContext): Promise<void> {
+		// Starting at index 1 to ignore the first column of row numbers
+		const columnHeaders = context.table.columns.slice(1, context.table.columns.length)
+			.map(c => c.name ? c.name : '')
+			.join(',');
+
+		await this.clipboardService.writeText(columnHeaders);
 	}
 }
 
