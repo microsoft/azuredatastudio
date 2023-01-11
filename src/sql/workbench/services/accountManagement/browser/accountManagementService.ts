@@ -554,13 +554,13 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	// Filters and merges accounts from both authentication libraries
-	private async filterAndMergeAccounts(accounts: azdata.Account[], currenAuthLibrary: AuthLibrary): Promise<azdata.Account[]> {
+	private async filterAndMergeAccounts(accounts: azdata.Account[], currentAuthLibrary: AuthLibrary): Promise<azdata.Account[]> {
 		// Fetch accounts for alternate authenticationLibrary
-		const altLibrary = currenAuthLibrary === MSAL_AUTH_LIBRARY ? ADAL_AUTH_LIBRARY : MSAL_AUTH_LIBRARY;
+		const altLibrary = currentAuthLibrary === MSAL_AUTH_LIBRARY ? ADAL_AUTH_LIBRARY : MSAL_AUTH_LIBRARY;
 		const altLibraryAccounts = filterAccounts(accounts, altLibrary);
 
 		// Fetch accounts for current authenticationLibrary
-		const currentLibraryAccounts = filterAccounts(accounts, currenAuthLibrary);
+		const currentLibraryAccounts = filterAccounts(accounts, currentAuthLibrary);
 
 		// In the list of alternate accounts, check if the accounts are present in the current library cache,
 		// if not, add the account and mark it stale. The original account is marked as taken so its not picked again.
@@ -571,8 +571,7 @@ export class AccountManagementService implements IAccountManagementService {
 			} else {
 				// TODO: Refresh access token for the account if feasible.
 				account.isStale = true;
-				account.key.accountVersion = currenAuthLibrary === MSAL_AUTH_LIBRARY ? '2.0' : '1.0'; // toggle account version
-				account.key.authLibrary = currenAuthLibrary;
+				account.key.authLibrary = currentAuthLibrary;
 				currentLibraryAccounts.push(account);
 				await this.addAccountWithoutPrompt(account);
 			}
