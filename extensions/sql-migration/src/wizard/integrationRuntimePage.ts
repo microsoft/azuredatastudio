@@ -271,7 +271,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			await this._blobContainerButton.focus();
 		} else {
 			this._networkShareButton.enabled = true;
-			this._blobContainerButton.checked = false;
+			this.migrationStateModel._databaseBackup.networkContainerType = NetworkContainerType.BLOB_CONTAINER
+			this._blobContainerButton.checked = true;
 			await this._sqlVmPageBlobInfoBox.updateCssStyles({ 'display': 'none' });
 		}
 
