@@ -630,8 +630,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		// if the actionsOrientation passed in is "VERTICAL" (or no actionsOrientation is passed in at all), create a vertical actionBar
 		else {
 			actionBarContainer.className = 'grid-panel action-bar vertical';
-			let actionBarWidth = this.showActionBar ? ACTIONBAR_WIDTH : 0;
-			actionBarContainer.style.width = actionBarWidth + 'px';
+			actionBarContainer.style.width = (this.showActionBar ? ACTIONBAR_WIDTH : 0) + 'px';
 			this.container.appendChild(actionBarContainer);
 		}
 
