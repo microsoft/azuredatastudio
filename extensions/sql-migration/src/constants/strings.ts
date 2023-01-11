@@ -1298,10 +1298,10 @@ export const TDE_WIZARD_DESCRIPTION = localize('sql.migration.tde.wizard.descrip
 export const TDE_WIZARD_MIGRATION_CAPTION = localize('sql.migration.tde.wizard.optionscaption', "Certificate migration");
 export const TDE_WIZARD_MIGRATION_OPTION_ADS = localize('sql.migration.tde.wizard.optionads', "Export my certificates and private key and provide to target database for migration.");
 export const TDE_WIZARD_MIGRATION_OPTION_ADS_CONFIRM = localize('sql.migration.tde.wizard.optionadsconfirm', "I give consent to use my credentials for accessing the certificates.");
-export const TDE_WIZARD_MIGRATION_OPTION_MANUAL = localize('sql.migration.tde.wizard.optionmanual', "I don't want ADS to export the certificates. I will manually do it myself.");
+export const TDE_WIZARD_MIGRATION_OPTION_MANUAL = localize('sql.migration.tde.wizard.optionmanual', "I don't want Azure Data Studio to export the certificates. I will manually do it myself.");
 export const TDE_BUTTON_CAPTION = localize('sql.migration.tde.button.caption', "Edit");
-export const TDE_WIZARD_MSG_MANUAL = localize('sql.migration.tde.msg.manual', "You have choosen to manually migrate certificates.");
-export const TDE_WIZARD_MSG_TDE = localize('sql.migration.tde.msg.tde', "You have given access to ADS to migrate the encryption certificates and database.");
+export const TDE_WIZARD_MSG_MANUAL = localize('sql.migration.tde.msg.manual', "You have chosen to manually migrate certificates.");
+export const TDE_WIZARD_MSG_TDE = localize('sql.migration.tde.msg.tde', "You have given access to Azure Data Studio to migrate the encryption certificates and database.");
 export const TDE_WIZARD_MSG_EMPTY = localize('sql.migration.tde.msg.empty', "No encrypted database selected.");
 export const TDE_RULE_ID = localize('sql.migration.tde.rule.id', "TdeEnabled");
 
@@ -1314,33 +1314,21 @@ export function TDE_MIGRATION_ERROR_DB(name: string, message: string): string {
 }
 
 export function TDE_MSG_DATABASES_SELECTED(selected: number, message: string): string {
-	return localize('sql.migration.tde.msg.databases.selected', "{0} TDE databases selected for migration. {1}", selected, message);
+	return localize('sql.migration.tde.msg.databases.selected', "{0} Transparent Data Encryption enabled databases selected for migration. {1}", selected, message);
 }
 
 export function TDE_WIZARD_DATABASES_SELECTED(encryptedCount: number, totalCount: number): string {
-	return localize('sql.migration.tde.wizard.databases.selected', "{0} out of {1} selected database is using transparent data encryption.", encryptedCount, totalCount);
+	return localize('sql.migration.tde.wizard.databases.selected', "{0} out of {1} selected database(s) is using transparent data encryption.", encryptedCount, totalCount);
 }
 
 
 export const TDE_WIZARD_MIGRATION_OPTION_MANUAL_WARNING = localize('sql.migration.tde.wizard.optionmanual.warning', "You must migrate the certificates before proceeding with the migration otherwise the migration will fail. {0}.");
 
-export const TDE_WIZARD_ADS_CERTS_INFO = localize('sql.migration.network.share.header.text', "Please enter a location where the SQL server will export the certificates. Please ensure the SQL server service has access access to this path. The current user should have administrator privileges on the computer where this network path is.");
+export const TDE_WIZARD_ADS_CERTS_INFO = localize('sql.migration.network.share.header.text', "Please enter a location where the SQL server will export the certificates. Please ensure the SQL Server service has access to this path. The current user should have administrator privileges on the computer where this network path is.");
 
 export const TDE_WIZARD_CERTS_NETWORK_SHARE_LABEL = localize('sql.migration.tde.wizard.network.share.label', "Network path for certificate");
 export const TDE_WIZARD_CERTS_NETWORK_SHARE_PLACEHOLDER = localize('sql.migration.tde.wizard.network.share.placeholder', "Enter network path");
 export const TDE_WIZARD_CERTS_NETWORK_SHARE_INFO = localize('sql.migration.tde.wizard.network.share.info', "Network path where certificate will be placed.");
-
-export const TDE_WIZARD_CERTS_DOMAIN_LABEL = localize('sql.migration.tde.wizard.domain.label', "Domain");
-export const TDE_WIZARD_CERTS_DOMAIN_PLACEHOLDER = localize('sql.migration.tde.wizard.domain.placeholder', "Enter Domain");
-export const TDE_WIZARD_CERTS_DOMAIN_INFO = localize('sql.migration.tde.wizard.domain.info', "Domain for the credentials provided.");
-
-export const TDE_WIZARD_CERTS_USERNAME_LABEL = localize('sql.migration.tde.wizard.username.label', "Username");
-export const TDE_WIZARD_CERTS_USERNAME_PLACEHOLDER = localize('sql.migration.tde.wizard.username.placeholder', "Enter Username.");
-export const TDE_WIZARD_CERTS_USERNAME_INFO = localize('sql.migration.tde.wizard.username.info', "Username for the credentials provided.");
-
-export const TDE_WIZARD_CERTS_PASSWORD_LABEL = localize('sql.migration.tde.wizard.password.label', "Password");
-export const TDE_WIZARD_CERTS_PASSWORD_PLACEHOLDER = localize('sql.migration.tde.wizard.password.placeholder', "Enter password.");
-export const TDE_WIZARD_CERTS_PASSWORD_INFO = localize('sql.migration.tde.wizard.password.info', "Password for the credentials provided.");
 
 export const TDE_MIGRATE_BUTTON = localize('sql.migration.tde.button.migrate', "Migrate TDE certificates");
 
@@ -1353,7 +1341,7 @@ export const TDE_MIGRATE_STATE_FAILED = localize('sql.migration.tde.migrate.stat
 
 export const TDE_MIGRATEDIALOG_TITLE = localize('sql.migration.validation.dialog.title', "Certificates Migration");
 export const TDE_MIGRATE_DONE_BUTTON = localize('sql.migration.tde.migrate.done.button', "Done");
-export const TDE_MIGRATE_HEADING = localize('sql.migration.tde.migrate.heading', "Migrating the certificates following databases:");
+export const TDE_MIGRATE_HEADING = localize('sql.migration.tde.migrate.heading', "Migrating the certificates from the following databases:");
 
 
 export const TDE_MIGRATE_COLUMN_DATABASES = localize('sql.migration.tde.migrate.column.databases', "Databases");

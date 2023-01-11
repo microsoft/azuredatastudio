@@ -267,7 +267,7 @@ export class TdeConfigurationDialog {
 				},
 				links: [{
 					text: constants.LEARN_MORE,
-					url: 'https://learn.microsoft.com/en-us/azure/azure-sql/managed-instance/tde-certificate-migrate',
+					url: 'https://learn.microsoft.com/azure/azure-sql/managed-instance/tde-certificate-migrate',
 					accessibilityInformation: {
 						label: constants.LEARN_MORE
 					}
