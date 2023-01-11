@@ -15,7 +15,7 @@ import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError 
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 import { excludeDatabases, getConnectionProfile, LoginTableInfo, TargetDatabaseInfo } from '../api/sqlUtils';
-import { TdeMigrationModel } from './tdeModels';
+import { TdeMigrationDbResult, TdeMigrationModel } from './tdeModels';
 const localize = nls.loadMessageBundle();
 
 export enum ValidateIrState {
@@ -1081,16 +1081,19 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async startTdeMigration(
 		accessToken: string,
-		reportUpdate: (dbName: string, succeeded: boolean, error: string) => Promise<void>): Promise<OperationResult> {
+		reportUpdate: (dbName: string, succeeded: boolean, error: string) => Promise<void>): Promise<OperationResult<TdeMigrationDbResult[]>> {
 
-		const result: OperationResult = {
+		const tdeEnabledDatabases = this.tdeMigrationConfig.getTdeEnabledDatabases();
+		const connectionString = await azdata.connection.getConnectionString(this.sourceConnectionId, true);
+
+		const opResult: OperationResult<TdeMigrationDbResult[]> = {
 			success: false,
+			result: [],
 			errors: []
 		};
 
 		try {
-			let tdeEnabledDatabases = this.tdeMigrationConfig.getTdeEnabledDatabases();
-			const connectionString = await azdata.connection.getConnectionString(this.sourceConnectionId, true);
+
 
 			const migrationResult = await this.tdeMigrationService.migrateCertificate(
 				tdeEnabledDatabases,
@@ -1105,16 +1108,28 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				accessToken,
 				reportUpdate);
 
-			result.errors = migrationResult.migrationStatuses
+			opResult.errors = migrationResult.migrationStatuses
 				.filter(entry => !entry.success)
 				.map(entry => constants.TDE_MIGRATION_ERROR_DB(entry.dbName, entry.errorMessage));
 
+			opResult.result = migrationResult.migrationStatuses.map(m => ({
+				name: m.dbName,
+				success: m.success,
+				error: m.errorMessage
+			}));
+
 		} catch (e) {
-			result.errors = [constants.TDE_MIGRATION_ERROR(e.message)];
+			opResult.errors = [constants.TDE_MIGRATION_ERROR(e.message)];
+
+			opResult.result = tdeEnabledDatabases.map(m => ({
+				name: m,
+				success: false,
+				error: e.message
+			}));
 		}
 
-		result.success = result.errors.length === 0; //Set success when there are no errors.
-		return result;
+		opResult.success = opResult.errors.length === 0; //Set success when there are no errors.
+		return opResult;
 	}
 
 	public async startMigration() {
@@ -1465,7 +1480,8 @@ export interface SkuRecommendation {
 	recommendationError?: Error;
 }
 
-export interface OperationResult {
+export interface OperationResult<T> {
 	success: boolean;
+	result: T;
 	errors: string[];
 }

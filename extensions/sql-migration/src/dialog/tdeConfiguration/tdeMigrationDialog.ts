@@ -8,9 +8,9 @@ import * as vscode from 'vscode';
 import * as constants from '../../constants/strings';
 import { logError, TelemetryErrorName, TelemetryViews } from '../../telemtery';
 import { EOL } from 'os';
-import { MigrationStateModel } from '../../models/stateMachine';
+import { MigrationStateModel, OperationResult } from '../../models/stateMachine';
 import { IconPathHelper } from '../../constants/iconPathHelper';
-import { TdeMigrationState, TdeMigrationResult, TdeMigrationDbState, TdeDatabaseMigrationState } from '../../models/tdeModels';
+import { TdeMigrationState, TdeMigrationResult, TdeMigrationDbState, TdeDatabaseMigrationState, TdeMigrationDbResult } from '../../models/tdeModels';
 
 const DialogName = 'TdeMigrationDialog';
 
@@ -19,7 +19,8 @@ export enum TdeValidationResultIndex {
 	icon = 1,
 	status = 2,
 	errors = 3,
-	state = 4
+	state = 4,
+	updated = 5
 }
 
 export const ValidationStatusLookup: constants.LookupTable<string | undefined> = {
@@ -51,13 +52,10 @@ export class TdeMigrationDialog {
 		dbList: []
 	};
 	private _valdiationErrors: string[] = [];
-	private _onClosed: () => void;
 
 	constructor(
-		model: MigrationStateModel,
-		onClosed: () => void) {
+		model: MigrationStateModel) {
 		this._model = model;
-		this._onClosed = onClosed;
 	}
 
 	public async openDialog(): Promise<void> {
@@ -74,6 +72,7 @@ export class TdeMigrationDialog {
 
 			await this._loadMigrationResults();
 
+			// This will prevent that it tryes to auto run when the last execution was successful, fails don't get persisted on the ui, only reported in the events.
 			if (this._tdeMigrationResult.state === TdeMigrationState.Pending) {
 				await this._runTdeMigration();
 			}
@@ -88,18 +87,6 @@ export class TdeMigrationDialog {
 					dialog.okButton.position = 'left';
 					dialog.okButton.enabled = false;
 					dialog.cancelButton.position = 'left';
-
-					this._disposables.push(
-						dialog.cancelButton.onClick(
-							e => {
-								//this._canceled = true;
-								//this._saveResults();
-								this._onClosed();
-							}));
-
-					this._disposables.push(
-						dialog.okButton.onClick(
-							e => this._onClosed()));
 
 					this._headingText = view.modelBuilder.text()
 						.withProps({
@@ -147,7 +134,7 @@ export class TdeMigrationDialog {
 
 					this._disposables.push(
 						this._retryMigrationButton.onDidClick(
-							async (e) => await this._runTdeMigration()));
+							async (e) => await this._retryTdeMigration()));
 
 					this._disposables.push(
 						this._copyButton.onDidClick(
@@ -212,41 +199,12 @@ export class TdeMigrationDialog {
 		});
 	}
 
-	// private _saveResults(): void {
-	// 	const results = this._validationResults();
-	// 	switch (this._model._targetType) {
-	// 		case MigrationTargetType.SQLDB:
-	// 			this._model._validateIrSqlDb = results;
-	// 			break;
-	// 		case MigrationTargetType.SQLMI:
-	// 			this._model._validateIrSqlMi = results;
-	// 			break;
-	// 		case MigrationTargetType.SQLVM:
-	// 			this._model._validateIrSqlVm = results;
-	// 			break;
-	// 	}
-	// }
 
-	// private _validationResults(): TdeMigrationResult[] {
-	// 	return this._validationResult.map(result => {
-	// 		const state = result[ValidationResultIndex.state];
-	// 		const finalState = this._canceled
-	// 			? state === TdeMigrationState.Running || state === TdeMigrationState.Pending
-	// 				? TdeMigrationState.Canceled
-	// 				: state
-	// 			: state;
-	// 		const errors = result[ValidationResultIndex.errors] ?? [];
-	// 		return {
-	// 			errors: errors,
-	// 			state: finalState,
-	// 		};
-	// 	});
-	// }
 
 	private async _loadMigrationResults(): Promise<void> {
 		const tdeMigrationResult = this._model.tdeMigrationConfig.lastTdeMigrationResult();
 
-		if (this._tdeMigrationResult.state === TdeMigrationState.Pending) {
+		if (tdeMigrationResult.state === TdeMigrationState.Pending) {
 			//First time it is called. Should auto start.
 			this._headingText.value = constants.TDE_MIGRATE_RESULTS_HEADING;
 
@@ -283,8 +241,29 @@ export class TdeMigrationDialog {
 		await this._populateTableResults();
 	}
 
+	private async _retryTdeMigration(): Promise<void> {
+		const tdeMigrationResult = this._model.tdeMigrationConfig.lastTdeMigrationResult();
+		tdeMigrationResult.dbList = this._model.tdeMigrationConfig.getTdeEnabledDatabases().map<TdeMigrationDbState>(
+			db => ({
+				name: db,
+				dbState: TdeDatabaseMigrationState.Running,
+				error: ''
+			}
+			));
+
+		this._tdeMigrationResult = {
+			state: tdeMigrationResult.state,
+			dbList: tdeMigrationResult.dbList
+		};
+
+		await this._populateTableResults();
+
+		await this._runTdeMigration();
+	}
+
 	private async _runTdeMigration(): Promise<void> {
 		//Update the UI buttons
+		this._headingText.value = constants.TDE_MIGRATE_RESULTS_HEADING;
 		this._startMigrationLoader.loading = true;
 		this._retryMigrationButton.enabled = false;
 		this._copyButton.enabled = false;
@@ -296,20 +275,37 @@ export class TdeMigrationDialog {
 
 			//Get access token
 			const accessToken = await azdata.accounts.getAccountSecurityToken(this._model._azureAccount, this._model._azureAccount.properties.tenants[0].id, azdata.AzureResource.ResourceManagement);
-			// if (accessToken === undefined) {
-			// 	throw new Error('Could not generate token to connect to Azure.');
-			// }
 
-			if (this._model.tdeMigrationConfig.shouldAdsMigrateCertificates()) {
+			const operationResult = await this._model.startTdeMigration(accessToken!.token, this._updateTableResultRow.bind(this));
 
-				const operationResult = await this._model.startTdeMigration(accessToken!.token, this._updateTableResultRow.bind(this));
+			await this._updateTableFromOperationResult(operationResult);
 
-				if (!operationResult.success) {
-					const errorDetails = operationResult.errors.join(EOL);
+			if (operationResult.success) {
+				this._dialog!.okButton.enabled = true;
 
-					logError(TelemetryViews.MigrationLocalStorage, TelemetryErrorName.StartMigrationFailed, errorDetails);
-				}
+				this._tdeMigrationResult = {
+					state: TdeMigrationState.Succeeded,
+					dbList: operationResult.result.map<TdeMigrationDbState>(
+						db => ({
+							name: db.name,
+							dbState: TdeDatabaseMigrationState.Succeeded,
+							error: db.error
+						}
+						))
+				};
+
+				this._model.tdeMigrationConfig.setTdeMigrationResult(this._tdeMigrationResult); // Set value on success.
 			}
+			else {
+				this._dialog!.okButton.enabled = false;
+				const errorDetails = operationResult.errors.join(EOL);
+
+				logError(TelemetryViews.MigrationLocalStorage, TelemetryErrorName.StartMigrationFailed, errorDetails);
+			}
+
+			this._startMigrationLoader.loading = false;
+			this._retryMigrationButton.enabled = true;
+			this._copyButton.enabled = true;
 
 		} catch (error) {
 			//Catch any exception and failed any pending table.
@@ -317,8 +313,9 @@ export class TdeMigrationDialog {
 			this._retryMigrationButton.enabled = true;
 			this._copyButton.enabled = false;
 			this._dialog!.okButton.enabled = false;
-			this._dialog!.cancelButton.enabled = true;
 		}
+
+		this._headingText.value = constants.TDE_MIGRATE_RESULTS_HEADING_COMPLETED;
 	}
 
 	private async _copyValidationResults(): Promise<void> {
@@ -390,32 +387,48 @@ export class TdeMigrationDialog {
 	}
 
 
-	// private async _validate(): Promise<void> {
-	// 	this._canceled = false;
-	// 	await this._initializeResults();
 
-	// 	await this._validateDatabaseMigration();
+	private async _updateTableFromOperationResult(operationResult: OperationResult<TdeMigrationDbResult[]>): Promise<void> {
+		let anyRowUpdated = false;
 
-	// 	this._saveResults();
-	// }
+		operationResult.result.forEach((element) => {
+			const rowResultsIndex = this._dbRowsMap.get(element.name)!; //Checked already at the beginning of the method
+			const currentRow = this._validationResult[rowResultsIndex];
+
+			if (!currentRow[TdeValidationResultIndex.updated]) {
+				anyRowUpdated = true;
+				this._updateValidationResultRow(element.name, element.success, element.error);
+			}
+		});
+
+		if (anyRowUpdated) {
+			// Update the table
+			await this._updateTableData();
+		}
+	}
 
 	private async _updateTableResultRow(dbName: string, succeeded: boolean, error: string): Promise<void> {
 		if (!this._dbRowsMap.has(dbName)) {
 			return; //Table not found
 		}
 
+		this._updateValidationResultRow(dbName, succeeded, error);
+
+		// Update the table
+		await this._updateTableData();
+	}
+
+	private _updateValidationResultRow(dbName: string, succeeded: boolean, error: string) {
 		const rowResultsIndex = this._dbRowsMap.get(dbName)!; //Checked already at the beginning of the method
 		const tmpRow = this._buildRow({
 			name: dbName,
 			dbState: (succeeded) ? TdeDatabaseMigrationState.Succeeded : TdeDatabaseMigrationState.Failed,
 			error: error
-		});
+		},
+			true);
 
 		// Update the local result
 		this._validationResult[rowResultsIndex] = tmpRow;
-
-		// Update the table
-		await this._updateTableData();
 	}
 
 	private async _updateTableData() {
@@ -423,6 +436,7 @@ export class TdeMigrationDialog {
 			row[TdeValidationResultIndex.name],
 			row[TdeValidationResultIndex.icon],
 			row[TdeValidationResultIndex.status]]);
+
 		await this._resultsTable.updateProperty('data', data);
 	}
 
@@ -439,7 +453,7 @@ export class TdeMigrationDialog {
 		await this._updateTableData();
 	}
 
-	private _buildRow(db: TdeMigrationDbState): any[] {
+	private _buildRow(db: TdeMigrationDbState, updated: boolean = false): any[] {
 
 		const statusMsg = ValidationStatusLookup[db.dbState];
 
@@ -455,7 +469,8 @@ export class TdeMigrationDialog {
 			},
 			ValidationStatusLookup[db.dbState],
 			db.error,
-			statusMsg
+			statusMsg,
+			updated
 		];
 
 		return row;

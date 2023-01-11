@@ -1370,17 +1370,11 @@ export function TDE_MIGRATE_VALIDATION_COMPLETED_ERRORS(msg: string): string {
 		'sql.migration.tde.migrate.completed.errors',
 		"Migration completed with the following error(s):{0}{1}", EOL, msg);
 }
-export function TDE_MIGRATE_VALIDATION_STATUS(state: string | undefined, errors?: string[]): string {
+export function TDE_MIGRATE_VALIDATION_STATUS(state: string | undefined, errors: string): string {
 	const status = state ?? '';
-	if (errors && errors.length > 0) {
-		return localize(
-			'sql.migration.tde.migrate.status.errors',
-			"Migration status: {0}{1}{2}", status, EOL, errors.join(EOL));
-	} else {
-		return localize(
-			'sql.migration.tde.migrate.status',
-			"Migration status: {0}", status);
-	}
+	return localize(
+		'sql.migration.tde.migrate.status.details',
+		"Migration status: {0}{1}{2}", status, EOL, errors);
 }
 
 export const TDE_MIGRATE_MESSAGE_SUCCESS = localize('sql.migration.tde.migrate.success', "Certificates migration completed successfully.  Please click Next to proceed with the migration.");

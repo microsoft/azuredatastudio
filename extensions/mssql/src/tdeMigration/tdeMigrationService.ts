@@ -37,14 +37,6 @@ export class TdeMigrationService implements mssql.ITdeMigrationService {
 		context.registerService(constants.TdeMigrationService, this);
 	}
 
-	ClearUpdatesListeners() {
-		this._reportUpdate = undefined; // No more updates
-	}
-
-	RegisterForUpdates(reportUpdate: (dbName: string, succeeded: boolean, error: string) => void): void {
-		this._reportUpdate = reportUpdate;
-	}
-
 	// sleep = async (waitTime: number) => new Promise(resolve => setTimeout(resolve, waitTime));
 
 	// async migrateCertificate(tdeEnabledDatabases: string[], sourceSqlConnectionString: string, targetSubscriptionId: string, targetResourceGroupName: string, targetManagedInstanceName: string, networkSharePath: string, networkShareDomain: string, networkShareUserName: string, networkSharePassword: string): Promise<mssql.TdeMigrationResult> {
@@ -95,12 +87,15 @@ export class TdeMigrationService implements mssql.ITdeMigrationService {
 		};
 
 		try {
-			return this.client.sendRequest(contracts.TdeMigrateRequest.type, params);
+			// This call needs to be awaited so, the updates are sent during the execution of the task.
+			// If the task is not await, the finally block will execute and no update will be sent.
+			const result = await this.client.sendRequest(contracts.TdeMigrateRequest.type, params);
+			return result;
 		}
 		catch (e) {
 			this.client.logFailedRequest(contracts.TdeMigrateRequest.type, e);
 		} finally {
-
+			this._reportUpdate = undefined;
 		}
 
 		return undefined;

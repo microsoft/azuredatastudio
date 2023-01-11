@@ -17,7 +17,6 @@ import { AzureSqlDatabaseServer, SqlVMServer } from '../api/azure';
 import { collectTargetDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
 import { TdeMigrationDialog } from '../dialog/tdeConfiguration/tdeMigrationDialog';
-import { TdeMigrationState } from '../models/tdeModels';
 
 
 const TDE_MIGRATION_BUTTON_INDEX = 1;
@@ -90,48 +89,9 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	}
 
 	private async _startTdeMigration(): Promise<void> {
-		const dialog = new TdeMigrationDialog(
-			this.migrationStateModel,
-			() => this.updateTdeMigrationResultUI());
+		const dialog = new TdeMigrationDialog(this.migrationStateModel);
 
 		await dialog.openDialog();
-	}
-
-	private updateTdeMigrationResultUI(): void {
-		const succeeded = this.migrationStateModel.tdeMigrationConfig.tdeMigrationCompleted();
-		if (succeeded) {
-			this.wizard.message = {
-				level: azdata.window.MessageLevel.Information,
-				text: constants.TDE_MIGRATE_MESSAGE_SUCCESS,
-			};
-		} else {
-			const results = this.migrationStateModel.tdeMigrationConfig.lastTdeMigrationResult();
-			switch (results.state) {
-				case TdeMigrationState.Canceled: {
-					this.wizard.message = {
-						level: azdata.window.MessageLevel.Warning,
-						text: constants.TDE_MIGRATE_MESSAGE_CANCELED,
-					};
-					break;
-				}
-				case TdeMigrationState.Failed: {
-					const errors: string[] = results.dbList.map(db => `DB ${db.name} failed with error ${db.error}`);
-					const errorsMessage: string = errors.join(EOL);
-					this.wizard.message = {
-						level: azdata.window.MessageLevel.Error,
-						text: constants.TDE_MIGRATE_MESSAGE_CANCELED_ERRORS(errorsMessage),
-					};
-					break;
-				}
-				default: { //Pending and newly added states. Success is already taken care of before getting here.
-					this.wizard.message = {
-						level: azdata.window.MessageLevel.Warning,
-						text: constants.TDE_MIGRATE_MESSAGE_NOT_RUN,
-					};
-					break;
-				}
-			}
-		}
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
@@ -162,6 +122,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		}
 
 		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].hidden = !this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates();
+		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].enabled = false;
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = { text: '' };
@@ -242,12 +203,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				return false;
 			}
 
-			if (this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates()) {
-				this.wizard.nextButton.enabled = this.migrationStateModel.tdeMigrationConfig.tdeMigrationCompleted();
-				return this.migrationStateModel.tdeMigrationConfig.tdeMigrationCompleted();
-			} else {
-				this.wizard.nextButton.enabled = true;
-			}
 
 			return true;
 		});
@@ -315,6 +270,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator(pageChangeInfo => true);
 		this.wizard.message = { text: '' };
+
+		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].hidden = true;
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
@@ -756,6 +713,9 @@ export class TargetSelectionPage extends MigrationWizardPage {
 									};
 								}
 							}
+
+							this.migrationStateModel.tdeMigrationConfig.resetTdeMigrationResult();
+
 							break;
 						case MigrationTargetType.SQLDB:
 							const sqlDatabaseServer = this.migrationStateModel._targetSqlDatabaseServers?.find(
@@ -1030,6 +990,9 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._targetManagedInstances,
 						this.migrationStateModel._location,
 						this.migrationStateModel._resourceGroup);
+
+					this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].enabled = (this._azureResourceDropdown.values.length > 1) || (this._azureResourceDropdown.values[0].displayName !== constants.NO_MANAGED_INSTANCE_FOUND);
+
 					break;
 				case MigrationTargetType.SQLVM:
 					this._azureResourceDropdown.values = utils.getAzureResourceDropdownValues(
