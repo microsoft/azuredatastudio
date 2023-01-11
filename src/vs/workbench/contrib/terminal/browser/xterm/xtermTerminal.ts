@@ -34,6 +34,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { DecorationAddon } from 'vs/workbench/contrib/terminal/browser/xterm/decorationAddon';
 import { ITerminalCapabilityStore, ITerminalCommand } from 'vs/platform/terminal/common/capabilities/capabilities';
 import { Emitter } from 'vs/base/common/event';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 // How long in milliseconds should an average frame take to render for a notification to appear
 // which suggests the fallback DOM-based renderer
@@ -105,6 +106,7 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal {
 		@IStorageService private readonly _storageService: IStorageService,
 		@IThemeService private readonly _themeService: IThemeService,
 		@IViewDescriptorService private readonly _viewDescriptorService: IViewDescriptorService,
+		@ITelemetryService private readonly _telemetryService: ITelemetryService
 	) {
 		super();
 		this.target = location;
@@ -173,7 +175,7 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal {
 		this._updateUnicodeVersion();
 		this._commandNavigationAddon = this._instantiationService.createInstance(CommandNavigationAddon, _capabilities);
 		this.raw.loadAddon(this._commandNavigationAddon);
-		this._shellIntegrationAddon = this._instantiationService.createInstance(ShellIntegrationAddon);
+		this._shellIntegrationAddon = (<any>this._instantiationService).createInstance(ShellIntegrationAddon, this._telemetryService);
 		this.raw.loadAddon(this._shellIntegrationAddon);
 		this._updateShellIntegrationAddons();
 	}
