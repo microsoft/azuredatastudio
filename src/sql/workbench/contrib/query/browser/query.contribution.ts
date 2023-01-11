@@ -444,7 +444,7 @@ const queryEditorConfiguration: IConfigurationNode = {
 		},
 		'queryEditor.results.showActionBar': {
 			'type': 'boolean',
-			'description': localize('queryEditor.results.showActionBar', "Configuration options for showing the action bar in the Results View"),
+			'description': localize('queryEditor.results.showActionBar', "Whether to show the action bar in the query results view"),
 			'default': true
 		},
 		'queryEditor.messages.showBatchTime': {
