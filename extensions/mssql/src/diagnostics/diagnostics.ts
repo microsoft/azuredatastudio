@@ -62,7 +62,7 @@ export class AzureDiagnostics {
 	constructor(private logPath: string, baseConfig: IConfig) {
 		if (baseConfig) {
 			this._config = JSON.parse(JSON.stringify(baseConfig));
-			this._config.executableFiles = ['SqlToolsResourceProviderService.exe', 'SqlToolsResourceProviderService'];
+			this._config.executableFiles = ['SqlToolsDiagnostics.exe', 'SqlToolsDiagnostics'];
 		}
 	}
 
