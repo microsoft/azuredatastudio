@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
-import { excludeDatabases, getConnectionProfile, LoginTableInfo, TargetDatabaseInfo } from '../api/sqlUtils';
+import { excludeDatabases, getConnectionProfile, LoginTableInfo, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 const localize = nls.loadMessageBundle();
 
 export enum ValidateIrState {
@@ -143,6 +143,7 @@ export interface SavedInfo {
 	closedPage: number;
 	databaseAssessment: string[];
 	databaseList: string[];
+	databaseInfoList: SourceDatabaseInfo[];
 	migrationTargetType: MigrationTargetType | null;
 	azureAccount: azdata.Account | null;
 	azureTenant: azurecore.Tenant | null;
@@ -218,6 +219,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public mementoString: string;
 
 	public _databasesForMigration: string[] = [];
+	public _databaseInfosForMigration: SourceDatabaseInfo[] = [];
 	public _didUpdateDatabasesForMigration: boolean = false;
 	public _didDatabaseMappingChange: boolean = false;
 	public _vmDbs: string[] = [];
@@ -1268,6 +1270,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			closedPage: currentPage,
 			databaseAssessment: [],
 			databaseList: [],
+			databaseInfoList: [],
 			migrationTargetType: null,
 			azureAccount: null,
 			azureTenant: null,
