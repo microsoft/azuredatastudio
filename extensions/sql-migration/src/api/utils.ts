@@ -13,6 +13,7 @@ import * as constants from '../constants/strings';
 import { logError, TelemetryViews } from '../telemtery';
 import { AdsMigrationStatus } from '../dashboard/tabBase';
 import { getMigrationMode, getMigrationStatus, getMigrationTargetType, hasRestoreBlockingReason, PipelineStatusCodes } from '../constants/helper';
+import { ServerInfo } from 'azdata';
 
 export type TargetServerType = azure.SqlVMServer | azureResource.AzureSqlManagedInstance | azure.AzureSqlDatabaseServer;
 
@@ -34,6 +35,12 @@ export const MenuCommands = {
 	NewSupportRequest: 'sqlmigration.newsupportrequest',
 	SendFeedback: 'sqlmigration.sendfeedback',
 };
+
+export enum BlobType {
+	BlockBlob = "BlockBlob",
+	PageBlob = "PageBlob",
+	AppendBlob = "AppendBlob",
+}
 
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
@@ -71,6 +78,10 @@ export function getSqlServerName(majorVersion: number): string | undefined {
 		default:
 			return undefined;
 	}
+}
+
+export function isSqlServerVersion2014OrBelow(serverInfo: ServerInfo): boolean {
+	return serverInfo.serverMajorVersion! <= 12;
 }
 
 export interface IPackageInfo {

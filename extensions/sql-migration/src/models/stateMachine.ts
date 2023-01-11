@@ -12,7 +12,7 @@ import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
-import { hashString, deepClone } from '../api/utils';
+import { hashString, deepClone, isSqlServerVersion2014OrBelow } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 import { excludeDatabases, getConnectionProfile, LoginTableInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 const localize = nls.loadMessageBundle();
@@ -1402,6 +1402,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				return constants.LOGIN_MIGRATIONS_DB_TEXT;
 		}
 		return "";
+	}
+
+	public async isSqlVM2014OrBelow(): Promise<boolean> {
+		const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
+		return this._targetType === MigrationTargetType.SQLVM && isSqlServerVersion2014OrBelow(sqlServerInfo);
 	}
 }
 

@@ -649,7 +649,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		this.wizard.registerNavigationValidator((pageChangeInfo) => {
+		this.wizard.registerNavigationValidator(async (pageChangeInfo) => {
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
 			}
@@ -693,6 +693,21 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							this._blobContainerLastBackupFileDropdowns.forEach((v, index) => {
 								if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBFILES_FOUND, constants.SELECT_BLOB_CONTAINER])) {
 									errors.push(constants.INVALID_BLOB_LAST_BACKUP_FILE_ERROR(this.migrationStateModel._databasesForMigration[index]));
+								}
+							});
+						}
+
+						if (await this.migrationStateModel.isSqlVM2014OrBelow() && this.migrationStateModel.isBackupContainerBlobContainer) {
+							this.migrationStateModel._databasesForMigration.forEach(async (sourceDatabaseName, index) => {
+								const backups = await utils.getBlobLastBackupFileNames(
+									this.migrationStateModel._azureAccount,
+									this.migrationStateModel._databaseBackup.subscription,
+									this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount,
+									this.migrationStateModel._databaseBackup.blobs[index]?.blobContainer);
+
+								const allBackupsPageBlob = backups.every(backup => backup.properties.blobType === utils.BlobType.PageBlob)
+								if (!allBackupsPageBlob) {
+									errors.push(constants.INVALID_NON_PAGE_BLOB_BACKUP_FILE_ERROR(this.migrationStateModel._databasesForMigration[index]));
 								}
 							});
 						}
