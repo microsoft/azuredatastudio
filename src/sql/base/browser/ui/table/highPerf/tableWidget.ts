@@ -22,7 +22,7 @@ import { isNumber } from 'vs/base/common/types';
 import { clamp } from 'vs/base/common/numbers';
 import { GridPosition } from 'sql/base/common/gridPosition';
 import { GridRange, IGridRange } from 'sql/base/common/gridRange';
-import { GlobalPointerMoveMonitor } from 'vs/base/browser/globalPointerMoveMonitor';
+import { GlobalPointerMoveMonitor } from 'sql/base/browser/globalPointerMoveMonitor';
 
 interface ITraitChangeEvent {
 	indexes: IGridRange[];

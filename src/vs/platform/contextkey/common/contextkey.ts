@@ -1524,7 +1524,9 @@ export interface ContextKeyInfo {
 	readonly description?: string;
 }
 
-export class RawContextKey<T extends ContextKeyValue> extends ContextKeyDefinedExpr {
+// {{SQL CARBON EDIT}} - don't require extended ContextKeyValue
+//export class RawContextKey<T extends ContextKeyValue> extends ContextKeyDefinedExpr {
+export class RawContextKey<T> extends ContextKeyDefinedExpr {
 
 	private static _info: ContextKeyInfo[] = [];
 
@@ -1572,10 +1574,12 @@ export type ContextKeyValue = null | undefined | boolean | number | string
 	| Record<string, null | undefined | boolean | number | string>;
 
 export interface IContext {
-	getValue<T extends ContextKeyValue = ContextKeyValue>(key: string): T | undefined;
+	// getValue<T extends ContextKeyValue = ContextKeyValue>(key: string): T | undefined;
+	getValue<T>(key: string): T | undefined;
 }
 
-export interface IContextKey<T extends ContextKeyValue = ContextKeyValue> {
+// export interface IContextKey<T extends ContextKeyValue = ContextKeyValue> {
+export interface IContextKey<T> {
 	set(value: T): void;
 	reset(): void;
 	get(): T | undefined;
@@ -1606,7 +1610,8 @@ export interface IContextKeyService {
 	onDidChangeContext: Event<IContextKeyChangeEvent>;
 	bufferChangeEvents(callback: Function): void;
 
-	createKey<T extends ContextKeyValue>(key: string, defaultValue: T | undefined): IContextKey<T>;
+	// createKey<T extends ContextKeyValue>(key: string, defaultValue: T | undefined): IContextKey<T>;
+	createKey<T>(key: string, defaultValue: T | undefined): IContextKey<T>;
 	contextMatchesRules(rules: ContextKeyExpression | undefined): boolean;
 	getContextKeyValue<T>(key: string): T | undefined;
 

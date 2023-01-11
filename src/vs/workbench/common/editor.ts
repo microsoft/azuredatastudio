@@ -428,7 +428,7 @@ export interface IUntitledTextResourceEditorInput extends IBaseTextResourceEdito
 	 * - they are dirty right when opening
 	 * - they will not ask for a file path when saving but use the associated path
 	 */
-	readonly resource: URI | undefined;
+	resource: URI | undefined;
 }
 
 /**

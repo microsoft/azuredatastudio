@@ -798,11 +798,10 @@ class SearchNodeAction extends Action {
 	public static LABEL_FOR_ADDED_PLAN = localize('epCompare.searchNodeActionAddedPlan', 'Find Node - Added Plan');
 
 	constructor(private readonly _planIdentifier: PlanIdentifier, @IInstantiationService private readonly _instantiationService: IInstantiationService, @IAdsTelemetryService private readonly _telemetryService: IAdsTelemetryService) {
-		const getLabelForAction = () => {
+		super(SearchNodeAction.ID, undefined, searchIconClassNames, true, () => {
 			return _planIdentifier === PlanIdentifier.Added ? SearchNodeAction.LABEL_FOR_ADDED_PLAN : SearchNodeAction.LABEL;
-		};
+		});
 
-		super(SearchNodeAction.ID, getLabelForAction(), searchIconClassNames);
 		this.enabled = false;
 	}
 

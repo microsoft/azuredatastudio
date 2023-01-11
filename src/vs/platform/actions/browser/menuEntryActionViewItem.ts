@@ -294,12 +294,10 @@ export class SubmenuEntryActionViewItem extends DropdownMenuActionViewItem {
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IThemeService protected _themeService: IThemeService
 	) {
-		const dropdownOptions = Object.assign({}, options ?? Object.create(null), {
+		super(action, { getActions: () => action.actions }, contextMenuService, Object.assign({}, options ?? Object.create(null), {
 			menuAsChild: options?.menuAsChild ?? false,
 			classNames: options?.classNames ?? (ThemeIcon.isThemeIcon(action.item.icon) ? ThemeIcon.asClassName(action.item.icon) : undefined),
-		});
-
-		super(action, { getActions: () => action.actions }, contextMenuService, dropdownOptions);
+		}));
 	}
 
 	override render(container: HTMLElement): void {

@@ -6,7 +6,7 @@
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { env, ExtensionContext, workspace, window, Disposable, commands, Uri, OutputChannel, version as vscodeVersion, WorkspaceFolder } from 'vscode';
+import { ExtensionContext, workspace, Disposable, commands } from 'vscode';
 import { findGit, Git } from './git';
 import { Model } from './model';
 import { CommandCenter } from './commands';

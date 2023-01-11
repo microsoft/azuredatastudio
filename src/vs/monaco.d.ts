@@ -1296,7 +1296,7 @@ declare namespace monaco.editor {
 		(...args: any[]): void;
 	}
 
-	export interface IContextKey<T extends ContextKeyValue = ContextKeyValue> {
+	export interface IContextKey<T> {
 		set(value: T): void;
 		reset(): void;
 		get(): T | undefined;

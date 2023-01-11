@@ -185,7 +185,7 @@ class DefaultOnDropProvider implements DocumentOnDropEditProvider {
 		}
 
 		if (!uris.length) {
-			return;
+			return undefined;
 		}
 
 		const snippet = uris

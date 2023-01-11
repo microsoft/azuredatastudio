@@ -89,7 +89,7 @@ class CellStatusBarLanguageDetectionProvider implements INotebookCellStatusBarIt
 		const cellUri = cell.uri;
 		const contentVersion = cell.textModel?.getVersionId();
 		if (!contentVersion) {
-			return;
+			return undefined;
 		}
 
 		const currentLanguageId = cell.cellKind === CellKind.Markup ?

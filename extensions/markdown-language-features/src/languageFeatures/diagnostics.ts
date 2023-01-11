@@ -130,7 +130,7 @@ class InflightDiagnosticRequests {
 
 class LinkWatcher extends Disposable {
 
-	private readonly _onDidChangeLinkedToFile = this._register(new vscode.EventEmitter<Iterable<vscode.Uri>>);
+	private readonly _onDidChangeLinkedToFile = this._register(new vscode.EventEmitter<Iterable<vscode.Uri>>());
 	/**
 	 * Event fired with a list of document uri when one of the links in the document changes
 	 */

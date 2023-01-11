@@ -679,10 +679,12 @@ export class HistoryInputBox extends InputBox implements IHistoryNavigationWidge
 	readonly onDidBlur = this._onDidBlur.event;
 
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider | undefined, options: IHistoryInputOptions) {
+		super(container, contextViewProvider, options);
+
 		const NLS_PLACEHOLDER_HISTORY_HINT = nls.localize({ key: 'history.inputbox.hint', comment: ['Text will be prefixed with \u21C5 plus a single space, then used as a hint where input field keeps history'] }, "for history");
 		const NLS_PLACEHOLDER_HISTORY_HINT_SUFFIX = ` or \u21C5 ${NLS_PLACEHOLDER_HISTORY_HINT}`;
 		const NLS_PLACEHOLDER_HISTORY_HINT_SUFFIX_IN_PARENS = ` (\u21C5 ${NLS_PLACEHOLDER_HISTORY_HINT})`;
-		super(container, contextViewProvider, options);
+
 		this.history = new HistoryNavigator<string>(options.history, 100);
 
 		// Function to append the history suffix to the placeholder if necessary

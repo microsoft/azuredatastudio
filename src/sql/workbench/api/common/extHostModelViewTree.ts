@@ -86,7 +86,7 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 		return Promise.resolve(undefined);
 	}
 
-	$handleDrop(destinationViewId: string, treeDataTransfer: DataTransferDTO, targetHandle: string | undefined, token: vscode.CancellationToken, operationUuid?: string, sourceViewId?: string, sourceTreeItemHandles?: string[]): Promise<void> {
+	$handleDrop(destinationViewId: string, requestId: number, treeDataTransfer: DataTransferDTO, targetHandle: string | undefined, token: vscode.CancellationToken, operationUuid?: string, sourceViewId?: string, sourceTreeItemHandles?: string[]): Promise<void> {
 		return Promise.resolve(undefined);
 	}
 

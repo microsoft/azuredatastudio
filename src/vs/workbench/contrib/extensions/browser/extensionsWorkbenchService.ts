@@ -34,7 +34,7 @@ import * as resources from 'vs/base/common/resources';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { IFileService } from 'vs/platform/files/common/files';
-import { IExtensionManifest, ExtensionType, IExtension as IPlatformExtension, TargetPlatform } from 'vs/platform/extensions/common/extensions';
+import { IExtensionManifest, ExtensionType, IExtension as IPlatformExtension, TargetPlatform, ExtensionIdentifier, ExtensionsPolicyKey, ExtensionsPolicy } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
 import { ILanguageService } from 'vs/editor/common/languages/language';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { FileAccess } from 'vs/base/common/network';
@@ -49,6 +49,9 @@ import { IExtensionManifestPropertiesService } from 'vs/workbench/services/exten
 import { IExtensionService, IExtensionsStatus } from 'vs/workbench/services/extensions/common/extensions';
 import { ExtensionEditor } from 'vs/workbench/contrib/extensions/browser/extensionEditor';
 import { isWeb } from 'vs/base/common/platform';
+import { GDPRClassification } from 'vs/platform/telemetry/common/gdprTypings';
+
+import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 
 interface IExtensionStateProvider<T> {
 	(extension: Extension): T;

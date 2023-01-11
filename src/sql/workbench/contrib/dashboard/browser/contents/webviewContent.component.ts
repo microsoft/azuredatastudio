@@ -98,11 +98,14 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 			this._onMessageDisposable.dispose();
 		}
 
-		this._webview = this.webviewService.createWebviewElement(this.id,
-			{},
-			{
-				allowScripts: true
-			}, undefined);
+		this._webview = this.webviewService.createWebviewElement({
+			id: this.id,
+			contentOptions: {
+				allowScripts: true,
+			},
+			options: {},
+			extension: undefined
+		});
 
 		this._webview.mountTo(this._el.nativeElement);
 

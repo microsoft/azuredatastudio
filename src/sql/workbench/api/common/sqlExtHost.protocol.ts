@@ -777,7 +777,7 @@ export interface ExtHostModelViewShape {
 
 export interface ExtHostModelViewTreeViewsShape {
 	$getChildren(treeViewId: string, treeItemHandle?: string): Promise<ITreeComponentItem[]>;
-	$handleDrop(destinationViewId: string, treeDataTransfer: DataTransferDTO, targetHandle: string | undefined, token: vscode.CancellationToken, operationUuid?: string, sourceViewId?: string, sourceTreeItemHandles?: string[]): Promise<void>;
+	$handleDrop(destinationViewId: string, requestId: number, treeDataTransfer: DataTransferDTO, targetHandle: string | undefined, token: vscode.CancellationToken, operationUuid?: string, sourceViewId?: string, sourceTreeItemHandles?: string[]): Promise<void>;
 	$handleDrag(sourceViewId: string, sourceTreeItemHandles: string[], operationUuid: string, token: vscode.CancellationToken): Promise<DataTransferDTO | undefined>;
 
 	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }, extension: IExtensionDescription): azdata.TreeComponentView<any>;

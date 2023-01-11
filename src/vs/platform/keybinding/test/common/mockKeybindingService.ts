@@ -12,7 +12,7 @@ import { IResolveResult } from 'vs/platform/keybinding/common/keybindingResolver
 import { ResolvedKeybindingItem } from 'vs/platform/keybinding/common/resolvedKeybindingItem';
 import { USLayoutResolvedKeybinding } from 'vs/platform/keybinding/common/usLayoutResolvedKeybinding';
 
-class MockKeybindingContextKey<T extends ContextKeyValue = ContextKeyValue> implements IContextKey<T> {
+class MockKeybindingContextKey<T = ContextKeyValue> implements IContextKey<T> {
 	private _defaultValue: T | undefined;
 	private _value: T | undefined;
 
@@ -42,7 +42,10 @@ export class MockContextKeyService implements IContextKeyService {
 	public dispose(): void {
 		//
 	}
-	public createKey<T extends ContextKeyValue = ContextKeyValue>(key: string, defaultValue: T | undefined): IContextKey<T> {
+
+	//public createKey<T extends ContextKeyValue = ContextKeyValue>(key: string, defaultValue: T | undefined): IContextKey<T> {
+	public createKey<T = ContextKeyValue>(key: string, defaultValue: T | undefined): IContextKey<T> {
+
 		let ret = new MockKeybindingContextKey(defaultValue);
 		this._keys.set(key, ret);
 		return ret;
