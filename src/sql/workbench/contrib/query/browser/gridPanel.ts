@@ -62,6 +62,7 @@ const HEADER_HEIGHT = 26;
 const MIN_GRID_HEIGHT_ROWS = 8;
 const ESTIMATED_SCROLL_BAR_HEIGHT = 15;
 const BOTTOM_PADDING = 15;
+const NO_ACTIONBAR_ADDITIONAL_PADDING = 75;
 const ACTIONBAR_WIDTH = 36;
 
 // minimum height needed to show the full actionbar
@@ -629,7 +630,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		// if the actionsOrientation passed in is "VERTICAL" (or no actionsOrientation is passed in at all), create a vertical actionBar
 		else {
 			actionBarContainer.className = 'grid-panel action-bar vertical';
-			actionBarContainer.style.width = ACTIONBAR_WIDTH + 'px';
+			let actionBarWidth = this.showActionBar ? ACTIONBAR_WIDTH : 0;
+			actionBarContainer.style.width = actionBarWidth + 'px';
 			this.container.appendChild(actionBarContainer);
 		}
 
@@ -820,11 +822,17 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	public get minimumSize(): number {
 		// clamp between ensuring we can show the actionbar, while also making sure we don't take too much space
 		// if there is only one table then allow a minimum size of ROW_HEIGHT
-		return this.isOnlyTable ? ROW_HEIGHT : Math.max(Math.min(this.maxSize, MIN_GRID_HEIGHT), ACTIONBAR_HEIGHT + BOTTOM_PADDING);
+		let actionBarHeight = this.showActionBar ? ACTIONBAR_HEIGHT : 0;
+		let bottomPadding = this.showActionBar ? BOTTOM_PADDING : BOTTOM_PADDING + NO_ACTIONBAR_ADDITIONAL_PADDING;
+
+		return this.isOnlyTable ? ROW_HEIGHT : Math.max(Math.min(this.maxSize, MIN_GRID_HEIGHT), actionBarHeight + bottomPadding);
 	}
 
 	public get maximumSize(): number {
-		return Math.max(this.maxSize, ACTIONBAR_HEIGHT + BOTTOM_PADDING);
+		let actionBarHeight = this.showActionBar ? ACTIONBAR_HEIGHT : 0;
+		let bottomPadding = this.showActionBar ? BOTTOM_PADDING : BOTTOM_PADDING + NO_ACTIONBAR_ADDITIONAL_PADDING;
+
+		return Math.max(this.maxSize, actionBarHeight + bottomPadding);
 	}
 
 	private loadData(offset: number, count: number): Thenable<T[]> {
