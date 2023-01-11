@@ -436,7 +436,7 @@ declare module 'azdata' {
 	 * An interface for receiving diagnostic data from a provider.
 	 */
 	export interface Diagnostics {
-		handleErrorCode(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<diagnostics.ErrorCodes>;
+		handleErrorCode(errorCode: number, errorMessage: string, providerId: string): Thenable<diagnostics.ErrorCodes>;
 	}
 
 	export namespace diagnostics {

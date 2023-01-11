@@ -15,13 +15,13 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 	constructor(
 	) { }
 
-	public async checkErrorCode(errorCode: number, errorMessage: string, connectionTypeId: string): Promise<diagnostics.ErrorCodes> {
+	public async checkErrorCode(errorCode: number, errorMessage: string, providerId: string): Promise<diagnostics.ErrorCodes> {
 		let result = diagnostics.ErrorCodes.noErrorOrUnsupported
 		const promises = [];
 		if (this._providers) {
 			for (const key in this._providers) {
 				const provider = this._providers[key];
-				promises.push(provider.handleErrorCode(errorCode, errorMessage, connectionTypeId)
+				promises.push(provider.handleErrorCode(errorCode, errorMessage, providerId)
 					.then(response => {
 						if (result === diagnostics.ErrorCodes.noErrorOrUnsupported) {
 							result = response;

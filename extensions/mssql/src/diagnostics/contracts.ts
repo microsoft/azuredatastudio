@@ -7,7 +7,7 @@ import { diagnostics } from 'azdata';
 
 export interface DiagnosticsParameters {
 	/**
-	 * The error code returned from the connection result in case an error happened.
+	 * The code of the error we want to check.
 	 */
 	errorCode: number;
 	/**
@@ -15,13 +15,9 @@ export interface DiagnosticsParameters {
 	 */
 	errorMessage: string;
 	/**
-	 * The name of the provider that was trying to connect.
+	 * The name of the provider where the error happened.
 	 */
 	providerName: string;
-	/**
-	 * OwnerUri of the connection that tried to connect.
-	 */
-	ownerUri: string;
 }
 
 export namespace DiagnosticsRequest {
