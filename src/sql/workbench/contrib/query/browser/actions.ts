@@ -114,7 +114,7 @@ export class CopyResultAction extends Action {
 		id: string,
 		label: string,
 		private copyHeader: boolean,
-		private copyHeadersOnly: boolean,
+		private onlyCopyHeaders: boolean,
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IClipboardService private clipboardService: IClipboardService
 	) {
@@ -122,9 +122,9 @@ export class CopyResultAction extends Action {
 	}
 
 	public override async run(context: IGridActionContext): Promise<void> {
-		if (this.copyHeadersOnly) {
+		if (this.onlyCopyHeaders) {
 			// Starting at index 1 to ignore the first column of row numbers
-			let columnHeaders = context.table.columns.slice(1, context.table.columns.length)
+			const columnHeaders = context.table.columns.slice(1, context.table.columns.length)
 				.map(c => c.name ? c.name : '')
 				.join(', ');
 
