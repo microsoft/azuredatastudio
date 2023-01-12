@@ -214,21 +214,7 @@ export class AccountManagementService implements IAccountManagementService {
 			let result = await self._accountStore.addOrUpdate(account);
 			if (result.accountAdded) {
 				// Double check that there isn't a matching account
-				let indexToRemove: number = provider.accounts.findIndex(account => {
-					// corner case handling for personal accounts
-					if (account.key.accountId.includes('#') || result.changedAccount.key.accountId.includes('#')) {
-						return account.displayInfo.email === result.changedAccount.displayInfo.email;
-					}
-					// MSAL account added
-					if (result.changedAccount.key.accountId.includes('.')) {
-						return account.key.accountId === result.changedAccount!.key.accountId.split('.')[0];
-					}
-					// ADAL account added
-					if (account.key.accountId.includes('.')) {
-						return account.key.accountId.split('.')[0] === result.changedAccount!.key.accountId;
-					}
-					return account.key.accountId === result.changedAccount!.key.accountId;
-				});
+				let indexToRemove = this.findAccountIndex(provider.accounts, result.changedAccount);
 				if (indexToRemove >= 0) {
 					self._accountStore.remove(provider.accounts[indexToRemove].key);
 					provider.accounts.splice(indexToRemove, 1);
@@ -586,7 +572,7 @@ export class AccountManagementService implements IAccountManagementService {
 		// if not, add the account and mark it stale. The original account is marked as taken so its not picked again.
 		for (let account of altLibraryAccounts) {
 			await this.removeAccount(account.key);
-			if (currentLibraryAccounts.find(a => account.displayInfo.email === a.displayInfo.email)) {
+			if (this.findAccountIndex(currentLibraryAccounts, account) >= 0) {
 				continue;
 			} else {
 				// TODO: Refresh access token for the account if feasible.
@@ -597,6 +583,25 @@ export class AccountManagementService implements IAccountManagementService {
 			}
 		}
 		return currentLibraryAccounts;
+	}
+
+	public findAccountIndex(accounts: azdata.Account[], accountToFind: azdata.Account): number {
+		let indexToRemove: number = accounts.findIndex(account => {
+			// corner case handling for personal accounts
+			if (account.key.accountId.includes('#') || accountToFind.key.accountId.includes('#')) {
+				return account.displayInfo.email === accountToFind.displayInfo.email;
+			}
+			// MSAL account added
+			if (accountToFind.key.accountId.includes('.')) {
+				return account.key.accountId === accountToFind!.key.accountId.split('.')[0];
+			}
+			// ADAL account added
+			if (account.key.accountId.includes('.')) {
+				return account.key.accountId.split('.')[0] === accountToFind!.key.accountId;
+			}
+			return account.key.accountId === accountToFind!.key.accountId;
+		});
+		return indexToRemove;
 	}
 }
 
