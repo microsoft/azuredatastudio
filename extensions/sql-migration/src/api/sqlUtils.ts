@@ -53,7 +53,7 @@ const query_databases_with_size = `
 			FROM sys.master_files with (nolock)
 			GROUP BY database_id
 		)
-	SELECT name, state_desc AS state, db_size.size
+	SELECT name, state_desc AS state, db_size.size, collation_name
 	FROM sys.databases with (nolock) LEFT JOIN db_size ON sys.databases.database_id = db_size.database_id
 	WHERE sys.databases.state = 0
 	`;
@@ -86,6 +86,13 @@ export interface TableInfo {
 	tableName: string;
 	rowCount: number;
 	selectedForMigration: boolean;
+}
+
+export interface SourceDatabaseInfo {
+	databaseName: string;
+	databaseCollation: string;
+	databaseState: number;
+	databaseSizeInMB: string;
 }
 
 export interface TargetDatabaseInfo {
@@ -331,6 +338,7 @@ export async function getDatabasesList(connectionProfile: azdata.connection.Conn
 					name: getSqlString(row[0]),
 					state: getSqlString(row[1]),
 					sizeInMB: getSqlString(row[2]),
+					collation: getSqlString(row[3])
 				}
 			};
 		}) ?? [];

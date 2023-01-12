@@ -7,14 +7,14 @@ import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
-import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, isSqlManagedInstance, isAzureSqlDatabaseServer } from '../api/azure';
+import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, isSqlManagedInstance, isAzureSqlDatabaseServer, VirtualMachineInstanceView } from '../api/azure';
 import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
-import { excludeDatabases, getConnectionProfile, LoginTableInfo, TargetDatabaseInfo } from '../api/sqlUtils';
+import { excludeDatabases, getConnectionProfile, LoginTableInfo, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { TdeMigrationDbResult, TdeMigrationModel } from './tdeModels';
 const localize = nls.loadMessageBundle();
 
@@ -148,6 +148,7 @@ export interface SavedInfo {
 	closedPage: number;
 	databaseAssessment: string[];
 	databaseList: string[];
+	databaseInfoList: SourceDatabaseInfo[];
 	migrationTargetType: MigrationTargetType | null;
 	azureAccount: azdata.Account | null;
 	azureTenant: azurecore.Tenant | null;
@@ -197,6 +198,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _targetSqlVirtualMachines!: SqlVMServer[];
 	public _targetSqlDatabaseServers!: AzureSqlDatabaseServer[];
 	public _targetServerInstance!: SqlManagedInstance | SqlVMServer | AzureSqlDatabaseServer;
+	public _vmInstanceView!: VirtualMachineInstanceView;
 	public _databaseBackup!: DatabaseBackupModel;
 	public _storageAccounts!: StorageAccount[];
 	public _fileShares!: azurecore.azureResource.FileShare[];
@@ -224,6 +226,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public mementoString: string;
 
 	public _databasesForMigration: string[] = [];
+	public _databaseInfosForMigration: SourceDatabaseInfo[] = [];
 	public _didUpdateDatabasesForMigration: boolean = false;
 	public _didDatabaseMappingChange: boolean = false;
 	public _vmDbs: string[] = [];
@@ -1327,6 +1330,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			closedPage: currentPage,
 			databaseAssessment: [],
 			databaseList: [],
+			databaseInfoList: [],
 			migrationTargetType: null,
 			azureAccount: null,
 			azureTenant: null,

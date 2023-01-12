@@ -150,6 +150,30 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider.azure.resource.pr" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) oviders.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Dedicated SQL Pools]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[전용 SQL 풀]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider.azure.resourc" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) e.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Azure Synapse Analytics]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Azure Synapse Analytics]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/accountNotSignedInTreeNode.azure.resource.tree.accountNotSignedInTre" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) eNode.signInLabel" ItemType="0" PsrId="308" Leaf="true">
@@ -254,15 +278,6 @@
           <Val><![CDATA[Error when parsing your account from the cache]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[캐시에서 계정을 구문 분석하는 동안 오류 발생]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azure.cacheErrrorRemove" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Error when removing your account from the cache.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[캐시에서 계정을 제거하는 동안 오류가 발생했습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

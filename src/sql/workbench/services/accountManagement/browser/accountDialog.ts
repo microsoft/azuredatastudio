@@ -51,10 +51,10 @@ import { IAccountManagementService } from 'sql/platform/accounts/common/interfac
 
 export const VIEWLET_ID = 'workbench.view.accountpanel';
 export type AuthLibrary = 'ADAL' | 'MSAL';
+export const MSAL_AUTH_LIBRARY: AuthLibrary = 'MSAL'; // default
+export const ADAL_AUTH_LIBRARY: AuthLibrary = 'ADAL';
 
-export class AccountPaneContainer extends ViewPaneContainer {
-
-}
+export class AccountPaneContainer extends ViewPaneContainer { }
 
 export const ACCOUNT_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
@@ -499,19 +499,10 @@ export class AccountDialog extends Modal {
 export function filterAccounts(accounts: azdata.Account[], authLibrary: AuthLibrary): azdata.Account[] {
 	let filteredAccounts = accounts.filter(account => {
 		if (account.key.authLibrary) {
-			if (account.key.authLibrary === authLibrary) {
-				return true;
-			} else {
-				return false;
-			}
+			return account.key.authLibrary === authLibrary;
 		} else {
-			if (authLibrary === 'ADAL') {
-				return true;
-			} else {
-				return false;
-			}
+			return authLibrary === ADAL_AUTH_LIBRARY;
 		}
 	});
-
 	return filteredAccounts;
 }
