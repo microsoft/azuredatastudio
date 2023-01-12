@@ -213,11 +213,17 @@ export class AccountManagementService implements IAccountManagementService {
 
 			let result = await self._accountStore.addOrUpdate(account);
 			if (result.accountAdded) {
+				// Double check that there isn't a matching account
+				let indexToRemove = this.findAccountIndex(provider.accounts, result.changedAccount);
+				if (indexToRemove >= 0) {
+					self._accountStore.remove(provider.accounts[indexToRemove].key);
+					provider.accounts.splice(indexToRemove, 1);
+				}
 				// Add the account to the list
 				provider.accounts.push(result.changedAccount!);
 			}
 			if (result.accountModified) {
-				// Find the updated account and splice the updated on in
+				// Find the updated account and splice the updated one in
 				let indexToRemove: number = provider.accounts.findIndex(account => {
 					return account.key.accountId === result.changedAccount!.key.accountId;
 				});
@@ -566,7 +572,7 @@ export class AccountManagementService implements IAccountManagementService {
 		// if not, add the account and mark it stale. The original account is marked as taken so its not picked again.
 		for (let account of altLibraryAccounts) {
 			await this.removeAccount(account.key);
-			if (currentLibraryAccounts.find(a => account.displayInfo.email === a.displayInfo.email)) {
+			if (this.findAccountIndex(currentLibraryAccounts, account) >= 0) {
 				continue;
 			} else {
 				// TODO: Refresh access token for the account if feasible.
@@ -577,6 +583,25 @@ export class AccountManagementService implements IAccountManagementService {
 			}
 		}
 		return currentLibraryAccounts;
+	}
+
+	public findAccountIndex(accounts: azdata.Account[], accountToFind: azdata.Account): number {
+		let indexToRemove: number = accounts.findIndex(account => {
+			// corner case handling for personal accounts
+			if (account.key.accountId.includes('#') || accountToFind.key.accountId.includes('#')) {
+				return account.displayInfo.email === accountToFind.displayInfo.email;
+			}
+			// MSAL account added
+			if (accountToFind.key.accountId.includes('.')) {
+				return account.key.accountId === accountToFind!.key.accountId.split('.')[0];
+			}
+			// ADAL account added
+			if (account.key.accountId.includes('.')) {
+				return account.key.accountId.split('.')[0] === accountToFind!.key.accountId;
+			}
+			return account.key.accountId === accountToFind!.key.accountId;
+		});
+		return indexToRemove;
 	}
 }
 
