@@ -454,8 +454,6 @@ declare module 'azdata' {
 		export function registerDiagnostics(providerMetadata: ResourceProviderMetadata, diagnostics: Diagnostics): vscode.Disposable;
 	}
 
-
-
 	export namespace connection {
 		/**
 		 * Well-known Authentication types commonly supported by connection providers.
