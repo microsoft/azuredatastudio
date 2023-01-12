@@ -14,7 +14,6 @@ import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature } from './features';
 import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
-import { AzureDiagnostics } from './diagnostics/diagnostics';
 import { SchemaCompareService } from './schemaCompare/schemaCompareService';
 import { AppContext } from './appContext';
 import { DacFxService } from './dacfx/dacFxService';
@@ -28,6 +27,7 @@ import { NotebookConvertService } from './notebookConvert/notebookConvertService
 import { SqlMigrationService } from './sqlMigration/sqlMigrationService';
 import { SqlCredentialService } from './credentialstore/sqlCredentialService';
 import { AzureBlobService } from './azureBlob/azureBlobService';
+import { ErrorDiagnosticsService } from './errorDiagnostics/errorDiagnosticsService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -101,12 +101,10 @@ export class SqlToolsServer {
 	private activateFeatures(context: AppContext): Promise<void> {
 		const credsStore = new CredentialStore(context, this.config);
 		const resourceProvider = new AzureResourceProvider(context.extensionContext.logPath, this.config);
-		const diagnostics = new AzureDiagnostics(context.extensionContext.logPath, this.config);
 		this.disposables.push(credsStore);
 		this.disposables.push(resourceProvider);
-		this.disposables.push(diagnostics);
 		context.registerService(Constants.AzureBlobService, new AzureBlobService(this.client));
-		return Promise.all([credsStore.start(), resourceProvider.start(), diagnostics.start()]).then();
+		return Promise.all([credsStore.start(), resourceProvider.start()]).then();
 	}
 
 	async dispose(): Promise<void> {
@@ -195,7 +193,8 @@ function getClientOptions(context: AppContext): ClientOptions {
 			SqlMigrationService.asFeature(context),
 			SqlCredentialService.asFeature(context),
 			TableDesignerFeature,
-			ExecutionPlanServiceFeature
+			ExecutionPlanServiceFeature,
+			ErrorDiagnosticsService.asFeature(context),
 		],
 		outputChannel: new CustomOutputChannel()
 	};
