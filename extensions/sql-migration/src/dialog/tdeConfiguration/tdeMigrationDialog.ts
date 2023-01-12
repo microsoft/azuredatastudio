@@ -24,11 +24,11 @@ export enum TdeValidationResultIndex {
 }
 
 export const ValidationStatusLookup: constants.LookupTable<string | undefined> = {
-	[TdeMigrationState.Canceled]: constants.TDE_MIGRATE_STATE_CANCELED,
-	[TdeMigrationState.Failed]: constants.TDE_MIGRATE_STATE_FAILED,
-	[TdeMigrationState.Pending]: constants.TDE_MIGRATE_STATE_PENDING,
-	[TdeMigrationState.Running]: constants.TDE_MIGRATE_STATE_RUNNING,
-	[TdeMigrationState.Succeeded]: constants.TDE_MIGRATE_STATE_SUCCEEDED,
+	[TdeMigrationState.Canceled]: constants.STATE_CANCELED,
+	[TdeMigrationState.Failed]: constants.STATE_FAILED,
+	[TdeMigrationState.Pending]: constants.STATE_PENDING,
+	[TdeMigrationState.Running]: constants.STATE_RUNNING,
+	[TdeMigrationState.Succeeded]: constants.STATE_SUCCEEDED,
 	default: undefined
 };
 

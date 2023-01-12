@@ -284,6 +284,7 @@ export class TdeConfigurationDialog {
 	private async updateUI(): Promise<void> {
 		const useAds = this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAds();
 
+		this._networkPathText.value = this.migrationStateModel.tdeMigrationConfig._networkPath;
 		this._adsConfirmationCheckBox.checked = this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAdsConfirmed();
 		await utils.updateControlDisplay(this._adsMethodConfirmationContainer, useAds);
 
@@ -312,6 +313,10 @@ export class TdeConfigurationDialog {
 					(eventArgs) => {
 						this._isOpen = false;
 						this.migrationStateModel.tdeMigrationConfig.setConfigurationCompleted();
+
+						if (this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates()) {
+							this.migrationStateModel.tdeMigrationConfig._networkPath = this._networkPathText.value ?? '';
+						}
 					})
 			);
 

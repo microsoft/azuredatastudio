@@ -1332,11 +1332,11 @@ export const TDE_WIZARD_CERTS_NETWORK_SHARE_INFO = localize('sql.migration.tde.w
 export const TDE_MIGRATE_BUTTON = localize('sql.migration.tde.button.migrate', "Migrate certificates");
 
 
-export const TDE_MIGRATE_STATE_CANCELED = localize('sql.migration.tde.migrate.state.canceled', "Canceled");
-export const TDE_MIGRATE_STATE_PENDING = localize('sql.migration.tde.migrate.state.pending', "Pending");
-export const TDE_MIGRATE_STATE_RUNNING = localize('sql.migration.tde.migrate.state.running', "Running");
-export const TDE_MIGRATE_STATE_SUCCEEDED = localize('sql.migration.tde.migrate.state.succeeded', "Succeeded");
-export const TDE_MIGRATE_STATE_FAILED = localize('sql.migration.tde.migrate.state.failed', "Failed");
+export const STATE_CANCELED = localize('sql.migration.state.canceled', "Canceled");
+export const STATE_PENDING = localize('sql.migration.state.pending', "Pending");
+export const STATE_RUNNING = localize('sql.migration.state.running', "Running");
+export const STATE_SUCCEEDED = localize('sql.migration.state.succeeded', "Succeeded");
+export const STATE_FAILED = localize('sql.migration.state.failed', "Failed");
 
 export const TDE_MIGRATEDIALOG_TITLE = localize('sql.migration.validation.dialog.title', "Certificates Migration");
 export const TDE_MIGRATE_DONE_BUTTON = localize('sql.migration.tde.migrate.done.button', "Done");
