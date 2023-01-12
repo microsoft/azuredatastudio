@@ -214,18 +214,24 @@ export class AccountManagementService implements IAccountManagementService {
 			let result = await self._accountStore.addOrUpdate(account);
 			if (result.accountAdded) {
 				// Double check that there isn't a matching account
-				if (result.changedAccount!.key.authLibrary === MSAL_AUTH_LIBRARY) {
-					let indexToRemove: number = provider.accounts.findIndex(account => {
-						// corner case handling for personal accounts
-						if (account.key.accountId.includes('#')) {
-							return account.key.accountId === `live.com#${result.changedAccount.displayInfo.email}`;
-						}
-						return account.key.accountId === result.changedAccount!.key.accountId.split('.')[0];
-					});
-					if (indexToRemove >= 0) {
-						self._accountStore.remove(provider.accounts[indexToRemove].key);
-						provider.accounts.splice(indexToRemove, 1);
+				let indexToRemove: number = provider.accounts.findIndex(account => {
+					// corner case handling for personal accounts
+					if (account.key.accountId.includes('#') || result.changedAccount.key.accountId.includes('#')) {
+						return account.displayInfo.email === result.changedAccount.displayInfo.email;
 					}
+					// MSAL account added
+					if (result.changedAccount.key.accountId.includes('.')) {
+						return account.key.accountId === result.changedAccount!.key.accountId.split('.')[0];
+					}
+					// ADAL account added
+					if (account.key.accountId.includes('.')) {
+						return account.key.accountId.split('.')[0] === result.changedAccount!.key.accountId;
+					}
+					return account.key.accountId === result.changedAccount!.key.accountId;
+				});
+				if (indexToRemove >= 0) {
+					self._accountStore.remove(provider.accounts[indexToRemove].key);
+					provider.accounts.splice(indexToRemove, 1);
 				}
 				// Add the account to the list
 				provider.accounts.push(result.changedAccount!);
