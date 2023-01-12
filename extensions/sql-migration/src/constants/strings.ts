@@ -1329,7 +1329,7 @@ export const TDE_WIZARD_CERTS_NETWORK_SHARE_LABEL = localize('sql.migration.tde.
 export const TDE_WIZARD_CERTS_NETWORK_SHARE_PLACEHOLDER = localize('sql.migration.tde.wizard.network.share.placeholder', "Enter network path");
 export const TDE_WIZARD_CERTS_NETWORK_SHARE_INFO = localize('sql.migration.tde.wizard.network.share.info', "Network path where certificate will be placed.");
 
-export const TDE_MIGRATE_BUTTON = localize('sql.migration.tde.button.migrate', "Migrate TDE certificates");
+export const TDE_MIGRATE_BUTTON = localize('sql.migration.tde.button.migrate', "Migrate certificates");
 
 
 export const TDE_MIGRATE_STATE_CANCELED = localize('sql.migration.tde.migrate.state.canceled', "Canceled");
