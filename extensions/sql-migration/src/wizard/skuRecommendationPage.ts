@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as utils from '../api/utils';
 import * as mssql from 'mssql';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, MigrationTargetType, PerformanceDataSourceOptions, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, MigrationTargetType, PerformanceDataSourceOptions, StateChangeEvent, AssessmentRuleId } from '../models/stateMachine';
 import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
 import { SkuRecommendationResultsDialog } from '../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
 import { GetAzureRecommendationDialog } from '../dialog/skuRecommendationResults/getAzureRecommendationDialog';
@@ -804,25 +804,25 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		} else {
 
-			const encryptedDbCount = this.migrationStateModel._assessmentResults.databaseAssessments
+			const encryptedDbFound = this.migrationStateModel._assessmentResults.databaseAssessments
 				.filter(
 					db => this.migrationStateModel._databasesForMigration.findIndex(dba => dba === db.name) >= 0 &&
-						db.issues.findIndex(iss => iss.ruleId === constants.TDE_RULE_ID && iss.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) >= 0
+						db.issues.findIndex(iss => iss.ruleId === AssessmentRuleId.TdeEnabled && iss.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) >= 0
 				)
 				.map(db => db.name);
 
-			if (this._matchWithEncryptedDatabases(encryptedDbCount)) {
+			if (this._matchWithEncryptedDatabases(encryptedDbFound)) {
 				this.migrationStateModel.tdeMigrationConfig = this._previousMiTdeMigrationConfig;
 			} else {
 
 				//Set encrypted databases
-				this.migrationStateModel.tdeMigrationConfig.setTdeEnabledDatabasesCount(encryptedDbCount);
+				this.migrationStateModel.tdeMigrationConfig.setTdeEnabledDatabasesCount(encryptedDbFound);
 
 				if (this.migrationStateModel.tdeMigrationConfig.hasTdeEnabledDatabases()) {
 					//Set the text when there are encrypted databases.
 
 					const tdeMsg = (this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAdsConfirmed) ? constants.TDE_WIZARD_MSG_TDE : constants.TDE_WIZARD_MSG_MANUAL;
-					this._tdedatabaseSelectedHelperText.value = constants.TDE_MSG_DATABASES_SELECTED(encryptedDbCount.length, tdeMsg);
+					this._tdedatabaseSelectedHelperText.value = constants.TDE_MSG_DATABASES_SELECTED(encryptedDbFound.length, tdeMsg);
 
 					if (!this.migrationStateModel.tdeMigrationConfig.shownBefore()) {
 						await this._tdeConfigurationDialog.openDialog();
@@ -836,13 +836,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		await utils.updateControlDisplay(this._tdeInfoContainer, this.migrationStateModel.tdeMigrationConfig.hasTdeEnabledDatabases());
 	}
-	private _matchWithEncryptedDatabases(encryptedDbCount: string[]): boolean {
+	private _matchWithEncryptedDatabases(encryptedDbList: string[]): boolean {
 		var currentTdeDbs = this._previousMiTdeMigrationConfig.getTdeEnabledDatabases();
 
-		if (encryptedDbCount.length === 0 || encryptedDbCount.length !== currentTdeDbs.length)
+		if (encryptedDbList.length === 0 || encryptedDbList.length !== currentTdeDbs.length)
 			return false;
 
-		if (encryptedDbCount.filter(db => currentTdeDbs.findIndex(dba => dba === db) < 0).length > 0)
+		if (encryptedDbList.filter(db => currentTdeDbs.findIndex(dba => dba === db) < 0).length > 0)
 			return false; //There is at least one element that is not in the other array. There should be no risk of duplicates table names
 
 

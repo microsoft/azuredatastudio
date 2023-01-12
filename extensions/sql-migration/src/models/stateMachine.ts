@@ -65,6 +65,10 @@ export enum MigrationSourceAuthenticationType {
 	Sql = 'SqlAuthentication'
 }
 
+export enum AssessmentRuleId {
+	TdeEnabled = 'TdeEnabled'
+}
+
 export enum MigrationMode {
 	ONLINE,
 	OFFLINE

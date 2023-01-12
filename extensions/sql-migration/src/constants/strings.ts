@@ -1294,16 +1294,15 @@ export const SQLDB_COL_COPY_START = localize('sql.migration.sqldb.column.copysta
 
 //TDE Configuration Dialog
 export const TDE_WIZARD_TITLE = localize('sql.migration.tde.wizard.title', "Encrypted database selected.");
-export const TDE_WIZARD_DESCRIPTION = localize('sql.migration.tde.wizard.description', "To migrate an encrypted database you need to provide access to the encryption certificates or migrate certificates manually before proceeding with the migration. {0}.");
+export const TDE_WIZARD_DESCRIPTION = localize('sql.migration.tde.wizard.description', "To migrate an encrypted database successfully you need to provide access to the encryption certificates or migrate certificates manually before proceeding with the migration. {0}.");
 export const TDE_WIZARD_MIGRATION_CAPTION = localize('sql.migration.tde.wizard.optionscaption', "Certificate migration");
-export const TDE_WIZARD_MIGRATION_OPTION_ADS = localize('sql.migration.tde.wizard.optionads', "Export my certificates and private key and provide to target database for migration.");
+export const TDE_WIZARD_MIGRATION_OPTION_ADS = localize('sql.migration.tde.wizard.optionads', "Export my certificates and private key to the target.");
 export const TDE_WIZARD_MIGRATION_OPTION_ADS_CONFIRM = localize('sql.migration.tde.wizard.optionadsconfirm', "I give consent to use my credentials for accessing the certificates.");
-export const TDE_WIZARD_MIGRATION_OPTION_MANUAL = localize('sql.migration.tde.wizard.optionmanual', "I don't want Azure Data Studio to export the certificates. I will manually do it myself.");
+export const TDE_WIZARD_MIGRATION_OPTION_MANUAL = localize('sql.migration.tde.wizard.optionmanual', "I don't want Azure Data Studio to export the certificates.");
 export const TDE_BUTTON_CAPTION = localize('sql.migration.tde.button.caption', "Edit");
 export const TDE_WIZARD_MSG_MANUAL = localize('sql.migration.tde.msg.manual', "You have chosen to manually migrate certificates.");
 export const TDE_WIZARD_MSG_TDE = localize('sql.migration.tde.msg.tde', "You have given access to Azure Data Studio to migrate the encryption certificates and database.");
 export const TDE_WIZARD_MSG_EMPTY = localize('sql.migration.tde.msg.empty', "No encrypted database selected.");
-export const TDE_RULE_ID = localize('sql.migration.tde.rule.id', "TdeEnabled");
 
 export function TDE_MIGRATION_ERROR(message: string): string {
 	return localize('sql.migration.starting.migration.error', "An error occurred while starting the certificate migration: '{0}'", message);
@@ -1324,7 +1323,7 @@ export function TDE_WIZARD_DATABASES_SELECTED(encryptedCount: number, totalCount
 
 export const TDE_WIZARD_MIGRATION_OPTION_MANUAL_WARNING = localize('sql.migration.tde.wizard.optionmanual.warning', "You must migrate the certificates before proceeding with the migration otherwise the migration will fail. {0}.");
 
-export const TDE_WIZARD_ADS_CERTS_INFO = localize('sql.migration.network.share.header.text', "Please enter a location where the SQL server will export the certificates. Please ensure the SQL Server service has access to this path. The current user should have administrator privileges on the computer where this network path is.");
+export const TDE_WIZARD_ADS_CERTS_INFO = localize('sql.migration.network.share.header.text', "Please enter a location where the SQL server will export the certificates. Also verify that SQL Server service has write access to this path and the current user should have administrator privileges on the computer where this network path is.");
 
 export const TDE_WIZARD_CERTS_NETWORK_SHARE_LABEL = localize('sql.migration.tde.wizard.network.share.label', "Network path for certificate");
 export const TDE_WIZARD_CERTS_NETWORK_SHARE_PLACEHOLDER = localize('sql.migration.tde.wizard.network.share.placeholder', "Enter network path");

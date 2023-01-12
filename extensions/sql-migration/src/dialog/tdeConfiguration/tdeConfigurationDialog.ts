@@ -70,6 +70,7 @@ export class TdeConfigurationDialog {
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'margin-top': '8px',
+				'text-align': 'justify'
 			},
 			links: [{
 				text: constants.LEARN_MORE,
@@ -201,7 +202,8 @@ export class TdeConfigurationDialog {
 				style: 'information',
 				CSSStyles: {
 					...styles.BODY_CSS,
-					'margin': '4px 14px 0px 14px'
+					'margin': '4px 14px 0px 14px',
+					'text-align': 'justify'
 				}
 			}).component();
 
