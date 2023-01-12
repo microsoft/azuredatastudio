@@ -11,7 +11,6 @@ import * as styles from '../../constants/styles';
 import * as utils from '../../api/utils';
 import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
 
-
 export class TdeConfigurationDialog {
 
 	private dialog: azdata.window.Dialog | undefined;
@@ -22,10 +21,12 @@ export class TdeConfigurationDialog {
 	private _adsMethodConfirmationContainer!: azdata.FlexContainer;
 	private _adsConfirmationCheckBox!: azdata.CheckBoxComponent;
 	private _manualMethodWarningContainer!: azdata.FlexContainer;
-
 	private _networkPathText!: azdata.InputBoxComponent;
+	private _onClosed: () => void;
 
-	constructor(public skuRecommendationPage: SKURecommendationPage, public wizard: azdata.window.Wizard, public migrationStateModel: MigrationStateModel) {
+	constructor(public skuRecommendationPage: SKURecommendationPage, public wizard: azdata.window.Wizard, public migrationStateModel: MigrationStateModel,
+		onClosed: () => void) {
+		this._onClosed = onClosed;
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
@@ -296,7 +297,7 @@ export class TdeConfigurationDialog {
 		this._networkPathText.required = useAds;
 	}
 
-	public async openDialog(dialogName?: string) {
+	public async openDialog(dialogName?: string,) {
 		if (!this._isOpen) {
 
 			this.migrationStateModel.tdeMigrationConfig.configurationShown();
@@ -317,12 +318,16 @@ export class TdeConfigurationDialog {
 						if (this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates()) {
 							this.migrationStateModel.tdeMigrationConfig._networkPath = this._networkPathText.value ?? '';
 						}
+						this._onClosed();
 					})
 			);
 
 			this._disposables.push(
 				this.dialog.cancelButton.onClick(
-					() => this._isOpen = false));
+					() => {
+						this._isOpen = false;
+						this._onClosed();
+					}));
 
 			const promise = this.initializeDialog(this.dialog);
 			azdata.window.openDialog(this.dialog);

@@ -18,7 +18,6 @@ import { collectTargetDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
 import { TdeMigrationDialog } from '../dialog/tdeConfiguration/tdeMigrationDialog';
 
-
 const TDE_MIGRATION_BUTTON_INDEX = 1;
 
 export class TargetSelectionPage extends MigrationWizardPage {
@@ -213,7 +212,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				};
 				return false;
 			}
-
 
 			return true;
 		});

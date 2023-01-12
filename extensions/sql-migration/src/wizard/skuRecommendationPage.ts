@@ -371,7 +371,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				'margin': '0',
 			}
 		}).component();
-		this._tdeConfigurationDialog = new TdeConfigurationDialog(this, this.wizard, this.migrationStateModel);
+		this._tdeConfigurationDialog = new TdeConfigurationDialog(this, this.wizard, this.migrationStateModel, () => this._onTdeConfigClosed());
 		this._disposables.push(editButton.onDidClick(
 			async (e) => await this._tdeConfigurationDialog.openDialog()));
 
@@ -821,9 +821,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				if (this.migrationStateModel.tdeMigrationConfig.hasTdeEnabledDatabases()) {
 					//Set the text when there are encrypted databases.
 
-					const tdeMsg = (this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAdsConfirmed) ? constants.TDE_WIZARD_MSG_TDE : constants.TDE_WIZARD_MSG_MANUAL;
-					this._tdedatabaseSelectedHelperText.value = constants.TDE_MSG_DATABASES_SELECTED(encryptedDbFound.length, tdeMsg);
-
 					if (!this.migrationStateModel.tdeMigrationConfig.shownBefore()) {
 						await this._tdeConfigurationDialog.openDialog();
 					}
@@ -836,6 +833,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		await utils.updateControlDisplay(this._tdeInfoContainer, this.migrationStateModel.tdeMigrationConfig.hasTdeEnabledDatabases());
 	}
+
+	private _onTdeConfigClosed() {
+		const tdeMsg = (this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAdsConfirmed()) ? constants.TDE_WIZARD_MSG_TDE : constants.TDE_WIZARD_MSG_MANUAL;
+		this._tdedatabaseSelectedHelperText.value = constants.TDE_MSG_DATABASES_SELECTED(this.migrationStateModel.tdeMigrationConfig.getTdeEnabledDatabasesCount(), tdeMsg);
+	}
+
 	private _matchWithEncryptedDatabases(encryptedDbList: string[]): boolean {
 		var currentTdeDbs = this._previousMiTdeMigrationConfig.getTdeEnabledDatabases();
 

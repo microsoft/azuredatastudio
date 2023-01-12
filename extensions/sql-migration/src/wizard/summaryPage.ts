@@ -164,13 +164,8 @@ export class SummaryPage extends MigrationWizardPage {
 					this.migrationStateModel._nodeNames.join(', ')));
 		}
 
-
 		this.wizard.registerNavigationValidator(async (pageChangeInfo) => {
 			this.wizard.message = { text: '' };
-			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
-				return true;
-			}
-
 			return true;
 		});
 	}
