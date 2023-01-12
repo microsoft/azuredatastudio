@@ -1407,5 +1407,5 @@ export function TDE_MIGRATE_STATUS_ERROR(state: string, error: string): string {
 }
 
 export function TDE_COMPLETED_STATUS(completed: number, total: number): string {
-	return localize('sql.migration.tde.progress.update', `${completed} of ${total} completed`);
+	return localize('sql.migration.tde.progress.update', "{0} of {1} completed", completed, total);
 }
