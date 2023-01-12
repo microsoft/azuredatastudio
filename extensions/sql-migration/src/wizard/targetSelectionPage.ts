@@ -1039,17 +1039,23 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 	private _getSourceTargetMappingErrors(): string[] {
 		// Validate source/target database mappings:
-		const errors: string[] = [];
+		var errors: string[] = [];
+		const collationErrors: string[] = [];
 		const targetDatabaseKeys = new Map<string, string>();
 		const migrationDatabaseCount = this._azureResourceTable.dataValues?.length ?? 0;
 		this.migrationStateModel._targetDatabaseNames = [];
+		const databaseInfosForMigration = new Map(this.migrationStateModel._databaseInfosForMigration.map(o => [o.databaseName, o]));
+
 		if (migrationDatabaseCount === 0) {
 			errors.push(constants.SQL_TARGET_MAPPING_ERROR_MISSING_TARGET);
 		} else {
 			for (let i = 0; i < this.migrationStateModel._databasesForMigration.length; i++) {
 				const sourceDatabaseName = this.migrationStateModel._databasesForMigration[i];
+				const sourceDatabaseInfo = databaseInfosForMigration.get(sourceDatabaseName);
 				const targetDatabaseInfo = this.migrationStateModel._sourceTargetMapping.get(sourceDatabaseName);
 				const targetDatabaseName = targetDatabaseInfo?.databaseName;
+				const sourceDatabaseCollation = sourceDatabaseInfo?.databaseCollation;
+				const targetDatabaseCollation = targetDatabaseInfo?.databaseCollation;
 				if (targetDatabaseName && targetDatabaseName.length > 0) {
 					if (!targetDatabaseKeys.has(targetDatabaseName)) {
 						targetDatabaseKeys.set(targetDatabaseName, sourceDatabaseName);
@@ -1063,12 +1069,28 @@ export class TargetSelectionPage extends MigrationWizardPage {
 								sourceDatabaseName,
 								mappedSourceDatabaseName));
 					}
+
+					// Collation validation
+					if (!this._isCollationSame(sourceDatabaseCollation, targetDatabaseCollation)) {
+						collationErrors.push(
+							constants.SQL_TARGET_SOURCE_COLLATION_NOT_SAME(
+								sourceDatabaseName,
+								targetDatabaseName,
+								sourceDatabaseCollation,
+								targetDatabaseCollation));
+					}
 				} else {
 					// source/target has mapping
 					errors.push(constants.SQL_TARGET_CONNECTION_SOURCE_NOT_MAPPED(sourceDatabaseName));
 				}
 			}
 		}
+
+		if (collationErrors.length > 0) {
+			collationErrors.push(constants.SQL_MIGRATION_TROUBLESHOOTING_LINK);
+			errors = errors.concat(collationErrors);
+		}
+
 		return errors;
 	}
 
@@ -1082,5 +1104,13 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		await this._targetPasswordInputBox.validate();
 		await this._targetUserNameInputBox.validate();
 		await this._azureResourceTable.validate();
+	}
+
+	private _isCollationSame(sourceDatabaseCollation: string | undefined, targetDatabaseCollation: string | undefined): boolean {
+		return sourceDatabaseCollation !== undefined &&
+			sourceDatabaseCollation.length > 0 &&
+			targetDatabaseCollation !== undefined &&
+			targetDatabaseCollation.length > 0 &&
+			sourceDatabaseCollation.toLocaleLowerCase() === targetDatabaseCollation.toLocaleLowerCase();
 	}
 }
