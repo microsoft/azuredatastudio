@@ -418,7 +418,7 @@ export function SQL_TARGET_SOURCE_COLLATION_NOT_SAME(
 	targetDatabaseCollation: string | undefined): string {
 	return localize(
 		'sql.migration.wizard.target.source.collation.error',
-		"A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select a target database with the same collation as the source database.",
+		"A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.",
 		sourceDatabaseName,
 		targetDatabaseName,
 		sourceDatabaseCollation,
