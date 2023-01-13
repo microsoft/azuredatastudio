@@ -186,15 +186,15 @@
     <body>
       <trans-unit id="table.resizeColumn">
         <source xml:lang="en">Provide new column width</source>
-        <target state="new">Provide new column width</target>
+        <target state="translated">提供新的資料行寬度</target>
       </trans-unit>
       <trans-unit id="table.resizeColumn.invalid">
         <source xml:lang="en">Invalid column width</source>
-        <target state="new">Invalid column width</target>
+        <target state="translated">資料行寬度無效</target>
       </trans-unit>
       <trans-unit id="table.resizeColumn.negativeSize">
         <source xml:lang="en">Size cannot be 0 or negative</source>
-        <target state="new">Size cannot be 0 or negative</target>
+        <target state="translated">大小不可以是 0 或負數</target>
       </trans-unit>
     </body>
   </file>
@@ -256,10 +256,6 @@
         <source xml:lang="en">Enable automatic update checks. Azure Data Studio will check for updates automatically and periodically.</source>
         <target state="translated">啟用自動更新檢查。Azure Data Studio 會自動並定期檢查更新。</target>
       </trans-unit>
-      <trans-unit id="docNotFoundForUriError">
-        <source xml:lang="en">Could not open a notebook document for the specified URI.</source>
-        <target state="translated">無法開啟指定 URI 的筆記本文件。</target>
-      </trans-unit>
       <trans-unit id="enable locally">
         <source xml:lang="en">Please reload Azure Data Studio to enable this extension locally.</source>
         <target state="translated">請重新載入 Azure Data Studio 以在本機啟用此延伸模組。</target>
@@ -310,10 +306,6 @@
       <trans-unit id="notebook.cellTitle">
         <source xml:lang="en">The notebook cell title menu</source>
         <target state="translated">筆記本儲存格標題功能表</target>
-      </trans-unit>
-      <trans-unit id="notebook.cellToolbarLocation.compatibilityDescription">
-        <source xml:lang="en">Where the cell toolbar should be shown, or whether it should be hidden. Note: This setting is only enabled for extension compatibility purposes, and so does not affect anything.</source>
-        <target state="translated">儲存格工具列應顯示在何處，或是否應隱藏。注意: 此設定僅針對延伸模組相容性目的啟用，因此不會影響任何項目。</target>
       </trans-unit>
       <trans-unit id="notebook.title">
         <source xml:lang="en">The notebook title menu</source>
@@ -465,17 +457,9 @@ Default Skipped Commands:
         <source xml:lang="en">Would you like to change Azure Data Studio's UI language to {0} and restart?</source>
         <target state="translated">您想要變更 Azure Data Studio 的 UI 語言為 {0} 並重新啟動嗎?</target>
       </trans-unit>
-      <trans-unit id="vscodeDocCreationFailedError">
-        <source xml:lang="en">Failed to create notebook document.</source>
-        <target state="translated">無法建立筆記本文件。</target>
-      </trans-unit>
-      <trans-unit id="vscodeFunctionalityNotSupportedError">
-        <source xml:lang="en">This VS Code functionality is not supported in Azure Data Studio.</source>
-        <target state="translated">Azure Data Studio 不支持此 VS Code 功能。</target>
-      </trans-unit>
-      <trans-unit id="vscodeInvalidArgumentsError">
-        <source xml:lang="en">Invalid arguments.</source>
-        <target state="translated">無效的引數。</target>
+      <trans-unit id="vscodeNotebooksNotSupportedError">
+        <source xml:lang="en">VS Code notebook extensions are not supported in Azure Data Studio.</source>
+        <target state="translated">Azure Data Studio 中不支援 VS Code 筆記本延伸模組。</target>
       </trans-unit>
       <trans-unit id="watermark.newNotebook">
         <source xml:lang="en">New Notebook</source>
@@ -1004,14 +988,6 @@ Default Skipped Commands:
       <trans-unit id="navigationProviderRequired">
         <source xml:lang="en">A NavigationProvider with valid providerId must be passed to this method</source>
         <target state="translated">必須將具有有效 providerId 的 NavigationProvider 傳遞給此方法</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/api/common/notebooks/vscodeExecuteProvider" source-language="en" datatype="plaintext" target-language="zh-Hant">
-    <body>
-      <trans-unit id="errorStartBeforeReady">
-        <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
-        <target state="translated">無法啟動工作階段，管理員尚未初始化</target>
       </trans-unit>
     </body>
   </file>
@@ -3543,7 +3519,7 @@ Default Skipped Commands:
         <target state="translated">重設縮放</target>
       </trans-unit>
       <trans-unit id="epCompare.zoomToFit">
-        <source xml:lang="en">Zoom to fit</source>
+        <source xml:lang="en">Zoom to Fit</source>
         <target state="translated">縮放至適當比例</target>
       </trans-unit>
       <trans-unit id="executionPlanComparison.bottomPlanDiagram.name">
@@ -3635,11 +3611,11 @@ Default Skipped Commands:
         <target state="translated">若為 true，會在暫留時啟用執行計畫暫留的工具提示。若為 false，則會在節點點擊或 F3 按鍵時顯示工具提示。</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareCommandOriginalValue">
-        <source xml:lang="en">Compare execution plans</source>
+        <source xml:lang="en">Compare Execution Plans</source>
         <target state="translated">比較執行計畫</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareCommandValue">
-        <source xml:lang="en">Compare execution plans</source>
+        <source xml:lang="en">Compare Execution Plans</source>
         <target state="translated">比較執行計畫</target>
       </trans-unit>
       <trans-unit id="executionPlanConfigurationTitle">
@@ -3767,7 +3743,7 @@ Default Skipped Commands:
         <target state="translated">執行計畫 {0}</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareExecutionPlanAction">
-        <source xml:lang="en">Compare execution plan</source>
+        <source xml:lang="en">Compare Execution Plan</source>
         <target state="translated">比較執行計畫</target>
       </trans-unit>
       <trans-unit id="executionPlanContextMenuDisableTooltip">
@@ -3791,7 +3767,7 @@ Default Skipped Commands:
         <target state="translated">已啟用工具提示</target>
       </trans-unit>
       <trans-unit id="executionPlanFitGraphLabel">
-        <source xml:lang="en">Zoom to fit</source>
+        <source xml:lang="en">Zoom to Fit</source>
         <target state="translated">縮放至適當比例</target>
       </trans-unit>
       <trans-unit id="executionPlanHighlightExpensiveOperationAction">
@@ -5114,6 +5090,10 @@ Error: {1}</source>
         <source xml:lang="en">The maximum number of changes stored in the undo history for the notebook Rich Text editor.</source>
         <target state="translated">筆記本 RTF 文字編輯器復原歷程記錄中儲存的變更數目上限。</target>
       </trans-unit>
+      <trans-unit id="notebook.renderTablesInHtml">
+        <source xml:lang="en">Display and save tables in HTML format in text cells instead of converting to markdown tables.</source>
+        <target state="translated">在文字儲存格中以 HTML 格式顯示和儲存資料表，而不是轉換成 Markdown 資料表。</target>
+      </trans-unit>
       <trans-unit id="notebook.richTextModeDescription">
         <source xml:lang="en">Text is displayed as Rich Text (also known as WYSIWYG).</source>
         <target state="translated">文字顯示為 RTF 文字 (也稱為 WYSIWYG)。</target>
@@ -5994,6 +5974,10 @@ Error: {1}</source>
         <source xml:lang="en">Chart</source>
         <target state="translated">圖表</target>
       </trans-unit>
+      <trans-unit id="copyHeaders">
+        <source xml:lang="en">Copy Headers</source>
+        <target state="translated">複製標頭</target>
+      </trans-unit>
       <trans-unit id="copySelection">
         <source xml:lang="en">Copy</source>
         <target state="translated">複製</target>
@@ -6274,6 +6258,10 @@ Error: {1}</source>
         <source xml:lang="en">When true, XML output will be formatted when saving results as XML</source>
         <target state="translated">若設定為 true，會在將結果另存為 XML 時將輸出格式化</target>
       </trans-unit>
+      <trans-unit id="queryEditor.results.showActionBar">
+        <source xml:lang="en">Whether to show the action bar in the query results view</source>
+        <target state="translated">是否要在查詢結果檢視中顯示動作列</target>
+      </trans-unit>
       <trans-unit id="queryEditor.results.streaming">
         <source xml:lang="en">Enable results streaming; contains few minor visual issues</source>
         <target state="translated">啟用結果串流；包含些許輕微視覺效果問題</target>
@@ -6437,6 +6425,14 @@ Error: {1}</source>
       <trans-unit id="status.query.summaryText">
         <source xml:lang="en">Average: {0}  Count: {1}  Sum: {2}</source>
         <target state="translated">平均: {0} 計數: {1} 總和: {2}</target>
+      </trans-unit>
+      <trans-unit id="status.query.summaryTextNonNumeric">
+        <source xml:lang="en">Count: {0}  Distinct Count: {1}  Null Count: {2}</source>
+        <target state="translated">計數: {0}  相異計數: {1}  Null 計數: {2}</target>
+      </trans-unit>
+      <trans-unit id="status.query.summaryTooltip">
+        <source xml:lang="en">Average: {0}  Count: {1}  Distinct Count: {2}  Max: {3}  Min: {4}  Null Count: {5}  Sum: {6}</source>
+        <target state="translated">平均: {0}  計數: {1}  相異計數: {2}  最大值: {3}  最小值: {4}  Null 計數:  {5}  總和: {6}</target>
       </trans-unit>
       <trans-unit id="status.query.timeElapsed">
         <source xml:lang="en">Time Elapsed</source>
@@ -6830,7 +6826,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="notifyEncryption.message">
         <source xml:lang="en">Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.</source>
-        <target state="new">Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.</target>
+        <target state="translated">Azure Data Studio 現在會針對所有 SQL Server 連線預設啟用加密。除非您變更特定加密相關連線屬性，否則這可能會導致現有的連線無法再使用。{0}建議您檢閱下列連結以了解更多詳細資料。</target>
       </trans-unit>
       <trans-unit id="notifyEncryption.moreInfoLink">
         <source xml:lang="en">More information</source>
@@ -7773,6 +7769,46 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/connection/browser/passwordChangeDialog" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="passwordChangeDialog.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">取消</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.confirmPassword">
+        <source xml:lang="en">Confirm password:</source>
+        <target state="translated">確認密碼:</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.connecting">
+        <source xml:lang="en">Connecting</source>
+        <target state="translated">正在連線</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.errorHeader">
+        <source xml:lang="en">Failure when attempting to change password</source>
+        <target state="translated">嘗試變更密碼時失敗</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.errorPasswordMismatchErrorMessage">
+        <source xml:lang="en">Passwords entered do not match</source>
+        <target state="translated">輸入的密碼不相符</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.errorPasswordMismatchRecoveryInstructions">
+        <source xml:lang="en">Press OK and enter the exact same password in both boxes.</source>
+        <target state="translated">請按 [確定]，然後在兩個方塊中輸入完全相同的密碼。</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.newPassword">
+        <source xml:lang="en">New password:</source>
+        <target state="translated">新密碼:</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">確定</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.title">
+        <source xml:lang="en">Change Password</source>
+        <target state="translated">變更密碼</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="newDashboardTab.cancel">
@@ -8240,6 +8276,10 @@ Error: {1}</source>
         <source xml:lang="en">Please select a connection to run cells for this kernel</source>
         <target state="translated">請選取要為此核心執行資料格的連線</target>
       </trans-unit>
+      <trans-unit id="savedKernelNotSupported">
+        <source xml:lang="en">This notebook's '{0}' kernel is not supported. Defaulting to SQL kernel instead.</source>
+        <target state="translated">不支援此筆記本的 '{0}' 核心。改為預設為 SQL 核心。</target>
+      </trans-unit>
       <trans-unit id="shutdownClientSessionError">
         <source xml:lang="en">A client session error occurred when closing the notebook: {0}</source>
         <target state="translated">關閉筆記本時發生用戶端工作階段錯誤: {0}</target>
@@ -8357,16 +8397,16 @@ Error: {1}</source>
   <file original="src/sql/workbench/services/notebook/common/notebookRegistry" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="carbon.extension.contributes.notebook.executionTarget">
-        <source xml:lang="en">Optional execution target this magic indicates, for example Spark vs SQL</source>
-        <target state="translated">這個 magic 指示的選擇性執行目標，例如 Spark vs SQL</target>
+        <source xml:lang="en">Optional execution target this magic indicates, for example Python vs SQL</source>
+        <target state="translated">這個 magic 指示的選擇性執行目標，例如 Python vs SQL</target>
       </trans-unit>
       <trans-unit id="carbon.extension.contributes.notebook.fileExtensions">
         <source xml:lang="en">What file extensions should be registered to this notebook provider</source>
         <target state="translated">應向此筆記本提供者註冊的檔案副檔名</target>
       </trans-unit>
       <trans-unit id="carbon.extension.contributes.notebook.kernels">
-        <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, pyspark, sql</source>
-        <target state="translated">適用於像是 python3、pyspark、sql 等等的選擇性核心集</target>
+        <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, sql</source>
+        <target state="translated">適用於像是 Python3、SQL 等等的選擇性核心集</target>
       </trans-unit>
       <trans-unit id="carbon.extension.contributes.notebook.language">
         <source xml:lang="en">The cell language to be used if this cell magic is included in the cell</source>
@@ -8383,10 +8423,6 @@ Error: {1}</source>
       <trans-unit id="carbon.extension.contributes.notebook.standardKernels">
         <source xml:lang="en">What kernels should be standard with this notebook provider</source>
         <target state="translated">應為此筆記本提供者之標準的核心</target>
-      </trans-unit>
-      <trans-unit id="providerNotInRegistryError">
-        <source xml:lang="en">The specified provider '{0}' is not present in the notebook registry.</source>
-        <target state="translated">指定的提供者 '{0}' 不存在於筆記本登錄中。</target>
       </trans-unit>
       <trans-unit id="vscode.extension.contributes.notebook.languagemagics">
         <source xml:lang="en">Contributes notebook language.</source>
@@ -8732,13 +8768,17 @@ Error: {1}</source>
         <source xml:lang="en">OK</source>
         <target state="translated">確定</target>
       </trans-unit>
-      <trans-unit id="firewallRuleDialogDescription">
-        <source xml:lang="en">Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.</source>
-        <target state="translated">您的用戶端 IP 位址無法存取伺服器。登錄到 Azure 帳戶並建立新的防火牆規則以啟用存取權限。</target>
+      <trans-unit id="firewall.ruleName">
+        <source xml:lang="en">Rule name</source>
+        <target state="translated">規則名稱</target>
       </trans-unit>
-      <trans-unit id="firewallRuleHelpDescription">
-        <source xml:lang="en">Learn more about firewall settings</source>
-        <target state="translated">深入了解防火牆設定</target>
+      <trans-unit id="firewallRuleDescription">
+        <source xml:lang="en">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</source>
+        <target state="translated">需要防火牆規則才能存取 SQL Server 執行個體。按一下下方連結以建立新的防火牆規則。</target>
+      </trans-unit>
+      <trans-unit id="firewallRuleHelpLink">
+        <source xml:lang="en">Learn more about firewall rules</source>
+        <target state="translated">深入了解防火牆規則</target>
       </trans-unit>
       <trans-unit id="from">
         <source xml:lang="en">From</source>
