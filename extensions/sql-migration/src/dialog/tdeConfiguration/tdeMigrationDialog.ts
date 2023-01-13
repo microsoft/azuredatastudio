@@ -108,7 +108,7 @@ export class TdeMigrationDialog {
 						.component();
 					this._progressReportText = view.modelBuilder.text()
 						.withProps({
-							value: constants.EMPTY_STRING,
+							value: '',
 							CSSStyles: {
 								'font-size': '13px',
 								'font-weight': '400',
@@ -217,7 +217,7 @@ export class TdeMigrationDialog {
 
 	private async _loadMigrationResults(): Promise<void> {
 		const tdeMigrationResult = this._model.tdeMigrationConfig.lastTdeMigrationResult();
-		this._progressReportText.value = constants.EMPTY_STRING;
+		this._progressReportText.value = '';
 
 		if (tdeMigrationResult.state === TdeMigrationState.Pending) {
 			//First time it is called. Should auto start.
@@ -228,7 +228,7 @@ export class TdeMigrationDialog {
 				db => ({
 					name: db,
 					dbState: TdeDatabaseMigrationState.Running,
-					message: constants.EMPTY_STRING
+					message: ''
 				}
 				));
 
@@ -262,7 +262,7 @@ export class TdeMigrationDialog {
 			db => ({
 				name: db,
 				dbState: TdeDatabaseMigrationState.Running,
-				message: constants.EMPTY_STRING
+				message: ''
 			}
 			));
 
@@ -338,7 +338,7 @@ export class TdeMigrationDialog {
 			this._retryMigrationButton.enabled = true;
 			this._copyButton.enabled = false;
 			this._dialog!.okButton.enabled = false;
-			this._progressReportText.value = constants.EMPTY_STRING;
+			this._progressReportText.value = '';
 		}
 
 		this._headingText.value = constants.TDE_MIGRATE_RESULTS_HEADING_COMPLETED;
@@ -368,7 +368,7 @@ export class TdeMigrationDialog {
 
 		const msg = statusMessages.length > 0
 			? statusMessages.join(EOL)
-			: constants.EMPTY_STRING;
+			: '';
 		text.value = msg;
 	}
 
@@ -386,7 +386,7 @@ export class TdeMigrationDialog {
 					},
 					{
 						value: 'image',
-						name: constants.EMPTY_STRING,
+						name: '',
 						type: azdata.ColumnType.icon,
 						width: 20,
 						headerCssClass: 'no-borders display-none',

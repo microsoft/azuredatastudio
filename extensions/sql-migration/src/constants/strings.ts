@@ -48,7 +48,6 @@ export function WIZARD_TITLE(instanceName: string): string {
 	return localize('sql-migration.wizard.title', "Migrate '{0}' to Azure SQL", instanceName);
 }
 // //#endregion
-export const EMPTY_STRING = localize('sql.migration.text.empty', "");
 
 // Save and close
 export const SAVE_AND_CLOSE = localize('sql.migration.save.close', "Save and close");
