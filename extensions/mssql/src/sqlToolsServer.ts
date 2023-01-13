@@ -58,7 +58,7 @@ export class SqlToolsServer {
 			const installationComplete = Date.now();
 			let serverOptions = await generateServerOptions(context.extensionContext.logPath, serverPath);
 			let clientOptions = getClientOptions(context);
-			this.client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
+			this.client = new SqlOpsDataClient('mssql', Constants.serviceName, serverOptions, clientOptions);
 			const processStart = Date.now();
 			const clientReadyPromise = this.client.onReady().then(() => {
 				const processEnd = Date.now();
@@ -196,28 +196,6 @@ function getClientOptions(context: AppContext): ClientOptions {
 			ExecutionPlanServiceFeature,
 			TdeMigrationService.asFeature(context),
 		],
-		outputChannel: new CustomOutputChannel()
+		outputChannel: outputChannel
 	};
-}
-
-class CustomOutputChannel implements vscode.OutputChannel {
-	name: string;
-	append(value: string): void {
-		console.log(value);
-	}
-	appendLine(value: string): void {
-		console.log(value);
-	}
-	clear(): void {
-	}
-	show(preserveFocus?: boolean): void;
-	show(column?: vscode.ViewColumn, preserveFocus?: boolean): void;
-	show(column?: any, preserveFocus?: any) {
-	}
-	hide(): void {
-	}
-	dispose(): void {
-	}
-	replace(_value: string): void {
-	}
 }

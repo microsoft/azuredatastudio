@@ -150,6 +150,17 @@
             "Verbose"
           ]
         },
+        "mssql.trace.server": {
+          "type": "string",
+          "scope": "window",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "%mssql.tracing.desc%"
+        },
         "mssql.logRetentionMinutes": {
           "type": "number",
           "default": 10080,
