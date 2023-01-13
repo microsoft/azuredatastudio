@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "계정을 캐시에 추가하는 동안 오류가 발생했습니다.",
 			"azure.cacheErrorGet": "캐시에서 계정을 가져올 때 오류 발생",
 			"azure.cacheErrorParse": "캐시에서 계정을 구문 분석하는 동안 오류 발생",
-			"azure.cacheErrrorRemove": "캐시에서 계정을 제거하는 동안 오류가 발생했습니다.",
 			"azure.microsoftAccountDisplayName": "Microsoft 계정",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "인증 관련 오류가 발생했거나 토큰이 시스템에서 삭제되었습니다. 계정을 다시 Azure Data Studio에 추가해 보세요.",
@@ -22,7 +21,6 @@
 			"azure.responseError": "오류로 인해 토큰 검색에 실패했습니다. 자세한 내용은 [개발자 도구 열기]({0})를 참조하세요.",
 			"azure.tenantNotFound": "ID가 '{0}'인 지정된 테넌트를 찾을 수 없습니다.",
 			"azureAuth.unidentifiedError": "Azure 인증에서 식별되지 않은 오류 발생",
-			"azureWorkAccountDisplayName": "회사 또는 학교 계정",
 			"azurecore.consentDialog.body": "'{0}({1})' 테넌트에서는 {2} 리소스에 액세스하려면 다시 재인증해야 합니다. [열기]를 눌러 인증 프로세스를 시작합니다.",
 			"azurecore.consentDialog.cancel": "취소",
 			"azurecore.consentDialog.ignore": "테넌트 무시",
@@ -99,6 +97,12 @@
 		},
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
 			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL 관리형 인스턴스 - Azure Arc"
+		},
+		"dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider": {
+			"azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel": "전용 SQL 풀"
+		},
+		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
+			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
 		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "리소스를 찾을 수 없음"
@@ -188,6 +192,8 @@
 			"azurecore.norwaywest": "노르웨이 서부",
 			"azurecore.postgresServer": "Azure Database for PostgreSQL 서버",
 			"azurecore.reload": "다시 로드",
+			"azurecore.reloadChoice": "Azure 데이터 스튜디오 다시 로드",
+			"azurecore.reloadPrompt": "인증 라이브러리가 변경되었습니다. Azure Data Studio를 다시 로드하세요.",
 			"azurecore.requiresReload": "이 설정을 수정하려면 모든 변경 내용이 적용되도록 창을 다시 로드해야 합니다.",
 			"azurecore.resourceGroup": "리소스 그룹",
 			"azurecore.resourceType": "리소스 종류",
@@ -233,6 +239,7 @@
 			"azure.resource.view.title": "Azure(미리 보기)",
 			"azure.tenant.config.filter.description": "Azure 리소스를 쿼리할 때 무시할 테넌트 ID 목록입니다. 각 요소는 테넌트 ID입니다.",
 			"azure.title": "Azure",
+			"config.authenticationLibrary": "AAD 인증 흐름에 사용되는 라이브러리입니다. 이 옵션을 변경한 후 ADS를 다시 시작하세요.",
 			"config.azureAccountConfigurationSection": "Azure 계정 구성",
 			"config.azureAuthMethodConfigurationSection": "Azure 인증 방법",
 			"config.azureCodeGrantMethod": "코드 부여 방법",

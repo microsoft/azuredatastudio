@@ -11337,7 +11337,6 @@
 			"dataExplorer.context": "O menu de contexto do item dataexplorer",
 			"dataGrid.context": "O menu de contexto do item da grade de dados",
 			"default": "Habilitar verificações de atualização automática. O Azure Data Studio verificará se há atualizações automaticamente e periodicamente.",
-			"docNotFoundForUriError": "Não foi possível abrir um documento do bloco de anotações para o URI especificado.",
 			"enable locally": "Recarregue o Azure Data Studio para habilitar essa extensão localmente.",
 			"enable remote": "Recarregue o Azure Data Studio para habilitar essa extensão em {0}.",
 			"enableWindowsBackgroundUpdates": "Habilitar o download e a instalação de novas versões do Azure Data Studio no segundo plano no Windows",
@@ -11350,7 +11349,6 @@
 			"miinstallVsix": "Instalar extensão do pacote VSIX",
 			"newQuery": "Nova consulta",
 			"notebook.cellTitle": "O menu de título da célula do bloco de anotações",
-			"notebook.cellToolbarLocation.compatibilityDescription": "Onde a barra de ferramentas da célula deve ser mostrada ou se ela deve ser ocultada. Observação: essa configuração só está habilitada para fins de compatibilidade de extensão e, portanto, não afeta nada.",
 			"notebook.title": "O menu de título do bloco de anotações",
 			"notebook.toolbar": "O menu da barra de ferramentas do bloco de anotações.",
 			"objectExplorer.context": "O menu de contexto do item do explorador de objetos",
@@ -11377,9 +11375,7 @@
 			"terminal.integrated.inheritEnv": "Se os novos shells devem herdar seu ambiente do Azure Data Studio, o que pode gerar um shell de entrada para garantir que $PATH e outras variáveis de desenvolvimento sejam inicializadas. Isso não tem efeito no Windows.",
 			"uninstallExtensionComplete": "Recarregue o Azure Data Studio para concluir a desinstalação da extensão {0}.",
 			"updateLocale": "Deseja alterar o idioma da interface do usuário do Azure Data Studio para {0} e reiniciar?",
-			"vscodeDocCreationFailedError": "Falha ao criar o documento do bloco de anotações.",
-			"vscodeFunctionalityNotSupportedError": "Essa funcionalidade do VS Code não é suportada no Azure Data Studio.",
-			"vscodeInvalidArgumentsError": "Argumentos inválidos.",
+			"vscodeNotebooksNotSupportedError": "As extensões de notebook do VS Code não são suportadas no Azure Data Studio.",
 			"watermark.newNotebook": "Novo bloco de anotações",
 			"watermark.newSqlFile": "Novo arquivo SQL",
 			"workspace.trust.description": "Controla se a confiança do workspace está habilitada ou não dentro Azure Data Studio.",
@@ -11530,9 +11526,6 @@
 		},
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
 			"navigationProviderRequired": "Um provedor de navegação com provedor válidoDeve ser passado para este método"
-		},
-		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "Não é possível iniciar uma sessão. O gerente ainda não foi inicializado"
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "Limpar todas as contas salvas",
@@ -12293,8 +12286,8 @@
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
 			"executionPlan.tooltips.enableOnHoverTooltips": "Quando true, habilita dicas de ferramenta ao passar o mouse para o plano de execução. Quando false, as dicas de ferramenta são mostradas ao clicar no nó ou pressionar tecla F3.",
-			"executionPlanCompareCommandOriginalValue": "Comparar planos de execução",
-			"executionPlanCompareCommandValue": "Comparar planos de execução",
+			"executionPlanCompareCommandOriginalValue": "Comparar Planos de Execução",
+			"executionPlanCompareCommandValue": "Comparar Planos de Execução",
 			"executionPlanConfigurationTitle": "Plano de Execução"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
@@ -12333,7 +12326,7 @@
 		"sql/workbench/contrib/executionPlan/browser/executionPlanView": {
 			"executionPlan.SaveFileDescription": "Arquivos de Plano de Execução",
 			"executionPlan.diagram.ariaLabel": "Plano de Execução {0}",
-			"executionPlanCompareExecutionPlanAction": "Comparar o plano de execução",
+			"executionPlanCompareExecutionPlanAction": "Comparar Plano de Execução",
 			"executionPlanContextMenuDisableTooltip": "Desabilitar Dicas de Ferramenta",
 			"executionPlanContextMenuEnableTooltip": "Habilitar Dicas de Ferramenta",
 			"executionPlanCustomZoom": "Zoom Personalizado",
@@ -12702,6 +12695,7 @@
 			"notebook.markdownModeDescription": "O texto é exibido como Markdown.",
 			"notebook.markdownPreviewLineHeight": "Controla a altura da linha usada na versão prévia de markdown do notebook. Este número é relativo ao tamanho da fonte.",
 			"notebook.maxRichTextUndoHistory": "O número máximo de alterações armazenadas no histórico de desfazer do editor de Rich Text do bloco de anotações.",
+			"notebook.renderTablesInHtml": "Exiba e salve tabelas no formato HTML em células de texto em vez de converter em tabelas de markdown.",
 			"notebook.richTextModeDescription": "O texto é exibido como Rich Text (também conhecido como WYSIWYG).",
 			"notebook.saveConnectionName": "(Versão Prévia) Salve o nome da conexão nos metadados do notebook.",
 			"notebook.showAllKernels": "(Versão Prévia) Mostrar todos os kernels para o provedor do notebook atual.",
@@ -12947,6 +12941,7 @@
 		},
 		"sql/workbench/contrib/query/browser/actions": {
 			"chart": "Gráfico",
+			"copyHeaders": "Copiar Cabeçalhos",
 			"copySelection": "Copiar",
 			"copyWithHeaders": "Copiar Com Cabeçalhos",
 			"jsonEncoding": "A codificação de resultados não será salva ao exportar para JSON. Lembre-se de salvar com a codificação desejada após a criação do arquivo.",
@@ -13022,6 +13017,7 @@
 			"queryEditor.results.saveAsMarkdown.lineSeparator": "Caracteres a serem usados para separar linhas ao exportar para Markdown, o padrão é terminações de linhas do sistema",
 			"queryEditor.results.saveAsXml.encoding": "Codificação de arquivo usada ao salvar os resultados como XML",
 			"queryEditor.results.saveAsXml.formatted": "Quando true, a saída XML será formatada ao salvar resultados como XML",
+			"queryEditor.results.showActionBar": "Se a barra de ações deve ser mostrada na visualização dos resultados da consulta",
 			"queryEditor.results.streaming": "Habilitar streaming de resultados; contém alguns problemas visuais menores",
 			"queryEditor.showConnectionInfoInTitle": "Controla se deseja mostrar a informação de conexão para uma guia no título.",
 			"queryEditor.tabColorMode": "Controla como colorir as guias com base no grupo de servidores de sua conexão ativa",
@@ -13067,6 +13063,8 @@
 			"status.query.selection-summary": "Resumo da Seleção",
 			"status.query.status": "Status de Execução",
 			"status.query.summaryText": "Média: {0}  Contagem: {1}  Soma: {2}",
+			"status.query.summaryTextNonNumeric": "Contagem: {0}  Contagem distinta: {1}  Contagem nula: {2}",
+			"status.query.summaryTooltip": "Média: {0}  Contagem: {1}  Contagem Distinta: {2}  Máx: {3}  Mín: {4}  Contagem Nula: {5}  Soma: {6}",
 			"status.query.timeElapsed": "Tempo Decorrido"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13583,6 +13581,7 @@
 			"deleteCellFailed": "Falha ao excluir a célula.",
 			"injectedParametersMsg": "# Injected-Parameters\r\n",
 			"kernelRequiresConnection": "Selecione uma conexão para executar células para este kernel",
+			"savedKernelNotSupported": "Não há suporte para o kernel '{0}' deste notebook. Em vez disso, o padrão é o kernel do SQL.",
 			"shutdownClientSessionError": "Ocorreu um erro de sessão de cliente ao fechar o notebook: {0}",
 			"startSessionFailed": "Não foi possível iniciar a sessão: {0}"
 		},
@@ -13619,14 +13618,13 @@
 			"unknownCellType": "Tipo de célula {0} desconhecido"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "Destino de execução opcional que essa mágic indica, por exemplo, Spark versus SQL",
+			"carbon.extension.contributes.notebook.executionTarget": "Alvo de execução opcional que essa mágica indica, por exemplo, Python versus SQL",
 			"carbon.extension.contributes.notebook.fileExtensions": "Quais extensões de arquivo devem ser registradas para este provedor de notebook?",
-			"carbon.extension.contributes.notebook.kernels": "Conjunto opcional de kernels que é válido para, por exemplo, python3, pyspark, SQL",
+			"carbon.extension.contributes.notebook.kernels": "Conjunto opcional de kernels para o qual isso é válido, por exemplo, python3, SQL",
 			"carbon.extension.contributes.notebook.language": "A linguagem de célula a ser usada se esta magic da célula estiver incluída na célula",
 			"carbon.extension.contributes.notebook.magic": "Nome do magic da célula, como '%%sql'.",
 			"carbon.extension.contributes.notebook.provider": "Identificador do provedor de notebook.",
 			"carbon.extension.contributes.notebook.standardKernels": "Quais kernels devem ser padrão com este provedor de notebook?",
-			"providerNotInRegistryError": "O provedor especificado '{0}' está ausente no registro do notebook.",
 			"vscode.extension.contributes.notebook.languagemagics": "Contribui com a linguagem do notebook.",
 			"vscode.extension.contributes.notebook.providersDescriptions": "Contribui com as descrições dos fornecedores de bloco de anotações."
 		},
@@ -13724,8 +13722,9 @@
 			"filewallRule": "Regra de firewall",
 			"firewall.cancel": "Cancelar",
 			"firewall.ok": "OK",
-			"firewallRuleDialogDescription": "Seu endereço IP de cliente não tem acesso ao servidor. Entre com uma conta Azure e crie uma regra de firewall para permitir o acesso.",
-			"firewallRuleHelpDescription": "Saiba mais sobre as configurações do firewall",
+			"firewall.ruleName": "Nome da regra",
+			"firewallRuleDescription": "É necessária uma regra de firewall para acessar a instância do SQL Server. Clique no link abaixo para criar uma nova regra de firewall.",
+			"firewallRuleHelpLink": "Saiba mais sobre as regras de firewall",
 			"from": "De",
 			"to": "Para"
 		},
@@ -13900,6 +13899,17 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "I&&ntrodução",
 			"showReleaseNotes": "Mostrar Introdução"
+		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "Cancelar",
+			"passwordChangeDialog.confirmPassword": "Confirmar senha:",
+			"passwordChangeDialog.connecting": "Conectando",
+			"passwordChangeDialog.errorHeader": "Falha ao tentar alterar a senha",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "As senhas digitadas não correspondem",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Pressione OK e insira exatamente a mesma senha nas duas caixas.",
+			"passwordChangeDialog.newPassword": "Nova senha:",
+			"passwordChangeDialog.ok": "OK",
+			"passwordChangeDialog.title": "Alterar Senha"
 		}
 	}
 }
