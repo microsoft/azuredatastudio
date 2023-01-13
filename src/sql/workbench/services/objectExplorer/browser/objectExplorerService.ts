@@ -214,7 +214,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public async updateObjectExplorerNodes(connection: IConnectionProfile, requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<void> {
 		const withPassword = await this._connectionManagementService.addSavedPassword(connection);
 		const connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, withPassword);
-		return await this.updateNewObjectExplorerNode(connectionProfile, requestStatus);
+		return this.updateNewObjectExplorerNode(connectionProfile, requestStatus);
 	}
 
 	public async deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void> {
@@ -390,9 +390,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private async callExpandOrRefreshFromProvider(provider: azdata.ObjectExplorerProviderBase, nodeInfo: azdata.ExpandNodeInfo, refresh: boolean = false): Promise<boolean> {
 		if (refresh) {
-			return await provider.refreshNode(nodeInfo);
+			return provider.refreshNode(nodeInfo);
 		} else {
-			return await provider.expandNode(nodeInfo);
+			return provider.expandNode(nodeInfo);
 		}
 	}
 
@@ -607,21 +607,21 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._nodeProviders[nodeProvider.supportedProviderId] = nodeProviders;
 	}
 
-	public async resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]> {
+	public resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]> {
 		// Always refresh the node if it has an error, otherwise expand it normally
 		let needsRefresh = !!parentTree.errorStateMessage;
-		return await this.expandOrRefreshTreeNode(session, parentTree, needsRefresh);
+		return this.expandOrRefreshTreeNode(session, parentTree, needsRefresh);
 	}
 
-	public async refreshTreeNode(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]> {
-		return await this.expandOrRefreshTreeNode(session, parentTree, true);
+	public refreshTreeNode(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]> {
+		return this.expandOrRefreshTreeNode(session, parentTree, true);
 	}
 
-	private async callExpandOrRefreshFromService(providerId: string, session: azdata.ObjectExplorerSession, node: TreeNode, refresh: boolean = false): Promise<azdata.ObjectExplorerExpandInfo | undefined> {
+	private callExpandOrRefreshFromService(providerId: string, session: azdata.ObjectExplorerSession, node: TreeNode, refresh: boolean = false): Promise<azdata.ObjectExplorerExpandInfo | undefined> {
 		if (refresh) {
-			return await this.refreshNode(providerId, session, node);
+			return this.refreshNode(providerId, session, node);
 		} else {
-			return await this.expandNode(providerId, session, node);
+			return this.expandNode(providerId, session, node);
 		}
 	}
 
@@ -808,7 +808,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		if (expandedState === TreeItemCollapsibleState.Expanded) {
 			await this._serverTreeView?.reveal(expandNode);
 		}
-		return await this._serverTreeView?.setExpandedState(expandNode, expandedState);
+		return this._serverTreeView?.setExpandedState(expandNode, expandedState);
 	}
 
 	private async setNodeSelected(treeNode?: TreeNode, selected?: boolean, clearOtherSelections?: boolean): Promise<void> {
@@ -823,7 +823,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		if (selected) {
 			await this._serverTreeView?.reveal(selectNode);
 		}
-		return await this._serverTreeView?.setSelected(selectNode, selected, clearOtherSelections);
+		return this._serverTreeView?.setSelected(selectNode, selected, clearOtherSelections);
 	}
 
 	private async getChildren(treeNode?: TreeNode): Promise<TreeNode[]> {
