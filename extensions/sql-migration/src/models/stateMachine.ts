@@ -392,7 +392,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async getDatabaseAssessments(targetType: MigrationTargetType[]): Promise<ServerAssessment> {
 		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
 		try {
-			const response = (await this.migrationService.getAssessments(ownerUri, this._databasesForAssessment))!;
+			const xEventsFilesFolderPath = '';		// to-do: collect by prompting the user in the UI - for now, blank = disabled
+			const response = (await this.migrationService.getAssessments(ownerUri, this._databasesForAssessment, xEventsFilesFolderPath))!;
 			this._assessmentApiResponse = response;
 			this._assessedDatabaseList = this._databasesForAssessment.slice();
 
