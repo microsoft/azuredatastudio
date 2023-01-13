@@ -166,6 +166,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private _sessions: { [sessionId: string]: SessionStatus };
 
 	private _onUpdateObjectExplorerNodes: Emitter<ObjectExplorerNodeEventArgs>;
+	private _onExpandCompleteWithoutNodes: Emitter<NodeExpandInfoWithProviderId>;
 
 	private _serverTreeView?: IServerTreeView;
 
@@ -178,6 +179,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		@ILogService private logService: ILogService
 	) {
 		this._onUpdateObjectExplorerNodes = new Emitter<ObjectExplorerNodeEventArgs>();
+		this._onExpandCompleteWithoutNodes = new Emitter<NodeExpandInfoWithProviderId>();
 		this._activeObjectExplorerNodes = {};
 		this._sessions = {};
 		this._providers = {};
@@ -247,7 +249,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				nodeStatus.expandEmitter.fire(expandResponse);
 			}
 		}
+
 		if (!foundSession) {
+			// Just fire reponse with empty nodes for example: request from standalone SQL instance
+			// TODO Need to investigate why we don't get nodes only 'sometimes'
+			this._onExpandCompleteWithoutNodes.fire(expandResponse);
 			this.logService.warn(`Cannot find node status for session: ${expandResponse.sessionId} and node path: ${expandResponse.nodePath}`);
 		}
 	}
@@ -417,36 +423,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						allProviders.push(...nodeProviders);
 					}
 
-					self._sessions[session.sessionId!].nodes[node.nodePath].expandEmitter.event((expandResult: NodeExpandInfoWithProviderId) => {
-						if (expandResult && expandResult.providerId) {
-							resultMap.set(expandResult.providerId, expandResult);
-							// If we got an error result back then send error our error event
-							// We only do this for the MSSQL provider
-							if (expandResult.errorMessage && expandResult.providerId === mssqlProviderName) {
-								const errorType = expandResult.errorMessage.indexOf('Object Explorer task didn\'t complete') !== -1 ? 'Timeout' : 'Other';
-								// For folders send the actual name of the folder (since the nodeTypeId isn't useful in this case and the names are controlled by us)
-								const nodeType = node.nodeTypeId === NodeType.Folder ? node.label : node.nodeTypeId;
-								this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.ObjectExplorerExpandError, undefined, errorType)
-									.withAdditionalProperties({
-										nodeType,
-										providerId: expandResult.providerId
-									}).send();
-							}
+					self._sessions[session.sessionId!].nodes[node.nodePath].expandEmitter.event(
+						(expandResult: NodeExpandInfoWithProviderId) =>
+							resolve(this.completedExpandRequest(expandResult, resultMap, node, newRequest, session, allProviders)));
 
-						} else {
-							this.logService.error('OE provider returns empty result or providerId');
-						}
+					self._onExpandCompleteWithoutNodes.event((expandResult: NodeExpandInfoWithProviderId) =>
+						resolve(this.completedExpandRequest(expandResult, resultMap, node, newRequest, session, allProviders)));
 
-						// When get all responses from all providers, merge results
-						if (resultMap.size === allProviders.length) {
-							resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
-
-							// Have to delete it after get all responses otherwise couldn't find session for not the first response
-							if (newRequest) {
-								delete self._sessions[session.sessionId!].nodes[node.nodePath];
-							}
-						}
-					});
 					if (newRequest) {
 						allProviders.forEach(provider => {
 							self.callExpandOrRefreshFromProvider(provider, {
@@ -472,6 +455,43 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				}
 			} else {
 				reject(`session cannot find to expand node. id: ${session.sessionId} nodePath: ${node.nodePath}`);
+			}
+		});
+	}
+
+	private completedExpandRequest(expandResult: NodeExpandInfoWithProviderId,
+		resultMap: Map<string, azdata.ObjectExplorerExpandInfo>,
+		node: TreeNode, newRequest: boolean,
+		session: azdata.ObjectExplorerSession,
+		allProviders: azdata.ObjectExplorerProviderBase[]): Promise<azdata.ObjectExplorerExpandInfo> {
+		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
+			if (expandResult && expandResult.providerId) {
+				resultMap.set(expandResult.providerId, expandResult);
+				// If we got an error result back then send error our error event
+				// We only do this for the MSSQL provider
+				if (expandResult.errorMessage && expandResult.providerId === mssqlProviderName) {
+					const errorType = expandResult.errorMessage.indexOf('Object Explorer task didn\'t complete') !== -1 ? 'Timeout' : 'Other';
+					// For folders send the actual name of the folder (since the nodeTypeId isn't useful in this case and the names are controlled by us)
+					const nodeType = node.nodeTypeId === NodeType.Folder ? node.label : node.nodeTypeId;
+					this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.ObjectExplorerExpandError, undefined, errorType)
+						.withAdditionalProperties({
+							nodeType,
+							providerId: expandResult.providerId
+						}).send();
+				}
+
+			} else {
+				this.logService.error('OE provider returns empty result or providerId');
+			}
+
+			// When get all responses from all providers, merge results
+			if (resultMap.size === allProviders.length) {
+				resolve(this.mergeResults(allProviders, resultMap, node.nodePath));
+
+				// Have to delete it after get all responses otherwise couldn't find session for not the first response
+				if (newRequest) {
+					delete this._sessions[session.sessionId!].nodes[node.nodePath];
+				}
 			}
 		});
 	}
@@ -724,6 +744,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			sessionId: sessionId
 		});
 		return response.nodes;
+	}
+
+	public registerOnExpandCompleted(handler: (response: azdata.ObjectExplorerExpandInfo) => any): void {
+		this._onExpandCompleteWithoutNodes.event(handler);
 	}
 
 	public getActiveConnectionNodes(): TreeNode[] {
