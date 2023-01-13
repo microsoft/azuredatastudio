@@ -13,7 +13,6 @@ import * as constants from '../constants/strings';
 import { logError, TelemetryViews } from '../telemtery';
 import { AdsMigrationStatus } from '../dashboard/tabBase';
 import { getMigrationMode, getMigrationStatus, getMigrationTargetType, hasRestoreBlockingReason, PipelineStatusCodes } from '../constants/helper';
-import { ServerInfo } from 'azdata';
 
 export type TargetServerType = azure.SqlVMServer | azureResource.AzureSqlManagedInstance | azure.AzureSqlDatabaseServer;
 
@@ -74,9 +73,20 @@ export function getSqlServerName(majorVersion: number): string | undefined {
 	}
 }
 
-export function isSqlServerVersion2014OrBelow(serverInfo: ServerInfo): boolean {
-	return serverInfo.serverMajorVersion! <= 12;
+export function isTargetSqlVm2014OrBelow(sqlVm: azure.SqlVMServer): boolean {
+	// sample image offers include:
+	// SQL2008-WS2012, SQL2008R2-WS2019, SQL2012-WS2016, SQL2014-WS2012R2, SQL2016-WS2019, SQL2017-WS2019, SQL2019-WS2022
+	const sqlImageOffer = sqlVm.properties.sqlImageOffer;
+
+	// parse image offer and extract version (assuming it is a valid image offer)
+	if (sqlImageOffer.toUpperCase().startsWith('SQL')) {
+		const version = parseInt(sqlImageOffer.substring(3, 7));
+		return version <= 2014;
+	}
+
+	return false;
 }
+
 
 export interface IPackageInfo {
 	name: string;
