@@ -834,7 +834,7 @@ declare module 'mssql' {
 		elapsedTime: string;
 	}
 
-	// SqlMigration interfaces  BEGIN -----------------------------------------------------------------------
+	// TDEMigration interfaces  BEGIN -----------------------------------------------------------------------
 	export interface TdeMigrationRequest {
 		encryptedDatabases: string[];
 		sourceSqlConnectionString: string;
@@ -864,5 +864,5 @@ declare module 'mssql' {
 			accessToken: string,
 			reportUpdate: (dbName: string, succeeded: boolean, message: string) => void): Promise<TdeMigrationResult>;
 	}
-	// SqlMigration interfaces END -----------------------------------------------------------------------
+	// TDEMigration interfaces END -----------------------------------------------------------------------
 }
