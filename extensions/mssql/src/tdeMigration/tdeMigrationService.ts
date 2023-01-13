@@ -75,17 +75,4 @@ export class TdeMigrationService implements mssql.ITdeMigrationService {
 
 		return undefined;
 	}
-
-	async getAssessments(ownerUri: string, databases: string[]): Promise<mssql.AssessmentResult | undefined> {
-		let params: contracts.SqlMigrationAssessmentParams = { ownerUri: ownerUri, databases: databases };
-		try {
-			return this.client.sendRequest(contracts.GetSqlMigrationAssessmentItemsRequest.type, params);
-		}
-		catch (e) {
-			this.client.logFailedRequest(contracts.GetSqlMigrationAssessmentItemsRequest.type, e);
-		}
-
-		return undefined;
-	}
-
 }
