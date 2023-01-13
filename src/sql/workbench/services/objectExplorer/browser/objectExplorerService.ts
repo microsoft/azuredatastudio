@@ -584,15 +584,15 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this.expandOrRefreshTreeNode(session, parentTree, needsRefresh);
 	}
 
-	public refreshTreeNode(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]> {
-		return this.expandOrRefreshTreeNode(session, parentTree, true);
+	public async refreshTreeNode(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]> {
+		return await this.expandOrRefreshTreeNode(session, parentTree, true);
 	}
 
-	private callExpandOrRefreshFromService(providerId: string, session: azdata.ObjectExplorerSession, node: TreeNode, refresh: boolean = false): Promise<azdata.ObjectExplorerExpandInfo | undefined> {
+	private async callExpandOrRefreshFromService(providerId: string, session: azdata.ObjectExplorerSession, node: TreeNode, refresh: boolean = false): Promise<azdata.ObjectExplorerExpandInfo | undefined> {
 		if (refresh) {
-			return this.refreshNode(providerId, session, node);
+			return await this.refreshNode(providerId, session, node);
 		} else {
-			return this.expandNode(providerId, session, node);
+			return await this.expandNode(providerId, session, node);
 		}
 	}
 
