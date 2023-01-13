@@ -446,24 +446,31 @@ export class SavePlanFile extends Action {
 	public override async run(context: ExecutionPlanView): Promise<void> {
 		const workspaceFolders = context.workspaceContextService.getWorkspace().folders;
 		const defaultFileName = 'plan';
+		const fileExtension = 'sqlplan'; //TODO: Get this extension from provider
 		let defaultUri: URI;
 
 		const lastUsedSavePath = this.storageService.get(SavePlanFile.LAST_USED_EXECUTION_PLAN_SAVE_PATH_STORAGE_KEY, StorageScope.GLOBAL);
 
 		if (lastUsedSavePath) {
-			defaultUri = joinPath(URI.file(lastUsedSavePath), defaultFileName);
+			defaultUri = joinPath(URI.file(lastUsedSavePath), `${defaultFileName}.${fileExtension}`);
 		} else {
 			if (workspaceFolders.length !== 0) {
-				defaultUri = URI.joinPath(workspaceFolders[0].uri, defaultFileName); // appending default file name to workspace uri
+				defaultUri = URI.joinPath(workspaceFolders[0].uri, `${defaultFileName}.${fileExtension}`); // appending default file name to workspace uri
 			} else {
-				defaultUri = URI.joinPath(await this.fileDialogService.defaultFolderPath(Schemas.file), defaultFileName);
+				defaultUri = URI.joinPath(await this.fileDialogService.defaultFolderPath(Schemas.file), `${defaultFileName}.${fileExtension}`);
 			}
+		}
+
+		let planNumber = 1;
+		while (await context.fileService.exists(defaultUri)) {
+			defaultUri = joinPath(URI.file(lastUsedSavePath), `${defaultFileName}${planNumber}.${fileExtension}`);
+			planNumber++;
 		}
 
 		const destination = await this.fileDialogService.showSaveDialog({
 			filters: [
 				{
-					extensions: ['sqlplan'], //TODO: Get this extension from provider
+					extensions: [fileExtension],
 					name: localize('executionPlan.SaveFileDescription', 'Execution Plan Files') //TODO: Get the names from providers.
 				}
 			],
