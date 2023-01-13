@@ -1264,7 +1264,7 @@ export interface ErrorDiagnosticsParameters {
 }
 
 export namespace DiagnosticsRequest {
-	export const type = new RequestType<ErrorDiagnosticsParameters, azdata.diagnostics.ErrorCodes, void, void>('diagnostics/errorHandler');
+	export const type = new RequestType<ErrorDiagnosticsParameters, azdata.diagnostics.ErrorDiagnosticsResponse, void, void>('diagnostics/errorHandler');
 }
 
 // ------------------------------- < Error Diagnostics > ------------------------------------
