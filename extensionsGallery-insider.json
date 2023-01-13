@@ -2787,14 +2787,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.12.2",
-							"lastUpdated": "11/7/2022",
+							"version": "1.13.0",
+							"lastUpdated": "1/13/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/datavirtualization-1.12.2.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/datavirtualization-1.13.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2802,15 +2802,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.12.0/README.md"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.13.0/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.12.0/package.json"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.13.0/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.12.0/LICENSE.txt"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.13.0/LICENSE.txt"
 								}
 							],
 							"properties": [
