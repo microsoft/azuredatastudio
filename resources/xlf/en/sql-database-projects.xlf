@@ -185,7 +185,7 @@
       <source xml:lang="en">dacpac Files</source>
     </trans-unit>
     <trans-unit id="dacpacNotOnSameDrive">
-      <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
+      <source xml:lang="en">Dacpac references need to be located on the same drive as the project file.</source>
     </trans-unit>
     <trans-unit id="dacpacReferenceElement">
       <source xml:lang="en">Dacpac reference</source>
@@ -739,7 +739,7 @@
       <source xml:lang="en">Publish to an existing {0}</source>
     </trans-unit>
     <trans-unit id="publishToNewAzureServer">
-      <source xml:lang="en">Publish to new Azure SQL logical server</source>
+      <source xml:lang="en">Publish to new Azure SQL logical server (Preview)</source>
     </trans-unit>
     <trans-unit id="publishToNewAzureServerFailed">
       <source xml:lang="en">Failed to publish to new Azure SQL server. {0}</source>
@@ -898,13 +898,13 @@
       <source xml:lang="en">SQL connection string</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.DotnetInstallationConfirmation">
-      <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.</source>
+      <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK location in settings if already installed.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.Install">
       <source xml:lang="en">Install</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
-      <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.</source>
+      <source xml:lang="en">Currently installed .NET SDK version is {0}, which is not supported. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK supported version location in settings if already installed.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.UpdateDotnetLocation">
       <source xml:lang="en">Update Location</source>
@@ -1069,22 +1069,25 @@
       <source xml:lang="en">Database Projects</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.dotnetInstallLocation">
-      <source xml:lang="en">Full path to .NET SDK on the machine.</source>
+      <source xml:lang="en">Full path to .NET SDK on the machine. For example, if dotnet.exe is located at C:\folder1\dotnet\dotnet.exe, set the path for this setting to C:\folder1\dotnet</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.editProjectFile">
       <source xml:lang="en">Edit .sqlproj File</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.enablePreviewFeatures">
+      <source xml:lang="en">Enable preview SQL Database Projects features</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.exclude">
       <source xml:lang="en">Exclude from project</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.generateProjectFromOpenApiSpec">
-      <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec</source>
+      <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec (Preview)</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.microsoftBuildSqlVersion">
-      <source xml:lang="en">Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.3-preview</source>
+      <source xml:lang="en">Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.7-preview</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
-      <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
+      <source xml:lang="en">Whether to prompt the user to install .NET SDK when not detected.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.new">
       <source xml:lang="en">New Database Project</source>

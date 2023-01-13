@@ -163,6 +163,9 @@ describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function ():
 			should(child.treeItem.label).equal(databaseServer.name);
 			should(child.treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);
 			should(child.treeItem.contextValue).equal(AzureResourceItemType.databaseServer);
+
+			// Authentication type should be empty string by default to support setting 'Sql: Default Authentication Type'.
+			should(child.treeItem.payload!.authenticationType).equal('');
 		}
 	});
 });

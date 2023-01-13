@@ -53,18 +53,16 @@ export interface IExtensionApiFactory {
 
 export interface IAdsExtensionApiFactory {
 	azdata: IAzdataExtensionApiFactory;
-	extHostNotebook: ExtHostNotebook;
-	extHostNotebookDocumentsAndEditors: ExtHostNotebookDocumentsAndEditors;
 }
 
 /**
  * This method instantiates and returns the extension API surface
  */
 export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): IExtensionApiFactory {
-	const { azdata, extHostNotebook, extHostNotebookDocumentsAndEditors } = createAdsApiFactory(accessor);
+	const { azdata } = createAdsApiFactory(accessor);
 	return {
 		azdata,
-		vscode: vsApiFactory(accessor, extHostNotebook, extHostNotebookDocumentsAndEditors)
+		vscode: vsApiFactory(accessor)
 	};
 }
 
@@ -99,7 +97,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol, extHostModelView, extHostBackgroundTaskManagement));
 	const extHostQueryEditor = rpcProtocol.set(SqlExtHostContext.ExtHostQueryEditor, new ExtHostQueryEditor(rpcProtocol));
 	const extHostNotebookDocumentsAndEditors = rpcProtocol.set(SqlExtHostContext.ExtHostNotebookDocumentsAndEditors, new ExtHostNotebookDocumentsAndEditors(rpcProtocol));
-	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol, extHostNotebookDocumentsAndEditors));
+	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol));
 	const extHostExtensionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostExtensionManagement, new ExtHostExtensionManagement(rpcProtocol));
 	const extHostWorkspace = rpcProtocol.set(SqlExtHostContext.ExtHostWorkspace, new ExtHostWorkspace(rpcProtocol));
 	return {
@@ -670,8 +668,6 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				executionPlan: executionPlan,
 				env
 			};
-		},
-		extHostNotebook: extHostNotebook,
-		extHostNotebookDocumentsAndEditors: extHostNotebookDocumentsAndEditors
+		}
 	};
 }

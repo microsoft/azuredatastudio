@@ -23,6 +23,7 @@ import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/
 import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -87,7 +88,7 @@ export interface IObjectExplorerService {
 
 	getObjectExplorerNode(connection: IConnectionProfile): TreeNode | undefined;
 
-	updateObjectExplorerNodes(connectionProfile: IConnectionProfile): Promise<void>;
+	updateObjectExplorerNodes(connectionProfile: IConnectionProfile, requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<void>;
 
 	deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void>;
 
@@ -208,10 +209,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._onSelectionOrFocusChange.event;
 	}
 
-	public async updateObjectExplorerNodes(connection: IConnectionProfile): Promise<void> {
+	public async updateObjectExplorerNodes(connection: IConnectionProfile, requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<void> {
 		const withPassword = await this._connectionManagementService.addSavedPassword(connection);
 		const connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, withPassword);
-		return this.updateNewObjectExplorerNode(connectionProfile);
+		return this.updateNewObjectExplorerNode(connectionProfile, requestStatus);
 	}
 
 	public async deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void> {
@@ -327,12 +328,14 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._onUpdateObjectExplorerNodes.fire(eventArgs);
 	}
 
-	private async updateNewObjectExplorerNode(connection: ConnectionProfile): Promise<void> {
+	private async updateNewObjectExplorerNode(connection: ConnectionProfile, requestStatus: ObjectExplorerRequestStatus | undefined): Promise<void> {
 		if (this._activeObjectExplorerNodes[connection.id]) {
 			this.sendUpdateNodeEvent(connection);
 		} else {
 			try {
-				await this.createNewSession(connection.providerName, connection);
+				if (!requestStatus) {
+					await this.createNewSession(connection.providerName, connection);
+				}
 			} catch (err) {
 				this.sendUpdateNodeEvent(connection, err);
 				throw err;
@@ -352,6 +355,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				connection: connection,
 				nodes: {}
 			};
+
 			return result;
 		} else {
 			throw new Error(`Provider doesn't exist. id: ${providerId}`);
@@ -440,7 +444,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						allProviders.forEach(provider => {
 							self.callExpandOrRefreshFromProvider(provider, {
 								sessionId: session.sessionId!,
-								nodePath: node.nodePath
+								nodePath: node.nodePath,
+								securityToken: session.securityToken
 							}, refresh).then(isExpanding => {
 								if (!isExpanding) {
 									// The provider stated it's not going to expand the node, therefore do not need to track when merging results
@@ -595,7 +600,18 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		session: azdata.ObjectExplorerSession,
 		parentTree: TreeNode,
 		refresh: boolean = false): Promise<TreeNode[]> {
-		const providerName = parentTree.getConnectionProfile()?.providerName;
+		let connection = parentTree.getConnectionProfile();
+		if (connection) {
+			// Refresh access token on connection if needed.
+			let refreshResult = await this._connectionManagementService.refreshAzureAccountTokenIfNecessary(connection);
+			if (refreshResult) {
+				session.securityToken = {
+					token: connection.options['azureAccountToken'],
+					expiresOn: connection.options['expiresOn']
+				};
+			}
+		}
+		const providerName = connection?.providerName;
 		if (!providerName) {
 			throw new Error('Failed to expand node - no provider name');
 		}

@@ -13,8 +13,9 @@
 			"darkPlusColorThemeLabel": "Oscuro+ (oscuro predeterminado)",
 			"description": "Temas claro y oscuro predeterminados de Visual Studio",
 			"displayName": "Temas por defecto",
-			"hcColorThemeLabel": "Contraste alto",
+			"hcColorThemeLabel": "Contraste alto oscuro",
 			"lightColorThemeLabel": "Claro (Visual Studio)",
+			"lightHcColorThemeLabel": "Contraste alto claro",
 			"lightPlusColorThemeLabel": "Claro+ (claro predeterminado)",
 			"minimalIconThemeLabel": "Mínimo (Visual Studio Code)"
 		}

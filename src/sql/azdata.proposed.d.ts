@@ -45,25 +45,6 @@ declare module 'azdata' {
 			 * The list of languages that are supported for this kernel.
 			 */
 			supportedLanguages?: string[];
-			/**
-			 * The original name for this kernel.
-			 */
-			oldName?: string;
-			/**
-			 * The original display name for this kernel.
-			 */
-			oldDisplayName?: string;
-			/**
-			 * The original language name for this kernel.
-			 */
-			oldLanguage?: string;
-		}
-
-		export interface ILanguageInfo {
-			/**
-			 * The original name for this language.
-			 */
-			oldName?: string;
 		}
 
 		export interface IStandardKernel {
@@ -97,21 +78,9 @@ declare module 'azdata' {
 
 		export interface IExecuteRequest {
 			/**
-			 * URI of the notebook document that is sending this execute request.
-			 */
-			notebookUri: vscode.Uri;
-			/**
-			 * URI of the notebook cell that is sending this execute request.
-			 */
-			cellUri: vscode.Uri;
-			/**
 			 * The language of the notebook document that is executing this request.
 			 */
 			language: string;
-			/**
-			 * The index of the cell which the code being executed is from.
-			 */
-			cellIndex: number;
 		}
 
 		export interface INotebookMetadata {
@@ -163,6 +132,24 @@ declare module 'azdata' {
 			 */
 			restart(): Thenable<void>;
 		}
+	}
+
+	export interface LoadingComponentBase {
+		/**
+		* When true, the component will display a loading spinner.
+		*/
+		loading?: boolean;
+
+		/**
+		 * This sets the alert text which gets announced when the loading spinner is shown.
+		 */
+		loadingText?: string;
+
+		/**
+		 * The text to display while loading is set to false. Will also be announced through screen readers
+		 * once loading is completed.
+		 */
+		loadingCompletedText?: string;
 	}
 
 	/**
@@ -416,6 +403,25 @@ declare module 'azdata' {
 		title: string;
 	}
 
+	export interface ConnectionProvider extends DataProvider {
+		/**
+		 * Changes a user's password for the scenario of password expiration during SQL Authentication. (for Azure Data Studio use only)
+		 */
+		changePassword?(connectionUri: string, connectionInfo: ConnectionInfo, newPassword: string): Thenable<PasswordChangeResult>;
+	}
+
+	// Password Change Request ----------------------------------------------------------------------
+	export interface PasswordChangeResult {
+		/**
+		 * Whether the password change was successful
+		 */
+		result: boolean;
+		/**
+		 * Error message if the password change was unsuccessful
+		 */
+		errorMessage?: string;
+	}
+
 	export interface IConnectionProfile extends ConnectionInfo {
 		/**
 		 * The type of authentication to use when connecting
@@ -477,6 +483,22 @@ declare module 'azdata' {
 		showOnConnectionDialog?: boolean;
 	}
 
+	// Object Explorer interfaces  --------------------------------
+	export interface ObjectExplorerSession {
+		/**
+		 * Authentication token for the current session.
+		 */
+		securityToken?: accounts.AccountSecurityToken | undefined;
+	}
+
+	export interface ExpandNodeInfo {
+		/**
+		 * Authentication token for the current session.
+		 */
+		securityToken?: accounts.AccountSecurityToken | undefined;
+	}
+	// End Object Explorer interfaces  ----------------------------
+
 	export interface TaskInfo {
 		targetLocation?: string;
 	}
@@ -531,6 +553,13 @@ declare module 'azdata' {
 		payload?: IConnectionProfile;
 		childProvider?: string;
 		type?: ExtensionNodeType;
+	}
+
+	export interface AccountKey {
+		/**
+		 * Auth Library used to add the account
+		 */
+		authLibrary?: string;
 	}
 
 	export namespace workspace {
@@ -1709,5 +1738,13 @@ declare module 'azdata' {
 		 * under the database, the nodeType is Folder, the objectType is be Tables.
 		 */
 		objectType?: string;
+	}
+
+	export namespace window {
+		export interface Wizard extends LoadingComponentBase {
+		}
+
+		export interface Dialog extends LoadingComponentBase {
+		}
 	}
 }

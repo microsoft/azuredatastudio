@@ -10,6 +10,10 @@ export enum AzureResourceItemType {
 	database = 'azure.resource.itemType.database',
 	databaseServerContainer = 'azure.resource.itemType.databaseServerContainer',
 	databaseServer = 'azure.resource.itemType.databaseServer',
+	synapseSqlPoolContainer = 'azure.resource.itemType.synapseSqlPoolContainer',
+	synapseSqlPool = 'azure.resource.itemType.synapseSqlPool',
+	synapseWorkspaceContainer = 'azure.resource.itemType.synapseWorkspaceContainer',
+	synapseWorkspace = 'azure.resource.itemType.synapseWorkspace',
 	azureDataExplorerContainer = 'azure.resource.itemType.azureDataExplorerContainer',
 	azureDataExplorer = 'azure.resource.itemType.azureDataExplorer',
 	sqlInstance = 'azure.resource.itemType.sqlInstance',
@@ -29,3 +33,5 @@ export enum AzureResourceServiceNames {
 	tenantService = 'AzureResourceTenantService',
 	terminalService = 'AzureTerminalService',
 }
+
+export const mssqlProvider = 'MSSQL';

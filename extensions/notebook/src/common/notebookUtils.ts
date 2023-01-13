@@ -4,24 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as os from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { getErrorMessage } from '../common/utils';
 
 const localize = nls.loadMessageBundle();
 
-const JUPYTER_NOTEBOOK_PROVIDER = 'jupyter';
-const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample code loads the file into a data frame and shows the first 10 results.");
 const noNotebookVisible = localize('noNotebookVisible', "No notebook editor is active");
 
 export class NotebookUtils {
 
 	constructor() { }
-
-	public async newNotebook(options?: azdata.nb.NotebookShowOptions): Promise<azdata.nb.NotebookEditor> {
-		return azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }), options);
-	}
 
 	public async openNotebook(): Promise<void> {
 		try {
@@ -99,32 +92,5 @@ export class NotebookUtils {
 
 	public async toggleMarkdownStyle(style: string, showUI?: boolean, value?: string): Promise<void> {
 		return vscode.commands.executeCommand(style, showUI, value);
-	}
-
-	public async analyzeNotebook(oeContext?: azdata.ObjectExplorerContext): Promise<void> {
-		let editor = await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }), {
-			connectionProfile: oeContext ? oeContext.connectionProfile : undefined,
-			providerId: JUPYTER_NOTEBOOK_PROVIDER,
-			preview: false,
-			defaultKernel: {
-				name: 'pysparkkernel',
-				display_name: 'PySpark',
-				language: 'python'
-			}
-		});
-		if (oeContext && oeContext.nodeInfo && oeContext.nodeInfo.nodePath) {
-			// Get the file path after '/HDFS'
-			let hdfsPath: string = oeContext.nodeInfo.nodePath.substring(oeContext.nodeInfo.nodePath.indexOf('/HDFS') + '/HDFS'.length);
-			if (hdfsPath.length > 0) {
-				let analyzeCommand = '#' + msgSampleCodeDataFrame + os.EOL + 'df = (spark.read.option("inferSchema", "true")'
-					+ os.EOL + '.option("header", "true")' + os.EOL + '.csv("{0}"))' + os.EOL + 'df.show(10)';
-				await editor.edit(editBuilder => {
-					editBuilder.insertCell({
-						cell_type: 'code',
-						source: analyzeCommand.replace('{0}', hdfsPath)
-					}, 0);
-				});
-			}
-		}
 	}
 }

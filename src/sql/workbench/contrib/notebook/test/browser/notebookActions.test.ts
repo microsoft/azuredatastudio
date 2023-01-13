@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as sinon from 'sinon';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
-import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, CreateNotebookViewAction, DashboardViewAction, kernelNotSupported, KernelsDropdown, msgChanging, NewNotebookAction, noKernelName, noParameterCell, noParametersInCell, NotebookViewAction, NotebookViewsActionProvider, RunAllCellsAction, RunParametersAction, TrustedAction, untitledNotSupported } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, CreateNotebookViewAction, DashboardViewAction, kernelNotSupported, KernelsDropdown, msgChanging, noKernelName, noParameterCell, noParametersInCell, NotebookViewAction, NotebookViewsActionProvider, RunAllCellsAction, RunParametersAction, TrustedAction, untitledNotSupported } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { ClientSessionStub, ContextViewProviderStub, NotebookComponentStub, NotebookModelStub, NotebookServiceStub, NotebookViewsStub, NotebookViewStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { ICellModel, INotebookModel, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -16,15 +16,12 @@ import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebo
 import { CellType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import * as TypeMoq from 'typemoq';
 import { Emitter, Event } from 'vs/base/common/event';
-import { TestCommandService } from 'vs/editor/test/browser/editorTestServices';
-import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IConfigurationChangeEvent, IConfigurationOverrides, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
-import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { MockQuickInputService } from 'sql/workbench/contrib/notebook/test/common/quickInputServiceMock';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { Separator } from 'vs/base/common/actions';
@@ -251,22 +248,6 @@ suite('Notebook Actions', function (): void {
 		});
 	});
 
-	test('New Notebook Action', async function (): Promise<void> {
-		let actualCmdId: string;
-
-		let mockCommandService = TypeMoq.Mock.ofType<ICommandService>(TestCommandService);
-		mockCommandService.setup(s => s.executeCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-			.returns((commandId) => {
-				actualCmdId = commandId;
-				return Promise.resolve(true);
-			});
-
-		let action = new NewNotebookAction('TestId', 'TestLabel', mockCommandService.object, undefined, new NullAdsTelemetryService());
-		await action.run(undefined);
-
-		assert.strictEqual(actualCmdId, NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID);
-	});
-
 	test('Should Run with Parameters Action', async function (): Promise<void> {
 		const testContents: azdata.nb.INotebookContents = {
 			cells: [{
@@ -491,7 +472,7 @@ suite('Notebook Actions', function (): void {
 	});
 
 	test('Should inform user kernel is not supported if Run with Parameters Action is run with unsupported kernels', async function (): Promise<void> {
-		// Kernels that are supported (Python, PySpark, PowerShell)
+		// Kernels that are supported (Python, PowerShell)
 
 		const testContents: azdata.nb.INotebookContents = {
 			cells: [{
@@ -536,7 +517,7 @@ suite('Notebook Actions', function (): void {
 	});
 
 	test('Should inform user that run with parameters is not supported for untitled notebooks', async function (): Promise<void> {
-		// Kernels that are supported (Python, PySpark, PowerShell)
+		// Kernels that are supported (Python, PowerShell)
 		const untitledUri = URI.parse('untitled:Notebook-0');
 		const testContents: azdata.nb.INotebookContents = {
 			cells: [{

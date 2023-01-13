@@ -589,8 +589,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizard.registerNavigationValidator(pageChangeInfo => true);
 		this.wizard.message = { text: '' };
-		this.wizard.registerNavigationValidator((pageChangeInfo) => true);
 		this.eventListener?.dispose();
 	}
 

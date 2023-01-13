@@ -7,14 +7,13 @@ import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as newProjectTool from '../tools/newProjectTool';
-import * as mssql from 'mssql';
 import * as path from 'path';
 
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
 import { ImportDataModel } from '../models/api/import';
 import { Deferred } from '../common/promise';
-import { getConnectionName } from './utils';
+import { getConnectionName, mapExtractTargetEnum } from './utils';
 import { exists, getAzdataApi, getDataWorkspaceExtensionApi } from '../common/utils';
 
 export class CreateProjectFromDatabaseDialog {
@@ -455,20 +454,5 @@ export class CreateProjectFromDatabaseDialog {
 			text: message,
 			level: getAzdataApi()!.window.MessageLevel.Error
 		};
-	}
-}
-
-export function mapExtractTargetEnum(inputTarget: string): mssql.ExtractTarget {
-	if (inputTarget) {
-		switch (inputTarget) {
-			case constants.file: return mssql.ExtractTarget.file;
-			case constants.flat: return mssql.ExtractTarget.flat;
-			case constants.objectType: return mssql.ExtractTarget.objectType;
-			case constants.schema: return mssql.ExtractTarget.schema;
-			case constants.schemaObjectType: return mssql.ExtractTarget.schemaObjectType;
-			default: throw new Error(constants.invalidInput(inputTarget));
-		}
-	} else {
-		throw new Error(constants.extractTargetRequired);
 	}
 }

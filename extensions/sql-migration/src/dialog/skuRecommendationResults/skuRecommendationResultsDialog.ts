@@ -492,6 +492,7 @@ export class SkuRecommendationResultsDialog {
 			this.dialog = azdata.window.createModelViewDialog(this.title!, 'SkuRecommendationResultsDialog', 'medium');
 
 			this.dialog.okButton.label = SkuRecommendationResultsDialog.OpenButtonText;
+			this.dialog.okButton.position = 'left';
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 
 			this.dialog.cancelButton.hidden = true;
@@ -501,7 +502,7 @@ export class SkuRecommendationResultsDialog {
 
 			this._saveButton = azdata.window.createButton(
 				constants.SAVE_RECOMMENDATION_REPORT,
-				'left');
+				'right');
 			this._disposables.push(
 				this._saveButton.onClick(async () => {
 					const folder = await utils.promptUserForFolder();

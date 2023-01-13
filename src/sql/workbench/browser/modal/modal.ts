@@ -81,6 +81,7 @@ export interface IModalOptions {
 	hasErrors?: boolean;
 	hasSpinner?: boolean;
 	spinnerTitle?: string;
+	onSpinnerHideText?: string;
 	renderHeader?: boolean;
 	renderFooter?: boolean;
 	dialogProperties?: IDialogProperties;
@@ -94,7 +95,7 @@ const defaultOptions: IModalOptions = {
 	hasBackButton: false,
 	hasTitleIcon: false,
 	hasErrors: false,
-	hasSpinner: false,
+	hasSpinner: true,
 	renderHeader: true,
 	renderFooter: true,
 	dialogProperties: undefined
@@ -638,6 +639,9 @@ export abstract class Modal extends Disposable implements IThemable {
 				}
 			} else {
 				DOM.hide(this._spinnerElement!);
+				if (this._modalOptions.onSpinnerHideText) {
+					alert(this._modalOptions.onSpinnerHideText);
+				}
 			}
 		}
 	}
