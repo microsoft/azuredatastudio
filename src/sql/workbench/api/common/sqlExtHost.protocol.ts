@@ -613,7 +613,7 @@ export abstract class ExtHostErrorDiagnosticsShape {
 	/**
 	 * Handle other error types
 	 */
-	$handleErrorCode(handle: number, errorCode: number, errorMessage: string, providerId: string): Thenable<azdata.diagnostics.ErrorCodes> { throw ni(); }
+	$handleErrorCode(handle: number, errorCode: number, errorMessage: string, providerId: string): Thenable<azdata.diagnostics.ErrorDiagnosticsResponse> { throw ni(); }
 }
 
 /**

@@ -1063,9 +1063,8 @@ export namespace diagnostics {
 	/**
 	 * The error codes returned to indicate what kind of error is being thrown.
 	 */
-	export enum ErrorCodes {
-		noErrorOrUnsupported = 0,
-		passwordReset = 1,
+	export interface ErrorDiagnosticsResponse {
+		errorAction: string;
 	}
 }
 

@@ -436,16 +436,12 @@ declare module 'azdata' {
 	 * An interface for receiving diagnostic data from a provider.
 	 */
 	export interface Diagnostics {
-		handleErrorCode(errorCode: number, errorMessage: string, providerId: string): Thenable<diagnostics.ErrorCodes>;
+		handleErrorCode(errorCode: number, errorMessage: string, providerId: string): Thenable<diagnostics.ErrorDiagnosticsResponse>;
 	}
 
 	export namespace diagnostics {
-		/**
-		 * The error codes returned to indicate what kind of error is being thrown.
-		 */
-		export enum ErrorCodes {
-			noErrorOrUnsupported = 0,
-			passwordReset = 1,
+		export interface ErrorDiagnosticsResponse {
+			errorAction: string;
 		}
 
 		/**

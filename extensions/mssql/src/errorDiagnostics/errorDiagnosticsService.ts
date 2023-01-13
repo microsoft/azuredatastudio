@@ -42,4 +42,48 @@ export class ErrorDiagnosticsService implements mssql.IErrorDiagnosticsService {
 			}
 		)
 	}
+
+	// private async registerDiagnosticProvider(provider: ProviderSettings): Promise<void> {
+	// 	const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf(Constants.Saw) > 0;
+	// 	const noSystemKeychain = vscode.workspace.getConfiguration(Constants.AzureSection).get<boolean>(Constants.NoSystemKeyChainSection);
+	// 	const tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
+	// 	const tokenCacheKeyMsal = `azureTokenCacheMsal-${provider.metadata.id}`;
+	// 	try {
+	// 		if (!this._credentialProvider) {
+	// 			throw new Error('Credential provider not registered');
+	// 		}
+
+	// 		// ADAL Token Cache
+	// 		let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, noSystemKeychain, this._credentialProvider);
+	// 		await simpleTokenCache.init();
+
+	// 		// MSAL Cache Plugin
+	// 		this._cachePluginProvider = new MsalCachePluginProvider(tokenCacheKeyMsal, this._userStoragePath);
+
+	// 		const msalConfiguration: Configuration = {
+	// 			auth: {
+	// 				clientId: provider.metadata.settings.clientId,
+	// 				authority: 'https://login.windows.net/common'
+	// 			},
+	// 			system: {
+	// 				loggerOptions: {
+	// 					loggerCallback: this.getLoggerCallback(),
+	// 					logLevel: MsalLogLevel.Trace,
+	// 					piiLoggingEnabled: true,
+	// 				},
+	// 			},
+	// 			cache: {
+	// 				cachePlugin: this._cachePluginProvider?.getCachePlugin()
+	// 			}
+	// 		}
+
+	// 		this.clientApplication = new PublicClientApplication(msalConfiguration);
+	// 		let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata,
+	// 			simpleTokenCache, this._context, this.clientApplication, this._uriEventHandler, this._authLibrary, isSaw);
+	// 		this._accountProviders[provider.metadata.id] = accountProvider;
+	// 		this._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
+	// 	} catch (e) {
+	// 		console.error(`Failed to register account provider, isSaw: ${isSaw}: ${e}`);
+	// 	}
+	// }
 }

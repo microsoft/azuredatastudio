@@ -88,6 +88,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 
 	registerTableDesignerCommands(appContext);
 
+	//TODO register provider for error diagnostics.
+	//azdata.diagnostics.registerDiagnostics
+
 	return createMssqlApi(appContext, server);
 }
 

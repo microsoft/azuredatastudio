@@ -220,7 +220,6 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			// namespace: diagnostics
 			const diagnostics: typeof azdata.diagnostics = {
 				// "azdata" API definition
-				ErrorCodes: sqlExtHostTypes.diagnostics.ErrorCodes,
 				registerDiagnostics: (providerMetadata: azdata.ResourceProviderMetadata, diagnostics: azdata.Diagnostics): vscode.Disposable => {
 					return extHostErrorDiagnostics.$registerDiagnostics(providerMetadata, diagnostics);
 				}

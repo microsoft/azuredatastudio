@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
-import { diagnostics } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as azdata from 'azdata';
 
 export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
@@ -15,15 +14,15 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 	constructor(
 	) { }
 
-	public async checkErrorCode(errorCode: number, errorMessage: string, providerId: string): Promise<diagnostics.ErrorCodes> {
-		let result = diagnostics.ErrorCodes.noErrorOrUnsupported
+	public async checkErrorCode(errorCode: number, errorMessage: string, providerId: string): Promise<azdata.diagnostics.ErrorDiagnosticsResponse> {
+		let result = { errorAction: "" };
 		const promises = [];
 		if (this._providers) {
 			for (const key in this._providers) {
 				const provider = this._providers[key];
 				promises.push(provider.handleErrorCode(errorCode, errorMessage, providerId)
 					.then(response => {
-						if (result === diagnostics.ErrorCodes.noErrorOrUnsupported) {
+						if (result.errorAction !== response.errorAction) {
 							result = response;
 						}
 					}, () => { }));
