@@ -39,7 +39,13 @@ export class ErrorDiagnosticsService extends SqlOpsFeature<any> {
 
 				let handleErrorCode = (errorCode: number, errorMessage: string): Thenable<azdata.diagnostics.ErrorDiagnosticsResponse> => {
 					const params: contracts.ErrorDiagnosticsParameters = { errorCode, errorMessage };
-					return client.sendRequest(contracts.DiagnosticsRequest.type, params);
+					try {
+						return client.sendRequest(contracts.DiagnosticsRequest.type, params);
+					}
+					catch (e) {
+						client.logFailedRequest(contracts.DiagnosticsRequest.type, e);
+						return Promise.reject(e);
+					}
 				}
 
 				return azdata.diagnostics.registerDiagnostics({
