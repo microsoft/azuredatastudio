@@ -12941,6 +12941,7 @@
 		},
 		"sql/workbench/contrib/query/browser/actions": {
 			"chart": "Gráfico",
+			"copyHeaders": "Encabezados de texto",
 			"copySelection": "Copiar",
 			"copyWithHeaders": "Copiar con encabezados",
 			"jsonEncoding": "La codificación de los resultados no se guardará al realizar la exportación en JSON. Recuerde guardarlos con la codificación deseada una vez que se cree el archivo.",
@@ -13016,6 +13017,7 @@
 			"queryEditor.results.saveAsMarkdown.lineSeparator": "Caracteres que se usarán para separar las líneas al exportar a Markdown, el valor predeterminado es finales de líneas del sistema",
 			"queryEditor.results.saveAsXml.encoding": "Codificación de archivo empleada al guardar los resultados como XML",
 			"queryEditor.results.saveAsXml.formatted": "Si es \"true\", se dará formato a la salida XML al guardar los resultados como XML.",
+			"queryEditor.results.showActionBar": "Indica si se debe mostrar la barra de acciones en la vista de resultados de la consulta.",
 			"queryEditor.results.streaming": "Permitir streaming de resultados; contiene algunos defectos visuales menores",
 			"queryEditor.showConnectionInfoInTitle": "Controla si se muestra la información de conexión para una pestaña en el título.",
 			"queryEditor.tabColorMode": "Controla cómo colorear las pestañas basadas en el grupo de servidores de la conexión activa",

@@ -5974,6 +5974,10 @@ Error: {1}</source>
         <source xml:lang="en">Chart</source>
         <target state="translated">图表</target>
       </trans-unit>
+      <trans-unit id="copyHeaders">
+        <source xml:lang="en">Copy Headers</source>
+        <target state="translated">复制标头</target>
+      </trans-unit>
       <trans-unit id="copySelection">
         <source xml:lang="en">Copy</source>
         <target state="translated">复制</target>
@@ -6253,6 +6257,10 @@ Error: {1}</source>
       <trans-unit id="queryEditor.results.saveAsXml.formatted">
         <source xml:lang="en">When true, XML output will be formatted when saving results as XML</source>
         <target state="translated">为 true 时，将在将结果保存为 XML 时设置 XML 输出的格式</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.showActionBar">
+        <source xml:lang="en">Whether to show the action bar in the query results view</source>
+        <target state="translated">是否在查询结果视图中显示操作栏</target>
       </trans-unit>
       <trans-unit id="queryEditor.results.streaming">
         <source xml:lang="en">Enable results streaming; contains few minor visual issues</source>

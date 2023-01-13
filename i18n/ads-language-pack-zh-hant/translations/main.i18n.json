@@ -12941,6 +12941,7 @@
 		},
 		"sql/workbench/contrib/query/browser/actions": {
 			"chart": "圖表",
+			"copyHeaders": "複製標頭",
 			"copySelection": "複製",
 			"copyWithHeaders": "隨標題一同複製",
 			"jsonEncoding": "匯出至 JSON 時將不會儲存結果編碼，請務必在建立檔案後儲存所需的編碼。",
@@ -13016,6 +13017,7 @@
 			"queryEditor.results.saveAsMarkdown.lineSeparator": "匯出至 Markdown 時，要用於分隔行的字元，預設為系統行結尾",
 			"queryEditor.results.saveAsXml.encoding": "將結果另存為 XML 時，要使用的檔案編碼",
 			"queryEditor.results.saveAsXml.formatted": "若設定為 true，會在將結果另存為 XML 時將輸出格式化",
+			"queryEditor.results.showActionBar": "是否要在查詢結果檢視中顯示動作列",
 			"queryEditor.results.streaming": "啟用結果串流；包含些許輕微視覺效果問題",
 			"queryEditor.showConnectionInfoInTitle": "控制是否要在標題中顯示索引標籤的連線資訊。",
 			"queryEditor.tabColorMode": "依據連線的伺服器群組控制索引標籤如何著色",

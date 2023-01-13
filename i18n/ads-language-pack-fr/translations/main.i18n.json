@@ -12941,6 +12941,7 @@
 		},
 		"sql/workbench/contrib/query/browser/actions": {
 			"chart": "Graphique",
+			"copyHeaders": "Copier les en-têtes",
 			"copySelection": "Copier",
 			"copyWithHeaders": "Copier avec les en-têtes",
 			"jsonEncoding": "L'encodage des résultats n'est pas enregistré quand vous les exportez au format JSON, n'oubliez pas d'enregistrer le fichier que vous créez avec l'encodage souhaité.",
@@ -13016,6 +13017,7 @@
 			"queryEditor.results.saveAsMarkdown.lineSeparator": "Caractère(s) à utiliser pour séparer les lignes lors de l’exportation vers Markdown. Par défaut, il s’agit des fins de ligne système",
 			"queryEditor.results.saveAsXml.encoding": "Encodage de fichier utilisé pendant l'enregistrement des résultats au format XML",
 			"queryEditor.results.saveAsXml.formatted": "Quand la valeur est true, la sortie XML est mise en forme pendant l'enregistrement des résultats au format XML",
+			"queryEditor.results.showActionBar": "Indique s’il faut afficher la barre d’action dans l’affichage des résultats de la requête",
 			"queryEditor.results.streaming": "Activer le streaming des résultats, contient quelques problèmes visuels mineurs",
 			"queryEditor.showConnectionInfoInTitle": "Contrôle s'il faut montrer les informations de connexion d'un onglet dans le titre.",
 			"queryEditor.tabColorMode": "Contrôle comment colorer les onglets en fonction du groupe de serveurs de leur connexion active",

@@ -12941,6 +12941,7 @@
 		},
 		"sql/workbench/contrib/query/browser/actions": {
 			"chart": "Diagramm",
+			"copyHeaders": "Header kopieren",
 			"copySelection": "Kopieren",
 			"copyWithHeaders": "Mit Headern kopieren",
 			"jsonEncoding": "Die Ergebniscodierung wird beim Exportieren in JSON nicht gespeichert. Nachdem die Datei erstellt wurde, speichern Sie sie mit der gewünschten Codierung.",
@@ -13016,6 +13017,7 @@
 			"queryEditor.results.saveAsMarkdown.lineSeparator": "Zeichen, die zum Trennen von Zeilen beim Exportieren in Markdown verwendet werden sollen. Standardmäßig werden Systemzeilenenden verwendet.",
 			"queryEditor.results.saveAsXml.encoding": "Beim Speichern der Ergebnisse im XML-Format verwendete Dateicodierung",
 			"queryEditor.results.saveAsXml.formatted": "Bei Festlegung auf TRUE wird die XML-Ausgabe formatiert, wenn die Ergebnisse im XML-Format gespeichert werden.",
+			"queryEditor.results.showActionBar": "Gibt an, ob die Aktionsleiste in der Abfrageergebnisansicht angezeigt werden soll.",
 			"queryEditor.results.streaming": "Hiermit wird das Streamen der Ergebnisse aktiviert. Diese Option weist einige geringfügige Darstellungsprobleme auf.",
 			"queryEditor.showConnectionInfoInTitle": "Legt fest, ob die Verbindungsinformationen für eine Registerkarte im Titel angezeigt werden.",
 			"queryEditor.tabColorMode": "Steuert die Farbe von Registerkarten basierend auf der Servergruppe der aktiven Verbindung.",

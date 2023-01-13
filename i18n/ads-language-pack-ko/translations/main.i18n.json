@@ -12941,6 +12941,7 @@
 		},
 		"sql/workbench/contrib/query/browser/actions": {
 			"chart": "차트",
+			"copyHeaders": "머리글 복사",
 			"copySelection": "복사",
 			"copyWithHeaders": "복사(머리글 포함)",
 			"jsonEncoding": "JSON으로 내보낼 때 결과 인코딩이 저장되지 않습니다. 파일이 만들어지면 원하는 인코딩으로 저장해야 합니다.",
@@ -13016,6 +13017,7 @@
 			"queryEditor.results.saveAsMarkdown.lineSeparator": "Markdown으로 내보낼 때 줄을 구분하는 데 사용할 문자입니다. 기본값은 시스템 줄 끝입니다.",
 			"queryEditor.results.saveAsXml.encoding": "결과를 XML로 저장할 때 사용되는 파일 인코딩",
 			"queryEditor.results.saveAsXml.formatted": "true이면 결과를 XML로 저장할 때 XML 출력에 형식이 지정됩니다.",
+			"queryEditor.results.showActionBar": "쿼리 결과 뷰에 작업 모음을 표시할지 여부",
 			"queryEditor.results.streaming": "결과 스트리밍을 사용하도록 설정합니다. 몇 가지 사소한 시각적 문제가 있습니다.",
 			"queryEditor.showConnectionInfoInTitle": "제목에 있는 탭에 연결 정보를 표시할지 여부를 제어합니다.",
 			"queryEditor.tabColorMode": "활성 연결의 서버 그룹을 기준으로 탭 색상 지정 방법을 제어합니다.",

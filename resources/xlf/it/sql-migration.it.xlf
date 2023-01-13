@@ -2878,6 +2878,14 @@ L'operazione potrebbe richiedere qualche minuto.</target>
         <source xml:lang="en">View/Select</source>
         <target state="translated">Visualizza/Seleziona</target>
       </trans-unit>
+      <trans-unit id="sql.migration.vm.not.ready.iaas.extension">
+        <source xml:lang="en">The virtual machine '{0}' is unavailable for migration because the SQL Server IaaS Agent extension is currently in '{1}' mode instead of Full mode. Learn more: https://aka.ms/sql-iaas-extension</source>
+        <target state="new">The virtual machine '{0}' is unavailable for migration because the SQL Server IaaS Agent extension is currently in '{1}' mode instead of Full mode. Learn more: https://aka.ms/sql-iaas-extension</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.vm.not.ready.power.state">
+        <source xml:lang="en">The virtual machine '{0}' is unavailable for migration because the underlying virtual machine is not running. Please make sure it is powered on before retrying.</source>
+        <target state="new">The virtual machine '{0}' is unavailable for migration because the underlying virtual machine is not running. Please make sure it is powered on before retrying.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.warning">
         <source xml:lang="en">Warning</source>
         <target state="translated">Avviso</target>
@@ -3002,6 +3010,10 @@ L'operazione potrebbe richiedere qualche minuto.</target>
         <source xml:lang="en">Database mapping error. Missing target databases to migrate.  Please configure the target server connection and click connect to collect the list of available database migration targets.</source>
         <target state="translated">Errore di mapping del database. Database di destinazione di cui eseguire la migrazione mancanti.  Configurare la connessione al server di destinazione e fare clic su Connetti per raccogliere l'elenco delle destinazioni di migrazione di database disponibili.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.source.collation.error">
+        <source xml:lang="en">A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.</source>
+        <target state="new">A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.wizard.target.source.mapping.error">
         <source xml:lang="en">Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.</source>
         <target state="translated">Errore di mapping del database.  Il database di origine '{0}' non è mappato a un database di destinazione.  Selezionare un database di destinazione a cui eseguire la migrazione.</target>
@@ -3009,6 +3021,10 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       <trans-unit id="sql.migration.wizard.target.title">
         <source xml:lang="en">Azure SQL target</source>
         <target state="translated">Destinazione di Azure SQL</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.troubleshooting">
+        <source xml:lang="en">Learn more: https://aka.ms/dms-migrations-troubleshooting.</source>
+        <target state="new">Learn more: https://aka.ms/dms-migrations-troubleshooting.</target>
       </trans-unit>
       <trans-unit id="sql.migration.yes">
         <source xml:lang="en">Yes</source>

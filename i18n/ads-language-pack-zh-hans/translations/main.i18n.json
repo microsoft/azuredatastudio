@@ -12941,6 +12941,7 @@
 		},
 		"sql/workbench/contrib/query/browser/actions": {
 			"chart": "图表",
+			"copyHeaders": "复制标头",
 			"copySelection": "复制",
 			"copyWithHeaders": "带标头复制",
 			"jsonEncoding": "导出到 JSON 时，将不会保存结果编码，请记得在创建文件后使用所需编码进行保存。",
@@ -13016,6 +13017,7 @@
 			"queryEditor.results.saveAsMarkdown.lineSeparator": "导出到 Markdown 时用于分隔行的字符，默认为系统行尾",
 			"queryEditor.results.saveAsXml.encoding": "将结果保存为 XML 时使用的文件编码",
 			"queryEditor.results.saveAsXml.formatted": "为 true 时，将在将结果保存为 XML 时设置 XML 输出的格式",
+			"queryEditor.results.showActionBar": "是否在查询结果视图中显示操作栏",
 			"queryEditor.results.streaming": "启用结果流式处理；包含极少轻微的可视化问题",
 			"queryEditor.showConnectionInfoInTitle": "控制是否显示标题中选项卡的连接信息。",
 			"queryEditor.tabColorMode": "控制如何根据活动连接的服务器组为选项卡着色",

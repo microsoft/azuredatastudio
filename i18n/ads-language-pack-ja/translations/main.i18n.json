@@ -12941,6 +12941,7 @@
 		},
 		"sql/workbench/contrib/query/browser/actions": {
 			"chart": "グラフ",
+			"copyHeaders": "ヘッダーのコピー",
 			"copySelection": "コピー",
 			"copyWithHeaders": "ヘッダー付きでコピー",
 			"jsonEncoding": "JSON にエクスポートするときに結果のエンコードは保存されません。ファイルが作成されたら、目的のエンコードで保存することを忘れないでください。",
@@ -13016,6 +13017,7 @@
 			"queryEditor.results.saveAsMarkdown.lineSeparator": "Markdown にエクスポートするときに行を区切るために使用する文字。既定では、システム行の末尾が使用されます",
 			"queryEditor.results.saveAsXml.encoding": "結果を XML として保存するときに使用されるファイル エンコード",
 			"queryEditor.results.saveAsXml.formatted": "true の場合、XML として結果を保存すると XML 出力がフォーマットされます",
+			"queryEditor.results.showActionBar": "クエリ結果ビューにアクション バーを表示するかどうか",
 			"queryEditor.results.streaming": "結果のストリーミングを有効にします。視覚上の小さな問題がいくつかあります",
 			"queryEditor.showConnectionInfoInTitle": "タイトルにタブの接続情報を表示するかを制御します。",
 			"queryEditor.tabColorMode": "アクティブな接続のサーバー グループに基づいてタブに色を付ける方法を制御します",
