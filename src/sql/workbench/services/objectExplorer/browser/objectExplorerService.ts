@@ -212,7 +212,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public async updateObjectExplorerNodes(connection: IConnectionProfile, requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<void> {
 		const withPassword = await this._connectionManagementService.addSavedPassword(connection);
 		const connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, withPassword);
-		return this.updateNewObjectExplorerNode(connectionProfile, requestStatus);
+		return await this.updateNewObjectExplorerNode(connectionProfile, requestStatus);
 	}
 
 	public async deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void> {
@@ -233,6 +233,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	 * Gets called when expanded node response is ready
 	 */
 	public onNodeExpanded(expandResponse: NodeExpandInfoWithProviderId) {
+		this.logService.trace(`Received node expanded response for session: ${expandResponse.sessionId} and node path: ${expandResponse.nodePath}`);
 		if (expandResponse.errorMessage) {
 			this.logService.error(expandResponse.errorMessage);
 		}
@@ -264,6 +265,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	private async handleSessionCreated(session: azdata.ObjectExplorerSession): Promise<void> {
+		this.logService.trace(`handleSessionCreated: Session Id: ${session.sessionId} and node path: ${session.rootNode}`);
 		let connection: ConnectionProfile | undefined = undefined;
 		let errorMessage: string | undefined = undefined;
 		if (this._sessions[session.sessionId!]) {
@@ -301,6 +303,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	 * Gets called when session is disconnected
 	 */
 	public onSessionDisconnected(handle: number, session: azdata.ObjectExplorerSession): void {
+		this.logService.trace(`onSessionDisconnected: Session Id: ${session.sessionId} and node path: ${session.rootNode}`);
 		if (this._sessions[session.sessionId!]) {
 			let connection: ConnectionProfile = this._sessions[session.sessionId!].connection;
 			if (connection && this._connectionManagementService.isProfileConnected(connection)) {
@@ -321,6 +324,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	private sendUpdateNodeEvent(connection: ConnectionProfile, errorMessage?: string) {
+		this.logService.trace(`sendUpdateNodeEvent: Sending update node event for connection Id: ${connection.id}`);
 		let eventArgs: ObjectExplorerNodeEventArgs = {
 			connection: <IConnectionProfile>connection,
 			errorMessage: errorMessage
@@ -329,6 +333,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	private async updateNewObjectExplorerNode(connection: ConnectionProfile, requestStatus: ObjectExplorerRequestStatus | undefined): Promise<void> {
+		this.logService.trace(`updateNewObjectExplorerNode: Connection Id: ${connection.id}`);
 		if (this._activeObjectExplorerNodes[connection.id]) {
 			this.sendUpdateNodeEvent(connection);
 		} else {
@@ -363,6 +368,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	public async expandNode(providerId: string, session: azdata.ObjectExplorerSession, node: TreeNode): Promise<azdata.ObjectExplorerExpandInfo> {
+		this.logService.trace(`expandNode: Session Id: ${session.sessionId} and node path: ${session.rootNode}`);
 		const provider = this._providers[providerId];
 		if (provider) {
 			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.ObjectExplorerExpand)
@@ -390,6 +396,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		node: TreeNode,
 		refresh: boolean = false): Promise<azdata.ObjectExplorerExpandInfo> {
 		let self = this;
+		this.logService.trace(`expandOrRefreshNode: Session Id: ${session.sessionId} and node path: ${session.rootNode}`);
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
 			if (session.sessionId! in self._sessions && self._sessions[session.sessionId!]) {
 				let newRequest = false;
@@ -515,6 +522,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	public async refreshNode(providerId: string, session: azdata.ObjectExplorerSession, node: TreeNode): Promise<azdata.ObjectExplorerExpandInfo | undefined> {
+		this.logService.trace(`refreshNode: Session Id: ${session.sessionId} and node path: ${session.rootNode}`);
 		let provider = this._providers[providerId];
 		if (provider) {
 			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.ObjectExplorerExpand)
@@ -528,6 +536,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	public closeSession(providerId: string, session: azdata.ObjectExplorerSession): Promise<azdata.ObjectExplorerCloseSessionResponse | undefined> {
+		this.logService.trace(`closeSession: Session Id: ${session.sessionId} and node path: ${session.rootNode}`);
 		// Complete any requests that are still open for the session
 		let sessionStatus = this._sessions[session.sessionId!];
 		if (sessionStatus && sessionStatus.nodes) {
@@ -600,6 +609,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		session: azdata.ObjectExplorerSession,
 		parentTree: TreeNode,
 		refresh: boolean = false): Promise<TreeNode[]> {
+		this.logService.trace(`expandOrRefreshTreeNode: Session Id: ${session.sessionId} and node path: ${session.rootNode}`);
 		let connection = parentTree.getConnectionProfile();
 		if (connection) {
 			// Refresh access token on connection if needed.
