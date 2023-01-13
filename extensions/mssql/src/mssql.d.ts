@@ -45,11 +45,6 @@ declare module 'mssql' {
 		readonly sqlMigration: ISqlMigrationService;
 
 		readonly azureBlob: IAzureBlobService;
-
-		/**
-		 * Get the Error Diagnostics Service APIs to handle errors and define actions
-		 */
-		readonly errorDiagnostics: IErrorDiagnosticsService;
 	}
 
 	/**
@@ -839,18 +834,5 @@ declare module 'mssql' {
 		exceptionMap: { [login: string]: any };
 		completedStep: LoginMigrationStep;
 		elapsedTime: string;
-	}
-
-	export interface ErrorDiagnosticsResponse {
-		errorAction: string;
-	}
-
-	export interface IErrorDiagnosticsService {
-		/**
-		 * Handles an error code and returns the appropriate error action
-		 * @param errorCode Error Number that occurred
-		 * @param errorMessage Error Message as received
-		 */
-		handleErrorCode(errorCode: number, errorMessage: string): Promise<ErrorDiagnosticsResponse>;
 	}
 }

@@ -29,5 +29,5 @@ export interface IErrorDiagnosticsService {
 	 * @param errorMessage Error message that describes the problem in detail.
 	 * @param providerId Identifies what provider the error comes from.
 	 */
-	checkErrorCode(errorCode: number, errorMessage: string, providerId: string): Promise<diagnostics.ErrorCodes>;
+	checkErrorCode(errorCode: number, errorMessage: string, providerId: string): Promise<diagnostics.ErrorDiagnosticsResponse>;
 }
