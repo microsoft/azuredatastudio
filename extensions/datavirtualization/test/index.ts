@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as IstanbulTestRunner from 'vscodetestcover';
+import * as IstanbulTestRunner from '@microsoft/vscodetestcover';
 let testRunner: any = IstanbulTestRunner;
 
 // You can directly control Mocha options by uncommenting the following lines

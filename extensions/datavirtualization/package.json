@@ -111,9 +111,9 @@
         "vscode-nls": "^5.2.0"
     },
     "devDependencies": {
+        "@microsoft/vscodetestcover": "^1.2.1",
         "mocha": "^7.1.1",
         "should": "^13.2.1",
-        "typemoq": "^2.1.0",
-        "vscodetestcover": "^1.1.0"
+        "typemoq": "^2.1.0"
     }
 }
