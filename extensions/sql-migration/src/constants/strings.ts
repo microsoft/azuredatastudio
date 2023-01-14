@@ -605,6 +605,9 @@ export function INVALID_BLOB_CONTAINER_ERROR(sourceDb: string): string {
 export function INVALID_BLOB_LAST_BACKUP_FILE_ERROR(sourceDb: string): string {
 	return localize('sql.migration.invalid.blob.lastBackupFile.error', "To continue, select a valid last backup file for source database '{0}'.", sourceDb);
 }
+export function INVALID_NON_PAGE_BLOB_BACKUP_FILE_ERROR(sourceDb: string): string {
+	return localize('sql.migration.invalid.non.page.blob.backupFile.error', "To continue, select a blob container where all the backup files are page blobs for source database '{0}', as block blobs are supported only for targets running SQL Server 2016 or later. Learn more: https://aka.ms/dms-migrations-troubleshooting", sourceDb);
+}
 export const INVALID_NETWORK_SHARE_LOCATION = localize('sql.migration.invalid.network.share.location', "Invalid network share location format. Example: {0}", NETWORK_SHARE_PATH_FORMAT);
 export const INVALID_USER_ACCOUNT = localize('sql.migration.invalid.user.account', "Invalid user account format. Example: {0}", WINDOWS_USER_ACCOUNT);
 export const INVALID_TARGET_NAME_ERROR = localize('sql.migration.invalid.target.name.error', "Enter a valid name for the target database.");

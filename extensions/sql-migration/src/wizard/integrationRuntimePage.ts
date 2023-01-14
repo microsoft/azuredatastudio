@@ -188,7 +188,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				links: [
 					{
 						text: constants.DATABASE_BACKUP_SQL_VM_PAGE_BLOB_URL_LABEL,
-						url: 'https://learn.microsoft.com/azure/dms/known-issues-azure-sql-migration-azure-data-studio#azure-sql-managed-instance-and-sql-server-on-azure-virtual-machine-known-issues-and-limitations'
+						url: 'https://aka.ms/dms-migrations-troubleshooting'
 					}
 				]
 			}).component();
