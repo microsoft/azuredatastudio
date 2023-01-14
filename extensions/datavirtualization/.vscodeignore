@@ -1,0 +1,38 @@
+# Unwanted compiled files
+out/test/**
+*.vsix
+
+# Build/Source files
+src/**
+tasks/**
+test/**
+typings/**
+packages/**
+samples/**
+.gitignore
+tsconfig.json
+coverconfig.json
+tslint.json
+
+# IDE Settings
+.vscode/**
+.vscode-test/**
+.idea/**
+.sqlops/**
+
+# Reference files
+**/*.ts
+**/*.map
+.gitignore
+tsconfig.json
+extension.webpack.config.js
+yarn.lock
+
+# Python/Compressed files
+python/*.tar.gz
+python/*.zip
+
+# Python/Compressed files
+python/*.tar.gz
+python/*.zip
+

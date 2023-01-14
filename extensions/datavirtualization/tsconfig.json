@@ -1,0 +1,25 @@
+{
+	"extends": "../tsconfig.base.json",
+	"compileOnSave": true,
+	"compilerOptions": {
+		"module": "commonjs",
+		"outDir": "./out",
+		"lib": [
+			"es6",
+			"dom"
+		],
+		"sourceMap": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"rootDir": ".",
+		"strict": false,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"noImplicitAny": false,
+		"noImplicitReturns": false,
+		"noImplicitOverride": false
+	},
+	"exclude": [
+		"node_modules"
+	]
+}
