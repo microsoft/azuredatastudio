@@ -1,14 +1,14 @@
 # Unwanted compiled files
-out/test/**
+out
 *.vsix
 
 # Build/Source files
-src/**
-test/**
-typings/**
+src
+test
+typings
 .gitignore
 tsconfig.json
-coverconfig.json
+coverConfig.json
 tslint.json
 
 # Reference files
@@ -18,12 +18,4 @@ tslint.json
 tsconfig.json
 extension.webpack.config.js
 yarn.lock
-
-# Python/Compressed files
-python/*.tar.gz
-python/*.zip
-
-# Python/Compressed files
-python/*.tar.gz
-python/*.zip
 
