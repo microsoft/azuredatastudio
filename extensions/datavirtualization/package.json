@@ -21,7 +21,7 @@
   "activationEvents": [
     "*"
   ],
-  "main": "./out/src/extension",
+  "main": "./out/extension",
   "capabilities": {
     "virtualWorkspaces": false,
     "untrustedWorkspaces": {
