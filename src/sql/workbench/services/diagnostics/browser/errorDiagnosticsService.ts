@@ -18,7 +18,7 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 		let result = { errorAction: "" };
 		let provider = this._providers[providerId]
 		if (provider) {
-			await provider.handleErrorCode(errorCode, errorMessage, providerId)
+			await provider.handleErrorCode(errorCode, errorMessage)
 				.then(response => {
 					if (result.errorAction !== response.errorAction) {
 						result = response;
