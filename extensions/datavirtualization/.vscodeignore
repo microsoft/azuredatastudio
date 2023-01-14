@@ -4,21 +4,12 @@ out/test/**
 
 # Build/Source files
 src/**
-tasks/**
 test/**
 typings/**
-packages/**
-samples/**
 .gitignore
 tsconfig.json
 coverconfig.json
 tslint.json
-
-# IDE Settings
-.vscode/**
-.vscode-test/**
-.idea/**
-.sqlops/**
 
 # Reference files
 **/*.ts

@@ -1,8 +1,6 @@
 
 out
 node_modules
-.vscode-test/
-.vscode/dev.testfilter.json
 *.vsix
 .DS_Store
 .idea
