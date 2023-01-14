@@ -45,6 +45,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _blobContainerStorageAccountDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerLastBackupFileDropdowns!: azdata.DropDownComponent[];
+	private _blobContainerFolderDropdowns!: azdata.DropDownComponent[];
 
 	private _networkShareStorageAccountDetails!: azdata.FlexContainer;
 	private _networkShareContainerSubscription!: azdata.TextComponent;
@@ -386,7 +387,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
 						isReadOnly: true,
-						width: WIZARD_TABLE_COLUMN_WIDTH
+						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL
 					},
 					{
 						displayName: constants.NETWORK_SHARE_PATH,
@@ -408,7 +409,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
 						isReadOnly: true,
-						width: WIZARD_TABLE_COLUMN_WIDTH,
+						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL,
 					},
 					{
 						displayName: constants.TARGET_DATABASE_NAME,
@@ -416,7 +417,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
 						isReadOnly: true,
-						width: WIZARD_TABLE_COLUMN_WIDTH
+						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL
 					},
 					{
 						displayName: constants.RESOURCE_GROUP,
@@ -424,7 +425,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
 						isReadOnly: true,
-						width: WIZARD_TABLE_COLUMN_WIDTH
+						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL
 					},
 					{
 						displayName: constants.STORAGE_ACCOUNT,
@@ -432,7 +433,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
 						isReadOnly: true,
-						width: WIZARD_TABLE_COLUMN_WIDTH
+						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL
 					},
 					{
 						displayName: constants.BLOB_CONTAINER,
@@ -440,7 +441,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
 						isReadOnly: true,
-						width: WIZARD_TABLE_COLUMN_WIDTH
+						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL
 					},
 					{
 						displayName: constants.BLOB_CONTAINER_LAST_BACKUP_FILE,
@@ -448,9 +449,18 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
 						isReadOnly: true,
-						width: WIZARD_TABLE_COLUMN_WIDTH,
+						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL,
 						hidden: true
-					}
+					},
+					{
+						displayName: constants.BLOB_CONTAINER_FOLDER,
+						valueType: azdata.DeclarativeDataType.component,
+						rowCssStyles: rowCssStyle,
+						headerCssStyles: headerCssStyles,
+						isReadOnly: true,
+						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL,
+						hidden: true
+					},
 				]
 			}).component();
 
@@ -697,6 +707,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							});
 						}
 
+						/////
+
 						if (errors.length > 0) {
 							const duplicates: Map<string, number[]> = new Map();
 							for (let i = 0; i < this.migrationStateModel._targetDatabaseNames.length; i++) {
@@ -755,22 +767,34 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				await this._loadTableData();
 			}
 			try {
+				/////
 				const isOfflineMigration = this.migrationStateModel._databaseBackup?.migrationMode === MigrationMode.OFFLINE;
-				const lastBackupFileColumnIndex = this._blobContainerTargetDatabaseNamesTable.columns.length - 1;
-				const oldHidden = this._blobContainerTargetDatabaseNamesTable.columns[lastBackupFileColumnIndex].hidden;
-				const newHidden = !isOfflineMigration;
-				if (oldHidden !== newHidden) {
+
+				// for offline migrations, show last backup file column
+				const lastBackupFileColumnIndex = 5;
+				const lastBackupFileColumnOldHidden = this._blobContainerTargetDatabaseNamesTable.columns[lastBackupFileColumnIndex].hidden;
+				const lastBackupFileColumnNewHidden = !isOfflineMigration;
+				if (lastBackupFileColumnOldHidden !== lastBackupFileColumnNewHidden) {
 					// clear values prior to hiding columns if changing column visibility
 					//  to prevent null DeclarativeTableComponent - exception / _view null
 					await this._blobContainerTargetDatabaseNamesTable.setDataValues([]);
 				}
+				this._blobContainerTargetDatabaseNamesTable.columns[lastBackupFileColumnIndex].hidden = lastBackupFileColumnNewHidden;
 
-				this._blobContainerTargetDatabaseNamesTable.columns[lastBackupFileColumnIndex].hidden = newHidden;
-				this._blobContainerTargetDatabaseNamesTable.columns.forEach(column => {
-					column.width = isOfflineMigration
-						? WIZARD_TABLE_COLUMN_WIDTH_SMALL
-						: WIZARD_TABLE_COLUMN_WIDTH;
-				});
+				// for online migrations, show folder column
+				const folderColumnIndex = 6;
+				const folderColumnOldHidden = this._blobContainerTargetDatabaseNamesTable.columns[folderColumnIndex].hidden;
+				const folderColumnNewHidden = isOfflineMigration;
+				if (folderColumnOldHidden !== folderColumnNewHidden) {
+					// clear values prior to hiding columns if changing column visibility
+					//  to prevent null DeclarativeTableComponent - exception / _view null
+					await this._blobContainerTargetDatabaseNamesTable.setDataValues([]);
+				}
+				this._blobContainerTargetDatabaseNamesTable.columns[folderColumnIndex].hidden = folderColumnNewHidden;
+
+
+
+
 
 				const connectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
 				const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
@@ -816,6 +840,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				this._blobContainerStorageAccountDropdowns = [];
 				this._blobContainerDropdowns = [];
 				this._blobContainerLastBackupFileDropdowns = [];
+				this._blobContainerFolderDropdowns = [];
 
 				if (this.migrationStateModel.isSqlMiTarget) {
 					this._existingDatabases = await this.migrationStateModel.getManagedDatabases();
@@ -988,6 +1013,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							required: true,
 							enabled: false,
 						}).component();
+					const blobContainerFolderDropdown = this._view.modelBuilder.dropDown()
+						.withProps({
+							ariaLabel: constants.BLOB_CONTAINER_FOLDER,
+							editable: true,
+							fireOnTextChange: true,
+							required: true,
+							enabled: false,
+						}).component();
+
 
 					this._disposables.push(
 						blobContainerResourceDropdown.onValueChanged(async (value) => {
@@ -1028,6 +1062,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 									if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 										await this.loadBlobLastBackupFileDropdown(index);
 										await blobContainerLastBackupFileDropdown.updateProperties({ enabled: true });
+									} else {
+										await this.loadBlobFolderDropdown(index);
+										await blobContainerFolderDropdown.updateProperties({ enabled: true });
 									}
 								} else {
 									await this.disableBlobTableDropdowns(index, constants.BLOB_CONTAINER);
@@ -1049,6 +1086,21 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 								}
 							}));
 						this._blobContainerLastBackupFileDropdowns.push(blobContainerLastBackupFileDropdown);
+					} else {
+						this._disposables.push(
+							blobContainerFolderDropdown.onValueChanged(value => {
+								if (value && value !== 'undefined') {
+									/////
+
+									// if (this.migrationStateModel._lastFileNames) {
+									// 	const selectedLastBackupFile = this.migrationStateModel._lastFileNames.find(fileName => fileName.name === value);
+									// 	if (selectedLastBackupFile && !blobFileErrorStrings.includes(value)) {
+									// 		this.migrationStateModel._databaseBackup.blobs[index].lastBackupFile = selectedLastBackupFile.name;
+									// 	}
+									// }
+								}
+							}));
+						this._blobContainerFolderDropdowns.push(blobContainerFolderDropdown);
 					}
 				});
 				this.migrationStateModel._sourceDatabaseNames = this.migrationStateModel._databasesForMigration;
@@ -1067,7 +1119,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						{ value: this._blobContainerResourceGroupDropdowns[index] },
 						{ value: this._blobContainerStorageAccountDropdowns[index] },
 						{ value: this._blobContainerDropdowns[index] },
-						{ value: this._blobContainerLastBackupFileDropdowns[index] }]);
+						{ value: this._blobContainerLastBackupFileDropdowns[index] },
+						{ value: this._blobContainerFolderDropdowns[index] }]);
 				await this._blobContainerTargetDatabaseNamesTable.setDataValues([]);
 				await this._blobContainerTargetDatabaseNamesTable.setDataValues(blobContainerTargetData);
 				await this.getSubscriptionValues();
@@ -1224,6 +1277,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 			if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 				await this._blobContainerLastBackupFileDropdowns[i]?.validate();
+			} else {
+				await this._blobContainerFolderDropdowns[i]?.validate();
 			}
 		}
 		if (this.migrationStateModel.isIrMigration) {
@@ -1392,6 +1447,27 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		}
 	}
 
+	private async loadBlobFolderDropdown(index: number): Promise<void> {
+		const dropDown = this._blobContainerFolderDropdowns[index];
+		if (dropDown) {
+			try {
+				dropDown.loading = true;
+
+
+				this.migrationStateModel._blobContainerFolders = await utils.getBlobFolders();
+				dropDown.values = this.migrationStateModel._blobContainerFolders;
+				// utils.selectDefaultDropdownValue(
+				// 	dropDown,
+				// 	this.migrationStateModel._databaseBackup?.blobs[index]?.lastBackupFile,
+				// 	false);
+			} catch (error) {
+				logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobFolders', error);
+			} finally {
+				dropDown.loading = false;
+			}
+		}
+	}
+
 	private shouldDisplayBlobDropdownError(v: azdata.DropDownComponent, errorStrings: string[]) {
 		return v.value === undefined || errorStrings.includes((<azdata.CategoryValue>v.value)?.displayName);
 	}
@@ -1404,6 +1480,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._blobContainerLastBackupFileDropdowns[rowIndex].values = createDropdownValuesWithPrereq(constants.SELECT_BLOB_CONTAINER);
 			utils.selectDropDownIndex(this._blobContainerLastBackupFileDropdowns[rowIndex], 0);
 			await this._blobContainerLastBackupFileDropdowns[rowIndex]?.updateProperties(dropdownProps);
+		} else {
+			this._blobContainerFolderDropdowns[rowIndex].values = createDropdownValuesWithPrereq(constants.SELECT_BLOB_CONTAINER);
+			utils.selectDropDownIndex(this._blobContainerFolderDropdowns[rowIndex], 0);
+			await this._blobContainerFolderDropdowns[rowIndex]?.updateProperties(dropdownProps);
 		}
 		if (columnName === constants.BLOB_CONTAINER) { return; }
 

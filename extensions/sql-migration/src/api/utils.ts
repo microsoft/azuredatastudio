@@ -718,6 +718,35 @@ export async function getBlobLastBackupFileNames(account?: Account, subscription
 	return lastFileNames;
 }
 
+export async function getBlobFolders(account?: Account, subscription?: azureResource.AzureResourceSubscription, storageAccount?: azure.StorageAccount, blobContainer?: azureResource.BlobContainer): Promise<string[]> {
+	let folders: string[] = [];
+	try {
+		if (account && subscription && storageAccount && blobContainer) {
+			const blobs = await azure.getBlobs(account, subscription, storageAccount, blobContainer.name);
+
+			/////
+			blobs.forEach(blob => {
+				const blobName = blob.name;
+				let folder: string;
+
+				if (blobName.split('/').length > 1) {
+					folder = blobName.split('/')[0];
+				} else {
+					folder = '/';	// root, no folder
+				}
+
+				if (!folders.includes(folder)) {
+					folders.push(folder);
+				}
+			});
+		}
+	} catch (e) {
+		logError(TelemetryViews.Utils, 'utils.getBlobLastBackupFileNames', e);
+	}
+	folders.sort();
+	return folders;
+}
+
 export function getAzureResourceDropdownValues(
 	azureResources: { location: string, id: string, name: string }[],
 	location: azureResource.AzureLocation | undefined,

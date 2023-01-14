@@ -198,6 +198,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _fileShares!: azurecore.azureResource.FileShare[];
 	public _blobContainers!: azurecore.azureResource.BlobContainer[];
 	public _lastFileNames!: azurecore.azureResource.Blob[];
+	public _blobContainerFolders!: string[];
 	public _sourceDatabaseNames!: string[];
 	public _targetDatabaseNames!: string[];
 
