@@ -209,7 +209,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
 		const isSqlVmTarget = this.migrationStateModel.isSqlVmTarget;
-
 		const isNetworkShare = this.migrationStateModel.isBackupContainerNetworkShare;
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
@@ -263,8 +262,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			this._radioButtonContainer,
 			!isSqlDbTarget);
 
-		// IR scenario: if target <= 2014, disable
-		// blob scenario: if target <= 2014, check for block blobs
 		if (isSqlVmTarget) {
 			const targetVm = this.migrationStateModel._targetServerInstance as SqlVMServer;
 
@@ -277,23 +274,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			this.migrationStateModel._databaseBackup.networkContainerType = NetworkContainerType.BLOB_CONTAINER;
 			this._blobContainerButton.checked = true;
 		}
-
-
-
-		// // block SQL VM file share scenario for SQL Server <= 2014
-		// const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
-		// if (this.migrationStateModel._targetType === MigrationTargetType.SQLVM && utils.isSqlServerVersion2014OrBelow(sqlServerInfo)) {
-		// 	this._networkShareButton.enabled = false;
-		// 	this.migrationStateModel._databaseBackup.networkContainerType = NetworkContainerType.BLOB_CONTAINER
-		// 	this._blobContainerButton.checked = true;
-		// 	await this._sqlVmPageBlobInfoBox.updateCssStyles({ 'display': 'block' });
-		// 	await this._blobContainerButton.focus();
-		// } else {
-		// 	this._networkShareButton.enabled = true;
-		// 	this.migrationStateModel._databaseBackup.networkContainerType = NetworkContainerType.BLOB_CONTAINER
-		// 	this._blobContainerButton.checked = true;
-		// 	await this._sqlVmPageBlobInfoBox.updateCssStyles({ 'display': 'none' });
-		// }
 
 		this._subscription.value = this.migrationStateModel._targetSubscription.name;
 		this._location.value = await getLocationDisplayName(

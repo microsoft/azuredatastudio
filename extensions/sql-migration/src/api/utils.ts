@@ -86,7 +86,6 @@ export function isTargetSqlVm2014OrBelow(sqlVm: azure.SqlVMServer): boolean {
 	return false;
 }
 
-
 export interface IPackageInfo {
 	name: string;
 	version: string;

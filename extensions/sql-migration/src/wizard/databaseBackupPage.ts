@@ -698,7 +698,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							});
 						}
 
-						/////
 						if (this.migrationStateModel.isSqlVmTarget && utils.isTargetSqlVm2014OrBelow(this.migrationStateModel._targetServerInstance as SqlVMServer)) {
 							errors.push(...this._nonPageBlobErrors);
 						}
@@ -1032,7 +1031,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 								if (selectedBlobContainer && !blobContainerErrorStrings.includes(value)) {
 									this.migrationStateModel._databaseBackup.blobs[index].blobContainer = selectedBlobContainer;
 
-									/////
 									if (this.migrationStateModel.isSqlVmTarget && utils.isTargetSqlVm2014OrBelow(this.migrationStateModel._targetServerInstance as SqlVMServer)) {
 										const backups = await utils.getBlobLastBackupFileNames(
 											this.migrationStateModel._azureAccount,
@@ -1048,7 +1046,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 											this._nonPageBlobErrors.push(errorMessage);
 										}
 									}
-
 
 									if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 										await this.loadBlobLastBackupFileDropdown(index);

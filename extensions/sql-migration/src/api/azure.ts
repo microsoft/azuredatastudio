@@ -872,12 +872,6 @@ export enum AzureResourceKind {
 	SQLVM = 'SqlVm',
 }
 
-export enum BlobType {
-	BlockBlob = 'BlockBlob',
-	PageBlob = 'PageBlob',
-	AppendBlob = 'AppendBlob',
-}
-
 export interface ValidateIrSqlDatabaseMigrationRequest {
 	sourceDatabaseName: string,
 	targetDatabaseName: string,
