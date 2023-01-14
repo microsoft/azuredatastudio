@@ -149,19 +149,18 @@ class CustomOutputChannel implements vscode.OutputChannel {
 	appendLine(value: string): void {
 		console.log(value);
 	}
-	// tslint:disable-next-line:no-empty
 	clear(): void {
 	}
 	show(preserveFocus?: boolean): void;
 	show(column?: vscode.ViewColumn, preserveFocus?: boolean): void;
-	// tslint:disable-next-line:no-empty
 	show(column?: any, preserveFocus?: any): void {
 	}
-	// tslint:disable-next-line:no-empty
 	hide(): void {
 	}
-	// tslint:disable-next-line:no-empty
 	dispose(): void {
+	}
+	replace(value: string): void {
+		throw new Error('Method not implemented.');
 	}
 }
 
