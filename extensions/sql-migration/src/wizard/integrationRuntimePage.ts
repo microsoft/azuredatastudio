@@ -262,18 +262,14 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			this._radioButtonContainer,
 			!isSqlDbTarget);
 
-		if (isSqlVmTarget) {
-			const targetVm = this.migrationStateModel._targetServerInstance as SqlVMServer;
+		// if target SQL VM version is <= 2014, disable IR scenario and show info box
+		const shouldDisableIrScenario = isSqlVmTarget && utils.isTargetSqlVm2014OrBelow(this.migrationStateModel._targetServerInstance as SqlVMServer);
+		this._networkShareButton.enabled = !shouldDisableIrScenario;
+		await utils.updateControlDisplay(this._sqlVmPageBlobInfoBox, shouldDisableIrScenario, 'block');
 
-			// if target SQL VM version is <= 2014, disable IR scenario and show info box
-			const shouldDisableIrScenario = utils.isTargetSqlVm2014OrBelow(targetVm);
-			this._networkShareButton.enabled = !shouldDisableIrScenario;
-			await utils.updateControlDisplay(this._sqlVmPageBlobInfoBox, shouldDisableIrScenario, 'block');
-
-			// always pre-select blob scenario
-			this.migrationStateModel._databaseBackup.networkContainerType = NetworkContainerType.BLOB_CONTAINER;
-			this._blobContainerButton.checked = true;
-		}
+		// always pre-select blob scenario
+		this.migrationStateModel._databaseBackup.networkContainerType = NetworkContainerType.BLOB_CONTAINER;
+		this._blobContainerButton.checked = true;
 
 		this._subscription.value = this.migrationStateModel._targetSubscription.name;
 		this._location.value = await getLocationDisplayName(
