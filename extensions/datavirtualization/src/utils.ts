@@ -5,12 +5,10 @@
 
 import * as childProcess from 'child_process';
 import { ExecOptions } from 'child_process';
-import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
 import * as path from 'path';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as which from 'which';
 
 import * as Constants from './constants';
 import { CategoryValue } from 'azdata';
@@ -49,18 +47,6 @@ export function getLivyUrl(serverName: string, port: string): string {
 
 export function getTemplatePath(extensionPath: string, templateName: string): string {
 	return path.join(extensionPath, 'resources', templateName);
-}
-export function shellWhichResolving(cmd: string): Promise<string> {
-	return new Promise<string>(resolve => {
-		which(cmd, (err, foundPath) => {
-			if (err) {
-				resolve(undefined);
-			} else {
-				// NOTE: Using realpath b/c some system installs are symlinked from */bin
-				resolve(fs.realpathSync(foundPath));
-			}
-		});
-	});
 }
 
 export function getErrorMessage(error: Error | string): string {

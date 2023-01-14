@@ -6,7 +6,6 @@
 import { ErrorAction, CloseAction } from 'vscode-languageclient';
 import TelemetryReporter from '@microsoft/ads-extension-telemetry';
 import { PlatformInformation } from '@microsoft/ads-service-downloader/out/platform';
-import * as opener from 'opener';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -46,7 +45,7 @@ export class LanguageClientErrorHandler {
 			crashButtonText
 		).then(action => {
 			if (action && action === crashButtonText) {
-				opener(constants.serviceCrashLink);
+				vscode.env.openExternal(vscode.Uri.parse(constants.serviceCrashLink));
 			}
 		});
 	}
