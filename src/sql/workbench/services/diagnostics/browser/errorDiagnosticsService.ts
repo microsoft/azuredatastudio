@@ -16,20 +16,15 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 
 	public async checkErrorCode(errorCode: number, errorMessage: string, providerId: string): Promise<azdata.diagnostics.ErrorDiagnosticsResponse> {
 		let result = { errorAction: "" };
-		const promises = [];
-		if (this._providers) {
-			for (const key in this._providers) {
-				const provider = this._providers[key];
-				promises.push(provider.handleErrorCode(errorCode, errorMessage, providerId)
-					.then(response => {
-						if (result.errorAction !== response.errorAction) {
-							result = response;
-						}
-					}, () => { }));
-			}
+		let provider = this._providers[providerId]
+		if (provider) {
+			await provider.handleErrorCode(errorCode, errorMessage, providerId)
+				.then(response => {
+					if (result.errorAction !== response.errorAction) {
+						result = response;
+					}
+				}, () => { });
 		}
-
-		await Promise.all(promises);
 		return result;
 	}
 

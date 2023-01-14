@@ -49,8 +49,8 @@ export class ErrorDiagnosticsService extends SqlOpsFeature<any> {
 				}
 
 				return azdata.diagnostics.registerDiagnostics({
-					displayName: 'Azure SQL Diagnostics',
-					id: 'Microsoft.Azure.SQL.Diagnostics',
+					displayName: 'Azure SQL Diagnostics for MSSQL',
+					id: 'MSSQL',
 					settings: {
 
 					}

@@ -596,7 +596,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	private handleOtherError(connection: interfaces.IConnectionProfile, connectionResult: IConnectionResult): Promise<boolean> {
 		return this._errorDiagnosticsService.checkErrorCode(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName).then(response => {
-			if (response.errorAction !== undefined) {
+			if (response.errorAction !== "") {
 				this._logService.info(`password reset error code returned!`);
 				//connectionResult.errorHandled = true;
 				return false;
