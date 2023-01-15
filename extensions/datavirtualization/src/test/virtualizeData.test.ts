@@ -7,16 +7,16 @@ import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
 import * as should from 'should';
 
-import { VirtualizeDataModel } from '../src/wizards/virtualizeData/virtualizeDataModel';
-import { CheckboxTreeNode } from '../src/wizards/virtualizeData/virtualizeDataTree';
+import { VirtualizeDataModel } from '../wizards/virtualizeData/virtualizeDataModel';
+import { CheckboxTreeNode } from '../wizards/virtualizeData/virtualizeDataTree';
 import {
 	MockInputBoxComponent, MockWizard, VirtualizeDataMockEnv, MockTextComponent,
 	MockDeclarativeTableComponent, MockDataSourceService, MockConnectionProfile
 } from './stubs';
-import { CreateMasterKeyPage, MasterKeyUiElements } from '../src/wizards/virtualizeData/createMasterKeyPage';
-import { SummaryPage, SummaryUiElements } from '../src/wizards/virtualizeData/summaryPage';
-import { VDIManager } from '../src/wizards/virtualizeData/virtualizeDataInputManager';
-import { ColumnDefinition } from '../src/services/contracts';
+import { CreateMasterKeyPage, MasterKeyUiElements } from '../wizards/virtualizeData/createMasterKeyPage';
+import { SummaryPage, SummaryUiElements } from '../wizards/virtualizeData/summaryPage';
+import { VDIManager } from '../wizards/virtualizeData/virtualizeDataInputManager';
+import { ColumnDefinition } from '../services/contracts';
 
 describe('Wizard Setup Tests', function (): void {
 	it('Should set model fields after creating session.', async () => {

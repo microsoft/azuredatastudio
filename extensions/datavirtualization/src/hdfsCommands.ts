@@ -10,7 +10,7 @@ import * as constants from './constants';
 import * as LocalizedConstants from './localizedConstants';
 import { AppContext } from './appContext';
 import { TreeNode } from './treeNodes';
-import { MssqlExtensionApi } from '../typings/mssqlapis';
+import { MssqlExtensionApi } from './typings/mssqlapis';
 
 
 export async function getNodeFromMssqlProvider<T extends TreeNode>(context: ICommandViewContext | ICommandObjectExplorerContext, appContext: AppContext): Promise<T> {

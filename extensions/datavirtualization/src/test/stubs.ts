@@ -7,12 +7,12 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 
-import { IPrompter, IQuestion, IPromptCallback } from '../src/prompts/question';
-import { CheckboxTreeNode } from '../src/wizards/virtualizeData/virtualizeDataTree';
-import { ObjectMappingPage } from '../src/wizards/virtualizeData/objectMappingPage';
-import { ConnectionDetailsPage } from '../src/wizards/virtualizeData/connectionDetailsPage';
-import { CreateMasterKeyPage, MasterKeyUiElements } from '../src/wizards/virtualizeData/createMasterKeyPage';
-import { SelectDataSourcePage } from '../src/wizards/virtualizeData/selectDataSourcePage';
+import { IPrompter, IQuestion, IPromptCallback } from '../prompts/question';
+import { CheckboxTreeNode } from '../wizards/virtualizeData/virtualizeDataTree';
+import { ObjectMappingPage } from '../wizards/virtualizeData/objectMappingPage';
+import { ConnectionDetailsPage } from '../wizards/virtualizeData/connectionDetailsPage';
+import { CreateMasterKeyPage, MasterKeyUiElements } from '../wizards/virtualizeData/createMasterKeyPage';
+import { SelectDataSourcePage } from '../wizards/virtualizeData/selectDataSourcePage';
 import {
 	DataSourceWizardService, DataSourceWizardConfigInfoResponse, VirtualizeDataInput,
 	ValidateVirtualizeDataInputResponse, GetDatabaseInfoResponse, GetDatabaseInfoRequestParams,
@@ -20,12 +20,12 @@ import {
 	GetSourceTablesResponse, GetSourceColumnDefinitionsRequestParams, GetSourceColumnDefinitionsResponse,
 	ColumnDefinition, ProseDiscoveryParams, ProseDiscoveryResponse, ExternalTableInfo, DataSourceType, SchemaTables,
 	ExecutionResult, DataSourceBrowsingParams, SchemaViews, DatabaseOverview
-} from '../src/services/contracts';
-import { VirtualizeDataModel } from '../src/wizards/virtualizeData/virtualizeDataModel';
-import { AppContext } from '../src/appContext';
-import { ApiWrapper } from '../src/apiWrapper';
-import { VDIManager } from '../src/wizards/virtualizeData/virtualizeDataInputManager';
-import { VirtualizeDataWizard } from '../src/wizards/virtualizeData/virtualizeDataWizard';
+} from '../services/contracts';
+import { VirtualizeDataModel } from '../wizards/virtualizeData/virtualizeDataModel';
+import { AppContext } from '../appContext';
+import { ApiWrapper } from '../apiWrapper';
+import { VDIManager } from '../wizards/virtualizeData/virtualizeDataInputManager';
+import { VirtualizeDataWizard } from '../wizards/virtualizeData/virtualizeDataWizard';
 
 // Dummy implementation to simplify mocking
 export class TestPrompter implements IPrompter {

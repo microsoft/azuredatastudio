@@ -5,7 +5,7 @@
 
 import * as fs from 'fs';
 
-import { IFileSource, IFile } from '../src/fileSources';
+import { IFileSource, IFile } from '../fileSources';
 
 export class MockFileSource implements IFileSource {
 	filesToReturn: Map<string, IFile[]>;

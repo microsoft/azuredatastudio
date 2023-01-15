@@ -8,16 +8,16 @@ import * as should from 'should';
 import * as path from 'path';
 import * as azdata from 'azdata';
 import { VirtualizeDataMockEnv, MockDataSourceService, MockInputBoxComponent, MockDropdownComponent, MockTextComponent, MockLoadingComponent, MockDeclarativeTableComponent, MockTableComponent, MockConnectionProfile, MockButtonComponent } from './stubs';
-import { TableFromFileWizard } from '../src/wizards/tableFromFile/tableFromFileWizard';
-import { ImportDataModel } from '../src/wizards/tableFromFile/api/models';
-import { FileConfigPage, FileConfigPageUiElements } from '../src/wizards/tableFromFile/pages/fileConfigPage';
-import { ProsePreviewPage, ProsePreviewPageUiElements } from '../src/wizards/tableFromFile/pages/prosePreviewPage';
-import { ModifyColumnsPage, ModifyColumnsPageUiElements } from '../src/wizards/tableFromFile/pages/modifyColumnsPage';
-import { SummaryPage, SummaryPageUiElements } from '../src/wizards/tableFromFile/pages/summaryPage';
-import { FileNode } from '../src/hdfsProvider';
-import { DataSourceInstance } from '../src/services/contracts';
-import { stripUrlPathSlashes } from '../src/utils';
-import { DataSourceType, delimitedTextFileType } from '../src/constants';
+import { TableFromFileWizard } from '../wizards/tableFromFile/tableFromFileWizard';
+import { ImportDataModel } from '../wizards/tableFromFile/api/models';
+import { FileConfigPage, FileConfigPageUiElements } from '../wizards/tableFromFile/pages/fileConfigPage';
+import { ProsePreviewPage, ProsePreviewPageUiElements } from '../wizards/tableFromFile/pages/prosePreviewPage';
+import { ModifyColumnsPage, ModifyColumnsPageUiElements } from '../wizards/tableFromFile/pages/modifyColumnsPage';
+import { SummaryPage, SummaryPageUiElements } from '../wizards/tableFromFile/pages/summaryPage';
+import { FileNode } from '../hdfsProvider';
+import { DataSourceInstance } from '../services/contracts';
+import { stripUrlPathSlashes } from '../utils';
+import { DataSourceType, delimitedTextFileType } from '../constants';
 
 describe('Table From File Wizard:', function () {
 	let env = new VirtualizeDataMockEnv();
