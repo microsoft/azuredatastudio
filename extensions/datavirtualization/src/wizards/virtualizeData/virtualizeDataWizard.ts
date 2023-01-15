@@ -21,14 +21,6 @@ import { CreateMasterKeyPage } from './createMasterKeyPage';
 import { getErrorMessage } from '../../utils';
 import { VDIManager } from './virtualizeDataInputManager';
 
-function timeoutPromise(errMsg: string, timeoutSeconds: number): Promise<azdata.ModelView> {
-	return new Promise<azdata.ModelView>((_, reject) => {
-		setTimeout(() => {
-			reject(new Error(errMsg));
-		}, timeoutSeconds * 1000);
-	});
-}
-
 export class VirtualizeDataWizard {
 	private _wizard: azdata.window.Wizard;
 	private _wizardPageWrappers: IWizardPageWrapper[];
