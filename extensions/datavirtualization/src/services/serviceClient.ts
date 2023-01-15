@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { IConfig, ServerProvider, Events } from '@microsoft/ads-service-downloader';
+import { IConfig, ServerProvider, Events, LogLevel } from '@microsoft/ads-service-downloader';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
@@ -132,6 +132,11 @@ export class ServiceClient {
 					break;
 				case Events.DOWNLOAD_END:
 					this.outputChannel.appendLine(localize('downloadingServiceComplete', "Done downloading {0}", Constants.serviceName));
+					break;
+				case Events.LOG_EMITTED:
+					if (args[0] >= LogLevel.Warning) {
+						this.outputChannel.appendLine(args[1]);
+					}
 					break;
 				default:
 					console.error(`Unknown event from Server Provider ${e}`);
