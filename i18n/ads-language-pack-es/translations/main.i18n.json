@@ -11337,7 +11337,6 @@
 			"dataExplorer.context": "Menú contextual del elemento dataexplorer",
 			"dataGrid.context": "Menú contextual del elemento de cuadrícula de datos",
 			"default": "Habilitar la comprobación automática de actualizaciones. Azure Data Studio comprobará las actualizaciones de manera automática y periódica.",
-			"docNotFoundForUriError": "No se pudo abrir un documento de bloc de notas para el URI especificado.",
 			"enable locally": "Vuelva a cargar Azure Data Studio para habilitar esta extensión localmente.",
 			"enable remote": "Vuelva a cargar Azure Data Studio para habilitar esta extensión en {0}.",
 			"enableWindowsBackgroundUpdates": "Habilitar para descargar e instalar nuevas versiones de Azure Data Studio en segundo plano en Windows",
@@ -11350,7 +11349,6 @@
 			"miinstallVsix": "Instalar extensión desde el paquete VSIX",
 			"newQuery": "Nueva consulta",
 			"notebook.cellTitle": "El menú de título de la celda del cuaderno",
-			"notebook.cellToolbarLocation.compatibilityDescription": "Indica si la barra de herramientas de celdas debe mostrarse u ocultarse. Nota: esta configuración solo está habilitada con fines de compatibilidad de extensiones, por lo que no afecta a nada.",
 			"notebook.title": "El menú de título del cuaderno",
 			"notebook.toolbar": "Menú de la barra de herramientas del cuaderno",
 			"objectExplorer.context": "Menú contextual del elemento del explorador de objetos",
@@ -11377,9 +11375,7 @@
 			"terminal.integrated.inheritEnv": "Si los nuevos shells deben heredar su entorno de Azure Data Studio, lo que puede generar un shell de inicio de sesión para asegurarse de que se inicializan $PATH y otras variables de desarrollo. Esto no tiene ningún efecto en Windows.",
 			"uninstallExtensionComplete": "Vuelva a cargar Azure Data Studio para completar la desinstalación de la extensión {0}.",
 			"updateLocale": "¿Desea cambiar el idioma de la interfaz de usuario de Azure Data Studio a {0} y reiniciar?",
-			"vscodeDocCreationFailedError": "No se pudo crear el documento del bloc de notas.",
-			"vscodeFunctionalityNotSupportedError": "Esta funcionalidad de VS Code no se admite en Azure Data Studio.",
-			"vscodeInvalidArgumentsError": "Argumentos no válidos.",
+			"vscodeNotebooksNotSupportedError": "VS Code no se admiten extensiones de cuaderno en Azure Data Studio.",
 			"watermark.newNotebook": "Nuevo cuaderno",
 			"watermark.newSqlFile": "Nuevo archivo SQL",
 			"workspace.trust.description": "Controla si la confianza del área de trabajo está habilitada o no en Azure Data Studio.",
@@ -11530,9 +11526,6 @@
 		},
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
 			"navigationProviderRequired": "Se debe pasar un NavigationProvider con un id. de proveedor válido a este método"
-		},
-		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "No se puede iniciar una sesión, el administrador aún no está inicializado"
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "Borrar todas las cuentas guardadas",
@@ -12268,7 +12261,7 @@
 			"epCompare.zoomInAction": "Acercar",
 			"epCompare.zoomOutAction": "Alejar",
 			"epCompare.zoomReset": "Restablecer zoom",
-			"epCompare.zoomToFit": "Ajustar al tamaño",
+			"epCompare.zoomToFit": "Zoom para ajustar",
 			"executionPlanComparison.bottomPlanDiagram.name": "Plan de ejecución inferior {0}",
 			"executionPlanComparison.topPlanDiagram.name": "Plan de ejecución principal {0}",
 			"executionPlanDisableTooltip": "Información sobre herramientas deshabilitada",
@@ -12339,7 +12332,7 @@
 			"executionPlanCustomZoom": "Zoom personalizado",
 			"executionPlanDisableTooltip": "Información sobre herramientas deshabilitada",
 			"executionPlanEnableTooltip": "Información sobre herramientas habilitada",
-			"executionPlanFitGraphLabel": "Ajustar al tamaño",
+			"executionPlanFitGraphLabel": "Zoom para ajustar",
 			"executionPlanHighlightExpensiveOperationAction": "Resaltar operación costosa",
 			"executionPlanOpenGraphFile": "Mostrar plan de consulta XML",
 			"executionPlanPropertiesActionLabel": "Propiedades",
@@ -12702,6 +12695,7 @@
 			"notebook.markdownModeDescription": "El texto se muestra como \"Markdown\".",
 			"notebook.markdownPreviewLineHeight": "Controla la altura de línea utilizada en la vista previa de Markdown del cuaderno. Este número es relativo al tamaño de la fuente.",
 			"notebook.maxRichTextUndoHistory": "Número máximo de cambios almacenados en el historial de deshacer del editor de texto enriquecido del cuaderno",
+			"notebook.renderTablesInHtml": "Muestre y guarde tablas en formato HTML en celdas de texto en lugar de convertirlas en tablas de Markdown.",
 			"notebook.richTextModeDescription": "El texto se muestra como texto enriquecido (también conocido como WYSIWYG).",
 			"notebook.saveConnectionName": "(Versión preliminar) Guarde el nombre de la conexión en los metadatos del cuaderno.",
 			"notebook.showAllKernels": "(Versión preliminar) Consulte todos los kernel del proveedor del cuaderno actual.",
@@ -12947,6 +12941,7 @@
 		},
 		"sql/workbench/contrib/query/browser/actions": {
 			"chart": "Gráfico",
+			"copyHeaders": "Encabezados de texto",
 			"copySelection": "Copiar",
 			"copyWithHeaders": "Copiar con encabezados",
 			"jsonEncoding": "La codificación de los resultados no se guardará al realizar la exportación en JSON. Recuerde guardarlos con la codificación deseada una vez que se cree el archivo.",
@@ -13022,6 +13017,7 @@
 			"queryEditor.results.saveAsMarkdown.lineSeparator": "Caracteres que se usarán para separar las líneas al exportar a Markdown, el valor predeterminado es finales de líneas del sistema",
 			"queryEditor.results.saveAsXml.encoding": "Codificación de archivo empleada al guardar los resultados como XML",
 			"queryEditor.results.saveAsXml.formatted": "Si es \"true\", se dará formato a la salida XML al guardar los resultados como XML.",
+			"queryEditor.results.showActionBar": "Indica si se debe mostrar la barra de acciones en la vista de resultados de la consulta.",
 			"queryEditor.results.streaming": "Permitir streaming de resultados; contiene algunos defectos visuales menores",
 			"queryEditor.showConnectionInfoInTitle": "Controla si se muestra la información de conexión para una pestaña en el título.",
 			"queryEditor.tabColorMode": "Controla cómo colorear las pestañas basadas en el grupo de servidores de la conexión activa",
@@ -13067,6 +13063,8 @@
 			"status.query.selection-summary": "Resumen de la selección",
 			"status.query.status": "Estado de ejecución",
 			"status.query.summaryText": "Promedio: {0}; recuento: {1}; suma: {2}",
+			"status.query.summaryTextNonNumeric": "Recuento: {0} Recuento distinto: {1} Recuento nulo: {2}",
+			"status.query.summaryTooltip": "Promedio: {0} Recuento: {1} Recuento distinto: {2} Máx.: {3} Mín.: {4} Recuento nulo: {5} Suma: {6}",
 			"status.query.timeElapsed": "Tiempo transcurrido"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13583,6 +13581,7 @@
 			"deleteCellFailed": "No se pudo eliminar la celda.",
 			"injectedParametersMsg": "N.º de parámetros insertados\r\n",
 			"kernelRequiresConnection": "Seleccione una conexión para ejecutar celdas para este kernel",
+			"savedKernelNotSupported": "No se admite el kernel \"{0}\" de este cuaderno. En su lugar, el valor predeterminado es kernel de SQL.",
 			"shutdownClientSessionError": "Se ha producido un error en la sesión del cliente al cerrar el cuaderno: {0}",
 			"startSessionFailed": "No se pudo iniciar sesión: {0}"
 		},
@@ -13619,14 +13618,13 @@
 			"unknownCellType": "Celda de tipo {0} desconocido"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "Objetivo de ejecución opcional indicado por este magic, por ejemplo Spark vs SQL",
+			"carbon.extension.contributes.notebook.executionTarget": "Objetivo de ejecución opcional indicado por este magic, por ejemplo Python vs SQL",
 			"carbon.extension.contributes.notebook.fileExtensions": "Extensiones de archivo que deben estar registradas en este proveedor de cuadernos",
-			"carbon.extension.contributes.notebook.kernels": "Conjunto opcional de kernels para los que esto es válido, por ejemplo python3, pyspark, sql",
+			"carbon.extension.contributes.notebook.kernels": "Conjunto opcional de kernels para los que esto es válido, por ejemplo, python3 y sql",
 			"carbon.extension.contributes.notebook.language": "El lenguaje de celda que se usará si este magic de celda se incluye en la celda",
 			"carbon.extension.contributes.notebook.magic": "Nombre del magic de celda, como \"%%sql\".",
 			"carbon.extension.contributes.notebook.provider": "Identificador del proveedor del cuaderno.",
 			"carbon.extension.contributes.notebook.standardKernels": "Núcleos que deben ser estándar con este proveedor de cuadernos",
-			"providerNotInRegistryError": "El proveedor especificado \"{0}\" no está presente en el registro del bloc de notas.",
 			"vscode.extension.contributes.notebook.languagemagics": "Aporta el lenguaje del cuaderno.",
 			"vscode.extension.contributes.notebook.providersDescriptions": "Aporta descripciones del proveedor de cuadernos."
 		},
@@ -13724,8 +13722,9 @@
 			"filewallRule": "Regla de firewall",
 			"firewall.cancel": "Cancelar",
 			"firewall.ok": "Aceptar",
-			"firewallRuleDialogDescription": "La dirección IP del cliente no tiene acceso al servidor. Inicie sesión en una cuenta de Azure y cree una regla de firewall para habilitar el acceso.",
-			"firewallRuleHelpDescription": "Más información sobre configuración de firewall",
+			"firewall.ruleName": "Nombre de la regla",
+			"firewallRuleDescription": "Se requiere una regla de firewall para acceder a la instancia de SQL Server. Haga clic en el vínculo siguiente para crear una nueva regla de firewall.",
+			"firewallRuleHelpLink": "Más información sobre las reglas del firewall",
 			"from": "De",
 			"to": "A"
 		},
@@ -13900,6 +13899,17 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "I&&ntroducción",
 			"showReleaseNotes": "Ver introducción"
+		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "Cancelar",
+			"passwordChangeDialog.confirmPassword": "Confirmar contraseña:",
+			"passwordChangeDialog.connecting": "Conexión en curso",
+			"passwordChangeDialog.errorHeader": "Error al intentar cambiar la contraseña",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "Las contraseñas introducidas no coinciden",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Presione Aceptar y escriba exactamente la misma contraseña en ambos cuadros.",
+			"passwordChangeDialog.newPassword": "Nueva contraseña:",
+			"passwordChangeDialog.ok": "Aceptar",
+			"passwordChangeDialog.title": "Cambiar contraseña"
 		}
 	}
 }

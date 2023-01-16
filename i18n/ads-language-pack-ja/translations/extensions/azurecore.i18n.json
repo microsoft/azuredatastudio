@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "キャッシュへのアカウントの追加中にエラーが発生しました。",
 			"azure.cacheErrorGet": "キャッシュからのアカウントの取得中にエラーが発生しました",
 			"azure.cacheErrorParse": "キャッシュからのアカウントの解析中にエラーが発生しました",
-			"azure.cacheErrrorRemove": "キャッシュからのアカウントの削除中にエラーが発生しました。",
 			"azure.microsoftAccountDisplayName": "Microsoft アカウント",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "認証で何かが失敗したか、またはトークンがシステムから削除されています。アカウントを Azure Data Studio にもう一度追加してください。",
@@ -22,7 +21,6 @@
 			"azure.responseError": "トークンの取得がエラーで失敗しました。詳細は、[開発者ツールを開く]({0})。",
 			"azure.tenantNotFound": "ID '{0}' の指定されたテナントが見つかりません。",
 			"azureAuth.unidentifiedError": "Azure 認証で不明なエラーが発生しました",
-			"azureWorkAccountDisplayName": "職場または学校アカウント",
 			"azurecore.consentDialog.body": "テナント '{0} ({1})' では、{2} リソースにアクセスするために、もう一度再認証する必要があります。[開く] をクリックして、認証プロセスを開始してください。",
 			"azurecore.consentDialog.cancel": "キャンセル",
 			"azurecore.consentDialog.ignore": "テナントの無視",
@@ -99,6 +97,12 @@
 		},
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
 			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL マネージド インスタンス - Azure Arc"
+		},
+		"dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider": {
+			"azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel": "専用 SQL プール"
+		},
+		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
+			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
 		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "リソースは見つかりませんでした"
@@ -188,6 +192,8 @@
 			"azurecore.norwaywest": "ノルウェー西部",
 			"azurecore.postgresServer": "Azure Database for PostgreSQL サーバー",
 			"azurecore.reload": "再読み込み",
+			"azurecore.reloadChoice": "Azure Data Studio の再読み込み",
+			"azurecore.reloadPrompt": "認証ライブラリが変更されました。Azure Data Studio を再読み込みしてください。",
 			"azurecore.requiresReload": "この設定を変更するには、すべての変更を有効にするためにウィンドウを再読み込みする必要があります。",
 			"azurecore.resourceGroup": "リソース グループ",
 			"azurecore.resourceType": "リソースの種類",
@@ -233,6 +239,7 @@
 			"azure.resource.view.title": "Azure (プレビュー)",
 			"azure.tenant.config.filter.description": "Azure リソースの照会時に無視するテナント ID の一覧。各要素はテナント ID です。",
 			"azure.title": "Azure",
+			"config.authenticationLibrary": "AAD 認証フローに使用されるライブラリ。このオプションを変更した後は ADS を再起動してください。",
 			"config.azureAccountConfigurationSection": "Azure アカウント構成",
 			"config.azureAuthMethodConfigurationSection": "Azure 認証方法",
 			"config.azureCodeGrantMethod": "Code Grant 方法",

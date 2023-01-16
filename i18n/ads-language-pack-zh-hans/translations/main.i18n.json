@@ -11337,7 +11337,6 @@
 			"dataExplorer.context": "dataexplorer 项上下文菜单",
 			"dataGrid.context": "数据网格项上下文菜单",
 			"default": "启用自动更新检查。Azure Data Studio 将定期自动检查更新。",
-			"docNotFoundForUriError": "无法打开指定的 URI 的笔记本文档。",
 			"enable locally": "请重新加载 Azure Data Studio 以在本地启用此扩展。",
 			"enable remote": "请重新加载 Azure Data Studio 以在 {0} 中启用此扩展。",
 			"enableWindowsBackgroundUpdates": "启用在 Windows 上后台下载和安装新的 Azure Data Studio 版本",
@@ -11350,7 +11349,6 @@
 			"miinstallVsix": "从 VSIX 包安装扩展",
 			"newQuery": "新建查询",
 			"notebook.cellTitle": "笔记本单元格标题菜单",
-			"notebook.cellToolbarLocation.compatibilityDescription": "应在何处显示单元格工具栏，或者是否应隐藏该工具栏。注意：此设置仅出于扩展兼容性目的而启用，因此不会产生任何影响。",
 			"notebook.title": "笔记本标题菜单",
 			"notebook.toolbar": "笔记本工具栏菜单",
 			"objectExplorer.context": "对象资源管理器项上下文菜单",
@@ -11377,9 +11375,7 @@
 			"terminal.integrated.inheritEnv": "新 shell 是否应从 Azure Data Studio 继承其环境，这可能会生成登录 shell，以确保初始化 $PATH 和其他开发变量。这不会对 Windows 造成影响。",
 			"uninstallExtensionComplete": "请重新加载 Azure Data Studio 以完成扩展 {0} 的卸载。",
 			"updateLocale": "是否要将 Azure Data Studio 的 UI 语言更改为 {0} 并重启?",
-			"vscodeDocCreationFailedError": "未能创建笔记本文档。",
-			"vscodeFunctionalityNotSupportedError": "Azure Data Studio 中不支持此 VS Code 功能。",
-			"vscodeInvalidArgumentsError": "参数无效。",
+			"vscodeNotebooksNotSupportedError": "Azure Data Studio 不支持 VS Code 笔记本扩展。",
 			"watermark.newNotebook": "新建笔记本",
 			"watermark.newSqlFile": "新建 SQL 文件",
 			"workspace.trust.description": "控制是否在 Azure Data Studio 内启用工作区信任。",
@@ -11530,9 +11526,6 @@
 		},
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
 			"navigationProviderRequired": "必须向此方法传递具有有效 providerId 的 NavigationProvider"
-		},
-		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "无法启动会话，管理器尚未初始化"
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "清除所有保存的帐户",
@@ -12702,6 +12695,7 @@
 			"notebook.markdownModeDescription": "文本显示为 Markdown。",
 			"notebook.markdownPreviewLineHeight": "控制笔记本 Markdown 预览中使用的行高。此数字与字号相关。",
 			"notebook.maxRichTextUndoHistory": "笔记本格式文本编辑器的撤消历史记录中存储的最大更改数。",
+			"notebook.renderTablesInHtml": "在文本单元格中以 HTML 格式显示和保存表，而不是转换为 Markdown 表。",
 			"notebook.richTextModeDescription": "文本显示为格式文本(也称为 \"WSIWYG\")。",
 			"notebook.saveConnectionName": "(预览)在笔记本元数据中保存连接名称。",
 			"notebook.showAllKernels": "(预览)显示当前笔记本提供程序的所有内核。",
@@ -12947,6 +12941,7 @@
 		},
 		"sql/workbench/contrib/query/browser/actions": {
 			"chart": "图表",
+			"copyHeaders": "复制标头",
 			"copySelection": "复制",
 			"copyWithHeaders": "带标头复制",
 			"jsonEncoding": "导出到 JSON 时，将不会保存结果编码，请记得在创建文件后使用所需编码进行保存。",
@@ -13022,6 +13017,7 @@
 			"queryEditor.results.saveAsMarkdown.lineSeparator": "导出到 Markdown 时用于分隔行的字符，默认为系统行尾",
 			"queryEditor.results.saveAsXml.encoding": "将结果保存为 XML 时使用的文件编码",
 			"queryEditor.results.saveAsXml.formatted": "为 true 时，将在将结果保存为 XML 时设置 XML 输出的格式",
+			"queryEditor.results.showActionBar": "是否在查询结果视图中显示操作栏",
 			"queryEditor.results.streaming": "启用结果流式处理；包含极少轻微的可视化问题",
 			"queryEditor.showConnectionInfoInTitle": "控制是否显示标题中选项卡的连接信息。",
 			"queryEditor.tabColorMode": "控制如何根据活动连接的服务器组为选项卡着色",
@@ -13067,6 +13063,8 @@
 			"status.query.selection-summary": "选择摘要",
 			"status.query.status": "执行状态",
 			"status.query.summaryText": "平均值: {0} 计数: {1} 总和: {2}",
+			"status.query.summaryTextNonNumeric": "计数: {0}  非重复计数: {1}  Null 计数: {2}",
+			"status.query.summaryTooltip": "平均值: {0}  计数: {1}  非重复计数: {2} 最大值: {3}  最小值: {4}  Null 计数: {5}  总和: {6}",
 			"status.query.timeElapsed": "已用时间"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13583,6 +13581,7 @@
 			"deleteCellFailed": "未能删除单元格。",
 			"injectedParametersMsg": "# 个注入参数\r\n",
 			"kernelRequiresConnection": "请选择一个连接来运行此内核的单元格",
+			"savedKernelNotSupported": "不支持此笔记本的 \"{0}\" 内核。正在改为默认的 SQL 内核。",
 			"shutdownClientSessionError": "关闭笔记本时发生客户端会话错误: {0}",
 			"startSessionFailed": "无法启动会话: {0}"
 		},
@@ -13619,14 +13618,13 @@
 			"unknownCellType": "单元格类型 {0} 未知"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "此魔术方法指示的可选执行目标，例如 Spark 和 SQL",
+			"carbon.extension.contributes.notebook.executionTarget": "此魔术方法指示的可选执行目标，例如 Python 和 SQL",
 			"carbon.extension.contributes.notebook.fileExtensions": "应向此笔记本提供程序注册哪些文件扩展名",
-			"carbon.extension.contributes.notebook.kernels": "可选内核集，对于 python3、pyspark 和 sql 等有效",
+			"carbon.extension.contributes.notebook.kernels": "可选内核集，对于 python3 和 sql 等有效",
 			"carbon.extension.contributes.notebook.language": "单元格中包含此单元格魔术方法时要使用的单元格语言",
 			"carbon.extension.contributes.notebook.magic": "单元格魔术方法的名称，如 \"%%sql\"。",
 			"carbon.extension.contributes.notebook.provider": "笔记本提供程序的标识符。",
 			"carbon.extension.contributes.notebook.standardKernels": "此笔记本提供程序应标配哪些内核",
-			"providerNotInRegistryError": "笔记本注册表中不存在指定的提供程序 \"{0}\"。",
 			"vscode.extension.contributes.notebook.languagemagics": "提供笔记本语言。",
 			"vscode.extension.contributes.notebook.providersDescriptions": "提供笔记本提供程序说明。"
 		},
@@ -13724,8 +13722,9 @@
 			"filewallRule": "防火墙规则",
 			"firewall.cancel": "取消",
 			"firewall.ok": "确定",
-			"firewallRuleDialogDescription": "你的客户端 IP 地址无权访问此服务器。请登录到 Azure 帐户，然后新建一个防火墙规则以启用访问。",
-			"firewallRuleHelpDescription": "详细了解防火墙设置",
+			"firewall.ruleName": "规则名",
+			"firewallRuleDescription": "访问 SQL Server 实例需要防火墙规则。单击下面的链接创建新的防火墙规则。",
+			"firewallRuleHelpLink": "了解有关防火墙规则的详细信息",
 			"from": "从",
 			"to": "到"
 		},
@@ -13900,6 +13899,17 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "入门(&&S)",
 			"showReleaseNotes": "显示入门指南"
+		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "取消",
+			"passwordChangeDialog.confirmPassword": "确认密码:",
+			"passwordChangeDialog.connecting": "正在连接",
+			"passwordChangeDialog.errorHeader": "尝试更改密码时失败",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "输入的密码不匹配",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "请按“确定”并在两个框中输入完全相同的密码。",
+			"passwordChangeDialog.newPassword": "新密码:",
+			"passwordChangeDialog.ok": "确定",
+			"passwordChangeDialog.title": "更改密码"
 		}
 	}
 }

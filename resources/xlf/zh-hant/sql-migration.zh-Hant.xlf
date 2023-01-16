@@ -10,6 +10,10 @@
         <source xml:lang="en">The access token for selected account '{0}' and tenant '{1}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.</source>
         <target state="translated">選取的帳戶 '{0}' 及租用戶 '{1}' 的存取權杖已失效。請選取 [連結帳戶] 並重新整理該帳戶，或選取其他帳戶。</target>
       </trans-unit>
+      <trans-unit id="sql-migration.login.wizard.title">
+        <source xml:lang="en">Migrate logins from '{0}' to Azure SQL</source>
+        <target state="translated">將登入從 '{0}' 移轉至 Azure SQL</target>
+      </trans-unit>
       <trans-unit id="sql-migration.wizard.title">
         <source xml:lang="en">Migrate '{0}' to Azure SQL</source>
         <target state="translated">將 '{0}' 移轉到 Azure SQL</target>
@@ -18,37 +22,181 @@
         <source xml:lang="en">Are you sure you want to cancel this migration?</source>
         <target state="translated">確定要取消此移轉嗎?</target>
       </trans-unit>
+      <trans-unit id="sql.login.migration..error">
+        <source xml:lang="en">Login migration error: {0}</source>
+        <target state="translated">登入移轉錯誤: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.complete">
+        <source xml:lang="en">Completed migrating logins</source>
+        <target state="translated">已完成登入移轉</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.db.title">
+        <source xml:lang="en">Azure SQL Database</source>
+        <target state="translated">Azure SQL 資料庫</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.establish.user.mappings">
+        <source xml:lang="en">Validating and migrating logins completed.
+
+Establishing user mappings.</source>
+        <target state="translated">驗證及移轉登入已完成。
+
+正在建立使用者對應。</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.establish.user.mappings.failed">
+        <source xml:lang="en">Establishing user mappings failed</source>
+        <target state="translated">建立使用者對應失敗</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.failed">
+        <source xml:lang="en">Migrating logins failed</source>
+        <target state="translated">移轉登入失敗</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.get.connection.string">
+        <source xml:lang="en">data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;</source>
+        <target state="translated">data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.get.logins.query">
+        <source xml:lang="en">SELECT sp.name as login, sp.type_desc as login_type, sp.default_database_name, case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status FROM sys.server_principals sp  LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN ('SQL_LOGIN', 'WINDOWS_LOGIN') ORDER BY sp.name;</source>
+        <target state="translated">SELECT sp.name as login, sp.type_desc as login_type, sp.default_database_name, case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status FROM sys.server_principals sp  LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN ('SQL_LOGIN', 'WINDOWS_LOGIN') ORDER BY sp.name;</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.in.progress">
+        <source xml:lang="en">Login migration in progress</source>
+        <target state="translated">正在進行登入移轉</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.logins.found">
+        <source xml:lang="en">Login found</source>
+        <target state="translated">找到登入</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.logins.not.found">
+        <source xml:lang="en">Login not found</source>
+        <target state="translated">找不到登入</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.mi.title">
+        <source xml:lang="en">Azure SQL Managed Instance</source>
+        <target state="translated">Azure SQL 受控執行個體</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.migrate.server.roles.and.set.permissions">
+        <source xml:lang="en">Establishing user mappings completed.
+
+Currently, migrating server roles, establishing server mappings and setting permissions. This will take some time.</source>
+        <target state="translated">建立使用者對應已完成。
+
+目前正在移轉伺服器角色、建立伺服器對應及設定權限。這需要一些時間。</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.migrate.server.roles.and.set.permissions.failed">
+        <source xml:lang="en">Migrating server roles, establishing server mappings and setting permissions failed.</source>
+        <target state="translated">移轉伺服器角色、建立伺服器對應及設定權限失敗。</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.migration.status.column">
+        <source xml:lang="en">Migration Status</source>
+        <target state="translated">移轉狀態</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.refresh.login.data.successful">
+        <source xml:lang="en">Refreshing login list was successful. Source logins found {0}, Target logins found {1}</source>
+        <target state="translated">重新整理登入清單成功。發現來源登入 {0}，找到目標登入 {1}</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.refresh.source.login.data.failed">
+        <source xml:lang="en">Refreshing login list from source failed</source>
+        <target state="translated">從來源重新整理登入清單失敗</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.refresh.target.login.data.failed">
+        <source xml:lang="en">Refreshing login list from target failed</source>
+        <target state="translated">從目標重新整理登入清單失敗</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.select.in.progress">
+        <source xml:lang="en">Refreshing login list from source and target</source>
+        <target state="translated">正在從來源和目標重新整理登入清單</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.select.logins.windows.auth.warning">
+        <source xml:lang="en">Please note that this wizard does not display windows authentication login types because migrating that type is currently not supported. Capability for migrating windows authentication logins is coming soon.</source>
+        <target state="translated">請注意，此精靈不會顯示 Windows 驗證登入類型，因為目前不支援移轉該類型。即將推出移轉 Windows 驗證登入的功能。</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.select.page.title">
+        <source xml:lang="en">Select login(s) to migrate</source>
+        <target state="translated">選取要移轉的登入</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.column">
+        <source xml:lang="en">Status</source>
+        <target state="translated">狀態</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.failed">
+        <source xml:lang="en">Failed</source>
+        <target state="translated">失敗</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.in.progress">
+        <source xml:lang="en">In progress</source>
+        <target state="translated">進行中</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.page.description">
+        <source xml:lang="en">Migrating {0} logins to target {1} '{2}'</source>
+        <target state="translated">正在將 {0} 登入移轉至目標 {1} '{2}'</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.page.description.completed">
+        <source xml:lang="en">Completed migrating {0} logins to {1} '{2}'</source>
+        <target state="translated">已完成將 {0} 登入移轉至 {1} '{2}'</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.page.description.failed">
+        <source xml:lang="en">Failed migrating {0} logins to {1} '{2}'</source>
+        <target state="translated">無法將 {0} 登入移轉至 {1} '{2}'</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.page.previous.button.error">
+        <source xml:lang="en">Login migration has already been initiated and going back to prior page is disabled.</source>
+        <target state="translated">登入移轉已起始，且已停用回到先前頁面的功能。</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.page.previous.button.title">
+        <source xml:lang="en">Previous (Disabled)</source>
+        <target state="translated">上一個 (已停用)</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.page.title">
+        <source xml:lang="en">Migration Status</source>
+        <target state="translated">移轉狀態</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.succeeded">
+        <source xml:lang="en">Succeeded</source>
+        <target state="translated">已成功</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.target.status.column">
+        <source xml:lang="en">Target Status</source>
+        <target state="translated">目標狀態</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.target.title">
+        <source xml:lang="en">Azure SQL target</source>
+        <target state="translated">Azure SQL 目標</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.type">
+        <source xml:lang="en">Login type</source>
+        <target state="translated">登入類型</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.vm.title">
+        <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
+        <target state="translated">Azure 虛擬機器上的 SQL Server</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.wizard.target.connection.success">
+        <source xml:lang="en">Connection was successful.</source>
+        <target state="translated">連線成功。</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.wizard.target.data.migration.warning">
+        <source xml:lang="en">Please note that login migration feature is in private preview mode.</source>
+        <target state="translated">請注意，登入移轉功能處於個人預覽版模式。</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.wizard.target.description">
+        <source xml:lang="en">Select the target Azure SQL Managed Instance, Azure SQL VM, or Azure SQL database(s) where you want to migrate your logins.</source>
+        <target state="translated">選取您要移轉登入的位置: 目標 Azure SQL 受控執行個體、Azure SQL VM 或 Azure SQL 資料庫。</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.wizard.target.permission.warning">
+        <source xml:lang="en">Please ensure that the current user has sysadmin permissions to get all login information for the current instance ({0}).</source>
+        <target state="translated">請確定目前的使用者具有系統管理員權限，可取得目前執行個體的所有登入資訊 ({0})。</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.wizard.target.type.title">
+        <source xml:lang="en">Azure SQL target type</source>
+        <target state="translated">Azure SQL 目標類型</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migrations.selected">
+        <source xml:lang="en">{0}/{1} logins selected</source>
+        <target state="translated">已選取 {0}/{1} 個登入</target>
+      </trans-unit>
       <trans-unit id="sql.migrate.text">
         <source xml:lang="en">Select the databases that you want to migrate to Azure SQL.</source>
         <target state="translated">選取要遷移至 Azure SQL 的資料庫。</target>
-      </trans-unit>
-      <trans-unit id="sql.migratino.database.loading.tables">
-        <source xml:lang="en">Loading tables list...</source>
-        <target state="translated">正在載入資料表清單...</target>
-      </trans-unit>
-      <trans-unit id="sql.migratino.database.missing.tables">
-        <source xml:lang="en">0 tables found.</source>
-        <target state="translated">找到 0 個資料表。</target>
-      </trans-unit>
-      <trans-unit id="sql.migratino.table.selection.filter">
-        <source xml:lang="en">Filter tables</source>
-        <target state="translated">篩選資料表</target>
-      </trans-unit>
-      <trans-unit id="sql.migratino.table.selection.status.column">
-        <source xml:lang="en">Has rows</source>
-        <target state="translated">有資料列</target>
-      </trans-unit>
-      <trans-unit id="sql.migratino.table.selection.tablename.column">
-        <source xml:lang="en">Table name</source>
-        <target state="translated">資料表名稱</target>
-      </trans-unit>
-      <trans-unit id="sql.migratino.table.selection.update.button">
-        <source xml:lang="en">Update</source>
-        <target state="translated">更新</target>
-      </trans-unit>
-      <trans-unit id="sql.migratino.table.selection.update.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">取消</target>
       </trans-unit>
       <trans-unit id="sql.migration.account.credentials.refresh.required">
         <source xml:lang="en">{0} (requires credentials refresh)</source>
@@ -498,6 +646,14 @@ This may take some time.</source>
         <source xml:lang="en">Help articles and video links</source>
         <target state="translated">說明文章及影片連結</target>
       </trans-unit>
+      <trans-unit id="sql.migration.dashboard.login.migrate.task.button">
+        <source xml:lang="en">Migrate logins to Azure SQL</source>
+        <target state="translated">將登入移轉至 Azure SQL</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.login.migrate.task.button.description">
+        <source xml:lang="en">Migrate SQL Server logins to Azure SQL.</source>
+        <target state="translated">將 SQL Server 登入移轉至 Azure SQL。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.dashboard.migrate.task.button">
         <source xml:lang="en">Migrate to Azure SQL</source>
         <target state="translated">移轉到 Azure SQL</target>
@@ -554,6 +710,10 @@ This may take some time.</source>
         <source xml:lang="en">Loading database table list..</source>
         <target state="translated">正在載入資料庫資料表清單..</target>
       </trans-unit>
+      <trans-unit id="sql.migration.database.loading.tables">
+        <source xml:lang="en">Loading tables list...</source>
+        <target state="translated">正在載入資料表清單...</target>
+      </trans-unit>
       <trans-unit id="sql.migration.database.migration.mode.description">
         <source xml:lang="en">To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.</source>
         <target state="translated">若要移轉到 Azure SQL 目標，請根據您的停機需求選擇移轉模式。</target>
@@ -597,6 +757,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.database.migration.status.label">
         <source xml:lang="en">Database migration status: {0}</source>
         <target state="translated">資料庫移轉狀態: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.missing.tables">
+        <source xml:lang="en">0 tables found.</source>
+        <target state="translated">找到 0 個資料表。</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.page.description">
         <source xml:lang="en">Select the location of the database backups to use during migration.</source>
@@ -657,6 +821,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.days">
         <source xml:lang="en">{0} days</source>
         <target state="translated">{0} 天</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.default.database">
+        <source xml:lang="en">Default database</source>
+        <target state="translated">預設資料庫</target>
       </trans-unit>
       <trans-unit id="sql.migration.description">
         <source xml:lang="en">Description</source>
@@ -1238,6 +1406,10 @@ This may take some time.</source>
         <source xml:lang="en">Failed to open the migration notebook.</source>
         <target state="translated">無法開啟移轉筆記本。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.number.logins.migrating">
+        <source xml:lang="en">{0}/{1} migrating logins displayed</source>
+        <target state="translated">顯示 {0}/{1} 個移轉登入</target>
+      </trans-unit>
       <trans-unit id="sql.migration.object.details">
         <source xml:lang="en">Object details</source>
         <target state="translated">物件詳細資料</target>
@@ -1386,6 +1558,10 @@ This may take some time.</source>
         <source xml:lang="en">Resource group created</source>
         <target state="translated">已建立資源群組</target>
       </trans-unit>
+      <trans-unit id="sql.migration.run.validation">
+        <source xml:lang="en">Run validation</source>
+        <target state="translated">執行驗證</target>
+      </trans-unit>
       <trans-unit id="sql.migration.save.assessment.report">
         <source xml:lang="en">Save assessment report</source>
         <target state="translated">儲存評定報表</target>
@@ -1443,8 +1619,8 @@ This may take some time.</source>
         <target state="translated">選取您的目標 Azure 訂用帳戶，以及 Azure 虛擬機器上的目標 SQL Server 作為您的目標。</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.database.to.continue">
-        <source xml:lang="en">Please select 1 or more databases to assess for migration</source>
-        <target state="translated">請選取 1 或多個資料庫進行移轉評估</target>
+        <source xml:lang="en">Please select 1 or more logins for migration</source>
+        <target state="translated">請選取 1 或多個要移轉的登入</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.database.to.migrate">
         <source xml:lang="en">Select the databases to migrate.</source>
@@ -1521,6 +1697,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.select.service.select.subscription.error">
         <source xml:lang="en">An error occurred while loading account subscriptions. Please check your Azure connection and try again.</source>
         <target state="translated">載入帳戶訂閱時發生錯誤。請檢查您的 Azure 連線，然後再試一次。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.select.service.select.target.type.">
+        <source xml:lang="en">Select target Azure SQL Type</source>
+        <target state="translated">選取目標 Azure SQL 類型</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.service.select.tenant.error">
         <source xml:lang="en">An error occurred while loading available Azure account tenants.</source>
@@ -1605,6 +1785,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.service.ready">
         <source xml:lang="en">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on the node - {1}</source>
         <target state="translated">Azure 資料庫移轉服務 '{0}' 已連線到在節點上執行的自我裝載整合執行階段 - {1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.service.selection.location.msg">
+        <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
+        <target state="translated">請選取資料庫備份檔案的位置，再繼續。</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.status.refresh.error">
         <source xml:lang="en">An error occurred while refreshing the migration service creation status.</source>
@@ -2130,6 +2314,10 @@ This may take some time.</source>
         <source xml:lang="en">Enter the Windows Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup files.</source>
         <target state="translated">輸入用來連線到 SQL Server 執行個體 {0} 的 Windows 驗證認證。這些認證將用來連線到 SQL Server 執行個體，並識別有效的備份檔案。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.source.login">
+        <source xml:lang="en">Source login</source>
+        <target state="translated">來源登入</target>
+      </trans-unit>
       <trans-unit id="sql.migration.source.server">
         <source xml:lang="en">Source server</source>
         <target state="translated">來源伺服器</target>
@@ -2210,6 +2398,10 @@ This may take some time.</source>
         <source xml:lang="en">Source name</source>
         <target state="translated">來源名稱</target>
       </trans-unit>
+      <trans-unit id="sql.migration.start.login.migration.button">
+        <source xml:lang="en">Migrate</source>
+        <target state="translated">移轉</target>
+      </trans-unit>
       <trans-unit id="sql.migration.start.migration.button">
         <source xml:lang="en">Start migration</source>
         <target state="translated">開始移轉</target>
@@ -2221,6 +2413,14 @@ This may take some time.</source>
       <trans-unit id="sql.migration.start.time">
         <source xml:lang="en">Start time</source>
         <target state="translated">開始時間</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.starting.login">
+        <source xml:lang="en">Validating and migrating logins are in progress</source>
+        <target state="translated">正在驗證及移轉登入</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.starting.login.failed">
+        <source xml:lang="en">Validating and migrating logins failed</source>
+        <target state="translated">驗證及移轉登入失敗</target>
       </trans-unit>
       <trans-unit id="sql.migration.status">
         <source xml:lang="en">Status</source>
@@ -2378,6 +2578,14 @@ This may take some time.</source>
         <source xml:lang="en">Feedback</source>
         <target state="translated">意見反應</target>
       </trans-unit>
+      <trans-unit id="sql.migration.tab.button.login.migration.description">
+        <source xml:lang="en">Migrate logins to Azure SQL</source>
+        <target state="translated">將登入移轉至 Azure SQL</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tab.button.login.migration.label">
+        <source xml:lang="en">New login migration (PREVIEW)</source>
+        <target state="translated">新的登入移轉 (預覽)</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tab.button.migration.description">
         <source xml:lang="en">Migrate to Azure SQL</source>
         <target state="translated">移轉到 Azure SQL</target>
@@ -2429,6 +2637,26 @@ This may take some time.</source>
       <trans-unit id="sql.migration.table.selection.edit">
         <source xml:lang="en">Edit</source>
         <target state="translated">編輯</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selection.filter">
+        <source xml:lang="en">Filter tables</source>
+        <target state="translated">篩選資料表</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selection.status.column">
+        <source xml:lang="en">Has rows</source>
+        <target state="translated">有資料列</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selection.tablename.column">
+        <source xml:lang="en">Table name</source>
+        <target state="translated">資料表名稱</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selection.update.button">
+        <source xml:lang="en">Update</source>
+        <target state="translated">更新</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selection.update.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">取消</target>
       </trans-unit>
       <trans-unit id="sql.migration.target">
         <source xml:lang="en">Target</source>
@@ -2506,6 +2734,142 @@ This may take some time.</source>
         <source xml:lang="en">Enter the target user name</source>
         <target state="translated">輸入目標使用者名稱</target>
       </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.column.status">
+        <source xml:lang="en">Status</source>
+        <target state="translated">狀態</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.column.validation.steps">
+        <source xml:lang="en">Validation steps</source>
+        <target state="translated">驗證步驟</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.completed.errors">
+        <source xml:lang="en">Validation completed with the following error(s):{0}{1}</source>
+        <target state="translated">驗證完成，錯誤如下:{0}{1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.copy.results">
+        <source xml:lang="en">Copy validation results</source>
+        <target state="translated">複製驗證結果</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.done.button">
+        <source xml:lang="en">Done</source>
+        <target state="translated">完成</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.heading">
+        <source xml:lang="en">We are validating the following:</source>
+        <target state="translated">正在驗證下列內容:</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.results.heading">
+        <source xml:lang="en">Validation step details</source>
+        <target state="translated">驗證步驟詳細資料</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.sqldb.validation.result.error">
+        <source xml:lang="en">Validation check error{0}Source database: {1}{0}Target database: {2}{0}Error: {3} - {4}</source>
+        <target state="translated">驗證檢查錯誤{0}來源資料庫: {1}{0}目標資料庫: {2}{0}錯誤: {3} - {4}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.start.validation">
+        <source xml:lang="en">Start validation</source>
+        <target state="translated">開始驗證</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.status">
+        <source xml:lang="en">Validation status: {0}</source>
+        <target state="translated">驗證狀態: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.status.error">
+        <source xml:lang="en">{0}{1}{2}</source>
+        <target state="translated">{0}{1}{2}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.status.error.count.many">
+        <source xml:lang="en">{0} - {1} errors</source>
+        <target state="translated">{0} - {1} 個錯誤</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.status.error.count.one">
+        <source xml:lang="en">{0} - 1 error</source>
+        <target state="translated">{0} - 1 個錯誤</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.status.errors">
+        <source xml:lang="en">Validation status: {0}{1}{2}</source>
+        <target state="translated">驗證狀態: {0}{1}{2}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.stop.validation">
+        <source xml:lang="en">Stop validation</source>
+        <target state="translated">停止驗證</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.validation.camceled">
+        <source xml:lang="en">Validation check canceled</source>
+        <target state="translated">已取消驗證檢查</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.validation.completed">
+        <source xml:lang="en">Validation completed successfully.</source>
+        <target state="translated">已成功完成驗證。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.validation.result.api.error">
+        <source xml:lang="en">Validation check error{0}Database:{1}{0}Error: {2} - {3}</source>
+        <target state="translated">驗證檢查錯誤{0}資料庫:{1}{0}錯誤: {2} - {3}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.validation.result.error">
+        <source xml:lang="en">Validation check error{0}Source database: {1}{0}File share path: {2}{0}Error: {3} - {4}</source>
+        <target state="translated">驗證檢查錯誤{0}來源資料庫: {1}{0}檔案共用路徑: {2}{0}錯誤: {3} - {4}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.validation.result.label.networkshare">
+        <source xml:lang="en">Network share connectivity: '{0}' </source>
+        <target state="translated">網路共用連線能力: '{0}' </target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.validation.result.label.shir">
+        <source xml:lang="en">Integration runtime connectivity</source>
+        <target state="translated">整合執行階段連線能力</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.validation.result.label.source.database">
+        <source xml:lang="en">Source database connectivity: '{0}'</source>
+        <target state="translated">來源資料庫連線: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.validation.result.label.storage">
+        <source xml:lang="en">Azure storage connectivity</source>
+        <target state="translated">Azure 儲存體連線能力</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.validation.result.label.target.database">
+        <source xml:lang="en">Target database connectivity: '{0}'</source>
+        <target state="translated">目標資料庫連線能力: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.canceled">
+        <source xml:lang="en">Validation was canceled. Please run and validate the migration settings to continue.</source>
+        <target state="translated">驗證已取消。請執行並驗證移轉設定以繼續。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.canceled.errors">
+        <source xml:lang="en">Validation was canceled with the following error(s):{0}{1}</source>
+        <target state="translated">已取消驗證，錯誤如下: {0}{1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.dialog.title">
+        <source xml:lang="en">Running validation</source>
+        <target state="translated">正在執行驗證</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.not.run">
+        <source xml:lang="en">Validation has not been run for the current configuration. Please run and validate the migration settings to continue.</source>
+        <target state="translated">尚未針對目前的設定執行驗證。請執行並驗證移轉設定以繼續。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.state.canceled">
+        <source xml:lang="en">Canceled</source>
+        <target state="translated">已取消</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.state.failed">
+        <source xml:lang="en">Failed</source>
+        <target state="translated">失敗</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.state.pending">
+        <source xml:lang="en">Pending</source>
+        <target state="translated">擱置中</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.state.running">
+        <source xml:lang="en">Running</source>
+        <target state="translated">正在執行</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.state.succeeded">
+        <source xml:lang="en">Succeeded</source>
+        <target state="translated">已成功</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.success">
+        <source xml:lang="en">Validation completed successfully.  Please click Next to proceed with the migration.</source>
+        <target state="translated">驗證已成功完成。 請按 [下一步] 繼續移轉。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.view.all">
         <source xml:lang="en">All database migrations</source>
         <target state="translated">所有資料庫移轉</target>
@@ -2513,6 +2877,14 @@ This may take some time.</source>
       <trans-unit id="sql.migration.view.select.button.label">
         <source xml:lang="en">View/Select</source>
         <target state="translated">檢視/選取</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.vm.not.ready.iaas.extension">
+        <source xml:lang="en">The virtual machine '{0}' is unavailable for migration because the SQL Server IaaS Agent extension is currently in '{1}' mode instead of Full mode. Learn more: https://aka.ms/sql-iaas-extension</source>
+        <target state="new">The virtual machine '{0}' is unavailable for migration because the SQL Server IaaS Agent extension is currently in '{1}' mode instead of Full mode. Learn more: https://aka.ms/sql-iaas-extension</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.vm.not.ready.power.state">
+        <source xml:lang="en">The virtual machine '{0}' is unavailable for migration because the underlying virtual machine is not running. Please make sure it is powered on before retrying.</source>
+        <target state="new">The virtual machine '{0}' is unavailable for migration because the underlying virtual machine is not running. Please make sure it is powered on before retrying.</target>
       </trans-unit>
       <trans-unit id="sql.migration.warning">
         <source xml:lang="en">Warning</source>
@@ -2559,8 +2931,12 @@ This may take some time.</source>
         <target state="translated">Azure 帳戶</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.connection.error.title">
-        <source xml:lang="en">An error occurred while conneting to the target server.</source>
+        <source xml:lang="en">An error occurred while connecting to the target server.</source>
         <target state="translated">連線到目標伺服器時發生錯誤。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.login.error.title">
+        <source xml:lang="en">An error occurred while trying to get {0} login information.</source>
+        <target state="translated">嘗試取得 {0} 登入資訊時發生錯誤。</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.perfCollection.error">
         <source xml:lang="en">Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:
@@ -2622,6 +2998,10 @@ This may take some time.</source>
         <source xml:lang="en">Select an Azure account and your target {0}.</source>
         <target state="translated">選取 Azure 帳戶和您的目標 {0}。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.login.error">
+        <source xml:lang="en">Error getting login information: {0}</source>
+        <target state="translated">取得登入資訊時發生錯誤: {0}</target>
+      </trans-unit>
       <trans-unit id="sql.migration.wizard.target.mapping.error.duplicate">
         <source xml:lang="en">Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.</source>
         <target state="translated">資料庫對應錯誤。無法選取目標資料庫 '{0}' 以做為資料庫' {1}' 的移轉目標。已選取目標資料庫 '${targetDatabaseName}' 做為資料庫 '{2}' 的移轉目標。 請選取其他目標資料庫。</target>
@@ -2630,6 +3010,10 @@ This may take some time.</source>
         <source xml:lang="en">Database mapping error. Missing target databases to migrate.  Please configure the target server connection and click connect to collect the list of available database migration targets.</source>
         <target state="translated">資料庫對應錯誤。缺少要移轉的目標資料庫。 請設定目標伺服器連線，然後按一下 [連線] 以收集可用的資料庫移轉目標清單。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.source.collation.error">
+        <source xml:lang="en">A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.</source>
+        <target state="new">A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.wizard.target.source.mapping.error">
         <source xml:lang="en">Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.</source>
         <target state="translated">資料庫對應錯誤。來源資料庫 '{0}' 未對應到目標資料庫。 請選取要移轉至的目標資料庫。</target>
@@ -2637,6 +3021,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.wizard.target.title">
         <source xml:lang="en">Azure SQL target</source>
         <target state="translated">Azure SQL 目標</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.troubleshooting">
+        <source xml:lang="en">Learn more: https://aka.ms/dms-migrations-troubleshooting.</source>
+        <target state="new">Learn more: https://aka.ms/dms-migrations-troubleshooting.</target>
       </trans-unit>
       <trans-unit id="sql.migration.yes">
         <source xml:lang="en">Yes</source>
