@@ -357,7 +357,7 @@ export const MIGRATE_SERVER_ROLES_AND_SET_PERMISSIONS_FAILED = localize('sql.log
 export const LOGIN_MIGRATIONS_COMPLETE = localize('sql.login.migration.complete', "Completed migrating logins");
 export const LOGIN_MIGRATIONS_FAILED = localize('sql.login.migration.failed', "Migrating logins failed");
 export function LOGIN_MIGRATIONS_ERROR(message: string): string {
-	return localize('sql.login.migration..error', "Login migration error: {0}", message);
+	return localize('sql.login.migration.error', "Login migration error: {0}", message);
 }
 export const LOGINS_FOUND = localize('sql.login.migration.logins.found', "Login found");
 export const LOGINS_NOT_FOUND = localize('sql.login.migration.logins.not.found', "Login not found");
@@ -366,6 +366,9 @@ export const LOGIN_MIGRATION_STATUS_FAILED = localize('sql.login.migration.statu
 export const LOGIN_MIGRATION_STATUS_IN_PROGRESS = localize('sql.login.migration.status.in.progress', "In progress");
 export const LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_LABEL = localize('sql.login.migration.aad.domain.name.input.box.label', "Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)");
 export const LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_PLACEHOLDER = localize('sql.login.migration.aad.domain.name.input.box.placeholder', "Enter AAD Domain Name");
+export function LOGIN_MIGRATIONS_LOGIN_STATUS_DETAILS_TITLE(loginName: string): string {
+	return localize('sql.login.migration.login.status.details.title', "Migration status details for {0}", loginName);
+}
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");
@@ -1313,3 +1316,8 @@ export const SQLDB_COL_COPY_DURATION = localize('sql.migration.sqldb.column.copy
 export const SQLDB_COL_PARRALEL_COPY_TYPE = localize('sql.migration.sqldb.column.parallelcopytype', 'Parallel copy type');
 export const SQLDB_COL_USED_PARALLEL_COPIES = localize('sql.migration.sqldb.column.usedparallelcopies', 'Used parallel copies');
 export const SQLDB_COL_COPY_START = localize('sql.migration.sqldb.column.copystart', 'Copy start');
+
+// Multi Step Status Dialog
+export const COPY_RESULTS = localize('sql.migration.multi.step.status.dialog.copy.results', "Copy results");
+export const MULTI_STEP_RESULTS_HEADING = localize('sql.migration.multi.step.status.dialog.heading', "Step details");
+export const STEPS_TITLE = localize('sql.migration.multi.step.status.steps.title', "Steps");
