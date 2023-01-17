@@ -577,6 +577,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			console.timeEnd("migrateLogins");
 
 			this.updateLoginMigrationResults(response);
+			this._loginMigrationModel.AddNewLogins(this._loginsForMigration.map(row => row.loginName));
 			this._loginMigrationModel.AddLoginMigrationResults(LoginMigrationStep.MigrateLogins, response);
 		} catch (error) {
 			console.log('Failed Login Migration at: ', new Date());
@@ -631,7 +632,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			console.timeEnd("migrateServerRolesAndSetPermissions");
 
 			this.updateLoginMigrationResults(response);
-			this._loginMigrationModel.AddLoginMigrationResults(LoginMigrationStep.SetServerRolePermissions, response);
+			this._loginMigrationModel.AddLoginMigrationResults(LoginMigrationStep.MigrateServerRolesAndSetPermissions, response);
 
 			console.log('Ending Login Migration at: ', new Date());
 			console.log('Login migration response: ', response);

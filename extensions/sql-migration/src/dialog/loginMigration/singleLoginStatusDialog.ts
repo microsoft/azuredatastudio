@@ -28,18 +28,27 @@ export enum MultiStepState {
 }
 
 export interface MultiStepResult {
-	errors: string[];
+	stepName: string;
 	state: MultiStepState;
+	errors: string[];
 }
 
-export const MultiStepStatusLookup: constants.LookupTable<string | undefined> = {
-	[MultiStepState.Canceled]: constants.VALIDATION_STATE_CANCELED,
-	[MultiStepState.Failed]: constants.VALIDATION_STATE_FAILED,
-	[MultiStepState.Pending]: constants.VALIDATION_STATE_PENDING,
-	[MultiStepState.Running]: constants.VALIDATION_STATE_RUNNING,
-	[MultiStepState.Succeeded]: constants.VALIDATION_STATE_SUCCEEDED,
-	default: undefined
-};
+export function GetMultiStepStatusString(state: MultiStepState) {
+	switch (state) {
+		case MultiStepState.Canceled:
+			return constants.VALIDATION_STATE_CANCELED;
+		case MultiStepState.Failed:
+			return constants.VALIDATION_STATE_FAILED;
+		case MultiStepState.Pending:
+			return constants.VALIDATION_STATE_PENDING;
+		case MultiStepState.Running:
+			return constants.VALIDATION_STATE_RUNNING;
+		case MultiStepState.Succeeded:
+			return constants.VALIDATION_STATE_SUCCEEDED;
+		default:
+			return ""
+	}
+}
 
 export class MultiStepStatusDialog {
 	private _dialog: azdata.window.Dialog | undefined;
@@ -195,7 +204,7 @@ export class MultiStepStatusDialog {
 			this._startLoader.loading = true;
 			await this._initializeResults(results);
 		} finally {
-			this._startLoader.loading = false;
+			// this._startLoader.loading = false;
 			this._copyButton.enabled = true;
 		}
 	}
@@ -218,7 +227,7 @@ export class MultiStepStatusDialog {
 				const status = results[MultiStepResultIndex.status];
 				const errors = results[MultiStepResultIndex.errors];
 				statusMessages.push(
-					constants.VALIDATE_IR_VALIDATION_STATUS(MultiStepStatusLookup[status], errors));
+					constants.VALIDATE_IR_VALIDATION_STATUS(GetMultiStepStatusString(status), errors));
 			}
 		}
 
@@ -233,7 +242,7 @@ export class MultiStepStatusDialog {
 			.withProps({
 				columns: [
 					{
-						value: 'test',
+						value: 'step',
 						name: constants.STEPS_TITLE,
 						type: azdata.ColumnType.text,
 						width: 380,
@@ -271,43 +280,17 @@ export class MultiStepStatusDialog {
 	private async _initializeResults(results?: MultiStepResult[]): Promise<void> {
 		this._validationResult = [];
 
-
-		// AKMA TODO: Remove these
-		this._addValidationResult(constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_SHIR);
-		this._addValidationResult(constants.VALIDATE_IR_VALIDATION_RESULT_LABEL_STORAGE);
-
 		if (results && results.length > 0) {
 			for (let row = 0; row < results.length; row++) {
-				await this._updateStepResults(
-					row,
-					results[row].state,
-					results[row].errors,
-					false);
+				this._addStepResult(results[row].stepName, results[row].state, results[row].errors);
 			}
 		}
 
-		const data = this._validationResult.map(row => [
-			row[MultiStepResultIndex.message],
-			row[MultiStepResultIndex.icon],
-			row[MultiStepResultIndex.status]]);
-		await this._resultsTable.updateProperty('data', data);
+		await this._updateTable();
 	}
 
-	private _addValidationResult(message: string): void {
-		this._validationResult.push([
-			message,
-			<azdata.IconColumnCellValue>{
-				icon: IconPathHelper.notStartedMigration,
-				title: MultiStepStatusLookup[MultiStepState.Pending],
-			},
-			MultiStepStatusLookup[MultiStepState.Pending],
-			[],
-			MultiStepState.Pending]);
-	}
-
-	private async _updateStepResults(stepRowIdx: number, state: MultiStepState, errors: string[] = [], updateTable: boolean = true): Promise<void> {
-		const result = this._validationResult[stepRowIdx];
-		const status = MultiStepStatusLookup[state];
+	private _addStepResult(message: string, state: MultiStepState, errors: string[] = []): void {
+		const status = GetMultiStepStatusString(state);
 		const statusMsg = state === MultiStepState.Failed && errors.length > 0
 			? constants.VALIDATE_IR_VALIDATION_STATUS_ERROR_COUNT(status, errors.length)
 			: status;
@@ -316,23 +299,15 @@ export class MultiStepStatusDialog {
 			? constants.VALIDATE_IR_VALIDATION_STATUS_ERROR(status, errors)
 			: statusMsg;
 
-		this._validationResult[stepRowIdx] = [
-			result[MultiStepResultIndex.message],
+		this._validationResult.push([
+			message,
 			<azdata.IconColumnCellValue>{
 				icon: this._getValidationStateImage(state),
 				title: statusMessage,
 			},
 			statusMsg,
 			errors,
-			state];
-
-		if (updateTable) {
-			const data = this._validationResult.map(row => [
-				row[MultiStepResultIndex.message],
-				row[MultiStepResultIndex.icon],
-				row[MultiStepResultIndex.status]]);
-			await this._resultsTable.updateProperty('data', data);
-		}
+			state]);
 	}
 
 	private _getValidationStateImage(state: MultiStepState): azdata.IconPath {
@@ -349,5 +324,13 @@ export class MultiStepStatusDialog {
 			default:
 				return IconPathHelper.notStartedMigration;
 		}
+	}
+
+	private async _updateTable() {
+		const data = this._validationResult.map(row => [
+			row[MultiStepResultIndex.message],
+			row[MultiStepResultIndex.icon],
+			row[MultiStepResultIndex.status]]);
+		await this._resultsTable.updateProperty('data', data);
 	}
 }

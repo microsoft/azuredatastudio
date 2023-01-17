@@ -406,14 +406,14 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 		}
 
 		await this._migrationProgressDetails.updateProperties({
-			'value': constants.MIGRATE_SERVER_ROLES_AND_SET_PERMISSIONS
+			'value': constants.MIGRATING_SERVER_ROLES_AND_SET_PERMISSIONS
 		});
 
 		result = await this.migrationStateModel.migrateServerRolesAndSetPermissions();
 
 		if (!result) {
 			await this._migrationProgressDetails.updateProperties({
-				'value': constants.MIGRATE_SERVER_ROLES_AND_SET_PERMISSIONS_FAILED
+				'value': constants.MIGRATING_SERVER_ROLES_AND_SET_PERMISSIONS_FAILED
 			});
 
 			return false;
@@ -450,9 +450,6 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			() => { });
 
 		const loginResults = this.migrationStateModel._loginMigrationModel.GetLoginMigrationResults(loginName);
-
-		// AKMA TODO: populate reults correctly
-		// results = this.migrationStateModel._validateIrSqlDb;
 
 		await dialog.openDialog(constants.LOGIN_MIGRATIONS_LOGIN_STATUS_DETAILS_TITLE(loginName), loginResults);
 	}
