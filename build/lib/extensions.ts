@@ -329,6 +329,7 @@ export const vscodeExternalExtensions = [
 
 // extensions that require a rebuild since they have native parts
 const rebuildExtensions = [
+	'big-data-cluster',
 	'mssql'
 ];
 

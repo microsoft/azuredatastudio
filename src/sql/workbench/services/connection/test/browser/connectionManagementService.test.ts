@@ -1338,7 +1338,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			serverEdition: 'test_edition',
 			azureVersion: 0,
 			osVersion: 'test_version',
-			options: {},
+			options: { isBigDataCluster: 'test' },
 			isCloud: true,
 			cpuCount: 0,
 			physicalMemoryInMb: 0
@@ -1373,6 +1373,8 @@ suite('SQL ConnectionManagementService tests', () => {
 				if (connection.providerName === 'MSSQL') {
 					if (serverInfo.isCloud) {
 						iconName = 'mssql:cloud';
+					} else if (serverInfo.options['isBigDataCluster']) {
+						iconName = 'mssql:cluster';
 					}
 				}
 				called = true;

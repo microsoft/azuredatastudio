@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as constants from './constants';
 
 const cloudIcon = 'mssql:cloud';
+const clusterIcon = 'mssql:cluster';
 
 export class MssqlIconProvider implements azdata.IconProvider {
 	public readonly providerId: string = constants.sqlProviderName;
@@ -16,6 +17,8 @@ export class MssqlIconProvider implements azdata.IconProvider {
 		if (connection.providerName === 'MSSQL') {
 			if (serverInfo.isCloud) {
 				iconName = cloudIcon;
+			} else if (serverInfo.options['isBigDataCluster']) {
+				iconName = clusterIcon;
 			}
 		}
 		return Promise.resolve(iconName);

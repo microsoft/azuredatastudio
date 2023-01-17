@@ -9,12 +9,14 @@ import * as TypeMoq from 'typemoq';
 import { ToolsService } from '../../services/toolsService';
 import { ITool, ToolType } from '../../interfaces';
 import { IPlatformService } from '../../services/platformService';
+import { AzdataToolName } from '../../services/tools/azdataTool';
 
 
 const tools: { name: string; type: ToolType }[] = [
 	{ name: 'azure-cli', type: ToolType.AzCli },
 	{ name: 'docker', type: ToolType.Docker },
-	{ name: 'kubectl', type: ToolType.KubeCtl }
+	{ name: 'kubectl', type: ToolType.KubeCtl },
+	{ name: AzdataToolName, type: ToolType.Azdata }
 ];
 const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
 const toolsService = new ToolsService(mockPlatformService.object);
