@@ -386,6 +386,14 @@ export function unableToFindDatabaseReference(reference: string) { return locali
 export function invalidGuid(guid: string) { return localize('invalidGuid', "Specified GUID is invalid: {0}", guid); }
 export function invalidTargetPlatform(targetPlatform: string, supportedTargetPlatforms: string[]) { return localize('invalidTargetPlatform', "Invalid target platform: {0}. Supported target platforms: {1}", targetPlatform, supportedTargetPlatforms.toString()); }
 export function errorReadingProject(section: string, path: string) { return localize('errorReadingProjectGuid', "Error trying to read {0} of project '{1}'", section, path); }
+export const undefinedFilenameErrorMessage = localize('undefinedFilenameErrorMessage', "Undefined name");
+export const filenameEndingIsPeriodErrorMessage = localize('filenameEndingInPeriodErrorMessage', "File name cannot end with a period");
+export const whitespaceFilenameErrorMessage = localize('whitespaceFilenameErrorMessage', "File name cannot be whitespace");
+export const invalidFileCharsErrorMessage = localize('invalidFileCharsErrorMessage', "Invalid file characters");
+export const reservedWindowsFilenameErrorMessage = localize('reservedWindowsFilenameErrorMessage', "This file name is reserved for use by Windows. Choose another name and try again");
+export const reservedValueErrorMessage = localize('reservedValueErrorMessage', "Reserved file name. Choose another name and try again");
+export const trailingWhitespaceErrorMessage = localize('trailingWhitespaceErrorMessage', "File name cannot end with a whitespace");
+export const tooLongFilenameErrorMessage = localize('tooLongFilenameErrorMessage', "File name is over 255 characters");
 
 // Action types
 export const deleteAction = localize('deleteAction', 'Delete');

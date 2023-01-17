@@ -10,7 +10,7 @@ import { exists, getVscodeMssqlApi } from '../common/utils';
 import { IConnectionInfo } from 'vscode-mssql';
 import { defaultProjectNameFromDb, defaultProjectSaveLocation } from '../tools/newProjectTool';
 import { ImportDataModel } from '../models/api/import';
-import { mapExtractTargetEnum } from './utils';
+import { isValidBasename, isValidBasenameErrorMessage, mapExtractTargetEnum, sanitizeStringForFilename } from './utils';
 
 import { getSDKStyleProjectInfo } from './quickpickHelper';
 
@@ -70,9 +70,9 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 	const projectName = await vscode.window.showInputBox(
 		{
 			title: constants.projectNamePlaceholderText,
-			value: defaultProjectNameFromDb(selectedDatabase),
+			value: defaultProjectNameFromDb(sanitizeStringForFilename(selectedDatabase)),
 			validateInput: (value) => {
-				return value ? undefined : constants.nameMustNotBeEmpty;
+				return isValidBasename(value) ? undefined : isValidBasenameErrorMessage(value);
 			},
 			ignoreFocusOut: true
 		});

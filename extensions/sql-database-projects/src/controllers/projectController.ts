@@ -48,6 +48,7 @@ import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updat
 import { AzureSqlClient } from '../models/deploy/azureSqlClient';
 import { ConnectionService } from '../models/connections/connectionService';
 import { getPublishToDockerSettings } from '../dialogs/publishToDockerQuickpick';
+import { isValidBasename, isValidBasenameErrorMessage, sanitizeStringForFilename } from '../dialogs/utils';
 
 const maxTableLength = 10;
 
@@ -660,7 +661,10 @@ export class ProjectsController {
 
 		const itemObjectName = await vscode.window.showInputBox({
 			prompt: constants.newObjectNamePrompt(itemType.friendlyName),
-			value: `${suggestedName}${counter}`,
+			value: sanitizeStringForFilename(`${suggestedName}${counter}`),
+			validateInput: (value) => {
+				return isValidBasename(value) ? undefined : isValidBasenameErrorMessage(value);
+			},
 			ignoreFocusOut: true,
 		});
 
@@ -1211,7 +1215,7 @@ export class ProjectsController {
 			prompt: constants.autorestProjectName,
 			value: defaultName,
 			validateInput: (value) => {
-				return value.trim() ? undefined : constants.nameMustNotBeEmpty;
+				return isValidBasename(value.trim()) ? undefined : isValidBasenameErrorMessage(value.trim());
 			}
 		});
 
