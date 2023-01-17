@@ -56,6 +56,7 @@ import { ViewContainerLocation } from 'vs/workbench/common/views';
 import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
+import { PasswordChangeDialog } from 'sql/workbench/services/connection/browser/passwordChangeDialog';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -562,10 +563,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					options.showFirewallRuleOnError = false;
 					return this.connectWithOptions(connection, uri, options, callbacks);
 				} else {
-					return this.handleOtherError(connection, connectionResult).then(success => {
+					return this.handleOtherError(connection, connectionResult, options).then(success => {
 						if (success) {
 							//For now handle connection errors inside handleOtherError.
-							return Promise.resolve(connectionResult);
+							connectionResult.errorHandled = true;
+							return connectionResult;
 						}
 						else {
 							if (callbacks.onConnectReject) {
@@ -595,17 +597,21 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private handleOtherError(connection: interfaces.IConnectionProfile, connectionResult: IConnectionResult): Promise<boolean> {
+	private handleOtherError(connection: interfaces.IConnectionProfile, connectionResult: IConnectionResult, options: IConnectionCompletionOptions): Promise<boolean> {
 		return this._errorDiagnosticsService.checkErrorCode(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName).then(response => {
-			if (response.errorAction === Constants.mssqlExpiredPasswordErrorCode) {
+			if (response.errorAction === Constants.expiredPasswordErrorCode) {
 				this._logService.info(`change password error code returned!`);
-				//connectionResult.errorHandled = true;
-				return false;
-				//return this._resourceProviderService.showFirewallRuleDialog(connection, response.ipAddress, response.resourceProviderId);
+				this.launchChangePasswordDialog(connection, options.params)
+				return true;
 			} else {
 				return false;
 			}
 		});
+	}
+
+	public launchChangePasswordDialog(profile: interfaces.IConnectionProfile, params: INewConnectionParams): void {
+		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
+		dialog.open(profile, params);
 	}
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {

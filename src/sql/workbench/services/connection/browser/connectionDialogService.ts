@@ -30,7 +30,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { CmsConnectionController } from 'sql/workbench/services/connection/browser/cmsConnectionController';
-import { PasswordChangeDialog } from 'sql/workbench/services/connection/browser/passwordChangeDialog';
 import { entries } from 'sql/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -284,9 +283,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			} else if (connectionResult && connectionResult.errorHandled) {
 				this._connectionDialog.resetConnection();
 				this._logService.debug(`ConnectionDialogService: Error handled and connection reset - Error: ${connectionResult.errorMessage}`);
-			} else if (connection.providerName === Constants.mssqlProviderName && connectionResult.errorCode === Constants.sqlPasswordErrorCode) {
-				this._connectionDialog.resetConnection();
-				this.launchChangePasswordDialog(connection, params);
 			} else {
 				this._connectionDialog.resetConnection();
 				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack, connectionResult.errorCode);
@@ -505,11 +501,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		await this._connectionDialog.open(recentConnections.length > 0);
 		this.uiController.focusOnOpen();
 		recentConnections.forEach(conn => conn.dispose());
-	}
-
-	public launchChangePasswordDialog(profile: IConnectionProfile, params: INewConnectionParams): void {
-		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
-		dialog.open(profile, params);
 	}
 
 
