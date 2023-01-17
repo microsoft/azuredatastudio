@@ -7,6 +7,7 @@
 /extensions/azcli/ @Charles-Gagnon @swells @candiceye
 /extensions/azurecore/ @cssuh @cheenamalhotra
 /extensions/dacpac/ @kisantia
+/extensions/datavirtualization @Charles-Gagnon
 /extensions/notebook @azure-data-studio-notebook-devs
 /extensions/query-history/ @Charles-Gagnon
 /extensions/resource-deployment/ @Charles-Gagnon
