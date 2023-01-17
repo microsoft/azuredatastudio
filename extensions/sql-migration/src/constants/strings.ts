@@ -1321,7 +1321,27 @@ export const SQLDB_COL_COPY_START = localize('sql.migration.sqldb.column.copysta
 export const COPY_RESULTS = localize('sql.migration.multi.step.status.dialog.copy.results', "Copy results");
 export const MULTI_STEP_RESULTS_HEADING = localize('sql.migration.multi.step.status.dialog.heading', "Step details");
 export const STEPS_TITLE = localize('sql.migration.multi.step.status.steps.title', "Steps");
-
+export const RUNNING_MULTI_STEPS_HEADING = localize('sql.migration.running.multi.steps.heading', "We are running the following steps:");
+export const COMPLETED_MULTI_STEPS_HEADING = localize('sql.migration.completed.multi.steps.heading', "We ran the following steps:");
+export const SOME_STEPS_ARE_STILL_RUNNING = localize('sql.migration.multi.step.some.steps.are.still.running', "Some steps are still running.");
+export const ALL_STEPS_SUCCEEDED = localize('sql.migration.multi.step.all.steps.succeeded', "All steps succeeded.");
+export function ALL_STEPS_COMPLETED_ERRORS(msg: string): string {
+	return localize(
+		'sql.migration.multi.step.all.steps.completed.errors',
+		"All steps completed with the following error(s):{0}{1}", EOL, msg);
+}
+export function RESULTS_INFO_BOX_STATUS(state: string | undefined, errors?: string[]): string {
+	const status = state ?? '';
+	if (errors && errors.length > 0) {
+		return localize(
+			'sql.migration.multi.step.status.errors',
+			"Step status: {0}{1}{2}", status, EOL, errors.join(EOL));
+	} else {
+		return localize(
+			'sql.migration.multi.step.status',
+			"Step status: {0}", status);
+	}
+}
 export const NOT_STARTED = localize('sql.login.migration.steps.not.started', "Not started");
 export const MIGRATE_LOGINS = localize('sql.login.migration.steps.migrate.logins', "Migrate logins");
 export const ESTABLISH_USER_MAPPINGS = localize('sql.login.migration.steps.migrate.logins', "Establish user mappings");

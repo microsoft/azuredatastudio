@@ -8,6 +8,8 @@ import { MultiStepResult, MultiStepState } from '../dialog/loginMigration/single
 import * as constants from '../constants/strings';
 import { LoginTableInfo } from '../api/sqlUtils';
 
+type ExceptionMap = { [login: string]: any }
+
 export enum LoginMigrationStep {
 	NotStarted = -1,
 	MigrateLogins = 0,
@@ -66,11 +68,11 @@ export interface Login {
 
 export class LoginMigrationModel {
 	public resultsPerStep: Map<mssql.LoginMigrationStep, mssql.StartLoginMigrationResult>;
-	public currentStep: LoginMigrationStep = LoginMigrationStep.NotStarted;
 	public collectedSourceLogins: boolean = false;
 	public collectedTargetLogins: boolean = false;;
 	public loginsOnSource: LoginTableInfo[] = [];
 	public loginsOnTarget: string[] = [];
+	private _currentStepIdx: number = 0;;
 	private _logins: Map<string, Login>;
 	private _loginMigrationSteps: LoginMigrationStep[] = [];
 
@@ -80,16 +82,30 @@ export class LoginMigrationModel {
 		this.SetLoginMigrationSteps();
 	}
 
+	public get currentStep(): LoginMigrationStep {
+		return this._currentStepIdx >= this._loginMigrationSteps.length ? LoginMigrationStep.MigrationCompleted : this._loginMigrationSteps[this._currentStepIdx];
+	}
+
+	public get isMigrationComplete(): boolean {
+		return this._currentStepIdx === this._loginMigrationSteps.length;
+	}
+
 	public AddLoginMigrationResults(step: LoginMigrationStep, newResult: mssql.StartLoginMigrationResult): void {
 		const failingLogins = new Set(Object.keys(newResult.exceptionMap).map(login => login.toLocaleLowerCase()));
+		const newExceptionMap = this._getExceptionMapWithNormalizedKeys(newResult.exceptionMap);
+		this._currentStepIdx = this._loginMigrationSteps.findIndex(s => s === step) + 1;
 
 		for (const loginName of this._logins.keys()) {
 			const status = failingLogins.has(loginName) ? LoginMigrationState.Failed : LoginMigrationState.Succeeded;
-			const errors = failingLogins.has(loginName) ? newResult.exceptionMap[loginName] : [];
+			const errors = failingLogins.has(loginName) ? newExceptionMap[loginName].map((exception: any) => exception.Message) : [];
 			this.AddStepStateForLogin(loginName, step, status, errors);
+
+			if (this.isMigrationComplete) {
+				const loginStatus = this.DidAnyStepFail(loginName) ? LoginMigrationState.Failed : LoginMigrationState.Succeeded;
+				this.MarkLoginStatus(loginName, loginStatus);
+			}
 		}
 
-		this.currentStep = step + 1;
 	}
 
 	public GetLoginMigrationResults(loginName: string): MultiStepResult[] {
@@ -184,5 +200,21 @@ export class LoginMigrationModel {
 		} else {
 			this._loginMigrationSteps = steps;
 		}
+	}
+
+	public DidAnyStepFail(loginName: string) {
+		const login = this.GetLogin(loginName);
+		if (login) {
+			return Object.values(login.statusPerStep).every(status => status === LoginMigrationState.Failed);
+		}
+
+		return false;
+	}
+
+	private _getExceptionMapWithNormalizedKeys(exceptionMap: ExceptionMap): ExceptionMap {
+		return Object.keys(exceptionMap).reduce((result: ExceptionMap, key: string) => {
+			result[key.toLocaleLowerCase()] = exceptionMap[key];
+			return result;
+		}, {});
 	}
 }

@@ -57,16 +57,18 @@ export class MultiStepStatusDialog {
 	private _resultsTable!: azdata.TableComponent;
 	private _startLoader!: azdata.LoadingComponent;
 	private _copyButton!: azdata.ButtonComponent;
-	private _validationResult: any[][] = [];
-	private _valdiationErrors: string[] = [];
+	private _headingText!: azdata.TextComponent;
+	private _results: any[][] = [];
+	private _errors: string[] = [];
 	private _onClosed: () => void;
+	private _areStepsComplete = false;
 
 	constructor(
 		onClosed: () => void) {
 		this._onClosed = onClosed;
 	}
 
-	public async openDialog(dialogTitle: string, results?: MultiStepResult[]): Promise<void> {
+	public async openDialog(dialogTitle: string, results?: MultiStepResult[], areStepsComplete: boolean = false): Promise<void> {
 		if (!this._isOpen) {
 			this._isOpen = true;
 			this._dialog = azdata.window.createModelViewDialog(
@@ -79,6 +81,7 @@ export class MultiStepStatusDialog {
 			azdata.window.openDialog(this._dialog);
 			await promise;
 
+			this._areStepsComplete = areStepsComplete;
 			return this._runValidation(results);
 		}
 	}
@@ -98,10 +101,10 @@ export class MultiStepStatusDialog {
 						dialog.okButton.onClick(
 							e => this._onClosed()));
 
-					const headingText = view.modelBuilder.text()
+					this._headingText = view.modelBuilder.text()
 						.withProps({
 							// AKMA TODO need to update this
-							value: constants.VALIDATE_IR_HEADING,
+							value: constants.RUNNING_MULTI_STEPS_HEADING,
 							CSSStyles: {
 								'font-size': '13px',
 								'font-weight': '400',
@@ -120,7 +123,7 @@ export class MultiStepStatusDialog {
 							flexFlow: 'row',
 							justifyContent: 'flex-start',
 						})
-						.withItems([headingText, this._startLoader], { flex: '0 0 auto' })
+						.withItems([this._headingText, this._startLoader], { flex: '0 0 auto' })
 						.component();
 
 					this._resultsTable = await this._createResultsTable(view);
@@ -132,7 +135,6 @@ export class MultiStepStatusDialog {
 							iconWidth: 18,
 							width: 88,
 							label: constants.COPY_RESULTS,
-							enabled: false,
 						}).component();
 
 					this._disposables.push(
@@ -200,20 +202,23 @@ export class MultiStepStatusDialog {
 	}
 
 	private async _runValidation(results?: MultiStepResult[]): Promise<void> {
-		try {
+		if (this._areStepsComplete) {
+			this._startLoader.loading = false;
+			this._headingText.value = constants.COMPLETED_MULTI_STEPS_HEADING;
+		} else {
 			this._startLoader.loading = true;
-			await this._initializeResults(results);
-		} finally {
-			// this._startLoader.loading = false;
-			this._copyButton.enabled = true;
+			this._headingText.value = constants.RUNNING_MULTI_STEPS_HEADING;
 		}
+
+		await this._initializeResults(results);
 	}
 
 	private async _copyValidationResults(): Promise<void> {
-		const errorsText = this._valdiationErrors.join(EOL);
-		const msg = errorsText.length === 0
-			? constants.VALIDATE_IR_VALIDATION_COMPLETED
-			: constants.VALIDATE_IR_VALIDATION_COMPLETED_ERRORS(errorsText);
+		const errorsText = this._errors.join(EOL);
+		const msg =
+			!this._areStepsComplete ? constants.SOME_STEPS_ARE_STILL_RUNNING :
+				errorsText.length === 0 ? constants.ALL_STEPS_SUCCEEDED :
+					constants.ALL_STEPS_COMPLETED_ERRORS(errorsText);
 		return vscode.env.clipboard.writeText(msg);
 	}
 
@@ -223,11 +228,11 @@ export class MultiStepStatusDialog {
 		if (selectedRows.length > 0) {
 			for (let i = 0; i < selectedRows.length; i++) {
 				const row = selectedRows[i];
-				const results: any[] = this._validationResult[row];
+				const results: any[] = this._results[row];
 				const status = results[MultiStepResultIndex.status];
 				const errors = results[MultiStepResultIndex.errors];
 				statusMessages.push(
-					constants.VALIDATE_IR_VALIDATION_STATUS(GetMultiStepStatusString(status), errors));
+					constants.RESULTS_INFO_BOX_STATUS(GetMultiStepStatusString(status), errors));
 			}
 		}
 
@@ -278,7 +283,7 @@ export class MultiStepStatusDialog {
 	}
 
 	private async _initializeResults(results?: MultiStepResult[]): Promise<void> {
-		this._validationResult = [];
+		this._results = [];
 
 		if (results && results.length > 0) {
 			for (let row = 0; row < results.length; row++) {
@@ -299,7 +304,7 @@ export class MultiStepStatusDialog {
 			? constants.VALIDATE_IR_VALIDATION_STATUS_ERROR(status, errors)
 			: statusMsg;
 
-		this._validationResult.push([
+		this._results.push([
 			message,
 			<azdata.IconColumnCellValue>{
 				icon: this._getValidationStateImage(state),
@@ -308,6 +313,8 @@ export class MultiStepStatusDialog {
 			statusMsg,
 			errors,
 			state]);
+
+		this._errors.push(...errors);
 	}
 
 	private _getValidationStateImage(state: MultiStepState): azdata.IconPath {
@@ -327,7 +334,7 @@ export class MultiStepStatusDialog {
 	}
 
 	private async _updateTable() {
-		const data = this._validationResult.map(row => [
+		const data = this._results.map(row => [
 			row[MultiStepResultIndex.message],
 			row[MultiStepResultIndex.icon],
 			row[MultiStepResultIndex.status]]);

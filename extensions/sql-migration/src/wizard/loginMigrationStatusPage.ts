@@ -450,7 +450,8 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			() => { });
 
 		const loginResults = this.migrationStateModel._loginMigrationModel.GetLoginMigrationResults(loginName);
+		const isMigrationComplete = this.migrationStateModel._loginMigrationModel.isMigrationComplete;
 
-		await dialog.openDialog(constants.LOGIN_MIGRATIONS_LOGIN_STATUS_DETAILS_TITLE(loginName), loginResults);
+		await dialog.openDialog(constants.LOGIN_MIGRATIONS_LOGIN_STATUS_DETAILS_TITLE(loginName), loginResults, isMigrationComplete);
 	}
 }
