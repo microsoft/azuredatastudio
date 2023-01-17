@@ -116,7 +116,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			.withProps({
 				value: constants.LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_LABEL,
 				requiredIndicator: false,
-				CSSStyles: { ...styles.LABEL_CSS, 'margin-top': '-1em' }
+				CSSStyles: { ...styles.LABEL_CSS }
 			}).component();
 
 		const aadDomainNameInputBox = this._view.modelBuilder.inputBox()
@@ -125,7 +125,6 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				inputType: 'text',
 				placeHolder: constants.LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_PLACEHOLDER,
 				required: false,
-				CSSStyles: { 'margin-top': '-1em' },
 			}).component();
 
 		this._disposables.push(
@@ -139,7 +138,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				aadDomainNameLabel,
 				aadDomainNameInputBox])
 			.withLayout({ flexFlow: 'column' })
-			.withProps({ CSSStyles: { 'margin': '10px 0 10px 0' } })
+			.withProps({ CSSStyles: { 'margin': '10px 0px 0px 0px' } })
 			.component();
 	}
 
