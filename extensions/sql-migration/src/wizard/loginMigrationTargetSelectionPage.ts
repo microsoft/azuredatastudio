@@ -14,7 +14,7 @@ import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as utils from '../api/utils';
 import { azureResource } from 'azurecore';
 import { AzureSqlDatabaseServer, SqlVMServer } from '../api/azure';
-import { collectTargetDatabaseInfo, TargetDatabaseInfo, isSysAdmin } from '../api/sqlUtils';
+import { collectTargetLogins, isSysAdmin } from '../api/sqlUtils';
 
 export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -599,18 +599,20 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				const targetDatabaseServer = this.migrationStateModel._targetServerInstance as AzureSqlDatabaseServer;
 				const userName = this.migrationStateModel._targetUserName;
 				const password = this.migrationStateModel._targetPassword;
-				const targetDatabases: TargetDatabaseInfo[] = [];
+				const loginsOnTarget: string[] = [];
 				if (targetDatabaseServer && userName && password) {
 					try {
 						connectionButtonLoadingContainer.loading = true;
 						await utils.updateControlDisplay(this._connectionResultsInfoBox, false);
 						this.wizard.nextButton.enabled = false;
-						targetDatabases.push(
-							...await collectTargetDatabaseInfo(
+						loginsOnTarget.push(
+							...await collectTargetLogins(
 								targetDatabaseServer,
 								userName,
 								password));
-						await this._showConnectionResults(targetDatabases);
+						this.migrationStateModel._loginMigrationModel.collectedTargetLogins = true;
+						this.migrationStateModel._loginMigrationModel.loginsOnTarget = loginsOnTarget;
+						await this._showConnectionResults(loginsOnTarget);
 					} catch (error) {
 						this.wizard.message = {
 							level: azdata.window.MessageLevel.Error,
@@ -618,7 +620,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 							description: constants.SQL_TARGET_CONNECTION_ERROR(error.message),
 						};
 						await this._showConnectionResults(
-							targetDatabases,
+							loginsOnTarget,
 							constants.AZURE_SQL_TARGET_CONNECTION_ERROR_TITLE);
 					}
 					finally {
@@ -653,19 +655,16 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	}
 
 	private async _showConnectionResults(
-		databases: TargetDatabaseInfo[],
+		logins: string[],
 		errorMessage?: string): Promise<void> {
 
 		const hasError = errorMessage !== undefined;
-		const hasDatabases = databases.length > 0;
 		this._connectionResultsInfoBox.style = hasError
 			? 'error'
-			: hasDatabases
-				? 'success'
-				: 'warning';
+			: 'success';
 		this._connectionResultsInfoBox.text = hasError
 			? constants.SQL_TARGET_CONNECTION_ERROR(errorMessage)
-			: constants.SQL_TARGET_CONNECTION_SUCCESS_LOGINS(databases.length.toLocaleString());
+			: constants.SQL_TARGET_CONNECTION_SUCCESS_LOGINS(logins.length.toLocaleString());
 		await utils.updateControlDisplay(this._connectionResultsInfoBox, true);
 
 		if (!hasError) {

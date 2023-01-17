@@ -72,7 +72,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			return true;
 		});
 
-		await this._loadLoginList();
+		await this._loadLoginList(false);
 
 		// load unfiltered table list and pre-select list of logins saved in state
 		await this._filterTableList('', this.migrationStateModel._loginsForMigration);
@@ -184,13 +184,6 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		// 	}).component();
 
 
-		// const loginSelectorTableLabel = this._view.modelBuilder.text()
-		// 	.withProps({
-		// 		value: constants.LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_LABEL,
-		// 		requiredIndicator: true,
-		// 		CSSStyles: { ...styles.LABEL_CSS, 'margin-top': '-1em' }
-		// 	}).component();
-
 		this._refreshButton = this._view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
@@ -199,7 +192,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				iconPath: IconPathHelper.refresh,
 				label: constants.DATABASE_TABLE_REFRESH_LABEL,
 				width: 70,
-				CSSStyles: { 'margin': '15px 0 0 0' },
+				CSSStyles: { 'margin': '15px 5px 0 0' },
 			})
 			.component();
 
@@ -326,7 +319,6 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			}
 		}).component();
 		// flex.addItem(windowsAuthInfoBox, { flex: '0 0 auto' });
-		// flex.addItem(loginSelectorTableLabel, { flex: '0 0 auto' });
 		flex.addItem(refreshContainer, { flex: '0 0 auto' });
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._loginCount, { flex: '0 0 auto' });
@@ -335,21 +327,15 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		return flex;
 	}
 
-	private async _loadLoginList(): Promise<void> {
-		this._refreshLoading.loading = true;
-		this.wizard.nextButton.enabled = false;
-		await utils.updateControlDisplay(this._refreshResultsInfoBox, true);
-		this._refreshResultsInfoBox.text = constants.LOGIN_MIGRATION_REFRESHING_LOGIN_DATA;
-		this._refreshResultsInfoBox.style = 'information';
-
+	private async _getSourceLogins() {
 		const stateMachine: MigrationStateModel = this.migrationStateModel;
-		const selectedLogins: LoginTableInfo[] = stateMachine._loginsForMigration || [];
 		const sourceLogins: LoginTableInfo[] = [];
-		const targetLogins: string[] = [];
 
 		// execute a query against the source to get the logins
 		try {
 			sourceLogins.push(...await collectSourceLogins(stateMachine.sourceConnectionId));
+			stateMachine._loginMigrationModel.collectedSourceLogins = true;
+			stateMachine._loginMigrationModel.loginsOnSource = sourceLogins;
 		} catch (error) {
 			this._refreshLoading.loading = false;
 			this._refreshResultsInfoBox.style = 'error';
@@ -360,11 +346,18 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				description: constants.LOGIN_MIGRATIONS_GET_LOGINS_ERROR(error.message),
 			};
 		}
+	}
+
+	private async _getTargetLogins() {
+		const stateMachine: MigrationStateModel = this.migrationStateModel;
+		const targetLogins: string[] = [];
 
 		// execute a query against the target to get the logins
 		try {
 			if (this.isTargetInstanceSet()) {
 				targetLogins.push(...await collectTargetLogins(stateMachine._targetServerInstance as AzureSqlDatabaseServer, stateMachine._targetUserName, stateMachine._targetPassword));
+				stateMachine._loginMigrationModel.collectedTargetLogins = true;
+				stateMachine._loginMigrationModel.loginsOnTarget = targetLogins;
 			}
 			else {
 				// TODO AKMA : Emit telemetry here saying target info is empty
@@ -379,7 +372,41 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				description: constants.LOGIN_MIGRATIONS_GET_LOGINS_ERROR(error.message),
 			};
 		}
+	}
 
+	private async _markRefreshDataStart() {
+		this._refreshLoading.loading = true;
+		this.wizard.nextButton.enabled = false;
+		await utils.updateControlDisplay(this._refreshResultsInfoBox, true);
+		this._refreshResultsInfoBox.text = constants.LOGIN_MIGRATION_REFRESHING_LOGIN_DATA;
+		this._refreshResultsInfoBox.style = 'information';
+	}
+
+	private _markRefreshDataComplete(numSourceLogins: number, numTargetLogins: number) {
+		this._refreshLoading.loading = false;
+		this._refreshResultsInfoBox.text = constants.LOGIN_MIGRATION_REFRESH_LOGIN_DATA_SUCCESSFUL(numSourceLogins, numTargetLogins);
+		this._refreshResultsInfoBox.style = 'success';
+		this.updateNextButton();
+	}
+
+	private async _loadLoginList(runQuery: boolean = true): Promise<void> {
+		const stateMachine: MigrationStateModel = this.migrationStateModel;
+		const selectedLogins: LoginTableInfo[] = stateMachine._loginsForMigration || [];
+
+		// Get source logins if caller asked us to or if we haven't collected in the past
+		if (runQuery || !stateMachine._loginMigrationModel.collectedSourceLogins) {
+			await this._markRefreshDataStart();
+			await this._getSourceLogins();
+		}
+
+		// Get target logins if caller asked us to or if we haven't collected in the past
+		if (runQuery || !stateMachine._loginMigrationModel.collectedTargetLogins) {
+			await this._markRefreshDataStart();
+			await this._getTargetLogins();
+		}
+
+		const sourceLogins: LoginTableInfo[] = stateMachine._loginMigrationModel.loginsOnSource;
+		const targetLogins: string[] = stateMachine._loginMigrationModel.loginsOnTarget;
 		this._loginNames = [];
 
 		this._loginTableValues = sourceLogins.map(row => {
@@ -400,10 +427,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		}) || [];
 
 		await this._filterTableList(this._filterTableValue);
-		this._refreshLoading.loading = false;
-		this._refreshResultsInfoBox.text = constants.LOGIN_MIGRATION_REFRESH_LOGIN_DATA_SUCCESSFUL(sourceLogins.length, targetLogins.length);
-		this._refreshResultsInfoBox.style = 'success';
-		this.updateNextButton();
+		this._markRefreshDataComplete(sourceLogins.length, targetLogins.length);
 	}
 
 	public selectedLogins(): LoginTableInfo[] {

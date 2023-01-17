@@ -6,6 +6,7 @@
 import * as mssql from 'mssql';
 import { MultiStepResult, MultiStepState } from '../dialog/loginMigration/singleLoginStatusDialog';
 import * as constants from '../constants/strings';
+import { LoginTableInfo } from '../api/sqlUtils';
 
 export enum LoginMigrationStep {
 	NotStarted = -1,
@@ -64,16 +65,18 @@ export interface Login {
 }
 
 export class LoginMigrationModel {
-	public _resultsPerStep: Map<mssql.LoginMigrationStep, mssql.StartLoginMigrationResult>;
-	public _currentStep: LoginMigrationStep;
+	public resultsPerStep: Map<mssql.LoginMigrationStep, mssql.StartLoginMigrationResult>;
+	public currentStep: LoginMigrationStep = LoginMigrationStep.NotStarted;
+	public collectedSourceLogins: boolean = false;
+	public collectedTargetLogins: boolean = false;;
+	public loginsOnSource: LoginTableInfo[] = [];
+	public loginsOnTarget: string[] = [];
 	private _logins: Map<string, Login>;
-	private _loginMigrationSteps: LoginMigrationStep[];
+	private _loginMigrationSteps: LoginMigrationStep[] = [];
 
 	constructor() {
-		this._resultsPerStep = new Map<mssql.LoginMigrationStep, mssql.StartLoginMigrationResult>();
-		this._currentStep = LoginMigrationStep.NotStarted;
+		this.resultsPerStep = new Map<mssql.LoginMigrationStep, mssql.StartLoginMigrationResult>();
 		this._logins = new Map<string, Login>();
-		this._loginMigrationSteps = [];
 		this.SetLoginMigrationSteps();
 	}
 
@@ -86,7 +89,7 @@ export class LoginMigrationModel {
 			this.AddStepStateForLogin(loginName, step, status, errors);
 		}
 
-		this._currentStep = step + 1;
+		this.currentStep = step + 1;
 	}
 
 	public GetLoginMigrationResults(loginName: string): MultiStepResult[] {
@@ -106,7 +109,7 @@ export class LoginMigrationModel {
 				let stepStatus = login!.statusPerStep.get(step);
 				stepResult.state = LoginMigrationStateToMultiStepState[stepStatus!.status];
 				stepResult.errors = stepStatus!.errors;
-			} else if (step === this._currentStep) {
+			} else if (step === this.currentStep) {
 				stepResult.state = LoginMigrationStateToMultiStepState[LoginMigrationState.Running];
 			}
 
