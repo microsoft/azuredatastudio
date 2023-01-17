@@ -1352,14 +1352,14 @@
 					},
 					"versions": [
 						{
-							"version": "2022.7.2",
-							"lastUpdated": "8/8/2022",
+							"version": "2022.12.1",
+							"lastUpdated": "12/15/2022",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2022.7.2.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2022.12.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1385,7 +1385,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.59.0"
+									"value": "^1.67.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -4520,34 +4520,34 @@
 					},
 					"versions": [
 						{
-							"version": "3.0.7",
-							"lastUpdated": "01/02/2023",
+							"version": "3.0.8",
+							"lastUpdated": "01/10/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.7/azuredatastudio-dma-oracle-3.0.7.vsix"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.8/azuredatastudio-dma-oracle-3.0.8.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.7/extension.png"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.8/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.7/README.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.8/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.7/CHANGELOG.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.8/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.7/package.json"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.8/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.7/LICENSE.rtf"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/3.0.8/LICENSE.rtf"
 								}
 							],
 							"properties": [
@@ -4650,14 +4650,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.2.4",
-							"lastUpdated": "11/23/2022",
+							"version": "0.2.5",
+							"lastUpdated": "01/04/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/mysql/azuredatastudio-mysql-0.2.4.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/mysql/azuredatastudio-mysql-0.2.5.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4763,6 +4763,71 @@
 					],
 					"statistics": [],
 					"flags": ""
+				},
+				{
+					"extensionId": "95",
+					"extensionName": "mongodb-vscode",
+					"displayName": "MongoDB Atlas for Azure Data Studio",
+					"shortDescription": "Connect to MongoDB and Atlas directly from your Azure Data Studio environment, navigate your databases and collections, inspect your schema and use playgrounds to prototype queries and aggregations.",
+					"publisher": {
+						"displayName": "MongoDB",
+						"publisherId": "mongodb",
+						"publisherName": "MongoDB"
+					},
+					"versions": [
+						{
+							"version": "0.9.3",
+							"lastUpdated": "04/26/2022",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/mongodb/mongodb.mongodb-vscode-0.9.3.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v0.9.3/images/mongodb.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v0.9.3/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
+									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v0.9.3/CHANGELOG.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v0.9.3/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v0.9.3/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "^1.65.2"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/mongodb-js/vscode"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -4771,7 +4836,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 78
+							"count": 79
 						}
 					]
 				}
