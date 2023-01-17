@@ -252,7 +252,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 		if (!foundSession) {
 			// Just fire reponse with empty nodes for example: request from standalone SQL instance
-			// TODO Need to investigate why we don't get nodes only 'sometimes'
+			// Comment Ref: https://github.com/microsoft/azuredatastudio/blob/bb1f5bfffe60156d4b4407fb450a4b466e66ed95/extensions/mssql/src/objectExplorerNodeProvider/objectExplorerNodeProvider.ts#L78-L81
+			// TODO Need to investigate why we get session failure and no nodes only 'sometimes'.
 			this._onExpandCompleteWithoutNodes.fire(expandResponse);
 			this.logService.warn(`Cannot find node status for session: ${expandResponse.sessionId} and node path: ${expandResponse.nodePath}`);
 		}
@@ -427,8 +428,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						(expandResult: NodeExpandInfoWithProviderId) =>
 							resolve(this.completedExpandRequest(expandResult, resultMap, node, newRequest, session, allProviders)));
 
-					self._onExpandCompleteWithoutNodes.event((expandResult: NodeExpandInfoWithProviderId) =>
-						resolve(this.completedExpandRequest(expandResult, resultMap, node, newRequest, session, allProviders)));
+					self._onExpandCompleteWithoutNodes.event(
+						(expandResult: NodeExpandInfoWithProviderId) =>
+							resolve(this.completedExpandRequest(expandResult, resultMap, node, newRequest, session, allProviders)));
 
 					if (newRequest) {
 						allProviders.forEach(provider => {
@@ -463,37 +465,38 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		resultMap: Map<string, azdata.ObjectExplorerExpandInfo>,
 		node: TreeNode, newRequest: boolean,
 		session: azdata.ObjectExplorerSession,
-		allProviders: azdata.ObjectExplorerProviderBase[]): Promise<azdata.ObjectExplorerExpandInfo> {
-		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
-			if (expandResult && expandResult.providerId) {
-				resultMap.set(expandResult.providerId, expandResult);
-				// If we got an error result back then send error our error event
-				// We only do this for the MSSQL provider
-				if (expandResult.errorMessage && expandResult.providerId === mssqlProviderName) {
-					const errorType = expandResult.errorMessage.indexOf('Object Explorer task didn\'t complete') !== -1 ? 'Timeout' : 'Other';
-					// For folders send the actual name of the folder (since the nodeTypeId isn't useful in this case and the names are controlled by us)
-					const nodeType = node.nodeTypeId === NodeType.Folder ? node.label : node.nodeTypeId;
-					this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.ObjectExplorerExpandError, undefined, errorType)
-						.withAdditionalProperties({
-							nodeType,
-							providerId: expandResult.providerId
-						}).send();
-				}
-
-			} else {
-				this.logService.error('OE provider returns empty result or providerId');
+		allProviders: azdata.ObjectExplorerProviderBase[]): azdata.ObjectExplorerExpandInfo | undefined {
+		if (expandResult && expandResult.providerId) {
+			resultMap.set(expandResult.providerId, expandResult);
+			// If we got an error result back then send error our error event
+			// We only do this for the MSSQL provider
+			if (expandResult.errorMessage && expandResult.providerId === mssqlProviderName) {
+				const errorType = expandResult.errorMessage.indexOf('Object Explorer task didn\'t complete') !== -1 ? 'Timeout' : 'Other';
+				// For folders send the actual name of the folder (since the nodeTypeId isn't useful in this case and the names are controlled by us)
+				const nodeType = node.nodeTypeId === NodeType.Folder ? node.label : node.nodeTypeId;
+				this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.ObjectExplorerExpandError, undefined, errorType)
+					.withAdditionalProperties({
+						nodeType,
+						providerId: expandResult.providerId
+					}).send();
 			}
 
-			// When get all responses from all providers, merge results
-			if (resultMap.size === allProviders.length) {
-				resolve(this.mergeResults(allProviders, resultMap, node.nodePath));
+		} else {
+			this.logService.error('OE provider returns empty result or providerId');
+		}
 
-				// Have to delete it after get all responses otherwise couldn't find session for not the first response
-				if (newRequest) {
-					delete this._sessions[session.sessionId!].nodes[node.nodePath];
-				}
+		// When get all responses from all providers, merge results
+		if (resultMap.size === allProviders.length) {
+			let results = this.mergeResults(allProviders, resultMap, node.nodePath);
+
+			// Have to delete it after get all responses otherwise couldn't find session for not the first response
+			if (newRequest) {
+				delete this._sessions[session.sessionId!].nodes[node.nodePath];
 			}
-		});
+
+			return results;
+		}
+		return undefined;
 	}
 
 	private mergeResults(allProviders: azdata.ObjectExplorerProviderBase[], resultMap: Map<string, azdata.ObjectExplorerExpandInfo>, nodePath: string): azdata.ObjectExplorerExpandInfo | undefined {
