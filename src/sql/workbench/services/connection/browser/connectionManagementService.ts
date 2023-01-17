@@ -564,7 +564,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				} else {
 					return this.handleOtherError(connection, connectionResult).then(success => {
 						if (success) {
-							return this.connectWithOptions(connection, uri, options, callbacks);
+							//For now handle connection errors inside handleOtherError.
+							return Promise.resolve(connectionResult);
 						}
 						else {
 							if (callbacks.onConnectReject) {
@@ -596,8 +597,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	private handleOtherError(connection: interfaces.IConnectionProfile, connectionResult: IConnectionResult): Promise<boolean> {
 		return this._errorDiagnosticsService.checkErrorCode(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName).then(response => {
-			if (response.errorAction !== "") {
-				this._logService.info(`password reset error code returned!`);
+			if (response.errorAction === Constants.mssqlExpiredPasswordErrorCode) {
+				this._logService.info(`change password error code returned!`);
 				//connectionResult.errorHandled = true;
 				return false;
 				//return this._resourceProviderService.showFirewallRuleDialog(connection, response.ipAddress, response.resourceProviderId);

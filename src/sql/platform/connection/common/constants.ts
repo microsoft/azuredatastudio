@@ -68,3 +68,6 @@ export const gen3Version = 12;
 
 /* SQL Server Password Reset Error Code */
 export const sqlPasswordErrorCode = 18488;
+
+/* MSSQL error code */
+export const mssqlExpiredPasswordErrorCode = "mssql/expiredPassword"
