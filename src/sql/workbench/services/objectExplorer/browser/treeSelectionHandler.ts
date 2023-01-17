@@ -15,17 +15,12 @@ import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/a
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { onUnexpectedError } from 'vs/base/common/errors';
 
-export interface ObjectExplorerRequestStatus {
-	inProgress: boolean;
-}
-
 export class TreeSelectionHandler {
 	// progressRunner: IProgressRunner;
 
 	private _lastClicked: any[] | undefined;
 	private _clickTimer: any = undefined;
 	private _otherTimer: any = undefined;
-	private _requestStatus: ObjectExplorerRequestStatus | undefined = undefined;
 
 	// constructor(@IProgressService private _progressService: IProgressService) {
 
@@ -55,13 +50,13 @@ export class TreeSelectionHandler {
 	 * Handle selection of tree element
 	 */
 	public onTreeSelect(event: any, tree: AsyncServerTree | ITree, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, capabilitiesService: ICapabilitiesService, connectionCompleteCallback: () => void) {
-		let sendSelectionEvent = ((event: any, selection: any, isDoubleClick: boolean, userInteraction: boolean, requestStatus: ObjectExplorerRequestStatus | undefined = undefined) => {
+		let sendSelectionEvent = ((event: any, selection: any, isDoubleClick: boolean, userInteraction: boolean) => {
 			// userInteraction: defensive - don't touch this something else is handling it.
 			if (userInteraction === true && this._lastClicked && this._lastClicked[0] === selection[0]) {
 				this._lastClicked = undefined;
 			}
 			if (!TreeUpdateUtils.isInDragAndDrop) {
-				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, capabilitiesService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback, requestStatus);
+				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, capabilitiesService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback);
 			}
 		});
 
@@ -87,14 +82,12 @@ export class TreeSelectionHandler {
 			this._lastClicked = selection;
 
 			this._clickTimer = setTimeout(() => {
-				// Sets request status object when timer is executed
-				this._requestStatus = { inProgress: true };
 				sendSelectionEvent(event, selection, false, true);
 			}, 400);
 		} else {
 			clearTimeout(this._otherTimer);
 			this._otherTimer = setTimeout(() => {
-				sendSelectionEvent(event, selection, false, false, this._requestStatus);
+				sendSelectionEvent(event, selection, false, false);
 			}, 400);
 		}
 	}
@@ -109,9 +102,8 @@ export class TreeSelectionHandler {
 	 * @param selection
 	 * @param tree
 	 * @param connectionCompleteCallback A function that gets called after a connection is established due to the selection, if needed
-	 * @param requestStatus Used to identify if a new session should be created or not to avoid creating back to back sessions
 	 */
-	private handleTreeItemSelected(connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, capabilitiesService: ICapabilitiesService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: AsyncServerTree | ITree, connectionCompleteCallback: () => void, requestStatus: ObjectExplorerRequestStatus | undefined): void {
+	private handleTreeItemSelected(connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, capabilitiesService: ICapabilitiesService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: AsyncServerTree | ITree, connectionCompleteCallback: () => void): void {
 		if (tree instanceof AsyncServerTree) {
 			if (selection && selection.length > 0 && (selection[0] instanceof ConnectionProfile)) {
 				if (!capabilitiesService.getCapabilities(selection[0].providerName)) {
@@ -139,12 +131,7 @@ export class TreeSelectionHandler {
 				if (connectionProfile) {
 					this.onTreeActionStateChange(true);
 
-					TreeUpdateUtils.connectAndCreateOeSession(connectionProfile, options, connectionManagementService, objectExplorerService, tree, requestStatus).then(sessionCreated => {
-						// Clears request status object that was created when the first timeout callback is executed.
-						if (this._requestStatus) {
-							this._requestStatus = undefined;
-						}
-
+					TreeUpdateUtils.connectAndCreateOeSession(connectionProfile, options, connectionManagementService, objectExplorerService, tree).then(sessionCreated => {
 						if (!sessionCreated) {
 							this.onTreeActionStateChange(false);
 						}

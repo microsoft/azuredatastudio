@@ -23,7 +23,6 @@ import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/
 import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -88,7 +87,7 @@ export interface IObjectExplorerService {
 
 	getObjectExplorerNode(connection: IConnectionProfile): TreeNode | undefined;
 
-	updateObjectExplorerNodes(connectionProfile: IConnectionProfile, requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<void>;
+	updateObjectExplorerNodes(connectionProfile: IConnectionProfile): Promise<void>;
 
 	deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void>;
 
@@ -209,10 +208,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._onSelectionOrFocusChange.event;
 	}
 
-	public async updateObjectExplorerNodes(connection: IConnectionProfile, requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<void> {
+	public async updateObjectExplorerNodes(connection: IConnectionProfile): Promise<void> {
 		const withPassword = await this._connectionManagementService.addSavedPassword(connection);
 		const connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, withPassword);
-		return this.updateNewObjectExplorerNode(connectionProfile, requestStatus);
+		return this.updateNewObjectExplorerNode(connectionProfile);
 	}
 
 	public async deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void> {
@@ -328,14 +327,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._onUpdateObjectExplorerNodes.fire(eventArgs);
 	}
 
-	private async updateNewObjectExplorerNode(connection: ConnectionProfile, requestStatus: ObjectExplorerRequestStatus | undefined): Promise<void> {
+	private async updateNewObjectExplorerNode(connection: ConnectionProfile): Promise<void> {
 		if (this._activeObjectExplorerNodes[connection.id]) {
 			this.sendUpdateNodeEvent(connection);
 		} else {
 			try {
-				if (!requestStatus) {
-					await this.createNewSession(connection.providerName, connection);
-				}
+				await this.createNewSession(connection.providerName, connection);
 			} catch (err) {
 				this.sendUpdateNodeEvent(connection, err);
 				throw err;
@@ -355,7 +352,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				connection: connection,
 				nodes: {}
 			};
-
 			return result;
 		} else {
 			throw new Error(`Provider doesn't exist. id: ${providerId}`);
