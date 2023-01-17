@@ -354,8 +354,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		const provider = this._providers[providerId];
 		if (provider) {
 			const result = await provider.createNewSession(connection.toConnectionInfo());
-			const session = this._sessions[result.sessionId];
-			if (session) {
+			if (this._sessions[result.sessionId]) {
 				this.logService.trace(`Overwriting session ${result.sessionId}`);
 			}
 			this._sessions[result.sessionId] = {
