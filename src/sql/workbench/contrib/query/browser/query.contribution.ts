@@ -447,11 +447,6 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.showActionBar', "Whether to show the action bar in the query results view"),
 			'default': true
 		},
-		'queryEditor.results.copyHeaders.delimiter': {
-			'type': 'string',
-			'description': localize('queryEditor.results.copyHeaders.delimiter', "The custom delimiter to use between result headers when copying"),
-			'default': '\t'
-		},
 		'queryEditor.messages.showBatchTime': {
 			'type': 'boolean',
 			'description': localize('queryEditor.messages.showBatchTime', "Should execution time be shown for individual batches"),

@@ -126,16 +126,13 @@ export class CopyHeadersAction extends Action {
 	private static ID = 'grid.copyHeaders';
 	private static LABEL = localize('copyHeaders', 'Copy Headers');
 
-	constructor(
-		@IConfigurationService private configurationService: IConfigurationService
-	) {
+	constructor() {
 		super(CopyHeadersAction.ID, CopyHeadersAction.LABEL);
 	}
 
 	public override async run(context: IGridActionContext): Promise<void> {
 		const selection = mapForNumberColumn(context.selection);
-		const delimiter = this.configurationService.getValue<string>('queryEditor.results.copyHeaders.delimeter');
-		await context.gridDataProvider.copyHeaders(selection, delimiter, context.table.columns);
+		await context.gridDataProvider.copyHeaders(selection);
 	}
 }
 

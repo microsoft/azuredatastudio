@@ -414,13 +414,13 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		}
 	}
 
-	copyHeaders(selection: Slick.Range[], delimiter: string, columns?: Slick.Column<any>[]): Promise<void> {
-		return this.copyHeadersAsync(selection, delimiter, columns);
+	copyHeaders(selection: Slick.Range[]): Promise<void> {
+		return this.copyHeadersAsync(selection);
 	}
 
-	private async copyHeadersAsync(selection: Slick.Range[], delimiter: string, columns?: Slick.Column<any>[]): Promise<void> {
+	private async copyHeadersAsync(selection: Slick.Range[]): Promise<void> {
 		try {
-			const results = getTableHeaderString(this, selection, delimiter, columns);
+			const results = getTableHeaderString(this, selection);
 			await this._clipboardService.writeText(results);
 		} catch (error) {
 			this._notificationService.error(localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
