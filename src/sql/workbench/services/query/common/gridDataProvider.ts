@@ -156,8 +156,9 @@ export function getTableHeaderString(provider: IGridDataProvider, selection: Sli
 			}
 		});
 	}
-	else if (columns) {
+	else if (columns) { // If a copy selection isn't specified then copy all column headers
 		columns.forEach((column, index) => {
+			// Skipping index 0 since that's the column for the row number
 			if (index === 0) {
 				return;
 			}
