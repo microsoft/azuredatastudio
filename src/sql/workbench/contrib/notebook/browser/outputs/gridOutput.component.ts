@@ -410,7 +410,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 			let results = await getResultsString(this, selection, includeHeaders, tableView);
 			this._clipboardService.writeText(results);
 		} catch (error) {
-			this._notificationService.error(localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
+			this._notificationService.error(localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
 		}
 	}
 
@@ -423,7 +423,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 			const results = getTableHeaderString(this, selection);
 			await this._clipboardService.writeText(results);
 		} catch (error) {
-			this._notificationService.error(localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
+			this._notificationService.error(localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
 		}
 	}
 

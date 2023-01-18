@@ -541,7 +541,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 			const results = await getResultsString(this, selection, includeHeaders, tableView);
 			await this._clipboardService.writeText(results);
 		} catch (error) {
-			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
+			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
 		}
 	}
 
@@ -554,7 +554,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 			const results = getTableHeaderString(this, selection);
 			await this._clipboardService.writeText(results);
 		} catch (error) {
-			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
+			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
 		}
 	}
 
