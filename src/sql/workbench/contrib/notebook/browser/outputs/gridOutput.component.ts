@@ -414,11 +414,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		}
 	}
 
-	copyHeaders(selection: Slick.Range[]): Promise<void> {
-		return this.copyHeadersAsync(selection);
-	}
-
-	private async copyHeadersAsync(selection: Slick.Range[]): Promise<void> {
+	async copyHeaders(selection: Slick.Range[]): Promise<void> {
 		try {
 			const results = getTableHeaderString(this, selection);
 			await this._clipboardService.writeText(results);
