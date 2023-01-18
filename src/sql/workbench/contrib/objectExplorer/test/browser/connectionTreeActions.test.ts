@@ -41,6 +41,8 @@ import { ConsoleLogger, LogService } from 'vs/platform/log/common/log';
 import { TestAccessibilityService } from 'vs/platform/accessibility/test/common/testAccessibilityService';
 import { TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { INotificationService, IPromptChoice, IPromptOptions } from 'vs/platform/notification/common/notification';
+import { TestNotificationService } from 'sql/platform/connection/test/common/testNotificationService';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -77,6 +79,34 @@ suite('SQL Connection Tree Action tests', () => {
 		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => profileToReturn);
 		connectionManagementService.setup(x => x.showEditConnectionDialog(TypeMoq.It.isAny())).returns(() => new Promise<void>((resolve, reject) => resolve()));
 		return connectionManagementService;
+	}
+
+	function createNotificationService(promptChoice: number): TypeMoq.Mock<INotificationService> {
+		let notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
+		notificationService.callBase = true;
+		notificationService.setup(x => x.prompt(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((
+			severity: Severity,
+			message: string,
+			choices: IPromptChoice[],
+			options?: IPromptOptions
+		) => {
+			choices[promptChoice].run();
+			return {
+				close: () => { },
+				onDidClose: Event.None,
+				onDidChangeVisibility: Event.None,
+				progress: {
+					infinite: () => { },
+					total: () => { },
+					worked: () => { },
+					done: () => { }
+				},
+				updateMessage: () => { },
+				updateSeverity: () => { },
+				updateActions: () => { },
+			}
+		});
+		return notificationService;
 	}
 
 	function createEditorService(): TypeMoq.Mock<IEditorService> {
@@ -329,10 +359,41 @@ suite('SQL Connection Tree Action tests', () => {
 		let connectionAction: DeleteConnectionAction = new DeleteConnectionAction(DeleteConnectionAction.ID,
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			connection,
-			connectionManagementService.object);
+			connectionManagementService.object,
+			createNotificationService(0).object); // Select 'Yes' on the promptChoice
 
 		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.deleteConnection(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
+		});
+
+	});
+
+	test('DeleteConnectionAction - connection not deleted when user selects no on the prompt', () => {
+		let connectionManagementService = createConnectionManagementService(true, undefined);
+
+		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'Test',
+			savePassword: false,
+			groupFullName: 'testGroup',
+			serverName: 'testServerName',
+			databaseName: 'testDatabaseName',
+			authenticationType: AuthenticationType.Integrated,
+			password: 'test',
+			userName: 'testUsername',
+			groupId: undefined,
+			providerName: mssqlProviderName,
+			options: {},
+			saveProfile: true,
+			id: 'testId'
+		});
+		let connectionAction: DeleteConnectionAction = new DeleteConnectionAction(DeleteConnectionAction.ID,
+			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
+			connection,
+			connectionManagementService.object,
+			createNotificationService(1).object); // Selecting 'No' on the promptChoice
+
+		return connectionAction.run().then((value) => {
+			connectionManagementService.verify(x => x.deleteConnection(TypeMoq.It.isAny()), TypeMoq.Times.never());
 		});
 
 	});
@@ -344,7 +405,8 @@ suite('SQL Connection Tree Action tests', () => {
 		let connectionAction: DeleteConnectionAction = new DeleteConnectionAction(DeleteConnectionAction.ID,
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			conProfGroup,
-			connectionManagementService.object);
+			connectionManagementService.object,
+			createNotificationService(0).object); // Select 'Yes' on the promptChoice
 
 		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.deleteConnectionGroup(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
@@ -375,7 +437,8 @@ suite('SQL Connection Tree Action tests', () => {
 		let connectionAction: DeleteConnectionAction = new DeleteConnectionAction(DeleteConnectionAction.ID,
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			connection,
-			connectionManagementService.object);
+			connectionManagementService.object,
+			createNotificationService(0).object);
 
 		assert.strictEqual(connectionAction.enabled, false, 'delete action should be disabled.');
 	});
