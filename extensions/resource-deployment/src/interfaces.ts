@@ -77,6 +77,10 @@ export interface DialogDeploymentProvider extends DeploymentProviderBase {
 	dialog: DialogInfo;
 }
 
+export interface BdcWizardDeploymentProvider extends DeploymentProviderBase {
+	bdcWizard: BdcWizardInfo;
+}
+
 export interface NotebookWizardDeploymentProvider extends DeploymentProviderBase {
 	notebookWizard: NotebookWizardInfo;
 }
@@ -107,6 +111,10 @@ export interface AzureSQLDBDeploymentProvider extends DeploymentProviderBase {
 
 export function instanceOfDialogDeploymentProvider(obj: any): obj is DialogDeploymentProvider {
 	return obj && 'dialog' in obj;
+}
+
+export function instanceOfWizardDeploymentProvider(obj: any): obj is BdcWizardDeploymentProvider {
+	return obj && 'bdcWizard' in obj;
 }
 
 export function instanceOfNotebookWizardDeploymentProvider(obj: any): obj is NotebookWizardDeploymentProvider {
@@ -143,8 +151,12 @@ export interface DeploymentProviderBase {
 	when: string;
 }
 
-export type DeploymentProvider = DialogDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider | AzureSQLVMDeploymentProvider | AzureSQLDBDeploymentProvider;
+export type DeploymentProvider = DialogDeploymentProvider | BdcWizardDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider | AzureSQLVMDeploymentProvider | AzureSQLDBDeploymentProvider;
 
+export interface BdcWizardInfo {
+	notebook: string | NotebookPathInfo;
+	type: BdcDeploymentType;
+}
 /**
  * An object that configures Script and Done buttons of the wizard.
  */
@@ -171,6 +183,7 @@ export interface NotebookWizardInfo extends WizardInfoBase {
 }
 
 export interface WizardInfoBase extends FieldInfoBase {
+	type?: DeploymentType;
 	/**
 	 * 	done button attributes.
 	 */
@@ -448,6 +461,7 @@ export enum ToolType {
 	AzCli,
 	KubeCtl,
 	Docker,
+	Azdata
 }
 
 export const enum ToolStatus {
@@ -482,6 +496,16 @@ export interface ITool {
 	isEulaAccepted(): Promise<boolean>;
 	promptForEula(): Promise<boolean>;
 }
+
+export const enum BdcDeploymentType {
+	NewAKS = 'new-aks',
+	ExistingAKS = 'existing-aks',
+	ExistingKubeAdm = 'existing-kubeadm',
+	ExistingARO = 'existing-aro',
+	ExistingOpenShift = 'existing-openshift'
+}
+
+export type DeploymentType = BdcDeploymentType;
 
 export interface Command {
 	command: string;

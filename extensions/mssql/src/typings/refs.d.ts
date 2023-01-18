@@ -7,3 +7,4 @@
 /// <reference path='../../../../src/sql/azdata.proposed.d.ts'/>
 /// <reference path='../../../../src/vscode-dts/vscode.d.ts'/>
 /// <reference path='../../../azurecore/src/azurecore.d.ts' />
+/// <reference path='../../../big-data-cluster/src/bdc.d.ts'/>

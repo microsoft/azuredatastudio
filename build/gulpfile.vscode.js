@@ -125,6 +125,7 @@ const extensionsFilter = filter([
 	'**/azcli.xlf',
 	'**/azurecore.xlf',
 	'**/azurehybridtoolkit.xlf',
+	'**/big-data-cluster.xlf',
 	'**/cms.xlf',
 	'**/dacpac.xlf',
 	'**/git.xlf',

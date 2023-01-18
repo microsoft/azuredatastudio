@@ -9,7 +9,8 @@ import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption, ResourceSubType, AgreementInfo, HelpText, InitialVariableValues } from '../interfaces';
+import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption, ResourceSubType, AgreementInfo, HelpText, InitialVariableValues } from '../interfaces';
+import { AzdataService } from './azdataService';
 import { KubeService } from './kubeService';
 import { INotebookService } from './notebookService';
 import { IPlatformService } from './platformService';
@@ -114,6 +115,9 @@ export class ResourceTypeService implements IResourceTypeService {
 			this.updateNotebookPath(provider, extensionPath);
 		} else if (instanceOfDialogDeploymentProvider(provider) && instanceOfNotebookBasedDialogInfo(provider.dialog)) {
 			this.updateNotebookPath(provider.dialog, extensionPath);
+		}
+		else if ('bdcWizard' in provider) {
+			this.updateNotebookPath(provider.bdcWizard, extensionPath);
 		}
 		else if ('notebookWizard' in provider) {
 			this.updateNotebookPath(provider.notebookWizard, extensionPath);
@@ -241,7 +245,8 @@ export class ResourceTypeService implements IResourceTypeService {
 			let providerIndex = 1;
 			resourceType.providers.forEach(provider => {
 				const providerPositionInfo = `${positionInfo}, provider index: ${providerIndex} `;
-				if (!instanceOfNotebookWizardDeploymentProvider(provider)
+				if (!instanceOfWizardDeploymentProvider(provider)
+					&& !instanceOfNotebookWizardDeploymentProvider(provider)
 					&& !instanceOfDialogDeploymentProvider(provider)
 					&& !instanceOfNotebookDeploymentProvider(provider)
 					&& !instanceOfDownloadDeploymentProvider(provider)
@@ -323,7 +328,7 @@ export class ResourceTypeService implements IResourceTypeService {
 	}
 
 	public startDeployment(resourceType: ResourceType, optionValuesFilter?: OptionValuesFilter, initialVariableValues?: InitialVariableValues): void {
-		const wizard = new ResourceTypeWizard(resourceType, new KubeService(), this.notebookService, this.toolsService, this.platformService, this, optionValuesFilter, initialVariableValues);
+		const wizard = new ResourceTypeWizard(resourceType, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService, this, optionValuesFilter, initialVariableValues);
 		wizard.open();
 	}
 
