@@ -5992,13 +5992,13 @@ Error: {1}</source>
 </body></file>
   <file original="src/sql/workbench/services/notebook/common/notebookRegistry" source-language="en" datatype="plaintext"><body>
     <trans-unit id="carbon.extension.contributes.notebook.executionTarget">
-      <source xml:lang="en">Optional execution target this magic indicates, for example Python vs SQL</source>
+      <source xml:lang="en">Optional execution target this magic indicates, for example Spark vs SQL</source>
     </trans-unit>
     <trans-unit id="carbon.extension.contributes.notebook.fileExtensions">
       <source xml:lang="en">What file extensions should be registered to this notebook provider</source>
     </trans-unit>
     <trans-unit id="carbon.extension.contributes.notebook.kernels">
-      <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, sql</source>
+      <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, pyspark, sql</source>
     </trans-unit>
     <trans-unit id="carbon.extension.contributes.notebook.language">
       <source xml:lang="en">The cell language to be used if this cell magic is included in the cell</source>
