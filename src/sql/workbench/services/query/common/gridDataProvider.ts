@@ -108,11 +108,8 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 	// Make sure all these tasks have executed
 	await Promise.all(actionedTasks);
 
-	const sortResults = (e1: [number, any], e2: [number, any]) => {
-		return e1[0] - e2[0];
-	};
-	headers = new Map([...headers].sort(sortResults));
-	rows = new Map([...rows].sort(sortResults));
+	headers = sortMapEntriesLeftToRight(headers);
+	rows = sortMapEntriesLeftToRight(rows);
 
 	let copyString = '';
 	if (includeHeaders) {
@@ -172,10 +169,7 @@ export function getTableHeaderString(provider: IGridDataProvider, selection: Sli
 		});
 	}
 
-	const sortResults = (e1: [number, any], e2: [number, any]) => {
-		return e1[0] - e2[0];
-	};
-	headers = new Map([...headers].sort(sortResults));
+	headers = sortMapEntriesLeftToRight(headers)
 
 	let columnNameFormatter = (colName: string | undefined): string => colName ? colName : '';
 
@@ -200,6 +194,19 @@ export function getTableHeaderString(provider: IGridDataProvider, selection: Sli
 		.join(delimiter);
 
 	return copyString;
+}
+
+/**
+ * Ensures that table entries in the map appear in left to right order instead of the order that they were selected.
+ * @param map Contains the entries selected in a table
+ * @returns Sorted map with entries appearing in left to right order.
+ */
+function sortMapEntriesLeftToRight(map: Map<number, any>): Map<number, any> {
+	const leftToRight = (e1: [number, any], e2: [number, any]) => {
+		return e1[0] - e2[0];
+	};
+
+	return new Map([...map].sort(leftToRight));
 }
 
 function removeNewLines(inputString: string): string {
