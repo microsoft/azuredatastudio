@@ -393,7 +393,7 @@ export const invalidFileCharsErrorMessage = localize('invalidFileCharsErrorMessa
 export const reservedWindowsFilenameErrorMessage = localize('reservedWindowsFilenameErrorMessage', "This file name is reserved for use by Windows. Choose another name and try again");
 export const reservedValueErrorMessage = localize('reservedValueErrorMessage', "Reserved file name. Choose another name and try again");
 export const trailingWhitespaceErrorMessage = localize('trailingWhitespaceErrorMessage', "File name cannot end with a whitespace");
-export const tooLongFilenameErrorMessage = localize('tooLongFilenameErrorMessage', "File name is over 255 characters");
+export const tooLongFilenameErrorMessage = localize('tooLongFilenameErrorMessage', "File name cannot be over 255 characters");
 
 // Action types
 export const deleteAction = localize('deleteAction', 'Delete');

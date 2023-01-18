@@ -231,7 +231,6 @@ export function isValidFilenameCharacter(c: string): boolean {
 	if (!c || c.length !== 1) {
 		return false;
 	}
-	let isWindows = os.platform() === 'win32';
 	WINDOWS_INVALID_FILE_CHARS.lastIndex = 0;
 	UNIX_INVALID_FILE_CHARS.lastIndex = 0;
 	if (isWindows && WINDOWS_INVALID_FILE_CHARS.test(c)) {
