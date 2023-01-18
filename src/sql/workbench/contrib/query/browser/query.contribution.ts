@@ -449,7 +449,7 @@ const queryEditorConfiguration: IConfigurationNode = {
 		},
 		'queryEditor.results.copyHeaders.delimiter': {
 			'type': 'string',
-			'description': localize('queryEditor.results.copyHeaders.delimeter', "The custom delimiter to use between result headers when copying"),
+			'description': localize('queryEditor.results.copyHeaders.delimiter', "The custom delimiter to use between result headers when copying"),
 			'default': '\t'
 		},
 		'queryEditor.messages.showBatchTime': {
