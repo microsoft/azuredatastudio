@@ -26,6 +26,14 @@ export interface IGridDataProvider {
 	copyResults(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void>;
 
 	/**
+	 * Sends a copy request to copy table headers to the clipboard
+	 * @param selection The selection range to copy
+	 * @param delimiter The delimiter to separate column headers
+	 * @param columns [Optional]: The data columns associated with the table component
+	 */
+	copyHeaders(selection: Slick.Range[], delimiter: string, columns?: Slick.Column<any>[]): Promise<void>;
+
+	/**
 	 * Gets the EOL terminator to use for this data type.
 	 */
 	getEolString(): string;
@@ -132,6 +140,66 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 	return copyString;
 }
 
+export function getTableHeaderString(provider: IGridDataProvider, selection: Slick.Range[], delimiter: string, columns?: Slick.Column<any>[]): string {
+	let headers: Map<number, string> = new Map(); // Maps a column index -> header
+
+	if (selection.length > 0) {
+		selection.forEach((range) => {
+			let startCol = range.fromCell;
+			let columnHeaders = provider.getColumnHeaders(range);
+			if (columnHeaders !== undefined) {
+				let idx = 0;
+				for (let header of columnHeaders) {
+					headers.set(startCol + idx, header);
+					idx++;
+				}
+			}
+		});
+	}
+	else if (columns) {
+		columns.forEach((column, index) => {
+			if (index === 0) {
+				return;
+			}
+
+			let columnHeader = column.name;
+			if (columnHeader?.includes('&quot;')) {
+				columnHeader = columnHeader.replace(/&quot;/g, '\"');
+			}
+
+			headers.set(index, (columnHeader ? columnHeader : ''));
+		});
+	}
+
+	const sortResults = (e1: [number, any], e2: [number, any]) => {
+		return e1[0] - e2[0];
+	};
+	headers = new Map([...headers].sort(sortResults));
+
+	let columnNameFormatter = (colName: string | undefined): string => colName ? colName : '';
+
+	// Removes all spaces in case users configure delimiter as ', '
+	if (delimiter.replace(/\s/g, "") === ',') {
+		columnNameFormatter = (colName: string | undefined): string => {
+			if (colName?.includes(',') || colName?.includes('\n')) {
+				return `\"${colName}\"`;
+			}
+			else if (colName?.includes('\"')) {
+				// "/g" flag replaces all occurances of double quotes with two double quotes
+				const formattedName = colName.replace(/"/g, '\"\"');
+				return `\"${formattedName}\"`;
+			}
+
+			return colName ? colName : '';
+		};
+	}
+
+	const copyString = Array.from(headers.values())
+		.map(columnNameFormatter)
+		.join(delimiter);
+
+	return copyString;
+}
 
 function removeNewLines(inputString: string): string {
 	// This regex removes all newlines in all OS types

@@ -23,7 +23,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { getChartMaxRowCount, notifyMaxRowCountExceeded } from 'sql/workbench/contrib/charts/browser/utils';
 import { IEncodingSupport } from 'vs/workbench/services/textfile/common/textfiles';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
@@ -128,36 +127,15 @@ export class CopyHeadersAction extends Action {
 	private static LABEL = localize('copyHeaders', 'Copy Headers');
 
 	constructor(
-		@IClipboardService private clipboardService: IClipboardService,
 		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super(CopyHeadersAction.ID, CopyHeadersAction.LABEL);
 	}
 
 	public override async run(context: IGridActionContext): Promise<void> {
-		let columnFormatterCallback = (col: Slick.Column<any>): string => col.name ? col.name : '';
-
-		const headerDelimiter = this.configurationService.getValue<string>('queryEditor.results.copyHeaders.delimeter');
-		if (headerDelimiter === ',') {
-			columnFormatterCallback = (col: Slick.Column<any>): string => {
-				if (col.name?.includes(',') || col.name?.includes('\n')) {
-					return `\"${col.name}\"`;
-				}
-				else if (col.name?.includes('&quot;')) {
-					// "/g" flag replaces all occurances of "&quot;" with two double quotes
-					const formattedName = col.name.replace(/&quot;/g, '\"\"');
-					return `\"${formattedName}\"`;
-				}
-
-				return col.name ? col.name : '';
-			};
-		}
-
-		const columnHeaders = context.table.columns.slice(1, context.table.columns.length)
-			.map(columnFormatterCallback)
-			.join(headerDelimiter);
-
-		await this.clipboardService.writeText(columnHeaders);
+		const selection = mapForNumberColumn(context.selection);
+		const delimiter = this.configurationService.getValue<string>('queryEditor.results.copyHeaders.delimeter');
+		await context.gridDataProvider.copyHeaders(selection, delimiter, context.table.columns);
 	}
 }
 

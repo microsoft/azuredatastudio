@@ -6,7 +6,7 @@
 import { OnInit, Component, Input, Inject, ViewChild, ElementRef, ChangeDetectorRef, forwardRef } from '@angular/core';
 import * as azdata from 'azdata';
 
-import { IGridDataProvider, getResultsString } from 'sql/workbench/services/query/common/gridDataProvider';
+import { IGridDataProvider, getResultsString, getTableHeaderString } from 'sql/workbench/services/query/common/gridDataProvider';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -409,6 +409,19 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		try {
 			let results = await getResultsString(this, selection, includeHeaders, tableView);
 			this._clipboardService.writeText(results);
+		} catch (error) {
+			this._notificationService.error(localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
+		}
+	}
+
+	copyHeaders(selection: Slick.Range[], delimiter: string, columns?: Slick.Column<any>[]): Promise<void> {
+		return this.copyHeadersAsync(selection, delimiter, columns);
+	}
+
+	private async copyHeadersAsync(selection: Slick.Range[], delimiter: string, columns?: Slick.Column<any>[]): Promise<void> {
+		try {
+			const results = getTableHeaderString(this, selection, delimiter, columns);
+			await this._clipboardService.writeText(results);
 		} catch (error) {
 			this._notificationService.error(localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
 		}
