@@ -10,9 +10,9 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 
 |Platform |Type             |Download |
 | --------|-----------------|-------- |
-|Windows  |User Installer   |[64 bit][win-user]&emsp;[ARM][in-win-user-arm64] |
-|         |System Installer |[64 bit][win-system]&emsp;[ARM][in-win-system-arm64] |
-|         |.zip             |[64 bit][win-zip]&emsp;[ARM][in-win-zip-arm64] |
+|Windows  |User Installer   |[64 bit][win-user]&emsp;[ARM][win-user-arm64] |
+|         |System Installer |[64 bit][win-system]&emsp;[ARM][win-system-arm64] |
+|         |.zip             |[64 bit][win-zip]&emsp;[ARM][win-zip-arm64] |
 |Linux    |.tar.gz          |[64 bit][linux-zip] |
 |         |.deb             |[64 bit][linux-deb] |
 |         |.rpm             |[64 bit][linux-rpm] |
