@@ -563,9 +563,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					options.showFirewallRuleOnError = false;
 					return this.connectWithOptions(connection, uri, options, callbacks);
 				} else {
-					return this.handleOtherError(connection, connectionResult, options).then(success => {
+					return this._errorDiagnosticsService.checkErrorCode(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName).then(success => {
 						if (success) {
-							//For now handle connection errors inside handleOtherError.
+							//For now handle connection errors in provider.
 							connectionResult.errorHandled = true;
 							return connectionResult;
 						}
@@ -597,21 +597,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private handleOtherError(connection: interfaces.IConnectionProfile, connectionResult: IConnectionResult, options: IConnectionCompletionOptions): Promise<boolean> {
-		return this._errorDiagnosticsService.checkErrorCode(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName).then(response => {
-			if (response.errorAction === Constants.expiredPasswordErrorCode) {
-				this._logService.info(`change password error code returned!`);
-				this.launchChangePasswordDialog(connection, options.params)
-				return true;
-			} else {
-				return false;
-			}
-		});
-	}
-
-	public launchChangePasswordDialog(profile: interfaces.IConnectionProfile, params: INewConnectionParams): void {
+	public launchChangePasswordDialog(profile: interfaces.IConnectionProfile): void {
 		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
-		dialog.open(profile, params);
+		dialog.open(profile)
 	}
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {

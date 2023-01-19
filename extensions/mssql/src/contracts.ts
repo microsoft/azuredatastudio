@@ -1251,25 +1251,6 @@ export namespace ExecutionPlanComparisonRequest {
 
 // ------------------------------- < Execution Plan > ------------------------------------
 
-// ------------------------------- < Error Diagnostics > ------------------------------------
-
-export interface ErrorDiagnosticsParameters {
-	/**
-	 * The code of the error we want to check.
-	 */
-	errorCode: number;
-	/**
-	 * The accompanying error message.
-	 */
-	errorMessage: string;
-}
-
-export namespace DiagnosticsRequest {
-	export const type = new RequestType<ErrorDiagnosticsParameters, azdata.diagnostics.ErrorDiagnosticsResponse, void, void>('diagnostics/errorHandler');
-}
-
-// ------------------------------- < Error Diagnostics > ------------------------------------
-
 // ------------------------------- < Tde Migration > ------------------------------------
 
 export namespace TdeMigrateRequest {

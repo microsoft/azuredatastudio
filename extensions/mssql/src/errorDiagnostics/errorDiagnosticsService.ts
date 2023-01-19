@@ -6,18 +6,18 @@
 import * as azdata from 'azdata';
 import { ISqlOpsFeature, SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
-import * as contracts from '../contracts';
+//import * as contracts from '../contracts';
 import { AppContext } from '../appContext';
 import { ServerCapabilities, ClientCapabilities, RPCMessageType } from 'vscode-languageclient';
 import { Disposable } from 'vscode';
+import * as ErrorDiagnosticsConstants from './errorDiagnosticsConstants';
 
 export const diagnosticsId = 'azurediagnostics'
 export const serviceName = 'AzureDiagnostics';
 
 export class ErrorDiagnosticsService extends SqlOpsFeature<any> {
-	private static readonly messagesTypes: RPCMessageType[] = [
-		contracts.DiagnosticsRequest.type,
-	];
+	//No contracts for now, but can be added later.
+	private static readonly messagesTypes: RPCMessageType[] = [];
 
 	public static asFeature(context: AppContext): ISqlOpsFeature {
 		return class extends ErrorDiagnosticsService {
@@ -35,16 +35,14 @@ export class ErrorDiagnosticsService extends SqlOpsFeature<any> {
 			}
 
 			protected override registerProvider(options: any): Disposable {
-				const client = this._client;
+				let handleErrorCode = (errorCode: number, errorMessage: string): Thenable<boolean> => {
+					if (errorCode = ErrorDiagnosticsConstants.MssqlPasswordResetCode) {
 
-				let handleErrorCode = (errorCode: number, errorMessage: string): Thenable<azdata.diagnostics.ErrorDiagnosticsResponse> => {
-					const params: contracts.ErrorDiagnosticsParameters = { errorCode, errorMessage };
-					try {
-						return client.sendRequest(contracts.DiagnosticsRequest.type, params);
+						//azdata.connection.openChangePasswordDialog(additionalParameters.profile, additionalParameters.options);
+						return Promise.resolve(true);
 					}
-					catch (e) {
-						client.logFailedRequest(contracts.DiagnosticsRequest.type, e);
-						return Promise.reject(e);
+					else {
+						return Promise.resolve(false);
 					}
 				}
 

@@ -333,6 +333,13 @@ export interface IConnectionManagementService {
 	 * @returns Promise with a boolean value indicating whether the user has accepted the suggestion.
 	 */
 	handleUnsupportedProvider(providerId: string): Promise<boolean>;
+
+	/**
+	 * Handle the unsupported provider scenario.
+	 * @param providerId The provider ID
+	 * @returns Promise with a boolean value indicating whether the user has accepted the suggestion.
+	 */
+	launchChangePasswordDialog?(profile: IConnectionProfile): void;
 }
 
 export enum RunQueryOnConnectionMode {

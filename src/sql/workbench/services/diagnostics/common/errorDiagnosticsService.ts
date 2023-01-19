@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { diagnostics } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as azdata from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
@@ -16,7 +15,7 @@ export interface IErrorDiagnosticsService {
 	/**
 	 * Register a Diagnostics object for a provider
 	 */
-	registerDiagnostics(providerId: string, diagnostics: azdata.Diagnostics): void;
+	registerDiagnostics(providerId: string, diagnostics: azdata.diagnostics.ErrorDiagnostics): void;
 
 	/**
 	 * Unregister a Diagnostics object for a provider
@@ -29,5 +28,5 @@ export interface IErrorDiagnosticsService {
 	 * @param errorMessage Error message that describes the problem in detail.
 	 * @param providerId Identifies what provider the error comes from.
 	 */
-	checkErrorCode(errorCode: number, errorMessage: string, providerId: string): Promise<diagnostics.ErrorDiagnosticsResponse>;
+	checkErrorCode(errorCode: number, errorMessage: string, providerId: string): Promise<boolean>;
 }

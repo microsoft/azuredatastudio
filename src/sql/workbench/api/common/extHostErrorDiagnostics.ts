@@ -25,12 +25,12 @@ export class ExtHostErrorDiagnostics extends ExtHostErrorDiagnosticsShape {
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	// - MAIN THREAD AVAILABLE METHODS /////////////////////////////////////
-	public override $handleErrorCode(handle: number, errorCode: number, errorMessage: string): Thenable<azdata.diagnostics.ErrorDiagnosticsResponse> {
-		return this._withProvider(handle, (provider: azdata.Diagnostics) => provider.handleErrorCode(errorCode, errorMessage));
+	public override $handleErrorCode(handle: number, errorCode: number, errorMessage: string): Thenable<boolean> {
+		return this._withProvider(handle, (provider: azdata.diagnostics.ErrorDiagnostics) => provider.handleErrorCode(errorCode, errorMessage));
 	}
 
 	// - EXTENSION HOST AVAILABLE METHODS //////////////////////////////////
-	public $registerDiagnostics(providerMetadata: azdata.ResourceProviderMetadata, diagnostics: azdata.Diagnostics): Disposable {
+	public $registerDiagnostics(providerMetadata: azdata.ResourceProviderMetadata, diagnostics: azdata.diagnostics.ErrorDiagnostics): Disposable {
 		let self = this;
 
 		// Look for any account providers that have the same provider ID
@@ -71,7 +71,7 @@ export class ExtHostErrorDiagnostics extends ExtHostErrorDiagnosticsShape {
 		return this._handlePool++;
 	}
 
-	private _withProvider<R>(handle: number, callback: (provider: azdata.Diagnostics) => Thenable<R>): Thenable<R> {
+	private _withProvider<R>(handle: number, callback: (provider: azdata.diagnostics.ErrorDiagnostics) => Thenable<R>): Thenable<R> {
 		let provider = this._providers[handle];
 		if (provider === undefined) {
 			return Promise.reject(new Error(`Provider ${handle} not found.`));
@@ -82,5 +82,5 @@ export class ExtHostErrorDiagnostics extends ExtHostErrorDiagnosticsShape {
 
 interface DiagnosticsWithMetadata {
 	metadata: azdata.ResourceProviderMetadata;
-	provider: azdata.Diagnostics;
+	provider: azdata.diagnostics.ErrorDiagnostics;
 }
