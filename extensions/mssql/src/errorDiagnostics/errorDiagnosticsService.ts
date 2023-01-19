@@ -6,7 +6,6 @@
 import * as azdata from 'azdata';
 import { ISqlOpsFeature, SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
-//import * as contracts from '../contracts';
 import { AppContext } from '../appContext';
 import { ServerCapabilities, ClientCapabilities, RPCMessageType } from 'vscode-languageclient';
 import { Disposable } from 'vscode';
@@ -57,6 +56,7 @@ export class ErrorDiagnosticsService extends SqlOpsFeature<any> {
 				let handleErrorCode = async (errorCode: number, errorMessage: string): Promise<boolean> => {
 					if (errorCode = ErrorDiagnosticsConstants.MssqlPasswordResetCode) {
 						let profile = await azdata.connection.getConnectionProfileFromError();
+						// Need to convert back to IConnectionProfile.
 						let restoredProfile = this.restoreProfileFormat(profile);
 						azdata.connection.openChangePasswordDialog(restoredProfile);
 						return Promise.resolve(true);

@@ -183,6 +183,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public $openChangePasswordDialog(initialConnectionProfile: IConnectionProfile): void {
+		// Need to have access to getOptionsKey, so recreate profile from details.
 		let profile = new ConnectionProfile(this._capabilitiesService, initialConnectionProfile);
 		this._connectionManagementService.launchChangePasswordDialog(profile);
 	}
@@ -193,6 +194,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			return Promise.resolve(undefined);
 		}
 
+		// Need to convert profile into azdata friendly format
 		let connection: azdata.connection.ConnectionProfile = {
 			providerId: profile.providerName,
 			connectionId: profile.id,
