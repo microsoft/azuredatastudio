@@ -486,7 +486,7 @@ declare module 'azdata' {
 		/**
 		 * Gets the connection profile and params from the last error (required to avoid circular dependencies)
 		 */
-		export function getConnectionProfileFromError(): Thenable<IConnectionProfile>;
+		export function getConnectionProfileFromError(): Thenable<ConnectionProfile>;
 	}
 
 	/*

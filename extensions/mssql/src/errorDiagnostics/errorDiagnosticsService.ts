@@ -34,13 +34,32 @@ export class ErrorDiagnosticsService extends SqlOpsFeature<any> {
 				});
 			}
 
+			private restoreProfileFormat(profile: azdata.connection.ConnectionProfile): azdata.IConnectionProfile {
+				return {
+					providerName: profile.providerId,
+					id: profile.connectionId,
+					connectionName: profile.connectionName,
+					serverName: profile.serverName,
+					databaseName: profile.databaseName,
+					userName: profile.userName,
+					password: profile.password,
+					authenticationType: profile.authenticationType,
+					savePassword: profile.savePassword,
+					groupFullName: profile.groupFullName,
+					groupId: profile.groupId,
+					saveProfile: profile.savePassword,
+					azureTenantId: profile.azureTenantId,
+					options: profile.options
+				};
+			}
+
 			protected override registerProvider(options: any): Disposable {
-				let handleErrorCode = (errorCode: number, errorMessage: string): Thenable<boolean> => {
+				let handleErrorCode = async (errorCode: number, errorMessage: string): Promise<boolean> => {
 					if (errorCode = ErrorDiagnosticsConstants.MssqlPasswordResetCode) {
-						return azdata.connection.getConnectionProfileFromError().then(profile => {
-							azdata.connection.openChangePasswordDialog(profile);
-							return Promise.resolve(true);
-						});
+						let profile = await azdata.connection.getConnectionProfileFromError();
+						let restoredProfile = this.restoreProfileFormat(profile);
+						azdata.connection.openChangePasswordDialog(restoredProfile);
+						return Promise.resolve(true);
 					}
 					else {
 						return Promise.resolve(false);

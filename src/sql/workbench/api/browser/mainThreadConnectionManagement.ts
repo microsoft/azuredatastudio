@@ -183,11 +183,33 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public $openChangePasswordDialog(initialConnectionProfile: IConnectionProfile): void {
-		this._connectionManagementService.launchChangePasswordDialog(initialConnectionProfile);
+		let profile = new ConnectionProfile(this._capabilitiesService, initialConnectionProfile);
+		this._connectionManagementService.launchChangePasswordDialog(profile);
 	}
 
-	public $getConnectionProfileFromError(): Thenable<IConnectionProfile> {
-		return Promise.resolve(this._connectionManagementService.getConnectionProfileFromError());
+	public $getConnectionProfileFromError(): Thenable<azdata.connection.ConnectionProfile> {
+		let profile = this._connectionManagementService.getConnectionProfileFromError();
+		if (!profile) {
+			return Promise.resolve(undefined);
+		}
+
+		let connection: azdata.connection.ConnectionProfile = {
+			providerId: profile.providerName,
+			connectionId: profile.id,
+			connectionName: profile.connectionName,
+			serverName: profile.serverName,
+			databaseName: profile.databaseName,
+			userName: profile.userName,
+			password: profile.password,
+			authenticationType: profile.authenticationType,
+			savePassword: profile.savePassword,
+			groupFullName: profile.groupFullName,
+			groupId: profile.groupId,
+			saveProfile: profile.savePassword,
+			azureTenantId: profile.azureTenantId,
+			options: profile.options
+		};
+		return Promise.resolve(connection);
 	}
 
 	public async $listDatabases(connectionId: string): Promise<string[]> {
