@@ -82,6 +82,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _connectionStatusManager: ConnectionStatusManager;
 	private _connectionsGotUnsupportedVersionWarning: string[] = [];
 
+	//Saved connection profile to be accessed by providers in case of error.
+	private _connectionProfileDuringError: interfaces.IConnectionProfile
+
 	private static readonly CONNECTION_MEMENTO = 'ConnectionManagement';
 	private static readonly _azureResources: AzureResource[] =
 		[AzureResource.ResourceManagement, AzureResource.Sql, AzureResource.OssRdbms, AzureResource.AzureLogAnalytics, AzureResource.AzureKusto];
@@ -563,7 +566,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					options.showFirewallRuleOnError = false;
 					return this.connectWithOptions(connection, uri, options, callbacks);
 				} else {
+					this._connectionProfileDuringError = connection;
 					return this._errorDiagnosticsService.checkErrorCode(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName).then(success => {
+						this._connectionProfileDuringError = undefined;
 						if (success) {
 							//For now handle connection errors in provider.
 							connectionResult.errorHandled = true;
@@ -600,6 +605,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public launchChangePasswordDialog(profile: interfaces.IConnectionProfile): void {
 		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
 		dialog.open(profile)
+	}
+
+	// Used by providers needing access to the profile that errored.
+	public getConnectionProfileFromError(): interfaces.IConnectionProfile {
+		return this._connectionProfileDuringError;
 	}
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {

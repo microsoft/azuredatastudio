@@ -435,14 +435,14 @@ declare module 'azdata' {
 
 	export namespace diagnostics {
 		/**
-		 * Diagnostics object for handling error codes.
+		 * Diagnostics object for handling error codes for a provider.
 		 */
 		export interface ErrorDiagnostics {
 			handleErrorCode(errorCode: number, errorMessage: string): Thenable<boolean>;
 		}
 
 		/**
-		 * Registers a Diagnostics object that can support a provider.
+		 * Registers provider with instance of Diagnostics implementation.
 		 */
 		export function registerDiagnostics(providerMetadata: ResourceProviderMetadata, diagnostics: ErrorDiagnostics): vscode.Disposable;
 	}
@@ -486,7 +486,7 @@ declare module 'azdata' {
 		/**
 		 * Gets the connection profile and params from the last error (required to avoid circular dependencies)
 		 */
-		export function getErrorProfile(): IConnectionProfile
+		export function getConnectionProfileFromError(): Thenable<IConnectionProfile>;
 	}
 
 	/*

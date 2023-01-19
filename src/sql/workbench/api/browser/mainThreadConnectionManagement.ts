@@ -183,7 +183,11 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public $openChangePasswordDialog(initialConnectionProfile: IConnectionProfile): void {
-		this._connectionManagementService.launchChangePasswordDialog(initialConnectionProfile)
+		this._connectionManagementService.launchChangePasswordDialog(initialConnectionProfile);
+	}
+
+	public $getConnectionProfileFromError(): Thenable<IConnectionProfile> {
+		return Promise.resolve(this._connectionManagementService.getConnectionProfileFromError());
 	}
 
 	public async $listDatabases(connectionId: string): Promise<string[]> {

@@ -37,9 +37,10 @@ export class ErrorDiagnosticsService extends SqlOpsFeature<any> {
 			protected override registerProvider(options: any): Disposable {
 				let handleErrorCode = (errorCode: number, errorMessage: string): Thenable<boolean> => {
 					if (errorCode = ErrorDiagnosticsConstants.MssqlPasswordResetCode) {
-
-						//azdata.connection.openChangePasswordDialog(additionalParameters.profile, additionalParameters.options);
-						return Promise.resolve(true);
+						return azdata.connection.getConnectionProfileFromError().then(profile => {
+							azdata.connection.openChangePasswordDialog(profile);
+							return Promise.resolve(true);
+						});
 					}
 					else {
 						return Promise.resolve(false);
