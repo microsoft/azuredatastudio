@@ -14,7 +14,7 @@ import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as utils from '../api/utils';
 import { azureResource } from 'azurecore';
 import { AzureSqlDatabaseServer, SqlVMServer } from '../api/azure';
-import { collectTargetLogins, isSysAdmin } from '../api/sqlUtils';
+import { collectSourceLogins, collectTargetLogins, isSysAdmin, LoginTableInfo } from '../api/sqlUtils';
 
 export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -609,9 +609,18 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 							...await collectTargetLogins(
 								targetDatabaseServer,
 								userName,
-								password));
+								password,
+								this.migrationStateModel.isWindowsAuthMigrationSupported));
 						this.migrationStateModel._loginMigrationModel.collectedTargetLogins = true;
 						this.migrationStateModel._loginMigrationModel.loginsOnTarget = loginsOnTarget;
+
+						// Collect source login info here, as it will speed up loading the next page
+						const sourceLogins: LoginTableInfo[] = [];
+						sourceLogins.push(...await collectSourceLogins(
+							this.migrationStateModel.sourceConnectionId,
+							this.migrationStateModel.isWindowsAuthMigrationSupported));
+						this.migrationStateModel._loginMigrationModel.collectedSourceLogins = true;
+						this.migrationStateModel._loginMigrationModel.loginsOnSource = sourceLogins;
 						await this._showConnectionResults(loginsOnTarget);
 					} catch (error) {
 						this.wizard.message = {

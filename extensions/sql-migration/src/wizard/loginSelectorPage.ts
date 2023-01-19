@@ -24,6 +24,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	private _disposables: vscode.Disposable[] = [];
 	private _isCurrentPage: boolean;
 	private _refreshResultsInfoBox!: azdata.InfoBoxComponent;
+	private _windowsAuthInfoBox!: azdata.InfoBoxComponent;
 	private _refreshButton!: azdata.ButtonComponent;
 	private _refreshLoading!: azdata.LoadingComponent;
 	private _filterTableValue!: string;
@@ -72,6 +73,10 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			return true;
 		});
 
+		// Dispaly windows auth info box if windows auth is not supported
+		await utils.updateControlDisplay(this._windowsAuthInfoBox, !this.migrationStateModel.isWindowsAuthMigrationSupported);
+
+		// Refresh login list
 		await this._loadLoginList(false);
 
 		// load unfiltered table list and pre-select list of logins saved in state
@@ -175,12 +180,12 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
 
-		// const windowsAuthInfoBox = this._view.modelBuilder.infoBox()
-		// 	.withProps({
-		// 		style: 'information',
-		// 		text: constants.LOGIN_MIGRATIONS_SELECT_LOGINS_WINDOWS_AUTH_WARNING,
-		// 		CSSStyles: { ...styles.BODY_CSS }
-		// 	}).component();
+		this._windowsAuthInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				style: 'information',
+				text: constants.LOGIN_MIGRATIONS_SELECT_LOGINS_WINDOWS_AUTH_WARNING,
+				CSSStyles: { ...styles.BODY_CSS, 'display': 'none', }
+			}).component();
 
 
 		this._refreshButton = this._view.modelBuilder.button()
@@ -317,7 +322,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				'margin': '-15px 28px 0px 28px'
 			}
 		}).component();
-		// flex.addItem(windowsAuthInfoBox, { flex: '0 0 auto' });
+		flex.addItem(this._windowsAuthInfoBox, { flex: '0 0 auto' });
 		flex.addItem(refreshContainer, { flex: '0 0 auto' });
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._loginCount, { flex: '0 0 auto' });
@@ -332,7 +337,9 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 		// execute a query against the source to get the logins
 		try {
-			sourceLogins.push(...await collectSourceLogins(stateMachine.sourceConnectionId));
+			sourceLogins.push(...await collectSourceLogins(
+				stateMachine.sourceConnectionId,
+				stateMachine.isWindowsAuthMigrationSupported));
 			stateMachine._loginMigrationModel.collectedSourceLogins = true;
 			stateMachine._loginMigrationModel.loginsOnSource = sourceLogins;
 		} catch (error) {
@@ -354,7 +361,11 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		// execute a query against the target to get the logins
 		try {
 			if (this.isTargetInstanceSet()) {
-				targetLogins.push(...await collectTargetLogins(stateMachine._targetServerInstance as AzureSqlDatabaseServer, stateMachine._targetUserName, stateMachine._targetPassword));
+				targetLogins.push(...await collectTargetLogins(
+					stateMachine._targetServerInstance as AzureSqlDatabaseServer,
+					stateMachine._targetUserName,
+					stateMachine._targetPassword,
+					stateMachine.isWindowsAuthMigrationSupported));
 				stateMachine._loginMigrationModel.collectedTargetLogins = true;
 				stateMachine._loginMigrationModel.loginsOnTarget = targetLogins;
 			}

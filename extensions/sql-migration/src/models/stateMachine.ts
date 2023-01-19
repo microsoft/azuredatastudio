@@ -1416,6 +1416,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		}
 		return "";
 	}
+
+	public get isWindowsAuthMigrationSupported(): boolean {
+		console.log("targetType", this._targetType);
+		console.log("match", this._targetType === MigrationTargetType.SQLMI);
+		return this._targetType === MigrationTargetType.SQLMI;
+	}
 }
 
 export interface ServerAssessment {
