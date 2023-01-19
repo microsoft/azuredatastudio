@@ -134,7 +134,7 @@
       {
         "command": "bigDataClusters.command.connectController",
         "title": "%command.connectController.title%",
-        "icon": "$(disconnect)"
+        "icon": "$(plug)"
       },
       {
         "command": "bigDataClusters.command.removeController",
