@@ -333,7 +333,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			height: '100%',
 		}).withProps({
 			CSSStyles: {
-				'margin': '-15px 28px 0px 28px'
+				'margin': '-20px 28px 0px 28px'
 			}
 		}).component();
 		flex.addItem(this._windowsAuthInfoBox, { flex: '0 0 auto' });
@@ -341,7 +341,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._loginCount, { flex: '0 0 auto' });
 		flex.addItem(this._loginSelectorTable);
-		flex.addItem(this.createAadDomainNameComponent(), { flex: '0 0 auto' });
+		flex.addItem(this.createAadDomainNameComponent(), { flex: '0 0 auto', CSSStyles: { 'margin-top': '8px' } });
 		return flex;
 	}
 
@@ -483,7 +483,9 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		});
 
 		// Display AAD Domain Name input box if windows logins selected, else disable
-		await utils.updateControlDisplay(this._aadDomainNameContainer, this.selectedWindowsLogins());
+		const hasSelectedWindowsLogins = this.selectedWindowsLogins()
+		await utils.updateControlDisplay(this._aadDomainNameContainer, hasSelectedWindowsLogins);
+		await this._loginSelectorTable.updateProperty("height", hasSelectedWindowsLogins ? 600 : 650);
 
 		this.migrationStateModel._loginsForMigration = selectedLogins;
 		this.updateNextButton();
