@@ -28,6 +28,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	private _refreshButton!: azdata.ButtonComponent;
 	private _refreshLoading!: azdata.LoadingComponent;
 	private _filterTableValue!: string;
+	private _aadDomainNameContainer!: azdata.FlexContainer;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE), migrationStateModel);
@@ -60,9 +61,11 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				text: '',
 				level: azdata.window.MessageLevel.Error
 			};
+
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
 			}
+
 			if (this.selectedLogins().length === 0) {
 				this.wizard.message = {
 					text: constants.SELECT_LOGIN_TO_CONTINUE,
@@ -70,6 +73,15 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				};
 				return false;
 			}
+
+			if (this.selectedWindowsLogins() && !this.migrationStateModel._aadDomainName) {
+				this.wizard.message = {
+					text: constants.ENTER_AAD_DOMAIN_NAME,
+					level: azdata.window.MessageLevel.Error
+				};
+				return false;
+			}
+
 			return true;
 		});
 
@@ -138,13 +150,15 @@ export class LoginSelectorPage extends MigrationWizardPage {
 					this.migrationStateModel._aadDomainName = value ?? '';
 				}));
 
-		return this._view.modelBuilder.flexContainer()
+		this._aadDomainNameContainer = this._view.modelBuilder.flexContainer()
 			.withItems([
 				aadDomainNameLabel,
 				aadDomainNameInputBox])
 			.withLayout({ flexFlow: 'column' })
-			.withProps({ CSSStyles: { 'margin': '10px 0px 0px 0px' } })
+			.withProps({ CSSStyles: { 'margin': '10px 0px 0px 0px', 'display': 'none' } })
 			.component();
+
+		return this._aadDomainNameContainer;
 	}
 
 	@debounce(500)
@@ -456,6 +470,10 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			|| [];
 	}
 
+	private selectedWindowsLogins(): boolean {
+		return this.selectedLogins().some(logins => logins.loginType.toLocaleLowerCase() === constants.LOGIN_TYPE_WINDOWS_LOGIN.toLocaleLowerCase());
+	}
+
 	private async updateValuesOnSelection() {
 		const selectedLogins = this.selectedLogins() || [];
 		await this._loginCount.updateProperties({
@@ -463,6 +481,9 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				selectedLogins.length,
 				this._loginSelectorTable.data?.length || 0)
 		});
+
+		// Display AAD Domain Name input box if windows logins selected, else disable
+		await utils.updateControlDisplay(this._aadDomainNameContainer, this.selectedWindowsLogins());
 
 		this.migrationStateModel._loginsForMigration = selectedLogins;
 		this.updateNextButton();
