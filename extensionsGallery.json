@@ -4874,7 +4874,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/Azure/azure-cosmosdb-ads-extension"
+									"value": "https://github.com/richardtallent/column-aligner"
 								}
 							]
 						}
