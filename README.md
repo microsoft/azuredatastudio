@@ -10,9 +10,9 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 
 |Platform |Type             |Download |
 | --------|-----------------|-------- |
-|Windows  |User Installer   |[64 bit][win-user] |
-|         |System Installer |[64 bit][win-system] |
-|         |.zip             |[64 bit][win-zip] |
+|Windows  |User Installer   |[64 bit][win-user]&emsp;[ARM][in-win-user-arm64] |
+|         |System Installer |[64 bit][win-system]&emsp;[ARM][in-win-system-arm64] |
+|         |.zip             |[64 bit][win-zip]&emsp;[ARM][in-win-zip-arm64] |
 |Linux    |.tar.gz          |[64 bit][linux-zip] |
 |         |.deb             |[64 bit][linux-deb] |
 |         |.rpm             |[64 bit][linux-rpm] |
@@ -21,6 +21,9 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 [win-user]: https://go.microsoft.com/fwlink/?linkid=2215273
 [win-system]: https://go.microsoft.com/fwlink/?linkid=2215525
 [win-zip]: https://go.microsoft.com/fwlink/?linkid=2215526
+[win-user-arm64]: https://go.microsoft.com/fwlink/?linkid=2222660
+[win-system-arm64]: https://go.microsoft.com/fwlink/?linkid=2222849
+[win-zip-arm64]: https://go.microsoft.com/fwlink/?linkid=2222850
 [osx-universal]: https://go.microsoft.com/fwlink/?linkid=2215527
 [osx-zip]: https://go.microsoft.com/fwlink/?linkid=2215420
 [osx-arm64]: https://go.microsoft.com/fwlink/?linkid=2215346
