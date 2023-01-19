@@ -482,8 +482,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		let actionBarContainer = document.createElement('div');
 
 		// Create a horizontal actionbar if orientation passed in is HORIZONTAL.
-		// The Horizontal actionbar gets created up top here so that it will appear above the results table.
-		// A Vertical actionbar is supposed to come after the results table, so it gets created later down below.
+		// The horizontal actionbar gets created up top here so that it will appear above the results table.
+		// A vertical actionbar is supposed to come after the results table, so it gets created later down below.
 		if (this.options.actionOrientation === ActionsOrientation.HORIZONTAL) {
 			actionBarContainer.className = 'grid-panel action-bar horizontal';
 			this.container.appendChild(actionBarContainer);
