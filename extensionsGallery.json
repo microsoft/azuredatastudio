@@ -4763,6 +4763,71 @@
 					],
 					"statistics": [],
 					"flags": ""
+				},
+				{
+					"extensionId": "95",
+					"extensionName": "mongodb-vscode",
+					"displayName": "MongoDB Atlas for Azure Data Studio",
+					"shortDescription": "Connect to MongoDB and Atlas directly from your Azure Data Studio environment, navigate your databases and collections, inspect your schema and use playgrounds to prototype queries and aggregations.",
+					"publisher": {
+						"displayName": "MongoDB",
+						"publisherId": "mongodb",
+						"publisherName": "MongoDB"
+					},
+					"versions": [
+						{
+							"version": "0.9.3",
+							"lastUpdated": "04/26/2022",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/mongodb/mongodb.mongodb-vscode-0.9.3.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v0.9.3/images/mongodb.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v0.9.3/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
+									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v0.9.3/CHANGELOG.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v0.9.3/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v0.9.3/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "^1.65.2"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/mongodb-js/vscode"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -4771,7 +4836,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 78
+							"count": 79
 						}
 					]
 				}
