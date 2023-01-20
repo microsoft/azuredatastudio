@@ -2,7 +2,7 @@
 	"name": "ads-language-pack-pt-br",
 	"displayName": "Portuguese (Brazil) Language Pack for Azure Data Studio",
 	"description": "Language pack extension for Portuguese (Brazil)",
-	"version": "1.41.0",
+	"version": "1.41.1",
 	"publisher": "Microsoft",
 	"repository": {
 		"type": "git",
@@ -37,12 +37,24 @@
 						"path": "./translations/extensions/configuration-editing.i18n.json"
 					},
 					{
+						"id": "vscode.csharp",
+						"path": "./translations/extensions/csharp.i18n.json"
+					},
+					{
+						"id": "vscode.dart",
+						"path": "./translations/extensions/dart.i18n.json"
+					},
+					{
 						"id": "vscode.docker",
 						"path": "./translations/extensions/docker.i18n.json"
 					},
 					{
-						"id": "vscode.git-ui",
-						"path": "./translations/extensions/git-ui.i18n.json"
+						"id": "vscode.fsharp",
+						"path": "./translations/extensions/fsharp.i18n.json"
+					},
+					{
+						"id": "vscode.git-base",
+						"path": "./translations/extensions/git-base.i18n.json"
 					},
 					{
 						"id": "vscode.git",
@@ -57,8 +69,16 @@
 						"path": "./translations/extensions/github.i18n.json"
 					},
 					{
+						"id": "vscode.html",
+						"path": "./translations/extensions/html.i18n.json"
+					},
+					{
 						"id": "vscode.image-preview",
 						"path": "./translations/extensions/image-preview.i18n.json"
+					},
+					{
+						"id": "vscode.javascript",
+						"path": "./translations/extensions/javascript.i18n.json"
 					},
 					{
 						"id": "vscode.json-language-features",
@@ -69,12 +89,20 @@
 						"path": "./translations/extensions/json.i18n.json"
 					},
 					{
+						"id": "vscode.julia",
+						"path": "./translations/extensions/julia.i18n.json"
+					},
+					{
 						"id": "vscode.markdown-basics",
 						"path": "./translations/extensions/markdown-basics.i18n.json"
 					},
 					{
 						"id": "vscode.markdown-language-features",
 						"path": "./translations/extensions/markdown-language-features.i18n.json"
+					},
+					{
+						"id": "vscode.markdown-math",
+						"path": "./translations/extensions/markdown-math.i18n.json"
 					},
 					{
 						"id": "vscode.merge-conflict",
@@ -99,6 +127,10 @@
 					{
 						"id": "vscode.search-result",
 						"path": "./translations/extensions/search-result.i18n.json"
+					},
+					{
+						"id": "vscode.simple-browser",
+						"path": "./translations/extensions/simple-browser.i18n.json"
 					},
 					{
 						"id": "vscode.sql",
@@ -149,10 +181,6 @@
 						"path": "./translations/extensions/theme-tomorrow-night-blue.i18n.json"
 					},
 					{
-						"id": "vscode.typescript-basics",
-						"path": "./translations/extensions/typescript-basics.i18n.json"
-					},
-					{
 						"id": "vscode.xml",
 						"path": "./translations/extensions/xml.i18n.json"
 					},
@@ -187,10 +215,6 @@
 					{
 						"id": "Microsoft.azurehybridtoolkit",
 						"path": "./translations/extensions/azurehybridtoolkit.i18n.json"
-					},
-					{
-						"id": "Microsoft.big-data-cluster",
-						"path": "./translations/extensions/big-data-cluster.i18n.json"
 					},
 					{
 						"id": "Microsoft.cms",
