@@ -291,6 +291,9 @@ var AMDLoader;
             if (typeof options.isBuild !== 'boolean') {
                 options.isBuild = false;
             }
+            if (typeof options.buildForceInvokeFactory !== 'object') {
+                options.buildForceInvokeFactory = {};
+            }
             if (typeof options.paths !== 'object') {
                 options.paths = {};
             }
@@ -536,6 +539,15 @@ var AMDLoader;
          */
         Configuration.prototype.isBuild = function () {
             return this.options.isBuild;
+        };
+        Configuration.prototype.shouldInvokeFactory = function (strModuleId) {
+            if (!this.options.isBuild) {
+                // outside of a build, all factories should be invoked
+                return true;
+            }
+            // during a build, only explicitly marked or anonymous modules get their factories invoked
+            return (this.options.buildForceInvokeFactory[strModuleId]
+                || AMDLoader.Utilities.isAnonymousModule(strModuleId));
         };
         /**
          * Test if module `moduleId` is expected to be defined multiple times
@@ -1184,7 +1196,7 @@ var AMDLoader;
             }
         };
         Module._invokeFactory = function (config, strModuleId, callback, dependenciesValues) {
-            if (config.isBuild() && !AMDLoader.Utilities.isAnonymousModule(strModuleId)) {
+            if (!config.shouldInvokeFactory(strModuleId)) {
                 return {
                     returnedValue: null,
                     producedError: null

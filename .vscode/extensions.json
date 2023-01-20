@@ -4,6 +4,6 @@
 	"recommendations": [
 		"dbaeumer.vscode-eslint",
 		"EditorConfig.EditorConfig",
-		"redhat.vscode-yaml"
+		"ms-vscode.vscode-selfhost-test-provider"
 	]
 }

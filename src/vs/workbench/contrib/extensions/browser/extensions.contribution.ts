@@ -78,7 +78,8 @@ import { Event } from 'vs/base/common/event';
 import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
 import { UnsupportedExtensionsMigrationContrib } from 'vs/workbench/contrib/extensions/browser/unsupportedExtensionsMigrationContribution';
 import { isWeb } from 'vs/base/common/platform';
-import { ExtensionsCleaner } from 'vs/workbench/contrib/extensions/browser/extensionsCleaner';
+import { ExtensionStorageService } from 'vs/platform/extensionManagement/common/extensionStorage';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 // Singletons
 registerSingleton(IExtensionsWorkbenchService, ExtensionsWorkbenchService);
@@ -93,7 +94,7 @@ Registry.as<IQuickAccessRegistry>(Extensions.Quickaccess).registerQuickAccessPro
 	ctor: ManageExtensionsQuickAccessProvider,
 	prefix: ManageExtensionsQuickAccessProvider.PREFIX,
 	placeholder: localize('manageExtensionsQuickAccessPlaceholder', "Press Enter to manage extensions."),
-	helpEntries: [{ description: localize('manageExtensionsHelp', "Manage Extensions"), needsEditor: false }]
+	helpEntries: [{ description: localize('manageExtensionsHelp', "Manage Extensions") }]
 });
 
 // Editor
@@ -232,6 +233,11 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 						'pub.name': 1
 					}
 				}]
+			},
+			'extensions.experimental.useUtilityProcess': {
+				type: 'boolean',
+				description: localize('extensionsUseUtilityProcess', "When enabled, the extension host will be launched using the new UtilityProcess Electron API."),
+				default: false
 			},
 			[WORKSPACE_TRUST_EXTENSION_SUPPORT]: {
 				type: 'object',
@@ -500,7 +506,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 				ctor: InstallExtensionQuickAccessProvider,
 				prefix: InstallExtensionQuickAccessProvider.PREFIX,
 				placeholder: localize('installExtensionQuickAccessPlaceholder', "Type the name of an extension to install or search."),
-				helpEntries: [{ description: localize('installExtensionQuickAccessHelp', "Install or Search Extensions"), needsEditor: false }]
+				helpEntries: [{ description: localize('installExtensionQuickAccessHelp', "Install or Search Extensions") }]
 			});
 		}
 	}
@@ -1418,7 +1424,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 			},
 			run: async (accessor: ServicesAccessor, extensionId: string) => {
 				const clipboardService = accessor.get(IClipboardService);
-				let extension = this.extensionsWorkbenchService.local.filter(e => areSameExtensions(e.identifier, { id: extensionId }))[0]
+				const extension = this.extensionsWorkbenchService.local.filter(e => areSameExtensions(e.identifier, { id: extensionId }))[0]
 					|| (await this.extensionsWorkbenchService.getExtensions([{ id: extensionId }], CancellationToken.None))[0];
 				if (extension) {
 					const name = localize('extensionInfoName', 'Name: {0}', extension.displayName);
@@ -1636,6 +1642,16 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 
 }
 
+class ExtensionStorageCleaner implements IWorkbenchContribution {
+
+	constructor(
+		@IExtensionManagementService extensionManagementService: IExtensionManagementService,
+		@IStorageService storageService: IStorageService,
+	) {
+		ExtensionStorageService.removeOutdatedExtensionVersions(extensionManagementService, storageService);
+	}
+}
+
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 workbenchRegistry.registerWorkbenchContribution(ExtensionsContributions, LifecyclePhase.Starting);
 workbenchRegistry.registerWorkbenchContribution(StatusUpdater, LifecyclePhase.Restored);
@@ -1648,7 +1664,7 @@ workbenchRegistry.registerWorkbenchContribution(ExtensionEnablementWorkspaceTrus
 workbenchRegistry.registerWorkbenchContribution(ExtensionsCompletionItemsProvider, LifecyclePhase.Restored);
 workbenchRegistry.registerWorkbenchContribution(UnsupportedExtensionsMigrationContrib, LifecyclePhase.Eventually);
 if (isWeb) {
-	workbenchRegistry.registerWorkbenchContribution(ExtensionsCleaner, LifecyclePhase.Eventually);
+	workbenchRegistry.registerWorkbenchContribution(ExtensionStorageCleaner, LifecyclePhase.Eventually);
 }
 
 

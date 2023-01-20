@@ -13,14 +13,182 @@
 		},	
 		{
 			"type": "node",
+			"timeout": 0,
+			"port": 5870,
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js",
+				"${workspaceFolder}/extensions/*/out/**/*.js"
+			]
+		},
+		{
+			"type": "pwa-chrome",
+			"request": "attach",
+			"name": "Attach to Shared Process",
+			"timeout": 30000,
+			"port": 9222,
+			"urlFilter": "*sharedProcess.html*",
+			"presentation": {
+				"hidden": true
+			}
+		},
+		{
+			"type": "node",
+			"request": "attach",
+			"name": "Attach to Search Process",
+			"port": 5876,
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			]
+		},
+		{
+			"type": "node",
+			"request": "attach",
+			"name": "Attach to Pty Host Process",
+			"port": 5877,
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			]
+		},
+		{
+			"type": "node",
+			"request": "attach",
+			"name": "Attach to CLI Process",
+			"port": 5874,
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			]
+		},
+		{
+			"type": "node",
+			"request": "attach",
+			"name": "Attach to Main Process",
+			"timeout": 30000,
+			"port": 5875,
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"presentation": {
+				"hidden": true,
+			}
+		},
+		{
+			"type": "extensionHost",
 			"request": "launch",
-			"name": "Launch Azure Data Studio",
-			"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
-			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat",
-			},
-			"runtimeArgs": [
-				"--no-cached-data"
+			"name": "VS Code Emmet Tests",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"${workspaceFolder}/extensions/emmet/test-workspace",
+				"--extensionDevelopmentPath=${workspaceFolder}/extensions/emmet",
+				"--extensionTestsPath=${workspaceFolder}/extensions/emmet/out/test"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"presentation": {
+				"group": "5_tests",
+				"order": 6
+			}
+		},
+		{
+			"type": "extensionHost",
+			"request": "launch",
+			"name": "VS Code Configuration Editing Tests",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}/extensions/configuration-editing",
+				"--extensionTestsPath=${workspaceFolder}/extensions/configuration-editing/out/test"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"presentation": {
+				"group": "5_tests",
+				"order": 6
+			}
+		},
+		{
+			"type": "extensionHost",
+			"request": "launch",
+			"name": "VS Code Git Tests",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"/tmp/my4g9l",
+				"--extensionDevelopmentPath=${workspaceFolder}/extensions/git",
+				"--extensionTestsPath=${workspaceFolder}/extensions/git/out/test"
+			],
+			"outFiles": [
+				"${workspaceFolder}/extensions/git/out/**/*.js"
+			],
+			"presentation": {
+				"group": "5_tests",
+				"order": 6
+			}
+		},
+		{
+			"type": "extensionHost",
+			"request": "launch",
+			"name": "VS Code Github Tests",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"${workspaceFolder}/extensions/github/testWorkspace",
+				"--extensionDevelopmentPath=${workspaceFolder}/extensions/github",
+				"--extensionTestsPath=${workspaceFolder}/extensions/github/out/test"
+			],
+			"outFiles": [
+				"${workspaceFolder}/extensions/github/out/**/*.js"
+			],
+			"presentation": {
+				"group": "5_tests",
+				"order": 6
+			}
+		},
+		{
+			"type": "extensionHost",
+			"request": "launch",
+			"name": "VS Code API Tests (single folder)",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				// "${workspaceFolder}", // Uncomment for running out of sources.
+				"${workspaceFolder}/extensions/vscode-api-tests/testWorkspace",
+				"--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode-api-tests",
+				"--extensionTestsPath=${workspaceFolder}/extensions/vscode-api-tests/out/singlefolder-tests",
+				"--disable-extensions"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"presentation": {
+				"group": "5_tests",
+				"order": 3
+			}
+		},
+		{
+			"type": "extensionHost",
+			"request": "launch",
+			"name": "VS Code API Tests (workspace)",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"${workspaceFolder}/extensions/vscode-api-tests/testworkspace.code-workspace",
+				"--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode-api-tests",
+				"--extensionTestsPath=${workspaceFolder}/extensions/vscode-api-tests/out/workspace-tests"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"presentation": {
+				"group": "5_tests",
+				"order": 4
+			}
+		},
+		{
+			"type": "extensionHost",
+			"request": "launch",
+			"name": "VS Code Tokenizer Tests",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"${workspaceFolder}/extensions/vscode-colorize-tests/test",
+				"--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode-colorize-tests",
+				"--extensionTestsPath=${workspaceFolder}/extensions/vscode-colorize-tests/out"
 			],
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
@@ -53,6 +221,9 @@
 			"runtimeArgs": [
 				"--inspect=5875",
 				"--no-cached-data",
+				"--crash-reporter-directory=${workspaceFolder}/.profile-oss/crashes",
+				// for general runtime freezes: https://github.com/microsoft/vscode/issues/127861#issuecomment-904144910
+				"--disable-features=CalculateNativeWinOcclusion",
 			],
 			"webRoot": "${workspaceFolder}",
 			"cascadeTerminateToConfigurations": [

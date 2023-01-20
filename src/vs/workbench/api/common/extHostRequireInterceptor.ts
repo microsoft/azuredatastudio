@@ -78,7 +78,7 @@ export abstract class RequireInterceptor {
 	public register(interceptor: INodeModuleFactory | IAlternativeModuleProvider): void {
 		if ('nodeModuleName' in interceptor) {
 			if (Array.isArray(interceptor.nodeModuleName)) {
-				for (let moduleName of interceptor.nodeModuleName) {
+				for (const moduleName of interceptor.nodeModuleName) {
 					this._factories.set(moduleName, interceptor);
 				}
 			} else {
@@ -254,6 +254,7 @@ class KeytarNodeModuleFactory implements INodeModuleFactory {
 	public load(_request: string, parent: URI): any {
 		const ext = this._extensionPaths.findSubstr(parent);
 		type ShimmingKeytarClassification = {
+			owner: 'jrieken';
 			extension: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
 		};
 		this._mainThreadTelemetry.$publicLog2<{ extension: string }, ShimmingKeytarClassification>('shimming.keytar', { extension: ext?.identifier.value ?? 'unknown_extension' });
@@ -351,6 +352,7 @@ class OpenNodeModuleFactory implements INodeModuleFactory {
 			return;
 		}
 		type ShimmingOpenClassification = {
+			owner: 'jrieken';
 			extension: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
 		};
 		this._mainThreadTelemetry.$publicLog2<{ extension: string }, ShimmingOpenClassification>('shimming.open', { extension: this._extensionId });
@@ -361,6 +363,7 @@ class OpenNodeModuleFactory implements INodeModuleFactory {
 			return;
 		}
 		type ShimmingOpenCallNoForwardClassification = {
+			owner: 'jrieken';
 			extension: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
 		};
 		this._mainThreadTelemetry.$publicLog2<{ extension: string }, ShimmingOpenCallNoForwardClassification>('shimming.open.call.noForward', { extension: this._extensionId });

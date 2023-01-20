@@ -43,7 +43,7 @@ export class BulkCellEdits {
 		// {{SQL CARBON EDIT}} Use our own notebooks
 		// const editsByNotebook = groupBy(this._edits, (a, b) => compare(a.resource.toString(), b.resource.toString()));
 
-		// for (let group of editsByNotebook) {
+		// for (const group of editsByNotebook) {
 		// 	if (this._token.isCancellationRequested) {
 		// 		break;
 		// 	}

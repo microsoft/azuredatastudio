@@ -7,7 +7,6 @@ import { distinct } from 'vs/base/common/arrays';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStringDictionary } from 'vs/base/common/collections';
 import { CancellationError, getErrorMessage, isCancellationError } from 'vs/base/common/errors';
-import { getOrDefault } from 'vs/base/common/objects';
 import { IPager } from 'vs/base/common/paging';
 import { isWeb, platform } from 'vs/base/common/platform';
 import { arch } from 'vs/base/common/process';
@@ -207,7 +206,8 @@ const PropertyType = {
 	// {{SQL CARBON EDIT}}
 	AzDataEngine: 'Microsoft.AzDataEngine',
 	LocalizedLanguages: 'Microsoft.VisualStudio.Code.LocalizedLanguages',
-	WebExtension: 'Microsoft.VisualStudio.Code.WebExtension'
+	WebExtension: 'Microsoft.VisualStudio.Code.WebExtension',
+	SponsorLink: 'Microsoft.VisualStudio.Code.SponsorLink'
 };
 
 interface ICriterium {
@@ -240,20 +240,22 @@ const DefaultQueryState: IQueryState = {
 
 /* {{SQL CARBON EDIT}} Remove unused
 type GalleryServiceQueryClassification = {
-	readonly filterTypes: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly flags: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly sortBy: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly sortOrder: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly pageNumber: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly duration: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; 'isMeasurement': true };
-	readonly success: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly requestBodySize: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly responseBodySize?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly statusCode?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly errorCode?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly count?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly source?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly searchTextLength?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+	owner: 'sandy081';
+	comment: 'Information about Marketplace query and its response';
+	readonly filterTypes: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'Filter types used in the query.' };
+	readonly flags: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'Flags passed in the query.' };
+	readonly sortBy: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'sorted by option passed in the query' };
+	readonly sortOrder: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'sort order option passed in the query' };
+	readonly pageNumber: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'requested page number in the query' };
+	readonly duration: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; 'isMeasurement': true; comment: 'amount of time taken by the query request' };
+	readonly success: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'whether the query reques is success or not' };
+	readonly requestBodySize: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'size of the request body' };
+	readonly responseBodySize?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'size of the response body' };
+	readonly statusCode?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'status code of the response' };
+	readonly errorCode?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'error code of the response' };
+	readonly count?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'total number of extensions matching the query' };
+	readonly source?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'source that requested this query, eg., recommendations, viewlet' };
+	readonly searchTextLength?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'length of the search text in the query' };
 };
 */
 
@@ -279,8 +281,10 @@ type GalleryServiceQueryEvent = QueryTelemetryData & {
 };
 
 type GalleryServiceAdditionalQueryClassification = {
-	readonly duration: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; 'isMeasurement': true };
-	readonly count: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+	owner: 'sandy081';
+	comment: 'Response information about the additional query to the Marketplace for fetching all versions to get release version';
+	readonly duration: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; 'isMeasurement': true; comment: 'Amount of time taken by the additional query' };
+	readonly count: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'Total number of extensions returned by this additional query' };
 };
 
 type GalleryServiceAdditionalQueryEvent = {
@@ -460,6 +464,10 @@ function getLocalizedLanguages(version: IRawGalleryExtensionVersion): string[] {
 	return value ? value.split(',') : [];
 }
 
+function getSponsorLink(version: IRawGalleryExtensionVersion): string | undefined {
+	return version.properties?.find(p => p.key === PropertyType.SponsorLink)?.value;
+}
+
 function getIsPreview(flags: string): boolean {
 	return flags.indexOf('preview') !== -1;
 }
@@ -553,6 +561,7 @@ function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGaller
 		publisher: galleryExtension.publisher.publisherName,
 		publisherDisplayName: galleryExtension.publisher.displayName,
 		publisherDomain: galleryExtension.publisher.domain ? { link: galleryExtension.publisher.domain, verified: !!galleryExtension.publisher.isDomainVerified } : undefined,
+		publisherSponsorLink: getSponsorLink(latestVersion),
 		description: galleryExtension.shortDescription || '',
 		installCount: getStatistic(galleryExtension.statistics, 'install'),
 		rating: getStatistic(galleryExtension.statistics, 'averagerating'),
@@ -619,7 +628,14 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		const config = productService.extensionsGallery;
 		this.extensionsGalleryUrl = config && config.serviceUrl;
 		this.extensionsControlUrl = config && config.controlUrl;
-		this.commonHeadersPromise = resolveMarketplaceHeaders(productService.version, productService, this.environmentService, this.configurationService, this.fileService, storageService);
+		this.commonHeadersPromise = resolveMarketplaceHeaders(
+			productService.version,
+			productService,
+			this.environmentService,
+			this.configurationService,
+			this.fileService,
+			storageService,
+			this.telemetryService);
 	}
 
 	private api(path = ''): string {
@@ -741,7 +757,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		}
 
 		let text = options.text || '';
-		const pageSize = getOrDefault(options, o => o.pageSize, 50);
+		const pageSize = options.pageSize ?? 50;
 
 		let query = new Query()
 			.withPage(1, pageSize);
@@ -1071,7 +1087,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 			'Content-Type': 'application/json',
 			'Accept': 'application/json;api-version=3.0-preview.1',
 			'Accept-Encoding': 'gzip',
-			'Content-Length': String(data.length)
+			'Content-Length': String(data.length),
 		};
 
 		const context = await this.requestService.request({
@@ -1130,6 +1146,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		const startTime = new Date().getTime();
 		/* __GDPR__
 			"galleryService:downloadVSIX" : {
+				"owner": "sandy081",
 				"duration": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true },
 				"${include}": [
 					"${GalleryExtensionTelemetryData}"
@@ -1264,8 +1281,10 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 
 			const message = getErrorMessage(err);
 			type GalleryServiceCDNFallbackClassification = {
-				url: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-				message: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+				owner: 'sandy081';
+				comment: 'Fallback request information when the primary asset request to CDN fails';
+				url: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'asset url that failed' };
+				message: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'error message' };
 			};
 			type GalleryServiceCDNFallbackEvent = {
 				url: string;

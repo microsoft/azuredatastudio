@@ -64,10 +64,89 @@ const opts = minimist(args, {
 	default: {
 		verbose: false
 	}
+}) as {
+	verbose?: boolean;
+	remote?: boolean;
+	headless?: boolean;
+	web?: boolean;
+	tracing?: boolean;
+	build?: string;
+	'stable-build'?: string;
+	browser?: string;
+	electronArgs?: string;
+};
+
+const logsRootPath = (() => {
+	const logsParentPath = path.join(rootPath, '.build', 'logs');
+
+	let logsName: string;
+	if (opts.web) {
+		logsName = 'smoke-tests-browser';
+	} else if (opts.remote) {
+		logsName = 'smoke-tests-remote';
+	} else {
+		logsName = 'smoke-tests-electron';
+	}
+
+	return path.join(logsParentPath, logsName);
+})();
+
+const crashesRootPath = (() => {
+	const crashesParentPath = path.join(rootPath, '.build', 'crashes');
+
+	let crashesName: string;
+	if (opts.web) {
+		crashesName = 'smoke-tests-browser';
+	} else if (opts.remote) {
+		crashesName = 'smoke-tests-remote';
+	} else {
+		crashesName = 'smoke-tests-electron';
+	}
+
+	return path.join(crashesParentPath, crashesName);
+})();
+
+const logger = createLogger();
+
+function createLogger(): Logger {
+	const loggers: Logger[] = [];
+
+	// Log to console if verbose
+	if (opts.verbose) {
+		loggers.push(new ConsoleLogger());
+	}
+
+	// Prepare logs rot path
+	fs.rmSync(logsRootPath, { recursive: true, force: true, maxRetries: 3 });
+	mkdirp.sync(logsRootPath);
+
+	// Always log to log file
+	loggers.push(new FileLogger(path.join(logsRootPath, 'smoke-test-runner.log')));
+
+	return new MultiLogger(loggers);
+}
+
+try {
+	gracefulify(fs);
+} catch (error) {
+	logger.log(`Error enabling graceful-fs: ${error}`);
+}
+
+const testDataPath = path.join(os.tmpdir(), 'vscsmoke');
+if (fs.existsSync(testDataPath)) {
+	rimraf.sync(testDataPath);
+}
+mkdirp.sync(testDataPath);
+process.once('exit', () => {
+	try {
+		rimraf.sync(testDataPath);
+	} catch {
+		// noop
+	}
 });
 
-const testRepoUrl = 'https://github.com/Microsoft/azuredatastudio-smoke-test-repo.git';
-const workspacePath = path.join(testDataPath, 'azuredatastudio-smoke-test-repo');
+const testRepoUrl = 'https://github.com/microsoft/vscode-smoketest-express';
+const workspacePath = path.join(testDataPath, 'vscode-smoketest-express');
 // {{SQL CARBON EDIT}} Let callers control extensions dir for non-packaged extensions
 let extensionsPath = opts.extensionsDir;
 if (!extensionsPath) {
@@ -75,20 +154,13 @@ if (!extensionsPath) {
 	mkdirp.sync(extensionsPath);
 }
 console.log(`Using extensions dir : ${extensionsPath}`);
-
-
-const screenshotsPath = opts.screenshots ? path.resolve(opts.screenshots) : null;
-if (screenshotsPath) {
-	mkdirp.sync(screenshotsPath);
-}
-
-const logPath = opts.log ? path.resolve(opts.log) : null;
-if (logPath) {
-	mkdirp.sync(path.dirname(logPath));
-}
+mkdirp.sync(extensionsPath);
 
 function fail(errorMessage): void {
-	console.error(errorMessage);
+	logger.log(errorMessage);
+	if (!opts.verbose) {
+		console.error(errorMessage);
+	}
 	process.exit(1);
 }
 
@@ -330,11 +402,10 @@ function createOptions(): ApplicationOptions {
 		workspacePath,
 		userDataDir,
 		extensionsPath,
-		waitTime: parseInt(opts['wait-time'] || '0') || 20,
-		logger: new MultiLogger(loggers),
+		logger,
+		logsPath: path.join(logsRootPath, 'suite_unknown'),
+		crashesPath: path.join(crashesRootPath, 'suite_unknown'),
 		verbose: opts.verbose,
-		log,
-		screenshotsPath,
 		remote: opts.remote,
 		web: opts.web,
 		headless: opts.headless,

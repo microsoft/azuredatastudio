@@ -14,11 +14,11 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IConnectionTreeService } from 'sql/workbench/services/connection/common/connectionTreeService'; // {{SQL CARBON EDIT}} Add our tree service
-import { DataTransferConverter } from 'vs/workbench/api/common/shared/dataTransfer';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { IDataTransfer } from 'vs/base/common/dataTransfer';
+import { createStringDataTransferItem, VSDataTransfer } from 'vs/base/common/dataTransfer';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { DataTransferCache } from 'vs/workbench/api/common/shared/dataTransferCache';
+import * as typeConvert from 'vs/workbench/api/common/extHostTypeConverters';
 
 @extHostNamedCustomer(MainContext.MainThreadTreeViews)
 export class MainThreadTreeViews extends Disposable implements MainThreadTreeViewsShape {
@@ -213,25 +213,30 @@ class TreeViewDragAndDropController implements ITreeViewDragAndDropController {
 		readonly hasWillDrop: boolean,
 		private readonly _proxy: ExtHostTreeViewsShape) { }
 
-	async handleDrop(dataTransfer: IDataTransfer, targetTreeItem: ITreeItem | undefined, token: CancellationToken,
+	async handleDrop(dataTransfer: VSDataTransfer, targetTreeItem: ITreeItem | undefined, token: CancellationToken,
 		operationUuid?: string, sourceTreeId?: string, sourceTreeItemHandles?: string[]): Promise<void> {
 		const request = this.dataTransfersCache.add(dataTransfer);
 		try {
-			return await this._proxy.$handleDrop(this.treeViewId, request.id, await DataTransferConverter.toDataTransferDTO(dataTransfer), targetTreeItem?.handle, token, operationUuid, sourceTreeId, sourceTreeItemHandles);
+			return await this._proxy.$handleDrop(this.treeViewId, request.id, await typeConvert.DataTransfer.toDataTransferDTO(dataTransfer), targetTreeItem?.handle, token, operationUuid, sourceTreeId, sourceTreeItemHandles);
 		} finally {
 			request.dispose();
 		}
 	}
 
-	async handleDrag(sourceTreeItemHandles: string[], operationUuid: string, token: CancellationToken): Promise<IDataTransfer | undefined> {
+	async handleDrag(sourceTreeItemHandles: string[], operationUuid: string, token: CancellationToken): Promise<VSDataTransfer | undefined> {
 		if (!this.hasWillDrop) {
-			return undefined;
+			return;
 		}
-		const additionalTransferItems = await this._proxy.$handleDrag(this.treeViewId, sourceTreeItemHandles, operationUuid, token);
-		if (!additionalTransferItems) {
-			return undefined;
+		const additionalDataTransferDTO = await this._proxy.$handleDrag(this.treeViewId, sourceTreeItemHandles, operationUuid, token);
+		if (!additionalDataTransferDTO) {
+			return;
 		}
-		return DataTransferConverter.toDataTransfer(additionalTransferItems, () => { throw new Error('not supported'); });
+
+		const additionalDataTransfer = new VSDataTransfer();
+		additionalDataTransferDTO.items.forEach(([type, item]) => {
+			additionalDataTransfer.replace(type, createStringDataTransferItem(item.asString));
+		});
+		return additionalDataTransfer;
 	}
 
 	public resolveDropFileData(requestId: number, dataItemIndex: number): Promise<VSBuffer> {
