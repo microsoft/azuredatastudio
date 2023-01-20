@@ -874,13 +874,13 @@ export class SchemaCompareDialog {
 				finalName = c.options.connectionName;
 			}
 
-			// use previously selected server or current connection if there is one
-			if (endpointInfo && !isNullOrUndefined(endpointInfo.serverName) && !isNullOrUndefined(endpointInfo.serverDisplayName)
-				&& c.options.server.toLowerCase() === endpointInfo.serverName.toLowerCase()
-				&& finalName.toLowerCase() === endpointInfo.serverDisplayName.toLowerCase()) {
+			// use current connection else use previously selected server if there is one
+			if (c.connectionId === this.connectionId) {
 				idx = count;
-			}
-			else if (c.connectionId === this.connectionId) {
+			} else if (endpointInfo && !isNullOrUndefined(endpointInfo.serverName) && !isNullOrUndefined(endpointInfo.serverDisplayName)
+				&& c.options.server.toLowerCase() === endpointInfo.serverName.toLowerCase()
+				&& finalName.toLowerCase() === endpointInfo.serverDisplayName.toLowerCase()
+				&& idx === -1) {	// select previous server only if current connection hasn't been set already
 				idx = count;
 			}
 
