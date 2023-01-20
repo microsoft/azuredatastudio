@@ -92,7 +92,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public $getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
-		return Promise.resolve(this._connectionManagementService.getConnections(activeConnectionsOnly).map(profile => this.convertToConnectionProfile(profile)));
+		return Promise.resolve(this._connectionManagementService.getConnections(activeConnectionsOnly).map(profile => this.convertToConnectionProfile(profile, true, true)));
 	}
 
 	public $getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile> {
@@ -101,22 +101,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			return Promise.resolve(undefined);
 		}
 
-		let connection: azdata.connection.ConnectionProfile = {
-			providerId: profile.providerName,
-			connectionId: profile.id,
-			connectionName: profile.connectionName,
-			serverName: profile.serverName,
-			databaseName: profile.databaseName,
-			userName: profile.userName,
-			password: profile.password,
-			authenticationType: profile.authenticationType,
-			savePassword: profile.savePassword,
-			groupFullName: profile.groupFullName,
-			groupId: profile.groupId,
-			saveProfile: profile.savePassword,
-			azureTenantId: profile.azureTenantId,
-			options: profile.options
-		};
+		let connection = this.convertToConnectionProfile(profile, false, false);
 		return Promise.resolve(connection);
 	}
 
@@ -129,7 +114,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public $getCurrentConnectionProfile(): Thenable<azdata.connection.ConnectionProfile> {
-		return Promise.resolve(this.convertToConnectionProfile(TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._workbenchEditorService, true)));
+		return Promise.resolve(this.convertToConnectionProfile(TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._workbenchEditorService, true,), true, true));
 	}
 
 	public $getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
@@ -195,22 +180,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		}
 
 		// Need to convert profile into azdata friendly format
-		let connection: azdata.connection.ConnectionProfile = {
-			providerId: profile.providerName,
-			connectionId: profile.id,
-			connectionName: profile.connectionName,
-			serverName: profile.serverName,
-			databaseName: profile.databaseName,
-			userName: profile.userName,
-			password: profile.password,
-			authenticationType: profile.authenticationType,
-			savePassword: profile.savePassword,
-			groupFullName: profile.groupFullName,
-			groupId: profile.groupId,
-			saveProfile: profile.savePassword,
-			azureTenantId: profile.azureTenantId,
-			options: profile.options
-		};
+		let connection = this.convertToConnectionProfile(profile, false, false)
 		return Promise.resolve(connection);
 	}
 
@@ -241,16 +211,19 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		return connection;
 	}
 
-	private convertToConnectionProfile(profile: IConnectionProfile): azdata.connection.ConnectionProfile {
+	private convertToConnectionProfile(profile: IConnectionProfile, removeCredentials: boolean, deepCopyOptions: boolean): azdata.connection.ConnectionProfile {
 		if (!profile) {
 			return undefined;
 		}
 
-		profile = this._connectionManagementService.removeConnectionProfileCredentials(profile);
+		// Need to account for different types of conversion usages.
+		if (removeCredentials) {
+			profile = this._connectionManagementService.removeConnectionProfileCredentials(profile);
+		}
 		let connection: azdata.connection.ConnectionProfile = {
 			providerId: profile.providerName,
 			connectionId: profile.id,
-			options: deepClone(profile.options),
+			options: deepCopyOptions ? deepClone(profile.options) : profile.options,
 			connectionName: profile.connectionName,
 			serverName: profile.serverName,
 			databaseName: profile.databaseName,
@@ -260,6 +233,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			savePassword: profile.savePassword,
 			groupFullName: profile.groupFullName,
 			groupId: profile.groupId,
+			azureTenantId: profile.azureTenantId,
 			saveProfile: profile.saveProfile
 		};
 		return connection;
