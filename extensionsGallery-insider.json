@@ -502,14 +502,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.12.1",
-							"lastUpdated": "09/03/2021",
+							"version": "0.12.2",
+							"lastUpdated": "01/20/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/profiler/profiler-0.12.1.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/profiler/profiler-0.12.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
