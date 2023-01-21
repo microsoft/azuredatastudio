@@ -1620,6 +1620,9 @@ Default Skipped Commands:
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/connection/common/connectionProviderExtension" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="schema.azureResource">
+      <source xml:lang="en">Azure resource endpoint for the provider.</source>
+    </trans-unit>
     <trans-unit id="schema.connectionOptions">
       <source xml:lang="en">Options for connection</source>
     </trans-unit>
