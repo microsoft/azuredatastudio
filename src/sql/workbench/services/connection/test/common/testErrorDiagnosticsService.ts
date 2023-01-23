@@ -15,7 +15,7 @@ export class TestErrorDiagnosticsService implements IErrorDiagnosticsService {
 	unregisterDiagnostics(ProviderId: string): void {
 	}
 
-	checkErrorCode(errorCode: number, errorMessage: string, providerId: string): Promise<boolean> {
+	checkErrorCode(errorCode: number, errorMessage: string, providerId: string, additionalObjects?: any): Promise<boolean> {
 		return Promise.resolve(false);
 	}
 }

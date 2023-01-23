@@ -53,7 +53,7 @@ export class ErrorDiagnosticsService extends SqlOpsFeature<any> {
 			}
 
 			protected override registerProvider(options: any): Disposable {
-				let handleErrorCode = async (errorCode: number, errorMessage: string): Promise<boolean> => {
+				let handleErrorCode = async (errorCode: number, errorMessage: string, additionalObjects?: any): Promise<boolean> => {
 					if (errorCode = ErrorDiagnosticsConstants.MssqlPasswordResetCode) {
 						let profile = await azdata.connection.getConnectionProfileFromError();
 						// Need to convert back to IConnectionProfile.

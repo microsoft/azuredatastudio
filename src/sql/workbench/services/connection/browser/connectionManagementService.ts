@@ -566,8 +566,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					options.showFirewallRuleOnError = false;
 					return this.connectWithOptions(connection, uri, options, callbacks);
 				} else {
+					connection.id
 					this._connectionProfileDuringError = connection;
-					return this._errorDiagnosticsService.checkErrorCode(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName).then(success => {
+					let newProfile = this.getConnectionProfileById(connection.id);
+					let newString = this.getConnectionString(connection.id);
+					return this._errorDiagnosticsService.checkErrorCode(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, connection.id).then(success => {
 						this._connectionProfileDuringError = undefined;
 						if (success) {
 							//For now handle connection errors in provider.

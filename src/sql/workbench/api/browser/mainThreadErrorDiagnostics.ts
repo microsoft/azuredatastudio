@@ -34,8 +34,8 @@ export class MainThreadErrorDiagnostics extends Disposable implements MainThread
 
 		//Create the error handler that interfaces with the extension via the proxy and register it
 		let diagnostics: azdata.diagnostics.ErrorDiagnostics = {
-			handleErrorCode(errorCode: number, errorMessage: string): Thenable<boolean> {
-				return self._proxy.$handleErrorCode(handle, errorCode, errorMessage);
+			handleErrorCode(errorCode: number, errorMessage: string, additionalObjects?: any): Thenable<boolean> {
+				return self._proxy.$handleErrorCode(handle, errorCode, errorMessage, additionalObjects);
 			}
 		};
 		this._errorDiagnosticsService.registerDiagnostics(providerMetadata.id, diagnostics);

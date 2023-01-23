@@ -438,7 +438,7 @@ declare module 'azdata' {
 		 * Diagnostics object for handling error codes for a provider.
 		 */
 		export interface ErrorDiagnostics {
-			handleErrorCode(errorCode: number, errorMessage: string): Thenable<boolean>;
+			handleErrorCode(errorCode: number, errorMessage: string, additionalObjects?: any): Thenable<boolean>;
 		}
 
 		/**
