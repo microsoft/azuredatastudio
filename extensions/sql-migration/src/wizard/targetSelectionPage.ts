@@ -79,10 +79,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 		if (this.migrationStateModel.resumeAssessment) {
 			await this.populateAzureAccountsDropdown();
-			//await this.populateSubscriptionDropdown();
-			//await this.populateResourceGroupDropdown();
-			//await this.populateLocationDropdown();
-			//await this.populateResourceInstanceDropdown();
 		}
 
 		await this._view.initializeModel(form);
