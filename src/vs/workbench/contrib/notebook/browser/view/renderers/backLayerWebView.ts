@@ -670,7 +670,7 @@ var requirejs = (function() {
 							case 'github-issues.authNow':
 							case 'workbench.extensions.search':
 							case 'workbench.action.openSettings': {
-								this.openerService.open(data.href, { fromUserGesture: true, allowCommands: true, fromWorkspace: true });
+								this.openerService.open(data.href, { fromUserGesture: true, allowCommands: true });
 								return;
 							}
 						}
@@ -707,7 +707,7 @@ var requirejs = (function() {
 					}
 
 					if (linkToOpen) {
-						this.openerService.open(linkToOpen, { fromUserGesture: true, allowCommands: false, fromWorkspace: true });
+						this.openerService.open(linkToOpen, { fromUserGesture: true, allowCommands: false });
 					}
 					break;
 				}
