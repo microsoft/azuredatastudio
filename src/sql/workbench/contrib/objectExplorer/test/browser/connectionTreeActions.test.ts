@@ -81,6 +81,11 @@ suite('SQL Connection Tree Action tests', () => {
 		return connectionManagementService;
 	}
 
+	/**
+	 * Creates a mock dialog service that and select the choice at the given index when show is called.
+	 * @param choiceIndex index of the button in the dialog to be selected starting from 0.
+	 * @returns
+	 */
 	function createDialogService(choiceIndex: number): TypeMoq.Mock<IDialogService> {
 		let dialogService = TypeMoq.Mock.ofType<IDialogService>(TestDialogService, TypeMoq.MockBehavior.Loose);
 		dialogService.callBase = true;
@@ -351,7 +356,7 @@ suite('SQL Connection Tree Action tests', () => {
 
 	});
 
-	test('DeleteConnectionAction - connection not deleted when user selects no on the modal dialog', () => {
+	test('DeleteConnectionAction - connection not deleted when user selects no on the prompt', async () => {
 		let connectionManagementService = createConnectionManagementService(true, undefined);
 
 		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
