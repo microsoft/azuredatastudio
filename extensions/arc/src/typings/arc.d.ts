@@ -20,7 +20,9 @@ declare module 'arc' {
 	}
 
 	export type MiaaResourceInfo = ResourceInfo & {
-		userName?: string
+		userName?: string,
+		encrypt?: string,
+		trustServerCertificate?: boolean
 	};
 
 	export type PGResourceInfo = ResourceInfo & {
