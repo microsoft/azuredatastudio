@@ -97,11 +97,11 @@ export class LoginMigrationModel {
 		for (const loginName of this._logins.keys()) {
 			const status = loginName in exceptionMap ? LoginMigrationState.Failed : LoginMigrationState.Succeeded;
 			let errors = loginName in exceptionMap ? this._extractErrors(exceptionMap, loginName) : [];
-			this.AddStepStateForLogin(loginName, step, status, errors);
+			this._addStepStateForLogin(loginName, step, status, errors);
 
 			if (this.isMigrationComplete) {
-				const loginStatus = this.DidAnyStepFail(loginName) ? LoginMigrationState.Failed : LoginMigrationState.Succeeded;
-				this.MarkLoginStatus(loginName, loginStatus);
+				const loginStatus = this._didAnyStepFail(loginName) ? LoginMigrationState.Failed : LoginMigrationState.Succeeded;
+				this._markLoginStatus(loginName, loginStatus);
 			}
 		}
 	}
@@ -112,9 +112,9 @@ export class LoginMigrationModel {
 		for (const loginName of this._logins.keys()) {
 			// Mark current step as failed with the error message and mark remaining messages as canceled
 			let errors = [error.message];
-			this.AddStepStateForLogin(loginName, step, LoginMigrationState.Failed, errors);
+			this._addStepStateForLogin(loginName, step, LoginMigrationState.Failed, errors);
 			this._markRemainingSteps(loginName, LoginMigrationState.Canceled);
-			this.MarkLoginStatus(loginName, LoginMigrationState.Failed);
+			this._markLoginStatus(loginName, LoginMigrationState.Failed);
 		}
 
 		this._markMigrationComplete();
@@ -122,7 +122,7 @@ export class LoginMigrationModel {
 
 	public GetLoginMigrationResults(loginName: string): MultiStepResult[] {
 		let loginResults: MultiStepResult[] = [];
-		let login = this.GetLogin(loginName);
+		let login = this._getLogin(loginName);
 
 		for (const step of this._loginMigrationSteps) {
 			// The default steps and state will be added if no steps have completed
@@ -132,7 +132,7 @@ export class LoginMigrationModel {
 				errors: [],
 			}
 
-			// If the step has completed, then the login will have status
+			// If the step has completed, then the login will have the stored status
 			if (login?.statusPerStep.has(step)) {
 				let stepStatus = login!.statusPerStep.get(step);
 				stepResult.state = LoginMigrationStateToMultiStepState[stepStatus!.status];
@@ -147,15 +147,28 @@ export class LoginMigrationModel {
 		return loginResults;
 	}
 
-	public GetLogin(loginName: string) {
+	public AddNewLogins(logins: string[]) {
+		logins.forEach(login => this._addNewLogin(login));
+	}
+
+	public SetLoginMigrationSteps(steps: LoginMigrationStep[] = []) {
+		this._loginMigrationSteps = [];
+
+		if (steps.length === 0) {
+			this._loginMigrationSteps.push(LoginMigrationStep.MigrateLogins);
+			this._loginMigrationSteps.push(LoginMigrationStep.EstablishUserMapping);
+			this._loginMigrationSteps.push(LoginMigrationStep.MigrateServerRolesAndSetPermissions);
+		} else {
+			this._loginMigrationSteps = steps;
+		}
+	}
+
+
+	private _getLogin(loginName: string) {
 		return this._logins.get(loginName.toLocaleLowerCase());
 	}
 
-	public AddNewLogins(logins: string[]) {
-		logins.forEach(login => this.AddNewLogin(login));
-	}
-
-	public AddNewLogin(loginName: string, status: LoginMigrationState = LoginMigrationState.Pending) {
+	private _addNewLogin(loginName: string, status: LoginMigrationState = LoginMigrationState.Pending) {
 		let newLogin: Login = {
 			loginName: loginName,
 			overallStatus: status,
@@ -165,14 +178,14 @@ export class LoginMigrationModel {
 		this._logins.set(loginName.toLocaleLowerCase(), newLogin);
 	}
 
-	public AddStepStateForLogin(loginName: string, step: LoginMigrationStep, stepStatus: LoginMigrationState, errors: string[] = []) {
+	private _addStepStateForLogin(loginName: string, step: LoginMigrationStep, stepStatus: LoginMigrationState, errors: string[] = []) {
 		const loginExist = this._logins.has(loginName);
 
 		if (!loginExist) {
-			this.AddNewLogin(loginName, LoginMigrationState.Running);
+			this._addNewLogin(loginName, LoginMigrationState.Running);
 		}
 
-		let login = this.GetLogin(loginName);
+		let login = this._getLogin(loginName);
 
 		if (login) {
 			login.overallStatus = LoginMigrationState.Running;
@@ -188,34 +201,22 @@ export class LoginMigrationModel {
 		}
 	}
 
-	public MarkLoginStatus(loginName: string, status: LoginMigrationState) {
+	private _markLoginStatus(loginName: string, status: LoginMigrationState) {
 		const loginExist = this._logins.has(loginName);
 
 		if (!loginExist) {
-			this.AddNewLogin(loginName, LoginMigrationState.Running);
+			this._addNewLogin(loginName, LoginMigrationState.Running);
 		}
 
-		let login = this.GetLogin(loginName);
+		let login = this._getLogin(loginName);
 
 		if (login) {
 			login.overallStatus = status;
 		}
 	}
 
-	public SetLoginMigrationSteps(steps: LoginMigrationStep[] = []) {
-		this._loginMigrationSteps = [];
-
-		if (steps.length === 0) {
-			this._loginMigrationSteps.push(LoginMigrationStep.MigrateLogins);
-			this._loginMigrationSteps.push(LoginMigrationStep.EstablishUserMapping);
-			this._loginMigrationSteps.push(LoginMigrationStep.MigrateServerRolesAndSetPermissions);
-		} else {
-			this._loginMigrationSteps = steps;
-		}
-	}
-
-	public DidAnyStepFail(loginName: string) {
-		const login = this.GetLogin(loginName);
+	private _didAnyStepFail(loginName: string) {
+		const login = this._getLogin(loginName);
 		if (login) {
 			return Object.values(login.statusPerStep).every(status => status === LoginMigrationState.Failed);
 		}
@@ -240,7 +241,7 @@ export class LoginMigrationModel {
 
 	private _markRemainingSteps(loginName: string, status: LoginMigrationState) {
 		for (let i = this._currentStepIdx; i < this._loginMigrationSteps.length; i++) {
-			this.AddStepStateForLogin(loginName, this._loginMigrationSteps[i], status, []);
+			this._addStepStateForLogin(loginName, this._loginMigrationSteps[i], status, []);
 		}
 	}
 }
