@@ -23,7 +23,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { getChartMaxRowCount, notifyMaxRowCountExceeded } from 'sql/workbench/contrib/charts/browser/utils';
 import { IEncodingSupport } from 'vs/workbench/services/textfile/common/textfiles';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
@@ -127,19 +126,13 @@ export class CopyHeadersAction extends Action {
 	private static ID = 'grid.copyHeaders';
 	private static LABEL = localize('copyHeaders', 'Copy Headers');
 
-	constructor(
-		@IClipboardService private clipboardService: IClipboardService
-	) {
+	constructor() {
 		super(CopyHeadersAction.ID, CopyHeadersAction.LABEL);
 	}
 
 	public override async run(context: IGridActionContext): Promise<void> {
-		// Starting at index 1 to ignore the first column of row numbers
-		const columnHeaders = context.table.columns.slice(1, context.table.columns.length)
-			.map(c => c.name ? c.name : '')
-			.join(',');
-
-		await this.clipboardService.writeText(columnHeaders);
+		const selection = mapForNumberColumn(context.selection);
+		await context.gridDataProvider.copyHeaders(selection);
 	}
 }
 
