@@ -41,8 +41,8 @@ import { ConsoleLogger, LogService } from 'vs/platform/log/common/log';
 import { TestAccessibilityService } from 'vs/platform/accessibility/test/common/testAccessibilityService';
 import { TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { INotificationService, IPromptChoice, IPromptOptions } from 'vs/platform/notification/common/notification';
-import { TestNotificationService } from 'sql/platform/connection/test/common/testNotificationService';
+import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -81,32 +81,15 @@ suite('SQL Connection Tree Action tests', () => {
 		return connectionManagementService;
 	}
 
-	function createNotificationService(promptChoice: number): TypeMoq.Mock<INotificationService> {
-		let notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
-		notificationService.callBase = true;
-		notificationService.setup(x => x.prompt(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((
-			severity: Severity,
-			message: string,
-			choices: IPromptChoice[],
-			options?: IPromptOptions
-		) => {
-			choices[promptChoice].run();
-			return {
-				close: () => { },
-				onDidClose: Event.None,
-				onDidChangeVisibility: Event.None,
-				progress: {
-					infinite: () => { },
-					total: () => { },
-					worked: () => { },
-					done: () => { }
-				},
-				updateMessage: () => { },
-				updateSeverity: () => { },
-				updateActions: () => { },
-			}
+	function createDialogService(choiceIndex: number): TypeMoq.Mock<IDialogService> {
+		let dialogService = TypeMoq.Mock.ofType<IDialogService>(TestDialogService, TypeMoq.MockBehavior.Loose);
+		dialogService.callBase = true;
+		dialogService.setup(x => x.show(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			return Promise.resolve({
+				choice: choiceIndex
+			})
 		});
-		return notificationService;
+		return dialogService;
 	}
 
 	function createEditorService(): TypeMoq.Mock<IEditorService> {
@@ -360,7 +343,7 @@ suite('SQL Connection Tree Action tests', () => {
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			connection,
 			connectionManagementService.object,
-			createNotificationService(0).object); // Select 'Yes' on the promptChoice
+			createDialogService(0).object); // Select 'Yes' on the promptChoice
 
 		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.deleteConnection(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
@@ -390,7 +373,7 @@ suite('SQL Connection Tree Action tests', () => {
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			connection,
 			connectionManagementService.object,
-			createNotificationService(1).object); // Selecting 'No' on the promptChoice
+			createDialogService(1).object); // Selecting 'No' on the promptChoice
 
 		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.deleteConnection(TypeMoq.It.isAny()), TypeMoq.Times.never());
@@ -406,7 +389,7 @@ suite('SQL Connection Tree Action tests', () => {
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			conProfGroup,
 			connectionManagementService.object,
-			createNotificationService(0).object); // Select 'Yes' on the promptChoice
+			createDialogService(0).object); // Select 'Yes' on the promptChoice
 
 		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.deleteConnectionGroup(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
@@ -438,7 +421,7 @@ suite('SQL Connection Tree Action tests', () => {
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			connection,
 			connectionManagementService.object,
-			createNotificationService(0).object);
+			createDialogService(0).object);
 
 		assert.strictEqual(connectionAction.enabled, false, 'delete action should be disabled.');
 	});

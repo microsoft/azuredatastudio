@@ -20,7 +20,7 @@ import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGr
 import { ILogService } from 'vs/platform/log/common/log';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { SqlIconId } from 'sql/base/common/codicons';
-import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 
 export interface IServerView {
 	showFilteredTree(filter: string): void;
@@ -268,7 +268,7 @@ export class DeleteConnectionAction extends Action {
 		label: string,
 		private element: IConnectionProfile | ConnectionProfileGroup,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@INotificationService private _notificationService: INotificationService
+		@IDialogService private _dialogService: IDialogService
 	) {
 		super(id, label);
 		this.class = 'delete-connection-action';
@@ -290,32 +290,17 @@ export class DeleteConnectionAction extends Action {
 		const deleteConnectionConfirmationNo = localize('deleteConnectionConfirmationNo', "No");
 
 		if (this.element instanceof ConnectionProfile) {
-			this._notificationService.prompt(Severity.Warning,
-				localize('deleteConnectionConfirmation', "Are you sure you want to delete connection {0}?", this.element.connectionName),
-				[{
-					label: deleteConnectionConfirmationYes,
-					run: async () => {
-						await this._connectionManagementService.deleteConnection(<ConnectionProfile>this.element);
-					},
-				}, {
-					label: deleteConnectionConfirmationNo,
-					run: async () => {
-					}
-				}]);
+			const modalResult = this._dialogService.show(Severity.Warning, localize('deleteConnectionConfirmation', "Are you sure you want to delete connection '{0}'?", this.element.connectionName),
+				[deleteConnectionConfirmationYes, deleteConnectionConfirmationNo]);
+			if ((await modalResult).choice === 0) {
+				await this._connectionManagementService.deleteConnection(this.element);
+			}
 		} else if (this.element instanceof ConnectionProfileGroup) {
-			this._notificationService.prompt(Severity.Warning,
-				localize('deleteConnectionGroupConfirmation', "Are you sure you want to delete connection group {0}?", this.element.name),
-				[{
-					label: deleteConnectionConfirmationYes,
-					run: async () => {
-						await this._connectionManagementService.deleteConnectionGroup(<ConnectionProfileGroup>this.element);
-					},
-				}, {
-					label: deleteConnectionConfirmationNo,
-					run: async () => {
-					}
-				}]);
-
+			const modalResult = this._dialogService.show(Severity.Warning, localize('deleteConnectionGroupConfirmation', "Are you sure you want to delete connection group '{0}'?", this.element.name),
+				[deleteConnectionConfirmationYes, deleteConnectionConfirmationNo]);
+			if ((await modalResult).choice === 0) {
+				await this._connectionManagementService.deleteConnectionGroup(this.element);
+			}
 		}
 	}
 }
