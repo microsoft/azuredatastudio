@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { EOL } from 'os';
-import { getStorageAccountAccessKeys } from '../api/azure';
+import { getStorageAccountAccessKeys, SqlVMServer } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { Blob, MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, NetworkShare, StateChangeEvent, ValidateIrState, ValidationResult } from '../models/stateMachine';
 import * as constants from '../constants/strings';
@@ -66,6 +66,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _networkDetailsContainer!: azdata.FlexContainer;
 
 	private _existingDatabases: string[] = [];
+	private _nonPageBlobErrors: string[] = [];
 	private _disposables: vscode.Disposable[] = [];
 
 	// SQL DB table  selection
@@ -696,27 +697,31 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						break;
 					case NetworkContainerType.BLOB_CONTAINER:
 						this._blobContainerResourceGroupDropdowns.forEach((v, index) => {
-							if (this.shouldDisplayBlobDropdownError(v, [constants.RESOURCE_GROUP_NOT_FOUND])) {
+							if (this.shouldDisplayBlobDropdownError(v, blobResourceGroupErrorStrings)) {
 								errors.push(constants.INVALID_BLOB_RESOURCE_GROUP_ERROR(this.migrationStateModel._databasesForMigration[index]));
 							}
 						});
 						this._blobContainerStorageAccountDropdowns.forEach((v, index) => {
-							if (this.shouldDisplayBlobDropdownError(v, [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP_PROMPT])) {
+							if (this.shouldDisplayBlobDropdownError(v, blobStorageAccountErrorStrings)) {
 								errors.push(constants.INVALID_BLOB_STORAGE_ACCOUNT_ERROR(this.migrationStateModel._databasesForMigration[index]));
 							}
 						});
 						this._blobContainerDropdowns.forEach((v, index) => {
-							if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBCONTAINERS_FOUND, constants.SELECT_STORAGE_ACCOUNT])) {
+							if (this.shouldDisplayBlobDropdownError(v, blobContainerErrorStrings)) {
 								errors.push(constants.INVALID_BLOB_CONTAINER_ERROR(this.migrationStateModel._databasesForMigration[index]));
 							}
 						});
 
 						if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 							this._blobContainerLastBackupFileDropdowns.forEach((v, index) => {
-								if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBFILES_FOUND, constants.SELECT_BLOB_CONTAINER])) {
+								if (this.shouldDisplayBlobDropdownError(v, blobFileErrorStrings)) {
 									errors.push(constants.INVALID_BLOB_LAST_BACKUP_FILE_ERROR(this.migrationStateModel._databasesForMigration[index]));
 								}
 							});
+						}
+
+						if (this.migrationStateModel.isSqlVmTarget && utils.isTargetSqlVm2014OrBelow(this.migrationStateModel._targetServerInstance as SqlVMServer)) {
+							errors.push(...this._nonPageBlobErrors);
 						}
 
 						if (errors.length > 0) {
@@ -1047,6 +1052,23 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 								const selectedBlobContainer = this.migrationStateModel._blobContainers.find(blob => blob.name === value);
 								if (selectedBlobContainer && !blobContainerErrorStrings.includes(value)) {
 									this.migrationStateModel._databaseBackup.blobs[index].blobContainer = selectedBlobContainer;
+
+									if (this.migrationStateModel.isSqlVmTarget && utils.isTargetSqlVm2014OrBelow(this.migrationStateModel._targetServerInstance as SqlVMServer)) {
+										const backups = await utils.getBlobLastBackupFileNames(
+											this.migrationStateModel._azureAccount,
+											this.migrationStateModel._databaseBackup.subscription,
+											this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount,
+											this.migrationStateModel._databaseBackup.blobs[index]?.blobContainer);
+
+										const errorMessage = constants.INVALID_NON_PAGE_BLOB_BACKUP_FILE_ERROR(this.migrationStateModel._databasesForMigration[index]);
+										this._nonPageBlobErrors = this._nonPageBlobErrors.filter(err => err !== errorMessage);
+
+										const allBackupsPageBlob = backups.every(backup => backup.properties.blobType === 'PageBlob')
+										if (!allBackupsPageBlob) {
+											this._nonPageBlobErrors.push(errorMessage);
+										}
+									}
+
 									if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 										await this.loadBlobLastBackupFileDropdown(index);
 										await blobContainerLastBackupFileDropdown.updateProperties({ enabled: true });
