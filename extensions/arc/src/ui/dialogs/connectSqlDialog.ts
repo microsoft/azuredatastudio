@@ -36,7 +36,7 @@ export abstract class ConnectToSqlDialog extends InitializingComponent {
 	}
 
 	public showDialog(dialogTitle: string, connectionProfile?: azdata.IConnectionProfile): azdata.window.Dialog {
-		const dialog = azdata.window.createModelViewDialog(dialogTitle, undefined, 'wide');
+		const dialog = azdata.window.createModelViewDialog(dialogTitle, undefined, 'narrow');
 		const trueCategory: azdata.CategoryValue = { displayName: loc.booleantrue, name: 'true' }
 		const falseCategory: azdata.CategoryValue = { displayName: loc.booleanfalse, name: 'false' }
 		const booleanCategoryValues: azdata.CategoryValue[] = [trueCategory, falseCategory];
