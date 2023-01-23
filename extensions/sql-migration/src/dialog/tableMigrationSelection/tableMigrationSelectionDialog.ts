@@ -51,7 +51,8 @@ export class TableMigrationSelectionDialog {
 				this._tableSelectionMap = new Map();
 				sourceTableList.forEach(table => {
 					const sourceTable = targetDatabaseInfo.sourceTables.get(table.tableName);
-					const isSelected = sourceTable?.selectedForMigration === true;
+					// Tables are selected by default at the first time going to the table selection page
+					const isSelected = sourceTable === null || sourceTable === undefined ? true : sourceTable?.selectedForMigration === true;
 					const tableInfo: TableInfo = {
 						databaseName: table.databaseName,
 						rowCount: table.rowCount,
@@ -97,7 +98,9 @@ export class TableMigrationSelectionDialog {
 		let tableRow = 0;
 		this._missingTableCount = 0;
 		this._tableSelectionMap.forEach(sourceTable => {
-			if (filterText?.length === 0 || sourceTable.tableName.indexOf(filterText) > -1) {
+			const tableName = sourceTable.tableName.toLocaleLowerCase();
+			const searchText = filterText.toLocaleLowerCase();
+			if (filterText?.length === 0 || tableName.indexOf(searchText) > -1) {
 				const targetTable = this._targetTableMap.get(sourceTable.tableName);
 				if (targetTable) {
 					const targetTableRowCount = targetTable?.rowCount ?? 0;

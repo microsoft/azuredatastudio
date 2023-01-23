@@ -76,6 +76,15 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				this._disposables.forEach(
 					d => { try { d.dispose(); } catch { } });
 			}));
+
+		if (this.migrationStateModel.resumeAssessment) {
+			await this.populateAzureAccountsDropdown();
+			//await this.populateSubscriptionDropdown();
+			//await this.populateResourceGroupDropdown();
+			//await this.populateLocationDropdown();
+			//await this.populateResourceInstanceDropdown();
+		}
+
 		await this._view.initializeModel(form);
 	}
 
