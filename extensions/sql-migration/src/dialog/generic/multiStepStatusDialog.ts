@@ -82,7 +82,7 @@ export class MultiStepStatusDialog {
 			await promise;
 
 			this._areStepsComplete = areStepsComplete;
-			return this._runValidation(results);
+			return this._loadResults(results);
 		}
 	}
 
@@ -103,7 +103,6 @@ export class MultiStepStatusDialog {
 
 					this._headingText = view.modelBuilder.text()
 						.withProps({
-							// AKMA TODO need to update this
 							value: constants.RUNNING_MULTI_STEPS_HEADING,
 							CSSStyles: {
 								'font-size': '13px',
@@ -139,7 +138,7 @@ export class MultiStepStatusDialog {
 
 					this._disposables.push(
 						this._copyButton.onDidClick(
-							async (e) => this._copyValidationResults()));
+							async (e) => this._copyResults()));
 
 					const resultsHeading = view.modelBuilder.text()
 						.withProps({
@@ -201,7 +200,7 @@ export class MultiStepStatusDialog {
 		});
 	}
 
-	private async _runValidation(results?: MultiStepResult[]): Promise<void> {
+	private async _loadResults(results?: MultiStepResult[]): Promise<void> {
 		if (this._areStepsComplete) {
 			this._startLoader.loading = false;
 			this._headingText.value = constants.COMPLETED_MULTI_STEPS_HEADING;
@@ -213,7 +212,7 @@ export class MultiStepStatusDialog {
 		await this._initializeResults(results);
 	}
 
-	private async _copyValidationResults(): Promise<void> {
+	private async _copyResults(): Promise<void> {
 		const errorsText = this._errors.join(EOL);
 		const msg =
 			!this._areStepsComplete ? constants.SOME_STEPS_ARE_STILL_RUNNING :

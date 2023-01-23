@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as mssql from 'mssql';
-import { MultiStepResult, MultiStepState } from '../dialog/loginMigration/singleLoginStatusDialog';
+import { MultiStepResult, MultiStepState } from '../dialog/generic/multiStepStatusDialog';
 import * as constants from '../constants/strings';
 import { LoginTableInfo } from '../api/sqlUtils';
 

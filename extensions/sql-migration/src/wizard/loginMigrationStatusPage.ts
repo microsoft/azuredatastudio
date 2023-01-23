@@ -13,7 +13,7 @@ import * as styles from '../constants/styles';
 import { IconPathHelper } from '../constants/iconPathHelper';
 // import { EOL } from 'os';
 import { LoginMigrationStatusCodes } from '../constants/helper';
-import { MultiStepStatusDialog } from '../dialog/loginMigration/singleLoginStatusDialog';
+import { MultiStepStatusDialog } from '../dialog/generic/multiStepStatusDialog';
 
 export class LoginMigrationStatusPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
