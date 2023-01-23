@@ -380,10 +380,8 @@ suite('SQL Connection Tree Action tests', () => {
 			connectionManagementService.object,
 			createDialogService(1).object); // Selecting 'No' on the modal dialog
 
-		return connectionAction.run().then((value) => {
-			connectionManagementService.verify(x => x.deleteConnection(TypeMoq.It.isAny()), TypeMoq.Times.never());
-		});
-
+		await connectionAction.run();
+		connectionManagementService.verify(x => x.deleteConnection(TypeMoq.It.isAny()), TypeMoq.Times.never());
 	});
 
 	test('DeleteConnectionAction - test delete connection group', () => {
