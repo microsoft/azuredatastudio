@@ -6324,6 +6324,9 @@
       <Item ItemId=";src/sql/workbench/contrib/connection/common/connectionProviderExtension.schema.azureResource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure resource endpoint for the provider.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Endpoint delle risorse di Azure per il provider.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
