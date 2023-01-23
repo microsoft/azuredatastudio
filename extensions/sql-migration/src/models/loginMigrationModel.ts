@@ -91,13 +91,12 @@ export class LoginMigrationModel {
 	}
 
 	public AddLoginMigrationResults(step: LoginMigrationStep, newResult: mssql.StartLoginMigrationResult): void {
-		const failingLogins = new Set(Object.keys(newResult.exceptionMap).map(login => login.toLocaleLowerCase()));
-		const newExceptionMap = this._getExceptionMapWithNormalizedKeys(newResult.exceptionMap);
+		const exceptionMap = this._getExceptionMapWithNormalizedKeys(newResult.exceptionMap);
 		this._currentStepIdx = this._loginMigrationSteps.findIndex(s => s === step) + 1;
 
 		for (const loginName of this._logins.keys()) {
-			const status = failingLogins.has(loginName) ? LoginMigrationState.Failed : LoginMigrationState.Succeeded;
-			const errors = failingLogins.has(loginName) ? newExceptionMap[loginName].map((exception: any) => exception.Message) : [];
+			const status = exceptionMap.has(loginName) ? LoginMigrationState.Failed : LoginMigrationState.Succeeded;
+			let errors = exceptionMap.has(loginName) ? this._extractErrors(exceptionMap, loginName) : [];
 			this.AddStepStateForLogin(loginName, step, status, errors);
 
 			if (this.isMigrationComplete) {
@@ -105,7 +104,6 @@ export class LoginMigrationModel {
 				this.MarkLoginStatus(loginName, loginStatus);
 			}
 		}
-
 	}
 
 	public GetLoginMigrationResults(loginName: string): MultiStepResult[] {
@@ -216,5 +214,9 @@ export class LoginMigrationModel {
 			result[key.toLocaleLowerCase()] = exceptionMap[key];
 			return result;
 		}, {});
+	}
+
+	private _extractErrors(exceptionMap: ExceptionMap, loginName: string): string[] {
+		return exceptionMap[loginName].map((exception: any) => typeof exception.InnerException !== 'undefined' && exception.InnerException !== null ? exception.InnerException.Message : exception.Message);
 	}
 }

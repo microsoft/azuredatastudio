@@ -269,36 +269,8 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 				switch (buttonState?.column) {
 					case 3:
 						const loginName = this._migratingLoginsTable!.data[rowState.row][0];
-						await this._showSingleLoginStatusDialog(loginName);
+						await this._showLoginDetailsDialog(loginName);
 						break;
-
-					// const status = this._migratingLoginsTable!.data[rowState.row][3].title;
-					// const statusMessage = constants.LOGIN_MIGRATION_STATUS_LABEL(status);
-					// var errors = [];
-
-					// if (this.migrationStateModel._loginMigrationsResult?.exceptionMap) {
-					// 	const exception_key = Object.keys(this.migrationStateModel._loginMigrationsResult.exceptionMap).find(key => key.toLocaleLowerCase() === loginName.toLocaleLowerCase());
-					// 	if (exception_key) {
-					// 		for (var exception of this.migrationStateModel._loginMigrationsResult.exceptionMap[exception_key]) {
-					// 			if (Array.isArray(exception)) {
-					// 				for (var inner_exception of exception) {
-					// 					errors.push(inner_exception.Message);
-					// 				}
-					// 			} else {
-					// 				errors.push(exception.Message);
-					// 			}
-					// 		}
-					// 	}
-					// }
-
-					// const unique_errors = new Set(errors);
-
-					// // TODO AKMA: Make errors prettier (spacing between errors is weird)
-					// this.showDialogMessage(
-					// 	constants.DATABASE_MIGRATION_STATUS_TITLE,
-					// 	statusMessage,
-					// 	[...unique_errors].join(EOL));
-					// break;
 				}
 			}));
 
@@ -441,10 +413,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 		return result;
 	}
 
-	public updateValidationResultUI(initializing?: boolean): void {
-	}
-
-	private async _showSingleLoginStatusDialog(loginName: string): Promise<void> {
+	private async _showLoginDetailsDialog(loginName: string): Promise<void> {
 		this.wizard.message = { text: '' };
 		const dialog = new MultiStepStatusDialog(
 			() => { });
