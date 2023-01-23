@@ -302,7 +302,7 @@ export function LOGIN_WIZARD_TITLE(instanceName: string): string {
 }
 export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DESCRIPTION = localize('sql.login.migration.wizard.target.description', "Select the target Azure SQL Managed Instance, Azure SQL VM, or Azure SQL database(s) where you want to migrate your logins.");
 export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PREVIEW_WARNING = localize('sql.login.migration.wizard.target.data.migration.warning', "Please note that login migration feature is in private preview mode.");
-export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DATA_MIGRATION_WARNING = localize('sql.login.migration.wizard.target.data.migration.warning', "You must successfully migrate all your database(s) to the target before starting the login migration else the migration will fail. Also if the source and target database names are not same then some permissions may not be applied properly. Learn more");
+export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DATA_MIGRATION_WARNING = localize('sql.login.migration.wizard.target.data.migration.warning', "We recommend migrating your databases(s) to the Azure SQL target before starting the login migration to avoid failures in the process. Nevertheless, you can run this migration process whenever want you want if your goal is to update the user mapping for recently migrated databases.\n\n If the source and database names are not the same, then it is possible that some permissions may not be applied properly.");
 export function LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PERMISSIONS_WARNING(userName: string, instanceName: string): string {
 	if (!userName || !userName.length) {
 		return localize('sql.login.migration.wizard.target.permission.warning', "Please ensure that the current user has sysadmin permissions to get all login information for the current instance ({0}).", instanceName);
@@ -337,6 +337,7 @@ export function LOGIN_MIGRATIONS_GET_LOGINS_ERROR(message: string): string {
 	return localize('sql.migration.wizard.target.login.error', "Error getting login information: {0}", message);
 }
 export const SELECT_LOGIN_TO_CONTINUE = localize('sql.migration.select.database.to.continue', "Please select 1 or more logins for migration");
+export const ENTER_AAD_DOMAIN_NAME = localize('sql.login.migration.enter.AAD.domain.name.to.continue', "Azure Active Directory (AAD) Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).");
 export const LOGIN_MIGRATE_BUTTON_TEXT = localize('sql.migration.start.login.migration.button', "Migrate");
 export function LOGIN_MIGRATIONS_GET_CONNECTION_STRING(dataSource: string, id: string, pass: string): string {
 	return localize('sql.login.migration.get.connection.string', "data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;", dataSource, id, pass);
@@ -352,18 +353,29 @@ export const STARTING_LOGIN_MIGRATION = localize('sql.migration.starting.login',
 export const STARTING_LOGIN_MIGRATION_FAILED = localize('sql.migration.starting.login.failed', "Validating and migrating logins failed");
 export const ESTABLISHING_USER_MAPPINGS = localize('sql.login.migration.establish.user.mappings', "Validating and migrating logins completed.\n\nEstablishing user mappings.");
 export const ESTABLISHING_USER_MAPPINGS_FAILED = localize('sql.login.migration.establish.user.mappings.failed', "Establishing user mappings failed");
-export const MIGRATE_SERVER_ROLES_AND_SET_PERMISSIONS = localize('sql.login.migration.migrate.server.roles.and.set.permissions', "Establishing user mappings completed.\n\nCurrently, migrating server roles, establishing server mappings and setting permissions. This will take some time.");
-export const MIGRATE_SERVER_ROLES_AND_SET_PERMISSIONS_FAILED = localize('sql.login.migration.migrate.server.roles.and.set.permissions.failed', "Migrating server roles, establishing server mappings and setting permissions failed.");
+export const MIGRATING_SERVER_ROLES_AND_SET_PERMISSIONS = localize('sql.login.migration.migrate.server.roles.and.set.permissions', "Establishing user mappings completed.\n\nCurrently, migrating server roles, establishing server mappings and setting permissions. This will take some time.");
+export const MIGRATING_SERVER_ROLES_AND_SET_PERMISSIONS_FAILED = localize('sql.login.migration.migrate.server.roles.and.set.permissions.failed', "Migrating server roles, establishing server mappings and setting permissions failed.");
 export const LOGIN_MIGRATIONS_COMPLETE = localize('sql.login.migration.complete', "Completed migrating logins");
 export const LOGIN_MIGRATIONS_FAILED = localize('sql.login.migration.failed', "Migrating logins failed");
 export function LOGIN_MIGRATIONS_ERROR(message: string): string {
-	return localize('sql.login.migration..error', "Login migration error: {0}", message);
+	return localize('sql.login.migration.error', "Login migration error: {0}", message);
 }
 export const LOGINS_FOUND = localize('sql.login.migration.logins.found', "Login found");
 export const LOGINS_NOT_FOUND = localize('sql.login.migration.logins.not.found', "Login not found");
 export const LOGIN_MIGRATION_STATUS_SUCCEEDED = localize('sql.login.migration.status.succeeded', "Succeeded");
 export const LOGIN_MIGRATION_STATUS_FAILED = localize('sql.login.migration.status.failed', "Failed");
 export const LOGIN_MIGRATION_STATUS_IN_PROGRESS = localize('sql.login.migration.status.in.progress', "In progress");
+export const LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_LABEL = localize('sql.login.migration.aad.domain.name.input.box.label', "Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)");
+export const LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_PLACEHOLDER = localize('sql.login.migration.aad.domain.name.input.box.placeholder', "Enter AAD Domain Name");
+export function LOGIN_MIGRATIONS_LOGIN_STATUS_DETAILS_TITLE(loginName: string): string {
+	return localize('sql.login.migration.login.status.details.title', "Migration status details for {0}", loginName);
+}
+export const NOT_STARTED = localize('sql.login.migration.steps.not.started', "Not started");
+export const MIGRATE_LOGINS = localize('sql.login.migration.steps.migrate.logins', "Migrate logins");
+export const ESTABLISH_USER_MAPPINGS = localize('sql.login.migration.steps.migrate.logins', "Establish user mappings");
+export const MIGRATE_SERVER_ROLES_AND_SET_PERMISSIONS = localize('sql.login.migration.steps.migrate.logins', "Migrate server roles, set login and server permissions");
+export const LOGIN_MIGRATION_COMPLETED = localize('sql.login.migration.steps.migrate.logins', "Login migration completed");
+
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");
@@ -1317,3 +1329,29 @@ export const SQLDB_COL_COPY_DURATION = localize('sql.migration.sqldb.column.copy
 export const SQLDB_COL_PARRALEL_COPY_TYPE = localize('sql.migration.sqldb.column.parallelcopytype', 'Parallel copy type');
 export const SQLDB_COL_USED_PARALLEL_COPIES = localize('sql.migration.sqldb.column.usedparallelcopies', 'Used parallel copies');
 export const SQLDB_COL_COPY_START = localize('sql.migration.sqldb.column.copystart', 'Copy start');
+
+// Multi Step Status Dialog
+export const COPY_RESULTS = localize('sql.migration.multi.step.status.dialog.copy.results', "Copy results");
+export const MULTI_STEP_RESULTS_HEADING = localize('sql.migration.multi.step.status.dialog.heading', "Step details");
+export const STEPS_TITLE = localize('sql.migration.multi.step.status.steps.title', "Steps");
+export const RUNNING_MULTI_STEPS_HEADING = localize('sql.migration.running.multi.steps.heading', "We are running the following steps:");
+export const COMPLETED_MULTI_STEPS_HEADING = localize('sql.migration.completed.multi.steps.heading', "We ran the following steps:");
+export const SOME_STEPS_ARE_STILL_RUNNING = localize('sql.migration.multi.step.some.steps.are.still.running', "Some steps are still running.");
+export const ALL_STEPS_SUCCEEDED = localize('sql.migration.multi.step.all.steps.succeeded', "All steps succeeded.");
+export function ALL_STEPS_COMPLETED_ERRORS(msg: string): string {
+	return localize(
+		'sql.migration.multi.step.all.steps.completed.errors',
+		"All steps completed with the following error(s):{0}{1}", EOL, msg);
+}
+export function RESULTS_INFO_BOX_STATUS(state: string | undefined, errors?: string[]): string {
+	const status = state ?? '';
+	if (errors && errors.length > 0) {
+		return localize(
+			'sql.migration.multi.step.status.errors',
+			"Step status: {0}{1}{2}", status, EOL, errors.join(EOL));
+	} else {
+		return localize(
+			'sql.migration.multi.step.status',
+			"Step status: {0}", status);
+	}
+}
