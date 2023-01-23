@@ -343,7 +343,7 @@ suite('SQL Connection Tree Action tests', () => {
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			connection,
 			connectionManagementService.object,
-			createDialogService(0).object); // Select 'Yes' on the promptChoice
+			createDialogService(0).object); // Select 'Yes' on the modal dialog
 
 		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.deleteConnection(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
@@ -351,7 +351,7 @@ suite('SQL Connection Tree Action tests', () => {
 
 	});
 
-	test('DeleteConnectionAction - connection not deleted when user selects no on the prompt', () => {
+	test('DeleteConnectionAction - connection not deleted when user selects no on the modal dialog', () => {
 		let connectionManagementService = createConnectionManagementService(true, undefined);
 
 		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
@@ -373,7 +373,7 @@ suite('SQL Connection Tree Action tests', () => {
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			connection,
 			connectionManagementService.object,
-			createDialogService(1).object); // Selecting 'No' on the promptChoice
+			createDialogService(1).object); // Selecting 'No' on the modal dialog
 
 		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.deleteConnection(TypeMoq.It.isAny()), TypeMoq.Times.never());
@@ -389,7 +389,7 @@ suite('SQL Connection Tree Action tests', () => {
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			conProfGroup,
 			connectionManagementService.object,
-			createDialogService(0).object); // Select 'Yes' on the promptChoice
+			createDialogService(0).object); // Select 'Yes' on the modal dialog
 
 		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.deleteConnectionGroup(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
