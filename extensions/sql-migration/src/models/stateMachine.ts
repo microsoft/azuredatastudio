@@ -561,8 +561,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 	public async migrateLogins(): Promise<Boolean> {
-		// this._loginMigrationModel = new LoginMigrationModel();
 		try {
+			this._loginMigrationModel.AddNewLogins(this._loginsForMigration.map(row => row.loginName));
+
 			const sourceConnectionString = await this.getSourceConnectionString();
 			const targetConnectionString = await this.getTargetConnectionString();
 			console.log('Starting Login Migration at: ', new Date());
@@ -577,11 +578,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			console.timeEnd("migrateLogins");
 
 			this.updateLoginMigrationResults(response);
-			this._loginMigrationModel.AddNewLogins(this._loginsForMigration.map(row => row.loginName));
 			this._loginMigrationModel.AddLoginMigrationResults(LoginMigrationStep.MigrateLogins, response);
 		} catch (error) {
 			console.log('Failed Login Migration at: ', new Date());
 			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
+			this._loginMigrationModel.ReportException(LoginMigrationStep.MigrateLogins, error);
 			this._loginMigrationsError = error;
 			return false;
 		}
@@ -609,6 +610,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		} catch (error) {
 			console.log('Failed Login Migration at: ', new Date());
 			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
+			this._loginMigrationModel.ReportException(LoginMigrationStep.MigrateLogins, error);
 			this._loginMigrationsError = error;
 			return false;
 		}
@@ -641,6 +643,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		} catch (error) {
 			console.log('Failed Login Migration at: ', new Date());
 			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
+			this._loginMigrationModel.ReportException(LoginMigrationStep.MigrateLogins, error);
 			this._loginMigrationsError = error;
 			return false;
 		}

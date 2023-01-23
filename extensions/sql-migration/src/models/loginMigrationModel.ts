@@ -106,12 +106,26 @@ export class LoginMigrationModel {
 		}
 	}
 
+	public ReportException(step: LoginMigrationStep, error: any): void {
+		this._currentStepIdx = this._loginMigrationSteps.findIndex(s => s === step) + 1;
+
+		for (const loginName of this._logins.keys()) {
+			// Mark current step as failed with the error message and mark remaining messages as canceled
+			let errors = [error.message];
+			this.AddStepStateForLogin(loginName, step, LoginMigrationState.Failed, errors);
+			this._markRemainingSteps(loginName, LoginMigrationState.Canceled);
+			this.MarkLoginStatus(loginName, LoginMigrationState.Failed);
+		}
+
+		this._markMigrationComplete();
+	}
+
 	public GetLoginMigrationResults(loginName: string): MultiStepResult[] {
 		let loginResults: MultiStepResult[] = [];
 		let login = this.GetLogin(loginName);
 
 		for (const step of this._loginMigrationSteps) {
-			// The default steps and state will be added if no steps ahve completed
+			// The default steps and state will be added if no steps have completed
 			let stepResult: MultiStepResult = {
 				stepName: GetLoginMigrationStepString(step),
 				state: MultiStepState.Pending,
@@ -218,5 +232,15 @@ export class LoginMigrationModel {
 
 	private _extractErrors(exceptionMap: ExceptionMap, loginName: string): string[] {
 		return exceptionMap[loginName].map((exception: any) => typeof exception.InnerException !== 'undefined' && exception.InnerException !== null ? exception.InnerException.Message : exception.Message);
+	}
+
+	private _markMigrationComplete() {
+		this._currentStepIdx = this._loginMigrationSteps.length;
+	}
+
+	private _markRemainingSteps(loginName: string, status: LoginMigrationState) {
+		for (let i = this._currentStepIdx; i < this._loginMigrationSteps.length; i++) {
+			this.AddStepStateForLogin(loginName, this._loginMigrationSteps[i], status, []);
+		}
 	}
 }
