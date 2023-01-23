@@ -333,6 +333,17 @@ export interface IConnectionManagementService {
 	 * @returns Promise with a boolean value indicating whether the user has accepted the suggestion.
 	 */
 	handleUnsupportedProvider(providerId: string): Promise<boolean>;
+
+	/**
+	 * Launches the password change dialog.
+	 * @param profile The connection profile to change the password.
+	 */
+	launchChangePasswordDialog?(profile: IConnectionProfile): void;
+
+	/**
+	 * Get the connection profile that caused an error from Connection Management.
+	 */
+	getConnectionProfileFromError?(): IConnectionProfile;
 }
 
 export enum RunQueryOnConnectionMode {

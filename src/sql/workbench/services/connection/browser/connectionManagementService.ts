@@ -82,6 +82,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _connectionStatusManager: ConnectionStatusManager;
 	private _connectionsGotUnsupportedVersionWarning: string[] = [];
 
+	//Saved connection profile to be accessed by providers in case of error.
+	private _connectionProfileDuringError: interfaces.IConnectionProfile
+
 	private static readonly CONNECTION_MEMENTO = 'ConnectionManagement';
 	private static readonly _azureResources: AzureResource[] =
 		[AzureResource.ResourceManagement, AzureResource.Sql, AzureResource.OssRdbms, AzureResource.AzureLogAnalytics, AzureResource.AzureKusto];
@@ -563,9 +566,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					options.showFirewallRuleOnError = false;
 					return this.connectWithOptions(connection, uri, options, callbacks);
 				} else {
-					return this.handleOtherError(connection, connectionResult, options).then(success => {
+					this._connectionProfileDuringError = connection;
+					return this._errorDiagnosticsService.checkErrorCode(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName).then(success => {
+						this._connectionProfileDuringError = undefined;
 						if (success) {
-							//For now handle connection errors inside handleOtherError.
+							//For now handle connection errors in provider.
 							connectionResult.errorHandled = true;
 							return connectionResult;
 						}
@@ -597,21 +602,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private handleOtherError(connection: interfaces.IConnectionProfile, connectionResult: IConnectionResult, options: IConnectionCompletionOptions): Promise<boolean> {
-		return this._errorDiagnosticsService.checkErrorCode(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName).then(response => {
-			if (response.errorAction === Constants.expiredPasswordErrorCode) {
-				this._logService.info(`change password error code returned!`);
-				this.launchChangePasswordDialog(connection, options.params)
-				return true;
-			} else {
-				return false;
-			}
-		});
+	public launchChangePasswordDialog(profile: interfaces.IConnectionProfile): void {
+		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
+		dialog.open(profile)
 	}
 
-	public launchChangePasswordDialog(profile: interfaces.IConnectionProfile, params: INewConnectionParams): void {
-		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
-		dialog.open(profile, params);
+	// Used by providers needing access to the profile that errored.
+	public getConnectionProfileFromError(): interfaces.IConnectionProfile {
+		return this._connectionProfileDuringError;
 	}
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {

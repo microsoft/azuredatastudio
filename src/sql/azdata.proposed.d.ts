@@ -432,22 +432,19 @@ declare module 'azdata' {
 		azurePortalEndpoint?: string;
 	}
 
-	/**
-	 * An interface for receiving diagnostic data from a provider.
-	 */
-	export interface Diagnostics {
-		handleErrorCode(errorCode: number, errorMessage: string): Thenable<diagnostics.ErrorDiagnosticsResponse>;
-	}
 
 	export namespace diagnostics {
-		export interface ErrorDiagnosticsResponse {
-			errorAction: string;
+		/**
+		 * Diagnostics object for handling error codes for a provider.
+		 */
+		export interface ErrorDiagnostics {
+			handleErrorCode(errorCode: number, errorMessage: string): Thenable<boolean>;
 		}
 
 		/**
-		 * Registers a Diagnostics object that can support a provider.
+		 * Registers provider with instance of Diagnostics implementation.
 		 */
-		export function registerDiagnostics(providerMetadata: ResourceProviderMetadata, diagnostics: Diagnostics): vscode.Disposable;
+		export function registerDiagnostics(providerMetadata: ResourceProviderMetadata, diagnostics: ErrorDiagnostics): vscode.Disposable;
 	}
 
 	export namespace connection {
@@ -480,6 +477,16 @@ declare module 'azdata' {
 			 */
 			None = 'None'
 		}
+
+		/**
+		 * Opens the change password dialog in connection management service.
+		 */
+		export function openChangePasswordDialog(initialConnectionProfile: IConnectionProfile): void;
+
+		/**
+		 * Gets the connection profile and params from the last error (required to avoid circular dependencies)
+		 */
+		export function getConnectionProfileFromError(): Thenable<ConnectionProfile>;
 	}
 
 	/*

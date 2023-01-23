@@ -20,7 +20,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { TestConnectionProvider } from 'sql/platform/connection/test/common/testConnectionProvider';
 import { TestResourceProvider } from 'sql/workbench/services/resourceProvider/test/common/testResourceProviderService';
-import { TestErrorDiagnosticsService } from 'sql/platform/diagnostics/common/testErrorDiagnosticsService';
+import { TestErrorDiagnosticsService } from 'sql/workbench/services/connection/test/common/testErrorDiagnosticsService';
 
 import * as azdata from 'azdata';
 

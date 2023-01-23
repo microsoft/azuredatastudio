@@ -4,22 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { diagnostics } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 
 export class TestErrorDiagnosticsService implements IErrorDiagnosticsService {
 	_serviceBrand: undefined;
 
-	registerDiagnostics(providerId: string, diagnostics: azdata.Diagnostics): void {
+	registerDiagnostics(providerId: string, diagnostics: azdata.diagnostics.ErrorDiagnostics): void {
 	}
 
 	unregisterDiagnostics(ProviderId: string): void {
 	}
 
-	checkErrorCode(errorCode: number, errorMessage: string, providerId: string): Promise<diagnostics.ErrorDiagnosticsResponse> {
-		let response: diagnostics.ErrorDiagnosticsResponse = {
-			errorAction: ""
-		}
-		return Promise.resolve(response);
+	checkErrorCode(errorCode: number, errorMessage: string, providerId: string): Promise<boolean> {
+		return Promise.resolve(false);
 	}
 }

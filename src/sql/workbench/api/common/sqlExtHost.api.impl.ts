@@ -138,6 +138,12 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				openConnectionDialog(providers?: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection> {
 					return extHostConnectionManagement.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
 				},
+				openChangePasswordDialog(initialConnectionProfile: azdata.IConnectionProfile) {
+					return extHostConnectionManagement.$openChangePasswordDialog(initialConnectionProfile)
+				},
+				getConnectionProfileFromError(): Thenable<azdata.connection.ConnectionProfile> {
+					return extHostConnectionManagement.$getConnectionProfileFromError();
+				},
 				listDatabases(connectionId: string): Thenable<string[]> {
 					return extHostConnectionManagement.$listDatabases(connectionId);
 				},
@@ -220,7 +226,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			// namespace: diagnostics
 			const diagnostics: typeof azdata.diagnostics = {
 				// "azdata" API definition
-				registerDiagnostics: (providerMetadata: azdata.ResourceProviderMetadata, diagnostics: azdata.Diagnostics): vscode.Disposable => {
+				registerDiagnostics: (providerMetadata: azdata.ResourceProviderMetadata, diagnostics: azdata.diagnostics.ErrorDiagnostics): vscode.Disposable => {
 					return extHostErrorDiagnostics.$registerDiagnostics(providerMetadata, diagnostics);
 				}
 			}

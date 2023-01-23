@@ -8,7 +8,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
-import { INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
+import { INewConnectionParams, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -43,7 +43,6 @@ export class PasswordChangeDialog extends Modal {
 	private _okButton?: Button;
 	private _cancelButton?: Button;
 	private _profile: IConnectionProfile;
-	private _params: INewConnectionParams;
 	private _uri: string;
 	private _passwordValueText: InputBox;
 	private _confirmValueText: InputBox;
@@ -64,9 +63,8 @@ export class PasswordChangeDialog extends Modal {
 		super('', '', telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasSpinner: true, spinnerTitle: passwordChangeLoadText, dialogStyle: 'normal', width: dialogWidth, dialogPosition: 'left' });
 	}
 
-	public open(profile: IConnectionProfile, params: INewConnectionParams) {
+	public open(profile: IConnectionProfile) {
 		this._profile = profile;
-		this._params = params;
 		this._uri = this.connectionManagementService.getConnectionUri(profile);
 		this.render();
 		this.show();
@@ -119,7 +117,7 @@ export class PasswordChangeDialog extends Modal {
 		this._okButton.enabled = false;
 		this._cancelButton.enabled = false;
 		this.spinner = true;
-		this.changePasswordFunction(this._profile, this._params, this._uri, this._passwordValueText.value, this._confirmValueText.value).then(
+		this.changePasswordFunction(this._profile, this._uri, this._passwordValueText.value, this._confirmValueText.value).then(
 			() => {
 				this.hide('ok'); /* password changed successfully */
 			},
@@ -131,7 +129,7 @@ export class PasswordChangeDialog extends Modal {
 		);
 	}
 
-	private async changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, oldPassword: string, newPassword: string): Promise<void> {
+	private async changePasswordFunction(connection: IConnectionProfile, uri: string, oldPassword: string, newPassword: string): Promise<void> {
 		// Verify passwords match before changing the password.
 		if (oldPassword !== newPassword) {
 			this.errorMessageService.showDialog(Severity.Error, errorHeader, errorPasswordMismatchErrorMessage + '\n\n' + errorPasswordMismatchRecoveryInstructions);
@@ -143,6 +141,8 @@ export class PasswordChangeDialog extends Modal {
 			return Promise.reject(new Error(passwordChangeResult.errorMessage));
 		}
 		connection.options['password'] = newPassword;
+		// Only one type is valid, the default one.
+		let params: INewConnectionParams = { connectionType: ConnectionType.default }
 		await this.connectionDialogService.callDefaultOnConnect(connection, params);
 	}
 }

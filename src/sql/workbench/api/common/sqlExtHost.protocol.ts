@@ -613,7 +613,7 @@ export abstract class ExtHostErrorDiagnosticsShape {
 	/**
 	 * Handle other error types
 	 */
-	$handleErrorCode(handle: number, errorCode: number, errorMessage: string): Thenable<azdata.diagnostics.ErrorDiagnosticsResponse> { throw ni(); }
+	$handleErrorCode(handle: number, errorCode: number, errorMessage: string): Thenable<boolean> { throw ni(); }
 }
 
 /**
@@ -722,6 +722,8 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
 	$getServerInfo(connectedId: string): Thenable<azdata.ServerInfo>;
 	$openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection>;
+	$openChangePasswordDialog(initialConnectionProfile: azdata.IConnectionProfile): void;
+	$getConnectionProfileFromError(): Thenable<azdata.connection.ConnectionProfile>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;

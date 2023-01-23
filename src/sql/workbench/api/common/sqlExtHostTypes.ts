@@ -1059,15 +1059,6 @@ export namespace executionPlan {
 	}
 }
 
-export namespace diagnostics {
-	/**
-	 * The error codes returned to indicate what kind of error is being thrown.
-	 */
-	export interface ErrorDiagnosticsResponse {
-		errorAction: string;
-	}
-}
-
 export namespace env {
 	/**
 	 * Well-known app quality values

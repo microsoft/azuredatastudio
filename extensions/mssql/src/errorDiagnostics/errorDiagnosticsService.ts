@@ -6,18 +6,17 @@
 import * as azdata from 'azdata';
 import { ISqlOpsFeature, SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
-import * as contracts from '../contracts';
 import { AppContext } from '../appContext';
 import { ServerCapabilities, ClientCapabilities, RPCMessageType } from 'vscode-languageclient';
 import { Disposable } from 'vscode';
+import * as ErrorDiagnosticsConstants from './errorDiagnosticsConstants';
 
 export const diagnosticsId = 'azurediagnostics'
 export const serviceName = 'AzureDiagnostics';
 
 export class ErrorDiagnosticsService extends SqlOpsFeature<any> {
-	private static readonly messagesTypes: RPCMessageType[] = [
-		contracts.DiagnosticsRequest.type,
-	];
+	//No contracts for now, but can be added later.
+	private static readonly messagesTypes: RPCMessageType[] = [];
 
 	public static asFeature(context: AppContext): ISqlOpsFeature {
 		return class extends ErrorDiagnosticsService {
@@ -34,17 +33,36 @@ export class ErrorDiagnosticsService extends SqlOpsFeature<any> {
 				});
 			}
 
-			protected override registerProvider(options: any): Disposable {
-				const client = this._client;
+			private restoreProfileFormat(profile: azdata.connection.ConnectionProfile): azdata.IConnectionProfile {
+				return {
+					providerName: profile.providerId,
+					id: profile.connectionId,
+					connectionName: profile.connectionName,
+					serverName: profile.serverName,
+					databaseName: profile.databaseName,
+					userName: profile.userName,
+					password: profile.password,
+					authenticationType: profile.authenticationType,
+					savePassword: profile.savePassword,
+					groupFullName: profile.groupFullName,
+					groupId: profile.groupId,
+					saveProfile: profile.savePassword,
+					azureTenantId: profile.azureTenantId,
+					options: profile.options
+				};
+			}
 
-				let handleErrorCode = (errorCode: number, errorMessage: string): Thenable<azdata.diagnostics.ErrorDiagnosticsResponse> => {
-					const params: contracts.ErrorDiagnosticsParameters = { errorCode, errorMessage };
-					try {
-						return client.sendRequest(contracts.DiagnosticsRequest.type, params);
+			protected override registerProvider(options: any): Disposable {
+				let handleErrorCode = async (errorCode: number, errorMessage: string): Promise<boolean> => {
+					if (errorCode = ErrorDiagnosticsConstants.MssqlPasswordResetCode) {
+						let profile = await azdata.connection.getConnectionProfileFromError();
+						// Need to convert back to IConnectionProfile.
+						let restoredProfile = this.restoreProfileFormat(profile);
+						azdata.connection.openChangePasswordDialog(restoredProfile);
+						return Promise.resolve(true);
 					}
-					catch (e) {
-						client.logFailedRequest(contracts.DiagnosticsRequest.type, e);
-						return Promise.reject(e);
+					else {
+						return Promise.resolve(false);
 					}
 				}
 

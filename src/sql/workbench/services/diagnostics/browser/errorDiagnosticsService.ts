@@ -9,21 +9,16 @@ import * as azdata from 'azdata';
 export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 
 	_serviceBrand: undefined;
-	private _providers: { [handle: string]: azdata.Diagnostics; } = Object.create(null);
+	private _providers: { [handle: string]: azdata.diagnostics.ErrorDiagnostics; } = Object.create(null);
 
 	constructor(
 	) { }
 
-	public async checkErrorCode(errorCode: number, errorMessage: string, providerId: string): Promise<azdata.diagnostics.ErrorDiagnosticsResponse> {
-		let result = { errorAction: "" };
+	public async checkErrorCode(errorCode: number, errorMessage: string, providerId: string): Promise<boolean> {
+		let result = false;
 		let provider = this._providers[providerId]
 		if (provider) {
-			await provider.handleErrorCode(errorCode, errorMessage)
-				.then(response => {
-					if (result.errorAction !== response.errorAction) {
-						result = response;
-					}
-				}, () => { });
+			result = await provider.handleErrorCode(errorCode, errorMessage)
 		}
 		return result;
 	}
@@ -31,7 +26,7 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 	/**
 	 * Register a diagnostics object for a provider
 	 */
-	public registerDiagnostics(providerId: string, diagnostics: azdata.Diagnostics): void {
+	public registerDiagnostics(providerId: string, diagnostics: azdata.diagnostics.ErrorDiagnostics): void {
 		this._providers[providerId] = diagnostics;
 	}
 

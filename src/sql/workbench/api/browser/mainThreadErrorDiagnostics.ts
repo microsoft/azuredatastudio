@@ -33,8 +33,8 @@ export class MainThreadErrorDiagnostics extends Disposable implements MainThread
 		let self = this;
 
 		//Create the error handler that interfaces with the extension via the proxy and register it
-		let diagnostics: azdata.Diagnostics = {
-			handleErrorCode(errorCode: number, errorMessage: string): Thenable<azdata.diagnostics.ErrorDiagnosticsResponse> {
+		let diagnostics: azdata.diagnostics.ErrorDiagnostics = {
+			handleErrorCode(errorCode: number, errorMessage: string): Thenable<boolean> {
 				return self._proxy.$handleErrorCode(handle, errorCode, errorMessage);
 			}
 		};
