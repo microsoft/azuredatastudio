@@ -566,21 +566,16 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			const sourceConnectionString = await this.getSourceConnectionString();
 			const targetConnectionString = await this.getTargetConnectionString();
-			console.log('Starting Login Migration at: ', new Date());
-
-			console.time("migrateLogins");
 			var response = (await this.migrationService.migrateLogins(
 				sourceConnectionString,
 				targetConnectionString,
 				this._loginsForMigration.map(row => row.loginName),
 				this._aadDomainName
 			))!;
-			console.timeEnd("migrateLogins");
 
 			this.updateLoginMigrationResults(response);
 			this._loginMigrationModel.AddLoginMigrationResults(LoginMigrationStep.MigrateLogins, response);
 		} catch (error) {
-			console.log('Failed Login Migration at: ', new Date());
 			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
 			this._loginMigrationModel.ReportException(LoginMigrationStep.MigrateLogins, error);
 			this._loginMigrationsError = error;
@@ -596,19 +591,16 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			const sourceConnectionString = await this.getSourceConnectionString();
 			const targetConnectionString = await this.getTargetConnectionString();
 
-			console.time("establishUserMapping");
 			var response = (await this.migrationService.establishUserMapping(
 				sourceConnectionString,
 				targetConnectionString,
 				this._loginsForMigration.map(row => row.loginName),
 				this._aadDomainName
 			))!;
-			console.timeEnd("establishUserMapping");
 
 			this.updateLoginMigrationResults(response);
 			this._loginMigrationModel.AddLoginMigrationResults(LoginMigrationStep.EstablishUserMapping, response);
 		} catch (error) {
-			console.log('Failed Login Migration at: ', new Date());
 			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
 			this._loginMigrationModel.ReportException(LoginMigrationStep.MigrateLogins, error);
 			this._loginMigrationsError = error;
@@ -624,24 +616,17 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			const sourceConnectionString = await this.getSourceConnectionString();
 			const targetConnectionString = await this.getTargetConnectionString();
 
-			console.time("migrateServerRolesAndSetPermissions")
 			var response = (await this.migrationService.migrateServerRolesAndSetPermissions(
 				sourceConnectionString,
 				targetConnectionString,
 				this._loginsForMigration.map(row => row.loginName),
 				this._aadDomainName
 			))!;
-			console.timeEnd("migrateServerRolesAndSetPermissions");
 
 			this.updateLoginMigrationResults(response);
 			this._loginMigrationModel.AddLoginMigrationResults(LoginMigrationStep.MigrateServerRolesAndSetPermissions, response);
 
-			console.log('Ending Login Migration at: ', new Date());
-			console.log('Login migration response: ', response);
-
-			console.log('AKMA DEBUG response: ', response);
 		} catch (error) {
-			console.log('Failed Login Migration at: ', new Date());
 			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
 			this._loginMigrationModel.ReportException(LoginMigrationStep.MigrateLogins, error);
 			this._loginMigrationsError = error;

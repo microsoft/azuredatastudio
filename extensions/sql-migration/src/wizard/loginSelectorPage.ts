@@ -14,6 +14,7 @@ import { collectSourceLogins, collectTargetLogins, LoginTableInfo } from '../api
 import { AzureSqlDatabaseServer } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import * as utils from '../api/utils';
+import { LoginType } from '../models/loginMigrationModel';
 
 export class LoginSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -471,7 +472,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	}
 
 	private selectedWindowsLogins(): boolean {
-		return this.selectedLogins().some(logins => logins.loginType.toLocaleLowerCase() === constants.LOGIN_TYPE_WINDOWS_LOGIN.toLocaleLowerCase());
+		return this.selectedLogins().some(logins => logins.loginType.toLocaleLowerCase() === LoginType.Windows_Login);
 	}
 
 	private async updateValuesOnSelection() {

@@ -10,6 +10,11 @@ import { LoginTableInfo } from '../api/sqlUtils';
 
 type ExceptionMap = { [login: string]: any }
 
+export enum LoginType {
+	Windows_Login = 'windows_login',
+	SQL_Login = 'sql_login',
+}
+
 export enum LoginMigrationStep {
 	NotStarted = -1,
 	MigrateLogins = 0,
@@ -31,38 +36,20 @@ export function GetLoginMigrationStepString(step: LoginMigrationStep): string {
 		case LoginMigrationStep.MigrationCompleted:
 			return constants.LOGIN_MIGRATION_COMPLETED;
 		default:
-			return ""
+			return "";
 	}
 }
-
-export enum LoginMigrationState {
-	Pending = 'Pending',
-	Running = 'Running',
-	Succeeded = 'Succeeded',
-	Failed = 'Failed',
-	Canceled = 'Canceled',
-}
-
-export const LoginMigrationStateToMultiStepState: constants.LookupTable<MultiStepState> = {
-	[LoginMigrationState.Pending]: MultiStepState.Pending,
-	[LoginMigrationState.Running]: MultiStepState.Running,
-	[LoginMigrationState.Succeeded]: MultiStepState.Succeeded,
-	[LoginMigrationState.Failed]: MultiStepState.Failed,
-	[LoginMigrationState.Canceled]: MultiStepState.Canceled,
-	default: MultiStepState.Pending
-};
-
 
 export interface LoginMigrationStepState {
 	loginName: string;
 	stepName: LoginMigrationStep;
-	status: LoginMigrationState;
+	status: MultiStepState;
 	errors: string[];
 }
 
 export interface Login {
 	loginName: string;
-	overallStatus: LoginMigrationState;
+	overallStatus: MultiStepState;
 	statusPerStep: Map<LoginMigrationStep, LoginMigrationStepState>;
 }
 
@@ -95,12 +82,12 @@ export class LoginMigrationModel {
 		this._currentStepIdx = this._loginMigrationSteps.findIndex(s => s === step) + 1;
 
 		for (const loginName of this._logins.keys()) {
-			const status = loginName in exceptionMap ? LoginMigrationState.Failed : LoginMigrationState.Succeeded;
-			let errors = loginName in exceptionMap ? this._extractErrors(exceptionMap, loginName) : [];
+			const status = loginName in exceptionMap ? MultiStepState.Failed : MultiStepState.Succeeded;
+			const errors = loginName in exceptionMap ? this._extractErrors(exceptionMap, loginName) : [];
 			this._addStepStateForLogin(loginName, step, status, errors);
 
 			if (this.isMigrationComplete) {
-				const loginStatus = this._didAnyStepFail(loginName) ? LoginMigrationState.Failed : LoginMigrationState.Succeeded;
+				const loginStatus = this._didAnyStepFail(loginName) ? MultiStepState.Failed : MultiStepState.Succeeded;
 				this._markLoginStatus(loginName, loginStatus);
 			}
 		}
@@ -112,9 +99,9 @@ export class LoginMigrationModel {
 		for (const loginName of this._logins.keys()) {
 			// Mark current step as failed with the error message and mark remaining messages as canceled
 			let errors = [error.message];
-			this._addStepStateForLogin(loginName, step, LoginMigrationState.Failed, errors);
-			this._markRemainingSteps(loginName, LoginMigrationState.Canceled);
-			this._markLoginStatus(loginName, LoginMigrationState.Failed);
+			this._addStepStateForLogin(loginName, step, MultiStepState.Failed, errors);
+			this._markRemainingSteps(loginName, MultiStepState.Canceled);
+			this._markLoginStatus(loginName, MultiStepState.Failed);
 		}
 
 		this._markMigrationComplete();
@@ -135,10 +122,10 @@ export class LoginMigrationModel {
 			// If the step has completed, then the login will have the stored status
 			if (login?.statusPerStep.has(step)) {
 				let stepStatus = login!.statusPerStep.get(step);
-				stepResult.state = LoginMigrationStateToMultiStepState[stepStatus!.status];
+				stepResult.state = stepStatus!.status;
 				stepResult.errors = stepStatus!.errors;
 			} else if (step === this.currentStep) {
-				stepResult.state = LoginMigrationStateToMultiStepState[LoginMigrationState.Running];
+				stepResult.state = MultiStepState.Running;
 			}
 
 			loginResults.push(stepResult);
@@ -168,7 +155,7 @@ export class LoginMigrationModel {
 		return this._logins.get(loginName.toLocaleLowerCase());
 	}
 
-	private _addNewLogin(loginName: string, status: LoginMigrationState = LoginMigrationState.Pending) {
+	private _addNewLogin(loginName: string, status: MultiStepState = MultiStepState.Pending) {
 		let newLogin: Login = {
 			loginName: loginName,
 			overallStatus: status,
@@ -178,17 +165,17 @@ export class LoginMigrationModel {
 		this._logins.set(loginName.toLocaleLowerCase(), newLogin);
 	}
 
-	private _addStepStateForLogin(loginName: string, step: LoginMigrationStep, stepStatus: LoginMigrationState, errors: string[] = []) {
+	private _addStepStateForLogin(loginName: string, step: LoginMigrationStep, stepStatus: MultiStepState, errors: string[] = []) {
 		const loginExist = this._logins.has(loginName);
 
 		if (!loginExist) {
-			this._addNewLogin(loginName, LoginMigrationState.Running);
+			this._addNewLogin(loginName, MultiStepState.Running);
 		}
 
-		let login = this._getLogin(loginName);
+		const login = this._getLogin(loginName);
 
 		if (login) {
-			login.overallStatus = LoginMigrationState.Running;
+			login.overallStatus = MultiStepState.Running;
 			login.statusPerStep.set(
 				step,
 				{
@@ -201,11 +188,11 @@ export class LoginMigrationModel {
 		}
 	}
 
-	private _markLoginStatus(loginName: string, status: LoginMigrationState) {
+	private _markLoginStatus(loginName: string, status: MultiStepState) {
 		const loginExist = this._logins.has(loginName);
 
 		if (!loginExist) {
-			this._addNewLogin(loginName, LoginMigrationState.Running);
+			this._addNewLogin(loginName, MultiStepState.Running);
 		}
 
 		let login = this._getLogin(loginName);
@@ -218,7 +205,7 @@ export class LoginMigrationModel {
 	private _didAnyStepFail(loginName: string) {
 		const login = this._getLogin(loginName);
 		if (login) {
-			return Object.values(login.statusPerStep).every(status => status === LoginMigrationState.Failed);
+			return Object.values(login.statusPerStep).every(status => status === MultiStepState.Failed);
 		}
 
 		return false;
@@ -232,14 +219,15 @@ export class LoginMigrationModel {
 	}
 
 	private _extractErrors(exceptionMap: ExceptionMap, loginName: string): string[] {
-		return exceptionMap[loginName].map((exception: any) => typeof exception.InnerException !== 'undefined' && exception.InnerException !== null ? exception.InnerException.Message : exception.Message);
+		return exceptionMap[loginName].map((exception: any) => typeof exception.InnerException !== 'undefined'
+			&& exception.InnerException !== null ? exception.InnerException.Message : exception.Message);
 	}
 
 	private _markMigrationComplete() {
 		this._currentStepIdx = this._loginMigrationSteps.length;
 	}
 
-	private _markRemainingSteps(loginName: string, status: LoginMigrationState) {
+	private _markRemainingSteps(loginName: string, status: MultiStepState) {
 		for (let i = this._currentStepIdx; i < this._loginMigrationSteps.length; i++) {
 			this._addStepStateForLogin(loginName, this._loginMigrationSteps[i], status, []);
 		}

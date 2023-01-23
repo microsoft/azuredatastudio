@@ -11,7 +11,6 @@ import * as constants from '../constants/strings';
 import { debounce, getPipelineStatusImage } from '../api/utils';
 import * as styles from '../constants/styles';
 import { IconPathHelper } from '../constants/iconPathHelper';
-// import { EOL } from 'os';
 import { LoginMigrationStatusCodes } from '../constants/helper';
 import { MultiStepStatusDialog } from '../dialog/generic/multiStepStatusDialog';
 
