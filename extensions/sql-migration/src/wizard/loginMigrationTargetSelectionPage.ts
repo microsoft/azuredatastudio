@@ -328,6 +328,14 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			await this.populateAzureAccountsDropdown();
 			await this.populateSubscriptionDropdown();
 			await this.populateLocationDropdown();
+
+			// Collect source login info here, as it will speed up loading the next page
+			const sourceLogins: LoginTableInfo[] = [];
+			sourceLogins.push(...await collectSourceLogins(
+				this.migrationStateModel.sourceConnectionId,
+				this.migrationStateModel.isWindowsAuthMigrationSupported));
+			this.migrationStateModel._loginMigrationModel.collectedSourceLogins = true;
+			this.migrationStateModel._loginMigrationModel.loginsOnSource = sourceLogins;
 			console.log(this.migrationStateModel._targetType);
 		}));
 
@@ -614,13 +622,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._loginMigrationModel.collectedTargetLogins = true;
 						this.migrationStateModel._loginMigrationModel.loginsOnTarget = loginsOnTarget;
 
-						// Collect source login info here, as it will speed up loading the next page
-						const sourceLogins: LoginTableInfo[] = [];
-						sourceLogins.push(...await collectSourceLogins(
-							this.migrationStateModel.sourceConnectionId,
-							this.migrationStateModel.isWindowsAuthMigrationSupported));
-						this.migrationStateModel._loginMigrationModel.collectedSourceLogins = true;
-						this.migrationStateModel._loginMigrationModel.loginsOnSource = sourceLogins;
 						await this._showConnectionResults(loginsOnTarget);
 					} catch (error) {
 						this.wizard.message = {
