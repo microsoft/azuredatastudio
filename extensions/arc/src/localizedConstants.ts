@@ -145,9 +145,6 @@ export const rememberPassword = localize('arc.rememberPassword', "Remember Passw
 export const encrypt = localize('arc.encrypt', "Encrypt");
 export const trustServerCertificate = localize('arc.trustServerCertificate', "Trust Server Certificate");
 export const enableTrustServerCert = localize('arc.enableTrustServerCert', "Enable Trust Server Certificate");
-export const trustServerCertInstructionText = localize('arc.trustServerCertInstructionText', `Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable 'Trust server certificate' in the connection dialog.
-
-Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? `);
 export const msgPromptSSLCertificateValidationFailed = localize('arc.msgPromptSSLCertificateValidationFailed', 'Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or set \'Trust server certificate\' to \'true\' in the settings file. Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable \'Trust server certificate\' on this connection and retry?');
 export const connect = localize('arc.connect', "Connect");
 export const readMore = localize('arc.readMore', "Read more");
