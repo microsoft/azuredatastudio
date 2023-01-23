@@ -55,6 +55,7 @@ export class ErrorDiagnosticsService extends SqlOpsFeature<any> {
 			protected override registerProvider(options: any): Disposable {
 				let handleErrorCode = async (errorCode: number, errorMessage: string, additionalObjects?: any): Promise<boolean> => {
 					if (errorCode = ErrorDiagnosticsConstants.MssqlPasswordResetCode) {
+						// additionalObjects here should be a connection profile in the format "azdata.connection.ConnectionProfile"
 						// Need to convert inputed profile back to IConnectionProfile.
 						let restoredProfile = this.restoreProfileFormat(additionalObjects as azdata.connection.ConnectionProfile);
 						azdata.connection.openChangePasswordDialog(restoredProfile);
