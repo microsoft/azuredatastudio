@@ -959,7 +959,7 @@ Select a different subscription containing at least one server</source>
       <source xml:lang="en">Deploy SQL Server 2019 container images</source>
     </trans-unit>
     <trans-unit id="docker-sql-2022-title">
-      <source xml:lang="en">Deploy SQL Server 2022 Preview container images</source>
+      <source xml:lang="en">Deploy SQL Server 2022 container images</source>
     </trans-unit>
     <trans-unit id="docker-sql-password-field">
       <source xml:lang="en">SQL Server password</source>
@@ -998,7 +998,7 @@ Select a different subscription containing at least one server</source>
       <source xml:lang="en">SQL Server 2019</source>
     </trans-unit>
     <trans-unit id="sql-2022-display-name">
-      <source xml:lang="en">SQL Server 2022 Preview</source>
+      <source xml:lang="en">SQL Server 2022</source>
     </trans-unit>
     <trans-unit id="sql-azure-database-server-display-name">
       <source xml:lang="en">Database Server</source>

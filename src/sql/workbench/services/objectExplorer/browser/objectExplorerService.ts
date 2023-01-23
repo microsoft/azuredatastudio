@@ -23,6 +23,7 @@ import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/
 import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -87,7 +88,7 @@ export interface IObjectExplorerService {
 
 	getObjectExplorerNode(connection: IConnectionProfile): TreeNode | undefined;
 
-	updateObjectExplorerNodes(connectionProfile: IConnectionProfile): Promise<void>;
+	updateObjectExplorerNodes(connectionProfile: IConnectionProfile, requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<void>;
 
 	deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void>;
 
@@ -208,10 +209,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._onSelectionOrFocusChange.event;
 	}
 
-	public async updateObjectExplorerNodes(connection: IConnectionProfile): Promise<void> {
+	public async updateObjectExplorerNodes(connection: IConnectionProfile, requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<void> {
 		const withPassword = await this._connectionManagementService.addSavedPassword(connection);
 		const connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, withPassword);
-		return this.updateNewObjectExplorerNode(connectionProfile);
+		return this.updateNewObjectExplorerNode(connectionProfile, requestStatus);
 	}
 
 	public async deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void> {
@@ -237,16 +238,19 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 
 		let sessionStatus = this._sessions[expandResponse.sessionId!];
-		let foundSession = false;
 		if (sessionStatus) {
-			let nodeStatus = this._sessions[expandResponse.sessionId!].nodes[expandResponse.nodePath];
-			foundSession = !!nodeStatus;
-			if (foundSession && nodeStatus.expandEmitter) {
-				nodeStatus.expandEmitter.fire(expandResponse);
+			const nodeStatus = sessionStatus.nodes[expandResponse.nodePath];
+			if (nodeStatus) {
+				if (!nodeStatus.expandEmitter) {
+					this.logService.warn(`No expand emitter for session: ${expandResponse.sessionId} and node path: ${expandResponse.nodePath}`);
+				} else {
+					nodeStatus.expandEmitter.fire(expandResponse);
+				}
+			} else {
+				this.logService.warn(`Cannot find node status for session: ${expandResponse.sessionId} and node path: ${expandResponse.nodePath}`);
 			}
-		}
-		if (!foundSession) {
-			this.logService.warn(`Cannot find node status for session: ${expandResponse.sessionId} and node path: ${expandResponse.nodePath}`);
+		} else {
+			this.logService.warn(`Cannot find session ${expandResponse.sessionId} for node path: ${expandResponse.nodePath}`);
 		}
 	}
 
@@ -327,12 +331,14 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._onUpdateObjectExplorerNodes.fire(eventArgs);
 	}
 
-	private async updateNewObjectExplorerNode(connection: ConnectionProfile): Promise<void> {
+	private async updateNewObjectExplorerNode(connection: ConnectionProfile, requestStatus: ObjectExplorerRequestStatus | undefined): Promise<void> {
 		if (this._activeObjectExplorerNodes[connection.id]) {
 			this.sendUpdateNodeEvent(connection);
 		} else {
 			try {
-				await this.createNewSession(connection.providerName, connection);
+				if (!requestStatus) {
+					await this.createNewSession(connection.providerName, connection);
+				}
 			} catch (err) {
 				this.sendUpdateNodeEvent(connection, err);
 				throw err;
@@ -348,6 +354,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		const provider = this._providers[providerId];
 		if (provider) {
 			const result = await provider.createNewSession(connection.toConnectionInfo());
+			if (this._sessions[result.sessionId]) {
+				this.logService.trace(`Overwriting session ${result.sessionId}`);
+			}
 			this._sessions[result.sessionId] = {
 				connection: connection,
 				nodes: {}
@@ -393,6 +402,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					self._sessions[session.sessionId!].nodes[node.nodePath] = {
 						expandEmitter: new Emitter<NodeExpandInfoWithProviderId>()
 					};
+					this.logService.trace(`Adding node ${node.nodePath} to session ${session.sessionId}`);
 					newRequest = true;
 				}
 				let provider = this._providers[providerId];
@@ -433,6 +443,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							// Have to delete it after get all responses otherwise couldn't find session for not the first response
 							if (newRequest) {
 								delete self._sessions[session.sessionId!].nodes[node.nodePath];
+								this.logService.trace(`Deleted node ${node.nodePath} from session ${session.sessionId}`);
 							}
 						}
 					});

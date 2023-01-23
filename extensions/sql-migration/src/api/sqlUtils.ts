@@ -53,10 +53,26 @@ const query_databases_with_size = `
 			FROM sys.master_files with (nolock)
 			GROUP BY database_id
 		)
-	SELECT name, state_desc AS state, db_size.size
+	SELECT name, state_desc AS state, db_size.size, collation_name
 	FROM sys.databases with (nolock) LEFT JOIN db_size ON sys.databases.database_id = db_size.database_id
 	WHERE sys.databases.state = 0
 	`;
+
+const query_login_tables_sql = `
+	SELECT
+		sp.name as login,
+		sp.type_desc as login_type,
+		sp.default_database_name,
+		case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status
+	FROM sys.server_principals sp
+	LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id
+	WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN (
+		'SQL_LOGIN'
+		--, 'WINDOWS_LOGIN'
+	) AND sp.name NOT LIKE '##%##'
+	ORDER BY sp.name;`;
+
+const query_is_sys_admin_sql = `SELECT IS_SRVROLEMEMBER('sysadmin');`;
 
 export const excludeDatabases: string[] = [
 	'master',
@@ -72,6 +88,13 @@ export interface TableInfo {
 	selectedForMigration: boolean;
 }
 
+export interface SourceDatabaseInfo {
+	databaseName: string;
+	databaseCollation: string;
+	databaseState: number;
+	databaseSizeInMB: string;
+}
+
 export interface TargetDatabaseInfo {
 	serverName: string;
 	serverCollation: string;
@@ -83,6 +106,13 @@ export interface TargetDatabaseInfo {
 	isReadOnly: boolean;
 	sourceTables: Map<string, TableInfo>;
 	targetTables: Map<string, TableInfo>;
+}
+
+export interface LoginTableInfo {
+	loginName: string;
+	loginType: string;
+	defaultDatabaseName: string;
+	status: string;
 }
 
 function getSqlDbConnectionProfile(
@@ -99,14 +129,14 @@ function getSqlDbConnectionProfile(
 		databaseName: databaseName,
 		userName: userName,
 		password: password,
-		authenticationType: 'SqlLogin',
+		authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 		savePassword: false,
 		saveProfile: false,
 		options: {
 			conectionName: '',
 			server: serverName,
 			database: databaseName,
-			authenticationType: 'SqlLogin',
+			authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 			user: userName,
 			password: password,
 			connectionTimeout: 60,
@@ -123,7 +153,7 @@ function getSqlDbConnectionProfile(
 	};
 }
 
-function getConnectionProfile(
+export function getConnectionProfile(
 	serverName: string,
 	azureResourceId: string,
 	userName: string,
@@ -137,7 +167,7 @@ function getConnectionProfile(
 		azureResourceId: azureResourceId,
 		userName: userName,
 		password: password,
-		authenticationType: 'SqlLogin', // TODO: use azdata.connection.AuthenticationType.SqlLogin after next ADS release
+		authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 		savePassword: false,
 		groupFullName: connectId,
 		groupId: connectId,
@@ -146,7 +176,7 @@ function getConnectionProfile(
 		options: {
 			conectionName: connectId,
 			server: serverName,
-			authenticationType: 'SqlLogin',
+			authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 			user: userName,
 			password: password,
 			connectionTimeout: 60,
@@ -308,6 +338,7 @@ export async function getDatabasesList(connectionProfile: azdata.connection.Conn
 					name: getSqlString(row[0]),
 					state: getSqlString(row[1]),
 					sizeInMB: getSqlString(row[2]),
+					collation: getSqlString(row[3])
 				}
 			};
 		}) ?? [];
@@ -318,4 +349,65 @@ export async function getDatabasesList(connectionProfile: azdata.connection.Conn
 
 		return [];
 	}
+}
+
+export async function collectSourceLogins(sourceConnectionId: string): Promise<LoginTableInfo[]> {
+	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
+	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+		'MSSQL',
+		azdata.DataProviderType.QueryProvider);
+
+	const results = await queryProvider.runQueryAndReturn(
+		ownerUri,
+		query_login_tables_sql);
+
+	return results.rows.map(row => {
+		return {
+			loginName: getSqlString(row[0]),
+			loginType: getSqlString(row[1]),
+			defaultDatabaseName: getSqlString(row[2]),
+			status: getSqlString(row[3]),
+		};
+	}) ?? [];
+}
+
+export async function collectTargetLogins(
+	targetServer: AzureSqlDatabaseServer,
+	userName: string,
+	password: string): Promise<string[]> {
+
+	const connectionProfile = getConnectionProfile(
+		targetServer.properties.fullyQualifiedDomainName,
+		targetServer.id,
+		userName,
+		password);
+
+	const result = await azdata.connection.connect(connectionProfile, false, false);
+	if (result.connected && result.connectionId) {
+		const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+			'MSSQL',
+			azdata.DataProviderType.QueryProvider);
+
+		const ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
+		const results = await queryProvider.runQueryAndReturn(
+			ownerUri,
+			query_login_tables_sql);
+
+		return results.rows.map(row => getSqlString(row[0])) ?? [];
+	}
+
+	throw new Error(result.errorMessage);
+}
+
+export async function isSysAdmin(sourceConnectionId: string): Promise<boolean> {
+	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
+	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+		'MSSQL',
+		azdata.DataProviderType.QueryProvider);
+
+	const results = await queryProvider.runQueryAndReturn(
+		ownerUri,
+		query_is_sys_admin_sql);
+
+	return getSqlBoolean(results.rows[0][0]);
 }

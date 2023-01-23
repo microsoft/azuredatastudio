@@ -11317,9 +11317,9 @@
 			"rowDetailView.loadError": "Errore di caricamento..."
 		},
 		"sql/base/browser/ui/table/table": {
-			"table.resizeColumn": "Provide new column width",
-			"table.resizeColumn.invalid": "Invalid column width",
-			"table.resizeColumn.negativeSize": "Size cannot be 0 or negative"
+			"table.resizeColumn": "Specificare la larghezza della nuova colonna",
+			"table.resizeColumn.invalid": "Larghezza della colonna non valida",
+			"table.resizeColumn.negativeSize": "La dimensione non può essere 0 o negativa"
 		},
 		"sql/base/browser/ui/taskbar/overflowActionbar": {
 			"toggleMore": "Attiva/Disattiva altro"
@@ -11337,7 +11337,6 @@
 			"dataExplorer.context": "Menu di scelta rapida della voce dataexplorer",
 			"dataGrid.context": "Menu di scelta rapida elemento griglia dati",
 			"default": "Abilita il controllo automatico degli aggiornamenti. Azure Data Studio controlla periodicamente la disponibilità di aggiornamenti in modo automatico.",
-			"docNotFoundForUriError": "Non è stato possibile aprire un documento del blocco appunti per l'URI specificato.",
 			"enable locally": "Ricaricare Azure Data Studio per abilitare l'estensione in locale.",
 			"enable remote": "Ricaricare Azure Data Studio per abilitare l'estensione in {0}.",
 			"enableWindowsBackgroundUpdates": "Abilitare questa opzione per scaricare e installare le nuove versioni di Azure Data Studio in background in Windows",
@@ -11350,7 +11349,6 @@
 			"miinstallVsix": "Installare l'estensione dal pacchetto VSIX",
 			"newQuery": "Nuova query",
 			"notebook.cellTitle": "Menu del titolo della cella del notebook",
-			"notebook.cellToolbarLocation.compatibilityDescription": "Indica la posizione in cui deve essere visualizzata la barra degli strumenti della cella o se deve essere nascosta. Nota: questa impostazione è abilitata solo per ragioni di compatibilità delle estensioni e pertanto non produce alcun effetto.",
 			"notebook.title": "Menu del titolo del notebook",
 			"notebook.toolbar": "Menu della barra degli strumenti del notebook",
 			"objectExplorer.context": "Menu di scelta rapida elemento Esplora oggetti",
@@ -11377,9 +11375,7 @@
 			"terminal.integrated.inheritEnv": "Indica se le nuove shell devono ereditare l'ambiente da Azure Data Studio, che può generare una shell di accesso per garantire l'inizializzazione di $PATH e altre variabili di sviluppo. Questo non ha alcun effetto su Windows.",
 			"uninstallExtensionComplete": "Ricaricare Azure Data Studio per completare la disinstallazione dell’estensione {0}.",
 			"updateLocale": "Cambiare la lingua dell'interfaccia utente di Azure Data Studio in {0} e riavviare?",
-			"vscodeDocCreationFailedError": "Non è stato possibile creare il documento del blocco appunti.",
-			"vscodeFunctionalityNotSupportedError": "Questa funzionalità VS Code non è supportata in Azure Data Studio.",
-			"vscodeInvalidArgumentsError": "Argomenti non validi.",
+			"vscodeNotebooksNotSupportedError": "Le estensioni del notebook di VS Code non sono supportate in Azure Data Studio.",
 			"watermark.newNotebook": "Nuovo notebook",
 			"watermark.newSqlFile": "Nuovo file SQL",
 			"workspace.trust.description": "Controlla se l'attendibilità dell'area di lavoro è abilitata all'interno di Azure Data Studio.",
@@ -11530,9 +11526,6 @@
 		},
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
 			"navigationProviderRequired": "È necessario passare a questo metodo un elemento NavigationProvider con providerId valido"
-		},
-		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "Non è possibile avviare una sessione. Il gestore non è ancora inizializzato"
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "Cancella tutti gli account salvati",
@@ -12268,7 +12261,7 @@
 			"epCompare.zoomInAction": "Zoom avanti",
 			"epCompare.zoomOutAction": "Zoom indietro",
 			"epCompare.zoomReset": "Reimpostare zoom",
-			"epCompare.zoomToFit": "Adattare alla finestra",
+			"epCompare.zoomToFit": "Adatta alla finestra",
 			"executionPlanComparison.bottomPlanDiagram.name": "Piano di esecuzione inferiore {0}",
 			"executionPlanComparison.topPlanDiagram.name": "Piano di esecuzione superiore {0}",
 			"executionPlanDisableTooltip": "Descrizioni comando disabilitate",
@@ -12702,6 +12695,7 @@
 			"notebook.markdownModeDescription": "Il testo viene visualizzato come Markdown.",
 			"notebook.markdownPreviewLineHeight": "Controlla l'altezza della riga usata nell'anteprima Markdown del notebook. Questo numero è relativo alle dimensioni del carattere.",
 			"notebook.maxRichTextUndoHistory": "Numero massimo di modifiche archiviate nella cronologia di annullamento per l'editor di testo RTF del notebook.",
+			"notebook.renderTablesInHtml": "È possibile visualizzare e salvare le tabelle in formato HTML nelle celle di testo invece di eseguire la conversione in tabelle markdown.",
 			"notebook.richTextModeDescription": "Il testo viene visualizzato come testo RTF, noto anche come WYSIWYG.",
 			"notebook.saveConnectionName": "(Anteprima) Salvare il nome della connessione nei metadati del notebook.",
 			"notebook.showAllKernels": "(Anteprima) mostrare tutti i kernel per il provider di notebook corrente.",
@@ -12947,6 +12941,7 @@
 		},
 		"sql/workbench/contrib/query/browser/actions": {
 			"chart": "Grafico",
+			"copyHeaders": "Copia intestazioni",
 			"copySelection": "Copia",
 			"copyWithHeaders": "Copia con intestazioni",
 			"jsonEncoding": "La codifica dei risultati non verrà salvata quando si esporta in JSON. Ricordarsi di salvare con la codifica desiderata dopo la creazione del file.",
@@ -13022,6 +13017,7 @@
 			"queryEditor.results.saveAsMarkdown.lineSeparator": "Caratteri da usare per separare le righe durante l'esportazione in Markdown, per impostazione predefinita le terminazioni di riga di sistema",
 			"queryEditor.results.saveAsXml.encoding": "Codifica di file usata quando si salvano i risultati in formato XML",
 			"queryEditor.results.saveAsXml.formatted": "Quando è true, l'output XML verrà formattato quando si salvano i risultati in formato XML",
+			"queryEditor.results.showActionBar": "Indica se visualizzare la barra delle azioni nella visualizzazione dei risultati della query",
 			"queryEditor.results.streaming": "Abilita lo streaming dei risultati. Contiene alcuni problemi minori relativi a oggetti visivi",
 			"queryEditor.showConnectionInfoInTitle": "Controlla se visualizzare le informazioni sulla connessione per una scheda nel titolo.",
 			"queryEditor.tabColorMode": "Controlla come colorare le schede in base al gruppo di server della connessione attiva",
@@ -13067,6 +13063,8 @@
 			"status.query.selection-summary": "Riepilogo selezioni",
 			"status.query.status": "Stato esecuzione",
 			"status.query.summaryText": "Media: {0}  Conteggio: {1}  Somma: {2}",
+			"status.query.summaryTextNonNumeric": "Conteggio: {0}  Conteggio valori distinti: {1}  Conteggio valori Null: {2}",
+			"status.query.summaryTooltip": "Media: {0}  Conteggio: {1}  Conteggio valori distinti: {2}  Max: {3}  Min: {4}  Conteggio valori Null: {5}  Somma: {6}",
 			"status.query.timeElapsed": "Tempo trascorso"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13186,7 +13184,7 @@
 			"enablePreviewFeatures.yes": "Sì (scelta consigliata)"
 		},
 		"sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog": {
-			"notifyEncryption.message": "Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.",
+			"notifyEncryption.message": "Azure Data Studio ora ha la crittografia abilitata per impostazione predefinita per tutte le connessioni SQL Server. In questo modo le connessioni esistenti potrebbero non funzionare più a meno che non vengano modificate determinate proprietà di connessione correlate alla crittografia.{0}Per altri dettagli, è consigliabile consultare il collegamento seguente.",
 			"notifyEncryption.moreInfoLink": "Più informazioni",
 			"notifyEncryption.title": "Aggiornamento importante"
 		},
@@ -13583,6 +13581,7 @@
 			"deleteCellFailed": "Non è stato possibile eliminare la cella.",
 			"injectedParametersMsg": "N. parametri inseriti\r\n",
 			"kernelRequiresConnection": "Selezionare una connessione per eseguire le celle per questo kernel",
+			"savedKernelNotSupported": "Il kernel '{0}' di questo notebook non è supportato. Verrà invece impostato il kernel SQL per impostazione predefinita.",
 			"shutdownClientSessionError": "Si è verificato un errore della sessione client durante la chiusura del notebook: {0}",
 			"startSessionFailed": "Non è stato possibile avviare la sessione: {0}"
 		},
@@ -13619,14 +13618,13 @@
 			"unknownCellType": "Il tipo di cella {0} è sconosciuto"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "Destinazione di esecuzione facoltativa indicata da questo comando magic, ad esempio Spark rispetto a SQL",
+			"carbon.extension.contributes.notebook.executionTarget": "Destinazione di esecuzione facoltativa indicata da questo comando magic, ad esempio Python rispetto a SQL",
 			"carbon.extension.contributes.notebook.fileExtensions": "Indica le estensioni di file da registrare in questo provider di notebook",
-			"carbon.extension.contributes.notebook.kernels": "Set facoltativo di kernel per cui è valida questa impostazione, ad esempio python3, pyspark, sql",
+			"carbon.extension.contributes.notebook.kernels": "Set facoltativo di kernel per cui è valida questa impostazione, ad esempio python3, sql",
 			"carbon.extension.contributes.notebook.language": "Lingua da usare per la cella se questo comando magic è incluso nella cella",
 			"carbon.extension.contributes.notebook.magic": "Nome del comando magic per la cella, ad esempio '%%sql'.",
 			"carbon.extension.contributes.notebook.provider": "Identificatore del provider di notebook.",
 			"carbon.extension.contributes.notebook.standardKernels": "Indica i kernel che devono essere standard con questo provider di notebook",
-			"providerNotInRegistryError": "Il provider specificato '{0}' non è presente nel registro di sistema del notebook.",
 			"vscode.extension.contributes.notebook.languagemagics": "Aggiunge come contributo la lingua del notebook.",
 			"vscode.extension.contributes.notebook.providersDescriptions": "Aggiunge come contributo le descrizioni del provider di notebook."
 		},
@@ -13724,8 +13722,9 @@
 			"filewallRule": "Regola del firewall",
 			"firewall.cancel": "Annulla",
 			"firewall.ok": "OK",
-			"firewallRuleDialogDescription": "L'indirizzo IP client non ha accesso al server. Accedere a un account Azure e creare una nuova regola del firewall per consentire l'accesso.",
-			"firewallRuleHelpDescription": "Altre informazioni sulle impostazioni del firewall",
+			"firewall.ruleName": "Nome regola",
+			"firewallRuleDescription": "Per accedere all'istanza di SQL Server è necessaria una regola del firewall. Fare clic sul collegamento seguente per creare una nuova regola del firewall.",
+			"firewallRuleHelpLink": "Altre informazioni sulle regole del firewall",
 			"from": "Da",
 			"to": "A"
 		},
@@ -13900,6 +13899,17 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "&&Introduzione",
 			"showReleaseNotes": "Mostra introduzione"
+		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "Annulla",
+			"passwordChangeDialog.confirmPassword": "Conferma password:",
+			"passwordChangeDialog.connecting": "Connessione",
+			"passwordChangeDialog.errorHeader": "Errore durante il tentativo di cambiare la password",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "Le password inserite non sono uguali",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Premere OK e immettere la stessa password in entrambe le caselle.",
+			"passwordChangeDialog.newPassword": "Nuova password:",
+			"passwordChangeDialog.ok": "OK",
+			"passwordChangeDialog.title": "Cambia password"
 		}
 	}
 }

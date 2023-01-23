@@ -45,6 +45,8 @@ declare module 'mssql' {
 		readonly sqlMigration: ISqlMigrationService;
 
 		readonly azureBlob: IAzureBlobService;
+
+		readonly tdeMigration: ITdeMigrationService;
 	}
 
 	/**
@@ -701,11 +703,16 @@ declare module 'mssql' {
 	}
 
 	export interface ISqlMigrationService {
-		getAssessments(ownerUri: string, databases: string[]): Promise<AssessmentResult | undefined>;
+		getAssessments(ownerUri: string, databases: string[], xEventsFilesFolderPath: string): Promise<AssessmentResult | undefined>;
 		getSkuRecommendations(dataFolder: string, perfQueryIntervalInSec: number, targetPlatforms: string[], targetSqlInstance: string, targetPercentile: number, scalingFactor: number, startTime: string, endTime: string, includePreviewSkus: boolean, databaseAllowList: string[]): Promise<SkuRecommendationResult | undefined>;
 		startPerfDataCollection(ownerUri: string, dataFolder: string, perfQueryIntervalInSec: number, staticQueryIntervalInSec: number, numberOfIterations: number): Promise<StartPerfDataCollectionResult | undefined>;
 		stopPerfDataCollection(): Promise<StopPerfDataCollectionResult | undefined>;
 		refreshPerfDataCollection(lastRefreshedTime: Date): Promise<RefreshPerfDataCollectionResult | undefined>;
+		startLoginMigration(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
+		validateLoginMigration(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
+		migrateLogins(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
+		establishUserMapping(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
+		migrateServerRolesAndSetPermissions(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
 	}
 
 	// SqlMigration interfaces  -----------------------------------------------------------------------
@@ -794,10 +801,6 @@ declare module 'mssql' {
 		assessmentReportPath: string;
 	}
 
-	export interface ISqlMigrationService {
-		getAssessments(ownerUri: string, databases: string[]): Promise<AssessmentResult | undefined>;
-	}
-
 	export interface CreateSasResponse {
 		sharedAccessSignature: string;
 	}
@@ -814,4 +817,52 @@ declare module 'mssql' {
 		 */
 		createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Promise<CreateSasResponse>;
 	}
+
+	export enum LoginMigrationStep {
+		StartValidations = 0,
+		MigrateLogins = 1,
+		EstablishUserMapping = 2,
+		MigrateServerRoles = 3,
+		EstablishServerRoleMapping = 4,
+		SetLoginPermissions = 5,
+		SetServerRolePermissions = 6,
+	}
+
+	export interface StartLoginMigrationResult {
+		exceptionMap: { [login: string]: any };
+		completedStep: LoginMigrationStep;
+		elapsedTime: string;
+	}
+
+	// TDEMigration interfaces  BEGIN -----------------------------------------------------------------------
+	export interface TdeMigrationRequest {
+		encryptedDatabases: string[];
+		sourceSqlConnectionString: string;
+		targetSubscriptionId: string;
+		targetResourceGroupName: string;
+		targetManagedInstanceName: string;
+	}
+
+	export interface TdeMigrationEntryResult {
+		dbName: string;
+		success: boolean;
+		message: string;
+	}
+
+	export interface TdeMigrationResult {
+		migrationStatuses: TdeMigrationEntryResult[];
+	}
+
+	export interface ITdeMigrationService {
+		migrateCertificate(
+			encryptedDatabases: string[],
+			sourceSqlConnectionString: string,
+			targetSubscriptionId: string,
+			targetResourceGroupName: string,
+			targetManagedInstanceName: string,
+			networkSharePath: string,
+			accessToken: string,
+			reportUpdate: (dbName: string, succeeded: boolean, message: string) => void): Promise<TdeMigrationResult>;
+	}
+	// TDEMigration interfaces END -----------------------------------------------------------------------
 }

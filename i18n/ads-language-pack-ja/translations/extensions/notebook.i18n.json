@@ -75,7 +75,6 @@
 			"newMarkdown": "新しいマークダウン (プレビュー)",
 			"newNotebook": "新しいノートブック (プレビュー)",
 			"newSection": "新しいセクション (プレビュー)",
-			"noBDCConnectionError": "Spark カーネルは、SQL Server ビッグ データ クラスターのマスター インスタンスへの接続を必要とします。",
 			"noBooksSelected": "ビューレットに現在選択されている Jupyter ブックがありません。",
 			"onGitHub": "GitHub",
 			"onsharedFile": "共有ファイル",
@@ -87,7 +86,6 @@
 			"openNotebookCommand": "ノートブックを開く",
 			"openNotebookError": "ノートブック {0} を開けませんでした: {1}",
 			"openUntitledNotebookError": "無題のノートブック {0} を無題として開けませんでした: {1}",
-			"providerNotValidError": "MSSQL 以外のプロバイダーは、Spark カーネルでサポートされていません。",
 			"readBookError": "Jupyter ブック {0} を読み取ることができませんでした: {1}",
 			"releases": "リリース",
 			"repoUrl": "リポジトリ URL",
@@ -101,7 +99,6 @@
 			"version": "バージョン"
 		},
 		"dist/common/notebookUtils": {
-			"msgSampleCodeDataFrame": "このサンプル コードは、ファイルをデータ フレームに読み込み、最初の 10 件の結果を示します。",
 			"noNotebookVisible": "アクティブなノートブック エディターがありません",
 			"notebookFiles": "ノートブック"
 		},
@@ -219,12 +216,7 @@
 			"shutdownError": "Notebook サーバーをシャットダウンできませんでした: {0}"
 		},
 		"dist/jupyter/jupyterSessionManager": {
-			"bdcConnectError": "エラー: {0}。",
-			"clusterControllerConnectionRequired": "Spark ジョブを実行するには、クラスター コントローラーへの接続が必要です",
-			"errorStartBeforeReady": "セッションを開始できません。マネージャーがまだ初期化されていません",
-			"notebook.couldNotFindKnoxGateway": "Knox ゲートウェイ エンドポイントが見つかりませんでした",
-			"promptBDCPassword": "BDC コントローラーに接続するためのパスワードを指定してください",
-			"promptBDCUsername": "{0}BDC コントローラーに接続するためのユーザー名を指定してください:"
+			"errorStartBeforeReady": "セッションを開始できません。マネージャーがまだ初期化されていません"
 		},
 		"dist/jupyter/pypiClient": {
 			"managePackages.packageRequestError": "パッケージ情報要求がエラーで失敗しました: {0} {1}"

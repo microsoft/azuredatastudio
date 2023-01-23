@@ -27,6 +27,7 @@ export class DropdownList extends Dropdown {
 	protected backgroundColor?: Color;
 	protected foregroundColor?: Color;
 	protected borderColor?: Color;
+	protected borderWidth = 1;
 
 	private button?: Button;
 
@@ -89,7 +90,7 @@ export class DropdownList extends Dropdown {
 	 */
 	protected override renderContents(container: HTMLElement): IDisposable {
 		let div = DOM.append(container, this._contentContainer);
-		div.style.width = DOM.getTotalWidth(this.element) + 'px';
+		div.style.width = (DOM.getTotalWidth(this.element) - this.borderWidth * 2) + 'px'; // Subtract border width
 		return { dispose: () => { } };
 	}
 
@@ -145,7 +146,8 @@ export class DropdownList extends Dropdown {
 			element.style.backgroundColor = background;
 			element.style.color = foreground;
 
-			element.style.borderWidth = border ? '1px' : '';
+			this.borderWidth = border ? 1 : 0;
+			element.style.borderWidth = border ? this.borderWidth + 'px' : '';
 			element.style.borderStyle = border ? 'solid' : '';
 			element.style.borderColor = border;
 		}

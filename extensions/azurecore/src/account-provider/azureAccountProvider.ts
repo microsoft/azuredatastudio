@@ -115,7 +115,13 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 			} else {
 				account.isStale = false;
 				if (this.authLibrary === Constants.AuthLibrary.MSAL) {
+					// Check MSAL Cache before adding account, to mark it as stale if it is not present in cache
+					const accountInCache = await azureAuth.getAccountFromMsalCache(account.key.accountId);
+					if (!accountInCache) {
+						account.isStale = true;
+					}
 					accounts.push(account);
+
 				} else { // fallback to ADAL as default
 					accounts.push(await azureAuth.refreshAccessAdal(account));
 				}
@@ -137,23 +143,31 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	private async _getAccountSecurityToken(account: AzureAccount, tenantId: string, resource: azdata.AzureResource): Promise<Token | undefined> {
 		await this.initCompletePromise;
 		const azureAuth = this.getAuthMethod(account);
-		Logger.pii(`Getting account security token for ${JSON.stringify(account.key)} (tenant ${tenantId}). Auth Method = ${azureAuth.userFriendlyName}`, [], []);
-		if (this.authLibrary === Constants.AuthLibrary.MSAL) {
-			let authResult = await azureAuth?.getTokenMsal(account.key.accountId, resource, tenantId);
-			if (!authResult || !authResult.account || !authResult.account.idTokenClaims) {
-				Logger.error(`MSAL: getToken call failed`);
-				throw Error('Failed to get token');
-			} else {
-				const token: Token = {
-					key: authResult.account.homeAccountId,
-					token: authResult.accessToken,
-					tokenType: authResult.tokenType,
-					expiresOn: authResult.account.idTokenClaims.exp
-				};
-				return token;
+		if (azureAuth) {
+			Logger.pii(`Getting account security token for ${JSON.stringify(account.key)} (tenant ${tenantId}). Auth Method = ${azureAuth.userFriendlyName}`, [], []);
+			if (this.authLibrary === Constants.AuthLibrary.MSAL) {
+				tenantId = tenantId || account.properties.owningTenant.id;
+				let authResult = await azureAuth.getTokenMsal(account.key.accountId, resource, tenantId);
+				if (!authResult || !authResult.account || !authResult.account.idTokenClaims) {
+					Logger.error(`MSAL: getToken call failed`);
+					throw Error('Failed to get token');
+				} else {
+					const token: Token = {
+						key: authResult.account.homeAccountId,
+						token: authResult.accessToken,
+						tokenType: authResult.tokenType,
+						expiresOn: authResult.account.idTokenClaims.exp
+					};
+					return token;
+				}
+			} else { // fallback to ADAL as default
+				return azureAuth.getAccountSecurityTokenAdal(account, tenantId, resource);
 			}
-		} else { // fallback to ADAL as default
-			return azureAuth?.getAccountSecurityTokenAdal(account, tenantId, resource);
+		} else {
+			account.isStale = true;
+			Logger.error(`_getAccountSecurityToken: Authentication method not found for account ${account.displayInfo.displayName}`);
+			throw Error('Failed to get authentication method, please remove and re-add the account');
+
 		}
 	}
 

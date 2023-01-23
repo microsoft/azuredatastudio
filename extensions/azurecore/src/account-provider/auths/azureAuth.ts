@@ -280,8 +280,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return undefined;
 	}
 
-
-
 	protected abstract loginAdal(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse | undefined, authComplete: Deferred<void, Error> }>;
 
 	protected abstract loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult | null, authComplete: Deferred<void, Error> }>;
@@ -318,32 +316,24 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * @returns The authentication result, including the access token
 	 */
 	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource, tenantId: string): Promise<AuthenticationResult | null> {
-		const cache = this.clientApplication.getTokenCache();
-		if (!cache) {
-			Logger.error('Error: Could not fetch token cache.');
-			return null;
-		}
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 		if (!resource) {
 			Logger.error(`Error: Could not fetch the azure resource ${azureResource} `);
 			return null;
 		}
-		let account: AccountInfo | null;
-		// if the accountId is a home ID, it will include a "." character
-		if (accountId.includes(".")) {
-			account = await cache.getAccountByHomeId(accountId);
-		} else {
-			account = await cache.getAccountByLocalId(accountId);
-		}
+		// Resource endpoint must end with '/' to form a valid scope for MSAL token request.
+		const endpoint = resource.endpoint.endsWith('/') ? resource.endpoint : resource.endpoint + '/';
+
+		let account: AccountInfo | null = await this.getAccountFromMsalCache(accountId);
 		if (!account) {
 			Logger.error('Error: Could not fetch account when acquiring token');
 			return null;
 		}
 		let newScope;
 		if (resource.azureResourceId === azdata.AzureResource.ResourceManagement) {
-			newScope = [`${resource?.endpoint}user_impersonation`];
+			newScope = [`${endpoint}user_impersonation`];
 		} else {
-			newScope = [`${resource?.endpoint}.default`];
+			newScope = [`${endpoint}.default`];
 		}
 
 		// construct request
@@ -372,6 +362,23 @@ export abstract class AzureAuth implements vscode.Disposable {
 			Logger.error('Failed to silently acquire token, not InteractionRequiredAuthError');
 			return null;
 		}
+	}
+
+	public async getAccountFromMsalCache(accountId: string): Promise<AccountInfo | null> {
+		const cache = this.clientApplication.getTokenCache();
+		if (!cache) {
+			Logger.error('Error: Could not fetch token cache.');
+			return null;
+		}
+
+		let account: AccountInfo | null = null;
+		// if the accountId is a home ID, it will include a "." character
+		if (accountId.includes(".")) {
+			account = await cache.getAccountByHomeId(accountId);
+		} else {
+			account = await cache.getAccountByLocalId(accountId);
+		}
+		return account;
 	}
 
 	public async getTokenAdal(tenant: Tenant, resource: Resource, postData: AuthorizationCodePostData | TokenPostData | RefreshTokenPostData): Promise<OAuthTokenResponse | undefined> {
@@ -817,26 +824,19 @@ export abstract class AzureAuth implements vscode.Disposable {
 			// remove account based on authLibrary field, accounts added before this field was present will default to
 			// ADAL method of account removal
 			if (account.authLibrary === Constants.AuthLibrary.MSAL) {
-				return this.deleteAccountCacheMsal(account);
+				return await this.deleteAccountCacheMsal(account);
 			} else { // fallback to ADAL by default
-				return this.deleteAccountCacheAdal(account);
+				return await this.deleteAccountCacheAdal(account);
 			}
 		} catch (ex) {
-			const msg = localize('azure.cacheErrrorRemove', "Error when removing your account from the cache.");
-			void vscode.window.showErrorMessage(msg);
-			Logger.error('Error when removing tokens.', ex);
+			// We need not prompt user for error if token could not be removed from cache.
+			Logger.error('Error when removing token from cache: ', ex);
 		}
 	}
 
 	public async deleteAccountCacheMsal(account: azdata.AccountKey): Promise<void> {
 		const tokenCache = this.clientApplication.getTokenCache();
-		let msalAccount: AccountInfo | null;
-		// if the accountId is a home ID, it will include a "." character
-		if (account.accountId.includes(".")) {
-			msalAccount = await tokenCache.getAccountByHomeId(account.accountId);
-		} else {
-			msalAccount = await tokenCache.getAccountByLocalId(account.accountId);
-		}
+		let msalAccount: AccountInfo | null = await this.getAccountFromMsalCache(account.accountId);
 		if (!msalAccount) {
 			Logger.error(`MSAL: Unable to find account ${account.accountId} for removal`);
 			throw Error(`Unable to find account ${account.accountId}`);
