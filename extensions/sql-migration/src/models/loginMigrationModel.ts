@@ -95,8 +95,8 @@ export class LoginMigrationModel {
 		this._currentStepIdx = this._loginMigrationSteps.findIndex(s => s === step) + 1;
 
 		for (const loginName of this._logins.keys()) {
-			const status = exceptionMap.has(loginName) ? LoginMigrationState.Failed : LoginMigrationState.Succeeded;
-			let errors = exceptionMap.has(loginName) ? this._extractErrors(exceptionMap, loginName) : [];
+			const status = loginName in exceptionMap ? LoginMigrationState.Failed : LoginMigrationState.Succeeded;
+			let errors = loginName in exceptionMap ? this._extractErrors(exceptionMap, loginName) : [];
 			this.AddStepStateForLogin(loginName, step, status, errors);
 
 			if (this.isMigrationComplete) {
