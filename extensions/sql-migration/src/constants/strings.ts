@@ -372,6 +372,12 @@ export function LOGIN_MIGRATIONS_LOGIN_STATUS_DETAILS_TITLE(loginName: string): 
 }
 export const LOGIN_TYPE_WINDOWS_LOGIN = localize('sql.login.type.windows.login', "WINDOWS_LOGIN");
 export const LOGIN_TYPE_SQL_LOGIN = localize('sql.login.type.sql.login', "SQL_LOGIN");
+export const NOT_STARTED = localize('sql.login.migration.steps.not.started', "Not started");
+export const MIGRATE_LOGINS = localize('sql.login.migration.steps.migrate.logins', "Migrate logins");
+export const ESTABLISH_USER_MAPPINGS = localize('sql.login.migration.steps.migrate.logins', "Establish user mappings");
+export const MIGRATE_SERVER_ROLES_AND_SET_PERMISSIONS = localize('sql.login.migration.steps.migrate.logins', "Migrate server roles, set login and server permissions");
+export const LOGIN_MIGRATION_COMPLETED = localize('sql.login.migration.steps.migrate.logins', "Login migration completed");
+
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");
@@ -1345,8 +1351,3 @@ export function RESULTS_INFO_BOX_STATUS(state: string | undefined, errors?: stri
 			"Step status: {0}", status);
 	}
 }
-export const NOT_STARTED = localize('sql.login.migration.steps.not.started', "Not started");
-export const MIGRATE_LOGINS = localize('sql.login.migration.steps.migrate.logins', "Migrate logins");
-export const ESTABLISH_USER_MAPPINGS = localize('sql.login.migration.steps.migrate.logins', "Establish user mappings");
-export const MIGRATE_SERVER_ROLES_AND_SET_PERMISSIONS = localize('sql.login.migration.steps.migrate.logins', "Migrate server roles, set login and server permissions");
-export const LOGIN_MIGRATION_COMPLETED = localize('sql.login.migration.steps.migrate.logins', "Login migration completed");
