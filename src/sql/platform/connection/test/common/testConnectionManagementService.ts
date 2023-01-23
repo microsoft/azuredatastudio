@@ -330,4 +330,8 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	async handleUnsupportedProvider(providerName: string): Promise<boolean> {
 		return true;
 	}
+
+	launchChangePasswordDialog(profile: IConnectionProfile): void {
+
+	}
 }

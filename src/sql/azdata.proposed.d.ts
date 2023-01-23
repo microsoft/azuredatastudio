@@ -482,11 +482,6 @@ declare module 'azdata' {
 		 * Opens the change password dialog in connection management service.
 		 */
 		export function openChangePasswordDialog(initialConnectionProfile: IConnectionProfile): void;
-
-		/**
-		 * Gets the connection profile and params from the last error (required to avoid circular dependencies)
-		 */
-		export function getConnectionProfileFromError(): Thenable<ConnectionProfile>;
 	}
 
 	/*

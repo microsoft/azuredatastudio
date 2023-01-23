@@ -173,17 +173,6 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		this._connectionManagementService.launchChangePasswordDialog(profile);
 	}
 
-	public $getConnectionProfileFromError(): Thenable<azdata.connection.ConnectionProfile> {
-		let profile = this._connectionManagementService.getConnectionProfileFromError();
-		if (!profile) {
-			return Promise.resolve(undefined);
-		}
-
-		// Need to convert profile into azdata friendly format
-		let connection = this.convertToConnectionProfile(profile, false, false)
-		return Promise.resolve(connection);
-	}
-
 	public async $listDatabases(connectionId: string): Promise<string[]> {
 		let connectionUri = await this.$getUriForConnection(connectionId);
 		let result = await this._connectionManagementService.listDatabases(connectionUri);

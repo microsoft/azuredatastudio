@@ -82,9 +82,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _connectionStatusManager: ConnectionStatusManager;
 	private _connectionsGotUnsupportedVersionWarning: string[] = [];
 
-	//Saved connection profile to be accessed by providers in case of error.
-	private _connectionProfileDuringError: interfaces.IConnectionProfile
-
 	private static readonly CONNECTION_MEMENTO = 'ConnectionManagement';
 	private static readonly _azureResources: AzureResource[] =
 		[AzureResource.ResourceManagement, AzureResource.Sql, AzureResource.OssRdbms, AzureResource.AzureLogAnalytics, AzureResource.AzureKusto];
@@ -566,12 +563,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					options.showFirewallRuleOnError = false;
 					return this.connectWithOptions(connection, uri, options, callbacks);
 				} else {
-					connection.id
-					this._connectionProfileDuringError = connection;
-					let newProfile = this.getConnectionProfileById(connection.id);
-					let newString = this.getConnectionString(connection.id);
-					return this._errorDiagnosticsService.checkErrorCode(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, connection.id).then(success => {
-						this._connectionProfileDuringError = undefined;
+					return this._errorDiagnosticsService.checkErrorCode(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, this.convertToSafeProfile(connection)).then(success => {
 						if (success) {
 							//For now handle connection errors in provider.
 							connectionResult.errorHandled = true;
@@ -610,9 +602,29 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		dialog.open(profile)
 	}
 
-	// Used by providers needing access to the profile that errored.
-	public getConnectionProfileFromError(): interfaces.IConnectionProfile {
-		return this._connectionProfileDuringError;
+	// Convert the profile to one that can be sent via RPC (used for error handling).
+	private convertToSafeProfile(profile: interfaces.IConnectionProfile): azdata.connection.ConnectionProfile {
+		if (!profile) {
+			return undefined;
+		}
+
+		let connection: azdata.connection.ConnectionProfile = {
+			providerId: profile.providerName,
+			connectionId: profile.id,
+			options: profile.options,
+			connectionName: profile.connectionName,
+			serverName: profile.serverName,
+			databaseName: profile.databaseName,
+			userName: profile.userName,
+			password: profile.password,
+			authenticationType: profile.authenticationType,
+			savePassword: profile.savePassword,
+			groupFullName: profile.groupFullName,
+			groupId: profile.groupId,
+			azureTenantId: profile.azureTenantId,
+			saveProfile: profile.saveProfile
+		};
+		return connection;
 	}
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {
