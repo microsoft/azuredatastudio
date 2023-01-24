@@ -21,6 +21,7 @@ import { SkuEditParametersDialog } from '../dialog/skuRecommendationResults/skuE
 import { logError, TelemetryViews } from '../telemtery';
 import { TdeConfigurationDialog } from '../dialog/tdeConfiguration/tdeConfigurationDialog';
 import { TdeMigrationModel } from '../models/tdeModels';
+import * as os from 'os';
 
 export interface Product {
 	type: MigrationTargetType;
@@ -814,6 +815,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (this._matchWithEncryptedDatabases(encryptedDbFound)) {
 				this.migrationStateModel.tdeMigrationConfig = this._previousMiTdeMigrationConfig;
 			} else {
+				if (os.platform() !== 'win32') //Only available for windows for now.
+					return;
 
 				//Set encrypted databases
 				this.migrationStateModel.tdeMigrationConfig.setTdeEnabledDatabasesCount(encryptedDbFound);

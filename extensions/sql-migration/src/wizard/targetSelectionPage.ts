@@ -94,6 +94,9 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].hidden = !this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates();
+		this._updateTdeMigrationButtonStatus();
+
 		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 			return;
 		}
@@ -119,9 +122,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				}
 				break;
 		}
-
-		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].hidden = !this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates();
-		this._updateTdeMigrationButtonStatus();
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = { text: '' };
