@@ -52,8 +52,8 @@ export class NotebookLinkHandler {
 			this.isMarkdown = this._link.attributes['is-markdown']?.nodeValue === 'true' ? true : false;
 			this.isEncoded = this._link.attributes['is-encoded']?.nodeValue === 'true' ? true : false;
 			this._isFile = this._link.protocol === `${Schemas.file}:` || this._link.protocol === `${Schemas.vscodeFileResource}:`;
-			// When editing on richtext, for local files paths use pathname to get the filepath of the link
-			// since the nodeValue results are ambiguous depending on OS ex: '/PathToParentFolder/ ./fiename.ipynb'.
+			// When editing on richtext, for local files paths the nodeValue results are ambiguous depending on OS
+			// ex on MacOS: '/PathToParentFolder/ ./fiename.ipynb', path.normalize resolves this.
 			if (isWindows) {
 				// Given an anchor element for windows href link will need to use nodeValue instead as that does not encode the url
 				this._href = this.isMarkdown || this.isEncoded ? path.normalize(this._link.href?.replace(/%5C/g, '\\')) : this._link.attributes['href']?.nodeValue;
