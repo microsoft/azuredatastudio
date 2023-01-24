@@ -564,7 +564,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					return this.connectWithOptions(connection, uri, options, callbacks);
 				} else {
 					// Pass connection profile to the provider for diagnostic tasks.
-					return this._errorDiagnosticsService.checkErrorCode(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, this.convertToSafeProfile(connection)).then(success => {
+					return this._errorDiagnosticsService.checkError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, this.convertToSafeProfile(connection)).then(success => {
 						if (success) {
 							//For now handle connection errors in provider.
 							connectionResult.errorHandled = true;

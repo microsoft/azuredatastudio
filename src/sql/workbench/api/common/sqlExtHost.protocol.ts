@@ -611,9 +611,9 @@ export abstract class ExtHostResourceProviderShape {
  */
 export abstract class ExtHostErrorDiagnosticsShape {
 	/**
-	 * Handle other error types
+	 * Handle other connection error types
 	 */
-	$handleErrorCode(handle: number, errorCode: number, errorMessage: string, additionalObjects?: any): Thenable<boolean> { throw ni(); }
+	$handleError(handle: number, errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile): Thenable<boolean> { throw ni(); }
 }
 
 /**

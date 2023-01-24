@@ -435,14 +435,22 @@ declare module 'azdata' {
 
 	export namespace diagnostics {
 		/**
-		 * Diagnostics object for handling error codes for a provider.
+		 * Diagnostics object for handling error codes for a connection provider.
 		 */
 		export interface ErrorDiagnostics {
-			handleErrorCode(errorCode: number, errorMessage: string, additionalObjects?: any): Thenable<boolean>;
+			/**
+			 * Takes an error code, connection profile, and error message and performs corrective tasks.
+			 * @param errorCode The error code of the connection error.
+			 * @param errorMessage The error message of the connection error.
+			 * @param connection The connection profile that caused the error.
+			 */
+			handleError(errorCode: number, errorMessage: string, connection: connection.ConnectionProfile): Thenable<boolean>;
 		}
 
 		/**
 		 * Registers provider with instance of Diagnostics implementation.
+		 * @param providerMetadata The provider metadata containing id and DisplayName (for use with registration).
+		 * @param diagnostics The provider's diagnostic object that handles errors.
 		 */
 		export function registerDiagnostics(providerMetadata: ResourceProviderMetadata, diagnostics: ErrorDiagnostics): vscode.Disposable;
 	}
@@ -480,6 +488,7 @@ declare module 'azdata' {
 
 		/**
 		 * Opens the change password dialog in connection management service.
+		 * @param initialConnectionProfile The connection profile to change the password for and connect to.
 		 */
 		export function openChangePasswordDialog(initialConnectionProfile: IConnectionProfile): void;
 	}

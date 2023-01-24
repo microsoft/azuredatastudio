@@ -23,11 +23,11 @@ export interface IErrorDiagnosticsService {
 	unregisterDiagnostics(ProviderId: string): void;
 
 	/**
-	 * Shows error dialog with given parameters
+	 * Checks connection error with given parameters
 	 * @param errorCode Error code indicating the error problem.
 	 * @param errorMessage Error message that describes the problem in detail.
 	 * @param providerId Identifies what provider the error comes from.
-	 * @param additionalObjects additional parameters that may be needed for error handling.
+	 * @param connection Connection profile that is utilized for connection
 	 */
-	checkErrorCode(errorCode: number, errorMessage: string, providerId: string, additionalObjects?: any): Promise<boolean>;
+	checkError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile): Promise<boolean>;
 }
