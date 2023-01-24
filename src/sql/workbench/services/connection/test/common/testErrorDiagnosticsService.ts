@@ -15,7 +15,7 @@ export class TestErrorDiagnosticsService implements IErrorDiagnosticsService {
 	unregisterDiagnostics(ProviderId: string): void {
 	}
 
-	checkError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile): Promise<boolean> {
+	checkConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Promise<boolean> {
 		return Promise.resolve(false);
 	}
 }

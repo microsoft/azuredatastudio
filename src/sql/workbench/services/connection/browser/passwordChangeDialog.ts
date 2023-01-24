@@ -6,9 +6,9 @@
 import 'vs/css!./media/passwordDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ConnectionOptionSpecialType, IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
-import { INewConnectionParams, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
+import { INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -26,13 +26,14 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 const dialogWidth: string = '300px'; // Width is set manually here as there is no default width for normal dialogs.
 const okText: string = localize('passwordChangeDialog.ok', "OK");
 const cancelText: string = localize('passwordChangeDialog.cancel', "Cancel");
 const dialogTitle: string = localize('passwordChangeDialog.title', "Change Password");
-const newPasswordText: string = localize('passwordChangeDialog.newPassword', 'New password:');
-const confirmPasswordText: string = localize('passwordChangeDialog.confirmPassword', 'Confirm password:');
+const newPasswordText: string = localize('passwordChangeDialog.newPassword', "New password:");
+const confirmPasswordText: string = localize('passwordChangeDialog.confirmPassword', "Confirm password:");
 const passwordChangeLoadText: string = localize('passwordChangeDialog.connecting', "Connecting");
 const errorHeader: string = localize('passwordChangeDialog.errorHeader', "Failure when attempting to change password");
 const errorPasswordMismatchErrorMessage = localize('passwordChangeDialog.errorPasswordMismatchErrorMessage', "Passwords entered do not match");
@@ -43,6 +44,7 @@ export class PasswordChangeDialog extends Modal {
 	private _okButton?: Button;
 	private _cancelButton?: Button;
 	private _profile: IConnectionProfile;
+	private _params: INewConnectionParams;
 	private _uri: string;
 	private _passwordValueText: InputBox;
 	private _confirmValueText: InputBox;
@@ -59,12 +61,14 @@ export class PasswordChangeDialog extends Modal {
 		@ILogService logService: ILogService,
 		@IContextViewService private readonly contextViewService: IContextViewService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
+		@ICapabilitiesService private capabilitiesService: ICapabilitiesService,
 	) {
 		super('', '', telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasSpinner: true, spinnerTitle: passwordChangeLoadText, dialogStyle: 'normal', width: dialogWidth, dialogPosition: 'left' });
 	}
 
-	public open(profile: IConnectionProfile) {
+	public open(profile: IConnectionProfile, params: INewConnectionParams) {
 		this._profile = profile;
+		this._params = params;
 		this._uri = this.connectionManagementService.getConnectionUri(profile);
 		this.render();
 		this.show();
@@ -135,14 +139,23 @@ export class PasswordChangeDialog extends Modal {
 			this.errorMessageService.showDialog(Severity.Error, errorHeader, errorPasswordMismatchErrorMessage + '\n\n' + errorPasswordMismatchRecoveryInstructions);
 			return Promise.reject(new Error(errorPasswordMismatchErrorMessage));
 		}
+
+		// Find the password option for the connection provider
+		let passwordOption = this.capabilitiesService.getCapabilities(connection.providerName).connection.connectionOptions.find(
+			option => option.specialValueType === ConnectionOptionSpecialType.password);
+
+		if (passwordOption === undefined) {
+			let message = localize('passwordChangeDialog.errorPasswordTypeNotFound', "Password property for the connection type '{0}' was not found, please report this issue.", connection.providerName);
+			return Promise.reject(new Error(message));
+		}
+
 		let passwordChangeResult = await this.connectionManagementService.changePassword(connection, uri, newPassword);
 		if (!passwordChangeResult.result) {
 			this.errorMessageService.showDialog(Severity.Error, errorHeader, passwordChangeResult.errorMessage);
 			return Promise.reject(new Error(passwordChangeResult.errorMessage));
 		}
-		connection.options['password'] = newPassword;
-		// Only one type is valid, the default one.
-		let params: INewConnectionParams = { connectionType: ConnectionType.default }
-		await this.connectionDialogService.callDefaultOnConnect(connection, params);
+
+		connection.options[passwordOption.name] = newPassword;
+		await this.connectionDialogService.callDefaultOnConnect(connection, this._params);
 	}
 }

@@ -53,11 +53,11 @@ export class ErrorDiagnosticsService extends SqlOpsFeature<any> {
 			}
 
 			protected override registerProvider(options: any): Disposable {
-				let handleError = async (errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile): Promise<boolean> => {
+				let handleConnectionError = async (errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile): Promise<boolean> => {
 					if (errorCode = ErrorDiagnosticsConstants.MssqlPasswordResetCode) {
 						// Need to convert inputed profile back to IConnectionProfile.
 						let restoredProfile = this.restoreProfileFormat(connection);
-						azdata.connection.openChangePasswordDialog(restoredProfile);
+						azdata.connection.openChangePasswordDialog(restoredProfile, options);
 						return Promise.resolve(true);
 					}
 					else {
@@ -72,7 +72,7 @@ export class ErrorDiagnosticsService extends SqlOpsFeature<any> {
 
 					}
 				}, {
-					handleError
+					handleConnectionError
 				});
 			}
 		}

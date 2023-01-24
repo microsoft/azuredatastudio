@@ -29,5 +29,5 @@ export interface IErrorDiagnosticsService {
 	 * @param providerId Identifies what provider the error comes from.
 	 * @param connection Connection profile that is utilized for connection
 	 */
-	checkError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile): Promise<boolean>;
+	checkConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Promise<boolean>;
 }

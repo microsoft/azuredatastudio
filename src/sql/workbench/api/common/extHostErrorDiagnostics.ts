@@ -25,8 +25,8 @@ export class ExtHostErrorDiagnostics extends ExtHostErrorDiagnosticsShape {
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	// - MAIN THREAD AVAILABLE METHODS /////////////////////////////////////
-	public override $handleError(handle: number, errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile): Thenable<boolean> {
-		return this._withProvider(handle, (provider: azdata.diagnostics.ErrorDiagnostics) => provider.handleError(errorCode, errorMessage, connection));
+	public override $handleConnectionError(handle: number, errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Thenable<boolean> {
+		return this._withProvider(handle, (provider: azdata.diagnostics.ErrorDiagnostics) => provider.handleConnectionError(errorCode, errorMessage, connection, options));
 	}
 
 	// - EXTENSION HOST AVAILABLE METHODS //////////////////////////////////
