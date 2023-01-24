@@ -24,11 +24,13 @@ export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
 	}
 
 	private construct() {
-		if (!(this.parent as ProjectRootTreeItem).project.sqlCmdVariables) {
+		const sqlCmdVariables = (this.parent as ProjectRootTreeItem).project.sqlCmdVariables;
+
+		if (!sqlCmdVariables) {
 			return;
 		}
 
-		for (const sqlCmdVariable of Object.keys((this.parent as ProjectRootTreeItem).project.sqlCmdVariables)) {
+		for (const sqlCmdVariable of Object.keys(sqlCmdVariables)) {
 			if (sqlCmdVariable) {
 				this.sqlcmdVariables.push(new SqlCmdVariableTreeItem(sqlCmdVariable, this));
 			}
