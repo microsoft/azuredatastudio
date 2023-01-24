@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { EOL } from 'os';
-import { getStorageAccountAccessKeys } from '../api/azure';
+import { getStorageAccountAccessKeys, SqlVMServer } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { Blob, MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, NetworkShare, StateChangeEvent, ValidateIrState, ValidationResult } from '../models/stateMachine';
 import * as constants from '../constants/strings';
@@ -45,6 +45,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _blobContainerStorageAccountDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerLastBackupFileDropdowns!: azdata.DropDownComponent[];
+	private _blobContainerVmDatabaseAlreadyExistsInfoBox!: azdata.TextComponent;
 
 	private _networkShareStorageAccountDetails!: azdata.FlexContainer;
 	private _networkShareContainerSubscription!: azdata.TextComponent;
@@ -52,6 +53,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _networkShareStorageAccountResourceGroupDropdown!: azdata.DropDownComponent;
 	private _networkShareContainerStorageAccountDropdown!: azdata.DropDownComponent;
 	private _networkShareContainerStorageAccountRefreshButton!: azdata.ButtonComponent;
+	private _networkShareVmDatabaseAlreadyExistsInfoBox!: azdata.TextComponent;
 
 	private _targetDatabaseContainer!: azdata.FlexContainer;
 	private _networkShareTargetDatabaseNamesTable!: azdata.DeclarativeTableComponent;
@@ -64,6 +66,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _networkDetailsContainer!: azdata.FlexContainer;
 
 	private _existingDatabases: string[] = [];
+	private _nonPageBlobErrors: string[] = [];
 	private _disposables: vscode.Disposable[] = [];
 
 	// SQL DB table  selection
@@ -454,9 +457,18 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				]
 			}).component();
 
+		this._networkShareVmDatabaseAlreadyExistsInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				text: constants.DATABASE_ALREADY_EXISTS_VM_INFO,
+				style: 'information',
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: { ...styles.BODY_CSS, 'display': 'none' }
+			}).component();
+
 		this._networkTableContainer = this._view.modelBuilder.flexContainer()
 			.withItems([
 				networkShareTableText,
+				this._networkShareVmDatabaseAlreadyExistsInfoBox,
 				this._networkShareTargetDatabaseNamesTable])
 			.withProps({ CSSStyles: { 'display': 'none', } })
 			.component();
@@ -467,10 +479,19 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
+		this._blobContainerVmDatabaseAlreadyExistsInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				text: constants.DATABASE_ALREADY_EXISTS_VM_INFO,
+				style: 'information',
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: { ...styles.BODY_CSS, 'display': 'none' }
+			}).component();
+
 		this._blobTableContainer = this._view.modelBuilder.flexContainer()
 			.withItems([
 				blobTableText,
 				allFieldsRequiredLabel,
+				this._blobContainerVmDatabaseAlreadyExistsInfoBox,
 				this._blobContainerTargetDatabaseNamesTable])
 			.withProps({ CSSStyles: { 'display': 'none', } })
 			.component();
@@ -627,6 +648,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	private async _updatePageControlsVisibility(): Promise<void> {
 		const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
+		const isSqlVmTarget = this.migrationStateModel.isSqlVmTarget;
 		const isNetworkShare = this.migrationStateModel.isBackupContainerNetworkShare;
 		const isBlobContainer = this.migrationStateModel.isBackupContainerBlobContainer;
 
@@ -634,12 +656,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		await utils.updateControlDisplay(this._migrationTableSection, isSqlDbTarget);
 		await utils.updateControlDisplay(this._networkDetailsContainer, !isSqlDbTarget);
 		await utils.updateControlDisplay(this._targetDatabaseContainer, !isSqlDbTarget);
-		await utils.updateControlDisplay(this._networkShareStorageAccountDetails, !isSqlDbTarget);
 
 		await utils.updateControlDisplay(this._networkShareContainer, isNetworkShare && !isSqlDbTarget);
 		await utils.updateControlDisplay(this._networkShareStorageAccountDetails, isNetworkShare && !isSqlDbTarget);
+		await utils.updateControlDisplay(this._networkShareVmDatabaseAlreadyExistsInfoBox, isSqlVmTarget);
 		await utils.updateControlDisplay(this._networkTableContainer, isNetworkShare && !isSqlDbTarget);
 		await utils.updateControlDisplay(this._blobContainer, isBlobContainer && !isSqlDbTarget);
+		await utils.updateControlDisplay(this._blobContainerVmDatabaseAlreadyExistsInfoBox, isSqlVmTarget);
 		await utils.updateControlDisplay(this._blobTableContainer, isBlobContainer && !isSqlDbTarget);
 
 		await this._windowsUserAccountText.updateProperties({ required: isNetworkShare && !isSqlDbTarget });
@@ -674,27 +697,31 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						break;
 					case NetworkContainerType.BLOB_CONTAINER:
 						this._blobContainerResourceGroupDropdowns.forEach((v, index) => {
-							if (this.shouldDisplayBlobDropdownError(v, [constants.RESOURCE_GROUP_NOT_FOUND])) {
+							if (this.shouldDisplayBlobDropdownError(v, blobResourceGroupErrorStrings)) {
 								errors.push(constants.INVALID_BLOB_RESOURCE_GROUP_ERROR(this.migrationStateModel._databasesForMigration[index]));
 							}
 						});
 						this._blobContainerStorageAccountDropdowns.forEach((v, index) => {
-							if (this.shouldDisplayBlobDropdownError(v, [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP_PROMPT])) {
+							if (this.shouldDisplayBlobDropdownError(v, blobStorageAccountErrorStrings)) {
 								errors.push(constants.INVALID_BLOB_STORAGE_ACCOUNT_ERROR(this.migrationStateModel._databasesForMigration[index]));
 							}
 						});
 						this._blobContainerDropdowns.forEach((v, index) => {
-							if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBCONTAINERS_FOUND, constants.SELECT_STORAGE_ACCOUNT])) {
+							if (this.shouldDisplayBlobDropdownError(v, blobContainerErrorStrings)) {
 								errors.push(constants.INVALID_BLOB_CONTAINER_ERROR(this.migrationStateModel._databasesForMigration[index]));
 							}
 						});
 
 						if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 							this._blobContainerLastBackupFileDropdowns.forEach((v, index) => {
-								if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBFILES_FOUND, constants.SELECT_BLOB_CONTAINER])) {
+								if (this.shouldDisplayBlobDropdownError(v, blobFileErrorStrings)) {
 									errors.push(constants.INVALID_BLOB_LAST_BACKUP_FILE_ERROR(this.migrationStateModel._databasesForMigration[index]));
 								}
 							});
+						}
+
+						if (this.migrationStateModel.isSqlVmTarget && utils.isTargetSqlVm2014OrBelow(this.migrationStateModel._targetServerInstance as SqlVMServer)) {
+							errors.push(...this._nonPageBlobErrors);
 						}
 
 						if (errors.length > 0) {
@@ -1025,6 +1052,23 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 								const selectedBlobContainer = this.migrationStateModel._blobContainers.find(blob => blob.name === value);
 								if (selectedBlobContainer && !blobContainerErrorStrings.includes(value)) {
 									this.migrationStateModel._databaseBackup.blobs[index].blobContainer = selectedBlobContainer;
+
+									if (this.migrationStateModel.isSqlVmTarget && utils.isTargetSqlVm2014OrBelow(this.migrationStateModel._targetServerInstance as SqlVMServer)) {
+										const backups = await utils.getBlobLastBackupFileNames(
+											this.migrationStateModel._azureAccount,
+											this.migrationStateModel._databaseBackup.subscription,
+											this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount,
+											this.migrationStateModel._databaseBackup.blobs[index]?.blobContainer);
+
+										const errorMessage = constants.INVALID_NON_PAGE_BLOB_BACKUP_FILE_ERROR(this.migrationStateModel._databasesForMigration[index]);
+										this._nonPageBlobErrors = this._nonPageBlobErrors.filter(err => err !== errorMessage);
+
+										const allBackupsPageBlob = backups.every(backup => backup.properties.blobType === 'PageBlob')
+										if (!allBackupsPageBlob) {
+											this._nonPageBlobErrors.push(errorMessage);
+										}
+									}
+
 									if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 										await this.loadBlobLastBackupFileDropdown(index);
 										await blobContainerLastBackupFileDropdown.updateProperties({ enabled: true });

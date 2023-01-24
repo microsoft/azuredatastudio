@@ -112,10 +112,14 @@ export class WizardController {
 				this._model.refreshDatabaseBackupPage = true;
 			}
 
-			// if the user selected network share and selected save & close afterwards, it should always return to the database backup page so that
-			// the user can input their password again
-			if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime &&
+			if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime && this._model.isSqlDbTarget) {
+				// if the user selected the tables and selected save & close afterwards in SQLDB scenario,
+				// it should always return to the target database selection page so that the user can input their password again
+				wizardSetupPromises.push(this._wizardObject.setCurrentPage(Page.TargetSelection));
+			} else if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime &&
 				this._model.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
+				// if the user selected network share and selected save & close afterwards, it should always return to the database backup page so that
+				// the user can input their password again
 				wizardSetupPromises.push(this._wizardObject.setCurrentPage(Page.IntegrationRuntime));
 			} else {
 				wizardSetupPromises.push(this._wizardObject.setCurrentPage(this._model.savedInfo.closedPage));
