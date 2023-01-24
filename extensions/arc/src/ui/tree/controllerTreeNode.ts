@@ -110,7 +110,7 @@ export class ControllerTreeNode extends TreeNode {
 						node = new PostgresTreeNode(postgresModel, this.model);
 						break;
 					case ResourceType.sqlManagedInstances:
-						// Fill in the username too if we already have it
+						// Fill in the username and connection properties too if we already have them
 						let miaaResourceInfo = this.model.info.resources.find(info =>
 							info.name === resourceInfo.name &&
 							info.resourceType === resourceInfo.resourceType) as MiaaResourceInfo;
