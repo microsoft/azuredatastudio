@@ -1383,11 +1383,11 @@
       </trans-unit>
       <trans-unit id="arc.cores-limit.label">
         <source xml:lang="en">Cores Limit</source>
-        <target state="translated">Nombre maximal de mémoires à tores magnétiques</target>
+        <target state="translated">Nombre maximal de cores</target>
       </trans-unit>
       <trans-unit id="arc.cores-request.label">
         <source xml:lang="en">Cores Request</source>
-        <target state="translated">Demande de mémoire à tores magnétiques</target>
+        <target state="translated">Demande de cores</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.auto.upload.logs">
         <source xml:lang="en">Auto-upload Logs</source>

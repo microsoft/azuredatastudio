@@ -703,7 +703,7 @@ declare module 'mssql' {
 	}
 
 	export interface ISqlMigrationService {
-		getAssessments(ownerUri: string, databases: string[]): Promise<AssessmentResult | undefined>;
+		getAssessments(ownerUri: string, databases: string[], xEventsFilesFolderPath: string): Promise<AssessmentResult | undefined>;
 		getSkuRecommendations(dataFolder: string, perfQueryIntervalInSec: number, targetPlatforms: string[], targetSqlInstance: string, targetPercentile: number, scalingFactor: number, startTime: string, endTime: string, includePreviewSkus: boolean, databaseAllowList: string[]): Promise<SkuRecommendationResult | undefined>;
 		startPerfDataCollection(ownerUri: string, dataFolder: string, perfQueryIntervalInSec: number, staticQueryIntervalInSec: number, numberOfIterations: number): Promise<StartPerfDataCollectionResult | undefined>;
 		stopPerfDataCollection(): Promise<StopPerfDataCollectionResult | undefined>;
@@ -801,10 +801,6 @@ declare module 'mssql' {
 		assessmentReportPath: string;
 	}
 
-	export interface ISqlMigrationService {
-		getAssessments(ownerUri: string, databases: string[]): Promise<AssessmentResult | undefined>;
-	}
-
 	export interface CreateSasResponse {
 		sharedAccessSignature: string;
 	}
@@ -838,7 +834,7 @@ declare module 'mssql' {
 		elapsedTime: string;
 	}
 
-	// SqlMigration interfaces  BEGIN -----------------------------------------------------------------------
+	// TDEMigration interfaces  BEGIN -----------------------------------------------------------------------
 	export interface TdeMigrationRequest {
 		encryptedDatabases: string[];
 		sourceSqlConnectionString: string;
@@ -868,5 +864,5 @@ declare module 'mssql' {
 			accessToken: string,
 			reportUpdate: (dbName: string, succeeded: boolean, message: string) => void): Promise<TdeMigrationResult>;
 	}
-	// SqlMigration interfaces END -----------------------------------------------------------------------
+	// TDEMigration interfaces END -----------------------------------------------------------------------
 }
