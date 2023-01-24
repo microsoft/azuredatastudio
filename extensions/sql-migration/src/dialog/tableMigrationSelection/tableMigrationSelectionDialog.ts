@@ -48,20 +48,6 @@ export class TableMigrationSelectionDialog {
 					this._model.sourceConnectionId,
 					this._sourceDatabaseName);
 
-				this._tableSelectionMap = new Map();
-				sourceTableList.forEach(table => {
-					const sourceTable = targetDatabaseInfo.sourceTables.get(table.tableName);
-					// Tables are selected by default at the first time going to the table selection page
-					const isSelected = sourceTable === null || sourceTable === undefined ? true : sourceTable?.selectedForMigration === true;
-					const tableInfo: TableInfo = {
-						databaseName: table.databaseName,
-						rowCount: table.rowCount,
-						selectedForMigration: isSelected,
-						tableName: table.tableName,
-					};
-					this._tableSelectionMap.set(table.tableName, tableInfo);
-				});
-
 				const targetTableList: TableInfo[] = await collectTargetDatabaseTableInfo(
 					this._model._targetServerInstance as AzureSqlDatabaseServer,
 					targetDatabaseInfo.databaseName,
@@ -78,6 +64,28 @@ export class TableMigrationSelectionDialog {
 						selectedForMigration: false,
 						tableName: table.tableName,
 					}));
+
+				this._tableSelectionMap = new Map();
+				sourceTableList.forEach(table => {
+					// If the source table doesn't exist in the target, set isSelected to false.
+					// Otherwise, set it to true as default.
+					var isSelected = false;
+					var sourceTable = targetDatabaseInfo.sourceTables.get(table.tableName);
+					if (sourceTable === null || sourceTable === undefined) {
+						sourceTable = this._targetTableMap.get(table.tableName);
+						isSelected = sourceTable === null || sourceTable === undefined ? false : true;
+					} else {
+						isSelected = sourceTable.selectedForMigration;
+					}
+
+					const tableInfo: TableInfo = {
+						databaseName: table.databaseName,
+						rowCount: table.rowCount,
+						selectedForMigration: isSelected,
+						tableName: table.tableName,
+					};
+					this._tableSelectionMap.set(table.tableName, tableInfo);
+				});
 			}
 		} catch (error) {
 			this._dialog!.message = {
@@ -116,9 +124,11 @@ export class TableMigrationSelectionDialog {
 					if (sourceTable.selectedForMigration) {
 						selectedItems.push(tableRow);
 					}
+
+					tableRow++;
 				}
+
 				this._missingTableCount += targetTable ? 0 : 1;
-				tableRow++;
 			}
 		});
 		await this._tableSelectionTable.updateProperty('data', data);
