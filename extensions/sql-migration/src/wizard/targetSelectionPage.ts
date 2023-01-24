@@ -80,6 +80,11 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					d => { try { d.dispose(); } catch { } });
 			}));
 
+		if (this.migrationStateModel.resumeAssessment) {
+			await this.populateAzureAccountsDropdown();
+		}
+
+
 		this._disposables.push(
 			this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].onClick(
 				async e => await this._startTdeMigration()));
