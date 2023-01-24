@@ -191,6 +191,7 @@ export abstract class ConnectToSqlDialog extends InitializingComponent {
 				return await reconnectAction(profile);
 			} else if (selection === loc.readMore) {
 				vscode.env.openExternal(vscode.Uri.parse(constants.encryptReadMoreLink));
+				// Show the dialog again so the user can still pick yes or no after they've read the docs
 				continue;
 			} else {
 				return false;
