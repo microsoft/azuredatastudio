@@ -163,36 +163,39 @@ export abstract class ConnectToSqlDialog extends InitializingComponent {
 			return true;
 		}
 		else {
+			vscode.window.showErrorMessage(this.connectionFailedMessage(result.errorMessage));
 			// Show error with instructions for MSSQL Provider Encryption error code -2146893019 thrown by SqlClient when certificate validation fails.
 			if (result.errorCode === -2146893019) {
 				return this.showInstructionTextAsWarning(connectionProfile, async updatedConnection => {
 					return await this.connect(updatedConnection);
 				});
 			} else {
-				vscode.window.showErrorMessage(this.connectionFailedMessage(result.errorMessage));
 				return false;
 			}
 		}
 	}
 
 	private async showInstructionTextAsWarning(profile: azdata.IConnectionProfile, reconnectAction: IReconnectAction): Promise<boolean> {
-		const selection = await vscode.window.showWarningMessage(
-			loc.msgPromptSSLCertificateValidationFailed,
-			{ modal: false },
-			...[
-				loc.enableTrustServerCert,
-				loc.readMore,
-				loc.cancel
-			]);
-		if (selection === loc.enableTrustServerCert) {
-			profile.options.encrypt = true;
-			profile.options.trustServerCertificate = true;
-			return await reconnectAction(profile);
-		} else if (selection === loc.readMore) {
-			vscode.env.openExternal(vscode.Uri.parse(constants.encryptReadMoreLink));
-			return await this.showInstructionTextAsWarning(profile, reconnectAction);
+		while (true) {
+			const selection = await vscode.window.showWarningMessage(
+				loc.msgPromptSSLCertificateValidationFailed,
+				{ modal: false },
+				...[
+					loc.enableTrustServerCert,
+					loc.readMore,
+					loc.cancel
+				]);
+			if (selection === loc.enableTrustServerCert) {
+				profile.options.encrypt = true;
+				profile.options.trustServerCertificate = true;
+				return await reconnectAction(profile);
+			} else if (selection === loc.readMore) {
+				vscode.env.openExternal(vscode.Uri.parse(constants.encryptReadMoreLink));
+				continue;
+			} else {
+				return false;
+			}
 		}
-		return false;
 	}
 	protected abstract get providerName(): string;
 
