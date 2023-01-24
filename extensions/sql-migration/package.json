@@ -2,7 +2,7 @@
   "name": "sql-migration",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "publisher": "Microsoft",
   "preview": false,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -10,7 +10,7 @@
   "aiKey": "29a207bb14f84905966a8f22524cb730-25407f35-11b6-4d4e-8114-ab9e843cb52f-7380",
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.40.0"
+    "azdata": ">=1.41.0"
   },
   "activationEvents": [
     "onDashboardOpen",

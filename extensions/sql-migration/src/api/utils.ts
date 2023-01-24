@@ -73,6 +73,19 @@ export function getSqlServerName(majorVersion: number): string | undefined {
 	}
 }
 
+export function isTargetSqlVm2014OrBelow(sqlVm: azure.SqlVMServer): boolean {
+	// e.g. SQL2008-WS2012, SQL2008R2-WS2019, SQL2012-WS2016, SQL2014-WS2012R2, SQL2016-WS2019, SQL2017-WS2019, SQL2019-WS2022
+	const sqlImageOffer = sqlVm.properties.sqlImageOffer;
+
+	// parse image offer and extract SQL version (assuming it is a valid image offer)
+	if (sqlImageOffer && sqlImageOffer.toUpperCase().startsWith('SQL')) {
+		const version = parseInt(sqlImageOffer.substring(3, 7));
+		return version <= 2014;
+	}
+
+	return false;
+}
+
 export interface IPackageInfo {
 	name: string;
 	version: string;
