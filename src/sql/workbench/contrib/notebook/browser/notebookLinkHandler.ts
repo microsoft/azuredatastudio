@@ -54,13 +54,11 @@ export class NotebookLinkHandler {
 			this._isFile = this._link.protocol === `${Schemas.file}:` || this._link.protocol === `${Schemas.vscodeFileResource}:`;
 			// When editing on richtext, for local files paths use pathname to get the filepath of the link
 			// since the nodeValue results are ambiguous depending on OS ex: '/PathToParentFolder/ ./fiename.ipynb'.
-			if (this._isFile && this.isMarkdown) {
-				this._href = this._link.pathname;
-			} else if (isWindows) {
+			if (isWindows) {
 				// Given an anchor element for windows href link will need to use nodeValue instead as that does not encode the url
-				this._href = this.isMarkdown || this.isEncoded ? this._link.href?.replace(/%5C/g, '\\') : this._link.attributes['href']?.nodeValue;
+				this._href = this.isMarkdown || this.isEncoded ? path.normalize(this._link.href?.replace(/%5C/g, '\\')) : this._link.attributes['href']?.nodeValue;
 			} else {
-				this._href = this._link.attributes['href']?.nodeValue;
+				this._href = this._isFile ? path.normalize(this._link.attributes['href']?.nodeValue) : this._link.attributes['href']?.nodeValue;
 			}
 			this._notebookUriLink = this._href ? URI.parse(encodeURI(this._href)) : undefined;
 			this._isAnchorLink = this._notebookUriLink?.fragment ? true : false;
@@ -176,11 +174,16 @@ export class NotebookLinkHandler {
  */
 export function findPathRelativeToContent(notebookFolder: string, contentPath: URI | undefined, isMarkdown?: boolean, isEncoded?: boolean): string {
 	if (contentPath?.scheme === 'file') {
-		// decode the contentPath before calculating the reative path since the notebookFolder is not encoded.
-		let decodedContentPath = decodeURI(contentPath.fsPath);
+		let decodedContentPath = contentPath.fsPath;
+		if (contentPath.fsPath !== decodeURI(contentPath.fsPath)) {
+			decodedContentPath = decodeURI(contentPath.fsPath);
+		}
+		// use the decodedContentPath for calculating the reative path since the notebookFolder is not encoded to get the relative path correctly.
 		let relativePath = contentPath.fragment ? path.relative(notebookFolder, decodedContentPath).concat('#', contentPath.fragment) : path.relative(notebookFolder, decodedContentPath);
 		// if relativePath contains improper directory format due to marked js parsing returning an invalid path (ex. ....\) then we need to replace it to ensure the directories are formatted properly (ex. ..\..\)
-		relativePath = isMarkdown || isEncoded ? replaceInvalidLinkPath(relativePath) : encodeURI(replaceInvalidLinkPath(relativePath)).replace(/%5C/g, '\\');
+		relativePath = isEncoded ? replaceInvalidLinkPath(relativePath) : encodeURI(replaceInvalidLinkPath(relativePath)).replace(/%5C/g, '\\');
+		// encode the path if we used decoded contentPath for calculating the relativePath.
+		relativePath = contentPath.fsPath !== decodedContentPath ? encodeURI(relativePath) : relativePath;
 		if (relativePath.startsWith(path.join('..', path.sep)) || relativePath.startsWith(path.join('.', path.sep))) {
 			return relativePath;
 		} else {
