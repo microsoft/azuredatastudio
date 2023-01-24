@@ -222,9 +222,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 
 			// namespace: diagnostics
 			const diagnostics: typeof azdata.diagnostics = {
-				// "azdata" API definition
-				registerDiagnostics: (providerMetadata: azdata.ResourceProviderMetadata, diagnostics: azdata.diagnostics.ErrorDiagnostics): vscode.Disposable => {
-					return extHostErrorDiagnostics.$registerDiagnostics(providerMetadata, diagnostics);
+				registerDiagnosticsProvider: (providerMetadata: azdata.ResourceProviderMetadata, diagnostics: azdata.diagnostics.ErrorDiagnostics): vscode.Disposable => {
+					return extHostErrorDiagnostics.$registerDiagnosticsProvider(providerMetadata, diagnostics);
 				}
 			}
 

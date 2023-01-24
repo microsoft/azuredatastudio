@@ -338,7 +338,7 @@ export interface IConnectionManagementService {
 	 * Launches the password change dialog.
 	 * @param profile The connection profile to change the password.
 	 */
-	launchChangePasswordDialog(profile: IConnectionProfile, params: INewConnectionParams): void;
+	openChangePasswordDialog(profile: IConnectionProfile, params: INewConnectionParams): void;
 }
 
 export enum RunQueryOnConnectionMode {

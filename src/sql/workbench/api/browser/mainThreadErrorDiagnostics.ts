@@ -29,7 +29,7 @@ export class MainThreadErrorDiagnostics extends Disposable implements MainThread
 		}
 	}
 
-	public $registerDiagnostics(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any> {
+	public $registerDiagnosticsProvider(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any> {
 		let self = this;
 
 		//Create the error handler that interfaces with the extension via the proxy and register it
@@ -38,14 +38,14 @@ export class MainThreadErrorDiagnostics extends Disposable implements MainThread
 				return self._proxy.$handleConnectionError(handle, errorCode, errorMessage, connection, options);
 			}
 		};
-		this._errorDiagnosticsService.registerDiagnostics(providerMetadata.id, diagnostics);
+		this._errorDiagnosticsService.registerDiagnosticsProvider(providerMetadata.id, diagnostics);
 		this._providerMetadata[handle] = providerMetadata;
 
 		return Promise.resolve(null);
 	}
 
-	public $unregisterDiagnostics(handle: number): Thenable<any> {
-		this._errorDiagnosticsService.unregisterDiagnostics(this._providerMetadata[handle].id);
+	public $unregisterDiagnosticsProvider(handle: number): Thenable<any> {
+		this._errorDiagnosticsService.unregisterDiagnosticsProvider(this._providerMetadata[handle].id);
 		return Promise.resolve(null);
 	}
 }

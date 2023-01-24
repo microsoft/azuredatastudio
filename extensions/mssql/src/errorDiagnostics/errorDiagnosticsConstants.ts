@@ -3,5 +3,4 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export const MssqlPasswordResetCode: number = 18488;
-
+export const MssqlPasswordResetErrorCode: number = 18488;

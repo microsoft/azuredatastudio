@@ -452,7 +452,7 @@ declare module 'azdata' {
 		 * @param providerMetadata The provider metadata containing id and DisplayName (for use with registration).
 		 * @param diagnostics The provider's diagnostic object that handles errors.
 		 */
-		export function registerDiagnostics(providerMetadata: ResourceProviderMetadata, diagnostics: ErrorDiagnostics): vscode.Disposable;
+		export function registerDiagnosticsProvider(providerMetadata: ResourceProviderMetadata, diagnostics: ErrorDiagnostics): vscode.Disposable;
 	}
 
 	export namespace connection {

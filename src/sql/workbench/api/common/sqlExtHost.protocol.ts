@@ -656,8 +656,8 @@ export interface MainThreadResourceProviderShape extends IDisposable {
 }
 
 export interface MainThreadErrorDiagnosticsShape extends IDisposable {
-	$registerDiagnostics(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any>;
-	$unregisterDiagnostics(handle: number): Thenable<any>;
+	$registerDiagnosticsProvider(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any>;
+	$unregisterDiagnosticsProvider(handle: number): Thenable<any>;
 }
 
 export interface MainThreadDataProtocolShape extends IDisposable {

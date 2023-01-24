@@ -14,12 +14,12 @@ import * as ErrorDiagnosticsConstants from './errorDiagnosticsConstants';
 export const diagnosticsId = 'azurediagnostics'
 export const serviceName = 'AzureDiagnostics';
 
-export class ErrorDiagnosticsService extends SqlOpsFeature<any> {
+export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 	//No contracts for now, but can be added later.
 	private static readonly messagesTypes: RPCMessageType[] = [];
 
 	public static asFeature(context: AppContext): ISqlOpsFeature {
-		return class extends ErrorDiagnosticsService {
+		return class extends ErrorDiagnosticsProvider {
 			constructor(client: SqlOpsDataClient) {
 				super(context, client);
 			}
@@ -54,7 +54,7 @@ export class ErrorDiagnosticsService extends SqlOpsFeature<any> {
 
 			protected override registerProvider(options: any): Disposable {
 				let handleConnectionError = async (errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Promise<boolean> => {
-					if (errorCode = ErrorDiagnosticsConstants.MssqlPasswordResetCode) {
+					if (errorCode = ErrorDiagnosticsConstants.MssqlPasswordResetErrorCode) {
 						// Need to convert inputed profile back to IConnectionProfile.
 						let restoredProfile = this.restoreProfileFormat(connection);
 						azdata.connection.openChangePasswordDialog(restoredProfile, options);
@@ -65,7 +65,7 @@ export class ErrorDiagnosticsService extends SqlOpsFeature<any> {
 					}
 				}
 
-				return azdata.diagnostics.registerDiagnostics({
+				return azdata.diagnostics.registerDiagnosticsProvider({
 					displayName: 'Azure SQL Diagnostics for MSSQL',
 					id: 'MSSQL',
 					settings: {
@@ -83,7 +83,7 @@ export class ErrorDiagnosticsService extends SqlOpsFeature<any> {
 	initialize(capabilities: ServerCapabilities): void { }
 
 	private constructor(context: AppContext, protected readonly client: SqlOpsDataClient) {
-		super(client, ErrorDiagnosticsService.messagesTypes);
+		super(client, ErrorDiagnosticsProvider.messagesTypes);
 	}
 
 	protected registerProvider(options: any): Disposable { return undefined; }

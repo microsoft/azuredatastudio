@@ -15,12 +15,12 @@ export interface IErrorDiagnosticsService {
 	/**
 	 * Register a Diagnostics object for a provider
 	 */
-	registerDiagnostics(providerId: string, diagnostics: azdata.diagnostics.ErrorDiagnostics): void;
+	registerDiagnosticsProvider(providerId: string, diagnostics: azdata.diagnostics.ErrorDiagnostics): void;
 
 	/**
 	 * Unregister a Diagnostics object for a provider
 	 */
-	unregisterDiagnostics(ProviderId: string): void;
+	unregisterDiagnosticsProvider(ProviderId: string): void;
 
 	/**
 	 * Checks connection error with given parameters

@@ -117,20 +117,21 @@ export class PasswordChangeDialog extends Modal {
 		this.handleOkButtonClick();
 	}
 
-	private handleOkButtonClick(): void {
+	private async handleOkButtonClick(): Promise<void> {
 		this._okButton.enabled = false;
 		this._cancelButton.enabled = false;
 		this.spinner = true;
-		this.changePasswordFunction(this._profile, this._uri, this._passwordValueText.value, this._confirmValueText.value).then(
-			() => {
-				this.hide('ok'); /* password changed successfully */
-			},
-			() => {
-				this._okButton.enabled = true; /* ignore, user must try again */
-				this._cancelButton.enabled = true;
-				this.spinner = false;
-			}
-		);
+		try {
+			await this.changePasswordFunction(this._profile, this._uri, this._passwordValueText.value, this._confirmValueText.value);
+			this.hide('ok'); /* password changed successfully */
+		}
+		catch {
+			// Error encountered, keep the dialog open and reset dialog back to previous state.
+			this._okButton.enabled = true; /* ignore, user must try again */
+			this._cancelButton.enabled = true;
+			this.spinner = false;
+		}
+
 	}
 
 	private async changePasswordFunction(connection: IConnectionProfile, uri: string, oldPassword: string, newPassword: string): Promise<void> {

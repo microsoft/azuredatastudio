@@ -555,30 +555,29 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private handleConnectionError(connection: interfaces.IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
+	private async handleConnectionError(connection: interfaces.IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
 		let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', "Connection Not Accepted");
 		if (options.showFirewallRuleOnError && connectionResult.errorCode) {
-			return this.handleFirewallRuleError(connection, connectionResult).then(success => {
-				if (success) {
-					options.showFirewallRuleOnError = false;
-					return this.connectWithOptions(connection, uri, options, callbacks);
-				} else {
-					// Pass connection profile to the provider for diagnostic tasks.
-					return this._errorDiagnosticsService.checkConnectionError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, this.convertToSafeProfile(connection), (options as any) as azdata.IConnectionCompletionOptions).then(success => {
-						if (success) {
-							//For now handle connection errors in provider.
-							connectionResult.errorHandled = true;
-							return connectionResult;
-						}
-						else {
-							if (callbacks.onConnectReject) {
-								callbacks.onConnectReject(connectionNotAcceptedError);
-							}
-							return connectionResult;
-						}
-					});
+			let handleFirewall = await this.handleFirewallRuleError(connection, connectionResult);
+			if (handleFirewall) {
+				options.showFirewallRuleOnError = false;
+				return this.connectWithOptions(connection, uri, options, callbacks);
+			}
+			else {
+				let handleOtherConnectionError = await this._errorDiagnosticsService.checkConnectionError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, this.convertToSafeProfile(connection), (options as any) as azdata.IConnectionCompletionOptions);
+				if (handleOtherConnectionError) {
+					//For now handle connection errors in provider.
+					connectionResult.errorHandled = true;
+					return connectionResult;
 				}
-			});
+				else {
+					// Error not recognized at all, reject.
+					if (callbacks.onConnectReject) {
+						callbacks.onConnectReject(connectionNotAcceptedError);
+					}
+					return connectionResult;
+				}
+			}
 		} else {
 			if (callbacks.onConnectReject) {
 				callbacks.onConnectReject(connectionNotAcceptedError);
@@ -598,7 +597,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	public launchChangePasswordDialog(profile: interfaces.IConnectionProfile, params: INewConnectionParams): void {
+	public openChangePasswordDialog(profile: interfaces.IConnectionProfile, params: INewConnectionParams): void {
 		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
 		dialog.open(profile, params);
 	}

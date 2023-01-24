@@ -26,11 +26,17 @@ export class ExtHostErrorDiagnostics extends ExtHostErrorDiagnosticsShape {
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	// - MAIN THREAD AVAILABLE METHODS /////////////////////////////////////
 	public override $handleConnectionError(handle: number, errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Thenable<boolean> {
-		return this._withProvider(handle, (provider: azdata.diagnostics.ErrorDiagnostics) => provider.handleConnectionError(errorCode, errorMessage, connection, options));
+		let provider = this._providers[handle];
+		if (provider === undefined) {
+			return Promise.resolve(false);
+		}
+		else {
+			return provider.provider.handleConnectionError(errorCode, errorMessage, connection, options);
+		}
 	}
 
 	// - EXTENSION HOST AVAILABLE METHODS //////////////////////////////////
-	public $registerDiagnostics(providerMetadata: azdata.ResourceProviderMetadata, diagnostics: azdata.diagnostics.ErrorDiagnostics): Disposable {
+	public $registerDiagnosticsProvider(providerMetadata: azdata.ResourceProviderMetadata, diagnostics: azdata.diagnostics.ErrorDiagnostics): Disposable {
 		let self = this;
 
 		// Look for any account providers that have the same provider ID
@@ -49,12 +55,12 @@ export class ExtHostErrorDiagnostics extends ExtHostErrorDiagnosticsShape {
 		};
 
 		// Register the provider in the main thread via the proxy
-		this._proxy.$registerDiagnostics(providerMetadata, handle);
+		this._proxy.$registerDiagnosticsProvider(providerMetadata, handle);
 
 		// Return a disposable to cleanup the provider
 		return new Disposable(() => {
 			delete self._providers[handle];
-			self._proxy.$unregisterDiagnostics(handle);
+			self._proxy.$unregisterDiagnosticsProvider(handle);
 		});
 	}
 
@@ -69,14 +75,6 @@ export class ExtHostErrorDiagnostics extends ExtHostErrorDiagnosticsShape {
 	// PRIVATE METHODS /////////////////////////////////////////////////////
 	private _nextHandle(): number {
 		return this._handlePool++;
-	}
-
-	private _withProvider<R>(handle: number, callback: (provider: azdata.diagnostics.ErrorDiagnostics) => Thenable<R>): Thenable<R> {
-		let provider = this._providers[handle];
-		if (provider === undefined) {
-			return Promise.reject(new Error(`Provider ${handle} not found.`));
-		}
-		return callback(provider.provider);
 	}
 }
 

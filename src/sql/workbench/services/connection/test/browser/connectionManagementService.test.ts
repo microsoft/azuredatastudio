@@ -184,7 +184,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			undefined, // IQuickInputService
 			new TestNotificationService(),
 			resourceProviderStubMock.object,
-			errorDiagnosticsService, // IErrorDiagnosticsService
+			errorDiagnosticsService,
 			undefined, // IAngularEventingService
 			accountManagementService.object,
 			testLogService, // ILogService

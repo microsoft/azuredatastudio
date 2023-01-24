@@ -26,14 +26,14 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 	/**
 	 * Register a diagnostics object for a provider
 	 */
-	public registerDiagnostics(providerId: string, diagnostics: azdata.diagnostics.ErrorDiagnostics): void {
+	public registerDiagnosticsProvider(providerId: string, diagnostics: azdata.diagnostics.ErrorDiagnostics): void {
 		this._providers[providerId] = diagnostics;
 	}
 
 	/**
 	 * Unregister a diagnostics object for a provider
 	 */
-	public unregisterDiagnostics(providerId: string): void {
+	public unregisterDiagnosticsProvider(providerId: string): void {
 		delete this._providers[providerId];
 	}
 }
