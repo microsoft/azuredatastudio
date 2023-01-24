@@ -95,10 +95,16 @@ export abstract class ConnectToSqlDialog extends InitializingComponent {
 							title: ''
 						}, {
 							component: this.encryptSelectBox,
-							title: loc.encrypt
+							title: loc.encrypt,
+							layout: {
+								info: loc.encryptDescription,
+							}
 						}, {
 							component: this.trustServerCertificateSelectBox,
-							title: loc.trustServerCertificate
+							title: loc.trustServerCertificate,
+							layout: {
+								info: loc.trustServerCertDescription,
+							}
 						}
 					],
 					title: ''
