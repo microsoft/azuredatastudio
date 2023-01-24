@@ -83,7 +83,7 @@ export class PasswordChangeDialog extends Modal {
 		super.render();
 		this.title = dialogTitle;
 		this._register(attachModalDialogStyler(this, this._themeService));
-		this._okButton = this.addFooterButton(okText, () => this.handleOkButtonClick());
+		this._okButton = this.addFooterButton(okText, async () => { await this.handleOkButtonClick() });
 		this._cancelButton = this.addFooterButton(cancelText, () => this.hide('cancel'), 'right', true);
 		this._register(attachButtonStyler(this._okButton, this._themeService));
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));
@@ -113,8 +113,8 @@ export class PasswordChangeDialog extends Modal {
 	}
 
 	/* enter key */
-	protected override onAccept() {
-		this.handleOkButtonClick();
+	protected override async onAccept() {
+		await this.handleOkButtonClick();
 	}
 
 	private async handleOkButtonClick(): Promise<void> {
