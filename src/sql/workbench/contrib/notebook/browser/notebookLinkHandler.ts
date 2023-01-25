@@ -174,16 +174,17 @@ export class NotebookLinkHandler {
  */
 export function findPathRelativeToContent(notebookFolder: string, contentPath: URI | undefined, isMarkdown?: boolean, isEncoded?: boolean): string {
 	if (contentPath?.scheme === 'file') {
+		let decodePath: boolean = contentPath.fsPath !== decodeURI(contentPath.fsPath);
 		let decodedContentPath = contentPath.fsPath;
-		if (contentPath.fsPath !== decodeURI(contentPath.fsPath)) {
+		if (decodePath) {
 			decodedContentPath = decodeURI(contentPath.fsPath);
 		}
 		// use the decodedContentPath for calculating the reative path since the notebookFolder is not encoded to get the relative path correctly.
 		let relativePath = contentPath.fragment ? path.relative(notebookFolder, decodedContentPath).concat('#', contentPath.fragment) : path.relative(notebookFolder, decodedContentPath);
 		// if relativePath contains improper directory format due to marked js parsing returning an invalid path (ex. ....\) then we need to replace it to ensure the directories are formatted properly (ex. ..\..\)
-		relativePath = isEncoded ? replaceInvalidLinkPath(relativePath) : encodeURI(replaceInvalidLinkPath(relativePath)).replace(/%5C/g, '\\');
+		relativePath = isMarkdown || isEncoded ? replaceInvalidLinkPath(relativePath) : encodeURI(replaceInvalidLinkPath(relativePath)).replace(/%5C/g, '\\');
 		// encode the path if we used decoded contentPath for calculating the relativePath.
-		relativePath = contentPath.fsPath !== decodedContentPath ? encodeURI(relativePath) : relativePath;
+		relativePath = decodePath ? encodeURI(relativePath) : relativePath;
 		if (relativePath.startsWith(path.join('..', path.sep)) || relativePath.startsWith(path.join('.', path.sep))) {
 			return relativePath;
 		} else {
