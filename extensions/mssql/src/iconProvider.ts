@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as constants from './constants';
 
 const cloudIcon = 'mssql:cloud';
+const miIcon = "mssql:miIcon";
 
 export class MssqlIconProvider implements azdata.IconProvider {
 	public readonly providerId: string = constants.sqlProviderName;
@@ -14,7 +15,10 @@ export class MssqlIconProvider implements azdata.IconProvider {
 	getConnectionIconId(connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> {
 		let iconName: string = undefined;
 		if (connection.providerName === 'MSSQL') {
-			if (serverInfo.isCloud) {
+			if (serverInfo.engineEditionId === 8) {
+				iconName = miIcon;
+			}
+			else if (serverInfo.isCloud) {
 				iconName = cloudIcon;
 			}
 		}

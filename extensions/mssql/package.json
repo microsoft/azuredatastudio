@@ -603,6 +603,13 @@
             "light": "resources/light/azureDB.svg",
             "dark": "resources/dark/azureDB_inverse.svg"
           }
+        },
+        {
+          "id": "mssql:miIcon",
+          "path": {
+            "light": "resources/light/miIcon.svg",
+            "dark": "resources/dark/miIcon_inverse.svg"
+          }
         }
       ],
       "connectionOptions": [
