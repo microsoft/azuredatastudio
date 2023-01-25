@@ -476,6 +476,7 @@ declare module 'azdata' {
 
 		/**
 		 * Registers provider with instance of Diagnostic Provider implementation.
+		 * Note: only ONE diagnostic provider object can be assigned to a specific provider at a time.
 		 * @param providerMetadata Additional data used to register the provider
 		 * @param errorDiagnostics The provider's diagnostic object that handles errors.
 		 * @returns The diagnostic provider implementation

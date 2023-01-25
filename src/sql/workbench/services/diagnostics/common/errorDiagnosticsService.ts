@@ -13,14 +13,15 @@ export interface IErrorDiagnosticsService {
 	_serviceBrand: undefined;
 
 	/**
-	 * Register a Diagnostics object for a provider
+	 * Register a diagnostics provider object for a provider
+	 * Note: only ONE diagnostic provider object can be assigned to a specific provider at a time.
 	 * @param providerId the id of the provider to be registered.
 	 * @param errorDiagnostics the actual diagnostics provider object to be registered under the id.
 	 */
 	registerDiagnosticsProvider(providerId: string, errorDiagnostics: azdata.diagnostics.ErrorDiagnosticsProvider): void;
 
 	/**
-	 * Unregister a Diagnostics object for a provider
+	 * Unregister a diagnostics provider object for a provider
 	 * @param providerId the id of the provider to be unregistered.
 	 */
 	unregisterDiagnosticsProvider(ProviderId: string): void;
