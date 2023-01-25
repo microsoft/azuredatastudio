@@ -1101,6 +1101,7 @@ export namespace ProfilerSessionCreatedNotification {
 export interface SqlMigrationAssessmentParams {
 	ownerUri: string;
 	databases: string[];
+	xEventsFilesFolderPath: string;
 }
 
 export namespace GetSqlMigrationAssessmentItemsRequest {
@@ -1151,6 +1152,36 @@ export namespace SqlMigrationRefreshPerfDataCollectionRequest {
 	export const type = new RequestType<SqlMigrationRefreshPerfDataCollectionParams, mssql.RefreshPerfDataCollectionResult, void, void>('migration/refreshperfdatacollection');
 }
 
+export interface StartLoginMigrationsParams {
+	sourceConnectionString: string;
+	targetConnectionString: string;
+	loginList: string[];
+	aadDomainName: string;
+}
+
+export namespace StartLoginMigrationRequest {
+	export const type = new RequestType<StartLoginMigrationsParams, mssql.StartLoginMigrationResult, void, void>('migration/startloginmigration');
+}
+
+export namespace ValidateLoginMigrationRequest {
+	export const type = new RequestType<StartLoginMigrationsParams, mssql.StartLoginMigrationResult, void, void>('migration/validateloginmigration');
+}
+
+export namespace MigrateLoginsRequest {
+	export const type = new RequestType<StartLoginMigrationsParams, mssql.StartLoginMigrationResult, void, void>('migration/migratelogins');
+}
+
+export namespace EstablishUserMappingRequest {
+	export const type = new RequestType<StartLoginMigrationsParams, mssql.StartLoginMigrationResult, void, void>('migration/establishusermapping');
+}
+
+export namespace MigrateServerRolesAndSetPermissionsRequest {
+	export const type = new RequestType<StartLoginMigrationsParams, mssql.StartLoginMigrationResult, void, void>('migration/migrateserverrolesandsetpermissions');
+}
+
+export namespace LoginMigrationNotification {
+	export const type = new NotificationType<mssql.StartLoginMigrationResult, void>('migration/loginmigrationnotification"');
+}
 // ------------------------------- <Sql Migration> -----------------------------
 
 // ------------------------------- < Table Designer > ------------------------------------
@@ -1219,3 +1250,35 @@ export namespace ExecutionPlanComparisonRequest {
 }
 
 // ------------------------------- < Execution Plan > ------------------------------------
+
+// ------------------------------- < Tde Migration > ------------------------------------
+
+export namespace TdeMigrateRequest {
+	export const type = new RequestType<TdeMigrationParams, mssql.TdeMigrationResult, void, void>('migration/tdemigration');
+}
+
+export interface TdeMigrationParams {
+	encryptedDatabases: string[];
+	sourceSqlConnectionString: string;
+	targetSubscriptionId: string;
+	targetResourceGroupName: string;
+	targetManagedInstanceName: string;
+	networkSharePath: string;
+	networkShareDomain: string;
+	networkShareUserName: string;
+	networkSharePassword: string;
+	accessToken: string;
+}
+
+export namespace TdeMigrateProgressEvent {
+	export const type = new NotificationType<TdeMigrateProgressParams, void>('migration/tdemigrationprogress');
+}
+
+
+export interface TdeMigrateProgressParams {
+	name: string;
+	success: boolean;
+	message: string;
+}
+
+// ------------------------------- < Tde Migration > ------------------------------------

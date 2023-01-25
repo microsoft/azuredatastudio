@@ -14,7 +14,7 @@
 			"kusto.missingLinkedAzureAccount": "Azure Data Studio 必須連絡 Azure Key Vault 以存取 Always Encrypted 的資料行主要金鑰，但沒有任何已連結的 Azure 帳戶可供使用。請新增已連結的 Azure 帳戶，然後重試一次此查詢。"
 		},
 		"dist/kustoServer": {
-			"downloadServiceDoneChannelMsg": "已完成 {0} 的安裝",
+			"downloadServiceDoneChannelMsg": "已下載 {0}",
 			"downloadingServiceChannelMsg": "正在下載 {0}",
 			"downloadingServiceSizeChannelMsg": "({0} KB)",
 			"downloadingServiceStatusMsg": "正在下載 {0}",

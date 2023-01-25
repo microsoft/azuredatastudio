@@ -18,10 +18,6 @@
         <source xml:lang="en">Error when parsing your account from the cache</source>
         <target state="translated">Erro ao analisar a sua conta do cache</target>
       </trans-unit>
-      <trans-unit id="azure.cacheErrrorRemove">
-        <source xml:lang="en">Error when removing your account from the cache.</source>
-        <target state="translated">Erro ao remover a sua conta do cache.</target>
-      </trans-unit>
       <trans-unit id="azure.microsoftAccountDisplayName">
         <source xml:lang="en">Microsoft Account</source>
         <target state="translated">Conta Microsoft</target>
@@ -38,6 +34,10 @@
         <source xml:lang="en">The user had no unique identifier within AAD</source>
         <target state="translated">O usuário não tinha um identificador exclusivo no AAD</target>
       </trans-unit>
+      <trans-unit id="azure.owningTenantNotFound">
+        <source xml:lang="en">Owning Tenant information not found for account.</source>
+        <target state="translated">As informações do locatário não foram encontradas para a conta.</target>
+      </trans-unit>
       <trans-unit id="azure.responseError">
         <source xml:lang="en">Token retrieval failed with an error. [Open developer tools]({0}) for more details.</source>
         <target state="translated">Falha na recuperação de token com um erro. [Abrir ferramentas para desenvolvedores] ({0}) para obter mais detalhes.</target>
@@ -49,10 +49,6 @@
       <trans-unit id="azureAuth.unidentifiedError">
         <source xml:lang="en">Unidentified error with azure authentication</source>
         <target state="translated">Erro não identificado com a autenticação do Azure</target>
-      </trans-unit>
-      <trans-unit id="azureWorkAccountDisplayName">
-        <source xml:lang="en">Work or school account</source>
-        <target state="translated">Conta corporativa ou de estudante</target>
       </trans-unit>
       <trans-unit id="azurecore.consentDialog.body">
         <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
@@ -69,6 +65,10 @@
       <trans-unit id="azurecore.consentDialog.open">
         <source xml:lang="en">Open</source>
         <target state="translated">Abrir</target>
+      </trans-unit>
+      <trans-unit id="noMicrosoftResource">
+        <source xml:lang="en">Provider '{0}' does not have a Microsoft resource endpoint defined.</source>
+        <target state="translated">O provedor '{0}' não tem um ponto de extremidade de recurso da Microsoft definido.</target>
       </trans-unit>
     </body>
   </file>
@@ -248,6 +248,14 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel">
+        <source xml:lang="en">Azure Database for MySQL Flexible server</source>
+        <target state="translated">Banco de dados do Azure para o servidor MySQL Flexível</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel">
@@ -280,6 +288,22 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel">
+        <source xml:lang="en">Dedicated SQL Pools</source>
+        <target state="translated">Pool de SQL Dedicados</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel">
+        <source xml:lang="en">Azure Synapse Analytics</source>
+        <target state="translated">Azure Synapse Analytics</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/azurecore/dist/azureResource/resourceTreeNode" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="azure.resource.resourceTreeNode.noResourcesLabel">
@@ -293,6 +317,10 @@
       <trans-unit id="azure.resource.tenantSubscriptionsError">
         <source xml:lang="en">Failed to get subscriptions for account {0} (tenant '{1}'). {2}</source>
         <target state="translated">Falha ao obter assinaturas da conta {0} (locatário '{1}'). {2}</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.tenantTokenError">
+        <source xml:lang="en">Failed to acquire Access Token for account '{0}' (tenant '{1}').</source>
+        <target state="translated">Falha ao adquirir o token de acesso para a conta '{0}' (locatário '{1}').</target>
       </trans-unit>
     </body>
   </file>
@@ -591,6 +619,14 @@
         <source xml:lang="en">Reload</source>
         <target state="translated">Recarregar</target>
       </trans-unit>
+      <trans-unit id="azurecore.reloadChoice">
+        <source xml:lang="en">Reload Azure Data Studio</source>
+        <target state="translated">Recarregar o Azure Data Studio</target>
+      </trans-unit>
+      <trans-unit id="azurecore.reloadPrompt">
+        <source xml:lang="en">Authentication Library has changed, please reload Azure Data Studio.</source>
+        <target state="translated">A Biblioteca de Autenticação foi alterada, recarregue o Azure Data Studio.</target>
+      </trans-unit>
       <trans-unit id="azurecore.requiresReload">
         <source xml:lang="en">Modifying this setting requires reloading the window for all changes to take effect.</source>
         <target state="translated">Modificar esta configuração requer o recarregamento da janela para que todas as alterações entrem em vigor.</target>
@@ -766,6 +802,10 @@
       <trans-unit id="azure.title">
         <source xml:lang="en">Azure</source>
         <target state="translated">Azure</target>
+      </trans-unit>
+      <trans-unit id="config.authenticationLibrary">
+        <source xml:lang="en">The library used for the AAD auth flow. Please restart ADS after changing this option.</source>
+        <target state="translated">A biblioteca usada para o fluxo de autenticação do AAD. Reinicie o ADS após alterar esta opção.</target>
       </trans-unit>
       <trans-unit id="config.azureAccountConfigurationSection">
         <source xml:lang="en">Azure Account Configuration</source>

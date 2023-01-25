@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { nb, ServerInfo } from 'azdata';
+import { nb } from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
@@ -14,14 +14,13 @@ import { CellTypes, CellType, NotebookChangeType, TextCellEditModes } from 'sql/
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes, ICaretPosition, ICellEdit, CellEditType } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { generateUuid } from 'vs/base/common/uuid';
 import { HideInputTag, ParametersTag, InjectedParametersTag } from 'sql/platform/notebooks/common/outputRegistry';
-import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
+import { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -35,7 +34,6 @@ import { ILanguageService } from 'vs/editor/common/languages/language';
 import { ICellMetadata } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { CELL_URI_PATH_PREFIX } from 'sql/workbench/common/constants';
-import { DotnetInteractiveLanguagePrefix } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { IModelContentChangedEvent } from 'vs/editor/common/textModelEvents';
 
 let modelId = 0;
@@ -70,7 +68,6 @@ export class CellModel extends Disposable implements ICellModel {
 	private _hover: boolean;
 	private _executionCount: number | undefined;
 	private _cellUri: URI;
-	private _connectionManagementService: IConnectionManagementService;
 	private _stdInHandler: nb.MessageHandler<nb.IStdinMessage>;
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
@@ -616,9 +613,6 @@ export class CellModel extends Disposable implements ICellModel {
 				this.active = true;
 			}
 
-			if (connectionManagementService) {
-				this._connectionManagementService = connectionManagementService;
-			}
 			if (this.cellType !== CellTypes.Code) {
 				// TODO should change hidden state to false if we add support
 				// for this property
@@ -659,10 +653,7 @@ export class CellModel extends Disposable implements ICellModel {
 					if (tryMatchCellMagic(this.source[0]) !== ads_execute_command || !this._isCommandExecutionSettingEnabled) {
 						const future = kernel.requestExecute({
 							code: content,
-							cellIndex: this.notebookModel.findCellIndex(this),
 							stop_on_error: true,
-							notebookUri: this.notebookModel.notebookUri,
-							cellUri: this.cellUri,
 							language: this.language
 						}, false);
 						this.setFuture(future as FutureInternal);
@@ -894,7 +885,7 @@ export class CellModel extends Disposable implements ICellModel {
 							// "Optional transient data introduced in 5.1. Information not to be persisted to a notebook or other documents."
 							// (https://jupyter-client.readthedocs.io/en/stable/messaging.html)
 							delete output['transient'];
-							this._outputs.splice(i, 0, this.rewriteOutputUrls(output));
+							this._outputs.splice(i, 0, output);
 							this.fireOutputsChanged();
 							added = true;
 							break;
@@ -935,43 +926,11 @@ export class CellModel extends Disposable implements ICellModel {
 		if (output && !added) {
 			// deletes transient node in the serialized JSON
 			delete output['transient'];
-			this._outputs.push(this.rewriteOutputUrls(output));
+			this._outputs.push(output);
 			// Only scroll on 1st output being added
 			let shouldScroll = this._outputs.length === 1;
 			this.fireOutputsChanged(shouldScroll);
 		}
-	}
-
-	private rewriteOutputUrls(output: nb.ICellOutput): nb.ICellOutput {
-		const driverLog = '/gateway/default/yarn/container';
-		const yarnUi = '/gateway/default/yarn/proxy';
-		const defaultPort = ':30433';
-		// Only rewrite if this is coming back during execution, not when loading from disk.
-		// A good approximation is that the model has a future (needed for execution)
-		if (this.future) {
-			try {
-				let result = output as nb.IDisplayResult;
-				if (result && result.data && result.data['text/html']) {
-					let model = this._options.notebook as NotebookModel;
-					if (model.context) {
-						let gatewayEndpointInfo = this.getGatewayEndpoint(model.context);
-						if (gatewayEndpointInfo) {
-							let hostAndIp = notebookUtils.getHostAndPortFromEndpoint(gatewayEndpointInfo.endpoint);
-							let host = hostAndIp.host ? hostAndIp.host : model.context.serverName;
-							let port = hostAndIp.port ? ':' + hostAndIp.port : defaultPort;
-							let html = result.data['text/html'];
-							// BDC Spark UI Link
-							html = notebookUtils.rewriteUrlUsingRegex(/(https?:\/\/sparkhead.*\/proxy)(.*)/g, html, host, port, yarnUi);
-							// Driver link
-							html = notebookUtils.rewriteUrlUsingRegex(/(https?:\/\/storage.*\/containerlogs)(.*)/g, html, host, port, driverLog);
-							(<nb.IDisplayResult>output).data['text/html'] = html;
-						}
-					}
-				}
-			}
-			catch (e) { }
-		}
-		return output;
 	}
 
 	public setStdInHandler(handler: nb.MessageHandler<nb.IStdinMessage>): void {
@@ -1019,10 +978,6 @@ export class CellModel extends Disposable implements ICellModel {
 			cellJson.execution_count = this.executionCount ? this.executionCount : null;
 			if (this._configurationService?.getValue('notebook.saveConnectionName')) {
 				metadata.connection_name = this._savedConnectionName;
-			}
-			// Set .NET Interactive language field for vscode compatibility
-			if (this._language?.startsWith(DotnetInteractiveLanguagePrefix)) {
-				(cellJson.metadata as ICellMetadata).dotnet_interactive = { language: this._language.replace(DotnetInteractiveLanguagePrefix, '') };
 			}
 		} else if (this._cellType === CellTypes.Markdown && this._attachments) {
 			cellJson.attachments = this._attachments;
@@ -1110,8 +1065,6 @@ export class CellModel extends Disposable implements ICellModel {
 			this._language = 'markdown';
 		} else if (metadata?.language) {
 			this._language = metadata.language;
-		} else if (metadata?.dotnet_interactive?.language) {
-			this._language = `dotnet-interactive.${metadata.dotnet_interactive.language}`;
 		} else {
 			this._language = this._options?.notebook?.language;
 		}
@@ -1138,23 +1091,6 @@ export class CellModel extends Disposable implements ICellModel {
 		// Use this to set the internal (immutable) and public (shared with extension) uri properties
 		this.cellUri = uri;
 	}
-
-	// Get Knox endpoint from IConnectionProfile
-	// TODO: this will be refactored out into the notebooks extension as a contribution point
-	private getGatewayEndpoint(activeConnection: IConnectionProfile): notebookUtils.IEndpoint {
-		let endpoint;
-		if (this._connectionManagementService && activeConnection && activeConnection.providerName.toLowerCase() === notebookConstants.SQL_CONNECTION_PROVIDER.toLowerCase()) {
-			let serverInfo: ServerInfo = this._connectionManagementService.getServerInfo(activeConnection.id);
-			if (serverInfo) {
-				let endpoints: notebookUtils.IEndpoint[] = notebookUtils.getClusterEndpoints(serverInfo);
-				if (endpoints && endpoints.length > 0) {
-					endpoint = endpoints.find(ep => ep.serviceName.toLowerCase() === notebookUtils.hadoopEndpointNameGateway);
-				}
-			}
-		}
-		return endpoint;
-	}
-
 
 	private getMultilineSource(source: string | string[]): string | string[] {
 		if (source === undefined) {

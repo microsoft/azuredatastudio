@@ -13,19 +13,19 @@
 			"azure.cacheErrorAdd": "Erro ao adicionar a sua conta ao cache.",
 			"azure.cacheErrorGet": "Erro ao obter a sua conta do cache",
 			"azure.cacheErrorParse": "Erro ao analisar a sua conta do cache",
-			"azure.cacheErrrorRemove": "Erro ao remover a sua conta do cache.",
 			"azure.microsoftAccountDisplayName": "Conta Microsoft",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Ocorreu um erro com a autenticação ou os tokens foram excluídos do sistema. Tente adicionar a sua conta no Azure Data Studio novamente.",
 			"azure.noUniqueIdentifier": "O usuário não tinha um identificador exclusivo no AAD",
+			"azure.owningTenantNotFound": "As informações do locatário não foram encontradas para a conta.",
 			"azure.responseError": "Falha na recuperação de token com um erro. [Abrir ferramentas para desenvolvedores] ({0}) para obter mais detalhes.",
 			"azure.tenantNotFound": "Locatário especificado com ID '{0}' não encontrado.",
 			"azureAuth.unidentifiedError": "Erro não identificado com a autenticação do Azure",
-			"azureWorkAccountDisplayName": "Conta corporativa ou de estudante",
 			"azurecore.consentDialog.body": "O locatário '{0} ({1})' requer que você seja autenticado novamente para acessar os recursos de {2}. Pressione Abrir para iniciar o processo de autenticação.",
 			"azurecore.consentDialog.cancel": "Cancelar",
 			"azurecore.consentDialog.ignore": "Ignorar Locatário",
-			"azurecore.consentDialog.open": "Abrir"
+			"azurecore.consentDialog.open": "Abrir",
+			"noMicrosoftResource": "O provedor '{0}' não tem um ponto de extremidade de recurso da Microsoft definido."
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
 			"azure.azureAuthCodeGrantName": "Concessão de Código de Autenticação do Azure",
@@ -83,6 +83,9 @@
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Cluster do Azure Data Explorer"
 		},
+		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Banco de dados do Azure para o servidor MySQL Flexível"
+		},
 		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "Hiperescala do PostgreSQL – Azure Arc"
 		},
@@ -95,11 +98,18 @@
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
 			"azure.resource.providers.sqlInstanceArcContainerLabel": "Instância gerenciada de SQL – Azure Arc"
 		},
+		"dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider": {
+			"azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel": "Pool de SQL Dedicados"
+		},
+		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
+			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
+		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "Nenhum recurso encontrado"
 		},
 		"dist/azureResource/services/subscriptionService": {
-			"azure.resource.tenantSubscriptionsError": "Falha ao obter assinaturas da conta {0} (locatário '{1}'). {2}"
+			"azure.resource.tenantSubscriptionsError": "Falha ao obter assinaturas da conta {0} (locatário '{1}'). {2}",
+			"azure.resource.tenantTokenError": "Falha ao adquirir o token de acesso para a conta '{0}' (locatário '{1}')."
 		},
 		"dist/azureResource/services/terminalService": {
 			"azure.cloudShell": "Azure Cloud Shell (Versão Prévia) {0} ({1})",
@@ -182,6 +192,8 @@
 			"azurecore.norwaywest": "Oeste da Noruega",
 			"azurecore.postgresServer": "Servidor do Banco de Dados do Azure para PostgreSQL",
 			"azurecore.reload": "Recarregar",
+			"azurecore.reloadChoice": "Recarregar o Azure Data Studio",
+			"azurecore.reloadPrompt": "A Biblioteca de Autenticação foi alterada, recarregue o Azure Data Studio.",
 			"azurecore.requiresReload": "Modificar esta configuração requer o recarregamento da janela para que todas as alterações entrem em vigor.",
 			"azurecore.resourceGroup": "Grupo de recursos",
 			"azurecore.resourceType": "Tipo de recurso",
@@ -227,6 +239,7 @@
 			"azure.resource.view.title": "Azure (Versão Prévia)",
 			"azure.tenant.config.filter.description": "A lista de IDs de locatário a serem ignoradas ao consultar os recursos do Azure. Cada elemento é uma ID de locatário.",
 			"azure.title": "Azure",
+			"config.authenticationLibrary": "A biblioteca usada para o fluxo de autenticação do AAD. Reinicie o ADS após alterar esta opção.",
 			"config.azureAccountConfigurationSection": "Configuração da Conta do Azure",
 			"config.azureAuthMethodConfigurationSection": "Método de Autenticação do Azure",
 			"config.azureCodeGrantMethod": "Método de Concessão de Código",

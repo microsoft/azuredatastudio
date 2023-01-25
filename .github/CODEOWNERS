@@ -6,8 +6,9 @@
 /extensions/arc/ @Charles-Gagnon @swells @candiceye
 /extensions/azcli/ @Charles-Gagnon @swells @candiceye
 /extensions/azurecore/ @cssuh @cheenamalhotra
-/extensions/big-data-cluster/ @Charles-Gagnon
 /extensions/dacpac/ @kisantia
+/extensions/datavirtualization @Charles-Gagnon
+/extensions/machine-learning @llali
 /extensions/notebook @azure-data-studio-notebook-devs
 /extensions/query-history/ @Charles-Gagnon
 /extensions/resource-deployment/ @Charles-Gagnon

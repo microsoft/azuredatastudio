@@ -306,9 +306,9 @@ const externalExtensions = [
 	'azuremonitor',
 	'cms',
 	'dacpac',
+	'datavirtualization',
 	'import',
 	'kusto',
-	'liveshare',
 	'machine-learning',
 	'profiler',
 	'query-history',
@@ -329,7 +329,6 @@ export const vscodeExternalExtensions = [
 
 // extensions that require a rebuild since they have native parts
 const rebuildExtensions = [
-	'big-data-cluster',
 	'mssql'
 ];
 

@@ -38,7 +38,6 @@ import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { AddCellEdit, CellOutputEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, CellOutputDataEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
-import { DotnetInteractiveDisplayName } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { IPYKERNEL_DISPLAY_NAME } from 'sql/workbench/common/constants';
 import * as path from 'vs/base/common/path';
 import { ILanguageService } from 'vs/editor/common/languages/language';
@@ -1086,6 +1085,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._providerId = provider;
 			} else if (!provider) {
 				this._providerId = SQL_NOTEBOOK_PROVIDER;
+				this._notebookOptions.notificationService.notify({ severity: Severity.Info, message: localize('savedKernelNotSupported', "This notebook's '{0}' kernel is not supported. Defaulting to SQL kernel instead.", this._savedKernelInfo.display_name ?? this._savedKernelInfo.name) });
 			}
 			this._defaultKernel = this._savedKernelInfo;
 		} else if (this._defaultKernel) {
@@ -1404,11 +1404,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName || displayName.startsWith(kernel.displayName));
 			if (standardKernel) {
 				if (this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
-					// Special case .NET Interactive kernel name to handle inconsistencies between notebook providers and jupyter kernel specs
-					if (this._savedKernelInfo.display_name === DotnetInteractiveDisplayName) {
-						this._savedKernelInfo.oldName = this._savedKernelInfo.name;
-					}
-
 					this._savedKernelInfo.name = standardKernel.name;
 					this._savedKernelInfo.display_name = standardKernel.displayName;
 				} else if (displayName === IPYKERNEL_DISPLAY_NAME && this._savedKernelInfo.name === standardKernel.name) {
@@ -1500,9 +1495,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					display_name: spec.display_name,
 					language: spec.language,
 					supportedLanguages: spec.supportedLanguages,
-					oldName: spec.oldName,
-					oldDisplayName: spec.oldDisplayName,
-					oldLanguage: spec.oldLanguage
 				};
 				this.clientSession?.configureKernel(this._savedKernelInfo);
 			} catch (err) {
@@ -1631,26 +1623,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		delete metadata.kernelspec?.supportedLanguages;
 
 		metadata.language_info = this.languageInfo;
-
-		// Undo special casing for .NET Interactive
-		if (metadata.kernelspec?.oldName) {
-			metadata.kernelspec.name = metadata.kernelspec.oldName;
-			delete metadata.kernelspec.oldName;
-		}
-		if (metadata.kernelspec?.oldDisplayName) {
-			metadata.kernelspec.display_name = metadata.kernelspec.oldDisplayName;
-			delete metadata.kernelspec.oldDisplayName;
-		}
-		if (metadata.kernelspec?.oldLanguage) {
-			metadata.kernelspec.language = metadata.kernelspec.oldLanguage;
-			delete metadata.kernelspec.oldLanguage;
-		}
-		if (metadata.language_info?.oldName) {
-			metadata.language_info.name = metadata.language_info?.oldName;
-			delete metadata.language_info?.oldName;
-		}
-
-
 		metadata.tags = this._tags;
 		metadata.multi_connection_mode = this._multiConnectionMode ? this._multiConnectionMode : undefined;
 		if (this.configurationService.getValue(saveConnectionNameConfigName)) {

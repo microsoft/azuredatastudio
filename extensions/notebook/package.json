@@ -8,7 +8,7 @@
     "vscode": "*",
     "azdata": "*"
   },
-  "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
+  "aiKey": "29a207bb14f84905966a8f22524cb730-25407f35-11b6-4d4e-8114-ab9e843cb52f-7380",
   "main": "./out/extension",
   "activationEvents": [
     "*"
@@ -95,18 +95,6 @@
     },
     "commands": [
       {
-        "command": "notebook.command.analyzeNotebook",
-        "title": "%notebook.analyzeJupyterNotebook%"
-      },
-      {
-        "command": "_notebook.command.new",
-        "title": "%notebook.command.new%",
-        "icon": {
-          "dark": "resources/dark/new_notebook_inverse.svg",
-          "light": "resources/light/new_notebook.svg"
-        }
-      },
-      {
         "command": "notebook.command.open",
         "title": "%notebook.command.open%"
       },
@@ -135,10 +123,6 @@
         "command": "notebook.command.addcell",
         "title": "%notebook.command.addcell%",
         "icon": "resources/dark/touchbar_add_cell.png"
-      },
-      {
-        "command": "jupyter.cmd.analyzeNotebook",
-        "title": "%title.analyzeJupyterNotebook%"
       },
       {
         "command": "jupyter.task.newNotebook",
@@ -343,14 +327,6 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "notebook.command.analyzeNotebook",
-          "when": "false"
-        },
-        {
-          "command": "_notebook.command.new",
-          "when": "false"
-        },
-        {
           "command": "notebook.command.open"
         },
         {
@@ -383,10 +359,6 @@
         },
         {
           "command": "jupyter.cmd.newNotebook",
-          "when": "false"
-        },
-        {
-          "command": "jupyter.cmd.analyzeNotebook",
           "when": "false"
         },
         {
@@ -496,18 +468,6 @@
           "command": "notebook.command.addcell",
           "when": "activeEditor == workbench.editor.notebookEditor",
           "group": "1_notebook@2"
-        }
-      ],
-      "objectExplorer/item/context": [
-        {
-          "command": "notebook.command.analyzeNotebook",
-          "when": "nodeType=~/^mssqlCluster/ && nodeLabel=~/[^\\s]+(\\.(csv|tsv|txt))$/ && nodeType == mssqlCluster:file",
-          "group": "1notebook@1"
-        },
-        {
-          "command": "jupyter.cmd.analyzeNotebook",
-          "when": "nodeType=~/^hdfs/ && nodeLabel=~/[^\\s]+(\\.(csv|tsv|txt))$/ && nodeType == hdfs:file",
-          "group": "1notebook@1"
         }
       ],
       "view/item/context": [
@@ -683,14 +643,6 @@
         ]
       },
       {
-        "magic": "lang_r",
-        "language": "r",
-        "executionTarget": null,
-        "kernels": [
-          "sql"
-        ]
-      },
-      {
         "magic": "lang_java",
         "language": "java",
         "executionTarget": null,
@@ -706,39 +658,6 @@
           ".ipynb"
         ],
         "standardKernels": [
-          {
-            "name": "pysparkkernel",
-            "displayName": "PySpark",
-            "connectionProviderIds": [
-              "MSSQL"
-            ],
-            "blockedOnSAW": true,
-            "supportedLanguages": [
-              "python"
-            ]
-          },
-          {
-            "name": "sparkkernel",
-            "displayName": "Spark | Scala",
-            "connectionProviderIds": [
-              "MSSQL"
-            ],
-            "supportedLanguages": [
-              "scala"
-            ],
-            "blockedOnSAW": true
-          },
-          {
-            "name": "sparkrkernel",
-            "displayName": "Spark | R",
-            "connectionProviderIds": [
-              "MSSQL"
-            ],
-            "supportedLanguages": [
-              "r"
-            ],
-            "blockedOnSAW": true
-          },
           {
             "name": "python3",
             "displayName": "Python 3",
@@ -761,7 +680,7 @@
   },
   "dependencies": {
     "@jupyterlab/services": "^3.2.1",
-    "@microsoft/ads-extension-telemetry": "^1.3.1",
+    "@microsoft/ads-extension-telemetry": "^1.3.2",
     "adm-zip": "^0.4.14",
     "error-ex": "^1.3.1",
     "fast-glob": "^3.1.0",

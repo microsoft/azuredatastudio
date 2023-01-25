@@ -29,8 +29,8 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 		context.registerService(constants.SqlMigrationService, this);
 	}
 
-	async getAssessments(ownerUri: string, databases: string[]): Promise<mssql.AssessmentResult | undefined> {
-		let params: contracts.SqlMigrationAssessmentParams = { ownerUri: ownerUri, databases: databases };
+	async getAssessments(ownerUri: string, databases: string[], xEventsFilesFolderPath: string): Promise<mssql.AssessmentResult | undefined> {
+		let params: contracts.SqlMigrationAssessmentParams = { ownerUri: ownerUri, databases: databases, xEventsFilesFolderPath: xEventsFilesFolderPath };
 		try {
 			return this.client.sendRequest(contracts.GetSqlMigrationAssessmentItemsRequest.type, params);
 		}
@@ -122,6 +122,117 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 		}
 		catch (e) {
 			this.client.logFailedRequest(contracts.SqlMigrationRefreshPerfDataCollectionRequest.type, e);
+		}
+
+		return undefined;
+	}
+
+	async startLoginMigration(
+		sourceConnectionString: string,
+		targetConnectionString: string,
+		loginList: string[],
+		aadDomainName: string): Promise<mssql.StartLoginMigrationResult | undefined> {
+		let params: contracts.StartLoginMigrationsParams = {
+			sourceConnectionString,
+			targetConnectionString,
+			loginList,
+			aadDomainName
+		};
+
+		try {
+			return this.client.sendRequest(contracts.StartLoginMigrationRequest.type, params);
+		}
+		catch (e) {
+			this.client.logFailedRequest(contracts.StartLoginMigrationRequest.type, e);
+		}
+
+		return undefined;
+	}
+
+	async validateLoginMigration(
+		sourceConnectionString: string,
+		targetConnectionString: string,
+		loginList: string[],
+		aadDomainName: string): Promise<mssql.StartLoginMigrationResult | undefined> {
+		let params: contracts.StartLoginMigrationsParams = {
+			sourceConnectionString,
+			targetConnectionString,
+			loginList,
+			aadDomainName
+		};
+
+		try {
+			return this.client.sendRequest(contracts.ValidateLoginMigrationRequest.type, params);
+
+		}
+		catch (e) {
+			this.client.logFailedRequest(contracts.ValidateLoginMigrationRequest.type, e);
+		}
+
+		return undefined;
+	}
+
+	async migrateLogins(
+		sourceConnectionString: string,
+		targetConnectionString: string,
+		loginList: string[],
+		aadDomainName: string): Promise<mssql.StartLoginMigrationResult | undefined> {
+		let params: contracts.StartLoginMigrationsParams = {
+			sourceConnectionString,
+			targetConnectionString,
+			loginList,
+			aadDomainName
+		};
+
+		try {
+			return this.client.sendRequest(contracts.MigrateLoginsRequest.type, params);
+		}
+		catch (e) {
+			this.client.logFailedRequest(contracts.MigrateLoginsRequest.type, e);
+		}
+
+		return undefined;
+	}
+
+	async establishUserMapping(
+		sourceConnectionString: string,
+		targetConnectionString: string,
+		loginList: string[],
+		aadDomainName: string): Promise<mssql.StartLoginMigrationResult | undefined> {
+		let params: contracts.StartLoginMigrationsParams = {
+			sourceConnectionString,
+			targetConnectionString,
+			loginList,
+			aadDomainName
+		};
+
+		try {
+			return this.client.sendRequest(contracts.EstablishUserMappingRequest.type, params);
+		}
+		catch (e) {
+			this.client.logFailedRequest(contracts.EstablishUserMappingRequest.type, e);
+		}
+
+		return undefined;
+	}
+
+	async migrateServerRolesAndSetPermissions(
+		sourceConnectionString: string,
+		targetConnectionString: string,
+		loginList: string[],
+		aadDomainName: string): Promise<mssql.StartLoginMigrationResult | undefined> {
+		let params: contracts.StartLoginMigrationsParams = {
+			sourceConnectionString,
+			targetConnectionString,
+			loginList,
+			aadDomainName
+		};
+
+		try {
+			return this.client.sendRequest(contracts.MigrateServerRolesAndSetPermissionsRequest.type, params);
+		}
+		catch (e) {
+			this.client.logFailedRequest(contracts.MigrateServerRolesAndSetPermissionsRequest.type, e);
 		}
 
 		return undefined;

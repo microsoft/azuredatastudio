@@ -8,9 +8,14 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"dist/localizedConstants": {
+			"errorLoading": "Erro ao carregar itens de histórico de consultas salvos. {0}",
+			"failed": "Com falha",
+			"succeeded": "Com êxito"
+		},
 		"package": {
 			"queryHistory.captureEnabledDesc": "Se a captura do Histórico de Consultas estiver habilitada. Se for false, as consultas executadas não serão capturadas.",
-			"queryHistory.clear": "Limpar todo o histórico",
+			"queryHistory.clear": "Limpar Todo o Histórico",
 			"queryHistory.delete": "Excluir",
 			"queryHistory.description": "Exibir e executar consultas executadas anteriormente",
 			"queryHistory.disableCapture": "Pausar a Captura de Histórico de Consultas",
@@ -19,8 +24,12 @@
 			"queryHistory.doubleClickAction.open": "Abrir um novo editor desconectado com a consulta do item de histórico selecionado",
 			"queryHistory.doubleClickAction.run": "Abrir um novo editor conectado com a consulta e a conexão do item de histórico selecionado e executar a consulta automaticamente",
 			"queryHistory.enableCapture": "Iniciar a Captura do Histórico de Consultas",
+			"queryHistory.loading": "Carregando entradas salvas...",
+			"queryHistory.maxEntries": "Número máximo de entradas a serem armazenados. 0 significa que entradas ilimitadas são armazenadas. Aumentar esse limite pode afetar o desempenho, especialmente se a persistência estiver habilitada.",
 			"queryHistory.noEntries": "Não há nenhuma consulta a ser exibida",
 			"queryHistory.open": "Abrir Consulta",
+			"queryHistory.openStorageFolder": "Abrir pasta de armazenamento",
+			"queryHistory.persistHistory": "Se o histórico de consultas persiste entre reinicializações. Se for false, o histórico será limpo quando o aplicativo for encerrado.",
 			"queryHistory.run": "Executar Consulta"
 		}
 	}

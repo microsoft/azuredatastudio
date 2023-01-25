@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { MigrationMode, MigrationStateModel, MigrationTargetType, NetworkContainerType } from '../../models/stateMachine';
+import { MigrationMode, MigrationStateModel, NetworkContainerType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
 
@@ -33,7 +33,7 @@ export class TargetDatabaseSummaryDialog {
 		tab.registerContent(async (view: azdata.ModelView) => {
 			this._view = view;
 
-			const isSqlDbMigration = this._model._targetType === MigrationTargetType.SQLDB;
+			const isSqlDbMigration = this._model.isSqlDbTarget;
 			const databaseCount = this._view.modelBuilder.text()
 				.withProps({
 					value: constants.COUNT_DATABASES(this._model._databasesForMigration.length),

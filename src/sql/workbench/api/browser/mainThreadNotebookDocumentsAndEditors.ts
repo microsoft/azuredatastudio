@@ -25,9 +25,9 @@ import { NotebookChangeType, CellTypes } from 'sql/workbench/services/notebook/c
 import { localize } from 'vs/nls';
 import { IFileService } from 'vs/platform/files/common/files';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -321,7 +321,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@INotebookService private readonly _notebookService: INotebookService,
 		@IFileService private readonly _fileService: IFileService,
-		@ITextFileService private readonly _textFileService: ITextFileService
+		@ITextFileService private readonly _textFileService: ITextFileService,
 	) {
 		super();
 		if (extHostContext) {
@@ -341,11 +341,6 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		} else {
 			return Promise.resolve(false);
 		}
-	}
-
-	async $tryCreateNotebookDocument(providerId: string, contents?: azdata.nb.INotebookContents): Promise<UriComponents> {
-		let input = await this._notebookService.createNotebookInputFromContents(providerId, contents);
-		return input.resource;
 	}
 
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string> {

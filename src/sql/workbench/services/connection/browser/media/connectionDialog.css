@@ -121,6 +121,16 @@
 	float: left;
 }
 
+.dialog-label-container.info-icon,
+.vs .dialog-label-container.info-icon {
+	background-image: url("info.svg");
+}
+
+.vs-dark .dialog-label-container.info-icon,
+.hc-black .dialog-label-container.info-icon {
+	background-image: url("info_inverse.svg");
+}
+
 .hide-azure-accounts .azure-account-row {
 	display: none;
 }

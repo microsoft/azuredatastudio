@@ -28,6 +28,7 @@ export const allowRoot = 'allowRoot';
 
 export const winPlatform = 'win32';
 export const macPlatform = 'darwin';
+export const linuxPlatform = 'linux';
 
 export const jupyterNotebookProviderId = 'jupyter';
 export const jupyterConfigRootFolder = 'jupyter_config';
@@ -35,7 +36,6 @@ export const jupyterNewNotebookTask = 'jupyter.task.newNotebook';
 export const jupyterOpenNotebookTask = 'jupyter.task.openNotebook';
 export const jupyterNewNotebookCommand = 'jupyter.cmd.newNotebook';
 export const jupyterReinstallDependenciesCommand = 'jupyter.reinstallDependencies';
-export const jupyterAnalyzeCommand = 'jupyter.cmd.analyzeNotebook';
 export const jupyterManagePackages = 'jupyter.cmd.managePackages';
 export const jupyterConfigurePython = 'jupyter.cmd.configurePython';
 export const localhostName = 'localhost';
@@ -44,9 +44,6 @@ export const PackageNotFoundError = localize('managePackages.packageNotFound', "
 
 export const ipykernelDisplayName = 'Python 3 (ipykernel)';
 export const python3DisplayName = 'Python 3';
-export const pysparkDisplayName = 'PySpark';
-export const sparkScalaDisplayName = 'Spark | Scala';
-export const sparkRDisplayName = 'Spark | R';
 export const powershellDisplayName = 'PowerShell';
 export const allKernelsName = 'All Kernels';
 
@@ -82,17 +79,6 @@ export const showPinnedBooksContextKey = 'showPinnedbooks';
 export const pythonWindowsInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2163338';
 export const pythonMacInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2163337';
 export const pythonLinuxInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2163336';
-
-export const notebookLanguages = ['notebook', 'ipynb'];
-
-export const KNOX_ENDPOINT_SERVER = 'host';
-export const KNOX_ENDPOINT_PORT = 'knoxport';
-export const KNOX_ENDPOINT_GATEWAY = 'gateway';
-export const CONTROLLER_ENDPOINT = 'controller';
-export const SQL_PROVIDER = 'MSSQL';
-export const USER = 'user';
-export const AUTHTYPE = 'authenticationType';
-export const INTEGRATED_AUTH = 'integrated';
 
 // The version of the notebook file format that we support
 export const NBFORMAT = 4;

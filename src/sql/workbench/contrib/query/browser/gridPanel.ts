@@ -13,7 +13,7 @@ import { VirtualizedCollection } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
-import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, RestoreTableAction, ChartDataAction, VisualizerDataAction } from 'sql/workbench/contrib/query/browser/actions';
+import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, RestoreTableAction, ChartDataAction, VisualizerDataAction, CopyHeadersAction } from 'sql/workbench/contrib/query/browser/actions';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
@@ -54,12 +54,15 @@ import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/comm
 import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/common/executionPlanInput';
 import { CopyAction } from 'vs/editor/contrib/clipboard/browser/clipboard';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/browser/format';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
 const MIN_GRID_HEIGHT_ROWS = 8;
 const ESTIMATED_SCROLL_BAR_HEIGHT = 15;
 const BOTTOM_PADDING = 15;
+const NO_ACTIONBAR_ADDITIONAL_PADDING = 75;
 const ACTIONBAR_WIDTH = 36;
 
 // minimum height needed to show the full actionbar
@@ -73,9 +76,9 @@ const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ES
 // 2. when user clicks a cell, whether the cell content should be displayed in a new text editor as json.
 // Based on the requirements, the solution doesn't need to be very accurate, a simple regex is enough since it is more
 // performant than trying to parse the string to object.
-// Regex explaination: after removing the trailing whitespaces, the string must start with '[' (to support arrays)
-// or '{'. And there must be a '}' to match the '{'.
-const IsJsonRegex = /^\s*\[*\s*{.*?}/g;
+// Regex explaination: after removing the trailing whitespaces and line breaks, the string must start with '[' (to support arrays)
+// or '{', and there must be a '}' or ']' to close it.
+const IsJsonRegex = /^\s*[\{|\[][\S\s]*[\}\]]\s*$/g;
 
 export class GridPanel extends Disposable {
 	private container = document.createElement('div');
@@ -407,7 +410,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		@IThemeService private readonly themeService: IThemeService,
 		@IContextViewService private readonly contextViewService: IContextViewService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@IExecutionPlanService private readonly executionPlanService: IExecutionPlanService
+		@IExecutionPlanService private readonly executionPlanService: IExecutionPlanService,
+		@IAccessibilityService private readonly accessibilityService: IAccessibilityService,
+		@IQuickInputService private readonly quickInputService: IQuickInputService
 	) {
 		super();
 
@@ -476,7 +481,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private build(): void {
 		let actionBarContainer = document.createElement('div');
 
-		// Create a horizontal actionbar if orientation passed in is HORIZONTAL
+		// Create a horizontal actionbar if orientation passed in is HORIZONTAL.
+		// The horizontal actionbar gets created up top here so that it will appear above the results table.
+		// A vertical actionbar is supposed to come after the results table, so it gets created later down below.
 		if (this.options.actionOrientation === ActionsOrientation.HORIZONTAL) {
 			actionBarContainer.className = 'grid-panel action-bar horizontal';
 			this.container.appendChild(actionBarContainer);
@@ -485,7 +492,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.tableContainer = document.createElement('div');
 		this.tableContainer.className = 'grid-panel';
 		this.tableContainer.style.display = 'inline-block';
-		this.tableContainer.style.width = `calc(100% - ${ACTIONBAR_WIDTH}px)`;
+
+		let actionBarWidth = this.showActionBar ? ACTIONBAR_WIDTH : 0;
+		this.tableContainer.style.width = `calc(100% - ${actionBarWidth}px)`;
 
 		this.container.appendChild(this.tableContainer);
 
@@ -522,7 +531,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				inMemoryDataProcessing: this.options.inMemoryDataProcessing,
 				inMemoryDataCountThreshold: this.options.inMemoryDataCountThreshold
 			});
-		this.table = this._register(new Table(this.tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
+		this.table = this._register(new Table(this.tableContainer, this.accessibilityService, this.quickInputService, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setTableTitle(localize('resultsGrid', "Results grid"));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
@@ -559,12 +568,13 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		if (this.styles) {
 			this.table.style(this.styles);
 		}
-		// If the actionsOrientation passed in is "VERTICAL" (or no actionsOrientation is passed in at all), create a vertical actionBar
+		// if the actionsOrientation passed in is "VERTICAL" (or no actionsOrientation is passed in at all), create a vertical actionBar
 		if (this.options.actionOrientation === ActionsOrientation.VERTICAL) {
 			actionBarContainer.className = 'grid-panel action-bar vertical';
-			actionBarContainer.style.width = ACTIONBAR_WIDTH + 'px';
+			actionBarContainer.style.width = (this.showActionBar ? ACTIONBAR_WIDTH : 0) + 'px';
 			this.container.appendChild(actionBarContainer);
 		}
+
 		let context: IGridActionContext = {
 			gridDataProvider: this.gridDataProvider,
 			table: this.table,
@@ -575,11 +585,14 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.actionBar = new ActionBar(actionBarContainer, {
 			orientation: this.options.actionOrientation, context: context
 		});
+
 		// update context before we run an action
 		this.selectionModel.onSelectedRangesChanged.subscribe(e => {
 			this.actionBar.context = this.generateContext();
 		});
+
 		this.rebuildActionBar();
+
 		this.selectionModel.onSelectedRangesChanged.subscribe(async e => {
 			if (this.state) {
 				this.state.selection = this.selectionModel.getSelectedRanges();
@@ -806,11 +819,17 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	public get minimumSize(): number {
 		// clamp between ensuring we can show the actionbar, while also making sure we don't take too much space
 		// if there is only one table then allow a minimum size of ROW_HEIGHT
-		return this.isOnlyTable ? ROW_HEIGHT : Math.max(Math.min(this.maxSize, MIN_GRID_HEIGHT), ACTIONBAR_HEIGHT + BOTTOM_PADDING);
+		let actionBarHeight = this.showActionBar ? ACTIONBAR_HEIGHT : 0;
+		let bottomPadding = this.showActionBar ? BOTTOM_PADDING : BOTTOM_PADDING + NO_ACTIONBAR_ADDITIONAL_PADDING;
+
+		return this.isOnlyTable ? ROW_HEIGHT : Math.max(Math.min(this.maxSize, MIN_GRID_HEIGHT), actionBarHeight + bottomPadding);
 	}
 
 	public get maximumSize(): number {
-		return Math.max(this.maxSize, ACTIONBAR_HEIGHT + BOTTOM_PADDING);
+		let actionBarHeight = this.showActionBar ? ACTIONBAR_HEIGHT : 0;
+		let bottomPadding = this.showActionBar ? BOTTOM_PADDING : BOTTOM_PADDING + NO_ACTIONBAR_ADDITIONAL_PADDING;
+
+		return Math.max(this.maxSize, actionBarHeight + bottomPadding);
 	}
 
 	private loadData(offset: number, count: number): Thenable<T[]> {
@@ -850,7 +869,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				}
 				actions.push(
 					this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false),
-					this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true)
+					this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true),
+					this.instantiationService.createInstance(CopyHeadersAction)
 				);
 
 				if (this.state.canBeMaximized) {
@@ -921,14 +941,16 @@ class GridTable<T> extends GridTableBase<T> {
 		@IThemeService themeService: IThemeService,
 		@IContextViewService contextViewService: IContextViewService,
 		@INotificationService notificationService: INotificationService,
-		@IExecutionPlanService executionPlanService: IExecutionPlanService
+		@IExecutionPlanService executionPlanService: IExecutionPlanService,
+		@IAccessibilityService accessibilityService: IAccessibilityService,
+		@IQuickInputService quickInputService: IQuickInputService
 	) {
 		super(state, resultSet, {
 			actionOrientation: ActionsOrientation.VERTICAL,
 			inMemoryDataProcessing: true,
-			showActionBar: true,
+			showActionBar: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.showActionBar,
 			inMemoryDataCountThreshold: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.inMemoryDataProcessingThreshold,
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 		this.providerId = this._runner.getProviderId();
 	}

@@ -39,6 +39,8 @@ import { ContextMenuColumn, ContextMenuCellValue } from 'sql/base/browser/ui/tab
 import { IAction, Separator } from 'vs/base/common/actions';
 import { MenuItemAction, MenuRegistry } from 'vs/platform/actions/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -90,7 +92,9 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		@Inject(ILogService) logService: ILogService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
-		@Inject(IInstantiationService) private instantiationService: IInstantiationService
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(IAccessibilityService) private accessibilityService: IAccessibilityService,
+		@Inject(IQuickInputService) private quickInputService: IQuickInputService
 	) {
 		super(changeRef, el, logService);
 	}
@@ -275,13 +279,16 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				dataItemColumnValueExtractor: slickGridDataItemColumnValueWithNoData // must change formatter if you are changing explicit column value extractor
 			};
 
-			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, { dataProvider: this._tableData, columns: this._tableColumns }, options);
+			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, this.accessibilityService, this.quickInputService, { dataProvider: this._tableData, columns: this._tableColumns }, options);
 			this._table.setData(this._tableData);
 			this._table.setSelectionModel(new RowSelectionModel({ selectActiveRow: true }));
 
 			this._register(this._table);
 			this._register(attachTableStyler(this._table, this.themeService));
 			this._register(this._table.onSelectedRowsChanged((e, data) => {
+				if (this.isCheckboxColumnsUsedForSelection()) {
+					return;
+				}
 				this.selectedRows = data.rows;
 				this.fireEvent({
 					eventType: ComponentEventType.onSelectedRowChanged,
@@ -441,6 +448,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			}, index));
 
 			this._register(this._checkboxColumns.get(col.value).onChange((state) => {
+				this.data[state.row][state.column] = state.checked;
+				this.setPropertyFromUI<any[][]>((props, value) => props.data = value, this.data);
 				this.fireEvent({
 					eventType: ComponentEventType.onCellAction,
 					args: {
@@ -450,6 +459,34 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 						name: name
 					}
 				});
+				if (checkboxAction === ActionOnCheck.selectRow) {
+					const selectedRows: number[] = [];
+					this.data.forEach((row, index) => {
+						if (row[state.column]) {
+							selectedRows.push(index);
+						}
+					});
+					this.selectedRows = selectedRows;
+					this.fireEvent({
+						eventType: ComponentEventType.onSelectedRowChanged,
+						args: selectedRows
+					});
+				}
+			}));
+
+			this._register(this._checkboxColumns.get(col.value).onCheckAllChange((state) => {
+				this.data.forEach((row, index) => {
+					row[state.column] = state.checked;
+				});
+				this.setPropertyFromUI<any[][]>((props, value) => props.data = value, this.data);
+				if (checkboxAction === ActionOnCheck.selectRow) {
+
+					this.selectedRows = state.checked ? this.data.map((v, i) => i) : [];
+					this.fireEvent({
+						eventType: ComponentEventType.onSelectedRowChanged,
+						args: this.selectedRows
+					});
+				}
 			}));
 		}
 	}
@@ -615,6 +652,16 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			}
 			this._table.grid.getActiveCellNode().focus();
 		}
+	}
+
+	/**
+	 * Returns true if the checkbox column is used for row selection in the table
+	 */
+	private isCheckboxColumnsUsedForSelection(): boolean {
+		return this.columns.some(c => {
+			const checkboxAction = <ActionOnCheck>(c.options ? (<azdata.CheckboxColumnOption>c.options).actionOnCheckbox : c.action);
+			return checkboxAction === ActionOnCheck.selectRow
+		});
 	}
 
 	// CSS-bound properties

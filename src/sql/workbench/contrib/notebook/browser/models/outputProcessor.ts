@@ -73,6 +73,7 @@ export function getBundleOptions(options: IOutputModelOptions): MimeModel.IOptio
 	let data = getData(options.value);
 	let metadata = getMetadata(options.value);
 	let trusted = !!options.trusted;
+
 	return { data, metadata, trusted };
 }
 

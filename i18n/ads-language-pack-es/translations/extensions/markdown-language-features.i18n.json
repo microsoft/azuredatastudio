@@ -8,22 +8,29 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/features/documentLinkProvider": {
+		"dist/languageFeatures/documentLinkProvider": {
 			"documentLink.tooltip": "Seguir vínculo"
 		},
-		"dist/features/preview": {
+		"dist/languageFeatures/fileReferences": {
+			"error.noResource": "Error al buscar referencias de archivo. No se ha proporcionado ningún recurso.",
+			"progress.title": "Buscando referencias de archivo"
+		},
+		"dist/languageFeatures/rename": {
+			"invalidRenameLocation": "No se admite el cambio de nombre en la ubicación"
+		},
+		"dist/preview/preview": {
 			"lockedPreviewTitle": "[Vista previa] {0}",
 			"onPreviewStyleLoadError": "No se pudo cargar 'markdown.styles': {0}",
 			"preview.clickOpenFailed": "No se pudo abrir {0}",
 			"previewTitle": "Vista Previa {0}"
 		},
-		"dist/features/previewContentProvider": {
+		"dist/preview/previewContentProvider": {
 			"preview.notFound": "{0} no se puede encontrar",
 			"preview.securityMessage.label": "Alerta de seguridad de contenido deshabilitado",
 			"preview.securityMessage.text": "Se ha deshabilitado parte del contenido de este documento",
 			"preview.securityMessage.title": "Se ha deshabilitado el contenido potencialmente inseguro en la vista previa de Markdown. Para permitir el contenido inseguro o habilitar scripts, cambie la configuración de la vista previa de Markdown"
 		},
-		"dist/security": {
+		"dist/preview/security": {
 			"disable.description": "Permitir todo el contenido y la ejecución de scripts. No se recomienda.",
 			"disable.title": "Deshabilitar",
 			"disableSecurityWarning.title": "Deshabilitar advertencias de seguridad de vista previa en esta área de trabajo",
@@ -39,14 +46,17 @@
 			"toggleSecurityWarning.description": "No afecta al nivel de seguridad de contenido"
 		},
 		"package": {
+			"configuration.markdown.editor.drop.enabled": "Habilite o deshabilite la colocación en el editor de Markdown para insertar el turno. Requiere habilitar “#workbenck.experimental.editor.dropIntoEditor.enabled#”.",
 			"configuration.markdown.links.openLocation.beside": "Abrir enlaces junto al editor activo.",
 			"configuration.markdown.links.openLocation.currentGroup": "Abra vínculos en el grupo de editor activo.",
 			"configuration.markdown.links.openLocation.description": "Controla dónde se deben abrir los vínculos de los archivos Markdown.",
 			"configuration.markdown.preview.openMarkdownLinks.description": "Controla cómo deben abrirse los vínculos hacia otros archivos Markdown en la vista previa de Markdown.",
 			"configuration.markdown.preview.openMarkdownLinks.inEditor": "Intenta abrir los vínculos en el editor.",
 			"configuration.markdown.preview.openMarkdownLinks.inPreview": "Intenta abrir los vínculos en la vista previa de Markdown.",
+			"configuration.markdown.suggest.paths.enabled.description": "Habilitar o deshabilitar sugerencias de ruta de acceso para vínculos de marcado",
 			"description": "Proporciona un potente soporte de lenguaje para archivos Markdown.",
 			"displayName": "Características del lenguaje Markdown",
+			"markdown.findAllFileReferences": "Buscar referencias de archivo",
 			"markdown.preview.breaks.desc": "Establece cómo se representan los saltos de línea en la vista previa de Markdown. Si se establece en \"true\", se crea <br> para las líneas nuevas dentro de los párrafos.",
 			"markdown.preview.doubleClickToSwitchToEditor.desc": "Haga doble clic en la vista previa de Markdown para cambiar al editor.",
 			"markdown.preview.fontFamily.desc": "Controla la familia de fuentes que se usa en la vista previa de Markdown.",

@@ -9,7 +9,6 @@ import { localize } from 'vs/nls';
 import * as platform from 'vs/platform/registry/common/platform';
 import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
-import { DEFAULT_NOTEBOOK_FILETYPE, VSCODE_JUPYTER_PROVIDER_ID } from 'sql/workbench/common/constants';
 
 export const NotebookProviderRegistryId = 'notebooks.providers.registry';
 
@@ -87,11 +86,11 @@ let notebookLanguageMagicType: IJSONSchema = {
 			type: 'string'
 		},
 		executionTarget: {
-			description: localize('carbon.extension.contributes.notebook.executionTarget', "Optional execution target this magic indicates, for example Spark vs SQL"),
+			description: localize('carbon.extension.contributes.notebook.executionTarget', "Optional execution target this magic indicates, for example Python vs SQL"),
 			type: 'string'
 		},
 		kernels: {
-			description: localize('carbon.extension.contributes.notebook.kernels', "Optional set of kernels this is valid for, e.g. python3, pyspark, sql"),
+			description: localize('carbon.extension.contributes.notebook.kernels', "Optional set of kernels this is valid for, e.g. python3, sql"),
 			type: 'array',
 			items: {
 				type: 'string'
@@ -119,8 +118,6 @@ export interface INotebookProviderRegistry {
 
 	readonly onNewDescriptionRegistration: Event<{ id: string, registration: ProviderDescriptionRegistration }>;
 
-	updateProviderKernels(providerId: string, kernels: azdata.nb.IStandardKernel[]): void;
-	updateKernelLanguages(providerId: string, kernelName: string, languages: string[]): void;
 	registerProviderDescription(provider: ProviderDescriptionRegistration): void;
 	registerNotebookLanguageMagic(magic: NotebookLanguageMagicRegistration): void;
 }
@@ -131,43 +128,6 @@ class NotebookProviderRegistry implements INotebookProviderRegistry {
 
 	private _onNewDescriptionRegistration = new Emitter<{ id: string, registration: ProviderDescriptionRegistration }>();
 	public readonly onNewDescriptionRegistration: Event<{ id: string, registration: ProviderDescriptionRegistration }> = this._onNewDescriptionRegistration.event;
-
-	private readonly providerNotInRegistryError = (providerId: string): string => localize('providerNotInRegistryError', "The specified provider '{0}' is not present in the notebook registry.", providerId);
-
-	updateProviderKernels(providerId: string, kernels: azdata.nb.IStandardKernel[]): void {
-		let registration = this._providerDescriptionRegistration.get(providerId);
-		if (!registration) {
-			// Newer versions of the Jupyter extension don't contribute a provider for the default file type, so
-			// register the original provider details here to preserve backwards compatibility for .NET Interactive
-			if (providerId === VSCODE_JUPYTER_PROVIDER_ID) {
-				registration = {
-					provider: VSCODE_JUPYTER_PROVIDER_ID,
-					fileExtensions: [DEFAULT_NOTEBOOK_FILETYPE],
-					standardKernels: undefined
-				};
-			} else {
-				throw new Error(this.providerNotInRegistryError(providerId));
-			}
-		}
-		registration.standardKernels = kernels;
-
-		// Update provider description with new info
-		this.registerProviderDescription(registration);
-	}
-
-	updateKernelLanguages(providerId: string, kernelName: string, languages: string[]): void {
-		let registration = this._providerDescriptionRegistration.get(providerId);
-		if (!registration) {
-			throw new Error(this.providerNotInRegistryError(providerId));
-		}
-		let kernel = registration.standardKernels?.find(kernel => kernel.name === kernelName);
-		if (kernel) {
-			kernel.supportedLanguages = languages;
-		}
-
-		// Update provider description with new info
-		this.registerProviderDescription(registration);
-	}
 
 	registerProviderDescription(registration: ProviderDescriptionRegistration): void {
 		this._providerDescriptionRegistration.set(registration.provider, registration);

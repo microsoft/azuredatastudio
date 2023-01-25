@@ -357,6 +357,11 @@ configurationRegistry.registerConfiguration({
 			'minimum': 10,
 			'description': localize('notebook.maxRichTextUndoHistory', "The maximum number of changes stored in the undo history for the notebook Rich Text editor.")
 		},
+		'notebook.renderTablesInHtml': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('notebook.renderTablesInHtml', "Display and save tables in HTML format in text cells instead of converting to markdown tables.")
+		},
 		'notebook.useAbsoluteFilePaths': {
 			'type': 'boolean',
 			'default': false,
@@ -433,24 +438,9 @@ registerComponentType({
 	mimeTypes: [
 		'text/plain',
 		'application/vnd.jupyter.stdout',
-		'application/vnd.jupyter.stderr',
-		'application/vnd.code.notebook.stdout',
-		'application/vnd.code.notebook.stderr'
+		'application/vnd.jupyter.stderr'
 	],
 	rank: 120,
-	safe: true,
-	ctor: MimeRendererComponent,
-	selector: MimeRendererComponent.SELECTOR
-});
-
-/**
- * A mime renderer component for VS Code Notebook error data.
- */
-registerComponentType({
-	mimeTypes: [
-		'application/vnd.code.notebook.error'
-	],
-	rank: 121,
 	safe: true,
 	ctor: MimeRendererComponent,
 	selector: MimeRendererComponent.SELECTOR

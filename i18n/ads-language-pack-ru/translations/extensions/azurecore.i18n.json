@@ -13,19 +13,19 @@
 			"azure.cacheErrorAdd": "Ошибка при добавлении учетной записи в кэш.",
 			"azure.cacheErrorGet": "Ошибка при получении учетной записи из кэша.",
 			"azure.cacheErrorParse": "Ошибка при анализе учетной записи из кэша.",
-			"azure.cacheErrrorRemove": "Ошибка при удалении учетной записи из кэша.",
 			"azure.microsoftAccountDisplayName": "Учетная запись Майкрософт",
 			"azure.microsoftCorpAccount": "Корпорация Майкрософт",
 			"azure.noBaseToken": "Произошла ошибка при проверке подлинности, или ваши токены были удалены из системы. Попробуйте добавить учетную запись в Azure Data Studio еще раз.",
 			"azure.noUniqueIdentifier": "У пользователя нет уникального идентификатора в AAD",
+			"azure.owningTenantNotFound": "Для учетной записи не найдены сведения о владении клиентом.",
 			"azure.responseError": "Не удалось получить токен из-за ошибки. [Откройте инструменты разработчика]({0}), чтобы узнать подробности.",
 			"azure.tenantNotFound": "Указанный клиент с идентификатором \"{0}\" не найден.",
 			"azureAuth.unidentifiedError": "Неизвестная ошибка при проверке подлинности Azure",
-			"azureWorkAccountDisplayName": "Рабочая или учебная учетная запись",
 			"azurecore.consentDialog.body": "Клиент \"{0} ({1})\" требует повторной проверки подлинности для доступа к ресурсам {2}. Нажмите кнопку \"Открыть\", чтобы начать процесс проверки подлинности.",
 			"azurecore.consentDialog.cancel": "Отмена",
 			"azurecore.consentDialog.ignore": "Игнорировать клиента",
-			"azurecore.consentDialog.open": "Открыть"
+			"azurecore.consentDialog.open": "Открыть",
+			"noMicrosoftResource": "Для поставщика {0} не определена конечная точка ресурса Майкрософт."
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
 			"azure.azureAuthCodeGrantName": "Предоставление кода проверки подлинности Azure",
@@ -83,6 +83,9 @@
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Кластер Azure Data Explorer"
 		},
+		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Гибкий сервер Базы данных Azure для MySQL"
+		},
 		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "Гипермасштабирование PostgreSQL — Azure Arc"
 		},
@@ -95,11 +98,18 @@
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
 			"azure.resource.providers.sqlInstanceArcContainerLabel": "Управляемый экземпляр SQL — Azure Arc"
 		},
+		"dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider": {
+			"azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel": "Выделенные пулы SQL"
+		},
+		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
+			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
+		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "Ресурсы не найдены"
 		},
 		"dist/azureResource/services/subscriptionService": {
-			"azure.resource.tenantSubscriptionsError": "Не удалось получить подписки для учетной записи {0} (клиент \"{1}\"). {2}"
+			"azure.resource.tenantSubscriptionsError": "Не удалось получить подписки для учетной записи {0} (клиент \"{1}\"). {2}",
+			"azure.resource.tenantTokenError": "Не удалось получить маркер доступа для учетной записи \"{0}\" (клиент \"{1}\")."
 		},
 		"dist/azureResource/services/terminalService": {
 			"azure.cloudShell": "Azure Cloud Shell (предварительная версия) {0} ({1})",
@@ -182,6 +192,8 @@
 			"azurecore.norwaywest": "Западная Норвегия",
 			"azurecore.postgresServer": "Сервер Базы данных Azure для PostgreSQL",
 			"azurecore.reload": "Перезагрузить",
+			"azurecore.reloadChoice": "Перезагрузить Azure Data Studio",
+			"azurecore.reloadPrompt": "Библиотека проверки подлинности изменена. Перезагрузите Azure Data Studio.",
 			"azurecore.requiresReload": "При изменении этого ресурса необходимо перезагрузить окно, чтобы все изменения вступили в силу.",
 			"azurecore.resourceGroup": "Группа ресурсов",
 			"azurecore.resourceType": "Тип ресурса",
@@ -227,6 +239,7 @@
 			"azure.resource.view.title": "Azure (предварительная версия)",
 			"azure.tenant.config.filter.description": "Список идентификаторов клиентов, которые будут проигнорированы при запросе ресурсов Azure. Каждый элемент представляет собой идентификатор клиента.",
 			"azure.title": "Azure",
+			"config.authenticationLibrary": "Библиотека, используемая для потока проверки подлинности AAD. Перезапустите ADS после изменения этого параметра.",
 			"config.azureAccountConfigurationSection": "Конфигурация учетной записи Azure",
 			"config.azureAuthMethodConfigurationSection": "Метод проверки подлинности Azure",
 			"config.azureCodeGrantMethod": "Метод предоставления кода",

@@ -39,6 +39,10 @@ import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { ConsoleLogger, LogService } from 'vs/platform/log/common/log';
 import { TestAccessibilityService } from 'vs/platform/accessibility/test/common/testAccessibilityService';
+import { TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -77,6 +81,28 @@ suite('SQL Connection Tree Action tests', () => {
 		return connectionManagementService;
 	}
 
+	/**
+	 * Creates a mock dialog service that and select the choice at the given index when show is called.
+	 * @param choiceIndex index of the button in the dialog to be selected starting from 0.
+	 * @returns
+	 */
+	function createDialogService(choiceIndex: number): TypeMoq.Mock<IDialogService> {
+		let dialogService = TypeMoq.Mock.ofType<IDialogService>(TestDialogService, TypeMoq.MockBehavior.Loose);
+		dialogService.callBase = true;
+		dialogService.setup(x => x.show(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			return Promise.resolve({
+				choice: choiceIndex
+			})
+		});
+		return dialogService;
+	}
+
+	function createEditorService(): TypeMoq.Mock<IEditorService> {
+		let editorService = TypeMoq.Mock.ofType<IEditorService>(TestEditorService, TypeMoq.MockBehavior.Strict);
+
+		return editorService;
+	}
+
 	function createObjectExplorerService(connectionManagementService: TestConnectionManagementService, getTreeNodeReturnVal: TreeNode): TypeMoq.Mock<ObjectExplorerService> {
 		let objectExplorerService = TypeMoq.Mock.ofType(ObjectExplorerService, TypeMoq.MockBehavior.Strict, connectionManagementService);
 		objectExplorerService.callBase = true;
@@ -107,6 +133,7 @@ suite('SQL Connection Tree Action tests', () => {
 			id: 'testId'
 		});
 		let connectionManagementService = createConnectionManagementService(isConnectedReturnValue, connection);
+		let editorService: TypeMoq.Mock<IEditorService> = createEditorService();
 		let objectExplorerService = createObjectExplorerService(connectionManagementService.object, undefined);
 		let treeSelectionMock = TypeMoq.Mock.ofType(TreeSelectionHandler);
 		let instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
@@ -163,6 +190,7 @@ suite('SQL Connection Tree Action tests', () => {
 			OEManageConnectionAction.ID,
 			OEManageConnectionAction.LABEL,
 			connectionManagementService.object,
+			editorService.object,
 			capabilitiesService,
 			instantiationService.object,
 			objectExplorerService.object,
@@ -196,6 +224,7 @@ suite('SQL Connection Tree Action tests', () => {
 		let treeNode = new TreeNode(NodeType.Database, '', 'db node', false, '', '', '', undefined, undefined, undefined, undefined);
 		treeNode.connection = connection;
 		let connectionManagementService = createConnectionManagementService(isConnectedReturnValue, connection);
+		let editorService = createEditorService();
 		let objectExplorerService = createObjectExplorerService(connectionManagementService.object, treeNode);
 		let treeSelectionMock = TypeMoq.Mock.ofType(TreeSelectionHandler);
 		let instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
@@ -207,6 +236,7 @@ suite('SQL Connection Tree Action tests', () => {
 			OEManageConnectionAction.ID,
 			OEManageConnectionAction.LABEL,
 			connectionManagementService.object,
+			editorService.object,
 			capabilitiesService,
 			instantiationService.object,
 			objectExplorerService.object,
@@ -317,12 +347,41 @@ suite('SQL Connection Tree Action tests', () => {
 		let connectionAction: DeleteConnectionAction = new DeleteConnectionAction(DeleteConnectionAction.ID,
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			connection,
-			connectionManagementService.object);
+			connectionManagementService.object,
+			createDialogService(0).object); // Select 'Yes' on the modal dialog
 
 		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.deleteConnection(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 		});
 
+	});
+
+	test('DeleteConnectionAction - connection not deleted when user selects no on the prompt', async () => {
+		let connectionManagementService = createConnectionManagementService(true, undefined);
+
+		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'Test',
+			savePassword: false,
+			groupFullName: 'testGroup',
+			serverName: 'testServerName',
+			databaseName: 'testDatabaseName',
+			authenticationType: AuthenticationType.Integrated,
+			password: 'test',
+			userName: 'testUsername',
+			groupId: undefined,
+			providerName: mssqlProviderName,
+			options: {},
+			saveProfile: true,
+			id: 'testId'
+		});
+		let connectionAction: DeleteConnectionAction = new DeleteConnectionAction(DeleteConnectionAction.ID,
+			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
+			connection,
+			connectionManagementService.object,
+			createDialogService(1).object); // Selecting 'No' on the modal dialog
+
+		await connectionAction.run();
+		connectionManagementService.verify(x => x.deleteConnection(TypeMoq.It.isAny()), TypeMoq.Times.never());
 	});
 
 	test('DeleteConnectionAction - test delete connection group', () => {
@@ -332,7 +391,8 @@ suite('SQL Connection Tree Action tests', () => {
 		let connectionAction: DeleteConnectionAction = new DeleteConnectionAction(DeleteConnectionAction.ID,
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			conProfGroup,
-			connectionManagementService.object);
+			connectionManagementService.object,
+			createDialogService(0).object); // Select 'Yes' on the modal dialog
 
 		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.deleteConnectionGroup(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
@@ -363,7 +423,8 @@ suite('SQL Connection Tree Action tests', () => {
 		let connectionAction: DeleteConnectionAction = new DeleteConnectionAction(DeleteConnectionAction.ID,
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			connection,
-			connectionManagementService.object);
+			connectionManagementService.object,
+			createDialogService(0).object);
 
 		assert.strictEqual(connectionAction.enabled, false, 'delete action should be disabled.');
 	});
@@ -450,7 +511,7 @@ suite('SQL Connection Tree Action tests', () => {
 		return refreshAction.run().then((value) => {
 			connectionManagementService.verify(x => x.isConnected(undefined, TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 			objectExplorerService.verify(x => x.getObjectExplorerNode(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
-			objectExplorerService.verify(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
+			objectExplorerService.verify(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
 			tree.verify(x => x.refresh(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 		});
 	});

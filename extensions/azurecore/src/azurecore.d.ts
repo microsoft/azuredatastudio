@@ -38,11 +38,17 @@ declare module 'azurecore' {
 		azureAuthType?: AzureAuthType
 
 		providerSettings: AzureAccountProviderMetadata;
+
 		/**
 		 * Whether or not the account is a Microsoft account
 		 */
 		isMsAccount: boolean;
 
+		/**
+		 * Represents the tenant that the user would be signing in to. For work and school accounts, the GUID is the immutable tenant ID of the organization that the user is signing in to.
+		 * For sign-ins to the personal Microsoft account tenant (services like Xbox, Teams for Life, or Outlook), the value is 9188040d-6c67-4c5b-b112-36a304b66dad.
+		 */
+		owningTenant: Tenant;
 		/**
 		 * A list of tenants (aka directories) that the account belongs to
 		 */
@@ -331,7 +337,7 @@ declare module 'azurecore' {
 	export namespace azureResource {
 
 		/**
-		 * AzureCore core extension supports following resource types of Azure Resource Graph.
+		 * AzureCore extension supports following resource types of Azure Resource Graph.
 		 * To add more resources, please refer this guide: https://docs.microsoft.com/en-us/azure/governance/resource-graph/reference/supported-tables-resources
 		 */
 		export const enum AzureResourceType {
@@ -339,6 +345,9 @@ declare module 'azurecore' {
 			sqlServer = 'microsoft.sql/servers',
 			sqlDatabase = 'microsoft.sql/servers/databases',
 			sqlManagedInstance = 'microsoft.sql/managedinstances',
+			sqlSynapseWorkspace = 'microsoft.synapse/workspaces', // (Synapse Analytics workspace)
+			sqlSynapseSqlPool = 'microsoft.synapse/workspaces/sqlpools', // (Dedicated SQL pools)
+			sqlSynapseSqlDatabase = 'microsoft.synapse/workspaces/sqldatabases', // (Synapse SQL databases)
 			azureArcSqlManagedInstance = 'microsoft.azuredata/sqlmanagedinstances',
 			virtualMachines = 'microsoft.compute/virtualmachines',
 			kustoClusters = 'microsoft.kusto/clusters',
@@ -356,10 +365,10 @@ declare module 'azurecore' {
 		}
 
 		export interface IAzureResourceTreeDataProvider {
-			 /**
-			  * Gets the root tree item nodes for this provider - these will be used as
-			  * direct children of the Account node in the Azure tree view.
-			  */
+			/**
+			 * Gets the root tree item nodes for this provider - these will be used as
+			 * direct children of the Account node in the Azure tree view.
+			 */
 			getRootChildren(): Promise<azdata.TreeItem[]>;
 			/**
 			 * Gets the children for a given {@link IAzureResourceNode}
@@ -485,6 +494,7 @@ declare module 'azurecore' {
 			fullName: string;
 			defaultDatabaseName: string;
 		}
+
 		export interface BlobContainer extends AzureResource { }
 
 		export interface FileShare extends AzureResource { }

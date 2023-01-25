@@ -8,14 +8,16 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/common/keychain": {
-			"keychainWriteError": "Не удалось записать информацию о входе в цепочку ключей, ошибка \"{0}\".",
-			"troubleshooting": "Руководство по устранению неполадок"
-		},
 		"dist/githubServer": {
-			"signingIn": "$(mark-github) Выполняется вход в github.com...",
-			"status.git.signIn.name": "Вход в GitHub",
-			"validUri": "Введите допустимый URI со страницы входа в GitHub."
+			"code.detail": "Чтобы завершить проверку подлинности, перейдите в GitHub и вставьте приведенный выше одноразовый код.",
+			"code.title": "Ваш код: {0}",
+			"no": "Нет",
+			"otherReasonMessage": "Вы еще не завершили авторизацию этого расширения для использования GitHub. Продолжить попытки?",
+			"progress": "Откройте [{0}]({0}) на новой вкладке и вставьте одноразовый код: {1}",
+			"signingIn": "Выполняется вход в github.com...",
+			"signingInAnotherWay": "Выполняется вход в github.com...",
+			"userCancelledMessage": "Проблемы со входом? Хотите попробовать другой способ?",
+			"yes": "Да"
 		},
 		"package": {
 			"description": "Поставщик проверки подлинности GitHub",

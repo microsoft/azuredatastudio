@@ -123,7 +123,7 @@ export class MiaaModel extends ResourceModel {
 			}
 
 			// If we have an external endpoint configured then fetch the databases now
-			if (this._config.status.endpoints.primaryEndpoint) {
+			if (this._config.status.endpoints.primary) {
 				this.getDatabases(false).catch(_err => {
 					// If an error occurs still fire the event so callers can know to
 					// update (e.g. so dashboards don't show the loading icon forever)
@@ -205,7 +205,7 @@ export class MiaaModel extends ResourceModel {
 	}
 
 	protected createConnectionProfile(): azdata.IConnectionProfile {
-		const ipAndPort = parseIpAndPort(this.config?.status.endpoints.primaryEndpoint || '');
+		const ipAndPort = parseIpAndPort(this.config?.status.endpoints.primary || '');
 		return {
 			serverName: `${ipAndPort.ip},${ipAndPort.port}`,
 			databaseName: '',
@@ -219,7 +219,10 @@ export class MiaaModel extends ResourceModel {
 			saveProfile: true,
 			id: '',
 			groupId: undefined,
-			options: {}
+			options: {
+				encrypt: this._miaaInfo.encrypt || true,
+				trustServerCertificate: this._miaaInfo.trustServerCertificate || false
+			}
 		};
 	}
 
@@ -240,6 +243,8 @@ export class MiaaModel extends ResourceModel {
 		this._activeConnectionId = connectionProfile.id;
 		this.info.connectionId = connectionProfile.id;
 		this._miaaInfo.userName = connectionProfile.userName;
+		this._miaaInfo.encrypt = connectionProfile.options.encrypt;
+		this._miaaInfo.trustServerCertificate = connectionProfile.options.trustServerCertificate;
 		await this._treeDataProvider.saveControllers();
 	}
 
@@ -270,6 +275,5 @@ export class MiaaModel extends ResourceModel {
 				this._databaseTimeWindow.set(dbName, ['', '']);
 			}
 		}
-
 	}
 }

@@ -8,6 +8,11 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"dist/localizedConstants": {
+			"errorLoading": "Errore durante il caricamento degli elementi della cronologia delle query salvate. {0}",
+			"failed": "Non riuscito",
+			"succeeded": "Riuscito"
+		},
 		"package": {
 			"queryHistory.captureEnabledDesc": "Indica se l'acquisizione della cronologia delle query è abilitata. Se è false, le query eseguite non verranno acquisite.",
 			"queryHistory.clear": "Cancella tutta la cronologia",
@@ -19,8 +24,12 @@
 			"queryHistory.doubleClickAction.open": "Aprire un nuovo editor disconnesso con la query dall'elemento della cronologia selezionato",
 			"queryHistory.doubleClickAction.run": "Aprire un nuovo editor connesso con la query e la connessione dall'elemento della cronologia selezionato ed eseguire automaticamente la query",
 			"queryHistory.enableCapture": "Avvia acquisizione della cronologia delle query",
+			"queryHistory.loading": "Caricamento delle voci salvate...",
+			"queryHistory.maxEntries": "Numero massimo di voci da memorizzare. 0 significa che le voci vengono memorizzate illimitatamente. L'aumento del limite può influire sulle prestazioni, soprattutto se la persistenza è abilitata.",
 			"queryHistory.noEntries": "Nessuna query da visualizzare",
 			"queryHistory.open": "Apri query",
+			"queryHistory.openStorageFolder": "Apri cartella di archiviazione",
+			"queryHistory.persistHistory": "Indica se la cronologia delle query viene mantenuta tra i riavvii. Se false, la cronologia verrà cancellata alla chiusura dell'applicazione.",
 			"queryHistory.run": "Esegui query"
 		}
 	}

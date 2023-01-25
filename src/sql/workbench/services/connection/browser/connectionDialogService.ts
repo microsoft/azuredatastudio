@@ -27,7 +27,10 @@ import * as types from 'vs/base/common/types';
 import { trim } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { CmsConnectionController } from 'sql/workbench/services/connection/browser/cmsConnectionController';
+import { PasswordChangeDialog } from 'sql/workbench/services/connection/browser/passwordChangeDialog';
 import { entries } from 'sql/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -89,6 +92,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService,
 		@ILogService private _logService: ILogService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		this.initializeConnectionProviders();
 	}
@@ -178,18 +182,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				}
 				profile = result.connection;
 				profile.serverName = trim(profile.serverName);
-
-				// append the port to the server name for SQL Server connections
-				if (this._currentProviderType === Constants.mssqlProviderName ||
-					this._currentProviderType === Constants.cmsProviderName) {
-					let portPropertyName: string = 'port';
-					let portOption: string = profile.options[portPropertyName];
-					if (portOption && portOption.indexOf(',') === -1) {
-						profile.serverName = profile.serverName + ',' + portOption;
-					}
-					profile.options[portPropertyName] = undefined;
-					profile.providerName = Constants.mssqlProviderName;
-				}
+				this.updatePortAndProvider(profile);
 
 				// Disable password prompt during reconnect if connected with an empty password
 				if (profile.password === '' && profile.savePassword === false) {
@@ -199,10 +192,25 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this.handleDefaultOnConnect(params, profile).catch(err => onUnexpectedError(err));
 			} else {
 				profile.serverName = trim(profile.serverName);
+				this.updatePortAndProvider(profile);
 				this._connectionManagementService.addSavedPassword(profile).then(async (connectionWithPassword) => {
 					await this.handleDefaultOnConnect(params, connectionWithPassword);
 				}).catch(err => onUnexpectedError(err));
 			}
+		}
+	}
+
+	private updatePortAndProvider(profile: IConnectionProfile): void {
+		// append the port to the server name for SQL Server connections
+		if (this._currentProviderType === Constants.mssqlProviderName ||
+			this._currentProviderType === Constants.cmsProviderName) {
+			let portPropertyName: string = 'port';
+			let portOption: string = profile.options[portPropertyName];
+			if (portOption && portOption.indexOf(',') === -1) {
+				profile.serverName = profile.serverName + ',' + portOption;
+			}
+			profile.options[portPropertyName] = undefined;
+			profile.providerName = Constants.mssqlProviderName;
 		}
 	}
 
@@ -219,7 +227,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		} else {
 			if (params && params.input && params.connectionType === ConnectionType.editor) {
 				this._connectionManagementService.cancelEditorConnection(params.input);
-			} else {
+			} else if (!params.isEditConnection) { // Do not cancel connected connection if this is Edit mode.
 				this._connectionManagementService.cancelConnection(this._model);
 			}
 			if (params && params.input && params.input.onConnectCanceled) {
@@ -232,6 +240,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		if (this._dialogDeferredPromise) {
 			this._dialogDeferredPromise.resolve(undefined);
 		}
+	}
+
+	/**
+	 * Calls the default connect function (used by password reset dialog)
+	 */
+	public async callDefaultOnConnect(connection: IConnectionProfile, params: INewConnectionParams): Promise<void> {
+		// Needed for password reset dialog to connect after changing password.
+		return this.handleDefaultOnConnect(params, connection);
 	}
 
 	private async handleDefaultOnConnect(params: INewConnectionParams, connection: IConnectionProfile): Promise<void> {
@@ -268,6 +284,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			} else if (connectionResult && connectionResult.errorHandled) {
 				this._connectionDialog.resetConnection();
 				this._logService.debug(`ConnectionDialogService: Error handled and connection reset - Error: ${connectionResult.errorMessage}`);
+			} else if (connection.providerName === Constants.mssqlProviderName && connectionResult.errorCode === Constants.sqlPasswordErrorCode) {
+				this._connectionDialog.resetConnection();
+				this.launchChangePasswordDialog(connection, params);
 			} else {
 				this._connectionDialog.resetConnection();
 				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack, connectionResult.errorCode);
@@ -488,6 +507,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		recentConnections.forEach(conn => conn.dispose());
 	}
 
+	public launchChangePasswordDialog(profile: IConnectionProfile, params: INewConnectionParams): void {
+		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
+		dialog.open(profile, params);
+	}
+
+
 	private showErrorDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, errorCode?: number): void {
 		// Kerberos errors are currently very hard to understand, so adding handling of these to solve the common scenario
 		// note that ideally we would have an extensible service to handle errors by error code and provider, but for now
@@ -524,6 +549,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? `);
 			let readMoreLink = "https://learn.microsoft.com/sql/database-engine/configure-windows/enable-encrypted-connections-to-the-database-engine"
 			actions.push(new Action('trustServerCert', enableTrustServerCert, undefined, true, async () => {
+				this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ConnectionDialog, TelemetryKeys.TelemetryAction.EnableTrustServerCertificate);
 				this._model.options[Constants.trustServerCertificate] = true;
 				await this.handleOnConnect(this._connectionDialog.newConnectionParams, this._model as IConnectionProfile);
 				return;

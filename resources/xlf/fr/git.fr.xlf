@@ -1,5 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/git/dist/actionButton" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="scm button publish branch">
+        <source xml:lang="en">Publish Branch</source>
+        <target state="translated">Publier la branche</target>
+      </trans-unit>
+      <trans-unit id="scm button publish branch running">
+        <source xml:lang="en">Publishing Branch...</source>
+        <target state="translated">Publication de Branch...</target>
+      </trans-unit>
+      <trans-unit id="scm button publish title">
+        <source xml:lang="en">$(cloud-upload) Publish Branch</source>
+        <target state="translated">$(cloud-upload) Publier les branches</target>
+      </trans-unit>
+      <trans-unit id="scm button sync description">
+        <source xml:lang="en">{0} Sync Changes {1}{2}</source>
+        <target state="translated">{0} Synchroniser les modifications {1}{2}</target>
+      </trans-unit>
+      <trans-unit id="scm button sync title">
+        <source xml:lang="en">{0} {1}{2}</source>
+        <target state="translated">{0} {1}{2}</target>
+      </trans-unit>
+      <trans-unit id="syncing changes">
+        <source xml:lang="en">Synchronizing Changes...</source>
+        <target state="translated">Synchronisation des modifications...</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/git/dist/askpass-main" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="missOrInvalid">
@@ -91,8 +119,8 @@
         <target state="translated">impossible de pousser les références vers la branche distante. Exécutez d'abord 'Récupérer' pour intégrer vos modifications.</target>
       </trans-unit>
       <trans-unit id="changed">
-        <source xml:lang="en">Log level changed to: {0}</source>
-        <target state="translated">Niveau de journalisation remplacé par : {0}</target>
+        <source xml:lang="en">{0} Log level changed to: {1}</source>
+        <target state="translated">{0} Niveau de consignation remplacé par: {1}</target>
       </trans-unit>
       <trans-unit id="checkout detached">
         <source xml:lang="en">Checkout detached...</source>
@@ -203,8 +231,8 @@ Are you sure to continue?</source>
 Voulez-vous vraiment continuer ?</target>
       </trans-unit>
       <trans-unit id="confirm publish branch">
-        <source xml:lang="en">The branch '{0}' has no upstream branch. Would you like to publish this branch?</source>
-        <target state="translated">La branche '{0}' n'a pas de branche en amont. Voulez-vous publier cette branche ?</target>
+        <source xml:lang="en">The branch '{0}' has no remote branch. Would you like to publish this branch?</source>
+        <target state="translated">La branche '{0}' n'a pas de branche distante. Voulez-vous publier cette branche ?</target>
       </trans-unit>
       <trans-unit id="confirm restore">
         <source xml:lang="en">Are you sure you want to restore {0}?</source>
@@ -282,6 +310,14 @@ Que voulez-vous faire ?</target>
         <source xml:lang="en">Discard 1 File</source>
         <target state="translated">Abandonner 1 fichier</target>
       </trans-unit>
+      <trans-unit id="drop all stashes">
+        <source xml:lang="en">Are you sure you want to drop ALL stashes? There are {0} stashes that will be subject to pruning, and MAY BE IMPOSSIBLE TO RECOVER.</source>
+        <target state="translated">Voulez-vous vraiment supprimer TOUS les stashes ? Des stashs {0} seront soumis à un nettoyage et PEUVENT ÊTRE IMPOSSIBLES À RÉCUPÉRER.</target>
+      </trans-unit>
+      <trans-unit id="drop one stash">
+        <source xml:lang="en">Are you sure you want to drop ALL stashes? There is 1 stash that will be subject to pruning, and MAY BE IMPOSSIBLE TO RECOVER.</source>
+        <target state="translated">Voulez-vous vraiment supprimer TOUS les stashes ? Il y a 1 stash qui va faire l’objet d’un nettoyage et PEUT ÊTRE IMPOSSIBLE À RÉCUPÉRER.</target>
+      </trans-unit>
       <trans-unit id="force">
         <source xml:lang="en">Force Checkout</source>
         <target state="translated">Forcer l'extraction</target>
@@ -298,13 +334,17 @@ Que voulez-vous faire ?</target>
         <source xml:lang="en">Git: {0}</source>
         <target state="translated">Git : {0}</target>
       </trans-unit>
+      <trans-unit id="git.timeline.openDiffCommand">
+        <source xml:lang="en">Open Comparison</source>
+        <target state="translated">Comparaison de plans</target>
+      </trans-unit>
       <trans-unit id="git.title.diff">
-        <source xml:lang="en">{0} ⟷ {1}</source>
-        <target state="translated">{0} ⟷ {1}</target>
+        <source xml:lang="en">{0} ↔ {1}</source>
+        <target state="translated">{0} ↔ {1}</target>
       </trans-unit>
       <trans-unit id="git.title.diffRefs">
-        <source xml:lang="en">{0} ({1}) ⟷ {0} ({2})</source>
-        <target state="translated">{0} ({1}) ⟷ {0} ({2})</target>
+        <source xml:lang="en">{0} ({1}) ↔ {0} ({2})</source>
+        <target state="translated">{0} ({1}) ↔ {0} ({2})</target>
       </trans-unit>
       <trans-unit id="git.title.index">
         <source xml:lang="en">{0} (Index)</source>
@@ -627,8 +667,8 @@ Voulez-vous indexer tous vos changements et les commiter directement ?</target>
         <target state="translated">Voulez-vous vraiment annuler le stash : {0} ?</target>
       </trans-unit>
       <trans-unit id="sync is unpredictable">
-        <source xml:lang="en">This action will push and pull commits to and from '{0}/{1}'.</source>
-        <target state="translated">Cette action va envoyer (push) et tirer (pull) des commits à destination et en provenance de '{0}/{1}'.</target>
+        <source xml:lang="en">This action will pull and push commits from and to '{0}/{1}'.</source>
+        <target state="translated">Cette action permet d’extraire et d’envoyer (push) les validations à partir de et vers « {0}/{1} ».</target>
       </trans-unit>
       <trans-unit id="tag at">
         <source xml:lang="en">Tag at {0}</source>
@@ -715,16 +755,16 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
   <file original="extensions/git/dist/main" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="skipped">
-        <source xml:lang="en">Skipped found git in: {0}</source>
-        <target state="translated">Git ignoré trouvé dans : {0}</target>
+        <source xml:lang="en">{0} Skipped found git in: {1}</source>
+        <target state="translated">{0} GIT ignoré trouvé dans : {1}</target>
       </trans-unit>
       <trans-unit id="using git">
-        <source xml:lang="en">Using git {0} from {1}</source>
-        <target state="translated">Utilisation de git {0} à partir de {1}</target>
+        <source xml:lang="en">{0} Using git {1} from {2}</source>
+        <target state="translated">{0} Utilisation de {1} GIT à partir de {2}</target>
       </trans-unit>
       <trans-unit id="validating">
-        <source xml:lang="en">Validating found git in: {0}</source>
-        <target state="translated">Validation du git trouvé dans : {0}</target>
+        <source xml:lang="en">{0} Validating found git in: {1}</source>
+        <target state="translated">{0} Validation du git trouvé dans : {1}</target>
       </trans-unit>
     </body>
   </file>
@@ -742,49 +782,13 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
         <source xml:lang="en">Choose a repository</source>
         <target state="translated">Choisir un dépôt</target>
       </trans-unit>
+      <trans-unit id="repoOnHomeDriveRootWarning">
+        <source xml:lang="en">Unable to automatically open the git repository at '{0}'. To open that git repository, open it directly as a folder in VS Code.</source>
+        <target state="translated">Impossible d’ouvrir automatiquement le dépôt Git à '{0}'. Pour ouvrir ce dépôt Git, ouvrez-le directement en tant que dossier dans VS Code.</target>
+      </trans-unit>
       <trans-unit id="too many submodules">
         <source xml:lang="en">The '{0}' repository has {1} submodules which won't be opened automatically. You can still open each one individually by opening a file within.</source>
         <target state="translated">Le dépôt '{0}' a {1} sous-modules qui ne vont pas être ouverts automatiquement. Vous pouvez ouvrir chacun individuellement en ouvrant un fichier à l'intérieur.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/git/dist/remoteSource" source-language="en" datatype="plaintext" target-language="fr">
-    <body>
-      <trans-unit id="branch name">
-        <source xml:lang="en">Branch name</source>
-        <target state="translated">Nom de la branche</target>
-      </trans-unit>
-      <trans-unit id="error">
-        <source xml:lang="en">$(error) Error: {0}</source>
-        <target state="translated">$(error) - Erreur : {0}</target>
-      </trans-unit>
-      <trans-unit id="none found">
-        <source xml:lang="en">No remote repositories found.</source>
-        <target state="translated">Dépôts distants introuvables.</target>
-      </trans-unit>
-      <trans-unit id="pick url">
-        <source xml:lang="en">Choose a URL to clone from.</source>
-        <target state="translated">Choisissez l'URL à partir de laquelle effectuer le clonage.</target>
-      </trans-unit>
-      <trans-unit id="provide url">
-        <source xml:lang="en">Provide repository URL</source>
-        <target state="translated">Indiquer l'URL du dépôt</target>
-      </trans-unit>
-      <trans-unit id="provide url or pick">
-        <source xml:lang="en">Provide repository URL or pick a repository source.</source>
-        <target state="translated">Indiquez l'URL du dépôt, ou choisissez une source de dépôt.</target>
-      </trans-unit>
-      <trans-unit id="type to filter">
-        <source xml:lang="en">Repository name</source>
-        <target state="translated">Nom du dépôt</target>
-      </trans-unit>
-      <trans-unit id="type to search">
-        <source xml:lang="en">Repository name (type to search)</source>
-        <target state="translated">Nom du dépôt (tapez pour effectuer une recherche)</target>
-      </trans-unit>
-      <trans-unit id="url">
-        <source xml:lang="en">URL</source>
-        <target state="translated">URL</target>
       </trans-unit>
     </body>
   </file>
@@ -974,18 +978,6 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
         <source xml:lang="en">Successfully pushed.</source>
         <target state="translated">Envoi (push) réussi.</target>
       </trans-unit>
-      <trans-unit id="scm button publish title">
-        <source xml:lang="en">$(cloud-upload) Publish Changes</source>
-        <target state="translated">$(cloud-upload) Publier les modifications</target>
-      </trans-unit>
-      <trans-unit id="scm button publish tooltip">
-        <source xml:lang="en">Publish Changes</source>
-        <target state="translated">Publier les modifications</target>
-      </trans-unit>
-      <trans-unit id="scm button sync title">
-        <source xml:lang="en"> Sync Changes $(sync){0}{1}</source>
-        <target state="translated"> Synchroniser les modifications $(sync){0}{1}</target>
-      </trans-unit>
       <trans-unit id="staged changes">
         <source xml:lang="en">Staged Changes</source>
         <target state="translated">Changements indexés</target>
@@ -1022,9 +1014,9 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
         <source xml:lang="en">Checkout branch/tag...</source>
         <target state="translated">Extraire la branche/l'étiquette...</target>
       </trans-unit>
-      <trans-unit id="publish changes">
-        <source xml:lang="en">Publish Changes</source>
-        <target state="translated">Publier les modifications</target>
+      <trans-unit id="publish branch">
+        <source xml:lang="en">Publish Branch</source>
+        <target state="translated">Publier la branche</target>
       </trans-unit>
       <trans-unit id="publish to">
         <source xml:lang="en">Publish to {0}</source>
@@ -1046,19 +1038,13 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
   </file>
   <file original="extensions/git/dist/timelineProvider" source-language="en" datatype="plaintext" target-language="fr">
     <body>
-      <trans-unit id="git.index">
-        <source xml:lang="en">Index</source>
-        <target state="translated">Index</target>
+      <trans-unit id="git.timeline.email">
+        <source xml:lang="en">Email</source>
+        <target state="translated">Adresse e-mail</target>
       </trans-unit>
-      <trans-unit id="git.timeline.detail">
-        <source xml:lang="en">{0}  — {1}
-{2}
-
-{3}</source>
-        <target state="translated">{0}  — {1}
-{2}
-
-{3}</target>
+      <trans-unit id="git.timeline.openComparison">
+        <source xml:lang="en">Open Comparison</source>
+        <target state="translated">Comparaison de plans</target>
       </trans-unit>
       <trans-unit id="git.timeline.source">
         <source xml:lang="en">Git History</source>
@@ -1075,10 +1061,6 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
       <trans-unit id="git.timeline.you">
         <source xml:lang="en">You</source>
         <target state="translated">Vous</target>
-      </trans-unit>
-      <trans-unit id="git.workingTree">
-        <source xml:lang="en">Working Tree</source>
-        <target state="translated">Arborescence de travail</target>
       </trans-unit>
     </body>
   </file>
@@ -1128,6 +1110,18 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
         <source xml:lang="en">Add Remote...</source>
         <target state="translated">Ajouter un dépôt distant...</target>
       </trans-unit>
+      <trans-unit id="command.api.getRemoteSources">
+        <source xml:lang="en">Get Remote Sources</source>
+        <target state="translated">Obtenir les sources distantes</target>
+      </trans-unit>
+      <trans-unit id="command.api.getRepositories">
+        <source xml:lang="en">Get Repositories</source>
+        <target state="translated">Obtenir les dépôts</target>
+      </trans-unit>
+      <trans-unit id="command.api.getRepositoryState">
+        <source xml:lang="en">Get Repository State</source>
+        <target state="translated">Obtenir l’état du dépôt</target>
+      </trans-unit>
       <trans-unit id="command.branch">
         <source xml:lang="en">Create Branch...</source>
         <target state="translated">Créer une branche...</target>
@@ -1175,6 +1169,10 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
       <trans-unit id="command.close">
         <source xml:lang="en">Close Repository</source>
         <target state="translated">Fermer le dépôt</target>
+      </trans-unit>
+      <trans-unit id="command.closeAllDiffEditors">
+        <source xml:lang="en">Close All Diff Editors</source>
+        <target state="translated">Fermer tous les éditeurs de différences</target>
       </trans-unit>
       <trans-unit id="command.commit">
         <source xml:lang="en">Commit</source>
@@ -1369,8 +1367,8 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
         <target state="translated">Restaurer le modèle de commit</target>
       </trans-unit>
       <trans-unit id="command.revealInExplorer">
-        <source xml:lang="en">Reveal in Side Bar</source>
-        <target state="translated">Révéler dans la barre latérale</target>
+        <source xml:lang="en">Reveal in Explorer View</source>
+        <target state="translated">Afficher en mode Explorateur</target>
       </trans-unit>
       <trans-unit id="command.revertChange">
         <source xml:lang="en">Revert Change</source>
@@ -1431,6 +1429,10 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
       <trans-unit id="command.stashDrop">
         <source xml:lang="en">Drop Stash...</source>
         <target state="translated">Supprimer le remisage (stash)...</target>
+      </trans-unit>
+      <trans-unit id="command.stashDropAll">
+        <source xml:lang="en">Drop All Stashes...</source>
+        <target state="translated">Supprimer tous les stashes...</target>
       </trans-unit>
       <trans-unit id="command.stashIncludeUntracked">
         <source xml:lang="en">Stash (Include Untracked)</source>
@@ -1568,6 +1570,14 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
         <source xml:lang="en">Tags</source>
         <target state="translated">Étiquettes</target>
       </trans-unit>
+      <trans-unit id="config.closeDiffOnOperation">
+        <source xml:lang="en">Controls whether the diff editor should be automatically closed when changes are stashed, committed, discarded, staged, or unstaged.</source>
+        <target state="translated">Contrôle si l’éditeur de différences doit être fermé automatiquement lorsque les modifications sont remises en cache, validées, ignorées, intermédiaires ou non.</target>
+      </trans-unit>
+      <trans-unit id="config.commandsToLog">
+        <source xml:lang="en">List of git commands (ex: commit, push) that would have their `stdout` logged to the [git output](command:git.showOutput). If the git command has a client-side hook configured, the client-side hook's `stdout` will also be logged to the [git output](command:git.showOutput).</source>
+        <target state="translated">Liste des commandes git (par exemple, commit, push) pour lesquelles 'stdout' serait journalisé dans le [git output](command:git.showOutput). Si un crochet côté client est configuré pour la commande git, le « stdout » du crochet côté client est également enregistré dans le [git output](command:git.showOutput).</target>
+      </trans-unit>
       <trans-unit id="config.confirmEmptyCommits">
         <source xml:lang="en">Always confirm the creation of empty commits for the 'Git: Commit Empty' command.</source>
         <target state="translated">Confirmez toujours la création de commits vides pour la commande 'Git: Commit Empty'.</target>
@@ -1635,6 +1645,10 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
       <trans-unit id="config.enabled">
         <source xml:lang="en">Whether git is enabled.</source>
         <target state="translated">Indique si git est activé.</target>
+      </trans-unit>
+      <trans-unit id="config.experimental.installGuide">
+        <source xml:lang="en">Experimental improvements for the git setup flow.</source>
+        <target state="translated">Améliorations expérimentales du flux d’installation git</target>
       </trans-unit>
       <trans-unit id="config.fetchOnPull">
         <source xml:lang="en">When enabled, fetch all branches when pulling. Otherwise, fetch just the current one.</source>
@@ -1772,6 +1786,14 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
         <source xml:lang="en">Force git to use rebase when running the sync command.</source>
         <target state="translated">Forcez git à utiliser rebase pendant l'exécution de la commande sync.</target>
       </trans-unit>
+      <trans-unit id="config.repositoryScanIgnoredFolders">
+        <source xml:lang="en">List of folders that are ignored while scanning for Git repositories when `#git.autoRepositoryDetection#` is set to `true` or `subFolders`.</source>
+        <target state="translated">Liste des dossiers ignorés lors de la recherche de référentiels Git lorsque `#git.autoRepositoryDetection#` est défini sur `true` ou `subFolders`.</target>
+      </trans-unit>
+      <trans-unit id="config.repositoryScanMaxDepth">
+        <source xml:lang="en">Controls the depth used when scanning workspace folders for Git repositories when `#git.autoRepositoryDetection#` is set to `true` or `subFolders`. Can be set to `-1` for no limit.</source>
+        <target state="translated">Contrôle la profondeur utilisée lors de l’analyse des dossiers d’espace de travail pour les dépôts Git quand '#git.autoRepositoryDetection#' a la valeur 'true' ou 'subFolders'. Peut être défini sur « -1 » pour aucune limite.</target>
+      </trans-unit>
       <trans-unit id="config.requireGitUserConfig">
         <source xml:lang="en">Controls whether to require explicit Git user configuration or allow Git to guess if missing.</source>
         <target state="translated">Contrôle si une configuration utilisateur Git explicite est nécessaire ou si elle peut être devinée par Git quand elle est manquante.</target>
@@ -1856,6 +1878,10 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
         <source xml:lang="en">Controls whether to show the commit author in the Timeline view.</source>
         <target state="translated">Contrôle si l'auteur du commit doit être affiché dans la vue Chronologie.</target>
       </trans-unit>
+      <trans-unit id="config.timeline.showUncommitted">
+        <source xml:lang="en">Controls whether to show uncommitted changes in the Timeline view.</source>
+        <target state="translated">Contrôle s’il faut afficher les modifications non validées dans l’affichage Chronologie.</target>
+      </trans-unit>
       <trans-unit id="config.untrackedChanges">
         <source xml:lang="en">Controls how untracked changes behave.</source>
         <target state="translated">Contrôle le comportement des changements non suivis.</target>
@@ -1879,6 +1905,10 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
       <trans-unit id="config.useForcePushWithLease">
         <source xml:lang="en">Controls whether force pushing uses the safer force-with-lease variant.</source>
         <target state="translated">Contrôles si force push utilise la variante force-with-lease plus sûr.</target>
+      </trans-unit>
+      <trans-unit id="config.useIntegratedAskPass">
+        <source xml:lang="en">Controls whether GIT_ASKPASS should be overwritten to use the integrated version.</source>
+        <target state="translated">Contrôle si GIT_ASKPASS doit être remplacé pour utiliser la version intégrée.</target>
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">Git SCM Integration</source>
@@ -1940,9 +1970,9 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.disabled">
         <source xml:lang="en">If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
-To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
-        <target state="translated">Si vous souhaitez utiliser les fonctionnalités de git, veuillez activer git dans vos [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
-Pour en savoir plus sur l’utilisation de git et du contrôle de code source dans Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</target>
+To learn more about how to use git and source control in VS Code [read our docs](https://aka.ms/vscode-scm).</source>
+        <target state="translated">Si vous souhaitez utiliser des fonctionnalités Git, activez Git dans vos [paramètres](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
+Pour en savoir plus sur la façon d'utiliser Git et le contrôle de code source dans VS Code, [lisez notre documentation](https://aka.ms/vscode-scm).</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.empty">
         <source xml:lang="en">In order to use git features, you can open a folder containing a git repository or clone from a URL.
@@ -1977,6 +2007,31 @@ If you're using a different version control system, you can [search the Marketpl
         <target state="translated">Une installation git valide n’a pas été détectée, plus de détails peuvent être trouvés dans la [git output] (commande : git.showOutput).
 Veuillez [install git](https://git-scm.com/), ou découvrez comment utiliser git et le contrôle de source dans Azure Data Studio dans [our docs](https://aka.ms/vscode-scm ).
 Si vous utilisez un système de contrôle de version différent, vous pouvez [search the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) pour des extensions supplémentaires.</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.missing.guide">
+        <source xml:lang="en">Install Git, a popular source control system, to track code changes and collaborate with others. Learn more in our [Git guides](https://aka.ms/vscode-scm).</source>
+        <target state="translated">Installez Git, un système de contrôle de code source populaire, pour suivre les modifications du code et collaborer avec d’autres personnes. En savoir plus sur notre [Git guides](https://aka.ms/vscode-scm).</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.missing.guide.linux">
+        <source xml:lang="en">Source control depends on Git being installed.
+[Download Git for Linux](https://git-scm.com/download/linux)
+After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <target state="translated">Le contrôle de code source dépend de Git en cours d’installation.
+
+[Download Git for Linux](https://git-scm.com/download/linux)
+Après l’installation, [reload](command:workbench.action.reloadWindow) (ou [troubleshoot](command:git.showOutput)). Des fournisseurs de contrôle de code source supplémentaires peuvent être installés [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.missing.guide.mac">
+        <source xml:lang="en">[Download Git for macOS](https://git-scm.com/download/mac)
+After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <target state="translated">[Download Git for macOS](https://git-scm.com/download/mac)
+Après l’installation, [reload](command:workbench.action.reloadWindow) (ou [troubleshoot](command:git.showOutput)). Des fournisseurs de contrôle de code source supplémentaires peuvent être installés [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.missing.guide.windows">
+        <source xml:lang="en">[Download Git for Windows](https://git-scm.com/download/win)
+After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <target state="translated">[Download Git for Windows](https://git-scm.com/download/win)
+Après l’installation, [reload](command:workbench.action.reloadWindow) (ou [troubleshoot](command:git.showOutput)). Des fournisseurs de contrôle de code source supplémentaires peuvent être installés [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.workspace">
         <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.

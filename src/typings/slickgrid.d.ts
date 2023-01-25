@@ -673,6 +673,13 @@ declare namespace Slick {
 		 *
 		 */
 		minRowBuffer?: number;
+
+		/**
+		 * Disable dom virtualization based on visible columns. When true, the grid will render all columns, even if they are not visible.
+		 * This is a mitigation for screen reader issues not announcing column number of visible cells properly.
+		 * Link to the accessibility issue: https://github.com/microsoft/azuredatastudio/issues/20784
+		 */
+		disableColumnBasedCellVirtualization?: boolean;
 	}
 
 	export interface DataProvider<T extends SlickData> {
@@ -1226,6 +1233,7 @@ declare namespace Slick {
 		public onCellCssStylesChanged: Slick.Event<OnCellCssStylesChangedEventArgs<T>>;
 		public onViewportChanged: Slick.Event<OnViewportChangedEventArgs<T>>;
 		public onRendered: Slick.Event<OnRenderedEventArgs<T>>;
+		public onAfterKeyboardNavigation: Slick.Event<OnAfterKeyboardNavigationEventArgs<T>>;
 		// #endregion Events
 
 		// #region Plugins
@@ -1442,6 +1450,9 @@ declare namespace Slick {
 	export interface OnRenderedEventArgs<T extends SlickData> extends GridEventArgs<T> {
 		startRow: number;
 		endRow: number;
+	}
+
+	export interface OnAfterKeyboardNavigationEventArgs<T extends SlickData> extends GridEventArgs<T> {
 	}
 
 	export interface SortColumn<T extends SlickData> {

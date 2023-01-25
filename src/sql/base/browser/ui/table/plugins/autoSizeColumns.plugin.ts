@@ -85,7 +85,7 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 			let colIndices: number[] = [];
 
 			for (let i = 0; i <= headerColumns.children.length; i++) {
-				let headerEl = jQuery(headerColumns.children.item(i)!);
+				let headerEl = jQuery(headerColumns.children.item(i)! as HTMLElement);
 				let columnDef = headerEl.data('column');
 				if (columnDef) {
 					headerElements.push(headerEl[0]);
@@ -118,7 +118,7 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 		}
 	}
 
-	private handleDoubleClick(e: JQuery.Event<HTMLElement, unknown>) {
+	private handleDoubleClick(e: JQuery.TriggeredEvent<HTMLElement, unknown>) {
 		let headerEl = jQuery(e.currentTarget).closest('.slick-header-column');
 		let columnDef = headerEl.data('column');
 
@@ -145,7 +145,8 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 
 		let autoSizeWidth = Math.max(headerWidth, this.getMaxColumnTextWidth(columnDef, colIndex)) + 1;
 
-		if (autoSizeWidth !== column.width) {
+		// Only resize if the current width is smaller than the new width.
+		if (autoSizeWidth > column.width) {
 			allColumns[colIndex].width = autoSizeWidth;
 			this._grid.setColumns(allColumns);
 			this._grid.onColumnsResized.notify();

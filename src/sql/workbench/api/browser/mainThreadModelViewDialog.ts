@@ -144,6 +144,9 @@ export class MainThreadModelViewDialog extends Disposable implements MainThreadM
 			dialog.customButtons = details.customButtons.map(buttonHandle => this.getButton(buttonHandle));
 		}
 		dialog.message = details.message;
+		dialog.loading = details.loading;
+		dialog.loadingText = dialog.loadingText;
+		dialog.loadingCompletedText = dialog.loadingCompletedText;
 
 		return Promise.resolve();
 	}
@@ -223,7 +226,9 @@ export class MainThreadModelViewDialog extends Disposable implements MainThreadM
 			wizard.customButtons = details.customButtons.map(buttonHandle => this.getButton(buttonHandle));
 		}
 		wizard.message = details.message;
-
+		wizard.loading = details.loading;
+		wizard.loadingText = details.loadingText;
+		wizard.loadingCompletedText = details.loadingCompletedText;
 		return Promise.resolve();
 	}
 

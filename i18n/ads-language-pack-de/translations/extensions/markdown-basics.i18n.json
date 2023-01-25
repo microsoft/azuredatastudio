@@ -9,7 +9,7 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"description": "Bietet Ausschnitte und Syntaxhervorhebung für Markdown.",
+			"description": "Bietet Schnipsel und Syntaxhervorhebung für Markdown.",
 			"displayName": "Markdown-Sprachgrundlagen"
 		}
 	}

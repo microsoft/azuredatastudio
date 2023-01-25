@@ -14,7 +14,7 @@
 			"kusto.missingLinkedAzureAccount": "O Azure Data Studio precisa entrar em contato com o Azure Key Vault para acessar uma chave mestra de coluna para Always Encrypted, mas nenhuma conta vinculada do Azure está disponível. Adicione uma conta vinculada do Azure e tente a consulta novamente."
 		},
 		"dist/kustoServer": {
-			"downloadServiceDoneChannelMsg": "Concluída a instalação de {0}",
+			"downloadServiceDoneChannelMsg": "Baixado {0}",
 			"downloadingServiceChannelMsg": "Baixando {0}",
 			"downloadingServiceSizeChannelMsg": "({0} KB)",
 			"downloadingServiceStatusMsg": "Baixando {0}",

@@ -45,11 +45,15 @@ import * as azurecore from 'azurecore';
 import * as azureResourceUtils from './azureResource/utils';
 import * as utils from './utils';
 import * as loc from './localizedConstants';
-import * as constants from './constants';
+import * as Constants from './constants';
 import { AzureResourceGroupService } from './azureResource/providers/resourceGroup/resourceGroupService';
 import { Logger } from './utils/Logger';
 import { ConnectionDialogTreeProvider } from './azureResource/tree/connectionDialogTreeProvider';
 import { AzureDataGridProvider } from './azureDataGridProvider';
+import { AzureResourceSynapseSqlPoolProvider } from './azureResource/providers/synapseSqlPool/synapseSqlPoolProvider';
+import { AzureResourceSynapseWorkspaceProvider } from './azureResource/providers/synapseWorkspace/synapseWorkspaceProvider';
+import { AzureResourceSynapseWorkspaceService } from './azureResource/providers/synapseWorkspace/synapseWorkspaceService';
+import { AzureResourceSynapseService } from './azureResource/providers/synapseSqlPool/synapseSqlPoolService';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -58,15 +62,15 @@ let extensionContext: vscode.ExtensionContext;
 function getAppDataPath() {
 	let platform = process.platform;
 	switch (platform) {
-		case 'win32': return process.env['APPDATA'] || path.join(process.env['USERPROFILE']!, 'AppData', 'Roaming');
-		case 'darwin': return path.join(os.homedir(), 'Library', 'Application Support');
-		case 'linux': return process.env['XDG_CONFIG_HOME'] || path.join(os.homedir(), '.config');
+		case Constants.Platform.Windows: return process.env['APPDATA'] || path.join(process.env['USERPROFILE']!, 'AppData', 'Roaming');
+		case Constants.Platform.Mac: return path.join(os.homedir(), 'Library', 'Application Support');
+		case Constants.Platform.Linux: return process.env['XDG_CONFIG_HOME'] || path.join(os.homedir(), '.config');
 		default: throw new Error('Platform not supported');
 	}
 }
 
 function getDefaultLogLocation() {
-	return path.join(getAppDataPath(), 'azuredatastudio');
+	return path.join(getAppDataPath(), Constants.ServiceName);
 }
 
 function pushDisposable(disposable: vscode.Disposable): void {
@@ -85,24 +89,27 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	}
 
 	// TODO: Since Code Grant auth doesnt work in web mode, enabling Device code auth by default for web mode. We can remove this once we have that working in web mode.
-	const config = vscode.workspace.getConfiguration('accounts.azure.auth');
+	const config = vscode.workspace.getConfiguration(Constants.AccountsAzureAuthSection);
 	if (vscode.env.uiKind === vscode.UIKind.Web) {
 		await config.update('deviceCode', true, vscode.ConfigurationTarget.Global);
 	}
 
+	const authLibrary: string = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.AuthenticationLibrarySection)
+		?? Constants.DefaultAuthLibrary;
+
 	updatePiiLoggingLevel();
 
 	// Create the provider service and activate
-	initAzureAccountProvider(extensionContext, storagePath).catch((err) => console.log(err));
+	initAzureAccountProvider(extensionContext, storagePath, authLibrary!).catch((err) => console.log(err));
 
 	registerAzureServices(appContext);
-	const azureResourceTree = new AzureResourceTreeProvider(appContext);
-	const connectionDialogTree = new ConnectionDialogTreeProvider(appContext);
+	const azureResourceTree = new AzureResourceTreeProvider(appContext, authLibrary);
+	const connectionDialogTree = new ConnectionDialogTreeProvider(appContext, authLibrary);
 	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
 	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
 	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e)));
-	registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree);
-	azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext));
+	registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree, authLibrary);
+	azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext, authLibrary));
 	vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
 		const portalEndpoint = item.portalEndpoint;
 		const subscriptionId = item.subscriptionId;
@@ -130,12 +137,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			return azureResourceUtils.getLocations(appContext, account, subscription, ignoreErrors);
 		},
 		provideResources(): azurecore.azureResource.IAzureResourceProvider[] {
-			const arcFeaturedEnabled = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get('enableArcFeatures');
+			const arcFeaturedEnabled = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.EnableArcFeaturesSection);
 			const providers: azurecore.azureResource.IAzureResourceProvider[] = [
 				new KustoProvider(new KustoResourceService(), extensionContext),
 				new AzureMonitorProvider(new AzureMonitorResourceService(), extensionContext),
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), extensionContext),
 				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), extensionContext),
+				new AzureResourceSynapseSqlPoolProvider(new AzureResourceSynapseService(), extensionContext),
+				new AzureResourceSynapseWorkspaceProvider(new AzureResourceSynapseWorkspaceService(), extensionContext),
 				new SqlInstanceProvider(new SqlInstanceResourceService(), extensionContext),
 				new PostgresServerProvider(new PostgresServerService(), extensionContext),
 				new CosmosDbMongoProvider(new CosmosDbMongoService(), extensionContext),
@@ -233,7 +242,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 // Create the folder for storing the token caches
 async function findOrMakeStoragePath() {
 	let defaultLogLocation = getDefaultLogLocation();
-	let storagePath = path.join(defaultLogLocation, constants.AzureTokenFolderName);
+	let storagePath = path.join(defaultLogLocation, Constants.AzureTokenFolderName);
 
 	try {
 		await fs.mkdir(defaultLogLocation, { recursive: true });
@@ -258,9 +267,9 @@ async function findOrMakeStoragePath() {
 	return storagePath;
 }
 
-async function initAzureAccountProvider(extensionContext: vscode.ExtensionContext, storagePath: string): Promise<void> {
+async function initAzureAccountProvider(extensionContext: vscode.ExtensionContext, storagePath: string, authLibrary: string): Promise<void> {
 	try {
-		const accountProviderService = new AzureAccountProviderService(extensionContext, storagePath);
+		const accountProviderService = new AzureAccountProviderService(extensionContext, storagePath, authLibrary);
 		extensionContext.subscriptions.push(accountProviderService);
 		await accountProviderService.activate();
 	} catch (err) {
@@ -281,10 +290,27 @@ async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent): Pro
 	if (e.affectsConfiguration('azure.piiLogging')) {
 		updatePiiLoggingLevel();
 	}
+	if (e.affectsConfiguration('azure.authenticationLibrary')) {
+		await displayReloadAds();
+	}
 }
 
 function updatePiiLoggingLevel(): void {
-	const piiLogging: boolean = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get('piiLogging', false);
+	const piiLogging: boolean = vscode.workspace.getConfiguration(Constants.AzureSection).get('piiLogging', false);
 	Logger.piiLogging = piiLogging;
+}
+
+// Display notification with button to reload
+// return true if button clicked
+// return false if button not clicked
+async function displayReloadAds(): Promise<boolean> {
+	const result = await vscode.window.showInformationMessage(loc.reloadPrompt, loc.reloadChoice);
+	if (result === loc.reloadChoice) {
+		await vscode.commands.executeCommand('workbench.action.reloadWindow');
+		return true;
+	} else {
+		return false;
+	}
+
 }
 

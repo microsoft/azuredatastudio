@@ -180,6 +180,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return new Promise<IConnectionResult>(() => true);
 	}
 
+	changePassword(connection: IConnectionProfile, uri: string, newPassword: string): Promise<azdata.PasswordChangeResult> {
+		return Promise.resolve(undefined!);
+	}
+
 	disconnectEditor(owner: IConnectableInput): Promise<boolean> {
 		return new Promise<boolean>(() => true);
 	}
@@ -319,7 +323,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined!;
 	}
 
-	refreshAzureAccountTokenIfNecessary(uri: string): Promise<boolean> {
+	refreshAzureAccountTokenIfNecessary(uriOrConnectionProfile: string | ConnectionProfile): Promise<boolean> {
 		return undefined;
 	}
 

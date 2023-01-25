@@ -122,6 +122,20 @@ export class CopyResultAction extends Action {
 	}
 }
 
+export class CopyHeadersAction extends Action {
+	private static ID = 'grid.copyHeaders';
+	private static LABEL = localize('copyHeaders', 'Copy Headers');
+
+	constructor() {
+		super(CopyHeadersAction.ID, CopyHeadersAction.LABEL);
+	}
+
+	public override async run(context: IGridActionContext): Promise<void> {
+		const selection = mapForNumberColumn(context.selection);
+		await context.gridDataProvider.copyHeaders(selection);
+	}
+}
+
 export class SelectAllGridAction extends Action {
 	public static ID = 'grid.selectAll';
 	public static LABEL = localize('selectAll', "Select All");

@@ -175,7 +175,7 @@ declare module 'az-ext' {
 				logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:miaa1'))
 				metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=miaa1-0
 				mirroring: string, // 10.91.90.25:3448
-				primaryEndpoint?: string // "10.91.86.39:32718"
+				primary?: string // "10.91.86.39:32718"
 			},
 			highAvailability: {
 				lastUpdateTime: string, // "2022-02-07T06:08:20.500688Z"
@@ -237,7 +237,7 @@ declare module 'az-ext' {
 				logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:miaa1'))
 				metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=miaa1-0
 				mirroring: string, // 10.91.90.25:3448
-				primaryEndpoint?: string // "10.91.86.39:32718"
+				primary?: string // "10.91.86.39:32718"
 			},
 			highAvailability: {
 				lastUpdateTime: string, // "2022-02-07T06:08:20.500688Z"
@@ -375,7 +375,7 @@ declare module 'az-ext' {
 						logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:miaa1'))
 						metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=miaa1-0
 						mirroring: string, // 10.91.90.25:3448
-						primaryEndpoint?: string // "10.91.86.39:32718"
+						primary?: string // "10.91.86.39:32718"
 					},
 					highAvailability: {
 						lastUpdateTime: string, // "2022-02-07T06:08:20.500688Z"

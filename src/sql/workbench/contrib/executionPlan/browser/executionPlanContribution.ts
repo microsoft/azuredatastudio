@@ -105,8 +105,8 @@ MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 	command: {
 		id: COMPARE_EXECUTION_PLAN_COMMAND_ID,
 		title: {
-			value: localize('executionPlanCompareCommandValue', "Compare execution plans"),
-			original: localize('executionPlanCompareCommandOriginalValue', "Compare execution plans")
+			value: localize('executionPlanCompareCommandValue', "Compare Execution Plans"),
+			original: localize('executionPlanCompareCommandOriginalValue', "Compare Execution Plans")
 		},
 		category: CATEGORIES.ExecutionPlan.value
 	}
