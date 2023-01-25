@@ -6047,8 +6047,20 @@ Error: {1}</source>
     <trans-unit id="deleteConnection">
       <source xml:lang="en">Delete Connection</source>
     </trans-unit>
+    <trans-unit id="deleteConnectionConfirmation">
+      <source xml:lang="en">Are you sure you want to delete connection '{0}'?</source>
+    </trans-unit>
+    <trans-unit id="deleteConnectionConfirmationNo">
+      <source xml:lang="en">No</source>
+    </trans-unit>
+    <trans-unit id="deleteConnectionConfirmationYes">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
     <trans-unit id="deleteConnectionGroup">
       <source xml:lang="en">Delete Group</source>
+    </trans-unit>
+    <trans-unit id="deleteConnectionGroupConfirmation">
+      <source xml:lang="en">Are you sure you want to delete connection group '{0}'?</source>
     </trans-unit>
     <trans-unit id="showAllConnections">
       <source xml:lang="en">Show All Connections</source>
