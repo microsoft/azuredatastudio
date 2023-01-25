@@ -79,7 +79,13 @@ export class WizardController {
 		validateButton.secondary = false;
 		validateButton.hidden = true;
 
-		this._wizardObject.customButtons = [validateButton, saveAndCloseButton];
+		const tdeMigrateButton = azdata.window.createButton(
+			loc.TDE_MIGRATE_BUTTON,
+			'left');
+		tdeMigrateButton.secondary = false;
+		tdeMigrateButton.hidden = true;
+
+		this._wizardObject.customButtons = [validateButton, tdeMigrateButton, saveAndCloseButton];
 		const databaseSelectorPage = new DatabaseSelectorPage(this._wizardObject, stateModel);
 		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
 		const targetSelectionPage = new TargetSelectionPage(this._wizardObject, stateModel);

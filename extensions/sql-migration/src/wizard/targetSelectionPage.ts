@@ -16,6 +16,9 @@ import { azureResource } from 'azurecore';
 import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/azure';
 import { collectTargetDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
+import { TdeMigrationDialog } from '../dialog/tdeConfiguration/tdeMigrationDialog';
+
+const TDE_MIGRATION_BUTTON_INDEX = 1;
 
 export class TargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -81,10 +84,49 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			await this.populateAzureAccountsDropdown();
 		}
 
+		this._disposables.push(
+			this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].onClick(
+				async e => await this._startTdeMigration()));
+
 		await this._view.initializeModel(form);
 	}
 
+	private async _startTdeMigration(): Promise<void> {
+		const dialog = new TdeMigrationDialog(this.migrationStateModel);
+
+		await dialog.openDialog();
+	}
+
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].hidden = !this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates();
+		this._updateTdeMigrationButtonStatus();
+
+		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+			return;
+		}
+		switch (this.migrationStateModel._targetType) {
+			case MigrationTargetType.SQLMI:
+				this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_MI_CARD_TEXT);
+				this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
+				this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
+				break;
+			case MigrationTargetType.SQLVM:
+				this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_VM_CARD_TEXT);
+				this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
+				this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
+				break;
+			case MigrationTargetType.SQLDB:
+				this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_SQLDB_CARD_TEXT);
+				this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE;
+				this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE;
+				this._updateConnectionButtonState();
+				if (this.migrationStateModel._didUpdateDatabasesForMigration) {
+					await this._resetTargetMapping();
+					this.migrationStateModel._didUpdateDatabasesForMigration = false;
+				}
+				break;
+		}
+
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = { text: '' };
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
@@ -174,6 +216,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				};
 				return false;
 			}
+
 			return true;
 		});
 
@@ -240,6 +283,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator(pageChangeInfo => true);
 		this.wizard.message = { text: '' };
+
+		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].hidden = true;
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
@@ -701,6 +746,9 @@ export class TargetSelectionPage extends MigrationWizardPage {
 									};
 								}
 							}
+
+							this.migrationStateModel.tdeMigrationConfig.resetTdeMigrationResult();
+
 							break;
 						case MigrationTargetType.SQLDB:
 							const sqlDatabaseServer = this.migrationStateModel._targetSqlDatabaseServers?.find(
@@ -975,6 +1023,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._targetManagedInstances,
 						this.migrationStateModel._location,
 						this.migrationStateModel._resourceGroup);
+
+					this._updateTdeMigrationButtonStatus();
 					break;
 				case MigrationTargetType.SQLVM:
 					this._azureResourceDropdown.values = await utils.getVirtualMachinesDropdownValues(
@@ -1012,6 +1062,12 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				targetName,
 				true);
 		}
+	}
+
+	private _updateTdeMigrationButtonStatus() {
+
+		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].enabled = this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates() &&
+			this.migrationStateModel._targetManagedInstances.length > 0;
 	}
 
 	private async _populateResourceMappingTable(targetDatabases: TargetDatabaseInfo[]): Promise<void> {
