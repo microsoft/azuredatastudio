@@ -11,9 +11,6 @@ import { ServerCapabilities, ClientCapabilities, RPCMessageType } from 'vscode-l
 import { Disposable } from 'vscode';
 import * as ErrorDiagnosticsConstants from './errorDiagnosticsConstants';
 
-export const diagnosticsId = 'azurediagnostics'
-export const serviceName = 'AzureDiagnostics';
-
 export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 	//No contracts for now, but can be added later.
 	private static readonly messagesTypes: RPCMessageType[] = [];

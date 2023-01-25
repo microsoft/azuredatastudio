@@ -337,6 +337,7 @@ export interface IConnectionManagementService {
 	/**
 	 * Launches the password change dialog.
 	 * @param profile The connection profile to change the password.
+	 * @param params Required connection parameters associated with the profile.
 	 */
 	openChangePasswordDialog(profile: IConnectionProfile, params: INewConnectionParams): void;
 }

@@ -25,6 +25,8 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 
 	/**
 	 * Register a diagnostics object for a provider
+	 * @param providerId the id of the provider to register.
+	 * @param diagnostics the actual diagnostics provider object to register under the id.
 	 */
 	public registerDiagnosticsProvider(providerId: string, diagnostics: azdata.diagnostics.ErrorDiagnostics): void {
 		this._providers[providerId] = diagnostics;
@@ -32,6 +34,7 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 
 	/**
 	 * Unregister a diagnostics object for a provider
+	 *  @param providerId the id of the provider to unregister.
 	 */
 	public unregisterDiagnosticsProvider(providerId: string): void {
 		delete this._providers[providerId];

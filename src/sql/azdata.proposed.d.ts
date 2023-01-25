@@ -443,6 +443,7 @@ declare module 'azdata' {
 			 * @param errorCode The error code of the connection error.
 			 * @param errorMessage The error message of the connection error.
 			 * @param connection The connection profile that caused the error.
+			 * @param options The connection complete options that are used with the profile.
 			 */
 			handleConnectionError(errorCode: number, errorMessage: string, connection: connection.ConnectionProfile, options: IConnectionCompletionOptions): Thenable<boolean>;
 		}
@@ -489,6 +490,7 @@ declare module 'azdata' {
 		/**
 		 * Opens the change password dialog in connection management service.
 		 * @param initialConnectionProfile The connection profile to change the password for and connect to.
+		 * @param options The connection options containing the required connection parameters.
 		 */
 		export function openChangePasswordDialog(initialConnectionProfile: IConnectionProfile, options: IConnectionCompletionOptions): void;
 	}

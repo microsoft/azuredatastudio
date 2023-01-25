@@ -14,11 +14,14 @@ export interface IErrorDiagnosticsService {
 
 	/**
 	 * Register a Diagnostics object for a provider
+	 * @param providerId the id of the provider to be registered.
+	 * @param diagnostics the actual diagnostics provider object to be registered under the id.
 	 */
 	registerDiagnosticsProvider(providerId: string, diagnostics: azdata.diagnostics.ErrorDiagnostics): void;
 
 	/**
 	 * Unregister a Diagnostics object for a provider
+	 * @param providerId the id of the provider to be unregistered.
 	 */
 	unregisterDiagnosticsProvider(ProviderId: string): void;
 
@@ -28,6 +31,7 @@ export interface IErrorDiagnosticsService {
 	 * @param errorMessage Error message that describes the problem in detail.
 	 * @param providerId Identifies what provider the error comes from.
 	 * @param connection Connection profile that is utilized for connection
+	 * @param options the connection complete options provided with the profile
 	 */
 	checkConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Promise<boolean>;
 }
