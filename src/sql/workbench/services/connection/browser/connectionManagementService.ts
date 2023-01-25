@@ -57,6 +57,7 @@ import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensio
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import { PasswordChangeDialog } from 'sql/workbench/services/connection/browser/passwordChangeDialog';
+import { deepClone } from 'vs/base/common/objects';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -558,20 +559,27 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private async handleConnectionError(connection: interfaces.IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
 		let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', "Connection Not Accepted");
 		if (options.showFirewallRuleOnError && connectionResult.errorCode) {
-			let handleFirewall = await this.handleFirewallRuleError(connection, connectionResult);
-			if (handleFirewall) {
+			let firewallRuleErrorHandled = await this.handleFirewallRuleError(connection, connectionResult);
+			if (firewallRuleErrorHandled) {
 				options.showFirewallRuleOnError = false;
 				return this.connectWithOptions(connection, uri, options, callbacks);
 			}
 			else {
-				let handleOtherConnectionError = await this._errorDiagnosticsService.checkConnectionError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, this.convertToSafeProfile(connection), (options as any) as azdata.IConnectionCompletionOptions);
-				if (handleOtherConnectionError) {
-					//For now handle connection errors in provider.
+				let connectionErrorHandled = await this._errorDiagnosticsService.tryHandleConnectionError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, this.convertToConnectionProfile(connection, false, false), (options as any) as azdata.IConnectionCompletionOptions);
+				if (connectionErrorHandled.success) {
 					connectionResult.errorHandled = true;
-					return connectionResult;
+					if (connectionErrorHandled.connectNeeded) {
+						// Handle case where after a connection error is handled
+						// the connection does not automatically reconnect.
+						// Handlers such as "Change Password" will connect on their own.
+						return this.connectWithOptions(connection, uri, options, callbacks);
+					}
+					else {
+						return connectionResult;
+					}
 				}
 				else {
-					// Error not recognized at all, reject.
+					// Error not handled by any registered providers so fail the connection
 					if (callbacks.onConnectReject) {
 						callbacks.onConnectReject(connectionNotAcceptedError);
 					}
@@ -603,15 +611,18 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	// Convert the profile to one that can be sent via RPC (used for error handling).
-	private convertToSafeProfile(profile: interfaces.IConnectionProfile): azdata.connection.ConnectionProfile {
+	public convertToConnectionProfile(profile: interfaces.IConnectionProfile, removeCredentials: boolean, deepCopyOptions: boolean): azdata.connection.ConnectionProfile {
 		if (!profile) {
 			return undefined;
 		}
-
+		// Need to account for different types of conversion usages.
+		if (removeCredentials) {
+			profile = this.removeConnectionProfileCredentials(profile);
+		}
 		let connection: azdata.connection.ConnectionProfile = {
 			providerId: profile.providerName,
 			connectionId: profile.id,
-			options: profile.options,
+			options: deepCopyOptions ? deepClone(profile.options) : profile.options,
 			connectionName: profile.connectionName,
 			serverName: profile.serverName,
 			databaseName: profile.databaseName,

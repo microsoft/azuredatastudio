@@ -25,10 +25,10 @@ export class ExtHostErrorDiagnostics extends ExtHostErrorDiagnosticsShape {
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	// - MAIN THREAD AVAILABLE METHODS /////////////////////////////////////
-	public override $handleConnectionError(handle: number, errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Thenable<boolean> {
+	public override $handleConnectionError(handle: number, errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Thenable<azdata.diagnostics.ConnectionDiagnosticsResult> {
 		let provider = this._providers[handle];
 		if (provider === undefined) {
-			return Promise.resolve(false);
+			return Promise.resolve({ success: false, connectNeeded: false });
 		}
 		else {
 			return provider.provider.handleConnectionError(errorCode, errorMessage, connection, options);
@@ -36,22 +36,22 @@ export class ExtHostErrorDiagnostics extends ExtHostErrorDiagnosticsShape {
 	}
 
 	// - EXTENSION HOST AVAILABLE METHODS //////////////////////////////////
-	public $registerDiagnosticsProvider(providerMetadata: azdata.ResourceProviderMetadata, diagnostics: azdata.diagnostics.ErrorDiagnostics): Disposable {
+	public $registerDiagnosticsProvider(providerMetadata: azdata.diagnostics.ErrorDiagnosticsProviderMetadata, errorDiagnostics: azdata.diagnostics.ErrorDiagnosticsProvider): Disposable {
 		let self = this;
 
-		// Look for any account providers that have the same provider ID
+		// Look for any diagnostic providers that have the same provider ID
 		let matchingProviderIndex = values(this._providers).findIndex((provider: DiagnosticsWithMetadata) => {
 			return provider.metadata.id === providerMetadata.id;
 		});
 		if (matchingProviderIndex >= 0) {
-			throw new Error(`Resource Provider with ID '${providerMetadata.id}' has already been registered`);
+			throw new Error(`Diagnostics Provider with ID '${providerMetadata.id}' has already been registered`);
 		}
 
 		// Create the handle for the provider
 		let handle: number = this._nextHandle();
 		this._providers[handle] = {
 			metadata: providerMetadata,
-			provider: diagnostics
+			provider: errorDiagnostics
 		};
 
 		// Register the provider in the main thread via the proxy
@@ -80,5 +80,5 @@ export class ExtHostErrorDiagnostics extends ExtHostErrorDiagnosticsShape {
 
 interface DiagnosticsWithMetadata {
 	metadata: azdata.ResourceProviderMetadata;
-	provider: azdata.diagnostics.ErrorDiagnostics;
+	provider: azdata.diagnostics.ErrorDiagnosticsProvider;
 }

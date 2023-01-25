@@ -9,13 +9,13 @@ import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/com
 export class TestErrorDiagnosticsService implements IErrorDiagnosticsService {
 	_serviceBrand: undefined;
 
-	registerDiagnosticsProvider(providerId: string, diagnostics: azdata.diagnostics.ErrorDiagnostics): void {
+	registerDiagnosticsProvider(providerId: string, errorDiagnostics: azdata.diagnostics.ErrorDiagnosticsProvider): void {
 	}
 
 	unregisterDiagnosticsProvider(ProviderId: string): void {
 	}
 
-	checkConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Promise<boolean> {
-		return Promise.resolve(false);
+	tryHandleConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
+		return Promise.resolve({ success: false, connectNeeded: false });
 	}
 }

@@ -29,23 +29,22 @@ export class MainThreadErrorDiagnostics extends Disposable implements MainThread
 		}
 	}
 
-	public $registerDiagnosticsProvider(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any> {
+	public $registerDiagnosticsProvider(providerMetadata: azdata.diagnostics.ErrorDiagnosticsProviderMetadata, handle: number): Thenable<void> {
 		let self = this;
 
 		//Create the error handler that interfaces with the extension via the proxy and register it
-		let diagnostics: azdata.diagnostics.ErrorDiagnostics = {
-			handleConnectionError(errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Thenable<boolean> {
+		let errorDiagnostics: azdata.diagnostics.ErrorDiagnosticsProvider = {
+			handleConnectionError(errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Thenable<azdata.diagnostics.ConnectionDiagnosticsResult> {
 				return self._proxy.$handleConnectionError(handle, errorCode, errorMessage, connection, options);
 			}
 		};
-		this._errorDiagnosticsService.registerDiagnosticsProvider(providerMetadata.id, diagnostics);
+		this._errorDiagnosticsService.registerDiagnosticsProvider(providerMetadata.id, errorDiagnostics);
 		this._providerMetadata[handle] = providerMetadata;
-
-		return Promise.resolve(null);
+		return undefined;
 	}
 
-	public $unregisterDiagnosticsProvider(handle: number): Thenable<any> {
+	public $unregisterDiagnosticsProvider(handle: number): Thenable<void> {
 		this._errorDiagnosticsService.unregisterDiagnosticsProvider(this._providerMetadata[handle].id);
-		return Promise.resolve(null);
+		return undefined;
 	}
 }

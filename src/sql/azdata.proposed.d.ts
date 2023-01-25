@@ -435,25 +435,52 @@ declare module 'azdata' {
 
 	export namespace diagnostics {
 		/**
-		 * Diagnostics object for handling error codes for a connection provider.
+		 * Represents a diagnostics provider of accounts.
 		 */
-		export interface ErrorDiagnostics {
+		export interface ErrorDiagnosticsProviderMetadata {
 			/**
-			 * Takes an error code, connection profile, and error message and performs corrective tasks.
+			 * The identifier of the provider that the diagnostics provider will handle errors for.
+			 */
+			id: string;
+
+			/**
+			 * Display name of the diagnostics provider object.
+			 */
+			displayName: string;
+		}
+
+		export interface ConnectionDiagnosticsResult {
+			success: boolean,
+			connectNeeded: boolean
+		}
+
+		/**
+		 * Diagnostics object for handling errors for a provider.
+		 */
+		export interface ErrorDiagnosticsProvider {
+			/**
+			 * Called when a connection error occurs, allowing the provider to optionally handle the error and fix any issues before continuing with completing the connection.
 			 * @param errorCode The error code of the connection error.
 			 * @param errorMessage The error message of the connection error.
 			 * @param connection The connection profile that caused the error.
 			 * @param options The connection complete options that are used with the profile.
+			 * @returns Two boolean values: "success" and "connectNeeded" to indicate if the connection error
+			 * was handled and if the profile needs to be manually connected afterwards respectively.
+			 * "success = false" means the error wasn't handled.
+			 * "success = true" means the error was handled.
+			 * "connectNeeded = false" means the profile does not need to be manually connected after error handling.
+			 * "reconnectNeeded = true" means the profile needs to be manually connected after error handling.
 			 */
-			handleConnectionError(errorCode: number, errorMessage: string, connection: connection.ConnectionProfile, options: IConnectionCompletionOptions): Thenable<boolean>;
+			handleConnectionError(errorCode: number, errorMessage: string, connection: connection.ConnectionProfile, options: IConnectionCompletionOptions): Thenable<ConnectionDiagnosticsResult>;
 		}
 
 		/**
-		 * Registers provider with instance of Diagnostics implementation.
-		 * @param providerMetadata The provider metadata containing id and DisplayName (for use with registration).
-		 * @param diagnostics The provider's diagnostic object that handles errors.
+		 * Registers provider with instance of Diagnostic Provider implementation.
+		 * @param providerMetadata Additional data used to register the provider
+		 * @param errorDiagnostics The provider's diagnostic object that handles errors.
+		 * @returns The diagnostic provider implementation
 		 */
-		export function registerDiagnosticsProvider(providerMetadata: ResourceProviderMetadata, diagnostics: ErrorDiagnostics): vscode.Disposable;
+		export function registerDiagnosticsProvider(providerMetadata: ErrorDiagnosticsProviderMetadata, errorDiagnostics: ErrorDiagnosticsProvider): vscode.Disposable;
 	}
 
 	export namespace connection {
@@ -488,11 +515,11 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * Opens the change password dialog in connection management service.
-		 * @param initialConnectionProfile The connection profile to change the password for and connect to.
+		 * Opens the change password dialog.
+		 * @param profile The connection profile to change the password for.
 		 * @param options The connection options containing the required connection parameters.
 		 */
-		export function openChangePasswordDialog(initialConnectionProfile: IConnectionProfile, options: IConnectionCompletionOptions): void;
+		export function openChangePasswordDialog(profile: IConnectionProfile, options: IConnectionCompletionOptions): void;
 	}
 
 	/*

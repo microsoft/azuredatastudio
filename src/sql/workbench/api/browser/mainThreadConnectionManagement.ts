@@ -92,7 +92,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public $getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
-		return Promise.resolve(this._connectionManagementService.getConnections(activeConnectionsOnly).map(profile => this.convertToConnectionProfile(profile, true, true)));
+		return Promise.resolve(this._connectionManagementService.getConnections(activeConnectionsOnly).map(profile => this._connectionManagementService.convertToConnectionProfile(profile, true, true)));
 	}
 
 	public $getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile> {
@@ -101,7 +101,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			return Promise.resolve(undefined);
 		}
 
-		let connection = this.convertToConnectionProfile(profile, false, false);
+		let connection = this._connectionManagementService.convertToConnectionProfile(profile, false, false);
 		return Promise.resolve(connection);
 	}
 
@@ -114,7 +114,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public $getCurrentConnectionProfile(): Thenable<azdata.connection.ConnectionProfile> {
-		return Promise.resolve(this.convertToConnectionProfile(TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._workbenchEditorService, true,), true, true));
+		return Promise.resolve(this._connectionManagementService.convertToConnectionProfile(TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._workbenchEditorService, true,), true, true));
 	}
 
 	public $getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
@@ -167,10 +167,10 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		return connection;
 	}
 
-	public $openChangePasswordDialog(initialConnectionProfile: IConnectionProfile, options: azdata.IConnectionCompletionOptions): void {
+	public $openChangePasswordDialog(profile: IConnectionProfile, options: azdata.IConnectionCompletionOptions): void {
 		// Need to have access to getOptionsKey, so recreate profile from details.
-		let profile = new ConnectionProfile(this._capabilitiesService, initialConnectionProfile);
-		this._connectionManagementService.openChangePasswordDialog(profile, ((options as any) as IConnectionCompletionOptions).params);
+		let convertedProfile = new ConnectionProfile(this._capabilitiesService, profile);
+		this._connectionManagementService.openChangePasswordDialog(convertedProfile, ((options as any) as IConnectionCompletionOptions).params);
 	}
 
 	public async $listDatabases(connectionId: string): Promise<string[]> {
@@ -196,34 +196,6 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			providerName: profile.providerName,
 			connectionId: profile.id,
 			options: deepClone(profile.options)
-		};
-		return connection;
-	}
-
-	private convertToConnectionProfile(profile: IConnectionProfile, removeCredentials: boolean, deepCopyOptions: boolean): azdata.connection.ConnectionProfile {
-		if (!profile) {
-			return undefined;
-		}
-
-		// Need to account for different types of conversion usages.
-		if (removeCredentials) {
-			profile = this._connectionManagementService.removeConnectionProfileCredentials(profile);
-		}
-		let connection: azdata.connection.ConnectionProfile = {
-			providerId: profile.providerName,
-			connectionId: profile.id,
-			options: deepCopyOptions ? deepClone(profile.options) : profile.options,
-			connectionName: profile.connectionName,
-			serverName: profile.serverName,
-			databaseName: profile.databaseName,
-			userName: profile.userName,
-			password: profile.password,
-			authenticationType: profile.authenticationType,
-			savePassword: profile.savePassword,
-			groupFullName: profile.groupFullName,
-			groupId: profile.groupId,
-			azureTenantId: profile.azureTenantId,
-			saveProfile: profile.saveProfile
 		};
 		return connection;
 	}

@@ -334,4 +334,8 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	openChangePasswordDialog(profile: IConnectionProfile, params: INewConnectionParams): void {
 
 	}
+
+	convertToConnectionProfile(profile: IConnectionProfile, removeCredentials: boolean, deepCopyOptions: boolean): azdata.connection.ConnectionProfile {
+		return undefined;
+	}
 }

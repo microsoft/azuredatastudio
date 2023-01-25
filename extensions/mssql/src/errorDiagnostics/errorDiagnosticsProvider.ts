@@ -9,6 +9,7 @@ import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { AppContext } from '../appContext';
 import { ServerCapabilities, ClientCapabilities, RPCMessageType } from 'vscode-languageclient';
 import { Disposable } from 'vscode';
+import * as CoreConstants from '../constants';
 import * as ErrorDiagnosticsConstants from './errorDiagnosticsConstants';
 
 export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
@@ -30,7 +31,7 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 				});
 			}
 
-			private restoreProfileFormat(profile: azdata.connection.ConnectionProfile): azdata.IConnectionProfile {
+			private convertToIConnectionProfile(profile: azdata.connection.ConnectionProfile): azdata.IConnectionProfile {
 				return {
 					providerName: profile.providerId,
 					id: profile.connectionId,
@@ -50,24 +51,21 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 			}
 
 			protected override registerProvider(options: any): Disposable {
-				let handleConnectionError = async (errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Promise<boolean> => {
+				let handleConnectionError = async (errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> => {
 					if (errorCode = ErrorDiagnosticsConstants.MssqlPasswordResetErrorCode) {
 						// Need to convert inputed profile back to IConnectionProfile.
-						let restoredProfile = this.restoreProfileFormat(connection);
+						let restoredProfile = this.convertToIConnectionProfile(connection);
 						azdata.connection.openChangePasswordDialog(restoredProfile, options);
-						return Promise.resolve(true);
+						return { success: true, connectNeeded: false };
 					}
 					else {
-						return Promise.resolve(false);
+						return { success: false, connectNeeded: false };
 					}
 				}
 
 				return azdata.diagnostics.registerDiagnosticsProvider({
-					displayName: 'Azure SQL Diagnostics for MSSQL',
-					id: 'MSSQL',
-					settings: {
-
-					}
+					displayName: ErrorDiagnosticsConstants.MssqlDiagnosticsProviderDisplayName,
+					id: CoreConstants.providerId,
 				}, {
 					handleConnectionError
 				});

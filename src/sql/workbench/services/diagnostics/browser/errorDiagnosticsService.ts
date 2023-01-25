@@ -9,13 +9,13 @@ import * as azdata from 'azdata';
 export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 
 	_serviceBrand: undefined;
-	private _providers: { [handle: string]: azdata.diagnostics.ErrorDiagnostics; } = Object.create(null);
+	private _providers: { [handle: string]: azdata.diagnostics.ErrorDiagnosticsProvider; } = Object.create(null);
 
 	constructor(
 	) { }
 
-	public async checkConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Promise<boolean> {
-		let result = false;
+	public async tryHandleConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
+		let result = { success: false, connectNeeded: false };
 		let provider = this._providers[providerId]
 		if (provider) {
 			result = await provider.handleConnectionError(errorCode, errorMessage, connection, options);
@@ -26,10 +26,10 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 	/**
 	 * Register a diagnostics object for a provider
 	 * @param providerId the id of the provider to register.
-	 * @param diagnostics the actual diagnostics provider object to register under the id.
+	 * @param errorDiagnostics the actual diagnostics provider object to register under the id.
 	 */
-	public registerDiagnosticsProvider(providerId: string, diagnostics: azdata.diagnostics.ErrorDiagnostics): void {
-		this._providers[providerId] = diagnostics;
+	public registerDiagnosticsProvider(providerId: string, errorDiagnostics: azdata.diagnostics.ErrorDiagnosticsProvider): void {
+		this._providers[providerId] = errorDiagnostics;
 	}
 
 	/**
