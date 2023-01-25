@@ -43,11 +43,12 @@ import { AutorestHelper } from '../tools/autorestHelper';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
 import { ISqlDbDeployProfile } from '../models/deploy/deployProfile';
-import { FileProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
+import { FileProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
 import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updateProject';
 import { AzureSqlClient } from '../models/deploy/azureSqlClient';
 import { ConnectionService } from '../models/connections/connectionService';
 import { getPublishToDockerSettings } from '../dialogs/publishToDockerQuickpick';
+import { SqlCmdVariablesTreeItem } from '../models/tree/sqlcmdVariableTreeItem';
 
 const maxTableLength = 10;
 
@@ -829,6 +830,21 @@ export class ProjectsController {
 
 			void vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, node.projectUri.path));
 		}
+	}
+
+	public async editSqlCmdVariable(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const node = context.element as SqlCmdVariablesTreeItem;
+		const project = this.getProjectFromContext(node);
+		const originalValue = project.sqlCmdVariables[node.friendlyName]; // TODO: update to hookup with however sqlcmd vars work
+
+		const newValue = await vscode.window.showInputBox(
+			{
+				title: constants.enterNewValueForVar(node.friendlyName),
+				value: originalValue,
+				ignoreFocusOut: true
+			});
+
+		// TODO: update value in sqlcmd variables
 	}
 
 	private getDatabaseReference(project: Project, context: BaseProjectTreeItem): IDatabaseReferenceProjectEntry | undefined {

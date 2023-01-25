@@ -201,6 +201,11 @@
         "command": "sqlDatabaseProjects.openInDesigner",
         "title": "%sqlDatabaseProjects.openInDesigner%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.editSqlCmdVar",
+        "title": "%sqlDatabaseProjects.edit%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -324,6 +329,10 @@
         {
           "command": "sqlDatabaseProjects.generateProjectFromOpenApiSpec",
           "when": "config.workbench.enablePreviewFeatures || config.sqlDatabaseProjects.enablePreviewFeatures"
+        },
+        {
+          "command": "sqlDatabaseProjects.editSqlCmdVar",
+          "when": "false"
         }
       ],
       "view/item/context": [
@@ -419,7 +428,7 @@
         },
         {
           "command": "sqlDatabaseProjects.delete",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/ || viewItem == databaseProject.itemType.reference",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/ || viewItem == databaseProject.itemType.reference || viewItem == databaseProject.itemType.sqlcmdVariable",
           "group": "9_dbProjectsLast@2"
         },
         {
@@ -441,6 +450,11 @@
           "command": "sqlDatabaseProjects.createProjectFromDatabase",
           "when": "!azdataAvailable && view == objectExplorer && viewItem =~ /^(disconnectedServer|Server|Database)$/",
           "group": "sqldbproj@1"
+        },
+        {
+          "command": "sqlDatabaseProjects.editSqlCmdVar",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.sqlcmdVariable",
+          "group": "9_dbProjectsLast@1"
         }
       ],
       "objectExplorer/item/context": [
