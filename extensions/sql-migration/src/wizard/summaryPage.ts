@@ -40,11 +40,13 @@ export class SummaryPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizard.registerNavigationValidator(pageChangeInfo => true);
+
 		const targetDatabaseSummary = new TargetDatabaseSummaryDialog(this.migrationStateModel);
-		const isSqlVmTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLVM;
-		const isSqlMiTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLMI;
-		const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
-		const isNetworkShare = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE;
+		const isSqlVmTarget = this.migrationStateModel.isSqlVmTarget;
+		const isSqlMiTarget = this.migrationStateModel.isSqlMiTarget;
+		const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
+		const isNetworkShare = this.migrationStateModel.isBackupContainerNetworkShare;
 
 		const targetDatabaseHyperlink = this._view.modelBuilder.hyperlink()
 			.withProps({
@@ -132,8 +134,6 @@ export class SummaryPage extends MigrationWizardPage {
 		}
 
 		this._flexContainer.addItems([
-
-
 			await createHeadingTextComponent(
 				this._view,
 				constants.IR_PAGE_TITLE),
@@ -163,11 +163,17 @@ export class SummaryPage extends MigrationWizardPage {
 					constants.SHIR,
 					this.migrationStateModel._nodeNames.join(', ')));
 		}
+
+		this.wizard.registerNavigationValidator(async (pageChangeInfo) => {
+			this.wizard.message = { text: '' };
+			return true;
+		});
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizard.registerNavigationValidator(pageChangeInfo => true);
+		this.wizard.message = { text: '' };
 		this._flexContainer.clearItems();
-		this.wizard.registerNavigationValidator(async (pageChangeInfo) => true);
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {

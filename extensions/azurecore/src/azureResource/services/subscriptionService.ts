@@ -28,7 +28,6 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 		const subscriptions: azureResource.AzureResourceSubscription[] = [];
 		let gotSubscriptions = false;
 		const errors: Error[] = [];
-
 		for (const tenantId of tenantIds ?? account.properties.tenants.map(t => t.id)) {
 			try {
 				const token = await azdata.accounts.getAccountSecurityToken(account, tenantId, azdata.AzureResource.ResourceManagement);
@@ -42,6 +41,7 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 							tenant: tenantId
 						};
 					}));
+					Logger.verbose(`AzureResourceSubscriptionService.getSubscriptions: Retrieved ${newSubs.length} subscriptions for tenant ${tenantId} / account ${account.displayInfo.displayName}`);
 					gotSubscriptions = true;
 				}
 				else if (!account.isStale) {
@@ -50,10 +50,12 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 					void vscode.window.showWarningMessage(errorMsg);
 				}
 			} catch (error) {
-				const errorMsg = localize('azure.resource.tenantSubscriptionsError', "Failed to get subscriptions for account {0} (tenant '{1}'). {2}", account.displayInfo.displayName, tenantId, AzureResourceErrorMessageUtil.getErrorMessage(error));
-				Logger.error(`Failed to get subscriptions for account ${account.displayInfo.displayName} (tenant '${tenantId}'). ${AzureResourceErrorMessageUtil.getErrorMessage(error)}`);
-				errors.push(error);
-				void vscode.window.showWarningMessage(errorMsg);
+				if (!account.isStale) {
+					const errorMsg = localize('azure.resource.tenantSubscriptionsError', "Failed to get subscriptions for account {0} (tenant '{1}'). {2}", account.displayInfo.displayName, tenantId, AzureResourceErrorMessageUtil.getErrorMessage(error));
+					Logger.error(`Failed to get subscriptions for account ${account.displayInfo.displayName} (tenant '${tenantId}'). ${AzureResourceErrorMessageUtil.getErrorMessage(error)}`);
+					errors.push(error);
+					void vscode.window.showWarningMessage(errorMsg);
+				}
 			}
 		}
 		if (!gotSubscriptions) {

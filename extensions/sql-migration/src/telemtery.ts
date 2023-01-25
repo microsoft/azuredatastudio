@@ -35,7 +35,10 @@ export enum TelemetryViews {
 	SkuRecommendationWizard = 'SkuRecommendationWizard',
 	DataCollectionWizard = 'GetAzureRecommendationDialog',
 	SelectMigrationServiceDialog = 'SelectMigrationServiceDialog',
-	Utils = 'Utils'
+	Utils = 'Utils',
+	LoginMigrationWizardController = 'LoginMigrationWizardController',
+	LoginMigrationWizard = 'LoginMigrationWizard',
+	TdeConfigurationDialog = 'TdeConfigurationDialog',
 }
 
 export enum TelemetryAction {
@@ -62,6 +65,10 @@ export enum TelemetryAction {
 	StartDataCollection = 'StartDataCollection',
 	StopDataCollection = 'StopDataCollection',
 	GetDatabasesListFailed = 'GetDatabasesListFailed'
+}
+
+export enum TelemetryErrorName {
+	StartMigrationFailed = 'StartMigrationFailed'
 }
 
 export function logError(telemetryView: TelemetryViews, err: string, error: any): void {

@@ -1623,6 +1623,30 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@src/sql/workbench/services/connection/browser/passwordChangeDialog.passwordChangeDialog.errorPasswordMismatchErro" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) rMessage" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Passwords entered do not match]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Las contraseñas introducidas no coinciden]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/services/connection/browser/passwordChangeDialog.passwordChangeDialog.errorPasswordMismatchReco" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) veryInstructions" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Press OK and enter the exact same password in both boxes.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Presione Aceptar y escriba exactamente la misma contraseña en ambos cuadros.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@src/sql/workbench/services/notebook/common/notebookRegistry.vscode.extension.contributes.notebook.providersDescri" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) ptions" ItemType="0" PsrId="308" Leaf="true">
@@ -6293,6 +6317,15 @@
           <Val><![CDATA[Connection Status]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Estado de conexión]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/connection/common/connectionProviderExtension.schema.azureResource" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Azure resource endpoint for the provider.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Punto de conexión de recursos de Azure para el proveedor.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -11882,10 +11915,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component.copyFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Copy failed with error {0}]]></Val>
+          <Val><![CDATA[Copy failed with error: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Error de copia {0}]]></Val>
+            <Val><![CDATA[Error de copia: {0}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Copy failed with error {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -12443,6 +12479,15 @@
           <Val><![CDATA[Chart]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Gráfico]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/actions.copyHeaders" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Copy Headers]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Encabezados de texto]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13041,6 +13086,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.showActionBar" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether to show the action bar in the query results view]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Indica si se debe mostrar la barra de acciones en la vista de resultados de la consulta.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.streaming" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable results streaming; contains few minor visual issues]]></Val>
@@ -13385,6 +13439,24 @@
           <Val><![CDATA[Average: {0}  Count: {1}  Sum: {2}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Promedio: {0}; recuento: {1}; suma: {2}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/statusBarItems.status.query.summaryTextNonNumeric" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Count: {0}  Distinct Count: {1}  Null Count: {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Recuento: {0} Recuento distinto: {1} Recuento nulo: {2}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/statusBarItems.status.query.summaryTooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Average: {0}  Count: {1}  Distinct Count: {2}  Max: {3}  Min: {4}  Null Count: {5}  Sum: {6}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Promedio: {0} Recuento: {1} Recuento distinto: {2} Máx.: {3} Mín.: {4} Recuento nulo: {5} Suma: {6}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -15801,6 +15873,69 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/passwordChangeDialog.passwordChangeDialog.cancel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Cancel]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cancelar]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/passwordChangeDialog.passwordChangeDialog.confirmPassword" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Confirm password:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Confirmar contraseña:]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/passwordChangeDialog.passwordChangeDialog.connecting" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Connecting]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Conexión en curso]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/passwordChangeDialog.passwordChangeDialog.errorHeader" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Failure when attempting to change password]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Error al intentar cambiar la contraseña]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/passwordChangeDialog.passwordChangeDialog.newPassword" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[New password:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nueva contraseña:]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/passwordChangeDialog.passwordChangeDialog.ok" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[OK]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aceptar]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/passwordChangeDialog.passwordChangeDialog.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Change Password]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cambiar contraseña]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl.newDashboardTab.cancel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cancel]]></Val>
@@ -16632,6 +16767,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/models/notebookModel.savedKernelNotSupported" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[This notebook's '{0}' kernel is not supported. Defaulting to SQL kernel instead.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se admite el kernel "{0}" de este cuaderno. En su lugar, el valor predeterminado es kernel de SQL.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/notebook/browser/models/notebookModel.shutdownClientSessionError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A client session error occurred when closing the notebook: {0}]]></Val>
@@ -16832,10 +16976,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/services/notebook/common/notebookRegistry.carbon.extension.contributes.notebook.executionTarget" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Optional execution target this magic indicates, for example Spark vs SQL]]></Val>
+          <Val><![CDATA[Optional execution target this magic indicates, for example Python vs SQL]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Objetivo de ejecución opcional indicado por este magic, por ejemplo Spark vs SQL]]></Val>
+            <Val><![CDATA[Objetivo de ejecución opcional indicado por este magic, por ejemplo Python vs SQL]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Optional execution target this magic indicates, for example Spark vs SQL]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -16850,10 +16997,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/services/notebook/common/notebookRegistry.carbon.extension.contributes.notebook.kernels" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Optional set of kernels this is valid for, e.g. python3, pyspark, sql]]></Val>
+          <Val><![CDATA[Optional set of kernels this is valid for, e.g. python3, sql]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Conjunto opcional de kernels para los que esto es válido, por ejemplo python3, pyspark, sql]]></Val>
+            <Val><![CDATA[Conjunto opcional de kernels para los que esto es válido, por ejemplo, python3 y sql]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Optional set of kernels this is valid for, e.g. python3, pyspark, sql]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -17354,10 +17504,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/services/query/common/queryRunner.copyFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Copy failed with error {0}]]></Val>
+          <Val><![CDATA[Copy failed with error: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Error de copia {0}]]></Val>
+            <Val><![CDATA[Error de copia: {0}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Copy failed with error {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -17559,20 +17712,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/services/resourceProvider/browser/firewallRuleDialog.firewallRuleDialogDescription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/services/resourceProvider/browser/firewallRuleDialog.firewall.ruleName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.]]></Val>
+          <Val><![CDATA[Rule name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[La dirección IP del cliente no tiene acceso al servidor. Inicie sesión en una cuenta de Azure y cree una regla de firewall para habilitar el acceso.]]></Val>
+            <Val><![CDATA[Nombre de la regla]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/services/resourceProvider/browser/firewallRuleDialog.firewallRuleHelpDescription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/services/resourceProvider/browser/firewallRuleDialog.firewallRuleDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Learn more about firewall settings]]></Val>
+          <Val><![CDATA[A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Más información sobre configuración de firewall]]></Val>
+            <Val><![CDATA[Se requiere una regla de firewall para acceder a la instancia de SQL Server. Haga clic en el vínculo siguiente para crear una nueva regla de firewall.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/resourceProvider/browser/firewallRuleDialog.firewallRuleHelpLink" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Learn more about firewall rules]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Más información sobre las reglas del firewall]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

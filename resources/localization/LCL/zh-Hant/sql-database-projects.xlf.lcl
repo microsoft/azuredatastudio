@@ -14,12 +14,12 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) firmation" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.]]></Val>
+            <Val><![CDATA[Currently installed .NET SDK version is {0}, which is not supported. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK supported version location in settings if already installed.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[目前安裝的 .NET Core SDK 版本是 {0}，但不支援此版本。專案組建將無法運作。請安裝 .NET Core SDK 3.1 版或更新版本，或在設定中更新 .NET SDK 支援的版本位置 (如果已安裝)。]]></Val>
+              <Val><![CDATA[目前安裝的 .NET SDK 版本是 {0}，但不支援此版本。專案組建將無法運作。請安裝 .NET 6 SDK 或更新版本，或在設定中更新 .NET SDK 支援的版本位置 (如果已安裝)。]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.]]></Val>
+              <Val><![CDATA[Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />
@@ -615,10 +615,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.dacpacNotOnSameDrive" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Dacpac references need to be located on the same drive as the project file. The project file is located at {0}]]></Val>
+          <Val><![CDATA[Dacpac references need to be located on the same drive as the project file.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Dacpac 參考必須位於與專案檔相同的磁碟機上。專案檔位於 {0}]]></Val>
+            <Val><![CDATA[Dacpac 參考必須位於與專案檔相同的磁碟機上。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Dacpac references need to be located on the same drive as the project file. The project file is located at {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2820,10 +2823,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.sqlDatabaseProjects.DotnetInstallationConfirmation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.]]></Val>
+          <Val><![CDATA[The .NET SDK cannot be located. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK location in settings if already installed.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[找不到 .NET SDK。專案組建將無法運作。請安裝 .NET Core SDK 3.1 版或更新版本，或在設定中更新 .NET SDK 位置 (如果已安裝)。]]></Val>
+            <Val><![CDATA[找不到 .NET SDK。專案組建將無法運作。請安裝 .NET 6 SDK 或更新版本，或在設定中更新 .NET SDK 位置 (如果已安裝)。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3333,10 +3339,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.generateProjectFromOpenApiSpec" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Generate SQL Project from OpenAPI/Swagger spec]]></Val>
+          <Val><![CDATA[Generate SQL Project from OpenAPI/Swagger spec (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[透過 OpenAPI/Swagger 規格產生 SQL 專案]]></Val>
+            <Val><![CDATA[透過 OpenAPI/Swagger 規格產生 SQL 專案 (預覽)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Generate SQL Project from OpenAPI/Swagger spec]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3354,10 +3363,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.netCoreDoNotAsk" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Whether to prompt the user to install .NET Core when not detected.]]></Val>
+          <Val><![CDATA[Whether to prompt the user to install .NET SDK when not detected.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[是否在未偵測到時提示使用者安裝 .NET Core。]]></Val>
+            <Val><![CDATA[是否在未偵測到時提示使用者安裝 .NET SDK。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Whether to prompt the user to install .NET Core when not detected.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

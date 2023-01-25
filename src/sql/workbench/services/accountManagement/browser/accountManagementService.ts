@@ -24,6 +24,9 @@ import { values } from 'vs/base/common/collections';
 import { ILogService } from 'vs/platform/log/common/log';
 import { INotificationService, Severity, INotification } from 'vs/platform/notification/common/notification';
 import { Action } from 'vs/base/common/actions';
+import { DisposableStore } from 'vs/base/common/lifecycle';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ADAL_AUTH_LIBRARY, AuthLibrary, filterAccounts, MSAL_AUTH_LIBRARY } from 'sql/workbench/services/accountManagement/browser/accountDialog';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -33,9 +36,12 @@ export class AccountManagementService implements IAccountManagementService {
 	public _providers: { [id: string]: AccountProviderWithMetadata } = {};
 	public _serviceBrand: undefined;
 	private _accountStore: AccountStore;
+	private _authLibrary: AuthLibrary;
 	private _accountDialogController?: AccountDialogController;
 	private _autoOAuthDialogController?: AutoOAuthDialogController;
 	private _mementoContext?: Memento;
+	protected readonly disposables = new DisposableStore();
+	private readonly configurationService: IConfigurationService;
 
 	// EVENT EMITTERS //////////////////////////////////////////////////////
 	private _addAccountProviderEmitter: Emitter<AccountProviderAddedEventParams>;
@@ -54,7 +60,8 @@ export class AccountManagementService implements IAccountManagementService {
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IOpenerService private _openerService: IOpenerService,
 		@ILogService private readonly _logService: ILogService,
-		@INotificationService private readonly _notificationService: INotificationService
+		@INotificationService private readonly _notificationService: INotificationService,
+		@IConfigurationService configurationService: IConfigurationService
 	) {
 		this._mementoContext = new Memento(AccountManagementService.ACCOUNT_MEMENTO, this._storageService);
 		const mementoObj = this._mementoContext.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE);
@@ -64,8 +71,14 @@ export class AccountManagementService implements IAccountManagementService {
 		this._addAccountProviderEmitter = new Emitter<AccountProviderAddedEventParams>();
 		this._removeAccountProviderEmitter = new Emitter<azdata.AccountProviderMetadata>();
 		this._updateAccountListEmitter = new Emitter<UpdateAccountListEventParams>();
+		this.configurationService = configurationService;
+
+		// Determine authentication library in use, to support filtering accounts respectively.
+		// When this value is changed a restart is required so there isn't a need to dynamically update this value at runtime.
+		this._authLibrary = this.configurationService.getValue('azure.authenticationLibrary');
 
 		_storageService.onWillSaveState(() => this.shutdown());
+		this.registerListeners();
 	}
 
 	private get autoOAuthDialogController(): AutoOAuthDialogController {
@@ -136,6 +149,10 @@ export class AccountManagementService implements IAccountManagementService {
 				}
 
 				let result = await this._accountStore.addOrUpdate(account);
+				if (!result) {
+					this._logService.error('adding account failed');
+					throw Error('Adding account failed, check Azure Accounts log for more info.')
+				}
 				if (result.accountAdded) {
 					// Add the account to the list
 					provider.accounts.push(result.changedAccount);
@@ -148,6 +165,28 @@ export class AccountManagementService implements IAccountManagementService {
 			} finally {
 				notificationHandler.close();
 			}
+		});
+	}
+
+	/**
+	 * Adds an account to the account store without prompting the user
+	 * @param account account to add
+	 */
+	public addAccountWithoutPrompt(account: azdata.Account): Promise<void> {
+		return this.doWithProvider(account.key.providerId, async (provider) => {
+			let result = await this._accountStore.addOrUpdate(account);
+			if (!result) {
+				this._logService.error('adding account failed');
+			}
+			if (result.accountAdded) {
+				// Add the account to the list
+				provider.accounts.push(result.changedAccount);
+			}
+			if (result.accountModified) {
+				this.spliceModifiedAccount(provider, result.changedAccount);
+			}
+
+			this.fireAccountListUpdate(provider, result.accountAdded);
 		});
 	}
 
@@ -174,11 +213,17 @@ export class AccountManagementService implements IAccountManagementService {
 
 			let result = await self._accountStore.addOrUpdate(account);
 			if (result.accountAdded) {
+				// Double check that there isn't a matching account
+				let indexToRemove = this.findAccountIndex(provider.accounts, result.changedAccount);
+				if (indexToRemove >= 0) {
+					self._accountStore.remove(provider.accounts[indexToRemove].key);
+					provider.accounts.splice(indexToRemove, 1);
+				}
 				// Add the account to the list
 				provider.accounts.push(result.changedAccount!);
 			}
 			if (result.accountModified) {
-				// Find the updated account and splice the updated on in
+				// Find the updated account and splice the updated one in
 				let indexToRemove: number = provider.accounts.findIndex(account => {
 					return account.key.accountId === result.changedAccount!.key.accountId;
 				});
@@ -209,9 +254,11 @@ export class AccountManagementService implements IAccountManagementService {
 		let self = this;
 
 		// 1) Get the accounts from the store
-		// 2) Update our local cache of accounts
+		// 2) Filter the accounts based on the auth library
+		// 3) Update our local cache of accounts
 		return this.doWithProvider(providerId, provider => {
 			return self._accountStore.getAccountsByProvider(provider.metadata.id)
+				.then(accounts => this._authLibrary ? filterAccounts(accounts, this._authLibrary) : accounts)
 				.then(accounts => {
 					self._providers[providerId].accounts = accounts;
 					return accounts;
@@ -220,10 +267,11 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	/**
-	 * Retrieves all the accounts registered with ADS.
+	 * Retrieves all the accounts registered with ADS based on auth library in use.
 	 */
 	public getAccounts(): Promise<azdata.Account[]> {
-		return this._accountStore.getAllAccounts();
+		return this._accountStore.getAllAccounts()
+			.then(accounts => this._authLibrary ? filterAccounts(accounts, this._authLibrary) : accounts);
 	}
 
 	/**
@@ -458,10 +506,15 @@ export class AccountManagementService implements IAccountManagementService {
 			});
 		}
 
+		const authLibrary: AuthLibrary = this.configurationService.getValue('azure.authenticationLibrary');
+		let updatedAccounts: azdata.Account[]
+		if (authLibrary) {
+			updatedAccounts = filterAccounts(provider.accounts, authLibrary);
+		}
 		// Step 2) Fire the event
 		let eventArg: UpdateAccountListEventParams = {
 			providerId: provider.metadata.id,
-			accountList: provider.accounts
+			accountList: updatedAccounts ?? provider.accounts
 		};
 		this._updateAccountListEmitter.fire(eventArg);
 	}
@@ -474,6 +527,81 @@ export class AccountManagementService implements IAccountManagementService {
 		if (indexToRemove >= 0) {
 			provider.accounts.splice(indexToRemove, 1, modifiedAccount);
 		}
+	}
+
+	private registerListeners(): void {
+		this.disposables.add(this.configurationService.onDidChangeConfiguration(async e => {
+			if (e.affectsConfiguration('azure.authenticationLibrary')) {
+				const authLibrary: AuthLibrary = this.configurationService.getValue('azure.authenticationLibrary') ?? MSAL_AUTH_LIBRARY;
+				let accounts = await this._accountStore.getAllAccounts();
+				if (accounts) {
+					let updatedAccounts = await this.filterAndMergeAccounts(accounts, authLibrary);
+					let eventArg: UpdateAccountListEventParams;
+					if (updatedAccounts.length > 0) {
+						updatedAccounts.forEach(account => {
+							if (account.key.authLibrary === MSAL_AUTH_LIBRARY) {
+								account.isStale = false;
+							}
+						});
+						eventArg = {
+							providerId: updatedAccounts[0].key.providerId,
+							accountList: updatedAccounts
+						};
+					} else { // default to public cloud if no accounts
+						eventArg = {
+							providerId: 'azure_publicCloud',
+							accountList: updatedAccounts
+						};
+					}
+					this._updateAccountListEmitter.fire(eventArg);
+				}
+			}
+		}));
+	}
+
+	// Filters and merges accounts from both authentication libraries
+	private async filterAndMergeAccounts(accounts: azdata.Account[], currentAuthLibrary: AuthLibrary): Promise<azdata.Account[]> {
+		// Fetch accounts for alternate authenticationLibrary
+		const altLibrary = currentAuthLibrary === MSAL_AUTH_LIBRARY ? ADAL_AUTH_LIBRARY : MSAL_AUTH_LIBRARY;
+		const altLibraryAccounts = filterAccounts(accounts, altLibrary);
+
+		// Fetch accounts for current authenticationLibrary
+		const currentLibraryAccounts = filterAccounts(accounts, currentAuthLibrary);
+
+		// In the list of alternate accounts, check if the accounts are present in the current library cache,
+		// if not, add the account and mark it stale. The original account is marked as taken so its not picked again.
+		for (let account of altLibraryAccounts) {
+			await this.removeAccount(account.key);
+			if (this.findAccountIndex(currentLibraryAccounts, account) >= 0) {
+				continue;
+			} else {
+				// TODO: Refresh access token for the account if feasible.
+				account.isStale = true;
+				account.key.authLibrary = currentAuthLibrary;
+				currentLibraryAccounts.push(account);
+				await this.addAccountWithoutPrompt(account);
+			}
+		}
+		return currentLibraryAccounts;
+	}
+
+	public findAccountIndex(accounts: azdata.Account[], accountToFind: azdata.Account): number {
+		let indexToRemove: number = accounts.findIndex(account => {
+			// corner case handling for personal accounts
+			if (account.key.accountId.includes('#') || accountToFind.key.accountId.includes('#')) {
+				return account.displayInfo.email === accountToFind.displayInfo.email;
+			}
+			// MSAL account added
+			if (accountToFind.key.accountId.includes('.')) {
+				return account.key.accountId === accountToFind!.key.accountId.split('.')[0];
+			}
+			// ADAL account added
+			if (account.key.accountId.includes('.')) {
+				return account.key.accountId.split('.')[0] === accountToFind!.key.accountId;
+			}
+			return account.key.accountId === accountToFind!.key.accountId;
+		});
+		return indexToRemove;
 	}
 }
 

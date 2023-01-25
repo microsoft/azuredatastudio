@@ -54,6 +54,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 
 	const registerCommandStartTime = new Date().getTime();
 	context.subscriptions.push(vscode.commands.registerCommand('projects.new', async () => {
+		// Make sure all project providing extensions are activated to be sure the project templates show up
+		await workspaceService.ensureProviderExtensionLoaded(undefined, true);
+
 		if (azdataApi) {
 			const dialog = new NewProjectDialog(workspaceService);
 			await dialog.open();
@@ -63,6 +66,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('projects.openExisting', async () => {
+		// Make sure all project providing extensions are activated so that all supported project types show up in the file filter
+		await workspaceService.ensureProviderExtensionLoaded(undefined, true);
+
 		if (azdataApi) {
 			const dialog = new OpenExistingDialog(workspaceService);
 			await dialog.open();

@@ -95,10 +95,6 @@
     },
     "commands": [
       {
-        "command": "notebook.command.analyzeNotebook",
-        "title": "%notebook.analyzeJupyterNotebook%"
-      },
-      {
         "command": "notebook.command.open",
         "title": "%notebook.command.open%"
       },
@@ -127,10 +123,6 @@
         "command": "notebook.command.addcell",
         "title": "%notebook.command.addcell%",
         "icon": "resources/dark/touchbar_add_cell.png"
-      },
-      {
-        "command": "jupyter.cmd.analyzeNotebook",
-        "title": "%title.analyzeJupyterNotebook%"
       },
       {
         "command": "jupyter.task.newNotebook",
@@ -335,10 +327,6 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "notebook.command.analyzeNotebook",
-          "when": "false"
-        },
-        {
           "command": "notebook.command.open"
         },
         {
@@ -371,10 +359,6 @@
         },
         {
           "command": "jupyter.cmd.newNotebook",
-          "when": "false"
-        },
-        {
-          "command": "jupyter.cmd.analyzeNotebook",
           "when": "false"
         },
         {
@@ -484,18 +468,6 @@
           "command": "notebook.command.addcell",
           "when": "activeEditor == workbench.editor.notebookEditor",
           "group": "1_notebook@2"
-        }
-      ],
-      "objectExplorer/item/context": [
-        {
-          "command": "notebook.command.analyzeNotebook",
-          "when": "nodeType=~/^mssqlCluster/ && nodeLabel=~/[^\\s]+(\\.(csv|tsv|txt))$/ && nodeType == mssqlCluster:file",
-          "group": "1notebook@1"
-        },
-        {
-          "command": "jupyter.cmd.analyzeNotebook",
-          "when": "nodeType=~/^hdfs/ && nodeLabel=~/[^\\s]+(\\.(csv|tsv|txt))$/ && nodeType == hdfs:file",
-          "group": "1notebook@1"
         }
       ],
       "view/item/context": [
@@ -671,14 +643,6 @@
         ]
       },
       {
-        "magic": "lang_r",
-        "language": "r",
-        "executionTarget": null,
-        "kernels": [
-          "sql"
-        ]
-      },
-      {
         "magic": "lang_java",
         "language": "java",
         "executionTarget": null,
@@ -694,39 +658,6 @@
           ".ipynb"
         ],
         "standardKernels": [
-          {
-            "name": "pysparkkernel",
-            "displayName": "PySpark",
-            "connectionProviderIds": [
-              "MSSQL"
-            ],
-            "blockedOnSAW": true,
-            "supportedLanguages": [
-              "python"
-            ]
-          },
-          {
-            "name": "sparkkernel",
-            "displayName": "Spark | Scala",
-            "connectionProviderIds": [
-              "MSSQL"
-            ],
-            "supportedLanguages": [
-              "scala"
-            ],
-            "blockedOnSAW": true
-          },
-          {
-            "name": "sparkrkernel",
-            "displayName": "Spark | R",
-            "connectionProviderIds": [
-              "MSSQL"
-            ],
-            "supportedLanguages": [
-              "r"
-            ],
-            "blockedOnSAW": true
-          },
           {
             "name": "python3",
             "displayName": "Python 3",
@@ -749,7 +680,7 @@
   },
   "dependencies": {
     "@jupyterlab/services": "^3.2.1",
-    "@microsoft/ads-extension-telemetry": "^1.3.1",
+    "@microsoft/ads-extension-telemetry": "^1.3.2",
     "adm-zip": "^0.4.14",
     "error-ex": "^1.3.1",
     "fast-glob": "^3.1.0",

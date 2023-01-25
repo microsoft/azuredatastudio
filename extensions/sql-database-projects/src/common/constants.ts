@@ -79,6 +79,7 @@ export const refreshDataWorkspaceCommand = 'dataworkspace.refresh';
 // UI Strings
 export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources");
 export const databaseReferencesNodeName = localize('databaseReferencesNodeName', "Database References");
+export const sqlcmdVariablesNodeName = localize('sqlcmdVariablesNodeName', "SQLCMD Variables");
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
 export const yesString = localize('yesString', "Yes");
 export const openEulaString = localize('openEulaString', "Open License Agreement");
@@ -282,6 +283,7 @@ export const databaseNameServerNameVariableRequired = localize('databaseNameServ
 export const otherServer = 'OtherServer';
 export const otherSeverVariable = 'OtherServer';
 export const databaseProject = localize('databaseProject', "Database project");
+export const dacpacMustBeOnSameDrive = localize('dacpacNotOnSameDrive', "Dacpac references need to be located on the same drive as the project file.");
 export const dacpacNotOnSameDrive = (projectLocation: string): string => { return localize('dacpacNotOnSameDrive', "Dacpac references need to be located on the same drive as the project file. The project file is located at {0}", projectLocation); };
 export const referenceType = localize('referenceType', "Reference type");
 
@@ -552,6 +554,8 @@ export enum DatabaseProjectItemType {
 	referencesRoot = 'databaseProject.itemType.referencesRoot',
 	reference = 'databaseProject.itemType.reference',
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
+	sqlcmdVariablesRoot = 'databaseProject.itemType.sqlcmdVariablesRoot',
+	sqlcmdVariable = 'databaseProject.itemType.sqlcmdVariable'
 }
 
 // AutoRest

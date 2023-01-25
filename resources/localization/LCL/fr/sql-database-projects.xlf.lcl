@@ -14,12 +14,12 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) firmation" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.]]></Val>
+            <Val><![CDATA[Currently installed .NET SDK version is {0}, which is not supported. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK supported version location in settings if already installed.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[La version du SDK .NET Core actuellement installée est {0}, ce qui n'est pas pris en charge. La construction du projet ne fonctionnera pas. Veuillez installer .NET Core SDK version 3.1 ou supérieure ou mettre à jour l'emplacement de la version supportée de .NET SDK dans les paramètres s'il est déjà installé.]]></Val>
+              <Val><![CDATA[La version du SDK .NET actuellement installée est {0}, ce qui n'est pas pris en charge. La construction du projet ne fonctionnera pas. Veuillez installer le Kit de développement logiciel (SDK) .NET 6 ou supérieure ou mettre à jour l'emplacement de la version supportée de .NET SDK dans les paramètres s'il est déjà installé.]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.]]></Val>
+              <Val><![CDATA[Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />
@@ -615,10 +615,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.dacpacNotOnSameDrive" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Dacpac references need to be located on the same drive as the project file. The project file is located at {0}]]></Val>
+          <Val><![CDATA[Dacpac references need to be located on the same drive as the project file.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Les références dacpac doivent se trouver sur le même lecteur que le fichier projet. Le fichier projet se trouve à {0}]]></Val>
+            <Val><![CDATA[Les références DACPAC doivent se trouver sur le même lecteur que le fichier projet.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Dacpac references need to be located on the same drive as the project file. The project file is located at {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2814,10 +2817,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.sqlDatabaseProjects.DotnetInstallationConfirmation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.]]></Val>
+          <Val><![CDATA[The .NET SDK cannot be located. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK location in settings if already installed.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Impossible de localiser le kit SDK .NET La génération du projet ne fonctionnera pas. Installez kit SDK .NET version 3.1 ou supérieur ou mettez à jour l’emplacement du kit de développement logiciel (SDK) .Net Core dans les paramètres, s’il est déjà installé.]]></Val>
+            <Val><![CDATA[Impossible de localiser le kit SDK .NET La génération du projet ne fonctionnera pas. Installez le Kit de développement logiciel (SDK) .NET 6 ou supérieur ou mettez à jour l’emplacement du kit de développement logiciel (SDK) .Net Core dans les paramètres, s’il est déjà installé.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3327,10 +3333,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.generateProjectFromOpenApiSpec" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Generate SQL Project from OpenAPI/Swagger spec]]></Val>
+          <Val><![CDATA[Generate SQL Project from OpenAPI/Swagger spec (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Générer un projet SQL à partir de OpenAPI/Swagger spec]]></Val>
+            <Val><![CDATA[Générer un projet SQL à partir de OpenAPI/Swagger spec (préversion)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Generate SQL Project from OpenAPI/Swagger spec]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3348,10 +3357,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.netCoreDoNotAsk" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Whether to prompt the user to install .NET Core when not detected.]]></Val>
+          <Val><![CDATA[Whether to prompt the user to install .NET SDK when not detected.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Indique si l’utilisateur doit être invité à installer .NET Core quand il n’est pas détecté.]]></Val>
+            <Val><![CDATA[Indique si l’utilisateur doit être invité à installer le Kit de développement logiciel (SDK) .NET quand il n’est pas détecté.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Whether to prompt the user to install .NET Core when not detected.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

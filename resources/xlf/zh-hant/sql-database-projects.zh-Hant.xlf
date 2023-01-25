@@ -247,8 +247,8 @@
         <target state="translated">dacpac 檔案</target>
       </trans-unit>
       <trans-unit id="dacpacNotOnSameDrive">
-        <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
-        <target state="translated">Dacpac 參考必須位於與專案檔相同的磁碟機上。專案檔位於 {0}</target>
+        <source xml:lang="en">Dacpac references need to be located on the same drive as the project file.</source>
+        <target state="translated">Dacpac 參考必須位於與專案檔相同的磁碟機上。</target>
       </trans-unit>
       <trans-unit id="dacpacReferenceElement">
         <source xml:lang="en">Dacpac reference</source>
@@ -976,13 +976,17 @@
         <source xml:lang="en">Publish to new {0} local development container</source>
         <target state="translated">發佈到新的 {0} 本機開發容器</target>
       </trans-unit>
+      <trans-unit id="publishToDockerContainerPreview">
+        <source xml:lang="en">Publish to new {0} local development container (Preview)</source>
+        <target state="translated">發佈到新的 {0} 本機開發容器 (預覽)</target>
+      </trans-unit>
       <trans-unit id="publishToExistingServer">
         <source xml:lang="en">Publish to an existing {0}</source>
         <target state="translated">發佈到現有的 {0}</target>
       </trans-unit>
       <trans-unit id="publishToNewAzureServer">
-        <source xml:lang="en">Publish to new Azure SQL logical server</source>
-        <target state="translated">發佈到新的 Azure SQL 邏輯伺服器</target>
+        <source xml:lang="en">Publish to new Azure SQL logical server (Preview)</source>
+        <target state="translated">發佈到新的 Azure SQL 邏輯伺服器 (預覽)</target>
       </trans-unit>
       <trans-unit id="publishToNewAzureServerFailed">
         <source xml:lang="en">Failed to publish to new Azure SQL server. {0}</source>
@@ -1193,16 +1197,16 @@
         <target state="translated">SQL 連接字串</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.DotnetInstallationConfirmation">
-        <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.</source>
-        <target state="translated">找不到 .NET SDK。專案組建將無法運作。請安裝 .NET Core SDK 3.1 版或更新版本，或在設定中更新 .NET SDK 位置 (如果已安裝)。</target>
+        <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK location in settings if already installed.</source>
+        <target state="translated">找不到 .NET SDK。專案組建將無法運作。請安裝 .NET 6 SDK 或更新版本，或在設定中更新 .NET SDK 位置 (如果已安裝)。</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.Install">
         <source xml:lang="en">Install</source>
         <target state="translated">安裝</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
-        <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.</source>
-        <target state="translated">目前安裝的 .NET Core SDK 版本是 {0}，但不支援此版本。專案組建將無法運作。請安裝 .NET Core SDK 3.1 版或更新版本，或在設定中更新 .NET SDK 支援的版本位置 (如果已安裝)。</target>
+        <source xml:lang="en">Currently installed .NET SDK version is {0}, which is not supported. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK supported version location in settings if already installed.</source>
+        <target state="translated">目前安裝的 .NET SDK 版本是 {0}，但不支援此版本。專案組建將無法運作。請安裝 .NET 6 SDK 或更新版本，或在設定中更新 .NET SDK 支援的版本位置 (如果已安裝)。</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.UpdateDotnetLocation">
         <source xml:lang="en">Update Location</source>
@@ -1425,28 +1429,32 @@
         <target state="translated">資料庫專案</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.dotnetInstallLocation">
-        <source xml:lang="en">Full path to .NET SDK on the machine.</source>
-        <target state="translated">電腦上 .NET SDK 的完整路徑。</target>
+        <source xml:lang="en">Full path to .NET SDK on the machine. For example, if dotnet.exe is located at C:\folder1\dotnet\dotnet.exe, set the path for this setting to C:\folder1\dotnet</source>
+        <target state="translated">電腦上 .NET SDK 的完整路徑。例如，如果 dotnet.exe 位於 C:\folder1\dotnet\dotnet.exe，請將此設定的路徑設定為 C:\folder1\dotnet</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.editProjectFile">
         <source xml:lang="en">Edit .sqlproj File</source>
         <target state="translated">編輯 .sqlproj 檔</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.enablePreviewFeatures">
+        <source xml:lang="en">Enable preview SQL Database Projects features</source>
+        <target state="translated">啟用預覽 SQL 資料庫專案功能</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.exclude">
         <source xml:lang="en">Exclude from project</source>
         <target state="translated">從專案中排除</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.generateProjectFromOpenApiSpec">
-        <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec</source>
-        <target state="translated">透過 OpenAPI/Swagger 規格產生 SQL 專案</target>
+        <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec (Preview)</source>
+        <target state="translated">透過 OpenAPI/Swagger 規格產生 SQL 專案 (預覽)</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.microsoftBuildSqlVersion">
-        <source xml:lang="en">Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.3-preview</source>
-        <target state="translated">要用於建置舊版 SQL 專案的 Microsoft.Build.Sql SDK 版本。範例: 0.1.3-預覽</target>
+        <source xml:lang="en">Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.7-preview</source>
+        <target state="translated">要用於建置舊版 SQL 專案的 Microsoft.Build.Sql SDK 版本。範例: 0.1.7-預覽</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
-        <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
-        <target state="translated">是否在未偵測到時提示使用者安裝 .NET Core。</target>
+        <source xml:lang="en">Whether to prompt the user to install .NET SDK when not detected.</source>
+        <target state="translated">是否在未偵測到時提示使用者安裝 .NET SDK。</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.new">
         <source xml:lang="en">New Database Project</source>

@@ -120,6 +120,11 @@ export interface IConnectionManagementService {
 	connectAndSaveProfile(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult>;
 
 	/**
+	 * Changes password of the connection profile's user.
+	 */
+	changePassword(connection: IConnectionProfile, uri: string, newPassword: string): Promise<azdata.PasswordChangeResult>;
+
+	/**
 	 * Replaces a connectioninfo's associated uri with a new uri.
 	 */
 	changeConnectionUri(newUri: string, oldUri: string): void
@@ -197,7 +202,7 @@ export interface IConnectionManagementService {
 
 	disconnect(ownerUri: string): Promise<void>;
 
-	addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile>;
+	addSavedPassword(connectionProfile: IConnectionProfile, skipAccessToken?: boolean): Promise<IConnectionProfile>;
 
 	listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult | undefined>;
 

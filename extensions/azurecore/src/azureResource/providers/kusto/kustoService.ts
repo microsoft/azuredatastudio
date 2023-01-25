@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { azureResource } from 'azurecore';
+import { kustoClusterQuery } from '../queryStringConstants';
 import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
 
 export interface KustoGraphData extends GraphData {
@@ -14,12 +15,10 @@ export interface KustoGraphData extends GraphData {
 	};
 }
 
-const instanceQuery = `where type == "${azureResource.AzureResourceType.kustoClusters}"`;
-
 export class KustoResourceService extends ResourceServiceBase<KustoGraphData, azureResource.AzureResourceDatabaseServer> {
 
 	protected get query(): string {
-		return instanceQuery;
+		return kustoClusterQuery;
 	}
 
 	protected convertResource(resource: KustoGraphData): azureResource.AzureResourceDatabaseServer {

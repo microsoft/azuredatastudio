@@ -1620,6 +1620,9 @@ Default Skipped Commands:
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/connection/common/connectionProviderExtension" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="schema.azureResource">
+      <source xml:lang="en">Azure resource endpoint for the provider.</source>
+    </trans-unit>
     <trans-unit id="schema.connectionOptions">
       <source xml:lang="en">Options for connection</source>
     </trans-unit>
@@ -4049,7 +4052,7 @@ Error: {1}</source>
 </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="copyFailed">
-      <source xml:lang="en">Copy failed with error {0}</source>
+      <source xml:lang="en">Copy failed with error: {0}</source>
     </trans-unit>
     <trans-unit id="notebook.showChart">
       <source xml:lang="en">Show chart</source>
@@ -4261,6 +4264,9 @@ Error: {1}</source>
     <trans-unit id="chart">
       <source xml:lang="en">Chart</source>
     </trans-unit>
+    <trans-unit id="copyHeaders">
+      <source xml:lang="en">Copy Headers</source>
+    </trans-unit>
     <trans-unit id="copySelection">
       <source xml:lang="en">Copy</source>
     </trans-unit>
@@ -4466,6 +4472,9 @@ Error: {1}</source>
     <trans-unit id="queryEditor.results.saveAsXml.formatted">
       <source xml:lang="en">When true, XML output will be formatted when saving results as XML</source>
     </trans-unit>
+    <trans-unit id="queryEditor.results.showActionBar">
+      <source xml:lang="en">Whether to show the action bar in the query results view</source>
+    </trans-unit>
     <trans-unit id="queryEditor.results.streaming">
       <source xml:lang="en">Enable results streaming; contains few minor visual issues</source>
     </trans-unit>
@@ -4584,6 +4593,12 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="status.query.summaryText">
       <source xml:lang="en">Average: {0}  Count: {1}  Sum: {2}</source>
+    </trans-unit>
+    <trans-unit id="status.query.summaryTextNonNumeric">
+      <source xml:lang="en">Count: {0}  Distinct Count: {1}  Null Count: {2}</source>
+    </trans-unit>
+    <trans-unit id="status.query.summaryTooltip">
+      <source xml:lang="en">Average: {0}  Count: {1}  Distinct Count: {2}  Max: {3}  Min: {4}  Null Count: {5}  Sum: {6}</source>
     </trans-unit>
     <trans-unit id="status.query.timeElapsed">
       <source xml:lang="en">Time Elapsed</source>
@@ -5541,6 +5556,35 @@ Error: {1}</source>
       <source xml:lang="en">Unsaved Connections</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/connection/browser/passwordChangeDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="passwordChangeDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.confirmPassword">
+      <source xml:lang="en">Confirm password:</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.connecting">
+      <source xml:lang="en">Connecting</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.errorHeader">
+      <source xml:lang="en">Failure when attempting to change password</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.errorPasswordMismatchErrorMessage">
+      <source xml:lang="en">Passwords entered do not match</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.errorPasswordMismatchRecoveryInstructions">
+      <source xml:lang="en">Press OK and enter the exact same password in both boxes.</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.newPassword">
+      <source xml:lang="en">New password:</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.ok">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.title">
+      <source xml:lang="en">Change Password</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl" source-language="en" datatype="plaintext"><body>
     <trans-unit id="newDashboardTab.cancel">
       <source xml:lang="en">Cancel</source>
@@ -5867,6 +5911,9 @@ Error: {1}</source>
     <trans-unit id="kernelRequiresConnection">
       <source xml:lang="en">Please select a connection to run cells for this kernel</source>
     </trans-unit>
+    <trans-unit id="savedKernelNotSupported">
+      <source xml:lang="en">This notebook's '{0}' kernel is not supported. Defaulting to SQL kernel instead.</source>
+    </trans-unit>
     <trans-unit id="shutdownClientSessionError">
       <source xml:lang="en">A client session error occurred when closing the notebook: {0}</source>
     </trans-unit>
@@ -5948,13 +5995,13 @@ Error: {1}</source>
 </body></file>
   <file original="src/sql/workbench/services/notebook/common/notebookRegistry" source-language="en" datatype="plaintext"><body>
     <trans-unit id="carbon.extension.contributes.notebook.executionTarget">
-      <source xml:lang="en">Optional execution target this magic indicates, for example Spark vs SQL</source>
+      <source xml:lang="en">Optional execution target this magic indicates, for example Python vs SQL</source>
     </trans-unit>
     <trans-unit id="carbon.extension.contributes.notebook.fileExtensions">
       <source xml:lang="en">What file extensions should be registered to this notebook provider</source>
     </trans-unit>
     <trans-unit id="carbon.extension.contributes.notebook.kernels">
-      <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, pyspark, sql</source>
+      <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, sql</source>
     </trans-unit>
     <trans-unit id="carbon.extension.contributes.notebook.language">
       <source xml:lang="en">The cell language to be used if this cell magic is included in the cell</source>
@@ -6000,8 +6047,20 @@ Error: {1}</source>
     <trans-unit id="deleteConnection">
       <source xml:lang="en">Delete Connection</source>
     </trans-unit>
+    <trans-unit id="deleteConnectionConfirmation">
+      <source xml:lang="en">Are you sure you want to delete connection '{0}'?</source>
+    </trans-unit>
+    <trans-unit id="deleteConnectionConfirmationNo">
+      <source xml:lang="en">No</source>
+    </trans-unit>
+    <trans-unit id="deleteConnectionConfirmationYes">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
     <trans-unit id="deleteConnectionGroup">
       <source xml:lang="en">Delete Group</source>
+    </trans-unit>
+    <trans-unit id="deleteConnectionGroupConfirmation">
+      <source xml:lang="en">Are you sure you want to delete connection group '{0}'?</source>
     </trans-unit>
     <trans-unit id="showAllConnections">
       <source xml:lang="en">Show All Connections</source>
@@ -6143,7 +6202,7 @@ Error: {1}</source>
 </body></file>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext"><body>
     <trans-unit id="copyFailed">
-      <source xml:lang="en">Copy failed with error {0}</source>
+      <source xml:lang="en">Copy failed with error: {0}</source>
     </trans-unit>
     <trans-unit id="elapsedBatchTime">
       <source xml:lang="en">Batch execution time: {0}</source>
@@ -6215,11 +6274,14 @@ Error: {1}</source>
     <trans-unit id="firewall.ok">
       <source xml:lang="en">OK</source>
     </trans-unit>
-    <trans-unit id="firewallRuleDialogDescription">
-      <source xml:lang="en">Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.</source>
+    <trans-unit id="firewall.ruleName">
+      <source xml:lang="en">Rule name</source>
     </trans-unit>
-    <trans-unit id="firewallRuleHelpDescription">
-      <source xml:lang="en">Learn more about firewall settings</source>
+    <trans-unit id="firewallRuleDescription">
+      <source xml:lang="en">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</source>
+    </trans-unit>
+    <trans-unit id="firewallRuleHelpLink">
+      <source xml:lang="en">Learn more about firewall rules</source>
     </trans-unit>
     <trans-unit id="from">
       <source xml:lang="en">From</source>

@@ -17,9 +17,9 @@ import { AzureResourceServiceNames } from './constants';
 import { AzureAccount, Tenant, azureResource } from 'azurecore';
 import { FlatAccountTreeNode } from './tree/flatAccountTreeNode';
 import { ConnectionDialogTreeProvider } from './tree/connectionDialogTreeProvider';
-import { AzureResourceErrorMessageUtil } from './utils';
+import { AzureResourceErrorMessageUtil, filterAccounts } from './utils';
 
-export function registerAzureResourceCommands(appContext: AppContext, azureViewTree: AzureResourceTreeProvider, connectionDialogTree: ConnectionDialogTreeProvider): void {
+export function registerAzureResourceCommands(appContext: AppContext, azureViewTree: AzureResourceTreeProvider, connectionDialogTree: ConnectionDialogTreeProvider, authLibrary: string): void {
 	const trees = [azureViewTree, connectionDialogTree];
 	vscode.commands.registerCommand('azure.resource.startterminal', async (node?: TreeNode) => {
 		try {
@@ -33,7 +33,7 @@ export function registerAzureResourceCommands(appContext: AppContext, azureViewT
 			if (node instanceof AzureResourceAccountTreeNode) {
 				azureAccount = node.account;
 			} else {
-				let accounts = await azdata.accounts.getAllAccounts();
+				let accounts = filterAccounts(await azdata.accounts.getAllAccounts(), authLibrary);
 				accounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 				if (accounts.length === 0) {
 					const signin = localize('azure.signIn', "Sign in");

@@ -5,6 +5,7 @@
 
 import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
+import { Schemas } from 'vs/base/common/network';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
 import { isWindows } from 'vs/base/common/platform';
@@ -51,7 +52,7 @@ export class NotebookLinkHandler {
 			this.isAbsolutePath = this._link.attributes['is-absolute']?.nodeValue === 'true' ? true : false;
 			this.isMarkdown = this._link.attributes['is-markdown']?.nodeValue === 'true' ? true : false;
 			this.isEncoded = this._link.attributes['is-encoded']?.nodeValue === 'true' ? true : false;
-			this._isFile = this._link.protocol === 'file:';
+			this._isFile = this._link.protocol === `${Schemas.file}:` || this._link.protocol === `${Schemas.vscodeFileResource}:`;
 			// Given an anchor element for windows href link will need to use nodeValue instead as that does not encode the url
 			if (isWindows) {
 				this._href = this.isMarkdown || this.isEncoded ? this._link.href?.replace(/%5C/g, '\\') : this._link.attributes['href']?.nodeValue;

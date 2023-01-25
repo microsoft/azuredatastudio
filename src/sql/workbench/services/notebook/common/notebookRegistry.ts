@@ -86,11 +86,11 @@ let notebookLanguageMagicType: IJSONSchema = {
 			type: 'string'
 		},
 		executionTarget: {
-			description: localize('carbon.extension.contributes.notebook.executionTarget', "Optional execution target this magic indicates, for example Spark vs SQL"),
+			description: localize('carbon.extension.contributes.notebook.executionTarget', "Optional execution target this magic indicates, for example Python vs SQL"),
 			type: 'string'
 		},
 		kernels: {
-			description: localize('carbon.extension.contributes.notebook.kernels', "Optional set of kernels this is valid for, e.g. python3, pyspark, sql"),
+			description: localize('carbon.extension.contributes.notebook.kernels', "Optional set of kernels this is valid for, e.g. python3, sql"),
 			type: 'array',
 			items: {
 				type: 'string'

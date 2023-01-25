@@ -50,10 +50,11 @@ import { Tenant, TenantListDelegate, TenantListRenderer } from 'sql/workbench/se
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
 export const VIEWLET_ID = 'workbench.view.accountpanel';
+export type AuthLibrary = 'ADAL' | 'MSAL';
+export const MSAL_AUTH_LIBRARY: AuthLibrary = 'MSAL'; // default
+export const ADAL_AUTH_LIBRARY: AuthLibrary = 'ADAL';
 
-export class AccountPaneContainer extends ViewPaneContainer {
-
-}
+export class AccountPaneContainer extends ViewPaneContainer { }
 
 export const ACCOUNT_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
@@ -376,9 +377,14 @@ export class AccountDialog extends Modal {
 		this._splitView!.layout(DOM.getContentHeight(this._container!));
 
 		// Set the initial items of the list
-		providerView.updateAccounts(newProvider.initialAccounts);
+		const authLibrary: AuthLibrary = this._configurationService.getValue('azure.authenticationLibrary');
+		let updatedAccounts: azdata.Account[];
+		if (authLibrary) {
+			updatedAccounts = filterAccounts(newProvider.initialAccounts, authLibrary);
+		}
+		providerView.updateAccounts(updatedAccounts);
 
-		if (newProvider.initialAccounts.length > 0 && this._splitViewContainer!.hidden) {
+		if (updatedAccounts.length > 0 && this._splitViewContainer!.hidden) {
 			this.showSplitView();
 		}
 
@@ -413,7 +419,12 @@ export class AccountDialog extends Modal {
 		if (!providerMapping || !providerMapping.view) {
 			return;
 		}
-		providerMapping.view.updateAccounts(args.accountList);
+		const authLibrary: AuthLibrary = this._configurationService.getValue('azure.authenticationLibrary');
+		let updatedAccounts: azdata.Account[];
+		if (authLibrary) {
+			updatedAccounts = filterAccounts(args.accountList, authLibrary);
+		}
+		providerMapping.view.updateAccounts(updatedAccounts);
 
 		if (args.accountList.length > 0 && this._splitViewContainer!.hidden) {
 			this.showSplitView();
@@ -479,4 +490,19 @@ export class AccountDialog extends Modal {
 
 		v.addAccountAction.run();
 	}
+}
+
+// Filter accounts based on currently selected Auth Library:
+// if the account key is present, filter based on current auth library
+// if there is no account key (pre-MSAL account), then it is an ADAL account and
+// should be displayed as long as ADAL is the currently selected auth library
+export function filterAccounts(accounts: azdata.Account[], authLibrary: AuthLibrary): azdata.Account[] {
+	let filteredAccounts = accounts.filter(account => {
+		if (account.key.authLibrary) {
+			return account.key.authLibrary === authLibrary;
+		} else {
+			return authLibrary === ADAL_AUTH_LIBRARY;
+		}
+	});
+	return filteredAccounts;
 }

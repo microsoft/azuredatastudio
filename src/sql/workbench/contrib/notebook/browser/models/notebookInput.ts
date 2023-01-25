@@ -257,6 +257,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		this._notebookEditorOpenedTimestamp = Date.now();
 		if (this._textInput) {
 			this.hookDirtyListener(this._textInput.onDidChangeDirty, () => this._onDidChangeDirty.fire());
+			this._register(this._textInput);
 		}
 	}
 

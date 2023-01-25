@@ -8,7 +8,7 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"out/common/constants": {
+		"dist/common/constants": {
 			"flatFile.InvalidFileLocation": "Недопустимое расположение файла. Попробуйте другой входной файл.",
 			"flatFileImport.allowNulls": "Разрешить значения NULL",
 			"flatFileImport.browseFiles": "Обзор",
@@ -59,7 +59,7 @@
 			"import.serviceCrashButton": "Оставить отзыв",
 			"serviceCrashMessage": "Не удалось запустить компонент службы"
 		},
-		"out/services/serviceClient": {
+		"dist/services/serviceClient": {
 			"downloadingService": "Идет загрузка {0}",
 			"downloadingServiceComplete": "Скачивание {0} завершено",
 			"downloadingServiceSize": "({0} КБ)",

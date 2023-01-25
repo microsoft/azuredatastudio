@@ -9,24 +9,27 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 ## **Download the latest Azure Data Studio release**
 
 |Platform |Type             |Download |
-| --------|-----------------|-------- |
-|Windows  |User Installer   |[64 bit][win-user] |
-|         |System Installer |[64 bit][win-system] |
-|         |.zip             |[64 bit][win-zip] |
+| --------|-----------------|----------------------- |
+|Windows  |User Installer   |[64 bit][win-user]&emsp;[ARM][win-user-arm64] |
+|         |System Installer |[64 bit][win-system]&emsp;[ARM][win-system-arm64] |
+|         |.zip             |[64 bit][win-zip]&emsp;[ARM][win-zip-arm64] |
 |Linux    |.tar.gz          |[64 bit][linux-zip] |
 |         |.deb             |[64 bit][linux-deb] |
 |         |.rpm             |[64 bit][linux-rpm] |
-|Mac      |.zip             |[Universal][osx-universal]&emsp;[Intel Chip][osx-zip]&emsp;[Apple Silicon][osx-arm64]|
+|Mac      |.zip             |[Universal][osx-universal]&emsp;[Intel Chip][osx-zip]&emsp;[Apple Silicon][osx-arm64] |
 
-[win-user]: https://go.microsoft.com/fwlink/?linkid=2215273
-[win-system]: https://go.microsoft.com/fwlink/?linkid=2215525
-[win-zip]: https://go.microsoft.com/fwlink/?linkid=2215526
-[osx-universal]: https://go.microsoft.com/fwlink/?linkid=2215527
-[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2215420
-[osx-arm64]: https://go.microsoft.com/fwlink/?linkid=2215346
-[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2215421
-[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2215347
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2215528
+[win-user]: https://go.microsoft.com/fwlink/?linkid=2222768
+[win-system]: https://go.microsoft.com/fwlink/?linkid=2222769
+[win-zip]: https://go.microsoft.com/fwlink/?linkid=2223104
+[win-user-arm64]: https://go.microsoft.com/fwlink/?linkid=2222660
+[win-system-arm64]: https://go.microsoft.com/fwlink/?linkid=2222849
+[win-zip-arm64]: https://go.microsoft.com/fwlink/?linkid=2222850
+[osx-universal]: https://go.microsoft.com/fwlink/?linkid=2222873
+[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2222874
+[osx-arm64]: https://go.microsoft.com/fwlink/?linkid=2222680
+[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2222918
+[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2223105
+[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2222875
 
 Go to our [download page](https://aka.ms/getazuredatastudio) for more specific instructions.
 

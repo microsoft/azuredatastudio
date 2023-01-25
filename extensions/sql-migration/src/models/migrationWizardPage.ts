@@ -5,6 +5,8 @@
 
 import * as azdata from 'azdata';
 import { MigrationStateModel, StateChangeEvent } from './stateMachine';
+import { ShowStatusMessageDialog } from '../dialog/generic/genericDialogs';
+
 export abstract class MigrationWizardPage {
 	constructor(
 		protected readonly wizard: azdata.window.Wizard,
@@ -79,5 +81,13 @@ export abstract class MigrationWizardPage {
 	protected async goToNextPage(): Promise<void> {
 		const current = this.wizard.currentPage;
 		await this.wizard.setCurrentPage(current + 1);
+	}
+
+	protected showDialogMessage(
+		title: string,
+		statusMessage: string,
+		errorMessage: string,
+	): void {
+		ShowStatusMessageDialog(title, statusMessage, errorMessage);
 	}
 }
