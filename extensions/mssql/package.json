@@ -849,7 +849,7 @@
           "showOnConnectionDialog": true,
           "onSelectionChange": [
             {
-              "onSelectedValues": ["strict"],
+              "values": ["strict"],
               "dependentOptionActions": [
                 {
                   "optionName": "trustServerCertificate",

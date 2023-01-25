@@ -483,18 +483,35 @@ declare module 'azdata' {
 		showOnConnectionDialog?: boolean;
 
 		/**
-		 * Used to define list of options and their values based on which this option is rendered visible.
+		 * Used to define list of values based on which another option is rendered visible/hidden.
 		 */
 		onSelectionChange?: SelectionChangeEvent[];
 	}
 
+	/**
+	 * This change event defines actions
+	 */
 	export interface SelectionChangeEvent {
+		/**
+		 * Values that affect actions defined in this event.
+		 */
 		values: string[];
+
+		/**
+		 * Action to be taken on another option when selected value matches to the list of values provided.
+		 */
 		dependentOptionActions: DependentOptionAction[];
 	}
 
 	export interface DependentOptionAction {
+		/**
+		 * Name of option affected by defined action.
+		 */
 		optionName: string,
+
+		/**
+		 * Action to be taken, Supported values: 'show', 'hide'.
+		 */
 		action: string;
 	}
 
