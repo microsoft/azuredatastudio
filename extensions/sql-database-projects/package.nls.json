@@ -29,6 +29,7 @@
 	"sqlDatabaseProjects.newFolder": "Add Folder",
 
 	"sqlDatabaseProjects.addDatabaseReference": "Add Database Reference",
+	"sqlDatabaseProjects.addSqlCmdVariable": "Add SQLCMD Variable",
 	"sqlDatabaseProjects.openContainingFolder": "Open Containing Folder",
 	"sqlDatabaseProjects.editProjectFile": "Edit .sqlproj File",
 	"sqlDatabaseProjects.changeTargetPlatform": "Change Target Platform",

@@ -203,8 +203,13 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.editSqlCmdVar",
+        "command": "sqlDatabaseProjects.editSqlCmdVariable",
         "title": "%sqlDatabaseProjects.edit%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.addSqlCmdVariable",
+        "title": "%sqlDatabaseProjects.addSqlCmdVariable%",
         "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
@@ -331,7 +336,11 @@
           "when": "config.workbench.enablePreviewFeatures || config.sqlDatabaseProjects.enablePreviewFeatures"
         },
         {
-          "command": "sqlDatabaseProjects.editSqlCmdVar",
+          "command": "sqlDatabaseProjects.editSqlCmdVariable",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.addSqlCmdVariable",
           "when": "false"
         }
       ],
@@ -452,9 +461,13 @@
           "group": "sqldbproj@1"
         },
         {
-          "command": "sqlDatabaseProjects.editSqlCmdVar",
+          "command": "sqlDatabaseProjects.editSqlCmdVariable",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.sqlcmdVariable",
           "group": "9_dbProjectsLast@1"
+        },
+        {
+          "command": "sqlDatabaseProjects.addSqlCmdVariable",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.sqlcmdVariablesRoot"
         }
       ],
       "objectExplorer/item/context": [

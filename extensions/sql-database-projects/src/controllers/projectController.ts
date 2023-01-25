@@ -43,12 +43,12 @@ import { AutorestHelper } from '../tools/autorestHelper';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
 import { ISqlDbDeployProfile } from '../models/deploy/deployProfile';
-import { FileProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
+import { FileProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
 import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updateProject';
 import { AzureSqlClient } from '../models/deploy/azureSqlClient';
 import { ConnectionService } from '../models/connections/connectionService';
 import { getPublishToDockerSettings } from '../dialogs/publishToDockerQuickpick';
-import { SqlCmdVariablesTreeItem } from '../models/tree/sqlcmdVariableTreeItem';
+import { SqlCmdVariableTreeItem } from '../models/tree/sqlcmdVariableTreeItem';
 
 const maxTableLength = 10;
 
@@ -787,6 +787,8 @@ export class ProjectsController {
 		let confirmationPrompt;
 		if (node instanceof DatabaseReferenceTreeItem) {
 			confirmationPrompt = constants.deleteReferenceConfirmation(node.friendlyName);
+		} else if (node instanceof SqlCmdVariableTreeItem) {
+			confirmationPrompt = constants.deleteSqlCmdVariableConfirmation(node.friendlyName);
 		} else if (node instanceof FolderNode) {
 			confirmationPrompt = constants.deleteConfirmationContents(node.friendlyName);
 		} else {
@@ -808,6 +810,8 @@ export class ProjectsController {
 				await project.deleteDatabaseReference(databaseReference);
 				success = true;
 			}
+		} else if (node instanceof SqlCmdVariableTreeItem) {
+			// TODO: handle deleting from project
 		} else if (node instanceof FileNode || FolderNode) {
 			const fileEntry = this.getFileProjectEntry(project, node);
 
@@ -833,7 +837,7 @@ export class ProjectsController {
 	}
 
 	public async editSqlCmdVariable(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
-		const node = context.element as SqlCmdVariablesTreeItem;
+		const node = context.element as SqlCmdVariableTreeItem;
 		const project = this.getProjectFromContext(node);
 		const originalValue = project.sqlCmdVariables[node.friendlyName]; // TODO: update to hookup with however sqlcmd vars work
 
@@ -845,6 +849,37 @@ export class ProjectsController {
 			});
 
 		// TODO: update value in sqlcmd variables
+		console.error('update new value to be ' + newValue);
+	}
+
+	public async addSqlCmdVariable(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const project = this.getProjectFromContext(context);
+
+		const variableName = await vscode.window.showInputBox(
+			{
+				title: constants.enterNewSqlCmdVariableName,
+				ignoreFocusOut: true,
+				validateInput: (value) => {
+					return this.sqlCmdVariableNameAlreadyExists(value, project) ? constants.sqlcmdVariableAlreadyExists : undefined;
+				}
+			});
+
+		if (!variableName) {
+			return;
+		}
+
+		const defaultValue = await vscode.window.showInputBox(
+			{
+				title: constants.enterNewSqlCmdVariableDefaultValue(variableName),
+				ignoreFocusOut: true
+			});
+
+		// TODO: add new sqlcmd variable to project
+		console.error(`adding new sqlcmd variable ${variableName} with value ${defaultValue}`);
+	}
+
+	private sqlCmdVariableNameAlreadyExists(newVariableName: string, project: Project): boolean {
+		return Object.keys(project.sqlCmdVariables).findIndex(v => v === newVariableName) !== -1;
 	}
 
 	private getDatabaseReference(project: Project, context: BaseProjectTreeItem): IDatabaseReferenceProjectEntry | undefined {
