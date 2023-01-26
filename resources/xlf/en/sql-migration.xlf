@@ -1873,6 +1873,27 @@ This may take some time.</source>
     <trans-unit id="sql.migration.starting.login.failed">
       <source xml:lang="en">Validating and migrating logins failed</source>
     </trans-unit>
+    <trans-unit id="sql.migration.starting.migration.dberror">
+      <source xml:lang="en">Error migrating certificate for database {0}. {1}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.starting.migration.error">
+      <source xml:lang="en">An error occurred while starting the certificate migration: '{0}'</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.state.canceled">
+      <source xml:lang="en">Canceled</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.state.failed">
+      <source xml:lang="en">Failed</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.state.pending">
+      <source xml:lang="en">Pending</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.state.running">
+      <source xml:lang="en">Running</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.state.succeeded">
+      <source xml:lang="en">Succeeded</source>
+    </trans-unit>
     <trans-unit id="sql.migration.status">
       <source xml:lang="en">Status</source>
     </trans-unit>
@@ -2082,6 +2103,114 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.target.version">
       <source xml:lang="en">Target version</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.button.caption">
+      <source xml:lang="en">Edit</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.button.migrate">
+      <source xml:lang="en">Migrate certificates</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.canceled">
+      <source xml:lang="en">Certificates migration was canceled. Please run and complete the certificates migration to continue.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.canceled.errors">
+      <source xml:lang="en">Validation was canceled with the following error(s):{0}{1}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.column.databases">
+      <source xml:lang="en">Databases</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.column.status">
+      <source xml:lang="en">Status</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.completed.errors">
+      <source xml:lang="en">Migration completed with the following error(s):{0}{1}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.copy.results">
+      <source xml:lang="en">Copy migration results</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.done.button">
+      <source xml:lang="en">Done</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.heading">
+      <source xml:lang="en">Migrating the certificates from the following databases:</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.not.run">
+      <source xml:lang="en">Certificates migration has not been run for the current configuration. Please run and complete the certificates migration to continue.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.results.heading">
+      <source xml:lang="en">Certificates migration progress details:</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.results.heading.completed">
+      <source xml:lang="en">Certificates migration results:</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.results.heading.previous">
+      <source xml:lang="en">Previous certificates migration results:</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.start.validation">
+      <source xml:lang="en">Retry migration</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.status.details">
+      <source xml:lang="en">Migration status: {0}{1}{2}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.status.error">
+      <source xml:lang="en">{0}{1}{2}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.success">
+      <source xml:lang="en">Certificates migration completed successfully.  Please click Next to proceed with the migration.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.validation.camceled">
+      <source xml:lang="en">Migration canceled</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.validation.completed">
+      <source xml:lang="en">Migration completed successfully.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.msg.databases.selected">
+      <source xml:lang="en">{0} Transparent Data Encryption enabled databases selected for migration. {1}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.msg.empty">
+      <source xml:lang="en">No encrypted database selected.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.msg.manual">
+      <source xml:lang="en">You have chosen to manually migrate certificates.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.msg.tde">
+      <source xml:lang="en">You have given access to Azure Data Studio to migrate the encryption certificates and database.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.progress.update">
+      <source xml:lang="en">{0} of {1} completed</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.databases.selected">
+      <source xml:lang="en">{0} out of {1} selected database(s) is using transparent data encryption.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.description">
+      <source xml:lang="en">To migrate an encrypted database successfully you need to provide access to the encryption certificates or migrate certificates manually before proceeding with the migration. {0}.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.network.share.info">
+      <source xml:lang="en">Network path where certificate will be placed.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.network.share.label">
+      <source xml:lang="en">Network path for certificate</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.network.share.placeholder">
+      <source xml:lang="en">Enter network path</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.optionads">
+      <source xml:lang="en">Export my certificates and private key to the target.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.optionadsconfirm">
+      <source xml:lang="en">I give consent to use my credentials for accessing the certificates.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.optionmanual">
+      <source xml:lang="en">I don't want Azure Data Studio to export the certificates.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.optionmanual.warning">
+      <source xml:lang="en">You must migrate the certificates before proceeding with the migration otherwise the migration will fail. {0}.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.optionscaption">
+      <source xml:lang="en">Certificate migration</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.title">
+      <source xml:lang="en">Encrypted database selected.</source>
     </trans-unit>
     <trans-unit id="sql.migration.test.connection">
       <source xml:lang="en">Test connection</source>

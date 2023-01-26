@@ -915,6 +915,9 @@
     <trans-unit id="sqlDatabaseProjects.outputChannel">
       <source xml:lang="en">Database Projects</source>
     </trans-unit>
+    <trans-unit id="sqlcmdVariablesNodeName">
+      <source xml:lang="en">SQLCMD Variables</source>
+    </trans-unit>
     <trans-unit id="storedProcedureFriendlyName">
       <source xml:lang="en">Stored Procedure</source>
     </trans-unit>
