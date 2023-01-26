@@ -610,6 +610,7 @@
             "light": "resources/light/managedInstance.svg",
             "dark": "resources/dark/managedInstance_inverse.svg"
           }
+        }
       ],
       "connectionOptions": [
         {
