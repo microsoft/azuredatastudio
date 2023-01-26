@@ -13,7 +13,7 @@ export class MssqlIconProvider implements azdata.IconProvider {
 	public handle: number;
 	getConnectionIconId(connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string | undefined> {
 		let iconName: string | undefined = undefined;
-		if (connection.providerName === 'MSSQL') {
+		if (connection.providerName === constants.sqlProviderName) {
 			if (serverInfo.engineEditionId === azdata.DatabaseEngineEdition.SqlManagedInstance) {
 				iconName = managedInstanceIcon;
 			}
