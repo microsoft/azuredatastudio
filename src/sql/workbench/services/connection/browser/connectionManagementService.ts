@@ -569,7 +569,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				if (connectionErrorHandled.success) {
 					connectionResult.errorHandled = true;
 					//copy over altered connection options from the result
-					connection.options = options;
+					connection.options = connectionErrorHandled.options;
 					return this.connectWithOptions(connection, uri, options, callbacks);
 				}
 				else {
