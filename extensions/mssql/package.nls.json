@@ -105,6 +105,8 @@
 	"mssql.connectionOptions.applicationIntent.description": "Declares the application workload type when connecting to a server",
 	"mssql.connectionOptions.connectTimeout.displayName": "Connect timeout",
 	"mssql.connectionOptions.connectTimeout.description": "The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error",
+	"mssql.connectionOptions.commandTimeout.displayName": "Command timeout",
+	"mssql.connectionOptions.commandTimeout.description": "The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error",
 	"mssql.connectionOptions.currentLanguage.displayName": "Current language",
 	"mssql.connectionOptions.currentLanguage.description": "The SQL Server language record name",
 	"mssql.connectionOptions.columnEncryptionSetting.displayName": "Always Encrypted",
