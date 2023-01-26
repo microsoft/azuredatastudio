@@ -169,6 +169,7 @@ export class PasswordChangeDialog extends Modal {
 			return Promise.reject(new Error(passwordChangeResult.errorMessage));
 		}
 
+		// Change should persist back in CMS.
 		connection.options[passwordOption.name] = newPassword;
 
 		return newPassword;
