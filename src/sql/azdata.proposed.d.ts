@@ -519,8 +519,11 @@ declare module 'azdata' {
 		 * Opens the change password dialog.
 		 * @param profile The connection profile to change the password for.
 		 * @param options The connection options containing the required connection parameters.
+		 * @returns The new password that is returned from the operation or undefined if unsuccessful.
 		 */
-		export function openChangePasswordDialog(profile: IConnectionProfile, options: IConnectionCompletionOptions): void;
+		export function openChangePasswordDialog(profile: IConnectionProfile, options: IConnectionCompletionOptions): Thenable<string | undefined>;
+
+		//export function getPasswordTypeOption(profile: IConnectionProfile): Thenable<string>;
 	}
 
 	/*

@@ -167,10 +167,10 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		return connection;
 	}
 
-	public $openChangePasswordDialog(profile: IConnectionProfile, options: azdata.IConnectionCompletionOptions): void {
+	public $openChangePasswordDialog(profile: IConnectionProfile, options: azdata.IConnectionCompletionOptions): Thenable<string | undefined> {
 		// Need to have access to getOptionsKey, so recreate profile from details.
 		let convertedProfile = new ConnectionProfile(this._capabilitiesService, profile);
-		this._connectionManagementService.openChangePasswordDialog(convertedProfile, ((options as any) as IConnectionCompletionOptions).params);
+		return this._connectionManagementService.openChangePasswordDialog(convertedProfile, ((options as any) as IConnectionCompletionOptions).params);
 	}
 
 	public async $listDatabases(connectionId: string): Promise<string[]> {

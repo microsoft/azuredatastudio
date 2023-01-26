@@ -55,8 +55,13 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 					if (errorCode = ErrorDiagnosticsConstants.MssqlPasswordResetErrorCode) {
 						// Need to convert inputed profile back to IConnectionProfile.
 						let restoredProfile = this.convertToIConnectionProfile(connection);
-						azdata.connection.openChangePasswordDialog(restoredProfile, options);
-						return { success: true, connectNeeded: false };
+						let result = await azdata.connection.openChangePasswordDialog(restoredProfile, options);
+						if (result === undefined) {
+							return { success: false, connectNeeded: false };
+						}
+						else {
+							return { success: true, connectNeeded: false };
+						}
 					}
 					else {
 						return { success: false, connectNeeded: false };
