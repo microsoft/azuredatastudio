@@ -15,7 +15,7 @@ export class MssqlIconProvider implements azdata.IconProvider {
 	getConnectionIconId(connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> {
 		let iconName: string = undefined;
 		if (connection.providerName === 'MSSQL') {
-			if (serverInfo.engineEditionId === 8) {
+			if (serverInfo.engineEditionId === azdata.DatabaseEngineEdition.SqlManagedInstance) {
 				iconName = miIcon;
 			}
 			else if (serverInfo.isCloud) {
