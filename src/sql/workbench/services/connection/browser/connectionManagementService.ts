@@ -569,6 +569,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				if (connectionErrorHandled.success) {
 					connectionResult.errorHandled = true;
 					if (connectionErrorHandled.connectNeeded) {
+						//copy over altered connection options from the result
+						connection.options = options;
+
 						// Handle case where after a connection error is handled
 						// the connection does not automatically reconnect.
 						// Handlers such as "Change Password" will connect on their own.

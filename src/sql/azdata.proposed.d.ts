@@ -452,6 +452,7 @@ declare module 'azdata' {
 		export interface ConnectionDiagnosticsResult {
 			success: boolean,
 			connectNeeded: boolean
+			options: { [name: string]: any };
 		}
 
 		/**

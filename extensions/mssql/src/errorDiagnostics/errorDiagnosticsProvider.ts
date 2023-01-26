@@ -63,14 +63,16 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 							//Error status will be handled below.
 						}
 						if (result === undefined) {
-							return { success: false, connectNeeded: false };
+							return { success: false, connectNeeded: false, options: {} };
 						}
 						else {
-							return { success: true, connectNeeded: false };
+							// MSSQL uses 'password' as the option key for connection profile.
+							restoredProfile.options['password'] = result
+							return { success: true, connectNeeded: true, options: restoredProfile.options };
 						}
 					}
 					else {
-						return { success: false, connectNeeded: false };
+						return { success: false, connectNeeded: false, options: {} };
 					}
 				}
 
