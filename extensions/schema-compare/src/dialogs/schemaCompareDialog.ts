@@ -88,7 +88,7 @@ export class SchemaCompareDialog {
 		// connection to use if schema compare wasn't launched from a database or no previous source/target
 		let connection = await azdata.connection.getCurrentConnection();
 		if (connection) {
-			this.connectionId = connection.connectionId;
+			this.connectionId = connection.connectionId;	// current active connection
 		}
 
 		this.dialog = azdata.window.createModelViewDialog(loc.SchemaCompareLabel);
@@ -875,12 +875,11 @@ export class SchemaCompareDialog {
 			}
 
 			// use current connection else use previously selected server if there is one
-			if (c.connectionId === this.connectionId) {
-				idx = count;
-			} else if (endpointInfo && !isNullOrUndefined(endpointInfo.serverName) && !isNullOrUndefined(endpointInfo.serverDisplayName)
-				&& c.options.server.toLowerCase() === endpointInfo.serverName.toLowerCase()
-				&& finalName.toLowerCase() === endpointInfo.serverDisplayName.toLowerCase()
-				&& idx === -1) {	// select previous server only if current connection hasn't been set already
+			if ((c.connectionId === this.connectionId) ||
+				(endpointInfo && !isNullOrUndefined(endpointInfo.serverName) && !isNullOrUndefined(endpointInfo.serverDisplayName)
+					&& c.options.server.toLowerCase() === endpointInfo.serverName.toLowerCase()
+					&& finalName.toLowerCase() === endpointInfo.serverDisplayName.toLowerCase()
+					&& idx === -1)) { // select previous server only if current connection hasn't been set already
 				idx = count;
 			}
 
