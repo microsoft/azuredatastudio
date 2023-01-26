@@ -119,6 +119,8 @@
 	"mssql.connectionOptions.encrypt.description": "When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed",
 	"mssql.connectionOptions.persistSecurityInfo.displayName": "Persist security info",
 	"mssql.connectionOptions.persistSecurityInfo.description": "When false, security-sensitive information, such as the password, is not returned as part of the connection",
+	"mssql.connectionOptions.hostNameInCertificate.displayName": "Host name in certificate",
+	"mssql.connectionOptions.hostNameInCertificate.description": "Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.",
 	"mssql.connectionOptions.trustServerCertificate.displayName": "Trust server certificate",
 	"mssql.connectionOptions.trustServerCertificate.description": "When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate",
 	"mssql.connectionOptions.attachedDBFileName.displayName": "Attached DB file name",
