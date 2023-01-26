@@ -1452,14 +1452,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		if (dropDown) {
 			try {
 				dropDown.loading = true;
-
-
-				this.migrationStateModel._blobContainerFolders = await utils.getBlobFolders();
+				this.migrationStateModel._blobContainerFolders = await utils.getBlobFolders(this.migrationStateModel._azureAccount,
+					this.migrationStateModel._databaseBackup.subscription,
+					this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount,
+					this.migrationStateModel._databaseBackup.blobs[index]?.blobContainer);
 				dropDown.values = this.migrationStateModel._blobContainerFolders;
-				// utils.selectDefaultDropdownValue(
-				// 	dropDown,
-				// 	this.migrationStateModel._databaseBackup?.blobs[index]?.lastBackupFile,
-				// 	false);
+				utils.selectDefaultDropdownValue(
+					dropDown,
+					this.migrationStateModel._blobContainerFolders[0],
+					false);
 			} catch (error) {
 				logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobFolders', error);
 			} finally {
