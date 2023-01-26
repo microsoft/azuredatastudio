@@ -202,7 +202,7 @@ export interface IConnectionManagementService {
 
 	disconnect(ownerUri: string): Promise<void>;
 
-	addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile>;
+	addSavedPassword(connectionProfile: IConnectionProfile, skipAccessToken?: boolean): Promise<IConnectionProfile>;
 
 	listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult | undefined>;
 

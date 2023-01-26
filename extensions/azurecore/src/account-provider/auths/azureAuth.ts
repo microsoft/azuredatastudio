@@ -280,8 +280,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return undefined;
 	}
 
-
-
 	protected abstract loginAdal(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse | undefined, authComplete: Deferred<void, Error> }>;
 
 	protected abstract loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult | null, authComplete: Deferred<void, Error> }>;
@@ -323,6 +321,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 			Logger.error(`Error: Could not fetch the azure resource ${azureResource} `);
 			return null;
 		}
+		// Resource endpoint must end with '/' to form a valid scope for MSAL token request.
+		const endpoint = resource.endpoint.endsWith('/') ? resource.endpoint : resource.endpoint + '/';
+
 		let account: AccountInfo | null = await this.getAccountFromMsalCache(accountId);
 		if (!account) {
 			Logger.error('Error: Could not fetch account when acquiring token');
@@ -330,9 +331,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 		let newScope;
 		if (resource.azureResourceId === azdata.AzureResource.ResourceManagement) {
-			newScope = [`${resource?.endpoint}user_impersonation`];
+			newScope = [`${endpoint}user_impersonation`];
 		} else {
-			newScope = [`${resource?.endpoint}.default`];
+			newScope = [`${endpoint}.default`];
 		}
 
 		// construct request

@@ -1563,7 +1563,8 @@ export class ProjectsController {
 			}
 		} catch { }
 
-		const updateProjectFromDatabaseDialog = this.getUpdateProjectFromDatabaseDialog(connection, project);
+		const workspaceProjects = await utils.getSqlProjectsInWorkspace();
+		const updateProjectFromDatabaseDialog = this.getUpdateProjectFromDatabaseDialog(connection, project, workspaceProjects);
 
 		updateProjectFromDatabaseDialog.updateProjectFromDatabaseCallback = async (model) => await this.updateProjectFromDatabaseCallback(model);
 
@@ -1572,8 +1573,8 @@ export class ProjectsController {
 		return updateProjectFromDatabaseDialog;
 	}
 
-	public getUpdateProjectFromDatabaseDialog(connection: azdataType.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined, project: Project | undefined): UpdateProjectFromDatabaseDialog {
-		return new UpdateProjectFromDatabaseDialog(connection, project);
+	public getUpdateProjectFromDatabaseDialog(connection: azdataType.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined, project: Project | undefined, workspaceProjects: vscode.Uri[]): UpdateProjectFromDatabaseDialog {
+		return new UpdateProjectFromDatabaseDialog(connection, project, workspaceProjects);
 	}
 
 	public async updateProjectFromDatabaseCallback(model: UpdateProjectDataModel) {

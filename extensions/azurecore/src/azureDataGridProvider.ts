@@ -16,6 +16,8 @@ import * as utils from './utils';
 const typesClause = [
 	azureResource.AzureResourceType.sqlDatabase,
 	azureResource.AzureResourceType.sqlServer,
+	azureResource.AzureResourceType.sqlSynapseWorkspace,
+	azureResource.AzureResourceType.sqlSynapseSqlPool,
 	azureResource.AzureResourceType.sqlManagedInstance,
 	azureResource.AzureResourceType.postgresServer,
 	azureResource.AzureResourceType.azureArcService,

@@ -12471,6 +12471,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/actions.copyHeaders" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Copy Headers]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Copier les en-têtes]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/actions.copySelection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Copy]]></Val>
@@ -13061,6 +13070,15 @@
           <Val><![CDATA[When true, XML output will be formatted when saving results as XML]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Quand la valeur est true, la sortie XML est mise en forme pendant l'enregistrement des résultats au format XML]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.showActionBar" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether to show the action bar in the query results view]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Indique s’il faut afficher la barre d’action dans l’affichage des résultats de la requête]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -17679,20 +17697,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/services/resourceProvider/browser/firewallRuleDialog.firewallRuleDialogDescription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/services/resourceProvider/browser/firewallRuleDialog.firewall.ruleName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.]]></Val>
+          <Val><![CDATA[Rule name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[L'adresse IP de votre client n'a pas accès au serveur. Connectez-vous à un compte Azure et créez une règle de pare-feu pour autoriser l'accès.]]></Val>
+            <Val><![CDATA[Nom de la règle]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/services/resourceProvider/browser/firewallRuleDialog.firewallRuleHelpDescription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/services/resourceProvider/browser/firewallRuleDialog.firewallRuleDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Learn more about firewall settings]]></Val>
+          <Val><![CDATA[A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[En savoir plus sur les paramètres de pare-feu]]></Val>
+            <Val><![CDATA[Une règle de pare-feu est nécessaire pour accéder à l’instance SQL Server. Cliquez sur le lien ci-dessous pour créer une règle de pare-feu.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/resourceProvider/browser/firewallRuleDialog.firewallRuleHelpLink" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Learn more about firewall rules]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[En savoir plus sur les règles de pare-feu]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

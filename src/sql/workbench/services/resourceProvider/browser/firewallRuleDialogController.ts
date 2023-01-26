@@ -68,6 +68,7 @@ export class FirewallRuleDialogController {
 			};
 
 			const firewallRuleInfo: azdata.FirewallRuleInfo = {
+				firewallRuleName: this._firewallRuleDialog!.viewModel.firewallRuleName,
 				startIpAddress: this._firewallRuleDialog!.viewModel.isIPAddressSelected ? this._firewallRuleDialog!.viewModel.defaultIPAddress : this._firewallRuleDialog!.viewModel.fromSubnetIPRange,
 				endIpAddress: this._firewallRuleDialog!.viewModel.isIPAddressSelected ? this._firewallRuleDialog!.viewModel.defaultIPAddress : this._firewallRuleDialog!.viewModel.toSubnetIPRange,
 				serverName: this._connection!.serverName,

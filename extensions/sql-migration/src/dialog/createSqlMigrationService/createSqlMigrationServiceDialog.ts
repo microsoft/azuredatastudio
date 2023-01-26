@@ -58,6 +58,9 @@ export class CreateSqlMigrationServiceDialog {
 		this._model = migrationStateModel;
 		this._resourceGroupPreset = resourceGroupPreset;
 		this._dialogObject = azdata.window.createModelViewDialog(constants.CREATE_MIGRATION_SERVICE_TITLE, 'MigrationServiceDialog', 'medium');
+		this._dialogObject.okButton.position = 'left';
+		this._dialogObject.cancelButton.position = 'left';
+
 		let tab = azdata.window.createTab('');
 		this._dialogObject.registerCloseValidator(async () => {
 			return true;

@@ -70,7 +70,8 @@ export class ServerTreeActionProvider {
 	 */
 	private getConnectionActions(tree: AsyncServerTree | ITree, profile: ConnectionProfile): IAction[] {
 		let node = new TreeNode(NodeType.Server, NodeType.Server, '', false, '', '', '', undefined, undefined, undefined, undefined);
-		this._connectionManagementService.addSavedPassword(profile);
+		// Only update password and not access tokens to avoid login prompts when opening context menu.
+		this._connectionManagementService.addSavedPassword(profile, true);
 		node.connection = profile;
 		return this.getAllActions({
 			tree: tree,

@@ -4261,6 +4261,9 @@ Error: {1}</source>
     <trans-unit id="chart">
       <source xml:lang="en">Chart</source>
     </trans-unit>
+    <trans-unit id="copyHeaders">
+      <source xml:lang="en">Copy Headers</source>
+    </trans-unit>
     <trans-unit id="copySelection">
       <source xml:lang="en">Copy</source>
     </trans-unit>
@@ -4465,6 +4468,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.saveAsXml.formatted">
       <source xml:lang="en">When true, XML output will be formatted when saving results as XML</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.showActionBar">
+      <source xml:lang="en">Whether to show the action bar in the query results view</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.streaming">
       <source xml:lang="en">Enable results streaming; contains few minor visual issues</source>
@@ -6253,11 +6259,14 @@ Error: {1}</source>
     <trans-unit id="firewall.ok">
       <source xml:lang="en">OK</source>
     </trans-unit>
-    <trans-unit id="firewallRuleDialogDescription">
-      <source xml:lang="en">Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.</source>
+    <trans-unit id="firewall.ruleName">
+      <source xml:lang="en">Rule name</source>
     </trans-unit>
-    <trans-unit id="firewallRuleHelpDescription">
-      <source xml:lang="en">Learn more about firewall settings</source>
+    <trans-unit id="firewallRuleDescription">
+      <source xml:lang="en">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</source>
+    </trans-unit>
+    <trans-unit id="firewallRuleHelpLink">
+      <source xml:lang="en">Learn more about firewall rules</source>
     </trans-unit>
     <trans-unit id="from">
       <source xml:lang="en">From</source>
