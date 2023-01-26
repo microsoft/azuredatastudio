@@ -749,6 +749,20 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "name": "commandTimeout",
+          "displayName": "%mssql.connectionOptions.commandTimeout.displayName%",
+          "description": "%mssql.connectionOptions.commandTimeout.description%",
+          "groupName": "%mssql.connectionOptions.groupName.initialization%",
+          "valueType": "number",
+          "defaultValue": "30",
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
           "name": "currentLanguage",
           "displayName": "%mssql.connectionOptions.currentLanguage.displayName%",
           "description": "%mssql.connectionOptions.currentLanguage.description%",
