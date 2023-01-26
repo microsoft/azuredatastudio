@@ -451,7 +451,6 @@ declare module 'azdata' {
 
 		export interface ConnectionDiagnosticsResult {
 			success: boolean,
-			connectNeeded: boolean
 			options: { [name: string]: any };
 		}
 
@@ -464,15 +463,9 @@ declare module 'azdata' {
 			 * @param errorCode The error code of the connection error.
 			 * @param errorMessage The error message of the connection error.
 			 * @param connection The connection profile that caused the error.
-			 * @param options The connection complete options that are used with the profile.
-			 * @returns Two boolean values: "success" and "connectNeeded" to indicate if the connection error
-			 * was handled and if the profile needs to be manually connected afterwards respectively.
-			 * "success = false" means the error wasn't handled.
-			 * "success = true" means the error was handled.
-			 * "connectNeeded = false" means the profile does not need to be manually connected after error handling.
-			 * "reconnectNeeded = true" means the profile needs to be manually connected after error handling.
+			 * @returns ConnectionDiagnosticsResult object containing error handling success status (boolean), and the changed connection options of the profile.
 			 */
-			handleConnectionError(errorCode: number, errorMessage: string, connection: connection.ConnectionProfile, options: IConnectionCompletionOptions): Thenable<ConnectionDiagnosticsResult>;
+			handleConnectionError(errorCode: number, errorMessage: string, connection: connection.ConnectionProfile): Thenable<ConnectionDiagnosticsResult>;
 		}
 
 		/**
@@ -519,12 +512,9 @@ declare module 'azdata' {
 		/**
 		 * Opens the change password dialog.
 		 * @param profile The connection profile to change the password for.
-		 * @param options The connection options containing the required connection parameters.
 		 * @returns The new password that is returned from the operation or undefined if unsuccessful.
 		 */
-		export function openChangePasswordDialog(profile: IConnectionProfile, options: IConnectionCompletionOptions): Thenable<string | undefined>;
-
-		//export function getPasswordTypeOption(profile: IConnectionProfile): Thenable<string>;
+		export function openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined>;
 	}
 
 	/*

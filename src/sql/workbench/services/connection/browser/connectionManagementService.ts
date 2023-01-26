@@ -565,21 +565,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				return this.connectWithOptions(connection, uri, options, callbacks);
 			}
 			else {
-				let connectionErrorHandled = await this._errorDiagnosticsService.tryHandleConnectionError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, this.convertToConnectionProfile(connection, false, false), (options as any) as azdata.IConnectionCompletionOptions);
+				let connectionErrorHandled = await this._errorDiagnosticsService.tryHandleConnectionError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, this.convertToConnectionProfile(connection, false, false));
 				if (connectionErrorHandled.success) {
 					connectionResult.errorHandled = true;
-					if (connectionErrorHandled.connectNeeded) {
-						//copy over altered connection options from the result
-						connection.options = options;
-
-						// Handle case where after a connection error is handled
-						// the connection does not automatically reconnect.
-						// Handlers such as "Change Password" will connect on their own.
-						return this.connectWithOptions(connection, uri, options, callbacks);
-					}
-					else {
-						return connectionResult;
-					}
+					//copy over altered connection options from the result
+					connection.options = options;
+					return this.connectWithOptions(connection, uri, options, callbacks);
 				}
 				else {
 					// Error not handled by any registered providers so fail the connection
@@ -608,9 +599,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	public async openChangePasswordDialog(profile: interfaces.IConnectionProfile, params: INewConnectionParams): Promise<string | undefined> {
+	public async openChangePasswordDialog(profile: interfaces.IConnectionProfile): Promise<string | undefined> {
 		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
-		let result = await dialog.open(profile, params);
+		let result = await dialog.open(profile);
 		return result;
 	}
 
