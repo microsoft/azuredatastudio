@@ -66,7 +66,9 @@ export class PasswordChangeDialog extends Modal {
 
 	public open(profile: IConnectionProfile, params: INewConnectionParams): Promise<string> {
 		if (this._profile) {
-			Promise.reject(new Error("Password change already in progress"));
+			let message = localize('passwordChangeDialog.passwordChangeInProgress', "Password change already in progress")
+			this.errorMessageService.showDialog(Severity.Error, errorHeader, message);
+			return Promise.reject(new Error(message));
 		}
 		this._profile = profile;
 		this._uri = this.connectionManagementService.getConnectionUri(profile);
@@ -157,6 +159,7 @@ export class PasswordChangeDialog extends Modal {
 
 		if (passwordOption === undefined) {
 			let message = localize('passwordChangeDialog.errorPasswordTypeNotFound', "Password property for the connection type '{0}' was not found, please report this issue.", connection.providerName);
+			this.errorMessageService.showDialog(Severity.Error, errorHeader, message);
 			return Promise.reject(new Error(message));
 		}
 
@@ -165,6 +168,8 @@ export class PasswordChangeDialog extends Modal {
 			this.errorMessageService.showDialog(Severity.Error, errorHeader, passwordChangeResult.errorMessage);
 			return Promise.reject(new Error(passwordChangeResult.errorMessage));
 		}
+
+		connection.options[passwordOption.name] = newPassword;
 
 		return newPassword;
 	}
