@@ -28,7 +28,6 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 const dialogWidth: string = '300px'; // Width is set manually here as there is no default width for normal dialogs.
 const okText: string = localize('passwordChangeDialog.ok', "OK");
 const cancelText: string = localize('passwordChangeDialog.cancel', "Cancel");
-const dialogTitle: string = localize('passwordChangeDialog.title', "Change Password");
 const newPasswordText: string = localize('passwordChangeDialog.newPassword', "New password:");
 const confirmPasswordText: string = localize('passwordChangeDialog.confirmPassword', "Confirm password:");
 const passwordChangeLoadText: string = localize('passwordChangeDialog.connecting', "Connecting");
@@ -63,6 +62,7 @@ export class PasswordChangeDialog extends Modal {
 
 	public open(profile: IConnectionProfile): Promise<string> {
 		if (this._profile) {
+			// If already in the middle of a password change, reject an incoming open.
 			let message = localize('passwordChangeDialog.passwordChangeInProgress', "Password change already in progress")
 			this.errorMessageService.showDialog(Severity.Error, errorHeader, message);
 			return Promise.reject(new Error(message));
@@ -84,7 +84,7 @@ export class PasswordChangeDialog extends Modal {
 
 	public override render() {
 		super.render();
-		this.title = dialogTitle;
+		this.title = localize('passwordChangeDialog.title', "Change password for '{0}'", this._profile?.userName);
 		this._register(attachModalDialogStyler(this, this._themeService));
 		this._okButton = this.addFooterButton(okText, async () => { await this.handleOkButtonClick(); });
 		this._cancelButton = this.addFooterButton(cancelText, () => { this.handleCancelButtonClick(); }, 'right', true);
