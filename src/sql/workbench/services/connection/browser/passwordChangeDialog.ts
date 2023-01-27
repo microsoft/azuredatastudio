@@ -6,7 +6,7 @@
 import 'vs/css!./media/passwordDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ConnectionOptionSpecialType, IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -25,6 +25,7 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 const dialogWidth: string = '300px'; // Width is set manually here as there is no default width for normal dialogs.
 const okText: string = localize('passwordChangeDialog.ok', "OK");
@@ -58,6 +59,7 @@ export class PasswordChangeDialog extends Modal {
 		@ILogService logService: ILogService,
 		@IContextViewService private readonly contextViewService: IContextViewService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
+		@ICapabilitiesService private capabilitiesService: ICapabilitiesService,
 	) {
 		super('', '', telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasSpinner: true, spinnerTitle: passwordChangeLoadText, dialogStyle: 'normal', width: dialogWidth, dialogPosition: 'left' });
 	}
@@ -151,11 +153,24 @@ export class PasswordChangeDialog extends Modal {
 			return Promise.reject(new Error(errorPasswordMismatchErrorMessage));
 		}
 
+		// Find the password option for the connection provider
+		let passwordOption = this.capabilitiesService.getCapabilities(connection.providerName).connection.connectionOptions.find(
+			option => option.specialValueType === ConnectionOptionSpecialType.password);
+
+		if (passwordOption === undefined) {
+			let message = localize('passwordChangeDialog.errorPasswordTypeNotFound', "Password property for the connection type '{0}' was not found, please report this issue.", connection.providerName);
+			this.errorMessageService.showDialog(Severity.Error, errorHeader, message);
+			return Promise.reject(new Error(message));
+		}
+
 		let passwordChangeResult = await this.connectionManagementService.changePassword(connection, uri, newPassword);
 		if (!passwordChangeResult.result) {
 			this.errorMessageService.showDialog(Severity.Error, errorHeader, passwordChangeResult.errorMessage);
 			return Promise.reject(new Error(passwordChangeResult.errorMessage));
 		}
+
+		// Change should persist back in CMS.
+		connection.options[passwordOption.name] = newPassword;
 
 		return newPassword;
 	}

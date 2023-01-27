@@ -15,7 +15,7 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 	) { }
 
 	public async tryHandleConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
-		let result = { success: false, connectNeeded: false, options: {} };
+		let result = { success: false, connectNeeded: false };
 		let provider = this._providers[providerId]
 		if (provider) {
 			result = await provider.handleConnectionError(errorCode, errorMessage, connection, options);
