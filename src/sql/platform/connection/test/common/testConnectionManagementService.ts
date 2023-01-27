@@ -330,4 +330,12 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	async handleUnsupportedProvider(providerName: string): Promise<boolean> {
 		return true;
 	}
+
+	openChangePasswordDialog(profile: IConnectionProfile): Promise<string | undefined> {
+		return undefined;
+	}
+
+	convertToConnectionProfile(profile: IConnectionProfile, removeCredentials: boolean, deepCopyOptions: boolean): azdata.connection.ConnectionProfile {
+		return undefined;
+	}
 }

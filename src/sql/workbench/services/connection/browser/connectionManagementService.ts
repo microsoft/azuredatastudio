@@ -55,6 +55,9 @@ import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/b
 import { ViewContainerLocation } from 'vs/workbench/common/views';
 import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
+import { PasswordChangeDialog } from 'sql/workbench/services/connection/browser/passwordChangeDialog';
+import { deepClone } from 'vs/base/common/objects';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -94,6 +97,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IQuickInputService private _quickInputService: IQuickInputService,
 		@INotificationService private _notificationService: INotificationService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
+		@IErrorDiagnosticsService private _errorDiagnosticsService: IErrorDiagnosticsService,
 		@IAngularEventingService private _angularEventing: IAngularEventingService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@ILogService private _logService: ILogService,
@@ -430,7 +434,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Changes password of the connection profile's user.
 	 */
-	public changePassword(connection: interfaces.IConnectionProfile, uri: string, newPassword: string):
+	public async changePassword(connection: interfaces.IConnectionProfile, uri: string, newPassword: string):
 		Promise<azdata.PasswordChangeResult> {
 		return this.sendChangePasswordRequest(connection, uri, newPassword);
 	}
@@ -552,20 +556,30 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private handleConnectionError(connection: interfaces.IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
+	private async handleConnectionError(connection: interfaces.IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
 		let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', "Connection Not Accepted");
 		if (options.showFirewallRuleOnError && connectionResult.errorCode) {
-			return this.handleFirewallRuleError(connection, connectionResult).then(success => {
-				if (success) {
-					options.showFirewallRuleOnError = false;
+			let firewallRuleErrorHandled = await this.handleFirewallRuleError(connection, connectionResult);
+			if (firewallRuleErrorHandled) {
+				options.showFirewallRuleOnError = false;
+				return this.connectWithOptions(connection, uri, options, callbacks);
+			}
+			else {
+				let connectionErrorHandled = await this._errorDiagnosticsService.tryHandleConnectionError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, this.convertToConnectionProfile(connection, false, false));
+				if (connectionErrorHandled.success) {
+					connectionResult.errorHandled = true;
+					//copy over altered connection options from the result
+					connection.options = connectionErrorHandled.options;
 					return this.connectWithOptions(connection, uri, options, callbacks);
-				} else {
+				}
+				else {
+					// Error not handled by any registered providers so fail the connection
 					if (callbacks.onConnectReject) {
 						callbacks.onConnectReject(connectionNotAcceptedError);
 					}
 					return connectionResult;
 				}
-			});
+			}
 		} else {
 			if (callbacks.onConnectReject) {
 				callbacks.onConnectReject(connectionNotAcceptedError);
@@ -583,6 +597,40 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				return false;
 			}
 		});
+	}
+
+	public async openChangePasswordDialog(profile: interfaces.IConnectionProfile): Promise<string | undefined> {
+		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
+		let result = await dialog.open(profile);
+		return result;
+	}
+
+	// Convert the profile to one that can be sent via RPC (used for error handling).
+	public convertToConnectionProfile(profile: interfaces.IConnectionProfile, removeCredentials: boolean, deepCopyOptions: boolean): azdata.connection.ConnectionProfile {
+		if (!profile) {
+			return undefined;
+		}
+		// Need to account for different types of conversion usages.
+		if (removeCredentials) {
+			profile = this.removeConnectionProfileCredentials(profile);
+		}
+		let connection: azdata.connection.ConnectionProfile = {
+			providerId: profile.providerName,
+			connectionId: profile.id,
+			options: deepCopyOptions ? deepClone(profile.options) : profile.options,
+			connectionName: profile.connectionName,
+			serverName: profile.serverName,
+			databaseName: profile.databaseName,
+			userName: profile.userName,
+			password: profile.password,
+			authenticationType: profile.authenticationType,
+			savePassword: profile.savePassword,
+			groupFullName: profile.groupFullName,
+			groupId: profile.groupId,
+			azureTenantId: profile.azureTenantId,
+			saveProfile: profile.saveProfile
+		};
+		return connection;
 	}
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {

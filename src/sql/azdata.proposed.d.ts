@@ -432,6 +432,52 @@ declare module 'azdata' {
 		azurePortalEndpoint?: string;
 	}
 
+
+	export namespace diagnostics {
+		/**
+		 * Represents a diagnostics provider of accounts.
+		 */
+		export interface ErrorDiagnosticsProviderMetadata {
+			/**
+			 * The identifier of the provider that the diagnostics provider will handle errors for.
+			 */
+			id: string;
+
+			/**
+			 * Display name of the diagnostics provider object.
+			 */
+			displayName: string;
+		}
+
+		export interface ConnectionDiagnosticsResult {
+			success: boolean,
+			options: { [name: string]: any };
+		}
+
+		/**
+		 * Diagnostics object for handling errors for a provider.
+		 */
+		export interface ErrorDiagnosticsProvider {
+			/**
+			 * Called when a connection error occurs, allowing the provider to optionally handle the error and fix any issues before continuing with completing the connection.
+			 * @param errorCode The error code of the connection error.
+			 * @param errorMessage The error message of the connection error.
+			 * @param connection The connection profile that caused the error.
+			 * @returns ConnectionDiagnosticsResult object containing error handling success status (boolean), and the changed connection options of the profile.
+			 */
+			handleConnectionError(errorCode: number, errorMessage: string, connection: connection.ConnectionProfile): Thenable<ConnectionDiagnosticsResult>;
+		}
+
+		/**
+		 * Registers provider with instance of Diagnostic Provider implementation.
+		 * Note: only ONE diagnostic provider object can be assigned to a specific provider at a time.
+		 * @param providerMetadata Additional data used to register the provider
+		 * @param errorDiagnostics The provider's diagnostic object that handles errors.
+		 * @returns The diagnostic provider implementation
+		 */
+		export function registerDiagnosticsProvider(providerMetadata: ErrorDiagnosticsProviderMetadata, errorDiagnostics: ErrorDiagnosticsProvider): vscode.Disposable;
+	}
+
 	export namespace connection {
 		/**
 		 * Well-known Authentication types commonly supported by connection providers.
@@ -462,6 +508,13 @@ declare module 'azdata' {
 			 */
 			None = 'None'
 		}
+
+		/**
+		 * Opens the change password dialog.
+		 * @param profile The connection profile to change the password for.
+		 * @returns The new password that is returned from the operation or undefined if unsuccessful.
+		 */
+		export function openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined>;
 	}
 
 	/*

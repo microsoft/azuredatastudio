@@ -333,6 +333,22 @@ export interface IConnectionManagementService {
 	 * @returns Promise with a boolean value indicating whether the user has accepted the suggestion.
 	 */
 	handleUnsupportedProvider(providerId: string): Promise<boolean>;
+
+	/**
+	 * Launches the password change dialog.
+	 * @param profile The connection profile to change the password.
+	 * @returns the new valid password that is entered, or undefined if cancelled or errored.
+	 */
+	openChangePasswordDialog(profile: IConnectionProfile): Promise<string | undefined>;
+
+	/**
+	 * converts the connection profile into an RPC friendly type (azdata.connection.ConnectionProfile).
+	 * @param profile The connection profile to be converted.
+	 * @param removeCredentials Remove credentials from the profile.
+	 * @param deepCopyOptions Deep copy the options of the profile to the converted profile.
+	 * @returns a profile without any services to be passed via the RPC protocol
+	 */
+	convertToConnectionProfile(profile: IConnectionProfile, removeCredentials: boolean, deepCopyOptions: boolean): azdata.connection.ConnectionProfile;
 }
 
 export enum RunQueryOnConnectionMode {
