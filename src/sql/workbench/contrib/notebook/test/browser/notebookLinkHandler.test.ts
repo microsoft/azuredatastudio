@@ -146,5 +146,21 @@ suite('Noteboook Link Handler', function (): void {
 			let expectedResult = `.${path.join(path.sep, 'notebook1.ipynb')}`
 			assert.strictEqual(notebookLinkHandler.getLinkUrl(), expectedResult, 'File relative link is wrong');
 		});
+		test('when is-encoded is true', () => {
+			let result = new NotebookLinkHandler(notebookUri, Object.assign(document.createElement('a'), { href: '/tmp/stuff.png', attributes: { isEncoded: true, isMarkdown: true } }), configurationService);
+			assert.strictEqual(result.getLinkUrl(), `.${path.sep}stuff.png`, 'Basic link test failed');
+
+			result = new NotebookLinkHandler(notebookUri, Object.assign(document.createElement('a'), { href: '/stuff.png', attributes: { isEncoded: true, isMarkdown: true } }), configurationService);
+			assert.strictEqual(result.getLinkUrl(), `..${path.sep}stuff.png`, 'Basic link test above folder failed');
+
+			result = new NotebookLinkHandler(notebookUri, Object.assign(document.createElement('a'), { href: '/tmp/inner/stuff.png', attributes: { isEncoded: true, isMarkdown: true } }), configurationService);
+			assert.strictEqual(result.getLinkUrl(), `.${path.sep}inner${path.sep}stuff.png`, 'Basic link test below folder failed');
+
+			result = new NotebookLinkHandler(notebookUri, Object.assign(document.createElement('a'), { href: '/tmp/my stuff.png', attributes: { isEncoded: true, isMarkdown: true } }), configurationService);
+			assert.strictEqual(result.getLinkUrl(), `.${path.sep}my%20stuff.png`, 'Basic link test with space filename failed');
+
+			result = new NotebookLinkHandler(notebookUri, Object.assign(document.createElement('a'), { href: '/tmp/my%20stuff.png', attributes: { isEncoded: true, isMarkdown: true } }), configurationService);
+			assert.strictEqual(result.getLinkUrl(), `.${path.sep}my%2520stuff.png`, 'Basic link test with %20 filename failed');
+		})
 	});
 });
