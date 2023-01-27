@@ -13442,6 +13442,17 @@
 			"onDidDisconnectMessage": "연결 끊김",
 			"unsavedGroupLabel": "저장되지 않은 연결"
 		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "취소",
+			"passwordChangeDialog.confirmPassword": "암호 확인:",
+			"passwordChangeDialog.connecting": "연결 중",
+			"passwordChangeDialog.errorHeader": "암호를 변경하는 동안 오류가 발생했습니다.",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "입력한 암호가 일치하지 않습니다.",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "확인을 누르고 두 상자에 정확히 동일한 암호를 입력하세요.",
+			"passwordChangeDialog.newPassword": "새 암호:",
+			"passwordChangeDialog.ok": "확인",
+			"passwordChangeDialog.title": "암호 변경"
+		},
 		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
 			"newDashboardTab.cancel": "취소",
 			"newDashboardTab.ok": "확인",
@@ -13899,17 +13910,6 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "시작(&S)",
 			"showReleaseNotes": "시작 표시"
-		},
-		"sql/workbench/services/connection/browser/passwordChangeDialog": {
-			"passwordChangeDialog.cancel": "취소",
-			"passwordChangeDialog.confirmPassword": "암호 확인:",
-			"passwordChangeDialog.connecting": "연결 중",
-			"passwordChangeDialog.errorHeader": "암호를 변경하는 동안 오류가 발생했습니다.",
-			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "입력한 암호가 일치하지 않습니다.",
-			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "확인을 누르고 두 상자에 정확히 동일한 암호를 입력하세요.",
-			"passwordChangeDialog.newPassword": "새 암호:",
-			"passwordChangeDialog.ok": "확인",
-			"passwordChangeDialog.title": "암호 변경"
 		}
 	}
 }

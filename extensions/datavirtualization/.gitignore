@@ -1,0 +1,20 @@
+
+out
+node_modules
+*.vsix
+.DS_Store
+.idea
+.rpt2_cache
+test-reports/**
+
+# Jupyter paths
+wheels/**
+
+# service paths
+scaleoutdataservice/**
+
+# python paths
+python/**/**
+
+# coverage folder
+coverage/**

@@ -10,7 +10,7 @@ import { MigrationMode, MigrationStateModel, NetworkContainerType, StateChangeEv
 import { CreateSqlMigrationServiceDialog } from '../dialog/createSqlMigrationService/createSqlMigrationServiceDialog';
 import * as constants from '../constants/strings';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import { getFullResourceGroupFromId, getLocationDisplayName, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData } from '../api/azure';
+import { getFullResourceGroupFromId, getLocationDisplayName, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlVMServer } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { logError, TelemetryViews } from '../telemtery';
 import * as utils from '../api/utils';
@@ -38,6 +38,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _radioButtonContainer!: azdata.FlexContainer;
 	private _networkShareButton!: azdata.RadioButtonComponent;
 	private _blobContainerButton!: azdata.RadioButtonComponent;
+	private _sqlVmPageBlobInfoBox!: azdata.TextComponent;
 	private _originalMigrationMode!: MigrationMode;
 	private _disposables: vscode.Disposable[] = [];
 
@@ -178,11 +179,26 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				}
 			}));
 
+		this._sqlVmPageBlobInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				text: constants.DATABASE_BACKUP_SQL_VM_PAGE_BLOB_INFO,
+				style: 'information',
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: { ...styles.BODY_CSS, 'display': 'none' },
+				links: [
+					{
+						text: constants.DATABASE_BACKUP_SQL_VM_PAGE_BLOB_URL_LABEL,
+						url: 'https://aka.ms/dms-migrations-troubleshooting'
+					}
+				]
+			}).component();
+
 		const flexContainer = this._view.modelBuilder.flexContainer()
 			.withItems([
 				selectLocationText,
 				this._blobContainerButton,
 				this._networkShareButton,
+				this._sqlVmPageBlobInfoBox
 			])
 			.withLayout({ flexFlow: 'column' })
 			.component();
@@ -192,6 +208,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
+		const isSqlVmTarget = this.migrationStateModel.isSqlVmTarget;
 		const isNetworkShare = this.migrationStateModel.isBackupContainerNetworkShare;
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
@@ -244,6 +261,15 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		await utils.updateControlDisplay(
 			this._radioButtonContainer,
 			!isSqlDbTarget);
+
+		// if target SQL VM version is <= 2014, disable IR scenario and show info box
+		const shouldDisableIrScenario = isSqlVmTarget && utils.isTargetSqlVm2014OrBelow(this.migrationStateModel._targetServerInstance as SqlVMServer);
+		this._networkShareButton.enabled = !shouldDisableIrScenario;
+		await utils.updateControlDisplay(this._sqlVmPageBlobInfoBox, shouldDisableIrScenario, 'block');
+
+		// always pre-select blob scenario
+		this.migrationStateModel._databaseBackup.networkContainerType = NetworkContainerType.BLOB_CONTAINER;
+		this._blobContainerButton.checked = true;
 
 		this._subscription.value = this.migrationStateModel._targetSubscription.name;
 		this._location.value = await getLocationDisplayName(

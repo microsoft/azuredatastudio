@@ -143,6 +143,12 @@
     <trans-unit id="cms.connectionOptions.connectTimeout.displayName">
       <source xml:lang="en">Connect timeout</source>
     </trans-unit>
+    <trans-unit id="cms.connectionOptions.commandTimeout.description">
+      <source xml:lang="en">The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.commandTimeout.displayName">
+      <source xml:lang="en">Command timeout</source>
+    </trans-unit>
     <trans-unit id="cms.connectionOptions.connectionName.description">
       <source xml:lang="en">Custom name of the connection</source>
     </trans-unit>
@@ -196,6 +202,12 @@
     </trans-unit>
     <trans-unit id="cms.connectionOptions.groupName.source">
       <source xml:lang="en">Source</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.hostNameInCertificate.description">
+      <source xml:lang="en">Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.hostNameInCertificate.displayName">
+      <source xml:lang="en">Host name in certificate</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.loadBalanceTimeout.description">
       <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>

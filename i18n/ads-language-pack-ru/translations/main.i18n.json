@@ -13442,6 +13442,17 @@
 			"onDidDisconnectMessage": "Отключено",
 			"unsavedGroupLabel": "Несохраненные подключения"
 		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "Отмена",
+			"passwordChangeDialog.confirmPassword": "Подтверждение пароля:",
+			"passwordChangeDialog.connecting": "Идет подключение",
+			"passwordChangeDialog.errorHeader": "Сбой при попытке изменить пароль",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "Введенные пароли не совпадают",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Нажмите \"ОК\" и введите в обоих полях одинаковый пароль.",
+			"passwordChangeDialog.newPassword": "Новый пароль:",
+			"passwordChangeDialog.ok": "OK",
+			"passwordChangeDialog.title": "Смена пароля"
+		},
 		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
 			"newDashboardTab.cancel": "Отмена",
 			"newDashboardTab.ok": "ОК",
@@ -13899,17 +13910,6 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "Начало р&&аботы",
 			"showReleaseNotes": "Показать раздел \"Начало работы\""
-		},
-		"sql/workbench/services/connection/browser/passwordChangeDialog": {
-			"passwordChangeDialog.cancel": "Отмена",
-			"passwordChangeDialog.confirmPassword": "Подтверждение пароля:",
-			"passwordChangeDialog.connecting": "Идет подключение",
-			"passwordChangeDialog.errorHeader": "Сбой при попытке изменить пароль",
-			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "Введенные пароли не совпадают",
-			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Нажмите \"ОК\" и введите в обоих полях одинаковый пароль.",
-			"passwordChangeDialog.newPassword": "Новый пароль:",
-			"passwordChangeDialog.ok": "OK",
-			"passwordChangeDialog.title": "Смена пароля"
 		}
 	}
 }

@@ -261,6 +261,7 @@ const externalExtensions = [
     'azuremonitor',
     'cms',
     'dacpac',
+    'datavirtualization',
     'import',
     'kusto',
     'machine-learning',
@@ -281,7 +282,6 @@ exports.vscodeExternalExtensions = [
 ];
 // extensions that require a rebuild since they have native parts
 const rebuildExtensions = [
-    'big-data-cluster',
     'mssql'
 ];
 const marketplaceWebExtensionsExclude = new Set([

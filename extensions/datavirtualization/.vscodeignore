@@ -1,0 +1,21 @@
+# Unwanted compiled files
+out
+*.vsix
+
+# Build/Source files
+src
+test
+typings
+.gitignore
+tsconfig.json
+coverConfig.json
+tslint.json
+
+# Reference files
+**/*.ts
+**/*.map
+.gitignore
+tsconfig.json
+extension.webpack.config.js
+yarn.lock
+

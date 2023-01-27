@@ -143,8 +143,8 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 			}).component();
 
 		toolbar.addToolbarItems([
-			// <azdata.ToolbarComponent>{ component: this.createNewLoginMigrationButton(), toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.createNewMigrationButton(), toolbarSeparatorAfter: true },
+			<azdata.ToolbarComponent>{ component: this.createNewLoginMigrationButton(), toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.createNewSupportRequestButton() },
 			<azdata.ToolbarComponent>{ component: this.createFeedbackButton(), toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this._refreshLoader },

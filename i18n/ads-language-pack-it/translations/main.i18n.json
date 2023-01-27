@@ -13442,6 +13442,17 @@
 			"onDidDisconnectMessage": "Disconnesso",
 			"unsavedGroupLabel": "Connessioni non salvate"
 		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "Annulla",
+			"passwordChangeDialog.confirmPassword": "Conferma password:",
+			"passwordChangeDialog.connecting": "Connessione",
+			"passwordChangeDialog.errorHeader": "Errore durante il tentativo di cambiare la password",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "Le password inserite non sono uguali",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Premere OK e immettere la stessa password in entrambe le caselle.",
+			"passwordChangeDialog.newPassword": "Nuova password:",
+			"passwordChangeDialog.ok": "OK",
+			"passwordChangeDialog.title": "Cambia password"
+		},
 		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
 			"newDashboardTab.cancel": "Annulla",
 			"newDashboardTab.ok": "OK",
@@ -13899,17 +13910,6 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "&&Introduzione",
 			"showReleaseNotes": "Mostra introduzione"
-		},
-		"sql/workbench/services/connection/browser/passwordChangeDialog": {
-			"passwordChangeDialog.cancel": "Annulla",
-			"passwordChangeDialog.confirmPassword": "Conferma password:",
-			"passwordChangeDialog.connecting": "Connessione",
-			"passwordChangeDialog.errorHeader": "Errore durante il tentativo di cambiare la password",
-			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "Le password inserite non sono uguali",
-			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Premere OK e immettere la stessa password in entrambe le caselle.",
-			"passwordChangeDialog.newPassword": "Nuova password:",
-			"passwordChangeDialog.ok": "OK",
-			"passwordChangeDialog.title": "Cambia password"
 		}
 	}
 }
