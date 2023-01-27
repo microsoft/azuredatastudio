@@ -2,7 +2,7 @@
   "name": "import",
   "displayName": "SQL Server Import",
   "description": "SQL Server Import for Azure Data Studio supports importing CSV or JSON files into SQL Server.",
-  "version": "1.5.4",
+  "version": "1.5.5",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
@@ -79,7 +79,7 @@
   "dependencies": {
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.3.1",
     "htmlparser2": "^3.10.1",
-    "@microsoft/ads-service-downloader": "1.0.4",
+    "@microsoft/ads-service-downloader": "^1.1.0",
     "@microsoft/ads-extension-telemetry": "^1.3.2",
     "vscode-nls": "^4.1.2"
   },
