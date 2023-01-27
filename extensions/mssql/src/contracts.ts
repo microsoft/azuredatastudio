@@ -1327,7 +1327,7 @@ export interface GetObjectsRequestParams {
 }
 
 export namespace GetObjectsRequest {
-	export const type = new RequestType<GetObjectsRequestParams, ObjectManagement.SqlObject[], void, void>('objectmanagement/get');
+	export const type = new RequestType<GetObjectsRequestParams, ObjectManagement.SqlObject[], void, void>('objectmanagement/getobjects');
 }
 
 /**

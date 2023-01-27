@@ -68,24 +68,9 @@
         "title": "%title.designTable%"
       },
       {
-        "command": "mssql.newServerRole",
-        "category": "MSSQL",
-        "title": "%title.newServerRole%"
-      },
-      {
         "command": "mssql.newLogin",
         "category": "MSSQL",
         "title": "%title.newLogin%"
-      },
-      {
-        "command": "mssql.newDatabaseRole",
-        "category": "MSSQL",
-        "title": "%title.newDatabaseRole%"
-      },
-      {
-        "command": "mssql.newApplicationRole",
-        "category": "MSSQL",
-        "title": "%title.newApplicationRole%"
       },
       {
         "command": "mssql.newUser",
@@ -95,7 +80,12 @@
       {
         "command": "mssql.objectProperties",
         "category": "MSSQL",
-        "title": "%title.properties%"
+        "title": "%title.objectProperties%"
+      },
+      {
+        "command": "mssql.deleteObject",
+        "category": "MSSQL",
+        "title": "%title.deleteObject%"
       }
     ],
     "outputChannels": [
@@ -430,6 +420,10 @@
         {
           "command": "mssql.objectProperties",
           "when": "false"
+        },
+        {
+          "command": "mssql.deleteObject",
+          "when": "false"
         }
       ],
       "objectExplorer/item/context": [
@@ -444,11 +438,6 @@
           "group": "0_query@1"
         },
         {
-          "command": "mssql.newServerRole",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ServerLevelServerRoles",
-          "group": "0_query@1"
-        },
-        {
           "command": "mssql.newLogin",
           "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ServerLevelLogins",
           "group": "0_query@1"
@@ -459,18 +448,13 @@
           "group": "0_query@1"
         },
         {
-          "command": "mssql.newDatabaseRole",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == DatabaseRoles",
-          "group": "0_query@1"
-        },
-        {
-          "command": "mssql.newApplicationRole",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ApplicationRoles",
-          "group": "0_query@1"
-        },
-        {
           "command": "mssql.objectProperties",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|ServerLevelServerRole|ApplicationRole|DatabaseRole|User)$/",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/",
+          "group": "0_query@1"
+        },
+        {
+          "command": "mssql.deleteObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/",
           "group": "0_query@1"
         }
       ],
@@ -486,11 +470,6 @@
           "group": "connection@1"
         },
         {
-          "command": "mssql.newServerRole",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ServerLevelServerRoles",
-          "group": "connection@1"
-        },
-        {
           "command": "mssql.newLogin",
           "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ServerLevelLogins",
           "group": "connection@1"
@@ -501,18 +480,13 @@
           "group": "connection@1"
         },
         {
-          "command": "mssql.newDatabaseRole",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == DatabaseRoles",
-          "group": "connection@1"
-        },
-        {
-          "command": "mssql.newApplicationRole",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ApplicationRoles",
-          "group": "connection@1"
-        },
-        {
           "command": "mssql.objectProperties",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|ServerLevelServerRole|ApplicationRole|DatabaseRole|User)$/",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/",
+          "group": "connection@1"
+        },
+        {
+          "command": "mssql.deleteObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/",
           "group": "connection@1"
         }
       ],
