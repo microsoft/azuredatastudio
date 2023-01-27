@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { ServerProvider, Events, LogLevel } from '@microsoft/ads-service-downloader';
+import { ServerProvider, Events, LogLevel, IConfig } from '@microsoft/ads-service-downloader';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
@@ -16,6 +16,9 @@ import { promises as fs } from 'fs';
 import * as constants from '../constants/strings';
 import { IMessage } from './contracts';
 import { ErrorAction, CloseAction } from 'vscode-languageclient';
+import { env } from 'process';
+import { exists } from './utils';
+
 
 export class ServiceClient {
 	private statusView: vscode.StatusBarItem;
@@ -31,9 +34,27 @@ export class ServiceClient {
 		let clientOptions: ClientOptions = this.createClientOptions();
 		try {
 			let client: SqlOpsDataClient;
-			let serviceBinaries = await this.downloadBinaries(context, rawConfig);
-			//serviceBinaries = "C:\\Users\\aaskhan\\src\\sts3\\src\\Microsoft.SqlTools.Migration\\bin\\Debug\\net6.0\\win-x64\\publish\\MicrosoftSqlToolsMigration.exe";
-			let serverOptions = this.generateServerOptions(serviceBinaries, context);
+			let serviceBinary: string = '';
+			let downloadBinary = true;
+			if (env['ADS_MIGRATIONSERVICE']) {
+				const config = <IConfig>JSON.parse(rawConfig.toString());
+				for (let executableFile of config.executableFiles) {
+					const executableFilePath = path.join(env['ADS_MIGRATIONSERVICE'], executableFile);
+					if (await exists(executableFilePath)) {
+						downloadBinary = false;
+						serviceBinary = executableFilePath;
+					}
+				}
+				if (!downloadBinary) {
+					vscode.window.showInformationMessage('Using Migration service found at: ' + serviceBinary).then((v) => { }, (r) => { });
+				} else {
+					vscode.window.showErrorMessage('Failed to find migration service binary falling back to downloaded binary').then((v) => { }, (r) => { });
+				}
+			}
+			if (downloadBinary) {
+				serviceBinary = await this.downloadBinaries(context, rawConfig);
+			}
+			let serverOptions = this.generateServerOptions(serviceBinary, context);
 			client = new SqlOpsDataClient(constants.serviceName, serverOptions, clientOptions);
 			client.onReady().then(() => {
 				this.statusView.text = localize('serviceStarted', "{0} Started", constants.serviceName);
@@ -83,8 +104,7 @@ export class ServiceClient {
 	private generateServerOptions(executablePath: string, context: vscode.ExtensionContext): ServerOptions {
 		let launchArgs = [];
 		launchArgs.push(`--locale`, vscode.env.language);
-		launchArgs.push('--log-file', path.join(context.logUri.fsPath, 'sqlmigration.log'));
-		launchArgs.push('--log-dir', context.logUri.fsPath);
+		launchArgs.push('--log-file', path.join(context.logUri.fsPath));
 		launchArgs.push('--tracing-level', this.getConfigTracingLevel());
 		launchArgs.push('--autoflush-log');
 		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
