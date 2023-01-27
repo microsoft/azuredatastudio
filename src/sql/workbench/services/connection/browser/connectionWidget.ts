@@ -623,7 +623,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		}
 		accountDropdownOptions.push({ text: this._addAzureAccountMessage, value: this._addAzureAccountMessage });
 		this._azureAccountDropdown.setOptions(accountDropdownOptions);
-		this._azureAccountDropdown.selectWithOptionName(oldSelection);
+		this._azureAccountDropdown.selectWithOptionName(oldSelection, false);
 	}
 
 	private updateRefreshCredentialsLink(): void {
@@ -689,15 +689,12 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				}
 			}
 			else {
-				this._azureTenantId = selectedAccount.properties.tenants[0].id;
 				this.onAzureTenantSelected(0);
 			}
 
 		} else {
 			if (selectedAccount && selectedAccount.properties.tenants && selectedAccount.properties.tenants.length === 1) {
 				this._azureTenantId = selectedAccount.properties.tenants[0].id;
-			} else {
-				this._azureTenantId = undefined;
 			}
 			this._tableContainer.classList.add(hideTenantsClassName);
 		}
@@ -841,15 +838,24 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 			if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
 				this.fillInAzureAccountOptions().then(async () => {
-					let tenantId = connectionInfo.azureTenantId;
 					let accountName = (this.authType === AuthenticationType.AzureMFA)
 						? connectionInfo.azureAccount : connectionInfo.userName;
-					// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
-					// The OR case can be removed once we no longer support ADAL
-					let account = this._azureAccountList.find(account => account.key.accountId === this.getModelValue(accountName)
-						|| account.key.accountId.split('.')[0] === this.getModelValue(accountName));
-					this._azureAccountDropdown.selectWithOptionName(account.key.accountId);
+					let account: azdata.Account;
+					if (accountName) {
+						// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
+						// The OR case can be removed once we no longer support ADAL
+						account = this._azureAccountList.find(account => account.key.accountId === this.getModelValue(accountName)
+							|| account.key.accountId.split('.')[0] === this.getModelValue(accountName));
+						this._azureAccountDropdown.selectWithOptionName(account.key.accountId);
+					} else {
+						// If account was not filled in from received configuration, select the first account.
+						this._azureAccountDropdown.select(0);
+						account = this._azureAccountList[0];
+						accountName = account.key.accountId;
+					}
 					await this.onAzureAccountSelected();
+
+					let tenantId = connectionInfo.azureTenantId;
 					if (account && account.properties.tenants && account.properties.tenants.length > 1) {
 						let tenant = account.properties.tenants.find(tenant => tenant.id === tenantId);
 						if (tenant) {
@@ -921,6 +927,13 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (this._authTypeSelectBox) {
 			this._authTypeSelectBox.disable();
 		}
+		if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
+			this._azureAccountDropdown.disable();
+			this._azureTenantDropdown?.disable();
+			if (!this._azureAccountDropdown.value) {
+				this._azureAccountDropdown.select(0);
+			}
+		}
 		if (this._customOptionWidgets) {
 			this._customOptionWidgets.forEach(widget => {
 				widget.disable();
@@ -963,6 +976,12 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (this._databaseNameInputBox) {
 			this._databaseNameInputBox.enabled = true;
 		}
+
+		if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
+			this._azureAccountDropdown.enable();
+			this._azureTenantDropdown?.enable();
+		}
+
 		if (this._customOptionWidgets) {
 			this._customOptionWidgets.forEach(widget => {
 				widget.enable();
