@@ -86,6 +86,7 @@ export class ServiceClient {
 		launchArgs.push('--log-file', path.join(context.logUri.fsPath, 'sqlmigration.log'));
 		launchArgs.push('--log-dir', context.logUri.fsPath);
 		launchArgs.push('--tracing-level', this.getConfigTracingLevel());
+		launchArgs.push('--autoflush-log');
 		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 	}
 
