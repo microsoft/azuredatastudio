@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { createSqlMigrationService, getResourceName, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlMigrationService } from '../../api/azure';
 import { MigrationStateModel, NetworkContainerType } from '../../models/stateMachine';
-import { logError, TelemetryViews } from '../../telemtery';
+import { logError, TelemetryViews } from '../../telemetry';
 import * as constants from '../../constants/strings';
 import * as os from 'os';
 import { azureResource } from 'azurecore';
