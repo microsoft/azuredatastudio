@@ -84,7 +84,7 @@ export class PasswordChangeDialog extends Modal {
 
 	public override render() {
 		super.render();
-		this.title = localize('passwordChangeDialog.title', "Password expired for: '{0}'\nOn the server: '{1}'\n\nPlease enter a new password below:", this._profile?.userName, this._profile?.serverName);
+		this.title = localize('passwordChangeDialog.title', "Change password for: '{0}' \nOn the server: '{1}'", this._profile?.userName, this._profile?.serverName);
 		this._register(attachModalDialogStyler(this, this._themeService));
 		this._okButton = this.addFooterButton(okText, async () => { await this.handleOkButtonClick(); });
 		this._cancelButton = this.addFooterButton(cancelText, () => { this.handleCancelButtonClick(); }, 'right', true);
