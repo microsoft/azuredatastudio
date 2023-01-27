@@ -193,7 +193,7 @@ export class SelectBox extends vsSelectBox {
 		this.applyStyles();
 	}
 
-	public selectWithOptionName(optionName?: string): void {
+	public selectWithOptionName(optionName?: string, selectFirstByDefault: boolean = true): void {
 		let option: number | undefined;
 		if (optionName !== undefined) {
 			option = this._optionsDictionary.get(optionName);
@@ -201,7 +201,9 @@ export class SelectBox extends vsSelectBox {
 		if (option !== undefined) {
 			this.select(option);
 		} else {
-			this.select(0);
+			if (selectFirstByDefault) {
+				this.select(0);
+			}
 		}
 	}
 
