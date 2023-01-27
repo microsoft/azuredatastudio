@@ -22,3 +22,4 @@ export const SqlAssessmentService = 'sqlAssessmentService';
 export const SqlMigrationService = 'sqlMigrationService';
 export const NotebookConvertService = 'notebookConvertService';
 export const AzureBlobService = 'azureBlobService';
+export const TdeMigrationService = 'tdeMigrationService';

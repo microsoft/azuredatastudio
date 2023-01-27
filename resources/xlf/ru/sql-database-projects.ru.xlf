@@ -247,8 +247,8 @@
         <target state="translated">Файлы DACPAC</target>
       </trans-unit>
       <trans-unit id="dacpacNotOnSameDrive">
-        <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
-        <target state="translated">Ссылки DACPAC должны располагаться на том же диске, что и файл проекта. Файл проекта расположен в {0}</target>
+        <source xml:lang="en">Dacpac references need to be located on the same drive as the project file.</source>
+        <target state="translated">Ссылки DACPAC должны располагаться на том же диске, что и файл проекта.</target>
       </trans-unit>
       <trans-unit id="dacpacReferenceElement">
         <source xml:lang="en">Dacpac reference</source>
@@ -976,13 +976,17 @@
         <source xml:lang="en">Publish to new {0} local development container</source>
         <target state="translated">Опубликовать в новом {0} контейнере локальной разработки</target>
       </trans-unit>
+      <trans-unit id="publishToDockerContainerPreview">
+        <source xml:lang="en">Publish to new {0} local development container (Preview)</source>
+        <target state="translated">Опубликовать в новом {0} контейнере локальной разработки (предварительная версия)</target>
+      </trans-unit>
       <trans-unit id="publishToExistingServer">
         <source xml:lang="en">Publish to an existing {0}</source>
         <target state="translated">Опубликовать в существующем {0}</target>
       </trans-unit>
       <trans-unit id="publishToNewAzureServer">
-        <source xml:lang="en">Publish to new Azure SQL logical server</source>
-        <target state="translated">Публикация на новом логическом сервере Azure SQL</target>
+        <source xml:lang="en">Publish to new Azure SQL logical server (Preview)</source>
+        <target state="translated">Публикация на новом логическом сервере Azure SQL (предварительная версия)</target>
       </trans-unit>
       <trans-unit id="publishToNewAzureServerFailed">
         <source xml:lang="en">Failed to publish to new Azure SQL server. {0}</source>
@@ -1193,16 +1197,16 @@
         <target state="translated">Строка подключения SQL</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.DotnetInstallationConfirmation">
-        <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.</source>
-        <target state="translated">Не удается найти пакет SDK для .NET. Сборка проекта работать не будет. Установите пакет SDK для .NET версии 3.1 или выше. Если поддерживаемая версия уже установлена, обновите ее расположение в разделе параметров.</target>
+        <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK location in settings if already installed.</source>
+        <target state="translated">Не удается найти пакет SDK для .NET. Сборка проекта работать не будет. Установите пакет SDK для .NET версии 6 или выше. Если поддерживаемая версия уже установлена, обновите ее расположение в разделе параметров.</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.Install">
         <source xml:lang="en">Install</source>
         <target state="translated">Установить</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
-        <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.</source>
-        <target state="translated">Установленная сейчас версия пакета SDK для .NET Core {0} не поддерживается. Сборка проекта работать не будет. Установите пакет SDK для .NET Core версии 3.1 или выше. Если поддерживаемая версия уже установлена, обновите ее расположение в разделе параметров.</target>
+        <source xml:lang="en">Currently installed .NET SDK version is {0}, which is not supported. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK supported version location in settings if already installed.</source>
+        <target state="translated">Установленная сейчас версия пакета SDK для .NET SDK {0} не поддерживается. Сборка проекта работать не будет. Установите пакет SDK для .NET версии 6 или выше. Если поддерживаемая версия уже установлена, обновите ее расположение в разделе параметров.</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.UpdateDotnetLocation">
         <source xml:lang="en">Update Location</source>
@@ -1425,28 +1429,32 @@
         <target state="translated">Проекты баз данных</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.dotnetInstallLocation">
-        <source xml:lang="en">Full path to .NET SDK on the machine.</source>
-        <target state="translated">Полный путь к пакету SDK для .NET на компьютере.</target>
+        <source xml:lang="en">Full path to .NET SDK on the machine. For example, if dotnet.exe is located at C:\folder1\dotnet\dotnet.exe, set the path for this setting to C:\folder1\dotnet</source>
+        <target state="translated">Полный путь к пакету SDK для .NET на компьютере. Например, если dotnet.exe находится в расположении C:\folder1\dotnet\dotnet.exe, задайте следующий путь для этого параметра: C:\folder1\dotnet</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.editProjectFile">
         <source xml:lang="en">Edit .sqlproj File</source>
         <target state="translated">Изменить файл .sqlproj</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.enablePreviewFeatures">
+        <source xml:lang="en">Enable preview SQL Database Projects features</source>
+        <target state="translated">Включить предварительные версии функций SQL Database Projects</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.exclude">
         <source xml:lang="en">Exclude from project</source>
         <target state="translated">Исключить из проекта</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.generateProjectFromOpenApiSpec">
-        <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec</source>
-        <target state="translated">Сформировать проект SQL из спецификации OpenAPI/Swagger</target>
+        <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec (Preview)</source>
+        <target state="translated">Сформировать проект SQL из спецификации OpenAPI/Swagger (предварительная версия)</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.microsoftBuildSqlVersion">
-        <source xml:lang="en">Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.3-preview</source>
-        <target state="translated">Какую версию Microsoft.Build.Sql SDK использовать для создания устаревших проектов SQL. Пример: 0.1.3-предварительная версия</target>
+        <source xml:lang="en">Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.7-preview</source>
+        <target state="translated">Какую версию Microsoft.Build.Sql SDK использовать для создания устаревших проектов SQL. Пример: 0.1.7-предварительная версия</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
-        <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
-        <target state="translated">Следует ли предлагать пользователю установить .NET Core, если он не будет обнаружен.</target>
+        <source xml:lang="en">Whether to prompt the user to install .NET SDK when not detected.</source>
+        <target state="translated">Следует ли предлагать пользователю установить .NET SDK, если он не будет обнаружен.</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.new">
         <source xml:lang="en">New Database Project</source>

@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "publisher": "Microsoft",
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
@@ -54,7 +54,7 @@
       {
         "command": "arc.connectToController",
         "title": "%command.connectToController.title%",
-        "icon": "$(disconnect)"
+        "icon": "$(plug)"
       },
       {
         "command": "arc.removeController",

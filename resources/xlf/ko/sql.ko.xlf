@@ -256,10 +256,6 @@
         <source xml:lang="en">Enable automatic update checks. Azure Data Studio will check for updates automatically and periodically.</source>
         <target state="translated">자동 업데이트 확인을 사용하도록 설정합니다. Azure Data Studio에서 정기적으로 업데이트를 자동 확인합니다.</target>
       </trans-unit>
-      <trans-unit id="docNotFoundForUriError">
-        <source xml:lang="en">Could not open a notebook document for the specified URI.</source>
-        <target state="translated">지정한 URI의 Notebook 문서를 열 수 없습니다.</target>
-      </trans-unit>
       <trans-unit id="enable locally">
         <source xml:lang="en">Please reload Azure Data Studio to enable this extension locally.</source>
         <target state="translated">이 확장을 로컬에서 사용하려면 Azure Data Studio를 다시 로드하세요.</target>
@@ -310,10 +306,6 @@
       <trans-unit id="notebook.cellTitle">
         <source xml:lang="en">The notebook cell title menu</source>
         <target state="translated">전자 필기장 셀 제목 메뉴</target>
-      </trans-unit>
-      <trans-unit id="notebook.cellToolbarLocation.compatibilityDescription">
-        <source xml:lang="en">Where the cell toolbar should be shown, or whether it should be hidden. Note: This setting is only enabled for extension compatibility purposes, and so does not affect anything.</source>
-        <target state="translated">셀 도구 모음을 표시할지 또는 숨길지 여부입니다. 참고: 이 설정은 확장 호환성 용도로만 사용하도록 설정되었으므로 아무 영향을 주지 않습니다.</target>
       </trans-unit>
       <trans-unit id="notebook.title">
         <source xml:lang="en">The notebook title menu</source>
@@ -465,17 +457,9 @@ Default Skipped Commands:
         <source xml:lang="en">Would you like to change Azure Data Studio's UI language to {0} and restart?</source>
         <target state="translated">Azure Data Studio의 UI 언어를 {0}(으)로 변경하고 다시 시작하시겠습니까?</target>
       </trans-unit>
-      <trans-unit id="vscodeDocCreationFailedError">
-        <source xml:lang="en">Failed to create notebook document.</source>
-        <target state="translated">Notebook 문서를 만들지 못했습니다.</target>
-      </trans-unit>
-      <trans-unit id="vscodeFunctionalityNotSupportedError">
-        <source xml:lang="en">This VS Code functionality is not supported in Azure Data Studio.</source>
-        <target state="translated">이 VS Code 기능은 Azure Data Studio에서 지원되지 않습니다.</target>
-      </trans-unit>
-      <trans-unit id="vscodeInvalidArgumentsError">
-        <source xml:lang="en">Invalid arguments.</source>
-        <target state="translated">잘못된 인수입니다.</target>
+      <trans-unit id="vscodeNotebooksNotSupportedError">
+        <source xml:lang="en">VS Code notebook extensions are not supported in Azure Data Studio.</source>
+        <target state="translated">Azure Data Studio에서 VS Code Notebook 확장이 지원되지 않습니다.</target>
       </trans-unit>
       <trans-unit id="watermark.newNotebook">
         <source xml:lang="en">New Notebook</source>
@@ -1004,14 +988,6 @@ Default Skipped Commands:
       <trans-unit id="navigationProviderRequired">
         <source xml:lang="en">A NavigationProvider with valid providerId must be passed to this method</source>
         <target state="translated">유효한 providerId가 있는 NavigationProvider가 이 메서드에 전달되어야 합니다.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/api/common/notebooks/vscodeExecuteProvider" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="errorStartBeforeReady">
-        <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
-        <target state="translated">세션을 시작할 수 없습니다. 관리자가 아직 초기화되지 않았습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -3543,7 +3519,7 @@ Default Skipped Commands:
         <target state="translated">확대/축소 초기화</target>
       </trans-unit>
       <trans-unit id="epCompare.zoomToFit">
-        <source xml:lang="en">Zoom to fit</source>
+        <source xml:lang="en">Zoom to Fit</source>
         <target state="translated">크기에 맞게 확대/축소</target>
       </trans-unit>
       <trans-unit id="executionPlanComparison.bottomPlanDiagram.name">
@@ -3635,11 +3611,11 @@ Default Skipped Commands:
         <target state="translated">true인 경우 실행 계획에 대한 마우스 오버 시 도구 설명을 활성화합니다. false인 경우 노드 클릭 또는 F3 키 누름 시 도구 설명이 표시됩니다.</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareCommandOriginalValue">
-        <source xml:lang="en">Compare execution plans</source>
+        <source xml:lang="en">Compare Execution Plans</source>
         <target state="translated">실행 계획 비교</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareCommandValue">
-        <source xml:lang="en">Compare execution plans</source>
+        <source xml:lang="en">Compare Execution Plans</source>
         <target state="translated">실행 계획 비교</target>
       </trans-unit>
       <trans-unit id="executionPlanConfigurationTitle">
@@ -3767,7 +3743,7 @@ Default Skipped Commands:
         <target state="translated">실행 계획 {0}</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareExecutionPlanAction">
-        <source xml:lang="en">Compare execution plan</source>
+        <source xml:lang="en">Compare Execution Plan</source>
         <target state="translated">실행 계획 비교</target>
       </trans-unit>
       <trans-unit id="executionPlanContextMenuDisableTooltip">
@@ -3791,8 +3767,8 @@ Default Skipped Commands:
         <target state="translated">도구 설명 활성화함</target>
       </trans-unit>
       <trans-unit id="executionPlanFitGraphLabel">
-        <source xml:lang="en">Zoom to fit</source>
-        <target state="translated">크기에 맞게</target>
+        <source xml:lang="en">Zoom to Fit</source>
+        <target state="translated">크기에 맞게 확대/축소</target>
       </trans-unit>
       <trans-unit id="executionPlanHighlightExpensiveOperationAction">
         <source xml:lang="en">Highlight Expensive Operation</source>
@@ -5114,6 +5090,10 @@ Error: {1}</source>
         <source xml:lang="en">The maximum number of changes stored in the undo history for the notebook Rich Text editor.</source>
         <target state="translated">전자 필기장 서식 있는 텍스트 편집기의 실행 취소 기록에 저장된 최대 변경 내용 수입니다.</target>
       </trans-unit>
+      <trans-unit id="notebook.renderTablesInHtml">
+        <source xml:lang="en">Display and save tables in HTML format in text cells instead of converting to markdown tables.</source>
+        <target state="translated">Markdown 표로 변환하는 대신 텍스트 셀에 표를 HTML 형식으로 표시하고 저장합니다.</target>
+      </trans-unit>
       <trans-unit id="notebook.richTextModeDescription">
         <source xml:lang="en">Text is displayed as Rich Text (also known as WYSIWYG).</source>
         <target state="translated">텍스트는 서식 있는 텍스트로 표시됩니다(이 텍스트는 WYSIWYG라고도 함).</target>
@@ -5994,6 +5974,10 @@ Error: {1}</source>
         <source xml:lang="en">Chart</source>
         <target state="translated">차트</target>
       </trans-unit>
+      <trans-unit id="copyHeaders">
+        <source xml:lang="en">Copy Headers</source>
+        <target state="translated">머리글 복사</target>
+      </trans-unit>
       <trans-unit id="copySelection">
         <source xml:lang="en">Copy</source>
         <target state="translated">복사</target>
@@ -6274,6 +6258,10 @@ Error: {1}</source>
         <source xml:lang="en">When true, XML output will be formatted when saving results as XML</source>
         <target state="translated">true이면 결과를 XML로 저장할 때 XML 출력에 형식이 지정됩니다.</target>
       </trans-unit>
+      <trans-unit id="queryEditor.results.showActionBar">
+        <source xml:lang="en">Whether to show the action bar in the query results view</source>
+        <target state="translated">쿼리 결과 뷰에 작업 모음을 표시할지 여부</target>
+      </trans-unit>
       <trans-unit id="queryEditor.results.streaming">
         <source xml:lang="en">Enable results streaming; contains few minor visual issues</source>
         <target state="translated">결과 스트리밍을 사용하도록 설정합니다. 몇 가지 사소한 시각적 문제가 있습니다.</target>
@@ -6437,6 +6425,14 @@ Error: {1}</source>
       <trans-unit id="status.query.summaryText">
         <source xml:lang="en">Average: {0}  Count: {1}  Sum: {2}</source>
         <target state="translated">평균: {0} 개수: {1} 합계: {2}</target>
+      </trans-unit>
+      <trans-unit id="status.query.summaryTextNonNumeric">
+        <source xml:lang="en">Count: {0}  Distinct Count: {1}  Null Count: {2}</source>
+        <target state="translated">개수: {0}  고유 카운트: {1} null 개수: {2}</target>
+      </trans-unit>
+      <trans-unit id="status.query.summaryTooltip">
+        <source xml:lang="en">Average: {0}  Count: {1}  Distinct Count: {2}  Max: {3}  Min: {4}  Null Count: {5}  Sum: {6}</source>
+        <target state="translated">평균: {0} 개수: {1} 고유 카운트: {2} 최대 {3} 최소: {4} null 개수: {5} 합계: {6}</target>
       </trans-unit>
       <trans-unit id="status.query.timeElapsed">
         <source xml:lang="en">Time Elapsed</source>
@@ -7773,6 +7769,46 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/connection/browser/passwordChangeDialog" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="passwordChangeDialog.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.confirmPassword">
+        <source xml:lang="en">Confirm password:</source>
+        <target state="translated">암호 확인:</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.connecting">
+        <source xml:lang="en">Connecting</source>
+        <target state="translated">연결 중</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.errorHeader">
+        <source xml:lang="en">Failure when attempting to change password</source>
+        <target state="translated">암호를 변경하는 동안 오류가 발생했습니다.</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.errorPasswordMismatchErrorMessage">
+        <source xml:lang="en">Passwords entered do not match</source>
+        <target state="translated">입력한 암호가 일치하지 않습니다.</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.errorPasswordMismatchRecoveryInstructions">
+        <source xml:lang="en">Press OK and enter the exact same password in both boxes.</source>
+        <target state="translated">확인을 누르고 두 상자에 정확히 동일한 암호를 입력하세요.</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.newPassword">
+        <source xml:lang="en">New password:</source>
+        <target state="translated">새 암호:</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">확인</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.title">
+        <source xml:lang="en">Change Password</source>
+        <target state="translated">암호 변경</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="newDashboardTab.cancel">
@@ -8240,6 +8276,10 @@ Error: {1}</source>
         <source xml:lang="en">Please select a connection to run cells for this kernel</source>
         <target state="translated">이 커널에 대해 셀을 실행하려면 연결을 선택하세요.</target>
       </trans-unit>
+      <trans-unit id="savedKernelNotSupported">
+        <source xml:lang="en">This notebook's '{0}' kernel is not supported. Defaulting to SQL kernel instead.</source>
+        <target state="translated">이 Notebook의 '{0}' 커널은 지원되지 않습니다. 대신 SQL 커널을 기본값으로 설정합니다.</target>
+      </trans-unit>
       <trans-unit id="shutdownClientSessionError">
         <source xml:lang="en">A client session error occurred when closing the notebook: {0}</source>
         <target state="translated">Notebook을 닫는 동안 클라이언트 세션 오류가 발생했습니다. {0}</target>
@@ -8357,16 +8397,16 @@ Error: {1}</source>
   <file original="src/sql/workbench/services/notebook/common/notebookRegistry" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="carbon.extension.contributes.notebook.executionTarget">
-        <source xml:lang="en">Optional execution target this magic indicates, for example Spark vs SQL</source>
-        <target state="translated">이 매직이 나타내는 선택적 실행 대상(예: Spark 및 SQL)</target>
+        <source xml:lang="en">Optional execution target this magic indicates, for example Python vs SQL</source>
+        <target state="translated">이 매직이 나타내는 선택적 실행 대상(예: Python 및 SQL)</target>
       </trans-unit>
       <trans-unit id="carbon.extension.contributes.notebook.fileExtensions">
         <source xml:lang="en">What file extensions should be registered to this notebook provider</source>
         <target state="translated">이 Notebook 공급자에 등록해야 하는 파일 확장명</target>
       </trans-unit>
       <trans-unit id="carbon.extension.contributes.notebook.kernels">
-        <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, pyspark, sql</source>
-        <target state="translated">유효한 선택적 커널 세트(예: python3, pyspark, sql)</target>
+        <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, sql</source>
+        <target state="translated">유효한 선택적 커널 집합(예: python3, sql)</target>
       </trans-unit>
       <trans-unit id="carbon.extension.contributes.notebook.language">
         <source xml:lang="en">The cell language to be used if this cell magic is included in the cell</source>
@@ -8383,10 +8423,6 @@ Error: {1}</source>
       <trans-unit id="carbon.extension.contributes.notebook.standardKernels">
         <source xml:lang="en">What kernels should be standard with this notebook provider</source>
         <target state="translated">이 Notebook 공급자에서 표준이어야 하는 커널</target>
-      </trans-unit>
-      <trans-unit id="providerNotInRegistryError">
-        <source xml:lang="en">The specified provider '{0}' is not present in the notebook registry.</source>
-        <target state="translated">지정된 공급자 '{0}'이(가) 전자 필기장 레지스트리에 없습니다.</target>
       </trans-unit>
       <trans-unit id="vscode.extension.contributes.notebook.languagemagics">
         <source xml:lang="en">Contributes notebook language.</source>
@@ -8732,13 +8768,17 @@ Error: {1}</source>
         <source xml:lang="en">OK</source>
         <target state="translated">확인</target>
       </trans-unit>
-      <trans-unit id="firewallRuleDialogDescription">
-        <source xml:lang="en">Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.</source>
-        <target state="translated">클라이언트 IP 주소에서 서버에 액세스할 수 없습니다. Azure 계정에 로그인하고 액세스를 허용하는 새 방화벽 규칙을 만드세요.</target>
+      <trans-unit id="firewall.ruleName">
+        <source xml:lang="en">Rule name</source>
+        <target state="translated">규칙 이름</target>
       </trans-unit>
-      <trans-unit id="firewallRuleHelpDescription">
-        <source xml:lang="en">Learn more about firewall settings</source>
-        <target state="translated">방화벽 설정에 대한 자세한 정보</target>
+      <trans-unit id="firewallRuleDescription">
+        <source xml:lang="en">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</source>
+        <target state="translated">SQL Server 인스턴스에 액세스하려면 방화벽 규칙이 필요합니다. 새 방화벽 규칙을 만들려면 아래 링크를 클릭하세요.</target>
+      </trans-unit>
+      <trans-unit id="firewallRuleHelpLink">
+        <source xml:lang="en">Learn more about firewall rules</source>
+        <target state="translated">방화벽 규칙에 대한 자세한 정보</target>
       </trans-unit>
       <trans-unit id="from">
         <source xml:lang="en">From</source>

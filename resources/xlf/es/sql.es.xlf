@@ -256,10 +256,6 @@
         <source xml:lang="en">Enable automatic update checks. Azure Data Studio will check for updates automatically and periodically.</source>
         <target state="translated">Habilitar la comprobación automática de actualizaciones. Azure Data Studio comprobará las actualizaciones de manera automática y periódica.</target>
       </trans-unit>
-      <trans-unit id="docNotFoundForUriError">
-        <source xml:lang="en">Could not open a notebook document for the specified URI.</source>
-        <target state="translated">No se pudo abrir un documento de bloc de notas para el URI especificado.</target>
-      </trans-unit>
       <trans-unit id="enable locally">
         <source xml:lang="en">Please reload Azure Data Studio to enable this extension locally.</source>
         <target state="translated">Vuelva a cargar Azure Data Studio para habilitar esta extensión localmente.</target>
@@ -310,10 +306,6 @@
       <trans-unit id="notebook.cellTitle">
         <source xml:lang="en">The notebook cell title menu</source>
         <target state="translated">El menú de título de la celda del cuaderno</target>
-      </trans-unit>
-      <trans-unit id="notebook.cellToolbarLocation.compatibilityDescription">
-        <source xml:lang="en">Where the cell toolbar should be shown, or whether it should be hidden. Note: This setting is only enabled for extension compatibility purposes, and so does not affect anything.</source>
-        <target state="translated">Indica si la barra de herramientas de celdas debe mostrarse u ocultarse. Nota: esta configuración solo está habilitada con fines de compatibilidad de extensiones, por lo que no afecta a nada.</target>
       </trans-unit>
       <trans-unit id="notebook.title">
         <source xml:lang="en">The notebook title menu</source>
@@ -465,17 +457,9 @@ Comandos omitidos predeterminados:
         <source xml:lang="en">Would you like to change Azure Data Studio's UI language to {0} and restart?</source>
         <target state="translated">¿Desea cambiar el idioma de la interfaz de usuario de Azure Data Studio a {0} y reiniciar?</target>
       </trans-unit>
-      <trans-unit id="vscodeDocCreationFailedError">
-        <source xml:lang="en">Failed to create notebook document.</source>
-        <target state="translated">No se pudo crear el documento del bloc de notas.</target>
-      </trans-unit>
-      <trans-unit id="vscodeFunctionalityNotSupportedError">
-        <source xml:lang="en">This VS Code functionality is not supported in Azure Data Studio.</source>
-        <target state="translated">Esta funcionalidad de VS Code no se admite en Azure Data Studio.</target>
-      </trans-unit>
-      <trans-unit id="vscodeInvalidArgumentsError">
-        <source xml:lang="en">Invalid arguments.</source>
-        <target state="translated">Argumentos no válidos.</target>
+      <trans-unit id="vscodeNotebooksNotSupportedError">
+        <source xml:lang="en">VS Code notebook extensions are not supported in Azure Data Studio.</source>
+        <target state="translated">VS Code no se admiten extensiones de cuaderno en Azure Data Studio.</target>
       </trans-unit>
       <trans-unit id="watermark.newNotebook">
         <source xml:lang="en">New Notebook</source>
@@ -1004,14 +988,6 @@ Comandos omitidos predeterminados:
       <trans-unit id="navigationProviderRequired">
         <source xml:lang="en">A NavigationProvider with valid providerId must be passed to this method</source>
         <target state="translated">Se debe pasar un NavigationProvider con un id. de proveedor válido a este método</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/api/common/notebooks/vscodeExecuteProvider" source-language="en" datatype="plaintext" target-language="es">
-    <body>
-      <trans-unit id="errorStartBeforeReady">
-        <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
-        <target state="translated">No se puede iniciar una sesión, el administrador aún no está inicializado</target>
       </trans-unit>
     </body>
   </file>
@@ -3543,8 +3519,8 @@ Comandos omitidos predeterminados:
         <target state="translated">Restablecer zoom</target>
       </trans-unit>
       <trans-unit id="epCompare.zoomToFit">
-        <source xml:lang="en">Zoom to fit</source>
-        <target state="translated">Ajustar al tamaño</target>
+        <source xml:lang="en">Zoom to Fit</source>
+        <target state="translated">Zoom para ajustar</target>
       </trans-unit>
       <trans-unit id="executionPlanComparison.bottomPlanDiagram.name">
         <source xml:lang="en">Bottom execution Plan {0}</source>
@@ -3635,11 +3611,11 @@ Comandos omitidos predeterminados:
         <target state="translated">Cuando es true, habilita la información sobre herramientas al mantener el puntero para el plan de ejecución. Cuando es false, la información sobre herramientas se muestra al hacer clic en el nodo o presionar la tecla F3.</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareCommandOriginalValue">
-        <source xml:lang="en">Compare execution plans</source>
+        <source xml:lang="en">Compare Execution Plans</source>
         <target state="translated">Comparar planes de ejecución</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareCommandValue">
-        <source xml:lang="en">Compare execution plans</source>
+        <source xml:lang="en">Compare Execution Plans</source>
         <target state="translated">Comparar planes de ejecución</target>
       </trans-unit>
       <trans-unit id="executionPlanConfigurationTitle">
@@ -3767,7 +3743,7 @@ Comandos omitidos predeterminados:
         <target state="translated">Plan de ejecución {0}</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareExecutionPlanAction">
-        <source xml:lang="en">Compare execution plan</source>
+        <source xml:lang="en">Compare Execution Plan</source>
         <target state="translated">Comparar plan de ejecución</target>
       </trans-unit>
       <trans-unit id="executionPlanContextMenuDisableTooltip">
@@ -3791,8 +3767,8 @@ Comandos omitidos predeterminados:
         <target state="translated">Información sobre herramientas habilitada</target>
       </trans-unit>
       <trans-unit id="executionPlanFitGraphLabel">
-        <source xml:lang="en">Zoom to fit</source>
-        <target state="translated">Ajustar al tamaño</target>
+        <source xml:lang="en">Zoom to Fit</source>
+        <target state="translated">Zoom para ajustar</target>
       </trans-unit>
       <trans-unit id="executionPlanHighlightExpensiveOperationAction">
         <source xml:lang="en">Highlight Expensive Operation</source>
@@ -5114,6 +5090,10 @@ Error: {1}</target>
         <source xml:lang="en">The maximum number of changes stored in the undo history for the notebook Rich Text editor.</source>
         <target state="translated">Número máximo de cambios almacenados en el historial de deshacer del editor de texto enriquecido del cuaderno</target>
       </trans-unit>
+      <trans-unit id="notebook.renderTablesInHtml">
+        <source xml:lang="en">Display and save tables in HTML format in text cells instead of converting to markdown tables.</source>
+        <target state="translated">Muestre y guarde tablas en formato HTML en celdas de texto en lugar de convertirlas en tablas de Markdown.</target>
+      </trans-unit>
       <trans-unit id="notebook.richTextModeDescription">
         <source xml:lang="en">Text is displayed as Rich Text (also known as WYSIWYG).</source>
         <target state="translated">El texto se muestra como texto enriquecido (también conocido como WYSIWYG).</target>
@@ -5994,6 +5974,10 @@ Error: {1}</target>
         <source xml:lang="en">Chart</source>
         <target state="translated">Gráfico</target>
       </trans-unit>
+      <trans-unit id="copyHeaders">
+        <source xml:lang="en">Copy Headers</source>
+        <target state="translated">Encabezados de texto</target>
+      </trans-unit>
       <trans-unit id="copySelection">
         <source xml:lang="en">Copy</source>
         <target state="translated">Copiar</target>
@@ -6274,6 +6258,10 @@ Error: {1}</target>
         <source xml:lang="en">When true, XML output will be formatted when saving results as XML</source>
         <target state="translated">Si es "true", se dará formato a la salida XML al guardar los resultados como XML.</target>
       </trans-unit>
+      <trans-unit id="queryEditor.results.showActionBar">
+        <source xml:lang="en">Whether to show the action bar in the query results view</source>
+        <target state="translated">Indica si se debe mostrar la barra de acciones en la vista de resultados de la consulta.</target>
+      </trans-unit>
       <trans-unit id="queryEditor.results.streaming">
         <source xml:lang="en">Enable results streaming; contains few minor visual issues</source>
         <target state="translated">Permitir streaming de resultados; contiene algunos defectos visuales menores</target>
@@ -6437,6 +6425,14 @@ Error: {1}</target>
       <trans-unit id="status.query.summaryText">
         <source xml:lang="en">Average: {0}  Count: {1}  Sum: {2}</source>
         <target state="translated">Promedio: {0}; recuento: {1}; suma: {2}</target>
+      </trans-unit>
+      <trans-unit id="status.query.summaryTextNonNumeric">
+        <source xml:lang="en">Count: {0}  Distinct Count: {1}  Null Count: {2}</source>
+        <target state="translated">Recuento: {0} Recuento distinto: {1} Recuento nulo: {2}</target>
+      </trans-unit>
+      <trans-unit id="status.query.summaryTooltip">
+        <source xml:lang="en">Average: {0}  Count: {1}  Distinct Count: {2}  Max: {3}  Min: {4}  Null Count: {5}  Sum: {6}</source>
+        <target state="translated">Promedio: {0} Recuento: {1} Recuento distinto: {2} Máx.: {3} Mín.: {4} Recuento nulo: {5} Suma: {6}</target>
       </trans-unit>
       <trans-unit id="status.query.timeElapsed">
         <source xml:lang="en">Time Elapsed</source>
@@ -7773,6 +7769,46 @@ Error: {1}</target>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/connection/browser/passwordChangeDialog" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="passwordChangeDialog.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Cancelar</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.confirmPassword">
+        <source xml:lang="en">Confirm password:</source>
+        <target state="translated">Confirmar contraseña:</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.connecting">
+        <source xml:lang="en">Connecting</source>
+        <target state="translated">Conexión en curso</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.errorHeader">
+        <source xml:lang="en">Failure when attempting to change password</source>
+        <target state="translated">Error al intentar cambiar la contraseña</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.errorPasswordMismatchErrorMessage">
+        <source xml:lang="en">Passwords entered do not match</source>
+        <target state="translated">Las contraseñas introducidas no coinciden</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.errorPasswordMismatchRecoveryInstructions">
+        <source xml:lang="en">Press OK and enter the exact same password in both boxes.</source>
+        <target state="translated">Presione Aceptar y escriba exactamente la misma contraseña en ambos cuadros.</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.newPassword">
+        <source xml:lang="en">New password:</source>
+        <target state="translated">Nueva contraseña:</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">Aceptar</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.title">
+        <source xml:lang="en">Change Password</source>
+        <target state="translated">Cambiar contraseña</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="newDashboardTab.cancel">
@@ -8240,6 +8276,10 @@ Error: {1}</target>
         <source xml:lang="en">Please select a connection to run cells for this kernel</source>
         <target state="translated">Seleccione una conexión para ejecutar celdas para este kernel</target>
       </trans-unit>
+      <trans-unit id="savedKernelNotSupported">
+        <source xml:lang="en">This notebook's '{0}' kernel is not supported. Defaulting to SQL kernel instead.</source>
+        <target state="translated">No se admite el kernel "{0}" de este cuaderno. En su lugar, el valor predeterminado es kernel de SQL.</target>
+      </trans-unit>
       <trans-unit id="shutdownClientSessionError">
         <source xml:lang="en">A client session error occurred when closing the notebook: {0}</source>
         <target state="translated">Se ha producido un error en la sesión del cliente al cerrar el cuaderno: {0}</target>
@@ -8357,16 +8397,16 @@ Error: {1}</target>
   <file original="src/sql/workbench/services/notebook/common/notebookRegistry" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="carbon.extension.contributes.notebook.executionTarget">
-        <source xml:lang="en">Optional execution target this magic indicates, for example Spark vs SQL</source>
-        <target state="translated">Objetivo de ejecución opcional indicado por este magic, por ejemplo Spark vs SQL</target>
+        <source xml:lang="en">Optional execution target this magic indicates, for example Python vs SQL</source>
+        <target state="translated">Objetivo de ejecución opcional indicado por este magic, por ejemplo Python vs SQL</target>
       </trans-unit>
       <trans-unit id="carbon.extension.contributes.notebook.fileExtensions">
         <source xml:lang="en">What file extensions should be registered to this notebook provider</source>
         <target state="translated">Extensiones de archivo que deben estar registradas en este proveedor de cuadernos</target>
       </trans-unit>
       <trans-unit id="carbon.extension.contributes.notebook.kernels">
-        <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, pyspark, sql</source>
-        <target state="translated">Conjunto opcional de kernels para los que esto es válido, por ejemplo python3, pyspark, sql</target>
+        <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, sql</source>
+        <target state="translated">Conjunto opcional de kernels para los que esto es válido, por ejemplo, python3 y sql</target>
       </trans-unit>
       <trans-unit id="carbon.extension.contributes.notebook.language">
         <source xml:lang="en">The cell language to be used if this cell magic is included in the cell</source>
@@ -8383,10 +8423,6 @@ Error: {1}</target>
       <trans-unit id="carbon.extension.contributes.notebook.standardKernels">
         <source xml:lang="en">What kernels should be standard with this notebook provider</source>
         <target state="translated">Núcleos que deben ser estándar con este proveedor de cuadernos</target>
-      </trans-unit>
-      <trans-unit id="providerNotInRegistryError">
-        <source xml:lang="en">The specified provider '{0}' is not present in the notebook registry.</source>
-        <target state="translated">El proveedor especificado "{0}" no está presente en el registro del bloc de notas.</target>
       </trans-unit>
       <trans-unit id="vscode.extension.contributes.notebook.languagemagics">
         <source xml:lang="en">Contributes notebook language.</source>
@@ -8732,13 +8768,17 @@ Error: {1}</target>
         <source xml:lang="en">OK</source>
         <target state="translated">Aceptar</target>
       </trans-unit>
-      <trans-unit id="firewallRuleDialogDescription">
-        <source xml:lang="en">Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.</source>
-        <target state="translated">La dirección IP del cliente no tiene acceso al servidor. Inicie sesión en una cuenta de Azure y cree una regla de firewall para habilitar el acceso.</target>
+      <trans-unit id="firewall.ruleName">
+        <source xml:lang="en">Rule name</source>
+        <target state="translated">Nombre de la regla</target>
       </trans-unit>
-      <trans-unit id="firewallRuleHelpDescription">
-        <source xml:lang="en">Learn more about firewall settings</source>
-        <target state="translated">Más información sobre configuración de firewall</target>
+      <trans-unit id="firewallRuleDescription">
+        <source xml:lang="en">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</source>
+        <target state="translated">Se requiere una regla de firewall para acceder a la instancia de SQL Server. Haga clic en el vínculo siguiente para crear una nueva regla de firewall.</target>
+      </trans-unit>
+      <trans-unit id="firewallRuleHelpLink">
+        <source xml:lang="en">Learn more about firewall rules</source>
+        <target state="translated">Más información sobre las reglas del firewall</target>
       </trans-unit>
       <trans-unit id="from">
         <source xml:lang="en">From</source>

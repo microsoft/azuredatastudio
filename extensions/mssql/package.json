@@ -150,6 +150,17 @@
             "Verbose"
           ]
         },
+        "mssql.trace.server": {
+          "type": "string",
+          "scope": "window",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "%mssql.tracing.desc%"
+        },
         "mssql.logRetentionMinutes": {
           "type": "number",
           "default": 10080,
@@ -578,6 +589,7 @@
       "providerId": "MSSQL",
       "displayName": "%mssql.provider.displayName%",
       "isExecutionPlanProvider": true,
+      "azureResource": "Sql",
       "supportedExecutionPlanFileExtensions": [
         "sqlplan"
       ],
@@ -737,6 +749,20 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "name": "commandTimeout",
+          "displayName": "%mssql.connectionOptions.commandTimeout.displayName%",
+          "description": "%mssql.connectionOptions.commandTimeout.description%",
+          "groupName": "%mssql.connectionOptions.groupName.initialization%",
+          "valueType": "number",
+          "defaultValue": "30",
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
           "name": "currentLanguage",
           "displayName": "%mssql.connectionOptions.currentLanguage.displayName%",
           "description": "%mssql.connectionOptions.currentLanguage.description%",
@@ -831,6 +857,20 @@
           "description": "%mssql.connectionOptions.persistSecurityInfo.description%",
           "groupName": "%mssql.connectionOptions.groupName.security%",
           "valueType": "boolean",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
+          "name": "hostNameInCertificate",
+          "displayName": "%mssql.connectionOptions.hostNameInCertificate.displayName%",
+          "description": "%mssql.connectionOptions.hostNameInCertificate.description%",
+          "groupName": "%mssql.connectionOptions.groupName.security%",
+          "valueType": "string",
           "defaultValue": null,
           "objectType": null,
           "categoryValues": null,
@@ -1118,7 +1158,7 @@
     "find-remove": "1.2.1",
     "request": "^2.88.0",
     "request-light": "^0.3.0",
-    "@microsoft/ads-service-downloader": "1.0.4",
+    "@microsoft/ads-service-downloader": "^1.1.0",
     "stream-meter": "^1.0.4",
     "through2": "^3.0.1",
     "tough-cookie": "^3.0.1",

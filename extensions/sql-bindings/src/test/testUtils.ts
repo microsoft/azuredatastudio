@@ -93,6 +93,7 @@ export function createTestCredentials(): vscodeMssql.IConnectionInfo {
 		expiresOn: 0,
 		encrypt: false,
 		trustServerCertificate: false,
+		hostNameInCertificate: '',
 		persistSecurityInfo: false,
 		connectTimeout: 15,
 		connectRetryCount: 0,

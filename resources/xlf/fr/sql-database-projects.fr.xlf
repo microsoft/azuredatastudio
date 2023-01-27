@@ -247,8 +247,8 @@
         <target state="translated">Fichiers dacpac</target>
       </trans-unit>
       <trans-unit id="dacpacNotOnSameDrive">
-        <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
-        <target state="translated">Les références dacpac doivent se trouver sur le même lecteur que le fichier projet. Le fichier projet se trouve à {0}</target>
+        <source xml:lang="en">Dacpac references need to be located on the same drive as the project file.</source>
+        <target state="translated">Les références DACPAC doivent se trouver sur le même lecteur que le fichier projet.</target>
       </trans-unit>
       <trans-unit id="dacpacReferenceElement">
         <source xml:lang="en">Dacpac reference</source>
@@ -976,13 +976,17 @@
         <source xml:lang="en">Publish to new {0} local development container</source>
         <target state="translated">Publier dans un nouveau conteneur de développement local {0}</target>
       </trans-unit>
+      <trans-unit id="publishToDockerContainerPreview">
+        <source xml:lang="en">Publish to new {0} local development container (Preview)</source>
+        <target state="translated">Publier dans un nouveau conteneur de développement local {0} (préversion)</target>
+      </trans-unit>
       <trans-unit id="publishToExistingServer">
         <source xml:lang="en">Publish to an existing {0}</source>
         <target state="translated">Publier sur un {0} existant</target>
       </trans-unit>
       <trans-unit id="publishToNewAzureServer">
-        <source xml:lang="en">Publish to new Azure SQL logical server</source>
-        <target state="translated">Publier sur un nouveau serveur logique Azure SQL</target>
+        <source xml:lang="en">Publish to new Azure SQL logical server (Preview)</source>
+        <target state="translated">Publier sur le nouveau serveur logique Azure SQL (Préversion)</target>
       </trans-unit>
       <trans-unit id="publishToNewAzureServerFailed">
         <source xml:lang="en">Failed to publish to new Azure SQL server. {0}</source>
@@ -1193,16 +1197,16 @@
         <target state="translated">Chaîne de connexion SQL</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.DotnetInstallationConfirmation">
-        <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.</source>
-        <target state="translated">Impossible de localiser le kit SDK .NET La génération du projet ne fonctionnera pas. Installez kit SDK .NET version 3.1 ou supérieur ou mettez à jour l’emplacement du kit de développement logiciel (SDK) .Net Core dans les paramètres, s’il est déjà installé.</target>
+        <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK location in settings if already installed.</source>
+        <target state="translated">Impossible de localiser le kit SDK .NET La génération du projet ne fonctionnera pas. Installez le Kit de développement logiciel (SDK) .NET 6 ou supérieur ou mettez à jour l’emplacement du kit de développement logiciel (SDK) .Net Core dans les paramètres, s’il est déjà installé.</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.Install">
         <source xml:lang="en">Install</source>
         <target state="translated">Installer</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
-        <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.</source>
-        <target state="translated">La version du SDK .NET Core actuellement installée est {0}, ce qui n'est pas pris en charge. La construction du projet ne fonctionnera pas. Veuillez installer .NET Core SDK version 3.1 ou supérieure ou mettre à jour l'emplacement de la version supportée de .NET SDK dans les paramètres s'il est déjà installé.</target>
+        <source xml:lang="en">Currently installed .NET SDK version is {0}, which is not supported. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK supported version location in settings if already installed.</source>
+        <target state="translated">La version du SDK .NET actuellement installée est {0}, ce qui n'est pas pris en charge. La construction du projet ne fonctionnera pas. Veuillez installer le Kit de développement logiciel (SDK) .NET 6 ou supérieure ou mettre à jour l'emplacement de la version supportée de .NET SDK dans les paramètres s'il est déjà installé.</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.UpdateDotnetLocation">
         <source xml:lang="en">Update Location</source>
@@ -1425,28 +1429,32 @@
         <target state="translated">Projets de base de données</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.dotnetInstallLocation">
-        <source xml:lang="en">Full path to .NET SDK on the machine.</source>
-        <target state="translated">Chemin d’accès complet à kit SDK .NET sur l’ordinateur</target>
+        <source xml:lang="en">Full path to .NET SDK on the machine. For example, if dotnet.exe is located at C:\folder1\dotnet\dotnet.exe, set the path for this setting to C:\folder1\dotnet</source>
+        <target state="translated">Chemin d’accès complet au kit SDK .NET sur l’ordinateur. Par exemple, si dotnet.exe se trouve à C:\folder1\dotnet\dotnet.exe, définissez le chemin d’accès de ce paramètre sur C:\folder1\dotnet</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.editProjectFile">
         <source xml:lang="en">Edit .sqlproj File</source>
         <target state="translated">Modifier le fichier .sqlproj</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.enablePreviewFeatures">
+        <source xml:lang="en">Enable preview SQL Database Projects features</source>
+        <target state="translated">Activer les fonctionnalités d'aperçu des projets de base de données SQL</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.exclude">
         <source xml:lang="en">Exclude from project</source>
         <target state="translated">Exclure du projet</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.generateProjectFromOpenApiSpec">
-        <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec</source>
-        <target state="translated">Générer un projet SQL à partir de OpenAPI/Swagger spec</target>
+        <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec (Preview)</source>
+        <target state="translated">Générer un projet SQL à partir de OpenAPI/Swagger spec (préversion)</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.microsoftBuildSqlVersion">
-        <source xml:lang="en">Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.3-preview</source>
-        <target state="translated">Version du Kit de développement logiciel (SDK) Microsoft.Build.Sql à utiliser pour la génération de projets SQL hérités. Exemple : 0.1.3-preview</target>
+        <source xml:lang="en">Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.7-preview</source>
+        <target state="translated">Quelle version de Microsoft.Build.Sql SDK utiliser pour créer des projets SQL hérités. Exemple : 0.1.7-aperçu</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
-        <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
-        <target state="translated">Indique si l’utilisateur doit être invité à installer .NET Core quand il n’est pas détecté.</target>
+        <source xml:lang="en">Whether to prompt the user to install .NET SDK when not detected.</source>
+        <target state="translated">Indique si l’utilisateur doit être invité à installer le Kit de développement logiciel (SDK) .NET quand il n’est pas détecté.</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.new">
         <source xml:lang="en">New Database Project</source>

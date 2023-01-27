@@ -1,0 +1,10 @@
+{
+	"config.logDebugInfo": "Enable/disable logging debug information to the developer console.",
+	"config.proseParsingMaxLines": "Number of lines to read from a file to run PROSE parsing on.",
+	"config.extensionDescription": "Support for Data Virtualization in SQL Server, including wizards for creating an External Table from an External Data Source or CSV files.",
+	"title.datavirtualization": "Data Virtualization",
+	"title.openVirtualizeDataWizard": "Virtualize Data",
+	"title.openMssqlHdfsTableWizard": "Virtualize Data From CSV Files",
+	"title.tasks": "Tasks",
+	"description.datavirtualization": "Support for Data Virtualization features in SQL Server"
+}

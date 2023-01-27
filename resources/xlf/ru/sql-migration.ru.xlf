@@ -10,6 +10,10 @@
         <source xml:lang="en">The access token for selected account '{0}' and tenant '{1}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.</source>
         <target state="translated">Маркер доступа для выбранной учетной записи "{0}" и клиента "{1}" больше не действителен. Нажмите "Связать учетную запись" и обновите учетную запись, либо выберите другую учетную запись.</target>
       </trans-unit>
+      <trans-unit id="sql-migration.login.wizard.title">
+        <source xml:lang="en">Migrate logins from '{0}' to Azure SQL</source>
+        <target state="translated">Миграция учетных данных из "{0}" в Azure SQL</target>
+      </trans-unit>
       <trans-unit id="sql-migration.wizard.title">
         <source xml:lang="en">Migrate '{0}' to Azure SQL</source>
         <target state="translated">Миграция "{0}" в Azure SQL</target>
@@ -18,37 +22,181 @@
         <source xml:lang="en">Are you sure you want to cancel this migration?</source>
         <target state="translated">Вы действительно хотите отменить эту миграцию?</target>
       </trans-unit>
+      <trans-unit id="sql.login.migration..error">
+        <source xml:lang="en">Login migration error: {0}</source>
+        <target state="translated">Ошибка миграции учетных данных: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.complete">
+        <source xml:lang="en">Completed migrating logins</source>
+        <target state="translated">Выполнена миграция учетных данных</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.db.title">
+        <source xml:lang="en">Azure SQL Database</source>
+        <target state="translated">База данных SQL Azure</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.establish.user.mappings">
+        <source xml:lang="en">Validating and migrating logins completed.
+
+Establishing user mappings.</source>
+        <target state="translated">Проверка и миграция учетных данных завершена.
+
+Установка сопоставлений пользователей.</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.establish.user.mappings.failed">
+        <source xml:lang="en">Establishing user mappings failed</source>
+        <target state="translated">Сбой установки сопоставлений пользователей</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.failed">
+        <source xml:lang="en">Migrating logins failed</source>
+        <target state="translated">Не удалось перенести учетные данные</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.get.connection.string">
+        <source xml:lang="en">data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;</source>
+        <target state="translated">data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.get.logins.query">
+        <source xml:lang="en">SELECT sp.name as login, sp.type_desc as login_type, sp.default_database_name, case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status FROM sys.server_principals sp  LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN ('SQL_LOGIN', 'WINDOWS_LOGIN') ORDER BY sp.name;</source>
+        <target state="translated">SELECT sp.name as login, sp.type_desc as login_type, sp.default_database_name, case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status FROM sys.server_principals sp  LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN ('SQL_LOGIN', 'WINDOWS_LOGIN') ORDER BY sp.name;</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.in.progress">
+        <source xml:lang="en">Login migration in progress</source>
+        <target state="translated">Выполняется миграция учетных данных</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.logins.found">
+        <source xml:lang="en">Login found</source>
+        <target state="translated">Учетные данные найдены</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.logins.not.found">
+        <source xml:lang="en">Login not found</source>
+        <target state="translated">Учетные данные не найдены</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.mi.title">
+        <source xml:lang="en">Azure SQL Managed Instance</source>
+        <target state="translated">Управляемый экземпляр SQL Azure</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.migrate.server.roles.and.set.permissions">
+        <source xml:lang="en">Establishing user mappings completed.
+
+Currently, migrating server roles, establishing server mappings and setting permissions. This will take some time.</source>
+        <target state="translated">Установка сопоставлений пользователей завершена.
+
+В настоящее время выполняется миграция ролей сервера, установка сопоставлений серверов и настройка разрешений. Это займет некоторое время.</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.migrate.server.roles.and.set.permissions.failed">
+        <source xml:lang="en">Migrating server roles, establishing server mappings and setting permissions failed.</source>
+        <target state="translated">Не удалось перенести роли сервера, установить сопоставления серверов и настроить разрешения.</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.migration.status.column">
+        <source xml:lang="en">Migration Status</source>
+        <target state="translated">Состояние миграции</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.refresh.login.data.successful">
+        <source xml:lang="en">Refreshing login list was successful. Source logins found {0}, Target logins found {1}</source>
+        <target state="translated">Список учетных данных обновлен. Найдены исходные учетные данные: {0}, найдены целевые учетные данные: {1}</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.refresh.source.login.data.failed">
+        <source xml:lang="en">Refreshing login list from source failed</source>
+        <target state="translated">Не удалось обновить список учетных данных из источника</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.refresh.target.login.data.failed">
+        <source xml:lang="en">Refreshing login list from target failed</source>
+        <target state="translated">Не удалось обновить список учетных данных из целевого объекта</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.select.in.progress">
+        <source xml:lang="en">Refreshing login list from source and target</source>
+        <target state="translated">Обновление списка учетных данных из источника и целевого объекта</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.select.logins.windows.auth.warning">
+        <source xml:lang="en">Please note that this wizard does not display windows authentication login types because migrating that type is currently not supported. Capability for migrating windows authentication logins is coming soon.</source>
+        <target state="translated">Обратите внимание, что этот мастер не отображает типы учетных данных проверки подлинности Windows, так как миграция этого типа сейчас не поддерживается. Возможность миграции учетных данных проверки подлинности Windows ожидается в ближайшее время.</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.select.page.title">
+        <source xml:lang="en">Select login(s) to migrate</source>
+        <target state="translated">Выберите учетные данные для миграции</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.column">
+        <source xml:lang="en">Status</source>
+        <target state="translated">Состояние</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.failed">
+        <source xml:lang="en">Failed</source>
+        <target state="translated">Сбой</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.in.progress">
+        <source xml:lang="en">In progress</source>
+        <target state="translated">Выполняется</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.page.description">
+        <source xml:lang="en">Migrating {0} logins to target {1} '{2}'</source>
+        <target state="translated">Миграция учетных данных ({0}) в целевой объект {1} "{2}"</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.page.description.completed">
+        <source xml:lang="en">Completed migrating {0} logins to {1} '{2}'</source>
+        <target state="translated">Выполнена миграция учетных данных ({0}) в {1} "{2}"</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.page.description.failed">
+        <source xml:lang="en">Failed migrating {0} logins to {1} '{2}'</source>
+        <target state="translated">Не удалось перенести учетные данные ({0}) в {1} "{2}"</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.page.previous.button.error">
+        <source xml:lang="en">Login migration has already been initiated and going back to prior page is disabled.</source>
+        <target state="translated">Миграция учетных данных уже запущена, а возврат к предыдущей странице отключен.</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.page.previous.button.title">
+        <source xml:lang="en">Previous (Disabled)</source>
+        <target state="translated">Назад (отключено)</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.page.title">
+        <source xml:lang="en">Migration Status</source>
+        <target state="translated">Состояние миграции</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.status.succeeded">
+        <source xml:lang="en">Succeeded</source>
+        <target state="translated">Успешно</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.target.status.column">
+        <source xml:lang="en">Target Status</source>
+        <target state="translated">Целевое состояние</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.target.title">
+        <source xml:lang="en">Azure SQL target</source>
+        <target state="translated">Целевой объект Azure SQL</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.type">
+        <source xml:lang="en">Login type</source>
+        <target state="translated">Тип учетных данных</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.vm.title">
+        <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
+        <target state="translated">SQL Server на виртуальной машине Azure</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.wizard.target.connection.success">
+        <source xml:lang="en">Connection was successful.</source>
+        <target state="translated">Подключение выполнено.</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.wizard.target.data.migration.warning">
+        <source xml:lang="en">Please note that login migration feature is in private preview mode.</source>
+        <target state="translated">Обратите внимание, что функция миграции учетных данных доступна в режиме закрытой предварительной версии.</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.wizard.target.description">
+        <source xml:lang="en">Select the target Azure SQL Managed Instance, Azure SQL VM, or Azure SQL database(s) where you want to migrate your logins.</source>
+        <target state="translated">Выберите целевой Управляемый экземпляр SQL Azure, виртуальную машину Azure SQL или базы данных SQL Azure, куда нужно перенести ваши учетные данные.</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.wizard.target.permission.warning">
+        <source xml:lang="en">Please ensure that the current user has sysadmin permissions to get all login information for the current instance ({0}).</source>
+        <target state="translated">Убедитесь, что у текущего пользователя есть разрешения системного администратора для получения всех сведений об учетных данных для текущего экземпляра ({0}).</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.wizard.target.type.title">
+        <source xml:lang="en">Azure SQL target type</source>
+        <target state="translated">Тип целевого объекта Azure SQL</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migrations.selected">
+        <source xml:lang="en">{0}/{1} logins selected</source>
+        <target state="translated">Выбрано учетных данных: {0}/{1}</target>
+      </trans-unit>
       <trans-unit id="sql.migrate.text">
         <source xml:lang="en">Select the databases that you want to migrate to Azure SQL.</source>
         <target state="translated">Выберите базы данных, которые вы хотите переместить в Azure SQL.</target>
-      </trans-unit>
-      <trans-unit id="sql.migratino.database.loading.tables">
-        <source xml:lang="en">Loading tables list...</source>
-        <target state="translated">Загрузка списка таблиц…</target>
-      </trans-unit>
-      <trans-unit id="sql.migratino.database.missing.tables">
-        <source xml:lang="en">0 tables found.</source>
-        <target state="translated">Обнаружено таблиц: 0.</target>
-      </trans-unit>
-      <trans-unit id="sql.migratino.table.selection.filter">
-        <source xml:lang="en">Filter tables</source>
-        <target state="translated">Фильтровать таблицы</target>
-      </trans-unit>
-      <trans-unit id="sql.migratino.table.selection.status.column">
-        <source xml:lang="en">Has rows</source>
-        <target state="translated">Содержит строки</target>
-      </trans-unit>
-      <trans-unit id="sql.migratino.table.selection.tablename.column">
-        <source xml:lang="en">Table name</source>
-        <target state="translated">Имя таблицы</target>
-      </trans-unit>
-      <trans-unit id="sql.migratino.table.selection.update.button">
-        <source xml:lang="en">Update</source>
-        <target state="translated">Обновить</target>
-      </trans-unit>
-      <trans-unit id="sql.migratino.table.selection.update.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">Отмена</target>
       </trans-unit>
       <trans-unit id="sql.migration.account.credentials.refresh.required">
         <source xml:lang="en">{0} (requires credentials refresh)</source>
@@ -498,6 +646,14 @@ This may take some time.</source>
         <source xml:lang="en">Help articles and video links</source>
         <target state="translated">Статьи справки и ссылки на видео</target>
       </trans-unit>
+      <trans-unit id="sql.migration.dashboard.login.migrate.task.button">
+        <source xml:lang="en">Migrate logins to Azure SQL</source>
+        <target state="translated">Миграция учетных данных в Azure SQL</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.login.migrate.task.button.description">
+        <source xml:lang="en">Migrate SQL Server logins to Azure SQL.</source>
+        <target state="translated">Миграция учетных данных SQL Server в Azure SQL.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.dashboard.migrate.task.button">
         <source xml:lang="en">Migrate to Azure SQL</source>
         <target state="translated">Миграция в Azure SQL</target>
@@ -554,6 +710,10 @@ This may take some time.</source>
         <source xml:lang="en">Loading database table list..</source>
         <target state="translated">Загрузка списка таблиц базы данных...</target>
       </trans-unit>
+      <trans-unit id="sql.migration.database.loading.tables">
+        <source xml:lang="en">Loading tables list...</source>
+        <target state="translated">Загрузка списка таблиц…</target>
+      </trans-unit>
       <trans-unit id="sql.migration.database.migration.mode.description">
         <source xml:lang="en">To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.</source>
         <target state="translated">Чтобы выполнить миграцию в целевую базу данных Azure SQL, выберите режим миграции в соответствии с требованиями к простою.</target>
@@ -597,6 +757,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.database.migration.status.label">
         <source xml:lang="en">Database migration status: {0}</source>
         <target state="translated">Состояние миграции базы данных: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.missing.tables">
+        <source xml:lang="en">0 tables found.</source>
+        <target state="translated">Обнаружено таблиц: 0.</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.page.description">
         <source xml:lang="en">Select the location of the database backups to use during migration.</source>
@@ -657,6 +821,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.days">
         <source xml:lang="en">{0} days</source>
         <target state="translated">{0} дн.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.default.database">
+        <source xml:lang="en">Default database</source>
+        <target state="translated">База данных по умолчанию</target>
       </trans-unit>
       <trans-unit id="sql.migration.description">
         <source xml:lang="en">Description</source>
@@ -1238,6 +1406,10 @@ This may take some time.</source>
         <source xml:lang="en">Failed to open the migration notebook.</source>
         <target state="translated">Не удалось открыть записную книжку миграции.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.number.logins.migrating">
+        <source xml:lang="en">{0}/{1} migrating logins displayed</source>
+        <target state="translated">Отображаются переносимые учетные данные: {0}/{1}</target>
+      </trans-unit>
       <trans-unit id="sql.migration.object.details">
         <source xml:lang="en">Object details</source>
         <target state="translated">Сведения об объекте</target>
@@ -1386,6 +1558,10 @@ This may take some time.</source>
         <source xml:lang="en">Resource group created</source>
         <target state="translated">Создана группа ресурсов</target>
       </trans-unit>
+      <trans-unit id="sql.migration.run.validation">
+        <source xml:lang="en">Run validation</source>
+        <target state="translated">Запустить проверку</target>
+      </trans-unit>
       <trans-unit id="sql.migration.save.assessment.report">
         <source xml:lang="en">Save assessment report</source>
         <target state="translated">Сохранить отчет об оценке</target>
@@ -1443,8 +1619,8 @@ This may take some time.</source>
         <target state="translated">Выберите целевую подписку Azure и целевой SQL Server на виртуальной машине Azure для целевого объекта.</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.database.to.continue">
-        <source xml:lang="en">Please select 1 or more databases to assess for migration</source>
-        <target state="translated">Выберите одну или несколько баз данных, чтобы выполнить оценку миграции</target>
+        <source xml:lang="en">Please select 1 or more logins for migration</source>
+        <target state="translated">Выберите 1 или более учетных данных для миграции</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.database.to.migrate">
         <source xml:lang="en">Select the databases to migrate.</source>
@@ -1521,6 +1697,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.select.service.select.subscription.error">
         <source xml:lang="en">An error occurred while loading account subscriptions. Please check your Azure connection and try again.</source>
         <target state="translated">Произошла ошибка при загрузке подписок учетных записей. Проверьте подключение к Azure и повторите попытку.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.select.service.select.target.type.">
+        <source xml:lang="en">Select target Azure SQL Type</source>
+        <target state="translated">Выберите целевой тип Azure SQL</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.service.select.tenant.error">
         <source xml:lang="en">An error occurred while loading available Azure account tenants.</source>
@@ -1605,6 +1785,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.service.ready">
         <source xml:lang="en">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on the node - {1}</source>
         <target state="translated">Azure Database Migration Service "{0}" подключена к локальной среде выполнения интеграции, запущенной на узле — {1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.service.selection.location.msg">
+        <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
+        <target state="translated">Прежде чем продолжить, выберите расположение файлов резервной копии базы данных.</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.status.refresh.error">
         <source xml:lang="en">An error occurred while refreshing the migration service creation status.</source>
@@ -2130,6 +2314,10 @@ This may take some time.</source>
         <source xml:lang="en">Enter the Windows Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup files.</source>
         <target state="translated">Введите учетные данные проверки подлинности Windows, используемые для подключения к экземпляру SQL Server {0}. Эти учетные данные будут использоваться для подключения к экземпляру SQL Server и определения действительных файлов резервных копий.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.source.login">
+        <source xml:lang="en">Source login</source>
+        <target state="translated">Исходные учетные данные</target>
+      </trans-unit>
       <trans-unit id="sql.migration.source.server">
         <source xml:lang="en">Source server</source>
         <target state="translated">Исходный сервер</target>
@@ -2210,6 +2398,10 @@ This may take some time.</source>
         <source xml:lang="en">Source name</source>
         <target state="translated">Имя источника</target>
       </trans-unit>
+      <trans-unit id="sql.migration.start.login.migration.button">
+        <source xml:lang="en">Migrate</source>
+        <target state="translated">Мигрировать</target>
+      </trans-unit>
       <trans-unit id="sql.migration.start.migration.button">
         <source xml:lang="en">Start migration</source>
         <target state="translated">Запуск миграции</target>
@@ -2221,6 +2413,14 @@ This may take some time.</source>
       <trans-unit id="sql.migration.start.time">
         <source xml:lang="en">Start time</source>
         <target state="translated">Время начала</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.starting.login">
+        <source xml:lang="en">Validating and migrating logins are in progress</source>
+        <target state="translated">Выполняется проверка и миграция учетных данных</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.starting.login.failed">
+        <source xml:lang="en">Validating and migrating logins failed</source>
+        <target state="translated">Сбой проверки и миграции учетных данных</target>
       </trans-unit>
       <trans-unit id="sql.migration.status">
         <source xml:lang="en">Status</source>
@@ -2378,6 +2578,14 @@ This may take some time.</source>
         <source xml:lang="en">Feedback</source>
         <target state="translated">Отзывы</target>
       </trans-unit>
+      <trans-unit id="sql.migration.tab.button.login.migration.description">
+        <source xml:lang="en">Migrate logins to Azure SQL</source>
+        <target state="translated">Миграция учетных данных в Azure SQL</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tab.button.login.migration.label">
+        <source xml:lang="en">New login migration (PREVIEW)</source>
+        <target state="translated">Новая миграция учетных данных (предварительная версия)</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tab.button.migration.description">
         <source xml:lang="en">Migrate to Azure SQL</source>
         <target state="translated">Миграция в Azure SQL</target>
@@ -2429,6 +2637,26 @@ This may take some time.</source>
       <trans-unit id="sql.migration.table.selection.edit">
         <source xml:lang="en">Edit</source>
         <target state="translated">Изменить</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selection.filter">
+        <source xml:lang="en">Filter tables</source>
+        <target state="translated">Фильтровать таблицы</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selection.status.column">
+        <source xml:lang="en">Has rows</source>
+        <target state="translated">Содержит строки</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selection.tablename.column">
+        <source xml:lang="en">Table name</source>
+        <target state="translated">Имя таблицы</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selection.update.button">
+        <source xml:lang="en">Update</source>
+        <target state="translated">Обновить</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selection.update.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Отмена</target>
       </trans-unit>
       <trans-unit id="sql.migration.target">
         <source xml:lang="en">Target</source>
@@ -2506,6 +2734,142 @@ This may take some time.</source>
         <source xml:lang="en">Enter the target user name</source>
         <target state="translated">Введите имя пользователя целевого объекта</target>
       </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.column.status">
+        <source xml:lang="en">Status</source>
+        <target state="translated">Состояние</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.column.validation.steps">
+        <source xml:lang="en">Validation steps</source>
+        <target state="translated">Шаги проверки</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.completed.errors">
+        <source xml:lang="en">Validation completed with the following error(s):{0}{1}</source>
+        <target state="translated">Проверка завершена со следующими ошибками:{0}{1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.copy.results">
+        <source xml:lang="en">Copy validation results</source>
+        <target state="translated">Копировать результаты проверки</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.done.button">
+        <source xml:lang="en">Done</source>
+        <target state="translated">Готово</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.heading">
+        <source xml:lang="en">We are validating the following:</source>
+        <target state="translated">Выполняется проверка следующего:</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.results.heading">
+        <source xml:lang="en">Validation step details</source>
+        <target state="translated">Сведения о шаге проверки</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.sqldb.validation.result.error">
+        <source xml:lang="en">Validation check error{0}Source database: {1}{0}Target database: {2}{0}Error: {3} - {4}</source>
+        <target state="translated">Ошибка проверки{0}Базы данных-источник: {1}{0}Целевая база данных: {2}{0}Ошибка: {3} - {4}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.start.validation">
+        <source xml:lang="en">Start validation</source>
+        <target state="translated">Начать проверку</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.status">
+        <source xml:lang="en">Validation status: {0}</source>
+        <target state="translated">Состояние проверки: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.status.error">
+        <source xml:lang="en">{0}{1}{2}</source>
+        <target state="translated">{0}{1}{2}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.status.error.count.many">
+        <source xml:lang="en">{0} - {1} errors</source>
+        <target state="translated">{0} - {1} ошибки</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.status.error.count.one">
+        <source xml:lang="en">{0} - 1 error</source>
+        <target state="translated">{0} — 1 ошибка</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.status.errors">
+        <source xml:lang="en">Validation status: {0}{1}{2}</source>
+        <target state="translated">Состояние проверки: {0}{1}{2}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.stop.validation">
+        <source xml:lang="en">Stop validation</source>
+        <target state="translated">Остановить проверку</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.validation.camceled">
+        <source xml:lang="en">Validation check canceled</source>
+        <target state="translated">Проверка отменена</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.validation.completed">
+        <source xml:lang="en">Validation completed successfully.</source>
+        <target state="translated">Проверка пройдена.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.validation.result.api.error">
+        <source xml:lang="en">Validation check error{0}Database:{1}{0}Error: {2} - {3}</source>
+        <target state="translated">Ошибка проверки{0}База данных:{1}{0}Ошибка: {2} - {3}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.validation.result.error">
+        <source xml:lang="en">Validation check error{0}Source database: {1}{0}File share path: {2}{0}Error: {3} - {4}</source>
+        <target state="translated">Ошибка проверки{0}База данных-источник: {1}{0}Путь к общей папке: {2}{0}Ошибка: {3} - {4}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.validation.result.label.networkshare">
+        <source xml:lang="en">Network share connectivity: '{0}' </source>
+        <target state="translated">Подключение к сетевой папке: "{0}" </target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.validation.result.label.shir">
+        <source xml:lang="en">Integration runtime connectivity</source>
+        <target state="translated">Возможность подключения среды выполнения интеграции</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.validation.result.label.source.database">
+        <source xml:lang="en">Source database connectivity: '{0}'</source>
+        <target state="translated">Подключение к базе данных-источнику: "{0}"</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.validation.result.label.storage">
+        <source xml:lang="en">Azure storage connectivity</source>
+        <target state="translated">Подключение к службе хранилища Azure</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.validation.result.label.target.database">
+        <source xml:lang="en">Target database connectivity: '{0}'</source>
+        <target state="translated">Подключение к целевой базе данных: "{0}"</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.canceled">
+        <source xml:lang="en">Validation was canceled. Please run and validate the migration settings to continue.</source>
+        <target state="translated">Проверка отменена. Чтобы продолжить, запустите и проверьте параметры миграции.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.canceled.errors">
+        <source xml:lang="en">Validation was canceled with the following error(s):{0}{1}</source>
+        <target state="translated">Проверка была отменена со следующими ошибками:{0}{1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.dialog.title">
+        <source xml:lang="en">Running validation</source>
+        <target state="translated">Идет проверка</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.not.run">
+        <source xml:lang="en">Validation has not been run for the current configuration. Please run and validate the migration settings to continue.</source>
+        <target state="translated">Проверка текущей конфигурации не выполнялась. Запустите и подтвердите параметры миграции, чтобы продолжить.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.state.canceled">
+        <source xml:lang="en">Canceled</source>
+        <target state="translated">Отменено</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.state.failed">
+        <source xml:lang="en">Failed</source>
+        <target state="translated">Сбой</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.state.pending">
+        <source xml:lang="en">Pending</source>
+        <target state="translated">Ожидание</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.state.running">
+        <source xml:lang="en">Running</source>
+        <target state="translated">Выполняется</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.state.succeeded">
+        <source xml:lang="en">Succeeded</source>
+        <target state="translated">Успешно</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validation.success">
+        <source xml:lang="en">Validation completed successfully.  Please click Next to proceed with the migration.</source>
+        <target state="translated">Проверка успешно завершена.  Нажмите кнопку "Далее", чтобы продолжить миграцию.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.view.all">
         <source xml:lang="en">All database migrations</source>
         <target state="translated">Все миграции баз данных</target>
@@ -2513,6 +2877,14 @@ This may take some time.</source>
       <trans-unit id="sql.migration.view.select.button.label">
         <source xml:lang="en">View/Select</source>
         <target state="translated">Просмотреть или выбрать</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.vm.not.ready.iaas.extension">
+        <source xml:lang="en">The virtual machine '{0}' is unavailable for migration because the SQL Server IaaS Agent extension is currently in '{1}' mode instead of Full mode. Learn more: https://aka.ms/sql-iaas-extension</source>
+        <target state="new">The virtual machine '{0}' is unavailable for migration because the SQL Server IaaS Agent extension is currently in '{1}' mode instead of Full mode. Learn more: https://aka.ms/sql-iaas-extension</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.vm.not.ready.power.state">
+        <source xml:lang="en">The virtual machine '{0}' is unavailable for migration because the underlying virtual machine is not running. Please make sure it is powered on before retrying.</source>
+        <target state="new">The virtual machine '{0}' is unavailable for migration because the underlying virtual machine is not running. Please make sure it is powered on before retrying.</target>
       </trans-unit>
       <trans-unit id="sql.migration.warning">
         <source xml:lang="en">Warning</source>
@@ -2559,8 +2931,12 @@ This may take some time.</source>
         <target state="translated">Учетная запись Azure</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.connection.error.title">
-        <source xml:lang="en">An error occurred while conneting to the target server.</source>
+        <source xml:lang="en">An error occurred while connecting to the target server.</source>
         <target state="translated">Ошибка при подключении к целевому серверу.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.login.error.title">
+        <source xml:lang="en">An error occurred while trying to get {0} login information.</source>
+        <target state="translated">Произошла ошибка при попытке получения сведений об учетных данных {0}.</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.perfCollection.error">
         <source xml:lang="en">Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:
@@ -2622,6 +2998,10 @@ This may take some time.</source>
         <source xml:lang="en">Select an Azure account and your target {0}.</source>
         <target state="translated">Выберите учетную запись Azure и целевой {0}.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.login.error">
+        <source xml:lang="en">Error getting login information: {0}</source>
+        <target state="translated">Ошибка при получении сведений об учетных данных: {0}</target>
+      </trans-unit>
       <trans-unit id="sql.migration.wizard.target.mapping.error.duplicate">
         <source xml:lang="en">Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.</source>
         <target state="translated">Ошибка сопоставления базы данных. Невозможно выбрать целевую базу данных "{0}" в качестве цели миграции для базы данных "{1}". Целевая база данных "${targetDatabaseName}" уже выбрана в качестве цели миграции для базы данных "{2}". Выберите другую целевую базу данных.</target>
@@ -2630,6 +3010,10 @@ This may take some time.</source>
         <source xml:lang="en">Database mapping error. Missing target databases to migrate.  Please configure the target server connection and click connect to collect the list of available database migration targets.</source>
         <target state="translated">Ошибка сопоставления баз данных. Нет целевых баз данных для миграции. Настройте подключение к целевому серверу и щелкните "Подключить", чтобы получить список доступных целевых объектов для миграции баз данных.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.source.collation.error">
+        <source xml:lang="en">A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.</source>
+        <target state="new">A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.wizard.target.source.mapping.error">
         <source xml:lang="en">Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.</source>
         <target state="translated">Ошибка сопоставления баз данных. База данных-источник "{0}" не сопоставлена с целевой базой данных. Выберите целевую базу данных для миграции.</target>
@@ -2637,6 +3021,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.wizard.target.title">
         <source xml:lang="en">Azure SQL target</source>
         <target state="translated">Целевой объект Azure SQL</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.troubleshooting">
+        <source xml:lang="en">Learn more: https://aka.ms/dms-migrations-troubleshooting.</source>
+        <target state="new">Learn more: https://aka.ms/dms-migrations-troubleshooting.</target>
       </trans-unit>
       <trans-unit id="sql.migration.yes">
         <source xml:lang="en">Yes</source>
