@@ -179,7 +179,7 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 		if (decodePath) {
 			decodedContentPath = decodeURI(contentPath.fsPath);
 		}
-		// use the decodedContentPath for calculating the reative path since the notebookFolder is not encoded to get the relative path correctly.
+		// use the decodedContentPath for calculating the relative path since the notebookFolder is not encoded to get the relative path correctly.
 		let relativePath = contentPath.fragment ? path.relative(notebookFolder, decodedContentPath).concat('#', contentPath.fragment) : path.relative(notebookFolder, decodedContentPath);
 		// if relativePath contains improper directory format due to marked js parsing returning an invalid path (ex. ....\) then we need to replace it to ensure the directories are formatted properly (ex. ..\..\)
 		relativePath = isMarkdown || isEncoded ? replaceInvalidLinkPath(relativePath) : encodeURI(replaceInvalidLinkPath(relativePath)).replace(/%5C/g, '\\');
