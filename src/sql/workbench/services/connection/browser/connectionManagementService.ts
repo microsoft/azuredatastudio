@@ -605,10 +605,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	public async openChangePasswordDialog(profile: interfaces.IConnectionProfile, params: INewConnectionParams): Promise<string | undefined> {
+	public openChangePasswordDialog(profile: interfaces.IConnectionProfile, params: INewConnectionParams): void {
 		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
-		let result = await dialog.open(profile, params);
-		return result;
+		dialog.open(profile, params);
 	}
 
 	// Convert the profile to one that can be sent via RPC (used for error handling).

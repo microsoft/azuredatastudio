@@ -331,8 +331,8 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return true;
 	}
 
-	openChangePasswordDialog(profile: IConnectionProfile, params: INewConnectionParams): Promise<string | undefined> {
-		return undefined;
+	openChangePasswordDialog(profile: IConnectionProfile, params: INewConnectionParams): void {
+
 	}
 
 	convertToConnectionProfile(profile: IConnectionProfile, removeCredentials: boolean, deepCopyOptions: boolean): azdata.connection.ConnectionProfile {

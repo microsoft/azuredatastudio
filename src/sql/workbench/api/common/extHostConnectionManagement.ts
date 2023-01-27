@@ -74,7 +74,7 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		return this._proxy.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
 	}
 
-	public $openChangePasswordDialog(profile: azdata.IConnectionProfile, options: azdata.IConnectionCompletionOptions): Thenable<string | undefined> {
+	public $openChangePasswordDialog(profile: azdata.IConnectionProfile, options: azdata.IConnectionCompletionOptions): void {
 		return this._proxy.$openChangePasswordDialog(profile, options);
 	}
 

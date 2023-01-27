@@ -339,7 +339,7 @@ export interface IConnectionManagementService {
 	 * @param profile The connection profile to change the password.
 	 * @param params Required connection parameters associated with the profile.
 	 */
-	openChangePasswordDialog(profile: IConnectionProfile, params: INewConnectionParams): Promise<string | undefined>;
+	openChangePasswordDialog(profile: IConnectionProfile, params: INewConnectionParams): void;
 
 	/**
 	 * converts the connection profile into an RPC friendly type (azdata.connection.ConnectionProfile).
