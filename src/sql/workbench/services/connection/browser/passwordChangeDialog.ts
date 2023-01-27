@@ -25,7 +25,7 @@ import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 
-const dialogWidth: string = '350px'; // Width is set manually here as there is no default width for normal dialogs.
+const dialogWidth: string = '300px'; // Width is set manually here as there is no default width for normal dialogs.
 const okText: string = localize('passwordChangeDialog.ok', "OK");
 const cancelText: string = localize('passwordChangeDialog.cancel', "Cancel");
 const newPasswordText: string = localize('passwordChangeDialog.newPassword', "New password:");
@@ -84,7 +84,7 @@ export class PasswordChangeDialog extends Modal {
 
 	public override render() {
 		super.render();
-		this.title = localize('passwordChangeDialog.title', "Change password for: '{0}' \nOn the server: '{1}'", this._profile?.userName, this._profile?.serverName);
+		this.title = localize('passwordChangeDialog.title', "Change password for '{0}'", this._profile?.userName);
 		this._register(attachModalDialogStyler(this, this._themeService));
 		this._okButton = this.addFooterButton(okText, async () => { await this.handleOkButtonClick(); });
 		this._cancelButton = this.addFooterButton(cancelText, () => { this.handleCancelButtonClick(); }, 'right', true);
