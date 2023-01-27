@@ -66,6 +66,36 @@
         "command": "mssql.designTable",
         "category": "MSSQL",
         "title": "%title.designTable%"
+      },
+      {
+        "command": "mssql.newServerRole",
+        "category": "MSSQL",
+        "title": "%title.newServerRole%"
+      },
+      {
+        "command": "mssql.newLogin",
+        "category": "MSSQL",
+        "title": "%title.newLogin%"
+      },
+      {
+        "command": "mssql.newDatabaseRole",
+        "category": "MSSQL",
+        "title": "%title.newDatabaseRole%"
+      },
+      {
+        "command": "mssql.newApplicationRole",
+        "category": "MSSQL",
+        "title": "%title.newApplicationRole%"
+      },
+      {
+        "command": "mssql.newUser",
+        "category": "MSSQL",
+        "title": "%title.newUser%"
+      },
+      {
+        "command": "mssql.objectProperties",
+        "category": "MSSQL",
+        "title": "%title.properties%"
       }
     ],
     "outputChannels": [
@@ -211,12 +241,12 @@
           ],
           "enumDescriptions": [
             "%mssql.executionPlan.expensiveOperationMetric.off%",
-	          "%mssql.executionPlan.expensiveOperationMetric.actualElapsedTime%",
-	          "%mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime%",
-	          "%mssql.executionPlan.cost%",
-	          "%mssql.executionPlan.subtreeCost%",
-	          "%mssql.executionPlan.actualNumberOfRowsForAllExecutions%",
-	          "%mssql.executionPlan.numberOfRowsRead%"
+            "%mssql.executionPlan.expensiveOperationMetric.actualElapsedTime%",
+            "%mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime%",
+            "%mssql.executionPlan.cost%",
+            "%mssql.executionPlan.subtreeCost%",
+            "%mssql.executionPlan.actualNumberOfRowsForAllExecutions%",
+            "%mssql.executionPlan.numberOfRowsRead%"
           ]
         },
         "mssql.query.rowCount": {
@@ -376,6 +406,30 @@
         {
           "command": "mssql.designTable",
           "when": "false"
+        },
+        {
+          "command": "mssql.newServerRole",
+          "when": "false"
+        },
+        {
+          "command": "mssql.newLogin",
+          "when": "false"
+        },
+        {
+          "command": "mssql.newDatabaseRole",
+          "when": "false"
+        },
+        {
+          "command": "mssql.newUser",
+          "when": "false"
+        },
+        {
+          "command": "mssql.newApplicationRole",
+          "when": "false"
+        },
+        {
+          "command": "mssql.objectProperties",
+          "when": "false"
         }
       ],
       "objectExplorer/item/context": [
@@ -388,6 +442,36 @@
           "command": "mssql.newTable",
           "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables",
           "group": "0_query@1"
+        },
+        {
+          "command": "mssql.newServerRole",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ServerLevelServerRoles",
+          "group": "0_query@1"
+        },
+        {
+          "command": "mssql.newLogin",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ServerLevelLogins",
+          "group": "0_query@1"
+        },
+        {
+          "command": "mssql.newUser",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Users",
+          "group": "0_query@1"
+        },
+        {
+          "command": "mssql.newDatabaseRole",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == DatabaseRoles",
+          "group": "0_query@1"
+        },
+        {
+          "command": "mssql.newApplicationRole",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ApplicationRoles",
+          "group": "0_query@1"
+        },
+        {
+          "command": "mssql.objectProperties",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|ServerLevelServerRole|ApplicationRole|DatabaseRole|User)$/",
+          "group": "0_query@1"
         }
       ],
       "dataExplorer/context": [
@@ -399,6 +483,36 @@
         {
           "command": "mssql.newTable",
           "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables",
+          "group": "connection@1"
+        },
+        {
+          "command": "mssql.newServerRole",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ServerLevelServerRoles",
+          "group": "connection@1"
+        },
+        {
+          "command": "mssql.newLogin",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ServerLevelLogins",
+          "group": "connection@1"
+        },
+        {
+          "command": "mssql.newUser",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Users",
+          "group": "connection@1"
+        },
+        {
+          "command": "mssql.newDatabaseRole",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == DatabaseRoles",
+          "group": "connection@1"
+        },
+        {
+          "command": "mssql.newApplicationRole",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ApplicationRoles",
+          "group": "connection@1"
+        },
+        {
+          "command": "mssql.objectProperties",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|ServerLevelServerRole|ApplicationRole|DatabaseRole|User)$/",
           "group": "connection@1"
         }
       ],

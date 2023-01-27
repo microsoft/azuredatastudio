@@ -8,6 +8,7 @@ import { ITelemetryEventProperties, ITelemetryEventMeasures } from './telemetry'
 import * as azdata from 'azdata';
 import { ConnectParams } from 'dataprotocol-client/lib/protocol';
 import * as mssql from 'mssql';
+import * as ObjectManagement from './objectManagement/interfaces';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
 
@@ -1282,3 +1283,81 @@ export interface TdeMigrateProgressParams {
 }
 
 // ------------------------------- < Tde Migration > ------------------------------------
+
+// ------------------------------- < Object Management > ------------------------------------
+export interface GetObjectRequestParams {
+	connectionId: string;
+	objectPath: string;
+}
+
+export namespace GetObjectRequest {
+	export const type = new RequestType<GetObjectRequestParams, ObjectManagement.SqlObject, void, void>('objectmanagement/get');
+}
+
+export interface CreateObjectRequestParams {
+	connectionId: string;
+	object: ObjectManagement.SqlObject;
+}
+
+export namespace CreateObjectRequest {
+	export const type = new RequestType<CreateObjectRequestParams, void, void, void>('objectmanagement/create');
+}
+
+export interface UpdateObjectRequestParams {
+	connectionId: string;
+	object: ObjectManagement.SqlObject;
+}
+
+export namespace UpdateObjectRoleRequest {
+	export const type = new RequestType<UpdateObjectRequestParams, void, void, void>('objectmanagement/update');
+}
+
+export interface ScriptObjectRequestParams {
+	connectionId: string;
+	object: ObjectManagement.SqlObject;
+}
+
+export namespace ScriptObjectRequest {
+	export const type = new RequestType<ScriptObjectRequestParams, string, void, void>('objectmanagement/script');
+}
+
+export interface GetObjectsRequestParams {
+	connectionId: string;
+	objectTypes: string[];
+}
+
+export namespace GetObjectsRequest {
+	export const type = new RequestType<GetObjectsRequestParams, ObjectManagement.SqlObject[], void, void>('objectmanagement/get');
+}
+
+/**
+ * Get the applicable securable types for the specified principal type.
+ */
+export interface GetSecurableTypesForPrincipalParams {
+	connectionId: string;
+	principalType: ObjectManagement.ObjectType;
+}
+
+export namespace GetSecurableTypesForPrincipalRequest {
+	export const type = new RequestType<GetSecurableTypesForPrincipalParams, string[], void, void>('objectmanagement/getsecurabletypes');
+}
+
+export interface GetLanguagesParams {
+	connectionId: string;
+}
+
+export namespace GetServerLanguagesRequest {
+	export const type = new RequestType<GetLanguagesParams, string[], void, void>('objectmanagement/getserverlanguages');
+}
+
+export interface GetServerLoginEffectivePermissionsParams {
+	connectionId: string;
+	login: string;
+	targetSecurablePath: string;
+}
+
+export namespace GetServerLoginEffectivePermissionsRequest {
+	export const type = new RequestType<GetServerLoginEffectivePermissionsParams, string[], void, void>('objectmanagement/getloginpermissions');
+}
+
+// ------------------------------- < Object Management > ------------------------------------
