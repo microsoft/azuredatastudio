@@ -200,10 +200,8 @@ export class SelectBox extends vsSelectBox {
 		}
 		if (option !== undefined) {
 			this.select(option);
-		} else {
-			if (selectFirstByDefault) {
-				this.select(0);
-			}
+		} else if (selectFirstByDefault) {
+			this.select(0);
 		}
 	}
 
