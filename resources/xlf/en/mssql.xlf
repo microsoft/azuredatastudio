@@ -190,6 +190,12 @@
     <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.displayName">
       <source xml:lang="en">Always Encrypted</source>
     </trans-unit>
+    <trans-unit id="mssql.connectionOptions.commandTimeout.description">
+      <source xml:lang="en">The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.commandTimeout.displayName">
+      <source xml:lang="en">Command timeout</source>
+    </trans-unit>
     <trans-unit id="mssql.connectionOptions.connectRetryCount.description">
       <source xml:lang="en">Number of attempts to restore connection</source>
     </trans-unit>
@@ -207,12 +213,6 @@
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.connectTimeout.displayName">
       <source xml:lang="en">Connect timeout</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.commandTimeout.description">
-      <source xml:lang="en">The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.commandTimeout.displayName">
-      <source xml:lang="en">Command timeout</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.connectionName.description">
       <source xml:lang="en">Custom name of the connection</source>
