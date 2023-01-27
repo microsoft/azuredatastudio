@@ -5,7 +5,6 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as mssql from 'mssql';
 import { promises as fs } from 'fs';
 import { DatabaseMigration, getMigrationDetails } from '../api/azure';
 import { MenuCommands, SqlMigrationExtensionId } from '../api/utils';
@@ -26,6 +25,7 @@ import { DashboardStatusBar, ErrorEvent } from './DashboardStatusBar';
 import { DashboardTab } from './dashboardTab';
 import { MigrationsTab, MigrationsTabId } from './migrationsTab';
 import { AdsMigrationStatus, MigrationDetailsEvent, ServiceContextChangeEvent } from './tabBase';
+import { MigrationServiceProvider } from '../service/provider';
 
 export interface MenuCommandArgs {
 	connectionId: string,
@@ -442,9 +442,9 @@ export class DashboardWidget {
 			serverName = activeConnection.serverName;
 		}
 		if (serverName) {
-			const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
-			if (api) {
-				this.stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration, api.tdeMigration);
+			const migrationService = await MigrationServiceProvider.getInstance().getService();
+			if (migrationService) {
+				this.stateModel = new MigrationStateModel(this._context, connectionId, migrationService);
 				this._context.subscriptions.push(this.stateModel);
 				const savedInfo = this.checkSavedInfo(serverName);
 				if (savedInfo) {
@@ -481,9 +481,9 @@ export class DashboardWidget {
 			serverName = activeConnection.serverName;
 		}
 		if (serverName) {
-			const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
-			if (api) {
-				this.stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration, api.tdeMigration);
+			const migrationService = await MigrationServiceProvider.getInstance().getService();
+			if (migrationService) {
+				this.stateModel = new MigrationStateModel(this._context, connectionId, migrationService);
 				this._context.subscriptions.push(this.stateModel);
 				const wizardController = new WizardController(
 					this._context,
