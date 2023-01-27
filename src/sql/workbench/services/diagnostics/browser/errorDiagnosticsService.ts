@@ -14,11 +14,11 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 	constructor(
 	) { }
 
-	public async tryHandleConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
-		let result = { success: false, options: {} };
+	public async tryHandleConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
+		let result = { success: false, connectNeeded: false, options: {} };
 		let provider = this._providers[providerId]
 		if (provider) {
-			result = await provider.handleConnectionError(errorCode, errorMessage, connection);
+			result = await provider.handleConnectionError(errorCode, errorMessage, connection, options);
 		}
 		return result;
 	}

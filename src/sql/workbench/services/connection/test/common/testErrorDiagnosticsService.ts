@@ -15,7 +15,7 @@ export class TestErrorDiagnosticsService implements IErrorDiagnosticsService {
 	unregisterDiagnosticsProvider(ProviderId: string): void {
 	}
 
-	tryHandleConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
-		return Promise.resolve({ success: false, options: {} });
+	tryHandleConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
+		return Promise.resolve({ success: false, connectNeeded: false, options: {} });
 	}
 }

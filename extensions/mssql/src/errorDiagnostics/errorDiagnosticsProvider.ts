@@ -51,28 +51,28 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 			}
 
 			protected override registerProvider(options: any): Disposable {
-				let handleConnectionError = async (errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> => {
+				let handleConnectionError = async (errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> => {
 					if (errorCode = ErrorDiagnosticsConstants.MssqlPasswordResetErrorCode) {
 						// Need to convert inputed profile back to IConnectionProfile.
 						let restoredProfile = this.convertToIConnectionProfile(connection);
 						let result = undefined;
 						try {
-							result = await azdata.connection.openChangePasswordDialog(restoredProfile);
+							result = await azdata.connection.openChangePasswordDialog(restoredProfile, options);
 						}
 						catch (e) {
 							//Error status will be handled below.
 						}
 						if (result === undefined) {
-							return { success: false, options: {} };
+							return { success: false, connectNeeded: false, options: {} };
 						}
 						else {
 							// MSSQL uses 'password' as the option key for connection profile.
 							restoredProfile.options['password'] = result
-							return { success: true, options: restoredProfile.options };
+							return { success: true, connectNeeded: true, options: restoredProfile.options };
 						}
 					}
 					else {
-						return { success: false, options: {} };
+						return { success: false, connectNeeded: false, options: {} };
 					}
 				}
 

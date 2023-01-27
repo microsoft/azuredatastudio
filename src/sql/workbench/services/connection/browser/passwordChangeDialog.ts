@@ -8,6 +8,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
+import { INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -61,7 +62,7 @@ export class PasswordChangeDialog extends Modal {
 		super('', '', telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasSpinner: true, spinnerTitle: passwordChangeLoadText, dialogStyle: 'normal', width: dialogWidth, dialogPosition: 'left' });
 	}
 
-	public open(profile: IConnectionProfile): Promise<string> {
+	public open(profile: IConnectionProfile, params: INewConnectionParams): Promise<string> {
 		if (this._profile) {
 			let message = localize('passwordChangeDialog.passwordChangeInProgress', "Password change already in progress")
 			this.errorMessageService.showDialog(Severity.Error, errorHeader, message);
