@@ -2,7 +2,7 @@
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
   "description": "Enables users to develop and publish database schemas for MSSQL Databases",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
