@@ -79,6 +79,6 @@ export class ExtHostErrorDiagnostics extends ExtHostErrorDiagnosticsShape {
 }
 
 interface DiagnosticsWithMetadata {
-	metadata: azdata.ResourceProviderMetadata;
+	metadata: azdata.diagnostics.ErrorDiagnosticsProviderMetadata;
 	provider: azdata.diagnostics.ErrorDiagnosticsProvider;
 }

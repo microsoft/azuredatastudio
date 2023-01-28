@@ -13,7 +13,6 @@ import * as CoreConstants from '../constants';
 import * as ErrorDiagnosticsConstants from './errorDiagnosticsConstants';
 
 export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
-	//No contracts for now, but can be added later.
 	private static readonly messagesTypes: RPCMessageType[] = [];
 
 	public static asFeature(context: AppContext): ISqlOpsFeature {
@@ -64,7 +63,6 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 				}
 
 				return azdata.diagnostics.registerDiagnosticsProvider({
-					displayName: ErrorDiagnosticsConstants.MssqlDiagnosticsProviderDisplayName,
 					id: CoreConstants.providerId,
 				}, {
 					handleConnectionError

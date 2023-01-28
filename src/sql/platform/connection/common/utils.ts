@@ -6,6 +6,7 @@
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { RpcConnectionProfile } from 'sql/platform/connection/common/rpcConnectionProfile';
 
 // CONSTANTS //////////////////////////////////////////////////////////////////////////////////////
 const msInH = 3.6e6;
@@ -136,4 +137,19 @@ export function findProfileInGroup(og: IConnectionProfile, groups: ConnectionPro
 export function isServerConnection(profile: IConnectionProfile): boolean {
 	// If the user did not specify a database in the original connection, then this is considered a server-level connection
 	return !profile.options.originalDatabase;
+}
+
+// Convert a IConnectionProfile with services to one that can be sent via RPC.
+export function convertToRpcConnectionProfile(profile: IConnectionProfile, deepCopyOptions: boolean, removeFunction?: (profile: IConnectionProfile) => IConnectionProfile): RpcConnectionProfile {
+	if (!profile) {
+		return undefined;
+	}
+
+	// If provided, that means the connection profile must be stripped of credentials.
+	if (removeFunction) {
+		profile = removeFunction(profile);
+	}
+
+	let connection: RpcConnectionProfile = new RpcConnectionProfile(profile, deepCopyOptions);
+	return connection;
 }

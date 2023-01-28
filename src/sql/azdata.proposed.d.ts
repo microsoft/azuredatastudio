@@ -442,11 +442,6 @@ declare module 'azdata' {
 			 * The identifier of the provider that the diagnostics provider will handle errors for.
 			 */
 			id: string;
-
-			/**
-			 * Display name of the diagnostics provider object.
-			 */
-			displayName: string;
 		}
 
 		export interface ConnectionDiagnosticsResult {
