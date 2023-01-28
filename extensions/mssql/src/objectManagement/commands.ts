@@ -6,21 +6,15 @@
 import { AppContext } from '../appContext';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { ServerRoleDialog } from './ui/serverRoleDialog';
+import { LoginDialog } from './ui/loginDialog';
 
 
 export function registerObjectManagementCommands(appContext: AppContext) {
-	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newServerRole', async (context: azdata.ObjectExplorerContext) => {
-		const dialog = new ServerRoleDialog(undefined);
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newLogin', async (context: azdata.ObjectExplorerContext) => {
+		const dialog = new LoginDialog(undefined);
 		dialog.open();
 	}));
-	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newLogin', async (context: azdata.ObjectExplorerContext) => {
-
-	}));
-	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newApplicationRole', async (context: azdata.ObjectExplorerContext) => {
-
-	}));
-	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newDatabaseRole', async (context: azdata.ObjectExplorerContext) => {
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.deleteObject', async (context: azdata.ObjectExplorerContext) => {
 
 	}));
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newUser', async (context: azdata.ObjectExplorerContext) => {

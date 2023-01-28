@@ -8,7 +8,7 @@ import * as ObjectManagement from '../interfaces';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-export class ServerRoleDialog extends DialogBase {
+export class LoginDialog extends DialogBase {
 	protected initialize(): void {
 		const tab = azdata.window.createTab('');
 		tab.registerContent(async view => {
