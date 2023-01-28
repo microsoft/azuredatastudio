@@ -15,7 +15,7 @@ import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHo
 
 @extHostNamedCustomer(SqlMainContext.MainThreadErrorDiagnostics)
 export class MainThreadErrorDiagnostics extends Disposable implements MainThreadErrorDiagnosticsShape {
-	private _providerMetadata: { [handle: number]: azdata.AccountProviderMetadata };
+	private _providerMetadata: { [handle: number]: azdata.diagnostics.ErrorDiagnosticsProviderMetadata };
 	private _proxy: ExtHostErrorDiagnosticsShape;
 
 	constructor(

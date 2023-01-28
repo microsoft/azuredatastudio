@@ -5,6 +5,7 @@
 
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import * as azdata from 'azdata';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 
@@ -12,6 +13,7 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 	private _providers: { [handle: string]: azdata.diagnostics.ErrorDiagnosticsProvider; } = Object.create(null);
 
 	constructor(
+		@ILogService private readonly _logService: ILogService,
 	) { }
 
 	public async tryHandleConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
@@ -30,7 +32,12 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 	 * @param errorDiagnostics the actual diagnostics provider object to register under the id.
 	 */
 	public registerDiagnosticsProvider(providerId: string, errorDiagnostics: azdata.diagnostics.ErrorDiagnosticsProvider): void {
-		this._providers[providerId] = errorDiagnostics;
+		if (this._providers[providerId]) {
+			this._logService.error('Provider ' + providerId + ' was already registered, cannot register again.')
+		}
+		else {
+			this._providers[providerId] = errorDiagnostics;
+		}
 	}
 
 	/**

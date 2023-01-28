@@ -57,7 +57,6 @@ import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensio
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import { PasswordChangeDialog } from 'sql/workbench/services/connection/browser/passwordChangeDialog';
-import { deepClone } from 'vs/base/common/objects';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -565,7 +564,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				return this.connectWithOptions(connection, uri, options, callbacks);
 			}
 			else {
-				let connectionErrorHandled = await this._errorDiagnosticsService.tryHandleConnectionError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, this.convertToConnectionProfile(connection, false, false));
+				let connectionErrorHandled = await this._errorDiagnosticsService.tryHandleConnectionError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, Utils.convertToRpcConnectionProfile(connection, false));
 				if (connectionErrorHandled.success) {
 					connectionResult.errorHandled = true;
 					//copy over altered connection options from the result
@@ -603,34 +602,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
 		let result = await dialog.open(profile);
 		return result;
-	}
-
-	// Convert the profile to one that can be sent via RPC (used for error handling).
-	public convertToConnectionProfile(profile: interfaces.IConnectionProfile, removeCredentials: boolean, deepCopyOptions: boolean): azdata.connection.ConnectionProfile {
-		if (!profile) {
-			return undefined;
-		}
-		// Need to account for different types of conversion usages.
-		if (removeCredentials) {
-			profile = this.removeConnectionProfileCredentials(profile);
-		}
-		let connection: azdata.connection.ConnectionProfile = {
-			providerId: profile.providerName,
-			connectionId: profile.id,
-			options: deepCopyOptions ? deepClone(profile.options) : profile.options,
-			connectionName: profile.connectionName,
-			serverName: profile.serverName,
-			databaseName: profile.databaseName,
-			userName: profile.userName,
-			password: profile.password,
-			authenticationType: profile.authenticationType,
-			savePassword: profile.savePassword,
-			groupFullName: profile.groupFullName,
-			groupId: profile.groupId,
-			azureTenantId: profile.azureTenantId,
-			saveProfile: profile.saveProfile
-		};
-		return connection;
 	}
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {

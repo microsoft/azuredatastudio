@@ -10,6 +10,7 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { convertToRpcConnectionProfile } from 'sql/platform/connection/common/utils';
 import { Disposable, DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -92,7 +93,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public $getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
-		return Promise.resolve(this._connectionManagementService.getConnections(activeConnectionsOnly).map(profile => this._connectionManagementService.convertToConnectionProfile(profile, true, true)));
+		return Promise.resolve(this._connectionManagementService.getConnections(activeConnectionsOnly).map(profile => convertToRpcConnectionProfile(profile, true, this._connectionManagementService.removeConnectionProfileCredentials)));
 	}
 
 	public $getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile> {
@@ -101,7 +102,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			return Promise.resolve(undefined);
 		}
 
-		let connection = this._connectionManagementService.convertToConnectionProfile(profile, false, false);
+		let connection = convertToRpcConnectionProfile(profile, false);
 		return Promise.resolve(connection);
 	}
 
@@ -114,7 +115,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public $getCurrentConnectionProfile(): Thenable<azdata.connection.ConnectionProfile> {
-		return Promise.resolve(this._connectionManagementService.convertToConnectionProfile(TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._workbenchEditorService, true,), true, true));
+		return Promise.resolve(convertToRpcConnectionProfile(TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._workbenchEditorService, true,), true, this._connectionManagementService.removeConnectionProfileCredentials));
 	}
 
 	public $getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
