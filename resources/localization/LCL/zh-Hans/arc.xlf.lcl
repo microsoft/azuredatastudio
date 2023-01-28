@@ -838,6 +838,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.encryptDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[如果为 True，并且服务器安装了证书，那么 SQL Server 将对客户端与服务器之间发送的所有数据使用 SSL 加密。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2635,6 +2638,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.trustServerCertDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[如果为 true (并且 encrypt=true)，SQL Server 将对客户端和服务器之间发送的所有数据使用 SSL 加密，而不验证服务器证书。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
