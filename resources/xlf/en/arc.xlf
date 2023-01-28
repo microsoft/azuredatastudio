@@ -34,6 +34,12 @@
     <trans-unit id="arc.backupsStorage">
       <source xml:lang="en">{0} backups</source>
     </trans-unit>
+    <trans-unit id="arc.booleanfalse">
+      <source xml:lang="en">False</source>
+    </trans-unit>
+    <trans-unit id="arc.booleantrue">
+      <source xml:lang="en">True</source>
+    </trans-unit>
     <trans-unit id="arc.businessCriticalLabel">
       <source xml:lang="en">BusinessCritical</source>
     </trans-unit>
@@ -259,6 +265,15 @@
     <trans-unit id="arc.emergency">
       <source xml:lang="en">Emergency</source>
     </trans-unit>
+    <trans-unit id="arc.enableTrustServerCert">
+      <source xml:lang="en">Enable Trust Server Certificate</source>
+    </trans-unit>
+    <trans-unit id="arc.encrypt">
+      <source xml:lang="en">Encrypt</source>
+    </trans-unit>
+    <trans-unit id="arc.encryptDescription">
+      <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed.</source>
+    </trans-unit>
     <trans-unit id="arc.endpoint">
       <source xml:lang="en">Endpoint</source>
     </trans-unit>
@@ -472,6 +487,9 @@
     <trans-unit id="arc.monitorUpgrade">
       <source xml:lang="en">You can check the status of the upgrade by running the following command:</source>
     </trans-unit>
+    <trans-unit id="arc.msgPromptSSLCertificateValidationFailed">
+      <source xml:lang="en">Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or set 'Trust server certificate' to 'true' in the settings file. Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry?</source>
+    </trans-unit>
     <trans-unit id="arc.name">
       <source xml:lang="en">Name</source>
     </trans-unit>
@@ -667,6 +685,9 @@
     <trans-unit id="arc.rangeSetting">
       <source xml:lang="en">Value is expected to be in the range {0} - {1}</source>
     </trans-unit>
+    <trans-unit id="arc.readMore">
+      <source xml:lang="en">Read more</source>
+    </trans-unit>
     <trans-unit id="arc.ready">
       <source xml:lang="en">Ready</source>
     </trans-unit>
@@ -837,6 +858,12 @@
     </trans-unit>
     <trans-unit id="arc.troubleshoot">
       <source xml:lang="en">Troubleshoot</source>
+    </trans-unit>
+    <trans-unit id="arc.trustServerCertDescription">
+      <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate.</source>
+    </trans-unit>
+    <trans-unit id="arc.trustServerCertificate">
+      <source xml:lang="en">Trust Server Certificate</source>
     </trans-unit>
     <trans-unit id="arc.type">
       <source xml:lang="en">Type</source>

@@ -296,6 +296,11 @@ declare module 'vscode-mssql' {
 		trustServerCertificate: boolean | undefined;
 
 		/**
+		 * Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.
+		 */
+		hostNameInCertificate: string | undefined;
+
+		/**
 		 * Gets or sets a Boolean value that indicates if security-sensitive information, such as the password, is not returned as part of the connection
 		 * if the connection is open or has ever been in an open state.
 		 */

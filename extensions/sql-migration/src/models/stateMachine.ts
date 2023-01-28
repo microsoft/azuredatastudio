@@ -16,6 +16,8 @@ import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError 
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 import { excludeDatabases, getConnectionProfile, LoginTableInfo, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
+import { LoginMigrationModel, LoginMigrationStep } from './loginMigrationModel';
+import { TdeMigrationDbResult, TdeMigrationModel } from './tdeModels';
 const localize = nls.loadMessageBundle();
 
 export enum ValidateIrState {
@@ -63,6 +65,10 @@ export enum MigrationTargetType {
 export enum MigrationSourceAuthenticationType {
 	Integrated = 'WindowsAuthentication',
 	Sql = 'SqlAuthentication'
+}
+
+export enum AssessmentRuleId {
+	TdeEnabled = 'TdeEnabled'
 }
 
 export enum MigrationMode {
@@ -173,6 +179,7 @@ export interface SkuRecommendationSavedInfo {
 }
 
 export class MigrationStateModel implements Model, vscode.Disposable {
+
 	public _azureAccounts!: azdata.Account[];
 	public _azureAccount!: azdata.Account;
 	public _accountTenants!: azurecore.Tenant[];
@@ -250,6 +257,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _aadDomainName!: string;
 	public _loginMigrationsResult!: contracts.StartLoginMigrationResult;
 	public _loginMigrationsError: any;
+	public _loginMigrationModel: LoginMigrationModel;
 
 	public readonly _refreshGetSkuRecommendationIntervalInMinutes = 10;
 	public readonly _performanceDataQueryIntervalInSeconds = 30;
@@ -275,6 +283,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _sessionId: string = uuidv4();
 	public serverName!: string;
 
+	public tdeMigrationConfig: TdeMigrationModel = new TdeMigrationModel();
+
 	private _stateChangeEventEmitter = new vscode.EventEmitter<StateChangeEvent>();
 	private _currentState: State;
 	private _gatheringInformationError: string | undefined;
@@ -288,7 +298,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	constructor(
 		public extensionContext: vscode.ExtensionContext,
 		private readonly _sourceConnectionId: string,
-		public readonly migrationService: features.SqlMigrationService
+		public readonly migrationService: features.SqlMigrationService,
+		public readonly tdeMigrationService: features.TdeMigrationService
 	) {
 		this._currentState = State.INIT;
 		this._databaseBackup = {} as DatabaseBackupModel;
@@ -299,11 +310,13 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._assessmentReportFilePath = '';
 		this._skuRecommendationReportFilePaths = [];
 		this.mementoString = 'sqlMigration.assessmentResults';
+		this._targetManagedInstances = [];
 
 		this._skuScalingFactor = 100;
 		this._skuTargetPercentile = 95;
 		this._skuEnablePreview = false;
 		this._skuEnableElastic = false;
+		this._loginMigrationModel = new LoginMigrationModel();
 	}
 
 	public get validationTargetResults(): ValidationResult[] {
@@ -560,23 +573,22 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async migrateLogins(): Promise<Boolean> {
 		try {
+			this._loginMigrationModel.AddNewLogins(this._loginsForMigration.map(row => row.loginName));
+
 			const sourceConnectionString = await this.getSourceConnectionString();
 			const targetConnectionString = await this.getTargetConnectionString();
-			console.log('Starting Login Migration at: ', new Date());
-
-			console.time("migrateLogins")
 			var response = (await this.migrationService.migrateLogins(
 				sourceConnectionString,
 				targetConnectionString,
 				this._loginsForMigration.map(row => row.loginName),
 				this._aadDomainName
 			))!;
-			console.timeEnd("migrateLogins")
 
-			this.updateLoginMigrationResults(response)
+			this.updateLoginMigrationResults(response);
+			this._loginMigrationModel.AddLoginMigrationResults(LoginMigrationStep.MigrateLogins, response);
 		} catch (error) {
-			console.log('Failed Login Migration at: ', new Date());
 			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
+			this._loginMigrationModel.ReportException(LoginMigrationStep.MigrateLogins, error);
 			this._loginMigrationsError = error;
 			return false;
 		}
@@ -590,19 +602,18 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			const sourceConnectionString = await this.getSourceConnectionString();
 			const targetConnectionString = await this.getTargetConnectionString();
 
-			console.time("establishUserMapping")
 			var response = (await this.migrationService.establishUserMapping(
 				sourceConnectionString,
 				targetConnectionString,
 				this._loginsForMigration.map(row => row.loginName),
 				this._aadDomainName
 			))!;
-			console.timeEnd("establishUserMapping")
 
-			this.updateLoginMigrationResults(response)
+			this.updateLoginMigrationResults(response);
+			this._loginMigrationModel.AddLoginMigrationResults(LoginMigrationStep.EstablishUserMapping, response);
 		} catch (error) {
-			console.log('Failed Login Migration at: ', new Date());
 			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
+			this._loginMigrationModel.ReportException(LoginMigrationStep.MigrateLogins, error);
 			this._loginMigrationsError = error;
 			return false;
 		}
@@ -616,24 +627,19 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			const sourceConnectionString = await this.getSourceConnectionString();
 			const targetConnectionString = await this.getTargetConnectionString();
 
-			console.time("migrateServerRolesAndSetPermissions")
 			var response = (await this.migrationService.migrateServerRolesAndSetPermissions(
 				sourceConnectionString,
 				targetConnectionString,
 				this._loginsForMigration.map(row => row.loginName),
 				this._aadDomainName
 			))!;
-			console.timeEnd("migrateServerRolesAndSetPermissions")
 
-			this.updateLoginMigrationResults(response)
+			this.updateLoginMigrationResults(response);
+			this._loginMigrationModel.AddLoginMigrationResults(LoginMigrationStep.MigrateServerRolesAndSetPermissions, response);
 
-			console.log('Ending Login Migration at: ', new Date());
-			console.log('Login migration response: ', response);
-
-			console.log('AKMA DEBUG response: ', response);
 		} catch (error) {
-			console.log('Failed Login Migration at: ', new Date());
 			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
+			this._loginMigrationModel.ReportException(LoginMigrationStep.MigrateLogins, error);
 			this._loginMigrationsError = error;
 			return false;
 		}
@@ -1079,6 +1085,55 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		).map(t => t.name);
 	}
 
+	public async startTdeMigration(
+		accessToken: string,
+		reportUpdate: (dbName: string, succeeded: boolean, message: string) => Promise<void>): Promise<OperationResult<TdeMigrationDbResult[]>> {
+
+		const tdeEnabledDatabases = this.tdeMigrationConfig.getTdeEnabledDatabases();
+		const connectionString = await azdata.connection.getConnectionString(this.sourceConnectionId, true);
+
+		const opResult: OperationResult<TdeMigrationDbResult[]> = {
+			success: false,
+			result: [],
+			errors: []
+		};
+
+		try {
+
+			const migrationResult = await this.tdeMigrationService.migrateCertificate(
+				tdeEnabledDatabases,
+				connectionString,
+				this._targetSubscription?.id,
+				this._resourceGroup?.name,
+				this._targetServerInstance.name,
+				this.tdeMigrationConfig._networkPath,
+				accessToken,
+				reportUpdate);
+
+			opResult.errors = migrationResult!.migrationStatuses
+				.filter(entry => !entry.success)
+				.map(entry => constants.TDE_MIGRATION_ERROR_DB(entry.dbName, entry.message));
+
+			opResult.result = migrationResult!.migrationStatuses.map(m => ({
+				name: m.dbName,
+				success: m.success,
+				message: m.message
+			}));
+
+		} catch (e) {
+			opResult.errors = [constants.TDE_MIGRATION_ERROR(e.message)];
+
+			opResult.result = tdeEnabledDatabases.map(m => ({
+				name: m,
+				success: false,
+				message: e.message
+			}));
+		}
+
+		opResult.success = opResult.errors.length === 0; //Set success when there are no errors.
+		return opResult;
+	}
+
 	public async startMigration() {
 		const sqlConnections = await azdata.connection.getConnections();
 		const currentConnection = sqlConnections.find(
@@ -1334,7 +1389,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				await this.extensionContext.globalState.update(`${this.mementoString}.${serverName}`, saveInfo);
 		}
 	}
-
 	public async loadSavedInfo(): Promise<Boolean> {
 		try {
 			this._targetType = this.savedInfo.migrationTargetType || undefined!;
@@ -1396,6 +1450,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		} catch {
 			return false;
 		}
+
+
 	}
 
 	public GetTargetType(): string {
@@ -1408,6 +1464,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				return constants.LOGIN_MIGRATIONS_DB_TEXT;
 		}
 		return "";
+	}
+
+	public get isWindowsAuthMigrationSupported(): boolean {
+		return this._targetType === MigrationTargetType.SQLMI;
 	}
 }
 
@@ -1425,4 +1485,10 @@ export interface ServerAssessment {
 export interface SkuRecommendation {
 	recommendations?: contracts.SkuRecommendationResult;
 	recommendationError?: Error;
+}
+
+export interface OperationResult<T> {
+	success: boolean;
+	result: T;
+	errors: string[];
 }

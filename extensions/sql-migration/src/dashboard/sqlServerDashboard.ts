@@ -26,6 +26,8 @@ import { DashboardTab } from './dashboardTab';
 import { MigrationsTab, MigrationsTabId } from './migrationsTab';
 import { AdsMigrationStatus, MigrationDetailsEvent, ServiceContextChangeEvent } from './tabBase';
 import { MigrationServiceProvider } from '../service/provider';
+import { ApiType } from '../service/serviceApiManager';
+import { SqlMigrationService, TdeMigrationService } from '../service/features';
 
 export interface MenuCommandArgs {
 	connectionId: string,
@@ -442,9 +444,11 @@ export class DashboardWidget {
 			serverName = activeConnection.serverName;
 		}
 		if (serverName) {
-			const migrationService = await MigrationServiceProvider.getInstance().getService();
+			const migrationService = <SqlMigrationService>await MigrationServiceProvider.getInstance().getService(ApiType.SqlMigrationProvider);
+			const tdeMigration = <TdeMigrationService>await MigrationServiceProvider.getInstance().getService(ApiType.TdeMigrationProvider);
+
 			if (migrationService) {
-				this.stateModel = new MigrationStateModel(this._context, connectionId, migrationService);
+				this.stateModel = new MigrationStateModel(this._context, connectionId, migrationService, tdeMigration);
 				this._context.subscriptions.push(this.stateModel);
 				const savedInfo = this.checkSavedInfo(serverName);
 				if (savedInfo) {
@@ -481,9 +485,10 @@ export class DashboardWidget {
 			serverName = activeConnection.serverName;
 		}
 		if (serverName) {
-			const migrationService = await MigrationServiceProvider.getInstance().getService();
+			const migrationService = <SqlMigrationService>await MigrationServiceProvider.getInstance().getService(ApiType.SqlMigrationProvider);
+			const tdeMigrationService = <TdeMigrationService>await MigrationServiceProvider.getInstance().getService(ApiType.TdeMigrationProvider);
 			if (migrationService) {
-				this.stateModel = new MigrationStateModel(this._context, connectionId, migrationService);
+				this.stateModel = new MigrationStateModel(this._context, connectionId, migrationService, tdeMigrationService);
 				this._context.subscriptions.push(this.stateModel);
 				const wizardController = new WizardController(
 					this._context,

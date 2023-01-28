@@ -15,6 +15,7 @@ import { getMigrationModeEnum, getMigrationTargetTypeEnum } from '../../constant
 import * as constants from '../../constants/strings';
 import { ServiceContextChangeEvent } from '../../dashboard/tabBase';
 import { MigrationServiceProvider } from '../../service/provider';
+import { ApiType } from '../../service/serviceApiManager';
 
 export class RetryMigrationDialog {
 
@@ -31,9 +32,10 @@ export class RetryMigrationDialog {
 		connectionId: string,
 		serverName: string,
 		migrationService: features.SqlMigrationService,
+		tdeMigrationService: features.TdeMigrationService,
 		location: azureResource.AzureLocation): Promise<MigrationStateModel> {
 
-		const stateModel = new MigrationStateModel(this._context, connectionId, migrationService);
+		const stateModel = new MigrationStateModel(this._context, connectionId, migrationService, tdeMigrationService);
 		const sourceDatabaseName = migration.properties.sourceDatabaseName;
 		const savedInfo: SavedInfo = {
 			closedPage: 0,
@@ -164,8 +166,9 @@ export class RetryMigrationDialog {
 			serverName = activeConnection.serverName;
 		}
 
-		const migrationService = await MigrationServiceProvider.getInstance().getService();
-		const stateModel = await this.createMigrationStateModel(this._serviceContext, this._migration, connectionId, serverName, migrationService, location!);
+		const migrationService = <features.SqlMigrationService>await MigrationServiceProvider.getInstance().getService(ApiType.SqlMigrationProvider)!;
+		const tdeMigrationService = <features.TdeMigrationService>await MigrationServiceProvider.getInstance().getService(ApiType.TdeMigrationProvider)!;
+		const stateModel = await this.createMigrationStateModel(this._serviceContext, this._migration, connectionId, serverName, migrationService, tdeMigrationService, location!);
 
 		if (await stateModel.loadSavedInfo()) {
 			const wizardController = new WizardController(
