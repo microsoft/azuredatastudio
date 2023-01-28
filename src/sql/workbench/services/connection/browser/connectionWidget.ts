@@ -562,8 +562,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this.fillInAzureAccountOptions().then(async () => {
 				// Don't enable the control until we've populated it
 				this._azureAccountDropdown.enable();
-				// Populate tenants
-				await this.onAzureAccountSelected();
+				// Populate tenants (select first by default for initialization of tenant dialog)
+				await this.onAzureAccountSelected(true);
 				this._azureTenantDropdown.enable();
 			}).catch(err => this._logService.error(`Unexpected error populating Azure Account dropdown : ${err}`));
 			// Immediately show/hide appropriate elements though so user gets immediate feedback while we load accounts
@@ -572,8 +572,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this.fillInAzureAccountOptions().then(async () => {
 				// Don't enable the control until we've populated it
 				this._azureAccountDropdown.enable();
-				// Populate tenants
-				await this.onAzureAccountSelected();
+				// Populate tenants (select first by default for initialization of tenant dialog)
+				await this.onAzureAccountSelected(true);
 				this._azureTenantDropdown.enable();
 			}).catch(err => this._logService.error(`Unexpected error populating Azure Account dropdown : ${err}`));
 			// Immediately show/hide appropriate elements though so user gets immediate feedback while we load accounts
@@ -638,7 +638,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		}
 	}
 
-	private async onAzureAccountSelected(): Promise<void> {
+	private async onAzureAccountSelected(selectFirstByDefault: boolean = false): Promise<void> {
 		// Reset the dropdown's validation message if the old selection was not valid but the new one is
 		this.validateAzureAccountSelection(false);
 
@@ -670,6 +670,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		// The OR case can be removed once we no longer support ADAL
 		let selectedAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value
 			|| account.key.accountId.split('.')[0] === this._azureAccountDropdown.value);
+		if (!selectedAccount && selectFirstByDefault && this._azureAccountList.length > 0) {
+			selectedAccount = this._azureAccountList[0];
+		}
 		if (selectedAccount && selectedAccount.properties.tenants && selectedAccount.properties.tenants.length > 1) {
 			// There are multiple tenants available so let the user select one
 			let options = selectedAccount.properties.tenants.map(tenant => tenant.displayName);
