@@ -13,7 +13,7 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 	private _providers: { [handle: string]: azdata.diagnostics.ErrorDiagnosticsProvider; } = Object.create(null);
 
 	constructor(
-		@ILogService private readonly _logService: ILogService,
+		@ILogService private readonly _logService: ILogService
 	) { }
 
 	public async tryHandleConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
