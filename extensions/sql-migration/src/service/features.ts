@@ -15,10 +15,21 @@ import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { Disposable } from 'vscode';
 
 import * as contracts from './contracts';
-import { ApiType, managerInstance } from './serviceApiManager';
+import { MigrationServiceProvider } from './provider';
+
+export enum ApiType {
+	SqlMigrationProvider = 'SqlMigrationProvider',
+	TdeMigrationProvider = 'TdeMigrationProvider'
+}
 
 
-export class SqlMigrationService extends SqlOpsFeature<undefined> implements contracts.ISqlMigrationService {
+export abstract class MigrationExtensionService extends SqlOpsFeature<undefined> {
+	abstract providerId: ApiType;
+}
+
+export class SqlMigrationService extends MigrationExtensionService implements contracts.ISqlMigrationService {
+
+	override providerId = ApiType.SqlMigrationProvider;
 
 	private static readonly messagesTypes: RPCMessageType[] = [
 		contracts.GetSqlMigrationAssessmentItemsRequest.type,
@@ -36,9 +47,6 @@ export class SqlMigrationService extends SqlOpsFeature<undefined> implements con
 	constructor(client: SqlOpsDataClient) {
 		super(client, SqlMigrationService.messagesTypes);
 	}
-	public get providerId(): string {
-		return this._client.providerId;
-	}
 
 	public initialize(capabilities: ServerCapabilities): void {
 		this.register(this.messages, {
@@ -48,7 +56,8 @@ export class SqlMigrationService extends SqlOpsFeature<undefined> implements con
 	}
 
 	protected registerProvider(options: undefined): Disposable {
-		return managerInstance.registerApi<contracts.ISqlMigrationService>(ApiType.SqlMigrationProvider, this);
+		MigrationServiceProvider.getInstance().addService(this);
+		return this;
 	}
 
 	public fillClientCapabilities(capabilities: ClientCapabilities): void {
@@ -264,3 +273,81 @@ export class SqlMigrationService extends SqlOpsFeature<undefined> implements con
 		return undefined;
 	}
 }
+
+
+export class TdeMigrationService extends MigrationExtensionService implements contracts.ITdeMigrationService {
+	private _reportUpdate: ((dbName: string, succeeded: boolean, error: string) => void) | undefined = undefined;
+
+	private static readonly messagesTypes: RPCMessageType[] = [
+		contracts.TdeMigrateRequest.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, TdeMigrationService.messagesTypes);
+	}
+
+	override providerId = ApiType.TdeMigrationProvider;
+
+	public initialize(capabilities: ServerCapabilities): void {
+		console.log('Registering tde');
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+
+		this._client.onNotification(contracts.TdeMigrateProgressEvent.type, e => {
+			if (this._reportUpdate === undefined) {
+				return;
+			}
+			this._reportUpdate(e.name, e.success, e.message);
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		MigrationServiceProvider.getInstance().addService(this);
+		return this;
+	}
+
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+		// this isn't explicitly necessary
+	}
+
+	async migrateCertificate(
+		tdeEnabledDatabases: string[],
+		sourceSqlConnectionString: string,
+		targetSubscriptionId: string,
+		targetResourceGroupName: string,
+		targetManagedInstanceName: string,
+		networkSharePath: string,
+		accessToken: string,
+		reportUpdate: (dbName: string, succeeded: boolean, message: string) => void): Promise<contracts.TdeMigrationResult | undefined> {
+
+		this._reportUpdate = reportUpdate;
+		let params: contracts.TdeMigrationParams = {
+			encryptedDatabases: tdeEnabledDatabases,
+			sourceSqlConnectionString: sourceSqlConnectionString,
+			targetSubscriptionId: targetSubscriptionId,
+			targetResourceGroupName: targetResourceGroupName,
+			targetManagedInstanceName: targetManagedInstanceName,
+			networkSharePath: networkSharePath,
+			networkShareDomain: 'a', // Will remove this on the next STS version
+			networkShareUserName: 'b',
+			networkSharePassword: 'c',
+			accessToken: accessToken
+		};
+
+		try {
+			// This call needs to be awaited so, the updates are sent during the execution of the task.
+			// If the task is not await, the finally block will execute and no update will be sent.
+			const result = await this._client.sendRequest(contracts.TdeMigrateRequest.type, params);
+			return result;
+		}
+		catch (e) {
+			this._client.logFailedRequest(contracts.TdeMigrateRequest.type, e);
+		}
+
+		return undefined;
+	}
+}
+

@@ -493,3 +493,61 @@ export interface ISqlMigrationService {
 	establishUserMapping(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
 	migrateServerRolesAndSetPermissions(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
 }
+
+export interface TdeMigrationRequest {
+	encryptedDatabases: string[];
+	sourceSqlConnectionString: string;
+	targetSubscriptionId: string;
+	targetResourceGroupName: string;
+	targetManagedInstanceName: string;
+}
+
+export interface TdeMigrationEntryResult {
+	dbName: string;
+	success: boolean;
+	message: string;
+}
+
+export interface TdeMigrationResult {
+	migrationStatuses: TdeMigrationEntryResult[];
+}
+
+export namespace TdeMigrateRequest {
+	export const type = new RequestType<TdeMigrationParams, TdeMigrationResult, void, void>('migration/tdemigration');
+}
+
+export interface TdeMigrationParams {
+	encryptedDatabases: string[];
+	sourceSqlConnectionString: string;
+	targetSubscriptionId: string;
+	targetResourceGroupName: string;
+	targetManagedInstanceName: string;
+	networkSharePath: string;
+	networkShareDomain: string;
+	networkShareUserName: string;
+	networkSharePassword: string;
+	accessToken: string;
+}
+
+export namespace TdeMigrateProgressEvent {
+	export const type = new NotificationType<TdeMigrateProgressParams, void>('migration/tdemigrationprogress');
+}
+
+
+export interface TdeMigrateProgressParams {
+	name: string;
+	success: boolean;
+	message: string;
+}
+
+export interface ITdeMigrationService {
+	migrateCertificate(
+		encryptedDatabases: string[],
+		sourceSqlConnectionString: string,
+		targetSubscriptionId: string,
+		targetResourceGroupName: string,
+		targetManagedInstanceName: string,
+		networkSharePath: string,
+		accessToken: string,
+		reportUpdate: (dbName: string, succeeded: boolean, message: string) => void): Promise<TdeMigrationResult | undefined>;
+}

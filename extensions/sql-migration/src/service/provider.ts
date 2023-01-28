@@ -3,19 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ApiType, managerInstance } from '../service/serviceApiManager';
-import { SqlMigrationService } from './features';
+import { ApiType, MigrationExtensionService } from './features';
 import * as constants from '../constants/strings';
 import * as vscode from 'vscode';
 
 export class MigrationServiceProvider {
 	private static instance: MigrationServiceProvider;
-	private service!: SqlMigrationService;
+	private services: Map<ApiType, MigrationExtensionService> = new Map();
 
 	private constructor() {
-		managerInstance.onRegisteredApi<SqlMigrationService>(ApiType.SqlMigrationProvider)(provider => {
-			this.service = provider;
-		});
+	}
+
+	public addService(service: MigrationExtensionService) {
+		this.services.set(service.providerId, service);
 	}
 
 	static initialize() {
@@ -31,29 +31,28 @@ export class MigrationServiceProvider {
 		return MigrationServiceProvider.instance;
 	}
 
-	public async getService(): Promise<SqlMigrationService> {
-		if (this.service) {
-			return this.service;
+	public async getService(serviceId: ApiType): Promise<MigrationExtensionService> {
+		if (this.services.has(serviceId)) {
+			return this.services.get(serviceId)!;
 		}
-		return this.waitUntilProviderReady();
+		return this.waitUntilProviderReady(serviceId);
 	}
 
-	public async waitUntilProviderReady(): Promise<SqlMigrationService> {
-		this.service = await vscode.window.withProgress({
+	public async waitUntilProviderReady(serviceId: ApiType): Promise<MigrationExtensionService> {
+		const service = await vscode.window.withProgress({
 			location: vscode.ProgressLocation.Notification,
-			title: constants.waitingForService,
+			title: constants.waitingForService(serviceId),
 			cancellable: false
 		}, (progress, token) => {
-			return new Promise<SqlMigrationService>(resolve => {
+			return new Promise<MigrationExtensionService>(resolve => {
 				const interval = setInterval(() => {
-					if (this.service) {
+					if (this.services.has(serviceId)) {
 						clearInterval(interval);
-						resolve(this.service);
+						resolve(this.services.get(serviceId)!);
 					}
-
 				}, 250);
 			});
 		});
-		return this.service;
+		return service;
 	}
 }

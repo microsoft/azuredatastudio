@@ -26,8 +26,7 @@ import { DashboardTab } from './dashboardTab';
 import { MigrationsTab, MigrationsTabId } from './migrationsTab';
 import { AdsMigrationStatus, MigrationDetailsEvent, ServiceContextChangeEvent } from './tabBase';
 import { MigrationServiceProvider } from '../service/provider';
-import { ApiType } from '../service/serviceApiManager';
-import { SqlMigrationService, TdeMigrationService } from '../service/features';
+import { ApiType, SqlMigrationService, TdeMigrationService } from '../service/features';
 
 export interface MenuCommandArgs {
 	connectionId: string,

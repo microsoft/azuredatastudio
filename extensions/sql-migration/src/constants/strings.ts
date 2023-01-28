@@ -20,7 +20,9 @@ export function serviceCrashMessage(error: string): string {
 	return localize('serviceCrashMessage', "Migration service component could not start. {0}", error);
 }
 export const serviceCrashed = localize('serviceCrashed', "Service component crashed.");
-export const waitingForService = localize('waitingForService', "Waiting for Migration service component to start.");
+export function waitingForService(serviceName: string): string {
+	return localize('waitingForService', "Waiting for {0} component to start.", serviceName);
+}
 
 // mirrors MigrationState as defined in RP
 export enum MigrationState {

@@ -11,7 +11,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 import * as path from 'path';
 import { EventAndListener } from 'eventemitter2';
-import { SqlMigrationService } from './features';
+import { SqlMigrationService, TdeMigrationService } from './features';
 import { promises as fs } from 'fs';
 import * as constants from '../constants/strings';
 import { IMessage } from './contracts';
@@ -71,7 +71,8 @@ export class ServiceClient {
 			return client;
 		}
 		catch (error) {
-			await vscode.window.showErrorMessage(localize('flatFileImport.serviceStartFailed', "Failed to start {0}: {1}", constants.serviceName, error));
+			await vscode.window.showErrorMessage(localize('flatFileImport.serviceStartFailed', "Failed to start {0}: {1}", constants.serviceName, error.stack.toString()));
+			console.log(error);
 			return undefined;
 		}
 	}
@@ -95,7 +96,8 @@ export class ServiceClient {
 			},
 			features: [
 				// we only want to add new features
-				SqlMigrationService
+				SqlMigrationService,
+				TdeMigrationService
 			],
 			outputChannel: new CustomOutputChannel()
 		};
@@ -206,6 +208,7 @@ class LanguageClientErrorHandler {
 	showOnErrorPrompt(error: Error): void {
 		// TODO add telemetry
 		// Telemetry.sendTelemetryEvent('SqlToolsServiceCrash');
+		console.log(error);
 		vscode.window.showErrorMessage(
 			constants.serviceCrashMessage(error.message),
 		).then(() => { }, () => { });
