@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
-import { excludeDatabases, getConnectionProfile, LoginTableInfo, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
+import { excludeDatabases, extractNameFromServer, getConnectionProfile, LoginTableInfo, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel, LoginMigrationStep } from './loginMigrationModel';
 import { TdeMigrationDbResult, TdeMigrationModel } from './tdeModels';
 const localize = nls.loadMessageBundle();
@@ -546,11 +546,18 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async getTargetConnectionString(): Promise<string> {
 		await this.setTargetServerName();
+		let serverName = this._targetServerName;
+
+		if (this.isSqlVmTarget) {
+			serverName = extractNameFromServer(this._targetServerInstance);
+		}
+
 		const connectionProfile = getConnectionProfile(
-			this._targetServerName,
+			serverName,
 			this._targetServerInstance.id,
 			this._targetUserName,
-			this._targetPassword);
+			this._targetPassword,
+			true /* trustServerCertificate */);
 
 		const result = await azdata.connection.connect(connectionProfile, false, false);
 		if (result.connected && result.connectionId) {

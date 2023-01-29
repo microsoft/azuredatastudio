@@ -10,6 +10,7 @@ import * as constants from '../constants/strings';
 import { getSessionIdHeader } from './utils';
 import { URL } from 'url';
 import { MigrationSourceAuthenticationType, MigrationStateModel, NetworkShare } from '../models/stateMachine';
+import { NetworkInterface } from './dataModels/azure/networkInterfaceModel';
 
 const ARM_MGMT_API_VERSION = '2021-04-01';
 const SQL_VM_API_VERSION = '2021-11-01-preview';
@@ -168,11 +169,6 @@ export interface ServerPrivateEndpointConnection {
 	readonly id?: string;
 	readonly properties?: PrivateEndpointConnectionProperties;
 }
-
-export function isAzureSqlDatabaseServer(instance: any): instance is AzureSqlDatabaseServer {
-	return (instance as AzureSqlDatabaseServer) !== undefined;
-}
-
 export interface AzureSqlDatabaseServer {
 	id: string,
 	name: string,
@@ -197,6 +193,10 @@ export interface AzureSqlDatabaseServer {
 	},
 }
 
+export function isAzureSqlDatabaseServer(instance: any): instance is AzureSqlDatabaseServer {
+	return (instance as AzureSqlDatabaseServer) !== undefined;
+}
+
 export type SqlVMServer = {
 	properties: {
 		virtualMachineResourceId: string,
@@ -210,8 +210,13 @@ export type SqlVMServer = {
 	name: string,
 	type: string,
 	tenantId: string,
-	subscriptionId: string
+	subscriptionId: string,
+	networkInterfaces: Map<string, NetworkInterface>,
 };
+
+export function isSqlVMServer(instance: any): instance is SqlVMServer {
+	return (instance as SqlVMServer) !== undefined;
+}
 
 export type VirtualMachineInstanceView = {
 	computerName: string,
@@ -224,6 +229,7 @@ export type VirtualMachineInstanceView = {
 	hyperVGeneration: string,
 	patchStatus: { [propertyName: string]: string; },
 	statuses: InstanceViewStatus[],
+	networkProfile: any,
 }
 
 export type InstanceViewStatus = {
@@ -291,6 +297,50 @@ export async function getVMInstanceView(sqlVm: SqlVMServer, account: azdata.Acco
 	}
 
 	return response.response.data;
+}
+
+export async function getComputeVM(sqlVm: SqlVMServer, account: azdata.Account, subscription: Subscription): Promise<any> {
+	const api = await getAzureCoreAPI();
+	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${getResourceGroupFromId(sqlVm.id)}/providers/Microsoft.Compute/virtualMachines/${sqlVm.name}?api-version=2022-08-01`);
+	// /instanceView
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
+
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.toString());
+	}
+
+	return response.response.data;
+}
+
+export async function getNetworkInterface(account: azdata.Account, subscription: Subscription, nicId: string): Promise<NetworkInterface> {
+	const api = await getAzureCoreAPI();
+	const path = encodeURI(`${nicId}?api-version=2022-09-01`);
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
+
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.toString());
+	}
+
+	return response.response.data;
+}
+
+export async function getVmNetworkInterfaces(account: azdata.Account, subscription: Subscription, sqlVm: SqlVMServer): Promise<Map<string, NetworkInterface>> {
+	const computeVMs = await getComputeVM(sqlVm, account, subscription);
+	const networkInterfaces = new Map<string, any>();
+
+	if (!computeVMs?.properties?.networkProfile?.networkInterfaces) {
+		return networkInterfaces;
+	}
+
+	for (const nic of computeVMs.properties.networkProfile.networkInterfaces) {
+		const nicId = nic.id;
+		const nicData = await getNetworkInterface(account, subscription, nicId);
+		networkInterfaces.set(nicId, nicData);
+	}
+
+	return networkInterfaces;
 }
 
 export type StorageAccount = AzureProduct;
