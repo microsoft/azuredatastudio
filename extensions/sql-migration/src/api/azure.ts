@@ -299,48 +299,22 @@ export async function getVMInstanceView(sqlVm: SqlVMServer, account: azdata.Acco
 	return response.response.data;
 }
 
+export async function getAzureResourceGivenId(account: azdata.Account, subscription: Subscription, id: string, apiVersion: string): Promise<any> {
+	const api = await getAzureCoreAPI();
+	const path = encodeURI(`${id}?api-version=${apiVersion}`);
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
+
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.toString());
+	}
+
+	return response.response.data;
+}
+
 export async function getComputeVM(sqlVm: SqlVMServer, account: azdata.Account, subscription: Subscription): Promise<any> {
-	const api = await getAzureCoreAPI();
-	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${getResourceGroupFromId(sqlVm.id)}/providers/Microsoft.Compute/virtualMachines/${sqlVm.name}?api-version=2022-08-01`);
-	// /instanceView
-	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
-
-	if (response.errors.length > 0) {
-		throw new Error(response.errors.toString());
-	}
-
-	return response.response.data;
-}
-
-export async function getNetworkInterface(account: azdata.Account, subscription: Subscription, nicId: string): Promise<NetworkInterface> {
-	const api = await getAzureCoreAPI();
-	const path = encodeURI(`${nicId}?api-version=2022-09-01`);
-	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
-
-	if (response.errors.length > 0) {
-		throw new Error(response.errors.toString());
-	}
-
-	return response.response.data;
-}
-
-export async function getVmNetworkInterfaces(account: azdata.Account, subscription: Subscription, sqlVm: SqlVMServer): Promise<Map<string, NetworkInterface>> {
-	const computeVMs = await getComputeVM(sqlVm, account, subscription);
-	const networkInterfaces = new Map<string, any>();
-
-	if (!computeVMs?.properties?.networkProfile?.networkInterfaces) {
-		return networkInterfaces;
-	}
-
-	for (const nic of computeVMs.properties.networkProfile.networkInterfaces) {
-		const nicId = nic.id;
-		const nicData = await getNetworkInterface(account, subscription, nicId);
-		networkInterfaces.set(nicId, nicData);
-	}
-
-	return networkInterfaces;
+	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${getResourceGroupFromId(sqlVm.id)}/providers/Microsoft.Compute/virtualMachines/${sqlVm.name}`);
+	return getAzureResourceGivenId(account, subscription, path, "2022-08-01");
 }
 
 export type StorageAccount = AzureProduct;
@@ -376,13 +350,13 @@ export async function getBlobs(account: azdata.Account, subscription: Subscripti
 }
 
 export async function getSqlMigrationService(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationServiceName: string): Promise<SqlMigrationService> {
-	const sqlMigrationServiceId = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/${sqlMigrationServiceName}`;
+	const sqlMigrationServiceId = `/ subscriptions / ${subscription.id} /resourceGroups/${resourceGroupName} /providers/Microsoft.DataMigration / sqlMigrationServices / ${sqlMigrationServiceName} `;
 	return await getSqlMigrationServiceById(account, subscription, sqlMigrationServiceId);
 }
 
 export async function getSqlMigrationServiceById(account: azdata.Account, subscription: Subscription, sqlMigrationServiceId: string): Promise<SqlMigrationService> {
 	const api = await getAzureCoreAPI();
-	const path = encodeURI(`${sqlMigrationServiceId}?api-version=${DMSV2_API_VERSION}`);
+	const path = encodeURI(`${sqlMigrationServiceId}?api - version=${DMSV2_API_VERSION} `);
 	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
 	if (response.errors.length > 0) {
@@ -397,7 +371,7 @@ export async function getSqlMigrationServiceById(account: azdata.Account, subscr
 
 export async function getSqlMigrationServicesByResourceGroup(account: azdata.Account, subscription: Subscription, resouceGroupName: string): Promise<SqlMigrationService[]> {
 	const api = await getAzureCoreAPI();
-	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${resouceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices?api-version=${DMSV2_API_VERSION}`);
+	const path = encodeURI(`/ subscriptions / ${subscription.id} /resourceGroups/${resouceGroupName} /providers/Microsoft.DataMigration / sqlMigrationServices ? api - version=${DMSV2_API_VERSION} `);
 	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
 	if (response.errors.length > 0) {
@@ -415,7 +389,7 @@ export async function getSqlMigrationServicesByResourceGroup(account: azdata.Acc
 
 export async function getSqlMigrationServices(account: azdata.Account, subscription: Subscription): Promise<SqlMigrationService[]> {
 	const api = await getAzureCoreAPI();
-	const path = encodeURI(`/subscriptions/${subscription.id}/providers/Microsoft.DataMigration/sqlMigrationServices?api-version=${DMSV2_API_VERSION}`);
+	const path = encodeURI(`/ subscriptions / ${subscription.id} /providers/Microsoft.DataMigration / sqlMigrationServices ? api - version=${DMSV2_API_VERSION} `);
 	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
 	if (response.errors.length > 0) {
@@ -433,7 +407,7 @@ export async function getSqlMigrationServices(account: azdata.Account, subscript
 
 export async function createSqlMigrationService(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationServiceName: string, sessionId: string): Promise<SqlMigrationService> {
 	const api = await getAzureCoreAPI();
-	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/${sqlMigrationServiceName}?api-version=${DMSV2_API_VERSION}`);
+	const path = encodeURI(`/ subscriptions / ${subscription.id} /resourceGroups/${resourceGroupName} /providers/Microsoft.DataMigration / sqlMigrationServices / ${sqlMigrationServiceName}?api - version=${DMSV2_API_VERSION} `);
 	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	const requestBody = {
 		'location': regionName
@@ -468,7 +442,7 @@ export async function createSqlMigrationService(account: azdata.Account, subscri
 
 export async function getSqlMigrationServiceAuthKeys(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationServiceName: string): Promise<SqlMigrationServiceAuthenticationKeys> {
 	const api = await getAzureCoreAPI();
-	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/${sqlMigrationServiceName}/ListAuthKeys?api-version=${DMSV2_API_VERSION}`);
+	const path = encodeURI(`/ subscriptions / ${subscription.id} /resourceGroups/${resourceGroupName} /providers/Microsoft.DataMigration / sqlMigrationServices / ${sqlMigrationServiceName} /ListAuthKeys?api-version=${DMSV2_API_VERSION}`);
 	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, undefined, true, host);
 	if (response.errors.length > 0) {

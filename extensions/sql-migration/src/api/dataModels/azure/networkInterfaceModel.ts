@@ -3,6 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
+import { getAzureResourceGivenId, getComputeVM, SqlVMServer, Subscription } from '../../azure';
+
 export interface NetworkResource {
 	id: string,
 	name: string,
@@ -33,6 +36,12 @@ export interface NetworkInterfaceIpConfiguration extends NetworkResource {
 	}
 }
 
+export interface PublicIpAddress extends NetworkResource {
+	properties: {
+		ipAddress: string
+	}
+}
+
 export class NetworkInterfaceModel {
 	public static IPv4VersionType = "IPv4".toLocaleLowerCase();
 
@@ -47,7 +56,7 @@ export class NetworkInterfaceModel {
 		return undefined;
 	}
 
-	public static getPrimaryNetworkInterfaceIpConfiguration(networkInterface: NetworkInterface): NetworkInterfaceIpConfiguration | undefined {
+	public static getPrimaryIpConfiguration(networkInterface: NetworkInterface): NetworkInterfaceIpConfiguration | undefined {
 		const hasIpConfigurations = networkInterface?.properties?.ipConfigurations && networkInterface.properties.ipConfigurations?.length > 0;
 		if (!hasIpConfigurations) {
 			return undefined;
@@ -70,21 +79,16 @@ export class NetworkInterfaceModel {
 		return primaryIpConfig;
 	}
 
-	public static getPublicIpAddressFromId(publicIpAddressId: string): string {
-		// TODO AKMA: will need to use this ip address id to get the public ip address
-		return publicIpAddressId;
-	}
-
 	public static getIpAddress(networkInterfaces: NetworkInterface[]): string {
-		const primaryNetworkInterface = NetworkInterfaceModel.getPrimaryNetworkInterface(networkInterfaces);
+		const primaryNetworkInterface = this.getPrimaryNetworkInterface(networkInterfaces);
 
 		if (!primaryNetworkInterface) {
 			return "";
 		}
 
-		const ipConfig = NetworkInterfaceModel.getPrimaryNetworkInterfaceIpConfiguration(primaryNetworkInterface);
+		const ipConfig = this.getPrimaryIpConfiguration(primaryNetworkInterface);
 		if (ipConfig && ipConfig.properties.publicIPAddress) {
-			return NetworkInterfaceModel.getPublicIpAddressFromId(ipConfig.properties.publicIPAddress.id);
+			return ipConfig.properties.publicIPAddress.properties.ipAddress;
 		}
 
 		if (ipConfig && ipConfig.properties.privateIPAddress) {
@@ -92,5 +96,52 @@ export class NetworkInterfaceModel {
 		}
 
 		return "";
+	}
+
+	public static getPublicIpAddressId(networkInterfaces: NetworkInterface[]): string | undefined {
+		const primaryNetworkInterface = this.getPrimaryNetworkInterface(networkInterfaces);
+
+		if (!primaryNetworkInterface) {
+			return undefined;
+		}
+
+		const ipConfig = this.getPrimaryIpConfiguration(primaryNetworkInterface);
+		if (ipConfig && ipConfig.properties.publicIPAddress) {
+			return ipConfig.properties.publicIPAddress.id;
+		}
+
+		return undefined;
+	}
+
+	public static async getNetworkInterfaces(account: azdata.Account, subscription: Subscription, nicId: string): Promise<NetworkInterface> {
+		return getAzureResourceGivenId(account, subscription, nicId, "2022-09-01");
+	}
+
+	public static async getPublicIpAddress(account: azdata.Account, subscription: Subscription, publicIpAddressId: string): Promise<PublicIpAddress> {
+		return getAzureResourceGivenId(account, subscription, publicIpAddressId, "2022-09-01");
+	}
+
+	public static async getVmNetworkInterfaces(account: azdata.Account, subscription: Subscription, sqlVm: SqlVMServer): Promise<Map<string, NetworkInterface>> {
+		const computeVMs = await getComputeVM(sqlVm, account, subscription);
+		const networkInterfaces = new Map<string, any>();
+
+		if (!computeVMs?.properties?.networkProfile?.networkInterfaces) {
+			return networkInterfaces;
+		}
+
+		for (const nic of computeVMs.properties.networkProfile.networkInterfaces) {
+			const nicId = nic.id;
+			const nicData = await this.getNetworkInterfaces(account, subscription, nicId);
+			const publicIpAddressId = NetworkInterfaceModel.getPublicIpAddressId([nicData]);
+			let primaryIpConfig = NetworkInterfaceModel.getPrimaryIpConfiguration(nicData);
+
+			if (primaryIpConfig && publicIpAddressId) {
+				primaryIpConfig.properties.publicIPAddress = await this.getPublicIpAddress(account, subscription, publicIpAddressId);
+			}
+
+			networkInterfaces.set(nicId, nicData);
+		}
+
+		return networkInterfaces;
 	}
 }

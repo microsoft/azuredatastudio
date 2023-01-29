@@ -13,8 +13,9 @@ import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as utils from '../api/utils';
 import { azureResource } from 'azurecore';
-import { AzureSqlDatabaseServer, getVMInstanceView, getVmNetworkInterfaces, SqlVMServer } from '../api/azure';
+import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/azure';
 import { collectSourceLogins, collectTargetLogins, isSysAdmin, LoginTableInfo } from '../api/sqlUtils';
+import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
 
 export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -745,10 +746,10 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 							if (selectedVm) {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(selectedVm)! as SqlVMServer;
 								this.migrationStateModel._vmInstanceView = await getVMInstanceView(this.migrationStateModel._targetServerInstance, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription);
-
-								let networkInterface = await getVmNetworkInterfaces(this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription, this.migrationStateModel._targetServerInstance);
-								console.log("network interfaces: ", networkInterface)
-								this.migrationStateModel._targetServerInstance.networkInterfaces = networkInterface;
+								this.migrationStateModel._targetServerInstance.networkInterfaces = await NetworkInterfaceModel.getVmNetworkInterfaces(
+									this.migrationStateModel._azureAccount,
+									this.migrationStateModel._targetSubscription,
+									this.migrationStateModel._targetServerInstance);
 
 								this.wizard.message = { text: '' };
 
