@@ -4,7 +4,7 @@
 * Release date: January 30, 2023
 * Release status: General Availability
 
-### Bug fixes in 1.41.0
+### Bug fixes in 1.41.1
 
 | New Item | Details |
 | --- | --- |
