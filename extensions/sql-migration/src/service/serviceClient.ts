@@ -99,7 +99,7 @@ export class ServiceClient {
 				SqlMigrationService,
 				TdeMigrationService
 			],
-			outputChannel: new CustomOutputChannel()
+			outputChannel: this.outputChannel
 		};
 	}
 
@@ -161,30 +161,6 @@ export class ServiceClient {
 					break;
 			}
 		};
-	}
-}
-
-class CustomOutputChannel implements vscode.OutputChannel {
-	name: string = '';
-	append(value: string): void {
-	}
-	appendLine(value: string): void {
-	}
-	// tslint:disable-next-line:no-empty
-	clear(): void {
-	}
-	show(preserveFocus?: boolean): void;
-	show(column?: vscode.ViewColumn, preserveFocus?: boolean): void;
-	// tslint:disable-next-line:no-empty
-	show(column?: any, preserveFocus?: any): void {
-	}
-	// tslint:disable-next-line:no-empty
-	hide(): void {
-	}
-	// tslint:disable-next-line:no-empty
-	dispose(): void {
-	}
-	replace(_value: string): void {
 	}
 }
 
