@@ -555,6 +555,21 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.commandTimeout.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.commandTimeout.displayName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Command timeout]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Timeout del comando]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.connectRetryCount.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Number of attempts to restore connection]]></Val>
@@ -839,6 +854,24 @@
           <Val><![CDATA[Source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Origine]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.hostNameInCertificate.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Indica il nome host specificato nel certificato TLS che verrà utilizzato da SQL Server per convalidare il certificato del server. Se non specificato, il nome del server viene utilizzato per impostazione predefinita per la convalida del certificato.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.hostNameInCertificate.displayName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Host name in certificate]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nome host nel certificato]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

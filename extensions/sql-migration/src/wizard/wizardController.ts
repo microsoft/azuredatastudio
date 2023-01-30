@@ -17,7 +17,7 @@ import { SummaryPage } from './summaryPage';
 import { LoginMigrationStatusPage } from './loginMigrationStatusPage';
 import { DatabaseSelectorPage } from './databaseSelectorPage';
 import { LoginSelectorPage } from './loginSelectorPage';
-import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
+import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
 import * as styles from '../constants/styles';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
 import { azureResource } from 'azurecore';
