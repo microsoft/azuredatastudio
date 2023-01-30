@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import * as path from 'path';
 import { getCommonLaunchArgsAndCleanupOldLogFiles } from './utils';
-import { Telemetry, LanguageClientErrorHandler } from './telemetry';
+import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, SerializationFeature, AccountFeature } from './features';
 import { AppContext } from './appContext';
@@ -46,7 +46,7 @@ export class KustoServer {
 				vscode.commands.registerCommand('kusto.loadCompletionExtension', (params: CompletionExtensionParams) => {
 					this.client.sendRequest(CompletionExtLoadRequest.type, params);
 				});
-				Telemetry.sendTelemetryEvent('startup/LanguageClientStarted', {
+				TelemetryReporter.sendTelemetryEvent('startup/LanguageClientStarted', {
 					installationTime: String(installationComplete - installationStart),
 					processStartupTime: String(processEnd - processStart),
 					totalTime: String(processEnd - installationStart),
@@ -59,7 +59,7 @@ export class KustoServer {
 			await Promise.all([clientReadyPromise]);
 			return this.client;
 		} catch (e) {
-			Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
+			TelemetryReporter.sendTelemetryEvent('ServiceInitializingFailed');
 			vscode.window.showErrorMessage(localize('failedToStartServiceErrorMsg', "Failed to start {0}", Constants.serviceName));
 			throw e;
 		}

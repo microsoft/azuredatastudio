@@ -6,6 +6,7 @@ export const serviceName = 'AzureMonitor Tools Service';
 export const providerId = 'LOGANALYTICS';
 export const serviceCrashLink = 'https://github.com/Microsoft/azuredatastudio/issues';
 export const extensionConfigSectionName = 'azuremonitor';
+export const packageName = 'Microsoft.azuremonitor';
 
 // DATA PROTOCOL VALUES ///////////////////////////////////////////////////////////
 export const azureMonitorClusterProviderName = 'azureMonitorCluster';
