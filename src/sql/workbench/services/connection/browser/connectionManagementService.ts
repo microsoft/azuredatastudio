@@ -433,7 +433,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Changes password of the connection profile's user.
 	 */
-	public changePassword(connection: interfaces.IConnectionProfile, uri: string, newPassword: string):
+	public async changePassword(connection: interfaces.IConnectionProfile, uri: string, newPassword: string):
 		Promise<azdata.PasswordChangeResult> {
 		return this.sendChangePasswordRequest(connection, uri, newPassword);
 	}
@@ -564,18 +564,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				return this.connectWithOptions(connection, uri, options, callbacks);
 			}
 			else {
-				let connectionErrorHandled = await this._errorDiagnosticsService.tryHandleConnectionError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, Utils.convertToRpcConnectionProfile(connection, false), (options as any) as azdata.IConnectionCompletionOptions);
-				if (connectionErrorHandled.success) {
+				let connectionErrorHandled = await this._errorDiagnosticsService.tryHandleConnectionError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, Utils.convertToRpcConnectionProfile(connection, false));
+				if (connectionErrorHandled.handled) {
 					connectionResult.errorHandled = true;
-					if (connectionErrorHandled.connectNeeded) {
-						// Handle case where after a connection error is handled
-						// the connection does not automatically reconnect.
-						// Handlers such as "Change Password" will connect on their own.
-						return this.connectWithOptions(connection, uri, options, callbacks);
-					}
-					else {
-						return connectionResult;
-					}
+					//copy over altered connection options from the result
+					connection.options = connectionErrorHandled.options;
+					return this.connectWithOptions(connection, uri, options, callbacks);
 				}
 				else {
 					// Error not handled by any registered providers so fail the connection
@@ -604,9 +598,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	public openChangePasswordDialog(profile: interfaces.IConnectionProfile, params: INewConnectionParams): void {
+	public async openChangePasswordDialog(profile: interfaces.IConnectionProfile): Promise<string | undefined> {
 		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
-		dialog.open(profile, params);
+		let result = await dialog.open(profile);
+		return result;
 	}
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {

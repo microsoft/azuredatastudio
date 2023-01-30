@@ -138,8 +138,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				openConnectionDialog(providers?: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection> {
 					return extHostConnectionManagement.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
 				},
-				openChangePasswordDialog(profile: azdata.IConnectionProfile, options: azdata.IConnectionCompletionOptions) {
-					return extHostConnectionManagement.$openChangePasswordDialog(profile, options);
+				openChangePasswordDialog(profile: azdata.IConnectionProfile): Thenable<string | undefined> {
+					return extHostConnectionManagement.$openChangePasswordDialog(profile);
 				},
 				listDatabases(connectionId: string): Thenable<string[]> {
 					return extHostConnectionManagement.$listDatabases(connectionId);

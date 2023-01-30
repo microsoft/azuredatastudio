@@ -331,7 +331,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return true;
 	}
 
-	openChangePasswordDialog(profile: IConnectionProfile, params: INewConnectionParams): void {
-
+	openChangePasswordDialog(profile: IConnectionProfile): Promise<string | undefined> {
+		return undefined;
 	}
 }

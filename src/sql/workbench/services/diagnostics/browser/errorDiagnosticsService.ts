@@ -16,11 +16,11 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 		@ILogService private readonly _logService: ILogService
 	) { }
 
-	public async tryHandleConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile, options: azdata.IConnectionCompletionOptions): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
-		let result = { success: false, connectNeeded: false };
+	public async tryHandleConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
+		let result = { handled: false, options: {} };
 		let provider = this._providers[providerId]
 		if (provider) {
-			result = await provider.handleConnectionError(errorCode, errorMessage, connection, options);
+			result = await provider.handleConnectionError(errorCode, errorMessage, connection);
 		}
 		return result;
 	}

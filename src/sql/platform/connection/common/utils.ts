@@ -6,7 +6,8 @@
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { RpcConnectionProfile } from 'sql/platform/connection/common/rpcConnectionProfile';
+import * as azdata from 'azdata';
+import { deepClone } from 'vs/base/common/objects';
 
 // CONSTANTS //////////////////////////////////////////////////////////////////////////////////////
 const msInH = 3.6e6;
@@ -139,8 +140,8 @@ export function isServerConnection(profile: IConnectionProfile): boolean {
 	return !profile.options.originalDatabase;
 }
 
-// Convert a IConnectionProfile with services to one that can be sent via RPC.
-export function convertToRpcConnectionProfile(profile: IConnectionProfile, deepCopyOptions: boolean, removeFunction?: (profile: IConnectionProfile) => IConnectionProfile): RpcConnectionProfile {
+// Convert a IConnectionProfile with services to a SqlExtHostType Connection Profile (can be sent via RPC)
+export function convertToRpcConnectionProfile(profile: IConnectionProfile, deepCopyOptions: boolean, removeFunction?: (profile: IConnectionProfile) => IConnectionProfile): azdata.connection.ConnectionProfile {
 	if (!profile) {
 		return undefined;
 	}
@@ -150,6 +151,22 @@ export function convertToRpcConnectionProfile(profile: IConnectionProfile, deepC
 		profile = removeFunction(profile);
 	}
 
-	let connection: RpcConnectionProfile = new RpcConnectionProfile(profile, deepCopyOptions);
+	let connection: azdata.connection.ConnectionProfile = {
+		providerId: profile.providerName,
+		connectionId: profile.id,
+		connectionName: profile.connectionName,
+		serverName: profile.serverName,
+		databaseName: profile.databaseName,
+		userName: profile.userName,
+		password: profile.password,
+		authenticationType: profile.authenticationType,
+		savePassword: profile.savePassword,
+		groupFullName: profile.groupFullName,
+		groupId: profile.groupId,
+		saveProfile: profile.savePassword,
+		azureTenantId: profile.azureTenantId,
+		options: deepCopyOptions ? deepClone(profile.options) : profile.options
+	};
+
 	return connection;
 }

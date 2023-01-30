@@ -337,9 +337,9 @@ export interface IConnectionManagementService {
 	/**
 	 * Launches the password change dialog.
 	 * @param profile The connection profile to change the password.
-	 * @param params Required connection parameters associated with the profile.
+	 * @returns the new valid password that is entered, or undefined if cancelled or errored.
 	 */
-	openChangePasswordDialog(profile: IConnectionProfile, params: INewConnectionParams): void;
+	openChangePasswordDialog(profile: IConnectionProfile): Promise<string | undefined>;
 }
 
 export enum RunQueryOnConnectionMode {

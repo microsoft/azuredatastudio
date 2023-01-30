@@ -5,7 +5,7 @@
 
 import { ExtHostConnectionManagementShape, MainThreadConnectionManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import * as azdata from 'azdata';
-import { IConnectionManagementService, ConnectionType, IConnectionParams, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService, ConnectionType, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
@@ -168,10 +168,10 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		return connection;
 	}
 
-	public $openChangePasswordDialog(profile: IConnectionProfile, options: azdata.IConnectionCompletionOptions): void {
+	public $openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined> {
 		// Need to have access to getOptionsKey, so recreate profile from details.
 		let convertedProfile = new ConnectionProfile(this._capabilitiesService, profile);
-		this._connectionManagementService.openChangePasswordDialog(convertedProfile, ((options as any) as IConnectionCompletionOptions).params);
+		return this._connectionManagementService.openChangePasswordDialog(convertedProfile);
 	}
 
 	public async $listDatabases(connectionId: string): Promise<string[]> {
