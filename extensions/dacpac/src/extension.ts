@@ -9,7 +9,7 @@ import { DataTierApplicationWizard } from './wizard/dataTierApplicationWizard';
 import { TelemetryReporter } from './telemetry';
 
 export async function activate(context: vscode.ExtensionContext) {
-	vscode.commands.registerCommand('dacFx.start', (profile: azdata.IConnectionProfile) => new DataTierApplicationWizard(undefined, context).start(profile));
+	context.subscriptions.push(vscode.commands.registerCommand('dacFx.start', (profile: azdata.IConnectionProfile) => new DataTierApplicationWizard(undefined, context).start(profile)));
 	context.subscriptions.push(TelemetryReporter);
 }
 
