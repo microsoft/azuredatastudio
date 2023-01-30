@@ -12,7 +12,7 @@ import * as constants from '../constants/strings';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { getFullResourceGroupFromId, getLocationDisplayName, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlVMServer } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { logError, TelemetryViews } from '../telemtery';
+import { logError, TelemetryViews } from '../telemetry';
 import * as utils from '../api/utils';
 import * as styles from '../constants/styles';
 
