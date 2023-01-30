@@ -244,7 +244,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _skuRecommendationApiResponse!: mssql.SkuRecommendationResult;
 	public _skuRecommendationReportFilePaths: string[];
 	public _skuRecommendationPerformanceLocation!: string;
-
+	public _provisioningScriptApiResponse!: mssql.ProvisioningScriptResult;
+	public _provisioningScriptResult!: ProvisioningScript;
 	public _perfDataCollectionStartDate!: Date | undefined;
 	public _perfDataCollectionStopDate!: Date | undefined;
 	public _perfDataCollectionLastRefreshedDate!: Date;
@@ -758,6 +759,50 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		} catch (e) {
 			logError(TelemetryViews.SkuRecommendationWizard, 'GetSkuRecommendationTelemetryFailed', e);
 		}
+	}
+
+	public async generateProvisioningScript(targetType: MigrationTargetType): Promise<ProvisioningScript> {
+		try {
+			switch (targetType) {
+				case MigrationTargetType.SQLVM: {
+					const response = (await this.migrationService.generateProvisioningScript(
+						this._skuRecommendationResults.recommendations.sqlVmRecommendationResults
+					))!;
+					this._provisioningScriptApiResponse = response;
+					break;
+				}
+				case MigrationTargetType.SQLDB: {
+					const response = (await this.migrationService.generateProvisioningScript(
+						this._skuRecommendationResults.recommendations.sqlDbRecommendationResults
+					))!;
+					this._provisioningScriptApiResponse = response;
+					break;
+				}
+				case MigrationTargetType.SQLMI: {
+					const response = (await this.migrationService.generateProvisioningScript(
+						this._skuRecommendationResults.recommendations.sqlMiRecommendationResults
+					))!;
+					this._provisioningScriptApiResponse = response;
+					break;
+				}
+			}
+
+			this._provisioningScriptResult = {
+				result: this._provisioningScriptApiResponse,
+			};
+
+			return this._provisioningScriptResult;
+
+		} catch (error) {
+			logError(TelemetryViews.ProvisioningScriptWizard, 'GenerateProvisioningScriptFailed', error);
+			this._provisioningScriptResult = {
+				result: {
+					provisioningScriptFilePath: '',
+				},
+				error: error,
+			};
+		}
+		return this._provisioningScriptResult;
 	}
 
 	public async startPerfDataCollection(
@@ -1484,6 +1529,11 @@ export interface ServerAssessment {
 export interface SkuRecommendation {
 	recommendations?: mssql.SkuRecommendationResult;
 	recommendationError?: Error;
+}
+
+export interface ProvisioningScript {
+	result: mssql.ProvisioningScriptResult;
+	error?: Error;
 }
 
 export interface OperationResult<T> {
