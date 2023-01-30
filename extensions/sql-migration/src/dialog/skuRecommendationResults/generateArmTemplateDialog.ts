@@ -11,7 +11,7 @@ import { join } from 'path';
 import * as styles from '../../constants/styles';
 import * as mssql from 'mssql';
 import * as utils from '../../api/utils';
-import { logError, TelemetryViews } from '../../telemtery';
+import { logError, TelemetryViews } from '../../telemetry';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 
 export class GenerateArmTemplateDialog {

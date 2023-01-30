@@ -766,21 +766,21 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			switch (targetType) {
 				case MigrationTargetType.SQLVM: {
 					const response = (await this.migrationService.generateProvisioningScript(
-						this._skuRecommendationResults.recommendations.sqlVmRecommendationResults
+						this._skuRecommendationResults.recommendations!.sqlVmRecommendationResults
 					))!;
 					this._provisioningScriptApiResponse = response;
 					break;
 				}
 				case MigrationTargetType.SQLDB: {
 					const response = (await this.migrationService.generateProvisioningScript(
-						this._skuRecommendationResults.recommendations.sqlDbRecommendationResults
+						this._skuRecommendationResults.recommendations!.sqlDbRecommendationResults
 					))!;
 					this._provisioningScriptApiResponse = response;
 					break;
 				}
 				case MigrationTargetType.SQLMI: {
 					const response = (await this.migrationService.generateProvisioningScript(
-						this._skuRecommendationResults.recommendations.sqlMiRecommendationResults
+						this._skuRecommendationResults.recommendations!.sqlMiRecommendationResults
 					))!;
 					this._provisioningScriptApiResponse = response;
 					break;
