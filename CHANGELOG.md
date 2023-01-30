@@ -1,5 +1,16 @@
 # Change Log
 
+## Version 1.41.1
+* Release date: January 30, 2023
+* Release status: General Availability
+
+### Bug fixes in 1.41.0
+
+| New Item | Details |
+| --- | --- |
+| Connection | Fixed a regression causing Object Explorer to not show database objects for Azure SQL DB Basic SLO |
+| Object Explorer | Fixed a bug causing incorrect Azure acount tenant selection when connecting to server through Azure view |
+
 ## Version 1.41.0
 * Release date: January 25, 2023
 * Release status: General Availability
@@ -14,7 +25,7 @@
 | Connection | Added ability to provide a description when creating a firewall rule from Azure Data Studio. |
 | Connection | Include ability to change password for new or expired login. |
 | Connection | Add support for SQL Server Alias use when connecting to a server. |
-| MongoDB Atlas Extension | Provides the ability to connect to and query data on MongoDB Atlas (Preview). | 
+| MongoDB Atlas Extension | Provides the ability to connect to and query data on MongoDB Atlas (Preview). |
 | Notebooks | Provide option for users to convert markdown to a table or not when HMTL table tag is present. |
 | Object Explorer | Databases are no longer brought online in serverless Azure SQL when Databases node is expanded. |
 | Object Explorer | Added support for Ledger views. |
