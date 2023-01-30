@@ -1099,7 +1099,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 		try {
 
-			const migrationResult = await this.tdeMigrationService.migrateCertificate(
+			const migrationResult = await this.migrationService.migrateCertificate(
 				tdeEnabledDatabases,
 				connectionString,
 				this._targetSubscription?.id,
@@ -1109,15 +1109,17 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				accessToken,
 				reportUpdate);
 
-			opResult.errors = migrationResult.migrationStatuses
-				.filter(entry => !entry.success)
-				.map(entry => constants.TDE_MIGRATION_ERROR_DB(entry.dbName, entry.message));
+			if (migrationResult) {
+				opResult.errors = migrationResult.migrationStatuses
+					.filter(entry => !entry.success)
+					.map(entry => constants.TDE_MIGRATION_ERROR_DB(entry.dbName, entry.message));
 
-			opResult.result = migrationResult.migrationStatuses.map(m => ({
-				name: m.dbName,
-				success: m.success,
-				message: m.message
-			}));
+				opResult.result = migrationResult.migrationStatuses.map(m => ({
+					name: m.dbName,
+					success: m.success,
+					message: m.message
+				}));
+			}
 
 		} catch (e) {
 			opResult.errors = [constants.TDE_MIGRATION_ERROR(e.message)];

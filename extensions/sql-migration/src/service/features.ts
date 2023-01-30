@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
 import { SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import {
 	ClientCapabilities,
@@ -19,6 +18,7 @@ import { ApiType, managerInstance } from './serviceApiManager';
 
 
 export class SqlMigrationService extends SqlOpsFeature<undefined> implements contracts.ISqlMigrationService {
+	private _reportUpdate: (dbName: string, succeeded: boolean, error: string) => void = () => { };
 
 	private static readonly messagesTypes: RPCMessageType[] = [
 		contracts.GetSqlMigrationAssessmentItemsRequest.type,
@@ -30,7 +30,8 @@ export class SqlMigrationService extends SqlOpsFeature<undefined> implements con
 		contracts.ValidateLoginMigrationRequest.type,
 		contracts.MigrateLoginsRequest.type,
 		contracts.EstablishUserMappingRequest.type,
-		contracts.MigrateServerRolesAndSetPermissionsRequest.type
+		contracts.MigrateServerRolesAndSetPermissionsRequest.type,
+		contracts.TdeMigrateRequest.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
@@ -44,6 +45,13 @@ export class SqlMigrationService extends SqlOpsFeature<undefined> implements con
 		this.register(this.messages, {
 			id: UUID.generateUuid(),
 			registerOptions: undefined
+		});
+
+		this._client.onNotification(contracts.TdeMigrateProgressEvent.type, e => {
+			if (this._reportUpdate === undefined) {
+				return;
+			}
+			this._reportUpdate(e.name, e.success, e.message);
 		});
 	}
 
@@ -259,6 +267,45 @@ export class SqlMigrationService extends SqlOpsFeature<undefined> implements con
 		}
 		catch (e) {
 			this._client.logFailedRequest(contracts.MigrateServerRolesAndSetPermissionsRequest.type, e);
+		}
+
+		return undefined;
+	}
+
+	async migrateCertificate(
+		tdeEnabledDatabases: string[],
+		sourceSqlConnectionString: string,
+		targetSubscriptionId: string,
+		targetResourceGroupName: string,
+		targetManagedInstanceName: string,
+		networkSharePath: string,
+		accessToken: string,
+		reportUpdate: (dbName: string, succeeded: boolean, message: string) => void): Promise<contracts.TdeMigrationResult | undefined> {
+
+		this._reportUpdate = reportUpdate;
+		let params: contracts.TdeMigrationParams = {
+			encryptedDatabases: tdeEnabledDatabases,
+			sourceSqlConnectionString: sourceSqlConnectionString,
+			targetSubscriptionId: targetSubscriptionId,
+			targetResourceGroupName: targetResourceGroupName,
+			targetManagedInstanceName: targetManagedInstanceName,
+			networkSharePath: networkSharePath,
+			networkShareDomain: 'a', // Will remove this on the next STS version
+			networkShareUserName: 'b',
+			networkSharePassword: 'c',
+			accessToken: accessToken
+		};
+
+		try {
+			// This call needs to be awaited so, the updates are sent during the execution of the task.
+			// If the task is not await, the finally block will execute and no update will be sent.
+			const result = await this._client.sendRequest(contracts.TdeMigrateRequest.type, params);
+			return result;
+		}
+		catch (e) {
+			this._client.logFailedRequest(contracts.TdeMigrateRequest.type, e);
+		} finally {
+			this._reportUpdate = () => { };
 		}
 
 		return undefined;

@@ -480,6 +480,57 @@ export namespace LoginMigrationNotification {
 	export const type = new NotificationType<StartLoginMigrationResult, void>('migration/loginmigrationnotification"');
 }
 
+
+// ------------------------------- < Tde Migration > ------------------------------------
+
+export namespace TdeMigrateRequest {
+	export const type = new RequestType<TdeMigrationParams, TdeMigrationResult, void, void>('migration/tdemigration');
+}
+
+export interface TdeMigrationParams {
+	encryptedDatabases: string[];
+	sourceSqlConnectionString: string;
+	targetSubscriptionId: string;
+	targetResourceGroupName: string;
+	targetManagedInstanceName: string;
+	networkSharePath: string;
+	networkShareDomain: string;
+	networkShareUserName: string;
+	networkSharePassword: string;
+	accessToken: string;
+}
+
+export namespace TdeMigrateProgressEvent {
+	export const type = new NotificationType<TdeMigrateProgressParams, void>('migration/tdemigrationprogress');
+}
+
+
+export interface TdeMigrateProgressParams {
+	name: string;
+	success: boolean;
+	message: string;
+}
+
+export interface TdeMigrationRequest {
+	encryptedDatabases: string[];
+	sourceSqlConnectionString: string;
+	targetSubscriptionId: string;
+	targetResourceGroupName: string;
+	targetManagedInstanceName: string;
+}
+
+export interface TdeMigrationEntryResult {
+	dbName: string;
+	success: boolean;
+	message: string;
+}
+
+export interface TdeMigrationResult {
+	migrationStatuses: TdeMigrationEntryResult[];
+}
+
+// ------------------------------- < Tde Migration > ------------------------------------
+
 export interface ISqlMigrationService {
 	providerId: string;
 	getAssessments(ownerUri: string, databases: string[], xEventsFilesFolderPath: string): Thenable<AssessmentResult | undefined>;
@@ -492,4 +543,5 @@ export interface ISqlMigrationService {
 	migrateLogins(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
 	establishUserMapping(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
 	migrateServerRolesAndSetPermissions(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
+	migrateCertificate(tdeEnabledDatabases: string[], sourceSqlConnectionString: string, targetSubscriptionId: string, targetResourceGroupName: string, targetManagedInstanceName: string, networkSharePath: string, accessToken: string, reportUpdate: (dbName: string, succeeded: boolean, message: string) => void): Promise<TdeMigrationResult | undefined>;
 }
