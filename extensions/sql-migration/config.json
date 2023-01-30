@@ -1,5 +1,5 @@
 {
-	"downloadUrl": "https://github.com/Microsoft/sqltoolsservice/releases/download/{#version#}/microsoft.sqltools.migration-{#fileName#}",
+	"downloadUrl": "https://akmastorageaccount.blob.core.windows.net/migrationservice/Microsoft.SqlTools.Migration-win-x64-net6.0.zip",
 	"useDefaultLinuxRuntime": true,
 	"version": "4.4.0.22",
 	"downloadFileNames": {
