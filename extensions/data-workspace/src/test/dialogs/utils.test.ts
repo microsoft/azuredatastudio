@@ -11,8 +11,8 @@ import { isValidBasename, isValidBasenameErrorMessage } from '../../common/pathU
 
 const isWindows = os.platform() === 'win32';
 
-describe('Check for invalid filename tests', function (): void {
-	it('Should determine invalid filenames', async () => {
+suite('Check for invalid filename tests', function (): void {
+	test('Should determine invalid filenames', async () => {
 		// valid filename
 		should(isValidBasename(formatFileName('ValidName.sqlproj'))).equal(true);
 
@@ -36,7 +36,7 @@ describe('Check for invalid filename tests', function (): void {
 		should(isValidBasename('/')).equal(false);
 	});
 
-	it('Should determine invalid Windows filenames', async () => {
+	test('Should determine invalid Windows filenames', async () => {
 		let invalidNames: string[] = [
 			// invalid characters only for Windows
 			'?.sqlproj',
@@ -56,7 +56,7 @@ describe('Check for invalid filename tests', function (): void {
 		}
 	});
 
-	it('Should determine Windows forbidden filenames', async () => {
+	test('Should determine Windows forbidden filenames', async () => {
 		let invalidNames: string[] = [
 			// invalid only for Windows
 			'CON.sqlproj',
@@ -89,8 +89,8 @@ describe('Check for invalid filename tests', function (): void {
 	});
 });
 
-describe('Check for invalid filename error tests', function (): void {
-	it('Should determine invalid filenames', async () => {
+suite('Check for invalid filename error tests', function (): void {
+	test('Should determine invalid filenames', async () => {
 		// valid filename
 		should(isValidBasenameErrorMessage(formatFileName('ValidName.sqlproj'))).equal('');
 
@@ -109,7 +109,7 @@ describe('Check for invalid filename error tests', function (): void {
 		should(isValidBasenameErrorMessage(formatFileName('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.sqlproj'))).equal(constants.tooLongFilenameErrorMessage);
 	});
 
-	it('Should determine invalid Windows filenames', async () => {
+	test('Should determine invalid Windows filenames', async () => {
 		let invalidNames: string[] = [
 			// invalid characters only for Windows
 			'?.sqlproj',
@@ -129,7 +129,7 @@ describe('Check for invalid filename error tests', function (): void {
 		should(isValidBasenameErrorMessage(formatFileName('test	.sqlproj'))).equal(isWindows ? constants.trailingWhitespaceErrorMessage : '');
 	});
 
-	it('Should determine Windows forbidden filenames', async () => {
+	test('Should determine Windows forbidden filenames', async () => {
 		let invalidNames: string[] = [
 			// invalid only for Windows
 			'CON.sqlproj',
