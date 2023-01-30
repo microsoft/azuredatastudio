@@ -23,6 +23,7 @@ export const serviceCrashed = localize('serviceCrashed', "Service component cras
 export function waitingForService(serviceName: string): string {
 	return localize('waitingForService', "Waiting for {0} component to start.", serviceName);
 }
+export const serviceProviderInitializationError = localize('serviceProviderIntializationError', "Service provider could not be initialized.");
 
 // mirrors MigrationState as defined in RP
 export enum MigrationState {

@@ -8,27 +8,13 @@ import * as constants from '../constants/strings';
 import * as vscode from 'vscode';
 
 export class MigrationServiceProvider {
-	private static instance: MigrationServiceProvider;
 	private services: Map<ApiType, MigrationExtensionService> = new Map();
 
-	private constructor() {
+	constructor() {
 	}
 
 	public addService(service: MigrationExtensionService) {
 		this.services.set(service.providerId, service);
-	}
-
-	static initialize() {
-		if (!MigrationServiceProvider.instance) {
-			MigrationServiceProvider.instance = new MigrationServiceProvider();
-		}
-	}
-
-	static getInstance() {
-		if (!MigrationServiceProvider.instance) {
-			MigrationServiceProvider.initialize();
-		}
-		return MigrationServiceProvider.instance;
 	}
 
 	public async getService(serviceId: ApiType): Promise<MigrationExtensionService> {
@@ -56,3 +42,5 @@ export class MigrationServiceProvider {
 		return service;
 	}
 }
+
+export const migrationServiceProvider = new MigrationServiceProvider();

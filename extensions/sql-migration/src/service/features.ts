@@ -15,7 +15,7 @@ import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { Disposable } from 'vscode';
 
 import * as contracts from './contracts';
-import { MigrationServiceProvider } from './provider';
+import { migrationServiceProvider } from './provider';
 
 export enum ApiType {
 	SqlMigrationProvider = 'SqlMigrationProvider',
@@ -56,7 +56,7 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 	}
 
 	protected registerProvider(options: undefined): Disposable {
-		MigrationServiceProvider.getInstance().addService(this);
+		migrationServiceProvider.addService(this);
 		return this;
 	}
 
@@ -289,7 +289,6 @@ export class TdeMigrationService extends MigrationExtensionService implements co
 	override providerId = ApiType.TdeMigrationProvider;
 
 	public initialize(capabilities: ServerCapabilities): void {
-		console.log('Registering tde');
 		this.register(this.messages, {
 			id: UUID.generateUuid(),
 			registerOptions: undefined
@@ -304,7 +303,7 @@ export class TdeMigrationService extends MigrationExtensionService implements co
 	}
 
 	protected registerProvider(options: undefined): Disposable {
-		MigrationServiceProvider.getInstance().addService(this);
+		migrationServiceProvider.addService(this);
 		return this;
 	}
 

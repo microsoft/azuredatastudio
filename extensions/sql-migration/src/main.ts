@@ -7,13 +7,14 @@ import * as vscode from 'vscode';
 import { DashboardWidget } from './dashboard/sqlServerDashboard';
 import * as constants from './constants/strings';
 import { ServiceClient } from './service/serviceClient';
-import { MigrationServiceProvider } from './service/provider';
+import { migrationServiceProvider } from './service/provider';
 
 let widget: DashboardWidget;
 export async function activate(context: vscode.ExtensionContext): Promise<DashboardWidget> {
-
+	if (!migrationServiceProvider) {
+		vscode.window.showErrorMessage(constants.serviceProviderInitializationError).then(() => { }, () => { });
+	}
 	// asynchronously starting the service
-	MigrationServiceProvider.initialize();
 	const outputChannel = vscode.window.createOutputChannel(constants.serviceName);
 	const serviceClient = new ServiceClient(outputChannel);
 	serviceClient.startService(context).catch((e) => {

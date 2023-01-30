@@ -14,7 +14,7 @@ import { WizardController } from '../../wizard/wizardController';
 import { getMigrationModeEnum, getMigrationTargetTypeEnum } from '../../constants/helper';
 import * as constants from '../../constants/strings';
 import { ServiceContextChangeEvent } from '../../dashboard/tabBase';
-import { MigrationServiceProvider } from '../../service/provider';
+import { migrationServiceProvider } from '../../service/provider';
 
 export class RetryMigrationDialog {
 
@@ -165,8 +165,8 @@ export class RetryMigrationDialog {
 			serverName = activeConnection.serverName;
 		}
 
-		const migrationService = <features.SqlMigrationService>await MigrationServiceProvider.getInstance().getService(features.ApiType.SqlMigrationProvider)!;
-		const tdeMigrationService = <features.TdeMigrationService>await MigrationServiceProvider.getInstance().getService(features.ApiType.TdeMigrationProvider)!;
+		const migrationService = <features.SqlMigrationService>await migrationServiceProvider.getService(features.ApiType.SqlMigrationProvider)!;
+		const tdeMigrationService = <features.TdeMigrationService>await migrationServiceProvider.getService(features.ApiType.TdeMigrationProvider)!;
 		const stateModel = await this.createMigrationStateModel(this._serviceContext, this._migration, connectionId, serverName, migrationService, tdeMigrationService, location!);
 
 		if (await stateModel.loadSavedInfo()) {

@@ -25,7 +25,7 @@ import { DashboardStatusBar, ErrorEvent } from './DashboardStatusBar';
 import { DashboardTab } from './dashboardTab';
 import { MigrationsTab, MigrationsTabId } from './migrationsTab';
 import { AdsMigrationStatus, MigrationDetailsEvent, ServiceContextChangeEvent } from './tabBase';
-import { MigrationServiceProvider } from '../service/provider';
+import { migrationServiceProvider } from '../service/provider';
 import { ApiType, SqlMigrationService, TdeMigrationService } from '../service/features';
 
 export interface MenuCommandArgs {
@@ -443,8 +443,8 @@ export class DashboardWidget {
 			serverName = activeConnection.serverName;
 		}
 		if (serverName) {
-			const migrationService = <SqlMigrationService>await MigrationServiceProvider.getInstance().getService(ApiType.SqlMigrationProvider);
-			const tdeMigration = <TdeMigrationService>await MigrationServiceProvider.getInstance().getService(ApiType.TdeMigrationProvider);
+			const migrationService = <SqlMigrationService>await migrationServiceProvider.getService(ApiType.SqlMigrationProvider);
+			const tdeMigration = <TdeMigrationService>await migrationServiceProvider.getService(ApiType.TdeMigrationProvider);
 
 			if (migrationService) {
 				this.stateModel = new MigrationStateModel(this._context, connectionId, migrationService, tdeMigration);
@@ -484,8 +484,8 @@ export class DashboardWidget {
 			serverName = activeConnection.serverName;
 		}
 		if (serverName) {
-			const migrationService = <SqlMigrationService>await MigrationServiceProvider.getInstance().getService(ApiType.SqlMigrationProvider);
-			const tdeMigrationService = <TdeMigrationService>await MigrationServiceProvider.getInstance().getService(ApiType.TdeMigrationProvider);
+			const migrationService = <SqlMigrationService>await migrationServiceProvider.getService(ApiType.SqlMigrationProvider);
+			const tdeMigrationService = <TdeMigrationService>await migrationServiceProvider.getService(ApiType.TdeMigrationProvider);
 			if (migrationService) {
 				this.stateModel = new MigrationStateModel(this._context, connectionId, migrationService, tdeMigrationService);
 				this._context.subscriptions.push(this.stateModel);
