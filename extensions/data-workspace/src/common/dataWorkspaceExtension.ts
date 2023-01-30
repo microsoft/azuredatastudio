@@ -8,6 +8,7 @@ import { IExtension, IProjectType } from 'dataworkspace';
 import { WorkspaceService } from '../services/workspaceService';
 import { defaultProjectSaveLocation } from './projectLocationHelper';
 import { openSpecificProjectNewProjectDialog } from '../dialogs/newProjectDialog';
+import { isValidBasename, isValidBasenameErrorMessage, isValidFilenameCharacter, sanitizeStringForFilename } from './pathUtilsHelper';
 
 export class DataWorkspaceExtension implements IExtension {
 	constructor(private workspaceService: WorkspaceService) {
@@ -39,6 +40,19 @@ export class DataWorkspaceExtension implements IExtension {
 
 	openSpecificProjectNewProjectDialog(projectType: IProjectType): Promise<vscode.Uri | undefined> {
 		return openSpecificProjectNewProjectDialog(projectType, this.workspaceService);
+	}
+
+	isValidFilenameCharacter(c: string): boolean {
+		return isValidFilenameCharacter(c);
+	}
+	sanitizeStringForFilename(s: string): string {
+		return sanitizeStringForFilename(s);
+	}
+	isValidBasename(name: string | null | undefined): boolean {
+		return isValidBasename(name);
+	}
+	isValidBasenameErrorMessage(name: string | null | undefined): string {
+		return isValidBasenameErrorMessage(name);
 	}
 
 }

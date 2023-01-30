@@ -737,7 +737,7 @@ export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.
  * @param c Character to validate
  */
 export function isValidFilenameCharacter(c: string): boolean {
-	return dataworkspace.IProjectNameValidation.isValidFilenameCharacter(c);
+	return getDataWorkspaceExtensionApi().isValidFilenameCharacter(c);
 }
 
 /**
@@ -745,7 +745,7 @@ export function isValidFilenameCharacter(c: string): boolean {
  * @param s The string to be sanitized for a filename
  */
 export function sanitizeStringForFilename(s: string): string {
-	return dataworkspace.IProjectNameValidation.sanitizeStringForFilename(s);
+	return getDataWorkspaceExtensionApi().sanitizeStringForFilename(s);
 }
 
 /**
@@ -754,7 +754,7 @@ export function sanitizeStringForFilename(s: string): string {
  * @param name filename to check
  */
 export function isValidBasename(name: string | null | undefined): boolean {
-	return dataworkspace.IProjectNameValidation.isValidBasename(name);
+	return getDataWorkspaceExtensionApi().isValidBasename(name);
 }
 
 /**
@@ -763,5 +763,5 @@ export function isValidBasename(name: string | null | undefined): boolean {
  * @param name filename to check
  */
 export function isValidBasenameErrorMessage(name: string | null | undefined): string {
-	return dataworkspace.IProjectNameValidation.isValidBasenameErrorMessage(name);
+	return getDataWorkspaceExtensionApi().isValidBasenameErrorMessage(name);
 }
