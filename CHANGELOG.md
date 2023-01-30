@@ -8,8 +8,8 @@
 
 | New Item | Details |
 | --- | --- |
-| Connection | Fixed a regression causing Object Explorer to not show database objects for Azure SQL DB Basic SLO |
-| Object Explorer | Fixed a bug causing incorrect Azure account tenant selection when connecting to server through Azure view |
+| Connection | Fixed a bug causing incorrect Azure account tenant selection when connecting to server through Azure view |
+| Object Explorer | Fixed a regression causing Object Explorer to not show database objects for Azure SQL DB Basic SLO |
 
 ## Version 1.41.0
 * Release date: January 25, 2023
