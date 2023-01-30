@@ -15,7 +15,7 @@ import { IconPathHelper } from '../common/iconHelper';
 import { defaultProjectSaveLocation } from '../common/projectLocationHelper';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { WorkspaceService } from '../services/workspaceService';
-import { isValidBasename, isValidBasenameErrorMessage } from './utils';
+import { isValidBasename, isValidBasenameErrorMessage } from '../common/pathUtilsHelper';
 
 class NewProjectDialogModel {
 	projectTypeId: string = '';

@@ -48,7 +48,6 @@ import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updat
 import { AzureSqlClient } from '../models/deploy/azureSqlClient';
 import { ConnectionService } from '../models/connections/connectionService';
 import { getPublishToDockerSettings } from '../dialogs/publishToDockerQuickpick';
-import { isValidBasename, isValidBasenameErrorMessage, sanitizeStringForFilename } from '../dialogs/utils';
 
 const maxTableLength = 10;
 
@@ -651,7 +650,7 @@ export class ProjectsController {
 	}
 
 	private async promptForNewObjectName(itemType: templates.ProjectScriptType, _project: ISqlProject, folderPath: string, fileExtension?: string, defaultName?: string): Promise<string | undefined> {
-		const suggestedName = sanitizeStringForFilename(defaultName ?? itemType.friendlyName.replace(/\s+/g, ''));
+		const suggestedName = utils.sanitizeStringForFilename(defaultName ?? itemType.friendlyName.replace(/\s+/g, ''));
 		let counter: number = 0;
 
 		do {
@@ -663,7 +662,7 @@ export class ProjectsController {
 			prompt: constants.newObjectNamePrompt(itemType.friendlyName),
 			value: `${suggestedName}${counter}`,
 			validateInput: (value) => {
-				return isValidBasename(value) ? undefined : isValidBasenameErrorMessage(value);
+				return utils.isValidBasename(value) ? undefined : utils.isValidBasenameErrorMessage(value);
 			},
 			ignoreFocusOut: true,
 		});
@@ -1215,7 +1214,7 @@ export class ProjectsController {
 			prompt: constants.autorestProjectName,
 			value: defaultName,
 			validateInput: (value) => {
-				return isValidBasename(value.trim()) ? undefined : isValidBasenameErrorMessage(value.trim());
+				return utils.isValidBasename(value.trim()) ? undefined : utils.isValidBasenameErrorMessage(value.trim());
 			}
 		});
 

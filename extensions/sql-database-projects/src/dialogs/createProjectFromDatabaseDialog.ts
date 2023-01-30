@@ -13,8 +13,8 @@ import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
 import { ImportDataModel } from '../models/api/import';
 import { Deferred } from '../common/promise';
-import { getConnectionName, isValidBasename, isValidBasenameErrorMessage, mapExtractTargetEnum, sanitizeStringForFilename } from './utils';
-import { exists, getAzdataApi, getDataWorkspaceExtensionApi } from '../common/utils';
+import { getConnectionName, mapExtractTargetEnum } from './utils';
+import { exists, getAzdataApi, getDataWorkspaceExtensionApi, isValidBasename, isValidBasenameErrorMessage, sanitizeStringForFilename } from '../common/utils';
 
 export class CreateProjectFromDatabaseDialog {
 	public dialog: azdataType.window.Dialog;

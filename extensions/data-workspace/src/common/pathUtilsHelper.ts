@@ -3,9 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
-import * as constants from '../common/constants';
-
+import * as constants from './constants';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -13,6 +11,40 @@ const WINDOWS_INVALID_FILE_CHARS = /[\\/:\*\?"<>\|]/g;
 const UNIX_INVALID_FILE_CHARS = /[\\/]/g;
 const isWindows = os.platform() === 'win32';
 const WINDOWS_FORBIDDEN_NAMES = /^(con|prn|aux|clock\$|nul|lpt[0-9]|com[0-9])$/i;
+
+/**
+ * Determines if a given character is a valid filename character
+ * @param c Character to validate
+ */
+export function isValidFilenameCharacter(c: string): boolean {
+	// only a character should be passed
+	if (!c || c.length !== 1) {
+		return false;
+	}
+	WINDOWS_INVALID_FILE_CHARS.lastIndex = 0;
+	UNIX_INVALID_FILE_CHARS.lastIndex = 0;
+	if (isWindows && WINDOWS_INVALID_FILE_CHARS.test(c)) {
+		return false;
+	} else if (!isWindows && UNIX_INVALID_FILE_CHARS.test(c)) {
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * Replaces invalid filename characters in a string with underscores
+ * @param s The string to be sanitized for a filename
+ */
+export function sanitizeStringForFilename(s: string): string {
+	// replace invalid characters with an underscore
+	let result = '';
+	for (let i = 0; i < s.length; ++i) {
+		result += isValidFilenameCharacter(s[i]) ? s[i] : '_';
+	}
+
+	return result;
+}
 
 /**
  * Returns true if the string is a valid filename

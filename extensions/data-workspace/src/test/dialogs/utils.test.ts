@@ -7,7 +7,7 @@ import * as should from 'should';
 import * as constants from '../../common/constants';
 import * as os from 'os';
 import * as path from 'path';
-import { isValidBasename, isValidBasenameErrorMessage } from '../../dialogs/utils';
+import { isValidBasename, isValidBasenameErrorMessage } from '../../common/pathUtilsHelper';
 
 const isWindows = os.platform() === 'win32';
 

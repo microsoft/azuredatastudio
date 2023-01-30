@@ -731,3 +731,37 @@ export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.
 
 	return targetPlatform;
 }
+
+/**
+ * Determines if a given character is a valid filename character
+ * @param c Character to validate
+ */
+export function isValidFilenameCharacter(c: string): boolean {
+	return dataworkspace.IProjectNameValidation.isValidFilenameCharacter(c);
+}
+
+/**
+ * Replaces invalid filename characters in a string with underscores
+ * @param s The string to be sanitized for a filename
+ */
+export function sanitizeStringForFilename(s: string): string {
+	return dataworkspace.IProjectNameValidation.sanitizeStringForFilename(s);
+}
+
+/**
+ * Returns true if the string is a valid filename
+ * Logic is copied from src\vs\base\common\extpath.ts
+ * @param name filename to check
+ */
+export function isValidBasename(name: string | null | undefined): boolean {
+	return dataworkspace.IProjectNameValidation.isValidBasename(name);
+}
+
+/**
+ * Returns specific error message if file name is invalid
+ * Logic is copied from src\vs\base\common\extpath.ts
+ * @param name filename to check
+ */
+export function isValidBasenameErrorMessage(name: string | null | undefined): string {
+	return dataworkspace.IProjectNameValidation.isValidBasenameErrorMessage(name);
+}
