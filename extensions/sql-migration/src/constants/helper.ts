@@ -44,6 +44,11 @@ export const LoginMigrationStatusCodes = {
 	Failed: 'Failed',
 };
 
+export const ValidationErrorCodes = {
+	// TODO: adding other error codes for troubleshooting
+	SqlInfoValidationFailed: '2056'
+};
+
 const _dateFormatter = new Intl.DateTimeFormat(
 	undefined, {
 	year: 'numeric',
