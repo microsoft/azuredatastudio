@@ -93,7 +93,7 @@ export class PasswordChangeDialog extends Modal {
 	protected renderBody(container: HTMLElement) {
 		const body = container.appendChild(DOM.$('.change-password-dialog'));
 		body.appendChild(DOM.$('span.component-label-bold')).innerText = localize('passwordChangeDialog.Message1',
-			`Password must be changed for '{0}'.`, this._profile?.userName);
+			`Password must be changed for '{0}' to continue logging into '{1}'.`, this._profile?.userName, this._profile?.serverName);
 		body.appendChild(DOM.$('span.component-label')).innerText = localize('passwordChangeDialog.Message2',
 			`Please enter a new password below:`);
 
