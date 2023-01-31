@@ -61,8 +61,8 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 						}
 						catch (e) {
 							// Unexpected errors associated with the dialog itself will be noted here
-							// Example includes such as dialog being opened with an existing password change.
-							console.log('password change dialog threw an unexpected error: ' + e);
+							// Examples include dialog being opened during an ongoing password change.
+							console.log('Password change dialog threw an unexpected error: ' + e);
 						}
 
 						// MSSQL uses 'password' as the option key for connection profile.
