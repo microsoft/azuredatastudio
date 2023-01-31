@@ -43,8 +43,7 @@ export class SqlNotebookController implements vscode.Disposable {
 		});
 	}
 
-	private async execute(cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController
-	): Promise<void> {
+	private async execute(cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController): Promise<void> {
 		if (this._queryCompleteHandler) {
 			throw new Error('Another query is currently in progress. Please wait for that query to complete before running these cells.');
 		}
@@ -70,13 +69,14 @@ export class SqlNotebookController implements vscode.Disposable {
 
 			let queryComplete = new Promise<void>(resolve => {
 				let queryCompleteHandler = async (batchSummaries: azdata.BatchSummary[]) => {
-					let tableHtml = '';
+					let tableHtmlEntries: string[] = [];
 					for (let batchSummary of batchSummaries) {
 						if (batchSummary.hasError) {
-							tableHtml += `<table><tr><td>Batch ${batchSummary.id} reported an error. See messages for details.</td></tr></table>`;
+							let tableHtml = `<table><tr><td>Batch ${batchSummary.id} reported an error. See messages for details.</td></tr></table>`;
+							tableHtmlEntries.push(tableHtml);
 						} else {
 							for (let resultSummary of batchSummary.resultSetSummaries) {
-								tableHtml += '<table>';
+								let tableHtml = '<table>';
 								if (resultSummary.rowCount === 0) {
 									tableHtml += `<tr><td>Info: No rows were returned for query ${resultSummary.id} in batch ${batchSummary.id}.</td></tr>`
 								} else {
@@ -104,13 +104,14 @@ export class SqlNotebookController implements vscode.Disposable {
 									}
 								}
 								tableHtml += '</table>';
+								tableHtmlEntries.push(tableHtml);
 							}
 						}
 					}
 
 					await execution.replaceOutput([
 						new vscode.NotebookCellOutput([
-							vscode.NotebookCellOutputItem.text(tableHtml, 'text/html')
+							vscode.NotebookCellOutputItem.text(tableHtmlEntries.join('<br><br>'), 'text/html')
 						])
 					]);
 					execution.end(true, Date.now());
