@@ -44,6 +44,7 @@ export interface PublicIpAddress extends NetworkResource {
 
 export class NetworkInterfaceModel {
 	public static IPv4VersionType = "IPv4".toLocaleLowerCase();
+	private static NETWORK_API_VERSION = '2022-09-01';
 
 	public static getPrimaryNetworkInterface(networkInterfaces: NetworkInterface[]): NetworkInterface | undefined {
 		if (networkInterfaces && networkInterfaces.length > 0) {
@@ -114,11 +115,11 @@ export class NetworkInterfaceModel {
 	}
 
 	public static async getNetworkInterfaces(account: azdata.Account, subscription: Subscription, nicId: string): Promise<NetworkInterface> {
-		return getAzureResourceGivenId(account, subscription, nicId, "2022-09-01");
+		return getAzureResourceGivenId(account, subscription, nicId, this.NETWORK_API_VERSION);
 	}
 
 	public static async getPublicIpAddress(account: azdata.Account, subscription: Subscription, publicIpAddressId: string): Promise<PublicIpAddress> {
-		return getAzureResourceGivenId(account, subscription, publicIpAddressId, "2022-09-01");
+		return getAzureResourceGivenId(account, subscription, publicIpAddressId, this.NETWORK_API_VERSION);
 	}
 
 	public static async getVmNetworkInterfaces(account: azdata.Account, subscription: Subscription, sqlVm: SqlVMServer): Promise<Map<string, NetworkInterface>> {

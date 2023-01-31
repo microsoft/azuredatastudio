@@ -17,6 +17,7 @@ const SQL_VM_API_VERSION = '2021-11-01-preview';
 const SQL_MI_API_VERSION = '2021-11-01-preview';
 const SQL_SQLDB_API_VERSION = '2021-11-01-preview';
 const DMSV2_API_VERSION = '2022-03-30-preview';
+const COMPUTE_VM_API_VERSION = '2022-08-01';
 
 async function getAzureCoreAPI(): Promise<azurecore.IExtension> {
 	const api = (await vscode.extensions.getExtension(azurecore.extension.name)?.activate()) as azurecore.IExtension;
@@ -288,7 +289,7 @@ export async function getAvailableSqlVMs(account: azdata.Account, subscription: 
 
 export async function getVMInstanceView(sqlVm: SqlVMServer, account: azdata.Account, subscription: Subscription): Promise<VirtualMachineInstanceView> {
 	const api = await getAzureCoreAPI();
-	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${getResourceGroupFromId(sqlVm.id)}/providers/Microsoft.Compute/virtualMachines/${sqlVm.name}/instanceView?api-version=2022-08-01`);
+	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${getResourceGroupFromId(sqlVm.id)}/providers/Microsoft.Compute/virtualMachines/${sqlVm.name}/instanceView?api-version=${COMPUTE_VM_API_VERSION}`);
 	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
 
@@ -314,7 +315,7 @@ export async function getAzureResourceGivenId(account: azdata.Account, subscript
 
 export async function getComputeVM(sqlVm: SqlVMServer, account: azdata.Account, subscription: Subscription): Promise<any> {
 	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${getResourceGroupFromId(sqlVm.id)}/providers/Microsoft.Compute/virtualMachines/${sqlVm.name}`);
-	return getAzureResourceGivenId(account, subscription, path, "2022-08-01");
+	return getAzureResourceGivenId(account, subscription, path, COMPUTE_VM_API_VERSION);
 }
 
 export type StorageAccount = AzureProduct;
