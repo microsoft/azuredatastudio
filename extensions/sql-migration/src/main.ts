@@ -12,7 +12,7 @@ import { migrationServiceProvider } from './service/provider';
 let widget: DashboardWidget;
 export async function activate(context: vscode.ExtensionContext): Promise<DashboardWidget> {
 	if (!migrationServiceProvider) {
-		vscode.window.showErrorMessage(constants.serviceProviderInitializationError).then(() => { }, () => { });
+		await vscode.window.showErrorMessage(constants.serviceProviderInitializationError);
 	}
 	// asynchronously starting the service
 	const outputChannel = vscode.window.createOutputChannel(constants.serviceName);
