@@ -750,18 +750,16 @@ export function sanitizeStringForFilename(s: string): string {
 
 /**
  * Returns true if the string is a valid filename
- * Logic is copied from src\vs\base\common\extpath.ts
  * @param name filename to check
  */
-export function isValidBasename(name: string | null | undefined): boolean {
+export function isValidBasename(name?: string): boolean {
 	return getDataWorkspaceExtensionApi().isValidBasename(name);
 }
 
 /**
  * Returns specific error message if file name is invalid
- * Logic is copied from src\vs\base\common\extpath.ts
  * @param name filename to check
  */
-export function isValidBasenameErrorMessage(name: string | null | undefined): string {
+export function isValidBasenameErrorMessage(name?: string): string {
 	return getDataWorkspaceExtensionApi().isValidBasenameErrorMessage(name);
 }

@@ -51,7 +51,7 @@ export function sanitizeStringForFilename(s: string): string {
  * Logic is copied from src\vs\base\common\extpath.ts
  * @param name filename to check
  */
-export function isValidBasename(name: string | null | undefined): boolean {
+export function isValidBasename(name?: string): boolean {
 	const invalidFileChars = isWindows ? WINDOWS_INVALID_FILE_CHARS : UNIX_INVALID_FILE_CHARS;
 
 	if (!name) {
@@ -96,7 +96,7 @@ export function isValidBasename(name: string | null | undefined): boolean {
  * Logic is copied from src\vs\base\common\extpath.ts
  * @param name filename to check
  */
-export function isValidBasenameErrorMessage(name: string | null | undefined): string {
+export function isValidBasenameErrorMessage(name?: string): string {
 	const invalidFileChars = isWindows ? WINDOWS_INVALID_FILE_CHARS : UNIX_INVALID_FILE_CHARS;
 	if (!name) {
 		return constants.undefinedFilenameErrorMessage;

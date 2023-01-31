@@ -45,13 +45,16 @@ export class DataWorkspaceExtension implements IExtension {
 	isValidFilenameCharacter(c: string): boolean {
 		return isValidFilenameCharacter(c);
 	}
+
 	sanitizeStringForFilename(s: string): string {
 		return sanitizeStringForFilename(s);
 	}
-	isValidBasename(name: string | null | undefined): boolean {
+
+	isValidBasename(name?: string): boolean {
 		return isValidBasename(name);
 	}
-	isValidBasenameErrorMessage(name: string | null | undefined): string {
+
+	isValidBasenameErrorMessage(name?: string): string {
 		return isValidBasenameErrorMessage(name);
 	}
 
