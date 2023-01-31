@@ -60,8 +60,7 @@ export class SqlNotebookController implements vscode.Disposable {
 
 			await execution.replaceOutput([
 				new vscode.NotebookCellOutput([
-					vscode.NotebookCellOutputItem.text('<table>' + columnRow + resultsRows + '</table>', 'text/html'),
-					vscode.NotebookCellOutputItem.text(`${results.rowCount} rows returned`)
+					vscode.NotebookCellOutputItem.text('<table>' + columnRow + resultsRows + '</table>', 'text/html')
 				])
 			]);
 			execution.end(true, Date.now());
