@@ -34,5 +34,5 @@ export interface IErrorDiagnosticsService {
 	 * @param connection Connection profile that is utilized for connection
 	 * @returns a Promise containing a ConnectionDiagnosticsResult object (with handling status and altered options)
 	 */
-	tryHandleConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.connection.ConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult>;
+	tryHandleConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.IConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult>;
 }

@@ -102,7 +102,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			return Promise.resolve(undefined);
 		}
 
-		let connection = convertToRpcConnectionProfile(profile, false);
+		let connection = convertToRpcConnectionProfile(profile);
 		return Promise.resolve(connection);
 	}
 

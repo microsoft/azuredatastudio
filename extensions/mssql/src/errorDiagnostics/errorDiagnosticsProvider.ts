@@ -62,7 +62,7 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 							//Error status will be handled below.
 						}
 						if (result === undefined) {
-							return { handled: false, options: {} };
+							return { handled: false };
 						}
 						else {
 							// MSSQL uses 'password' as the option key for connection profile.
@@ -71,7 +71,7 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 						}
 					}
 					else {
-						return { handled: false, options: {} };
+						return { handled: false };
 					}
 				}
 

@@ -28,7 +28,7 @@ export class ExtHostErrorDiagnostics extends ExtHostErrorDiagnosticsShape {
 	public override $handleConnectionError(handle: number, errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile): Thenable<azdata.diagnostics.ConnectionDiagnosticsResult> {
 		let provider = this._providers[handle];
 		if (provider === undefined) {
-			return Promise.resolve({ handled: false, options: {} });
+			return Promise.resolve({ handled: false });
 		}
 		else {
 			return provider.provider.handleConnectionError(errorCode, errorMessage, connection);

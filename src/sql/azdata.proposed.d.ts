@@ -439,7 +439,8 @@ declare module 'azdata' {
 		 */
 		export interface ErrorDiagnosticsProviderMetadata {
 			/**
-			 * The name of the provider (ex. a connection provider) that the diagnostics provider will handle errors for.
+			 * The name of the provider (ex. a connection provider) that a diagnostics provider will handle errors for.
+			 * Note: only ONE diagnostic provider per id/name at a time.
 			 */
 			id: string;
 		}
@@ -450,9 +451,9 @@ declare module 'azdata' {
 			 */
 			handled: boolean,
 			/**
-			 * The altered connection options after error handling.
+			 * If given, the new set of connection options to assign to the original connection profile, overwriting any previous options.
 			 */
-			options: { [name: string]: any };
+			options?: { [name: string]: any };
 		}
 
 		/**
@@ -464,7 +465,7 @@ declare module 'azdata' {
 			 * @param errorCode The error code of the connection error.
 			 * @param errorMessage The error message of the connection error.
 			 * @param connection The connection profile that caused the error.
-			 * @returns ConnectionDiagnosticsResult object containing error handling success status (boolean), and the changed connection options of the profile.
+			 * @returns ConnectionDiagnosticsResult: The result from the provider for whether the error was handled.
 			 */
 			handleConnectionError(errorCode: number, errorMessage: string, connection: connection.ConnectionProfile): Thenable<ConnectionDiagnosticsResult>;
 		}
@@ -474,7 +475,7 @@ declare module 'azdata' {
 		 * Note: only ONE diagnostic provider object can be assigned to a specific provider at a time.
 		 * @param providerMetadata Additional data used to register the provider
 		 * @param errorDiagnostics The provider's diagnostic object that handles errors.
-		 * @returns The diagnostic provider implementation
+		 * @returns  A disposable that when disposed with unregisters the provider
 		 */
 		export function registerDiagnosticsProvider(providerMetadata: ErrorDiagnosticsProviderMetadata, errorDiagnostics: ErrorDiagnosticsProvider): vscode.Disposable;
 	}

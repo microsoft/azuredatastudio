@@ -564,11 +564,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				return this.connectWithOptions(connection, uri, options, callbacks);
 			}
 			else {
-				let connectionErrorHandled = await this._errorDiagnosticsService.tryHandleConnectionError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, Utils.convertToRpcConnectionProfile(connection, false));
+				let connectionErrorHandled = await this._errorDiagnosticsService.tryHandleConnectionError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, connection);
 				if (connectionErrorHandled.handled) {
 					connectionResult.errorHandled = true;
-					//copy over altered connection options from the result
-					connection.options = connectionErrorHandled.options;
+					if (connectionErrorHandled.options) {
+						//copy over altered connection options from the result if provided.
+						connection.options = connectionErrorHandled.options;
+					}
 					return this.connectWithOptions(connection, uri, options, callbacks);
 				}
 				else {
