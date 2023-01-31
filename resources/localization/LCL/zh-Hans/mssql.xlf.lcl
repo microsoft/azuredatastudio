@@ -558,6 +558,9 @@
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.commandTimeout.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[在终止尝试并生成错误之前等待命令执行的时长(秒)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
