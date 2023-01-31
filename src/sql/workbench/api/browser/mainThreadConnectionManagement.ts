@@ -10,6 +10,7 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { convertToRpcConnectionProfile } from 'sql/platform/connection/common/utils';
 import { Disposable, DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -92,7 +93,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public $getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
-		return Promise.resolve(this._connectionManagementService.getConnections(activeConnectionsOnly).map(profile => this.convertToConnectionProfile(profile)));
+		return Promise.resolve(this._connectionManagementService.getConnections(activeConnectionsOnly).map(profile => convertToRpcConnectionProfile(profile, true, this._connectionManagementService.removeConnectionProfileCredentials)));
 	}
 
 	public $getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile> {
@@ -101,22 +102,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			return Promise.resolve(undefined);
 		}
 
-		let connection: azdata.connection.ConnectionProfile = {
-			providerId: profile.providerName,
-			connectionId: profile.id,
-			connectionName: profile.connectionName,
-			serverName: profile.serverName,
-			databaseName: profile.databaseName,
-			userName: profile.userName,
-			password: profile.password,
-			authenticationType: profile.authenticationType,
-			savePassword: profile.savePassword,
-			groupFullName: profile.groupFullName,
-			groupId: profile.groupId,
-			saveProfile: profile.savePassword,
-			azureTenantId: profile.azureTenantId,
-			options: profile.options
-		};
+		let connection = convertToRpcConnectionProfile(profile);
 		return Promise.resolve(connection);
 	}
 
@@ -129,7 +115,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public $getCurrentConnectionProfile(): Thenable<azdata.connection.ConnectionProfile> {
-		return Promise.resolve(this.convertToConnectionProfile(TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._workbenchEditorService, true)));
+		return Promise.resolve(convertToRpcConnectionProfile(TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._workbenchEditorService, true,), true, this._connectionManagementService.removeConnectionProfileCredentials));
 	}
 
 	public $getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
@@ -182,6 +168,12 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		return connection;
 	}
 
+	public $openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined> {
+		// Need to have access to getOptionsKey, so recreate profile from details.
+		let convertedProfile = new ConnectionProfile(this._capabilitiesService, profile);
+		return this._connectionManagementService.openChangePasswordDialog(convertedProfile);
+	}
+
 	public async $listDatabases(connectionId: string): Promise<string[]> {
 		let connectionUri = await this.$getUriForConnection(connectionId);
 		let result = await this._connectionManagementService.listDatabases(connectionUri);
@@ -205,30 +197,6 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			providerName: profile.providerName,
 			connectionId: profile.id,
 			options: deepClone(profile.options)
-		};
-		return connection;
-	}
-
-	private convertToConnectionProfile(profile: IConnectionProfile): azdata.connection.ConnectionProfile {
-		if (!profile) {
-			return undefined;
-		}
-
-		profile = this._connectionManagementService.removeConnectionProfileCredentials(profile);
-		let connection: azdata.connection.ConnectionProfile = {
-			providerId: profile.providerName,
-			connectionId: profile.id,
-			options: deepClone(profile.options),
-			connectionName: profile.connectionName,
-			serverName: profile.serverName,
-			databaseName: profile.databaseName,
-			userName: profile.userName,
-			password: profile.password,
-			authenticationType: profile.authenticationType,
-			savePassword: profile.savePassword,
-			groupFullName: profile.groupFullName,
-			groupId: profile.groupId,
-			saveProfile: profile.saveProfile
 		};
 		return connection;
 	}

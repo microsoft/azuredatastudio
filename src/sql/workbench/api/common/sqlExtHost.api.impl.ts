@@ -10,6 +10,7 @@ import { ExtHostAccountManagement } from 'sql/workbench/api/common/extHostAccoun
 import { ExtHostCredentialManagement } from 'sql/workbench/api/common/extHostCredentialManagement';
 import { ExtHostDataProtocol } from 'sql/workbench/api/common/extHostDataProtocol';
 import { ExtHostResourceProvider } from 'sql/workbench/api/common/extHostResourceProvider';
+import { ExtHostErrorDiagnostics } from 'sql/workbench/api/common/extHostErrorDiagnostics';
 import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ExtHostModalDialogs } from 'sql/workbench/api/common/extHostModalDialog';
 import { ExtHostTasks } from 'sql/workbench/api/common/extHostTasks';
@@ -87,6 +88,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostDataProvider = rpcProtocol.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(rpcProtocol, uriTransformer));
 	const extHostObjectExplorer = rpcProtocol.set(SqlExtHostContext.ExtHostObjectExplorer, new ExtHostObjectExplorer(rpcProtocol, commands));
 	const extHostResourceProvider = rpcProtocol.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(rpcProtocol));
+	const extHostErrorDiagnostics = rpcProtocol.set(SqlExtHostContext.ExtHostErrorDiagnostics, new ExtHostErrorDiagnostics(rpcProtocol));
 	const extHostModalDialogs = rpcProtocol.set(SqlExtHostContext.ExtHostModalDialogs, new ExtHostModalDialogs(rpcProtocol));
 	const extHostTasks = rpcProtocol.set(SqlExtHostContext.ExtHostTasks, new ExtHostTasks(rpcProtocol, extHostLogService));
 	const extHostBackgroundTaskManagement = rpcProtocol.set(SqlExtHostContext.ExtHostBackgroundTaskManagement, new ExtHostBackgroundTaskManagement(rpcProtocol));
@@ -135,6 +137,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				},
 				openConnectionDialog(providers?: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection> {
 					return extHostConnectionManagement.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
+				},
+				openChangePasswordDialog(profile: azdata.IConnectionProfile): Thenable<string | undefined> {
+					return extHostConnectionManagement.$openChangePasswordDialog(profile);
 				},
 				listDatabases(connectionId: string): Thenable<string[]> {
 					return extHostConnectionManagement.$listDatabases(connectionId);
@@ -214,6 +219,13 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 					return extHostResourceProvider.$registerResourceProvider(providerMetadata, provider);
 				}
 			};
+
+			// namespace: diagnostics
+			const diagnostics: typeof azdata.diagnostics = {
+				registerDiagnosticsProvider: (providerMetadata: azdata.diagnostics.ErrorDiagnosticsProviderMetadata, errorDiagnostics: azdata.diagnostics.ErrorDiagnosticsProvider): vscode.Disposable => {
+					return extHostErrorDiagnostics.$registerDiagnosticsProvider(providerMetadata, errorDiagnostics);
+				}
+			}
 
 			let registerConnectionProvider = (provider: azdata.ConnectionProvider): vscode.Disposable => {
 				// Connection callbacks
@@ -666,6 +678,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				TextType: sqlExtHostTypes.TextType,
 				designers: designers,
 				executionPlan: executionPlan,
+				diagnostics: diagnostics,
 				env
 			};
 		}
