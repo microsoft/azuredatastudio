@@ -55,12 +55,12 @@ export class SqlNotebookController implements vscode.Disposable {
 			const ownerUri = await azdata.connection.getUriForConnection(connectionProfile.connectionId);
 			const results = await queryProvider.runQueryAndReturn(ownerUri, cell.document.getText());
 
-			var columnNames = results.columnInfo.map(column => column.columnName).join(', ');
-			var resultsTable = results.rows.map(row => row.map(cell => cell.displayValue).join(', ')).join('\n');
+			var columnRow = '<tr>' + results.columnInfo.map(column => `<th>${column.columnName}</th>`).join('') + '</tr>';
+			var resultsRows = results.rows.map(row => '<tr>' + row.map(cell => `<td>${cell.displayValue}</td>`).join('') + '</tr>').join('');
 
 			await execution.replaceOutput([
 				new vscode.NotebookCellOutput([
-					vscode.NotebookCellOutputItem.text(columnNames + '\n' + resultsTable),
+					vscode.NotebookCellOutputItem.text('<table>' + columnRow + resultsRows + '</table>', 'text/html'),
 					vscode.NotebookCellOutputItem.text(`${results.rowCount} rows returned`)
 				])
 			]);
