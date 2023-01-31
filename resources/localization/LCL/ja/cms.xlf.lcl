@@ -267,24 +267,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.asynchronousProcessing.description" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[True の場合は、.Net Framework Data Provider の非同期機能を使用できるようになります]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.asynchronousProcessing.displayName" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Asynchronous processing]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[非同期処理]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/cms/package.cms.connectionOptions.attachDbFilename.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Attach DB filename]]></Val>
@@ -371,6 +353,24 @@
           <Val><![CDATA[Column encryption]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[列暗号化]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/cms/package.cms.connectionOptions.commandTimeout.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[試行を終了してエラーを生成する前にコマンドの実行を待機するまでの時間 (秒単位)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/cms/package.cms.connectionOptions.commandTimeout.displayName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Command timeout]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[コマンドのタイムアウト]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -587,6 +587,24 @@
           <Val><![CDATA[Source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[ソース]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/cms/package.cms.connectionOptions.hostNameInCertificate.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server で使用されるサーバー証明書検証用の TLS 証明書内に指定されたホスト名を示します。指定されていない場合、既定ではサーバー名が証明書の検証に使用されます。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/cms/package.cms.connectionOptions.hostNameInCertificate.displayName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Host name in certificate]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[証明書内のホスト名]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

@@ -130,4 +130,37 @@ suite('Noteboook Link Handler', function (): void {
 			assert.strictEqual(notebookLinkHandler.getEncodedLinkUrl(), `/Notebooks/Test_Paths/My%2520File.ipynb`, '% in file path failed to be encoded');
 		});
 	});
+	test('getLinkUrl should return relativePath correctly', () => {
+		test('when given an relative link with file protocol and useAbsoluteFilePaths set to true', () => {
+			let node = Object.assign(document.createElement('a'), { href: '/tmp//notebook1.ipynb', attributes: { href: { nodeValue: '/tmp/.\\notebook1.ipynb' } } });
+			configurationService.updateValue('notebook.useAbsoluteFilePaths', true, ConfigurationTarget.USER);
+			node.setAttribute("protocol", 'file:');
+			let notebookLinkHandler = new NotebookLinkHandler(notebookUri, node, configurationService);
+			let expectedResult = `.${path.join(path.sep, 'notebook1.ipynb')}`
+			assert.strictEqual(notebookLinkHandler.getLinkUrl(), expectedResult, 'File relative link is wrong');
+		});
+		test('when given an relative link with vscode-file protocol', () => {
+			let node = Object.assign(document.createElement('a'), { href: '/tmp//notebook1.ipynb', attributes: { href: { nodeValue: '/tmp/.\\notebook1.ipynb' } } });
+			node.setAttribute("protocol", 'vscode-file:');
+			let notebookLinkHandler = new NotebookLinkHandler(notebookUri, node, configurationService);
+			let expectedResult = `.${path.join(path.sep, 'notebook1.ipynb')}`
+			assert.strictEqual(notebookLinkHandler.getLinkUrl(), expectedResult, 'File relative link is wrong');
+		});
+		test('when is-encoded is true', () => {
+			let result = new NotebookLinkHandler(notebookUri, Object.assign(document.createElement('a'), { href: '/tmp/stuff.png', attributes: { isEncoded: true, isMarkdown: true } }), configurationService);
+			assert.strictEqual(result.getLinkUrl(), `.${path.sep}stuff.png`, 'Basic link test failed');
+
+			result = new NotebookLinkHandler(notebookUri, Object.assign(document.createElement('a'), { href: '/stuff.png', attributes: { isEncoded: true, isMarkdown: true } }), configurationService);
+			assert.strictEqual(result.getLinkUrl(), `..${path.sep}stuff.png`, 'Basic link test above folder failed');
+
+			result = new NotebookLinkHandler(notebookUri, Object.assign(document.createElement('a'), { href: '/tmp/inner/stuff.png', attributes: { isEncoded: true, isMarkdown: true } }), configurationService);
+			assert.strictEqual(result.getLinkUrl(), `.${path.sep}inner${path.sep}stuff.png`, 'Basic link test below folder failed');
+
+			result = new NotebookLinkHandler(notebookUri, Object.assign(document.createElement('a'), { href: '/tmp/my stuff.png', attributes: { isEncoded: true, isMarkdown: true } }), configurationService);
+			assert.strictEqual(result.getLinkUrl(), `.${path.sep}my%20stuff.png`, 'Basic link test with space filename failed');
+
+			result = new NotebookLinkHandler(notebookUri, Object.assign(document.createElement('a'), { href: '/tmp/my%20stuff.png', attributes: { isEncoded: true, isMarkdown: true } }), configurationService);
+			assert.strictEqual(result.getLinkUrl(), `.${path.sep}my%2520stuff.png`, 'Basic link test with %20 filename failed');
+		})
+	});
 });

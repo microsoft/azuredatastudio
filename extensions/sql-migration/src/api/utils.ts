@@ -10,7 +10,7 @@ import * as crypto from 'crypto';
 import * as azure from './azure';
 import { azureResource, Tenant } from 'azurecore';
 import * as constants from '../constants/strings';
-import { logError, TelemetryViews } from '../telemtery';
+import { logError, TelemetryViews } from '../telemetry';
 import { AdsMigrationStatus } from '../dashboard/tabBase';
 import { getMigrationMode, getMigrationStatus, getMigrationTargetType, hasRestoreBlockingReason, PipelineStatusCodes } from '../constants/helper';
 
