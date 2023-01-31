@@ -41,10 +41,10 @@ export class ExtHostErrorDiagnostics extends ExtHostErrorDiagnosticsShape {
 
 		// Look for any diagnostic providers that have the same provider ID
 		let matchingProviderIndex = values(this._providers).findIndex((provider: DiagnosticsWithMetadata) => {
-			return provider.metadata.id === providerMetadata.id;
+			return provider.metadata.targetProviderId === providerMetadata.targetProviderId;
 		});
 		if (matchingProviderIndex >= 0) {
-			throw new Error(`Diagnostics Provider with ID '${providerMetadata.id}' has already been registered`);
+			throw new Error(`Diagnostics Provider with ID '${providerMetadata.targetProviderId}' has already been registered`);
 		}
 
 		// Create the handle for the provider
