@@ -75,7 +75,7 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 				}
 
 				return azdata.diagnostics.registerDiagnosticsProvider({
-					id: CoreConstants.providerId,
+					targetProviderId: CoreConstants.providerId,
 				}, {
 					handleConnectionError
 				});
