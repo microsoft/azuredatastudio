@@ -148,7 +148,7 @@ export function isServerConnection(profile: IConnectionProfile): boolean {
  * @param removeFunction the function that strips the credentials from the connection profile if provided.
  * @returns An azdata.connection.ConnectionProfile shaped object that contains only the data and none of the services.
  */
-export function convertToRpcConnectionProfile(profile: IConnectionProfile, deepCopyOptions: boolean = false, removeFunction?: (profile: IConnectionProfile) => IConnectionProfile): sqlExtHostTypes.ConnectionProfile {
+export function convertToRpcConnectionProfile(profile: IConnectionProfile | undefined, deepCopyOptions: boolean = false, removeFunction?: (profile: IConnectionProfile) => IConnectionProfile): sqlExtHostTypes.ConnectionProfile {
 	if (!profile) {
 		return undefined;
 	}
