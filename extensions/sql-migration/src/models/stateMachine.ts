@@ -1153,6 +1153,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					userName: this._sqlServerUsername,
 					password: this._sqlServerPassword,
 					trustServerCertificate: currentConnection?.options.trustServerCertificate ?? false
+					// to-do: need to include encryptConnection here, should it respect user input, or default to true/false?
 				},
 				scope: this._targetServerInstance.id,
 				offlineConfiguration: {
