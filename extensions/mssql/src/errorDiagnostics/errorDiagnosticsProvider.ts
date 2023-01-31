@@ -56,18 +56,22 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 						let restoredProfile = this.convertToIConnectionProfile(connection);
 						let result = undefined;
 						try {
+							// If a password reset failed was cancelled or closed, it will return undefined and NOT throw an error.
 							result = await azdata.connection.openChangePasswordDialog(restoredProfile);
 						}
 						catch (e) {
-							return { handled: false };
+							// Unexpected errors associated with the dialog itself will be noted here
+							// Example includes such as dialog being opened with an existing password change.
+							console.log('password change dialog threw an unexpected error: ' + e);
 						}
+
 						// MSSQL uses 'password' as the option key for connection profile.
-						restoredProfile.options['password'] = result
-						return { handled: true, options: restoredProfile.options };
+						if (result) {
+							restoredProfile.options['password'] = result
+							return { handled: true, options: restoredProfile.options };
+						}
 					}
-					else {
-						return { handled: false };
-					}
+					return { handled: false };
 				}
 
 				return azdata.diagnostics.registerDiagnosticsProvider({
