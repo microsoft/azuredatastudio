@@ -360,6 +360,9 @@
       <Item ItemId=";extensions/cms/package.cms.connectionOptions.commandTimeout.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Intervallo di tempo (in secondi) in cui attendere l'esecuzione di un comando prima di interrompere il tentativo e generare un errore]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
