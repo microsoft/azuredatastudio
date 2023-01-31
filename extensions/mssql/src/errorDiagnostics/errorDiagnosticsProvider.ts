@@ -71,8 +71,9 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 			private async handleChangePassword(connection: azdata.IConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
 				try {
 					const result = await azdata.connection.openChangePasswordDialog(connection);
-					// MSSQL uses 'password' as the option key for connection profile.
+					// result will be undefined if password change was closed or cancelled.
 					if (result) {
+						// MSSQL uses 'password' as the option key for connection profile.
 						connection.options['password'] = result;
 						return { handled: true, options: connection.options };
 					}
