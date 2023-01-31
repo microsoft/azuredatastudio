@@ -59,16 +59,11 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 							result = await azdata.connection.openChangePasswordDialog(restoredProfile);
 						}
 						catch (e) {
-							//Error status will be handled below.
-						}
-						if (result === undefined) {
 							return { handled: false };
 						}
-						else {
-							// MSSQL uses 'password' as the option key for connection profile.
-							restoredProfile.options['password'] = result
-							return { handled: true, options: restoredProfile.options };
-						}
+						// MSSQL uses 'password' as the option key for connection profile.
+						restoredProfile.options['password'] = result
+						return { handled: true, options: restoredProfile.options };
 					}
 					else {
 						return { handled: false };
