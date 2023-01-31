@@ -811,7 +811,7 @@ export class ProjectsController {
 				success = true;
 			}
 		} else if (node instanceof SqlCmdVariableTreeItem) {
-			// TODO: handle deleting from project
+			// TODO: handle deleting sqlcmd var from project after swap
 		} else if (node instanceof FileNode || FolderNode) {
 			const fileEntry = this.getFileProjectEntry(project, node);
 
@@ -836,10 +836,14 @@ export class ProjectsController {
 		}
 	}
 
+	/**
+	 * Opens a quickpick to edit the value of the SQLCMD variable launched from
+	 * @param context
+	 */
 	public async editSqlCmdVariable(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const node = context.element as SqlCmdVariableTreeItem;
 		const project = this.getProjectFromContext(node);
-		const originalValue = project.sqlCmdVariables[node.friendlyName]; // TODO: update to hookup with however sqlcmd vars work
+		const originalValue = project.sqlCmdVariables[node.friendlyName]; // TODO: update to hookup with however sqlcmd vars work after swap
 
 		const newValue = await vscode.window.showInputBox(
 			{
@@ -848,10 +852,14 @@ export class ProjectsController {
 				ignoreFocusOut: true
 			});
 
-		// TODO: update value in sqlcmd variables
+		// TODO: update value in sqlcmd variables after swap
 		console.error('update new value to be ' + newValue);
 	}
 
+	/**
+	 * Opens a quickpick to add a new SQLCMD variable to the project
+	 * @param context
+	 */
 	public async addSqlCmdVariable(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(context);
 
@@ -874,7 +882,7 @@ export class ProjectsController {
 				ignoreFocusOut: true
 			});
 
-		// TODO: add new sqlcmd variable to project
+		// TODO: add new sqlcmd variable to project after swap
 		console.error(`adding new sqlcmd variable ${variableName} with value ${defaultValue}`);
 	}
 
