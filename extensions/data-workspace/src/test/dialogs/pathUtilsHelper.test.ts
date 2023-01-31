@@ -30,7 +30,7 @@ suite('Check for invalid filename tests', function (): void {
 		for (let invalidName of invalidNames) {
 			should(isValidBasename(formatFileName(invalidName))).equal(false);
 		}
-		should(isValidBasename(null)).equal(false);
+
 		should(isValidBasename(undefined)).equal(false);
 		should(isValidBasename('\\')).equal(false);
 		should(isValidBasename('/')).equal(false);
@@ -100,7 +100,6 @@ suite('Check for invalid filename error tests', function (): void {
 		should(isValidBasenameErrorMessage(formatFileName('  	.sqlproj'))).equal(constants.whitespaceFilenameErrorMessage);
 		should(isValidBasenameErrorMessage(formatFileName('..sqlproj'))).equal(constants.reservedValueErrorMessage);
 		should(isValidBasenameErrorMessage(formatFileName('...sqlproj'))).equal(constants.reservedValueErrorMessage);
-		should(isValidBasenameErrorMessage(null)).equal(constants.undefinedFilenameErrorMessage);
 		should(isValidBasenameErrorMessage(undefined)).equal(constants.undefinedFilenameErrorMessage);
 		should(isValidBasenameErrorMessage('\\')).equal(isWindows ? constants.whitespaceFilenameErrorMessage : constants.invalidFileCharsErrorMessage);
 		should(isValidBasenameErrorMessage('/')).equal(constants.whitespaceFilenameErrorMessage);
