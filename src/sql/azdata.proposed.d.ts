@@ -475,7 +475,7 @@ declare module 'azdata' {
 		 * Note: only ONE diagnostic provider object can be assigned to a specific provider at a time.
 		 * @param providerMetadata Additional data used to register the provider
 		 * @param errorDiagnostics The provider's diagnostic object that handles errors.
-		 * @returns  A disposable that when disposed with unregisters the provider
+		 * @returns  A disposable that when disposed will unregister the provider
 		 */
 		export function registerDiagnosticsProvider(providerMetadata: ErrorDiagnosticsProviderMetadata, errorDiagnostics: ErrorDiagnosticsProvider): vscode.Disposable;
 	}
