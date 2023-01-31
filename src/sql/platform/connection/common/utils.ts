@@ -143,8 +143,8 @@ export function isServerConnection(profile: IConnectionProfile): boolean {
 /**
  * Convert a IConnectionProfile with services to an azdata.connection.ConnectionProfile that can be sent via RPC
  * @param profile The profile to be converted.
- * @param deepCopyOptions: whether to deep copy the options or not.
- * @param removeFunction: the function that strips the credentials from the connection profile if provided.
+ * @param deepCopyOptions whether to deep copy the options or not.
+ * @param removeFunction the function that strips the credentials from the connection profile if provided.
  * @returns An azdata.connection.ConnectionProfile object that contains only the data and none of the services.
  */
 export function convertToRpcConnectionProfile(profile: IConnectionProfile, deepCopyOptions: boolean = false, removeFunction?: (profile: IConnectionProfile) => IConnectionProfile): sqlExtHostTypes.ConnectionProfile {
