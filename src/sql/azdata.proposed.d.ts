@@ -439,7 +439,7 @@ declare module 'azdata' {
 		 */
 		export interface ErrorDiagnosticsProviderMetadata {
 			/**
-			 * The name of the provider (ex. a connection provider) that a diagnostics provider will handle errors for.
+			 * The id of the provider (ex. a connection provider) that a diagnostics provider will handle errors for.
 			 * Note: only ONE diagnostic provider per id/name at a time.
 			 */
 			targetProviderId: string;
