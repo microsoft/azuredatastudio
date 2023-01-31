@@ -205,7 +205,7 @@ export function getConnectionProfile(
 	};
 }
 
-export function extractNameFromServer(
+function extractNameFromServer(
 	server: string | SqlManagedInstance | SqlVMServer | AzureSqlDatabaseServer): string {
 
 	// No need to extract name if the server is a string

@@ -7,14 +7,14 @@ import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
-import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, isSqlManagedInstance, isAzureSqlDatabaseServer, VirtualMachineInstanceView } from '../api/azure';
+import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView } from '../api/azure';
 import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
-import { excludeDatabases, extractNameFromServer, getConnectionProfile, LoginTableInfo, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
+import { excludeDatabases, getConnectionProfile, LoginTableInfo, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel, LoginMigrationStep } from './loginMigrationModel';
 import { TdeMigrationDbResult, TdeMigrationModel } from './tdeModels';
 const localize = nls.loadMessageBundle();
@@ -533,27 +533,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return await azdata.connection.getConnectionString(this._sourceConnectionId, true);
 	}
 
-	public async setTargetServerName(): Promise<void> {
-		// If target server name has already been set, we can skip this part
-		if (this._targetServerName) {
-			return;
-		}
-
-		if (isSqlManagedInstance(this._targetServerInstance) || isAzureSqlDatabaseServer(this._targetServerInstance)) {
-			this._targetServerName = this._targetServerName ?? this._targetServerInstance.properties.fullyQualifiedDomainName;
-		}
-	}
-
 	public async getTargetConnectionString(): Promise<string> {
-		await this.setTargetServerName();
-		let serverName = this._targetServerName;
-
-		if (this.isSqlVmTarget) {
-			serverName = extractNameFromServer(this._targetServerInstance);
-		}
-
 		const connectionProfile = getConnectionProfile(
-			serverName,
+			this._targetServerInstance,
 			this._targetServerInstance.id,
 			this._targetUserName,
 			this._targetPassword,

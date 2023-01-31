@@ -356,7 +356,7 @@ export async function getSqlMigrationService(account: azdata.Account, subscripti
 
 export async function getSqlMigrationServiceById(account: azdata.Account, subscription: Subscription, sqlMigrationServiceId: string): Promise<SqlMigrationService> {
 	const api = await getAzureCoreAPI();
-	const path = encodeURI(`${sqlMigrationServiceId}?api-version=${DMSV2_API_VERSION} `);
+	const path = encodeURI(`${sqlMigrationServiceId}?api-version=${DMSV2_API_VERSION}`);
 	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
 	if (response.errors.length > 0) {
