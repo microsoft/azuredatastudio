@@ -8,6 +8,7 @@ import { DashboardWidget } from './dashboard/sqlServerDashboard';
 import * as constants from './constants/strings';
 import { ServiceClient } from './service/serviceClient';
 import { migrationServiceProvider } from './service/provider';
+import { TelemetryReporter } from './telemetry';
 
 let widget: DashboardWidget;
 export async function activate(context: vscode.ExtensionContext): Promise<DashboardWidget> {
@@ -23,6 +24,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<Dashbo
 
 	widget = new DashboardWidget(context);
 	await widget.register();
+	context.subscriptions.push(TelemetryReporter);
 	return widget;
 }
 

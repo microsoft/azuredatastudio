@@ -897,6 +897,8 @@ export class PublishDatabaseDialog {
 				// show file path in text box and hover text
 				this.loadProfileTextBox!.value = fileUris[0].fsPath;
 				await this.loadProfileTextBox!.updateProperty('title', fileUris[0].fsPath);
+
+				this.profileUsed = true;
 			}
 		});
 

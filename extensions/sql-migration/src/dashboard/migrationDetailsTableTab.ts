@@ -7,13 +7,14 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as loc from '../constants/strings';
 import { getSqlServerName, getMigrationStatusImage, getPipelineStatusImage, debounce } from '../api/utils';
-import { logError, TelemetryViews } from '../telemtery';
+import { logError, TelemetryViews } from '../telemetry';
 import { canCancelMigration, canCutoverMigration, canRetryMigration, formatDateTimeString, formatNumber, formatSizeBytes, formatSizeKb, formatTime, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation, PipelineStatusCodes } from '../constants/helper';
 import { CopyProgressDetail, getResourceName } from '../api/azure';
 import { InfoFieldSchema, infoFieldLgWidth, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { EOL } from 'os';
 import { DashboardStatusBar } from './DashboardStatusBar';
+import { getSourceConnectionServerInfo } from '../api/sqlUtils';
 
 const MigrationDetailsTableTabId = 'MigrationDetailsTableTab';
 
@@ -110,7 +111,7 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 
 		const sqlServerName = migration?.properties.sourceServerName;
 		const sourceDatabaseName = migration?.properties.sourceDatabaseName;
-		const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
+		const sqlServerInfo = await getSourceConnectionServerInfo();
 		const versionName = getSqlServerName(sqlServerInfo.serverMajorVersion!);
 		const sqlServerVersion = versionName ? versionName : sqlServerInfo.serverVersion;
 		const targetDatabaseName = migration?.name;

@@ -8,6 +8,7 @@ import { IExtension, BindingType, GetAzureFunctionsResult, ResultStatus, IConnec
 import { addSqlBinding, createAzureFunction, getAzureFunctions } from './services/azureFunctionsService';
 import { launchAddSqlBindingQuickpick } from './dialogs/addSqlBindingQuickpick';
 import { promptForBindingType, promptAndUpdateConnectionStringSetting, promptForObjectName, addSqlNugetReferenceToProjectFile } from './common/azureFunctionsUtils';
+import { TelemetryReporter } from './common/telemetry';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	// register the add sql binding command
@@ -16,6 +17,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	context.subscriptions.push(vscode.commands.registerCommand('sqlBindings.createAzureFunction', async (node?: ITreeNodeInfo) => {
 		return await createAzureFunction(node);
 	}));
+	context.subscriptions.push(TelemetryReporter);
 	return {
 		addSqlBinding: async (bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string): Promise<ResultStatus> => {
 			return addSqlBinding(bindingType, filePath, functionName, objectName, connectionStringSetting);

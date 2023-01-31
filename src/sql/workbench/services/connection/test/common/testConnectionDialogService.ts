@@ -5,6 +5,7 @@
 
 import { INewConnectionParams, IConnectionResult, IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { IErrorDialogOptions } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 
 export class TestConnectionDialogService implements IConnectionDialogService {
@@ -27,6 +28,10 @@ export class TestConnectionDialogService implements IConnectionDialogService {
 	}
 
 	public callDefaultOnConnect(connection: IConnectionProfile, params: INewConnectionParams): Promise<void> {
+		return Promise.resolve(undefined);
+	}
+
+	public async showErrorDialogAsync(options: IErrorDialogOptions): Promise<string | undefined> {
 		return Promise.resolve(undefined);
 	}
 }

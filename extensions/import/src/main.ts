@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 
 import ControllerBase from './controllers/controllerBase';
 import MainController from './controllers/mainController';
+import { TelemetryReporter } from './services/telemetry';
 
 let controllers: ControllerBase[] = [];
 
@@ -18,6 +19,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	context.subscriptions.push(mainController);
 
 	await mainController.activate();
+	context.subscriptions.push(TelemetryReporter);
 }
 
 export function deactivate() {
