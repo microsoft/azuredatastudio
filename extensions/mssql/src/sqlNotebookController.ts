@@ -62,20 +62,31 @@ export class SqlNotebookController implements vscode.Disposable {
 		const execution = this._controller.createNotebookCellExecution(cell);
 		execution.executionOrder = ++this._executionOrder;
 		execution.start(Date.now());
+		await execution.clearOutput();
 
+		let cancelHandler: vscode.Disposable;
 		try {
 			const ownerUri = await azdata.connection.getUriForConnection(connectionProfile.connectionId);
 			await this._queryProvider.runQueryString(ownerUri, cell.document.getText());
+			cancelHandler = execution.token.onCancellationRequested(async () => await this._queryProvider.cancelQuery(ownerUri));
 
 			let queryComplete = new Promise<void>(resolve => {
 				let queryCompleteHandler = async (batchSummaries: azdata.BatchSummary[]) => {
 					let tableHtmlEntries: string[] = [];
 					for (let batchSummary of batchSummaries) {
+						if (execution.token.isCancellationRequested) {
+							break;
+						}
+
 						if (batchSummary.hasError) {
 							let tableHtml = `<table><tr><td>Batch ${batchSummary.id} reported an error. See messages for details.</td></tr></table>`;
 							tableHtmlEntries.push(tableHtml);
 						} else {
 							for (let resultSummary of batchSummary.resultSetSummaries) {
+								if (execution.token.isCancellationRequested) {
+									break;
+								}
+
 								let tableHtml = '<table>';
 								if (resultSummary.rowCount === 0) {
 									tableHtml += `<tr><td>Info: No rows were returned for query ${resultSummary.id} in batch ${batchSummary.id}.</td></tr>`
@@ -109,12 +120,21 @@ export class SqlNotebookController implements vscode.Disposable {
 						}
 					}
 
-					await execution.replaceOutput([
-						new vscode.NotebookCellOutput([
-							vscode.NotebookCellOutputItem.text(tableHtmlEntries.join('<br><br>'), 'text/html')
-						])
-					]);
-					execution.end(true, Date.now());
+					if (execution.token.isCancellationRequested) {
+						await execution.replaceOutput([
+							new vscode.NotebookCellOutput([
+								vscode.NotebookCellOutputItem.text('Cell execution cancelled.')
+							])
+						]);
+						execution.end(false, Date.now());
+					} else {
+						await execution.replaceOutput([
+							new vscode.NotebookCellOutput([
+								vscode.NotebookCellOutputItem.text(tableHtmlEntries.join('<br><br>'), 'text/html')
+							])
+						]);
+						execution.end(true, Date.now());
+					}
 					resolve();
 				};
 				this._queryCompleteHandler = { ownerUri: ownerUri, handler: queryCompleteHandler };
@@ -128,6 +148,9 @@ export class SqlNotebookController implements vscode.Disposable {
 			]);
 			execution.end(false, Date.now());
 		} finally {
+			if (cancelHandler) {
+				cancelHandler.dispose();
+			}
 			this._queryCompleteHandler = undefined;
 			// TODO: add message handler for errors
 		}
