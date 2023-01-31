@@ -38,13 +38,13 @@ export class MainThreadErrorDiagnostics extends Disposable implements MainThread
 				return self._proxy.$handleConnectionError(handle, errorCode, errorMessage, connection);
 			}
 		};
-		this._errorDiagnosticsService.registerDiagnosticsProvider(providerMetadata.id, errorDiagnostics);
+		this._errorDiagnosticsService.registerDiagnosticsProvider(providerMetadata.targetProviderId, errorDiagnostics);
 		this._providerMetadata[handle] = providerMetadata;
 		return undefined;
 	}
 
 	public $unregisterDiagnosticsProvider(handle: number): Thenable<void> {
-		this._errorDiagnosticsService.unregisterDiagnosticsProvider(this._providerMetadata[handle].id);
+		this._errorDiagnosticsService.unregisterDiagnosticsProvider(this._providerMetadata[handle].targetProviderId);
 		return undefined;
 	}
 }
