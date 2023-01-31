@@ -754,7 +754,8 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 								this.wizard.message = { text: '' };
 
 								// validate power state from VM instance view
-								if (!this.migrationStateModel._vmInstanceView.statuses.some(status => status.code.toLowerCase() === 'PowerState/running'.toLowerCase())) {
+								const runningState = 'PowerState/running'.toLowerCase();
+								if (!this.migrationStateModel._vmInstanceView.statuses.some(status => status.code.toLowerCase() === runningState)) {
 									this.wizard.message = {
 										text: constants.VM_NOT_READY_POWER_STATE_ERROR(this.migrationStateModel._targetServerInstance.name),
 										level: azdata.window.MessageLevel.Warning
@@ -762,7 +763,8 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 								}
 
 								// validate IaaS extension mode
-								if (this.migrationStateModel._targetServerInstance.properties.sqlManagement.toLowerCase() !== 'Full'.toLowerCase()) {
+								const fullMode = 'Full'.toLowerCase();
+								if (this.migrationStateModel._targetServerInstance.properties.sqlManagement.toLowerCase() !== fullMode) {
 									this.wizard.message = {
 										text: constants.VM_NOT_READY_IAAS_EXTENSION_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.sqlManagement),
 										level: azdata.window.MessageLevel.Warning
