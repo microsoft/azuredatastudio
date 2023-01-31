@@ -57,7 +57,7 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 						logDebug(`Error Code ${errorCode} requires user to change their password, launching change password dialog.`)
 						return await this.handleChangePassword(restoredProfile);
 					}
-          logDebug(`No error handler found for errorCode ${errorCode}.`);
+					logDebug(`No error handler found for errorCode ${errorCode}.`);
 					return { handled: false };
 				}
 
@@ -72,15 +72,15 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 				try {
 					const result = await azdata.connection.openChangePasswordDialog(connection);
 					// MSSQL uses 'password' as the option key for connection profile.
-          if(result) {
-            connection.options['password'] = result;
-            return { handled: true, options: connection.options };
-          }
+					if (result) {
+						connection.options['password'] = result;
+						return { handled: true, options: connection.options };
+					}
 				}
 				catch (e) {
 					console.error(`Change password failed unexpectedly with error: ${e}`);
 				}
-        return { handled: false };
+				return { handled: false };
 			}
 		}
 	}
