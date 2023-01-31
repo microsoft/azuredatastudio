@@ -11,6 +11,7 @@ import { ServerCapabilities, ClientCapabilities, RPCMessageType } from 'vscode-l
 import { Disposable } from 'vscode';
 import * as CoreConstants from '../constants';
 import * as ErrorDiagnosticsConstants from './errorDiagnosticsConstants';
+import { logDebug } from '../utils';
 
 export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 	private static readonly messagesTypes: RPCMessageType[] = [];
@@ -51,21 +52,13 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 
 			protected override registerProvider(options: any): Disposable {
 				let handleConnectionError = async (errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> => {
+					let restoredProfile = this.convertToIConnectionProfile(connection);
 					if (errorCode === ErrorDiagnosticsConstants.MssqlPasswordResetErrorCode) {
-						// Need to convert inputed profile back to IConnectionProfile.
-						let restoredProfile = this.convertToIConnectionProfile(connection);
-						let result = undefined;
-						try {
-							result = await azdata.connection.openChangePasswordDialog(restoredProfile);
-						}
-						catch (e) {
-							return { handled: false };
-						}
-						// MSSQL uses 'password' as the option key for connection profile.
-						restoredProfile.options['password'] = result
-						return { handled: true, options: restoredProfile.options };
+						logDebug(`Error Code ${errorCode} requires user to change their password, launching change password dialog.`)
+						return await this.handleChangePassword(restoredProfile);
 					}
 					else {
+						logDebug(`No error handler found for errorCode ${errorCode}.`);
 						return { handled: false };
 					}
 				}
@@ -75,6 +68,19 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 				}, {
 					handleConnectionError
 				});
+			}
+
+			private async handleChangePassword(connection: azdata.IConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
+				try {
+					const result = await azdata.connection.openChangePasswordDialog(connection);
+					// MSSQL uses 'password' as the option key for connection profile.
+					connection.options['password'] = result;
+					return { handled: true, options: connection.options };
+				}
+				catch (e) {
+					console.error(`Change Password failed with error: ${e}`);
+					return { handled: false };
+				}
 			}
 		}
 	}

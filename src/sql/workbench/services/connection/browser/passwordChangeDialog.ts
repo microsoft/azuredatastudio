@@ -78,13 +78,11 @@ export class PasswordChangeDialog extends Modal {
 		return promise;
 	}
 
-	public override dispose(): void {
-
-	}
+	public override dispose(): void { }
 
 	public override render() {
 		super.render();
-		this.title = localize('passwordChangeDialog.title', "Password expired for: '{0}'\non the server: '{1}'\n\nPlease enter a new password below:", this._profile?.userName, this._profile?.serverName);
+		this.title = localize('passwordChangeDialog.title', 'Change Password');
 		this._register(attachModalDialogStyler(this, this._themeService));
 		this._okButton = this.addFooterButton(okText, async () => { await this.handleOkButtonClick(); });
 		this._cancelButton = this.addFooterButton(cancelText, () => { this.handleCancelButtonClick(); }, 'right', true);
@@ -94,6 +92,11 @@ export class PasswordChangeDialog extends Modal {
 
 	protected renderBody(container: HTMLElement) {
 		const body = container.appendChild(DOM.$('.change-password-dialog'));
+		body.appendChild(DOM.$('span.component-label-bold')).innerText = localize('passwordChangeDialog.Message1',
+			`Password must be changed for '{0}'.`, this._profile?.userName);
+		body.appendChild(DOM.$('span.component-label')).innerText = localize('passwordChangeDialog.Message2',
+			`Please enter a new password below:`);
+
 		const contentElement = body.appendChild(DOM.$('.properties-content.components-grid'));
 		contentElement.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = newPasswordText;
 		const passwordInputContainer = contentElement.appendChild(DOM.$(''));
