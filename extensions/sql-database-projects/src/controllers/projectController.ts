@@ -852,15 +852,18 @@ export class ProjectsController {
 				ignoreFocusOut: true
 			});
 
+		if (!newValue) {
+			return;
+		}
+
 		// TODO: update value in sqlcmd variables after swap
-		console.error('update new value to be ' + newValue);
 	}
 
 	/**
 	 * Opens a quickpick to add a new SQLCMD variable to the project
 	 * @param context
 	 */
-	public async addSqlCmdVariable(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
+	public async addSqlCmdVariable(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(context);
 
 		const variableName = await vscode.window.showInputBox(
@@ -882,8 +885,14 @@ export class ProjectsController {
 				ignoreFocusOut: true
 			});
 
-		// TODO: add new sqlcmd variable to project after swap
-		console.error(`adding new sqlcmd variable ${variableName} with value ${defaultValue}`);
+		if (!defaultValue) {
+			return;
+		}
+
+		// TODO: update after swap
+		await project.addSqlCmdVariable(variableName, defaultValue);
+
+		this.refreshProjectsTree(context);
 	}
 
 	private sqlCmdVariableNameAlreadyExists(newVariableName: string, project: Project): boolean {
