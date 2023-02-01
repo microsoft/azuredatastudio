@@ -711,8 +711,8 @@ export async function validateIrDatabaseMigrationSettings(
 			dataSource: sourceServerName,
 			userName: migration._sqlServerUsername,
 			password: migration._sqlServerPassword,
+			// to-do: pass correct value of encryptConnection
 			trustServerCertificate: trustServerCertificate,
-			encryptConnection: false,
 			authentication: migration._authenticationType,
 		}
 	};
