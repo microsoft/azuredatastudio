@@ -37,8 +37,7 @@ export enum TelemetryViews {
 	SelectMigrationServiceDialog = 'SelectMigrationServiceDialog',
 	Utils = 'Utils',
 	LoginMigrationWizardController = 'LoginMigrationWizardController',
-	LoginMigrationWizard = 'LoginMigrationWizard',
-	TdeConfigurationDialog = 'TdeConfigurationDialog',
+	LoginMigrationWizard = 'LoginMigrationWizard'
 }
 
 export enum TelemetryAction {
@@ -65,10 +64,6 @@ export enum TelemetryAction {
 	StartDataCollection = 'StartDataCollection',
 	StopDataCollection = 'StopDataCollection',
 	GetDatabasesListFailed = 'GetDatabasesListFailed'
-}
-
-export enum TelemetryErrorName {
-	StartMigrationFailed = 'StartMigrationFailed'
 }
 
 export function logError(telemetryView: TelemetryViews, err: string, error: any): void {

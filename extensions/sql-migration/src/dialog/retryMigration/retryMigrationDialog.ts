@@ -32,7 +32,7 @@ export class RetryMigrationDialog {
 		api: mssql.IExtension,
 		location: azureResource.AzureLocation): Promise<MigrationStateModel> {
 
-		const stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration, api.tdeMigration);
+		const stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration);
 		const sourceDatabaseName = migration.properties.sourceDatabaseName;
 		const savedInfo: SavedInfo = {
 			closedPage: 0,

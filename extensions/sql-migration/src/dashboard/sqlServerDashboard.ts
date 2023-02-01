@@ -444,7 +444,7 @@ export class DashboardWidget {
 		if (serverName) {
 			const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 			if (api) {
-				this.stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration, api.tdeMigration);
+				this.stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration);
 				this._context.subscriptions.push(this.stateModel);
 				const savedInfo = this.checkSavedInfo(serverName);
 				if (savedInfo) {
@@ -483,7 +483,7 @@ export class DashboardWidget {
 		if (serverName) {
 			const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 			if (api) {
-				this.stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration, api.tdeMigration);
+				this.stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration);
 				this._context.subscriptions.push(this.stateModel);
 				const wizardController = new WizardController(
 					this._context,

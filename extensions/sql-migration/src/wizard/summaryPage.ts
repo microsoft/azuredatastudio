@@ -163,11 +163,6 @@ export class SummaryPage extends MigrationWizardPage {
 					constants.SHIR,
 					this.migrationStateModel._nodeNames.join(', ')));
 		}
-
-		this.wizard.registerNavigationValidator(async (pageChangeInfo) => {
-			this.wizard.message = { text: '' };
-			return true;
-		});
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
