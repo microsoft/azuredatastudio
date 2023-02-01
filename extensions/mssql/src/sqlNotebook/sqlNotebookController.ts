@@ -94,16 +94,16 @@ export class SqlNotebookController implements vscode.Disposable {
 								break;
 							}
 
-							let tableHtml = '<table>';
+							let tableHtml = '';
 							if (resultSummary.rowCount === 0) {
-								tableHtml += `<tr><td>Info: No rows were returned for query ${resultSummary.id} in batch ${batchSummary.id}.</td></tr>`
+								tableHtml += `<span>Info: No rows were returned for query ${resultSummary.id} in batch ${batchSummary.id}.</span>`
 							} else {
 								// Add column headers
-								tableHtml += '<tr>';
+								tableHtml += '<table class="sqlNotebookResults"><thead><tr>';
 								for (let column of resultSummary.columnInfo) {
-									tableHtml += `<th>${column.columnName}</th>`;
+									tableHtml += `<th style="text-align: left;">${column.columnName}</th>`;
 								}
-								tableHtml += '</tr>';
+								tableHtml += '</tr></thead>';
 
 								// Add rows and cells
 								let subsetResult = await this._queryProvider.getQueryRows({
@@ -113,15 +113,16 @@ export class SqlNotebookController implements vscode.Disposable {
 									rowsStartIndex: 0,
 									rowsCount: resultSummary.rowCount
 								});
+								tableHtml += '<tbody>';
 								for (let row of subsetResult.resultSubset.rows) {
 									tableHtml += '<tr>';
 									for (let cell of row) {
-										tableHtml += `<td>${cell.displayValue}</td>`;
+										tableHtml += `<td style="text-align: left;">${cell.displayValue}</td>`;
 									}
 									tableHtml += '</tr>';
 								}
 							}
-							tableHtml += '</table>';
+							tableHtml += '</tbody></table>';
 							tableHtmlEntries.push(tableHtml);
 						}
 					}
