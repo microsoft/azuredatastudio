@@ -27,6 +27,7 @@ import { NotebookConvertService } from './notebookConvert/notebookConvertService
 import { SqlMigrationService } from './sqlMigration/sqlMigrationService';
 import { SqlCredentialService } from './credentialstore/sqlCredentialService';
 import { AzureBlobService } from './azureBlob/azureBlobService';
+import { ErrorDiagnosticsProvider } from './errorDiagnostics/errorDiagnosticsProvider';
 import { TdeMigrationService } from './tdeMigration/tdeMigrationService';
 
 const localize = nls.loadMessageBundle();
@@ -194,7 +195,8 @@ function getClientOptions(context: AppContext): ClientOptions {
 			SqlCredentialService.asFeature(context),
 			TableDesignerFeature,
 			ExecutionPlanServiceFeature,
-			TdeMigrationService.asFeature(context),
+			ErrorDiagnosticsProvider.asFeature(context),
+			TdeMigrationService.asFeature(context)
 		],
 		outputChannel: outputChannel
 	};
