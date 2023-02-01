@@ -48,6 +48,7 @@ import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updat
 import { AzureSqlClient } from '../models/deploy/azureSqlClient';
 import { ConnectionService } from '../models/connections/connectionService';
 import { getPublishToDockerSettings } from '../dialogs/publishToDockerQuickpick';
+import { SqlCmdVariableTreeItem } from '../models/tree/sqlcmdVariableTreeItem';
 
 const maxTableLength = 10;
 
@@ -786,6 +787,8 @@ export class ProjectsController {
 		let confirmationPrompt;
 		if (node instanceof DatabaseReferenceTreeItem) {
 			confirmationPrompt = constants.deleteReferenceConfirmation(node.friendlyName);
+		} else if (node instanceof SqlCmdVariableTreeItem) {
+			confirmationPrompt = constants.deleteSqlCmdVariableConfirmation(node.friendlyName);
 		} else if (node instanceof FolderNode) {
 			confirmationPrompt = constants.deleteConfirmationContents(node.friendlyName);
 		} else {
@@ -807,6 +810,8 @@ export class ProjectsController {
 				await project.deleteDatabaseReference(databaseReference);
 				success = true;
 			}
+		} else if (node instanceof SqlCmdVariableTreeItem) {
+			// TODO: handle deleting sqlcmd var from project after swap
 		} else if (node instanceof FileNode || FolderNode) {
 			const fileEntry = this.getFileProjectEntry(project, node);
 
@@ -829,6 +834,69 @@ export class ProjectsController {
 
 			void vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, node.projectUri.path));
 		}
+	}
+
+	/**
+	 * Opens a quickpick to edit the value of the SQLCMD variable launched from
+	 * @param context
+	 */
+	public async editSqlCmdVariable(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const node = context.element as SqlCmdVariableTreeItem;
+		const project = this.getProjectFromContext(node);
+		const originalValue = project.sqlCmdVariables[node.friendlyName]; // TODO: update to hookup with however sqlcmd vars work after swap
+
+		const newValue = await vscode.window.showInputBox(
+			{
+				title: constants.enterNewValueForVar(node.friendlyName),
+				value: originalValue,
+				ignoreFocusOut: true
+			});
+
+		if (!newValue) {
+			return;
+		}
+
+		// TODO: update value in sqlcmd variables after swap
+	}
+
+	/**
+	 * Opens a quickpick to add a new SQLCMD variable to the project
+	 * @param context
+	 */
+	public async addSqlCmdVariable(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const project = this.getProjectFromContext(context);
+
+		const variableName = await vscode.window.showInputBox(
+			{
+				title: constants.enterNewSqlCmdVariableName,
+				ignoreFocusOut: true,
+				validateInput: (value) => {
+					return this.sqlCmdVariableNameAlreadyExists(value, project) ? constants.sqlcmdVariableAlreadyExists : undefined;
+				}
+			});
+
+		if (!variableName) {
+			return;
+		}
+
+		const defaultValue = await vscode.window.showInputBox(
+			{
+				title: constants.enterNewSqlCmdVariableDefaultValue(variableName),
+				ignoreFocusOut: true
+			});
+
+		if (!defaultValue) {
+			return;
+		}
+
+		// TODO: update after swap
+		await project.addSqlCmdVariable(variableName, defaultValue);
+
+		this.refreshProjectsTree(context);
+	}
+
+	private sqlCmdVariableNameAlreadyExists(newVariableName: string, project: Project): boolean {
+		return Object.keys(project.sqlCmdVariables).findIndex(v => v === newVariableName) !== -1;
 	}
 
 	private getDatabaseReference(project: Project, context: BaseProjectTreeItem): IDatabaseReferenceProjectEntry | undefined {

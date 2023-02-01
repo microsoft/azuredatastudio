@@ -14,6 +14,7 @@
 	"sqlDatabaseProjects.schemaCompare": "Schema Compare",
 	"sqlDatabaseProjects.delete": "Delete",
 	"sqlDatabaseProjects.exclude": "Exclude from project",
+	"sqlDatabaseProjects.edit": "Edit",
 	"sqlDatabaseProjects.validateExternalStreamingJob": "Validate External Streaming Job",
 
 	"sqlDatabaseProjects.newScript": "Add Script",
@@ -28,6 +29,7 @@
 	"sqlDatabaseProjects.newFolder": "Add Folder",
 
 	"sqlDatabaseProjects.addDatabaseReference": "Add Database Reference",
+	"sqlDatabaseProjects.addSqlCmdVariable": "Add SQLCMD Variable",
 	"sqlDatabaseProjects.openContainingFolder": "Open Containing Folder",
 	"sqlDatabaseProjects.editProjectFile": "Edit .sqlproj File",
 	"sqlDatabaseProjects.changeTargetPlatform": "Change Target Platform",
