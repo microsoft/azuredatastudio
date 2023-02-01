@@ -64,7 +64,7 @@ export class AzureDeviceCode extends AzureAuth {
 
 		const deviceCodeRequest: DeviceCodeRequest = {
 			scopes: this.scopes,
-			authority: `https://login.microsoftonline.com/${tenant.id}`,
+			authority: `${this.loginEndpointUrl}${tenant.id}`,
 			deviceCodeCallback: async (response) => {
 				await azdata.accounts.beginAutoOAuthDeviceCode(this.metadata.id, this.pageTitle, response.message, response.userCode, response.verificationUri);
 			}

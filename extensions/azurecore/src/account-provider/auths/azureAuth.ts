@@ -341,7 +341,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		// https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/3687
 		const tokenRequest = {
 			account: account,
-			authority: `https://login.microsoftonline.com/${tenantId}`,
+			authority: `${this.loginEndpointUrl}${tenantId}`,
 			scopes: newScope,
 			forceRefresh: true
 		};
@@ -692,8 +692,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 		// Determine if this is a microsoft account
 		let accountIssuer = 'unknown';
 
+		// this.login
 		if (tokenClaims.iss === 'https://sts.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/' ||
-			tokenClaims.iss === 'https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47/v2.0') {
+			tokenClaims.iss === `${this.loginEndpointUrl}72f988bf-86f1-41af-91ab-2d7cd011db47/v2.0`) {
 			accountIssuer = Constants.AccountIssuer.Corp;
 		}
 		if (tokenClaims?.idp === 'live.com') {
