@@ -13,9 +13,8 @@ import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as utils from '../api/utils';
 import { azureResource } from 'azurecore';
-import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/azure';
+import { AzureSqlDatabaseServer, SqlVMServer } from '../api/azure';
 import { collectSourceLogins, collectTargetLogins, isSysAdmin, LoginTableInfo } from '../api/sqlUtils';
-import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
 
 export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -605,7 +604,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			this._testConectionButton.onDidClick(async (value) => {
 				this.wizard.message = { text: '' };
 
-				const targetDatabaseServer = this.migrationStateModel._targetServerInstance;
+				const targetDatabaseServer = this.migrationStateModel._targetServerInstance as AzureSqlDatabaseServer;
 				const userName = this.migrationStateModel._targetUserName;
 				const password = this.migrationStateModel._targetPassword;
 				const loginsOnTarget: string[] = [];
@@ -745,31 +744,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 							const selectedVm = this.migrationStateModel._targetSqlVirtualMachines.find(vm => vm.name === value);
 							if (selectedVm) {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(selectedVm)! as SqlVMServer;
-								this.migrationStateModel._vmInstanceView = await getVMInstanceView(this.migrationStateModel._targetServerInstance, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription);
-								this.migrationStateModel._targetServerInstance.networkInterfaces = await NetworkInterfaceModel.getVmNetworkInterfaces(
-									this.migrationStateModel._azureAccount,
-									this.migrationStateModel._targetSubscription,
-									this.migrationStateModel._targetServerInstance);
-
-								this.wizard.message = { text: '' };
-
-								// validate power state from VM instance view
-								const runningState = 'PowerState/running'.toLowerCase();
-								if (!this.migrationStateModel._vmInstanceView.statuses.some(status => status.code.toLowerCase() === runningState)) {
-									this.wizard.message = {
-										text: constants.VM_NOT_READY_POWER_STATE_ERROR(this.migrationStateModel._targetServerInstance.name),
-										level: azdata.window.MessageLevel.Warning
-									};
-								}
-
-								// validate IaaS extension mode
-								const fullMode = 'Full'.toLowerCase();
-								if (this.migrationStateModel._targetServerInstance.properties.sqlManagement.toLowerCase() !== fullMode) {
-									this.wizard.message = {
-										text: constants.VM_NOT_READY_IAAS_EXTENSION_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.sqlManagement),
-										level: azdata.window.MessageLevel.Warning
-									};
-								}
 							}
 							break;
 						case MigrationTargetType.SQLMI:
@@ -989,15 +963,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._location,
 						this.migrationStateModel._resourceGroup?.name,
 						constants.NO_VIRTUAL_MACHINE_FOUND);
-
-					let response = await utils.getVirtualMachinesDropdownValues(
-						this.migrationStateModel._targetSqlVirtualMachines,
-						this.migrationStateModel._location,
-						this.migrationStateModel._resourceGroup,
-						this.migrationStateModel._azureAccount,
-						this.migrationStateModel._targetSubscription);
-					console.log(response);
-
 					break;
 				case MigrationTargetType.SQLDB:
 					this._azureResourceDropdown.values = utils.getAzureResourceDropdownValues(

@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
-import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView } from '../api/azure';
+import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, isSqlManagedInstance, isAzureSqlDatabaseServer, VirtualMachineInstanceView } from '../api/azure';
 import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
@@ -533,13 +533,24 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return await azdata.connection.getConnectionString(this._sourceConnectionId, true);
 	}
 
+	public async setTargetServerName(): Promise<void> {
+		// If target server name has already been set, we can skip this part
+		if (this._targetServerName) {
+			return;
+		}
+
+		if (isSqlManagedInstance(this._targetServerInstance) || isAzureSqlDatabaseServer(this._targetServerInstance)) {
+			this._targetServerName = this._targetServerName ?? this._targetServerInstance.properties.fullyQualifiedDomainName;
+		}
+	}
+
 	public async getTargetConnectionString(): Promise<string> {
+		await this.setTargetServerName();
 		const connectionProfile = getConnectionProfile(
-			this._targetServerInstance,
+			this._targetServerName,
 			this._targetServerInstance.id,
 			this._targetUserName,
-			this._targetPassword,
-			true /* trustServerCertificate */);
+			this._targetPassword);
 
 		const result = await azdata.connection.connect(connectionProfile, false, false);
 		if (result.connected && result.connectionId) {

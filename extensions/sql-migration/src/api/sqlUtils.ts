@@ -5,11 +5,10 @@
 
 import * as azdata from 'azdata';
 import { azureResource } from 'azurecore';
-import { AzureSqlDatabase, AzureSqlDatabaseServer, isAzureSqlDatabaseServer, isSqlManagedInstance, isSqlVMServer, SqlManagedInstance, SqlVMServer } from './azure';
+import { AzureSqlDatabase, AzureSqlDatabaseServer } from './azure';
 import { generateGuid } from './utils';
 import * as utils from '../api/utils';
 import { TelemetryAction, TelemetryViews, logError } from '../telemetry';
-import { NetworkInterfaceModel } from './dataModels/azure/networkInterfaceModel';
 
 const query_database_tables_sql = `
 	SELECT
@@ -167,14 +166,12 @@ function getSqlDbConnectionProfile(
 }
 
 export function getConnectionProfile(
-	server: string | SqlManagedInstance | SqlVMServer | AzureSqlDatabaseServer,
+	serverName: string,
 	azureResourceId: string,
 	userName: string,
-	password: string,
-	trustServerCert: boolean = false): azdata.IConnectionProfile {
+	password: string): azdata.IConnectionProfile {
 
 	const connectId = generateGuid();
-	const serverName = extractNameFromServer(server);
 	return {
 		serverName: serverName,
 		id: connectId,
@@ -197,35 +194,12 @@ export function getConnectionProfile(
 			connectionTimeout: 60,
 			columnEncryptionSetting: 'Enabled',
 			encrypt: true,
-			trustServerCertificate: trustServerCert,
+			trustServerCertificate: false,
 			connectRetryCount: '1',
 			connectRetryInterval: '10',
 			applicationName: 'azdata',
 		},
 	};
-}
-
-function extractNameFromServer(
-	server: string | SqlManagedInstance | SqlVMServer | AzureSqlDatabaseServer): string {
-
-	// No need to extract name if the server is a string
-	if (typeof server === 'string') {
-		return server
-	}
-
-	if (isSqlVMServer(server)) {
-		// For sqlvm, we need to use ip address from the network interface to connect to the server
-		const sqlVm = server as SqlVMServer;
-		const networkInterfaces = Array.from(sqlVm.networkInterfaces.values());
-		return NetworkInterfaceModel.getIpAddress(networkInterfaces);
-	}
-
-	// check if the target server is a managed instance or a VM
-	if (isSqlManagedInstance(server) || isAzureSqlDatabaseServer(server)) {
-		return server.properties.fullyQualifiedDomainName;
-	}
-
-	return "";
 }
 
 export async function collectSourceDatabaseTableInfo(sourceConnectionId: string, sourceDatabase: string): Promise<TableInfo[]> {
@@ -413,17 +387,16 @@ export async function collectSourceLogins(
 }
 
 export async function collectTargetLogins(
-	targetServer: SqlManagedInstance | SqlVMServer | AzureSqlDatabaseServer,
+	targetServer: AzureSqlDatabaseServer,
 	userName: string,
 	password: string,
 	includeWindowsAuth: boolean = true): Promise<string[]> {
 
 	const connectionProfile = getConnectionProfile(
-		targetServer,
+		targetServer.properties.fullyQualifiedDomainName,
 		targetServer.id,
 		userName,
-		password,
-		true /* trustServerCertificate */);
+		password);
 
 	const result = await azdata.connection.connect(connectionProfile, false, false);
 	if (result.connected && result.connectionId) {
