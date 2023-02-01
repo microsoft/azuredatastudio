@@ -5,10 +5,11 @@
 
 import * as azdata from 'azdata';
 import { azureResource } from 'azurecore';
-import { AzureSqlDatabase, AzureSqlDatabaseServer } from './azure';
+import { AzureSqlDatabase, AzureSqlDatabaseServer, isAzureSqlDatabaseServer, isSqlManagedInstance, isSqlVMServer, SqlManagedInstance, SqlVMServer } from './azure';
 import { generateGuid } from './utils';
 import * as utils from '../api/utils';
-import { TelemetryAction, TelemetryViews, logError } from '../telemtery';
+import { TelemetryAction, TelemetryViews, logError } from '../telemetry';
+import { NetworkInterfaceModel } from './dataModels/azure/networkInterfaceModel';
 
 const query_database_tables_sql = `
 	SELECT
@@ -68,7 +69,19 @@ const query_login_tables_sql = `
 	LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id
 	WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN (
 		'SQL_LOGIN'
-		--, 'WINDOWS_LOGIN'
+	) AND sp.name NOT LIKE '##%##'
+	ORDER BY sp.name;`;
+
+const query_login_tables_include_windows_auth_sql = `
+	SELECT
+		sp.name as login,
+		sp.type_desc as login_type,
+		sp.default_database_name,
+		case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status
+	FROM sys.server_principals sp
+	LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id
+	WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN (
+		'SQL_LOGIN', 'WINDOWS_LOGIN'
 	) AND sp.name NOT LIKE '##%##'
 	ORDER BY sp.name;`;
 
@@ -154,12 +167,14 @@ function getSqlDbConnectionProfile(
 }
 
 export function getConnectionProfile(
-	serverName: string,
+	server: string | SqlManagedInstance | SqlVMServer | AzureSqlDatabaseServer,
 	azureResourceId: string,
 	userName: string,
-	password: string): azdata.IConnectionProfile {
+	password: string,
+	trustServerCert: boolean = false): azdata.IConnectionProfile {
 
 	const connectId = generateGuid();
+	const serverName = extractNameFromServer(server);
 	return {
 		serverName: serverName,
 		id: connectId,
@@ -182,12 +197,35 @@ export function getConnectionProfile(
 			connectionTimeout: 60,
 			columnEncryptionSetting: 'Enabled',
 			encrypt: true,
-			trustServerCertificate: false,
+			trustServerCertificate: trustServerCert,
 			connectRetryCount: '1',
 			connectRetryInterval: '10',
 			applicationName: 'azdata',
 		},
 	};
+}
+
+function extractNameFromServer(
+	server: string | SqlManagedInstance | SqlVMServer | AzureSqlDatabaseServer): string {
+
+	// No need to extract name if the server is a string
+	if (typeof server === 'string') {
+		return server
+	}
+
+	if (isSqlVMServer(server)) {
+		// For sqlvm, we need to use ip address from the network interface to connect to the server
+		const sqlVm = server as SqlVMServer;
+		const networkInterfaces = Array.from(sqlVm.networkInterfaces.values());
+		return NetworkInterfaceModel.getIpAddress(networkInterfaces);
+	}
+
+	// check if the target server is a managed instance or a VM
+	if (isSqlManagedInstance(server) || isAzureSqlDatabaseServer(server)) {
+		return server.properties.fullyQualifiedDomainName;
+	}
+
+	return "";
 }
 
 export async function collectSourceDatabaseTableInfo(sourceConnectionId: string, sourceDatabase: string): Promise<TableInfo[]> {
@@ -351,15 +389,18 @@ export async function getDatabasesList(connectionProfile: azdata.connection.Conn
 	}
 }
 
-export async function collectSourceLogins(sourceConnectionId: string): Promise<LoginTableInfo[]> {
+export async function collectSourceLogins(
+	sourceConnectionId: string,
+	includeWindowsAuth: boolean = true): Promise<LoginTableInfo[]> {
 	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
 	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
 		'MSSQL',
 		azdata.DataProviderType.QueryProvider);
 
+	const query = includeWindowsAuth ? query_login_tables_include_windows_auth_sql : query_login_tables_sql;
 	const results = await queryProvider.runQueryAndReturn(
 		ownerUri,
-		query_login_tables_sql);
+		query);
 
 	return results.rows.map(row => {
 		return {
@@ -372,15 +413,17 @@ export async function collectSourceLogins(sourceConnectionId: string): Promise<L
 }
 
 export async function collectTargetLogins(
-	targetServer: AzureSqlDatabaseServer,
+	targetServer: SqlManagedInstance | SqlVMServer | AzureSqlDatabaseServer,
 	userName: string,
-	password: string): Promise<string[]> {
+	password: string,
+	includeWindowsAuth: boolean = true): Promise<string[]> {
 
 	const connectionProfile = getConnectionProfile(
-		targetServer.properties.fullyQualifiedDomainName,
+		targetServer,
 		targetServer.id,
 		userName,
-		password);
+		password,
+		true /* trustServerCertificate */);
 
 	const result = await azdata.connection.connect(connectionProfile, false, false);
 	if (result.connected && result.connectionId) {
@@ -388,10 +431,11 @@ export async function collectTargetLogins(
 			'MSSQL',
 			azdata.DataProviderType.QueryProvider);
 
+		const query = includeWindowsAuth ? query_login_tables_include_windows_auth_sql : query_login_tables_sql;
 		const ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
 		const results = await queryProvider.runQueryAndReturn(
 			ownerUri,
-			query_login_tables_sql);
+			query);
 
 		return results.rows.map(row => getSqlString(row[0])) ?? [];
 	}

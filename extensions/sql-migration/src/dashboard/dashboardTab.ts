@@ -12,7 +12,7 @@ import { filterMigrations, MenuCommands } from '../api/utils';
 import { DatabaseMigration } from '../api/azure';
 import { getCurrentMigrations, getSelectedServiceStatus, isServiceContextValid, MigrationLocalStorage } from '../models/migrationLocalStorage';
 import { SelectMigrationServiceDialog } from '../dialog/selectMigrationService/selectMigrationServiceDialog';
-import { logError, TelemetryViews } from '../telemtery';
+import { logError, TelemetryViews } from '../telemetry';
 import { AdsMigrationStatus, ServiceContextChangeEvent, TabBase } from './tabBase';
 import { DashboardStatusBar } from './DashboardStatusBar';
 
@@ -141,7 +141,7 @@ export class DashboardTab extends TabBase<DashboardTab> {
 		const toolbar = view.modelBuilder.toolbarContainer();
 		toolbar.addToolbarItems([
 			<azdata.ToolbarComponent>{ component: this.createNewMigrationButton() },
-			// <azdata.ToolbarComponent>{ component: this.createNewLoginMigrationButton() }, // TODO Enable when login migrations is ready for public consumption
+			<azdata.ToolbarComponent>{ component: this.createNewLoginMigrationButton() },
 			<azdata.ToolbarComponent>{ component: this.createNewSupportRequestButton() },
 			<azdata.ToolbarComponent>{ component: this.createFeedbackButton() },
 		]);

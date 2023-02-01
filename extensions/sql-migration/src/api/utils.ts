@@ -10,7 +10,7 @@ import * as crypto from 'crypto';
 import * as azure from './azure';
 import { azureResource, Tenant } from 'azurecore';
 import * as constants from '../constants/strings';
-import { logError, TelemetryViews } from '../telemtery';
+import { logError, TelemetryViews } from '../telemetry';
 import { AdsMigrationStatus } from '../dashboard/tabBase';
 import { getMigrationMode, getMigrationStatus, getMigrationTargetType, hasRestoreBlockingReason, PipelineStatusCodes } from '../constants/helper';
 
@@ -71,6 +71,19 @@ export function getSqlServerName(majorVersion: number): string | undefined {
 		default:
 			return undefined;
 	}
+}
+
+export function isTargetSqlVm2014OrBelow(sqlVm: azure.SqlVMServer): boolean {
+	// e.g. SQL2008-WS2012, SQL2008R2-WS2019, SQL2012-WS2016, SQL2014-WS2012R2, SQL2016-WS2019, SQL2017-WS2019, SQL2019-WS2022
+	const sqlImageOffer = sqlVm.properties.sqlImageOffer;
+
+	// parse image offer and extract SQL version (assuming it is a valid image offer)
+	if (sqlImageOffer && sqlImageOffer.toUpperCase().startsWith('SQL')) {
+		const version = parseInt(sqlImageOffer.substring(3, 7));
+		return version <= 2014;
+	}
+
+	return false;
 }
 
 export interface IPackageInfo {

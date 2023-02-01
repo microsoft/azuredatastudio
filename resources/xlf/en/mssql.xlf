@@ -190,6 +190,12 @@
     <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.displayName">
       <source xml:lang="en">Always Encrypted</source>
     </trans-unit>
+    <trans-unit id="mssql.connectionOptions.commandTimeout.description">
+      <source xml:lang="en">The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.commandTimeout.displayName">
+      <source xml:lang="en">Command timeout</source>
+    </trans-unit>
     <trans-unit id="mssql.connectionOptions.connectRetryCount.description">
       <source xml:lang="en">Number of attempts to restore connection</source>
     </trans-unit>
@@ -285,6 +291,12 @@
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.groupName.source">
       <source xml:lang="en">Source</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.hostNameInCertificate.description">
+      <source xml:lang="en">Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.hostNameInCertificate.displayName">
+      <source xml:lang="en">Host name in certificate</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.loadBalanceTimeout.description">
       <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>

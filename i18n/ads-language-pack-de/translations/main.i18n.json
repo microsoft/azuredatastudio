@@ -13442,6 +13442,17 @@
 			"onDidDisconnectMessage": "Getrennt",
 			"unsavedGroupLabel": "Nicht gespeicherte Verbindungen"
 		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "Abbrechen",
+			"passwordChangeDialog.confirmPassword": "Kennwort bestätigen:",
+			"passwordChangeDialog.connecting": "Verbindung wird hergestellt",
+			"passwordChangeDialog.errorHeader": "Fehler beim Versuch, das Kennwort zu ändern",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "Eingegebene Kennwörter stimmen nicht überein",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Drücken Sie OK, und geben Sie in beiden Feldern das genau gleiche Kennwort ein.",
+			"passwordChangeDialog.newPassword": "Neues Kennwort:",
+			"passwordChangeDialog.ok": "OK",
+			"passwordChangeDialog.title": "Kennwort ändern"
+		},
 		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
 			"newDashboardTab.cancel": "Abbrechen",
 			"newDashboardTab.ok": "OK",
@@ -13899,17 +13910,6 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "Erste &&Schritte",
 			"showReleaseNotes": "\"Erste Schritte\" anzeigen"
-		},
-		"sql/workbench/services/connection/browser/passwordChangeDialog": {
-			"passwordChangeDialog.cancel": "Abbrechen",
-			"passwordChangeDialog.confirmPassword": "Kennwort bestätigen:",
-			"passwordChangeDialog.connecting": "Verbindung wird hergestellt",
-			"passwordChangeDialog.errorHeader": "Fehler beim Versuch, das Kennwort zu ändern",
-			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "Eingegebene Kennwörter stimmen nicht überein",
-			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Drücken Sie OK, und geben Sie in beiden Feldern das genau gleiche Kennwort ein.",
-			"passwordChangeDialog.newPassword": "Neues Kennwort:",
-			"passwordChangeDialog.ok": "OK",
-			"passwordChangeDialog.title": "Kennwort ändern"
 		}
 	}
 }

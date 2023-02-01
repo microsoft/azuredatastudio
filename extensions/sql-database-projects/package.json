@@ -2,7 +2,7 @@
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
   "description": "Enables users to develop and publish database schemas for MSSQL Databases",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
@@ -93,11 +93,6 @@
       {
         "command": "sqlDatabaseProjects.newView",
         "title": "%sqlDatabaseProjects.newView%",
-        "category": "%sqlDatabaseProjects.displayName%"
-      },
-      {
-        "command": "sqlDatabaseProjects.newExternalStreamingJob",
-        "title": "%sqlDatabaseProjects.newExternalStreamingJob%",
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
@@ -243,10 +238,6 @@
           "when": "false"
         },
         {
-          "command": "sqlDatabaseProjects.newExternalStreamingJob",
-          "when": "false"
-        },
-        {
           "command": "sqlDatabaseProjects.newStoredProcedure",
           "when": "false"
         },
@@ -378,11 +369,6 @@
           "group": "3_dbProjects_newItem@3"
         },
         {
-          "command": "sqlDatabaseProjects.newExternalStreamingJob",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
-          "group": "3_dbProjects_newItem@4"
-        },
-        {
           "command": "sqlDatabaseProjects.newScript",
           "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@7"
@@ -480,7 +466,7 @@
     }
   },
   "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^1.3.2",
+    "@microsoft/ads-extension-telemetry": "^1.3.4",
     "@xmldom/xmldom": "0.8.4",
     "axios": "^0.27.2",
     "extract-zip": "^2.0.1",

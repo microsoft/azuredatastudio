@@ -20,7 +20,7 @@ import { RetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDia
 import { SqlMigrationServiceDetailsDialog } from '../dialog/sqlMigrationService/sqlMigrationServiceDetailsDialog';
 import { MigrationLocalStorage } from '../models/migrationLocalStorage';
 import { MigrationStateModel, SavedInfo } from '../models/stateMachine';
-import { logError, TelemetryViews } from '../telemtery';
+import { logError, TelemetryViews } from '../telemetry';
 import { WizardController } from '../wizard/wizardController';
 import { DashboardStatusBar, ErrorEvent } from './DashboardStatusBar';
 import { DashboardTab } from './dashboardTab';
@@ -444,7 +444,7 @@ export class DashboardWidget {
 		if (serverName) {
 			const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 			if (api) {
-				this.stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration);
+				this.stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration, api.tdeMigration);
 				this._context.subscriptions.push(this.stateModel);
 				const savedInfo = this.checkSavedInfo(serverName);
 				if (savedInfo) {
@@ -483,7 +483,7 @@ export class DashboardWidget {
 		if (serverName) {
 			const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 			if (api) {
-				this.stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration);
+				this.stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration, api.tdeMigration);
 				this._context.subscriptions.push(this.stateModel);
 				const wizardController = new WizardController(
 					this._context,
