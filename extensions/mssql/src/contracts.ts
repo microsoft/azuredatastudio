@@ -8,7 +8,6 @@ import { ITelemetryEventProperties, ITelemetryEventMeasures } from './telemetry'
 import * as azdata from 'azdata';
 import { ConnectParams } from 'dataprotocol-client/lib/protocol';
 import * as mssql from 'mssql';
-import * as ObjectManagement from './objectManagement/interfaces';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
 
@@ -1285,79 +1284,50 @@ export interface TdeMigrateProgressParams {
 // ------------------------------- < Tde Migration > ------------------------------------
 
 // ------------------------------- < Object Management > ------------------------------------
-export interface GetObjectRequestParams {
-	connectionId: string;
-	objectPath: string;
+export interface InitializeLoginViewRequestParams {
+	connectionUri: string;
+	contextId: string;
+	isNewObject: boolean;
+	name: string | undefined;
 }
 
-export namespace GetObjectRequest {
-	export const type = new RequestType<GetObjectRequestParams, ObjectManagement.SqlObject, void, void>('objectmanagement/get');
+export namespace InitializeLoginViewRequest {
+	export const type = new RequestType<InitializeLoginViewRequestParams, mssql.ObjectManagement.LoginViewInfo, void, void>('objectManagement/initializeLoginView');
 }
 
-export interface CreateObjectRequestParams {
-	connectionId: string;
-	object: ObjectManagement.SqlObject;
+export interface CreateLoginRequestParams {
+	contextId: string;
+	login: mssql.ObjectManagement.Login;
 }
 
-export namespace CreateObjectRequest {
-	export const type = new RequestType<CreateObjectRequestParams, void, void, void>('objectmanagement/create');
+export namespace CreateLoginRequest {
+	export const type = new RequestType<CreateLoginRequestParams, void, void, void>('objectManagement/createLogin');
 }
 
-export interface UpdateObjectRequestParams {
-	connectionId: string;
-	object: ObjectManagement.SqlObject;
+export interface UpdateLoginRequestParams {
+	contextId: string;
+	login: mssql.ObjectManagement.Login;
 }
 
-export namespace UpdateObjectRoleRequest {
-	export const type = new RequestType<UpdateObjectRequestParams, void, void, void>('objectmanagement/update');
+export namespace UpdateLoginRequest {
+	export const type = new RequestType<UpdateLoginRequestParams, void, void, void>('objectManagement/updateLogin');
 }
 
-export interface ScriptObjectRequestParams {
-	connectionId: string;
-	object: ObjectManagement.SqlObject;
+export interface DeleteLoginRequestParams {
+	connectionUri: string;
+	name: string;
 }
 
-export namespace ScriptObjectRequest {
-	export const type = new RequestType<ScriptObjectRequestParams, string, void, void>('objectmanagement/script');
+export namespace DeleteLoginRequest {
+	export const type = new RequestType<DeleteLoginRequestParams, void, void, void>('objectManagement/deleteLogin');
 }
 
-export interface GetObjectsRequestParams {
-	connectionId: string;
-	objectTypes: string[];
+export interface DisposeLoginViewRequestParams {
+	contextId: string;
 }
 
-export namespace GetObjectsRequest {
-	export const type = new RequestType<GetObjectsRequestParams, ObjectManagement.SqlObject[], void, void>('objectmanagement/getobjects');
-}
-
-/**
- * Get the applicable securable types for the specified principal type.
- */
-export interface GetSecurableTypesForPrincipalParams {
-	connectionId: string;
-	principalType: ObjectManagement.ObjectType;
-}
-
-export namespace GetSecurableTypesForPrincipalRequest {
-	export const type = new RequestType<GetSecurableTypesForPrincipalParams, string[], void, void>('objectmanagement/getsecurabletypes');
-}
-
-export interface GetLanguagesParams {
-	connectionId: string;
-}
-
-export namespace GetServerLanguagesRequest {
-	export const type = new RequestType<GetLanguagesParams, string[], void, void>('objectmanagement/getserverlanguages');
-}
-
-export interface GetServerLoginEffectivePermissionsParams {
-	connectionId: string;
-	login: string;
-	targetSecurablePath: string;
-}
-
-export namespace GetServerLoginEffectivePermissionsRequest {
-	export const type = new RequestType<GetServerLoginEffectivePermissionsParams, string[], void, void>('objectmanagement/getloginpermissions');
+export namespace DisposeLoginViewRequest {
+	export const type = new RequestType<DisposeLoginViewRequestParams, void, void, void>('objectManagement/disposeLoginView');
 }
 
 // ------------------------------- < Object Management > ------------------------------------

@@ -865,4 +865,110 @@ declare module 'mssql' {
 			reportUpdate: (dbName: string, succeeded: boolean, message: string) => void): Promise<TdeMigrationResult>;
 	}
 	// TDEMigration interfaces END -----------------------------------------------------------------------
+
+	// Object Management Service
+	export namespace ObjectManagement {
+
+		export interface SqlObject {
+			name: string;
+			iconType: string | undefined;
+		}
+
+		export interface Login extends SqlObject {
+			authenticationType: LoginAuthenticationType;
+			password: string | undefined;
+			oldPassword: string | undefined;
+			enforcePasswordPolicy: boolean | undefined;
+			enforcePasswordExpiration: boolean | undefined;
+			mustChangePassword: boolean | undefined;
+			defaultDatabase: string;
+			defaultLanguage: string;
+			serverRoles: string[];
+			userMapping: ServerLoginDatabaseUserMapping[];
+			isEnabled: boolean;
+			connectPermission: boolean;
+			isLockedOut: boolean;
+		}
+
+		export type LoginAuthenticationType = 'Windows' | 'Sql' | 'AAD';
+
+		export interface ServerLoginDatabaseUserMapping {
+			database: string;
+			user: string;
+			defaultSchema: string;
+			databaseRoles: string[];
+		}
+
+		export interface LoginViewInfo {
+			login: Login;
+			canEditName: boolean;
+			supportWindowsAuthentication: boolean;
+			supportAADAuthentication: boolean;
+			supportSQLAuthentication: boolean;
+			canEditLockedOutState: boolean;
+			databases: string[];
+			languages: string[];
+			serverRoles: string[];
+		}
+
+		export interface Permission {
+			name: string;
+			grant: boolean;
+			withGrant: boolean;
+			deny: boolean;
+		}
+
+		export interface SecurablePermissions {
+			securable: SqlObject;
+			permissions: Permission[];
+		}
+
+		export interface ExtendedProperty {
+			name: string;
+			value: string;
+		}
+
+		export interface ServerRole extends SqlObject {
+			owner: string | undefined;
+			securablePermissions: SecurablePermissions[];
+			members: SqlObject[];
+			memberships: SqlObject[];
+			isFixedRole: boolean;
+		}
+
+		export interface DatabaseRole extends SqlObject {
+			owner: string | undefined;
+			password: string | undefined;
+			ownedSchemas: string[];
+			securablePermissions: SecurablePermissions[] | undefined;
+			extendedProperties: ExtendedProperty[] | undefined;
+			isFixedRole: boolean;
+		}
+
+		export interface DatabaseUser extends SqlObject {
+			type: string;
+			isAAD: boolean | undefined;
+			password: string | undefined;
+			defaultSchema: string | undefined;
+			ownedSchemas: string[] | undefined;
+			loginName: string | undefined;
+			isEnabled: boolean;
+			extendedProperties: ExtendedProperty[] | undefined;
+			securablePermissions: SecurablePermissions[] | undefined;
+		}
+	}
+
+	export interface IObjectManagementService {
+
+		initializeLoginView(connectionUri: string, contextId: string, isNewObject: boolean, name: string | undefined): Thenable<ObjectManagement.LoginViewInfo>;
+
+		createLogin(contextId: string, login: ObjectManagement.Login): Thenable<void>;
+
+		updateLogin(contextId: string, login: ObjectManagement.Login): Thenable<void>;
+
+		deleteLogin(connectionUri: string, name: string): Thenable<void>;
+
+		disposeLoginView(contextId: string): Thenable<void>;
+	}
+	//
 }

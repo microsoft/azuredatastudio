@@ -28,6 +28,7 @@ import { SqlMigrationService } from './sqlMigration/sqlMigrationService';
 import { SqlCredentialService } from './credentialstore/sqlCredentialService';
 import { AzureBlobService } from './azureBlob/azureBlobService';
 import { TdeMigrationService } from './tdeMigration/tdeMigrationService';
+import { ObjectManagementService } from './objectManagement/objectManagementService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -195,6 +196,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 			TableDesignerFeature,
 			ExecutionPlanServiceFeature,
 			TdeMigrationService.asFeature(context),
+			ObjectManagementService.asFeature(context)
 		],
 		outputChannel: outputChannel
 	};
