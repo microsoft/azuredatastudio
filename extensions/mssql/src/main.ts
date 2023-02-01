@@ -22,7 +22,7 @@ import { IconPathHelper } from './iconHelper';
 import * as nls from 'vscode-nls';
 import { INotebookConvertService } from './notebookConvert/notebookConvertService';
 import { registerTableDesignerCommands } from './tableDesigner/tableDesigner';
-import { SqlNotebookController } from './sqlNotebookController';
+import { SqlNotebookController } from './sqlNotebook/sqlNotebookController';
 
 const localize = nls.loadMessageBundle();
 
