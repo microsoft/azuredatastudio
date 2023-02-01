@@ -11,6 +11,11 @@ interface QueryCompletionHandler {
 	handler: (results: azdata.BatchSummary[]) => void
 }
 
+interface QueryMessageHandler {
+	ownerUri: string;
+	handler: (results: azdata.QueryExecuteMessageParams) => void
+}
+
 export class SqlNotebookController implements vscode.Disposable {
 	private readonly _controllerId = 'sql-controller-id';
 	private readonly _notebookType = 'jupyter-notebook';
@@ -22,6 +27,7 @@ export class SqlNotebookController implements vscode.Disposable {
 	private _executionOrder = 0;
 	private _connectionsMap = new Map<vscode.Uri, azdata.connection.Connection>();
 	private _queryCompleteHandler: QueryCompletionHandler;
+	private _queryMessageHandler: QueryMessageHandler;
 	private _queryProvider: azdata.QueryProvider;
 
 	constructor() {
@@ -39,6 +45,11 @@ export class SqlNotebookController implements vscode.Disposable {
 		this._queryProvider.registerOnQueryComplete(result => {
 			if (this._queryCompleteHandler && this._queryCompleteHandler.ownerUri === result.ownerUri) { // Check if handler is undefined separately in case the result URI is also undefined
 				this._queryCompleteHandler.handler(result.batchSummaries);
+			}
+		});
+		this._queryProvider.registerOnMessage(message => {
+			if (this._queryMessageHandler && this._queryMessageHandler.ownerUri === message.ownerUri) { // Check if handler is undefined separately in case the result URI is also undefined
+				this._queryMessageHandler.handler(message);
 			}
 		});
 	}
@@ -78,57 +89,52 @@ export class SqlNotebookController implements vscode.Disposable {
 							break;
 						}
 
-						if (batchSummary.hasError) {
-							let tableHtml = `<table><tr><td>Batch ${batchSummary.id} reported an error. See messages for details.</td></tr></table>`;
-							tableHtmlEntries.push(tableHtml);
-						} else {
-							for (let resultSummary of batchSummary.resultSetSummaries) {
-								if (execution.token.isCancellationRequested) {
-									break;
-								}
+						for (let resultSummary of batchSummary.resultSetSummaries) {
+							if (execution.token.isCancellationRequested) {
+								break;
+							}
 
-								let tableHtml = '<table>';
-								if (resultSummary.rowCount === 0) {
-									tableHtml += `<tr><td>Info: No rows were returned for query ${resultSummary.id} in batch ${batchSummary.id}.</td></tr>`
-								} else {
-									// Add column headers
+							let tableHtml = '<table>';
+							if (resultSummary.rowCount === 0) {
+								tableHtml += `<tr><td>Info: No rows were returned for query ${resultSummary.id} in batch ${batchSummary.id}.</td></tr>`
+							} else {
+								// Add column headers
+								tableHtml += '<tr>';
+								for (let column of resultSummary.columnInfo) {
+									tableHtml += `<th>${column.columnName}</th>`;
+								}
+								tableHtml += '</tr>';
+
+								// Add rows and cells
+								let subsetResult = await this._queryProvider.getQueryRows({
+									ownerUri: ownerUri,
+									batchIndex: batchSummary.id,
+									resultSetIndex: resultSummary.id,
+									rowsStartIndex: 0,
+									rowsCount: resultSummary.rowCount
+								});
+								for (let row of subsetResult.resultSubset.rows) {
 									tableHtml += '<tr>';
-									for (let column of resultSummary.columnInfo) {
-										tableHtml += `<th>${column.columnName}</th>`;
+									for (let cell of row) {
+										tableHtml += `<td>${cell.displayValue}</td>`;
 									}
 									tableHtml += '</tr>';
-
-									// Add rows and cells
-									let subsetResult = await this._queryProvider.getQueryRows({
-										ownerUri: ownerUri,
-										batchIndex: batchSummary.id,
-										resultSetIndex: resultSummary.id,
-										rowsStartIndex: 0,
-										rowsCount: resultSummary.rowCount
-									});
-									for (let row of subsetResult.resultSubset.rows) {
-										tableHtml += '<tr>';
-										for (let cell of row) {
-											tableHtml += `<td>${cell.displayValue}</td>`;
-										}
-										tableHtml += '</tr>';
-									}
 								}
-								tableHtml += '</table>';
-								tableHtmlEntries.push(tableHtml);
 							}
+							tableHtml += '</table>';
+							tableHtmlEntries.push(tableHtml);
 						}
 					}
 
 					if (execution.token.isCancellationRequested) {
-						await execution.replaceOutput([
+						await execution.appendOutput([
 							new vscode.NotebookCellOutput([
 								vscode.NotebookCellOutputItem.text('Cell execution cancelled.')
 							])
 						]);
 						execution.end(false, Date.now());
 					} else {
-						await execution.replaceOutput([
+						await execution.appendOutput([
 							new vscode.NotebookCellOutput([
 								vscode.NotebookCellOutputItem.text(tableHtmlEntries.join('<br><br>'), 'text/html')
 							])
@@ -139,9 +145,21 @@ export class SqlNotebookController implements vscode.Disposable {
 				};
 				this._queryCompleteHandler = { ownerUri: ownerUri, handler: queryCompleteHandler };
 			});
+
+			this._queryMessageHandler = {
+				ownerUri: ownerUri,
+				handler: async message => {
+					await execution.appendOutput([
+						new vscode.NotebookCellOutput([
+							vscode.NotebookCellOutputItem.text(message.message.message)
+						])
+					]);
+				}
+			};
+
 			await queryComplete;
 		} catch (error) {
-			await execution.replaceOutput([
+			await execution.appendOutput([
 				new vscode.NotebookCellOutput([
 					vscode.NotebookCellOutputItem.error(error)
 				])
@@ -152,7 +170,7 @@ export class SqlNotebookController implements vscode.Disposable {
 				cancelHandler.dispose();
 			}
 			this._queryCompleteHandler = undefined;
-			// TODO: add message handler for errors
+			this._queryMessageHandler = undefined;
 		}
 	}
 
