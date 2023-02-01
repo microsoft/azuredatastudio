@@ -692,7 +692,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 		// Determine if this is a microsoft account
 		let accountIssuer = 'unknown';
 
-		// this.login
 		if (tokenClaims.iss === 'https://sts.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/' ||
 			tokenClaims.iss === `${this.loginEndpointUrl}72f988bf-86f1-41af-91ab-2d7cd011db47/v2.0`) {
 			accountIssuer = Constants.AccountIssuer.Corp;
