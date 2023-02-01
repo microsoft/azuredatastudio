@@ -17,6 +17,7 @@ import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/a
 import { collectTargetDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
 import { TdeMigrationDialog } from '../dialog/tdeConfiguration/tdeMigrationDialog';
+import { ValidationErrorCodes } from '../constants/helper';
 
 const TDE_MIGRATION_BUTTON_INDEX = 1;
 
@@ -1167,6 +1168,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					if (!this._isCollationSame(sourceDatabaseCollation, targetDatabaseCollation)) {
 						collationErrors.push(
 							constants.SQL_TARGET_SOURCE_COLLATION_NOT_SAME(
+								ValidationErrorCodes.SqlInfoValidationFailed,
 								sourceDatabaseName,
 								targetDatabaseName,
 								sourceDatabaseCollation,
