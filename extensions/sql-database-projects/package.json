@@ -96,11 +96,6 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.newExternalStreamingJob",
-        "title": "%sqlDatabaseProjects.newExternalStreamingJob%",
-        "category": "%sqlDatabaseProjects.displayName%"
-      },
-      {
         "command": "sqlDatabaseProjects.newStoredProcedure",
         "title": "%sqlDatabaseProjects.newStoredProcedure%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -243,10 +238,6 @@
           "when": "false"
         },
         {
-          "command": "sqlDatabaseProjects.newExternalStreamingJob",
-          "when": "false"
-        },
-        {
           "command": "sqlDatabaseProjects.newStoredProcedure",
           "when": "false"
         },
@@ -376,11 +367,6 @@
           "command": "sqlDatabaseProjects.newStoredProcedure",
           "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@3"
-        },
-        {
-          "command": "sqlDatabaseProjects.newExternalStreamingJob",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
-          "group": "3_dbProjects_newItem@4"
         },
         {
           "command": "sqlDatabaseProjects.newScript",
