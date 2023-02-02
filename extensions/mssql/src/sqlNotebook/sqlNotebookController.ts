@@ -69,9 +69,9 @@ export class SqlNotebookController implements vscode.Disposable {
 		this._disposables.push(this._connectionLabelItem);
 
 		let editorChangedEvent = vscode.window.onDidChangeActiveTextEditor((editor) => {
-			let connection = this._connectionsMap.get(editor?.document.uri);
+			let connection = this._connectionsMap.get(editor?.document.notebook?.uri);
 			if (connection) {
-				this._connectionLabelItem.text = 'Connected to: ' + (connection.options['serverName'] ?? '(none)');
+				this._connectionLabelItem.text = 'Connected to: ' + connection.options['server'];
 				this._connectionLabelItem.show();
 			} else {
 				this._connectionLabelItem.hide();
@@ -90,7 +90,7 @@ export class SqlNotebookController implements vscode.Disposable {
 			connection = await azdata.connection.openConnectionDialog(['MSSQL']);
 			this._connectionsMap.set(notebook.uri, connection);
 		}
-		this._connectionLabelItem.text = 'Connected to: ' + (connection.options['serverName'] ?? '(none)');
+		this._connectionLabelItem.text = 'Connected to: ' + connection.options['server'];
 		this._connectionLabelItem.show();
 
 		for (let cell of cells) {
