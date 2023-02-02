@@ -333,7 +333,7 @@ export class GetAzureRecommendationDialog {
 					this.skuRecommendationPage);
 				break;
 			case PerformanceDataSourceOptions.OpenExisting: {
-				const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
+				const serverName = (await azdata.connection.getCurrentConnection()).serverName;
 				const errors: string[] = [];
 				try {
 					await this.skuRecommendationPage.startCardLoading();

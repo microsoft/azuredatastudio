@@ -66,8 +66,8 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
-		const hasSysAdminPermissions: boolean = await isSysAdmin(this.migrationStateModel.sourceConnectionId);
-		const connectionProfile: azdata.connection.ConnectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
+		const hasSysAdminPermissions: boolean = await isSysAdmin((await azdata.connection.getCurrentConnection()).connectionId);
+		const connectionProfile: azdata.connection.ConnectionProfile = await azdata.connection.getCurrentConnection();
 		const permissionsInfoBox = this._view.modelBuilder.infoBox()
 			.withProps({
 				style: 'warning',
@@ -333,7 +333,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			// Collect source login info here, as it will speed up loading the next page
 			const sourceLogins: LoginTableInfo[] = [];
 			sourceLogins.push(...await collectSourceLogins(
-				this.migrationStateModel.sourceConnectionId,
+				(await azdata.connection.getCurrentConnection()).connectionId,
 				this.migrationStateModel.isWindowsAuthMigrationSupported));
 			this.migrationStateModel._loginMigrationModel.collectedSourceLogins = true;
 			this.migrationStateModel._loginMigrationModel.loginsOnSource = sourceLogins;

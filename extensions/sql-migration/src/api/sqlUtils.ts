@@ -228,8 +228,8 @@ function extractNameFromServer(
 	return "";
 }
 
-export async function collectSourceDatabaseTableInfo(sourceConnectionId: string, sourceDatabase: string): Promise<TableInfo[]> {
-	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
+export async function collectSourceDatabaseTableInfo(sourceDatabase: string): Promise<TableInfo[]> {
+	const ownerUri = await azdata.connection.getUriForConnection((await azdata.connection.getCurrentConnection()).connectionId);
 	const connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(
 		'MSSQL',
 		azdata.DataProviderType.ConnectionProvider);

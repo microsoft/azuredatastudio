@@ -133,7 +133,6 @@ export interface Blob {
 }
 
 export interface Model {
-	readonly sourceConnectionId: string;
 	readonly currentState: State;
 	gatheringInformationError: string | undefined;
 	_azureAccount: azdata.Account | undefined;
@@ -296,7 +295,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	constructor(
 		public extensionContext: vscode.ExtensionContext,
-		private readonly _sourceConnectionId: string,
+		// private readonly _sourceConnectionId: string,
 		public readonly migrationService: mssql.ISqlMigrationService,
 		public readonly tdeMigrationService: mssql.ITdeMigrationService
 	) {
@@ -372,9 +371,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			|| this.isBackupContainerNetworkShare;
 	}
 
-	public get sourceConnectionId(): string {
-		return this._sourceConnectionId;
-	}
+	// public get sourceConnectionId(): string {
+	// 	return this._sourceConnectionId;
+	// }
 
 	public get currentState(): State {
 		return this._currentState;
@@ -386,7 +385,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._stateChangeEventEmitter.fire({ oldState, newState: this.currentState });
 	}
 	public async getDatabases(): Promise<string[]> {
-		const temp = await azdata.connection.listDatabases(this.sourceConnectionId);
+		const temp = await azdata.connection.listDatabases((await azdata.connection.getCurrentConnection()).connectionId);
 		const finalResult = temp.filter((name) => !excludeDatabases.includes(name));
 		return finalResult;
 	}
@@ -403,7 +402,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 	public async getDatabaseAssessments(targetType: MigrationTargetType[]): Promise<ServerAssessment> {
-		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
+		const ownerUri = await azdata.connection.getUriForConnection((await azdata.connection.getCurrentConnection()).connectionId);
 		try {
 			const xEventsFilesFolderPath = '';		// to-do: collect by prompting the user in the UI - for now, blank = disabled
 			const response = (await this.migrationService.getAssessments(ownerUri, this._databasesForAssessment, xEventsFilesFolderPath))!;
@@ -471,8 +470,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			let fullInstanceName: string;
 
 			// execute a query against the source to get the correct instance name
-			const connectionProfile = await this.getSourceConnectionProfile();
-			const connectionUri = await azdata.connection.getUriForConnection(this._sourceConnectionId);
+			const connectionProfile = await azdata.connection.getCurrentConnection();
+			const connectionUri = await azdata.connection.getUriForConnection((await azdata.connection.getCurrentConnection()).connectionId);
 			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
 			const queryString = 'SELECT SERVERPROPERTY(\'ServerName\');';
 			const queryResult = await queryProvider.runQueryAndReturn(connectionUri, queryString);
@@ -481,9 +480,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				fullInstanceName = queryResult.rows[0][0].displayValue;
 			} else {
 				// get the instance name from connection info in case querying for the instance name doesn't work for whatever reason
-				const serverInfo = await azdata.connection.getServerInfo(this.sourceConnectionId);
+				const serverInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
 				const machineName = (<any>serverInfo)['machineName'];						// contains the correct machine name but not necessarily the correct instance name
-				const instanceName = (await this.getSourceConnectionProfile()).serverName;	// contains the correct instance name but not necessarily the correct machine name
+				const instanceName = (await azdata.connection.getCurrentConnection()).serverName;	// contains the correct instance name but not necessarily the correct machine name
 
 				if (instanceName.includes('\\')) {
 					fullInstanceName = machineName + '\\' + instanceName.substring(instanceName.indexOf('\\') + 1);
@@ -530,7 +529,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 
 	public async getSourceConnectionString(): Promise<string> {
-		return await azdata.connection.getConnectionString(this._sourceConnectionId, true);
+		return await azdata.connection.getConnectionString((await azdata.connection.getCurrentConnection()).connectionId, true);
 	}
 
 	public async getTargetConnectionString(): Promise<string> {
@@ -757,7 +756,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		page: SKURecommendationPage): Promise<boolean> {
 		try {
 			if (!this.performanceCollectionInProgress()) {
-				const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
+				const ownerUri = await azdata.connection.getUriForConnection((await azdata.connection.getCurrentConnection()).connectionId);
 				const response = await this.migrationService.startPerfDataCollection(
 					ownerUri,
 					dataFolder,
@@ -1055,11 +1054,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this.extensionContext.extensionPath;
 	}
 
-	public async getSourceConnectionProfile(): Promise<azdata.connection.ConnectionProfile> {
-		const sqlConnections = await azdata.connection.getConnections();
-		return sqlConnections.find(
-			value => value.connectionId === this.sourceConnectionId)!;
-	}
+	// public async getSourceConnectionProfile(): Promise<azdata.connection.ConnectionProfile> {
+	// 	const sqlConnections = await azdata.connection.getConnections();
+	// 	return sqlConnections.find(
+	// 		value => value.connectionId === this.sourceConnectionId)!;
+	// }
 
 	public getLocationDisplayName(location: string): Promise<string> {
 		return getLocationDisplayName(location);
@@ -1078,7 +1077,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		reportUpdate: (dbName: string, succeeded: boolean, message: string) => Promise<void>): Promise<OperationResult<TdeMigrationDbResult[]>> {
 
 		const tdeEnabledDatabases = this.tdeMigrationConfig.getTdeEnabledDatabases();
-		const connectionString = await azdata.connection.getConnectionString(this.sourceConnectionId, true);
+		const connectionString = await azdata.connection.getConnectionString((await azdata.connection.getCurrentConnection()).connectionId, true);
 
 		const opResult: OperationResult<TdeMigrationDbResult[]> = {
 			success: false,
@@ -1123,10 +1122,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 	public async startMigration() {
-		const sqlConnections = await azdata.connection.getConnections();
-		const currentConnection = sqlConnections.find(
-			value => value.connectionId === this.sourceConnectionId);
-
+		const currentConnection = await azdata.connection.getCurrentConnection();
 		const isOfflineMigration = this._databaseBackup.migrationMode === MigrationMode.OFFLINE;
 		const isSqlDbTarget = this.isSqlDbTarget;
 

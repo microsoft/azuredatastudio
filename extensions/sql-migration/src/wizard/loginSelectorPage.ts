@@ -353,7 +353,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		// execute a query against the source to get the logins
 		try {
 			sourceLogins.push(...await collectSourceLogins(
-				stateMachine.sourceConnectionId,
+				(await azdata.connection.getCurrentConnection()).connectionId,
 				stateMachine.isWindowsAuthMigrationSupported));
 			stateMachine._loginMigrationModel.collectedSourceLogins = true;
 			stateMachine._loginMigrationModel.loginsOnSource = sourceLogins;

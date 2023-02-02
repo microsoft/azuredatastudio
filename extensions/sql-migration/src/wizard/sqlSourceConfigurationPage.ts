@@ -51,10 +51,10 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 
 	private async createSourceCredentialContainer(): Promise<azdata.FormComponent> {
 
-		const connectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
-		const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>((await this.migrationStateModel.getSourceConnectionProfile()).providerId, azdata.DataProviderType.QueryProvider);
+		const connectionProfile = await azdata.connection.getCurrentConnection();
+		const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
 		const query = 'select SUSER_NAME()';
-		const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId)), query);
+		const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection((await azdata.connection.getCurrentConnection()).connectionId)), query);
 		const username = results.rows[0][0].displayValue;
 		this.migrationStateModel._authenticationType = connectionProfile.authenticationType === azdata.connection.AuthenticationType.SqlLogin
 			? MigrationSourceAuthenticationType.Sql
@@ -129,7 +129,7 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 			}
 		}).component();
 		this._password = this._view.modelBuilder.inputBox().withProps({
-			value: (await azdata.connection.getCredentials(this.migrationStateModel.sourceConnectionId)).password,
+			value: (await azdata.connection.getCredentials((await azdata.connection.getCurrentConnection()).connectionId)).password,
 			required: true,
 			inputType: 'password',
 			width: WIZARD_INPUT_COMPONENT_WIDTH

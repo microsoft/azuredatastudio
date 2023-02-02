@@ -33,7 +33,7 @@ export class WizardController {
 		private readonly _serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>) {
 	}
 
-	public async openWizard(connectionId: string): Promise<void> {
+	public async openWizard(): Promise<void> {
 		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 		if (api) {
 			this.extensionContext.subscriptions.push(this._model);
@@ -41,7 +41,7 @@ export class WizardController {
 		}
 	}
 
-	public async openLoginWizard(connectionId: string): Promise<void> {
+	public async openLoginWizard(): Promise<void> {
 		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 		if (api) {
 			this.extensionContext.subscriptions.push(this._model);
@@ -50,7 +50,7 @@ export class WizardController {
 	}
 
 	private async createWizard(stateModel: MigrationStateModel): Promise<void> {
-		const serverName = (await stateModel.getSourceConnectionProfile()).serverName;
+		const serverName = (await azdata.connection.getCurrentConnection()).serverName;
 		this._wizardObject = azdata.window.createWizard(
 			loc.WIZARD_TITLE(serverName),
 			'MigrationWizard',
@@ -198,7 +198,7 @@ export class WizardController {
 	}
 
 	private async createLoginWizard(stateModel: MigrationStateModel): Promise<void> {
-		const serverName = (await stateModel.getSourceConnectionProfile()).serverName;
+		const serverName = (await azdata.connection.getCurrentConnection()).serverName;
 		this._wizardObject = azdata.window.createWizard(
 			loc.LOGIN_WIZARD_TITLE(serverName),
 			'LoginMigrationWizard',

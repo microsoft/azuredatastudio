@@ -404,7 +404,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			CSSStyles: { 'margin': '12px 0' }
 		}).component();
 
-		this._serverName = this.migrationStateModel.serverName || (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
+		this._serverName = this.migrationStateModel.serverName || (await azdata.connection.getCurrentConnection()).serverName;
 
 		const miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(this._serverName), this, MigrationTargetType.SQLMI);
 		const vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(this._serverName), this, MigrationTargetType.SQLVM);

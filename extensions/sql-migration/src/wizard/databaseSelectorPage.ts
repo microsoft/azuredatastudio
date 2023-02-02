@@ -228,7 +228,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	}
 
 	private async _loadDatabaseList(stateMachine: MigrationStateModel, selectedDatabases: string[]): Promise<void> {
-		const allDatabases = (<azdata.DatabaseInfo[]>await getDatabasesList(await stateMachine.getSourceConnectionProfile()));
+		const allDatabases = (<azdata.DatabaseInfo[]>await getDatabasesList(await azdata.connection.getCurrentConnection()));
 
 		const databaseList = allDatabases
 			.filter(database => !excludeDatabases.includes(database.options.name))

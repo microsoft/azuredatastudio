@@ -363,9 +363,7 @@ export class ValidateIrDialog {
 	}
 
 	private async _validateDatabaseMigration(): Promise<void> {
-		const sqlConnections = await azdata.connection.getConnections();
-		const currentConnection = sqlConnections.find(
-			value => value.connectionId === this._model.sourceConnectionId);
+		const currentConnection = await azdata.connection.getCurrentConnection();
 		const sourceServerName = currentConnection?.serverName!;
 		const encryptConnection = currentConnection?.options?.encrypt === true || currentConnection?.options?.encrypt === 'true';
 		const trustServerCertificate = currentConnection?.options?.trustServerCertificate === true || currentConnection?.options?.trustServerCertificate === 'true';
@@ -449,9 +447,7 @@ export class ValidateIrDialog {
 	}
 
 	private async _validateSqlDbMigration(): Promise<void> {
-		const sqlConnections = await azdata.connection.getConnections();
-		const currentConnection = sqlConnections.find(
-			value => value.connectionId === this._model.sourceConnectionId);
+		const currentConnection = await azdata.connection.getCurrentConnection();
 		const sourceServerName = currentConnection?.serverName!;
 		const trustServerCertificate = currentConnection?.options['trustServerCertificate'] === true;
 		const databaseCount = this._model._databasesForMigration.length;
