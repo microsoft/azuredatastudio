@@ -103,14 +103,14 @@ export class SqlNotebookController implements vscode.Disposable {
 		let connection = this._connectionsMap.get(notebook.uri);
 		if (!connection) {
 			connection = await azdata.connection.openConnectionDialog(['MSSQL']);
-			if (!connection) {
-				await vscode.window.showInformationMessage(localize('skipCellExecutionMsg', 'Skipping cell execution since no connection was selected.'));
-				return;
-			}
 			this._connectionsMap.set(notebook.uri, connection);
 		}
-		this._connectionLabelItem.text = 'Connected to: ' + connection.options['server'];
-		this._connectionLabelItem.show();
+		if (connection) {
+			this._connectionLabelItem.text = 'Connected to: ' + connection.options['server'];
+			this._connectionLabelItem.show();
+		} else {
+			this._connectionLabelItem.hide();
+		}
 
 		for (let cell of cells) {
 			await this.doExecution(cell, connection);
@@ -122,6 +122,15 @@ export class SqlNotebookController implements vscode.Disposable {
 		execution.executionOrder = ++this._executionOrder;
 		execution.start(Date.now());
 		await execution.clearOutput();
+		if (!connectionProfile) {
+			await execution.appendOutput([
+				new vscode.NotebookCellOutput([
+					vscode.NotebookCellOutputItem.text('No connection provided.')
+				])
+			]);
+			execution.end(false, Date.now());
+			return;
+		}
 
 		let cancelHandler: vscode.Disposable;
 		try {
