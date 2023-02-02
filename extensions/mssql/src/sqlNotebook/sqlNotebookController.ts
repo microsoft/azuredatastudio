@@ -46,21 +46,11 @@ export class SqlNotebookController implements vscode.Disposable {
 		this._controller.executeHandler = this.execute.bind(this);
 
 		this._queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>('MSSQL', azdata.DataProviderType.QueryProvider);
-		this._queryProvider.registerOnQueryComplete(result => {
-			if (this._queryCompleteHandler && this._queryCompleteHandler.ownerUri === result.ownerUri) { // Check if handler is undefined separately in case the result URI is also undefined
-				this._queryCompleteHandler.handler(result.batchSummaries);
-			}
-		});
-		this._queryProvider.registerOnMessage(message => {
-			if (this._queryMessageHandler && this._queryMessageHandler.ownerUri === message.ownerUri) { // Check if handler is undefined separately in case the result URI is also undefined
-				this._queryMessageHandler.handler(message);
-			}
-		});
+		this._queryProvider.registerOnQueryComplete(result => this.handleQueryComplete(result));
+		this._queryProvider.registerOnMessage(message => this.handleQueryMessage(message));
 
 		const commandName = 'mssql.changeNotebookConnection';
-		let changeConnectionCommand = vscode.commands.registerCommand(commandName, () => {
-			return;
-		});
+		let changeConnectionCommand = vscode.commands.registerCommand(commandName, () => this.handleChangeConnection());
 		this._disposables.push(changeConnectionCommand);
 
 		this._connectionLabelItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right);
@@ -68,16 +58,34 @@ export class SqlNotebookController implements vscode.Disposable {
 		this._connectionLabelItem.command = commandName;
 		this._disposables.push(this._connectionLabelItem);
 
-		let editorChangedEvent = vscode.window.onDidChangeActiveTextEditor((editor) => {
-			let connection = this._connectionsMap.get(editor?.document.notebook?.uri);
-			if (connection) {
-				this._connectionLabelItem.text = 'Connected to: ' + connection.options['server'];
-				this._connectionLabelItem.show();
-			} else {
-				this._connectionLabelItem.hide();
-			}
-		});
+		let editorChangedEvent = vscode.window.onDidChangeActiveTextEditor((editor) => this.handleActiveEditorChanged(editor));
 		this._disposables.push(editorChangedEvent);
+	}
+
+	private handleQueryComplete(result: azdata.QueryExecuteCompleteNotificationResult): void {
+		if (this._queryCompleteHandler && this._queryCompleteHandler.ownerUri === result.ownerUri) { // Check if handler is undefined separately in case the result URI is also undefined
+			this._queryCompleteHandler.handler(result.batchSummaries);
+		}
+	}
+
+	private handleQueryMessage(message: azdata.QueryExecuteMessageParams): void {
+		if (this._queryMessageHandler && this._queryMessageHandler.ownerUri === message.ownerUri) { // Check if handler is undefined separately in case the result URI is also undefined
+			this._queryMessageHandler.handler(message);
+		}
+	}
+
+	private handleActiveEditorChanged(editor: vscode.TextEditor): void {
+		let connection = this._connectionsMap.get(editor?.document.notebook?.uri);
+		if (connection) {
+			this._connectionLabelItem.text = 'Connected to: ' + connection.options['server'];
+			this._connectionLabelItem.show();
+		} else {
+			this._connectionLabelItem.hide();
+		}
+	}
+
+	private handleChangeConnection(): void {
+
 	}
 
 	private async execute(cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController): Promise<void> {
