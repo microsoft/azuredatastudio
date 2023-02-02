@@ -905,11 +905,21 @@ declare module 'mssql' {
 			supportWindowsAuthentication: boolean;
 			supportAADAuthentication: boolean;
 			supportSQLAuthentication: boolean;
-			supportPasswordPolicy: boolean;
 			canEditLockedOutState: boolean;
 			databases: string[];
 			languages: string[];
 			serverRoles: string[];
+			/**
+			 * Whether advanced password options are supported.
+			 * Advanced password options: check policy, check expiration, must change, unlock.
+			 * Notes: 2 options to control the advanced options because Analytics Platform supports advanced options but does not support advanced options.
+			 */
+			supportAdvancedPasswordOptions: boolean;
+			/**
+			 * Whether advanced options are supported.
+			 * Advanced options: default database, default language and connect permission.
+			 */
+			supportAdvancedOptions: boolean;
 		}
 
 		export interface Permission {

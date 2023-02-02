@@ -31,11 +31,11 @@ export function DeleteObjectConfirmationText(objectType: string, objectName: str
 	}, "Are you sure you want to delete the {0}: {1}?", objectType, objectName);
 }
 
-export function CreateObjectOperationDisplayName(objectType: string, objectName: string): string {
+export function CreateObjectOperationDisplayName(objectType: string): string {
 	return localize({
 		key: 'objectManagement.createObjectOperationName',
-		comment: ['{0} object type, {1}: object name.']
-	}, "Create {0} '{1}'", objectType, objectName);
+		comment: ['{0} object type']
+	}, "Create {0}", objectType);
 }
 
 export function UpdateObjectOperationDisplayName(objectType: string, objectName: string): string {

@@ -44,7 +44,6 @@ export abstract class ObjectManagementDialogBase {
 	protected abstract onComplete(): Promise<void>;
 	protected abstract onDispose(): Promise<void>;
 	protected abstract validate(): Promise<string[]>;
-	protected abstract getFinalObjectName(): string;
 
 	protected async onConfirmation(): Promise<boolean> {
 		return true;
@@ -73,7 +72,7 @@ export abstract class ObjectManagementDialogBase {
 		});
 		const typeDisplayName = getNodeTypeDisplayName(this.objectType);
 		this.dialogObject.registerOperation({
-			displayName: this.isNewObject ? CreateObjectOperationDisplayName(typeDisplayName, this.getFinalObjectName())
+			displayName: this.isNewObject ? CreateObjectOperationDisplayName(typeDisplayName)
 				: UpdateObjectOperationDisplayName(typeDisplayName, this.objectName),
 			description: '',
 			isCancelable: false,

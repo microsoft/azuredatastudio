@@ -77,6 +77,7 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 					return;
 				}
 				await refreshParentNode(context.connectionProfile.id, context.nodeInfo.nodePath);
+				operation.updateStatus(azdata.TaskStatus.Succeeded);
 			}
 		});
 	}));

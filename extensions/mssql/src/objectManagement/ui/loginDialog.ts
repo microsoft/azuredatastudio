@@ -9,12 +9,17 @@ import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { NodeType } from '../constants';
 
+// TODO:
+// 1. Password validation: when advanced password options are not supported or when password policy check is on.
+// 2. only allow empty password when advanced password options are supported
+// 3. only submit when there are changes.
+
 export class LoginDialog extends ObjectManagementDialogBase {
 	private dialogInfo: ObjectManagement.LoginViewInfo;
 	private formContainer: azdata.DivContainer;
-	private generalGroup: azdata.GroupContainer;
-	private sqlAuthGroup: azdata.GroupContainer;
-	private advancedGroup: azdata.GroupContainer;
+	private generalSection: azdata.GroupContainer;
+	private sqlAuthSection: azdata.GroupContainer;
+	private advancedSection: azdata.GroupContainer;
 	private nameInput: azdata.InputBoxComponent;
 	private authTypeDropdown: azdata.DropDownComponent;
 	private passwordInput: azdata.InputBoxComponent;
@@ -23,7 +28,7 @@ export class LoginDialog extends ObjectManagementDialogBase {
 	private oldPasswordInput: azdata.InputBoxComponent;
 	private enforcePasswordPolicyCheckbox: azdata.CheckBoxComponent;
 	private enforcePasswordExpirationCheckbox: azdata.CheckBoxComponent;
-	private changePasswordCheckbox: azdata.CheckBoxComponent;
+	private mustChangePasswordCheckbox: azdata.CheckBoxComponent;
 	private defaultDatabaseDropdown: azdata.DropDownComponent;
 	private defaultLanguageDropdown: azdata.DropDownComponent;
 	// private serverRolesList: azdata.ListBoxComponent;
@@ -43,21 +48,17 @@ export class LoginDialog extends ObjectManagementDialogBase {
 		return true;
 	}
 
-	protected getFinalObjectName(): string {
-		return this.nameInput?.value;
-	}
-
 	protected async validate(): Promise<string[]> {
 		const errors: string[] = [];
 		if (!this.nameInput.value) {
 			errors.push(localizedConstants.NameCannotBeEmptyError);
 		}
 
-		if (this.passwordInput.value !== this.confirmPasswordInput.value) {
+		if (this.passwordInput && this.passwordInput.value !== this.confirmPasswordInput.value) {
 			errors.push(localizedConstants.PasswordsNotMatchError);
 		}
 
-		if (this.specifyOldPasswordCheckbox.checked && !this.oldPasswordInput.value) {
+		if (this.specifyOldPasswordCheckbox && this.specifyOldPasswordCheckbox.checked && !this.oldPasswordInput.value) {
 			errors.push(localizedConstants.OldPasswordCannotBeEmptyError);
 		}
 		return errors;
@@ -66,15 +67,27 @@ export class LoginDialog extends ObjectManagementDialogBase {
 	protected async onComplete(): Promise<void> {
 		this.dialogInfo.login.name = this.nameInput.value;
 		this.dialogInfo.login.authenticationType = this.getAuthenticationType(<string>this.authTypeDropdown.value);
-		this.dialogInfo.login.password = this.passwordInput.value;
-		this.dialogInfo.login.oldPassword = this.oldPasswordInput.value;
-		this.dialogInfo.login.enforcePasswordExpiration = this.enforcePasswordExpirationCheckbox.checked;
-		this.dialogInfo.login.enforcePasswordPolicy = this.enforcePasswordPolicyCheckbox.checked;
-		this.dialogInfo.login.mustChangePassword = this.changePasswordCheckbox.checked;
-		this.dialogInfo.login.defaultDatabase = <string>this.defaultDatabaseDropdown.value;
-		this.dialogInfo.login.defaultLanguage = <string>this.defaultLanguageDropdown.value;
-		this.dialogInfo.login.isLockedOut = this.lockedOutCheckbox.checked;
-		this.dialogInfo.login.connectPermission = this.connectPermissionCheckbox.checked;
+		if (this.passwordInput) {
+			this.dialogInfo.login.password = this.passwordInput.value;
+		}
+		if (this.oldPasswordInput) {
+			this.dialogInfo.login.oldPassword = this.oldPasswordInput.value;
+		}
+		if (this.enforcePasswordPolicyCheckbox) {
+			this.dialogInfo.login.enforcePasswordExpiration = this.enforcePasswordExpirationCheckbox.checked;
+			this.dialogInfo.login.enforcePasswordPolicy = this.enforcePasswordPolicyCheckbox.checked;
+			this.dialogInfo.login.mustChangePassword = this.mustChangePasswordCheckbox.checked;
+		}
+		if (this.defaultDatabaseDropdown) {
+			this.dialogInfo.login.defaultDatabase = <string>this.defaultDatabaseDropdown.value;
+			this.dialogInfo.login.defaultLanguage = <string>this.defaultLanguageDropdown.value;
+		}
+		if (this.lockedOutCheckbox) {
+			this.dialogInfo.login.isLockedOut = this.lockedOutCheckbox.checked;
+		}
+		if (this.connectPermissionCheckbox) {
+			this.dialogInfo.login.connectPermission = this.connectPermissionCheckbox.checked;
+		}
 		this.dialogInfo.login.isEnabled = this.enabledCheckbox.checked;
 		if (this.isNewObject) {
 			await this.objectManagementService.createLogin(this.contextId, this.dialogInfo.login);
@@ -91,66 +104,127 @@ export class LoginDialog extends ObjectManagementDialogBase {
 		this.dialogInfo = await this.objectManagementService.initializeLoginView(this.connectionUri, this.contextId, this.isNewObject, this.objectName);
 		const tab = azdata.window.createTab('');
 		tab.registerContent(async view => {
-			// General Group
-			this.nameInput = view.modelBuilder.inputBox().withProps({
-				ariaLabel: localizedConstants.ObjectNameLabel,
-				enabled: this.isNewObject,
-				value: this.dialogInfo.login.name,
-				required: this.dialogInfo.canEditName,
-				width: DefaultInputWidth
-			}).component();
+			const sections: azdata.Component[] = [];
+			this.initializeGeneralSection(view);
+			sections.push(this.generalSection);
 
-			const nameContainer = this.createLabelInputContainer(view, localizedConstants.ObjectNameLabel, this.nameInput);
-			const authTypes = [];
-			if (this.dialogInfo.supportWindowsAuthentication) {
-				authTypes.push(localizedConstants.WindowsAuthenticationTypeDisplayText);
+			if (this.isNewObject || this.dialogInfo.login.authenticationType === 'Sql') {
+				this.initializeSqlAuthSection(view);
+				sections.push(this.sqlAuthSection);
 			}
-			if (this.dialogInfo.supportSQLAuthentication) {
-				authTypes.push(localizedConstants.SQLAuthenticationTypeDisplayText);
-			}
-			if (this.dialogInfo.supportAADAuthentication) {
-				authTypes.push(localizedConstants.AADAuthenticationTypeDisplayText);
-			}
-			this.authTypeDropdown = view.modelBuilder.dropDown().withProps({
-				ariaLabel: localizedConstants.AuthTypeText,
-				values: authTypes,
-				value: this.getAuthenticationTypeDisplayValue(this.dialogInfo.login.authenticationType),
-				width: DefaultInputWidth,
-				enabled: this.isNewObject
-			}).component();
 
-			const typeContainer = this.createLabelInputContainer(view, localizedConstants.AuthTypeText, this.authTypeDropdown);
-			this.generalGroup = this.createGroup(view, localizedConstants.GeneralSectionHeader, [nameContainer, typeContainer], false);
+			if (this.dialogInfo.supportAdvancedOptions) {
+				this.initializeAdvancedSection(view);
+				sections.push(this.advancedSection);
+			}
 
-			// SQL Authentication Group
-			this.passwordInput = this.createPasswordInputBox(view, localizedConstants.PasswordText, this.dialogInfo.login.password ?? '');
-			const passwordRow = this.createLabelInputContainer(view, localizedConstants.PasswordText, this.passwordInput);
-			this.confirmPasswordInput = this.createPasswordInputBox(view, localizedConstants.ConfirmPasswordText, this.dialogInfo.login.password ?? '');
-			const confirmPasswordRow = this.createLabelInputContainer(view, localizedConstants.ConfirmPasswordText, this.confirmPasswordInput);
+			this.formContainer = this.createFormContainer(view, sections);
+			return view.initializeModel(this.formContainer)
+		});
+		this.dialogObject.content = [tab];
+	}
+
+	private initializeGeneralSection(view: azdata.ModelView): void {
+		this.nameInput = view.modelBuilder.inputBox().withProps({
+			ariaLabel: localizedConstants.ObjectNameLabel,
+			enabled: this.dialogInfo.canEditName,
+			value: this.dialogInfo.login.name,
+			required: this.dialogInfo.canEditName,
+			width: DefaultInputWidth
+		}).component();
+
+		const nameContainer = this.createLabelInputContainer(view, localizedConstants.ObjectNameLabel, this.nameInput);
+		const authTypes = [];
+		if (this.dialogInfo.supportWindowsAuthentication) {
+			authTypes.push(localizedConstants.WindowsAuthenticationTypeDisplayText);
+		}
+		if (this.dialogInfo.supportSQLAuthentication) {
+			authTypes.push(localizedConstants.SQLAuthenticationTypeDisplayText);
+		}
+		if (this.dialogInfo.supportAADAuthentication) {
+			authTypes.push(localizedConstants.AADAuthenticationTypeDisplayText);
+		}
+		this.authTypeDropdown = view.modelBuilder.dropDown().withProps({
+			ariaLabel: localizedConstants.AuthTypeText,
+			values: authTypes,
+			value: this.getAuthenticationTypeDisplayValue(this.dialogInfo.login.authenticationType),
+			width: DefaultInputWidth,
+			enabled: this.isNewObject
+		}).component();
+
+		this.authTypeDropdown.onValueChanged(() => {
+			this.setViewByAuthenticationType();
+		});
+
+		this.nameInput.onTextChanged(async () => {
+			await this.runValidation(false);
+		});
+
+		const typeContainer = this.createLabelInputContainer(view, localizedConstants.AuthTypeText, this.authTypeDropdown);
+		this.enabledCheckbox = this.createCheckbox(view, localizedConstants.EnabledText, this.dialogInfo.login.isEnabled);
+		this.generalSection = this.createGroup(view, localizedConstants.GeneralSectionHeader, [nameContainer, typeContainer, this.enabledCheckbox], false);
+	}
+
+	private initializeSqlAuthSection(view: azdata.ModelView): void {
+		const sqlAuthGroupItems: azdata.Component[] = [];
+		this.passwordInput = this.createPasswordInputBox(view, localizedConstants.PasswordText, this.dialogInfo.login.password ?? '');
+		const passwordRow = this.createLabelInputContainer(view, localizedConstants.PasswordText, this.passwordInput);
+		this.confirmPasswordInput = this.createPasswordInputBox(view, localizedConstants.ConfirmPasswordText, this.dialogInfo.login.password ?? '');
+		this.passwordInput.onTextChanged(async () => {
+			await this.runValidation(false);
+		});
+		this.confirmPasswordInput.onTextChanged(async () => {
+			await this.runValidation(false);
+		});
+		const confirmPasswordRow = this.createLabelInputContainer(view, localizedConstants.ConfirmPasswordText, this.confirmPasswordInput);
+		sqlAuthGroupItems.push(passwordRow, confirmPasswordRow);
+		if (!this.isNewObject) {
 			this.specifyOldPasswordCheckbox = this.createCheckbox(view, localizedConstants.SpecifyOldPasswordText);
 			this.oldPasswordInput = this.createPasswordInputBox(view, localizedConstants.OldPasswordText, '', false);
 			const oldPasswordRow = this.createLabelInputContainer(view, localizedConstants.OldPasswordText, this.oldPasswordInput);
+			this.specifyOldPasswordCheckbox.onChanged(async () => {
+				this.oldPasswordInput.enabled = this.specifyOldPasswordCheckbox.checked;
+				await this.runValidation(false);
+			});
+			this.oldPasswordInput.onTextChanged(async () => {
+				await this.runValidation(false);
+			});
+			sqlAuthGroupItems.push(this.specifyOldPasswordCheckbox, oldPasswordRow);
+		}
+
+		if (this.dialogInfo.supportAdvancedPasswordOptions) {
 			this.enforcePasswordPolicyCheckbox = this.createCheckbox(view, localizedConstants.EnforcePasswordPolicyText, this.dialogInfo.login.enforcePasswordPolicy);
 			this.enforcePasswordExpirationCheckbox = this.createCheckbox(view, localizedConstants.EnforcePasswordExpirationText, this.dialogInfo.login.enforcePasswordPolicy);
-			this.changePasswordCheckbox = this.createCheckbox(view, localizedConstants.MustChangePasswordText, this.dialogInfo.login.mustChangePassword);
-
-			const sqlAuthGroupItems: azdata.Component[] = [passwordRow, confirmPasswordRow];
+			this.mustChangePasswordCheckbox = this.createCheckbox(view, localizedConstants.MustChangePasswordText, this.dialogInfo.login.mustChangePassword);
+			this.enforcePasswordPolicyCheckbox.onChanged(() => {
+				const enforcePolicy = this.enforcePasswordPolicyCheckbox.checked;
+				this.enforcePasswordExpirationCheckbox.enabled = enforcePolicy;
+				this.mustChangePasswordCheckbox.enabled = enforcePolicy;
+				this.enforcePasswordExpirationCheckbox.checked = enforcePolicy;
+				this.mustChangePasswordCheckbox.checked = enforcePolicy;
+			});
+			this.enforcePasswordExpirationCheckbox.onChanged(() => {
+				const enforceExpiration = this.enforcePasswordExpirationCheckbox.checked;
+				this.mustChangePasswordCheckbox.enabled = enforceExpiration;
+				this.mustChangePasswordCheckbox.checked = enforceExpiration;
+			});
+			sqlAuthGroupItems.push(this.enforcePasswordPolicyCheckbox, this.enforcePasswordExpirationCheckbox, this.mustChangePasswordCheckbox);
 			if (!this.isNewObject) {
-				sqlAuthGroupItems.push(this.specifyOldPasswordCheckbox, oldPasswordRow);
+				this.lockedOutCheckbox = this.createCheckbox(view, localizedConstants.LoginLockedOutText, this.dialogInfo.login.isLockedOut, this.dialogInfo.canEditLockedOutState);
+				sqlAuthGroupItems.push(this.lockedOutCheckbox);
 			}
+		}
 
-			if (this.dialogInfo.supportPasswordPolicy) {
-				sqlAuthGroupItems.push(this.enforcePasswordPolicyCheckbox,
-					this.enforcePasswordExpirationCheckbox,
-					this.changePasswordCheckbox);
-			}
-			this.sqlAuthGroup = view.modelBuilder.groupContainer().withLayout({
-				header: localizedConstants.SQLAuthenticationSectionHeader,
-				collapsible: true,
-				collapsed: false
-			}).withItems(sqlAuthGroupItems).component();
+		this.sqlAuthSection = view.modelBuilder.groupContainer().withLayout({
+			header: localizedConstants.SQLAuthenticationSectionHeader,
+			collapsible: true,
+			collapsed: false
+		}).withItems(sqlAuthGroupItems).component();
+	}
 
-			// Advanced Group
+	private initializeAdvancedSection(view: azdata.ModelView): void {
+		const items: azdata.Component[] = [];
+		if (this.dialogInfo.supportAdvancedOptions) {
 			this.defaultDatabaseDropdown = view.modelBuilder.dropDown().withProps({
 				ariaLabel: localizedConstants.DefaultDatabaseText,
 				values: this.dialogInfo.databases,
@@ -165,75 +239,22 @@ export class LoginDialog extends ObjectManagementDialogBase {
 				width: DefaultInputWidth
 			}).component();
 			const defaultLanguageContainer = this.createLabelInputContainer(view, localizedConstants.DefaultLanguageText, this.defaultLanguageDropdown);
-
 			this.connectPermissionCheckbox = this.createCheckbox(view, localizedConstants.PermissionToConnectText, this.dialogInfo.login.connectPermission);
-			this.enabledCheckbox = this.createCheckbox(view, localizedConstants.EnabledText, this.dialogInfo.login.isEnabled);
-			this.lockedOutCheckbox = this.createCheckbox(view, localizedConstants.LoginLockedOutText, this.dialogInfo.login.isLockedOut, this.dialogInfo.canEditLockedOutState);
-			this.advancedGroup = view.modelBuilder.groupContainer().withLayout({
-				header: localizedConstants.AdvancedSectionHeader,
-				collapsed: false,
-				collapsible: true
-			}).withItems([
-				defaultDatabaseContainer,
-				defaultLanguageContainer,
-				this.connectPermissionCheckbox,
-				this.enabledCheckbox,
-				this.lockedOutCheckbox
-			]).component();
-			this.setupEventHandlers();
-			const groups = this.dialogInfo.login.authenticationType === 'Sql' ? [this.generalGroup, this.sqlAuthGroup, this.advancedGroup] : [this.generalGroup, this.advancedGroup];
-			this.formContainer = this.createFormContainer(view, groups);
-			return view.initializeModel(this.formContainer)
-		});
-		this.dialogObject.content = [tab];
-	}
+			items.push(defaultDatabaseContainer, defaultLanguageContainer, this.connectPermissionCheckbox);
+		}
 
-	private setupEventHandlers(): void {
-		this.authTypeDropdown.onValueChanged(() => {
-			this.setViewByAuthenticationType();
-		});
-
-		this.nameInput.onTextChanged(async () => {
-			await this.runValidation(false);
-		});
-
-		this.passwordInput.onTextChanged(async () => {
-			await this.runValidation(false);
-		});
-
-		this.confirmPasswordInput.onTextChanged(async () => {
-			await this.runValidation(false);
-		});
-
-		this.specifyOldPasswordCheckbox.onChanged(async () => {
-			this.oldPasswordInput.enabled = this.specifyOldPasswordCheckbox.checked;
-			await this.runValidation(false);
-		});
-
-		this.oldPasswordInput.onTextChanged(async () => {
-			await this.runValidation(false);
-		});
-
-		this.enforcePasswordPolicyCheckbox.onChanged(() => {
-			const enforcePolicy = this.enforcePasswordPolicyCheckbox.checked;
-			this.enforcePasswordExpirationCheckbox.enabled = enforcePolicy;
-			this.changePasswordCheckbox.enabled = enforcePolicy;
-			this.enforcePasswordExpirationCheckbox.checked = enforcePolicy;
-			this.changePasswordCheckbox.checked = enforcePolicy;
-		});
-
-		this.enforcePasswordExpirationCheckbox.onChanged(() => {
-			const enforceExpiration = this.enforcePasswordExpirationCheckbox.checked;
-			this.changePasswordCheckbox.enabled = enforceExpiration;
-			this.changePasswordCheckbox.checked = enforceExpiration;
-		});
+		this.advancedSection = view.modelBuilder.groupContainer().withLayout({
+			header: localizedConstants.AdvancedSectionHeader,
+			collapsed: false,
+			collapsible: true
+		}).withItems(items).component();
 	}
 
 	private setViewByAuthenticationType(): void {
-		if (this.authTypeDropdown.value === localizedConstants.SQLAuthenticationTypeDisplayText && this.formContainer.items.indexOf(this.sqlAuthGroup) === -1) {
-			this.formContainer.insertItem(this.sqlAuthGroup, 1);
-		} else if (this.authTypeDropdown.value !== localizedConstants.SQLAuthenticationTypeDisplayText && this.formContainer.items.indexOf(this.sqlAuthGroup) !== -1) {
-			this.formContainer.removeItem(this.sqlAuthGroup);
+		if (this.authTypeDropdown.value === localizedConstants.SQLAuthenticationTypeDisplayText && this.formContainer.items.indexOf(this.sqlAuthSection) === -1) {
+			this.formContainer.insertItem(this.sqlAuthSection, 1);
+		} else if (this.authTypeDropdown.value !== localizedConstants.SQLAuthenticationTypeDisplayText && this.formContainer.items.indexOf(this.sqlAuthSection) !== -1) {
+			this.formContainer.removeItem(this.sqlAuthSection);
 		}
 	}
 
