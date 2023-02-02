@@ -152,8 +152,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				break;
 		}
 
-		const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
-
 		if (this._targetUserNameInputBox) {
 			await this._targetUserNameInputBox.updateProperty('required', true);
 		}
