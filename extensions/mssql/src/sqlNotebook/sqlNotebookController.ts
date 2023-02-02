@@ -5,6 +5,9 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import * as nls from 'vscode-nls';
+
+const localize = nls.loadMessageBundle();
 
 interface QueryCompletionHandler {
 	ownerUri: string;
@@ -29,6 +32,7 @@ export class SqlNotebookController implements vscode.Disposable {
 	private _queryCompleteHandler: QueryCompletionHandler;
 	private _queryMessageHandler: QueryMessageHandler;
 	private _queryProvider: azdata.QueryProvider;
+	private _connectionLabelItem: vscode.StatusBarItem;
 
 	constructor() {
 		this._controller = vscode.notebooks.createNotebookController(
@@ -52,11 +56,33 @@ export class SqlNotebookController implements vscode.Disposable {
 				this._queryMessageHandler.handler(message);
 			}
 		});
+
+		const commandName = 'mssql.changeNotebookConnection';
+		let changeConnectionCommand = vscode.commands.registerCommand(commandName, () => {
+			return;
+		});
+		this._disposables.push(changeConnectionCommand);
+
+		this._connectionLabelItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right);
+		this._connectionLabelItem.tooltip = localize('changeNotebookConnection', 'Change SQL Notebook Connection');
+		this._connectionLabelItem.command = commandName;
+		this._disposables.push(this._connectionLabelItem);
+
+		let editorChangedEvent = vscode.window.onDidChangeActiveTextEditor((editor) => {
+			let connection = this._connectionsMap.get(editor?.document.uri);
+			if (connection) {
+				this._connectionLabelItem.text = 'Connected to: ' + (connection.options['serverName'] ?? '(none)');
+				this._connectionLabelItem.show();
+			} else {
+				this._connectionLabelItem.hide();
+			}
+		});
+		this._disposables.push(editorChangedEvent);
 	}
 
 	private async execute(cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController): Promise<void> {
 		if (this._queryCompleteHandler) {
-			throw new Error('Another query is currently in progress. Please wait for that query to complete before running these cells.');
+			throw new Error(localize('queryInProgressError', 'Another query is currently in progress. Please wait for that query to complete before running these cells.'));
 		}
 
 		let connection = this._connectionsMap.get(notebook.uri);
@@ -64,6 +90,9 @@ export class SqlNotebookController implements vscode.Disposable {
 			connection = await azdata.connection.openConnectionDialog(['MSSQL']);
 			this._connectionsMap.set(notebook.uri, connection);
 		}
+		this._connectionLabelItem.text = 'Connected to: ' + (connection.options['serverName'] ?? '(none)');
+		this._connectionLabelItem.show();
+
 		for (let cell of cells) {
 			await this.doExecution(cell, connection);
 		}

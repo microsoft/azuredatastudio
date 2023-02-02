@@ -66,6 +66,11 @@
         "command": "mssql.designTable",
         "category": "MSSQL",
         "title": "%title.designTable%"
+      },
+      {
+        "command": "mssql.changeNotebookConnection",
+        "category": "MSSQL",
+        "title": "%title.changeNotebookConnection%"
       }
     ],
     "outputChannels": [
@@ -375,6 +380,10 @@
         },
         {
           "command": "mssql.designTable",
+          "when": "false"
+        },
+        {
+          "command": "mssql.changeNotebookConnection",
           "when": "false"
         }
       ],
