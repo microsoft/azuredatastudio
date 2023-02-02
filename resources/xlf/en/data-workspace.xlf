@@ -154,11 +154,17 @@
     <trans-unit id="fileDoesNotExist">
       <source xml:lang="en">File '{0}' doesn't exist</source>
     </trans-unit>
+    <trans-unit id="filenameEndingInPeriodErrorMessage">
+      <source xml:lang="en">File name cannot end with a period</source>
+    </trans-unit>
     <trans-unit id="gitCloneError">
       <source xml:lang="en">Error during git clone. View git output for more details</source>
     </trans-unit>
     <trans-unit id="gitCloneMessage">
       <source xml:lang="en">Cloning git repository '{0}'...</source>
+    </trans-unit>
+    <trans-unit id="invalidFileCharsErrorMessage">
+      <source xml:lang="en">Invalid file characters</source>
     </trans-unit>
     <trans-unit id="noPreviousData">
       <source xml:lang="en">Prior {0} for the current project will appear here, please run to see the results.</source>
@@ -168,6 +174,24 @@
     </trans-unit>
     <trans-unit id="projectNameNull">
       <source xml:lang="en">Project name is null</source>
+    </trans-unit>
+    <trans-unit id="reservedValueErrorMessage">
+      <source xml:lang="en">Reserved file name. Choose another name and try again</source>
+    </trans-unit>
+    <trans-unit id="reservedWindowsFilenameErrorMessage">
+      <source xml:lang="en">This file name is reserved for use by Windows. Choose another name and try again</source>
+    </trans-unit>
+    <trans-unit id="tooLongFilenameErrorMessage">
+      <source xml:lang="en">File name cannot be over 255 characters</source>
+    </trans-unit>
+    <trans-unit id="trailingWhitespaceErrorMessage">
+      <source xml:lang="en">File name cannot end with a whitespace</source>
+    </trans-unit>
+    <trans-unit id="undefinedFilenameErrorMessage">
+      <source xml:lang="en">Undefined name</source>
+    </trans-unit>
+    <trans-unit id="whitespaceFilenameErrorMessage">
+      <source xml:lang="en">File name cannot be whitespace</source>
     </trans-unit>
 </body></file>
   <file original="extensions/data-workspace/package" source-language="en" datatype="plaintext"><body>
