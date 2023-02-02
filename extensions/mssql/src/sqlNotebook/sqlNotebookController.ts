@@ -125,7 +125,7 @@ export class SqlNotebookController implements vscode.Disposable {
 		if (!connectionProfile) {
 			await execution.appendOutput([
 				new vscode.NotebookCellOutput([
-					vscode.NotebookCellOutputItem.text('No connection provided.')
+					vscode.NotebookCellOutputItem.text(localize('noConnectionError', 'No connection provided.'))
 				])
 			]);
 			execution.end(false, Date.now());
