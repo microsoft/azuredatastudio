@@ -66,8 +66,11 @@ export class SqlNotebookController implements vscode.Disposable {
 			this._connectionLabelItem.show();
 		}
 
-		let editorChangedEvent = vscode.window.onDidChangeActiveTextEditor((editor) => this.handleActiveEditorChanged(editor));
+		let editorChangedEvent = vscode.window.onDidChangeActiveTextEditor(editor => this.handleActiveEditorChanged(editor));
 		this._disposables.push(editorChangedEvent);
+
+		let docClosedEvent = vscode.workspace.onDidCloseTextDocument(document => this.handleDocumentClosed(document));
+		this._disposables.push(docClosedEvent);
 	}
 
 	private handleQueryComplete(result: azdata.QueryExecuteCompleteNotificationResult): void {
@@ -95,6 +98,14 @@ export class SqlNotebookController implements vscode.Disposable {
 				this._connectionLabelItem.text = this._disconnectedLabel;
 			}
 			this._connectionLabelItem.show();
+		}
+	}
+
+	private handleDocumentClosed(editor: vscode.TextDocument): void {
+		// Have to check isClosed here since this event is also emitted on doc language changes
+		if (editor.notebook && editor.isClosed) {
+			// Remove the connection association if the doc is closed, but don't close the connection since it might be re-used elsewhere
+			this._connectionsMap.delete(editor.notebook.uri);
 		}
 	}
 
