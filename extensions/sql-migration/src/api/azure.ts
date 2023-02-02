@@ -636,7 +636,7 @@ export async function getLocationDisplayName(location: string): Promise<string> 
 export async function validateIrSqlDatabaseMigrationSettings(
 	migration: MigrationStateModel,
 	sourceServerName: string,
-	trustServerCertificate: boolean,
+	trustServerCertificate: boolean,				// todo
 	sourceDatabaseName: string,
 	targetDatabaseName: string,
 	testIrOnline: boolean = true,
@@ -694,6 +694,7 @@ export async function validateIrSqlDatabaseMigrationSettings(
 export async function validateIrDatabaseMigrationSettings(
 	migration: MigrationStateModel,
 	sourceServerName: string,
+	encryptConnection: boolean,
 	trustServerCertificate: boolean,
 	sourceDatabaseName: string,
 	networkShare: NetworkShare,
@@ -736,7 +737,7 @@ export async function validateIrDatabaseMigrationSettings(
 			dataSource: sourceServerName,
 			userName: migration._sqlServerUsername,
 			password: migration._sqlServerPassword,
-			// to-do: use correct value of encryptConnection and trustServerCertificate
+			encryptConnection: encryptConnection,
 			trustServerCertificate: trustServerCertificate,
 			authentication: migration._authenticationType,
 		}
@@ -962,8 +963,8 @@ export interface ValdiateIrDatabaseMigrationResponse {
 	sourceDatabaseName: string,
 	sourceSqlConnection: {
 		testConnectivity: boolean,
-		encryptConnection: true,
-		trustServerCertificate: false,
+		encryptConnection: boolean,
+		trustServerCertificate: boolean,
 		dataSource: string,
 	},
 	backupConfiguration: {
@@ -1048,15 +1049,6 @@ export interface CopyProgressDetail {
 	copyThroughput: number,
 	copyDuration: number;
 	errors: string[];
-}
-
-export interface SqlConnectionInfo {
-	dataSource: string;
-	authentication: string;
-	username: string;
-	password: string;
-	encryptConnection: string;
-	trustServerCertificate: string;
 }
 
 export interface BackupConfiguration {

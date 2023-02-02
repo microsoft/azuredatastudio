@@ -367,7 +367,8 @@ export class ValidateIrDialog {
 		const currentConnection = sqlConnections.find(
 			value => value.connectionId === this._model.sourceConnectionId);
 		const sourceServerName = currentConnection?.serverName!;
-		const trustServerCertificate = currentConnection?.options?.trustServerCertificate === true;
+		const encryptConnection = currentConnection?.options?.encrypt === true || currentConnection?.options?.encrypt === 'true';
+		const trustServerCertificate = currentConnection?.options?.trustServerCertificate === true || currentConnection?.options?.trustServerCertificate === 'true';
 		const databaseCount = this._model._databasesForMigration.length;
 		const sourceDatabaseName = this._model._databasesForMigration[0];
 		const networkShare = this._model._databaseBackup.networkShares[0];
@@ -385,6 +386,7 @@ export class ValidateIrDialog {
 				const response = await validateIrDatabaseMigrationSettings(
 					this._model,
 					sourceServerName,
+					encryptConnection,
 					trustServerCertificate,
 					sourceDatabase,
 					network,

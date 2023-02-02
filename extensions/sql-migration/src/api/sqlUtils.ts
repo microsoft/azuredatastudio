@@ -423,7 +423,7 @@ export async function collectTargetLogins(
 		targetServer.id,
 		userName,
 		password,
-		true /* trustServerCertificate */);
+		true /* trustServerCertificate */);			// todo
 
 	const result = await azdata.connection.connect(connectionProfile, false, false);
 	if (result.connected && result.connectionId) {
