@@ -29,4 +29,3 @@ describe('Tests to verify dialog utils functions', function (): void {
 		should(getDefaultDockerImageWithTag('AzureV12', 'mcr.microsoft.com/azure-sql-edge', azureLiteImageInfo)).equals(`${azureLiteImageInfo?.name}`, 'Unexpected docker image returned for target platform Azure Azure lite base image');
 	});
 });
-
