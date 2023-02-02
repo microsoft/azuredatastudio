@@ -598,6 +598,16 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._userNameInputBox.enable();
 			this._passwordInputBox.enable();
 			this._rememberPasswordCheckBox.enabled = true;
+
+			const recentConnections = this._connectionManagementService.getRecentConnections();
+			if (recentConnections && recentConnections.length > 0) {
+				const self = this;
+				const connectionProfile = recentConnections.find(c => c.serverName === self._serverNameInputBox.value && c.userName === self._userNameInputBox.value);
+				if (connectionProfile) {
+					this._rememberPasswordCheckBox.checked = connectionProfile.savePassword;
+					this._connectionManagementService.addSavedPassword(connectionProfile, true).then(profile => self._passwordInputBox.value = profile.password);
+				}
+			}
 		}
 	}
 
