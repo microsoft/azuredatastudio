@@ -87,7 +87,8 @@ export function ObjectPropertiesDialogTitle(objectType: string, objectName: stri
 	}, '{0} - {1}', objectType, objectName);
 }
 
-export const ObjectNameLabel = localize('objectManagement.objectNameLabel', "Name");
+export const NameText = localize('objectManagement.nameLabel', "Name");
+export const SelectedText = localize('objectManagement.selectedLabel', "Selected");
 export const GeneralSectionHeader = localize('objectManagement.generalSectionHeader', "General");
 export const AdvancedSectionHeader = localize('objectManagement.advancedSectionHeader', "Advanced");
 export const PasswordText = localize('objectManagement.passwordLabel', "Password");

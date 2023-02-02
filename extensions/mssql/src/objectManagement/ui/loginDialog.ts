@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { DefaultInputWidth, ObjectManagementDialogBase } from './objectManagementDialogBase';
+import { DefaultInputWidth, DefaultTableWidth, GetTableHeight, ObjectManagementDialogBase } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { NodeType } from '../constants';
+import { NodeType, PublicServerRoleName } from '../constants';
 
 // TODO:
 // 1. Password validation: when advanced password options are not supported or when password policy check is on.
@@ -19,6 +19,7 @@ export class LoginDialog extends ObjectManagementDialogBase {
 	private formContainer: azdata.DivContainer;
 	private generalSection: azdata.GroupContainer;
 	private sqlAuthSection: azdata.GroupContainer;
+	private serverRoleSection: azdata.GroupContainer;
 	private advancedSection: azdata.GroupContainer;
 	private nameInput: azdata.InputBoxComponent;
 	private authTypeDropdown: azdata.DropDownComponent;
@@ -31,7 +32,7 @@ export class LoginDialog extends ObjectManagementDialogBase {
 	private mustChangePasswordCheckbox: azdata.CheckBoxComponent;
 	private defaultDatabaseDropdown: azdata.DropDownComponent;
 	private defaultLanguageDropdown: azdata.DropDownComponent;
-	// private serverRolesList: azdata.ListBoxComponent;
+	private serverRoleTable: azdata.TableComponent;
 	private connectPermissionCheckbox: azdata.CheckBoxComponent;
 	private enabledCheckbox: azdata.CheckBoxComponent;
 	private lockedOutCheckbox: azdata.CheckBoxComponent;
@@ -112,6 +113,9 @@ export class LoginDialog extends ObjectManagementDialogBase {
 				sections.push(this.sqlAuthSection);
 			}
 
+			this.initializeServerRolesSection(view);
+			sections.push(this.serverRoleSection);
+
 			if (this.dialogInfo.supportAdvancedOptions) {
 				this.initializeAdvancedSection(view);
 				sections.push(this.advancedSection);
@@ -124,14 +128,14 @@ export class LoginDialog extends ObjectManagementDialogBase {
 
 	private initializeGeneralSection(view: azdata.ModelView): void {
 		this.nameInput = view.modelBuilder.inputBox().withProps({
-			ariaLabel: localizedConstants.ObjectNameLabel,
+			ariaLabel: localizedConstants.NameText,
 			enabled: this.dialogInfo.canEditName,
 			value: this.dialogInfo.login.name,
 			required: this.dialogInfo.canEditName,
 			width: DefaultInputWidth
 		}).component();
 
-		const nameContainer = this.createLabelInputContainer(view, localizedConstants.ObjectNameLabel, this.nameInput);
+		const nameContainer = this.createLabelInputContainer(view, localizedConstants.NameText, this.nameInput);
 		const authTypes = [];
 		if (this.dialogInfo.supportWindowsAuthentication) {
 			authTypes.push(localizedConstants.WindowsAuthenticationTypeDisplayText);
@@ -164,7 +168,7 @@ export class LoginDialog extends ObjectManagementDialogBase {
 	}
 
 	private initializeSqlAuthSection(view: azdata.ModelView): void {
-		const sqlAuthGroupItems: azdata.Component[] = [];
+		const items: azdata.Component[] = [];
 		this.passwordInput = this.createPasswordInputBox(view, localizedConstants.PasswordText, this.dialogInfo.login.password ?? '');
 		const passwordRow = this.createLabelInputContainer(view, localizedConstants.PasswordText, this.passwordInput);
 		this.confirmPasswordInput = this.createPasswordInputBox(view, localizedConstants.ConfirmPasswordText, this.dialogInfo.login.password ?? '');
@@ -175,7 +179,7 @@ export class LoginDialog extends ObjectManagementDialogBase {
 			await this.runValidation(false);
 		});
 		const confirmPasswordRow = this.createLabelInputContainer(view, localizedConstants.ConfirmPasswordText, this.confirmPasswordInput);
-		sqlAuthGroupItems.push(passwordRow, confirmPasswordRow);
+		items.push(passwordRow, confirmPasswordRow);
 		if (!this.isNewObject) {
 			this.specifyOldPasswordCheckbox = this.createCheckbox(view, localizedConstants.SpecifyOldPasswordText);
 			this.oldPasswordInput = this.createPasswordInputBox(view, localizedConstants.OldPasswordText, '', false);
@@ -187,7 +191,7 @@ export class LoginDialog extends ObjectManagementDialogBase {
 			this.oldPasswordInput.onTextChanged(async () => {
 				await this.runValidation(false);
 			});
-			sqlAuthGroupItems.push(this.specifyOldPasswordCheckbox, oldPasswordRow);
+			items.push(this.specifyOldPasswordCheckbox, oldPasswordRow);
 		}
 
 		if (this.dialogInfo.supportAdvancedPasswordOptions) {
@@ -206,18 +210,14 @@ export class LoginDialog extends ObjectManagementDialogBase {
 				this.mustChangePasswordCheckbox.enabled = enforceExpiration;
 				this.mustChangePasswordCheckbox.checked = enforceExpiration;
 			});
-			sqlAuthGroupItems.push(this.enforcePasswordPolicyCheckbox, this.enforcePasswordExpirationCheckbox, this.mustChangePasswordCheckbox);
+			items.push(this.enforcePasswordPolicyCheckbox, this.enforcePasswordExpirationCheckbox, this.mustChangePasswordCheckbox);
 			if (!this.isNewObject) {
 				this.lockedOutCheckbox = this.createCheckbox(view, localizedConstants.LoginLockedOutText, this.dialogInfo.login.isLockedOut, this.dialogInfo.canEditLockedOutState);
-				sqlAuthGroupItems.push(this.lockedOutCheckbox);
+				items.push(this.lockedOutCheckbox);
 			}
 		}
 
-		this.sqlAuthSection = view.modelBuilder.groupContainer().withLayout({
-			header: localizedConstants.SQLAuthenticationSectionHeader,
-			collapsible: true,
-			collapsed: false
-		}).withItems(sqlAuthGroupItems).component();
+		this.sqlAuthSection = this.createGroup(view, localizedConstants.SQLAuthenticationSectionHeader, items);
 	}
 
 	private initializeAdvancedSection(view: azdata.ModelView): void {
@@ -241,11 +241,42 @@ export class LoginDialog extends ObjectManagementDialogBase {
 			items.push(defaultDatabaseContainer, defaultLanguageContainer, this.connectPermissionCheckbox);
 		}
 
-		this.advancedSection = view.modelBuilder.groupContainer().withLayout({
-			header: localizedConstants.AdvancedSectionHeader,
-			collapsed: false,
-			collapsible: true
-		}).withItems(items).component();
+		this.advancedSection = this.createGroup(view, localizedConstants.AdvancedSectionHeader, items);
+	}
+
+	private initializeServerRolesSection(view: azdata.ModelView): void {
+		const serverRolesData = this.dialogInfo.serverRoles.map(name => {
+			const isRoleSelected = this.dialogInfo.login.serverRoles.indexOf(name) !== -1;
+			const isRoleSelectionEnabled = name !== PublicServerRoleName;
+			return [{ enabled: isRoleSelectionEnabled, checked: isRoleSelected }, name];
+		});
+		this.serverRoleTable = view.modelBuilder.table().withProps(
+			{
+				ariaLabel: localizedConstants.ServerRoleSectionHeader,
+				data: serverRolesData,
+				columns: [
+					{
+						value: localizedConstants.SelectedText,
+						type: azdata.ColumnType.checkBox,
+						options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction }
+					}, {
+						value: localizedConstants.NameText,
+					}
+				],
+				width: DefaultTableWidth,
+				height: GetTableHeight(this.dialogInfo.serverRoles.length)
+			}
+		).component();
+		this.serverRoleTable.onCellAction((arg: azdata.ICheckboxCellActionEventArgs) => {
+			const serverRoleName = this.dialogInfo.serverRoles[arg.row];
+			const idx = this.dialogInfo.login.serverRoles.indexOf(serverRoleName);
+			if (arg.checked && idx === -1) {
+				this.dialogInfo.login.serverRoles.push(serverRoleName);
+			} else if (!arg.checked && idx !== -1) {
+				this.dialogInfo.login.serverRoles.splice(idx, 1)
+			}
+		});
+		this.serverRoleSection = this.createGroup(view, localizedConstants.ServerRoleSectionHeader, [this.serverRoleTable]);
 	}
 
 	private setViewByAuthenticationType(): void {

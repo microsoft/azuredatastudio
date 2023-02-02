@@ -11,8 +11,17 @@ import { getErrorMessage } from '../../utils';
 import { getNodeTypeDisplayName, NodeType } from '../constants';
 import { CreateObjectOperationDisplayName, LoadingDialogText, NewObjectDialogTitle, ObjectPropertiesDialogTitle, OkText, UpdateObjectOperationDisplayName, ValidationErrorSummary } from '../localizedConstants';
 
-export const DefaultLabelWidth = '120px';
-export const DefaultInputWidth = '300px';
+export const DefaultLabelWidth = 150;
+export const DefaultInputWidth = 300;
+export const DefaultTableWidth = DefaultInputWidth + DefaultLabelWidth;
+export const DefaultTableMaxHeight = 400;
+export const DefaultTableMinRowCount = 2;
+export const TableRowHeight = 25;
+export const TableColumnHeaderHeight = 30;
+
+export function GetTableHeight(rowCount: number, minRowCount: number = DefaultTableMinRowCount, maxHeight: number = DefaultTableMaxHeight): number {
+	return Math.min(Math.max(rowCount, minRowCount) * TableRowHeight + TableColumnHeaderHeight, maxHeight);
+}
 
 export abstract class ObjectManagementDialogBase {
 	protected readonly disposables: vscode.Disposable[] = [];
@@ -104,32 +113,29 @@ export abstract class ObjectManagementDialogBase {
 		return view.modelBuilder.checkBox().withProps({
 			label: label,
 			checked: checked,
-			enabled: enabled,
-			CSSStyles: {
-				'margin-block-start': '0.5em'
-			}
+			enabled: enabled
 		}).component();
 	}
 
-	protected createPasswordInputBox(view: azdata.ModelView, ariaLabel: string, value: string = '', enabled: boolean = true, width: string = DefaultInputWidth): azdata.InputBoxComponent {
+	protected createPasswordInputBox(view: azdata.ModelView, ariaLabel: string, value: string = '', enabled: boolean = true, width: number = DefaultInputWidth): azdata.InputBoxComponent {
 		return this.createInputBox(view, ariaLabel, value, enabled, 'password', width);
 	}
 
-	protected createInputBox(view: azdata.ModelView, ariaLabel: string, value: string = '', enabled: boolean = true, type: azdata.InputBoxInputType = 'text', width: string = DefaultInputWidth): azdata.InputBoxComponent {
+	protected createInputBox(view: azdata.ModelView, ariaLabel: string, value: string = '', enabled: boolean = true, type: azdata.InputBoxInputType = 'text', width: number = DefaultInputWidth): azdata.InputBoxComponent {
 		return view.modelBuilder.inputBox().withProps({ inputType: type, enabled: enabled, ariaLabel: ariaLabel, value: value, width: width }).component();
 	}
 
-	protected createGroup(view: azdata.ModelView, header: string, items: azdata.Component[], collapsible: boolean = true): azdata.GroupContainer {
+	protected createGroup(view: azdata.ModelView, header: string, items: azdata.Component[], collapsible: boolean = true, collapsed: boolean = false): azdata.GroupContainer {
 		return view.modelBuilder.groupContainer().withLayout({
 			header: header,
 			collapsed: false,
 			collapsible: collapsible
-		}).withItems(items).component();
+		}).withProps({ collapsed: collapsed }).withItems(items).component();
 	}
 
 	protected createFormContainer(view: azdata.ModelView, items: azdata.Component[]): azdata.DivContainer {
 		return view.modelBuilder.divContainer().withLayout({ width: 'calc(100% - 20px)', height: 'calc(100% - 20px)' }).withProps({
 			CSSStyles: { 'padding': '10px' }
-		}).withItems(items).component();
+		}).withItems(items, { CSSStyles: { 'margin-block-end': '10px' } }).component();
 	}
 }

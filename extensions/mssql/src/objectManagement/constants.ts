@@ -13,6 +13,8 @@ export enum NodeType {
 	DatabaseUser = 'DatabaseUser'
 }
 
+export const PublicServerRoleName = 'public';
+
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
 	switch (type) {
 		case NodeType.Login:

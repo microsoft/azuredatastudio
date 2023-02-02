@@ -92,6 +92,9 @@ export class TestObjectManagementService implements IObjectManagementService {
 	initializeLoginView(connectionUri: string, contextId: string, isNewObject: boolean, name: string | undefined): Promise<ObjectManagement.LoginViewInfo> {
 		return new Promise((resolve, reject) => {
 			setTimeout(() => {
+				const serverRoles = ['sysadmin', 'public', 'bulkadmin', 'dbcreator', 'diskadmin', 'processadmin', 'securityadmin', 'serveradmin'];
+				const languages = ['<default>', 'English'];
+				const databases = ['master', 'db1', 'db2'];
 				let login: ObjectManagement.LoginViewInfo;
 				if (isNewObject) {
 					login = <ObjectManagement.LoginViewInfo>{
@@ -103,7 +106,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 							mustChangePassword: true,
 							defaultDatabase: 'master',
 							defaultLanguage: '<default>',
-							serverRoles: ['public'],
+							serverRoles: ['public', 'bulkadmin'],
 							connectPermission: true,
 							isEnabled: true,
 							isLockedOut: false
@@ -115,9 +118,9 @@ export class TestObjectManagementService implements IObjectManagementService {
 						supportAdvancedPasswordOptions: true,
 						canEditName: true,
 						canEditLockedOutState: false,
-						languages: ['<default>', 'English'],
-						databases: ['master', 'db1', 'db2'],
-						serverRoles: ['sysadmin', 'public']
+						languages: languages,
+						databases: databases,
+						serverRoles: serverRoles
 					};
 				} else {
 					login = <ObjectManagement.LoginViewInfo>{
@@ -142,9 +145,9 @@ export class TestObjectManagementService implements IObjectManagementService {
 						supportAdvancedPasswordOptions: true,
 						canEditName: false,
 						canEditLockedOutState: false,
-						languages: ['<default>', 'English'],
-						databases: ['master', 'db1', 'db2'],
-						serverRoles: ['sysadmin', 'public']
+						languages: languages,
+						databases: databases,
+						serverRoles: serverRoles
 					};
 				}
 				resolve(login);
