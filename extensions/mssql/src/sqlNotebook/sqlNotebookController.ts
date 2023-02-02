@@ -84,8 +84,15 @@ export class SqlNotebookController implements vscode.Disposable {
 		}
 	}
 
-	private handleChangeConnection(): void {
-
+	private async handleChangeConnection(): Promise<void> {
+		let notebookUri = vscode.window.activeTextEditor?.document.notebook?.uri;
+		if (notebookUri) {
+			let connection = await azdata.connection.openConnectionDialog(['MSSQL']);
+			if (connection) {
+				this._connectionsMap.set(notebookUri, connection);
+				this._connectionLabelItem.text = 'Connected to: ' + connection.options['server'];
+			}
+		}
 	}
 
 	private async execute(cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController): Promise<void> {
@@ -96,6 +103,10 @@ export class SqlNotebookController implements vscode.Disposable {
 		let connection = this._connectionsMap.get(notebook.uri);
 		if (!connection) {
 			connection = await azdata.connection.openConnectionDialog(['MSSQL']);
+			if (!connection) {
+				await vscode.window.showInformationMessage(localize('skipCellExecutionMsg', 'Skipping cell execution since no connection was selected.'));
+				return;
+			}
 			this._connectionsMap.set(notebook.uri, connection);
 		}
 		this._connectionLabelItem.text = 'Connected to: ' + connection.options['server'];
@@ -106,7 +117,7 @@ export class SqlNotebookController implements vscode.Disposable {
 		}
 	}
 
-	private async doExecution(cell: vscode.NotebookCell, connectionProfile: azdata.connection.Connection): Promise<void> {
+	private async doExecution(cell: vscode.NotebookCell, connectionProfile: azdata.connection.Connection | undefined): Promise<void> {
 		const execution = this._controller.createNotebookCellExecution(cell);
 		execution.executionOrder = ++this._executionOrder;
 		execution.start(Date.now());
