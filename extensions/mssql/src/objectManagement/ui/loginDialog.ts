@@ -4,38 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { DefaultInputWidth, DialogBase } from './dialogBase';
-import * as nls from 'vscode-nls';
+import { DefaultInputWidth, ObjectManagementDialogBase } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
-import { BlankPasswordConfirmationText, YesText } from '../localizedConstants';
-const localize = nls.loadMessageBundle();
+import * as localizedConstants from '../localizedConstants';
+import { NodeType } from '../constants';
 
-const GeneralSectionHeader = localize('LoginDialog.GeneralSectionHeader', "General");
-const SQLAuthenticationSectionHeader = localize('LoginDialog.SQLAuthenticationSectionHeader', "SQL Authentication");
-const AdvancedSectionHeader = localize('LoginDialog.AdvancedSectionHeader', "Advanced");
-//const ServerRoleSectionHeader = localize('LoginDialog.ServerRoleSectionHeader', "Server Roles");
-const NewLoginDialogTitle = localize('LoginDialogNew.Title', 'Login - New');
-function EditLoginDialogTitle(name: string): string { return localize({ key: 'LoginDialogEdit.Title', comment: ['{0} is the placeholder for the name of the login'] }, 'Login - {0}', name); }
-const NameText = localize('LoginDialog.NameLabel', "Name");
-const TypeText = localize('LoginDialog.Type', "Type");
-const PasswordText = localize('LoginDialog.PasswordLabel', "Password");
-const ConfirmPasswordText = localize('LoginDialog.ConfirmPasswordLabel', "Confirm password");
-const SpecifyOldPasswordText = localize('LoginDialog.SpecifyOldPasswordLabel', "Specify old password");
-const OldPasswordText = localize('LoginDialog.OldPasswordLabel', "Old password");
-const EnforcePasswordPolicyText = localize('LoginDialog.EnforcePasswordPolicyLabel', "Enforce password policy");
-const EnforcePasswordExpirationText = localize('LoginDialog.EnforcePasswordExpirationLabel', "Enforce password expiration");
-const MustChangePasswordOnNextLoginText = localize('LoginDialog.MustChangePasswordOnNextLoginLabel', "User must change password at next login");
-const DefaultDatabaseText = localize('LoginDialog.DefaultDatabaseLabel', "Default database");
-const DefaultLanguageText = localize('LoginDialog.DefaultLanguageLabel', "Default language");
-const PermissionToConnectText = localize('LoginDialog.PermissionToConnectLabel', "Permission to connect to database engine");
-const EnabledText = localize('LoginDialog.EnabledLabel', "Enabled");
-const LoginLockedOutText = localize('LoginDialog.LoginLockedOutLabel', "Login is locked out");
-
-const WindowsAuthenticationType = localize('LoginDialog.WindowsAuthenticationType', "Windows Authentication");
-const SQLAuthenticationType = localize('LoginDialog.SQLAuthenticationType', "SQL Authentication");
-const AADAuthenticationType = localize('LoginDialog.AADAuthenticationType', "Azure Active Directory Authentication");
-
-export class LoginDialog extends DialogBase {
+export class LoginDialog extends ObjectManagementDialogBase {
 	private dialogInfo: ObjectManagement.LoginViewInfo;
 	private formContainer: azdata.DivContainer;
 	private generalGroup: azdata.GroupContainer;
@@ -58,29 +32,33 @@ export class LoginDialog extends DialogBase {
 	private lockedOutCheckbox: azdata.CheckBoxComponent;
 
 	constructor(objectManagementService: IObjectManagementService, connectionUri: string, isNewObject: boolean, name?: string) {
-		super(objectManagementService, connectionUri, isNewObject, name, isNewObject ? NewLoginDialogTitle : EditLoginDialogTitle(name), 'Login');
+		super(NodeType.Login, objectManagementService, connectionUri, isNewObject, name);
 	}
 
 	protected override async onConfirmation(): Promise<boolean> {
 		if (!this.passwordInput.value) {
-			const result = await vscode.window.showWarningMessage(BlankPasswordConfirmationText, { modal: true }, YesText);
-			return result === YesText;
+			const result = await vscode.window.showWarningMessage(localizedConstants.BlankPasswordConfirmationText, { modal: true }, localizedConstants.YesText);
+			return result === localizedConstants.YesText;
 		}
 		return true;
+	}
+
+	protected getFinalObjectName(): string {
+		return this.nameInput?.value;
 	}
 
 	protected async validate(): Promise<string[]> {
 		const errors: string[] = [];
 		if (!this.nameInput.value) {
-			errors.push(localize('loginDialog.EmptyNameError', "Name cannot be empty."));
+			errors.push(localizedConstants.NameCannotBeEmptyError);
 		}
 
 		if (this.passwordInput.value !== this.confirmPasswordInput.value) {
-			errors.push(localize('loginDialog.PasswordNotMatchError', "Password must match the confirm password."));
+			errors.push(localizedConstants.PasswordsNotMatchError);
 		}
 
 		if (this.specifyOldPasswordCheckbox.checked && !this.oldPasswordInput.value) {
-			errors.push(localize('loginDialog.oldPasswordEmptyError', "Old password cannot be empty."));
+			errors.push(localizedConstants.OldPasswordCannotBeEmptyError);
 		}
 		return errors;
 	}
@@ -115,84 +93,84 @@ export class LoginDialog extends DialogBase {
 		tab.registerContent(async view => {
 			// General Group
 			this.nameInput = view.modelBuilder.inputBox().withProps({
-				ariaLabel: NameText,
+				ariaLabel: localizedConstants.ObjectNameLabel,
 				enabled: this.isNewObject,
 				value: this.dialogInfo.login.name,
 				required: this.dialogInfo.canEditName,
 				width: DefaultInputWidth
 			}).component();
 
-			const nameContainer = this.createLabelInputContainer(view, NameText, this.nameInput);
+			const nameContainer = this.createLabelInputContainer(view, localizedConstants.ObjectNameLabel, this.nameInput);
 			const authTypes = [];
 			if (this.dialogInfo.supportWindowsAuthentication) {
-				authTypes.push(WindowsAuthenticationType);
+				authTypes.push(localizedConstants.WindowsAuthenticationTypeDisplayText);
 			}
 			if (this.dialogInfo.supportSQLAuthentication) {
-				authTypes.push(SQLAuthenticationType);
+				authTypes.push(localizedConstants.SQLAuthenticationTypeDisplayText);
 			}
 			if (this.dialogInfo.supportAADAuthentication) {
-				authTypes.push(AADAuthenticationType);
+				authTypes.push(localizedConstants.AADAuthenticationTypeDisplayText);
 			}
 			this.authTypeDropdown = view.modelBuilder.dropDown().withProps({
-				ariaLabel: TypeText,
+				ariaLabel: localizedConstants.AuthTypeText,
 				values: authTypes,
 				value: this.getAuthenticationTypeDisplayValue(this.dialogInfo.login.authenticationType),
 				width: DefaultInputWidth,
 				enabled: this.isNewObject
 			}).component();
 
-			const typeContainer = this.createLabelInputContainer(view, TypeText, this.authTypeDropdown);
-			this.generalGroup = this.createGroup(view, GeneralSectionHeader, [nameContainer, typeContainer], false);
+			const typeContainer = this.createLabelInputContainer(view, localizedConstants.AuthTypeText, this.authTypeDropdown);
+			this.generalGroup = this.createGroup(view, localizedConstants.GeneralSectionHeader, [nameContainer, typeContainer], false);
 
 			// SQL Authentication Group
-			this.passwordInput = this.createPasswordInputBox(view, PasswordText, this.dialogInfo.login.password ?? '');
-			const passwordRow = this.createLabelInputContainer(view, PasswordText, this.passwordInput);
-			this.confirmPasswordInput = this.createPasswordInputBox(view, ConfirmPasswordText, this.dialogInfo.login.password ?? '');
-			const confirmPasswordRow = this.createLabelInputContainer(view, ConfirmPasswordText, this.confirmPasswordInput);
-			this.specifyOldPasswordCheckbox = this.createCheckbox(view, SpecifyOldPasswordText);
-			this.oldPasswordInput = this.createPasswordInputBox(view, OldPasswordText, '', false);
-			const oldPasswordRow = this.createLabelInputContainer(view, OldPasswordText, this.oldPasswordInput);
-			this.enforcePasswordPolicyCheckbox = this.createCheckbox(view, EnforcePasswordPolicyText, this.dialogInfo.login.enforcePasswordPolicy);
-			this.enforcePasswordExpirationCheckbox = this.createCheckbox(view, EnforcePasswordExpirationText, this.dialogInfo.login.enforcePasswordPolicy);
-			this.changePasswordCheckbox = this.createCheckbox(view, MustChangePasswordOnNextLoginText, this.dialogInfo.login.mustChangePassword);
-			const sqlAuthGroupItems = this.dialogInfo.login.name ? [passwordRow,
-				confirmPasswordRow,
-				this.specifyOldPasswordCheckbox,
-				oldPasswordRow,
-				this.enforcePasswordPolicyCheckbox,
-				this.enforcePasswordExpirationCheckbox,
-				this.changePasswordCheckbox] : [passwordRow,
-				confirmPasswordRow,
-				this.enforcePasswordPolicyCheckbox,
-				this.enforcePasswordExpirationCheckbox,
-				this.changePasswordCheckbox];
+			this.passwordInput = this.createPasswordInputBox(view, localizedConstants.PasswordText, this.dialogInfo.login.password ?? '');
+			const passwordRow = this.createLabelInputContainer(view, localizedConstants.PasswordText, this.passwordInput);
+			this.confirmPasswordInput = this.createPasswordInputBox(view, localizedConstants.ConfirmPasswordText, this.dialogInfo.login.password ?? '');
+			const confirmPasswordRow = this.createLabelInputContainer(view, localizedConstants.ConfirmPasswordText, this.confirmPasswordInput);
+			this.specifyOldPasswordCheckbox = this.createCheckbox(view, localizedConstants.SpecifyOldPasswordText);
+			this.oldPasswordInput = this.createPasswordInputBox(view, localizedConstants.OldPasswordText, '', false);
+			const oldPasswordRow = this.createLabelInputContainer(view, localizedConstants.OldPasswordText, this.oldPasswordInput);
+			this.enforcePasswordPolicyCheckbox = this.createCheckbox(view, localizedConstants.EnforcePasswordPolicyText, this.dialogInfo.login.enforcePasswordPolicy);
+			this.enforcePasswordExpirationCheckbox = this.createCheckbox(view, localizedConstants.EnforcePasswordExpirationText, this.dialogInfo.login.enforcePasswordPolicy);
+			this.changePasswordCheckbox = this.createCheckbox(view, localizedConstants.MustChangePasswordText, this.dialogInfo.login.mustChangePassword);
+
+			const sqlAuthGroupItems: azdata.Component[] = [passwordRow, confirmPasswordRow];
+			if (!this.isNewObject) {
+				sqlAuthGroupItems.push(this.specifyOldPasswordCheckbox, oldPasswordRow);
+			}
+
+			if (this.dialogInfo.supportPasswordPolicy) {
+				sqlAuthGroupItems.push(this.enforcePasswordPolicyCheckbox,
+					this.enforcePasswordExpirationCheckbox,
+					this.changePasswordCheckbox);
+			}
 			this.sqlAuthGroup = view.modelBuilder.groupContainer().withLayout({
-				header: SQLAuthenticationSectionHeader,
+				header: localizedConstants.SQLAuthenticationSectionHeader,
 				collapsible: true,
 				collapsed: false
 			}).withItems(sqlAuthGroupItems).component();
 
 			// Advanced Group
 			this.defaultDatabaseDropdown = view.modelBuilder.dropDown().withProps({
-				ariaLabel: DefaultDatabaseText,
+				ariaLabel: localizedConstants.DefaultDatabaseText,
 				values: this.dialogInfo.databases,
 				value: this.dialogInfo.login.defaultDatabase,
 				width: DefaultInputWidth
 			}).component();
-			const defaultDatabaseContainer = this.createLabelInputContainer(view, DefaultDatabaseText, this.defaultDatabaseDropdown);
+			const defaultDatabaseContainer = this.createLabelInputContainer(view, localizedConstants.DefaultDatabaseText, this.defaultDatabaseDropdown);
 			this.defaultLanguageDropdown = view.modelBuilder.dropDown().withProps({
-				ariaLabel: DefaultLanguageText,
+				ariaLabel: localizedConstants.DefaultLanguageText,
 				values: this.dialogInfo.languages,
 				value: this.dialogInfo.login.defaultLanguage,
 				width: DefaultInputWidth
 			}).component();
-			const defaultLanguageContainer = this.createLabelInputContainer(view, DefaultLanguageText, this.defaultLanguageDropdown);
+			const defaultLanguageContainer = this.createLabelInputContainer(view, localizedConstants.DefaultLanguageText, this.defaultLanguageDropdown);
 
-			this.connectPermissionCheckbox = this.createCheckbox(view, PermissionToConnectText, this.dialogInfo.login.connectPermission);
-			this.enabledCheckbox = this.createCheckbox(view, EnabledText, this.dialogInfo.login.isEnabled);
-			this.lockedOutCheckbox = this.createCheckbox(view, LoginLockedOutText, this.dialogInfo.login.isLockedOut, this.dialogInfo.canEditLockedOutState);
+			this.connectPermissionCheckbox = this.createCheckbox(view, localizedConstants.PermissionToConnectText, this.dialogInfo.login.connectPermission);
+			this.enabledCheckbox = this.createCheckbox(view, localizedConstants.EnabledText, this.dialogInfo.login.isEnabled);
+			this.lockedOutCheckbox = this.createCheckbox(view, localizedConstants.LoginLockedOutText, this.dialogInfo.login.isLockedOut, this.dialogInfo.canEditLockedOutState);
 			this.advancedGroup = view.modelBuilder.groupContainer().withLayout({
-				header: AdvancedSectionHeader,
+				header: localizedConstants.AdvancedSectionHeader,
 				collapsed: false,
 				collapsible: true
 			}).withItems([
@@ -252,9 +230,9 @@ export class LoginDialog extends DialogBase {
 	}
 
 	private setViewByAuthenticationType(): void {
-		if (this.authTypeDropdown.value === SQLAuthenticationType && this.formContainer.items.indexOf(this.sqlAuthGroup) === -1) {
+		if (this.authTypeDropdown.value === localizedConstants.SQLAuthenticationTypeDisplayText && this.formContainer.items.indexOf(this.sqlAuthGroup) === -1) {
 			this.formContainer.insertItem(this.sqlAuthGroup, 1);
-		} else if (this.authTypeDropdown.value !== SQLAuthenticationType && this.formContainer.items.indexOf(this.sqlAuthGroup) !== -1) {
+		} else if (this.authTypeDropdown.value !== localizedConstants.SQLAuthenticationTypeDisplayText && this.formContainer.items.indexOf(this.sqlAuthGroup) !== -1) {
 			this.formContainer.removeItem(this.sqlAuthGroup);
 		}
 	}
@@ -262,22 +240,22 @@ export class LoginDialog extends DialogBase {
 	private getAuthenticationTypeDisplayValue(authType: ObjectManagement.LoginAuthenticationType): string {
 		switch (authType) {
 			case 'Windows':
-				return WindowsAuthenticationType;
+				return localizedConstants.WindowsAuthenticationTypeDisplayText;
 			case 'Sql':
-				return SQLAuthenticationType;
+				return localizedConstants.SQLAuthenticationTypeDisplayText;
 			case 'AAD':
-				return AADAuthenticationType;
+				return localizedConstants.AADAuthenticationTypeDisplayText;
 			default:
 				throw new Error(`Unknown authentication type: ${authType}`);
 		}
 	}
 	private getAuthenticationType(displayValue: string): ObjectManagement.LoginAuthenticationType {
 		switch (displayValue) {
-			case WindowsAuthenticationType:
+			case localizedConstants.WindowsAuthenticationTypeDisplayText:
 				return 'Windows';
-			case SQLAuthenticationType:
+			case localizedConstants.SQLAuthenticationTypeDisplayText:
 				return 'Sql';
-			case AADAuthenticationType:
+			case localizedConstants.AADAuthenticationTypeDisplayText:
 				return 'AAD';
 			default:
 				throw new Error(`Unknown authentication type display value: ${displayValue}`);

@@ -111,6 +111,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 						supportAADAuthentication: true,
 						supportSQLAuthentication: true,
 						supportWindowsAuthentication: true,
+						supportPasswordPolicy: false,
 						canEditName: true,
 						canEditLockedOutState: false,
 						languages: ['<default>', 'English'],

@@ -7,28 +7,28 @@ import * as azdata from 'azdata';
 import { IObjectManagementService } from 'mssql';
 import * as vscode from 'vscode';
 import { generateUuid } from 'vscode-languageclient/lib/utils/uuid';
-import * as nls from 'vscode-nls';
 import { getErrorMessage } from '../../utils';
-const localize = nls.loadMessageBundle();
+import { getNodeTypeDisplayName, NodeType } from '../constants';
+import { CreateObjectOperationDisplayName, LoadingDialogText, NewObjectDialogTitle, ObjectPropertiesDialogTitle, OkText, UpdateObjectOperationDisplayName, ValidationErrorSummary } from '../localizedConstants';
 
 export const DefaultLabelWidth = '120px';
 export const DefaultInputWidth = '300px';
 
-export abstract class DialogBase {
+export abstract class ObjectManagementDialogBase {
 	protected readonly disposables: vscode.Disposable[] = [];
 	protected readonly dialogObject: azdata.window.Dialog;
 	protected readonly contextId: string;
 
-	constructor(protected readonly objectManagementService: IObjectManagementService,
+	constructor(private readonly objectType: NodeType,
+		protected readonly objectManagementService: IObjectManagementService,
 		protected readonly connectionUri: string,
 		protected isNewObject: boolean,
-		protected readonly objectName: string | undefined,
-		dialogTitle: string,
-		dialogName: string,
+		protected readonly objectName: string | undefined = undefined,
 		dialogWidth: azdata.window.DialogWidth = 'narrow') {
-		this.dialogObject = azdata.window.createModelViewDialog(dialogTitle, dialogName, dialogWidth);
-		this.dialogObject.okButton.label = localize('objectManagementDialog.OkText', "OK");
-		this.disposables.push(this.dialogObject.okButton.onClick(() => this.onOkButtonClicked()));
+		const objectTypeDisplayName = getNodeTypeDisplayName(NodeType.Login, true);
+		const dialogTitle = isNewObject ? NewObjectDialogTitle(objectTypeDisplayName) : ObjectPropertiesDialogTitle(objectTypeDisplayName, objectName);
+		this.dialogObject = azdata.window.createModelViewDialog(dialogTitle, objectType, dialogWidth);
+		this.dialogObject.okButton.label = OkText;
 		this.disposables.push(this.dialogObject.onClosed(async () => { await this.dispose(); }));
 		this.contextId = generateUuid();
 		this.dialogObject.registerCloseValidator(async (): Promise<boolean> => {
@@ -44,6 +44,7 @@ export abstract class DialogBase {
 	protected abstract onComplete(): Promise<void>;
 	protected abstract onDispose(): Promise<void>;
 	protected abstract validate(): Promise<string[]>;
+	protected abstract getFinalObjectName(): string;
 
 	protected async onConfirmation(): Promise<boolean> {
 		return true;
@@ -54,7 +55,7 @@ export abstract class DialogBase {
 		if ((this.dialogObject.message !== undefined || showError) && errors.length > 0) {
 			this.dialogObject.message = {
 				level: azdata.window.MessageLevel.Error,
-				text: localize('objectManagementDialog.ValidationError', "There are some validation errors"),
+				text: ValidationErrorSummary,
 				description: errors.join('\n')
 			};
 		} else {
@@ -66,25 +67,27 @@ export abstract class DialogBase {
 	public async open(): Promise<void> {
 		await vscode.window.withProgress({
 			location: vscode.ProgressLocation.Notification,
-			title: localize('objectManagementDialog.loadingDialog', "Loading dialog...")
+			title: LoadingDialogText
 		}, async () => {
 			await this.initialize();
 		});
-		azdata.window.openDialog(this.dialogObject);
-	}
-
-	private async onOkButtonClicked(): Promise<void> {
-		await vscode.window.withProgress({
-			location: vscode.ProgressLocation.Notification,
-			title: localize('objectManagementDialog.savingChanges', "Saving changes...")
-		}, async () => {
-			try {
-				await this.onComplete();
-			}
-			catch (err) {
-				await vscode.window.showErrorMessage(localize('objectManagementDialog.SaveError', "Error occurred while saving changes: {0}", getErrorMessage(err)));
+		const typeDisplayName = getNodeTypeDisplayName(this.objectType);
+		this.dialogObject.registerOperation({
+			displayName: this.isNewObject ? CreateObjectOperationDisplayName(typeDisplayName, this.getFinalObjectName())
+				: UpdateObjectOperationDisplayName(typeDisplayName, this.objectName),
+			description: '',
+			isCancelable: false,
+			operation: async (operation: azdata.BackgroundOperation): Promise<void> => {
+				try {
+					await this.onComplete();
+					operation.updateStatus(azdata.TaskStatus.Succeeded);
+				}
+				catch (err) {
+					operation.updateStatus(azdata.TaskStatus.Failed, getErrorMessage(err));
+				}
 			}
 		});
+		azdata.window.openDialog(this.dialogObject);
 	}
 
 	private async dispose(): Promise<void> {

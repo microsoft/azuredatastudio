@@ -7,18 +7,12 @@ import { AppContext } from '../appContext';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { LoginDialog } from './ui/loginDialog';
-import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
 import { TestObjectManagementService } from './objectManagementService';
 import { getErrorMessage } from '../utils';
-import { YesText } from './localizedConstants';
+import { getNodeTypeDisplayName, NodeType } from './constants';
+import * as localizedConstants from './localizedConstants';
 // import * as constants from '../constants';
 // import { IObjectManagementService } from 'mssql';
-
-enum ObjectType {
-	Login = 'ServerLevelLogin',
-	DatabaseUser = 'DatabaseUser'
-}
 
 async function refreshParentNode(connectionId: string, nodePath: string): Promise<void> {
 	try {
@@ -27,7 +21,7 @@ async function refreshParentNode(connectionId: string, nodePath: string): Promis
 		await parentNode?.refresh();
 	}
 	catch (err) {
-		await vscode.window.showErrorMessage(localize('mssql.refreshOEError', "An error occurred while trying to refresh the object explorer. {0}", getErrorMessage(err)));
+		await vscode.window.showErrorMessage(localizedConstants.RefreshObjectExplorerError(getErrorMessage(err)));
 	}
 }
 
@@ -41,56 +35,66 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 			await dialog.open();
 		}
 		catch (err) {
-			await vscode.window.showErrorMessage(localize('loginDialog.new.ErrorOpenDialog', "An error occurred while trying to the new login dialog. {0}", getErrorMessage(err)));
+			await vscode.window.showErrorMessage(localizedConstants.OpenNewObjectDialogError(localizedConstants.LoginTypeDisplayName, getErrorMessage(err)));
 		}
 	}));
+
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.deleteObject', async (context: azdata.ObjectExplorerContext) => {
 		let additionalConfirmationMessage: string;
 		switch (context.nodeInfo.nodeType) {
-			case ObjectType.Login:
-				additionalConfirmationMessage = localize('mssql.deleteLoginConfirmation', "Deleting server logins does not delete the database users associated with the logins. To complete the process, delete the users in each database. It may be necessary to first transfer the ownership of schemas to new users.");
+			case NodeType.Login:
+				additionalConfirmationMessage = localizedConstants.DeleteLoginConfirmationText;
 				break;
 			default:
 				break;
 		}
-		let confirmMessage = localize('mssql.deleteObjectConfirmation', "Are you sure you want to delete the object?");
+		const nodeTypeDisplayName = getNodeTypeDisplayName(context.nodeInfo.nodeType);
+		let confirmMessage = localizedConstants.DeleteObjectConfirmationText(nodeTypeDisplayName, context.nodeInfo.label);
 		if (additionalConfirmationMessage) {
 			confirmMessage = `${additionalConfirmationMessage} ${confirmMessage}`;
 		}
-		const confirmResult = await vscode.window.showWarningMessage(confirmMessage, { modal: true }, YesText);
-		if (confirmResult !== YesText) {
+		const confirmResult = await vscode.window.showWarningMessage(confirmMessage, { modal: true }, localizedConstants.YesText);
+		if (confirmResult !== localizedConstants.YesText) {
 			return;
 		}
-		await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: localize('mssql.deletingObject', "Deleting object: {0}", context.nodeInfo.label) }, async () => {
-			try {
-				const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
-				switch (context.nodeInfo.nodeType) {
-					case ObjectType.Login:
-						await service.deleteLogin(connectionUri, context.nodeInfo.label);
-						break;
-					default:
-						return;
+		azdata.tasks.startBackgroundOperation({
+			displayName: localizedConstants.DeleteObjectOperationDisplayName(nodeTypeDisplayName, context.nodeInfo.label),
+			description: '',
+			isCancelable: false,
+			operation: async (operation) => {
+				try {
+					const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
+					switch (context.nodeInfo.nodeType) {
+						case NodeType.Login:
+							await service.deleteLogin(connectionUri, context.nodeInfo.label);
+							break;
+						default:
+							return;
+					}
 				}
+				catch (err) {
+					operation.updateStatus(azdata.TaskStatus.Failed, localizedConstants.DeleteObjectError(nodeTypeDisplayName, context.nodeInfo.label, getErrorMessage(err)));
+					return;
+				}
+				await refreshParentNode(context.connectionProfile.id, context.nodeInfo.nodePath);
 			}
-			catch (err) {
-				await vscode.window.showErrorMessage(localize('mssql.deleteObjectError', "An error occurred while trying to delete the object: {0}.", context.nodeInfo.label));
-				return;
-			}
-			await refreshParentNode(context.connectionProfile.id, context.nodeInfo.nodePath);
 		});
 	}));
+
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newUser', async (context: azdata.ObjectExplorerContext) => {
 
 	}));
+
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.objectProperties', async (context: azdata.ObjectExplorerContext) => {
+		const nodeTypeDisplayName = getNodeTypeDisplayName(context.nodeInfo.nodeType);
 		try {
 			const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
 			let dialog;
 			switch (context.nodeInfo.nodeType) {
-				case ObjectType.Login:
+				case NodeType.Login:
 					dialog = new LoginDialog(service, connectionUri, false, context.nodeInfo.label);
 					break;
-				case ObjectType.DatabaseUser:
+				case NodeType.DatabaseUser:
 					break;
 				default:
 					break;
@@ -100,7 +104,7 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 			}
 		}
 		catch (err) {
-			await vscode.window.showErrorMessage(localize('loginDialog.edit.ErroOpenDialog', "An error occurred while trying to open the properties dialog. {0}", getErrorMessage(err)));
+			await vscode.window.showErrorMessage(localizedConstants.OpenObjectPropertiesDialogError(nodeTypeDisplayName, context.nodeInfo.label, getErrorMessage(err)));
 		}
 	}));
 }

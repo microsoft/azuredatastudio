@@ -905,6 +905,7 @@ declare module 'mssql' {
 			supportWindowsAuthentication: boolean;
 			supportAADAuthentication: boolean;
 			supportSQLAuthentication: boolean;
+			supportPasswordPolicy: boolean;
 			canEditLockedOutState: boolean;
 			databases: string[];
 			languages: string[];
