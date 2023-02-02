@@ -153,7 +153,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 		}
 
 		const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
-		console.log(isSqlDbTarget);
 
 		if (this._targetUserNameInputBox) {
 			await this._targetUserNameInputBox.updateProperty('required', true);
@@ -174,6 +173,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			this._targetPasswordInputBox.value = '';
 			this.migrationStateModel._sqlMigrationServices = undefined!;
 			this.migrationStateModel._targetServerInstance = undefined!;
+			this.migrationStateModel._targetServerName = undefined!;
 			this.migrationStateModel._resourceGroup = undefined!;
 			this.migrationStateModel._location = undefined!;
 			await this.populateLocationDropdown();
@@ -337,7 +337,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				this.migrationStateModel.isWindowsAuthMigrationSupported));
 			this.migrationStateModel._loginMigrationModel.collectedSourceLogins = true;
 			this.migrationStateModel._loginMigrationModel.loginsOnSource = sourceLogins;
-			console.log(this.migrationStateModel._targetType);
 		}));
 
 		const flexContainer = this._view.modelBuilder.flexContainer()
@@ -616,7 +615,8 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 						this.wizard.nextButton.enabled = false;
 						loginsOnTarget.push(
 							...await collectTargetLogins(
-								targetDatabaseServer,
+								this.migrationStateModel.targetServerName,
+								targetDatabaseServer.id,
 								userName,
 								password,
 								this.migrationStateModel.isWindowsAuthMigrationSupported));
@@ -750,6 +750,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 									this.migrationStateModel._azureAccount,
 									this.migrationStateModel._targetSubscription,
 									this.migrationStateModel._targetServerInstance);
+								this.migrationStateModel.setTargetServerName();
 
 								this.wizard.message = { text: '' };
 
@@ -779,6 +780,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 
 							if (selectedMi) {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(selectedMi)! as azureResource.AzureSqlManagedInstance;
+								this.migrationStateModel.setTargetServerName();
 
 								this.wizard.message = { text: '' };
 								if (this.migrationStateModel._targetServerInstance.properties.state !== 'Ready') {
@@ -797,6 +799,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 
 							if (sqlDatabaseServer) {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(sqlDatabaseServer)! as AzureSqlDatabaseServer;
+								this.migrationStateModel.setTargetServerName();
 								this.wizard.message = { text: '' };
 								if (this.migrationStateModel._targetServerInstance.properties.state === 'Ready') {
 									this._targetUserNameInputBox.value = this.migrationStateModel._targetServerInstance.properties.administratorLogin;
@@ -813,6 +816,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 					}
 				} else {
 					this.migrationStateModel._targetServerInstance = undefined!;
+					this.migrationStateModel._targetServerName = undefined!;
 					if (isSqlDbTarget) {
 						this._targetUserNameInputBox.value = '';
 					}
@@ -989,14 +993,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._location,
 						this.migrationStateModel._resourceGroup?.name,
 						constants.NO_VIRTUAL_MACHINE_FOUND);
-
-					let response = await utils.getVirtualMachinesDropdownValues(
-						this.migrationStateModel._targetSqlVirtualMachines,
-						this.migrationStateModel._location,
-						this.migrationStateModel._resourceGroup,
-						this.migrationStateModel._azureAccount,
-						this.migrationStateModel._targetSubscription);
-					console.log(response);
 
 					break;
 				case MigrationTargetType.SQLDB:
