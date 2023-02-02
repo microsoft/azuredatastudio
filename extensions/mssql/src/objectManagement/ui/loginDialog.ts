@@ -129,9 +129,9 @@ export class LoginDialog extends ObjectManagementDialogBase {
 	private initializeGeneralSection(view: azdata.ModelView): void {
 		this.nameInput = view.modelBuilder.inputBox().withProps({
 			ariaLabel: localizedConstants.NameText,
-			enabled: this.dialogInfo.canEditName,
+			enabled: this.isNewObject,
 			value: this.dialogInfo.login.name,
-			required: this.dialogInfo.canEditName,
+			required: this.isNewObject,
 			width: DefaultInputWidth
 		}).component();
 

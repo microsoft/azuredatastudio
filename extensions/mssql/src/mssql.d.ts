@@ -901,7 +901,6 @@ declare module 'mssql' {
 
 		export interface LoginViewInfo {
 			login: Login;
-			canEditName: boolean;
 			supportWindowsAuthentication: boolean;
 			supportAADAuthentication: boolean;
 			supportSQLAuthentication: boolean;
