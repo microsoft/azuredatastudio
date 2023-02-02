@@ -20,6 +20,8 @@ interface QueryMessageHandler {
 }
 
 export class SqlNotebookController implements vscode.Disposable {
+	private readonly _connectionLabel = (serverName: string) => localize('notebookConnection', 'Connected to: {0}', serverName);
+	private readonly _disconnectedLabel = localize('notebookDisconnected', 'Disconnected');
 	private readonly _controllerId = 'sql-controller-id';
 	private readonly _notebookType = 'jupyter-notebook';
 	private readonly _label = 'SQL';
@@ -54,9 +56,15 @@ export class SqlNotebookController implements vscode.Disposable {
 		this._disposables.push(changeConnectionCommand);
 
 		this._connectionLabelItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right);
+		this._connectionLabelItem.text = this._disconnectedLabel;
 		this._connectionLabelItem.tooltip = localize('changeNotebookConnection', 'Change SQL Notebook Connection');
 		this._connectionLabelItem.command = commandName;
 		this._disposables.push(this._connectionLabelItem);
+
+		// Show connection status if there's a notebook already open when ADS starts
+		if (vscode.window.activeTextEditor?.document.notebook) {
+			this._connectionLabelItem.show();
+		}
 
 		let editorChangedEvent = vscode.window.onDidChangeActiveTextEditor((editor) => this.handleActiveEditorChanged(editor));
 		this._disposables.push(editorChangedEvent);
@@ -75,12 +83,18 @@ export class SqlNotebookController implements vscode.Disposable {
 	}
 
 	private handleActiveEditorChanged(editor: vscode.TextEditor): void {
-		let connection = this._connectionsMap.get(editor?.document.notebook?.uri);
-		if (connection) {
-			this._connectionLabelItem.text = 'Connected to: ' + connection.options['server'];
-			this._connectionLabelItem.show();
-		} else {
+		let notebook = editor?.document.notebook;
+		if (!notebook) {
+			// Hide status bar item if the current editor isn't a notebook
 			this._connectionLabelItem.hide();
+		} else {
+			let connection = this._connectionsMap.get(notebook.uri);
+			if (connection) {
+				this._connectionLabelItem.text = this._connectionLabel(connection.options['server']);
+			} else {
+				this._connectionLabelItem.text = this._disconnectedLabel;
+			}
+			this._connectionLabelItem.show();
 		}
 	}
 
@@ -90,7 +104,9 @@ export class SqlNotebookController implements vscode.Disposable {
 			let connection = await azdata.connection.openConnectionDialog(['MSSQL']);
 			if (connection) {
 				this._connectionsMap.set(notebookUri, connection);
-				this._connectionLabelItem.text = 'Connected to: ' + connection.options['server'];
+				this._connectionLabelItem.text = this._connectionLabel(connection.options['server']);
+			} else {
+				this._connectionLabelItem.text = this._disconnectedLabel;
 			}
 		}
 	}
@@ -106,11 +122,11 @@ export class SqlNotebookController implements vscode.Disposable {
 			this._connectionsMap.set(notebook.uri, connection);
 		}
 		if (connection) {
-			this._connectionLabelItem.text = 'Connected to: ' + connection.options['server'];
-			this._connectionLabelItem.show();
+			this._connectionLabelItem.text = this._connectionLabel(connection.options['server']);
 		} else {
-			this._connectionLabelItem.hide();
+			this._connectionLabelItem.text = this._disconnectedLabel;
 		}
+		this._connectionLabelItem.show();
 
 		for (let cell of cells) {
 			await this.doExecution(cell, connection);
@@ -187,7 +203,7 @@ export class SqlNotebookController implements vscode.Disposable {
 					if (execution.token.isCancellationRequested) {
 						await execution.appendOutput([
 							new vscode.NotebookCellOutput([
-								vscode.NotebookCellOutputItem.text('Cell execution cancelled.')
+								vscode.NotebookCellOutputItem.text(localize('cellExecutionCancelled', 'Cell execution cancelled.'))
 							])
 						]);
 						execution.end(false, Date.now());
