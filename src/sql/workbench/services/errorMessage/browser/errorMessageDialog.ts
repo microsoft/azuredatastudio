@@ -8,6 +8,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
+import * as azdata from 'azdata';
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_FOREGROUND } from 'vs/workbench/common/theme';
@@ -44,6 +45,8 @@ export class ErrorMessageDialog extends Modal {
 	private _okLabel: string;
 	private _closeLabel: string;
 	private _readMoreLabel: string;
+	private _actionEvents = new Map<string, boolean>();
+	private _promiseResolver: (value: string) => void;
 
 	private _onOk = new Emitter<void>();
 	public onOk: Event<void> = this._onOk.event;
@@ -56,7 +59,8 @@ export class ErrorMessageDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
-		@IOpenerService private readonly _openerService: IOpenerService
+		@IOpenerService private readonly _openerService: IOpenerService,
+		protected _telemetryView?: TelemetryKeys.TelemetryView
 	) {
 		super('', TelemetryKeys.ModalDialogName.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
 		this._okLabel = localize('errorMessageDialog.ok', "OK");
@@ -80,6 +84,10 @@ export class ErrorMessageDialog extends Modal {
 		this._register(attachButtonStyler(this._okButton, this._themeService));
 	}
 
+	public setTelemetryView(telemetryView: TelemetryKeys.TelemetryView) {
+		this._telemetryView = telemetryView;
+	}
+
 	private createCopyButton() {
 		let copyButtonLabel = localize('copyDetails', "Copy details");
 		this._copyButton = this.addFooterButton(copyButtonLabel, () => {
@@ -101,11 +109,19 @@ export class ErrorMessageDialog extends Modal {
 	}
 
 	private onActionSelected(index: number): void {
-		// Call OK so it always closes
-		this.ok();
-		// Run the action if possible
 		if (this._actions && index < this._actions.length) {
+			const actionId = this._actions[index].id;
+			if (this._telemetryView) {
+				this._telemetryService.sendActionEvent(this._telemetryView, actionId);
+			}
+			if (this._actionEvents && this._actionEvents.has(actionId) && this._actionEvents.get(actionId)) {
+				// Call OK to close dialog.
+				this.ok(false);
+			}
+			// Run the action if possible
 			this._actions[index].run();
+			// Resolve promise after running action.
+			this._promiseResolver(actionId);
 		}
 	}
 
@@ -157,16 +173,20 @@ export class ErrorMessageDialog extends Modal {
 		this.ok();
 	}
 
-	public ok(): void {
+	public ok(resolvePromise: boolean = true): void {
 		this._onOk.fire();
-		this.close('ok');
+		this.close('ok', resolvePromise);
 	}
 
-	public close(hideReason: HideReason = 'close') {
+	public close(hideReason: HideReason = 'close', resolvePromise: boolean) {
 		this.hide(hideReason);
+		if (resolvePromise) {
+			this._promiseResolver(hideReason.toString());
+		}
 	}
 
-	public open(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[], instructionText?: string, readMoreLink?: string): void {
+	public open(severity: Severity, headerTitle: string, message: string, messageDetails?: string,
+		actions?: IAction[], instructionText?: string, readMoreLink?: string, resetActions: boolean = true): void {
 		this._severity = severity;
 		this._message = message;
 		this._instructionText = instructionText;
@@ -181,7 +201,9 @@ export class ErrorMessageDialog extends Modal {
 		if (this._message) {
 			this._bodyContainer.setAttribute('aria-description', this._message);
 		}
-		this.resetActions();
+		if (resetActions) {
+			this.resetActions();
+		}
 		if (actions?.length > 0) {
 			for (let i = 0; i < maxActions && i < actions.length; i++) {
 				this._actions.push(actions[i]);
@@ -209,8 +231,36 @@ export class ErrorMessageDialog extends Modal {
 		}
 	}
 
+	public openCustomAsync(severity: Severity, options: azdata.window.ICustomDialogOptions): Promise<string | undefined> {
+		if (!options) {
+			return undefined;
+		}
+		let actions: IAction[] = [];
+
+		this.resetActions();
+		options.actions?.forEach(action => {
+			this._actionEvents.set(action.id, action.closeDialog);
+			actions.push({
+				id: action.id,
+				label: action.label,
+				class: action.styleClass,
+				enabled: action.isEnabled,
+				tooltip: action.label,
+				dispose: () => { },
+				run: () => { }
+			});
+		});
+
+		this.open(severity, options.headerTitle, options.message, options.messageDetails, actions, options.instructionText, options.readMoreLink, false);
+		const promise = new Promise<string | undefined>((resolve) => {
+			this._promiseResolver = resolve;
+		});
+		return promise;
+	}
+
 	private resetActions(): void {
 		this._actions = [];
+		this._actionEvents.clear();
 		for (let actionButton of this._actionButtons) {
 			actionButton.element.style.visibility = 'hidden';
 		}

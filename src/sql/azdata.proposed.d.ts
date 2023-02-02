@@ -432,7 +432,6 @@ declare module 'azdata' {
 		azurePortalEndpoint?: string;
 	}
 
-
 	export namespace diagnostics {
 		/**
 		 * Represents a diagnostics provider of accounts.
@@ -447,9 +446,13 @@ declare module 'azdata' {
 
 		export interface ConnectionDiagnosticsResult {
 			/**
-			 * Status indicating if the error was handled or not.
+			 * Property indicating if the error was handled or not.
 			 */
 			handled: boolean,
+			/**
+			 * Property indicating if reconnect should be attempted.
+			 */
+			reconnect?: boolean,
 			/**
 			 * If given, the new set of connection options to assign to the original connection profile, overwriting any previous options.
 			 */
@@ -467,7 +470,7 @@ declare module 'azdata' {
 			 * @param connection The connection profile that caused the error.
 			 * @returns ConnectionDiagnosticsResult: The result from the provider for whether the error was handled.
 			 */
-			handleConnectionError(errorCode: number, errorMessage: string, connection: connection.ConnectionProfile): Thenable<ConnectionDiagnosticsResult>;
+			handleConnectionError(errorCode: number, errorMessage: string, callStack: string, connection: connection.ConnectionProfile): Thenable<ConnectionDiagnosticsResult>;
 		}
 
 		/**
@@ -517,6 +520,13 @@ declare module 'azdata' {
 		 * @returns The new password that is returned from the operation or undefined if unsuccessful.
 		 */
 		export function openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined>;
+
+		/**
+		 * Opens the error dialog with customization options provided.
+		 * @param profile The connection profile associated with error dialog.
+		 * @returns Id of action button clicked by user, e.g. ok, cancel
+		 */
+		export function openCustomErrorDialog(options: window.ICustomDialogOptions): Thenable<string | undefined>;
 	}
 
 	/*
@@ -1800,6 +1810,70 @@ declare module 'azdata' {
 		}
 
 		export interface Dialog extends LoadingComponentBase {
+		}
+
+		/**
+		 * Provides dialog options to customize modal dialog content and layout
+		 */
+		export interface ICustomDialogOptions {
+			/**
+			 * Severity Level to identify icon of modal dialog.
+			 */
+			severity: MessageLevel;
+			/**
+			 * Title of modal dialog header.
+			 */
+			headerTitle: string;
+			/**
+			 * Message text to show on dialog.
+			 */
+			message: string;
+			/**
+			 * (Optional) Detailed message, e.g stack trace of error.
+			 */
+			messageDetails?: string;
+			/**
+			 * (Optional) List of custom actions to include in modal dialog.
+			 */
+			actions?: IDialogAction[];
+			/**
+			 * (Optional) If provided, instruction text is shown in bold below message.
+			 */
+			instructionText?: string;
+			/**
+			 * (Optional) If provided, appends read more link after instruction text.
+			 */
+			readMoreLink?: string;
+		}
+
+		/**
+		 * Provides APIs to define customization for modal dialog action buttons.
+		 */
+		export interface IDialogAction {
+			/**
+			 * Identifier of action.
+			 */
+			id: string;
+			/**
+			 * Label of Action button.
+			 */
+			label: string;
+			/**
+			 * Defines if action button should be enabled/disabled.
+			 */
+			isEnabled: boolean;
+			/**
+			 * Defines if button styling and focus should be based on primary action.
+			 */
+			isPrimary: boolean;
+			/**
+			 * Defines if dialog should be closed on action event.
+			 */
+			closeDialog: boolean;
+			/**
+			 * Custom class to append to action button.
+			 */
+			styleClass?: string | undefined;
 		}
 	}
 }

@@ -10,6 +10,7 @@ import { IAction } from 'vs/base/common/actions';
 
 import { ErrorMessageDialog } from 'sql/workbench/services/errorMessage/browser/errorMessageDialog';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 export class ErrorMessageService implements IErrorMessageService {
 
@@ -24,13 +25,14 @@ export class ErrorMessageService implements IErrorMessageService {
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) { }
 
-	public showDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[], instructionText?: string, readMoreLink?: string): void {
-		this.doShowDialog(severity, headerTitle, message, messageDetails, actions, instructionText, readMoreLink);
+	public showDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[], instructionText?: string, readMoreLink?: string, telemetryView?: TelemetryView): void {
+		this.doShowDialog(severity, headerTitle, message, messageDetails, actions, instructionText, readMoreLink, telemetryView);
 	}
 
-	private doShowDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[], instructionText?: string, readMoreLink?: string): void {
+	private doShowDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[], instructionText?: string, readMoreLink?: string, telemetryView?: TelemetryView): void {
 		if (!this._errorDialog) {
 			this._errorDialog = this._instantiationService.createInstance(ErrorMessageDialog);
+			this._errorDialog.setTelemetryView(telemetryView);
 			this._errorDialog.onOk(() => this.handleOnOk());
 			this._errorDialog.render();
 		}

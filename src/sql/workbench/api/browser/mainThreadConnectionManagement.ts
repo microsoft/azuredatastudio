@@ -188,6 +188,10 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		return this._connectionManagementService.openChangePasswordDialog(convertedProfile);
 	}
 
+	public $openCustomErrorDialog(options: azdata.window.ICustomDialogOptions): Thenable<string | undefined> {
+		return this._connectionManagementService.openCustomErrorDialog(options);
+	}
+
 	public async $listDatabases(connectionId: string): Promise<string[]> {
 		let connectionUri = await this.$getUriForConnection(connectionId);
 		let result = await this._connectionManagementService.listDatabases(connectionUri);

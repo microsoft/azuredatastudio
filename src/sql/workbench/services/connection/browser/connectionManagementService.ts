@@ -23,7 +23,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { Deferred } from 'sql/base/common/promise';
-import { AzureResource, ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { AzureResource, ConnectionOptionSpecialType, MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
 import * as azdata from 'azdata';
@@ -57,6 +57,8 @@ import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensio
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import { PasswordChangeDialog } from 'sql/workbench/services/connection/browser/passwordChangeDialog';
+import { ErrorMessageDialog } from 'sql/workbench/services/errorMessage/browser/errorMessageDialog';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -564,14 +566,17 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				return this.connectWithOptions(connection, uri, options, callbacks);
 			}
 			else {
-				let connectionErrorHandled = await this._errorDiagnosticsService.tryHandleConnectionError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, connection);
-				if (connectionErrorHandled.handled) {
+				let connectionErrorHandleResult = await this._errorDiagnosticsService.tryHandleConnectionError(connectionResult, connection.providerName, connection);
+				if (connectionErrorHandleResult.handled) {
 					connectionResult.errorHandled = true;
-					if (connectionErrorHandled.options) {
+					if (connectionErrorHandleResult.options) {
 						//copy over altered connection options from the result if provided.
-						connection.options = connectionErrorHandled.options;
+						connection.options = connectionErrorHandleResult.options;
 					}
-					return this.connectWithOptions(connection, uri, options, callbacks);
+					// Attempt reconnect if requested by provider
+					return connectionErrorHandleResult.reconnect
+						? this.connectWithOptions(connection, uri, options, callbacks)
+						: connectionResult;
 				}
 				else {
 					// Error not handled by any registered providers so fail the connection
@@ -603,6 +608,26 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public async openChangePasswordDialog(profile: interfaces.IConnectionProfile): Promise<string | undefined> {
 		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
 		let result = await dialog.open(profile);
+		return result;
+	}
+
+	public async openCustomErrorDialog(options: azdata.window.ICustomDialogOptions): Promise<string | undefined> {
+		let dialog = this._instantiationService.createInstance(ErrorMessageDialog);
+		let severity: Severity = Severity.Error;
+		switch (options.severity) {
+			case MessageLevel.Error:
+				severity = Severity.Error;
+				break;
+			case MessageLevel.Information:
+				severity = Severity.Info;
+				break;
+			case MessageLevel.Warning:
+				severity = Severity.Warning;
+				break;
+		}
+		dialog.setTelemetryView(TelemetryView.ConnectionDialog)
+		dialog.render();
+		let result = await dialog.openCustomAsync(severity, options);
 		return result;
 	}
 

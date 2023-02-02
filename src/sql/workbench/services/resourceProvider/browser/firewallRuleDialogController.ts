@@ -7,6 +7,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import Severity from 'vs/base/common/severity';
 import { localize } from 'vs/nls';
 import * as azdata from 'azdata';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { FirewallRuleDialog } from 'sql/workbench/services/resourceProvider/browser/firewallRuleDialog';
@@ -55,7 +56,8 @@ export class FirewallRuleDialogController {
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private handleOnAddAccountError(message: string): void {
-		this._errorMessageService.showDialog(Severity.Error, this._addAccountErrorTitle, message);
+		this._errorMessageService.showDialog(Severity.Error, this._addAccountErrorTitle, message,
+			undefined, undefined, undefined, undefined, TelemetryView.FirewallDialog);
 	}
 
 	private async handleOnCreateFirewallRule(): Promise<void> {
@@ -80,7 +82,8 @@ export class FirewallRuleDialogController {
 				this._firewallRuleDialog!.close();
 				this._deferredPromise!.resolve(true);
 			} else {
-				this._errorMessageService.showDialog(Severity.Error, this._firewallRuleErrorTitle, response.errorMessage);
+				this._errorMessageService.showDialog(Severity.Error, this._firewallRuleErrorTitle, response.errorMessage,
+					undefined, undefined, undefined, undefined, TelemetryView.FirewallDialog);
 			}
 			this._firewallRuleDialog!.onServiceComplete();
 		} catch (e) {
@@ -89,7 +92,8 @@ export class FirewallRuleDialogController {
 	}
 
 	private showError(error: any): void {
-		this._errorMessageService.showDialog(Severity.Error, this._firewallRuleErrorTitle, error);
+		this._errorMessageService.showDialog(Severity.Error, this._firewallRuleErrorTitle, error,
+			undefined, undefined, undefined, undefined, TelemetryView.FirewallDialog);
 		this._firewallRuleDialog!.onServiceComplete();
 		// Note: intentionally not rejecting the promise as we want users to be able to choose a different account
 	}

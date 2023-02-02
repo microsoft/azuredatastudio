@@ -334,4 +334,8 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	openChangePasswordDialog(profile: IConnectionProfile): Promise<string | undefined> {
 		return undefined;
 	}
+
+	openCustomErrorDialog(options: azdata.window.ICustomDialogOptions): Promise<string | undefined> {
+		return undefined;
+	}
 }

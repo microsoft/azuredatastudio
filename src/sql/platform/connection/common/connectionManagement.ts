@@ -340,6 +340,13 @@ export interface IConnectionManagementService {
 	 * @returns the new valid password that is entered, or undefined if cancelled or errored.
 	 */
 	openChangePasswordDialog(profile: IConnectionProfile): Promise<string | undefined>;
+
+	/**
+	 * Opens the error dialog with customization options provided.
+	 * @param profile The connection profile associated with error dialog.
+	 * @returns Id of action button clicked by user, e.g. ok, cancel
+	 */
+	openCustomErrorDialog(options: azdata.window.ICustomDialogOptions): Promise<string | undefined>;
 }
 
 export enum RunQueryOnConnectionMode {
