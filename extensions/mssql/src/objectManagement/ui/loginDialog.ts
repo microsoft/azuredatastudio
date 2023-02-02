@@ -102,8 +102,7 @@ export class LoginDialog extends ObjectManagementDialogBase {
 
 	protected async initialize(): Promise<void> {
 		this.dialogInfo = await this.objectManagementService.initializeLoginView(this.connectionUri, this.contextId, this.isNewObject, this.objectName);
-		const tab = azdata.window.createTab('');
-		tab.registerContent(async view => {
+		this.dialogObject.registerContent(async view => {
 			const sections: azdata.Component[] = [];
 			this.initializeGeneralSection(view);
 			sections.push(this.generalSection);
@@ -121,7 +120,6 @@ export class LoginDialog extends ObjectManagementDialogBase {
 			this.formContainer = this.createFormContainer(view, sections);
 			return view.initializeModel(this.formContainer)
 		});
-		this.dialogObject.content = [tab];
 	}
 
 	private initializeGeneralSection(view: azdata.ModelView): void {
