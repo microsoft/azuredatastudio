@@ -126,7 +126,7 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 	return `<span title="${titleValue}" style="${cellStyle}" class="${cellClasses}">${valueToDisplay}</span>`;
 }
 
-function getCellDisplayValue(cellValue: string): string {
+export function getCellDisplayValue(cellValue: string): string {
 	// allow-any-unicode-next-line
 	let valueToDisplay = cellValue.replace(/(\r\n|\n|\r)/g, '↵');
 	return escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);

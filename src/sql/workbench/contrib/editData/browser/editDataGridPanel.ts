@@ -7,6 +7,7 @@ import 'vs/css!./media/editData';
 
 import { VirtualizedCollection, AsyncDataProvider, ISlickColumn } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
+import { getCellDisplayValue } from 'sql/base/browser/ui/table/formatters'
 
 import { IGridDataSet } from 'sql/workbench/contrib/grid/browser/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
@@ -1151,17 +1152,12 @@ export class EditDataGridPanel extends GridParentComponent {
 		let cellClasses = 'grid-cell-value-container';
 		/* tslint:disable:no-null-keyword */
 		let valueMissing = value === undefined || value === null || (Services.DBCellValue.isDBCellValue(value) && value.isNull) || value === 'NULL';
-		let isStringNull = (Services.DBCellValue.isDBCellValue(value) && !value.isNull && value.displayValue === 'NULL');
 		if (valueMissing) {
 			valueToDisplay = 'NULL';
 			cellClasses += ' missing-value';
 		}
-		else if (isStringNull) {
-			valueToDisplay = '\'NULL\'';
-		}
 		else if (Services.DBCellValue.isDBCellValue(value)) {
-			valueToDisplay = (value.displayValue + '');
-			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+			valueToDisplay = getCellDisplayValue(value.displayValue);
 		}
 		else if (typeof value === 'string' || (value && value.text)) {
 			if (value.text) {
@@ -1169,8 +1165,8 @@ export class EditDataGridPanel extends GridParentComponent {
 			} else {
 				valueToDisplay = value;
 			}
-			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+			valueToDisplay = getCellDisplayValue(valueToDisplay);
 		}
-		return '<span title="' + valueToDisplay + '" class="' + cellClasses + '">' + valueToDisplay + '</span>';
+		return `<span title="${valueToDisplay}" class="${cellClasses}">${valueToDisplay}</span>`;
 	}
 }
