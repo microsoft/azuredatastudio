@@ -875,7 +875,7 @@ declare module 'mssql' {
 		}
 
 		export interface Login extends SqlObject {
-			authenticationType: LoginAuthenticationType;
+			authenticationType: AuthenticationType;
 			password: string | undefined;
 			oldPassword: string | undefined;
 			enforcePasswordPolicy: boolean | undefined;
@@ -884,15 +884,15 @@ declare module 'mssql' {
 			defaultDatabase: string;
 			defaultLanguage: string;
 			serverRoles: string[];
-			userMapping: ServerLoginDatabaseUserMapping[];
+			userMapping: ServerLoginUserMapping[];
 			isEnabled: boolean;
 			connectPermission: boolean;
 			isLockedOut: boolean;
 		}
 
-		export type LoginAuthenticationType = 'Windows' | 'Sql' | 'AAD';
+		export type AuthenticationType = 'Windows' | 'Sql' | 'AAD';
 
-		export interface ServerLoginDatabaseUserMapping {
+		export interface ServerLoginUserMapping {
 			database: string;
 			user: string;
 			defaultSchema: string;
@@ -955,18 +955,66 @@ declare module 'mssql' {
 			isFixedRole: boolean;
 		}
 
-		export interface DatabaseUser extends SqlObject {
-			type: string;
-			isAAD: boolean | undefined;
-			password: string | undefined;
+		export type UserType = 'Login' | 'WindowsGroupLogin' | 'Contained' | 'NoConnectAccess';
+
+		export interface User extends SqlObject {
+			type: UserType;
+			/**
+			 * Default schema.
+			 */
 			defaultSchema: string | undefined;
+			/**
+			 * Schemas owned by the user.
+			 */
 			ownedSchemas: string[] | undefined;
+			/**
+			 * Database roles that the user belongs to.
+			 */
+			databaseRoles: string[] | undefined;
+			/**
+			 * Whether the user has access to database.
+			 */
+			hasDbAccess: boolean;
+			/**
+			 * The name of the server login associated with the user.
+			 * Only applicable to type: Login.
+			 */
 			loginName: string | undefined;
-			isEnabled: boolean;
-			extendedProperties: ExtendedProperty[] | undefined;
-			securablePermissions: SecurablePermissions[] | undefined;
+			/**
+			 * The default language of the user.
+			 * Only applicable to type: ContainedUser
+			 */
+			defaultLanguage: string | undefined;
+			/**
+			 * Authentication type.
+			 * Only applicable to type: Contained.
+			 */
+			authenticationType: AuthenticationType | undefined;
+			/**
+			 * Password of the user.
+			 * Only applicable to type: Contained, authType: Sql
+			 */
+			password: string | undefined;
+		}
+
+		export interface UserViewInfo {
+			user: User;
+			supportContainedUser: boolean;
+			supportWindowsAuthentication: boolean;
+			supportAADAuthentication: boolean;
+			supportSQLAuthentication: boolean;
+			/**
+			 * Whether advanced options are supported.
+			 * Advanced options: default language.
+			 */
+			supportedAdvancedOptions: boolean;
+			languages: string[];
+			schemas: string[];
+			logins: string[];
+			databaseRoles: string[];
 		}
 	}
+
 
 	export interface IObjectManagementService {
 
@@ -979,6 +1027,16 @@ declare module 'mssql' {
 		deleteLogin(connectionUri: string, name: string): Thenable<void>;
 
 		disposeLoginView(contextId: string): Thenable<void>;
+
+		initializeUserView(connectionUri: string, database: string, contextId: string, isNewObject: boolean, name: string | undefined): Thenable<ObjectManagement.UserViewInfo>;
+
+		createUser(contextId: string, user: ObjectManagement.User): Thenable<void>;
+
+		updateUser(contextId: string, login: ObjectManagement.User): Thenable<void>;
+
+		deleteUser(connectionUri: string, database: string, name: string): Thenable<void>;
+
+		disposeUserView(contextId: string): Thenable<void>;
 	}
 	//
 }

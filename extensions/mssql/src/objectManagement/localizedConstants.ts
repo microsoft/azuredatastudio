@@ -4,7 +4,43 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
+import { NodeType } from './constants';
 const localize = nls.loadMessageBundle();
+import { ObjectManagement } from 'mssql';
+
+// Util functions
+export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
+	switch (type) {
+		case NodeType.Login:
+			return inTitle ? LoginTypeDisplayNameInTitle : LoginTypeDisplayName;
+		case NodeType.User:
+			return inTitle ? UserTypeDisplayNameInTitle : UserTypeDisplayName;
+		default:
+			throw new Error(`Unkown node type: ${type}`);
+	}
+}
+
+export function getAuthenticationTypeDisplayName(authType: ObjectManagement.AuthenticationType): string {
+	switch (authType) {
+		case 'Windows':
+			return WindowsAuthenticationTypeDisplayText;
+		case 'AAD':
+			return AADAuthenticationTypeDisplayText;
+		default:
+			return SQLAuthenticationTypeDisplayText;
+	}
+}
+
+export function getAuthenticationTypeByDisplayName(displayValue: string): ObjectManagement.AuthenticationType {
+	switch (displayValue) {
+		case WindowsAuthenticationTypeDisplayText:
+			return 'Windows';
+		case AADAuthenticationTypeDisplayText:
+			return 'AAD';
+		default:
+			return 'Sql';
+	}
+}
 
 // Object Types
 export const LoginTypeDisplayName: string = localize('objectManagement.LoginTypeDisplayName', "login");
@@ -102,7 +138,7 @@ export const BlankPasswordConfirmationText: string = localize('objectManagement.
 export const DeleteLoginConfirmationText: string = localize('objectManagement.deleteLoginConfirmation', "Deleting server logins does not delete the database users associated with the logins. To complete the process, delete the users in each database. It may be necessary to first transfer the ownership of schemas to new users.");
 export const SQLAuthenticationSectionHeader = localize('objectManagement.login.sqlAuthSectionHeader', "SQL Authentication");
 export const ServerRoleSectionHeader = localize('objectManagement.login.serverRoleSectionHeader', "Server Roles");
-export const AuthTypeText = localize('objectManagement.login.authenticateType', "Type");
+export const AuthTypeText = localize('objectManagement.login.authenticateType', "Authentication");
 export const SpecifyOldPasswordText = localize('objectManagement.login.specifyOldPasswordLabel', "Specify old password");
 export const OldPasswordText = localize('objectManagement.login.oldPasswordLabel', "Old password");
 export const EnforcePasswordPolicyText = localize('objectManagement.login.enforcePasswordPolicyLabel', "Enforce password policy");
@@ -116,3 +152,40 @@ export const WindowsAuthenticationTypeDisplayText = localize('objectManagement.l
 export const SQLAuthenticationTypeDisplayText = localize('objectManagement.login.sqlAuthenticationType', "SQL Authentication");
 export const AADAuthenticationTypeDisplayText = localize('objectManagement.login.aadAuthenticationType', "Azure Active Directory Authentication");
 export const OldPasswordCannotBeEmptyError = localize('objectManagement.login.oldPasswordCannotBeEmptyError', "Old password cannot be empty.");
+
+// User
+export const UserTypeText = localize('objectManagement.user.type', "Type");
+export const UserWithLoginText = localize('objectManagement.user.userWithLogin', "User with login");
+export const UserWithWindowsGroupLoginText = localize('objectManagement.user.userWithGroupLogin', "User with Windows group login");
+export const ContainedUserText = localize('objectManagement.user.containedUser', "Contained user");
+export const UserWithNoConnectAccess = localize('objectManagement.user.userWithNoConnectAccess', "User with no connect access");
+export const DefaultSchemaText = localize('objectManagement.user.defaultSchemaLabel', "Default schema");
+export const LoginText = localize('objectManagement.user.loginLabel', "Login");
+export const OwnedSchemaSectionHeader = localize('objectManagement.user.ownedSchemasLabel', "Owned Schemas");
+export const MembershipSectionHeader = localize('objectManagement.user.membershipLabel', "Membership");
+
+export function getUserTypeDisplayName(userType: ObjectManagement.UserType): string {
+	switch (userType) {
+		case 'Login':
+			return UserWithLoginText;
+		case 'WindowsGroupLogin':
+			return UserWithWindowsGroupLoginText;
+		case 'Contained':
+			return ContainedUserText;
+		default:
+			return UserWithNoConnectAccess;
+	}
+}
+
+export function getUserTypeByDisplayName(userTypeDisplayName: string): ObjectManagement.UserType {
+	switch (userTypeDisplayName) {
+		case UserWithLoginText:
+			return 'Login';
+		case UserWithWindowsGroupLoginText:
+			return 'WindowsGroupLogin';
+		case ContainedUserText:
+			return 'Contained';
+		default:
+			return 'NoConnectAccess';
+	}
+}

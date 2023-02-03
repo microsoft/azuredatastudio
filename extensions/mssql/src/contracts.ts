@@ -1330,4 +1330,52 @@ export namespace DisposeLoginViewRequest {
 	export const type = new RequestType<DisposeLoginViewRequestParams, void, void, void>('objectManagement/disposeLoginView');
 }
 
+export interface InitializeUserViewRequestParams {
+	connectionUri: string;
+	contextId: string;
+	isNewObject: boolean;
+	database: string;
+	name: string | undefined;
+}
+
+export namespace InitializeUserViewRequest {
+	export const type = new RequestType<InitializeUserViewRequestParams, mssql.ObjectManagement.UserViewInfo, void, void>('objectManagement/initializeUserView');
+}
+
+export interface CreateUserRequestParams {
+	contextId: string;
+	user: mssql.ObjectManagement.User;
+}
+
+export namespace CreateUserRequest {
+	export const type = new RequestType<CreateUserRequestParams, void, void, void>('objectManagement/createUser');
+}
+
+export interface UpdateUserRequestParams {
+	contextId: string;
+	user: mssql.ObjectManagement.User;
+}
+
+export namespace UpdateUserRequest {
+	export const type = new RequestType<UpdateUserRequestParams, void, void, void>('objectManagement/updateUser');
+}
+
+export interface DeleteUserRequestParams {
+	connectionUri: string;
+	database: string;
+	name: string;
+}
+
+export namespace DeleteUserRequest {
+	export const type = new RequestType<DeleteUserRequestParams, void, void, void>('objectManagement/deleteUser');
+}
+
+export interface DisposeUserViewRequestParams {
+	contextId: string;
+}
+
+export namespace DisposeUserViewRequest {
+	export const type = new RequestType<DisposeUserViewRequestParams, void, void, void>('objectManagement/disposeUserView');
+}
+
 // ------------------------------- < Object Management > ------------------------------------

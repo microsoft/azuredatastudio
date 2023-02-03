@@ -8,8 +8,11 @@ import { IObjectManagementService } from 'mssql';
 import * as vscode from 'vscode';
 import { generateUuid } from 'vscode-languageclient/lib/utils/uuid';
 import { getErrorMessage } from '../../utils';
-import { getNodeTypeDisplayName, NodeType } from '../constants';
-import { CreateObjectOperationDisplayName, LoadingDialogText, NewObjectDialogTitle, ObjectPropertiesDialogTitle, OkText, UpdateObjectOperationDisplayName, ValidationErrorSummary } from '../localizedConstants';
+import { NodeType } from '../constants';
+import {
+	CreateObjectOperationDisplayName, getNodeTypeDisplayName, LoadingDialogText,
+	NewObjectDialogTitle, ObjectPropertiesDialogTitle, OkText, UpdateObjectOperationDisplayName, ValidationErrorSummary
+} from '../localizedConstants';
 
 export const DefaultLabelWidth = 150;
 export const DefaultInputWidth = 300;
@@ -19,7 +22,7 @@ export const DefaultTableMinRowCount = 2;
 export const TableRowHeight = 25;
 export const TableColumnHeaderHeight = 30;
 
-export function GetTableHeight(rowCount: number, minRowCount: number = DefaultTableMinRowCount, maxHeight: number = DefaultTableMaxHeight): number {
+export function getTableHeight(rowCount: number, minRowCount: number = DefaultTableMinRowCount, maxHeight: number = DefaultTableMaxHeight): number {
 	return Math.min(Math.max(rowCount, minRowCount) * TableRowHeight + TableColumnHeaderHeight, maxHeight);
 }
 
@@ -34,7 +37,7 @@ export abstract class ObjectManagementDialogBase {
 		protected isNewObject: boolean,
 		protected readonly objectName: string | undefined = undefined,
 		dialogWidth: azdata.window.DialogWidth = 'narrow') {
-		const objectTypeDisplayName = getNodeTypeDisplayName(NodeType.Login, true);
+		const objectTypeDisplayName = getNodeTypeDisplayName(objectType, true);
 		const dialogTitle = isNewObject ? NewObjectDialogTitle(objectTypeDisplayName) : ObjectPropertiesDialogTitle(objectTypeDisplayName, objectName);
 		this.dialogObject = azdata.window.createModelViewDialog(dialogTitle, objectType, dialogWidth);
 		this.dialogObject.okButton.label = OkText;
@@ -137,5 +140,21 @@ export abstract class ObjectManagementDialogBase {
 		return view.modelBuilder.divContainer().withLayout({ width: 'calc(100% - 20px)', height: 'calc(100% - 20px)' }).withProps({
 			CSSStyles: { 'padding': '10px' }
 		}).withItems(items, { CSSStyles: { 'margin-block-end': '10px' } }).component();
+	}
+
+	protected removeItem(container: azdata.DivContainer | azdata.FlexContainer, item: azdata.Component): void {
+		if (container.items.indexOf(item) !== -1) {
+			container.removeItem(item);
+		}
+	}
+
+	protected addItem(container: azdata.DivContainer | azdata.FlexContainer, item: azdata.Component, index?: number): void {
+		if (container.items.indexOf(item) === -1) {
+			if (index === undefined) {
+				container.addItem(item);
+			} else {
+				container.insertItem(item, index);
+			}
+		}
 	}
 }

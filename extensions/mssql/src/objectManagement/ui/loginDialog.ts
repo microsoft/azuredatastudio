@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { DefaultInputWidth, DefaultTableWidth, GetTableHeight, ObjectManagementDialogBase } from './objectManagementDialogBase';
+import { DefaultInputWidth, DefaultTableWidth, getTableHeight, ObjectManagementDialogBase } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { NodeType, PublicServerRoleName } from '../constants';
@@ -67,7 +67,7 @@ export class LoginDialog extends ObjectManagementDialogBase {
 
 	protected async onComplete(): Promise<void> {
 		this.dialogInfo.login.name = this.nameInput.value;
-		this.dialogInfo.login.authenticationType = this.getAuthenticationType(<string>this.authTypeDropdown.value);
+		this.dialogInfo.login.authenticationType = localizedConstants.getAuthenticationTypeByDisplayName(<string>this.authTypeDropdown.value);
 		if (this.passwordInput) {
 			this.dialogInfo.login.password = this.passwordInput.value;
 		}
@@ -149,7 +149,7 @@ export class LoginDialog extends ObjectManagementDialogBase {
 		this.authTypeDropdown = view.modelBuilder.dropDown().withProps({
 			ariaLabel: localizedConstants.AuthTypeText,
 			values: authTypes,
-			value: this.getAuthenticationTypeDisplayValue(this.dialogInfo.login.authenticationType),
+			value: localizedConstants.getAuthenticationTypeDisplayName(this.dialogInfo.login.authenticationType),
 			width: DefaultInputWidth,
 			enabled: this.isNewObject
 		}).component();
@@ -264,7 +264,7 @@ export class LoginDialog extends ObjectManagementDialogBase {
 					}
 				],
 				width: DefaultTableWidth,
-				height: GetTableHeight(this.dialogInfo.serverRoles.length)
+				height: getTableHeight(this.dialogInfo.serverRoles.length)
 			}
 		).component();
 		this.serverRoleTable.onCellAction((arg: azdata.ICheckboxCellActionEventArgs) => {
@@ -280,35 +280,10 @@ export class LoginDialog extends ObjectManagementDialogBase {
 	}
 
 	private setViewByAuthenticationType(): void {
-		if (this.authTypeDropdown.value === localizedConstants.SQLAuthenticationTypeDisplayText && this.formContainer.items.indexOf(this.sqlAuthSection) === -1) {
-			this.formContainer.insertItem(this.sqlAuthSection, 1);
-		} else if (this.authTypeDropdown.value !== localizedConstants.SQLAuthenticationTypeDisplayText && this.formContainer.items.indexOf(this.sqlAuthSection) !== -1) {
-			this.formContainer.removeItem(this.sqlAuthSection);
-		}
-	}
-
-	private getAuthenticationTypeDisplayValue(authType: ObjectManagement.LoginAuthenticationType): string {
-		switch (authType) {
-			case 'Windows':
-				return localizedConstants.WindowsAuthenticationTypeDisplayText;
-			case 'Sql':
-				return localizedConstants.SQLAuthenticationTypeDisplayText;
-			case 'AAD':
-				return localizedConstants.AADAuthenticationTypeDisplayText;
-			default:
-				throw new Error(`Unknown authentication type: ${authType}`);
-		}
-	}
-	private getAuthenticationType(displayValue: string): ObjectManagement.LoginAuthenticationType {
-		switch (displayValue) {
-			case localizedConstants.WindowsAuthenticationTypeDisplayText:
-				return 'Windows';
-			case localizedConstants.SQLAuthenticationTypeDisplayText:
-				return 'Sql';
-			case localizedConstants.AADAuthenticationTypeDisplayText:
-				return 'AAD';
-			default:
-				throw new Error(`Unknown authentication type display value: ${displayValue}`);
+		if (this.authTypeDropdown.value === localizedConstants.SQLAuthenticationTypeDisplayText) {
+			this.addItem(this.formContainer, this.sqlAuthSection, 1);
+		} else if (this.authTypeDropdown.value !== localizedConstants.SQLAuthenticationTypeDisplayText) {
+			this.removeItem(this.formContainer, this.sqlAuthSection);
 		}
 	}
 }

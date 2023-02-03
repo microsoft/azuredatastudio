@@ -83,12 +83,61 @@ export class ObjectManagementService implements IObjectManagementService {
 		);
 	}
 
+	initializeUserView(connectionUri: string, database: string, contextId: string, isNewObject: boolean, name: string | undefined): Thenable<ObjectManagement.UserViewInfo> {
+		const params: contracts.InitializeUserViewRequestParams = { connectionUri, database, contextId, isNewObject, name };
+		return this.client.sendRequest(contracts.InitializeUserViewRequest.type, params).then(
+			r => {
+				return r;
+			},
+			e => {
+				this.client.logFailedRequest(contracts.InitializeUserViewRequest.type, e);
+				return Promise.reject(new Error(e.message));
+			}
+		);
+	}
+	createUser(contextId: string, user: ObjectManagement.User): Thenable<void> {
+		const params: contracts.CreateUserRequestParams = { contextId, user };
+		return this.client.sendRequest(contracts.CreateUserRequest.type, params).then(
+			r => { },
+			e => {
+				this.client.logFailedRequest(contracts.CreateUserRequest.type, e);
+				return Promise.reject(new Error(e.message));
+			}
+		);
+	}
+	updateUser(contextId: string, user: ObjectManagement.User): Thenable<void> {
+		const params: contracts.UpdateUserRequestParams = { contextId, user };
+		return this.client.sendRequest(contracts.UpdateUserRequest.type, params).then(
+			r => { },
+			e => {
+				this.client.logFailedRequest(contracts.UpdateLoginRequest.type, e);
+				return Promise.reject(new Error(e.message));
+			}
+		);
+	}
+	deleteUser(connectionUri: string, database: string, name: string): Thenable<void> {
+		const params: contracts.DeleteUserRequestParams = { connectionUri, database, name };
+		return this.client.sendRequest(contracts.DeleteUserRequest.type, params).then(
+			r => { },
+			e => {
+				this.client.logFailedRequest(contracts.DeleteUserRequest.type, e);
+				return Promise.reject(new Error(e.message));
+			}
+		);
+	}
+	disposeUserView(contextId: string): Thenable<void> {
+		const params: contracts.DisposeUserViewRequestParams = { contextId };
+		return this.client.sendRequest(contracts.DisposeUserViewRequest.type, params).then(
+			r => { },
+			e => {
+				this.client.logFailedRequest(contracts.DisposeUserViewRequest.type, e);
+				return Promise.reject(new Error(e.message));
+			}
+		);
+	}
 }
 
 export class TestObjectManagementService implements IObjectManagementService {
-	async disposeLoginView(contextId: string): Promise<void> {
-
-	}
 	initializeLoginView(connectionUri: string, contextId: string, isNewObject: boolean, name: string | undefined): Promise<ObjectManagement.LoginViewInfo> {
 		return new Promise((resolve, reject) => {
 			setTimeout(() => {
@@ -167,6 +216,83 @@ export class TestObjectManagementService implements IObjectManagementService {
 		});
 	}
 	async deleteLogin(connectionUri: string, name: string): Promise<void> {
+		return new Promise((resolve, reject) => {
+			setTimeout(() => {
+				resolve();
+			}, 3000);
+		});
+	}
+	async disposeLoginView(contextId: string): Promise<void> {
+	}
+	async initializeUserView(connectionUri: string, database: string, contextId: string, isNewObject: boolean, name: string): Promise<ObjectManagement.UserViewInfo> {
+		return new Promise((resolve, reject) => {
+			setTimeout(() => {
+				let viewInfo: ObjectManagement.UserViewInfo;
+				const languages = ['<default>', 'English'];
+				const schemas = ['dbo', 'sys', 'alanren'];
+				const logins = ['sa', 'alanren', 'alanren@microsoft.com'];
+				const databaseRoles = ['dbmanager', 'loginmanager', 'bulkadmin', 'sysadmin', 'tablemanager', 'viewmanager'];
+
+				if (isNewObject) {
+					viewInfo = {
+						user: <ObjectManagement.User>{
+							name: '',
+							type: 'Login',
+							defaultSchema: '',
+							defaultLanguage: '<default>',
+							loginName: '',
+							ownedSchemas: [],
+							databaseRoles: []
+						},
+						languages: languages,
+						schemas: schemas,
+						logins: logins,
+						databaseRoles: databaseRoles,
+						supportContainedUser: true,
+						supportAADAuthentication: true,
+						supportSQLAuthentication: true,
+						supportWindowsAuthentication: true,
+						supportedAdvancedOptions: true,
+					};
+				} else {
+					viewInfo = {
+						user: <ObjectManagement.User>{
+							name: name,
+							type: 'Login',
+							defaultSchema: '',
+							defaultLanguage: '<default>',
+							loginName: '',
+							ownedSchemas: ['dbo'],
+							databaseRoles: ['dbmanager', 'loginmanager']
+						},
+						languages: languages,
+						schemas: schemas,
+						logins: logins,
+						databaseRoles: databaseRoles,
+						supportContainedUser: true,
+						supportAADAuthentication: true,
+						supportSQLAuthentication: true,
+						supportWindowsAuthentication: true,
+						supportedAdvancedOptions: false
+					};
+				}
+				resolve(viewInfo);
+			}, 3000);
+		});
+	}
+	async createUser(contextId: string, user: ObjectManagement.User): Promise<void> {
+		return this.delayAndResolve();
+	}
+	async updateUser(contextId: string, login: ObjectManagement.User): Promise<void> {
+		return this.delayAndResolve();
+	}
+	async deleteUser(connectionUri: string, database: string, name: string): Promise<void> {
+		return this.delayAndResolve();
+	}
+	async disposeUserView(contextId: string): Promise<void> {
+	}
+
+	private delayAndResolve(): Promise<void> {
 		return new Promise((resolve, reject) => {
 			setTimeout(() => {
 				resolve();
