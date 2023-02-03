@@ -4847,16 +4847,12 @@
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
-									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://github.com/MarkMpn/Sql4Cds/releases/download/v7.1.0/azuredatastudio-sql4cds-7.1.0.vsix"
-								},
-								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
 									"source": "https://github.com/MarkMpn/Sql4Cds/releases/tag/v7.1.0"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://markcarrington.dev/wp-content/uploads/2019/10/SQL4CDS-Icon.png"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/master/MarkMpn.Sql4Cds/Images/SQL4CDS%20Icon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -4890,7 +4886,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/mongodb-js/vscode"
+									"value": "https://github.com/MarkMpn/Sql4Cds"
 								}
 							]
 						}
@@ -4905,7 +4901,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 79
+							"count": 80
 						}
 					]
 				}

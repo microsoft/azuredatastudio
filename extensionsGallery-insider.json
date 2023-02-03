@@ -4828,6 +4828,71 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "96",
+					"extensionName": "mark carrington.azuredatastudio-sql4cds",
+					"displayName": "SQL 4 CDS",
+					"shortDescription": "Query and modify data in Microsoft Dataverse/Dynamics 365/CRM using standard SQL queries.",
+					"publisher": {
+						"displayName": "Mark Carrington",
+						"publisherId": "mark carrington",
+						"publisherName": "Mark Carrington"
+					},
+					"versions": [
+						{
+							"version": "7.1.0",
+							"lastUpdated": "02/01/2023",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/MarkMpn/Sql4Cds/releases/tag/v7.1.0"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/master/MarkMpn.Sql4Cds/Images/SQL4CDS%20Icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.1.0/AzureDataStudioExtension/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
+									"source": "https://github.com/MarkMpn/Sql4Cds/releases/tag/v7.1.0"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.1.0/AzureDataStudioExtension/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.1.0/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "^1.65.2"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/MarkMpn/Sql4Cds"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
@@ -4836,7 +4901,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 79
+							"count": 80
 						}
 					]
 				}
