@@ -317,7 +317,7 @@ suite('ConnectionDialogService tests', () => {
 
 			assert.strictEqual(returnedModel._groupName, 'testGroup');
 			assert(called);
-		}, 200)
+		}, 200);
 	});
 
 	test('handleOnConnect calls connectAndSaveProfile when called with profile', async () => {
