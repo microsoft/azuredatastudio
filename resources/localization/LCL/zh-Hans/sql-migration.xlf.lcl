@@ -7785,10 +7785,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.target.mapping.error.duplicate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.]]></Val>
+          <Val><![CDATA[Database mapping error. Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '{2}' is already selected as a migration target for database '{3}'.  Please select a different target database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[数据库映射错误。无法将目标数据库“{0}”选为数据库“{1}”的迁移目标。已将目标数据库“${targetDatabaseName}”选为数据库“{2}”的迁移目标。请选择其他目标数据库。]]></Val>
+            <Val><![CDATA[数据库映射错误。无法将目标数据库“{0}”选为数据库“{1}”的迁移目标。已将目标数据库“{2}”选为数据库“{3}”的迁移目标。请选择其他目标数据库。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7803,19 +7806,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.target.source.collation.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.]]></Val>
+          <Val><![CDATA[Database mapping error (Error code: {0}) was found between '{1}' and '{2}' databases. The source database collation '{3}' does not match the target database collation '{4}'. Please select or re-create a target database with the same collation as the source database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[在“{0}”和“{1}”数据库之间发现映射错误。源数据库排序规则“{2}”与目标数据库排序规则“{3}”不匹配。请选择或重新创建与源数据库具有相同排序规则的目标数据库。]]></Val>
+            <Val><![CDATA[在“{1}”和“{2}”数据库之间发现映射错误(错误代码: {0})。源数据库排序规则“{3}”与目标数据库排序规则“{4}”不匹配。请选择或重新创建与源数据库具有相同排序规则的目标数据库。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.target.source.mapping.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.]]></Val>
+          <Val><![CDATA[Database mapping error. Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[数据库映射错误。未将源数据库“{0}”映射到目标数据库。请选择要迁移到的目标数据库。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
