@@ -431,7 +431,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	private async showDialogWithModel(): Promise<void> {
-		this.updateModelServerCapabilities(this._inputModel);
+		await this.updateModelServerCapabilities(this._inputModel);
 		await this.doShowDialog(this._params);
 	}
 
@@ -470,7 +470,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._params = params;
 		this._inputModel = model;
 
-		this.updateModelServerCapabilities(model);
+		await this.updateModelServerCapabilities(model);
 
 		// If connecting from a query editor set "save connection" to false
 		if (params && (params.input && params.connectionType === ConnectionType.editor ||
