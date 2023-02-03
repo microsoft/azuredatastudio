@@ -168,115 +168,6 @@ const usGovAzureSettings: ProviderSettings = {
 	}
 };
 
-const usNatAzureSettings: ProviderSettings = {
-	configKey: 'enableUsNatCloud',
-	metadata: {
-		displayName: localize('usNatCloudDisplayName', "Azure (US National)"),
-		id: 'azure_usNatCloud',
-		settings: {
-			host: 'https://login.microsoftonline.eaglex.ic.gov/',
-			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
-			microsoftResource: {
-				id: SettingIds.marm,
-				endpoint: 'https://management.azure.eaglex.ic.gov/',
-				azureResourceId: AzureResource.MicrosoftResourceManagement
-			},
-			graphResource: {
-				id: SettingIds.graph,
-				endpoint: 'https://graph.eaglex.ic.gov/',
-				azureResourceId: AzureResource.Graph
-			},
-			armResource: {
-				id: SettingIds.arm,
-				endpoint: 'https://management.core.eaglex.ic.gov/',
-				azureResourceId: AzureResource.ResourceManagement
-			},
-			sqlResource: {
-				id: SettingIds.sql,
-				endpoint: 'https://database.cloudapi.eaglex.ic.gov/',
-				azureResourceId: AzureResource.Sql
-			},
-			ossRdbmsResource: {
-				id: SettingIds.ossrdbms,
-				endpoint: 'https://ossrdbms-aad.database.cloudapi.eaglex.ic.gov/',
-				azureResourceId: AzureResource.OssRdbms
-			},
-			azureKeyVaultResource: {
-				id: SettingIds.vault,
-				endpoint: 'https://vault.cloudapi.eaglex.ic.gov/',
-				azureResourceId: AzureResource.AzureKeyVault
-			},
-			azureLogAnalyticsResource: {
-				id: SettingIds.ala,
-				endpoint: 'https://api.loganalytics.azure.eaglex.ic.gov/',
-				azureResourceId: AzureResource.AzureLogAnalytics,
-			},
-			azureStorageResource: {
-				id: SettingIds.storage,
-				endpoint: '',
-				endpointSuffix: '.core.eaglex.ic.gov/',
-				azureResourceId: AzureResource.AzureStorage
-			},
-			redirectUri: 'http://localhost',
-			scopes: [
-				'openid', 'email', 'profile', 'offline_access',
-				'https://management.core.eaglex.ic.gov/user_impersonation'
-			],
-			portalEndpoint: 'https://portal.azure.eaglex.ic.gov/'
-		}
-	}
-};
-
-
-const germanyAzureSettings: ProviderSettings = {
-	configKey: 'enableGermanyCloud',
-	metadata: {
-		displayName: localize('germanyCloud', "Azure (Germany)"),
-		id: 'azure_germanyCloud',
-		settings: {
-			host: 'https://login.microsoftazure.de/',
-			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
-			graphResource: {
-				id: SettingIds.graph,
-				endpoint: 'https://graph.cloudapi.de/',
-				azureResourceId: AzureResource.Graph
-			},
-			msGraphResource: {
-				id: SettingIds.msgraph,
-				endpoint: 'https://graph.microsoft.de/',
-				azureResourceId: AzureResource.MsGraph
-			},
-			armResource: {
-				id: SettingIds.arm,
-				endpoint: 'https://management.microsoftazure.de/',
-				azureResourceId: AzureResource.ResourceManagement
-			},
-			azureKeyVaultResource: {
-				id: SettingIds.vault,
-				endpoint: 'https://vault.microsoftazure.de/',
-				azureResourceId: AzureResource.AzureKeyVault
-			},
-			azureStorageResource: {
-				id: SettingIds.storage,
-				endpoint: '',
-				endpointSuffix: '.core.cloudapi.de/',
-				azureResourceId: AzureResource.AzureStorage
-			},
-			powerBiResource: {
-				id: SettingIds.powerbi,
-				endpoint: 'https://analysis.windows.net/powerbi/api/',
-				azureResourceId: AzureResource.PowerBi
-			},
-			redirectUri: 'http://localhost',
-			scopes: [
-				'openid', 'email', 'profile', 'offline_access',
-				'https://management.microsoftazure.de/user_impersonation'
-			],
-			portalEndpoint: 'https://portal.microsoftazure.de/'
-		}
-	}
-};
-
 const chinaAzureSettings: ProviderSettings = {
 	configKey: 'enableChinaCloud',
 	metadata: {
@@ -340,5 +231,5 @@ const chinaAzureSettings: ProviderSettings = {
 		}
 	}
 };
-const allSettings = [publicAzureSettings, usGovAzureSettings, usNatAzureSettings, germanyAzureSettings, chinaAzureSettings];
+const allSettings = [publicAzureSettings, usGovAzureSettings, chinaAzureSettings];
 export default allSettings;
