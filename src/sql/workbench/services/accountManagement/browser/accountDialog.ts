@@ -295,7 +295,10 @@ export class AccountDialog extends Modal {
 		if (Iterable.consume(this._providerViewsMap.values()).length > 0) {
 			const firstView = this._providerViewsMap.values().next().value;
 			if (firstView && firstView.view instanceof AccountPanel) {
-				firstView.view.setSelection([0]);
+				// This causes an issue with public cloud when it has 1 entry
+				if (firstView.view.length > 0) {
+					firstView.view.setSelection([0]);
+				}
 				firstView.view.focus();
 			}
 		}
@@ -404,6 +407,13 @@ export class AccountDialog extends Modal {
 			return;
 		}
 
+		// Remove from the views registry
+		Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).deregisterViews([{
+			id: removedProvider.id,
+			name: removedProvider.displayName,
+			ctorDescriptor: new SyncDescriptor(AccountPanel),
+		}], ACCOUNT_VIEW_CONTAINER);
+
 		// Remove the list view from the split view
 		this._splitView!.removeView(providerView.view.index!);
 		this._splitView!.layout(DOM.getContentHeight(this._container!));
@@ -430,7 +440,7 @@ export class AccountDialog extends Modal {
 			this.showSplitView();
 		}
 
-		if (this.isEmptyLinkedAccount() && this._noaccountViewContainer!.hidden) {
+		if (this.isEmptyLinkedAccount() && this._noaccountViewContainer!.hidden && this._providerViewsMap.size === 1) {
 			this.showNoAccountContainer();
 		}
 

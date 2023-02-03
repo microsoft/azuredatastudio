@@ -536,6 +536,7 @@ class ViewsRegistry extends Disposable implements IViewsRegistry {
 		}
 		const viewsToDeregister: IViewDescriptor[] = [];
 		const remaningViews: IViewDescriptor[] = [];
+		// something doesn't match up here when removing azure china view
 		for (const view of views) {
 			if (!viewDescriptors.includes(view)) {
 				remaningViews.push(view);
