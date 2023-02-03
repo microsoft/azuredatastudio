@@ -128,6 +128,18 @@ export interface LoginTableInfo {
 	status: string;
 }
 
+export async function getSourceConnectionProfile(): Promise<azdata.connection.ConnectionProfile> {
+	return await azdata.connection.getCurrentConnection();
+}
+
+export async function getSourceConnectionId(): Promise<string> {
+	return (await getSourceConnectionProfile()).connectionId;
+}
+
+export async function getSourceConnectionServerInfo(): Promise<azdata.ServerInfo> {
+	return await azdata.connection.getServerInfo((await getSourceConnectionProfile()).connectionId);
+}
+
 function getSqlDbConnectionProfile(
 	serverName: string,
 	tenantId: string,
@@ -207,7 +219,7 @@ export function getTargetConnectionProfile(
 }
 
 export async function getSourceConnectionString(): Promise<string> {
-	return await azdata.connection.getConnectionString((await azdata.connection.getCurrentConnection()).connectionId, true);
+	return await azdata.connection.getConnectionString((await getSourceConnectionProfile()).connectionId, true);
 }
 
 export async function getTargetConnectionString(
@@ -236,8 +248,6 @@ export async function getTargetConnectionString(
 	return '';
 }
 
-
-
 function extractNameFromServer(
 	server: string | SqlManagedInstance | SqlVMServer | AzureSqlDatabaseServer): string {
 
@@ -262,7 +272,7 @@ function extractNameFromServer(
 }
 
 export async function collectSourceDatabaseTableInfo(sourceDatabase: string): Promise<TableInfo[]> {
-	const ownerUri = await azdata.connection.getUriForConnection((await azdata.connection.getCurrentConnection()).connectionId);
+	const ownerUri = await azdata.connection.getUriForConnection((await getSourceConnectionProfile()).connectionId);
 	const connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(
 		'MSSQL',
 		azdata.DataProviderType.ConnectionProvider);

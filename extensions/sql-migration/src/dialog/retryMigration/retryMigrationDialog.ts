@@ -14,6 +14,7 @@ import { WizardController } from '../../wizard/wizardController';
 import { getMigrationModeEnum, getMigrationTargetTypeEnum } from '../../constants/helper';
 import * as constants from '../../constants/strings';
 import { ServiceContextChangeEvent } from '../../dashboard/tabBase';
+import { getSourceConnectionProfile } from '../../api/sqlUtils';
 
 export class RetryMigrationDialog {
 
@@ -148,7 +149,7 @@ export class RetryMigrationDialog {
 			}
 		});
 
-		const activeConnection = await azdata.connection.getCurrentConnection();
+		const activeConnection = await getSourceConnectionProfile();
 		let serverName: string = '';
 		if (!activeConnection) {
 			const connection = await azdata.connection.openConnectionDialog();

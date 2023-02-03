@@ -16,6 +16,7 @@ import { MigrationDetailsFileShareTab } from './migrationDetailsFileShareTab';
 import { MigrationDetailsBlobContainerTab } from './migrationDetailsBlobContainerTab';
 import { MigrationDetailsTableTab } from './migrationDetailsTableTab';
 import { DashboardStatusBar } from './DashboardStatusBar';
+import { getSourceConnectionProfile } from '../api/sqlUtils';
 
 export const MigrationsTabId = 'MigrationsTab';
 
@@ -110,7 +111,7 @@ export class MigrationsTab extends TabBase<MigrationsTab> {
 			this.statusBar);
 		this.disposables.push(this._migrationDetailsFileShareTab);
 
-		const connectionProfile = await azdata.connection.getCurrentConnection();
+		const connectionProfile = await getSourceConnectionProfile();
 		const connectionId = connectionProfile.connectionId;
 		this.disposables.push(
 			this._migrationDetailsEvent.event(async e => {

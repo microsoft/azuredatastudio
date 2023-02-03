@@ -10,6 +10,7 @@ import { validateIrDatabaseMigrationSettings, validateIrSqlDatabaseMigrationSett
 import { MigrationStateModel, MigrationTargetType, NetworkShare, ValidateIrState, ValidationResult } from '../../models/stateMachine';
 import { EOL } from 'os';
 import { IconPathHelper } from '../../constants/iconPathHelper';
+import { getSourceConnectionProfile } from '../../api/sqlUtils';
 
 const DialogName = 'ValidateIrDialog';
 
@@ -363,7 +364,7 @@ export class ValidateIrDialog {
 	}
 
 	private async _validateDatabaseMigration(): Promise<void> {
-		const currentConnection = await azdata.connection.getCurrentConnection();
+		const currentConnection = await getSourceConnectionProfile();
 		const sourceServerName = currentConnection?.serverName!;
 		const encryptConnection = currentConnection?.options?.encrypt === true || currentConnection?.options?.encrypt === 'true';
 		const trustServerCertificate = currentConnection?.options?.trustServerCertificate === true || currentConnection?.options?.trustServerCertificate === 'true';
@@ -447,7 +448,7 @@ export class ValidateIrDialog {
 	}
 
 	private async _validateSqlDbMigration(): Promise<void> {
-		const currentConnection = await azdata.connection.getCurrentConnection();
+		const currentConnection = await getSourceConnectionProfile();
 		const sourceServerName = currentConnection?.serverName!;
 		const encryptConnection = currentConnection?.options?.encrypt === true || currentConnection?.options?.encrypt === 'true';
 		const trustServerCertificate = currentConnection?.options?.trustServerCertificate === true || currentConnection?.options?.trustServerCertificate === 'true'; const databaseCount = this._model._databasesForMigration.length;

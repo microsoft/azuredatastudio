@@ -9,6 +9,7 @@ import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationSourceAuthenticationType, MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { createLabelTextComponent, createHeadingTextComponent, WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
+import { getSourceConnectionId, getSourceConnectionProfile } from '../api/sqlUtils';
 
 export class SqlSourceConfigurationPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -51,10 +52,10 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 
 	private async createSourceCredentialContainer(): Promise<azdata.FormComponent> {
 
-		const connectionProfile = await azdata.connection.getCurrentConnection();
+		const connectionProfile = await getSourceConnectionProfile();
 		const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
 		const query = 'select SUSER_NAME()';
-		const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection((await azdata.connection.getCurrentConnection()).connectionId)), query);
+		const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection(await getSourceConnectionId())), query);
 		const username = results.rows[0][0].displayValue;
 		this.migrationStateModel._authenticationType = connectionProfile.authenticationType === azdata.connection.AuthenticationType.SqlLogin
 			? MigrationSourceAuthenticationType.Sql
@@ -129,7 +130,7 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 			}
 		}).component();
 		this._password = this._view.modelBuilder.inputBox().withProps({
-			value: (await azdata.connection.getCredentials((await azdata.connection.getCurrentConnection()).connectionId)).password,
+			value: (await azdata.connection.getCredentials((await getSourceConnectionProfile()).connectionId)).password,
 			required: true,
 			inputType: 'password',
 			width: WIZARD_INPUT_COMPONENT_WIDTH

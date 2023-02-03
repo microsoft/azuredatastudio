@@ -26,6 +26,7 @@ import { DashboardStatusBar, ErrorEvent } from './DashboardStatusBar';
 import { DashboardTab } from './dashboardTab';
 import { MigrationsTab, MigrationsTabId } from './migrationsTab';
 import { AdsMigrationStatus, MigrationDetailsEvent, ServiceContextChangeEvent } from './tabBase';
+import { getSourceConnectionProfile } from '../api/sqlUtils';
 
 export interface MenuCommandArgs {
 	connectionId: string,
@@ -73,7 +74,7 @@ export class DashboardWidget {
 					CSSStyles: { 'font-size': '14px', 'display': 'none', },
 				}).component();
 
-			const connectionProfile = await azdata.connection.getCurrentConnection();
+			const connectionProfile = await getSourceConnectionProfile();
 			const statusBar = new DashboardStatusBar(
 				this._context,
 				connectionProfile.connectionId,
@@ -133,7 +134,7 @@ export class DashboardWidget {
 			let migrationsTabInitialized = false;
 			disposables.push(
 				tabs.onTabChanged(async tabId => {
-					const connectionProfile = await azdata.connection.getCurrentConnection();
+					const connectionProfile = await getSourceConnectionProfile();
 					await this.clearError(connectionProfile.connectionId);
 					if (tabId === MigrationsTabId && !migrationsTabInitialized) {
 						migrationsTabInitialized = true;
@@ -428,7 +429,7 @@ export class DashboardWidget {
 	}
 
 	public async launchMigrationWizard(): Promise<void> {
-		const activeConnection = await azdata.connection.getCurrentConnection();
+		const activeConnection = await getSourceConnectionProfile();
 		let serverName: string = '';
 		if (!activeConnection) {
 			const connection = await azdata.connection.openConnectionDialog();
@@ -464,7 +465,7 @@ export class DashboardWidget {
 	}
 
 	public async launchLoginMigrationWizard(): Promise<void> {
-		const activeConnection = await azdata.connection.getCurrentConnection();
+		const activeConnection = await getSourceConnectionProfile();
 		let serverName: string = '';
 		if (!activeConnection) {
 			const connection = await azdata.connection.openConnectionDialog();

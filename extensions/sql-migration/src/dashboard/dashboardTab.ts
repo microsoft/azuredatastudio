@@ -15,6 +15,7 @@ import { SelectMigrationServiceDialog } from '../dialog/selectMigrationService/s
 import { logError, TelemetryViews } from '../telemetry';
 import { AdsMigrationStatus, ServiceContextChangeEvent, TabBase } from './tabBase';
 import { DashboardStatusBar } from './DashboardStatusBar';
+import { getSourceConnectionProfile } from '../api/sqlUtils';
 
 interface IActionMetadata {
 	title?: string,
@@ -764,7 +765,7 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			})
 			.component();
 
-		const connectionProfile = await azdata.connection.getCurrentConnection();
+		const connectionProfile = await getSourceConnectionProfile();
 		this.disposables.push(
 			this.serviceContextChangedEvent.event(
 				async (e) => {
