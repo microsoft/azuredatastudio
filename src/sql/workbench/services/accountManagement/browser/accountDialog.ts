@@ -384,6 +384,13 @@ export class AccountDialog extends Modal {
 
 		// Append the list view to the split view
 		this._splitView!.addView(providerView, Sizing.Distribute, insertIndex);
+		// Increment index for each provider
+		this._providerViewsMap.forEach((provider) => {
+			if (provider.view.index > providerView.index) {
+				provider.view.index++;
+			}
+		})
+
 		providerView.index = insertIndex;
 
 		this._splitView!.layout(DOM.getContentHeight(this._container!));
@@ -417,11 +424,13 @@ export class AccountDialog extends Modal {
 		}
 
 		// Remove the list view from the split view
-		try {
-			this._splitView!.removeView(providerView.view.index!);
-		} catch (error) {
-			this.logService.debug(error);
-		}
+		this._splitView!.removeView(providerView.view.index!);
+		// Decrement index for each provider
+		this._providerViewsMap.forEach((provider) => {
+			if (provider.view.index > providerView.view.index) {
+				provider.view.index--;
+			}
+		})
 		this._splitView!.layout(DOM.getContentHeight(this._container!));
 
 		// Remove the list view from our internal map
