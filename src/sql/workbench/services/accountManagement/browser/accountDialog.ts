@@ -226,7 +226,6 @@ export class AccountDialog extends Modal {
 		noAccountTitle.innerText = noAccountLabel;
 
 		// Show the add account button for the first provider
-		// Todo: If we have more than 1 provider, need to show all add account buttons for all providers
 		const buttonSection = DOM.append(this._noaccountViewContainer, DOM.$('div.button-section'));
 		this._addAccountButton = new Button(buttonSection);
 		this._addAccountButton.label = localize('accountDialog.addConnection', "Add an account");
@@ -267,6 +266,9 @@ export class AccountDialog extends Modal {
 		}
 		else if (accountMetadata.length === 0) {
 			this.showLoadingSpinner();
+		}
+		else if (accountMetadata.length > 1) {
+			this.showSplitView();
 		}
 		else {
 			this.showNoAccountContainer();
@@ -360,13 +362,20 @@ export class AccountDialog extends Modal {
 			this.vstelemetryService
 		);
 
-		Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{
-			id: newProvider.addedProvider.id,
-			name: newProvider.addedProvider.displayName,
-			ctorDescriptor: new SyncDescriptor(AccountPanel),
-		}], ACCOUNT_VIEW_CONTAINER);
+		// Check if view is registered, if it isn't, register the view
+		if (!Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(newProvider.addedProvider.id)) {
+			try {
+				Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{
+					id: newProvider.addedProvider.id,
+					name: newProvider.addedProvider.displayName,
+					ctorDescriptor: new SyncDescriptor(AccountPanel),
+				}], ACCOUNT_VIEW_CONTAINER);
+				this.registerActions(newProvider.addedProvider.id);
+			} catch (error) {
+				this.logService.debug(error);
+			}
+		}
 
-		this.registerActions(newProvider.addedProvider.id);
 
 		attachPanelStyler(providerView, this._themeService);
 
@@ -387,7 +396,7 @@ export class AccountDialog extends Modal {
 		}
 		providerView.updateAccounts(updatedAccounts);
 
-		if (updatedAccounts.length > 0 && this._splitViewContainer!.hidden) {
+		if ((updatedAccounts.length > 0 && this._splitViewContainer!.hidden) || this._providerViewsMap.size > 1) {
 			this.showSplitView();
 		}
 
@@ -407,20 +416,21 @@ export class AccountDialog extends Modal {
 			return;
 		}
 
-		// Remove from the views registry
-		Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).deregisterViews([{
-			id: removedProvider.id,
-			name: removedProvider.displayName,
-			ctorDescriptor: new SyncDescriptor(AccountPanel),
-		}], ACCOUNT_VIEW_CONTAINER);
-
 		// Remove the list view from the split view
-		this._splitView!.removeView(providerView.view.index!);
+		try {
+			this._splitView!.removeView(providerView.view.index!);
+		} catch (error) {
+			this.logService.debug(error);
+		}
 		this._splitView!.layout(DOM.getContentHeight(this._container!));
 
 		// Remove the list view from our internal map
 		this._providerViewsMap.delete(removedProvider.id);
 		this.logService.debug(`Provider ${removedProvider.id} removed`);
+		// Update view after removing provider
+		if (this._splitViewContainer!.hidden || this._providerViewsMap.size > 1) {
+			this.showSplitView();
+		}
 		this.layout();
 	}
 
@@ -436,7 +446,7 @@ export class AccountDialog extends Modal {
 		}
 		providerMapping.view.updateAccounts(updatedAccounts);
 
-		if (args.accountList.length > 0 && this._splitViewContainer!.hidden) {
+		if ((args.accountList.length > 0 && this._splitViewContainer!.hidden) || this._providerViewsMap.size > 1) {
 			this.showSplitView();
 		}
 
