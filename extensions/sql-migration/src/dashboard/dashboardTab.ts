@@ -15,7 +15,7 @@ import { SelectMigrationServiceDialog } from '../dialog/selectMigrationService/s
 import { logError, TelemetryViews } from '../telemetry';
 import { AdsMigrationStatus, ServiceContextChangeEvent, TabBase } from './tabBase';
 import { DashboardStatusBar } from './DashboardStatusBar';
-import { getSourceConnectionProfile } from '../api/sqlUtils';
+import { getSourceConnectionId } from '../api/sqlUtils';
 
 interface IActionMetadata {
 	title?: string,
@@ -765,11 +765,10 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			})
 			.component();
 
-		const connectionProfile = await getSourceConnectionProfile();
 		this.disposables.push(
 			this.serviceContextChangedEvent.event(
 				async (e) => {
-					if (e.connectionId === connectionProfile.connectionId) {
+					if (e.connectionId === await getSourceConnectionId()) {
 						await this.updateServiceContext(this._serviceContextButton);
 						await this.refresh();
 					}

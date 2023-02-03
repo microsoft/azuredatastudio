@@ -14,7 +14,7 @@ import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as utils from '../api/utils';
 import { azureResource } from 'azurecore';
 import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/azure';
-import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionProfile, isSysAdmin, LoginTableInfo } from '../api/sqlUtils';
+import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionProfile, isSourceConnectionSysAdmin, LoginTableInfo } from '../api/sqlUtils';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
 
 export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
@@ -66,7 +66,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
-		const hasSysAdminPermissions: boolean = await isSysAdmin((await getSourceConnectionProfile()).connectionId);		////
+		const hasSysAdminPermissions: boolean = await isSourceConnectionSysAdmin();
 		const connectionProfile: azdata.connection.ConnectionProfile = await getSourceConnectionProfile();
 		const permissionsInfoBox = this._view.modelBuilder.infoBox()
 			.withProps({

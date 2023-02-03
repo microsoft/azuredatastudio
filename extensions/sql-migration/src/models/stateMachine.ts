@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
-import { excludeDatabases, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getTargetConnectionString, LoginTableInfo, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
+import { excludeDatabases, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getSourceConnectionUri, getTargetConnectionString, LoginTableInfo, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel, LoginMigrationStep } from './loginMigrationModel';
 import { TdeMigrationDbResult, TdeMigrationModel } from './tdeModels';
 const localize = nls.loadMessageBundle();
@@ -380,7 +380,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._stateChangeEventEmitter.fire({ oldState, newState: this.currentState });
 	}
 	public async getDatabases(): Promise<string[]> {
-		const temp = await azdata.connection.listDatabases((await getSourceConnectionProfile()).connectionId);
+		const temp = await azdata.connection.listDatabases(await getSourceConnectionId());
 		const finalResult = temp.filter((name) => !excludeDatabases.includes(name));
 		return finalResult;
 	}
@@ -397,7 +397,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 	public async getDatabaseAssessments(targetType: MigrationTargetType[]): Promise<ServerAssessment> {
-		const ownerUri = await azdata.connection.getUriForConnection(await getSourceConnectionId());
+		const ownerUri = await getSourceConnectionUri();
 		try {
 			const xEventsFilesFolderPath = '';		// to-do: collect by prompting the user in the UI - for now, blank = disabled
 			const response = (await this.migrationService.getAssessments(ownerUri, this._databasesForAssessment, xEventsFilesFolderPath))!;
@@ -466,7 +466,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			// execute a query against the source to get the correct instance name
 			const connectionProfile = await getSourceConnectionProfile();
-			const connectionUri = await azdata.connection.getUriForConnection(await getSourceConnectionId());
+			const connectionUri = await getSourceConnectionUri();
 			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
 			const queryString = 'SELECT SERVERPROPERTY(\'ServerName\');';
 			const queryResult = await queryProvider.runQueryAndReturn(connectionUri, queryString);
@@ -476,8 +476,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			} else {
 				// get the instance name from connection info in case querying for the instance name doesn't work for whatever reason
 				const serverInfo = await getSourceConnectionServerInfo();
-				const machineName = (<any>serverInfo)['machineName'];						// contains the correct machine name but not necessarily the correct instance name
-				const instanceName = (await getSourceConnectionProfile()).serverName;	// contains the correct instance name but not necessarily the correct machine name
+				const machineName = (<any>serverInfo)['machineName'];				// contains the correct machine name but not necessarily the correct instance name
+				const instanceName = connectionProfile.serverName;					// contains the correct instance name but not necessarily the correct machine name
 
 				if (instanceName.includes('\\')) {
 					fullInstanceName = machineName + '\\' + instanceName.substring(instanceName.indexOf('\\') + 1);
@@ -740,7 +740,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		page: SKURecommendationPage): Promise<boolean> {
 		try {
 			if (!this.performanceCollectionInProgress()) {
-				const ownerUri = await azdata.connection.getUriForConnection(await getSourceConnectionId());
+				const ownerUri = await getSourceConnectionUri();
 				const response = await this.migrationService.startPerfDataCollection(
 					ownerUri,
 					dataFolder,

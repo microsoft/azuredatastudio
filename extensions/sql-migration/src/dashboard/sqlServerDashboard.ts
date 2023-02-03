@@ -26,7 +26,7 @@ import { DashboardStatusBar, ErrorEvent } from './DashboardStatusBar';
 import { DashboardTab } from './dashboardTab';
 import { MigrationsTab, MigrationsTabId } from './migrationsTab';
 import { AdsMigrationStatus, MigrationDetailsEvent, ServiceContextChangeEvent } from './tabBase';
-import { getSourceConnectionProfile } from '../api/sqlUtils';
+import { getSourceConnectionId, getSourceConnectionProfile } from '../api/sqlUtils';
 
 export interface MenuCommandArgs {
 	connectionId: string,
@@ -74,10 +74,9 @@ export class DashboardWidget {
 					CSSStyles: { 'font-size': '14px', 'display': 'none', },
 				}).component();
 
-			const connectionProfile = await getSourceConnectionProfile();
 			const statusBar = new DashboardStatusBar(
 				this._context,
-				connectionProfile.connectionId,
+				await getSourceConnectionId(),
 				statusInfoBox,
 				this._errorEvent);
 
@@ -134,8 +133,7 @@ export class DashboardWidget {
 			let migrationsTabInitialized = false;
 			disposables.push(
 				tabs.onTabChanged(async tabId => {
-					const connectionProfile = await getSourceConnectionProfile();
-					await this.clearError(connectionProfile.connectionId);
+					await this.clearError(await getSourceConnectionId());
 					if (tabId === MigrationsTabId && !migrationsTabInitialized) {
 						migrationsTabInitialized = true;
 						await migrationsTab.refresh();

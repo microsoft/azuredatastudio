@@ -140,6 +140,20 @@ export async function getSourceConnectionServerInfo(): Promise<azdata.ServerInfo
 	return await azdata.connection.getServerInfo((await getSourceConnectionProfile()).connectionId);
 }
 
+export async function getSourceConnectionUri(): Promise<string> {
+	return await azdata.connection.getUriForConnection(await getSourceConnectionId());
+}
+
+export async function getSourceConnectionCredentials(): Promise<{ [name: string]: string }> {
+	return await azdata.connection.getCredentials((await getSourceConnectionProfile()).connectionId);
+}
+
+export async function getSourceConnectionQueryProvider() {
+	return azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+		(await getSourceConnectionProfile()).providerId,
+		azdata.DataProviderType.QueryProvider);
+}
+
 function getSqlDbConnectionProfile(
 	serverName: string,
 	tenantId: string,
@@ -236,7 +250,7 @@ export async function getTargetConnectionString(
 
 		// to-do: we only use target connection string for login migration
 		// what are the correct values to use for encryptConnection / trustServerCertificate when connecting to target?
-		// it may depend on the target platform
+		// it may depend on the target platform - maybe it'll need to be passed in
 		true /* encryptConnection */,
 		true /* trustServerCertificate */);
 
@@ -494,7 +508,8 @@ export async function collectTargetLogins(
 	throw new Error(result.errorMessage);
 }
 
-export async function isSysAdmin(sourceConnectionId: string): Promise<boolean> {
+export async function isSourceConnectionSysAdmin(): Promise<boolean> {
+	const sourceConnectionId = await getSourceConnectionId();
 	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
 	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
 		'MSSQL',
