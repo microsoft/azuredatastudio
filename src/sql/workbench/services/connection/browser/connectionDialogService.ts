@@ -414,7 +414,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		let newProfile = new ConnectionProfile(this._capabilitiesService, model || providerName);
 		if (!model.password && defaultAuthenticationType === AuthenticationType.SqlLogin && authenticationTypeName === AuthenticationType.SqlLogin) {
 			try {
-				await this._connectionManagementService.addSavedPassword(newProfile, true);
+				await this._connectionManagementService.addSavedPassword(newProfile);
 			}
 			catch (err) {
 				onUnexpectedError(err);
