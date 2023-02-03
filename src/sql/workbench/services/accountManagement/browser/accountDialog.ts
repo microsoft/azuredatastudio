@@ -297,7 +297,7 @@ export class AccountDialog extends Modal {
 		if (Iterable.consume(this._providerViewsMap.values()).length > 0) {
 			const firstView = this._providerViewsMap.values().next().value;
 			if (firstView && firstView.view instanceof AccountPanel) {
-				// This causes an issue with public cloud when it has 1 entry
+				// Handle index error with length 0
 				if (firstView.view.length > 0) {
 					firstView.view.setSelection([0]);
 				}
