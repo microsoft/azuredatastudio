@@ -1113,10 +1113,6 @@ declare module 'mssql' {
 			 */
 			databaseRoles: string[] | undefined;
 			/**
-			 * Whether the user has access to database.
-			 */
-			hasDbAccess: boolean;
-			/**
 			 * The name of the server login associated with the user.
 			 * Only applicable when the user type is 'WithLogin'.
 			 */
