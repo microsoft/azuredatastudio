@@ -42,7 +42,6 @@ export const enum TelemetryView {
 	ExecutionPlan = 'ExecutionPlan',
 	ExtensionHost = 'ExtensionHost',
 	ExtensionRecommendationDialog = 'ExtensionRecommendationDialog',
-	FirewallDialog = 'FirewallDialog',
 	Notebook = 'Notebook',
 	ResultsPanel = 'ResultsPanel',
 	Shell = 'Shell',
