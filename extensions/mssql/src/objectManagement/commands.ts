@@ -14,17 +14,7 @@ import * as localizedConstants from './localizedConstants';
 import { UserDialog } from './ui/userDialog';
 import { IObjectManagementService } from 'mssql';
 import * as constants from '../constants';
-
-async function refreshParentNode(connectionId: string, nodePath: string): Promise<void> {
-	try {
-		const node = await azdata.objectexplorer.getNode(connectionId, nodePath);
-		const parentNode = await node?.getParent();
-		await parentNode?.refresh();
-	}
-	catch (err) {
-		await vscode.window.showErrorMessage(localizedConstants.RefreshObjectExplorerError(getErrorMessage(err)));
-	}
-}
+import { refreshParentNode } from './utils';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
@@ -54,7 +44,7 @@ function getObjectManagementService(appContext: AppContext, useTestService: bool
 async function handleNewLoginDialogCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
 	try {
 		const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
-		const dialog = new LoginDialog(service, connectionUri, true);
+		const dialog = new LoginDialog(service, connectionUri, true, undefined, context);
 		await dialog.open();
 	}
 	catch (err) {
@@ -65,7 +55,7 @@ async function handleNewLoginDialogCommand(context: azdata.ObjectExplorerContext
 async function handleNewUserDialogCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
 	try {
 		const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
-		const dialog = new UserDialog(service, connectionUri, context.connectionProfile.databaseName, true);
+		const dialog = new UserDialog(service, connectionUri, context.connectionProfile.databaseName, true, undefined, context);
 		await dialog.open();
 	}
 	catch (err) {
@@ -137,7 +127,7 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 				operation.updateStatus(azdata.TaskStatus.Failed, localizedConstants.DeleteObjectError(nodeTypeDisplayName, context.nodeInfo.label, getErrorMessage(err)));
 				return;
 			}
-			await refreshParentNode(context.connectionProfile.id, context.nodeInfo.nodePath);
+			await refreshParentNode(context);
 			operation.updateStatus(azdata.TaskStatus.Succeeded);
 		}
 	});

@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
-import { NodeType } from './constants';
+import { AuthenticationType, NodeType, UserType } from './constants';
 const localize = nls.loadMessageBundle();
-import { ObjectManagement } from 'mssql';
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
@@ -20,25 +19,25 @@ export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): 
 	}
 }
 
-export function getAuthenticationTypeDisplayName(authType: ObjectManagement.AuthenticationType): string {
+export function getAuthenticationTypeDisplayName(authType: AuthenticationType): string {
 	switch (authType) {
-		case 'Windows':
+		case AuthenticationType.Windows:
 			return WindowsAuthenticationTypeDisplayText;
-		case 'AAD':
+		case AuthenticationType.AzureActiveDirectory:
 			return AADAuthenticationTypeDisplayText;
 		default:
 			return SQLAuthenticationTypeDisplayText;
 	}
 }
 
-export function getAuthenticationTypeByDisplayName(displayValue: string): ObjectManagement.AuthenticationType {
+export function getAuthenticationTypeByDisplayName(displayValue: string): AuthenticationType {
 	switch (displayValue) {
 		case WindowsAuthenticationTypeDisplayText:
-			return 'Windows';
+			return AuthenticationType.Windows;
 		case AADAuthenticationTypeDisplayText:
-			return 'AAD';
+			return AuthenticationType.AzureActiveDirectory;
 		default:
-			return 'Sql';
+			return AuthenticationType.Sql;
 	}
 }
 
@@ -164,28 +163,28 @@ export const LoginText = localize('objectManagement.user.loginLabel', "Login");
 export const OwnedSchemaSectionHeader = localize('objectManagement.user.ownedSchemasLabel', "Owned Schemas");
 export const MembershipSectionHeader = localize('objectManagement.user.membershipLabel', "Membership");
 
-export function getUserTypeDisplayName(userType: ObjectManagement.UserType): string {
+export function getUserTypeDisplayName(userType: UserType): string {
 	switch (userType) {
-		case 'Login':
+		case UserType.WithLogin:
 			return UserWithLoginText;
-		case 'WindowsGroupLogin':
+		case UserType.WithWindowsGroupLogin:
 			return UserWithWindowsGroupLoginText;
-		case 'Contained':
+		case UserType.Contained:
 			return ContainedUserText;
 		default:
 			return UserWithNoConnectAccess;
 	}
 }
 
-export function getUserTypeByDisplayName(userTypeDisplayName: string): ObjectManagement.UserType {
+export function getUserTypeByDisplayName(userTypeDisplayName: string): UserType {
 	switch (userTypeDisplayName) {
 		case UserWithLoginText:
-			return 'Login';
+			return UserType.WithLogin;
 		case UserWithWindowsGroupLoginText:
-			return 'WindowsGroupLogin';
+			return UserType.WithWindowsGroupLogin;
 		case ContainedUserText:
-			return 'Contained';
+			return UserType.Contained;
 		default:
-			return 'NoConnectAccess';
+			return UserType.NoConnectAccess;
 	}
 }

@@ -8,6 +8,7 @@ import { DefaultInputWidth, DefaultTableWidth, getTableHeight, ObjectManagementD
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { NodeType, PublicServerRoleName } from '../constants';
+import { refreshNode } from '../utils';
 
 // TODO:
 // 1. Password validation: when advanced password options are not supported or when password policy check is on.
@@ -37,7 +38,7 @@ export class LoginDialog extends ObjectManagementDialogBase {
 	private enabledCheckbox: azdata.CheckBoxComponent;
 	private lockedOutCheckbox: azdata.CheckBoxComponent;
 
-	constructor(objectManagementService: IObjectManagementService, connectionUri: string, isNewObject: boolean, name?: string) {
+	constructor(objectManagementService: IObjectManagementService, connectionUri: string, isNewObject: boolean, name?: string, private readonly objectExplorerContext?: azdata.ObjectExplorerContext) {
 		super(NodeType.Login, objectManagementService, connectionUri, isNewObject, name);
 	}
 
@@ -51,21 +52,6 @@ export class LoginDialog extends ObjectManagementDialogBase {
 
 	protected async validate(): Promise<string[]> {
 		const errors: string[] = [];
-		if (!this.nameInput.value) {
-			errors.push(localizedConstants.NameCannotBeEmptyError);
-		}
-
-		if (this.passwordInput && this.passwordInput.value !== this.confirmPasswordInput.value) {
-			errors.push(localizedConstants.PasswordsNotMatchError);
-		}
-
-		if (this.specifyOldPasswordCheckbox && this.specifyOldPasswordCheckbox.checked && !this.oldPasswordInput.value) {
-			errors.push(localizedConstants.OldPasswordCannotBeEmptyError);
-		}
-		return errors;
-	}
-
-	protected async onComplete(): Promise<void> {
 		this.dialogInfo.login.name = this.nameInput.value;
 		this.dialogInfo.login.authenticationType = localizedConstants.getAuthenticationTypeByDisplayName(<string>this.authTypeDropdown.value);
 		if (this.passwordInput) {
@@ -90,8 +76,26 @@ export class LoginDialog extends ObjectManagementDialogBase {
 			this.dialogInfo.login.connectPermission = this.connectPermissionCheckbox.checked;
 		}
 		this.dialogInfo.login.isEnabled = this.enabledCheckbox.checked;
+		if (!this.nameInput.value) {
+			errors.push(localizedConstants.NameCannotBeEmptyError);
+		}
+
+		if (this.passwordInput && this.passwordInput.value !== this.confirmPasswordInput.value) {
+			errors.push(localizedConstants.PasswordsNotMatchError);
+		}
+
+		if (this.specifyOldPasswordCheckbox && this.specifyOldPasswordCheckbox.checked && !this.oldPasswordInput.value) {
+			errors.push(localizedConstants.OldPasswordCannotBeEmptyError);
+		}
+		return errors;
+	}
+
+	protected async onComplete(): Promise<void> {
 		if (this.isNewObject) {
 			await this.objectManagementService.createLogin(this.contextId, this.dialogInfo.login);
+			if (this.objectExplorerContext) {
+				await refreshNode(this.objectExplorerContext);
+			}
 		} else {
 			await this.objectManagementService.updateLogin(this.contextId, this.dialogInfo.login);
 		}

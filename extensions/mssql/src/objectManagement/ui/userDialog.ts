@@ -7,6 +7,7 @@ import { DefaultInputWidth, DefaultTableWidth, getTableHeight, ObjectManagementD
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { NodeType } from '../constants';
+import { refreshNode } from '../utils';
 
 export class UserDialog extends ObjectManagementDialogBase {
 	private dialogInfo: ObjectManagement.UserViewInfo;
@@ -32,7 +33,7 @@ export class UserDialog extends ObjectManagementDialogBase {
 	private ownedSchemaTable: azdata.TableComponent;
 	private membershipTable: azdata.TableComponent;
 
-	constructor(objectManagementService: IObjectManagementService, connectionUri: string, private readonly database: string, isNewObject: boolean, name?: string) {
+	constructor(objectManagementService: IObjectManagementService, connectionUri: string, private readonly database: string, isNewObject: boolean, name?: string, private readonly objectExplorerContext?: azdata.ObjectExplorerContext) {
 		super(NodeType.User, objectManagementService, connectionUri, isNewObject, name);
 	}
 
@@ -61,6 +62,9 @@ export class UserDialog extends ObjectManagementDialogBase {
 		}
 		if (this.isNewObject) {
 			await this.objectManagementService.createUser(this.contextId, this.dialogInfo.user);
+			if (this.objectExplorerContext) {
+				await refreshNode(this.objectExplorerContext);
+			}
 		} else {
 			await this.objectManagementService.updateUser(this.contextId, this.dialogInfo.user);
 		}
@@ -77,12 +81,10 @@ export class UserDialog extends ObjectManagementDialogBase {
 			this.initializeGeneralSection(view);
 			this.initializeOwnedSchemaSection(view);
 			this.initializeMembershipSection(view);
-			sections.push(this.generalSection, this.ownedSchemaSection, this.membershipSection);
-			if (this.dialogInfo.supportedAdvancedOptions) {
-				this.initializeAdvancedSection(view);
-				sections.push(this.advancedSection);
-			}
+			this.initializeAdvancedSection(view);
+			sections.push(this.generalSection, this.ownedSchemaSection, this.membershipSection, this.advancedSection);
 			this.formContainer = this.createFormContainer(view, sections);
+			this.onUserTypeChanged();
 			return view.initializeModel(this.formContainer)
 		});
 	}
@@ -124,7 +126,8 @@ export class UserDialog extends ObjectManagementDialogBase {
 			ariaLabel: localizedConstants.LoginText,
 			values: this.dialogInfo.logins,
 			value: this.dialogInfo.user.loginName,
-			width: DefaultInputWidth
+			width: DefaultInputWidth,
+			enabled: this.isNewObject
 		}).component();
 		this.loginContainer = this.createLabelInputContainer(view, localizedConstants.LoginText, this.loginDropdown);
 
@@ -170,8 +173,6 @@ export class UserDialog extends ObjectManagementDialogBase {
 			this.passwordContainer,
 			this.confirmPasswordContainer
 		], false);
-		this.onUserTypeChanged();
-		this.onAuthenticationTypeChanged();
 	}
 
 	private initializeOwnedSchemaSection(view: azdata.ModelView): void {
@@ -254,23 +255,32 @@ export class UserDialog extends ObjectManagementDialogBase {
 	}
 
 	private onUserTypeChanged(): void {
-		this.removeItem(this.generalSection, this.loginContainer);
-		this.removeItem(this.generalSection, this.authTypeContainer);
-		this.removeItem(this.generalSection, this.passwordContainer);
-		this.removeItem(this.generalSection, this.confirmPasswordContainer);
+		// this.removeItem(this.generalSection, this.loginContainer);
+		// this.removeItem(this.generalSection, this.authTypeContainer);
+		// this.removeItem(this.generalSection, this.passwordContainer);
+		// this.removeItem(this.generalSection, this.confirmPasswordContainer);
+		// this.removeItem(this.formContainer, this.advancedSection);
+		let enableLogin = false;
+		let enableAuthType = false;
+		let enableLanguage = false;
 		if (this.typeDropdown.value === localizedConstants.UserWithLoginText) {
-			this.addItem(this.generalSection, this.loginContainer);
+			// this.addItem(this.generalSection, this.loginContainer);
+			enableLogin = true;
 		} else if (this.typeDropdown.value === localizedConstants.ContainedUserText) {
-			this.addItem(this.generalSection, this.authTypeContainer);
+			enableAuthType = true;
+			enableLanguage = true;
+			// this.addItem(this.generalSection, this.authTypeContainer);
+			// this.addItem(this.formContainer, this.advancedSection);
 		}
+		this.loginDropdown.enabled = enableLogin;
+		this.authTypeDropdown.enabled = enableAuthType;
+		this.defaultLanguageDropdown.enabled = enableLanguage;
+		this.onAuthenticationTypeChanged();
 	}
 
 	private onAuthenticationTypeChanged(): void {
-		this.removeItem(this.generalSection, this.passwordContainer);
-		this.removeItem(this.generalSection, this.confirmPasswordContainer);
-		if (this.authTypeDropdown.value === localizedConstants.SQLAuthenticationTypeDisplayText) {
-			this.addItem(this.generalSection, this.passwordContainer);
-			this.addItem(this.generalSection, this.confirmPasswordContainer);
-		}
+		const enablePassword = this.typeDropdown.value === localizedConstants.ContainedUserText && this.authTypeDropdown.value === localizedConstants.SQLAuthenticationTypeDisplayText
+		this.passwordInput.enabled = enablePassword;
+		this.confirmPasswordInput.enabled = enablePassword;
 	}
 }

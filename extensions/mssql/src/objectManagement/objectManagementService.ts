@@ -10,6 +10,7 @@ import { AppContext } from '../appContext';
 import * as Utils from '../utils';
 import * as constants from '../constants';
 import * as contracts from '../contracts';
+import { AuthenticationType, UserType } from './constants';
 
 export class ObjectManagementService implements IObjectManagementService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
@@ -149,7 +150,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 					login = <ObjectManagement.LoginViewInfo>{
 						login: {
 							name: '',
-							authenticationType: 'Sql',
+							authenticationType: AuthenticationType.Sql,
 							enforcePasswordPolicy: true,
 							enforcePasswordExpiration: true,
 							mustChangePassword: true,
@@ -174,7 +175,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 					login = <ObjectManagement.LoginViewInfo>{
 						login: {
 							name: name,
-							authenticationType: 'Sql',
+							authenticationType: AuthenticationType.Sql,
 							enforcePasswordPolicy: true,
 							enforcePasswordExpiration: true,
 							mustChangePassword: true,
@@ -237,7 +238,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 					viewInfo = {
 						user: <ObjectManagement.User>{
 							name: '',
-							type: 'Login',
+							type: UserType.WithLogin,
 							defaultSchema: '',
 							defaultLanguage: '<default>',
 							loginName: '',
@@ -251,19 +252,18 @@ export class TestObjectManagementService implements IObjectManagementService {
 						supportContainedUser: true,
 						supportAADAuthentication: true,
 						supportSQLAuthentication: true,
-						supportWindowsAuthentication: true,
-						supportedAdvancedOptions: true,
+						supportWindowsAuthentication: true
 					};
 				} else {
 					viewInfo = {
 						user: <ObjectManagement.User>{
 							name: name,
-							type: 'Login',
+							type: UserType.WithLogin,
 							defaultSchema: '',
 							defaultLanguage: '<default>',
 							loginName: '',
 							ownedSchemas: ['dbo'],
-							databaseRoles: ['dbmanager', 'loginmanager']
+							databaseRoles: ['dbmanager', 'bulkadmin']
 						},
 						languages: languages,
 						schemas: schemas,
@@ -272,8 +272,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 						supportContainedUser: true,
 						supportAADAuthentication: true,
 						supportSQLAuthentication: true,
-						supportWindowsAuthentication: true,
-						supportedAdvancedOptions: false
+						supportWindowsAuthentication: true
 					};
 				}
 				resolve(viewInfo);
