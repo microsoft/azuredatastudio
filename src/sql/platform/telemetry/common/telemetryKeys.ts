@@ -32,13 +32,14 @@ export const enum ModalDialogName {
 }
 
 export const enum TelemetryView {
+	Default = 'Default',
 	Agent = 'Agent',
 	AgentJobs = 'AgentJobs',
 	AgentJobHistory = 'AgentJobHistory',
 	AgentJobSteps = 'AgentJobSteps',
 	AgentNotebookHistory = 'AgentNotebookHistory',
 	AgentNotebooks = 'AgentNotebooks',
-	ConnectionDialog = 'ConnectionDialog',
+	ConnectionErrorDialog = 'ConnectionErrorDialog',
 	ExecutionPlan = 'ExecutionPlan',
 	ExtensionHost = 'ExtensionHost',
 	ExtensionRecommendationDialog = 'ExtensionRecommendationDialog',

@@ -51,18 +51,20 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 			}
 
 			protected override registerProvider(options: any): Disposable {
-				let handleConnectionError = async (errorCode: number, errorMessage: string, callStack: string, connection: azdata.connection.ConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> => {
-					let restoredProfile = this.convertToIConnectionProfile(connection);
+				let handleConnectionError = async (errorInfo: azdata.diagnostics.IErrorInformation, connection: azdata.connection.ConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> => {
+					if (errorInfo) {
+						let restoredProfile = this.convertToIConnectionProfile(connection);
 
-					if (errorCode === ErrorDiagnosticsConstants.MssqlPasswordResetErrorCode) {
-						logDebug(`ErrorDiagnosticsProvider: Error Code ${errorCode} requires user to change their password, launching change password dialog.`);
-						return await this.handleChangePassword(restoredProfile);
+						if (errorInfo.errorCode === ErrorDiagnosticsConstants.MssqlPasswordResetErrorCode) {
+							logDebug(`ErrorDiagnosticsProvider: Error Code ${errorInfo.errorCode} requires user to change their password, launching change password dialog.`);
+							return await this.handleChangePassword(restoredProfile);
+						}
+						else if (errorInfo.errorCode === ErrorDiagnosticsConstants.MssqlCertValidationFailedErrorCode) {
+							logDebug(`ErrorDiagnosticsProvider: Error Code ${errorInfo.errorCode} indicates certificate validation has failed, launching error dialog with instructionText.`);
+							return await this.showCertValidationDialog(restoredProfile, errorInfo.errorMessage, errorInfo.callStack);
+						}
+						logDebug(`ErrorDiagnosticsProvider: No error handler found for errorCode ${errorInfo.errorCode}.`);
 					}
-					else if (errorCode === ErrorDiagnosticsConstants.MssqlCertValidationFailedErrorCode) {
-						logDebug(`ErrorDiagnosticsProvider: Error Code ${errorCode} indicates certificate validation has failed, launching error dialog with instructionText.`);
-						return await this.showCertValidationDialog(restoredProfile, errorMessage, callStack);
-					}
-					logDebug(`ErrorDiagnosticsProvider: No error handler found for errorCode ${errorCode}.`);
 					return { handled: false };
 				}
 
@@ -98,7 +100,7 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 					);
 
 					// Result represents id of action taken by user.
-					if (result && result === ErrorDiagnosticsConstants.TSC_ActionId) {
+					if (result === ErrorDiagnosticsConstants.TSC_ActionId) {
 						connection.options[ErrorDiagnosticsConstants.TSC_OptionName] = true;
 						return { handled: true, reconnect: true, options: connection.options };
 					} else {

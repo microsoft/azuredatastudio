@@ -20,6 +20,7 @@ export interface IErrorMessageService {
 	 * @param actions Custom actions to display on the error message dialog
 	 * @param instructionText Special instructions to display to user when displaying error message
 	 * @param readMoreLink External link to read more about the instructions.
+	 * @param telemetryView Telemetry View to be used for dispatching telemetry events.
 	 */
 	showDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[], instructionText?: string, readMoreLink?: string, telemetryView?: TelemetryView): void;
 }

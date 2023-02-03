@@ -613,7 +613,7 @@ export abstract class ExtHostErrorDiagnosticsShape {
 	/**
 	 * Handle other connection error types
 	 */
-	$handleConnectionError(handle: number, errorCode: number, errorMessage: string, callStack: string, connection: azdata.connection.ConnectionProfile): Thenable<azdata.diagnostics.ConnectionDiagnosticsResult> { throw ni(); }
+	$handleConnectionError(handle: number, errorInfo: azdata.diagnostics.IErrorInformation, connection: azdata.connection.ConnectionProfile): Thenable<azdata.diagnostics.ConnectionDiagnosticsResult> { throw ni(); }
 }
 
 /**

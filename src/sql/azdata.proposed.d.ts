@@ -446,11 +446,11 @@ declare module 'azdata' {
 
 		export interface ConnectionDiagnosticsResult {
 			/**
-			 * Property indicating if the error was handled or not.
+			 * Whether the error was handled or not.
 			 */
 			handled: boolean,
 			/**
-			 * Property indicating if reconnect should be attempted.
+			 * Whether reconnect should be attempted.
 			 */
 			reconnect?: boolean,
 			/**
@@ -460,17 +460,34 @@ declare module 'azdata' {
 		}
 
 		/**
+		 * Provides error information
+		 */
+		export interface IErrorInformation {
+			/**
+			 * Error code
+			 */
+			errorCode: number,
+			/**
+			 * Error Message
+			 */
+			errorMessage: string,
+			/**
+			 * Stack trace of error
+			 */
+			callStack: string
+		}
+
+		/**
 		 * Diagnostics object for handling errors for a provider.
 		 */
 		export interface ErrorDiagnosticsProvider {
 			/**
 			 * Called when a connection error occurs, allowing the provider to optionally handle the error and fix any issues before continuing with completing the connection.
-			 * @param errorCode The error code of the connection error.
-			 * @param errorMessage The error message of the connection error.
+			 * @param errorInfo The error information of the connection error.
 			 * @param connection The connection profile that caused the error.
 			 * @returns ConnectionDiagnosticsResult: The result from the provider for whether the error was handled.
 			 */
-			handleConnectionError(errorCode: number, errorMessage: string, callStack: string, connection: connection.ConnectionProfile): Thenable<ConnectionDiagnosticsResult>;
+			handleConnectionError(errorInfo: IErrorInformation, connection: connection.ConnectionProfile): Thenable<ConnectionDiagnosticsResult>;
 		}
 
 		/**

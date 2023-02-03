@@ -27,6 +27,7 @@ import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { Link } from 'vs/platform/opener/browser/link';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { Deferred } from 'sql/base/common/promise';
 
 const maxActions = 1;
 
@@ -60,7 +61,7 @@ export class ErrorMessageDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 		@IOpenerService private readonly _openerService: IOpenerService,
-		protected _telemetryView?: TelemetryKeys.TelemetryView
+		protected _telemetryView: TelemetryKeys.TelemetryView = TelemetryKeys.TelemetryView.Default,
 	) {
 		super('', TelemetryKeys.ModalDialogName.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
 		this._okLabel = localize('errorMessageDialog.ok', "OK");
@@ -252,10 +253,9 @@ export class ErrorMessageDialog extends Modal {
 		});
 
 		this.open(severity, options.headerTitle, options.message, options.messageDetails, actions, options.instructionText, options.readMoreLink, false);
-		const promise = new Promise<string | undefined>((resolve) => {
-			this._promiseResolver = resolve;
-		});
-		return promise;
+		const deferred = new Deferred<string | undefined>();
+		this._promiseResolver = deferred.resolve;
+		return deferred.promise;
 	}
 
 	private resetActions(): void {

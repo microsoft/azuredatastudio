@@ -625,7 +625,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				severity = Severity.Warning;
 				break;
 		}
-		dialog.setTelemetryView(TelemetryView.ConnectionDialog)
+		dialog.setTelemetryView(TelemetryView.ConnectionErrorDialog)
 		dialog.render();
 		let result = await dialog.openCustomAsync(severity, options);
 		return result;

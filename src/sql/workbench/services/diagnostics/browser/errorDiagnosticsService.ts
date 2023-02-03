@@ -23,7 +23,12 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 		let result = { handled: false };
 		let provider = this._providers[providerId]
 		if (provider) {
-			result = await provider.handleConnectionError(connectionResult.errorCode, connectionResult.errorMessage, connectionResult.callStack, Utils.convertToRpcConnectionProfile(connection));
+			let errorInfo: azdata.diagnostics.IErrorInformation = {
+				errorCode: connectionResult.errorCode,
+				errorMessage: connectionResult.errorMessage,
+				callStack: connectionResult.callStack
+			}
+			result = await provider.handleConnectionError(errorInfo, Utils.convertToRpcConnectionProfile(connection));
 		}
 		return result;
 	}
