@@ -839,6 +839,26 @@ export class ProjectsController {
 		}
 	}
 
+	public async rename(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const node = context.element as BaseProjectTreeItem;
+		const project = this.getProjectFromContext(node);
+
+		const newFileName = await vscode.window.showInputBox(
+			{
+				title: constants.enterNewName,
+				value: node.friendlyName,
+				ignoreFocusOut: true
+			});
+
+		if (!newFileName) {
+			return;
+		}
+
+		// TODO: hookup to "Move" file/folder api
+
+		this.refreshProjectsTree(context);
+	}
+
 	/**
 	 * Opens a quickpick to edit the value of the SQLCMD variable launched from
 	 * @param context
