@@ -4828,6 +4828,75 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "96",
+					"extensionName": "mark carrington.azuredatastudio-sql4cds",
+					"displayName": "SQL 4 CDS",
+					"shortDescription": "Query and modify data in Microsoft Dataverse/Dynamics 365/CRM using standard SQL queries.",
+					"publisher": {
+						"displayName": "Mark Carrington",
+						"publisherId": "mark carrington",
+						"publisherName": "Mark Carrington"
+					},
+					"versions": [
+						{
+							"version": "7.1.0",
+							"lastUpdated": "02/01/2023",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://github.com/MarkMpn/Sql4Cds/releases/download/v7.1.0/azuredatastudio-sql4cds-7.1.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/MarkMpn/Sql4Cds/releases/tag/v7.1.0"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://markcarrington.dev/wp-content/uploads/2019/10/SQL4CDS-Icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.1.0/AzureDataStudioExtension/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
+									"source": "https://github.com/MarkMpn/Sql4Cds/releases/tag/v7.1.0"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.1.0/AzureDataStudioExtension/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.1.0/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "^1.65.2"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/mongodb-js/vscode"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
