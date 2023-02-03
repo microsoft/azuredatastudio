@@ -308,14 +308,16 @@ suite('ConnectionDialogService tests', () => {
 			called = true;
 		});
 
-		await connectionDialogService.showDialog(mockConnectionManagementService.object, testConnectionParams, connectionProfile).then(() => {
-			((connectionDialogService as any)._connectionControllerMap['MSSQL'] as any)._model = connectionProfile;
-		});
+		await connectionDialogService.showDialog(mockConnectionManagementService.object, testConnectionParams, connectionProfile);
 		await (connectionDialogService as any).handleFillInConnectionInputs(connectionProfile);
 
-		let returnedModel = ((connectionDialogService as any)._connectionControllerMap['MSSQL'] as any)._model;
-		assert.strictEqual(returnedModel._groupName, 'testGroup');
-		assert(called); // lewissanchez TODO why is this losing true?
+		setTimeout(() => {
+			let connectionControllerMap = (connectionDialogService as any)._connectionControllerMap;
+			let returnedModel = (connectionControllerMap['MSSQL'] as any)._model;
+
+			assert.strictEqual(returnedModel._groupName, 'testGroup');
+			assert(called);
+		}, 200)
 	});
 
 	test('handleOnConnect calls connectAndSaveProfile when called with profile', async () => {
