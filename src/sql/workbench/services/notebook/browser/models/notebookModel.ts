@@ -862,16 +862,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (this._activeCell !== cell) {
 			if (this._activeCell) {
 				this._activeCell.active = false;
-				if (this._activeCell.isEditMode) {
-					this._activeCell.isEditMode = false;
-				}
+				this._activeCell.isEditMode = false;
 			}
 			this._activeCell = cell;
 			if (this._activeCell) {
 				this._activeCell.active = true;
-				if (this._activeCell.isEditMode !== isEditMode) {
-					this._activeCell.isEditMode = isEditMode;
-				}
+				this._activeCell.isEditMode = isEditMode;
 			}
 			this._onActiveCellChanged.fire(cell);
 		}
