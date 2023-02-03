@@ -365,12 +365,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	private handleFillInConnectionInputs(connectionInfo: IConnectionProfile): void {
-		this._connectionManagementService.addSavedPassword(connectionInfo).then(async connectionWithPassword => {
+		this.createModel(connectionInfo).then(connectionWithPassword => {
 			if (this._model) {
 				this._model.dispose();
 			}
-			this._model = await this.createModel(connectionWithPassword);
-
+			this._model = connectionWithPassword;
 			this.uiController.fillInConnectionInputs(this._model);
 		}).catch(err => onUnexpectedError(err));
 		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[connectionInfo.providerName]);
