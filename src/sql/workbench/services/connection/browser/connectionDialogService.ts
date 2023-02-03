@@ -33,6 +33,7 @@ import { CmsConnectionController } from 'sql/workbench/services/connection/brows
 import { entries } from 'sql/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
+import { AuthenticationType } from 'sql/platform/connection/common/constants';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -364,11 +365,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	private handleFillInConnectionInputs(connectionInfo: IConnectionProfile): void {
-		this._connectionManagementService.addSavedPassword(connectionInfo).then(connectionWithPassword => {
+		this._connectionManagementService.addSavedPassword(connectionInfo).then(async connectionWithPassword => {
 			if (this._model) {
 				this._model.dispose();
 			}
-			this._model = this.createModel(connectionWithPassword);
+			this._model = await this.createModel(connectionWithPassword);
 
 			this.uiController.fillInConnectionInputs(this._model);
 		}).catch(err => onUnexpectedError(err));
@@ -383,11 +384,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this.uiController.handleOnConnecting();
 	}
 
-	private updateModelServerCapabilities(model: IConnectionProfile) {
+	private async updateModelServerCapabilities(model: IConnectionProfile) {
 		if (this._model) {
 			this._model.dispose();
 		}
-		this._model = this.createModel(model);
+		this._model = await this.createModel(model);
 		if (this._model.providerName) {
 			this._currentProviderType = this._model.providerName;
 			if (this._connectionDialog) {
@@ -396,7 +397,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 	}
 
-	private createModel(model: IConnectionProfile): ConnectionProfile {
+	private async createModel(model: IConnectionProfile): Promise<ConnectionProfile> {
 		const defaultProvider = this.getDefaultProviderName();
 		let providerName = model ? model.providerName : defaultProvider;
 		providerName = providerName ? providerName : defaultProvider;
@@ -412,6 +413,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 
 		let newProfile = new ConnectionProfile(this._capabilitiesService, model || providerName);
+		if (!model.password && defaultAuthenticationType === AuthenticationType.SqlLogin && authenticationTypeName === defaultAuthenticationType) {
+			try {
+				await this._connectionManagementService.addSavedPassword(newProfile, true);
+			}
+			catch (err) {
+				onUnexpectedError(err);
+			}
+		}
 		newProfile.saveProfile = true;
 		newProfile.generateNewId();
 		// If connecting from a query editor set "save connection" to false
