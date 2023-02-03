@@ -843,6 +843,8 @@ export class ProjectsController {
 		const node = context.element as BaseProjectTreeItem;
 		const project = this.getProjectFromContext(node);
 
+		// need to use quickpick because input box isn't supported in treeviews
+		// https://github.com/microsoft/vscode/issues/117502 and https://github.com/microsoft/vscode/issues/97190
 		const newFileName = await vscode.window.showInputBox(
 			{
 				title: constants.enterNewName,
