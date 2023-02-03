@@ -4860,7 +4860,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://github.com/MarkMpn/Sql4Cds/releases/tag/v7.1.0"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/master/AzureDataStudioExtension/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
