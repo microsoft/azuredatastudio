@@ -15,6 +15,7 @@ import { IconPathHelper } from '../common/iconHelper';
 import { defaultProjectSaveLocation } from '../common/projectLocationHelper';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { WorkspaceService } from '../services/workspaceService';
+import { isValidBasename, isValidBasenameErrorMessage } from '../common/pathUtilsHelper';
 
 class NewProjectDialogModel {
 	projectTypeId: string = '';
@@ -174,16 +175,25 @@ export class NewProjectDialog extends DialogBase {
 			}
 		}));
 
-		const projectNameTextBox = view.modelBuilder.inputBox().withProps({
-			ariaLabel: constants.ProjectNameTitle,
-			placeHolder: constants.ProjectNamePlaceholder,
-			required: true,
-			width: constants.DefaultInputWidth
-		}).component();
+		const projectNameTextBox = view.modelBuilder.inputBox().withValidation(
+			component => isValidBasename(component.value)
+		)
+			.withProps({
+				ariaLabel: constants.ProjectNameTitle,
+				placeHolder: constants.ProjectNamePlaceholder,
+				required: true,
+				width: constants.DefaultInputWidth
+			}).component();
 
-		this.register(projectNameTextBox.onTextChanged(() => {
-			this.model.name = projectNameTextBox.value!;
-			return projectNameTextBox.updateProperty('title', projectNameTextBox.value);
+		this.register(projectNameTextBox.onTextChanged(text => {
+			const errorMessage = isValidBasenameErrorMessage(text);
+			if (errorMessage) {
+				// Set validation error message if project name is invalid
+				return void projectNameTextBox.updateProperty('validationErrorMessage', errorMessage);
+			} else {
+				this.model.name = projectNameTextBox.value!;
+				return projectNameTextBox.updateProperty('title', projectNameTextBox.value);
+			}
 		}));
 
 		const locationTextBox = view.modelBuilder.inputBox().withProps({
