@@ -636,7 +636,8 @@ export async function getLocationDisplayName(location: string): Promise<string> 
 export async function validateIrSqlDatabaseMigrationSettings(
 	migration: MigrationStateModel,
 	sourceServerName: string,
-	trustServerCertificate: boolean,				// todo
+	encryptConnection: boolean,
+	trustServerCertificate: boolean,
 	sourceDatabaseName: string,
 	targetDatabaseName: string,
 	testIrOnline: boolean = true,
@@ -662,17 +663,19 @@ export async function validateIrSqlDatabaseMigrationSettings(
 			userName: migration._sqlServerUsername,
 			password: migration._sqlServerPassword,
 			authentication: migration._authenticationType,
+			encryptConnection: encryptConnection,
 			trustServerCertificate: trustServerCertificate,
-			// encryptConnection: true,
 		},
 		targetSqlConnection: {
 			testConnectivity: testTargetConnectivity,
 			dataSource: targetDatabaseServer.properties.fullyQualifiedDomainName,
 			userName: migration._targetUserName,
 			password: migration._targetPassword,
+			authentication: MigrationSourceAuthenticationType.Sql,
+
+			// to-do: what are the correct values to use when connecting to a target SQL DB?
 			encryptConnection: true,
 			trustServerCertificate: false,
-			authentication: MigrationSourceAuthenticationType.Sql,
 		}
 	};
 

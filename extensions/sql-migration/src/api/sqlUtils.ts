@@ -166,12 +166,13 @@ function getSqlDbConnectionProfile(
 	};
 }
 
-export function getConnectionProfile(
+export function getTargetConnectionProfile(
 	server: string | SqlManagedInstance | SqlVMServer | AzureSqlDatabaseServer,
 	azureResourceId: string,
 	userName: string,
 	password: string,
-	trustServerCert: boolean = false): azdata.IConnectionProfile {
+	encryptConnection: boolean,
+	trustServerCert: boolean): azdata.IConnectionProfile {
 
 	const connectId = generateGuid();
 	const serverName = extractNameFromServer(server);
@@ -196,7 +197,7 @@ export function getConnectionProfile(
 			password: password,
 			connectionTimeout: 60,
 			columnEncryptionSetting: 'Enabled',
-			encrypt: true,
+			encrypt: encryptConnection,
 			trustServerCertificate: trustServerCert,
 			connectRetryCount: '1',
 			connectRetryInterval: '10',
@@ -204,6 +205,38 @@ export function getConnectionProfile(
 		},
 	};
 }
+
+export async function getSourceConnectionString(): Promise<string> {
+	return await azdata.connection.getConnectionString((await azdata.connection.getCurrentConnection()).connectionId, true);
+}
+
+export async function getTargetConnectionString(
+	server: string | SqlManagedInstance | SqlVMServer | AzureSqlDatabaseServer,
+	azureResourceId: string,
+	username: string,
+	password: string): Promise<string> {
+
+	const connectionProfile = getTargetConnectionProfile(
+		server,
+		azureResourceId,
+		username,
+		password,
+
+		// to-do: we only use target connection string for login migration
+		// what are the correct values to use for encryptConnection / trustServerCertificate when connecting to target?
+		// it may depend on the target platform
+		true /* encryptConnection */,
+		true /* trustServerCertificate */);
+
+	const result = await azdata.connection.connect(connectionProfile, false, false);
+	if (result.connected && result.connectionId) {
+		return azdata.connection.getConnectionString(result.connectionId, true);
+	}
+
+	return '';
+}
+
+
 
 function extractNameFromServer(
 	server: string | SqlManagedInstance | SqlVMServer | AzureSqlDatabaseServer): string {
@@ -294,11 +327,15 @@ export async function collectTargetDatabaseInfo(
 	userName: string,
 	password: string): Promise<TargetDatabaseInfo[]> {
 
-	const connectionProfile = getConnectionProfile(
+	const connectionProfile = getTargetConnectionProfile(
 		targetServer.properties.fullyQualifiedDomainName,
 		targetServer.id,
 		userName,
-		password);
+		password,
+
+		// to-do: what are the correct values to use when connecting to a target SQL DB?
+		true /* encryptConnection */,
+		false /* trustServerCertificate */);
 
 	const result = await azdata.connection.connect(connectionProfile, false, false);
 	if (result.connected && result.connectionId) {
@@ -418,12 +455,16 @@ export async function collectTargetLogins(
 	password: string,
 	includeWindowsAuth: boolean = true): Promise<string[]> {
 
-	const connectionProfile = getConnectionProfile(
+	const connectionProfile = getTargetConnectionProfile(
 		targetServer,
 		targetServer.id,
 		userName,
 		password,
-		true /* trustServerCertificate */);			// todo
+
+		// to-do: what are the correct values to use for encryptConnection / trustServerCertificate when connecting to target?
+		// it may depend on the target platform
+		true /* encryptConnection */,
+		true /* trustServerCertificate */);
 
 	const result = await azdata.connection.connect(connectionProfile, false, false);
 	if (result.connected && result.connectionId) {

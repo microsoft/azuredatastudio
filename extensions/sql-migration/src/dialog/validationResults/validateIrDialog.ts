@@ -449,8 +449,8 @@ export class ValidateIrDialog {
 	private async _validateSqlDbMigration(): Promise<void> {
 		const currentConnection = await azdata.connection.getCurrentConnection();
 		const sourceServerName = currentConnection?.serverName!;
-		const trustServerCertificate = currentConnection?.options['trustServerCertificate'] === true;
-		const databaseCount = this._model._databasesForMigration.length;
+		const encryptConnection = currentConnection?.options?.encrypt === true || currentConnection?.options?.encrypt === 'true';
+		const trustServerCertificate = currentConnection?.options?.trustServerCertificate === true || currentConnection?.options?.trustServerCertificate === 'true'; const databaseCount = this._model._databasesForMigration.length;
 		const sourceDatabaseName = this._model._databasesForMigration[0];
 		const targetDatabaseName = this._model._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? '';
 		let testNumber: number = 0;
@@ -467,6 +467,7 @@ export class ValidateIrDialog {
 				const response = await validateIrSqlDatabaseMigrationSettings(
 					this._model,
 					sourceServerName,
+					encryptConnection,
 					trustServerCertificate,
 					sourceDatabase,
 					targetDatabase,

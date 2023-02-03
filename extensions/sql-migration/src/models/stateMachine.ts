@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
-import { excludeDatabases, getConnectionProfile, LoginTableInfo, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
+import { excludeDatabases, getSourceConnectionString, getTargetConnectionString, LoginTableInfo, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel, LoginMigrationStep } from './loginMigrationModel';
 import { TdeMigrationDbResult, TdeMigrationModel } from './tdeModels';
 const localize = nls.loadMessageBundle();
@@ -527,27 +527,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._skuRecommendationResults;
 	}
 
-
-	public async getSourceConnectionString(): Promise<string> {
-		return await azdata.connection.getConnectionString((await azdata.connection.getCurrentConnection()).connectionId, true);
-	}
-
-	public async getTargetConnectionString(): Promise<string> {
-		const connectionProfile = getConnectionProfile(
-			this._targetServerInstance,
-			this._targetServerInstance.id,
-			this._targetUserName,
-			this._targetPassword,
-			true /* trustServerCertificate */);
-
-		const result = await azdata.connection.connect(connectionProfile, false, false);
-		if (result.connected && result.connectionId) {
-			return azdata.connection.getConnectionString(result.connectionId, true);
-		}
-
-		return '';
-	}
-
 	private updateLoginMigrationResults(newResult: mssql.StartLoginMigrationResult): void {
 		if (this._loginMigrationsResult && this._loginMigrationsResult.exceptionMap) {
 			for (var key in newResult.exceptionMap) {
@@ -562,8 +541,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		try {
 			this._loginMigrationModel.AddNewLogins(this._loginsForMigration.map(row => row.loginName));
 
-			const sourceConnectionString = await this.getSourceConnectionString();
-			const targetConnectionString = await this.getTargetConnectionString();
+			const sourceConnectionString = await getSourceConnectionString();
+			const targetConnectionString = await getTargetConnectionString(this._targetServerInstance,
+				this._targetServerInstance.id,
+				this._targetUserName,
+				this._targetPassword);
+
 			var response = (await this.migrationService.migrateLogins(
 				sourceConnectionString,
 				targetConnectionString,
@@ -586,8 +569,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async establishUserMappings(): Promise<Boolean> {
 		try {
-			const sourceConnectionString = await this.getSourceConnectionString();
-			const targetConnectionString = await this.getTargetConnectionString();
+			const sourceConnectionString = await getSourceConnectionString();
+			const targetConnectionString = await getTargetConnectionString(this._targetServerInstance,
+				this._targetServerInstance.id,
+				this._targetUserName,
+				this._targetPassword);
 
 			var response = (await this.migrationService.establishUserMapping(
 				sourceConnectionString,
@@ -611,8 +597,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async migrateServerRolesAndSetPermissions(): Promise<Boolean> {
 		try {
-			const sourceConnectionString = await this.getSourceConnectionString();
-			const targetConnectionString = await this.getTargetConnectionString();
+			const sourceConnectionString = await getSourceConnectionString();
+			const targetConnectionString = await getTargetConnectionString(this._targetServerInstance,
+				this._targetServerInstance.id,
+				this._targetUserName,
+				this._targetPassword);
 
 			var response = (await this.migrationService.migrateServerRolesAndSetPermissions(
 				sourceConnectionString,
@@ -1137,8 +1126,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					authentication: this._authenticationType,
 					userName: this._sqlServerUsername,
 					password: this._sqlServerPassword,
-					// to-do: use correct value of encryptConnection and trustServerCertificate
-					trustServerCertificate: currentConnection?.options.trustServerCertificate ?? false
+					encryptConnection: currentConnection?.options.encrypt === true || currentConnection?.options.encrypt === 'true',
+					trustServerCertificate: currentConnection?.options.trustServerCertificate === true || currentConnection?.options.trustServerCertificate === 'true'
 				},
 				scope: this._targetServerInstance.id,
 				offlineConfiguration: {
@@ -1179,14 +1168,16 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						authentication: this._authenticationType,
 						userName: this._sqlServerUsername,
 						password: this._sqlServerPassword,
-						encryptConnection: true,
-						trustServerCertificate: currentConnection?.options.trustServerCertificate ?? false,
+						encryptConnection: currentConnection?.options.encrypt === true || currentConnection?.options.encrypt === 'true',
+						trustServerCertificate: currentConnection?.options.trustServerCertificate === true || currentConnection?.options.trustServerCertificate === 'true'
 					};
 					requestBody.properties.targetSqlConnection = {
 						dataSource: sqlDbTarget.properties.fullyQualifiedDomainName,
 						authentication: MigrationSourceAuthenticationType.Sql,
 						userName: this._targetUserName,
 						password: this._targetPassword,
+
+						// to-do: what are the correct values of encryptConnection / trustServerCertificate to use when connecting to target SQL DB?
 						encryptConnection: true,
 						trustServerCertificate: false,
 					};
