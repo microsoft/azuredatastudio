@@ -13,6 +13,7 @@ jobs:
       - uses: mshick/add-pr-comment@v1
         with:
           message: |
+            **MSFT Gallery Maintainer Only**
             This is a reminder to update the Extensions Gallery list at https://github.com/Microsoft/azuredatastudio/wiki/List-of-Extensions once this PR has been merged in.
             Instructions for doing this can be found [here](https://github.com/microsoft/azuredatastudio-docs/blob/main/Guides/UpdateExtensionGallery.md#guide-for-extension-release-dri).
 
