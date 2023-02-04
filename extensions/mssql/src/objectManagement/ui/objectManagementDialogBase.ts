@@ -10,9 +10,11 @@ import { generateUuid } from 'vscode-languageclient/lib/utils/uuid';
 import { getErrorMessage } from '../../utils';
 import { NodeType } from '../constants';
 import {
-	CreateObjectOperationDisplayName, getNodeTypeDisplayName, LoadingDialogText,
-	NewObjectDialogTitle, ObjectPropertiesDialogTitle, OkText, UpdateObjectOperationDisplayName, ValidationErrorSummary
+	CreateObjectOperationDisplayName, LoadingDialogText,
+	NameText,
+	NewObjectDialogTitle, ObjectPropertiesDialogTitle, OkText, SelectedText, UpdateObjectOperationDisplayName, ValidationErrorSummary
 } from '../localizedConstants';
+import { getNodeTypeDisplayName } from '../utils';
 
 export const DefaultLabelWidth = 150;
 export const DefaultInputWidth = 300;
@@ -55,24 +57,10 @@ export abstract class ObjectManagementDialogBase {
 	protected abstract initialize(): Promise<void>;
 	protected abstract onComplete(): Promise<void>;
 	protected abstract onDispose(): Promise<void>;
-	protected abstract validate(): Promise<string[]>;
+	protected abstract validateInput(): Promise<string[]>;
 
 	protected async onConfirmation(): Promise<boolean> {
 		return true;
-	}
-
-	protected async runValidation(showError: boolean = true): Promise<boolean> {
-		const errors = await this.validate();
-		if ((this.dialogObject.message !== undefined || showError) && errors.length > 0) {
-			this.dialogObject.message = {
-				level: azdata.window.MessageLevel.Error,
-				text: ValidationErrorSummary,
-				description: errors.join('\n')
-			};
-		} else {
-			this.dialogObject.message = undefined;
-		}
-		return errors.length === 0;
 	}
 
 	public async open(): Promise<void> {
@@ -104,6 +92,14 @@ export abstract class ObjectManagementDialogBase {
 	private async dispose(): Promise<void> {
 		await this.onDispose();
 		this.disposables.forEach(disposable => disposable.dispose());
+	}
+
+	private async runValidation(): Promise<boolean> {
+		const errors = await this.validateInput();
+		if (errors.length > 0) {
+			await vscode.window.showErrorMessage(ValidationErrorSummary, { modal: true, detail: errors.join('\n') });
+		}
+		return errors.length === 0;
 	}
 
 	protected createLabelInputContainer(view: azdata.ModelView, label: string, input: azdata.InputBoxComponent | azdata.DropDownComponent): azdata.FlexContainer {
@@ -140,6 +136,43 @@ export abstract class ObjectManagementDialogBase {
 		return view.modelBuilder.divContainer().withLayout({ width: 'calc(100% - 20px)', height: 'calc(100% - 20px)' }).withProps({
 			CSSStyles: { 'padding': '10px' }
 		}).withItems(items, { CSSStyles: { 'margin-block-end': '10px' } }).component();
+	}
+
+	protected createTableList(view: azdata.ModelView, ariaLabel: string, listValues: string[], selectedValues: string[], data?: any[][]): azdata.TableComponent {
+		let tableData = data;
+		if (tableData === undefined) {
+			tableData = listValues.map(name => {
+				const isSelected = selectedValues.indexOf(name) !== -1;
+				return [isSelected, name];
+			});
+		}
+		const table = view.modelBuilder.table().withProps(
+			{
+				ariaLabel: ariaLabel,
+				data: tableData,
+				columns: [
+					{
+						value: SelectedText,
+						type: azdata.ColumnType.checkBox,
+						options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction }
+					}, {
+						value: NameText,
+					}
+				],
+				width: DefaultTableWidth,
+				height: getTableHeight(tableData.length)
+			}
+		).component();
+		table.onCellAction((arg: azdata.ICheckboxCellActionEventArgs) => {
+			const name = listValues[arg.row];
+			const idx = selectedValues.indexOf(name);
+			if (arg.checked && idx === -1) {
+				selectedValues.push(name);
+			} else if (!arg.checked && idx !== -1) {
+				selectedValues.splice(idx, 1)
+			}
+		});
+		return table;
 	}
 
 	protected removeItem(container: azdata.DivContainer | azdata.FlexContainer, item: azdata.Component): void {

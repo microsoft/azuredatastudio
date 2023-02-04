@@ -14,7 +14,7 @@ import * as localizedConstants from './localizedConstants';
 import { UserDialog } from './ui/userDialog';
 import { IObjectManagementService } from 'mssql';
 import * as constants from '../constants';
-import { refreshParentNode } from './utils';
+import { getNodeTypeDisplayName, refreshParentNode } from './utils';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
@@ -64,7 +64,7 @@ async function handleNewUserDialogCommand(context: azdata.ObjectExplorerContext,
 }
 
 async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
-	const nodeTypeDisplayName = localizedConstants.getNodeTypeDisplayName(context.nodeInfo.nodeType);
+	const nodeTypeDisplayName = getNodeTypeDisplayName(context.nodeInfo.nodeType);
 	try {
 		const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
 		let dialog;
@@ -96,7 +96,7 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 		default:
 			break;
 	}
-	const nodeTypeDisplayName = localizedConstants.getNodeTypeDisplayName(context.nodeInfo.nodeType);
+	const nodeTypeDisplayName = getNodeTypeDisplayName(context.nodeInfo.nodeType);
 	let confirmMessage = localizedConstants.DeleteObjectConfirmationText(nodeTypeDisplayName, context.nodeInfo.label);
 	if (additionalConfirmationMessage) {
 		confirmMessage = `${additionalConfirmationMessage} ${confirmMessage}`;

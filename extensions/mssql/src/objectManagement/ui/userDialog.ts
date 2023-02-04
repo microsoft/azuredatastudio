@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { DefaultInputWidth, DefaultTableWidth, getTableHeight, ObjectManagementDialogBase } from './objectManagementDialogBase';
+import { DefaultInputWidth, ObjectManagementDialogBase } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { NodeType } from '../constants';
-import { refreshNode } from '../utils';
+import { getAuthenticationTypeByDisplayName, getAuthenticationTypeDisplayName, getUserTypeByDisplayName, getUserTypeDisplayName, refreshNode } from '../utils';
 
 export class UserDialog extends ObjectManagementDialogBase {
 	private dialogInfo: ObjectManagement.UserViewInfo;
@@ -37,7 +37,7 @@ export class UserDialog extends ObjectManagementDialogBase {
 		super(NodeType.User, objectManagementService, connectionUri, isNewObject, name);
 	}
 
-	protected async validate(): Promise<string[]> {
+	protected async validateInput(): Promise<string[]> {
 		const errors: string[] = [];
 		if (!this.nameInput.value) {
 			errors.push(localizedConstants.NameCannotBeEmptyError);
@@ -52,7 +52,7 @@ export class UserDialog extends ObjectManagementDialogBase {
 	protected async onComplete(): Promise<void> {
 		this.dialogInfo.user.name = this.nameInput.value;
 		if (this.authTypeDropdown) {
-			this.dialogInfo.user.authenticationType = localizedConstants.getAuthenticationTypeByDisplayName(<string>this.authTypeDropdown.value);
+			this.dialogInfo.user.authenticationType = getAuthenticationTypeByDisplayName(<string>this.authTypeDropdown.value);
 		}
 		if (this.passwordInput) {
 			this.dialogInfo.user.password = this.passwordInput.value;
@@ -98,7 +98,7 @@ export class UserDialog extends ObjectManagementDialogBase {
 			width: DefaultInputWidth
 		}).component();
 		this.nameInput.onTextChanged(async () => {
-			await this.runValidation(false);
+			this.dialogInfo.user.name = this.nameInput.value;
 		});
 		const nameContainer = this.createLabelInputContainer(view, localizedConstants.NameText, this.nameInput);
 
@@ -109,15 +109,19 @@ export class UserDialog extends ObjectManagementDialogBase {
 			width: DefaultInputWidth
 		}).component();
 		this.defaultSchemaContainer = this.createLabelInputContainer(view, localizedConstants.DefaultSchemaText, this.defaultSchemaDropdown);
+		this.defaultSchemaDropdown.onValueChanged(() => {
+			this.dialogInfo.user.defaultSchema = <string>this.defaultSchemaDropdown.value;
+		});
 
 		this.typeDropdown = view.modelBuilder.dropDown().withProps({
 			ariaLabel: localizedConstants.UserTypeText,
 			values: [localizedConstants.UserWithLoginText, localizedConstants.UserWithWindowsGroupLoginText, localizedConstants.ContainedUserText, localizedConstants.UserWithNoConnectAccess],
-			value: localizedConstants.getUserTypeDisplayName(this.dialogInfo.user.type),
+			value: getUserTypeDisplayName(this.dialogInfo.user.type),
 			width: DefaultInputWidth,
 			enabled: this.isNewObject
 		}).component();
 		this.typeDropdown.onValueChanged(() => {
+			this.dialogInfo.user.type = getUserTypeByDisplayName(<string>this.typeDropdown.value);
 			this.onUserTypeChanged();
 		});
 		this.typeContainer = this.createLabelInputContainer(view, localizedConstants.UserTypeText, this.typeDropdown);
@@ -129,6 +133,9 @@ export class UserDialog extends ObjectManagementDialogBase {
 			width: DefaultInputWidth,
 			enabled: this.isNewObject
 		}).component();
+		this.loginDropdown.onValueChanged(() => {
+			this.dialogInfo.user.loginName = <string>this.loginDropdown.value;
+		});
 		this.loginContainer = this.createLabelInputContainer(view, localizedConstants.LoginText, this.loginDropdown);
 
 		const authTypes = [];
@@ -144,12 +151,13 @@ export class UserDialog extends ObjectManagementDialogBase {
 		this.authTypeDropdown = view.modelBuilder.dropDown().withProps({
 			ariaLabel: localizedConstants.AuthTypeText,
 			values: authTypes,
-			value: localizedConstants.getAuthenticationTypeDisplayName(this.dialogInfo.user.authenticationType),
+			value: getAuthenticationTypeDisplayName(this.dialogInfo.user.authenticationType),
 			width: DefaultInputWidth,
 			enabled: this.isNewObject
 		}).component();
 		this.authTypeContainer = this.createLabelInputContainer(view, localizedConstants.AuthTypeText, this.authTypeDropdown);
 		this.authTypeDropdown.onValueChanged(() => {
+			this.dialogInfo.user.authenticationType = getAuthenticationTypeByDisplayName(<string>this.authTypeDropdown.value);
 			this.onAuthenticationTypeChanged();
 		});
 
@@ -157,11 +165,8 @@ export class UserDialog extends ObjectManagementDialogBase {
 		this.passwordContainer = this.createLabelInputContainer(view, localizedConstants.PasswordText, this.passwordInput);
 		this.confirmPasswordInput = this.createPasswordInputBox(view, localizedConstants.ConfirmPasswordText, this.dialogInfo.user.password ?? '');
 		this.confirmPasswordContainer = this.createLabelInputContainer(view, localizedConstants.ConfirmPasswordText, this.confirmPasswordInput);
-		this.passwordInput.onTextChanged(async () => {
-			await this.runValidation(false);
-		});
-		this.confirmPasswordInput.onTextChanged(async () => {
-			await this.runValidation(false);
+		this.passwordInput.onTextChanged(() => {
+			this.dialogInfo.user.password = this.passwordInput.value;
 		});
 
 		this.generalSection = this.createGroup(view, localizedConstants.GeneralSectionHeader, [
@@ -176,70 +181,12 @@ export class UserDialog extends ObjectManagementDialogBase {
 	}
 
 	private initializeOwnedSchemaSection(view: azdata.ModelView): void {
-		const ownedSchemasData = this.dialogInfo.schemas.map(name => {
-			const isSchemaSelected = this.dialogInfo.user.ownedSchemas.indexOf(name) !== -1;
-			return [isSchemaSelected, name];
-		});
-		this.ownedSchemaTable = view.modelBuilder.table().withProps(
-			{
-				ariaLabel: localizedConstants.OwnedSchemaSectionHeader,
-				data: ownedSchemasData,
-				columns: [
-					{
-						value: localizedConstants.SelectedText,
-						type: azdata.ColumnType.checkBox,
-						options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction }
-					}, {
-						value: localizedConstants.NameText,
-					}
-				],
-				width: DefaultTableWidth,
-				height: getTableHeight(this.dialogInfo.schemas.length)
-			}
-		).component();
-		this.ownedSchemaTable.onCellAction((arg: azdata.ICheckboxCellActionEventArgs) => {
-			const schemaName = this.dialogInfo.schemas[arg.row];
-			const idx = this.dialogInfo.user.ownedSchemas.indexOf(schemaName);
-			if (arg.checked && idx === -1) {
-				this.dialogInfo.user.ownedSchemas.push(schemaName);
-			} else if (!arg.checked && idx !== -1) {
-				this.dialogInfo.user.ownedSchemas.splice(idx, 1)
-			}
-		});
+		this.ownedSchemaTable = this.createTableList(view, localizedConstants.OwnedSchemaSectionHeader, this.dialogInfo.schemas, this.dialogInfo.user.ownedSchemas);
 		this.ownedSchemaSection = this.createGroup(view, localizedConstants.OwnedSchemaSectionHeader, [this.ownedSchemaTable]);
 	}
 
 	private initializeMembershipSection(view: azdata.ModelView): void {
-		const databaseRoleData = this.dialogInfo.databaseRoles.map(name => {
-			const isSelected = this.dialogInfo.user.databaseRoles.indexOf(name) !== -1;
-			return [isSelected, name];
-		});
-		this.membershipTable = view.modelBuilder.table().withProps(
-			{
-				ariaLabel: localizedConstants.MembershipSectionHeader,
-				data: databaseRoleData,
-				columns: [
-					{
-						value: localizedConstants.SelectedText,
-						type: azdata.ColumnType.checkBox,
-						options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction }
-					}, {
-						value: localizedConstants.NameText,
-					}
-				],
-				width: DefaultTableWidth,
-				height: getTableHeight(this.dialogInfo.databaseRoles.length)
-			}
-		).component();
-		this.membershipTable.onCellAction((arg: azdata.ICheckboxCellActionEventArgs) => {
-			const name = this.dialogInfo.databaseRoles[arg.row];
-			const idx = this.dialogInfo.user.databaseRoles.indexOf(name);
-			if (arg.checked && idx === -1) {
-				this.dialogInfo.user.databaseRoles.push(name);
-			} else if (!arg.checked && idx !== -1) {
-				this.dialogInfo.user.databaseRoles.splice(idx, 1)
-			}
-		});
+		this.membershipTable = this.createTableList(view, localizedConstants.MembershipSectionHeader, this.dialogInfo.databaseRoles, this.dialogInfo.user.databaseRoles);
 		this.membershipSection = this.createGroup(view, localizedConstants.MembershipSectionHeader, [this.membershipTable]);
 	}
 
