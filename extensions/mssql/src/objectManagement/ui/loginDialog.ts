@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { DefaultInputWidth, DefaultTableWidth, getTableHeight, ObjectManagementDialogBase } from './objectManagementDialogBase';
+import { DefaultInputWidth, ObjectManagementDialogBase } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { NodeType, PublicServerRoleName } from '../constants';
