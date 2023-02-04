@@ -8,7 +8,7 @@ import { azureResource } from 'azurecore';
 import { AzureSqlDatabase, AzureSqlDatabaseServer } from './azure';
 import { generateGuid } from './utils';
 import * as utils from '../api/utils';
-import { TelemetryAction, TelemetryViews, logError } from '../telemtery';
+import { TelemetryAction, TelemetryViews, logError } from '../telemetry';
 
 const query_database_tables_sql = `
 	SELECT
@@ -169,7 +169,8 @@ export function getConnectionProfile(
 	serverName: string,
 	azureResourceId: string,
 	userName: string,
-	password: string): azdata.IConnectionProfile {
+	password: string,
+	trustServerCert: boolean = false): azdata.IConnectionProfile {
 
 	const connectId = generateGuid();
 	return {
@@ -194,7 +195,7 @@ export function getConnectionProfile(
 			connectionTimeout: 60,
 			columnEncryptionSetting: 'Enabled',
 			encrypt: true,
-			trustServerCertificate: false,
+			trustServerCertificate: trustServerCert,
 			connectRetryCount: '1',
 			connectRetryInterval: '10',
 			applicationName: 'azdata',
@@ -387,16 +388,18 @@ export async function collectSourceLogins(
 }
 
 export async function collectTargetLogins(
-	targetServer: AzureSqlDatabaseServer,
+	serverName: string,
+	azureResourceId: string,
 	userName: string,
 	password: string,
 	includeWindowsAuth: boolean = true): Promise<string[]> {
 
 	const connectionProfile = getConnectionProfile(
-		targetServer.properties.fullyQualifiedDomainName,
-		targetServer.id,
+		serverName,
+		azureResourceId,
 		userName,
-		password);
+		password,
+		true /* trustServerCertificate */);
 
 	const result = await azdata.connection.connect(connectionProfile, false, false);
 	if (result.connected && result.connectionId) {

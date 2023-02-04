@@ -9,7 +9,7 @@ import * as Constants from './constants';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getOrDownloadServer, getParallelMessageProcessingConfig, TracingLevel } from './utils';
-import { Telemetry, LanguageClientErrorHandler } from './telemetry';
+import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature } from './features';
 import { CredentialStore } from './credentialstore/credentialstore';
@@ -27,6 +27,7 @@ import { NotebookConvertService } from './notebookConvert/notebookConvertService
 import { SqlMigrationService } from './sqlMigration/sqlMigrationService';
 import { SqlCredentialService } from './credentialstore/sqlCredentialService';
 import { AzureBlobService } from './azureBlob/azureBlobService';
+import { ErrorDiagnosticsProvider } from './errorDiagnostics/errorDiagnosticsProvider';
 import { TdeMigrationService } from './tdeMigration/tdeMigrationService';
 import { ObjectManagementService } from './objectManagement/objectManagementService';
 
@@ -70,7 +71,7 @@ export class SqlToolsServer {
 				vscode.commands.registerCommand('mssql.loadCompletionExtension', (params: CompletionExtensionParams) => {
 					return this.client.sendRequest(CompletionExtLoadRequest.type, params);
 				});
-				Telemetry.sendTelemetryEvent('startup/LanguageClientStarted', {
+				TelemetryReporter.sendTelemetryEvent('startup/LanguageClientStarted', {
 					installationTime: String(installationComplete - installationStart),
 					processStartupTime: String(processEnd - processStart),
 					totalTime: String(processEnd - installationStart),
@@ -83,7 +84,7 @@ export class SqlToolsServer {
 			await Promise.all([this.activateFeatures(context), clientReadyPromise]);
 			return this.client;
 		} catch (e) {
-			Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
+			TelemetryReporter.sendTelemetryEvent('ServiceInitializingFailed');
 			void vscode.window.showErrorMessage(localize('failedToStartServiceErrorMsg', "Failed to start {0}", Constants.serviceName));
 			throw e;
 		}
@@ -195,6 +196,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 			SqlCredentialService.asFeature(context),
 			TableDesignerFeature,
 			ExecutionPlanServiceFeature,
+			ErrorDiagnosticsProvider.asFeature(context),
 			TdeMigrationService.asFeature(context),
 			ObjectManagementService.asFeature(context)
 		],

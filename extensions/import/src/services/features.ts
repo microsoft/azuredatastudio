@@ -14,7 +14,7 @@ import {
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { Disposable } from 'vscode';
 
-import { Telemetry } from './telemetry';
+import { TelemetryReporter } from './telemetry';
 import * as serviceUtils from './serviceUtils';
 import * as Contracts from './contracts';
 import { managerInstance, ApiType } from './serviceApiManager';
@@ -30,7 +30,7 @@ export class TelemetryFeature implements StaticFeature {
 
 	initialize(): void {
 		this._client.onNotification(Contracts.TelemetryNotification.type, e => {
-			Telemetry.sendTelemetryEvent(e.params.eventName, e.params.properties, e.params.measures);
+			TelemetryReporter.sendTelemetryEvent(e.params.eventName, e.params.properties, e.params.measures);
 		});
 	}
 }

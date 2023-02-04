@@ -838,6 +838,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.encryptDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[true인 경우 서버에 인증서가 설치되어 있으면 SQL Server는 클라이언트와 서버 간에 전송되는 모든 데이터에 SSL 암호화를 사용합니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2635,6 +2638,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.trustServerCertDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[true(및 encrypt=true)인 경우 SQL Server는 서버 인증서의 유효성을 검사하지 않고 클라이언트와 서버 간에 전송되는 모든 데이터에 SSL 암호화를 사용합니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

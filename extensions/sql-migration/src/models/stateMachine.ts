@@ -7,16 +7,17 @@ import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
-import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, isSqlManagedInstance, isAzureSqlDatabaseServer, VirtualMachineInstanceView } from '../api/azure';
+import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView } from '../api/azure';
 import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
-import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
+import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 import { excludeDatabases, getConnectionProfile, LoginTableInfo, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel, LoginMigrationStep } from './loginMigrationModel';
 import { TdeMigrationDbResult, TdeMigrationModel } from './tdeModels';
+import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
 const localize = nls.loadMessageBundle();
 
 export enum ValidateIrState {
@@ -528,29 +529,42 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._skuRecommendationResults;
 	}
 
+	public setTargetServerName(): void {
+		switch (this._targetType) {
+			case MigrationTargetType.SQLMI:
+				const sqlMi = this._targetServerInstance as SqlManagedInstance;
+				this._targetServerName = sqlMi.properties.fullyQualifiedDomainName;
+			case MigrationTargetType.SQLDB:
+				const sqlDb = this._targetServerInstance as AzureSqlDatabaseServer;
+				this._targetServerName = sqlDb.properties.fullyQualifiedDomainName;
+			case MigrationTargetType.SQLVM:
+				// For sqlvm, we need to use ip address from the network interface to connect to the server
+				const sqlVm = this._targetServerInstance as SqlVMServer;
+				const networkInterfaces = Array.from(sqlVm.networkInterfaces.values());
+				this._targetServerName = NetworkInterfaceModel.getIpAddress(networkInterfaces);
+		}
+	}
+
+	public get targetServerName(): string {
+		// If the target server name is not already set, return it
+		if (!this._targetServerName) {
+			this.setTargetServerName();
+		}
+
+		return this._targetServerName;
+	}
 
 	public async getSourceConnectionString(): Promise<string> {
 		return await azdata.connection.getConnectionString(this._sourceConnectionId, true);
 	}
 
-	public async setTargetServerName(): Promise<void> {
-		// If target server name has already been set, we can skip this part
-		if (this._targetServerName) {
-			return;
-		}
-
-		if (isSqlManagedInstance(this._targetServerInstance) || isAzureSqlDatabaseServer(this._targetServerInstance)) {
-			this._targetServerName = this._targetServerName ?? this._targetServerInstance.properties.fullyQualifiedDomainName;
-		}
-	}
-
 	public async getTargetConnectionString(): Promise<string> {
-		await this.setTargetServerName();
 		const connectionProfile = getConnectionProfile(
-			this._targetServerName,
+			this.targetServerName,
 			this._targetServerInstance.id,
 			this._targetUserName,
-			this._targetPassword);
+			this._targetPassword,
+			true /* trustServerCertificate */);
 
 		const result = await azdata.connection.connect(connectionProfile, false, false);
 		if (result.connected && result.connectionId) {
@@ -1152,6 +1166,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					authentication: this._authenticationType,
 					userName: this._sqlServerUsername,
 					password: this._sqlServerPassword,
+					// to-do: use correct value of encryptConnection and trustServerCertificate
 					trustServerCertificate: currentConnection?.options.trustServerCertificate ?? false
 				},
 				scope: this._targetServerInstance.id,

@@ -9,6 +9,7 @@ import * as constants from '../common/constants';
 import { directoryExist, showInfoMessageWithLearnMoreLink } from '../common/utils';
 import { defaultProjectSaveLocation } from '../common/projectLocationHelper';
 import { WorkspaceService } from '../services/workspaceService';
+import { isValidBasename, isValidBasenameErrorMessage } from '../common/pathUtilsHelper';
 
 /**
  * Create flow for a New Project using only VS Code-native APIs such as QuickPick
@@ -39,7 +40,7 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 		{
 			title: constants.EnterProjectName,
 			validateInput: (value) => {
-				return value ? undefined : constants.NameCannotBeEmpty;
+				return isValidBasename(value) ? undefined : isValidBasenameErrorMessage(value);
 			},
 			ignoreFocusOut: true
 		});

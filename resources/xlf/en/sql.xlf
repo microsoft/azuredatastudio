@@ -5557,6 +5557,12 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/connection/browser/passwordChangeDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="passwordChangeDialog.Message1">
+      <source xml:lang="en">Password must be changed for '{0}' to continue logging into '{1}'.</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.Message2">
+      <source xml:lang="en">Please enter a new password below:</source>
+    </trans-unit>
     <trans-unit id="passwordChangeDialog.cancel">
       <source xml:lang="en">Cancel</source>
     </trans-unit>
@@ -5580,6 +5586,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="passwordChangeDialog.ok">
       <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.passwordChangeInProgress">
+      <source xml:lang="en">Password change already in progress</source>
     </trans-unit>
     <trans-unit id="passwordChangeDialog.title">
       <source xml:lang="en">Change Password</source>

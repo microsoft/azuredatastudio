@@ -11,7 +11,7 @@ import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import * as utils from '../../api/utils';
 import { SqlMigrationService } from '../../api/azure';
-import { logError, TelemetryViews } from '../../telemtery';
+import { logError, TelemetryViews } from '../../telemetry';
 import { ServiceContextChangeEvent } from '../../dashboard/tabBase';
 
 const CONTROL_MARGIN = '20px';
