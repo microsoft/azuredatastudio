@@ -562,6 +562,9 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.tooLongFilenameErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File name cannot be over 255 characters]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[파일 이름은 255자를 초과할 수 없습니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -578,7 +581,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Undefined name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[정의되지 않은 네임스페이스:]]></Val>
+            <Val><![CDATA[정의되지 않은 이름]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
