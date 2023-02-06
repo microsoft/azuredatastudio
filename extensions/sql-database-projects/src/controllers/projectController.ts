@@ -842,13 +842,14 @@ export class ProjectsController {
 	public async rename(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const node = context.element as BaseProjectTreeItem;
 		const project = this.getProjectFromContext(node);
+		const file = this.getFileProjectEntry(project, node);
 
 		// need to use quickpick because input box isn't supported in treeviews
 		// https://github.com/microsoft/vscode/issues/117502 and https://github.com/microsoft/vscode/issues/97190
 		const newFileName = await vscode.window.showInputBox(
 			{
 				title: constants.enterNewName,
-				value: node.friendlyName,
+				value: path.basename(node.friendlyName, constants.sqlFileExtension),
 				ignoreFocusOut: true
 			});
 
@@ -856,7 +857,12 @@ export class ProjectsController {
 			return;
 		}
 
-		// TODO: hookup to "Move" file/folder api
+		// TODO: swap this out and hookup to "Move" file/folder api
+		// rename the file
+		const newFilePath = path.join(path.dirname(file?.fsUri.fsPath!), `${newFileName}.sql`);
+		await fs.rename(file?.fsUri.fsPath!, newFilePath);
+		await project.exclude(file!);
+		await project.addExistingItem(newFilePath);
 
 		this.refreshProjectsTree(context);
 	}
