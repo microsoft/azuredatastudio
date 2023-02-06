@@ -32,7 +32,6 @@ export const enum ModalDialogName {
 }
 
 export const enum TelemetryView {
-	ErrorMessageDialog = 'ErrorMessageDialog',
 	Agent = 'Agent',
 	AgentJobs = 'AgentJobs',
 	AgentJobHistory = 'AgentJobHistory',
@@ -40,10 +39,12 @@ export const enum TelemetryView {
 	AgentNotebookHistory = 'AgentNotebookHistory',
 	AgentNotebooks = 'AgentNotebooks',
 	ConnectionErrorDialog = 'ConnectionErrorDialog',
+	ErrorMessageDialog = 'ErrorMessageDialog',
 	ExecutionPlan = 'ExecutionPlan',
 	ExtensionHost = 'ExtensionHost',
 	ExtensionRecommendationDialog = 'ExtensionRecommendationDialog',
 	Notebook = 'Notebook',
+	NotifyEncryptionDialog = 'NotifyEncryptionDialog',
 	ResultsPanel = 'ResultsPanel',
 	Shell = 'Shell',
 	SqlAssessment = 'SqlAssessment',

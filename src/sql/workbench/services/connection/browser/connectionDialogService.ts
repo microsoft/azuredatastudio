@@ -32,6 +32,7 @@ import { CmsConnectionController } from 'sql/workbench/services/connection/brows
 import { entries } from 'sql/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IErrorDialogOptions } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -501,7 +502,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		recentConnections.forEach(conn => conn.dispose());
 	}
 
-
 	private showErrorDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string): void {
 		// Kerberos errors are currently very hard to understand, so adding handling of these to solve the common scenario
 		// note that ideally we would have an extensible service to handle errors by error code and provider, but for now
@@ -530,6 +530,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 		this._logService.error(message);
 
-		this._errorMessageService.showDialog(severity, headerTitle, message, messageDetails, actions, undefined, undefined, TelemetryView.ConnectionErrorDialog);
+		this._errorMessageService.showDialog(severity, headerTitle, message, messageDetails, TelemetryView.ConnectionErrorDialog, actions, undefined, undefined);
+	}
+
+	public async openCustomErrorDialog(options: IErrorDialogOptions): Promise<string | undefined> {
+
+		let result = await this._errorMessageService.showDialogAsync(options, TelemetryView.ConnectionErrorDialog);
+		return result;
 	}
 }

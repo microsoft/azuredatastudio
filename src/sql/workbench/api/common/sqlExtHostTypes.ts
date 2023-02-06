@@ -328,6 +328,30 @@ export interface IDialogProperties {
 	height: number
 }
 
+/**
+ * Provides dialog options to customize modal dialog content and layout
+ */
+export interface IErrorDialogOptions {
+	severity: MessageLevel;
+	headerTitle: string;
+	message: string;
+	messageDetails?: string;
+	actions?: IDialogAction[];
+	instructionText?: string;
+	readMoreLink?: string;
+}
+
+/**
+ * An action that will be rendered as a button on the dialog.
+ */
+export interface IDialogAction {
+	id: string;
+	label: string;
+	isPrimary: boolean;
+	closeDialog: boolean;
+	styleClass?: string | undefined;
+}
+
 export enum MessageLevel {
 	Error = 0,
 	Warning = 1,

@@ -537,13 +537,6 @@ declare module 'azdata' {
 		 * @returns The new password that is returned from the operation or undefined if unsuccessful.
 		 */
 		export function openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined>;
-
-		/**
-		 * Opens the error dialog with customization options provided.
-		 * @param options Dialog options to customize error dialog.
-		 * @returns Id of action button clicked by user, e.g. ok, cancel
-		 */
-		export function openCustomErrorDialog(options: window.ICustomDialogOptions): Thenable<string | undefined>;
 	}
 
 	/*
@@ -1830,9 +1823,16 @@ declare module 'azdata' {
 		}
 
 		/**
+		 * Opens the error dialog with customization options provided.
+		 * @param options Dialog options to customize error dialog.
+		 * @returns Id of action button clicked by user, e.g. ok, cancel
+		 */
+		export function openCustomErrorDialog(options: IErrorDialogOptions): Thenable<string | undefined>;
+
+		/**
 		 * Provides dialog options to customize modal dialog content and layout
 		 */
-		export interface ICustomDialogOptions {
+		export interface IErrorDialogOptions {
 			/**
 			 * Severity Level to identify icon of modal dialog.
 			 */

@@ -335,7 +335,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
-	openCustomErrorDialog(options: azdata.window.ICustomDialogOptions): Promise<string | undefined> {
+	openCustomErrorDialog(options: azdata.window.IErrorDialogOptions): Promise<string | undefined> {
 		return undefined;
 	}
 }

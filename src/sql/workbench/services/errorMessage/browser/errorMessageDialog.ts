@@ -85,10 +85,6 @@ export class ErrorMessageDialog extends Modal {
 		this._register(attachButtonStyler(this._okButton, this._themeService));
 	}
 
-	public setTelemetryView(telemetryView: TelemetryKeys.TelemetryView) {
-		this._telemetryView = telemetryView;
-	}
-
 	private createCopyButton() {
 		let copyButtonLabel = localize('copyDetails', "Copy details");
 		this._copyButton = this.addFooterButton(copyButtonLabel, () => {
@@ -173,19 +169,22 @@ export class ErrorMessageDialog extends Modal {
 	}
 
 	public ok(resolvePromise: boolean = true): void {
+		this._telemetryService.sendActionEvent(this._telemetryView, 'ok');
 		this._onOk.fire();
 		this.close('ok', resolvePromise);
 	}
 
 	public close(hideReason: HideReason = 'close', resolvePromise: boolean) {
+		this._telemetryService.sendActionEvent(this._telemetryView, hideReason.toString());
 		this.hide(hideReason);
 		if (resolvePromise) {
 			this._promiseResolver(hideReason.toString());
 		}
 	}
 
-	public open(severity: Severity, headerTitle: string, message: string, messageDetails?: string,
+	public open(telemetryView: TelemetryKeys.TelemetryView, severity: Severity, headerTitle: string, message: string, messageDetails?: string,
 		actions?: IAction[], instructionText?: string, readMoreLink?: string, resetActions: boolean = true): void {
+		this._telemetryView = telemetryView;
 		this._severity = severity;
 		this._message = message;
 		this._instructionText = instructionText;
@@ -230,12 +229,12 @@ export class ErrorMessageDialog extends Modal {
 		}
 	}
 
-	public openCustomAsync(severity: Severity, options: azdata.window.ICustomDialogOptions): Promise<string | undefined> {
+	public openCustomAsync(telemetryView: TelemetryKeys.TelemetryView, severity: Severity, options: azdata.window.IErrorDialogOptions): Promise<string | undefined> {
 		if (!options) {
 			return undefined;
 		}
-		let actions: IAction[] = [];
 
+		let actions: IAction[] = [];
 		this.resetActions();
 		options.actions?.forEach(action => {
 			this._actionEvents.set(action.id, action.closeDialog);
@@ -250,7 +249,7 @@ export class ErrorMessageDialog extends Modal {
 			});
 		});
 
-		this.open(severity, options.headerTitle, options.message, options.messageDetails, actions, options.instructionText, options.readMoreLink, false);
+		this.open(telemetryView, severity, options.headerTitle, options.message, options.messageDetails, actions, options.instructionText, options.readMoreLink, false);
 		const deferred = new Deferred<string | undefined>();
 		this._promiseResolver = deferred.resolve;
 		return deferred.promise;

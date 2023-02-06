@@ -84,7 +84,7 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 					};
 
 					actions.push(trustServerCertAction);
-					const result = await azdata.connection.openCustomErrorDialog(
+					const result = await azdata.window.openCustomErrorDialog(
 						{
 							severity: azdata.window.MessageLevel.Error,
 							headerTitle: ErrorDiagnosticsConstants.ConnectionErrorDialogTitle,

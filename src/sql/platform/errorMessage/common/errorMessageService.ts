@@ -7,6 +7,7 @@ import Severity from 'vs/base/common/severity';
 import { IAction } from 'vs/base/common/actions';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
+import { IErrorDialogOptions } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export const IErrorMessageService = createDecorator<IErrorMessageService>('errorMessageService');
 export interface IErrorMessageService {
@@ -17,10 +18,17 @@ export interface IErrorMessageService {
 	 * @param headerTitle Title to show on Error modal dialog
 	 * @param message Message containng error message
 	 * @param messageDetails Message details containing stacktrace along with error message
+	 * @param telemetryView Telemetry View to be used for dispatching telemetry events.
 	 * @param actions Custom actions to display on the error message dialog
 	 * @param instructionText Special instructions to display to user when displaying error message
 	 * @param readMoreLink External link to read more about the instructions.
+	 */
+	showDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, telemetryView?: TelemetryView, actions?: IAction[], instructionText?: string, readMoreLink?: string): void;
+
+	/**
+	 * Shows error dialog with given parameters
+	 * @param options Error Dialog options to customize error message dialog.
 	 * @param telemetryView Telemetry View to be used for dispatching telemetry events.
 	 */
-	showDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[], instructionText?: string, readMoreLink?: string, telemetryView?: TelemetryView): void;
+	showDialogAsync(options: IErrorDialogOptions, telemetryView: TelemetryView): Promise<string | undefined>;
 }

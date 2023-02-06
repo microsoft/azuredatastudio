@@ -78,7 +78,7 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		return this._proxy.$openChangePasswordDialog(profile);
 	}
 
-	public $openCustomErrorDialog(options: azdata.window.ICustomDialogOptions): Thenable<string | undefined> {
+	public $openCustomErrorDialog(options: azdata.window.IErrorDialogOptions): Thenable<string | undefined> {
 		return this._proxy.$openCustomErrorDialog(options);
 	}
 

@@ -723,7 +723,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getServerInfo(connectedId: string): Thenable<azdata.ServerInfo>;
 	$openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection>;
 	$openChangePasswordDialog(profile: azdata.IConnectionProfile): Thenable<string | undefined>;
-	$openCustomErrorDialog(options: azdata.window.ICustomDialogOptions): Thenable<string | undefined>;
+	$openCustomErrorDialog(options: azdata.window.IErrorDialogOptions): Thenable<string | undefined>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;
