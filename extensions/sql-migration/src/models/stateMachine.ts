@@ -548,26 +548,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._targetServerName;
 	}
 
-	// public async getSourceConnectionString(): Promise<string> {
-	// 	return await azdata.connection.getConnectionString(this._sourceConnectionId, true);
-	// }
-
-	// public async getTargetConnectionString(): Promise<string> {
-	// 	const connectionProfile = getConnectionProfile(
-	// 		this.targetServerName,
-	// 		this._targetServerInstance.id,
-	// 		this._targetUserName,
-	// 		this._targetPassword,
-	// 		true /* trustServerCertificate */);
-
-	// 	const result = await azdata.connection.connect(connectionProfile, false, false);
-	// 	if (result.connected && result.connectionId) {
-	// 		return azdata.connection.getConnectionString(result.connectionId, true);
-	// 	}
-
-	// 	return '';
-	// }
-
 	private updateLoginMigrationResults(newResult: mssql.StartLoginMigrationResult): void {
 		if (this._loginMigrationsResult && this._loginMigrationsResult.exceptionMap) {
 			for (var key in newResult.exceptionMap) {
