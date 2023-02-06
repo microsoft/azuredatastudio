@@ -179,6 +179,7 @@ function getSqlDbConnectionProfile(
 			password: password,
 			connectionTimeout: 60,
 			columnEncryptionSetting: 'Enabled',
+			// when connecting to a target Azure SQL DB, use true/false
 			encrypt: true,
 			trustServerCertificate: false,
 			connectRetryCount: '1',
@@ -245,10 +246,7 @@ export async function getTargetConnectionString(
 		azureResourceId,
 		username,
 		password,
-
-		// to-do: we only use target connection string for login migration
-		// what are the correct values to use for encryptConnection / trustServerCertificate when connecting to target?
-		// it may depend on the target platform - maybe it'll need to be passed in
+		// for login migration, when connecting to a target Azure SQL, use true/true
 		true /* encryptConnection */,
 		true /* trustServerCertificate */);
 
@@ -331,8 +329,7 @@ export async function collectTargetDatabaseInfo(
 		targetServer.id,
 		userName,
 		password,
-
-		// to-do: what are the correct values to use when connecting to a target SQL DB?
+		// when connecting to a target Azure SQL DB, use true/false
 		true /* encryptConnection */,
 		false /* trustServerCertificate */);
 
@@ -460,9 +457,7 @@ export async function collectTargetLogins(
 		azureResourceId,
 		userName,
 		password,
-
-		// to-do: what are the correct values to use for encryptConnection / trustServerCertificate when connecting to target?
-		// it may depend on the target platform
+		// for login migration, when connecting to a target Azure SQL, use true/true
 		true /* encryptConnection */,
 		true /* trustServerCertificate */);
 

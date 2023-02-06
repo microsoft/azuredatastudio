@@ -1194,8 +1194,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						authentication: MigrationSourceAuthenticationType.Sql,
 						userName: this._targetUserName,
 						password: this._targetPassword,
-
-						// to-do: what are the correct values of encryptConnection / trustServerCertificate to use when connecting to target SQL DB?
+						// when connecting to a target Azure SQL DB, use true/false
 						encryptConnection: true,
 						trustServerCertificate: false,
 					};

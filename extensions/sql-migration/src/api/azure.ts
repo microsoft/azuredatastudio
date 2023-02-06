@@ -664,8 +664,7 @@ export async function validateIrSqlDatabaseMigrationSettings(
 			userName: migration._targetUserName,
 			password: migration._targetPassword,
 			authentication: MigrationSourceAuthenticationType.Sql,
-
-			// to-do: what are the correct values to use when connecting to a target SQL DB?
+			// when connecting to a target Azure SQL DB, use true/false
 			encryptConnection: true,
 			trustServerCertificate: false,
 		}
