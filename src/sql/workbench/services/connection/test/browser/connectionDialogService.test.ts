@@ -311,13 +311,11 @@ suite('ConnectionDialogService tests', () => {
 		await connectionDialogService.showDialog(mockConnectionManagementService.object, testConnectionParams, connectionProfile);
 		await (connectionDialogService as any).handleFillInConnectionInputs(connectionProfile);
 
-		setTimeout(() => {
-			let connectionControllerMap = (connectionDialogService as any)._connectionControllerMap;
-			let returnedModel = (connectionControllerMap['MSSQL'] as any)._model;
+		let connectionControllerMap = (connectionDialogService as any)._connectionControllerMap;
+		let returnedModel = (connectionControllerMap['MSSQL'] as any)._model;
 
-			assert.strictEqual(returnedModel._groupName, 'testGroup');
-			assert(called);
-		}, 200);
+		assert.strictEqual(returnedModel._groupName, 'testGroup');
+		assert(called);
 	});
 
 	test('handleOnConnect calls connectAndSaveProfile when called with profile', async () => {

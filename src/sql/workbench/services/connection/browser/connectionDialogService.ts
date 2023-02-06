@@ -364,14 +364,20 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this.uiController.initDialog(this._params && this._params.providers, this._model);
 	}
 
-	private handleFillInConnectionInputs(connectionInfo: IConnectionProfile): void {
-		this.createModel(connectionInfo).then(connectionWithPassword => {
+	private async handleFillInConnectionInputs(connectionInfo: IConnectionProfile): Promise<void> {
+		try {
+			const connectionWithPassword = await this.createModel(connectionInfo);
+
 			if (this._model) {
 				this._model.dispose();
 			}
 			this._model = connectionWithPassword;
 			this.uiController.fillInConnectionInputs(this._model);
-		}).catch(err => onUnexpectedError(err));
+		}
+		catch (err) {
+			onUnexpectedError(err);
+		}
+
 		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[connectionInfo.providerName]);
 	}
 
@@ -417,7 +423,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				await this._connectionManagementService.addSavedPassword(newProfile);
 			}
 			catch (err) {
-				onUnexpectedError(err);
+				onUnexpectedError(new Error('Error filling in password for connection dialog model.'));
 			}
 		}
 		newProfile.saveProfile = true;
@@ -495,7 +501,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			});
 			this._connectionDialog.onShowUiComponent((input) => this.handleShowUiComponent(input));
 			this._connectionDialog.onInitDialog(() => this.handleInitDialog());
-			this._connectionDialog.onFillinConnectionInputs((input) => this.handleFillInConnectionInputs(input as IConnectionProfile));
+			this._connectionDialog.onFillinConnectionInputs(async (input) => this.handleFillInConnectionInputs(input as IConnectionProfile));
 			this._connectionDialog.onResetConnection(() => this.handleProviderOnResetConnection());
 			this._connectionDialog.render();
 			this._connectionDialog.onClosed(() => {
