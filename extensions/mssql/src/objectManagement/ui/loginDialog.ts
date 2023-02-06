@@ -7,13 +7,11 @@ import * as vscode from 'vscode';
 import { DefaultInputWidth, ObjectManagementDialogBase } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { NodeType, PublicServerRoleName } from '../constants';
-import { getAuthenticationTypeByDisplayName, getAuthenticationTypeDisplayName, refreshNode } from '../utils';
+import { AlterLoginDocUrl, AuthenticationType, CreateLoginDocUrl, NodeType, PublicServerRoleName } from '../constants';
+import { getAuthenticationTypeByDisplayName, getAuthenticationTypeDisplayName, isValidSQLPassword, refreshNode } from '../utils';
 
 // TODO:
-// 1. Password validation: when advanced password options are not supported or when password policy check is on.
-// 2. only allow empty password when advanced password options are supported
-// 3. only submit when there are changes.
+// 1. only submit when there are changes.
 
 export class LoginDialog extends ObjectManagementDialogBase {
 	private dialogInfo: ObjectManagement.LoginViewInfo;
@@ -39,11 +37,17 @@ export class LoginDialog extends ObjectManagementDialogBase {
 	private lockedOutCheckbox: azdata.CheckBoxComponent;
 
 	constructor(objectManagementService: IObjectManagementService, connectionUri: string, isNewObject: boolean, name?: string, private readonly objectExplorerContext?: azdata.ObjectExplorerContext) {
-		super(NodeType.Login, objectManagementService, connectionUri, isNewObject, name);
+		super(NodeType.Login, isNewObject ? CreateLoginDocUrl : AlterLoginDocUrl, objectManagementService, connectionUri, isNewObject, name);
 	}
 
 	protected override async onConfirmation(): Promise<boolean> {
-		if (!this.passwordInput.value) {
+		const login = this.dialogInfo.login;
+		// Empty password is only allowed when advanced password options are supported and the password policy check is off.
+		// To match the SSMS behavior, a warning is shown to the user.
+		if (this.dialogInfo.supportAdvancedPasswordOptions
+			&& login.authenticationType === AuthenticationType.Sql
+			&& !login.password
+			&& !login.enforcePasswordPolicy) {
 			const result = await vscode.window.showWarningMessage(localizedConstants.BlankPasswordConfirmationText, { modal: true }, localizedConstants.YesText);
 			return result === localizedConstants.YesText;
 		}
@@ -51,17 +55,28 @@ export class LoginDialog extends ObjectManagementDialogBase {
 	}
 
 	protected async validateInput(): Promise<string[]> {
+		const login = this.dialogInfo.login;
 		const errors: string[] = [];
-		if (!this.nameInput.value) {
+		if (!login.name) {
 			errors.push(localizedConstants.NameCannotBeEmptyError);
 		}
+		if (login.authenticationType === AuthenticationType.Sql) {
+			if (!login.password && !(this.dialogInfo.supportAdvancedPasswordOptions && !login.enforcePasswordPolicy)) {
+				errors.push(localizedConstants.PasswordCannotBeEmptyError);
+			}
 
-		if (this.passwordInput && this.passwordInput.value !== this.confirmPasswordInput.value) {
-			errors.push(localizedConstants.PasswordsNotMatchError);
-		}
+			if (login.password && (login.enforcePasswordPolicy || !this.dialogInfo.supportAdvancedPasswordOptions)
+				&& !isValidSQLPassword(login.password, login.name)) {
+				errors.push(localizedConstants.InvalidPasswordError);
+			}
 
-		if (this.specifyOldPasswordCheckbox && this.specifyOldPasswordCheckbox.checked && !this.oldPasswordInput.value) {
-			errors.push(localizedConstants.OldPasswordCannotBeEmptyError);
+			if (login.password !== this.confirmPasswordInput.value) {
+				errors.push(localizedConstants.PasswordsNotMatchError);
+			}
+
+			if (this.specifyOldPasswordCheckbox?.checked && !login.oldPassword) {
+				errors.push(localizedConstants.OldPasswordCannotBeEmptyError);
+			}
 		}
 		return errors;
 	}
@@ -83,6 +98,7 @@ export class LoginDialog extends ObjectManagementDialogBase {
 
 	protected async initialize(): Promise<void> {
 		this.dialogInfo = await this.objectManagementService.initializeLoginView(this.connectionUri, this.contextId, this.isNewObject, this.objectName);
+		this.dialogInfo.login.password = this.dialogInfo.login.password ?? '';
 		this.dialogObject.registerContent(async view => {
 			const sections: azdata.Component[] = [];
 			this.initializeGeneralSection(view);
@@ -111,7 +127,6 @@ export class LoginDialog extends ObjectManagementDialogBase {
 			ariaLabel: localizedConstants.NameText,
 			enabled: this.isNewObject,
 			value: this.dialogInfo.login.name,
-			required: this.isNewObject,
 			width: DefaultInputWidth
 		}).component();
 		this.nameInput.onTextChanged(() => {

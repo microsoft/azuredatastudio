@@ -43,3 +43,8 @@ export enum AuthenticationType {
 	Sql = 'Sql',
 	AzureActiveDirectory = 'AAD'
 }
+
+export const CreateUserDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/create-user-transact-sql';
+export const AlterUserDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/alter-user-transact-sql';
+export const CreateLoginDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/create-login-transact-sql';
+export const AlterLoginDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/alter-login-transact-sql';

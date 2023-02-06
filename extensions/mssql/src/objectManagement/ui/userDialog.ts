@@ -6,8 +6,8 @@ import * as azdata from 'azdata';
 import { DefaultInputWidth, ObjectManagementDialogBase } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { NodeType } from '../constants';
-import { getAuthenticationTypeByDisplayName, getAuthenticationTypeDisplayName, getUserTypeByDisplayName, getUserTypeDisplayName, refreshNode } from '../utils';
+import { AlterUserDocUrl, AuthenticationType, CreateUserDocUrl, NodeType, UserType } from '../constants';
+import { getAuthenticationTypeByDisplayName, getAuthenticationTypeDisplayName, getUserTypeByDisplayName, getUserTypeDisplayName, isValidSQLPassword, refreshNode } from '../utils';
 
 export class UserDialog extends ObjectManagementDialogBase {
 	private dialogInfo: ObjectManagement.UserViewInfo;
@@ -34,32 +34,30 @@ export class UserDialog extends ObjectManagementDialogBase {
 	private membershipTable: azdata.TableComponent;
 
 	constructor(objectManagementService: IObjectManagementService, connectionUri: string, private readonly database: string, isNewObject: boolean, name?: string, private readonly objectExplorerContext?: azdata.ObjectExplorerContext) {
-		super(NodeType.User, objectManagementService, connectionUri, isNewObject, name);
+		super(NodeType.User, isNewObject ? CreateUserDocUrl : AlterUserDocUrl, objectManagementService, connectionUri, isNewObject, name);
 	}
 
 	protected async validateInput(): Promise<string[]> {
 		const errors: string[] = [];
-		if (!this.nameInput.value) {
+		const user = this.dialogInfo.user;
+		if (!user.name) {
 			errors.push(localizedConstants.NameCannotBeEmptyError);
 		}
-
-		if (this.passwordInput && this.passwordInput.value !== this.confirmPasswordInput.value) {
-			errors.push(localizedConstants.PasswordsNotMatchError);
+		if (user.type === UserType.Contained && user.authenticationType === AuthenticationType.Sql) {
+			if (!user.password) {
+				errors.push(localizedConstants.PasswordCannotBeEmptyError);
+			}
+			if (user.password !== this.confirmPasswordInput.value) {
+				errors.push(localizedConstants.PasswordsNotMatchError);
+			}
+			if (!isValidSQLPassword(user.password, user.name)) {
+				errors.push(localizedConstants.InvalidPasswordError);
+			}
 		}
 		return errors;
 	}
 
 	protected async onComplete(): Promise<void> {
-		this.dialogInfo.user.name = this.nameInput.value;
-		if (this.authTypeDropdown) {
-			this.dialogInfo.user.authenticationType = getAuthenticationTypeByDisplayName(<string>this.authTypeDropdown.value);
-		}
-		if (this.passwordInput) {
-			this.dialogInfo.user.password = this.passwordInput.value;
-		}
-		if (this.defaultLanguageDropdown) {
-			this.dialogInfo.user.defaultLanguage = <string>this.defaultLanguageDropdown.value;
-		}
 		if (this.isNewObject) {
 			await this.objectManagementService.createUser(this.contextId, this.dialogInfo.user);
 			if (this.objectExplorerContext) {
@@ -76,6 +74,7 @@ export class UserDialog extends ObjectManagementDialogBase {
 
 	protected async initialize(): Promise<void> {
 		this.dialogInfo = await this.objectManagementService.initializeUserView(this.connectionUri, this.database, this.contextId, this.isNewObject, this.objectName);
+		this.dialogInfo.user.password = this.dialogInfo.user.password ?? '';
 		this.dialogObject.registerContent(async view => {
 			const sections: azdata.Component[] = [];
 			this.initializeGeneralSection(view);
@@ -84,7 +83,9 @@ export class UserDialog extends ObjectManagementDialogBase {
 			this.initializeAdvancedSection(view);
 			sections.push(this.generalSection, this.ownedSchemaSection, this.membershipSection, this.advancedSection);
 			this.formContainer = this.createFormContainer(view, sections);
-			this.onUserTypeChanged();
+			setTimeout(() => {
+				this.setViewByUserType();
+			}, 100);
 			return view.initializeModel(this.formContainer)
 		});
 	}
@@ -94,7 +95,6 @@ export class UserDialog extends ObjectManagementDialogBase {
 			ariaLabel: localizedConstants.NameText,
 			enabled: this.isNewObject,
 			value: this.dialogInfo.user.name,
-			required: this.isNewObject,
 			width: DefaultInputWidth
 		}).component();
 		this.nameInput.onTextChanged(async () => {
@@ -122,7 +122,7 @@ export class UserDialog extends ObjectManagementDialogBase {
 		}).component();
 		this.typeDropdown.onValueChanged(() => {
 			this.dialogInfo.user.type = getUserTypeByDisplayName(<string>this.typeDropdown.value);
-			this.onUserTypeChanged();
+			this.setViewByUserType();
 		});
 		this.typeContainer = this.createLabelInputContainer(view, localizedConstants.UserTypeText, this.typeDropdown);
 
@@ -158,7 +158,7 @@ export class UserDialog extends ObjectManagementDialogBase {
 		this.authTypeContainer = this.createLabelInputContainer(view, localizedConstants.AuthTypeText, this.authTypeDropdown);
 		this.authTypeDropdown.onValueChanged(() => {
 			this.dialogInfo.user.authenticationType = getAuthenticationTypeByDisplayName(<string>this.authTypeDropdown.value);
-			this.onAuthenticationTypeChanged();
+			this.setViewByAuthenticationType();
 		});
 
 		this.passwordInput = this.createPasswordInputBox(view, localizedConstants.PasswordText, this.dialogInfo.user.password ?? '');
@@ -197,37 +197,38 @@ export class UserDialog extends ObjectManagementDialogBase {
 			value: this.dialogInfo.user.defaultLanguage,
 			width: DefaultInputWidth
 		}).component();
+		this.defaultLanguageDropdown.onValueChanged(() => {
+			this.dialogInfo.user.defaultLanguage = <string>this.defaultLanguageDropdown.value;
+		});
 		const container = this.createLabelInputContainer(view, localizedConstants.DefaultLanguageText, this.defaultLanguageDropdown);
 		this.advancedSection = this.createGroup(view, localizedConstants.AdvancedSectionHeader, [container]);
 	}
 
-	private onUserTypeChanged(): void {
-		// this.removeItem(this.generalSection, this.loginContainer);
-		// this.removeItem(this.generalSection, this.authTypeContainer);
-		// this.removeItem(this.generalSection, this.passwordContainer);
-		// this.removeItem(this.generalSection, this.confirmPasswordContainer);
-		// this.removeItem(this.formContainer, this.advancedSection);
-		let enableLogin = false;
-		let enableAuthType = false;
-		let enableLanguage = false;
+	private setViewByUserType(): void {
 		if (this.typeDropdown.value === localizedConstants.UserWithLoginText) {
-			// this.addItem(this.generalSection, this.loginContainer);
-			enableLogin = true;
+			this.removeItem(this.generalSection, this.authTypeContainer);
+			this.removeItem(this.formContainer, this.advancedSection);
+			this.addItem(this.generalSection, this.loginContainer);
 		} else if (this.typeDropdown.value === localizedConstants.ContainedUserText) {
-			enableAuthType = true;
-			enableLanguage = true;
-			// this.addItem(this.generalSection, this.authTypeContainer);
-			// this.addItem(this.formContainer, this.advancedSection);
+			this.removeItem(this.generalSection, this.loginContainer);
+			this.addItem(this.generalSection, this.authTypeContainer);
+			this.addItem(this.formContainer, this.advancedSection);
+		} else {
+			this.removeItem(this.generalSection, this.loginContainer);
+			this.removeItem(this.generalSection, this.authTypeContainer);
+			this.removeItem(this.formContainer, this.advancedSection);
 		}
-		this.loginDropdown.enabled = enableLogin;
-		this.authTypeDropdown.enabled = enableAuthType;
-		this.defaultLanguageDropdown.enabled = enableLanguage;
-		this.onAuthenticationTypeChanged();
+		this.setViewByAuthenticationType();
 	}
 
-	private onAuthenticationTypeChanged(): void {
-		const enablePassword = this.typeDropdown.value === localizedConstants.ContainedUserText && this.authTypeDropdown.value === localizedConstants.SQLAuthenticationTypeDisplayText
-		this.passwordInput.enabled = enablePassword;
-		this.confirmPasswordInput.enabled = enablePassword;
+	private setViewByAuthenticationType(): void {
+		const showPassword = this.typeDropdown.value === localizedConstants.ContainedUserText && this.authTypeDropdown.value === localizedConstants.SQLAuthenticationTypeDisplayText;
+		if (showPassword) {
+			this.addItem(this.generalSection, this.passwordContainer);
+			this.addItem(this.generalSection, this.confirmPasswordContainer);
+		} else {
+			this.removeItem(this.generalSection, this.passwordContainer);
+			this.removeItem(this.generalSection, this.confirmPasswordContainer);
+		}
 	}
 }

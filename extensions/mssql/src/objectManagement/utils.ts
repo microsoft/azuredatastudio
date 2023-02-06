@@ -92,3 +92,13 @@ export function getUserTypeByDisplayName(userTypeDisplayName: string): UserType 
 			return UserType.NoConnectAccess;
 	}
 }
+
+// https://docs.microsoft.com/sql/relational-databases/security/password-policy
+export function isValidSQLPassword(password: string, userName: string = 'sa'): boolean {
+	const containsUserName = password && userName !== undefined && password.toUpperCase().includes(userName.toUpperCase());
+	const hasUpperCase = /[A-Z]/.test(password) ? 1 : 0;
+	const hasLowerCase = /[a-z]/.test(password) ? 1 : 0;
+	const hasNumbers = /\d/.test(password) ? 1 : 0;
+	const hasNonAlphas = /\W/.test(password) ? 1 : 0;
+	return !containsUserName && password.length >= 8 && password.length <= 128 && (hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas >= 3);
+}

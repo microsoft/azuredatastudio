@@ -13,6 +13,7 @@ export const LoginTypeDisplayNameInTitle: string = localize('objectManagement.Lo
 export const UserTypeDisplayNameInTitle: string = localize('objectManagement.UserTypeDisplayNameInTitle', "User");
 
 // Shared Strings
+export const HelpText: string = localize('objectManagement.helpText', "Help");
 export const YesText: string = localize('objectManagement.yesText', "Yes");
 export const OkText: string = localize('objectManagement.OkText', "OK");
 export const LoadingDialogText: string = localize('objectManagement.loadingDialog', "Loading dialog...")
@@ -95,7 +96,9 @@ export const PasswordText = localize('objectManagement.passwordLabel', "Password
 export const ConfirmPasswordText = localize('objectManagement.confirmPasswordLabel', "Confirm password");
 export const EnabledText = localize('objectManagement.enabledLabel', "Enabled");
 export const NameCannotBeEmptyError = localize('objectManagement.nameCannotBeEmptyError', "Name cannot be empty.");
+export const PasswordCannotBeEmptyError = localize('objectManagement.passwordCannotBeEmptyError', "Password cannot be empty.");
 export const PasswordsNotMatchError = localize('objectManagement.passwordsNotMatchError', "Password must match the confirm password.");
+export const InvalidPasswordError = localize('objectManagement.invalidPasswordError', "Password doesn't meet the complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");

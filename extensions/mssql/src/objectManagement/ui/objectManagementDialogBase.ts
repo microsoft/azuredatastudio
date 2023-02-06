@@ -10,7 +10,7 @@ import { generateUuid } from 'vscode-languageclient/lib/utils/uuid';
 import { getErrorMessage } from '../../utils';
 import { NodeType } from '../constants';
 import {
-	CreateObjectOperationDisplayName, LoadingDialogText,
+	CreateObjectOperationDisplayName, HelpText, LoadingDialogText,
 	NameText,
 	NewObjectDialogTitle, ObjectPropertiesDialogTitle, OkText, SelectedText, UpdateObjectOperationDisplayName, ValidationErrorSummary
 } from '../localizedConstants';
@@ -34,6 +34,7 @@ export abstract class ObjectManagementDialogBase {
 	protected readonly contextId: string;
 
 	constructor(private readonly objectType: NodeType,
+		docUrl: string,
 		protected readonly objectManagementService: IObjectManagementService,
 		protected readonly connectionUri: string,
 		protected isNewObject: boolean,
@@ -44,6 +45,11 @@ export abstract class ObjectManagementDialogBase {
 		this.dialogObject = azdata.window.createModelViewDialog(dialogTitle, objectType, dialogWidth);
 		this.dialogObject.okButton.label = OkText;
 		this.disposables.push(this.dialogObject.onClosed(async () => { await this.dispose(); }));
+		const helpButton = azdata.window.createButton(HelpText, 'left');
+		this.disposables.push(helpButton.onClick(async () => {
+			await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(docUrl));
+		}));
+		this.dialogObject.customButtons = [helpButton];
 		this.contextId = generateUuid();
 		this.dialogObject.registerCloseValidator(async (): Promise<boolean> => {
 			const confirmed = await this.onConfirmation();
