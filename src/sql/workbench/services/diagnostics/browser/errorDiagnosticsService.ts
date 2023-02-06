@@ -24,9 +24,9 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 		let provider = this._providers[providerId]
 		if (provider) {
 			let errorInfo: azdata.diagnostics.IErrorInformation = {
-				errorCode: connectionResult.errorCode,
-				errorMessage: connectionResult.errorMessage,
-				callStack: connectionResult.callStack
+				errorCode: connectionResult.errorCode ?? 0,
+				errorMessage: connectionResult.errorMessage ?? '',
+				callStack: connectionResult.callStack ?? ''
 			}
 			result = await provider.handleConnectionError(errorInfo, Utils.convertToRpcConnectionProfile(connection));
 		}

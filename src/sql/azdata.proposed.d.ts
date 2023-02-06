@@ -540,7 +540,7 @@ declare module 'azdata' {
 
 		/**
 		 * Opens the error dialog with customization options provided.
-		 * @param profile The connection profile associated with error dialog.
+		 * @param options Dialog options to customize error dialog.
 		 * @returns Id of action button clicked by user, e.g. ok, cancel
 		 */
 		export function openCustomErrorDialog(options: window.ICustomDialogOptions): Thenable<string | undefined>;
@@ -1850,7 +1850,8 @@ declare module 'azdata' {
 			 */
 			messageDetails?: string;
 			/**
-			 * (Optional) List of custom actions to include in modal dialog.
+			 * (Optional) List of custom actions to include in modal dialog alongwith a 'Cancel' button.
+			 * If custom 'actions' are not provided, 'OK' and 'Cancel' buttons will be shown by default.
 			 */
 			actions?: IDialogAction[];
 			/**
@@ -1864,7 +1865,7 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * Provides APIs to define customization for modal dialog action buttons.
+		 * An action that will be rendered as a button on the dialog.
 		 */
 		export interface IDialogAction {
 			/**
@@ -1875,10 +1876,6 @@ declare module 'azdata' {
 			 * Label of Action button.
 			 */
 			label: string;
-			/**
-			 * Defines if action button should be enabled/disabled.
-			 */
-			isEnabled: boolean;
 			/**
 			 * Defines if button styling and focus should be based on primary action.
 			 */

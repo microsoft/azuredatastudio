@@ -61,7 +61,7 @@ export class ErrorMessageDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 		@IOpenerService private readonly _openerService: IOpenerService,
-		protected _telemetryView: TelemetryKeys.TelemetryView = TelemetryKeys.TelemetryView.Default,
+		protected _telemetryView: TelemetryKeys.TelemetryView = TelemetryKeys.TelemetryView.ErrorMessageDialog,
 	) {
 		super('', TelemetryKeys.ModalDialogName.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
 		this._okLabel = localize('errorMessageDialog.ok', "OK");
@@ -112,9 +112,7 @@ export class ErrorMessageDialog extends Modal {
 	private onActionSelected(index: number): void {
 		if (this._actions && index < this._actions.length) {
 			const actionId = this._actions[index].id;
-			if (this._telemetryView) {
-				this._telemetryService.sendActionEvent(this._telemetryView, actionId);
-			}
+			this._telemetryService.sendActionEvent(this._telemetryView, actionId);
 			if (this._actionEvents && this._actionEvents.has(actionId) && this._actionEvents.get(actionId)) {
 				// Call OK to close dialog.
 				this.ok(false);
@@ -245,7 +243,7 @@ export class ErrorMessageDialog extends Modal {
 				id: action.id,
 				label: action.label,
 				class: action.styleClass,
-				enabled: action.isEnabled,
+				enabled: true,
 				tooltip: action.label,
 				dispose: () => { },
 				run: () => { }

@@ -32,7 +32,7 @@ export const enum ModalDialogName {
 }
 
 export const enum TelemetryView {
-	Default = 'Default',
+	ErrorMessageDialog = 'ErrorMessageDialog',
 	Agent = 'Agent',
 	AgentJobs = 'AgentJobs',
 	AgentJobHistory = 'AgentJobHistory',
