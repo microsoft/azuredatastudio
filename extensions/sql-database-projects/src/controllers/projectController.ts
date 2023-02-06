@@ -850,7 +850,10 @@ export class ProjectsController {
 			{
 				title: constants.enterNewName,
 				value: path.basename(node.friendlyName, constants.sqlFileExtension),
-				ignoreFocusOut: true
+				ignoreFocusOut: true,
+				validateInput: async (value) => {
+					return await this.fileAlreadyExists(value, file?.fsUri.fsPath!) ? constants.fileAlreadyExists(value) : undefined;
+				}
 			});
 
 		if (!newFileName) {
@@ -865,6 +868,10 @@ export class ProjectsController {
 		await project.addExistingItem(newFilePath);
 
 		this.refreshProjectsTree(context);
+	}
+
+	private fileAlreadyExists(newFileName: string, previousFilePath: string): Promise<boolean> {
+		return utils.exists(path.join(path.dirname(previousFilePath), `${newFileName}.sql`));
 	}
 
 	/**
