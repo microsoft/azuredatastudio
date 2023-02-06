@@ -209,11 +209,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._register(this.cellModel.onOutputsChanged(e => {
 			this.updatePreview();
 		}));
-		this._register(this.cellModel.onCellModeChanged(mode => {
+		this._register(this.cellModel.onCellEditModeChanged(mode => {
 			if (mode !== this.isEditMode) {
 				this.toggleEditMode(mode);
 			}
-			this._changeRef.detectChanges();
 		}));
 		this._register(this.cellModel.onCurrentEditModeChanged(editMode => {
 			let markdown: boolean = editMode !== CellEditModes.WYSIWYG;
@@ -268,11 +267,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				let changedProp = changes[propName];
 				this._activeCellId = changedProp.currentValue;
 				this.toggleUserSelect(this.isActive());
-				// If the activeCellId is undefined (i.e. in an active cell update), don't unnecessarily set editMode to false;
-				// it will be set to true in a subsequent call to toggleEditMode()
-				if (changedProp.previousValue !== undefined) {
-					this.toggleEditMode(false);
-				}
 				break;
 			}
 		}

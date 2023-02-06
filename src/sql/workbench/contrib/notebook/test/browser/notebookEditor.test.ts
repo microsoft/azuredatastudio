@@ -463,7 +463,7 @@ suite('Test class NotebookEditor:', () => {
 		const notebookModel = <NotebookModelStub>await notebookEditor.getNotebookModel();
 		notebookModel['_cells'] = [new CellModel({ cell_type: 'code', source: '' }, { isTrusted: true, notebook: notebookModel })];
 		notebookEditor['registerModelChanges']();
-		notebookModel.cells[0]['_onCellModeChanged'].fire(true); //fire cellModeChanged event on the first sell of our test notebookModel
+		notebookModel.cells[0]['_onCellEditModeChanged'].fire(true); //fire cellEditModeChanged event on the first sell of our test notebookModel
 		notebookModel.contentChangedEmitter.fire({ changeType: NotebookChangeType.Saved });
 		(<NotebookService>notebookService)['_onNotebookEditorAdd'].fire(<INotebookEditor>{});
 		notebookFindModelMock.verify(x => x.find(
