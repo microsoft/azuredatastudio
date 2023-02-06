@@ -7785,10 +7785,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.target.mapping.error.duplicate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.]]></Val>
+          <Val><![CDATA[Database mapping error. Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '{2}' is already selected as a migration target for database '{3}'.  Please select a different target database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[데이터베이스 매핑 오류입니다.  대상 데이터베이스 '{0}'을 데이터베이스 '{1}'에 대한 마이그레이션 대상으로 선택할 수 없습니다.  대상 데이터베이스 '${targetDatabaseName}'이(가) 데이터베이스 '{2}'에 대한 마이그레이션 대상으로 이미 선택되어 있습니다.  다른 대상 데이터베이스를 선택하세요.]]></Val>
+            <Val><![CDATA[데이터베이스 매핑 오류입니다. 대상 데이터베이스 '{0}'을(를) 데이터베이스 '{1}'의 마이그레이션 대상으로 선택할 수 없습니다. 대상 데이터베이스 '{2}'이(가) 데이터베이스 '{3}'의 마이그레이션 대상으로 이미 선택되었습니다. 다른 대상 데이터베이스를 선택하세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7803,19 +7806,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.target.source.collation.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.]]></Val>
+          <Val><![CDATA[Database mapping error (Error code: {0}) was found between '{1}' and '{2}' databases. The source database collation '{3}' does not match the target database collation '{4}'. Please select or re-create a target database with the same collation as the source database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA['{0}' 및 '{1}' 데이터베이스 간에 매핑 오류가 발견되었습니다. 원본 데이터베이스 데이터 정렬 '{2}'이(가) 대상 데이터베이스 데이터 정렬 '{3}'와(과) 일치하지 않습니다. 원본 데이터베이스와 동일한 데이터 정렬이 포함된 대상 데이터베이스를 선택하거나 다시 만드세요.]]></Val>
+            <Val><![CDATA[데이터베이스 매핑 오류(오류 코드: {0})가 '{1}' 및 '{2}' 데이터베이스 사이에서 발견되었습니다. 원본 데이터베이스 데이터 정렬 '{3}'이(가) 대상 데이터베이스 데이터 정렬 '{4}'과(와) 일치하지 않습니다. 원본 데이터베이스와 동일한 데이터 정렬을 사용하여 대상 데이터베이스를 선택하거나 다시 생성하세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.target.source.mapping.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.]]></Val>
+          <Val><![CDATA[Database mapping error. Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[데이터베이스 매핑 오류입니다.  원본 데이터베이스 '{0}'이(가) 대상 데이터베이스에 매핑되지 않았습니다.  마이그레이션할 대상 데이터베이스를 선택하세요.]]></Val>
+            <Val><![CDATA[데이터베이스 매핑 오류입니다. 원본 데이터베이스 '{0}'이(가) 대상 데이터베이스에 매핑되지 않았습니다. 마이그레이션할 대상 데이터베이스를 선택하세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

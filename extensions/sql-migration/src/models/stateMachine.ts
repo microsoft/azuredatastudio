@@ -17,6 +17,7 @@ import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 import { excludeDatabases, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getSourceConnectionUri, getTargetConnectionString, LoginTableInfo, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel, LoginMigrationStep } from './loginMigrationModel';
 import { TdeMigrationDbResult, TdeMigrationModel } from './tdeModels';
+import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
 const localize = nls.loadMessageBundle();
 
 export enum ValidateIrState {
@@ -522,6 +523,51 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._skuRecommendationResults;
 	}
 
+	public setTargetServerName(): void {
+		switch (this._targetType) {
+			case MigrationTargetType.SQLMI:
+				const sqlMi = this._targetServerInstance as SqlManagedInstance;
+				this._targetServerName = sqlMi.properties.fullyQualifiedDomainName;
+			case MigrationTargetType.SQLDB:
+				const sqlDb = this._targetServerInstance as AzureSqlDatabaseServer;
+				this._targetServerName = sqlDb.properties.fullyQualifiedDomainName;
+			case MigrationTargetType.SQLVM:
+				// For sqlvm, we need to use ip address from the network interface to connect to the server
+				const sqlVm = this._targetServerInstance as SqlVMServer;
+				const networkInterfaces = Array.from(sqlVm.networkInterfaces.values());
+				this._targetServerName = NetworkInterfaceModel.getIpAddress(networkInterfaces);
+		}
+	}
+
+	public get targetServerName(): string {
+		// If the target server name is not already set, return it
+		if (!this._targetServerName) {
+			this.setTargetServerName();
+		}
+
+		return this._targetServerName;
+	}
+
+	// public async getSourceConnectionString(): Promise<string> {
+	// 	return await azdata.connection.getConnectionString(this._sourceConnectionId, true);
+	// }
+
+	// public async getTargetConnectionString(): Promise<string> {
+	// 	const connectionProfile = getConnectionProfile(
+	// 		this.targetServerName,
+	// 		this._targetServerInstance.id,
+	// 		this._targetUserName,
+	// 		this._targetPassword,
+	// 		true /* trustServerCertificate */);
+
+	// 	const result = await azdata.connection.connect(connectionProfile, false, false);
+	// 	if (result.connected && result.connectionId) {
+	// 		return azdata.connection.getConnectionString(result.connectionId, true);
+	// 	}
+
+	// 	return '';
+	// }
+
 	private updateLoginMigrationResults(newResult: mssql.StartLoginMigrationResult): void {
 		if (this._loginMigrationsResult && this._loginMigrationsResult.exceptionMap) {
 			for (var key in newResult.exceptionMap) {
@@ -537,7 +583,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			this._loginMigrationModel.AddNewLogins(this._loginsForMigration.map(row => row.loginName));
 
 			const sourceConnectionString = await getSourceConnectionString();
-			const targetConnectionString = await getTargetConnectionString(this._targetServerInstance,
+			const targetConnectionString = await getTargetConnectionString(
+				this.targetServerName,
 				this._targetServerInstance.id,
 				this._targetUserName,
 				this._targetPassword);
@@ -565,7 +612,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async establishUserMappings(): Promise<Boolean> {
 		try {
 			const sourceConnectionString = await getSourceConnectionString();
-			const targetConnectionString = await getTargetConnectionString(this._targetServerInstance,
+			const targetConnectionString = await getTargetConnectionString(
+				this.targetServerName,
 				this._targetServerInstance.id,
 				this._targetUserName,
 				this._targetPassword);
@@ -593,7 +641,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async migrateServerRolesAndSetPermissions(): Promise<Boolean> {
 		try {
 			const sourceConnectionString = await getSourceConnectionString();
-			const targetConnectionString = await getTargetConnectionString(this._targetServerInstance,
+			const targetConnectionString = await getTargetConnectionString(
+				this.targetServerName,
 				this._targetServerInstance.id,
 				this._targetUserName,
 				this._targetPassword);

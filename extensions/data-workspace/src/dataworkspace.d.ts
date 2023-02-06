@@ -54,6 +54,32 @@ declare module 'dataworkspace' {
 		 * @returns the uri of the created the project or undefined if no project was created
 		 */
 		openSpecificProjectNewProjectDialog(projectType: IProjectType): Promise<vscode.Uri | undefined>;
+
+		/**
+		 * Determines if a given character is a valid filename character
+		 * @param c Character to validate
+		 */
+		isValidFilenameCharacter(c: string): boolean;
+
+		/**
+		 * Replaces invalid filename characters in a string with underscores
+		 * @param s The string to be sanitized for a filename
+		*/
+		sanitizeStringForFilename(s: string): string;
+
+		/**
+		 * Returns true if the string is a valid filename
+		 * Logic is copied from src\vs\base\common\extpath.ts
+		 * @param name filename to check
+		*/
+		isValidBasename(name: string | null | undefined): boolean;
+
+		/**
+		 * Returns specific error message if file name is invalid
+		 * Logic is copied from src\vs\base\common\extpath.ts
+		 * @param name filename to check
+		 */
+		isValidBasenameErrorMessage(name: string | null | undefined): string;
 	}
 
 	/**
@@ -94,7 +120,7 @@ declare module 'dataworkspace' {
 		/**
 		 * Gets the project image to be used as background in dashboard container
 		 */
-		 readonly image?: azdata.ThemedIconPath;
+		readonly image?: azdata.ThemedIconPath;
 	}
 
 	/**
@@ -233,4 +259,5 @@ declare module 'dataworkspace' {
 	 * Union type representing data types in dashboard table
 	 */
 	export type IDashboardColumnType = 'string' | 'icon';
+
 }
