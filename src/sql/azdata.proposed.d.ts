@@ -537,6 +537,14 @@ declare module 'azdata' {
 		 * @returns The new password that is returned from the operation or undefined if unsuccessful.
 		 */
 		export function openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined>;
+
+		/**
+		 * Opens the error dialog with customization options provided.
+		 * @param options Dialog options to customize error dialog.
+		 * @returns Id of action button clicked by user, e.g. ok, cancel
+		 */
+		export function openCustomErrorDialog(options: window.IErrorDialogOptions): Thenable<string | undefined>;
+
 	}
 
 	/*
@@ -1823,13 +1831,6 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * Opens the error dialog with customization options provided.
-		 * @param options Dialog options to customize error dialog.
-		 * @returns Id of action button clicked by user, e.g. ok, cancel
-		 */
-		export function openCustomErrorDialog(options: IErrorDialogOptions): Thenable<string | undefined>;
-
-		/**
 		 * Provides dialog options to customize modal dialog content and layout
 		 */
 		export interface IErrorDialogOptions {
@@ -1851,7 +1852,7 @@ declare module 'azdata' {
 			messageDetails?: string;
 			/**
 			 * (Optional) List of custom actions to include in modal dialog alongwith a 'Cancel' button.
-			 * If custom 'actions' are not provided, 'OK' and 'Cancel' buttons will be shown by default.
+			 * If custom 'actions' are not provided, 'OK' button will be shown by default.
 			 */
 			actions?: IDialogAction[];
 			/**
@@ -1880,14 +1881,6 @@ declare module 'azdata' {
 			 * Defines if button styling and focus should be based on primary action.
 			 */
 			isPrimary: boolean;
-			/**
-			 * Defines if dialog should be closed on action event.
-			 */
-			closeDialog: boolean;
-			/**
-			 * Custom class to append to action button.
-			 */
-			styleClass?: string | undefined;
 		}
 	}
 }

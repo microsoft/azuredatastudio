@@ -18,7 +18,8 @@ import {
 	IModelViewWizardDetails, IModelViewWizardPageDetails, IExecuteManagerDetails, INotebookSessionDetails,
 	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, INotebookEditOperation,
 	NotebookChangeKind,
-	ISerializationManagerDetails
+	ISerializationManagerDetails,
+	IErrorDialogOptions
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
@@ -723,7 +724,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getServerInfo(connectedId: string): Thenable<azdata.ServerInfo>;
 	$openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection>;
 	$openChangePasswordDialog(profile: azdata.IConnectionProfile): Thenable<string | undefined>;
-	$openCustomErrorDialog(options: azdata.window.IErrorDialogOptions): Thenable<string | undefined>;
+	$openCustomErrorDialog(options: IErrorDialogOptions): Thenable<string | undefined>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;

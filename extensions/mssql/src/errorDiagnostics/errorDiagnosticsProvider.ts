@@ -79,12 +79,11 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 					let trustServerCertAction: azdata.window.IDialogAction = {
 						id: ErrorDiagnosticsConstants.TSC_ActionId,
 						label: ErrorDiagnosticsConstants.TSC_EnableTrustServerCert,
-						isPrimary: true,
-						closeDialog: true
+						isPrimary: true
 					};
 
 					actions.push(trustServerCertAction);
-					const result = await azdata.window.openCustomErrorDialog(
+					const result = await azdata.connection.openCustomErrorDialog(
 						{
 							severity: azdata.window.MessageLevel.Error,
 							headerTitle: ErrorDiagnosticsConstants.ConnectionErrorDialogTitle,

@@ -9,6 +9,7 @@ import * as azdata from 'azdata';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { IErrorDialogOptions } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ExtHostConnectionManagement extends ExtHostConnectionManagementShape {
 
@@ -78,7 +79,7 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		return this._proxy.$openChangePasswordDialog(profile);
 	}
 
-	public $openCustomErrorDialog(options: azdata.window.IErrorDialogOptions): Thenable<string | undefined> {
+	public $openCustomErrorDialog(options: IErrorDialogOptions): Thenable<string | undefined> {
 		return this._proxy.$openCustomErrorDialog(options);
 	}
 

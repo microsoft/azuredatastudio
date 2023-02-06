@@ -348,8 +348,6 @@ export interface IDialogAction {
 	id: string;
 	label: string;
 	isPrimary: boolean;
-	closeDialog: boolean;
-	styleClass?: string | undefined;
 }
 
 export enum MessageLevel {

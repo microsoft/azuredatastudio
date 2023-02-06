@@ -16,7 +16,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
-import { IAction } from 'vs/base/common/actions';
+import { Action, IAction } from 'vs/base/common/actions';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
@@ -46,7 +46,6 @@ export class ErrorMessageDialog extends Modal {
 	private _okLabel: string;
 	private _closeLabel: string;
 	private _readMoreLabel: string;
-	private _actionEvents = new Map<string, boolean>();
 	private _promiseResolver: (value: string) => void;
 
 	private _onOk = new Emitter<void>();
@@ -109,10 +108,8 @@ export class ErrorMessageDialog extends Modal {
 		if (this._actions && index < this._actions.length) {
 			const actionId = this._actions[index].id;
 			this._telemetryService.sendActionEvent(this._telemetryView, actionId);
-			if (this._actionEvents && this._actionEvents.has(actionId) && this._actionEvents.get(actionId)) {
-				// Call OK to close dialog.
-				this.ok(false);
-			}
+			// Call OK to close dialog.
+			this.ok(false);
 			// Run the action if possible
 			this._actions[index].run();
 			// Resolve promise after running action.
@@ -237,16 +234,7 @@ export class ErrorMessageDialog extends Modal {
 		let actions: IAction[] = [];
 		this.resetActions();
 		options.actions?.forEach(action => {
-			this._actionEvents.set(action.id, action.closeDialog);
-			actions.push({
-				id: action.id,
-				label: action.label,
-				class: action.styleClass,
-				enabled: true,
-				tooltip: action.label,
-				dispose: () => { },
-				run: () => { }
-			});
+			actions.push(new Action(action.id, action.label, '', true, () => { }));
 		});
 
 		this.open(telemetryView, severity, options.headerTitle, options.message, options.messageDetails, actions, options.instructionText, options.readMoreLink, false);
@@ -257,7 +245,6 @@ export class ErrorMessageDialog extends Modal {
 
 	private resetActions(): void {
 		this._actions = [];
-		this._actionEvents.clear();
 		for (let actionButton of this._actionButtons) {
 			actionButton.element.style.visibility = 'hidden';
 		}
