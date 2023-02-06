@@ -60,7 +60,7 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 					}
 					else if (errorInfo.errorCode === ErrorDiagnosticsConstants.MssqlCertValidationFailedErrorCode) {
 						logDebug(`ErrorDiagnosticsProvider: Error Code ${errorInfo.errorCode} indicates certificate validation has failed, launching error dialog with instructionText.`);
-						return await this.showCertValidationDialog(restoredProfile, errorInfo.errorMessage, errorInfo.callStack);
+						return await this.showCertValidationDialog(restoredProfile, errorInfo.errorMessage, errorInfo.messageDetails);
 					}
 					logDebug(`ErrorDiagnosticsProvider: No error handler found for errorCode ${errorInfo.errorCode}.`);
 					return { handled: false };

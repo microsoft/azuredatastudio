@@ -474,7 +474,7 @@ declare module 'azdata' {
 			/**
 			 * Stack trace of error
 			 */
-			callStack: string
+			messageDetails: string
 		}
 
 		/**

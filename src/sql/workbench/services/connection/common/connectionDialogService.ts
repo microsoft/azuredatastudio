@@ -32,5 +32,5 @@ export interface IConnectionDialogService {
 	 * @param profile The connection profile associated with error dialog.
 	 * @returns Id of action button clicked by user, e.g. ok, cancel
 	 */
-	openCustomErrorDialog(options: IErrorDialogOptions): Promise<string | undefined>;
+	showErrorDialogAsync(options: IErrorDialogOptions): Promise<string | undefined>;
 }

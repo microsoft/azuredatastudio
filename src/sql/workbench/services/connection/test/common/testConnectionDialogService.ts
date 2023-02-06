@@ -31,7 +31,7 @@ export class TestConnectionDialogService implements IConnectionDialogService {
 		return Promise.resolve(undefined);
 	}
 
-	public async openCustomErrorDialog(options: IErrorDialogOptions): Promise<string | undefined> {
+	public async showErrorDialogAsync(options: IErrorDialogOptions): Promise<string | undefined> {
 		return Promise.resolve(undefined);
 	}
 }

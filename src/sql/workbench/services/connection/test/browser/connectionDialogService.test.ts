@@ -289,7 +289,7 @@ suite('ConnectionDialogService tests', () => {
 			connected: false,
 			errorMessage: 'test_error',
 			errorCode: -1,
-			callStack: 'testCallStack'
+			messageDetails: 'testCallStack'
 		};
 		// promise only resolves upon handleDefaultOnConnect, must return it at the end
 		let connectionPromise = connectionDialogService.openDialogAndWait(mockConnectionManagementService.object, testConnectionParams, connectionProfile, connectionResult, false);

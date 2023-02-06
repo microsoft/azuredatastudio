@@ -329,7 +329,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 			// If the password is required and still not loaded show the dialog
 			if ((!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
-				return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options);
+				return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, messageDetails: undefined, errorCode: undefined }, options);
 			} else {
 				// Try to connect
 				return this.connectWithOptions(newConnection, owner.uri, options, owner).then(connectionResult => {
@@ -1307,18 +1307,18 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				if (connectionMngInfo && connectionMngInfo.deleted) {
 					this._logService.info(`Found deleted connection management info for ${uri} - removing`);
 					this._connectionStatusManager.deleteConnection(uri);
-					resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, callStack: undefined, errorHandled: true, connectionProfile: connection });
+					resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, messageDetails: undefined, errorHandled: true, connectionProfile: connection });
 				} else {
 					if (errorMessage) {
 						// Connection to the server failed
 						this._logService.info(`Error occurred while connecting, removing connection management info for ${uri}`);
 						this._connectionStatusManager.deleteConnection(uri);
-						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, messageDetails: callStack, connectionProfile: connection });
 					} else {
 						if (connectionMngInfo.serverInfo) {
 							connection.options.isCloud = connectionMngInfo.serverInfo.isCloud;
 						}
-						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, messageDetails: callStack, connectionProfile: connection });
 					}
 				}
 			});

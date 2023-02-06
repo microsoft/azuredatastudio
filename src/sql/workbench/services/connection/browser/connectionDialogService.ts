@@ -284,7 +284,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this._logService.debug(`ConnectionDialogService: Error handled and connection reset - Error: ${connectionResult.errorMessage}`);
 			} else {
 				this._connectionDialog.resetConnection();
-				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
+				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.messageDetails);
 				this._logService.debug(`ConnectionDialogService: Connection error: ${connectionResult.errorMessage}`);
 			}
 		} catch (err) {
@@ -470,7 +470,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		await this.showDialogWithModel();
 
 		if (connectionResult && connectionResult.errorMessage) {
-			this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
+			this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.messageDetails);
 		}
 	}
 
@@ -533,7 +533,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._errorMessageService.showDialog(severity, headerTitle, message, messageDetails, TelemetryView.ConnectionErrorDialog, actions, undefined, undefined);
 	}
 
-	public async openCustomErrorDialog(options: IErrorDialogOptions): Promise<string | undefined> {
+	public async showErrorDialogAsync(options: IErrorDialogOptions): Promise<string | undefined> {
 
 		let result = await this._errorMessageService.showDialogAsync(options, TelemetryView.ConnectionErrorDialog);
 		return result;

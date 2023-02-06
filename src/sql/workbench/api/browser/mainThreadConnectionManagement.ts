@@ -189,7 +189,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public $openCustomErrorDialog(options: azdata.window.IErrorDialogOptions): Thenable<string | undefined> {
-		return this._connectionDialogService.openCustomErrorDialog(options);
+		return this._connectionDialogService.showErrorDialogAsync(options);
 	}
 
 	public async $listDatabases(connectionId: string): Promise<string[]> {
