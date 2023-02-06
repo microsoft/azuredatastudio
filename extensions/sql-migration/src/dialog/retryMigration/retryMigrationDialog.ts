@@ -31,10 +31,9 @@ export class RetryMigrationDialog {
 		connectionId: string,
 		serverName: string,
 		migrationService: features.SqlMigrationService,
-		tdeMigrationService: features.TdeMigrationService,
 		location: azureResource.AzureLocation): Promise<MigrationStateModel> {
 
-		const stateModel = new MigrationStateModel(this._context, connectionId, migrationService, tdeMigrationService);
+		const stateModel = new MigrationStateModel(this._context, connectionId, migrationService);
 		const sourceDatabaseName = migration.properties.sourceDatabaseName;
 		const savedInfo: SavedInfo = {
 			closedPage: 0,
@@ -166,8 +165,7 @@ export class RetryMigrationDialog {
 		}
 
 		const migrationService = <features.SqlMigrationService>await migrationServiceProvider.getService(features.ApiType.SqlMigrationProvider)!;
-		const tdeMigrationService = <features.TdeMigrationService>await migrationServiceProvider.getService(features.ApiType.TdeMigrationProvider)!;
-		const stateModel = await this.createMigrationStateModel(this._serviceContext, this._migration, connectionId, serverName, migrationService, tdeMigrationService, location!);
+		const stateModel = await this.createMigrationStateModel(this._serviceContext, this._migration, connectionId, serverName, migrationService, location!);
 
 		if (await stateModel.loadSavedInfo()) {
 			const wizardController = new WizardController(

@@ -11,7 +11,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 import * as path from 'path';
 import { EventAndListener } from 'eventemitter2';
-import { SqlMigrationService, TdeMigrationService } from './features';
+import { SqlMigrationService } from './features';
 import { promises as fs } from 'fs';
 import * as constants from '../constants/strings';
 import { IMessage } from './contracts';
@@ -97,7 +97,6 @@ export class ServiceClient {
 			features: [
 				// we only want to add new features
 				SqlMigrationService,
-				TdeMigrationService
 			],
 			outputChannel: this.outputChannel
 		};

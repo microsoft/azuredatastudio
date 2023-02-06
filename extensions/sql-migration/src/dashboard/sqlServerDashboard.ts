@@ -26,7 +26,7 @@ import { DashboardTab } from './dashboardTab';
 import { MigrationsTab, MigrationsTabId } from './migrationsTab';
 import { AdsMigrationStatus, MigrationDetailsEvent, ServiceContextChangeEvent } from './tabBase';
 import { migrationServiceProvider } from '../service/provider';
-import { ApiType, SqlMigrationService, TdeMigrationService } from '../service/features';
+import { ApiType, SqlMigrationService } from '../service/features';
 
 export interface MenuCommandArgs {
 	connectionId: string,
@@ -444,10 +444,9 @@ export class DashboardWidget {
 		}
 		if (serverName) {
 			const migrationService = <SqlMigrationService>await migrationServiceProvider.getService(ApiType.SqlMigrationProvider);
-			const tdeMigration = <TdeMigrationService>await migrationServiceProvider.getService(ApiType.TdeMigrationProvider);
 
 			if (migrationService) {
-				this.stateModel = new MigrationStateModel(this._context, connectionId, migrationService, tdeMigration);
+				this.stateModel = new MigrationStateModel(this._context, connectionId, migrationService);
 				this._context.subscriptions.push(this.stateModel);
 				const savedInfo = this.checkSavedInfo(serverName);
 				if (savedInfo) {
@@ -485,9 +484,8 @@ export class DashboardWidget {
 		}
 		if (serverName) {
 			const migrationService = <SqlMigrationService>await migrationServiceProvider.getService(ApiType.SqlMigrationProvider);
-			const tdeMigrationService = <TdeMigrationService>await migrationServiceProvider.getService(ApiType.TdeMigrationProvider);
 			if (migrationService) {
-				this.stateModel = new MigrationStateModel(this._context, connectionId, migrationService, tdeMigrationService);
+				this.stateModel = new MigrationStateModel(this._context, connectionId, migrationService);
 				this._context.subscriptions.push(this.stateModel);
 				const wizardController = new WizardController(
 					this._context,

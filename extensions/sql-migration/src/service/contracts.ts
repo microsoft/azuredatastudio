@@ -492,6 +492,15 @@ export interface ISqlMigrationService {
 	migrateLogins(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
 	establishUserMapping(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
 	migrateServerRolesAndSetPermissions(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
+	migrateCertificate(
+		encryptedDatabases: string[],
+		sourceSqlConnectionString: string,
+		targetSubscriptionId: string,
+		targetResourceGroupName: string,
+		targetManagedInstanceName: string,
+		networkSharePath: string,
+		accessToken: string,
+		reportUpdate: (dbName: string, succeeded: boolean, message: string) => void): Promise<TdeMigrationResult | undefined>;
 }
 
 export interface TdeMigrationRequest {
@@ -538,16 +547,4 @@ export interface TdeMigrateProgressParams {
 	name: string;
 	success: boolean;
 	message: string;
-}
-
-export interface ITdeMigrationService {
-	migrateCertificate(
-		encryptedDatabases: string[],
-		sourceSqlConnectionString: string,
-		targetSubscriptionId: string,
-		targetResourceGroupName: string,
-		targetManagedInstanceName: string,
-		networkSharePath: string,
-		accessToken: string,
-		reportUpdate: (dbName: string, succeeded: boolean, message: string) => void): Promise<TdeMigrationResult | undefined>;
 }

@@ -19,7 +19,6 @@ import { migrationServiceProvider } from './provider';
 
 export enum ApiType {
 	SqlMigrationProvider = 'SqlMigrationProvider',
-	TdeMigrationProvider = 'TdeMigrationProvider'
 }
 
 
@@ -28,6 +27,7 @@ export abstract class MigrationExtensionService extends SqlOpsFeature<undefined>
 }
 
 export class SqlMigrationService extends MigrationExtensionService implements contracts.ISqlMigrationService {
+	private _reportUpdate: ((dbName: string, succeeded: boolean, error: string) => void) | undefined = undefined;
 
 	override providerId = ApiType.SqlMigrationProvider;
 
@@ -41,7 +41,8 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 		contracts.ValidateLoginMigrationRequest.type,
 		contracts.MigrateLoginsRequest.type,
 		contracts.EstablishUserMappingRequest.type,
-		contracts.MigrateServerRolesAndSetPermissionsRequest.type
+		contracts.MigrateServerRolesAndSetPermissionsRequest.type,
+		contracts.TdeMigrateRequest.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
@@ -52,6 +53,13 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 		this.register(this.messages, {
 			id: UUID.generateUuid(),
 			registerOptions: undefined
+		});
+
+		this._client.onNotification(contracts.TdeMigrateProgressEvent.type, e => {
+			if (this._reportUpdate === undefined) {
+				return;
+			}
+			this._reportUpdate(e.name, e.success, e.message);
 		});
 	}
 
@@ -271,45 +279,6 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 		}
 
 		return undefined;
-	}
-}
-
-
-export class TdeMigrationService extends MigrationExtensionService implements contracts.ITdeMigrationService {
-	private _reportUpdate: ((dbName: string, succeeded: boolean, error: string) => void) | undefined = undefined;
-
-	private static readonly messagesTypes: RPCMessageType[] = [
-		contracts.TdeMigrateRequest.type
-	];
-
-	constructor(client: SqlOpsDataClient) {
-		super(client, TdeMigrationService.messagesTypes);
-	}
-
-	override providerId = ApiType.TdeMigrationProvider;
-
-	public initialize(capabilities: ServerCapabilities): void {
-		this.register(this.messages, {
-			id: UUID.generateUuid(),
-			registerOptions: undefined
-		});
-
-		this._client.onNotification(contracts.TdeMigrateProgressEvent.type, e => {
-			if (this._reportUpdate === undefined) {
-				return;
-			}
-			this._reportUpdate(e.name, e.success, e.message);
-		});
-	}
-
-	protected registerProvider(options: undefined): Disposable {
-		migrationServiceProvider.addService(this);
-		return this;
-	}
-
-
-	public fillClientCapabilities(capabilities: ClientCapabilities): void {
-		// this isn't explicitly necessary
 	}
 
 	async migrateCertificate(
