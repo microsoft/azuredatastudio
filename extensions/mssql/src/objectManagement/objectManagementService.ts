@@ -148,7 +148,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 				let login: ObjectManagement.LoginViewInfo;
 				if (isNewObject) {
 					login = <ObjectManagement.LoginViewInfo>{
-						login: {
+						objectInfo: {
 							name: '',
 							authenticationType: AuthenticationType.Sql,
 							enforcePasswordPolicy: true,
@@ -173,7 +173,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 					};
 				} else {
 					login = <ObjectManagement.LoginViewInfo>{
-						login: {
+						objectInfo: {
 							name: name,
 							authenticationType: AuthenticationType.Sql,
 							enforcePasswordPolicy: true,
@@ -236,7 +236,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 
 				if (isNewObject) {
 					viewInfo = {
-						user: <ObjectManagement.User>{
+						objectInfo: <ObjectManagement.User>{
 							name: '',
 							type: UserType.WithLogin,
 							defaultSchema: '',
@@ -256,7 +256,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 					};
 				} else {
 					viewInfo = {
-						user: <ObjectManagement.User>{
+						objectInfo: <ObjectManagement.User>{
 							name: name,
 							type: UserType.WithLogin,
 							defaultSchema: '',

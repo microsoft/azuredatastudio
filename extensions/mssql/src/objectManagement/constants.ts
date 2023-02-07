@@ -48,3 +48,13 @@ export const CreateUserDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/sta
 export const AlterUserDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/alter-user-transact-sql';
 export const CreateLoginDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/create-login-transact-sql';
 export const AlterLoginDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/alter-login-transact-sql';
+
+export enum TelemetryActions {
+	CreateObject = 'CreateObject',
+	UpdateObject = 'UpdateObject',
+	DeleteObject = 'DeleteObject'
+}
+
+export enum TelemetryViews {
+	ObjectManagement = 'ObjectManagement'
+}

@@ -879,6 +879,16 @@ declare module 'mssql' {
 		}
 
 		/**
+		 * Base interface for the object view information
+		 */
+		export interface ObjectViewInfo<T extends SqlObject> {
+			/**
+			 * The object information
+			 */
+			objectInfo: T;
+		}
+
+		/**
 		 * Server level login.
 		 */
 		export interface Login extends SqlObject {
@@ -977,11 +987,7 @@ declare module 'mssql' {
 		/**
 		 * The information required to render the login view.
 		 */
-		export interface LoginViewInfo {
-			/**
-			 * Login object.
-			 */
-			login: Login;
+		export interface LoginViewInfo extends ObjectViewInfo<Login> {
 			/**
 			 * Whether Windows Authentication is supported.
 			 */
@@ -1137,11 +1143,7 @@ declare module 'mssql' {
 		/**
 		 * The information required to render the user view.
 		 */
-		export interface UserViewInfo {
-			/**
-			 * The user object.
-			 */
-			user: User;
+		export interface UserViewInfo extends ObjectViewInfo<User> {
 			/**
 			 * Whether contained user is supported.
 			 */

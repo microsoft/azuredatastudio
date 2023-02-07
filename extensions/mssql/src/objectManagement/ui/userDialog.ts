@@ -7,9 +7,9 @@ import { DefaultInputWidth, ObjectManagementDialogBase } from './objectManagemen
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterUserDocUrl, AuthenticationType, CreateUserDocUrl, NodeType, UserType } from '../constants';
-import { getAuthenticationTypeByDisplayName, getAuthenticationTypeDisplayName, getUserTypeByDisplayName, getUserTypeDisplayName, isValidSQLPassword, refreshNode } from '../utils';
+import { getAuthenticationTypeByDisplayName, getAuthenticationTypeDisplayName, getUserTypeByDisplayName, getUserTypeDisplayName, isValidSQLPassword } from '../utils';
 
-export class UserDialog extends ObjectManagementDialogBase {
+export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User, ObjectManagement.UserViewInfo> {
 	private dialogInfo: ObjectManagement.UserViewInfo;
 	private formContainer: azdata.DivContainer;
 	private generalSection: azdata.GroupContainer;
@@ -33,24 +33,30 @@ export class UserDialog extends ObjectManagementDialogBase {
 	private ownedSchemaTable: azdata.TableComponent;
 	private membershipTable: azdata.TableComponent;
 
-	constructor(objectManagementService: IObjectManagementService, connectionUri: string, private readonly database: string, isNewObject: boolean, name?: string, private readonly objectExplorerContext?: azdata.ObjectExplorerContext) {
-		super(NodeType.User, isNewObject ? CreateUserDocUrl : AlterUserDocUrl, objectManagementService, connectionUri, isNewObject, name);
+	constructor(objectManagementService: IObjectManagementService, connectionUri: string, private readonly database: string, isNewObject: boolean, name?: string, objectExplorerContext?: azdata.ObjectExplorerContext) {
+		super(NodeType.User, isNewObject ? CreateUserDocUrl : AlterUserDocUrl, objectManagementService, connectionUri, isNewObject, name, objectExplorerContext);
+	}
+
+	protected async initializeData(): Promise<ObjectManagement.UserViewInfo> {
+		const viewInfo = await this.objectManagementService.initializeUserView(this.connectionUri, this.database, this.contextId, this.isNewObject, this.objectName);
+		viewInfo.objectInfo.password = viewInfo.objectInfo.password ?? '';
+		return viewInfo;
 	}
 
 	protected async validateInput(): Promise<string[]> {
 		const errors: string[] = [];
-		const user = this.dialogInfo.user;
-		if (!user.name) {
+		if (!this.objectInfo.name) {
 			errors.push(localizedConstants.NameCannotBeEmptyError);
 		}
-		if (user.type === UserType.Contained && user.authenticationType === AuthenticationType.Sql) {
-			if (!user.password) {
+		if (this.objectInfo.type === UserType.Contained && this.objectInfo.authenticationType === AuthenticationType.Sql) {
+			if (!this.objectInfo.password) {
 				errors.push(localizedConstants.PasswordCannotBeEmptyError);
 			}
-			if (user.password !== this.confirmPasswordInput.value) {
+			if (this.objectInfo.password !== this.confirmPasswordInput.value) {
 				errors.push(localizedConstants.PasswordsNotMatchError);
 			}
-			if (!isValidSQLPassword(user.password, user.name)) {
+			if (!isValidSQLPassword(this.objectInfo.password, this.objectInfo.name)
+				&& (this.isNewObject || this.objectInfo.password !== this.originalObjectInfo.password)) {
 				errors.push(localizedConstants.InvalidPasswordError);
 			}
 		}
@@ -59,12 +65,9 @@ export class UserDialog extends ObjectManagementDialogBase {
 
 	protected async onComplete(): Promise<void> {
 		if (this.isNewObject) {
-			await this.objectManagementService.createUser(this.contextId, this.dialogInfo.user);
-			if (this.objectExplorerContext) {
-				await refreshNode(this.objectExplorerContext);
-			}
+			await this.objectManagementService.createUser(this.contextId, this.objectInfo);
 		} else {
-			await this.objectManagementService.updateUser(this.contextId, this.dialogInfo.user);
+			await this.objectManagementService.updateUser(this.contextId, this.objectInfo);
 		}
 	}
 
@@ -72,9 +75,7 @@ export class UserDialog extends ObjectManagementDialogBase {
 		await this.objectManagementService.disposeUserView(this.contextId);
 	}
 
-	protected async initialize(): Promise<void> {
-		this.dialogInfo = await this.objectManagementService.initializeUserView(this.connectionUri, this.database, this.contextId, this.isNewObject, this.objectName);
-		this.dialogInfo.user.password = this.dialogInfo.user.password ?? '';
+	protected async initializeUI(): Promise<void> {
 		this.dialogObject.registerContent(async view => {
 			const sections: azdata.Component[] = [];
 			this.initializeGeneralSection(view);
@@ -94,47 +95,49 @@ export class UserDialog extends ObjectManagementDialogBase {
 		this.nameInput = view.modelBuilder.inputBox().withProps({
 			ariaLabel: localizedConstants.NameText,
 			enabled: this.isNewObject,
-			value: this.dialogInfo.user.name,
+			value: this.objectInfo.name,
 			width: DefaultInputWidth
 		}).component();
 		this.nameInput.onTextChanged(async () => {
-			this.dialogInfo.user.name = this.nameInput.value;
+			this.objectInfo.name = this.nameInput.value;
+			await this.runValidation(false);
 		});
 		const nameContainer = this.createLabelInputContainer(view, localizedConstants.NameText, this.nameInput);
 
 		this.defaultSchemaDropdown = view.modelBuilder.dropDown().withProps({
 			ariaLabel: localizedConstants.DefaultSchemaText,
 			values: this.dialogInfo.schemas,
-			value: this.dialogInfo.user.defaultSchema,
+			value: this.objectInfo.defaultSchema,
 			width: DefaultInputWidth
 		}).component();
 		this.defaultSchemaContainer = this.createLabelInputContainer(view, localizedConstants.DefaultSchemaText, this.defaultSchemaDropdown);
 		this.defaultSchemaDropdown.onValueChanged(() => {
-			this.dialogInfo.user.defaultSchema = <string>this.defaultSchemaDropdown.value;
+			this.objectInfo.defaultSchema = <string>this.defaultSchemaDropdown.value;
 		});
 
 		this.typeDropdown = view.modelBuilder.dropDown().withProps({
 			ariaLabel: localizedConstants.UserTypeText,
 			values: [localizedConstants.UserWithLoginText, localizedConstants.UserWithWindowsGroupLoginText, localizedConstants.ContainedUserText, localizedConstants.UserWithNoConnectAccess],
-			value: getUserTypeDisplayName(this.dialogInfo.user.type),
+			value: getUserTypeDisplayName(this.objectInfo.type),
 			width: DefaultInputWidth,
 			enabled: this.isNewObject
 		}).component();
-		this.typeDropdown.onValueChanged(() => {
-			this.dialogInfo.user.type = getUserTypeByDisplayName(<string>this.typeDropdown.value);
+		this.typeDropdown.onValueChanged(async () => {
+			this.objectInfo.type = getUserTypeByDisplayName(<string>this.typeDropdown.value);
 			this.setViewByUserType();
+			await this.runValidation(false);
 		});
 		this.typeContainer = this.createLabelInputContainer(view, localizedConstants.UserTypeText, this.typeDropdown);
 
 		this.loginDropdown = view.modelBuilder.dropDown().withProps({
 			ariaLabel: localizedConstants.LoginText,
 			values: this.dialogInfo.logins,
-			value: this.dialogInfo.user.loginName,
+			value: this.objectInfo.loginName,
 			width: DefaultInputWidth,
 			enabled: this.isNewObject
 		}).component();
 		this.loginDropdown.onValueChanged(() => {
-			this.dialogInfo.user.loginName = <string>this.loginDropdown.value;
+			this.objectInfo.loginName = <string>this.loginDropdown.value;
 		});
 		this.loginContainer = this.createLabelInputContainer(view, localizedConstants.LoginText, this.loginDropdown);
 
@@ -151,22 +154,27 @@ export class UserDialog extends ObjectManagementDialogBase {
 		this.authTypeDropdown = view.modelBuilder.dropDown().withProps({
 			ariaLabel: localizedConstants.AuthTypeText,
 			values: authTypes,
-			value: getAuthenticationTypeDisplayName(this.dialogInfo.user.authenticationType),
+			value: getAuthenticationTypeDisplayName(this.objectInfo.authenticationType),
 			width: DefaultInputWidth,
 			enabled: this.isNewObject
 		}).component();
 		this.authTypeContainer = this.createLabelInputContainer(view, localizedConstants.AuthTypeText, this.authTypeDropdown);
-		this.authTypeDropdown.onValueChanged(() => {
-			this.dialogInfo.user.authenticationType = getAuthenticationTypeByDisplayName(<string>this.authTypeDropdown.value);
+		this.authTypeDropdown.onValueChanged(async () => {
+			this.objectInfo.authenticationType = getAuthenticationTypeByDisplayName(<string>this.authTypeDropdown.value);
 			this.setViewByAuthenticationType();
+			await this.runValidation(false);
 		});
 
-		this.passwordInput = this.createPasswordInputBox(view, localizedConstants.PasswordText, this.dialogInfo.user.password ?? '');
+		this.passwordInput = this.createPasswordInputBox(view, localizedConstants.PasswordText, this.objectInfo.password ?? '');
 		this.passwordContainer = this.createLabelInputContainer(view, localizedConstants.PasswordText, this.passwordInput);
-		this.confirmPasswordInput = this.createPasswordInputBox(view, localizedConstants.ConfirmPasswordText, this.dialogInfo.user.password ?? '');
+		this.confirmPasswordInput = this.createPasswordInputBox(view, localizedConstants.ConfirmPasswordText, this.objectInfo.password ?? '');
 		this.confirmPasswordContainer = this.createLabelInputContainer(view, localizedConstants.ConfirmPasswordText, this.confirmPasswordInput);
-		this.passwordInput.onTextChanged(() => {
-			this.dialogInfo.user.password = this.passwordInput.value;
+		this.passwordInput.onTextChanged(async () => {
+			this.objectInfo.password = this.passwordInput.value;
+			await this.runValidation(false);
+		});
+		this.confirmPasswordInput.onTextChanged(async () => {
+			await this.runValidation(false);
 		});
 
 		this.generalSection = this.createGroup(view, localizedConstants.GeneralSectionHeader, [
@@ -181,12 +189,12 @@ export class UserDialog extends ObjectManagementDialogBase {
 	}
 
 	private initializeOwnedSchemaSection(view: azdata.ModelView): void {
-		this.ownedSchemaTable = this.createTableList(view, localizedConstants.OwnedSchemaSectionHeader, this.dialogInfo.schemas, this.dialogInfo.user.ownedSchemas);
+		this.ownedSchemaTable = this.createTableList(view, localizedConstants.OwnedSchemaSectionHeader, this.dialogInfo.schemas, this.objectInfo.ownedSchemas);
 		this.ownedSchemaSection = this.createGroup(view, localizedConstants.OwnedSchemaSectionHeader, [this.ownedSchemaTable]);
 	}
 
 	private initializeMembershipSection(view: azdata.ModelView): void {
-		this.membershipTable = this.createTableList(view, localizedConstants.MembershipSectionHeader, this.dialogInfo.databaseRoles, this.dialogInfo.user.databaseRoles);
+		this.membershipTable = this.createTableList(view, localizedConstants.MembershipSectionHeader, this.dialogInfo.databaseRoles, this.objectInfo.databaseRoles);
 		this.membershipSection = this.createGroup(view, localizedConstants.MembershipSectionHeader, [this.membershipTable]);
 	}
 
@@ -194,11 +202,11 @@ export class UserDialog extends ObjectManagementDialogBase {
 		this.defaultLanguageDropdown = view.modelBuilder.dropDown().withProps({
 			ariaLabel: localizedConstants.DefaultLanguageText,
 			values: this.dialogInfo.languages,
-			value: this.dialogInfo.user.defaultLanguage,
+			value: this.objectInfo.defaultLanguage,
 			width: DefaultInputWidth
 		}).component();
 		this.defaultLanguageDropdown.onValueChanged(() => {
-			this.dialogInfo.user.defaultLanguage = <string>this.defaultLanguageDropdown.value;
+			this.objectInfo.defaultLanguage = <string>this.defaultLanguageDropdown.value;
 		});
 		const container = this.createLabelInputContainer(view, localizedConstants.DefaultLanguageText, this.defaultLanguageDropdown);
 		this.advancedSection = this.createGroup(view, localizedConstants.AdvancedSectionHeader, [container]);

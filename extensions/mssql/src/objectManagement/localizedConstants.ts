@@ -17,7 +17,7 @@ export const HelpText: string = localize('objectManagement.helpText', "Help");
 export const YesText: string = localize('objectManagement.yesText', "Yes");
 export const OkText: string = localize('objectManagement.OkText', "OK");
 export const LoadingDialogText: string = localize('objectManagement.loadingDialog', "Loading dialog...")
-export const ValidationErrorSummary: string = localize('objectManagement.ValidationErrorSummary', "There are some validation errors.")
+
 export function RefreshObjectExplorerError(error: string): string {
 	return localize({
 		key: 'objectManagement.refreshOEError',

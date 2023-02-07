@@ -9,6 +9,24 @@ import { getErrorMessage } from '../utils';
 import { AuthenticationType, NodeType, UserType } from './constants';
 import { AADAuthenticationTypeDisplayText, ContainedUserText, LoginTypeDisplayName, LoginTypeDisplayNameInTitle, RefreshObjectExplorerError, SQLAuthenticationTypeDisplayText, UserTypeDisplayName, UserTypeDisplayNameInTitle, UserWithLoginText, UserWithNoConnectAccess, UserWithWindowsGroupLoginText, WindowsAuthenticationTypeDisplayText } from './localizedConstants';
 
+export function deepClone<T>(obj: T): T {
+	if (!obj || typeof obj !== 'object') {
+		return obj;
+	}
+	if (obj instanceof RegExp) {
+		// See https://github.com/Microsoft/TypeScript/issues/10990
+		return obj as any;
+	}
+	const result: any = Array.isArray(obj) ? [] : {};
+	Object.keys(<any>obj).forEach((key: string) => {
+		if ((<any>obj)[key] && typeof (<any>obj)[key] === 'object') {
+			result[key] = deepClone((<any>obj)[key]);
+		} else {
+			result[key] = (<any>obj)[key];
+		}
+	});
+	return result;
+}
 
 export async function refreshParentNode(context: azdata.ObjectExplorerContext): Promise<void> {
 	if (context) {

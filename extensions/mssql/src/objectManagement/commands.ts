@@ -9,12 +9,13 @@ import * as vscode from 'vscode';
 import { LoginDialog } from './ui/loginDialog';
 import { TestObjectManagementService } from './objectManagementService';
 import { getErrorMessage } from '../utils';
-import { NodeType } from './constants';
+import { NodeType, TelemetryActions, TelemetryViews } from './constants';
 import * as localizedConstants from './localizedConstants';
 import { UserDialog } from './ui/userDialog';
 import { IObjectManagementService } from 'mssql';
 import * as constants from '../constants';
 import { getNodeTypeDisplayName, refreshParentNode } from './utils';
+import { TelemetryReporter } from '../telemetry';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
@@ -111,6 +112,7 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 		isCancelable: false,
 		operation: async (operation) => {
 			try {
+				const startTime = Date.now();
 				const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
 				switch (context.nodeInfo.nodeType) {
 					case NodeType.Login:
@@ -122,9 +124,15 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 					default:
 						return;
 				}
+				TelemetryReporter.sendTelemetryEvent(TelemetryActions.DeleteObject, {
+					objectType: context.nodeInfo.nodeType
+				}, {
+					ellapsedTime: Date.now() - startTime
+				});
 			}
 			catch (err) {
 				operation.updateStatus(azdata.TaskStatus.Failed, localizedConstants.DeleteObjectError(nodeTypeDisplayName, context.nodeInfo.label, getErrorMessage(err)));
+				TelemetryReporter.sendErrorEvent(TelemetryViews.ObjectManagement, TelemetryActions.DeleteObject);
 				return;
 			}
 			await refreshParentNode(context);
