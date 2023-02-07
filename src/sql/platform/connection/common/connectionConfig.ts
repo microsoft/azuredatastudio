@@ -251,7 +251,7 @@ export class ConnectionConfig {
 		// Remove the profile from the connections
 		profiles = profiles!.filter(value => {
 			let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
-			return providerConnectionProfile.getOptionsKey() !== profile.getOptionsKey();
+			return providerConnectionProfile.getCompleteOptionsKey() !== profile.getCompleteOptionsKey();
 		});
 
 		// Write connections back to settings
@@ -272,7 +272,7 @@ export class ConnectionConfig {
 		// Remove the profiles from the connections
 		profiles = profiles!.filter(value => {
 			let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
-			return !connections.some((val) => val.getOptionsKey() === providerConnectionProfile.getOptionsKey());
+			return !connections.some((val) => val.getCompleteOptionsKey() === providerConnectionProfile.getCompleteOptionsKey());
 		});
 
 		// Get all groups in the settings

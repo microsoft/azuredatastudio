@@ -121,7 +121,7 @@ export class InsightsDialogController {
 
 	private async createNewConnection(connectionProfile: IConnectionProfile): Promise<void> {
 		// determine if we need to create a new connection
-		if (!this._connectionProfile || connectionProfile.getOptionsKey() !== this._connectionProfile.getOptionsKey()) {
+		if (!this._connectionProfile || connectionProfile.getCompleteOptionsKey() !== this._connectionProfile.getCompleteOptionsKey()) {
 			if (this._connectionProfile) {
 				try {
 					await this._connectionManagementService.disconnect(this._connectionUri);

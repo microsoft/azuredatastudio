@@ -99,7 +99,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	}
 
 	public static matchesProfile(a: interfaces.IConnectionProfile | undefined, b: interfaces.IConnectionProfile | undefined): boolean {
-		return a && b && a.getOptionsKey() === b.getOptionsKey();
+		return a && b && a.getCompleteOptionsKey() === b.getCompleteOptionsKey();
 	}
 
 	public matches(other: interfaces.IConnectionProfile): boolean {
@@ -233,6 +233,20 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	}
 
 	/**
+	 * Returns a key containing all connection options.
+	 * This key uniquely identifies a connection in a group (with more distinction due to all options)
+	 */
+	public override getCompleteOptionsKey(): string {
+		let id = super.getCompleteOptionsKey();
+		let databaseDisplayName: string = this.options['databaseDisplayName'];
+		if (databaseDisplayName) {
+			id += ProviderConnectionInfo.idSeparator + 'databaseDisplayName' + ProviderConnectionInfo.nameValueSeparator + databaseDisplayName;
+		}
+
+		return id + ProviderConnectionInfo.idSeparator + 'group' + ProviderConnectionInfo.nameValueSeparator + this.groupId;
+	}
+
+	/**
 	 * Returns the unique id for the connection that doesn't include the group name
 	 */
 	public getConnectionInfoId(): string {
@@ -245,6 +259,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			serverName: this.serverName,
 			databaseName: this.databaseName,
 			authenticationType: this.authenticationType,
+			getCompleteOptionsKey: this.getCompleteOptionsKey,
 			getOptionsKey: this.getOptionsKey,
 			matches: this.matches,
 			groupId: this.groupId,

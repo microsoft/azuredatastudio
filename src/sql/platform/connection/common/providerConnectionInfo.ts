@@ -244,6 +244,42 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 			this.providerName + ProviderConnectionInfo.idSeparator + idValues.join(ProviderConnectionInfo.idSeparator);
 	}
 
+	/**
+	 * Returns a key containing all connection options.
+	 * This key uniquely identifies a connection in a group (with more distinction due to all options)
+	 */
+	public getCompleteOptionsKey(): string {
+		let idNames = [];
+		if (this.serverCapabilities) {
+			idNames = this.serverCapabilities.connectionOptions.map(o => {
+				if (o.specialValueType !== ConnectionOptionSpecialType.password) {
+					return o.name;
+				} else {
+					return undefined;
+				}
+			});
+		} else {
+			// This should never happen but just incase the serverCapabilities was not ready at this time
+			idNames = ['authenticationType', 'database', 'server', 'user'];
+		}
+
+		idNames = idNames.filter(x => x !== undefined);
+
+		//Sort to make sure using names in the same order every time otherwise the ids would be different
+		idNames.sort();
+
+		let idValues: string[] = [];
+		for (let index = 0; index < idNames.length; index++) {
+			let value = this.options[idNames[index]!];
+			if (value) {
+				idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
+			}
+		}
+
+		return ProviderConnectionInfo.ProviderPropertyName + ProviderConnectionInfo.nameValueSeparator +
+			this.providerName + ProviderConnectionInfo.idSeparator + idValues.join(ProviderConnectionInfo.idSeparator);
+	}
+
 	public static getProviderFromOptionsKey(optionsKey: string) {
 		let providerId: string = '';
 		if (optionsKey) {
