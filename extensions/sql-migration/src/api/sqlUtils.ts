@@ -44,12 +44,15 @@ const query_target_databases_sql = `
 		AND is_distributor <> 1
 	ORDER BY db.name;`;
 
+// NOTES: Converting the size to BIGINT is need to handle the large database scenarios.
+// Size column in sys.master_files represents the number of pages and each page is 8 KB
+// The end result is size in MB, 8/1024 = 1/128.
 const query_databases_with_size = `
 	WITH
 		db_size
 		AS
 		(
-			SELECT database_id, CAST(SUM(size) / 128 AS bigint) size
+			SELECT database_id, CAST(SUM(CAST(size as BIGINT)) / 128 AS BIGINT) size
 			FROM sys.master_files with (nolock)
 			GROUP BY database_id
 		)
