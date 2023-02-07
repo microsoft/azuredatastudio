@@ -465,6 +465,8 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	public unregisterProvider(providerMetadata: azdata.AccountProviderMetadata): void {
+		const p = this._providers[providerMetadata.id];
+		this.fireAccountListUpdate(p, false);
 		// Delete this account provider
 		delete this._providers[providerMetadata.id];
 
