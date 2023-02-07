@@ -141,9 +141,6 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				openChangePasswordDialog(profile: azdata.IConnectionProfile): Thenable<string | undefined> {
 					return extHostConnectionManagement.$openChangePasswordDialog(profile);
 				},
-				openCustomErrorDialog(options: sqlExtHostTypes.IErrorDialogOptions): Thenable<string | undefined> {
-					return extHostConnectionManagement.$openCustomErrorDialog(options);
-				},
 				listDatabases(connectionId: string): Thenable<string[]> {
 					return extHostConnectionManagement.$listDatabases(connectionId);
 				},
@@ -480,7 +477,10 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				createModelViewDashboard(title: string, name?: string, options?: azdata.ModelViewDashboardOptions): azdata.window.ModelViewDashboard {
 					return extHostModelViewDialog.createModelViewDashboard(title, name, options, extension);
 				},
-				MessageLevel: sqlExtHostTypes.MessageLevel
+				MessageLevel: sqlExtHostTypes.MessageLevel,
+				openCustomErrorDialog(options: sqlExtHostTypes.IErrorDialogOptions): Thenable<string | undefined> {
+					return extHostModelViewDialog.openCustomErrorDialog(options);
+				}
 			};
 
 			const tasks: typeof azdata.tasks = {

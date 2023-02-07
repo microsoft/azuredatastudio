@@ -19,7 +19,6 @@ import { IConnectionDialogService } from 'sql/workbench/services/connection/comm
 import { deepClone } from 'vs/base/common/objects';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
-import { IErrorDialogOptions } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadConnectionManagement)
 export class MainThreadConnectionManagement extends Disposable implements MainThreadConnectionManagementShape {
@@ -187,10 +186,6 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		// Need to have access to getOptionsKey, so recreate profile from details.
 		let convertedProfile = new ConnectionProfile(this._capabilitiesService, profile);
 		return this._connectionManagementService.openChangePasswordDialog(convertedProfile);
-	}
-
-	public $openCustomErrorDialog(options: IErrorDialogOptions): Thenable<string | undefined> {
-		return this._connectionDialogService.showErrorDialogAsync(options);
 	}
 
 	public async $listDatabases(connectionId: string): Promise<string[]> {

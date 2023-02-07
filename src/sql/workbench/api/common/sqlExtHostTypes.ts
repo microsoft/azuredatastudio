@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as vsExtTypes from 'vs/workbench/api/common/extHostTypes';
 import { URI } from 'vs/base/common/uri';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 // SQL added extension host types
 export enum ServiceOptionType {
@@ -336,6 +337,7 @@ export interface IErrorDialogOptions {
 	headerTitle: string;
 	message: string;
 	messageDetails?: string;
+	telemetryView?: TelemetryView | string;
 	actions?: IDialogAction[];
 	instructionText?: string;
 	readMoreLink?: string;

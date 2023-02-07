@@ -8,7 +8,6 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
-import * as azdata from 'azdata';
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_FOREGROUND } from 'vs/workbench/common/theme';
@@ -28,6 +27,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { Link } from 'vs/platform/opener/browser/link';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { Deferred } from 'sql/base/common/promise';
+import { IErrorDialogOptions, MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 const maxActions = 1;
 
@@ -60,7 +60,7 @@ export class ErrorMessageDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 		@IOpenerService private readonly _openerService: IOpenerService,
-		protected _telemetryView: TelemetryKeys.TelemetryView = TelemetryKeys.TelemetryView.ErrorMessageDialog,
+		protected _telemetryView: TelemetryKeys.TelemetryView | string = TelemetryKeys.TelemetryView.ErrorMessageDialog,
 	) {
 		super('', TelemetryKeys.ModalDialogName.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
 		this._okLabel = localize('errorMessageDialog.ok', "OK");
@@ -179,7 +179,7 @@ export class ErrorMessageDialog extends Modal {
 		}
 	}
 
-	public open(telemetryView: TelemetryKeys.TelemetryView, severity: Severity, headerTitle: string, message: string, messageDetails?: string,
+	public open(telemetryView: TelemetryKeys.TelemetryView | string, severity: Severity, headerTitle: string, message: string, messageDetails?: string,
 		actions?: IAction[], instructionText?: string, readMoreLink?: string, resetActions: boolean = true): void {
 		this._telemetryView = telemetryView;
 		this._severity = severity;
@@ -226,7 +226,7 @@ export class ErrorMessageDialog extends Modal {
 		}
 	}
 
-	public openCustomAsync(telemetryView: TelemetryKeys.TelemetryView, severity: Severity, options: azdata.window.IErrorDialogOptions): Promise<string | undefined> {
+	public openCustomAsync(options: IErrorDialogOptions): Promise<string | undefined> {
 		if (!options) {
 			return undefined;
 		}
@@ -237,10 +237,29 @@ export class ErrorMessageDialog extends Modal {
 			actions.push(new Action(action.id, action.label, '', true, () => { }));
 		});
 
-		this.open(telemetryView, severity, options.headerTitle, options.message, options.messageDetails, actions, options.instructionText, options.readMoreLink, false);
+		this.open(options.telemetryView, this.convertToSeverity(options.severity),
+			options.headerTitle, options.message, options.messageDetails, actions,
+			options.instructionText, options.readMoreLink, false);
+
 		const deferred = new Deferred<string | undefined>();
 		this._promiseResolver = deferred.resolve;
 		return deferred.promise;
+	}
+
+	private convertToSeverity(messageLevel: MessageLevel): Severity {
+		let severity: Severity = Severity.Error;
+		switch (messageLevel) {
+			case MessageLevel.Error:
+				severity = Severity.Error;
+				break;
+			case MessageLevel.Information:
+				severity = Severity.Info;
+				break;
+			case MessageLevel.Warning:
+				severity = Severity.Warning;
+				break;
+		}
+		return severity;
 	}
 
 	private resetActions(): void {

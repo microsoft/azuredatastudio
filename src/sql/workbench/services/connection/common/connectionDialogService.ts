@@ -6,7 +6,6 @@
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { INewConnectionParams, IConnectionResult, IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { IErrorDialogOptions } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export const IConnectionDialogService = createDecorator<IConnectionDialogService>('connectionDialogService');
 export interface IConnectionDialogService {
@@ -26,11 +25,4 @@ export interface IConnectionDialogService {
 	 * Calls the default connect function (used by password reset dialog)
 	 */
 	callDefaultOnConnect(connection: IConnectionProfile, params: INewConnectionParams): Promise<void>;
-
-	/**
-	 * Opens the error dialog with customization options provided.
-	 * @param profile The connection profile associated with error dialog.
-	 * @returns Id of action button clicked by user, e.g. ok, cancel
-	 */
-	showErrorDialogAsync(options: IErrorDialogOptions): Promise<string | undefined>;
 }

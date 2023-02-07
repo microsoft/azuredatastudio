@@ -32,7 +32,6 @@ import { CmsConnectionController } from 'sql/workbench/services/connection/brows
 import { entries } from 'sql/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IErrorDialogOptions } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -531,11 +530,5 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._logService.error(message);
 
 		this._errorMessageService.showDialog(severity, headerTitle, message, messageDetails, TelemetryView.ConnectionErrorDialog, actions, undefined, undefined);
-	}
-
-	public async showErrorDialogAsync(options: IErrorDialogOptions): Promise<string | undefined> {
-
-		let result = await this._errorMessageService.showDialogAsync(options, TelemetryView.ConnectionErrorDialog);
-		return result;
 	}
 }
