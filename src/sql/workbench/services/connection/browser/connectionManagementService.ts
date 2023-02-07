@@ -1166,7 +1166,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				this._connectionGlobalStatus.setStatusToConnected(info.connectionSummary);
 			}
 
-			const connectionUniqueId = connection.connectionProfile.getConnectionInfoId();
+			const connectionUniqueId = connection.connectionProfile.getCompleteOptionsKey();
 			if (info.isSupportedVersion === false
 				&& this._connectionsGotUnsupportedVersionWarning.indexOf(connectionUniqueId) === -1
 				&& this._configurationService.getValue<boolean>('connection.showUnsupportedServerVersionWarning')) {
