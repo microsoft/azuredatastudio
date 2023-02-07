@@ -364,16 +364,12 @@ export class AccountDialog extends Modal {
 
 		// Check if view is registered, if it isn't, register the view
 		if (!Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(newProvider.addedProvider.id)) {
-			try {
-				Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{
-					id: newProvider.addedProvider.id,
-					name: newProvider.addedProvider.displayName,
-					ctorDescriptor: new SyncDescriptor(AccountPanel),
-				}], ACCOUNT_VIEW_CONTAINER);
-				this.registerActions(newProvider.addedProvider.id);
-			} catch (error) {
-				this.logService.debug(error);
-			}
+			Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{
+				id: newProvider.addedProvider.id,
+				name: newProvider.addedProvider.displayName,
+				ctorDescriptor: new SyncDescriptor(AccountPanel),
+			}], ACCOUNT_VIEW_CONTAINER);
+			this.registerActions(newProvider.addedProvider.id);
 		}
 
 
@@ -432,12 +428,11 @@ export class AccountDialog extends Modal {
 			}
 		})
 		this._splitView!.layout(DOM.getContentHeight(this._container!));
-
 		// Remove the list view from our internal map
 		this._providerViewsMap.delete(removedProvider.id);
 		this.logService.debug(`Provider ${removedProvider.id} removed`);
 		// Update view after removing provider
-		if (this._splitViewContainer!.hidden || this._providerViewsMap.size > 1) {
+		if (this._splitViewContainer!.hidden) {
 			this.showSplitView();
 		}
 		this.layout();
