@@ -57,7 +57,6 @@ export class CustomDialogService {
 	/**
 	 * Shows error dialog customized with given options
 	 * @param options Error Dialog options to customize error message dialog.
-	 * @param telemetryView Telemetry View to be used for dispatching telemetry events.
 	 */
 	public async openCustomErrorDialog(options: IErrorDialogOptions): Promise<string | undefined> {
 		let dialog = this._instantiationService.createInstance(ErrorMessageDialog);
