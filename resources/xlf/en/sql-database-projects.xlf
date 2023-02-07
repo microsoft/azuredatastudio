@@ -202,9 +202,6 @@
     <trans-unit id="dataSourceRadioButtonLabel">
       <source xml:lang="en">Data sources</source>
     </trans-unit>
-    <trans-unit id="dataSourcesNodeName">
-      <source xml:lang="en">Data Sources</source>
-    </trans-unit>
     <trans-unit id="databaseLocation">
       <source xml:lang="en">Database location is required for adding a reference to a database</source>
     </trans-unit>
