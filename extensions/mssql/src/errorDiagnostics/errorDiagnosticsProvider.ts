@@ -89,7 +89,7 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 							headerTitle: ErrorDiagnosticsConstants.ConnectionErrorDialogTitle,
 							message: errorMessage,
 							messageDetails: callStack,
-							telemetryView: 'CustomizedConnectionErrorDialog',
+							telemetryView: ErrorDiagnosticsConstants.MssqlConnectionTelemetryView,
 							instructionText: ErrorDiagnosticsConstants.TSC_InstructionText,
 							readMoreLink: ErrorDiagnosticsConstants.TSC_ReadMoreLink,
 							actions: actions

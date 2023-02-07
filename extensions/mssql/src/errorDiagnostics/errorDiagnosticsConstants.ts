@@ -10,6 +10,7 @@ const localize = nls.loadMessageBundle();
 export const MssqlPasswordResetErrorCode: number = 18488;
 export const MssqlCertValidationFailedErrorCode: number = -2146893019;
 
+export const MssqlConnectionTelemetryView = 'MssqlConnectionErrorDialog';
 export const ConnectionErrorDialogTitle = localize('connectionError', "Connection error");
 
 // Trust Server certificate custom dialog constants.
