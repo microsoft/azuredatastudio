@@ -136,7 +136,7 @@ export async function getSourceConnectionId(): Promise<string> {
 }
 
 export async function getSourceConnectionServerInfo(): Promise<azdata.ServerInfo> {
-	return await azdata.connection.getServerInfo((await getSourceConnectionProfile()).connectionId);
+	return await azdata.connection.getServerInfo(await getSourceConnectionId());
 }
 
 export async function getSourceConnectionUri(): Promise<string> {
@@ -144,7 +144,7 @@ export async function getSourceConnectionUri(): Promise<string> {
 }
 
 export async function getSourceConnectionCredentials(): Promise<{ [name: string]: string }> {
-	return await azdata.connection.getCredentials((await getSourceConnectionProfile()).connectionId);
+	return await azdata.connection.getCredentials(await getSourceConnectionId());
 }
 
 export async function getSourceConnectionQueryProvider() {
@@ -239,16 +239,17 @@ export async function getTargetConnectionString(
 	serverName: string,
 	azureResourceId: string,
 	username: string,
-	password: string): Promise<string> {
+	password: string,
+	encryptConnection: boolean,
+	trustServerCertificate: boolean): Promise<string> {
 
 	const connectionProfile = getTargetConnectionProfile(
 		serverName,
 		azureResourceId,
 		username,
 		password,
-		// for login migration, when connecting to a target Azure SQL, use true/true
-		true /* encryptConnection */,
-		true /* trustServerCertificate */);
+		encryptConnection,
+		trustServerCertificate);
 
 	const result = await azdata.connection.connect(connectionProfile, false, false);
 	if (result.connected && result.connectionId) {
@@ -457,7 +458,8 @@ export async function collectTargetLogins(
 		azureResourceId,
 		userName,
 		password,
-		// for login migration, when connecting to a target Azure SQL, use true/true
+		// for login migration, connect to target Azure SQL with true/true
+		// to-do: take as input from the user, should be true/false for DB/MI but true/true for VM
 		true /* encryptConnection */,
 		true /* trustServerCertificate */);
 

@@ -567,7 +567,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				this.targetServerName,
 				this._targetServerInstance.id,
 				this._targetUserName,
-				this._targetPassword);
+				this._targetPassword,
+				// for login migration, connect to target Azure SQL with true/true
+				// to-do: take as input from the user, should be true/false for DB/MI but true/true for VM
+				true /* encryptConnection */,
+				true /* trustServerCertificate */);
 
 			var response = (await this.migrationService.migrateLogins(
 				sourceConnectionString,
@@ -596,7 +600,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				this.targetServerName,
 				this._targetServerInstance.id,
 				this._targetUserName,
-				this._targetPassword);
+				this._targetPassword,
+				// for login migration, connect to target Azure SQL with true/true
+				// to-do: take as input from the user, should be true/false for DB/MI but true/true for VM
+				true /* encryptConnection */,
+				true /* trustServerCertificate */);
 
 			var response = (await this.migrationService.establishUserMapping(
 				sourceConnectionString,
@@ -625,7 +633,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				this.targetServerName,
 				this._targetServerInstance.id,
 				this._targetUserName,
-				this._targetPassword);
+				this._targetPassword,
+				// for login migration, connect to target Azure SQL with true/true
+				// to-do: take as input from the user, should be true/false for DB/MI but true/true for VM
+				true /* encryptConnection */,
+				true /* trustServerCertificate */);
 
 			var response = (await this.migrationService.migrateServerRolesAndSetPermissions(
 				sourceConnectionString,

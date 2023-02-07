@@ -451,7 +451,8 @@ export class ValidateIrDialog {
 		const currentConnection = await getSourceConnectionProfile();
 		const sourceServerName = currentConnection?.serverName!;
 		const encryptConnection = currentConnection?.options?.encrypt === true || currentConnection?.options?.encrypt === 'true';
-		const trustServerCertificate = currentConnection?.options?.trustServerCertificate === true || currentConnection?.options?.trustServerCertificate === 'true'; const databaseCount = this._model._databasesForMigration.length;
+		const trustServerCertificate = currentConnection?.options?.trustServerCertificate === true || currentConnection?.options?.trustServerCertificate === 'true';
+		const databaseCount = this._model._databasesForMigration.length;
 		const sourceDatabaseName = this._model._databasesForMigration[0];
 		const targetDatabaseName = this._model._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? '';
 		let testNumber: number = 0;
