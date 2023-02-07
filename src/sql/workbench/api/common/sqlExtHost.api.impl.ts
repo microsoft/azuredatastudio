@@ -224,7 +224,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			const diagnostics: typeof azdata.diagnostics = {
 				registerDiagnosticsProvider: (providerMetadata: azdata.diagnostics.ErrorDiagnosticsProviderMetadata, errorDiagnostics: azdata.diagnostics.ErrorDiagnosticsProvider): vscode.Disposable => {
 					return extHostErrorDiagnostics.$registerDiagnosticsProvider(providerMetadata, errorDiagnostics);
-				}
+				},
 			}
 
 			let registerConnectionProvider = (provider: azdata.ConnectionProvider): vscode.Disposable => {
@@ -477,7 +477,10 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				createModelViewDashboard(title: string, name?: string, options?: azdata.ModelViewDashboardOptions): azdata.window.ModelViewDashboard {
 					return extHostModelViewDialog.createModelViewDashboard(title, name, options, extension);
 				},
-				MessageLevel: sqlExtHostTypes.MessageLevel
+				MessageLevel: sqlExtHostTypes.MessageLevel,
+				openCustomErrorDialog(options: sqlExtHostTypes.IErrorDialogOptions): Thenable<string | undefined> {
+					return extHostModelViewDialog.openCustomErrorDialog(options);
+				}
 			};
 
 			const tasks: typeof azdata.tasks = {

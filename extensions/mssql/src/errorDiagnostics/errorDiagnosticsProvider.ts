@@ -51,13 +51,18 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 			}
 
 			protected override registerProvider(options: any): Disposable {
-				let handleConnectionError = async (errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> => {
+				let handleConnectionError = async (errorInfo: azdata.diagnostics.IErrorInformation, connection: azdata.connection.ConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> => {
 					let restoredProfile = this.convertToIConnectionProfile(connection);
-					if (errorCode === ErrorDiagnosticsConstants.MssqlPasswordResetErrorCode) {
-						logDebug(`Error Code ${errorCode} requires user to change their password, launching change password dialog.`)
+
+					if (errorInfo.errorCode === ErrorDiagnosticsConstants.MssqlPasswordResetErrorCode) {
+						logDebug(`ErrorDiagnosticsProvider: Error Code ${errorInfo.errorCode} requires user to change their password, launching change password dialog.`);
 						return await this.handleChangePassword(restoredProfile);
 					}
-					logDebug(`No error handler found for errorCode ${errorCode}.`);
+					else if (errorInfo.errorCode === ErrorDiagnosticsConstants.MssqlCertValidationFailedErrorCode) {
+						logDebug(`ErrorDiagnosticsProvider: Error Code ${errorInfo.errorCode} indicates certificate validation has failed, launching error dialog with instructionText.`);
+						return await this.showCertValidationDialog(restoredProfile, errorInfo.errorMessage, errorInfo.messageDetails);
+					}
+					logDebug(`ErrorDiagnosticsProvider: No error handler found for errorCode ${errorInfo.errorCode}.`);
 					return { handled: false };
 				}
 
@@ -68,6 +73,43 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 				});
 			}
 
+			private async showCertValidationDialog(connection: azdata.IConnectionProfile, errorMessage: string, callStack: string): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
+				try {
+					let actions: azdata.window.IDialogAction[] = [];
+					let trustServerCertAction: azdata.window.IDialogAction = {
+						id: ErrorDiagnosticsConstants.TSC_ActionId,
+						label: ErrorDiagnosticsConstants.TSC_EnableTrustServerCert,
+						isPrimary: true
+					};
+
+					actions.push(trustServerCertAction);
+					const result = await azdata.window.openCustomErrorDialog(
+						{
+							severity: azdata.window.MessageLevel.Error,
+							headerTitle: ErrorDiagnosticsConstants.ConnectionErrorDialogTitle,
+							message: errorMessage,
+							messageDetails: callStack,
+							telemetryView: ErrorDiagnosticsConstants.MssqlConnectionTelemetryView,
+							instructionText: ErrorDiagnosticsConstants.TSC_InstructionText,
+							readMoreLink: ErrorDiagnosticsConstants.TSC_ReadMoreLink,
+							actions: actions
+						}
+					);
+
+					// Result represents id of action taken by user.
+					if (result === ErrorDiagnosticsConstants.TSC_ActionId) {
+						connection.options[ErrorDiagnosticsConstants.TSC_OptionName] = true;
+						return { handled: true, reconnect: true, options: connection.options };
+					} else {
+						return { handled: true, reconnect: false };
+					}
+				}
+				catch (e) {
+					console.error(`Unexpected exception occurred when showing certificate validation custom dialog: ${e}`);
+				}
+				return { handled: false };
+			}
+
 			private async handleChangePassword(connection: azdata.IConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
 				try {
 					const result = await azdata.connection.openChangePasswordDialog(connection);
@@ -75,7 +117,7 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 					if (result) {
 						// MSSQL uses 'password' as the option key for connection profile.
 						connection.options['password'] = result;
-						return { handled: true, options: connection.options };
+						return { handled: true, reconnect: true, options: connection.options };
 					}
 				}
 				catch (e) {

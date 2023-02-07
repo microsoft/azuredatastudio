@@ -8,6 +8,7 @@ import * as azdata from 'azdata';
 import { ILogService } from 'vs/platform/log/common/log';
 import * as Utils from 'sql/platform/connection/common/utils';
 import * as interfaces from 'sql/platform/connection/common/interfaces';
+import { IConnectionResult } from 'sql/platform/connection/common/connectionManagement';
 
 export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 
@@ -18,11 +19,16 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 		@ILogService private readonly _logService: ILogService
 	) { }
 
-	public async tryHandleConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: interfaces.IConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
+	public async tryHandleConnectionError(connectionResult: IConnectionResult, providerId: string, connection: interfaces.IConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
 		let result = { handled: false };
 		let provider = this._providers[providerId]
 		if (provider) {
-			result = await provider.handleConnectionError(errorCode, errorMessage, Utils.convertToRpcConnectionProfile(connection));
+			let errorInfo: azdata.diagnostics.IErrorInformation = {
+				errorCode: connectionResult.errorCode ?? 0,
+				errorMessage: connectionResult.errorMessage ?? '',
+				messageDetails: connectionResult.messageDetails ?? ''
+			}
+			result = await provider.handleConnectionError(errorInfo, Utils.convertToRpcConnectionProfile(connection));
 		}
 		return result;
 	}

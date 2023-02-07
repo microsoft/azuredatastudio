@@ -295,7 +295,7 @@ export class ConnectionDialogWidget extends Modal {
 	private connect(element?: IConnectionProfile): void {
 		this.logService.debug('ConnectionDialogWidget: Connect button is clicked');
 		if (this._connectButton.enabled) {
-			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.ConnectionDialog, TelemetryKeys.TelemetryAction.ConnectToServer).withAdditionalProperties(
+			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.ConnectionErrorDialog, TelemetryKeys.TelemetryAction.ConnectToServer).withAdditionalProperties(
 				{ [TelemetryKeys.TelemetryPropertyName.ConnectionSource]: this._connectionSource }
 			).send();
 			this._connecting = true;
