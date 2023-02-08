@@ -147,10 +147,18 @@ export async function getSourceConnectionCredentials(): Promise<{ [name: string]
 	return await azdata.connection.getCredentials(await getSourceConnectionId());
 }
 
-export async function getSourceConnectionQueryProvider() {
+export async function getSourceConnectionQueryProvider(): Promise<azdata.QueryProvider> {
 	return azdata.dataprotocol.getProvider<azdata.QueryProvider>(
 		(await getSourceConnectionProfile()).providerId,
 		azdata.DataProviderType.QueryProvider);
+}
+
+export function getEncryptConnectionValue(connection: azdata.connection.ConnectionProfile): boolean {
+	return connection?.options?.encrypt === true || connection?.options?.encrypt === 'true';
+}
+
+export function getTrustServerCertificateValue(connection: azdata.connection.ConnectionProfile): boolean {
+	return connection?.options?.trustServerCertificate === true || connection?.options?.trustServerCertificate === 'true';
 }
 
 function getSqlDbConnectionProfile(

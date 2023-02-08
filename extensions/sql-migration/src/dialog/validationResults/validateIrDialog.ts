@@ -10,7 +10,7 @@ import { validateIrDatabaseMigrationSettings, validateIrSqlDatabaseMigrationSett
 import { MigrationStateModel, MigrationTargetType, NetworkShare, ValidateIrState, ValidationResult } from '../../models/stateMachine';
 import { EOL } from 'os';
 import { IconPathHelper } from '../../constants/iconPathHelper';
-import { getSourceConnectionProfile } from '../../api/sqlUtils';
+import { getEncryptConnectionValue, getSourceConnectionProfile, getTrustServerCertificateValue } from '../../api/sqlUtils';
 
 const DialogName = 'ValidateIrDialog';
 
@@ -366,8 +366,8 @@ export class ValidateIrDialog {
 	private async _validateDatabaseMigration(): Promise<void> {
 		const currentConnection = await getSourceConnectionProfile();
 		const sourceServerName = currentConnection?.serverName!;
-		const encryptConnection = currentConnection?.options?.encrypt === true || currentConnection?.options?.encrypt === 'true';
-		const trustServerCertificate = currentConnection?.options?.trustServerCertificate === true || currentConnection?.options?.trustServerCertificate === 'true';
+		const encryptConnection = getEncryptConnectionValue(currentConnection);
+		const trustServerCertificate = getTrustServerCertificateValue(currentConnection);
 		const databaseCount = this._model._databasesForMigration.length;
 		const sourceDatabaseName = this._model._databasesForMigration[0];
 		const networkShare = this._model._databaseBackup.networkShares[0];
@@ -450,8 +450,8 @@ export class ValidateIrDialog {
 	private async _validateSqlDbMigration(): Promise<void> {
 		const currentConnection = await getSourceConnectionProfile();
 		const sourceServerName = currentConnection?.serverName!;
-		const encryptConnection = currentConnection?.options?.encrypt === true || currentConnection?.options?.encrypt === 'true';
-		const trustServerCertificate = currentConnection?.options?.trustServerCertificate === true || currentConnection?.options?.trustServerCertificate === 'true';
+		const encryptConnection = getEncryptConnectionValue(currentConnection);
+		const trustServerCertificate = getTrustServerCertificateValue(currentConnection);
 		const databaseCount = this._model._databasesForMigration.length;
 		const sourceDatabaseName = this._model._databasesForMigration[0];
 		const targetDatabaseName = this._model._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? '';

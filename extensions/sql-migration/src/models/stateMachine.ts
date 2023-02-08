@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
-import { excludeDatabases, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getSourceConnectionUri, getTargetConnectionString, LoginTableInfo, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
+import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getSourceConnectionUri, getTargetConnectionString, getTrustServerCertificateValue, LoginTableInfo, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel, LoginMigrationStep } from './loginMigrationModel';
 import { TdeMigrationDbResult, TdeMigrationModel } from './tdeModels';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
@@ -1156,8 +1156,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					authentication: this._authenticationType,
 					userName: this._sqlServerUsername,
 					password: this._sqlServerPassword,
-					encryptConnection: currentConnection?.options.encrypt === true || currentConnection?.options.encrypt === 'true',
-					trustServerCertificate: currentConnection?.options.trustServerCertificate === true || currentConnection?.options.trustServerCertificate === 'true'
+					encryptConnection: getEncryptConnectionValue(currentConnection),
+					trustServerCertificate: getTrustServerCertificateValue(currentConnection)
 				},
 				scope: this._targetServerInstance.id,
 				offlineConfiguration: {
@@ -1198,8 +1198,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						authentication: this._authenticationType,
 						userName: this._sqlServerUsername,
 						password: this._sqlServerPassword,
-						encryptConnection: currentConnection?.options.encrypt === true || currentConnection?.options.encrypt === 'true',
-						trustServerCertificate: currentConnection?.options.trustServerCertificate === true || currentConnection?.options.trustServerCertificate === 'true'
+						encryptConnection: getEncryptConnectionValue(currentConnection),
+						trustServerCertificate: getTrustServerCertificateValue(currentConnection)
 					};
 					requestBody.properties.targetSqlConnection = {
 						dataSource: sqlDbTarget.properties.fullyQualifiedDomainName,
