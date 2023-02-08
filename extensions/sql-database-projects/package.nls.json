@@ -15,6 +15,7 @@
 	"sqlDatabaseProjects.delete": "Delete",
 	"sqlDatabaseProjects.exclude": "Exclude from project",
 	"sqlDatabaseProjects.edit": "Edit",
+	"sqlDatabaseProjects.rename": "Rename",
 	"sqlDatabaseProjects.validateExternalStreamingJob": "Validate External Streaming Job",
 
 	"sqlDatabaseProjects.newScript": "Add Script",
