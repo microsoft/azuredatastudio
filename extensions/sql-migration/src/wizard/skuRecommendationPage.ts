@@ -22,6 +22,7 @@ import { logError, TelemetryViews } from '../telemetry';
 import { TdeConfigurationDialog } from '../dialog/tdeConfiguration/tdeConfigurationDialog';
 import { TdeMigrationModel } from '../models/tdeModels';
 import * as os from 'os';
+import { getSourceConnectionProfile } from '../api/sqlUtils';
 
 export interface Product {
 	type: MigrationTargetType;
@@ -404,7 +405,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			CSSStyles: { 'margin': '12px 0' }
 		}).component();
 
-		this._serverName = this.migrationStateModel.serverName || (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
+		this._serverName = this.migrationStateModel.serverName || (await getSourceConnectionProfile()).serverName;
 
 		const miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(this._serverName), this, MigrationTargetType.SQLMI);
 		const vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(this._serverName), this, MigrationTargetType.SQLVM);

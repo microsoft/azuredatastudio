@@ -14,6 +14,7 @@ import { InfoFieldSchema, infoFieldLgWidth, MigrationDetailsTabBase, MigrationTa
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { EOL } from 'os';
 import { DashboardStatusBar } from './DashboardStatusBar';
+import { getSourceConnectionServerInfo } from '../api/sqlUtils';
 
 const MigrationDetailsTableTabId = 'MigrationDetailsTableTab';
 
@@ -110,7 +111,7 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 
 		const sqlServerName = migration?.properties.sourceServerName;
 		const sourceDatabaseName = migration?.properties.sourceDatabaseName;
-		const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
+		const sqlServerInfo = await getSourceConnectionServerInfo();
 		const versionName = getSqlServerName(sqlServerInfo.serverMajorVersion!);
 		const sqlServerVersion = versionName ? versionName : sqlServerInfo.serverVersion;
 		const targetDatabaseName = migration?.name;
