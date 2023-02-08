@@ -8,7 +8,7 @@ import { MigrationStateModel, NetworkContainerType, Page } from '../models/state
 import * as loc from '../constants/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SKURecommendationPage } from './skuRecommendationPage';
-import { DatabaseBackupPage } from './databaseBackupPage'mssql;
+import { DatabaseBackupPage } from './databaseBackupPage';
 import { TargetSelectionPage } from './targetSelectionPage';
 import { LoginMigrationTargetSelectionPage } from './loginMigrationTargetSelectionPage';
 import { IntergrationRuntimePage } from './integrationRuntimePage';
