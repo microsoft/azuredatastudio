@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 
-import { BaseProjectTreeItem, SpacerTreeItem } from '../models/tree/baseTreeItem';
+import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { Project } from '../models/project';
 
@@ -60,11 +60,6 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 
 		for (const proj of projects) {
 			newRoots.push(new ProjectRootTreeItem(proj));
-			newRoots.push(SpacerTreeItem);
-		}
-
-		if (newRoots[newRoots.length - 1] === SpacerTreeItem) {
-			newRoots.pop(); // get rid of the trailing SpacerTreeItem
 		}
 
 		this.roots = newRoots;

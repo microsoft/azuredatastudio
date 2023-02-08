@@ -11,11 +11,11 @@ import * as path from 'path';
  */
 export abstract class BaseProjectTreeItem {
 	/** Project-relative URI that's compatible with the project tree */
-	projectUri: vscode.Uri;
+	relativeProjectUri: vscode.Uri;
 	parent?: BaseProjectTreeItem;
 
-	constructor(uri: vscode.Uri, parent?: BaseProjectTreeItem) {
-		this.projectUri = uri;
+	constructor(relativeProjectUri: vscode.Uri, parent?: BaseProjectTreeItem) {
+		this.relativeProjectUri = relativeProjectUri;
 		this.parent = parent;
 	}
 
@@ -24,7 +24,7 @@ export abstract class BaseProjectTreeItem {
 	abstract get treeItem(): vscode.TreeItem;
 
 	public get friendlyName(): string {
-		return path.parse(this.projectUri.path).base;
+		return path.parse(this.relativeProjectUri.path).base;
 	}
 
 	public get root() {
@@ -37,25 +37,3 @@ export abstract class BaseProjectTreeItem {
 		return node;
 	}
 }
-
-/**
- * Leaf tree item that just displays text for messaging purposes
- */
-export class MessageTreeItem extends BaseProjectTreeItem {
-	private message: string;
-
-	constructor(message: string, parent?: BaseProjectTreeItem) {
-		super(vscode.Uri.file(path.join(parent?.projectUri.path ?? 'Message', message)), parent);
-		this.message = message;
-	}
-
-	public get children(): BaseProjectTreeItem[] {
-		return [];
-	}
-
-	public get treeItem(): vscode.TreeItem {
-		return new vscode.TreeItem(this.message, vscode.TreeItemCollapsibleState.None);
-	}
-}
-
-export const SpacerTreeItem = new MessageTreeItem('');
