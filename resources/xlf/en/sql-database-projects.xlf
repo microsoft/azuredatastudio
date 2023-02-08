@@ -376,6 +376,9 @@
     <trans-unit id="enterNewDatabaseName">
       <source xml:lang="en">Enter new database name</source>
     </trans-unit>
+    <trans-unit id="enterNewName">
+      <source xml:lang="en">Enter new name</source>
+    </trans-unit>
     <trans-unit id="enterNewSqlCmdVariableDefaultValue">
       <source xml:lang="en">Enter default value for SQLCMD variable '{0}'</source>
     </trans-unit>
@@ -1154,6 +1157,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.publish">
       <source xml:lang="en">Publish</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.rename">
+      <source xml:lang="en">Rename</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.schemaCompare">
       <source xml:lang="en">Schema Compare</source>
