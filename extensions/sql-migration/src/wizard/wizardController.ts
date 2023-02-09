@@ -8,7 +8,7 @@ import { MigrationStateModel, NetworkContainerType, Page } from '../models/state
 import * as loc from '../constants/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SKURecommendationPage } from './skuRecommendationPage';
-import { DatabaseBackupPage } from './databaseBackupPage'mssql;
+import { DatabaseBackupPage } from './databaseBackupPage';
 import { TargetSelectionPage } from './targetSelectionPage';
 import { LoginMigrationTargetSelectionPage } from './loginMigrationTargetSelectionPage';
 import { IntergrationRuntimePage } from './integrationRuntimePage';
@@ -21,6 +21,7 @@ import * as styles from '../constants/styles';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
 import { azureResource } from 'azurecore';
 import { ServiceContextChangeEvent } from '../dashboard/tabBase';
+import { getSourceConnectionProfile } from '../api/sqlUtils';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
@@ -32,18 +33,18 @@ export class WizardController {
 		private readonly _serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>) {
 	}
 
-	public async openWizard(connectionId: string): Promise<void> {
+	public async openWizard(): Promise<void> {
 		this.extensionContext.subscriptions.push(this._model);
 		await this.createWizard(this._model);
 	}
 
-	public async openLoginWizard(connectionId: string): Promise<void> {
+	public async openLoginWizard(): Promise<void> {
 		this.extensionContext.subscriptions.push(this._model);
 		await this.createLoginWizard(this._model);
 	}
 
 	private async createWizard(stateModel: MigrationStateModel): Promise<void> {
-		const serverName = (await stateModel.getSourceConnectionProfile()).serverName;
+		const serverName = (await getSourceConnectionProfile()).serverName;
 		this._wizardObject = azdata.window.createWizard(
 			loc.WIZARD_TITLE(serverName),
 			'MigrationWizard',
@@ -191,7 +192,7 @@ export class WizardController {
 	}
 
 	private async createLoginWizard(stateModel: MigrationStateModel): Promise<void> {
-		const serverName = (await stateModel.getSourceConnectionProfile()).serverName;
+		const serverName = (await getSourceConnectionProfile()).serverName;
 		this._wizardObject = azdata.window.createWizard(
 			loc.LOGIN_WIZARD_TITLE(serverName),
 			'LoginMigrationWizard',

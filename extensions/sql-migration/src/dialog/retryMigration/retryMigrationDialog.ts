@@ -15,6 +15,7 @@ import { getMigrationModeEnum, getMigrationTargetTypeEnum } from '../../constant
 import * as constants from '../../constants/strings';
 import { ServiceContextChangeEvent } from '../../dashboard/tabBase';
 import { migrationServiceProvider } from '../../service/provider';
+import { getSourceConnectionProfile } from '../../api/sqlUtils';
 
 export class RetryMigrationDialog {
 
@@ -28,12 +29,11 @@ export class RetryMigrationDialog {
 	private async createMigrationStateModel(
 		serviceContext: MigrationServiceContext,
 		migration: DatabaseMigration,
-		connectionId: string,
 		serverName: string,
 		migrationService: features.SqlMigrationService,
 		location: azureResource.AzureLocation): Promise<MigrationStateModel> {
 
-		const stateModel = new MigrationStateModel(this._context, connectionId, migrationService);
+		const stateModel = new MigrationStateModel(this._context, migrationService);
 		const sourceDatabaseName = migration.properties.sourceDatabaseName;
 		const savedInfo: SavedInfo = {
 			closedPage: 0,
@@ -150,29 +150,26 @@ export class RetryMigrationDialog {
 			}
 		});
 
-		const activeConnection = await azdata.connection.getCurrentConnection();
-		let connectionId: string = '';
+		const activeConnection = await getSourceConnectionProfile();
 		let serverName: string = '';
 		if (!activeConnection) {
 			const connection = await azdata.connection.openConnectionDialog();
 			if (connection) {
-				connectionId = connection.connectionId;
 				serverName = connection.options.server;
 			}
 		} else {
-			connectionId = activeConnection.connectionId;
 			serverName = activeConnection.serverName;
 		}
 
 		const migrationService = <features.SqlMigrationService>await migrationServiceProvider.getService(features.ApiType.SqlMigrationProvider)!;
-		const stateModel = await this.createMigrationStateModel(this._serviceContext, this._migration, connectionId, serverName, migrationService, location!);
+		const stateModel = await this.createMigrationStateModel(this._serviceContext, this._migration, serverName, migrationService, location!);
 
 		if (await stateModel.loadSavedInfo()) {
 			const wizardController = new WizardController(
 				this._context,
 				stateModel,
 				this._serviceContextChangedEvent);
-			await wizardController.openWizard(stateModel.sourceConnectionId);
+			await wizardController.openWizard();
 		} else {
 			void vscode.window.showInformationMessage(constants.MIGRATION_CANNOT_RETRY);
 		}

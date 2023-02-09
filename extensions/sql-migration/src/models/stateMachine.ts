@@ -8,16 +8,17 @@ import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as contracts from '../service/contracts';
 import * as features from '../service/features';
-import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, isSqlManagedInstance, isAzureSqlDatabaseServer, VirtualMachineInstanceView } from '../api/azure';
+import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView } from '../api/azure';
 import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
-import { excludeDatabases, getConnectionProfile, LoginTableInfo, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
+import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getSourceConnectionUri, getTargetConnectionString, getTrustServerCertificateValue, LoginTableInfo, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel, LoginMigrationStep } from './loginMigrationModel';
 import { TdeMigrationDbResult, TdeMigrationModel } from './tdeModels';
+import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
 const localize = nls.loadMessageBundle();
 
 export enum ValidateIrState {
@@ -134,7 +135,6 @@ export interface Blob {
 }
 
 export interface Model {
-	readonly sourceConnectionId: string;
 	readonly currentState: State;
 	gatheringInformationError: string | undefined;
 	_azureAccount: azdata.Account | undefined;
@@ -297,7 +297,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	constructor(
 		public extensionContext: vscode.ExtensionContext,
-		private readonly _sourceConnectionId: string,
 		public readonly migrationService: features.SqlMigrationService,
 	) {
 		this._currentState = State.INIT;
@@ -372,10 +371,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			|| this.isBackupContainerNetworkShare;
 	}
 
-	public get sourceConnectionId(): string {
-		return this._sourceConnectionId;
-	}
-
 	public get currentState(): State {
 		return this._currentState;
 	}
@@ -386,7 +381,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._stateChangeEventEmitter.fire({ oldState, newState: this.currentState });
 	}
 	public async getDatabases(): Promise<string[]> {
-		const temp = await azdata.connection.listDatabases(this.sourceConnectionId);
+		const temp = await azdata.connection.listDatabases(await getSourceConnectionId());
 		const finalResult = temp.filter((name) => !excludeDatabases.includes(name));
 		return finalResult;
 	}
@@ -403,7 +398,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 	public async getDatabaseAssessments(targetType: MigrationTargetType[]): Promise<ServerAssessment> {
-		const connectionString = await azdata.connection.getConnectionString(this.sourceConnectionId, true);
+		const connectionString = await getSourceConnectionString();
 		try {
 			const xEventsFilesFolderPath = '';		// to-do: collect by prompting the user in the UI - for now, blank = disabled
 			const response = (await this.migrationService.getAssessments(connectionString, this._databasesForAssessment, xEventsFilesFolderPath))!;
@@ -471,8 +466,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			let fullInstanceName: string;
 
 			// execute a query against the source to get the correct instance name
-			const connectionProfile = await this.getSourceConnectionProfile();
-			const connectionUri = await azdata.connection.getUriForConnection(this._sourceConnectionId);
+			const connectionProfile = await getSourceConnectionProfile();
+			const connectionUri = await getSourceConnectionUri();
 			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
 			const queryString = 'SELECT SERVERPROPERTY(\'ServerName\');';
 			const queryResult = await queryProvider.runQueryAndReturn(connectionUri, queryString);
@@ -481,9 +476,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				fullInstanceName = queryResult.rows[0][0].displayValue;
 			} else {
 				// get the instance name from connection info in case querying for the instance name doesn't work for whatever reason
-				const serverInfo = await azdata.connection.getServerInfo(this.sourceConnectionId);
-				const machineName = (<any>serverInfo)['machineName'];						// contains the correct machine name but not necessarily the correct instance name
-				const instanceName = (await this.getSourceConnectionProfile()).serverName;	// contains the correct instance name but not necessarily the correct machine name
+				const serverInfo = await getSourceConnectionServerInfo();
+				const machineName = (<any>serverInfo)['machineName'];				// contains the correct machine name but not necessarily the correct instance name
+				const instanceName = connectionProfile.serverName;					// contains the correct instance name but not necessarily the correct machine name
 
 				if (instanceName.includes('\\')) {
 					fullInstanceName = machineName + '\\' + instanceName.substring(instanceName.indexOf('\\') + 1);
@@ -528,36 +523,29 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._skuRecommendationResults;
 	}
 
-
-	public async getSourceConnectionString(): Promise<string> {
-		return await azdata.connection.getConnectionString(this._sourceConnectionId, true);
+	public setTargetServerName(): void {
+		switch (this._targetType) {
+			case MigrationTargetType.SQLMI:
+				const sqlMi = this._targetServerInstance as SqlManagedInstance;
+				this._targetServerName = sqlMi.properties.fullyQualifiedDomainName;
+			case MigrationTargetType.SQLDB:
+				const sqlDb = this._targetServerInstance as AzureSqlDatabaseServer;
+				this._targetServerName = sqlDb.properties.fullyQualifiedDomainName;
+			case MigrationTargetType.SQLVM:
+				// For sqlvm, we need to use ip address from the network interface to connect to the server
+				const sqlVm = this._targetServerInstance as SqlVMServer;
+				const networkInterfaces = Array.from(sqlVm.networkInterfaces.values());
+				this._targetServerName = NetworkInterfaceModel.getIpAddress(networkInterfaces);
+		}
 	}
 
-	public async setTargetServerName(): Promise<void> {
-		// If target server name has already been set, we can skip this part
-		if (this._targetServerName) {
-			return;
+	public get targetServerName(): string {
+		// If the target server name is not already set, return it
+		if (!this._targetServerName) {
+			this.setTargetServerName();
 		}
 
-		if (isSqlManagedInstance(this._targetServerInstance) || isAzureSqlDatabaseServer(this._targetServerInstance)) {
-			this._targetServerName = this._targetServerName ?? this._targetServerInstance.properties.fullyQualifiedDomainName;
-		}
-	}
-
-	public async getTargetConnectionString(): Promise<string> {
-		await this.setTargetServerName();
-		const connectionProfile = getConnectionProfile(
-			this._targetServerName,
-			this._targetServerInstance.id,
-			this._targetUserName,
-			this._targetPassword);
-
-		const result = await azdata.connection.connect(connectionProfile, false, false);
-		if (result.connected && result.connectionId) {
-			return azdata.connection.getConnectionString(result.connectionId, true);
-		}
-
-		return '';
+		return this._targetServerName;
 	}
 
 	private updateLoginMigrationResults(newResult: contracts.StartLoginMigrationResult): void {
@@ -574,8 +562,17 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		try {
 			this._loginMigrationModel.AddNewLogins(this._loginsForMigration.map(row => row.loginName));
 
-			const sourceConnectionString = await this.getSourceConnectionString();
-			const targetConnectionString = await this.getTargetConnectionString();
+			const sourceConnectionString = await getSourceConnectionString();
+			const targetConnectionString = await getTargetConnectionString(
+				this.targetServerName,
+				this._targetServerInstance.id,
+				this._targetUserName,
+				this._targetPassword,
+				// for login migration, connect to target Azure SQL with true/true
+				// to-do: take as input from the user, should be true/false for DB/MI but true/true for VM
+				true /* encryptConnection */,
+				true /* trustServerCertificate */);
+
 			var response = (await this.migrationService.migrateLogins(
 				sourceConnectionString,
 				targetConnectionString,
@@ -598,8 +595,16 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async establishUserMappings(): Promise<Boolean> {
 		try {
-			const sourceConnectionString = await this.getSourceConnectionString();
-			const targetConnectionString = await this.getTargetConnectionString();
+			const sourceConnectionString = await getSourceConnectionString();
+			const targetConnectionString = await getTargetConnectionString(
+				this.targetServerName,
+				this._targetServerInstance.id,
+				this._targetUserName,
+				this._targetPassword,
+				// for login migration, connect to target Azure SQL with true/true
+				// to-do: take as input from the user, should be true/false for DB/MI but true/true for VM
+				true /* encryptConnection */,
+				true /* trustServerCertificate */);
 
 			var response = (await this.migrationService.establishUserMapping(
 				sourceConnectionString,
@@ -623,8 +628,16 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async migrateServerRolesAndSetPermissions(): Promise<Boolean> {
 		try {
-			const sourceConnectionString = await this.getSourceConnectionString();
-			const targetConnectionString = await this.getTargetConnectionString();
+			const sourceConnectionString = await getSourceConnectionString();
+			const targetConnectionString = await getTargetConnectionString(
+				this.targetServerName,
+				this._targetServerInstance.id,
+				this._targetUserName,
+				this._targetPassword,
+				// for login migration, connect to target Azure SQL with true/true
+				// to-do: take as input from the user, should be true/false for DB/MI but true/true for VM
+				true /* encryptConnection */,
+				true /* trustServerCertificate */);
 
 			var response = (await this.migrationService.migrateServerRolesAndSetPermissions(
 				sourceConnectionString,
@@ -768,7 +781,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		page: SKURecommendationPage): Promise<boolean> {
 		try {
 			if (!this.performanceCollectionInProgress()) {
-				const connectionString = await azdata.connection.getConnectionString(this.sourceConnectionId, true);
+				const connectionString = await getSourceConnectionString();
 				const response = await this.migrationService.startPerfDataCollection(
 					connectionString,
 					dataFolder,
@@ -1066,12 +1079,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this.extensionContext.extensionPath;
 	}
 
-	public async getSourceConnectionProfile(): Promise<azdata.connection.ConnectionProfile> {
-		const sqlConnections = await azdata.connection.getConnections();
-		return sqlConnections.find(
-			value => value.connectionId === this.sourceConnectionId)!;
-	}
-
 	public getLocationDisplayName(location: string): Promise<string> {
 		return getLocationDisplayName(location);
 	}
@@ -1089,7 +1096,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		reportUpdate: (dbName: string, succeeded: boolean, message: string) => Promise<void>): Promise<OperationResult<TdeMigrationDbResult[]>> {
 
 		const tdeEnabledDatabases = this.tdeMigrationConfig.getTdeEnabledDatabases();
-		const connectionString = await azdata.connection.getConnectionString(this.sourceConnectionId, true);
+		const connectionString = await getSourceConnectionString();
 
 		const opResult: OperationResult<TdeMigrationDbResult[]> = {
 			success: false,
@@ -1134,10 +1141,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 	public async startMigration() {
-		const sqlConnections = await azdata.connection.getConnections();
-		const currentConnection = sqlConnections.find(
-			value => value.connectionId === this.sourceConnectionId);
-
+		const currentConnection = await getSourceConnectionProfile();
 		const isOfflineMigration = this._databaseBackup.migrationMode === MigrationMode.OFFLINE;
 		const isSqlDbTarget = this.isSqlDbTarget;
 
@@ -1152,7 +1156,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					authentication: this._authenticationType,
 					userName: this._sqlServerUsername,
 					password: this._sqlServerPassword,
-					trustServerCertificate: currentConnection?.options.trustServerCertificate ?? false
+					encryptConnection: getEncryptConnectionValue(currentConnection),
+					trustServerCertificate: getTrustServerCertificateValue(currentConnection)
 				},
 				scope: this._targetServerInstance.id,
 				offlineConfiguration: {
@@ -1193,14 +1198,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						authentication: this._authenticationType,
 						userName: this._sqlServerUsername,
 						password: this._sqlServerPassword,
-						encryptConnection: true,
-						trustServerCertificate: currentConnection?.options.trustServerCertificate ?? false,
+						encryptConnection: getEncryptConnectionValue(currentConnection),
+						trustServerCertificate: getTrustServerCertificateValue(currentConnection)
 					};
 					requestBody.properties.targetSqlConnection = {
 						dataSource: sqlDbTarget.properties.fullyQualifiedDomainName,
 						authentication: MigrationSourceAuthenticationType.Sql,
 						userName: this._targetUserName,
 						password: this._targetPassword,
+						// when connecting to a target Azure SQL DB, use true/false
 						encryptConnection: true,
 						trustServerCertificate: false,
 					};
