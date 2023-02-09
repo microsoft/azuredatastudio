@@ -19,6 +19,7 @@ const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
 const extensionConfigSectionName = 'mssql';
 const configLogDebugInfo = 'logDebugInfo';
 const parallelMessageProcessingConfig = 'parallelMessageProcessing';
+const enableSqlAuthenticationProviderConfig = 'enableSqlAuthenticationProvider';
 const tableDesignerPreloadConfig = 'tableDesigner.preloadDatabaseModel';
 
 /**
@@ -130,6 +131,17 @@ export async function getParallelMessageProcessingConfig(): Promise<boolean> {
 	// For dev environment, we want to enable the feature by default unless it is set explicitely.
 	// Note: the quality property is not set for dev environment, we can use this to determine whether it is dev environment.
 	return (azdata.env.quality === azdata.env.AppQuality.dev && setting.globalValue === undefined && setting.workspaceValue === undefined) ? true : config[parallelMessageProcessingConfig];
+}
+
+export async function getEnableSqlAuthenticationProviderConfig(): Promise<boolean> {
+	const config = getConfiguration();
+	if (!config) {
+		return false;
+	}
+	const setting = config.inspect(enableSqlAuthenticationProviderConfig);
+	// For dev environment, we want to enable the feature by default unless it is set explicitely.
+	// Note: the quality property is not set for dev environment, we can use this to determine whether it is dev environment.
+	return (azdata.env.quality === azdata.env.AppQuality.dev && setting.globalValue === undefined && setting.workspaceValue === undefined) ? true : config[enableSqlAuthenticationProviderConfig];
 }
 
 export function getLogFileName(prefix: string, pid: number): string {
