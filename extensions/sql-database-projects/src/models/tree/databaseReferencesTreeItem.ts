@@ -26,7 +26,7 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 	 * @param project
 	 */
 	constructor(projectNodeName: string, sqlprojUri: vscode.Uri, databaseReferences: IDatabaseReferenceProjectEntry[], project: ProjectRootTreeItem) {
-		super(vscode.Uri.file(path.join(projectNodeName, constants.databaseReferencesNodeName)), sqlprojUri, project); // to do update to not use project path
+		super(vscode.Uri.file(path.join(projectNodeName, constants.databaseReferencesNodeName)), sqlprojUri, project);
 
 		this.construct(databaseReferences);
 	}
