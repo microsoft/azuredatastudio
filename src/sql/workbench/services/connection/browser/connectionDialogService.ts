@@ -375,7 +375,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this.uiController.fillInConnectionInputs(this._model);
 		}
 		catch (err) {
-			onUnexpectedError(err);
+			onUnexpectedError(new Error(`Error filling in connection inputs with password. Original error message: ${err.message}`));
 		}
 
 		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[connectionInfo.providerName]);
@@ -423,7 +423,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				await this._connectionManagementService.addSavedPassword(newProfile);
 			}
 			catch (err) {
-				onUnexpectedError(new Error('Error filling in password for connection dialog model.'));
+				onUnexpectedError(new Error(`Error filling in password for connection dialog model. Original error message: ${err.message}`));
 			}
 		}
 		newProfile.saveProfile = true;
