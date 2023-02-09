@@ -8,7 +8,7 @@
 
 | New Item | Details |
 | --- | --- |
-| Connection | Fixed a regression blocking connections to soverign Azure clouds |
+| Connection | Fixed a regression blocking connections to sovereign Azure clouds |
 | Query Editor | Fixed a regression causing the Output window to display on each query execution |
 
 ## Version 1.41.1
