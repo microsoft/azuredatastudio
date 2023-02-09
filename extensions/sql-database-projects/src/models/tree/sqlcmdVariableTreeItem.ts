@@ -18,7 +18,7 @@ export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
 	private sqlcmdVariables: SqlCmdVariableTreeItem[] = [];
 
 	constructor(project: ProjectRootTreeItem) {
-		super(vscode.Uri.file(path.join(project.projectUri.fsPath, constants.sqlcmdVariablesNodeName)), project);
+		super(vscode.Uri.file(path.join(project.relativeProjectUri.fsPath, constants.sqlcmdVariablesNodeName)), project);
 
 		this.construct();
 	}
@@ -42,7 +42,7 @@ export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		const sqlCmdVariableFolderItem = new vscode.TreeItem(this.projectUri, vscode.TreeItemCollapsibleState.Collapsed);
+		const sqlCmdVariableFolderItem = new vscode.TreeItem(this.relativeProjectUri, vscode.TreeItemCollapsibleState.Collapsed);
 		sqlCmdVariableFolderItem.contextValue = constants.DatabaseProjectItemType.sqlcmdVariablesRoot;
 		sqlCmdVariableFolderItem.iconPath = IconPathHelper.sqlCmdVariablesGroup;
 
@@ -55,7 +55,7 @@ export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
  */
 export class SqlCmdVariableTreeItem extends BaseProjectTreeItem {
 	constructor(private sqlcmdVar: string, sqlcmdVarsTreeItem: SqlCmdVariablesTreeItem) {
-		super(vscode.Uri.file(path.join(sqlcmdVarsTreeItem.projectUri.fsPath, sqlcmdVar)), sqlcmdVarsTreeItem);
+		super(vscode.Uri.file(path.join(sqlcmdVarsTreeItem.relativeProjectUri.fsPath, sqlcmdVar)), sqlcmdVarsTreeItem);
 	}
 
 	public get children(): BaseProjectTreeItem[] {
@@ -63,7 +63,7 @@ export class SqlCmdVariableTreeItem extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		const sqlcmdVariableItem = new vscode.TreeItem(this.projectUri, vscode.TreeItemCollapsibleState.None);
+		const sqlcmdVariableItem = new vscode.TreeItem(this.relativeProjectUri, vscode.TreeItemCollapsibleState.None);
 		sqlcmdVariableItem.label = this.sqlcmdVar;
 		sqlcmdVariableItem.contextValue = constants.DatabaseProjectItemType.sqlcmdVariable;
 		sqlcmdVariableItem.iconPath = IconPathHelper.sqlCmdVariable;

@@ -8,7 +8,6 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
-import { INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -19,7 +18,6 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import Severity from 'vs/base/common/severity';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -27,12 +25,11 @@ import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 
-const dialogWidth: string = '300px'; // Width is set manually here as there is no default width for normal dialogs.
+const dialogWidth: string = '500px'; // Width is set manually here as there is no default width for normal dialogs.
 const okText: string = localize('passwordChangeDialog.ok', "OK");
 const cancelText: string = localize('passwordChangeDialog.cancel', "Cancel");
-const dialogTitle: string = localize('passwordChangeDialog.title', "Change Password");
-const newPasswordText: string = localize('passwordChangeDialog.newPassword', 'New password:');
-const confirmPasswordText: string = localize('passwordChangeDialog.confirmPassword', 'Confirm password:');
+const newPasswordText: string = localize('passwordChangeDialog.newPassword', "New password:");
+const confirmPasswordText: string = localize('passwordChangeDialog.confirmPassword', "Confirm password:");
 const passwordChangeLoadText: string = localize('passwordChangeDialog.connecting', "Connecting");
 const errorHeader: string = localize('passwordChangeDialog.errorHeader', "Failure when attempting to change password");
 const errorPasswordMismatchErrorMessage = localize('passwordChangeDialog.errorPasswordMismatchErrorMessage', "Passwords entered do not match");
@@ -42,8 +39,8 @@ export class PasswordChangeDialog extends Modal {
 
 	private _okButton?: Button;
 	private _cancelButton?: Button;
+	private _promiseResolver: (value: string) => void;
 	private _profile: IConnectionProfile;
-	private _params: INewConnectionParams;
 	private _uri: string;
 	private _passwordValueText: InputBox;
 	private _confirmValueText: InputBox;
@@ -53,7 +50,6 @@ export class PasswordChangeDialog extends Modal {
 		@IClipboardService clipboardService: IClipboardService,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IErrorMessageService private readonly errorMessageService: IErrorMessageService,
-		@IConnectionDialogService private readonly connectionDialogService: IConnectionDialogService,
 		@ILayoutService layoutService: ILayoutService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
@@ -64,31 +60,43 @@ export class PasswordChangeDialog extends Modal {
 		super('', '', telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasSpinner: true, spinnerTitle: passwordChangeLoadText, dialogStyle: 'normal', width: dialogWidth, dialogPosition: 'left' });
 	}
 
-	public open(profile: IConnectionProfile, params: INewConnectionParams) {
+	public open(profile: IConnectionProfile): Promise<string> {
+		if (this._profile) {
+			// If already in the middle of a password change, reject an incoming open.
+			let message = localize('passwordChangeDialog.passwordChangeInProgress', "Password change already in progress")
+			this.errorMessageService.showDialog(Severity.Error, errorHeader, message);
+			return Promise.reject(new Error(message));
+		}
 		this._profile = profile;
-		this._params = params;
 		this._uri = this.connectionManagementService.getConnectionUri(profile);
 		this.render();
 		this.show();
 		this._okButton!.focus();
+		const promise = new Promise<string | undefined>((resolve) => {
+			this._promiseResolver = resolve;
+		});
+		return promise;
 	}
 
-	public override dispose(): void {
-
-	}
+	public override dispose(): void { }
 
 	public override render() {
 		super.render();
-		this.title = dialogTitle;
+		this.title = localize('passwordChangeDialog.title', 'Change Password');
 		this._register(attachModalDialogStyler(this, this._themeService));
-		this._okButton = this.addFooterButton(okText, () => this.handleOkButtonClick());
-		this._cancelButton = this.addFooterButton(cancelText, () => this.hide('cancel'), 'right', true);
+		this._okButton = this.addFooterButton(okText, async () => { await this.handleOkButtonClick(); });
+		this._cancelButton = this.addFooterButton(cancelText, () => { this.handleCancelButtonClick(); }, 'right', true);
 		this._register(attachButtonStyler(this._okButton, this._themeService));
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));
 	}
 
 	protected renderBody(container: HTMLElement) {
 		const body = container.appendChild(DOM.$('.change-password-dialog'));
+		body.appendChild(DOM.$('span.component-label-bold')).innerText = localize('passwordChangeDialog.Message1',
+			`Password must be changed for '{0}' to continue logging into '{1}'.`, this._profile?.userName, this._profile?.serverName);
+		body.appendChild(DOM.$('span.component-label')).innerText = localize('passwordChangeDialog.Message2',
+			`Please enter a new password below:`);
+
 		const contentElement = body.appendChild(DOM.$('.properties-content.components-grid'));
 		contentElement.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = newPasswordText;
 		const passwordInputContainer = contentElement.appendChild(DOM.$(''));
@@ -107,42 +115,50 @@ export class PasswordChangeDialog extends Modal {
 
 	/* espace key */
 	protected override onClose() {
-		this.hide('close');
+		this.handleCancelButtonClick();
 	}
 
 	/* enter key */
-	protected override onAccept() {
-		this.handleOkButtonClick();
+	protected override async onAccept() {
+		await this.handleOkButtonClick();
 	}
 
-	private handleOkButtonClick(): void {
+	private async handleOkButtonClick(): Promise<void> {
 		this._okButton.enabled = false;
 		this._cancelButton.enabled = false;
 		this.spinner = true;
-		this.changePasswordFunction(this._profile, this._params, this._uri, this._passwordValueText.value, this._confirmValueText.value).then(
-			() => {
-				this.hide('ok'); /* password changed successfully */
-			},
-			() => {
-				this._okButton.enabled = true; /* ignore, user must try again */
-				this._cancelButton.enabled = true;
-				this.spinner = false;
-			}
-		);
+		try {
+			let result = await this.changePasswordFunction(this._profile, this._uri, this._passwordValueText.value, this._confirmValueText.value);
+			this.hide('ok'); /* password changed successfully */
+			this._promiseResolver(result);
+		}
+		catch {
+			// Error encountered, keep the dialog open and reset dialog back to previous state.
+			this._okButton.enabled = true; /* ignore, user must try again */
+			this._cancelButton.enabled = true;
+			this.spinner = false;
+		}
+
 	}
 
-	private async changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, oldPassword: string, newPassword: string): Promise<void> {
+	private handleCancelButtonClick(): void {
+		this.hide('cancel');
+		this._promiseResolver(undefined);
+	}
+
+	private async changePasswordFunction(connection: IConnectionProfile, uri: string, oldPassword: string, newPassword: string): Promise<string> {
 		// Verify passwords match before changing the password.
 		if (oldPassword !== newPassword) {
 			this.errorMessageService.showDialog(Severity.Error, errorHeader, errorPasswordMismatchErrorMessage + '\n\n' + errorPasswordMismatchRecoveryInstructions);
 			return Promise.reject(new Error(errorPasswordMismatchErrorMessage));
 		}
+
 		let passwordChangeResult = await this.connectionManagementService.changePassword(connection, uri, newPassword);
 		if (!passwordChangeResult.result) {
 			this.errorMessageService.showDialog(Severity.Error, errorHeader, passwordChangeResult.errorMessage);
 			return Promise.reject(new Error(passwordChangeResult.errorMessage));
 		}
-		connection.options['password'] = newPassword;
-		await this.connectionDialogService.callDefaultOnConnect(connection, params);
+
+		return newPassword;
 	}
 }

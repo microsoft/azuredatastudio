@@ -11,6 +11,7 @@ import * as styles from '../../constants/styles';
 import * as utils from '../../api/utils';
 import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
 import { EOL } from 'os';
+import { getSourceConnectionProfile } from '../../api/sqlUtils';
 
 export class GetAzureRecommendationDialog {
 	private static readonly StartButtonText: string = constants.AZURE_RECOMMENDATION_START;
@@ -333,7 +334,7 @@ export class GetAzureRecommendationDialog {
 					this.skuRecommendationPage);
 				break;
 			case PerformanceDataSourceOptions.OpenExisting: {
-				const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
+				const serverName = (await getSourceConnectionProfile()).serverName;
 				const errors: string[] = [];
 				try {
 					await this.skuRecommendationPage.startCardLoading();

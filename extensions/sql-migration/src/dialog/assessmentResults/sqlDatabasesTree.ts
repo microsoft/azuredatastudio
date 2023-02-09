@@ -12,6 +12,7 @@ import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
 import * as styles from '../../constants/styles';
 import { EOL } from 'os';
 import { selectDatabasesFromList } from '../../constants/helper';
+import { getSourceConnectionProfile } from '../../api/sqlUtils';
 
 const styleLeft: azdata.CssStyles = {
 	'border': 'none',
@@ -835,7 +836,7 @@ export class SqlDatabaseTree {
 		let instanceTableValues: azdata.DeclarativeTableCellValue[][] = [];
 		this._databaseTableValues = [];
 		this._dbNames = this._model._databasesForAssessment;
-		this._serverName = (await this._model.getSourceConnectionProfile()).serverName;
+		this._serverName = (await getSourceConnectionProfile()).serverName;
 
 		// pre-select the entire list
 		const selectedDbs = this._dbNames.filter(db => this._model._databasesForAssessment.includes(db));

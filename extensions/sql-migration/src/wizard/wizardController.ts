@@ -22,6 +22,7 @@ import * as styles from '../constants/styles';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
 import { azureResource } from 'azurecore';
 import { ServiceContextChangeEvent } from '../dashboard/tabBase';
+import { getSourceConnectionProfile } from '../api/sqlUtils';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
@@ -33,7 +34,7 @@ export class WizardController {
 		private readonly _serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>) {
 	}
 
-	public async openWizard(connectionId: string): Promise<void> {
+	public async openWizard(): Promise<void> {
 		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 		if (api) {
 			this.extensionContext.subscriptions.push(this._model);
@@ -41,7 +42,7 @@ export class WizardController {
 		}
 	}
 
-	public async openLoginWizard(connectionId: string): Promise<void> {
+	public async openLoginWizard(): Promise<void> {
 		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 		if (api) {
 			this.extensionContext.subscriptions.push(this._model);
@@ -50,7 +51,7 @@ export class WizardController {
 	}
 
 	private async createWizard(stateModel: MigrationStateModel): Promise<void> {
-		const serverName = (await stateModel.getSourceConnectionProfile()).serverName;
+		const serverName = (await getSourceConnectionProfile()).serverName;
 		this._wizardObject = azdata.window.createWizard(
 			loc.WIZARD_TITLE(serverName),
 			'MigrationWizard',
@@ -198,7 +199,7 @@ export class WizardController {
 	}
 
 	private async createLoginWizard(stateModel: MigrationStateModel): Promise<void> {
-		const serverName = (await stateModel.getSourceConnectionProfile()).serverName;
+		const serverName = (await getSourceConnectionProfile()).serverName;
 		this._wizardObject = azdata.window.createWizard(
 			loc.LOGIN_WIZARD_TITLE(serverName),
 			'LoginMigrationWizard',
