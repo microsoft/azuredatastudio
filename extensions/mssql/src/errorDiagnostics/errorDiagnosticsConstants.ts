@@ -9,8 +9,15 @@ const localize = nls.loadMessageBundle();
 // Error code reference comes from here: https://learn.microsoft.com/en-us/sql/relational-databases/errors-events/database-engine-events-and-errors?view=sql-server-ver16
 export const MssqlPasswordResetErrorCode: number = 18488;
 export const MssqlCertValidationFailedErrorCode: number = -2146893019;
+export const MssqlLoginFailedForUserErrorCode: number = 18456;
+
+export const AzureDiagnostics18456 = 'SqlAzure18456ErrorCode';
+
+export const AzureSQLSuffixGlobal = '.database.windows.net';
+export const AzureSQLSuffixUSNational = '.database.usgovcloudapi.net';
 
 export const MssqlConnectionTelemetryView = 'MssqlConnectionErrorDialog';
+export const MssqlConnectionTSGTelemetryView = 'MssqlConnectionTSGErrorDialog';
 export const ConnectionErrorDialogTitle = localize('connectionError', "Connection error");
 
 // Trust Server certificate custom dialog constants.
@@ -21,3 +28,4 @@ export const TSC_InstructionText = localize('trustServerCertInstructionText', `E
 
 Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? `);
 export const TSC_ReadMoreLink = "https://learn.microsoft.com/sql/database-engine/configure-windows/enable-encrypted-connections-to-the-database-engine"
+

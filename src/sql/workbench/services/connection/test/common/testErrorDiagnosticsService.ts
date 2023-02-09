@@ -19,4 +19,7 @@ export class TestErrorDiagnosticsService implements IErrorDiagnosticsService {
 	tryHandleConnectionError(connectionResult: IConnectionResult, providerId: string, connection: azdata.IConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
 		return Promise.resolve({ handled: false });
 	}
+	getAzureDiagnosticsSolution(diagnosticsSolutionId: string): Promise<string> {
+		return undefined;
+	}
 }

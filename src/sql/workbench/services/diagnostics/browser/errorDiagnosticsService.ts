@@ -33,6 +33,11 @@ export class ErrorDiagnosticsService implements IErrorDiagnosticsService {
 		return result;
 	}
 
+	public async getAzureDiagnosticsSolution(diagnosticsSolutionId: string): Promise<string> {
+		let result = "<HTML><body><h2>This is a sample Diagnostics service response.</h2></body></HTML>";
+		return result;
+	}
+
 	/**
 	 * Register a diagnostic provider object for a provider
 	 * Note: only ONE diagnostic provider object can be assigned to a specific provider at a time.

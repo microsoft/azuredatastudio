@@ -36,4 +36,10 @@ export interface IErrorDiagnosticsService {
 	 * @returns a Promise containing a ConnectionDiagnosticsResult object (with handling status and altered options)
 	 */
 	tryHandleConnectionError(connectionResult: IConnectionResult, providerId: string, connection: azdata.IConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult>;
+
+	/**
+	 * Runs Azure diagnostics using the provided solution id and fetches HTML results from the Azure Help APIs.
+	 * @param diagnosticsSolutionId Solution to fetch results for.
+	 */
+	getAzureDiagnosticsSolution(diagnosticsSolutionId: string): Promise<string>;
 }

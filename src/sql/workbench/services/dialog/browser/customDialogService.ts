@@ -10,6 +10,7 @@ import { IModalOptions } from 'sql/workbench/browser/modal/modal';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ErrorMessageDialog } from 'sql/workbench/services/errorMessage/browser/errorMessageDialog';
 import { IErrorDialogOptions } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ErrorDiagnosticsDialog } from 'sql/workbench/services/diagnostics/browser/errorDiagnosticsDialog';
 
 export const DefaultDialogOptions: IModalOptions = { hasBackButton: false, width: 'narrow', hasErrors: true, hasSpinner: true };
 export const DefaultWizardOptions: IModalOptions = { hasBackButton: false, width: 'wide', hasErrors: true, hasSpinner: true };
@@ -59,7 +60,9 @@ export class CustomDialogService {
 	 * @param options Error Dialog options to customize error message dialog.
 	 */
 	public async openCustomErrorDialog(options: IErrorDialogOptions): Promise<string | undefined> {
-		let dialog = this._instantiationService.createInstance(ErrorMessageDialog);
+		let dialog = options.diagnosticsSolutionId
+			? this._instantiationService.createInstance(ErrorDiagnosticsDialog)
+			: this._instantiationService.createInstance(ErrorMessageDialog);
 		dialog.render();
 		let result = await dialog.openCustomAsync(options);
 		return result;

@@ -62,6 +62,10 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 						logDebug(`ErrorDiagnosticsProvider: Error Code ${errorInfo.errorCode} indicates certificate validation has failed, launching error dialog with instructionText.`);
 						return await this.showCertValidationDialog(restoredProfile, errorInfo.errorMessage, errorInfo.messageDetails);
 					}
+					else if (errorInfo.errorCode === ErrorDiagnosticsConstants.MssqlLoginFailedForUserErrorCode
+						&& (connection.serverName.endsWith(ErrorDiagnosticsConstants.AzureSQLSuffixGlobal) || connection.serverName.endsWith(ErrorDiagnosticsConstants.AzureSQLSuffixUSNational))) {
+						return await this.showDialogWithDiagnosticSupport(errorInfo.errorCode, errorInfo.errorMessage, errorInfo.messageDetails);
+					}
 					logDebug(`ErrorDiagnosticsProvider: No error handler found for errorCode ${errorInfo.errorCode}.`);
 					return { handled: false };
 				}
@@ -73,13 +77,27 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 				});
 			}
 
-			private async showCertValidationDialog(connection: azdata.IConnectionProfile, errorMessage: string, callStack: string): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
+			private async showDialogWithDiagnosticSupport(errorCode: number, errorMessage: string, messageDetails: string): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
+				await azdata.window.openCustomErrorDialog(
+					{
+						severity: azdata.window.MessageLevel.Error,
+						headerTitle: ErrorDiagnosticsConstants.ConnectionErrorDialogTitle,
+						message: errorMessage,
+						messageDetails: messageDetails,
+						telemetryView: ErrorDiagnosticsConstants.MssqlConnectionTSGTelemetryView,
+						diagnosticsSolutionId: ErrorDiagnosticsConstants.AzureDiagnostics18456
+					}
+				);
+				return { handled: true, reconnect: false };
+			}
+
+			private async showCertValidationDialog(connection: azdata.IConnectionProfile, errorMessage: string, messageDetails: string): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
 				try {
 					let actions: azdata.window.IDialogAction[] = [];
 					let trustServerCertAction: azdata.window.IDialogAction = {
 						id: ErrorDiagnosticsConstants.TSC_ActionId,
 						label: ErrorDiagnosticsConstants.TSC_EnableTrustServerCert,
-						isPrimary: true
+						closeDialog: true
 					};
 
 					actions.push(trustServerCertAction);
@@ -88,7 +106,7 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 							severity: azdata.window.MessageLevel.Error,
 							headerTitle: ErrorDiagnosticsConstants.ConnectionErrorDialogTitle,
 							message: errorMessage,
-							messageDetails: callStack,
+							messageDetails: messageDetails,
 							telemetryView: ErrorDiagnosticsConstants.MssqlConnectionTelemetryView,
 							instructionText: ErrorDiagnosticsConstants.TSC_InstructionText,
 							readMoreLink: ErrorDiagnosticsConstants.TSC_ReadMoreLink,

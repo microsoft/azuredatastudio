@@ -1866,6 +1866,10 @@ declare module 'azdata' {
 			 * (Optional) If provided, appends read more link after instruction text.
 			 */
 			readMoreLink?: string;
+			/**
+			 * (Optional) When set, error dialog will support running Azure resource troubleshooting for the identifier within the error dialog.
+			 */
+			diagnosticsSolutionId?: string;
 		}
 
 		/**
@@ -1881,9 +1885,9 @@ declare module 'azdata' {
 			 */
 			label: string;
 			/**
-			 * Defines if button styling and focus should be based on primary action.
+			 * Whether or not to close error dialog on action.
 			 */
-			isPrimary: boolean;
+			closeDialog: boolean;
 		}
 	}
 }

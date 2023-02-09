@@ -341,6 +341,7 @@ export interface IErrorDialogOptions {
 	actions?: IDialogAction[];
 	instructionText?: string;
 	readMoreLink?: string;
+	diagnosticsSolutionId?: string;
 }
 
 /**
@@ -349,7 +350,8 @@ export interface IErrorDialogOptions {
 export interface IDialogAction {
 	id: string;
 	label: string;
-	isPrimary: boolean;
+	closeDialog?: boolean;
+	run?: () => void;
 }
 
 export enum MessageLevel {
