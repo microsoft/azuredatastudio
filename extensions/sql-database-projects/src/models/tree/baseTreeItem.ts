@@ -10,14 +10,12 @@ import * as path from 'path';
  * Base class for an item that appears in the ADS project tree
  */
 export abstract class BaseProjectTreeItem {
-	/** Project-relative URI that's compatible with the project tree */
-	relativeProjectUri: vscode.Uri;
-	parent?: BaseProjectTreeItem;
-
-	constructor(relativeProjectUri: vscode.Uri, parent?: BaseProjectTreeItem) {
-		this.relativeProjectUri = relativeProjectUri;
-		this.parent = parent;
-	}
+	/**
+	 * Constructor
+	 * @param relativeProjectUri Project-relative URI that's compatible with the project tree
+	 * @param parent parent tree item
+	 */
+	constructor(public relativeProjectUri: vscode.Uri, public parent?: BaseProjectTreeItem) { }
 
 	abstract get children(): BaseProjectTreeItem[];
 
