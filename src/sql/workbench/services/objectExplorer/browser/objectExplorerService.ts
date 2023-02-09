@@ -354,9 +354,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		const provider = this._providers[providerId];
 		if (provider) {
 			let connInfo = connection.toConnectionInfo();
-			// Sessions are not distinguished enough so connections to the same server with the average same details will not be distinguished.
-			// Need to format sessionId in a way that is more unique and has more data.
-			// Session id is formatted like this: ALEX_DESKTOP%5CSQLEXPRESS_master_alexnormallogin_SqlLogin_master_C777F06B-202E-4480-B475-FA416154D458
 			const result = await provider.createNewSession(connInfo);
 			if (this._sessions[result.sessionId]) {
 				this.logService.trace(`Overwriting session ${result.sessionId}`);

@@ -110,7 +110,6 @@ export function getUriPrefix(ownerUri: string): string {
 
 export function generateUriWithPrefix(connection: IConnectionProfile, prefix: string): string {
 	let id = connection.getCompleteOptionsKey();
-	//let id = connection.getOptionsKey();
 	let uri = prefix + (id ? id : connection.serverName + ':' + connection.databaseName);
 
 	return uri;
