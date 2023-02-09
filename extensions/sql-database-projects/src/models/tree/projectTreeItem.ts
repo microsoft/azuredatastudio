@@ -37,7 +37,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 		this.databaseReferencesNode = new DatabaseReferencesTreeItem(this.projectNodeName, this.sqlprojUri, project.databaseReferences, this);
 		this.sqlCmdVariablesNode = new SqlCmdVariablesTreeItem(this.projectNodeName, this.sqlprojUri, project.sqlCmdVariables, this);
-		this.construct(project);
+		this.construct();
 	}
 
 	public get children(): BaseProjectTreeItem[] {
@@ -61,11 +61,11 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	/**
 	 * Processes the list of files in a project file to constructs the tree
 	 */
-	private construct(project: Project) {
-		let treeItemList = project.files
-			.concat(project.preDeployScripts)
-			.concat(project.postDeployScripts)
-			.concat(project.noneDeployScripts);
+	private construct() {
+		let treeItemList = this.project.files
+			.concat(this.project.preDeployScripts)
+			.concat(this.project.postDeployScripts)
+			.concat(this.project.noneDeployScripts);
 
 		for (const entry of treeItemList) {
 			if (entry.type !== EntryType.File && entry.relativePath.startsWith(RelativeOuterPath)) {
