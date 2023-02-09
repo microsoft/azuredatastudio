@@ -37,7 +37,7 @@ export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
 
 		for (const sqlCmdVariable of Object.keys(sqlCmdVariables)) {
 			if (sqlCmdVariable) {
-				this.sqlcmdVariableTreeItems.push(new SqlCmdVariableTreeItem(sqlCmdVariable, this.sqlprojUri, this));
+				this.sqlcmdVariableTreeItems.push(new SqlCmdVariableTreeItem(sqlCmdVariable, this.relativeProjectUri, this.sqlprojUri, this));
 			}
 		}
 	}
@@ -59,8 +59,8 @@ export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
  * Represents a SQLCMD variable in a .sqlproj
  */
 export class SqlCmdVariableTreeItem extends BaseProjectTreeItem {
-	constructor(private sqlcmdVar: string, sqlprojUri: vscode.Uri, sqlcmdVarsTreeItem: SqlCmdVariablesTreeItem) {
-		super(vscode.Uri.file(path.join(sqlcmdVarsTreeItem.relativeProjectUri.fsPath, sqlcmdVar)), sqlprojUri, sqlcmdVarsTreeItem);
+	constructor(private sqlcmdVar: string, sqlprojUri: vscode.Uri, sqlCmdNodeRelativeProjectUri: vscode.Uri, sqlcmdVarsTreeItem: SqlCmdVariablesTreeItem) {
+		super(vscode.Uri.file(path.join(sqlCmdNodeRelativeProjectUri.fsPath, sqlcmdVar)), sqlprojUri, sqlcmdVarsTreeItem);
 	}
 
 	public get children(): BaseProjectTreeItem[] {
