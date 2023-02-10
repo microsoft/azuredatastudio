@@ -551,6 +551,14 @@ export interface ParseTSqlScriptParams {
 	databaseSchemaProvider: string;
 }
 
+export interface SavePublishProfileParams {
+	profilePath: string;
+	databaseName: string;
+	connectionString: string;
+	sqlCommandVariableValues?: Record<string, string>;
+	deploymentOptions?: mssql.DeploymentOptions;
+}
+
 export namespace ExportRequest {
 	export const type = new RequestType<ExportParams, mssql.DacFxResult, void, void>('dacfx/export');
 }
@@ -585,6 +593,10 @@ export namespace ValidateStreamingJobRequest {
 
 export namespace ParseTSqlScriptRequest {
 	export const type = new RequestType<ParseTSqlScriptParams, mssql.ParseTSqlScriptResult, void, void>('dacfx/parseTSqlScript');
+}
+
+export namespace SavePublishProfileRequest {
+	export const type = new RequestType<SavePublishProfileParams, mssql.ParseTSqlScriptResult, void, void>('dacfx/savePublishProfile');
 }
 
 // ------------------------------- </ DacFx > ------------------------------------
