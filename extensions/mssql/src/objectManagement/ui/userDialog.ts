@@ -10,7 +10,6 @@ import { AlterUserDocUrl, AuthenticationType, CreateUserDocUrl, NodeType, UserTy
 import { getAuthenticationTypeByDisplayName, getAuthenticationTypeDisplayName, getUserTypeByDisplayName, getUserTypeDisplayName, isValidSQLPassword } from '../utils';
 
 export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User, ObjectManagement.UserViewInfo> {
-	private dialogInfo: ObjectManagement.UserViewInfo;
 	private formContainer: azdata.DivContainer;
 	private generalSection: azdata.GroupContainer;
 	private ownedSchemaSection: azdata.GroupContainer;
@@ -106,7 +105,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 
 		this.defaultSchemaDropdown = view.modelBuilder.dropDown().withProps({
 			ariaLabel: localizedConstants.DefaultSchemaText,
-			values: this.dialogInfo.schemas,
+			values: this.viewInfo.schemas,
 			value: this.objectInfo.defaultSchema,
 			width: DefaultInputWidth
 		}).component();
@@ -131,7 +130,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 
 		this.loginDropdown = view.modelBuilder.dropDown().withProps({
 			ariaLabel: localizedConstants.LoginText,
-			values: this.dialogInfo.logins,
+			values: this.viewInfo.logins,
 			value: this.objectInfo.loginName,
 			width: DefaultInputWidth,
 			enabled: this.isNewObject
@@ -142,13 +141,13 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		this.loginContainer = this.createLabelInputContainer(view, localizedConstants.LoginText, this.loginDropdown);
 
 		const authTypes = [];
-		if (this.dialogInfo.supportWindowsAuthentication) {
+		if (this.viewInfo.supportWindowsAuthentication) {
 			authTypes.push(localizedConstants.WindowsAuthenticationTypeDisplayText);
 		}
-		if (this.dialogInfo.supportSQLAuthentication) {
+		if (this.viewInfo.supportSQLAuthentication) {
 			authTypes.push(localizedConstants.SQLAuthenticationTypeDisplayText);
 		}
-		if (this.dialogInfo.supportAADAuthentication) {
+		if (this.viewInfo.supportAADAuthentication) {
 			authTypes.push(localizedConstants.AADAuthenticationTypeDisplayText);
 		}
 		this.authTypeDropdown = view.modelBuilder.dropDown().withProps({
@@ -189,19 +188,19 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 	}
 
 	private initializeOwnedSchemaSection(view: azdata.ModelView): void {
-		this.ownedSchemaTable = this.createTableList(view, localizedConstants.OwnedSchemaSectionHeader, this.dialogInfo.schemas, this.objectInfo.ownedSchemas);
+		this.ownedSchemaTable = this.createTableList(view, localizedConstants.OwnedSchemaSectionHeader, this.viewInfo.schemas, this.objectInfo.ownedSchemas);
 		this.ownedSchemaSection = this.createGroup(view, localizedConstants.OwnedSchemaSectionHeader, [this.ownedSchemaTable]);
 	}
 
 	private initializeMembershipSection(view: azdata.ModelView): void {
-		this.membershipTable = this.createTableList(view, localizedConstants.MembershipSectionHeader, this.dialogInfo.databaseRoles, this.objectInfo.databaseRoles);
+		this.membershipTable = this.createTableList(view, localizedConstants.MembershipSectionHeader, this.viewInfo.databaseRoles, this.objectInfo.databaseRoles);
 		this.membershipSection = this.createGroup(view, localizedConstants.MembershipSectionHeader, [this.membershipTable]);
 	}
 
 	private initializeAdvancedSection(view: azdata.ModelView): void {
 		this.defaultLanguageDropdown = view.modelBuilder.dropDown().withProps({
 			ariaLabel: localizedConstants.DefaultLanguageText,
-			values: this.dialogInfo.languages,
+			values: this.viewInfo.languages,
 			value: this.objectInfo.defaultLanguage,
 			width: DefaultInputWidth
 		}).component();
