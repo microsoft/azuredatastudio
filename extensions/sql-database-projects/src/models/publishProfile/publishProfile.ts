@@ -125,3 +125,11 @@ async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string
 		server: server
 	};
 }
+
+/**
+ * saves publish settings to the specified file
+ */
+export async function savePublishProfile(profilePath: vscode.Uri): Promise<void> {
+	const dacFxService = await utils.getDacFxService();
+	await dacFxService.savePublishProfile(profilePath.fsPath);
+}

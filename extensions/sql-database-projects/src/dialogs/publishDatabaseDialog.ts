@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as uiUtils from './utils';
+import * as path from 'path';
 
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
@@ -172,6 +173,10 @@ export class PublishDatabaseDialog {
 								component: flexRadioButtonsModel,
 								title: ''
 							},
+							/*{
+								component: publishProfileFormComponentGroup,
+								title: ''
+							},*/
 							{
 								component: this.connectionRow,
 								title: ''
@@ -944,7 +949,20 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		saveProfileAsButton.onDidClick(async () => {
-			// TODO: Handle button click
+			const filePath = await vscode.window.showSaveDialog(
+				{
+					defaultUri: vscode.Uri.file(path.join(this.project.projectFolderPath, `${this.project.projectFileName}_1`)),
+					saveLabel: constants.save,
+					filters: {
+						'Publish Settings Files': ['publish.xml'],
+					}
+				}
+			);
+
+			if (!filePath) {
+				return;
+			}
+
 		});
 
 		return saveProfileAsButton;
