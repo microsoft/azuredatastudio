@@ -1111,12 +1111,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 
 		return this._providers.get(providerId).onReady.then(provider => {
-			return provider.listDatabases(uri).then(result => {
-				if (result && result.databaseNames) {
-					result.databaseNames.sort();
-				}
-				return result;
-			});
+			return provider.listDatabases(uri);
 		});
 	}
 
