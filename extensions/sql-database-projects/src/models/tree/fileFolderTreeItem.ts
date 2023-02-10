@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as utils from '../../common/utils';
 import { BaseProjectTreeItem } from './baseTreeItem';
-import { ProjectRootTreeItem } from './projectTreeItem';
 import { DatabaseProjectItemType, sqlprojExtension } from '../../common/constants';
 import { IconPathHelper } from '../../common/iconHelper';
 
@@ -18,8 +17,8 @@ export class FolderNode extends BaseProjectTreeItem {
 	public fileChildren: { [childName: string]: (FolderNode | FileNode) } = {};
 	public fileSystemUri: vscode.Uri;
 
-	constructor(folderPath: vscode.Uri, sqlprojUri: vscode.Uri, parent: FolderNode | ProjectRootTreeItem) {
-		super(fsPathToProjectUri(folderPath, sqlprojUri), sqlprojUri, parent);
+	constructor(folderPath: vscode.Uri, sqlprojUri: vscode.Uri) {
+		super(fsPathToProjectUri(folderPath, sqlprojUri), sqlprojUri);
 		this.fileSystemUri = folderPath;
 	}
 
@@ -42,8 +41,8 @@ export class FolderNode extends BaseProjectTreeItem {
 export class FileNode extends BaseProjectTreeItem {
 	public fileSystemUri: vscode.Uri;
 
-	constructor(filePath: vscode.Uri, sqlprojUri: vscode.Uri, parent: FolderNode | ProjectRootTreeItem) {
-		super(fsPathToProjectUri(filePath, sqlprojUri, true), sqlprojUri, parent);
+	constructor(filePath: vscode.Uri, sqlprojUri: vscode.Uri) {
+		super(fsPathToProjectUri(filePath, sqlprojUri, true), sqlprojUri);
 		this.fileSystemUri = filePath;
 	}
 
