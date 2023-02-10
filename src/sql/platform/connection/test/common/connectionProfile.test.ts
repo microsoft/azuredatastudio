@@ -26,6 +26,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 		groupFullName: 'g2/g2-2',
 		groupId: 'group id',
 		getOptionsKey: undefined!,
+		getCompleteOptionsKey: undefined!,
 		matches: undefined!,
 		providerName: mssqlProviderName,
 		options: {},
