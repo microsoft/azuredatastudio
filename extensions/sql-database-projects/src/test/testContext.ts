@@ -22,6 +22,12 @@ export const mockDacFxResult = {
 	report: ''
 };
 
+export const mockSavePublishResult = {
+	success: true,
+	errorMessage: '',
+	report: ''
+};
+
 /* Get the deployment options sample model */
 export function getDeploymentOptions(): mssql.DeploymentOptions {
 	const sampleDesc = 'Sample Description text';
@@ -57,6 +63,7 @@ export class MockDacFxService implements mssql.IDacFxService {
 	public getOptionsFromProfile(_: string): Thenable<mssql.DacFxOptionsResult> { return Promise.resolve(mockDacFxOptionsResult); }
 	public validateStreamingJob(_: string, __: string): Thenable<mssql.ValidateStreamingJobResult> { return Promise.resolve(mockDacFxResult); }
 	public parseTSqlScript(_: string, __: string): Thenable<mssql.ParseTSqlScriptResult> { return Promise.resolve({ containsCreateTableStatement: true }); }
+	public savePublishProfile(_: string, __: string, ___: string, ______?: Record<string, string>): Thenable<mssql.SavePublishProfileResult> { return Promise.resolve(mockSavePublishResult); }
 }
 
 export function createContext(): TestContext {

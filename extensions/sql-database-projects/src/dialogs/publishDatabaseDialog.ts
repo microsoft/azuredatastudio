@@ -72,6 +72,7 @@ export class PublishDatabaseDialog {
 	public publishToContainer: ((proj: Project, profile: IPublishToDockerSettings) => any) | undefined;
 	public generateScript: ((proj: Project, profile: ISqlProjectPublishSettings) => any) | undefined;
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
+	public savePublishProfile: ((profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions) => any) | undefined;
 
 	constructor(private project: Project) {
 		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.publishDialogName, 'sqlProjectPublishDialog');
@@ -961,6 +962,10 @@ export class PublishDatabaseDialog {
 
 			if (!filePath) {
 				return;
+			}
+
+			if (this.savePublishProfile) {
+				await this.savePublishProfile(filePath.fsPath);
 			}
 
 		});

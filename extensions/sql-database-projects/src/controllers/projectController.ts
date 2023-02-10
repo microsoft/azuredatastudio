@@ -25,7 +25,7 @@ import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
 import { ShellCommandOptions } from '../tools/shellExecutionHelper';
 import { BuildHelper } from '../tools/buildHelper';
-import { readPublishProfile } from '../models/publishProfile/publishProfile';
+import { readPublishProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
@@ -445,6 +445,7 @@ export class ProjectsController {
 			publishDatabaseDialog.publishToContainer = async (proj, prof) => this.publishToDockerContainer(proj, prof);
 			publishDatabaseDialog.generateScript = async (proj, prof) => this.publishOrScriptProject(proj, prof, false);
 			publishDatabaseDialog.readPublishProfile = async (profileUri) => readPublishProfile(profileUri);
+			publishDatabaseDialog.savePublishProfile = async (profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions) => savePublishProfile(profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions);
 
 			publishDatabaseDialog.openDialog();
 

@@ -127,9 +127,9 @@ async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string
 }
 
 /**
- * saves publish settings to the specified file
+ * saves publish settings to the specified profile file
  */
-export async function savePublishProfile(profilePath: vscode.Uri): Promise<void> {
+export async function savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: mssql.DeploymentOptions): Promise<void> {
 	const dacFxService = await utils.getDacFxService();
-	await dacFxService.savePublishProfile(profilePath.fsPath);
+	await dacFxService.savePublishProfile(profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions);
 }
