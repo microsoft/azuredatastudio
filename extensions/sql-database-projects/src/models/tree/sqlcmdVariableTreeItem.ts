@@ -15,30 +15,35 @@ import { IconPathHelper } from '../../common/iconHelper';
  * Folder for containing SQLCMD variable nodes in the tree
  */
 export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
-	private sqlcmdVariables: SqlCmdVariableTreeItem[] = [];
+	private sqlcmdVariableTreeItems: SqlCmdVariableTreeItem[] = [];
 
-	constructor(project: ProjectRootTreeItem) {
-		super(vscode.Uri.file(path.join(project.relativeProjectUri.fsPath, constants.sqlcmdVariablesNodeName)), project);
+	/**
+	 * Constructor
+	 * @param projectNodeName Name of the project node. Used for creating the relative path of the SQLCMD Variables node to the project
+	 * @param sqlprojUri Full URI to the .sqlproj
+	 * @param sqlCmdVariables Collection of SQLCMD variables in the project
+	 * @param project
+	 */
+	constructor(projectNodeName: string, sqlprojUri: vscode.Uri, sqlCmdVariables: Record<string, string>, project: ProjectRootTreeItem) {
+		super(vscode.Uri.file(path.join(projectNodeName, constants.sqlcmdVariablesNodeName)), sqlprojUri, project);
 
-		this.construct();
+		this.construct(sqlCmdVariables);
 	}
 
-	private construct() {
-		const sqlCmdVariables = (this.parent as ProjectRootTreeItem).project.sqlCmdVariables;
-
+	private construct(sqlCmdVariables: Record<string, string>) {
 		if (!sqlCmdVariables) {
 			return;
 		}
 
 		for (const sqlCmdVariable of Object.keys(sqlCmdVariables)) {
 			if (sqlCmdVariable) {
-				this.sqlcmdVariables.push(new SqlCmdVariableTreeItem(sqlCmdVariable, this));
+				this.sqlcmdVariableTreeItems.push(new SqlCmdVariableTreeItem(sqlCmdVariable, this.relativeProjectUri, this.sqlprojUri, this));
 			}
 		}
 	}
 
 	public get children(): SqlCmdVariableTreeItem[] {
-		return this.sqlcmdVariables;
+		return this.sqlcmdVariableTreeItems;
 	}
 
 	public get treeItem(): vscode.TreeItem {
@@ -54,8 +59,8 @@ export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
  * Represents a SQLCMD variable in a .sqlproj
  */
 export class SqlCmdVariableTreeItem extends BaseProjectTreeItem {
-	constructor(private sqlcmdVar: string, sqlcmdVarsTreeItem: SqlCmdVariablesTreeItem) {
-		super(vscode.Uri.file(path.join(sqlcmdVarsTreeItem.relativeProjectUri.fsPath, sqlcmdVar)), sqlcmdVarsTreeItem);
+	constructor(private sqlcmdVar: string, sqlprojUri: vscode.Uri, sqlCmdNodeRelativeProjectUri: vscode.Uri, sqlcmdVarsTreeItem: SqlCmdVariablesTreeItem) {
+		super(vscode.Uri.file(path.join(sqlCmdNodeRelativeProjectUri.fsPath, sqlcmdVar)), sqlprojUri, sqlcmdVarsTreeItem);
 	}
 
 	public get children(): BaseProjectTreeItem[] {
