@@ -144,13 +144,24 @@ export class PublishDatabaseDialog {
 			const options = await this.getDefaultDeploymentOptions();
 			this.setDeploymentOptions(options);
 
-			const profileRow = this.createProfileRow(view);
+			const profileRow = this.createProfileSection(view);
+
+			let publishProfileFormComponentGroup: azdataType.FormComponentGroup = {
+				components: [
+					{
+						title: '',
+						component: profileRow
+					}
+				],
+				title: constants.profile
+			};
+
 			this.connectionRow = this.createConnectionRow(view);
 			this.databaseRow = this.createDatabaseRow(view);
 			const displayOptionsButton = this.createOptionsButton(view);
 
 			const horizontalFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			horizontalFormSection.addItems([profileRow, this.databaseRow]);
+			horizontalFormSection.addItems([this.databaseRow]);
 
 			this.formBuilder = <azdataType.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
@@ -187,6 +198,8 @@ export class PublishDatabaseDialog {
 				.withLayout({
 					width: '100%'
 				});
+
+			this.formBuilder.insertFormItem(publishProfileFormComponentGroup, 1);
 
 			// add SQLCMD variables table if the project has any
 			if (Object.keys(this.project.sqlCmdVariables).length > 0) {
@@ -524,8 +537,10 @@ export class PublishDatabaseDialog {
 		}
 	}
 
-	private createProfileRow(view: azdataType.ModelView): azdataType.FlexContainer {
-		const loadProfileButton = this.createLoadProfileButton(view);
+	private createProfileSection(view: azdataType.ModelView): azdataType.FlexContainer {
+		const selectProfileButton = this.createSelectProfileButton(view);
+		const saveProfileAsButton = this.createSaveProfileAsButton(view);
+
 		this.loadProfileTextBox = view.modelBuilder.inputBox().withProps({
 			placeHolder: constants.loadProfilePlaceholderText,
 			ariaLabel: constants.profile,
@@ -533,13 +548,7 @@ export class PublishDatabaseDialog {
 			enabled: false
 		}).component();
 
-		const profileLabel = view.modelBuilder.text().withProps({
-			value: constants.profile,
-			width: cssStyles.publishDialogLabelWidth
-		}).component();
-
-		const profileRow = view.modelBuilder.flexContainer().withItems([profileLabel, this.loadProfileTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-		profileRow.insertItem(loadProfileButton, 2, { CSSStyles: { 'margin-right': '0px' } });
+		const profileRow = view.modelBuilder.flexContainer().withItems([this.loadProfileTextBox, selectProfileButton, saveProfileAsButton], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		return profileRow;
 	}
@@ -862,13 +871,14 @@ export class PublishDatabaseDialog {
 		}
 	}
 
-	private createLoadProfileButton(view: azdataType.ModelView): azdataType.ButtonComponent {
+	private createSelectProfileButton(view: azdataType.ModelView): azdataType.ButtonComponent {
 		let loadProfileButton: azdataType.ButtonComponent = view.modelBuilder.button().withProps({
-			ariaLabel: constants.loadProfilePlaceholderText,
-			title: constants.loadProfilePlaceholderText,
-			iconPath: IconPathHelper.folder_blue,
-			height: '18px',
-			width: '18px'
+			label: constants.selectProfile,
+			title: constants.selectProfile,
+			ariaLabel: constants.selectProfile,
+			width: cssStyles.PublishingOptionsButtonWidth,
+			height: '25px',
+			secondary: true,
 		}).component();
 
 		loadProfileButton.onDidClick(async () => {
@@ -921,6 +931,23 @@ export class PublishDatabaseDialog {
 		});
 
 		return loadProfileButton;
+	}
+
+	private createSaveProfileAsButton(view: azdataType.ModelView): azdataType.ButtonComponent {
+		let saveProfileAsButton: azdataType.ButtonComponent = view.modelBuilder.button().withProps({
+			label: constants.saveProfileAsButtonText,
+			title: constants.saveProfileAsButtonText,
+			ariaLabel: constants.saveProfileAsButtonText,
+			width: cssStyles.PublishingOptionsButtonWidth,
+			height: '25px',
+			secondary: true
+		}).component();
+
+		saveProfileAsButton.onDidClick(async () => {
+			// TODO: Handle button click
+		});
+
+		return saveProfileAsButton;
 	}
 
 	private convertSqlCmdVarsToTableFormat(sqlCmdVars: Record<string, string>): azdataType.DeclarativeTableCellValue[][] {
