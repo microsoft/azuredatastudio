@@ -17,6 +17,7 @@ import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { SelectBoxList } from 'vs/base/browser/ui/selectBox/selectBoxCustom';
 import { Event, Emitter } from 'vs/base/common/event';
+import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
 
 const $ = dom.$;
 
@@ -39,7 +40,7 @@ export interface ISelectBoxStyles extends vsISelectBoxStyles {
 	inputValidationErrorForeground?: Color;
 }
 
-export class SelectBox extends vsSelectBox {
+export class SelectBox extends vsSelectBox implements AdsWidget {
 	private _optionsDictionary: Map<string, number>;
 	private _dialogOptions: SelectOptionItemSQL[];
 	private _selectedOption: string;
@@ -67,7 +68,7 @@ export class SelectBox extends vsSelectBox {
 
 	private element?: HTMLElement;
 
-	constructor(options: SelectOptionItemSQL[] | string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
+	constructor(options: SelectOptionItemSQL[] | string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions, id?: string) {
 		let optionItems: SelectOptionItemSQL[] = SelectBox.createOptions(options);
 		super(optionItems, 0, contextViewProvider, undefined, selectBoxOptions);
 
@@ -98,6 +99,7 @@ export class SelectBox extends vsSelectBox {
 			this.element = dom.append(container, $('.monaco-selectbox.idle'));
 		}
 
+		this.selectElement.id = id;
 		this._selectBoxOptions = selectBoxOptions;
 		let focusTracker = dom.trackFocus(this.selectElement);
 		this._register(focusTracker);
@@ -220,7 +222,6 @@ export class SelectBox extends vsSelectBox {
 		});
 	}
 
-
 	public override setOptions(options: string[] | SelectOptionItemSQL[] | ISelectOptionItem[], selected?: number): void {
 		let selectOptions: SelectOptionItemSQL[] = SelectBox.createOptions(options);
 		this.populateOptionsDictionary(selectOptions);
@@ -253,6 +254,14 @@ export class SelectBox extends vsSelectBox {
 		this.selectForeground = this.disabledSelectForeground;
 		this.selectBorder = this.disabledSelectBorder;
 		this.applyStyles();
+	}
+
+	public getAriaLabel(): string {
+		return this.selectElem.ariaLabel;
+	}
+
+	public get id(): string {
+		return this.selectElem.id;
 	}
 
 	public hasFocus(): boolean {
