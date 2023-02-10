@@ -142,7 +142,7 @@ export class DacFxService implements mssql.IDacFxService {
 		}
 	}
 
-	public async savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: mssql.DeploymentOptions): Promise<mssql.ParseTSqlScriptResult> {
+	public async savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: mssql.DeploymentOptions): Promise<mssql.SavePublishProfileResult> {
 		const params: contracts.SavePublishProfileParams = { profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions };
 		try {
 			const result = await this.client.sendRequest(contracts.SavePublishProfileRequest.type, params);
