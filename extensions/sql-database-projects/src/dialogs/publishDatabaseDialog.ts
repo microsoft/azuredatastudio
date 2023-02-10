@@ -199,7 +199,7 @@ export class PublishDatabaseDialog {
 					width: '100%'
 				});
 
-			this.formBuilder.insertFormItem(publishProfileFormComponentGroup, 1);
+			this.formBuilder.insertFormItem(publishProfileFormComponentGroup, 2);
 
 			// add SQLCMD variables table if the project has any
 			if (Object.keys(this.project.sqlCmdVariables).length > 0) {
