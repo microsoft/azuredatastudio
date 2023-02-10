@@ -122,25 +122,21 @@ export function setConfigPreloadDatabaseModel(enable: boolean): void {
 	}
 }
 
-export async function getParallelMessageProcessingConfig(): Promise<boolean> {
+export function getParallelMessageProcessingConfig(): boolean {
 	const config = getConfiguration();
 	if (!config) {
 		return false;
 	}
 	const setting = config.inspect(parallelMessageProcessingConfig);
-	// For dev environment, we want to enable the feature by default unless it is set explicitely.
-	// Note: the quality property is not set for dev environment, we can use this to determine whether it is dev environment.
 	return (azdata.env.quality === azdata.env.AppQuality.dev && setting.globalValue === undefined && setting.workspaceValue === undefined) ? true : config[parallelMessageProcessingConfig];
 }
 
-export async function getEnableSqlAuthenticationProviderConfig(): Promise<boolean> {
+export function getEnableSqlAuthenticationProviderConfig(): boolean {
 	const config = getConfiguration();
 	if (!config) {
 		return false;
 	}
 	const setting = config.inspect(enableSqlAuthenticationProviderConfig);
-	// For dev environment, we want to enable the feature by default unless it is set explicitely.
-	// Note: the quality property is not set for dev environment, we can use this to determine whether it is dev environment.
 	return (azdata.env.quality === azdata.env.AppQuality.dev && setting.globalValue === undefined && setting.workspaceValue === undefined) ? true : config[enableSqlAuthenticationProviderConfig];
 }
 

@@ -175,6 +175,6 @@
 	"title.newTable": "New Table",
 	"title.designTable": "Design",
 	"mssql.parallelMessageProcessing" : "[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.",
-	"mssql.enableSqlAuthenticationProvider" : "Enables registering Sql Authentication Provider implementation for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens.",
+	"mssql.enableSqlAuthenticationProvider" : "Enables use of the Sql Authentication Provider for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens.",
 	"mssql.tableDesigner.preloadDatabaseModel": "Whether to preload the database model when the database node in the object explorer is expanded. When enabled, the loading time of table designer can be reduced. Note: You might see higher than normal memory usage if you need to expand a lot of database nodes."
 }

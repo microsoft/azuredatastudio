@@ -58,7 +58,7 @@ export class SqlToolsServer {
 			const serverPath = await this.download(context);
 			this.installDirectory = path.dirname(serverPath);
 			const installationComplete = Date.now();
-			let serverOptions = await generateServerOptions(context.extensionContext.logPath, serverPath);
+			let serverOptions = generateServerOptions(context.extensionContext.logPath, serverPath);
 			let clientOptions = getClientOptions(context);
 			this.client = new SqlOpsDataClient('mssql', Constants.serviceName, serverOptions, clientOptions);
 			const processStart = Date.now();
@@ -117,13 +117,13 @@ export class SqlToolsServer {
 	}
 }
 
-async function generateServerOptions(logPath: string, executablePath: string): Promise<ServerOptions> {
+function generateServerOptions(logPath: string, executablePath: string): ServerOptions {
 	const launchArgs = getCommonLaunchArgsAndCleanupOldLogFiles(logPath, 'sqltools.log', executablePath);
-	const enableAsyncMessageProcessing = await getParallelMessageProcessingConfig();
+	const enableAsyncMessageProcessing = getParallelMessageProcessingConfig();
 	if (enableAsyncMessageProcessing) {
 		launchArgs.push('--parallel-message-processing');
 	}
-	const enableSqlAuthenticationProvider = await getEnableSqlAuthenticationProviderConfig();
+	const enableSqlAuthenticationProvider = getEnableSqlAuthenticationProviderConfig();
 	if (enableSqlAuthenticationProvider) {
 		launchArgs.push('--enable-sql-authentication-provider');
 	}
