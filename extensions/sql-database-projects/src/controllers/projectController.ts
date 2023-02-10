@@ -623,7 +623,8 @@ export class ProjectsController {
 
 	public async addFolderPrompt(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(treeNode);
-		const relativePathToParent = this.getRelativePath(treeNode.element);
+		const projectRelativeUri = vscode.Uri.file(path.basename((treeNode.element as BaseProjectTreeItem).sqlprojUri.fsPath, constants.sqlprojExtension));
+		const relativePathToParent = this.getRelativePath(projectRelativeUri, treeNode.element);
 		const absolutePathToParent = path.join(project.projectFolderPath, relativePathToParent);
 		const newFolderName = await this.promptForNewObjectName(new templates.ProjectScriptType(ItemType.folder, constants.folderFriendlyName, ''),
 			project, absolutePathToParent);
@@ -678,7 +679,8 @@ export class ProjectsController {
 	}
 
 	public async addItemPromptFromNode(treeNode: dataworkspace.WorkspaceTreeItem, itemTypeName?: string): Promise<void> {
-		await this.addItemPrompt(this.getProjectFromContext(treeNode), this.getRelativePath(treeNode.element), { itemType: itemTypeName }, treeNode.treeDataProvider as SqlDatabaseProjectTreeViewProvider);
+		const projectRelativeUri = vscode.Uri.file(path.basename((treeNode.element as BaseProjectTreeItem).sqlprojUri.fsPath, constants.sqlprojExtension));
+		await this.addItemPrompt(await this.getProjectFromContext(treeNode), this.getRelativePath(projectRelativeUri, treeNode.element), { itemType: itemTypeName }, treeNode.treeDataProvider as SqlDatabaseProjectTreeViewProvider);
 	}
 
 	public async addItemPrompt(project: ISqlProject, relativePath: string, options?: AddItemOptions, treeDataProvider?: SqlDatabaseProjectTreeViewProvider): Promise<void> {
@@ -1443,18 +1445,18 @@ export class ProjectsController {
 	//#region Helper methods
 
 	private getFileProjectEntry(project: Project, context: BaseProjectTreeItem): FileProjectEntry | undefined {
-		const root = context.root as ProjectRootTreeItem;
 		const fileOrFolder = context as FileNode ? context as FileNode : context as FolderNode;
 
-		if (root && fileOrFolder) {
+		if (fileOrFolder) {
 			// use relative path and not tree paths for files and folder
 			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts);
 
 			// trim trailing slash since folders with and without a trailing slash are allowed in a sqlproj
-			const trimmedUri = utils.trimChars(utils.getPlatformSafeFileEntryPath(utils.trimUri(root.fileSystemUri, fileOrFolder.fileSystemUri)), '/');
+			const trimmedUri = utils.trimChars(utils.getPlatformSafeFileEntryPath(utils.trimUri(fileOrFolder.sqlprojUri, fileOrFolder.fileSystemUri)), '/');
 			return allFileEntries.find(x => utils.trimChars(utils.getPlatformSafeFileEntryPath(x.relativePath), '/') === trimmedUri);
 		}
-		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.relativeProjectUri, context.relativeProjectUri)));
+		const projectRelativeUri = vscode.Uri.file(path.basename(context.sqlprojUri.fsPath, constants.sqlprojExtension));
+		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(projectRelativeUri, context.relativeProjectUri)));
 	}
 
 	private getProjectFromContext(context: Project | BaseProjectTreeItem | dataworkspace.WorkspaceTreeItem): Project {
@@ -1473,8 +1475,8 @@ export class ProjectsController {
 		}
 	}
 
-	private getRelativePath(treeNode: BaseProjectTreeItem): string {
-		return treeNode instanceof FolderNode ? utils.trimUri(treeNode.root.relativeProjectUri, treeNode.relativeProjectUri) : '';
+	private getRelativePath(rootProjectUri: vscode.Uri, treeNode: BaseProjectTreeItem): string {
+		return treeNode instanceof FolderNode ? utils.trimUri(rootProjectUri, treeNode.relativeProjectUri) : '';
 	}
 
 	private getConnectionProfileFromContext(context: azdataType.IConnectionProfile | mssqlVscode.ITreeNodeInfo | undefined): azdataType.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined {
