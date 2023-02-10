@@ -35,7 +35,12 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 						'acceptSelectedSuggestion', 'acceptAlternativeSelectedSuggestion', 'hideSuggestWidget',
 						'selectNextSuggestion', 'selectNextPageSuggestion', 'selectLastSuggestion', 'selectPrevSuggestion',
 						'selectPrevPageSuggestion', 'selectFirstSuggestion', 'toggleSuggestionDetails', 'toggleExplainMode', 'toggleSuggestionFocus',
-						'insertBestCompletion', 'insertNextSuggestion', 'insertPrevSuggestion', 'editor.action.resetSuggestSize'
+						'insertBestCompletion', 'insertNextSuggestion', 'insertPrevSuggestion', 'editor.action.resetSuggestSize',
+						'workbench.action.toggleSidebarVisibility', // From src\vs\workbench\browser\actions\layoutActions.ts
+						// Panel actions from src\vs\workbench\browser\parts\panel\panelActions.ts
+						'workbench.action.togglePanel', 'workbench.action.focusPanel', 'workbench.action.previousPanelView',
+						'workbench.action.nextPanelView', 'workbench.action.toggleMaximizedPanel', 'workbench.action.closePanel', 'workbench.action.closeAuxiliaryBar',
+						'workbench.action.movePanelToSidePanel', 'workbench.action.movePanelToSecondarySideBar', 'workbench.action.moveSidePanelToPanel', 'workbench.action.moveSecondarySideBarToPanel'
 					].some(id => id === e.commandId) &&
 						!e.commandId.startsWith('deleteWord') && // Events from src\vs\editor\contrib\wordOperations\wordOperations.ts
 						!e.commandId.startsWith('cursor') && // Events from src\vs\editor\contrib\wordOperations\wordOperations.ts
