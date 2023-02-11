@@ -70,7 +70,6 @@ export function hyperLinkFormatter(row: number | undefined, cell: any | undefine
 	if (DBCellValue.isDBCellValue(value)) {
 		valueToDisplay = 'NULL';
 		if (!value.isNull) {
-			cellClasses += ' xmlLink';
 			valueToDisplay = getCellDisplayValue(value.displayValue);
 			return `<a class="${cellClasses}">${valueToDisplay}</a>`;
 		} else {
