@@ -1,15 +1,3 @@
-{
-    "sdk": {
-        "version": "7.0.101",
-        "rollForward": "latestFeature"
-    },
-    "msbuild-sdks": {
-      "Microsoft.Build.NoTargets": "3.2.9"
-    }
-}
-
-
-
 # SQL Migration Extension Developer Guide
 
 SQL migration utilizes a backend service to execute assessments and provide SKU recommendations. The source code for the backend service can be found at  [Microsoft.SqlTools.Migration](https://github.com/microsoft/sqltoolsservice/tree/main/src/Microsoft.SqlTools.Migration).
