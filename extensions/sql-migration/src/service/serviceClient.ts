@@ -18,6 +18,7 @@ import { IMessage } from './contracts';
 import { ErrorAction, CloseAction } from 'vscode-languageclient';
 import { env } from 'process';
 import { exists } from './utils';
+import { logError, TelemetryViews } from '../telemetry';
 
 
 export class ServiceClient {
@@ -72,7 +73,7 @@ export class ServiceClient {
 		}
 		catch (error) {
 			await vscode.window.showErrorMessage(localize('flatFileImport.serviceStartFailed', "Failed to start {0}: {1}", constants.serviceName, error.stack.toString()));
-			console.log(error);
+			logError(TelemetryViews.SqlServerDashboard, error.stack.toString(), error);
 			return undefined;
 		}
 	}
