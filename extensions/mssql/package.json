@@ -136,6 +136,11 @@
           "default": false,
           "description": "%mssql.logDebugInfo%"
         },
+        "mssql.piiLogging": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.piiLogging%"
+        },
         "mssql.tracingLevel": {
           "type": "string",
           "description": "%mssql.tracingLevel%",

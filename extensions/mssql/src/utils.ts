@@ -14,6 +14,7 @@ import { IConfig, ServerProvider } from '@microsoft/ads-service-downloader';
 import { env } from 'process';
 
 const configTracingLevel = 'tracingLevel';
+const configPiiLogging = 'piiLogging';
 const configLogRetentionMinutes = 'logRetentionMinutes';
 const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
 const extensionConfigSectionName = 'mssql';
@@ -106,6 +107,15 @@ export function getConfigTracingLevel(): TracingLevel {
 	}
 }
 
+export function getConfigPiiLogging(): boolean {
+	let config = getConfiguration();
+	if (config) {
+		return config[configPiiLogging];
+	} else {
+		return false;
+	}
+}
+
 export function getConfigPreloadDatabaseModel(): boolean {
 	let config = getConfiguration();
 	if (config) {
@@ -159,6 +169,9 @@ export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileNa
 	console.log(`Old log files deletion report: ${JSON.stringify(deletedLogFiles)}`);
 	launchArgs.push('--tracing-level');
 	launchArgs.push(getConfigTracingLevel());
+	if (getConfigPiiLogging()) {
+		launchArgs.push('--piiLogging');
+	}
 	// Always enable autoflush so that log entries are written immediately to disk, otherwise we can end up with partial logs
 	launchArgs.push('--autoflush-log');
 	return launchArgs;
