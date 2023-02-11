@@ -242,7 +242,7 @@ declare module 'mssql' {
 		getOptionsFromProfile(profilePath: string): Thenable<DacFxOptionsResult>;
 		validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<ValidateStreamingJobResult>;
 		parseTSqlScript(filePath: string, databaseSchemaProvider: string): Thenable<ParseTSqlScriptResult>;
-		savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<SavePublishProfileResult>;
+		savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<azdata.ResultStatus>;
 	}
 
 	export interface DacFxResult extends azdata.ResultStatus {
@@ -262,9 +262,6 @@ declare module 'mssql' {
 
 	export interface ParseTSqlScriptResult {
 		containsCreateTableStatement: boolean;
-	}
-
-	export interface SavePublishProfileResult extends azdata.ResultStatus {
 	}
 
 	export interface ExportParams {

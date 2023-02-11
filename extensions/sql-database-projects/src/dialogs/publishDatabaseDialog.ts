@@ -963,9 +963,11 @@ export class PublishDatabaseDialog {
 			if (!filePath) {
 				return;
 			}
-
+			console.error('----------------------------------------------In save');
 			if (this.savePublishProfile) {
-				await this.savePublishProfile(filePath.fsPath);
+				const targetConnectionString = this.targetConnectionTextBox?.value ?? '';
+				const deploymentOptions = await this.getDeploymentOptions();
+				await this.savePublishProfile(filePath.fsPath, this.targetDatabaseName, targetConnectionString, this.getSqlCmdVariablesForPublish(), deploymentOptions);
 			}
 
 		});
