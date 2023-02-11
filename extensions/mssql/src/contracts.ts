@@ -596,7 +596,7 @@ export namespace ParseTSqlScriptRequest {
 }
 
 export namespace SavePublishProfileRequest {
-	export const type = new RequestType<SavePublishProfileParams, mssql.SavePublishProfileResult, void, void>('dacfx/savePublishProfile');
+	export const type = new RequestType<SavePublishProfileParams, azdata.ResultStatus, void, void>('dacfx/savePublishProfile');
 }
 
 // ------------------------------- </ DacFx > ------------------------------------

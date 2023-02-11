@@ -426,7 +426,7 @@ declare module 'vscode-mssql' {
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 		getOptionsFromProfile(profilePath: string): Thenable<DacFxOptionsResult>;
 		validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<ValidateStreamingJobResult>;
-		savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<SavePublishProfileResult>;
+		//savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<SavePublishProfileResult>;
 	}
 
 	/**
@@ -656,7 +656,7 @@ declare module 'vscode-mssql' {
 
 	export interface ValidateStreamingJobResult extends ResultStatus { }
 
-	export interface SavePublishProfileResult extends ResultStatus { }
+	//export interface SavePublishProfileResult extends ResultStatus { }
 
 	export interface ExportParams {
 		databaseName: string;
@@ -724,13 +724,13 @@ declare module 'vscode-mssql' {
 		defaultDeploymentOptions: DeploymentOptions;
 	}
 
-	export interface SavePublishProfileParams {
+	/*export interface SavePublishProfileParams {
 		profilePath: string;
 		databaseName: string;
 		connectionString: string;
 		sqlCommandVariableValues?: Record<string, string>;
 		deploymentOptions?: DeploymentOptions;
-	}
+	}*/
 
 	export interface ITreeNodeInfo extends vscode.TreeItem {
 		readonly connectionInfo: IConnectionInfo;
