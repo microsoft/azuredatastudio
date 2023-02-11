@@ -20,7 +20,6 @@ import { env } from 'process';
 import { exists } from './utils';
 import { logError, TelemetryViews } from '../telemetry';
 
-
 export class ServiceClient {
 	private statusView: vscode.StatusBarItem;
 
