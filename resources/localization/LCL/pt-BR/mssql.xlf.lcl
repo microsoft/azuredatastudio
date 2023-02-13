@@ -810,8 +810,8 @@
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.encrypt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' encryption is supported on SQL Server 2022 onwards.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Quando true, o SQL Server usa a criptografia SSL para todos os dados enviados entre o cliente e o servidor quando o servidor tem um certificado instalado]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Quando "Obrigatório" ou "Estrito", o SQL Server usa criptografia SSL para todos os dados enviados entre o cliente e o servidor se o servidor tiver um certificado instalado. Quando definido como "Strict", o SQL Server usa o TDS 8.0 para todas as transferências de dados entre o cliente e o servidor. A criptografia "Estrita" tem suporte no SQL Server 2022 em diante.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed]]></Val>
