@@ -208,22 +208,18 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 	/**
 	 * Returns a key derived the connections options (providerName, authenticationType, serverName, databaseName, userName, groupid)
-	 * and all the other properties if isPropertyKey is enabled for them.
+	 * and all the other properties if useFullOptions is enabled for the provider.
 	 * This key uniquely identifies a connection in a group
 	 * Example: "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
-	 * @param getOriginalOptions will return the original URI format regardless if isPropertyKey was set or not. (used for retrieving passwords)
+	 * @param getOriginalOptions will return the original URI format regardless if useFullOptions was set or not. (used for retrieving passwords)
 	 */
 	public getOptionsKey(getOriginalOptions?: boolean): string {
-		let newUriUsed = false;
 		let idNames = [];
 		if (this.serverCapabilities) {
 			idNames = this.serverCapabilities.connectionOptions.map(o => {
-				let newProperty = o.isPropertyKey && o.specialValueType !== ConnectionOptionSpecialType.password && !getOriginalOptions
+				let newProperty = this.serverCapabilities.useFullOptions && o.specialValueType !== ConnectionOptionSpecialType.password && !getOriginalOptions
 				let originalProperty = (o.specialValueType || o.isIdentity) && o.specialValueType !== ConnectionOptionSpecialType.password
 					&& o.specialValueType !== ConnectionOptionSpecialType.connectionName;
-				if (!newUriUsed && newProperty) {
-					newUriUsed = true;
-				}
 				if (newProperty || originalProperty) {
 					return o.name;
 				} else {
@@ -243,7 +239,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		let idValues: string[] = [];
 		for (let index = 0; index < idNames.length; index++) {
 			let value = this.options[idNames[index]!];
-			value = value ? value : (newUriUsed ? undefined : '');
+			value = value ? value : (this.serverCapabilities.useFullOptions ? undefined : '');
 			if (value) {
 				idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
 			}

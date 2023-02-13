@@ -549,11 +549,6 @@ declare module 'azdata' {
 	}
 
 	export interface ConnectionOption {
-		/**
-		 * Used to determine if a property should be added regardless of isIdentity, (used to distinguish individual connections with same logins)
-		 */
-		isPropertyKey?: boolean
-
 		defaultValueOsOverrides?: DefaultValueOsOverride[];
 
 		/**

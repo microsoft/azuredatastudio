@@ -219,10 +219,10 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	/**
 	 * Returns a key derived the connections options (providerName, authenticationType, serverName, databaseName, userName, groupid)
-	 * and all the other properties if isPropertyKey is enabled for them.
+	 * and all the other properties if useFullOptions is enabled for the provider.
 	 * This key uniquely identifies a connection in a group
 	 * Example: "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
-	 * @param getOriginalOptions will return the original URI format regardless if isPropertyKey was set or not. (used for retrieving passwords)
+	 * @param getOriginalOptions will return the original URI format regardless if useFullOptions was set or not. (used for retrieving passwords)
 	 */
 	public override getOptionsKey(getOriginalOptions?: boolean): string {
 		let id = super.getOptionsKey(getOriginalOptions);
