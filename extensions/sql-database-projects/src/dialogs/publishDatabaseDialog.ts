@@ -147,16 +147,6 @@ export class PublishDatabaseDialog {
 
 			const profileRow = this.createProfileSection(view);
 
-			let publishProfileFormComponentGroup: azdataType.FormComponentGroup = {
-				components: [
-					{
-						title: '',
-						component: profileRow
-					}
-				],
-				title: constants.profile
-			};
-
 			this.connectionRow = this.createConnectionRow(view);
 			this.databaseRow = this.createDatabaseRow(view);
 			const displayOptionsButton = this.createOptionsButton(view);
@@ -173,10 +163,10 @@ export class PublishDatabaseDialog {
 								component: flexRadioButtonsModel,
 								title: ''
 							},
-							/*{
-								component: publishProfileFormComponentGroup,
-								title: ''
-							},*/
+							{
+								component: profileRow,
+								title: constants.profile
+							},
 							{
 								component: this.connectionRow,
 								title: ''
@@ -203,8 +193,6 @@ export class PublishDatabaseDialog {
 				.withLayout({
 					width: '100%'
 				});
-
-			this.formBuilder.insertFormItem(publishProfileFormComponentGroup, 2);
 
 			// add SQLCMD variables table if the project has any
 			if (Object.keys(this.project.sqlCmdVariables).length > 0) {
@@ -450,18 +438,19 @@ export class PublishDatabaseDialog {
 		this.createDatabaseRow(view);
 		this.tryEnableGenerateScriptAndOkButtons();
 		if (existingServer) {
-			if (this.connectionRow) {
-				this.formBuilder!.insertFormItem({
-					title: '',
-					component: this.connectionRow
-				}, 2);
-			}
 			if (this.localDbSection) {
 				this.formBuilder!.removeFormItem({
 					title: '',
 					component: this.localDbSection
 				});
 			}
+			if (this.connectionRow) {
+				this.formBuilder!.insertFormItem({
+					title: '',
+					component: this.connectionRow
+				}, 3);
+			}
+
 		} else {
 			if (this.connectionRow) {
 				this.formBuilder!.removeFormItem({
@@ -946,7 +935,7 @@ export class PublishDatabaseDialog {
 			if (!filePath) {
 				return;
 			}
-			console.error('----------------------------------------------In save');
+
 			if (this.savePublishProfile) {
 				const targetConnectionString = this.targetConnectionTextBox?.value ?? '';
 				const deploymentOptions = await this.getDeploymentOptions();
