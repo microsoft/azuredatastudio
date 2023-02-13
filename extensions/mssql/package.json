@@ -616,6 +616,7 @@
         {
           "specialValueType": "connectionName",
           "isIdentity": true,
+          "isPropertyKey": true,
           "name": "connectionName",
           "displayName": "%mssql.connectionOptions.connectionName.displayName%",
           "description": "%mssql.connectionOptions.connectionName.description%",
@@ -630,6 +631,7 @@
         {
           "specialValueType": "serverName",
           "isIdentity": true,
+          "isPropertyKey": true,
           "name": "server",
           "displayName": "%mssql.connectionOptions.serverName.displayName%",
           "description": "%mssql.connectionOptions.serverName.description%",
@@ -644,6 +646,7 @@
         {
           "specialValueType": "databaseName",
           "isIdentity": true,
+          "isPropertyKey": true,
           "name": "database",
           "displayName": "%mssql.connectionOptions.databaseName.displayName%",
           "description": "%mssql.connectionOptions.databaseName.description%",
@@ -658,6 +661,7 @@
         {
           "specialValueType": "authType",
           "isIdentity": true,
+          "isPropertyKey": true,
           "name": "authenticationType",
           "displayName": "%mssql.connectionOptions.authType.displayName%",
           "description": "%mssql.connectionOptions.authType.description%",
@@ -691,6 +695,7 @@
         {
           "specialValueType": "userName",
           "isIdentity": true,
+          "isPropertyKey": true,
           "name": "user",
           "displayName": "%mssql.connectionOptions.userName.displayName%",
           "description": "%mssql.connectionOptions.userName.description%",
@@ -719,6 +724,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "applicationIntent",
           "displayName": "%mssql.connectionOptions.applicationIntent.displayName%",
           "description": "%mssql.connectionOptions.applicationIntent.description%",
@@ -742,6 +748,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "connectTimeout",
           "displayName": "%mssql.connectionOptions.connectTimeout.displayName%",
           "description": "%mssql.connectionOptions.connectTimeout.description%",
@@ -756,6 +763,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "commandTimeout",
           "displayName": "%mssql.connectionOptions.commandTimeout.displayName%",
           "description": "%mssql.connectionOptions.commandTimeout.description%",
@@ -770,6 +778,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "currentLanguage",
           "displayName": "%mssql.connectionOptions.currentLanguage.displayName%",
           "description": "%mssql.connectionOptions.currentLanguage.description%",
@@ -784,6 +793,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "columnEncryptionSetting",
           "displayName": "%mssql.connectionOptions.columnEncryptionSetting.displayName%",
           "description": "%mssql.connectionOptions.columnEncryptionSetting.description%",
@@ -807,6 +817,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "attestationProtocol",
           "displayName": "%mssql.connectionOptions.enclaveAttestationProtocol.displayName%",
           "description": "%mssql.connectionOptions.enclaveAttestationProtocol.description%",
@@ -830,6 +841,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "enclaveAttestationUrl",
           "displayName": "%mssql.connectionOptions.enclaveAttestationUrl.displayName%",
           "description": "%mssql.connectionOptions.enclaveAttestationUrl.description%",
@@ -844,6 +856,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "encrypt",
           "displayName": "%mssql.connectionOptions.encrypt.displayName%",
           "description": "%mssql.connectionOptions.encrypt.description%",
@@ -859,6 +872,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "persistSecurityInfo",
           "displayName": "%mssql.connectionOptions.persistSecurityInfo.displayName%",
           "description": "%mssql.connectionOptions.persistSecurityInfo.description%",
@@ -873,6 +887,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "hostNameInCertificate",
           "displayName": "%mssql.connectionOptions.hostNameInCertificate.displayName%",
           "description": "%mssql.connectionOptions.hostNameInCertificate.description%",
@@ -887,6 +902,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "trustServerCertificate",
           "displayName": "%mssql.connectionOptions.trustServerCertificate.displayName%",
           "description": "%mssql.connectionOptions.trustServerCertificate.description%",
@@ -902,6 +918,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "attachedDBFileName",
           "displayName": "%mssql.connectionOptions.attachedDBFileName.displayName%",
           "description": "%mssql.connectionOptions.attachedDBFileName.description%",
@@ -916,6 +933,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "contextConnection",
           "displayName": "%mssql.connectionOptions.contextConnection.displayName%",
           "description": "%mssql.connectionOptions.contextConnection.description%",
@@ -930,6 +948,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "port",
           "displayName": "%mssql.connectionOptions.port.displayName%",
           "description": null,
@@ -944,6 +963,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "connectRetryCount",
           "displayName": "%mssql.connectionOptions.connectRetryCount.displayName%",
           "description": "%mssql.connectionOptions.connectRetryCount.description%",
@@ -958,6 +978,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "connectRetryInterval",
           "displayName": "%mssql.connectionOptions.connectRetryInterval.displayName%",
           "description": "%mssql.connectionOptions.connectRetryInterval.description%",
@@ -972,6 +993,7 @@
         {
           "specialValueType": "appName",
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "applicationName",
           "displayName": "%mssql.connectionOptions.applicationName.displayName%",
           "description": "%mssql.connectionOptions.applicationName.description%",
@@ -986,6 +1008,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "workstationId",
           "displayName": "%mssql.connectionOptions.workstationId.displayName%",
           "description": "%mssql.connectionOptions.workstationId.description%",
@@ -1000,6 +1023,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "pooling",
           "displayName": "%mssql.connectionOptions.pooling.displayName%",
           "description": "%mssql.connectionOptions.pooling.description%",
@@ -1014,6 +1038,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "maxPoolSize",
           "displayName": "%mssql.connectionOptions.maxPoolSize.displayName%",
           "description": "%mssql.connectionOptions.maxPoolSize.description%",
@@ -1028,6 +1053,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "minPoolSize",
           "displayName": "%mssql.connectionOptions.minPoolSize.displayName%",
           "description": "%mssql.connectionOptions.minPoolSize.description%",
@@ -1042,6 +1068,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "loadBalanceTimeout",
           "displayName": "%mssql.connectionOptions.loadBalanceTimeout.displayName%",
           "description": "%mssql.connectionOptions.loadBalanceTimeout.description%",
@@ -1056,6 +1083,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "replication",
           "displayName": "%mssql.connectionOptions.replication.displayName%",
           "description": "%mssql.connectionOptions.replication.description%",
@@ -1070,6 +1098,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "attachDbFilename",
           "displayName": "%mssql.connectionOptions.attachDbFilename.displayName%",
           "description": null,
@@ -1084,6 +1113,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "failoverPartner",
           "displayName": "%mssql.connectionOptions.failoverPartner.displayName%",
           "description": "%mssql.connectionOptions.failoverPartner.description%",
@@ -1098,6 +1128,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "multiSubnetFailover",
           "displayName": "%mssql.connectionOptions.multiSubnetFailover.displayName%",
           "description": null,
@@ -1112,6 +1143,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "multipleActiveResultSets",
           "displayName": "%mssql.connectionOptions.multipleActiveResultSets.displayName%",
           "description": "%mssql.connectionOptions.multipleActiveResultSets.description%",
@@ -1126,6 +1158,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "packetSize",
           "displayName": "%mssql.connectionOptions.packetSize.displayName%",
           "description": "%mssql.connectionOptions.packetSize.description%",
@@ -1140,6 +1173,7 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "isPropertyKey": true,
           "name": "typeSystemVersion",
           "displayName": "%mssql.connectionOptions.typeSystemVersion.displayName%",
           "description": "%mssql.connectionOptions.typeSystemVersion.description%",

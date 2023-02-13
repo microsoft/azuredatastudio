@@ -226,7 +226,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 	}
 
 	private _getStorageKey(): string {
-		return `insights.${this.insightConfig.cacheId}.${this.dashboardService.connectionManagementService.connectionInfo.connectionProfile.getCompleteOptionsKey()}`;
+		return `insights.${this.insightConfig.cacheId}.${this.dashboardService.connectionManagementService.connectionInfo.connectionProfile.getOptionsKey()}`;
 	}
 
 	private _runQuery(): Promise<SimpleExecuteResult> {

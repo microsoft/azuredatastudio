@@ -99,7 +99,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	}
 
 	public static matchesProfile(a: interfaces.IConnectionProfile | undefined, b: interfaces.IConnectionProfile | undefined): boolean {
-		return a && b && a.getCompleteOptionsKey() === b.getCompleteOptionsKey();
+		return a && b && a.getOptionsKey() === b.getOptionsKey();
 	}
 
 	public matches(other: interfaces.IConnectionProfile): boolean {
@@ -219,11 +219,13 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	/**
 	 * Returns a key derived the connections options (providerName, authenticationType, serverName, databaseName, userName, groupid)
+	 * and all the other properties if isPropertyKey is enabled for them.
 	 * This key uniquely identifies a connection in a group
 	 * Example: "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
+	 * @param getOriginalOptions will return the original URI format regardless if isPropertyKey was set or not. (used for retrieving passwords)
 	 */
-	public override getOptionsKey(): string {
-		let id = super.getOptionsKey();
+	public override getOptionsKey(getOriginalOptions?: boolean): string {
+		let id = super.getOptionsKey(getOriginalOptions);
 		let databaseDisplayName: string = this.options['databaseDisplayName'];
 		if (databaseDisplayName) {
 			id += ProviderConnectionInfo.idSeparator + 'databaseDisplayName' + ProviderConnectionInfo.nameValueSeparator + databaseDisplayName;
@@ -233,24 +235,11 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	}
 
 	/**
-	 * Returns a key containing all connection options.
-	 * This key uniquely identifies a connection in a group (with more distinction due to all options)
-	 */
-	public override getCompleteOptionsKey(): string {
-		let id = super.getCompleteOptionsKey();
-		let databaseDisplayName: string = this.options['databaseDisplayName'];
-		if (databaseDisplayName) {
-			id += ProviderConnectionInfo.idSeparator + 'databaseDisplayName' + ProviderConnectionInfo.nameValueSeparator + databaseDisplayName;
-		}
-
-		return id + ProviderConnectionInfo.idSeparator + 'group' + ProviderConnectionInfo.nameValueSeparator + this.groupId;
-	}
-
-	/**
-	 * Returns the unique id for the connection that doesn't include the group name
+	 * Returns the unique id for the connection that doesn't include the group name and only contains basic identity information
+	 * Used for retrieving shared passwords among different connections.
 	 */
 	public getConnectionInfoId(): string {
-		return super.getOptionsKey();
+		return super.getOptionsKey(true);
 	}
 
 	public toIConnectionProfile(): interfaces.IConnectionProfile {
@@ -259,7 +248,6 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			serverName: this.serverName,
 			databaseName: this.databaseName,
 			authenticationType: this.authenticationType,
-			getCompleteOptionsKey: this.getCompleteOptionsKey,
 			getOptionsKey: this.getOptionsKey,
 			matches: this.matches,
 			groupId: this.groupId,

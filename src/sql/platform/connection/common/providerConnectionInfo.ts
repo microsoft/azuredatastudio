@@ -208,16 +208,23 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 	/**
 	 * Returns a key derived the connections options (providerName, authenticationType, serverName, databaseName, userName, groupid)
+	 * and all the other properties if isPropertyKey is enabled for them.
 	 * This key uniquely identifies a connection in a group
 	 * Example: "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
+	 * @param getOriginalOptions will return the original URI format regardless if isPropertyKey was set or not. (used for retrieving passwords)
 	 */
-	public getOptionsKey(): string {
+	public getOptionsKey(getOriginalOptions?: boolean): string {
+		let newUriUsed = false;
 		let idNames = [];
 		if (this.serverCapabilities) {
 			idNames = this.serverCapabilities.connectionOptions.map(o => {
-				if ((o.specialValueType || o.isIdentity)
-					&& o.specialValueType !== ConnectionOptionSpecialType.password
-					&& o.specialValueType !== ConnectionOptionSpecialType.connectionName) {
+				let newProperty = o.isPropertyKey && o.specialValueType !== ConnectionOptionSpecialType.password && !getOriginalOptions
+				let originalProperty = (o.specialValueType || o.isIdentity) && o.specialValueType !== ConnectionOptionSpecialType.password
+					&& o.specialValueType !== ConnectionOptionSpecialType.connectionName;
+				if (!newUriUsed && newProperty) {
+					newUriUsed = true;
+				}
+				if (newProperty || originalProperty) {
 					return o.name;
 				} else {
 					return undefined;
@@ -236,41 +243,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		let idValues: string[] = [];
 		for (let index = 0; index < idNames.length; index++) {
 			let value = this.options[idNames[index]!];
-			value = value ? value : '';
-			idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
-		}
-
-		return ProviderConnectionInfo.ProviderPropertyName + ProviderConnectionInfo.nameValueSeparator +
-			this.providerName + ProviderConnectionInfo.idSeparator + idValues.join(ProviderConnectionInfo.idSeparator);
-	}
-
-	/**
-	 * Returns a key containing all connection options.
-	 * This key uniquely identifies a connection in a group (with more distinction due to all options)
-	 */
-	public getCompleteOptionsKey(): string {
-		let idNames = [];
-		if (this.serverCapabilities) {
-			idNames = this.serverCapabilities.connectionOptions.map(o => {
-				if (o.specialValueType !== ConnectionOptionSpecialType.password) {
-					return o.name;
-				} else {
-					return undefined;
-				}
-			});
-		} else {
-			// This should never happen but just incase the serverCapabilities was not ready at this time
-			idNames = ['authenticationType', 'database', 'server', 'user'];
-		}
-
-		idNames = idNames.filter(x => x !== undefined);
-
-		//Sort to make sure using names in the same order every time otherwise the ids would be different
-		idNames.sort();
-
-		let idValues: string[] = [];
-		for (let index = 0; index < idNames.length; index++) {
-			let value = this.options[idNames[index]!];
+			value = value ? value : (newUriUsed ? undefined : '');
 			if (value) {
 				idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
 			}
