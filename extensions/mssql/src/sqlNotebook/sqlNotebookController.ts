@@ -94,6 +94,11 @@ export class SqlNotebookController implements vscode.Disposable {
 			let connection = this._connectionsMap.get(notebook.uri);
 			if (connection) {
 				this._connectionLabelItem.text = this._connectionLabel(connection.options['server']);
+
+				// TODO: need to set connection mapping for cell
+				// If this editor is for a cell, then update the connection for it
+				// if (editor.document.uri.scheme === 'vscode-notebook-cell' && editor.document.uri.path === notebook.uri.path) {
+				// }
 			} else {
 				this._connectionLabelItem.text = this._disconnectedLabel;
 			}
