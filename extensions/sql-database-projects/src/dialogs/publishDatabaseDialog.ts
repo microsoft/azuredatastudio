@@ -63,6 +63,7 @@ export class PublishDatabaseDialog {
 	protected optionsButton: azdataType.ButtonComponent | undefined;
 	private publishOptionsDialog: PublishOptionsDialog | undefined;
 	public publishOptionsModified: boolean = false;
+	private publishProfileUri: vscode.Uri | undefined;
 
 	private completionPromise: Deferred = new Deferred();
 
@@ -445,6 +446,7 @@ export class PublishDatabaseDialog {
 					component: this.localDbSection
 				});
 			}
+
 			if (this.connectionRow) {
 				this.formBuilder!.insertFormItem({
 					title: '',
@@ -459,6 +461,7 @@ export class PublishDatabaseDialog {
 					component: this.connectionRow
 				});
 			}
+
 			if (this.localDbSection) {
 				this.formBuilder!.insertFormItem({
 					title: '',
@@ -922,6 +925,7 @@ export class PublishDatabaseDialog {
 				await this.loadProfileTextBox!.updateProperty('title', fileUris[0].fsPath);
 
 				this.profileUsed = true;
+				this.publishProfileUri = fileUris[0];
 			}
 		});
 
@@ -941,7 +945,7 @@ export class PublishDatabaseDialog {
 		saveProfileAsButton.onDidClick(async () => {
 			const filePath = await vscode.window.showSaveDialog(
 				{
-					defaultUri: vscode.Uri.file(path.join(this.project.projectFolderPath, `${this.project.projectFileName}_1`)),
+					defaultUri: this.publishProfileUri ?? vscode.Uri.file(path.join(this.project.projectFolderPath, `${this.project.projectFileName}_1`)),
 					saveLabel: constants.save,
 					filters: {
 						'Publish Settings Files': ['publish.xml'],
@@ -955,10 +959,13 @@ export class PublishDatabaseDialog {
 
 			if (this.savePublishProfile) {
 				const targetConnectionString = this.targetConnectionTextBox?.value ?? '';
+				const targetDatabaseName = this.targetDatabaseName ?? '';
 				const deploymentOptions = await this.getDeploymentOptions();
-				await this.savePublishProfile(filePath.fsPath, this.targetDatabaseName, targetConnectionString, this.getSqlCmdVariablesForPublish(), deploymentOptions);
+				await this.savePublishProfile(filePath.fsPath, targetDatabaseName, targetConnectionString, this.getSqlCmdVariablesForPublish(), deploymentOptions);
 			}
 
+			this.profileUsed = true;
+			this.publishProfileUri = filePath;
 		});
 
 		return saveProfileAsButton;
