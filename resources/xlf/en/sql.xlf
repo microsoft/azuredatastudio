@@ -4626,6 +4626,9 @@ Error: {1}</source>
     <trans-unit id="maxColumnWidth">
       <source xml:lang="en">The maximum width in pixels for auto-sized columns</source>
     </trans-unit>
+    <trans-unit id="resultsGrid.showJsonAsLink">
+      <source xml:lang="en">Whether to show cells with JSON formatted string as hyperlink. When enabled, upon click the JSON value will be opened in another tab. The default value is true.</source>
+    </trans-unit>
     <trans-unit id="resultsGridConfigurationTitle">
       <source xml:lang="en">Results Grid and Messages</source>
     </trans-unit>
@@ -5603,6 +5606,12 @@ Error: {1}</source>
   <file original="src/sql/workbench/services/dialog/browser/dialogPane" source-language="en" datatype="plaintext"><body>
     <trans-unit id="wizardPageNumberDisplayText">
       <source xml:lang="en">Step {0}</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/dialog/browser/wizardNavigation.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="wizardNavigation.stepName">
+      <source xml:lang="en">Step {0}: {1}</source>
+      <note>Name of a step in wizard. {0}: step number, {1}: step name.</note>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/dialog/common/dialogTypes" source-language="en" datatype="plaintext"><body>
