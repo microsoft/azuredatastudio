@@ -69,6 +69,7 @@ export interface ConnectionProviderProperties {
 
 	/**
 	 * Enable to use all connection properties for URI generation (ServiceLayer requires the same options as well.)
+	 * If not specified, only IsIdentity options will be used instead (URI with basic info).
 	 */
 	useFullOptions?: boolean;
 
