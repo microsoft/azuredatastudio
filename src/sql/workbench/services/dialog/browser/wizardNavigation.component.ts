@@ -6,12 +6,13 @@
 import 'vs/css!./media/wizardNavigation';
 import { Component, Inject, forwardRef, ElementRef, AfterViewInit, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { Event, Emitter } from 'vs/base/common/event';
-import { Wizard } from '../common/dialogTypes';
+import { Wizard, WizardPage } from '../common/dialogTypes';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { localize } from 'vs/nls';
 
 export class WizardNavigationParams implements IBootstrapParams {
 	wizard!: Wizard;
@@ -26,7 +27,7 @@ export class WizardNavigationParams implements IBootstrapParams {
 			<ng-container *ngFor="let item of _params.wizard.pages; let i = index">
 				<div class="wizardNavigation-pageNumber">
 					<div class="wizardNavigation-connector" [ngClass]="{'invisible': !hasTopConnector(i), 'active': isActive(i)}"></div>
-					<a [tabindex]="isActive(i) ? 0 : -1" [attr.href]="isActive(i) ? '' : null" [title]="item.title" (click)="navigate(i)" (keydown)="onKey($event,i)" [attr.aria-current]="isCurrentPage(i) ? 'step' : null" [attr.aria-disabled]="isActive(i) ? null : 'true'">
+					<a [tabindex]="isActive(i) ? 0 : -1" [attr.href]="isActive(i) ? '' : null" [title]="item.title" [attr.aria-label]="getStepAriaLabel(i, item)" (click)="navigate(i)" (keydown)="onKey($event,i)" [attr.aria-current]="isCurrentPage(i) ? 'step' : null" [attr.aria-disabled]="isActive(i) ? null : 'true'">
 						<span class="wizardNavigation-dot" [ngClass]="{'active': isActive(i), 'currentPage': isCurrentPage(i)}">{{i+1}}</span>
 					</a>
 					<div class="wizardNavigation-connector" [ngClass]="{'invisible': !hasBottomConnector(i), 'active': isActive(i)}"></div>
@@ -83,6 +84,13 @@ export class WizardNavigation implements AfterViewInit {
 			e.preventDefault();
 			e.stopPropagation();
 		}
+	}
+
+	getStepAriaLabel(index: number, item: WizardPage): string {
+		return localize({
+			key: 'wizardNavigation.stepName',
+			comment: ['Name of a step in wizard. {0}: step number, {1}: step name.']
+		}, "Step {0}: {1}", index + 1, item.title);
 	}
 
 	private style(): void {
