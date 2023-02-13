@@ -24,8 +24,7 @@ export const mockDacFxResult = {
 
 export const mockSavePublishResult = {
 	success: true,
-	errorMessage: '',
-	report: ''
+	errorMessage: ''
 };
 
 /* Get the deployment options sample model */
