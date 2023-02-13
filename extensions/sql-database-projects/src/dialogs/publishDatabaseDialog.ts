@@ -958,7 +958,7 @@ export class PublishDatabaseDialog {
 			}
 
 			if (this.savePublishProfile) {
-				const targetConnectionString = this.targetConnectionTextBox?.value ?? '';
+				const targetConnectionString = this.connectionId ? await utils.getAzdataApi()!.connection.getConnectionString(this.connectionId, false) : '';
 				const targetDatabaseName = this.targetDatabaseName ?? '';
 				const deploymentOptions = await this.getDeploymentOptions();
 				await this.savePublishProfile(filePath.fsPath, targetDatabaseName, targetConnectionString, this.getSqlCmdVariablesForPublish(), deploymentOptions);
