@@ -131,7 +131,5 @@ async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string
  */
 export async function savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: mssql.DeploymentOptions): Promise<void> {
 	const dacFxService = await utils.getDacFxService();
-	console.error('-In method-----------------------------------------------------------------------method');
 	await dacFxService.savePublishProfile(profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions);
-	console.error('------------------------------------------------------------------------Here');
 }
