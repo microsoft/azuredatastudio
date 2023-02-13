@@ -353,8 +353,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public async createNewSession(providerId: string, connection: ConnectionProfile): Promise<azdata.ObjectExplorerSessionResponse> {
 		const provider = this._providers[providerId];
 		if (provider) {
-			let connInfo = connection.toConnectionInfo();
-			const result = await provider.createNewSession(connInfo);
+			const result = await provider.createNewSession(connection.toConnectionInfo());
 			if (this._sessions[result.sessionId]) {
 				this.logService.trace(`Overwriting session ${result.sessionId}`);
 			}
