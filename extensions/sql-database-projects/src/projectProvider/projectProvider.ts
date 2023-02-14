@@ -7,7 +7,7 @@ import type { ThemedIconPath } from 'azdata';
 import * as dataworkspace from 'dataworkspace';
 import * as sqldbproj from 'sqldbproj';
 import * as vscode from 'vscode';
-import * as path from 'path';
+
 import * as constants from '../common/constants';
 import { IconPathHelper } from '../common/iconHelper';
 import { getDataWorkspaceExtensionApi } from '../common/utils';
@@ -17,8 +17,6 @@ import { Project } from '../models/project';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { getPublishToDockerSettings } from '../dialogs/publishToDockerQuickpick';
 import { getDockerImageSpec } from '../models/deploy/deployService';
-import { FileNode, FolderNode } from '../models/tree/fileFolderTreeItem';
-import { promises as fs } from 'fs';
 
 export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvider, sqldbproj.IExtension {
 	supportsDragAndDrop: boolean = true;
@@ -28,35 +26,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	}
 
 	public async moveFile(projectUri: vscode.Uri, source: any, target: dataworkspace.WorkspaceTreeItem): Promise<void> {
-		const fileNode = source as FileNode;
-
-		// only moving files is supported
-		if (!fileNode || !(fileNode instanceof FileNode)) {
-			void vscode.window.showErrorMessage('Only moving .sql files is supported for sql projects.');
-			return;
-		}
-
-		// TODO: handle moving between different projects
-		if (projectUri.fsPath !== target.element.projectFileUri.fsPath) {
-			void vscode.window.showErrorMessage('Moving files between projects is not supported');
-			return;
-		}
-
-		// TODO: add prompt for checking if user really wants to move file
-
-		const project = await Project.openProject(projectUri.fsPath);
-
-		// TODO: handle dragging to another another file (rather than dragged to a folderNode)
-		// check how this works for vscode file tree
-
-		const folderPath = target.element.projectFileUri.fsPath === target.element?.relativeProjectUri.fsPath ? path.dirname(target.element.projectFileUri.fsPath!) : (target.element as FolderNode)?.fileSystemUri.fsPath;
-
-		const newPath = path.join(folderPath!, fileNode.friendlyName);
-
-		await fs.rename(fileNode.fileSystemUri.fsPath, newPath!);
-		await project.exclude(project.files.find(f => f.fsUri.fsPath === fileNode.fileSystemUri.fsPath)!);
-		await project.addExistingItem(newPath!);
-
+		return this.projectController.moveFile(projectUri, source, target);
 	}
 
 	/**
