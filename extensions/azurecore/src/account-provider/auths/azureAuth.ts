@@ -204,12 +204,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return undefined;
 		}
 
-		const resource = (typeof azureResource === 'string')
-			? this.resources.find(s => s.endpoint === azureResource as string)
-			: this.resources.find(s => s.azureResourceId === azureResource);
+		const resource = this.getResource(azureResource);
 
 		if (!resource) {
-			Logger.error(`Unable to find Azure resource ${azureResource} for account ${account.displayInfo.userId} and tenant ${tenantId}`);
+			Logger.error(`Unable to find Azure resource ${azureResource}`);
 			return undefined;
 		}
 
@@ -319,14 +317,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * @returns The authentication result, including the access token
 	 */
 	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource | string, tenantId: string): Promise<AuthenticationResult | null> {
-		const resource = (typeof azureResource === 'string')
-			? this.resources.find(s => s.endpoint === azureResource as string)
-			: this.resources.find(s => s.azureResourceId === azureResource);
+		const resource = this.getResource(azureResource);
 
 		if (!resource) {
-			Logger.error(`Error: Could not fetch the azure resource ${azureResource} `);
+			Logger.error(`Unable to find Azure resource ${azureResource}`);
 			return null;
 		}
+
 		// Resource endpoint must end with '/' to form a valid scope for MSAL token request.
 		const endpoint = resource.endpoint.endsWith('/') ? resource.endpoint : resource.endpoint + '/';
 
@@ -368,6 +365,27 @@ export abstract class AzureAuth implements vscode.Disposable {
 			Logger.error('Failed to silently acquire token, not InteractionRequiredAuthError');
 			return null;
 		}
+	}
+
+	private getResource(azureResource: string | azdata.AzureResource): Resource | undefined {
+		let resource: Resource | undefined;
+		if (typeof azureResource === 'string') {
+			Logger.verbose(`Token Request received for resource URI: ${azureResource}`);
+			// Find existing resource if exists for received resource URI
+			resource = this.resources.find(s => s.endpoint === azureResource as string);
+			if (!resource) {
+				// Create custom resource for URIs that are not hard-coded but received from server endpoint.
+				resource = {
+					id: 'custom',
+					endpoint: azureResource as string,
+					azureResourceId: azdata.AzureResource.Custom
+				}
+			}
+		} else {
+			resource = this.resources.find(s => s.azureResourceId === azureResource);
+		}
+
+		return resource;
 	}
 
 	public async getAccountFromMsalCache(accountId: string): Promise<AccountInfo | null> {
