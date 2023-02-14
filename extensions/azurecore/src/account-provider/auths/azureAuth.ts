@@ -198,13 +198,16 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return account;
 	}
 
-	public async getAccountSecurityTokenAdal(account: AzureAccount, tenantId: string, azureResource: azdata.AzureResource): Promise<Token | undefined> {
+	public async getAccountSecurityTokenAdal(account: AzureAccount, tenantId: string, azureResource: azdata.AzureResource | string): Promise<Token | undefined> {
 		if (account.isStale === true) {
 			Logger.error('Account was stale. No tokens being fetched.');
 			return undefined;
 		}
 
-		const resource = this.resources.find(s => s.azureResourceId === azureResource);
+		const resource = (typeof azureResource === 'string')
+			? this.resources.find(s => s.endpoint === azureResource as string)
+			: this.resources.find(s => s.azureResourceId === azureResource);
+
 		if (!resource) {
 			Logger.error(`Unable to find Azure resource ${azureResource} for account ${account.displayInfo.userId} and tenant ${tenantId}`);
 			return undefined;
@@ -315,8 +318,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * @param azureResource
 	 * @returns The authentication result, including the access token
 	 */
-	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource, tenantId: string): Promise<AuthenticationResult | null> {
-		const resource = this.resources.find(s => s.azureResourceId === azureResource);
+	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource | string, tenantId: string): Promise<AuthenticationResult | null> {
+		const resource = (typeof azureResource === 'string')
+			? this.resources.find(s => s.endpoint === azureResource as string)
+			: this.resources.find(s => s.azureResourceId === azureResource);
+
 		if (!resource) {
 			Logger.error(`Error: Could not fetch the azure resource ${azureResource} `);
 			return null;
@@ -670,7 +676,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			}
 
 		};
-		const messageBody = localize('azurecore.consentDialog.body', "Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.", tenant.displayName, tenant.id, resource.id);
+		const messageBody = localize('azurecore.consentDialog.body', "Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.", tenant.displayName, tenant.id, resource.endpoint);
 		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem, dontAskAgainItem);
 
 		if (result?.action) {

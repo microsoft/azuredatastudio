@@ -61,10 +61,13 @@ export class AccountFeature implements StaticFeature {
 	protected async getToken(request: contracts.RequestSecurityTokenParams): Promise<contracts.RequestSecurityTokenResponse | undefined> {
 		const accountList = await azdata.accounts.getAllAccounts();
 		let account: azurecore.AzureAccount;
-
+		// This is a hack to continue showing customized messages for Azure Key Vault specific requests.
+		const isAKVTokenRequest: boolean = request.resource.includes('vault');
 		if (accountList.length < 1) {
 			// TODO: Prompt user to add account
-			void window.showErrorMessage(localize('mssql.missingLinkedAzureAccount', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query."));
+			void window.showErrorMessage(isAKVTokenRequest
+				? localize('mssql.missingLinkedAzureAccountAKV', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query.")
+				: localize('mssql.missingLinkedAzureAccount', 'Azure Data Studio needs to acquire access token for resource {0}, but no linked Azure account is available. Please add a linked Azure account and retry.', request.resource));
 			return undefined;
 		} else if (accountList.length > 1) {
 			let options: QuickPickOptions = {
@@ -74,7 +77,9 @@ export class AccountFeature implements StaticFeature {
 			let items = accountList.map(a => new AccountFeature.AccountQuickPickItem(a));
 			let selectedItem = await window.showQuickPick(items, options);
 			if (!selectedItem) { // The user canceled the selection.
-				void window.showErrorMessage(localize('mssql.canceledLinkedAzureAccountSelection', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted."));
+				void window.showErrorMessage(isAKVTokenRequest
+					? localize('mssql.canceledLinkedAzureAccountSelectionAKV', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted.")
+					: localize('mssql.canceledLinkedAzureAccountSelection', 'Azure Data Studio needs to acquire access token for resource: {0}, but no linked Azure account was selected. Please retry and select a linked Azure account when prompted.', request.resource));
 				return undefined;
 			}
 			account = selectedItem.account;
@@ -83,12 +88,14 @@ export class AccountFeature implements StaticFeature {
 		}
 
 		const tenant = account.properties.tenants.find(tenant => request.authority.includes(tenant.id));
-		const unauthorizedMessage = localize('mssql.insufficientlyPrivelagedAzureAccount', "The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.", account.key.accountId);
+		const unauthorizedMessage = isAKVTokenRequest
+			? localize('mssql.insufficientlyPrivelagedAzureAccount', "The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.", account.key.accountId)
+			: localize('mssql.insufficientlyPrivelagedAzureAccount', "The configured Azure account for {0} does not have sufficient permissions to access resource: {1}", account.key.accountId, request.resource);
 		if (!tenant) {
 			void window.showErrorMessage(unauthorizedMessage);
 			return undefined;
 		}
-		const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.AzureKeyVault);
+		const securityToken = await azdata.accounts.getAccountSecurityTokenForResourceUri(account, tenant.id, request.resource);
 
 		if (!securityToken?.token) {
 			void window.showErrorMessage(unauthorizedMessage);
@@ -97,7 +104,8 @@ export class AccountFeature implements StaticFeature {
 
 		let params: contracts.RequestSecurityTokenResponse = {
 			accountKey: JSON.stringify(account.key),
-			token: securityToken.token
+			token: securityToken.token,
+			expiresOn: securityToken.expiresOn
 		};
 
 		return params;
@@ -121,7 +129,7 @@ export class AccountFeature implements StaticFeature {
 		}
 
 		// Get the updated token, which will handle refreshing it if necessary
-		const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
+		const securityToken = await azdata.accounts.getAccountSecurityTokenForResourceUri(account, tenant.id, request.resource);
 		if (!securityToken) {
 			console.log('Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected');
 			throw Error(localizedConstants.tokenRefreshFailedNoSecurityToken);
