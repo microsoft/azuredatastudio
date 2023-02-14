@@ -42,6 +42,7 @@ import { AuthLibrary, filterAccounts } from 'sql/workbench/services/accountManag
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
 export class ConnectionWidget extends lifecycle.Disposable {
+	private _initialConnectionInfo: IConnectionProfile;
 	private _defaultInputOptionRadioButton: RadioButton;
 	private _connectionStringRadioButton: RadioButton;
 	private _previousGroupOption: string;
@@ -598,6 +599,16 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._userNameInputBox.enable();
 			this._passwordInputBox.enable();
 			this._rememberPasswordCheckBox.enabled = true;
+
+			this._initialConnectionInfo.authenticationType = AuthenticationType.SqlLogin;
+			if (this._initialConnectionInfo && this._initialConnectionInfo.userName) {
+				const loadProfileIntoPasswordInputBox = (profile: IConnectionProfile) => {
+					this._passwordInputBox.value = profile.password;
+				};
+
+				this._rememberPasswordCheckBox.checked = this._initialConnectionInfo.savePassword;
+				this._connectionManagementService.addSavedPassword(this._initialConnectionInfo, true).then(loadProfileIntoPasswordInputBox);
+			}
 		}
 	}
 
@@ -752,6 +763,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	public initDialog(connectionInfo: IConnectionProfile): void {
+		this._initialConnectionInfo = connectionInfo;
 		this.fillInConnectionInputs(connectionInfo);
 	}
 

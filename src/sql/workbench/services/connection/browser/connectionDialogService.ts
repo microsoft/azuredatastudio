@@ -375,7 +375,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this.uiController.fillInConnectionInputs(this._model);
 		}
 		catch (err) {
-			onUnexpectedError(new Error(`Error filling in connection inputs with password. Original error message: ${err}`));
+			this._logService.error(`Error filling in connection inputs with password. Original error message: ${err}`);
 		}
 
 		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[connectionInfo.providerName]);
@@ -418,12 +418,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 
 		let newProfile = new ConnectionProfile(this._capabilitiesService, model || providerName);
-		if (!model.password && defaultAuthenticationType === AuthenticationType.SqlLogin && authenticationTypeName === AuthenticationType.SqlLogin) {
+		if (!model.password) {
 			try {
 				await this._connectionManagementService.addSavedPassword(newProfile);
 			}
 			catch (err) {
-				onUnexpectedError(new Error(`Error filling in password for connection dialog model. Original error message: ${err.message}`));
+				this._logService.error(`Error filling in password for connection dialog model. Original error message: ${err}`);
 			}
 		}
 		newProfile.saveProfile = true;
