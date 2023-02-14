@@ -191,7 +191,6 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		await this.updateValuesOnSelection();
 	}
 
-
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
 
 		this._windowsAuthInfoBox = this._view.modelBuilder.infoBox()
