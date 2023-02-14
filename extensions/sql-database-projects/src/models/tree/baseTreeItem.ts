@@ -14,9 +14,8 @@ export abstract class BaseProjectTreeItem {
 	 * Constructor
 	 * @param relativeProjectUri Project-relative URI that's compatible with the project tree
 	 * @param projectFileUri Full URI to the .sqlproj of this project
-	 * @param parent parent tree item
 	 */
-	constructor(public relativeProjectUri: vscode.Uri, public projectFileUri: vscode.Uri, public parent?: BaseProjectTreeItem) { }
+	constructor(public relativeProjectUri: vscode.Uri, public projectFileUri: vscode.Uri) { }
 
 	abstract get children(): BaseProjectTreeItem[];
 

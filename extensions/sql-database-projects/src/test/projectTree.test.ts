@@ -19,30 +19,29 @@ describe('Project Tree tests', function (): void {
 		const root = os.platform() === 'win32' ? 'Z:\\' : '/';
 
 		const sqlprojUri = vscode.Uri.file(`${root}Fake.sqlproj`);
-		const parent = new ProjectRootTreeItem(new Project(sqlprojUri.fsPath));
 
 		let inputNodes: (FileNode | FolderNode)[] = [
-			new FileNode(vscode.Uri.file(`${root}C`), sqlprojUri, parent),
-			new FileNode(vscode.Uri.file(`${root}D`), sqlprojUri, parent),
-			new FolderNode(vscode.Uri.file(`${root}Z`), sqlprojUri, parent),
-			new FolderNode(vscode.Uri.file(`${root}X`), sqlprojUri, parent),
-			new FileNode(vscode.Uri.file(`${root}B`), sqlprojUri, parent),
-			new FileNode(vscode.Uri.file(`${root}A`), sqlprojUri, parent),
-			new FolderNode(vscode.Uri.file(`${root}W`), sqlprojUri, parent),
-			new FolderNode(vscode.Uri.file(`${root}Y`), sqlprojUri, parent)
+			new FileNode(vscode.Uri.file(`${root}C`), sqlprojUri),
+			new FileNode(vscode.Uri.file(`${root}D`), sqlprojUri),
+			new FolderNode(vscode.Uri.file(`${root}Z`), sqlprojUri),
+			new FolderNode(vscode.Uri.file(`${root}X`), sqlprojUri),
+			new FileNode(vscode.Uri.file(`${root}B`), sqlprojUri),
+			new FileNode(vscode.Uri.file(`${root}A`), sqlprojUri),
+			new FolderNode(vscode.Uri.file(`${root}W`), sqlprojUri),
+			new FolderNode(vscode.Uri.file(`${root}Y`), sqlprojUri)
 		];
 
 		inputNodes = inputNodes.sort(sortFileFolderNodes);
 
 		const expectedNodes: (FileNode | FolderNode)[] = [
-			new FolderNode(vscode.Uri.file(`${root}W`), sqlprojUri, parent),
-			new FolderNode(vscode.Uri.file(`${root}X`), sqlprojUri, parent),
-			new FolderNode(vscode.Uri.file(`${root}Y`), sqlprojUri, parent),
-			new FolderNode(vscode.Uri.file(`${root}Z`), sqlprojUri, parent),
-			new FileNode(vscode.Uri.file(`${root}A`), sqlprojUri, parent),
-			new FileNode(vscode.Uri.file(`${root}B`), sqlprojUri, parent),
-			new FileNode(vscode.Uri.file(`${root}C`), sqlprojUri, parent),
-			new FileNode(vscode.Uri.file(`${root}D`), sqlprojUri, parent)
+			new FolderNode(vscode.Uri.file(`${root}W`), sqlprojUri),
+			new FolderNode(vscode.Uri.file(`${root}X`), sqlprojUri),
+			new FolderNode(vscode.Uri.file(`${root}Y`), sqlprojUri),
+			new FolderNode(vscode.Uri.file(`${root}Z`), sqlprojUri),
+			new FileNode(vscode.Uri.file(`${root}A`), sqlprojUri),
+			new FileNode(vscode.Uri.file(`${root}B`), sqlprojUri),
+			new FileNode(vscode.Uri.file(`${root}C`), sqlprojUri),
+			new FileNode(vscode.Uri.file(`${root}D`), sqlprojUri)
 		];
 
 		should(inputNodes.map(n => n.relativeProjectUri.path)).deepEqual(expectedNodes.map(n => n.relativeProjectUri.path));

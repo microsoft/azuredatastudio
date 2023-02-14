@@ -8,7 +8,6 @@ import * as path from 'path';
 import * as constants from '../../common/constants';
 
 import { BaseProjectTreeItem } from './baseTreeItem';
-import { ProjectRootTreeItem } from './projectTreeItem';
 import { IconPathHelper } from '../../common/iconHelper';
 
 /**
@@ -24,8 +23,8 @@ export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
 	 * @param sqlCmdVariables Collection of SQLCMD variables in the project
 	 * @param project
 	 */
-	constructor(projectNodeName: string, sqlprojUri: vscode.Uri, sqlCmdVariables: Record<string, string>, project: ProjectRootTreeItem) {
-		super(vscode.Uri.file(path.join(projectNodeName, constants.sqlcmdVariablesNodeName)), sqlprojUri, project);
+	constructor(projectNodeName: string, sqlprojUri: vscode.Uri, sqlCmdVariables: Record<string, string>) {
+		super(vscode.Uri.file(path.join(projectNodeName, constants.sqlcmdVariablesNodeName)), sqlprojUri);
 
 		this.construct(sqlCmdVariables);
 	}
@@ -37,7 +36,7 @@ export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
 
 		for (const sqlCmdVariable of Object.keys(sqlCmdVariables)) {
 			if (sqlCmdVariable) {
-				this.sqlcmdVariableTreeItems.push(new SqlCmdVariableTreeItem(sqlCmdVariable, this.relativeProjectUri, this.projectFileUri, this));
+				this.sqlcmdVariableTreeItems.push(new SqlCmdVariableTreeItem(sqlCmdVariable, this.relativeProjectUri, this.projectFileUri));
 			}
 		}
 	}
@@ -59,8 +58,8 @@ export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
  * Represents a SQLCMD variable in a .sqlproj
  */
 export class SqlCmdVariableTreeItem extends BaseProjectTreeItem {
-	constructor(private sqlcmdVar: string, sqlprojUri: vscode.Uri, sqlCmdNodeRelativeProjectUri: vscode.Uri, sqlcmdVarsTreeItem: SqlCmdVariablesTreeItem) {
-		super(vscode.Uri.file(path.join(sqlCmdNodeRelativeProjectUri.fsPath, sqlcmdVar)), sqlprojUri, sqlcmdVarsTreeItem);
+	constructor(private sqlcmdVar: string, sqlprojUri: vscode.Uri, sqlCmdNodeRelativeProjectUri: vscode.Uri) {
+		super(vscode.Uri.file(path.join(sqlCmdNodeRelativeProjectUri.fsPath, sqlcmdVar)), sqlprojUri);
 	}
 
 	public get children(): BaseProjectTreeItem[] {

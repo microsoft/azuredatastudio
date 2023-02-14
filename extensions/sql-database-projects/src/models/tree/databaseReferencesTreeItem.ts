@@ -8,7 +8,6 @@ import * as path from 'path';
 import * as constants from '../../common/constants';
 
 import { BaseProjectTreeItem } from './baseTreeItem';
-import { ProjectRootTreeItem } from './projectTreeItem';
 import { IconPathHelper } from '../../common/iconHelper';
 import { IDatabaseReferenceProjectEntry } from 'sqldbproj';
 
@@ -25,8 +24,8 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 	 * @param databaseReferences Array of database references in the project
 	 * @param project
 	 */
-	constructor(projectNodeName: string, sqlprojUri: vscode.Uri, databaseReferences: IDatabaseReferenceProjectEntry[], project: ProjectRootTreeItem) {
-		super(vscode.Uri.file(path.join(projectNodeName, constants.databaseReferencesNodeName)), sqlprojUri, project);
+	constructor(projectNodeName: string, sqlprojUri: vscode.Uri, databaseReferences: IDatabaseReferenceProjectEntry[]) {
+		super(vscode.Uri.file(path.join(projectNodeName, constants.databaseReferencesNodeName)), sqlprojUri);
 
 		this.construct(databaseReferences);
 	}
@@ -37,7 +36,7 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 		}
 
 		for (const reference of databaseReferences) {
-			this.references.push(new DatabaseReferenceTreeItem(reference, this.relativeProjectUri, this.projectFileUri, this));
+			this.references.push(new DatabaseReferenceTreeItem(reference, this.relativeProjectUri, this.projectFileUri));
 		}
 	}
 
@@ -55,8 +54,8 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 }
 
 export class DatabaseReferenceTreeItem extends BaseProjectTreeItem {
-	constructor(private reference: IDatabaseReferenceProjectEntry, referencesNodeRelativeProjectUri: vscode.Uri, sqlprojUri: vscode.Uri, referencesTreeItem: DatabaseReferencesTreeItem) {
-		super(vscode.Uri.file(path.join(referencesNodeRelativeProjectUri.fsPath, reference.databaseName)), sqlprojUri, referencesTreeItem);
+	constructor(private reference: IDatabaseReferenceProjectEntry, referencesNodeRelativeProjectUri: vscode.Uri, sqlprojUri: vscode.Uri) {
+		super(vscode.Uri.file(path.join(referencesNodeRelativeProjectUri.fsPath, reference.databaseName)), sqlprojUri);
 	}
 
 	public get children(): BaseProjectTreeItem[] {
