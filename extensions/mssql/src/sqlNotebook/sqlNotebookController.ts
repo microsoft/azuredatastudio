@@ -66,7 +66,7 @@ export class SqlNotebookController implements vscode.Disposable {
 			this._connectionLabelItem.show();
 		}
 
-		let editorChangedEvent = vscode.window.onDidChangeActiveTextEditor(editor => this.handleActiveEditorChanged(editor));
+		let editorChangedEvent = vscode.window.onDidChangeActiveTextEditor(async editor => await this.handleActiveEditorChanged(editor));
 		this._disposables.push(editorChangedEvent);
 
 		let docClosedEvent = vscode.workspace.onDidCloseTextDocument(document => this.handleDocumentClosed(document));
@@ -85,7 +85,7 @@ export class SqlNotebookController implements vscode.Disposable {
 		}
 	}
 
-	private handleActiveEditorChanged(editor: vscode.TextEditor): void {
+	private async handleActiveEditorChanged(editor: vscode.TextEditor): Promise<void> {
 		let notebook = editor?.document.notebook;
 		if (!notebook) {
 			// Hide status bar item if the current editor isn't a notebook
@@ -95,15 +95,38 @@ export class SqlNotebookController implements vscode.Disposable {
 			if (connection) {
 				this._connectionLabelItem.text = this._connectionLabel(connection.options['server']);
 
-				// TODO: need to set connection mapping for cell
 				// If this editor is for a cell, then update the connection for it
-				// if (editor.document.uri.scheme === 'vscode-notebook-cell' && editor.document.uri.path === notebook.uri.path) {
-				// }
+				if (editor.document.uri.scheme === 'vscode-notebook-cell' && editor.document.uri.path === notebook.uri.path) {
+					let profile = this.getConnectionProfile(connection);
+					let result = await azdata.connection.connect(profile, false, false, editor.document.uri.toString());
+					if (!result.connected) {
+						console.log(`Failed to update cell connection. Error: ${result.errorMessage}`);
+					}
+				}
 			} else {
 				this._connectionLabelItem.text = this._disconnectedLabel;
 			}
 			this._connectionLabelItem.show();
 		}
+	}
+
+	public getConnectionProfile(connection: azdata.connection.Connection): azdata.IConnectionProfile {
+		let connectionProfile: azdata.IConnectionProfile = {
+			connectionName: connection.options.connectionName,
+			serverName: connection.options.server,
+			databaseName: connection.options.database,
+			userName: connection.options.user,
+			password: connection.options.password,
+			authenticationType: connection.options.authenticationType,
+			savePassword: connection.options.savePassword,
+			groupFullName: undefined,
+			groupId: undefined,
+			providerName: connection.providerName,
+			saveProfile: false,
+			id: connection.connectionId,
+			options: connection.options
+		};
+		return connectionProfile;
 	}
 
 	private handleDocumentClosed(editor: vscode.TextDocument): void {
