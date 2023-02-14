@@ -24,6 +24,7 @@ import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
+import { alert } from 'vs/base/browser/ui/aria/aria';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -517,6 +518,22 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			}
 
 			finalResult.nodes = allNodes;
+			if (allNodes.length === 0) {
+				const expansionReturnedNoNodesDisplayString = nls.localize('nodeExpansionNoNodes', "Expansion returned no nodes");
+				alert(expansionReturnedNoNodesDisplayString);
+				allNodes.push({
+					nodePath: '',
+					nodeType: '',
+					label: expansionReturnedNoNodesDisplayString,
+					isLeaf: true,
+					nodeSubType: '',
+					nodeStatus: '',
+					metadata: undefined,
+					objectType: '',
+					errorMessage: undefined,
+					iconType: ''
+				})
+			}
 		}
 		return finalResult;
 	}

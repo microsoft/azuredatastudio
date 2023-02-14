@@ -87,6 +87,18 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		}
 	});
 
+	vscode.workspace.onDidChangeConfiguration(async e => {
+		if (e.affectsConfiguration(Constants.cmdObjectExplorerGroupBySchemaFlagName)) {
+			const activeConnections = await azdata.objectexplorer.getActiveConnectionNodes();
+			activeConnections.forEach(async node => {
+				const connectionProfile = (await azdata.connection.getConnections()).filter(c => c.connectionId === node.connectionId)[0];
+				if (connectionProfile.providerId === Constants.providerId) {
+					await node.refresh();
+				}
+			});
+		}
+	});
+
 	registerTableDesignerCommands(appContext);
 
 	context.subscriptions.push(TelemetryReporter);

@@ -356,6 +356,11 @@
           "type": "boolean",
           "default": false,
           "description": "%mssql.tableDesigner.preloadDatabaseModel%"
+        },
+        "mssql.objectExplorer.groupBySchema": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.objectExplorer.groupBySchema%"
         }
       }
     },
