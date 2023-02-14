@@ -33,7 +33,6 @@ import { CmsConnectionController } from 'sql/workbench/services/connection/brows
 import { entries } from 'sql/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
-import { AuthenticationType } from 'sql/platform/connection/common/constants';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
