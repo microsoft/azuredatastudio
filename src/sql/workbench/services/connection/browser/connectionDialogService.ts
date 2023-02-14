@@ -375,7 +375,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this.uiController.fillInConnectionInputs(this._model);
 		}
 		catch (err) {
-			onUnexpectedError(new Error(`Error filling in connection inputs with password. Original error message: ${err.message}`));
+			onUnexpectedError(new Error(`Error filling in connection inputs with password. Original error message: ${err}`));
 		}
 
 		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[connectionInfo.providerName]);
