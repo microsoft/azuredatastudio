@@ -15,6 +15,7 @@ type ExceptionMap = { [login: string]: any }
 export enum LoginType {
 	Windows_Login = 'windows_login',
 	SQL_Login = 'sql_login',
+	Mixed_Mode = 'mixed_mode',
 }
 
 export enum LoginMigrationStep {
@@ -64,6 +65,7 @@ export class LoginMigrationModel {
 	public loginMigrationsResult!: contracts.StartLoginMigrationResult;
 	public loginMigrationsError: any;
 	public loginsForMigration!: LoginTableInfo[];
+	public errorCountMap: Map<LoginMigrationStep, any> = new Map<LoginMigrationStep, any>();
 	private _currentStepIdx: number = 0;
 	private _logins: Map<string, Login>;
 	private _loginMigrationSteps: LoginMigrationStep[] = [];
@@ -80,6 +82,28 @@ export class LoginMigrationModel {
 
 	public get isMigrationComplete(): boolean {
 		return this._currentStepIdx === this._loginMigrationSteps.length;
+	}
+
+	public get selectedWindowsLogins(): boolean {
+		return this.loginsForMigration.some(logins => logins.loginType.toLocaleLowerCase() === LoginType.Windows_Login);
+	}
+
+	public get selectedAllWindowsLogins(): boolean {
+		return this.loginsForMigration.every(logins => logins.loginType.toLocaleLowerCase() === LoginType.Windows_Login);
+	}
+
+	public get selectedAllSQLLogins(): boolean {
+		return this.loginsForMigration.every(logins => logins.loginType.toLocaleLowerCase() === LoginType.SQL_Login);
+	}
+
+	public get loginsAuthType(): LoginType {
+		if (this.selectedAllWindowsLogins) {
+			return LoginType.Windows_Login;
+		} else if (this.selectedAllSQLLogins) {
+			return LoginType.SQL_Login;
+		}
+
+		return LoginType.Mixed_Mode;
 	}
 
 	public async MigrateLogins(stateMachine: MigrationStateModel): Promise<boolean> {
@@ -102,7 +126,7 @@ export class LoginMigrationModel {
 	}
 
 
-	public GetLoginMigrationResults(loginName: string): MultiStepResult[] {
+	public GetDisplayResults(loginName: string): MultiStepResult[] {
 		let loginResults: MultiStepResult[] = [];
 		let login = this.getLogin(loginName);
 
@@ -127,6 +151,38 @@ export class LoginMigrationModel {
 		}
 
 		return loginResults;
+	}
+
+	public GetLoginMigrationsErrorCountMap(): Map<any, any> {
+		let errorCountsPerStep = new Map<LoginMigrationStep, any>();
+
+		for (const login of this._logins.values()) {
+			for (const [step, stepState] of login.statusPerStep) {
+				let errorCounts = this.getErrorCountsMapPerStep(stepState.errors);
+				if (errorCountsPerStep.has(step)) {
+				} else {
+					errorCountsPerStep.set(step, errorCounts);
+
+				}
+			}
+
+		}
+
+		return errorCountsPerStep;
+	}
+
+	private getErrorCountsMapPerStep(errors: string[]): Map<string, number> {
+		let errorCountMap = new Map<string, number>();
+		errors.forEach(error => {
+			// TODO AKMA: use error code instead of error message
+			if (errorCountMap.has(error)) {
+				errorCountMap.set(error, errorCountMap.get(error)! + 1);
+			} else {
+				errorCountMap.set(error, 1);
+			}
+		});
+
+		return errorCountMap;
 	}
 
 	private setLoginMigrationSteps(steps: LoginMigrationStep[] = []) {
@@ -355,4 +411,10 @@ export class LoginMigrationModel {
 			this.addStepStateForLogin(loginName, this._loginMigrationSteps[i], status, []);
 		}
 	}
+
+	// private getErrorCountMap(exceptionMap: ExceptionMap, loginName: string): any {
+	// 	return exceptionMap[loginName].map((exception: any) => typeof exception.InnerException !== 'undefined'
+	// 		&& exception.InnerException !== null ? exception.InnerException.Message : exception.Message);
+	// }
+
 }

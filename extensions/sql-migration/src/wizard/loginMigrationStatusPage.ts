@@ -13,6 +13,7 @@ import * as styles from '../constants/styles';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { LoginMigrationStatusCodes } from '../constants/helper';
 import { MultiStepStatusDialog } from '../dialog/generic/multiStepStatusDialog';
+import { logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
 
 export class LoginMigrationStatusPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -92,8 +93,10 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			};
 
 			this._progressLoader.loading = false;
+			logError(TelemetryViews.LoginMigrationWizard, 'LoginMigrationFailed', 'Internal Server Error');
 		}
 
+		this._logMigrationSuccess();
 		await this._loadMigratingLoginsList(this.migrationStateModel);
 		await this._filterTableList('');
 	}
@@ -417,9 +420,26 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 		const dialog = new MultiStepStatusDialog(
 			() => { });
 
-		const loginResults = this.migrationStateModel._loginMigrationModel.GetLoginMigrationResults(loginName);
+		const loginResults = this.migrationStateModel._loginMigrationModel.GetDisplayResults(loginName);
 		const isMigrationComplete = this.migrationStateModel._loginMigrationModel.isMigrationComplete;
 
 		await dialog.openDialog(constants.LOGIN_MIGRATIONS_LOGIN_STATUS_DETAILS_TITLE(loginName), loginResults, isMigrationComplete);
+	}
+
+	private _logMigrationSuccess(): void {
+
+		sendSqlMigrationActionEvent(
+			TelemetryViews.LoginMigrationStatusWizard,
+			TelemetryAction.LoginMigrationCompleted,
+			{
+				'sessionId': this.migrationStateModel._sessionId,
+				'targetType': this.migrationStateModel._targetType,
+				'loginsAuthType': this.migrationStateModel._loginMigrationModel.loginsAuthType,
+				'stepDetails': "", // AKMA TODO : add step details
+				// each step, will Success : ogin count, Failure and the failure type count. Also duration of the step
+				'extensionVersion': this.migrationStateModel.extensionContext.extension.packageJSON.version,
+			},
+			{}
+		);
 	}
 }

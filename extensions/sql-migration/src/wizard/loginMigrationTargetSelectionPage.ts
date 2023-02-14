@@ -16,6 +16,7 @@ import { azureResource } from 'azurecore';
 import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/azure';
 import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionProfile, isSourceConnectionSysAdmin, LoginTableInfo } from '../api/sqlUtils';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
+import { logError, TelemetryViews } from '../telemetry';
 
 export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -631,6 +632,8 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 						await this._showConnectionResults(
 							loginsOnTarget,
 							constants.AZURE_SQL_TARGET_CONNECTION_ERROR_TITLE);
+
+						logError(TelemetryViews.LoginMigrationWizard, 'ConnectingToTargetFailed', error);
 					}
 					finally {
 						connectionButtonLoadingContainer.loading = false;

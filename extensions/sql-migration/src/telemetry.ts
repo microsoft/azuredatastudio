@@ -38,6 +38,7 @@ export enum TelemetryViews {
 	Utils = 'Utils',
 	LoginMigrationWizardController = 'LoginMigrationWizardController',
 	LoginMigrationWizard = 'LoginMigrationWizard',
+	LoginMigrationStatusWizard = 'LoginMigrationStatusWizard',
 	TdeConfigurationDialog = 'TdeConfigurationDialog',
 }
 
@@ -64,7 +65,8 @@ export enum TelemetryAction {
 	GetInstanceRequirements = 'GetInstanceRequirements',
 	StartDataCollection = 'StartDataCollection',
 	StopDataCollection = 'StopDataCollection',
-	GetDatabasesListFailed = 'GetDatabasesListFailed'
+	GetDatabasesListFailed = 'GetDatabasesListFailed',
+	LoginMigrationCompleted = 'LoginMigrationCompleted'
 }
 
 export enum TelemetryErrorName {
