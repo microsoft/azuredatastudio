@@ -21,19 +21,13 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { IResultGridConfiguration } from 'sql/platform/query/common/query';
 
 export const TextCompareEditorVisible = new RawContextKey<boolean>('textCompareEditorVisible', false);
 
 export class BareResultsGridInfo extends BareFontInfo {
 
-	public static override createFromRawSettings(opts: {
-		fontFamily?: string;
-		fontWeight?: string;
-		fontSize?: number;
-		lineHeight?: number;
-		letterSpacing?: number;
-		cellPadding?: number | number[];
-	}, zoomLevel: number): BareResultsGridInfo {
+	public static override createFromRawSettings(opts: IResultGridConfiguration, zoomLevel: number): BareResultsGridInfo {
 		let cellPadding = !types.isUndefinedOrNull(opts.cellPadding) ? opts.cellPadding : RESULTS_GRID_DEFAULTS.cellPadding;
 		return new BareResultsGridInfo(BareFontInfo.createFromRawSettings(opts, PixelRatio.value, false), { cellPadding });
 	}

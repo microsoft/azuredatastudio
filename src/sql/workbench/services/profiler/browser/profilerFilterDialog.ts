@@ -128,7 +128,11 @@ export class ProfilerFilterDialog extends Modal {
 			this.addClauseRow(true, clause.field, this.convertToOperatorString(clause.operator), clause.value);
 		});
 
-		this.createClauseTableActionLink(AddClauseText, body, () => { this.addClauseRow(false); });
+		this.createClauseTableActionLink(AddClauseText, body, () => {
+			this.addClauseRow(false);
+			// Set keyboard focus to the newly added clause.
+			this._clauseRows[this._clauseRows.length - 1]?.field?.focus();
+		});
 		this.createClauseTableActionLink(ClearText, body, () => { this.handleClearButtonClick(); });
 	}
 
@@ -168,6 +172,7 @@ export class ProfilerFilterDialog extends Modal {
 		DOM.addStandardDisposableListener(actionLink, DOM.EventType.KEY_DOWN, (e: StandardKeyboardEvent) => {
 			if (e.equals(KeyCode.Space) || e.equals(KeyCode.Enter)) {
 				handler();
+				e.preventDefault();
 				e.stopPropagation();
 			}
 		});
