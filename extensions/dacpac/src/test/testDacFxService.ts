@@ -89,4 +89,8 @@ export class DacFxTestService implements mssql.IDacFxService {
 	parseTSqlScript(filePath: string, databaseSchemaProvider: string): Thenable<mssql.ParseTSqlScriptResult> {
 		return Promise.resolve({ containsCreateTableStatement: true });
 	}
+
+	savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>): Thenable<azdata.ResultStatus> {
+		return Promise.resolve(this.dacfxResult);
+	}
 }
