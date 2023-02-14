@@ -36,7 +36,7 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 		}
 
 		for (const reference of databaseReferences) {
-			this.references.push(new DatabaseReferenceTreeItem(reference, this.relativeProjectUri, this.sqlprojUri));
+			this.references.push(new DatabaseReferenceTreeItem(reference, this.relativeProjectUri, this.projectFileUri));
 		}
 	}
 
