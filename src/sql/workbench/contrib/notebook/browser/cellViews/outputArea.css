@@ -21,6 +21,6 @@ output-area-component .notebook-output {
 	word-wrap: break-word;
 }
 
-.output-userselect {
+output-area-component .notebook-output .output-userselect {
 	overflow: scroll;
 }
