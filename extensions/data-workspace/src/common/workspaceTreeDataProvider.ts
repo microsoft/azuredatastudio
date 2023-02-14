@@ -116,7 +116,6 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 	}
 
 	handleDrag(treeItems: readonly WorkspaceTreeItem[], dataTransfer: vscode.DataTransfer): void | Thenable<void> {
-		// Can't transfer the WorkspaceTreeItem as is because there's a circular reference error when converting the treeDataProvider to JSON
 		dataTransfer.set('application/vnd.code.tree.WorkspaceTreeDataProvider', new vscode.DataTransferItem(treeItems.map(t => t.element)));
 	}
 
