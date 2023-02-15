@@ -226,7 +226,6 @@ export class AccountDialog extends Modal {
 		noAccountTitle.innerText = noAccountLabel;
 
 		// Show the add account button for the first provider
-		// Todo: If we have more than 1 provider, need to show all add account buttons for all providers
 		const buttonSection = DOM.append(this._noaccountViewContainer, DOM.$('div.button-section'));
 		this._addAccountButton = new Button(buttonSection);
 		this._addAccountButton.label = localize('accountDialog.addConnection', "Add an account");
@@ -268,6 +267,9 @@ export class AccountDialog extends Modal {
 		else if (accountMetadata.length === 0) {
 			this.showLoadingSpinner();
 		}
+		else if (accountMetadata.length > 1) {
+			this.showSplitView();
+		}
 		else {
 			this.showNoAccountContainer();
 		}
@@ -295,7 +297,10 @@ export class AccountDialog extends Modal {
 		if (Iterable.consume(this._providerViewsMap.values()).length > 0) {
 			const firstView = this._providerViewsMap.values().next().value;
 			if (firstView && firstView.view instanceof AccountPanel) {
-				firstView.view.setSelection([0]);
+				// Handle index error with length 0
+				if (firstView.view.length > 0) {
+					firstView.view.setSelection([0]);
+				}
 				firstView.view.focus();
 			}
 		}
@@ -357,13 +362,16 @@ export class AccountDialog extends Modal {
 			this.vstelemetryService
 		);
 
-		Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{
-			id: newProvider.addedProvider.id,
-			name: newProvider.addedProvider.displayName,
-			ctorDescriptor: new SyncDescriptor(AccountPanel),
-		}], ACCOUNT_VIEW_CONTAINER);
+		// Check if view is registered, if it isn't, register the view
+		if (!Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(newProvider.addedProvider.id)) {
+			Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{
+				id: newProvider.addedProvider.id,
+				name: newProvider.addedProvider.displayName,
+				ctorDescriptor: new SyncDescriptor(AccountPanel),
+			}], ACCOUNT_VIEW_CONTAINER);
+			this.registerActions(newProvider.addedProvider.id);
+		}
 
-		this.registerActions(newProvider.addedProvider.id);
 
 		attachPanelStyler(providerView, this._themeService);
 
@@ -372,6 +380,13 @@ export class AccountDialog extends Modal {
 
 		// Append the list view to the split view
 		this._splitView!.addView(providerView, Sizing.Distribute, insertIndex);
+		// Increment index for each provider
+		this._providerViewsMap.forEach((provider) => {
+			if (provider.view.index > providerView.index) {
+				provider.view.index++;
+			}
+		})
+
 		providerView.index = insertIndex;
 
 		this._splitView!.layout(DOM.getContentHeight(this._container!));
@@ -384,7 +399,7 @@ export class AccountDialog extends Modal {
 		}
 		providerView.updateAccounts(updatedAccounts);
 
-		if (updatedAccounts.length > 0 && this._splitViewContainer!.hidden) {
+		if ((updatedAccounts.length > 0 && this._splitViewContainer!.hidden) || this._providerViewsMap.size > 1) {
 			this.showSplitView();
 		}
 
@@ -406,11 +421,20 @@ export class AccountDialog extends Modal {
 
 		// Remove the list view from the split view
 		this._splitView!.removeView(providerView.view.index!);
+		// Decrement index for each provider
+		this._providerViewsMap.forEach((provider) => {
+			if (provider.view.index > providerView.view.index) {
+				provider.view.index--;
+			}
+		})
 		this._splitView!.layout(DOM.getContentHeight(this._container!));
-
 		// Remove the list view from our internal map
 		this._providerViewsMap.delete(removedProvider.id);
 		this.logService.debug(`Provider ${removedProvider.id} removed`);
+		// Update view after removing provider
+		if (this._splitViewContainer!.hidden) {
+			this.showSplitView();
+		}
 		this.layout();
 	}
 
@@ -426,11 +450,11 @@ export class AccountDialog extends Modal {
 		}
 		providerMapping.view.updateAccounts(updatedAccounts);
 
-		if (args.accountList.length > 0 && this._splitViewContainer!.hidden) {
+		if ((args.accountList.length > 0 && this._splitViewContainer!.hidden) || this._providerViewsMap.size > 1) {
 			this.showSplitView();
 		}
 
-		if (this.isEmptyLinkedAccount() && this._noaccountViewContainer!.hidden) {
+		if (this.isEmptyLinkedAccount() && this._noaccountViewContainer!.hidden && this._providerViewsMap.size === 1) {
 			this.showNoAccountContainer();
 		}
 

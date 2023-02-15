@@ -11,6 +11,20 @@ import { formatNumber, ParallelCopyTypeCodes, PipelineStatusCodes } from './help
 import { ValidationError } from '../api/azure';
 const localize = nls.loadMessageBundle();
 
+export const serviceName = 'Sql Migration Service';
+export const providerId = 'SqlMigration';
+export const extensionConfigSectionName = 'sqlMigration';
+export const sqlConfigSectionName = 'sql';
+export const configLogDebugInfo = 'logDebugInfo';
+export function serviceCrashMessage(error: string): string {
+	return localize('serviceCrashMessage', "Migration service component could not start. {0}", error);
+}
+export const serviceCrashed = localize('serviceCrashed', "Service component crashed.");
+export function waitingForService(serviceName: string): string {
+	return localize('waitingForService', "Waiting for {0} component to start.", serviceName);
+}
+export const serviceProviderInitializationError = localize('serviceProviderIntializationError', "Service provider could not be initialized.");
+
 // mirrors MigrationState as defined in RP
 export enum MigrationState {
 	Canceled = 'Canceled',
@@ -408,9 +422,10 @@ export function SQL_TARGET_CONNECTION_DUPLICATE_TARGET_MAPPING(
 ): string {
 	return localize(
 		'sql.migration.wizard.target.mapping.error.duplicate',
-		"Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.",
+		"Database mapping error. Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '{2}' is already selected as a migration target for database '{3}'.  Please select a different target database.",
 		targetDatabaseName,
 		sourceDatabaseName,
+		targetDatabaseName,
 		mappedSourceDatabaseName);
 }
 
@@ -418,19 +433,21 @@ export function SQL_TARGET_CONNECTION_DUPLICATE_TARGET_MAPPING(
 export function SQL_TARGET_CONNECTION_SOURCE_NOT_MAPPED(sourceDatabaseName: string): string {
 	return localize(
 		'sql.migration.wizard.target.source.mapping.error',
-		"Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.",
+		"Database mapping error. Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.",
 		sourceDatabaseName);
 }
 
-//`Database mapping error. Source database ({0}) collation ({1}) does not match target database ({2}) collation ({3}). Please select a target database with the same collation to the source database.`
+//`A mapping error (Error code: {0}) was found between '{1}' and '{2}' databases. The source database collation '{3}' does not match the target database collation '{4}'. Please select or re-create a target database with the same collation as the source database.`
 export function SQL_TARGET_SOURCE_COLLATION_NOT_SAME(
+	errorCode: string,
 	sourceDatabaseName: string,
 	targetDatabaseName: string,
 	sourceDatabaseCollation: string | undefined,
 	targetDatabaseCollation: string | undefined): string {
 	return localize(
 		'sql.migration.wizard.target.source.collation.error',
-		"A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.",
+		"Database mapping error (Error code: {0}) was found between '{1}' and '{2}' databases. The source database collation '{3}' does not match the target database collation '{4}'. Please select or re-create a target database with the same collation as the source database.",
+		errorCode,
 		sourceDatabaseName,
 		targetDatabaseName,
 		sourceDatabaseCollation,

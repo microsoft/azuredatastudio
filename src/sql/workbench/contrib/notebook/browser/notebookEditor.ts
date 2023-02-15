@@ -374,8 +374,8 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 			filters: false
 		};
 		this._notebookModel.cells?.forEach(cell => {
-			this._register(cell.onCellModeChanged((state) => {
-				if (state) {
+			this._register(cell.onCellEditModeChanged((isEditMode) => {
+				if (isEditMode) {
 					this._onFindStateChange(changeEvent).catch(onUnexpectedError);
 				}
 			}));

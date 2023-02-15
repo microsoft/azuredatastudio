@@ -45,7 +45,6 @@ export class TableMigrationSelectionDialog {
 			const targetDatabaseInfo = this._model._sourceTargetMapping.get(this._sourceDatabaseName);
 			if (targetDatabaseInfo) {
 				const sourceTableList: TableInfo[] = await collectSourceDatabaseTableInfo(
-					this._model.sourceConnectionId,
 					this._sourceDatabaseName);
 
 				const targetTableList: TableInfo[] = await collectTargetDatabaseTableInfo(

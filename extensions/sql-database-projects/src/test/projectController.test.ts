@@ -127,10 +127,11 @@ describe('ProjectsController', function (): void {
 				sinon.stub(vscode.window, 'showInputBox').resolves(tableName);
 				const spy = sinon.spy(vscode.window, 'showErrorMessage');
 				const projController = new ProjectsController(testContext.outputChannel);
-				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+				let project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
 
 				should(project.files.length).equal(0, 'There should be no files');
 				await projController.addItemPrompt(project, '', { itemType: ItemType.script });
+
 				should(project.files.length).equal(1, 'File should be successfully added');
 				await projController.addItemPrompt(project, '', { itemType: ItemType.script });
 				const msg = constants.fileAlreadyExists(tableName);
@@ -155,7 +156,7 @@ describe('ProjectsController', function (): void {
 				sinon.stub(vscode.window, 'showInputBox').resolves(tableName);
 				const spy = sinon.spy(vscode.window, 'showErrorMessage');
 				const projController = new ProjectsController(testContext.outputChannel);
-				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+				let project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
 
 				should(project.files.length).equal(0, 'There should be no files');
 				await projController.addItemPrompt(project, '', { itemType: ItemType.script });
@@ -164,12 +165,18 @@ describe('ProjectsController', function (): void {
 				// exclude item
 				const projTreeRoot = new ProjectRootTreeItem(project);
 				await projController.exclude(createWorkspaceTreeItem(<FileNode>projTreeRoot.children.find(x => x.friendlyName === 'table1.sql')!));
+
+				// reload project
+				project = await Project.openProject(project.projectFilePath);
 				should(project.files.length).equal(0, 'File should be successfully excluded');
 				should(spy.called).be.false(`showErrorMessage not called with expected message. Actual '${spy.getCall(0)?.args[0]}'`);
 
 				// add item back
 				sinon.stub(vscode.window, 'showOpenDialog').resolves([vscode.Uri.file(path.join(project.projectFolderPath, 'table1.sql'))]);
 				await projController.addExistingItemPrompt(createWorkspaceTreeItem(projTreeRoot));
+
+				// reload project
+				project = await Project.openProject(project.projectFilePath);
 				should(project.files.length).equal(1, 'File should be successfully re-added');
 			});
 
@@ -178,11 +185,15 @@ describe('ProjectsController', function (): void {
 				const stub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
 
 				const projController = new ProjectsController(testContext.outputChannel);
-				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+				let project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
 				const projectRoot = new ProjectRootTreeItem(project);
 
 				should(project.files.length).equal(0, 'There should be no other folders');
 				await projController.addFolderPrompt(createWorkspaceTreeItem(projectRoot));
+
+				// reload project
+				project = await Project.openProject(project.projectFilePath);
+
 				should(project.files.length).equal(1, 'Folder should be successfully added');
 				stub.restore();
 				await verifyFolderNotAdded(folderName, projController, project, projectRoot);
@@ -198,22 +209,28 @@ describe('ProjectsController', function (): void {
 				const stub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
 
 				const projController = new ProjectsController(testContext.outputChannel);
-				const project = await testUtils.createTestProject(baselines.openProjectFileBaseline);
+				let project = await testUtils.createTestProject(baselines.openProjectFileBaseline);
 				const projectRoot = new ProjectRootTreeItem(project);
 
 				// make sure it's ok to add these folders if they aren't where the reserved folders are at the root of the project
 				let node = projectRoot.children.find(c => c.friendlyName === 'Tables');
 				stub.restore();
 				for (let i in reservedProjectFolders) {
+					// reload project
+					project = await Project.openProject(project.projectFilePath);
 					await verifyFolderAdded(reservedProjectFolders[i], projController, project, <BaseProjectTreeItem>node);
 				}
 			});
 
 			async function verifyFolderAdded(folderName: string, projController: ProjectsController, project: Project, node: BaseProjectTreeItem): Promise<void> {
 				const beforeFileCount = project.files.length;
+				let beforeFiles = project.files.map(f => f.relativePath);
 				const stub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
 				await projController.addFolderPrompt(createWorkspaceTreeItem(node));
-				should(project.files.length).equal(beforeFileCount + 1, `File count should be increased by one after adding the folder ${folderName}`);
+
+				// reload project
+				project = await Project.openProject(project.projectFilePath);
+				should(project.files.length).equal(beforeFileCount + 1, `File count should be increased by one after adding the folder ${folderName}. before files: ${JSON.stringify(beforeFiles)}/n after files: ${JSON.stringify(project.files.map(f => f.relativePath))}`);
 				stub.restore();
 			}
 
@@ -261,7 +278,7 @@ describe('ProjectsController', function (): void {
 
 			it('Should delete database references', async function (): Promise<void> {
 				// setup - openProject baseline has a system db reference to master
-				const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
+				let proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
 				const projController = new ProjectsController(testContext.outputChannel);
 				sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
 
@@ -281,6 +298,8 @@ describe('ProjectsController', function (): void {
 				});
 
 				const projTreeRoot = new ProjectRootTreeItem(proj);
+				// reload project
+				proj = await Project.openProject(proj.projectFilePath);
 				should(proj.databaseReferences.length).equal(3, 'Should start with 3 database references');
 
 				const databaseReferenceNodeChildren = projTreeRoot.children.find(x => x.friendlyName === constants.databaseReferencesNodeName)?.children;
@@ -289,6 +308,8 @@ describe('ProjectsController', function (): void {
 				await projController.delete(createWorkspaceTreeItem(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'project1')!)); // project reference
 
 				// confirm result
+				// reload project
+				proj = await Project.openProject(proj.projectFilePath);
 				should(proj.databaseReferences.length).equal(0, 'All database references should have been deleted');
 			});
 
@@ -343,8 +364,8 @@ describe('ProjectsController', function (): void {
 				// Confirm result
 				should(proj.files.some(x => x.relativePath === 'UpperFolder')).equal(false, 'UpperFolder should not be part of proj file any more');
 				should(await utils.exists(scriptEntry.fsUri.fsPath)).equal(false, 'script is supposed to be deleted from disk');
-				should(await utils.exists(lowerFolder.projectUri.fsPath)).equal(false, 'LowerFolder is supposed to be deleted from disk');
-				should(await utils.exists(upperFolder.projectUri.fsPath)).equal(false, 'UpperFolder is supposed to be deleted from disk');
+				should(await utils.exists(lowerFolder.relativeProjectUri.fsPath)).equal(false, 'LowerFolder is supposed to be deleted from disk');
+				should(await utils.exists(upperFolder.relativeProjectUri.fsPath)).equal(false, 'UpperFolder is supposed to be deleted from disk');
 			});
 
 			it('Should reload correctly after changing sqlproj file', async function (): Promise<void> {
@@ -353,7 +374,7 @@ describe('ProjectsController', function (): void {
 				const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline, folderPath);
 				const treeProvider = new SqlDatabaseProjectTreeViewProvider();
 				const projController = new ProjectsController(testContext.outputChannel);
-				const project = await Project.openProject(vscode.Uri.file(sqlProjPath).fsPath);
+				let project = await Project.openProject(vscode.Uri.file(sqlProjPath).fsPath);
 				treeProvider.load([project]);
 
 				// change the sql project file
@@ -361,9 +382,12 @@ describe('ProjectsController', function (): void {
 				should(project.files.length).equal(0);
 
 				// call reload project
-				await projController.reloadProject({ treeDataProvider: treeProvider, element: { root: { project: project } } });
+				const projTreeRoot = new ProjectRootTreeItem(project);
+				await projController.reloadProject(createWorkspaceTreeItem(projTreeRoot));
 				// calling this because this gets called in the projectProvider.getProjectTreeDataProvider(), which is called by workspaceTreeDataProvider
 				// when notifyTreeDataChanged() happens
+				// reload project
+				project = await Project.openProject(sqlProjPath);
 				treeProvider.load([project]);
 
 				// check that the new project is in the tree
@@ -421,7 +445,7 @@ describe('ProjectsController', function (): void {
 				projController.setup(x => x.getPublishDialog(TypeMoq.It.isAny())).returns(() => publishDialog.object);
 				const proj = new Project('FakePath');
 				sinon.stub(proj, 'getProjectTargetVersion').returns('150');
-				void projController.object.publishProject(proj);
+				await projController.object.publishProject(proj);
 				should(opened).equal(true);
 			});
 

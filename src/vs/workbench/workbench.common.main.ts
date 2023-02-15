@@ -220,6 +220,8 @@ import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/comm
 import { TableDesignerService } from 'sql/workbench/services/tableDesigner/browser/tableDesignerService';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { ExecutionPlanService } from 'sql/workbench/services/executionPlan/common/executionPlanService';
+import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
+import { ErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/browser/errorDiagnosticsService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -263,6 +265,7 @@ registerSingleton(IAssessmentService, AssessmentService);
 registerSingleton(IDataGridProviderService, DataGridProviderService);
 registerSingleton(ITableDesignerService, TableDesignerService);
 registerSingleton(IExecutionPlanService, ExecutionPlanService);
+registerSingleton(IErrorDiagnosticsService, ErrorDiagnosticsService);
 //#endregion
 
 

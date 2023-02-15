@@ -172,7 +172,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	connect(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		return new Promise<IConnectionResult>((resolve, reject) => {
-			resolve({ connected: true, errorMessage: undefined!, errorCode: undefined!, callStack: undefined! });
+			resolve({ connected: true, errorMessage: undefined!, errorCode: undefined!, messageDetails: undefined! });
 		});
 	}
 
@@ -329,5 +329,13 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	async handleUnsupportedProvider(providerName: string): Promise<boolean> {
 		return true;
+	}
+
+	openChangePasswordDialog(profile: IConnectionProfile): Promise<string | undefined> {
+		return undefined;
+	}
+
+	openCustomErrorDialog(options: azdata.window.IErrorDialogOptions): Promise<string | undefined> {
+		return undefined;
 	}
 }

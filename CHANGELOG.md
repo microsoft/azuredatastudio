@@ -1,5 +1,16 @@
 # Change Log
 
+## Version 1.41.2
+* Release date: February 10, 2023
+* Release status: General Availability
+
+### Bug fixes in 1.41.2
+
+| New Item | Details |
+| --- | --- |
+| Connection | Fixed a regression blocking connections to sovereign Azure clouds |
+| Query Editor | Fixed a regression causing the Output window to display on each query execution |
+
 ## Version 1.41.1
 * Release date: January 30, 2023
 * Release status: General Availability
