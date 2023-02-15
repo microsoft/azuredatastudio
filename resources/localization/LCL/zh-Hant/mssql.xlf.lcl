@@ -809,12 +809,12 @@
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.encrypt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' encryption is supported on SQL Server 2022 onwards.]]></Val>
+          <Val><![CDATA[When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' is supported on SQL Server 2022 onwards.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[當 [強制]5D; 或 [嚴格]5D; 時，若伺服器已安裝憑證，SQL Server 會針對用戶端與伺服器之間傳送的所有資料使用 SSL 加密。設定為 [嚴格]5D; 時，SQL Server 會使用 TDS 8.0 在用戶端與伺服器之間傳輸所有資料。從 SQL Server 2022 起支援 [嚴格]5D; 加密。]]></Val>
+            <Val><![CDATA[當 [強制]5D; 或 [嚴格]5D; 時，若伺服器已安裝憑證，SQL Server 會為所有在用戶端和伺服器之間傳輸的資料使用 SSL 加密。當設定為 [嚴格]5D; 時，SQL Server 會為所有在用戶端和伺服器之間傳輸的資料使用 TDS 8.0。SQL Server 2022 與更新版本支援 [嚴格]5D;。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed]]></Val>
+            <Val><![CDATA[When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' encryption is supported on SQL Server 2022 onwards.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1136,10 +1136,13 @@
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.trustServerCertificate.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate]]></Val>
+          <Val><![CDATA[When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[若為 True (且 encrypt=true)，則 SQL Server 會對用戶端和伺服器間傳送的所有資料使用 SSL 加密，而不驗證伺服器憑證]]></Val>
+            <Val><![CDATA[當 True 時 (且 encrypt=true)，SQL Server 會為所有在用戶端和伺服器之間傳輸的資料使用 SSL 加密，且不驗證伺服器憑證。Encrypt=Strict 不支援此屬性。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
