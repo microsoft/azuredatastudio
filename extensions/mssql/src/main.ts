@@ -103,7 +103,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 			const activeConnections = await azdata.objectexplorer.getActiveConnectionNodes();
 			const connections = await azdata.connection.getConnections();
 			activeConnections.forEach(async node => {
-				const connectionProfile = connections.filter(c => c.connectionId === node.connectionId)[0];
+				const connectionProfile = connections.find(c => c.connectionId === node.connectionId);
 				if (connectionProfile?.providerId === Constants.providerId) {
 					await node.refresh();
 				}
