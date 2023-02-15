@@ -512,12 +512,12 @@
       </Item>
       <Item ItemId=";extensions/cms/package.cms.connectionOptions.encrypt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' encryption is supported on SQL Server 2022 onwards.]]></Val>
+          <Val><![CDATA[When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' is supported on SQL Server 2022 onwards.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA['필수' 또는 '엄격'으로 설정되면 SQL Server는 인증서가 설치된 경우 클라이언트와 서버 간의 모든 데이터 전송에 SSL 암호화를 사용합니다. '엄격'으로 설정되면 SQL Server는 클라이언트와 서버 간의 모든 데이터 전송에 TDS 8.0을 사용합니다. '엄격' 암호화는 SQL Server 2022 이상에서 지원됩니다.]]></Val>
+            <Val><![CDATA['Mandatory' 또는 'Strict'로 설정하면 SQL Server는 인증서가 설치된 경우 클라이언트와 서버 간의 모든 데이터 전송에 SSL 암호화를 사용합니다. 'Strict'로 설정하면 SQL Server는 클라이언트와 서버 간의 모든 데이터 전송에 TDS 8.0을 사용합니다. 'Strict'는 SQL Server 2022 이상에서 지원됩니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed]]></Val>
+            <Val><![CDATA[When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' encryption is supported on SQL Server 2022 onwards.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -857,10 +857,13 @@
       </Item>
       <Item ItemId=";extensions/cms/package.cms.connectionOptions.trustServerCertificate.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate]]></Val>
+          <Val><![CDATA[When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[true(및 encrypt=true)인 경우 SQL Server는 서버 인증서의 유효성을 검사하지 않고 클라이언트와 서버 간에 전송된 모든 데이터에 대해 SSL 암호화를 사용합니다.]]></Val>
+            <Val><![CDATA[true(및 encrypt=true)인 경우 SQL Server는 서버 인증서의 유효성을 검사하지 않고 클라이언트와 서버 간에 전송되는 모든 데이터에 SSL 암호화를 사용합니다. 이 속성은 Encrypt=Strict와는 지원되지 않습니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
