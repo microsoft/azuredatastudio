@@ -20,6 +20,7 @@ interface QueryMessageHandler {
 }
 
 export class SqlNotebookController implements vscode.Disposable {
+	private readonly _cellUriScheme = 'vscode-notebook-cell';
 	private readonly _connectionLabel = (serverName: string) => localize('notebookConnection', 'Connected to: {0}', serverName);
 	private readonly _disconnectedLabel = localize('notebookDisconnected', 'Disconnected');
 	private readonly _controllerId = 'sql-controller-id';
@@ -96,13 +97,7 @@ export class SqlNotebookController implements vscode.Disposable {
 				this._connectionLabelItem.text = this._connectionLabel(connection.options['server']);
 
 				// If this editor is for a cell, then update the connection for it
-				if (editor.document.uri.scheme === 'vscode-notebook-cell' && editor.document.uri.path === notebook.uri.path) {
-					let profile = this.getConnectionProfile(connection);
-					let result = await azdata.connection.connect(profile, false, false, editor.document.uri.toString());
-					if (!result.connected) {
-						console.log(`Failed to update cell connection. Error: ${result.errorMessage}`);
-					}
-				}
+				await this.updateCellConnection(notebook.uri, connection);
 			} else {
 				this._connectionLabelItem.text = this._disconnectedLabel;
 			}
@@ -137,6 +132,17 @@ export class SqlNotebookController implements vscode.Disposable {
 		}
 	}
 
+	private async updateCellConnection(notebookUri: vscode.Uri, connection: azdata.connection.Connection): Promise<void> {
+		let docUri = vscode.window.activeTextEditor?.document.uri;
+		if (docUri?.scheme === this._cellUriScheme && docUri?.path === notebookUri.path) {
+			let profile = this.getConnectionProfile(connection);
+			let result = await azdata.connection.connect(profile, false, false, docUri.toString());
+			if (!result.connected) {
+				console.log(`Failed to update cell connection. Error: ${result.errorMessage}`);
+			}
+		}
+	}
+
 	private async changeConnection(notebook?: vscode.NotebookDocument): Promise<azdata.connection.Connection | undefined> {
 		let connection: azdata.connection.Connection;
 		let notebookUri = notebook?.uri ?? vscode.window.activeTextEditor?.document.notebook?.uri;
@@ -145,6 +151,9 @@ export class SqlNotebookController implements vscode.Disposable {
 			if (connection) {
 				this._connectionsMap.set(notebookUri, connection);
 				this._connectionLabelItem.text = this._connectionLabel(connection.options['server']);
+
+				// Connect current notebook cell, if there is one
+				await this.updateCellConnection(notebookUri, connection);
 			} else {
 				this._connectionLabelItem.text = this._disconnectedLabel;
 			}
