@@ -500,7 +500,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			});
 			this._connectionDialog.onShowUiComponent((input) => this.handleShowUiComponent(input));
 			this._connectionDialog.onInitDialog(() => this.handleInitDialog());
-			this._connectionDialog.onFillinConnectionInputs(async (input) => this.handleFillInConnectionInputs(input as IConnectionProfile));
+			this._connectionDialog.onFillinConnectionInputs((input) => this.handleFillInConnectionInputs(input as IConnectionProfile));
 			this._connectionDialog.onResetConnection(() => this.handleProviderOnResetConnection());
 			this._connectionDialog.render();
 			this._connectionDialog.onClosed(() => {
