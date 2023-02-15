@@ -214,6 +214,21 @@ suite('SQL ProviderConnectionInfo tests', () => {
 		assert.strictEqual(conn.options['encrypt'], 'true');
 	});
 
+	test('constructor should initialize the options with encrypt strict', () => {
+		let options: { [key: string]: string } = {};
+		options['encrypt'] = 'strict';
+		let conn2 = Object.assign({}, connectionProfile, { options: options });
+		let conn = new ProviderConnectionInfo(capabilitiesService, conn2);
+
+		assert.strictEqual(conn.connectionName, conn2.connectionName);
+		assert.strictEqual(conn.serverName, conn2.serverName);
+		assert.strictEqual(conn.databaseName, conn2.databaseName);
+		assert.strictEqual(conn.authenticationType, conn2.authenticationType);
+		assert.strictEqual(conn.password, conn2.password);
+		assert.strictEqual(conn.userName, conn2.userName);
+		assert.strictEqual(conn.options['encrypt'], 'strict');
+	});
+
 	test('getOptionsKey should create a valid unique id', () => {
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
 		// **IMPORTANT** This should NEVER change without thorough review and consideration of side effects. This key controls

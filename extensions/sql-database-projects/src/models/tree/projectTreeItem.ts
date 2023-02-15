@@ -26,14 +26,17 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	fileChildren: { [childName: string]: (fileTree.FolderNode | fileTree.FileNode) } = {};
 	project: Project;
 	fileSystemUri: vscode.Uri;
+	projectNodeName: string;
 
 	constructor(project: Project) {
-		super(vscode.Uri.parse(path.basename(project.projectFilePath, sqlprojExtension)), undefined);
+		super(vscode.Uri.parse(path.basename(project.projectFilePath, sqlprojExtension)), vscode.Uri.file(project.projectFilePath));
 
 		this.project = project;
 		this.fileSystemUri = vscode.Uri.file(project.projectFilePath);
-		this.databaseReferencesNode = new DatabaseReferencesTreeItem(this);
-		this.sqlCmdVariablesNode = new SqlCmdVariablesTreeItem(this);
+		this.projectNodeName = path.basename(project.projectFilePath, sqlprojExtension);
+
+		this.databaseReferencesNode = new DatabaseReferencesTreeItem(this.projectNodeName, this.projectFileUri, project.databaseReferences);
+		this.sqlCmdVariablesNode = new SqlCmdVariablesTreeItem(this.projectNodeName, this.projectFileUri, project.sqlCmdVariables);
 		this.construct();
 	}
 
@@ -50,7 +53,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 		const projectItem = new vscode.TreeItem(this.fileSystemUri, collapsibleState);
 		projectItem.contextValue = this.project.isSdkStyleProject ? DatabaseProjectItemType.project : DatabaseProjectItemType.legacyProject;
 		projectItem.iconPath = IconPathHelper.databaseProject;
-		projectItem.label = path.basename(this.relativeProjectUri.fsPath, sqlprojExtension);
+		projectItem.label = this.projectNodeName;
 
 		return projectItem;
 	}
@@ -80,17 +83,17 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 			switch (entry.type) {
 				case EntryType.File:
 					if (entry.sqlObjectType === ExternalStreamingJob) {
-						newNode = new fileTree.ExternalStreamingJobFileNode(entry.fsUri, parentNode);
+						newNode = new fileTree.ExternalStreamingJobFileNode(entry.fsUri, this.projectFileUri);
 					} else if (entry.containsCreateTableStatement) {
-						newNode = new fileTree.TableFileNode(entry.fsUri, parentNode);
+						newNode = new fileTree.TableFileNode(entry.fsUri, this.projectFileUri);
 					}
 					else {
-						newNode = new fileTree.FileNode(entry.fsUri, parentNode);
+						newNode = new fileTree.FileNode(entry.fsUri, this.projectFileUri);
 					}
 
 					break;
 				case EntryType.Folder:
-					newNode = new fileTree.FolderNode(entry.fsUri, parentNode);
+					newNode = new fileTree.FolderNode(entry.fsUri, this.projectFileUri);
 					break;
 				default:
 					throw new Error(`Unknown EntryType: '${entry.type}'`);
@@ -104,7 +107,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	 * Gets the immediate parent tree node for an entry in a project file
 	 */
 	private getEntryParentNode(entry: FileProjectEntry): fileTree.FolderNode | ProjectRootTreeItem {
-		const relativePathParts = utils.trimChars(utils.trimUri(vscode.Uri.file(this.project.projectFilePath), entry.fsUri), '/').split('/').slice(0, -1); // remove the last part because we only care about the parent
+		const relativePathParts = utils.trimChars(utils.trimUri(this.projectFileUri, entry.fsUri), '/').split('/').slice(0, -1); // remove the last part because we only care about the parent
 
 		if (relativePathParts.length === 0) {
 			return this; // if nothing left after trimming the entry itself, must been root
@@ -119,7 +122,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 		for (const part of relativePathParts) {
 			if (current.fileChildren[part] === undefined) {
 				const parentPath = current instanceof ProjectRootTreeItem ? path.dirname(current.fileSystemUri.fsPath) : current.fileSystemUri.fsPath;
-				current.fileChildren[part] = new fileTree.FolderNode(vscode.Uri.file(path.join(parentPath, part)), current);
+				current.fileChildren[part] = new fileTree.FolderNode(vscode.Uri.file(path.join(parentPath, part)), this.projectFileUri);
 			}
 
 			if (current.fileChildren[part] instanceof fileTree.FileNode) {

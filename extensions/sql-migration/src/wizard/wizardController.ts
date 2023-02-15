@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as mssql from 'mssql';
 import { MigrationStateModel, NetworkContainerType, Page } from '../models/stateMachine';
 import * as loc from '../constants/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
@@ -35,19 +34,13 @@ export class WizardController {
 	}
 
 	public async openWizard(): Promise<void> {
-		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
-		if (api) {
-			this.extensionContext.subscriptions.push(this._model);
-			await this.createWizard(this._model);
-		}
+		this.extensionContext.subscriptions.push(this._model);
+		await this.createWizard(this._model);
 	}
 
 	public async openLoginWizard(): Promise<void> {
-		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
-		if (api) {
-			this.extensionContext.subscriptions.push(this._model);
-			await this.createLoginWizard(this._model);
-		}
+		this.extensionContext.subscriptions.push(this._model);
+		await this.createLoginWizard(this._model);
 	}
 
 	private async createWizard(stateModel: MigrationStateModel): Promise<void> {

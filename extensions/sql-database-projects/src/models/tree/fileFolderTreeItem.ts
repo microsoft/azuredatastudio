@@ -7,9 +7,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as utils from '../../common/utils';
 import { BaseProjectTreeItem } from './baseTreeItem';
-import { ProjectRootTreeItem } from './projectTreeItem';
-import { Project } from '../project';
-import { DatabaseProjectItemType } from '../../common/constants';
+import { DatabaseProjectItemType, sqlprojExtension } from '../../common/constants';
 import { IconPathHelper } from '../../common/iconHelper';
 
 /**
@@ -19,8 +17,8 @@ export class FolderNode extends BaseProjectTreeItem {
 	public fileChildren: { [childName: string]: (FolderNode | FileNode) } = {};
 	public fileSystemUri: vscode.Uri;
 
-	constructor(folderPath: vscode.Uri, parent: FolderNode | ProjectRootTreeItem) {
-		super(fsPathToProjectUri(folderPath, parent.root as ProjectRootTreeItem), parent);
+	constructor(folderPath: vscode.Uri, sqlprojUri: vscode.Uri) {
+		super(fsPathToProjectUri(folderPath, sqlprojUri), sqlprojUri);
 		this.fileSystemUri = folderPath;
 	}
 
@@ -35,10 +33,6 @@ export class FolderNode extends BaseProjectTreeItem {
 
 		return folderItem;
 	}
-
-	public get project(): Project {
-		return (<FolderNode | ProjectRootTreeItem>this.parent).project;
-	}
 }
 
 /**
@@ -47,8 +41,8 @@ export class FolderNode extends BaseProjectTreeItem {
 export class FileNode extends BaseProjectTreeItem {
 	public fileSystemUri: vscode.Uri;
 
-	constructor(filePath: vscode.Uri, parent: FolderNode | ProjectRootTreeItem) {
-		super(fsPathToProjectUri(filePath, parent.root as ProjectRootTreeItem, true), parent);
+	constructor(filePath: vscode.Uri, sqlprojUri: vscode.Uri) {
+		super(fsPathToProjectUri(filePath, sqlprojUri, true), sqlprojUri);
 		this.fileSystemUri = filePath;
 	}
 
@@ -107,8 +101,9 @@ export function sortFileFolderNodes(a: (FolderNode | FileNode), b: (FolderNode |
 /**
  * Converts a full filesystem URI to a project-relative URI that's compatible with the project tree
  */
-function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootTreeItem, isFile?: boolean): vscode.Uri {
-	const projBaseDir = projectNode.project.projectFolderPath;
+function fsPathToProjectUri(fileSystemUri: vscode.Uri, sqlprojUri: vscode.Uri, isFile?: boolean): vscode.Uri {
+	const projBaseDir = path.dirname(sqlprojUri.fsPath);
+	const projectFolderName = path.basename(sqlprojUri.fsPath, sqlprojExtension);
 	let localUri = '';
 
 	if (fileSystemUri.fsPath.startsWith(projBaseDir)) {
@@ -120,5 +115,5 @@ function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootT
 		localUri = parts[parts.length - 1];
 	}
 
-	return vscode.Uri.file(path.join(projectNode.relativeProjectUri.fsPath, localUri));
+	return vscode.Uri.file(path.join(projectFolderName, localUri));
 }
