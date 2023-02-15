@@ -543,7 +543,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._callbacks.onSetConnectButton(shouldEnableConnectButton);
 	}
 
-	protected onAuthTypeSelected(selectedAuthType: string) {
+	protected async onAuthTypeSelected(selectedAuthType: string): Promise<void> {
 		let currentAuthType = this.getMatchingAuthType(selectedAuthType);
 		if (currentAuthType !== AuthenticationType.SqlLogin) {
 			if (currentAuthType !== AuthenticationType.AzureMFA && currentAuthType !== AuthenticationType.AzureMFAAndUser) {
@@ -602,12 +602,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 			this._initialConnectionInfo.authenticationType = AuthenticationType.SqlLogin;
 			if (this._initialConnectionInfo && this._initialConnectionInfo.userName) {
-				const loadProfileIntoPasswordInputBox = (profile: IConnectionProfile) => {
-					this._passwordInputBox.value = profile.password;
-				};
-
 				this._rememberPasswordCheckBox.checked = this._initialConnectionInfo.savePassword;
-				this._connectionManagementService.addSavedPassword(this._initialConnectionInfo, true).then(loadProfileIntoPasswordInputBox);
+				const profileWithSavedPassword = await this._connectionManagementService.addSavedPassword(this._initialConnectionInfo, true);
+				this._passwordInputBox.value = profileWithSavedPassword.password;
 			}
 		}
 	}
