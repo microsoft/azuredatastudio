@@ -42,10 +42,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	Logger.log(`DataWorkspaceExtension constructor took ${new Date().getTime() - dataWorkspaceExtensionStartTime}ms`);
 
-	// const registerTreeDataProvidertartTime = new Date().getTime();
-	// context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
-	// Logger.log(`registerTreeDataProvider took ${new Date().getTime() - registerTreeDataProvidertartTime}ms`);
-
 	const settingProjectProviderContextStartTime = new Date().getTime();
 	context.subscriptions.push(vscode.extensions.onDidChange(() => {
 		setProjectProviderContextValue(workspaceService);
