@@ -7,7 +7,6 @@ import type { ThemedIconPath } from 'azdata';
 import * as dataworkspace from 'dataworkspace';
 import * as sqldbproj from 'sqldbproj';
 import * as vscode from 'vscode';
-
 import * as constants from '../common/constants';
 import { IconPathHelper } from '../common/iconHelper';
 import { getDataWorkspaceExtensionApi } from '../common/utils';
@@ -19,12 +18,18 @@ import { getPublishToDockerSettings } from '../dialogs/publishToDockerQuickpick'
 import { getDockerImageSpec } from '../models/deploy/deployService';
 
 export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvider, sqldbproj.IExtension {
-	supportsDragAndDrop: boolean = true;
-
 	constructor(private projectController: ProjectsController) {
 
 	}
 
+	supportsDragAndDrop: boolean = true;
+
+	/**
+	 * Move a file in the project tree
+	 * @param projectUri
+	 * @param source
+	 * @param target
+	 */
 	public async moveFile(projectUri: vscode.Uri, source: any, target: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		return this.projectController.moveFile(projectUri, source, target);
 	}

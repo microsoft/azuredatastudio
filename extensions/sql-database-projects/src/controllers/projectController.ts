@@ -1839,7 +1839,6 @@ export class ProjectsController {
 	 * @param projectUri URI of the project
 	 * @param source
 	 * @param target
-	 * @returns
 	 */
 	public async moveFile(projectUri: vscode.Uri, source: any, target: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const sourceFileNode = source as FileNode;
