@@ -27,3 +27,5 @@ export const TdeMigrationService = 'tdeMigrationService';
 
 // COMMANDNAMES //////////////////////////////////////////////////////////
 export const cmdObjectExplorerGroupBySchemaFlagName = 'mssql.objectExplorer.groupBySchema';
+export const cmdObjectExplorerEnableGroupBySchemaCommand = 'mssql.enableGroupBySchema';
+export const cmdObjectExplorerDisableGroupBySchemaCommand = 'mssql.disableGroupBySchema';

@@ -87,6 +87,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		}
 	});
 
+	vscode.commands.registerCommand(Constants.cmdObjectExplorerEnableGroupBySchemaCommand, async () => {
+		await vscode.workspace.getConfiguration().update(Constants.cmdObjectExplorerGroupBySchemaFlagName, true, true);
+	});
+
+	vscode.commands.registerCommand(Constants.cmdObjectExplorerDisableGroupBySchemaCommand, async () => {
+		await vscode.workspace.getConfiguration().update(Constants.cmdObjectExplorerGroupBySchemaFlagName, true, true);
+	});
+
 	vscode.workspace.onDidChangeConfiguration(async e => {
 		if (e.affectsConfiguration(Constants.cmdObjectExplorerGroupBySchemaFlagName)) {
 			const activeConnections = await azdata.objectexplorer.getActiveConnectionNodes();
