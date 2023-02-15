@@ -63,7 +63,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	context.subscriptions.push(server);
 	await server.start(appContext);
 
-	vscode.commands.registerCommand('mssql.exportSqlAsNotebook', async (uri: vscode.Uri) => {
+	context.subscriptions.push(vscode.commands.registerCommand('mssql.exportSqlAsNotebook', async (uri: vscode.Uri) => {
 		try {
 			const result = await appContext.getService<INotebookConvertService>(Constants.NotebookConvertService).convertSqlToNotebook(uri.toString());
 			const title = findNextUntitledEditorName();
@@ -72,9 +72,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		} catch (err) {
 			void vscode.window.showErrorMessage(localize('mssql.errorConvertingToNotebook', "An error occurred converting the SQL document to a Notebook. Error : {0}", err.toString()));
 		}
-	});
+	}));
 
-	vscode.commands.registerCommand('mssql.exportNotebookToSql', async (uri: vscode.Uri) => {
+	context.subscriptions.push(vscode.commands.registerCommand('mssql.exportNotebookToSql', async (uri: vscode.Uri) => {
 		try {
 			// SqlToolsService doesn't currently store anything about Notebook documents so we have to pass the raw JSON to it directly
 			// We use vscode.workspace.textDocuments here because the azdata.nb.notebookDocuments don't actually contain their contents
@@ -85,17 +85,17 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		} catch (err) {
 			void vscode.window.showErrorMessage(localize('mssql.errorConvertingToSQL', "An error occurred converting the Notebook document to SQL. Error : {0}", err.toString()));
 		}
-	});
+	}));
 
-	vscode.commands.registerCommand(Constants.cmdObjectExplorerEnableGroupBySchemaCommand, async () => {
+	context.subscriptions.push(vscode.commands.registerCommand(Constants.cmdObjectExplorerEnableGroupBySchemaCommand, async () => {
 		await vscode.workspace.getConfiguration().update(Constants.configObjectExplorerGroupBySchemaFlagName, true, true);
-	});
+	}));
 
-	vscode.commands.registerCommand(Constants.cmdObjectExplorerDisableGroupBySchemaCommand, async () => {
+	context.subscriptions.push(vscode.commands.registerCommand(Constants.cmdObjectExplorerDisableGroupBySchemaCommand, async () => {
 		await vscode.workspace.getConfiguration().update(Constants.configObjectExplorerGroupBySchemaFlagName, false, true);
-	});
+	}));
 
-	vscode.workspace.onDidChangeConfiguration(async e => {
+	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async e => {
 		if (e.affectsConfiguration(Constants.configObjectExplorerGroupBySchemaFlagName)) {
 			const groupBySchemaTelemetryActionEvent = vscode.workspace.getConfiguration().get(Constants.configObjectExplorerGroupBySchemaFlagName) ? TelemetryActions.GroupBySchemaEnabled : TelemetryActions.GroupBySchemaDisabled;
 			TelemetryReporter.sendActionEvent(TelemetryViews.MssqlObjectExplorer, groupBySchemaTelemetryActionEvent);
@@ -108,7 +108,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 				}
 			});
 		}
-	});
+	}));
 
 	registerTableDesignerCommands(appContext);
 
