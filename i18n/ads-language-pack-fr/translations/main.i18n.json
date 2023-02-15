@@ -9738,7 +9738,7 @@
 			"checkboxTitle": "Lorsque cette option est cochée, cette page s’affiche au démarrage.",
 			"close": "Masquer",
 			"footer": "{0} collecte les données d’utilisation. Lisez notre {1} et apprenez à {2}.",
-			"getStarted": "Démarrage",
+			"getStarted": "Prise en main",
 			"gettingStarted.allStepsComplete": "Toutes les {0} étapes ont été complétées.",
 			"gettingStarted.editingEvolved": "Édition évoluée",
 			"gettingStarted.someStepsComplete": "{0} étapes complétées sur {1}",
@@ -9763,9 +9763,9 @@
 		},
 		"vs/workbench/contrib/welcomeGettingStarted/browser/gettingStarted.contribution": {
 			"deprecationMessage": "Déconseillé, utilisez le 'workbench.reduceMotion' global.",
-			"getStarted": "Démarrage",
+			"getStarted": "Prise en main",
 			"help": "Aide",
-			"miGetStarted": "Démarrage",
+			"miGetStarted": "Prise en main",
 			"pickWalkthroughs": "Ouvrir la procédure pas à pas...",
 			"welcome.goBack": "Précédent",
 			"welcome.markStepComplete": "Marquer l’étape comme complète",
@@ -9831,7 +9831,7 @@
 			"gettingStartedUnchecked": "Utilisé pour représenter les étapes de procédure pas à pas qui n’ont été pas effectuées"
 		},
 		"vs/workbench/contrib/welcomeGettingStarted/browser/gettingStartedInput": {
-			"getStarted": "Démarrage"
+			"getStarted": "Prise en main"
 		},
 		"vs/workbench/contrib/welcomeGettingStarted/browser/gettingStartedService": {
 			"builtin": "Intégré"
@@ -13442,6 +13442,17 @@
 			"onDidDisconnectMessage": "Déconnecté",
 			"unsavedGroupLabel": "Connexions non enregistrées"
 		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "Annuler",
+			"passwordChangeDialog.confirmPassword": "Confirmer le mot de passe :",
+			"passwordChangeDialog.connecting": "Connexion",
+			"passwordChangeDialog.errorHeader": "Échec lors de la tentative de modification du mot de passe",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "Les mots de passe entrés ne correspondent pas.",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Appuyez sur OK et entrez exactement le même mot de passe dans les deux zones.",
+			"passwordChangeDialog.newPassword": "Nouveau mot de passe :",
+			"passwordChangeDialog.ok": "OK",
+			"passwordChangeDialog.title": "Changer le mot de passe"
+		},
 		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
 			"newDashboardTab.cancel": "Annuler",
 			"newDashboardTab.ok": "OK",
@@ -13899,17 +13910,6 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "Pri&&se en main",
 			"showReleaseNotes": "Afficher la prise en main"
-		},
-		"sql/workbench/services/connection/browser/passwordChangeDialog": {
-			"passwordChangeDialog.cancel": "Annuler",
-			"passwordChangeDialog.confirmPassword": "Confirmer le mot de passe :",
-			"passwordChangeDialog.connecting": "Connexion",
-			"passwordChangeDialog.errorHeader": "Échec lors de la tentative de modification du mot de passe",
-			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "Les mots de passe entrés ne correspondent pas.",
-			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Appuyez sur OK et entrez exactement le même mot de passe dans les deux zones.",
-			"passwordChangeDialog.newPassword": "Nouveau mot de passe :",
-			"passwordChangeDialog.ok": "OK",
-			"passwordChangeDialog.title": "Changer le mot de passe"
 		}
 	}
 }

@@ -24,6 +24,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		const ssmsMinVer = JSON.parse(rawConfig.toString()).version;
 		exePath = path.join(context.extensionPath, 'ssmsmin', 'Windows', ssmsMinVer, 'ssmsmin.exe');
 		registerCommands(context);
+		context.subscriptions.push(TelemetryReporter);
 	}
 }
 

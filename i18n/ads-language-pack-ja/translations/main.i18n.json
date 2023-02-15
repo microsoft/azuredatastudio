@@ -13442,6 +13442,17 @@
 			"onDidDisconnectMessage": "切断",
 			"unsavedGroupLabel": "保存されていない接続"
 		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "キャンセル",
+			"passwordChangeDialog.confirmPassword": "パスワードの確認入力:",
+			"passwordChangeDialog.connecting": "接続しています",
+			"passwordChangeDialog.errorHeader": "パスワードを変更しようとしたときにエラーが発生しました",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "入力されたパスワードが一致しません",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "[OK] を押し、両方のボックスにまったく同じパスワードを入力します。",
+			"passwordChangeDialog.newPassword": "新しいパスワード:",
+			"passwordChangeDialog.ok": "OK",
+			"passwordChangeDialog.title": "パスワードの変更"
+		},
 		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
 			"newDashboardTab.cancel": "キャンセル",
 			"newDashboardTab.ok": "OK",
@@ -13899,17 +13910,6 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "はじめに(&&S)",
 			"showReleaseNotes": "「はじめに」を表示する"
-		},
-		"sql/workbench/services/connection/browser/passwordChangeDialog": {
-			"passwordChangeDialog.cancel": "キャンセル",
-			"passwordChangeDialog.confirmPassword": "パスワードの確認入力:",
-			"passwordChangeDialog.connecting": "接続しています",
-			"passwordChangeDialog.errorHeader": "パスワードを変更しようとしたときにエラーが発生しました",
-			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "入力されたパスワードが一致しません",
-			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "[OK] を押し、両方のボックスにまったく同じパスワードを入力します。",
-			"passwordChangeDialog.newPassword": "新しいパスワード:",
-			"passwordChangeDialog.ok": "OK",
-			"passwordChangeDialog.title": "パスワードの変更"
 		}
 	}
 }

@@ -6,6 +6,7 @@
 import Severity from 'vs/base/common/severity';
 import { IAction } from 'vs/base/common/actions';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 export const IErrorMessageService = createDecorator<IErrorMessageService>('errorMessageService');
 export interface IErrorMessageService {
@@ -16,9 +17,10 @@ export interface IErrorMessageService {
 	 * @param headerTitle Title to show on Error modal dialog
 	 * @param message Message containng error message
 	 * @param messageDetails Message details containing stacktrace along with error message
+	 * @param telemetryView Telemetry View to be used for dispatching telemetry events.
 	 * @param actions Custom actions to display on the error message dialog
-	 * @param instructionText Spcial instructions to display to user when displaying error message
+	 * @param instructionText Special instructions to display to user when displaying error message
 	 * @param readMoreLink External link to read more about the instructions.
 	 */
-	showDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[], instructionText?: string, readMoreLink?: string): void;
+	showDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, telemetryView?: TelemetryView, actions?: IAction[], instructionText?: string, readMoreLink?: string): void;
 }

@@ -21,6 +21,7 @@ exports.dirs = [
 	'extensions/configuration-editing',
 	'extensions/dacpac',
 	'extensions/data-workspace',
+	'extensions/datavirtualization',
 	'extensions/git',
 	'extensions/git-base',
 	'extensions/github',

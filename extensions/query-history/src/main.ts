@@ -104,6 +104,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.openStorageFolder', async () => {
 		return vscode.env.openExternal(storageUri);
 	}));
+	context.subscriptions.push(TelemetryReporter);
 }
 
 async function openQuery(item: QueryHistoryItem): Promise<void> {

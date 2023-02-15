@@ -2,7 +2,7 @@
   "name": "azcli",
   "displayName": "%azcli.arc.displayName%",
   "description": "%azcli.arc.description%",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "publisher": "Microsoft",
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",

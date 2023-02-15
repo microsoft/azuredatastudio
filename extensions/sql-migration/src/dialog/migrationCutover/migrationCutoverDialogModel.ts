@@ -5,7 +5,7 @@
 
 import { DatabaseMigration, startMigrationCutover, stopMigration, BackupFileInfo, getResourceGroupFromId, getMigrationDetails, getMigrationTargetName } from '../../api/azure';
 import { MigrationServiceContext } from '../../models/migrationLocalStorage';
-import { logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../../telemtery';
+import { logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../../telemetry';
 import * as constants from '../../constants/strings';
 import { getMigrationTargetType, getMigrationMode, isBlobMigration } from '../../constants/helper';
 

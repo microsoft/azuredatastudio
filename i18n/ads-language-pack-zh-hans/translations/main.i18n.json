@@ -13442,6 +13442,17 @@
 			"onDidDisconnectMessage": "已断开连接",
 			"unsavedGroupLabel": "未保存的连接"
 		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "取消",
+			"passwordChangeDialog.confirmPassword": "确认密码:",
+			"passwordChangeDialog.connecting": "正在连接",
+			"passwordChangeDialog.errorHeader": "尝试更改密码时失败",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "输入的密码不匹配",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "请按“确定”并在两个框中输入完全相同的密码。",
+			"passwordChangeDialog.newPassword": "新密码:",
+			"passwordChangeDialog.ok": "确定",
+			"passwordChangeDialog.title": "更改密码"
+		},
 		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
 			"newDashboardTab.cancel": "取消",
 			"newDashboardTab.ok": "确定",
@@ -13899,17 +13910,6 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "入门(&&S)",
 			"showReleaseNotes": "显示入门指南"
-		},
-		"sql/workbench/services/connection/browser/passwordChangeDialog": {
-			"passwordChangeDialog.cancel": "取消",
-			"passwordChangeDialog.confirmPassword": "确认密码:",
-			"passwordChangeDialog.connecting": "正在连接",
-			"passwordChangeDialog.errorHeader": "尝试更改密码时失败",
-			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "输入的密码不匹配",
-			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "请按“确定”并在两个框中输入完全相同的密码。",
-			"passwordChangeDialog.newPassword": "新密码:",
-			"passwordChangeDialog.ok": "确定",
-			"passwordChangeDialog.title": "更改密码"
 		}
 	}
 }

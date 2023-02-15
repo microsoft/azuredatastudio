@@ -10,10 +10,10 @@ import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { debounce, getLoginStatusImage, getLoginStatusMessage } from '../api/utils';
 import * as styles from '../constants/styles';
-import { collectSourceLogins, collectTargetLogins, LoginTableInfo } from '../api/sqlUtils';
-import { AzureSqlDatabaseServer } from '../api/azure';
+import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, LoginTableInfo } from '../api/sqlUtils';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import * as utils from '../api/utils';
+import { LoginType } from '../models/loginMigrationModel';
 
 export class LoginSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -24,9 +24,11 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	private _disposables: vscode.Disposable[] = [];
 	private _isCurrentPage: boolean;
 	private _refreshResultsInfoBox!: azdata.InfoBoxComponent;
+	private _windowsAuthInfoBox!: azdata.InfoBoxComponent;
 	private _refreshButton!: azdata.ButtonComponent;
 	private _refreshLoading!: azdata.LoadingComponent;
 	private _filterTableValue!: string;
+	private _aadDomainNameContainer!: azdata.FlexContainer;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE), migrationStateModel);
@@ -59,9 +61,11 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				text: '',
 				level: azdata.window.MessageLevel.Error
 			};
+
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
 			}
+
 			if (this.selectedLogins().length === 0) {
 				this.wizard.message = {
 					text: constants.SELECT_LOGIN_TO_CONTINUE,
@@ -69,13 +73,26 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				};
 				return false;
 			}
+
+			if (this.selectedWindowsLogins() && !this.migrationStateModel._aadDomainName) {
+				this.wizard.message = {
+					text: constants.ENTER_AAD_DOMAIN_NAME,
+					level: azdata.window.MessageLevel.Error
+				};
+				return false;
+			}
+
 			return true;
 		});
 
-		await this._loadLoginList();
+		// Dispaly windows auth info box if windows auth is not supported
+		await utils.updateControlDisplay(this._windowsAuthInfoBox, !this.migrationStateModel.isWindowsAuthMigrationSupported);
+
+		// Refresh login list
+		await this._loadLoginList(false);
 
 		// load unfiltered table list and pre-select list of logins saved in state
-		await this._filterTableList('', this.migrationStateModel._loginsForMigration);
+		await this._filterTableList('', this.migrationStateModel._loginMigrationModel.loginsForMigration);
 	}
 
 	public async onPageLeave(): Promise<void> {
@@ -98,7 +115,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		}).component();
 
 		this._disposables.push(
-			resourceSearchBox.onTextChanged(value => this._filterTableList(value, this.migrationStateModel._loginsForMigration || [])));
+			resourceSearchBox.onTextChanged(value => this._filterTableList(value, this.migrationStateModel._loginMigrationModel.loginsForMigration || [])));
 
 		const searchContainer = this._view.modelBuilder.divContainer().withItems([resourceSearchBox]).withProps({
 			CSSStyles: {
@@ -108,6 +125,40 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		}).component();
 
 		return searchContainer;
+	}
+
+	private createAadDomainNameComponent(): azdata.FlexContainer {
+		// target user name
+		const aadDomainNameLabel = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_LABEL,
+				requiredIndicator: false,
+				CSSStyles: { ...styles.LABEL_CSS }
+			}).component();
+
+		const aadDomainNameInputBox = this._view.modelBuilder.inputBox()
+			.withProps({
+				width: '300px',
+				inputType: 'text',
+				placeHolder: constants.LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_PLACEHOLDER,
+				required: false,
+			}).component();
+
+		this._disposables.push(
+			aadDomainNameInputBox.onTextChanged(
+				(value: string) => {
+					this.migrationStateModel._aadDomainName = value ?? '';
+				}));
+
+		this._aadDomainNameContainer = this._view.modelBuilder.flexContainer()
+			.withItems([
+				aadDomainNameLabel,
+				aadDomainNameInputBox])
+			.withLayout({ flexFlow: 'column' })
+			.withProps({ CSSStyles: { 'margin': '10px 0px 0px 0px', 'display': 'none' } })
+			.component();
+
+		return this._aadDomainNameContainer;
 	}
 
 	@debounce(500)
@@ -143,12 +194,13 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
 
-		const windowsAuthInfoBox = this._view.modelBuilder.infoBox()
+		this._windowsAuthInfoBox = this._view.modelBuilder.infoBox()
 			.withProps({
 				style: 'information',
 				text: constants.LOGIN_MIGRATIONS_SELECT_LOGINS_WINDOWS_AUTH_WARNING,
-				CSSStyles: { ...styles.BODY_CSS }
+				CSSStyles: { ...styles.BODY_CSS, 'display': 'none', }
 			}).component();
+
 
 		this._refreshButton = this._view.modelBuilder.button()
 			.withProps({
@@ -158,7 +210,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				iconPath: IconPathHelper.refresh,
 				label: constants.DATABASE_TABLE_REFRESH_LABEL,
 				width: 70,
-				CSSStyles: { 'margin': '15px 0 0 0' },
+				CSSStyles: { 'margin': '15px 5px 0 0' },
 			})
 			.component();
 
@@ -274,39 +326,36 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		}));
 
 		// load unfiltered table list and pre-select list of logins saved in state
-		await this._filterTableList('', this.migrationStateModel._loginsForMigration);
+		await this._filterTableList('', this.migrationStateModel._loginMigrationModel.loginsForMigration);
 
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			height: '100%',
 		}).withProps({
 			CSSStyles: {
-				'margin': '0px 28px 0px 28px'
+				'margin': '-20px 28px 0px 28px'
 			}
 		}).component();
-		flex.addItem(windowsAuthInfoBox, { flex: '0 0 auto' });
+		flex.addItem(this._windowsAuthInfoBox, { flex: '0 0 auto' });
 		flex.addItem(refreshContainer, { flex: '0 0 auto' });
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._loginCount, { flex: '0 0 auto' });
 		flex.addItem(this._loginSelectorTable);
+		flex.addItem(this.createAadDomainNameComponent(), { flex: '0 0 auto', CSSStyles: { 'margin-top': '8px' } });
 		return flex;
 	}
 
-	private async _loadLoginList(): Promise<void> {
-		this._refreshLoading.loading = true;
-		this.wizard.nextButton.enabled = false;
-		await utils.updateControlDisplay(this._refreshResultsInfoBox, true);
-		this._refreshResultsInfoBox.text = constants.LOGIN_MIGRATION_REFRESHING_LOGIN_DATA;
-		this._refreshResultsInfoBox.style = 'information';
-
+	private async _getSourceLogins() {
 		const stateMachine: MigrationStateModel = this.migrationStateModel;
-		const selectedLogins: LoginTableInfo[] = stateMachine._loginsForMigration || [];
 		const sourceLogins: LoginTableInfo[] = [];
-		const targetLogins: string[] = [];
 
 		// execute a query against the source to get the logins
 		try {
-			sourceLogins.push(...await collectSourceLogins(stateMachine.sourceConnectionId));
+			sourceLogins.push(...await collectSourceLogins(
+				await getSourceConnectionId(),
+				stateMachine.isWindowsAuthMigrationSupported));
+			stateMachine._loginMigrationModel.collectedSourceLogins = true;
+			stateMachine._loginMigrationModel.loginsOnSource = sourceLogins;
 		} catch (error) {
 			this._refreshLoading.loading = false;
 			this._refreshResultsInfoBox.style = 'error';
@@ -317,11 +366,23 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				description: constants.LOGIN_MIGRATIONS_GET_LOGINS_ERROR(error.message),
 			};
 		}
+	}
+
+	private async _getTargetLogins() {
+		const stateMachine: MigrationStateModel = this.migrationStateModel;
+		const targetLogins: string[] = [];
 
 		// execute a query against the target to get the logins
 		try {
 			if (this.isTargetInstanceSet()) {
-				targetLogins.push(...await collectTargetLogins(stateMachine._targetServerInstance as AzureSqlDatabaseServer, stateMachine._targetUserName, stateMachine._targetPassword));
+				targetLogins.push(...await collectTargetLogins(
+					stateMachine.targetServerName,
+					stateMachine._targetServerInstance.id,
+					stateMachine._targetUserName,
+					stateMachine._targetPassword,
+					stateMachine.isWindowsAuthMigrationSupported));
+				stateMachine._loginMigrationModel.collectedTargetLogins = true;
+				stateMachine._loginMigrationModel.loginsOnTarget = targetLogins;
 			}
 			else {
 				// TODO AKMA : Emit telemetry here saying target info is empty
@@ -336,7 +397,41 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				description: constants.LOGIN_MIGRATIONS_GET_LOGINS_ERROR(error.message),
 			};
 		}
+	}
 
+	private async _markRefreshDataStart() {
+		this._refreshLoading.loading = true;
+		this.wizard.nextButton.enabled = false;
+		await utils.updateControlDisplay(this._refreshResultsInfoBox, true);
+		this._refreshResultsInfoBox.text = constants.LOGIN_MIGRATION_REFRESHING_LOGIN_DATA;
+		this._refreshResultsInfoBox.style = 'information';
+	}
+
+	private _markRefreshDataComplete(numSourceLogins: number, numTargetLogins: number) {
+		this._refreshLoading.loading = false;
+		this._refreshResultsInfoBox.text = constants.LOGIN_MIGRATION_REFRESH_LOGIN_DATA_SUCCESSFUL(numSourceLogins, numTargetLogins);
+		this._refreshResultsInfoBox.style = 'success';
+		this.updateNextButton();
+	}
+
+	private async _loadLoginList(runQuery: boolean = true): Promise<void> {
+		const stateMachine: MigrationStateModel = this.migrationStateModel;
+		const selectedLogins: LoginTableInfo[] = stateMachine._loginMigrationModel.loginsForMigration || [];
+
+		// Get source logins if caller asked us to or if we haven't collected in the past
+		if (runQuery || !stateMachine._loginMigrationModel.collectedSourceLogins) {
+			await this._markRefreshDataStart();
+			await this._getSourceLogins();
+		}
+
+		// Get target logins if caller asked us to or if we haven't collected in the past
+		if (runQuery || !stateMachine._loginMigrationModel.collectedTargetLogins) {
+			await this._markRefreshDataStart();
+			await this._getTargetLogins();
+		}
+
+		const sourceLogins: LoginTableInfo[] = stateMachine._loginMigrationModel.loginsOnSource;
+		const targetLogins: string[] = stateMachine._loginMigrationModel.loginsOnTarget;
 		this._loginNames = [];
 
 		this._loginTableValues = sourceLogins.map(row => {
@@ -357,10 +452,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		}) || [];
 
 		await this._filterTableList(this._filterTableValue);
-		this._refreshLoading.loading = false;
-		this._refreshResultsInfoBox.text = constants.LOGIN_MIGRATION_REFRESH_LOGIN_DATA_SUCCESSFUL(sourceLogins.length, targetLogins.length);
-		this._refreshResultsInfoBox.style = 'success';
-		this.updateNextButton();
+		this._markRefreshDataComplete(sourceLogins.length, targetLogins.length);
 	}
 
 	public selectedLogins(): LoginTableInfo[] {
@@ -379,6 +471,10 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			|| [];
 	}
 
+	private selectedWindowsLogins(): boolean {
+		return this.selectedLogins().some(logins => logins.loginType.toLocaleLowerCase() === LoginType.Windows_Login);
+	}
+
 	private async updateValuesOnSelection() {
 		const selectedLogins = this.selectedLogins() || [];
 		await this._loginCount.updateProperties({
@@ -387,8 +483,12 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				this._loginSelectorTable.data?.length || 0)
 		});
 
-		this.migrationStateModel._loginsForMigration = selectedLogins;
-		this.migrationStateModel._aadDomainName = "";
+		// Display AAD Domain Name input box if windows logins selected, else disable
+		const hasSelectedWindowsLogins = this.selectedWindowsLogins()
+		await utils.updateControlDisplay(this._aadDomainNameContainer, hasSelectedWindowsLogins);
+		await this._loginSelectorTable.updateProperty("height", hasSelectedWindowsLogins ? 600 : 650);
+
+		this.migrationStateModel._loginMigrationModel.loginsForMigration = selectedLogins;
 		this.updateNextButton();
 	}
 
@@ -396,7 +496,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		// Only uppdate next label if we are currently on this page
 		if (this._isCurrentPage) {
 			this.wizard.nextButton.label = constants.LOGIN_MIGRATE_BUTTON_TEXT;
-			this.wizard.nextButton.enabled = this.migrationStateModel?._loginsForMigration?.length > 0;
+			this.wizard.nextButton.enabled = this.migrationStateModel?._loginMigrationModel.loginsForMigration?.length > 0;
 		}
 	}
 

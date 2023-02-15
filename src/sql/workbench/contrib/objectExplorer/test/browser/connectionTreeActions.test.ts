@@ -41,6 +41,8 @@ import { ConsoleLogger, LogService } from 'vs/platform/log/common/log';
 import { TestAccessibilityService } from 'vs/platform/accessibility/test/common/testAccessibilityService';
 import { TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -48,7 +50,7 @@ suite('SQL Connection Tree Action tests', () => {
 		connected: true,
 		errorMessage: undefined,
 		errorCode: undefined,
-		callStack: undefined
+		messageDetails: undefined
 	};
 	let capabilitiesService = new TestCapabilitiesService();
 	const logService = new LogService(new ConsoleLogger());
@@ -77,6 +79,22 @@ suite('SQL Connection Tree Action tests', () => {
 		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => profileToReturn);
 		connectionManagementService.setup(x => x.showEditConnectionDialog(TypeMoq.It.isAny())).returns(() => new Promise<void>((resolve, reject) => resolve()));
 		return connectionManagementService;
+	}
+
+	/**
+	 * Creates a mock dialog service that and select the choice at the given index when show is called.
+	 * @param choiceIndex index of the button in the dialog to be selected starting from 0.
+	 * @returns
+	 */
+	function createDialogService(choiceIndex: number): TypeMoq.Mock<IDialogService> {
+		let dialogService = TypeMoq.Mock.ofType<IDialogService>(TestDialogService, TypeMoq.MockBehavior.Loose);
+		dialogService.callBase = true;
+		dialogService.setup(x => x.show(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			return Promise.resolve({
+				choice: choiceIndex
+			})
+		});
+		return dialogService;
 	}
 
 	function createEditorService(): TypeMoq.Mock<IEditorService> {
@@ -329,12 +347,41 @@ suite('SQL Connection Tree Action tests', () => {
 		let connectionAction: DeleteConnectionAction = new DeleteConnectionAction(DeleteConnectionAction.ID,
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			connection,
-			connectionManagementService.object);
+			connectionManagementService.object,
+			createDialogService(0).object); // Select 'Yes' on the modal dialog
 
 		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.deleteConnection(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 		});
 
+	});
+
+	test('DeleteConnectionAction - connection not deleted when user selects no on the prompt', async () => {
+		let connectionManagementService = createConnectionManagementService(true, undefined);
+
+		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'Test',
+			savePassword: false,
+			groupFullName: 'testGroup',
+			serverName: 'testServerName',
+			databaseName: 'testDatabaseName',
+			authenticationType: AuthenticationType.Integrated,
+			password: 'test',
+			userName: 'testUsername',
+			groupId: undefined,
+			providerName: mssqlProviderName,
+			options: {},
+			saveProfile: true,
+			id: 'testId'
+		});
+		let connectionAction: DeleteConnectionAction = new DeleteConnectionAction(DeleteConnectionAction.ID,
+			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
+			connection,
+			connectionManagementService.object,
+			createDialogService(1).object); // Selecting 'No' on the modal dialog
+
+		await connectionAction.run();
+		connectionManagementService.verify(x => x.deleteConnection(TypeMoq.It.isAny()), TypeMoq.Times.never());
 	});
 
 	test('DeleteConnectionAction - test delete connection group', () => {
@@ -344,7 +391,8 @@ suite('SQL Connection Tree Action tests', () => {
 		let connectionAction: DeleteConnectionAction = new DeleteConnectionAction(DeleteConnectionAction.ID,
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			conProfGroup,
-			connectionManagementService.object);
+			connectionManagementService.object,
+			createDialogService(0).object); // Select 'Yes' on the modal dialog
 
 		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.deleteConnectionGroup(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
@@ -375,7 +423,8 @@ suite('SQL Connection Tree Action tests', () => {
 		let connectionAction: DeleteConnectionAction = new DeleteConnectionAction(DeleteConnectionAction.ID,
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			connection,
-			connectionManagementService.object);
+			connectionManagementService.object,
+			createDialogService(0).object);
 
 		assert.strictEqual(connectionAction.enabled, false, 'delete action should be disabled.');
 	});

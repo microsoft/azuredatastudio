@@ -152,6 +152,7 @@ module.exports.indentationFilter = [
 	'!extensions/sql-database-projects/src/test/baselines/*.json',
 	'!extensions/sql-database-projects/src/test/baselines/*.sqlproj',
 	'!extensions/sql-database-projects/BuildDirectory/SystemDacpacs/**',
+	'!extensions/datavirtualization/scaleoutdataservice/**',
 	'!resources/linux/snap/electron-launch',
 	'!extensions/markdown-language-features/media/*.js',
 	'!extensions/simple-browser/media/*.js',

@@ -11,8 +11,8 @@ import * as constants from '../constants/strings';
 import { debounce, getPipelineStatusImage } from '../api/utils';
 import * as styles from '../constants/styles';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { EOL } from 'os';
 import { LoginMigrationStatusCodes } from '../constants/helper';
+import { MultiStepStatusDialog } from '../dialog/generic/multiStepStatusDialog';
 
 export class LoginMigrationStatusPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -88,7 +88,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			this.wizard.message = {
 				text: constants.LOGIN_MIGRATIONS_FAILED,
 				level: azdata.window.MessageLevel.Error,
-				description: constants.LOGIN_MIGRATIONS_ERROR(this.migrationStateModel._loginMigrationsError.message),
+				description: constants.LOGIN_MIGRATIONS_ERROR(this.migrationStateModel._loginMigrationModel.loginMigrationsError.message),
 			};
 
 			this._progressLoader.loading = false;
@@ -268,32 +268,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 				switch (buttonState?.column) {
 					case 3:
 						const loginName = this._migratingLoginsTable!.data[rowState.row][0];
-						const status = this._migratingLoginsTable!.data[rowState.row][3].title;
-						const statusMessage = constants.LOGIN_MIGRATION_STATUS_LABEL(status);
-						var errors = [];
-
-						if (this.migrationStateModel._loginMigrationsResult?.exceptionMap) {
-							const exception_key = Object.keys(this.migrationStateModel._loginMigrationsResult.exceptionMap).find(key => key.toLocaleLowerCase() === loginName.toLocaleLowerCase());
-							if (exception_key) {
-								for (var exception of this.migrationStateModel._loginMigrationsResult.exceptionMap[exception_key]) {
-									if (Array.isArray(exception)) {
-										for (var inner_exception of exception) {
-											errors.push(inner_exception.Message);
-										}
-									} else {
-										errors.push(exception.Message);
-									}
-								}
-							}
-						}
-
-						const unique_errors = new Set(errors);
-
-						// TODO AKMA: Make errors prettier (spacing between errors is weird)
-						this.showDialogMessage(
-							constants.DATABASE_MIGRATION_STATUS_TITLE,
-							statusMessage,
-							[...unique_errors].join(EOL));
+						await this._showLoginDetailsDialog(loginName);
 						break;
 				}
 			}));
@@ -317,7 +292,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 	}
 
 	private async _loadMigratingLoginsList(stateMachine: MigrationStateModel): Promise<void> {
-		const loginList = stateMachine._loginsForMigration || [];
+		const loginList = stateMachine._loginMigrationModel.loginsForMigration || [];
 		loginList.sort((a, b) => a.loginName.localeCompare(b.loginName));
 
 		this._loginsTableValues = loginList.map(login => {
@@ -325,13 +300,13 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 
 			var status = LoginMigrationStatusCodes.InProgress;
 			var title = constants.LOGIN_MIGRATION_STATUS_IN_PROGRESS;
-			if (stateMachine._loginMigrationsError) {
+			if (stateMachine._loginMigrationModel.loginMigrationsError) {
 				status = LoginMigrationStatusCodes.Failed;
 				title = constants.LOGIN_MIGRATION_STATUS_FAILED;
-			} else if (stateMachine._loginMigrationsResult) {
+			} else if (stateMachine._loginMigrationModel.loginMigrationsResult) {
 				status = LoginMigrationStatusCodes.Succeeded;
 				title = constants.LOGIN_MIGRATION_STATUS_SUCCEEDED;
-				var didLoginFail = Object.keys(stateMachine._loginMigrationsResult.exceptionMap).some(key => key.toLocaleLowerCase() === loginName.toLocaleLowerCase());
+				var didLoginFail = Object.keys(stateMachine._loginMigrationModel.loginMigrationsResult.exceptionMap).some(key => key.toLocaleLowerCase() === loginName.toLocaleLowerCase());
 				if (didLoginFail) {
 					status = LoginMigrationStatusCodes.Failed;
 					title = constants.LOGIN_MIGRATION_STATUS_FAILED;
@@ -377,7 +352,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			'value': constants.STARTING_LOGIN_MIGRATION
 		});
 
-		var result = await this.migrationStateModel.migrateLogins();
+		var result = await this.migrationStateModel._loginMigrationModel.MigrateLogins(this.migrationStateModel);
 
 		if (!result) {
 			await this._migrationProgressDetails.updateProperties({
@@ -391,7 +366,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			'value': constants.ESTABLISHING_USER_MAPPINGS
 		});
 
-		result = await this.migrationStateModel.establishUserMappings();
+		result = await this.migrationStateModel._loginMigrationModel.EstablishUserMappings(this.migrationStateModel);
 
 		if (!result) {
 			await this._migrationProgressDetails.updateProperties({
@@ -402,14 +377,14 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 		}
 
 		await this._migrationProgressDetails.updateProperties({
-			'value': constants.MIGRATE_SERVER_ROLES_AND_SET_PERMISSIONS
+			'value': constants.MIGRATING_SERVER_ROLES_AND_SET_PERMISSIONS
 		});
 
-		result = await this.migrationStateModel.migrateServerRolesAndSetPermissions();
+		result = await this.migrationStateModel._loginMigrationModel.MigrateServerRolesAndSetPermissions(this.migrationStateModel);
 
 		if (!result) {
 			await this._migrationProgressDetails.updateProperties({
-				'value': constants.MIGRATE_SERVER_ROLES_AND_SET_PERMISSIONS_FAILED
+				'value': constants.MIGRATING_SERVER_ROLES_AND_SET_PERMISSIONS_FAILED
 			});
 
 			return false;
@@ -435,5 +410,16 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 
 		this.wizard.doneButton.enabled = true;
 		return result;
+	}
+
+	private async _showLoginDetailsDialog(loginName: string): Promise<void> {
+		this.wizard.message = { text: '' };
+		const dialog = new MultiStepStatusDialog(
+			() => { });
+
+		const loginResults = this.migrationStateModel._loginMigrationModel.GetLoginMigrationResults(loginName);
+		const isMigrationComplete = this.migrationStateModel._loginMigrationModel.isMigrationComplete;
+
+		await dialog.openDialog(constants.LOGIN_MIGRATIONS_LOGIN_STATUS_DETAILS_TITLE(loginName), loginResults, isMigrationComplete);
 	}
 }

@@ -15,6 +15,33 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
+      <Item ItemId=";extensions/mssql/dist/errorDiagnostics/errorDiagnosticsConstants.connectionError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Connection error]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Verbindungsfehler]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/errorDiagnostics/errorDiagnosticsConstants.enableTrustServerCertificate" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enable Trust server certificate]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Vertrauensserverzertifikat aktivieren]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/errorDiagnostics/errorDiagnosticsConstants.trustServerCertInstructionText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable 'Trust server certificate' in the connection dialog.]D;]A;]D;]A;Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Verschlüsselung wurde für diese Verbindung aktiviert, überprüfen Sie Ihre SSL- und Zertifikatkonfiguration für die Ziel-SQL Server, oder aktivieren Sie "Serverzertifikat vertrauen" im Verbindungsdialogfeld.]D;]A;]D;]A;Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und ist keine empfohlene Vorgehensweise für Produktionsumgebungen. Möchten Sie "Serverzertifikat vertrauen" für diese Verbindung aktivieren und es erneut versuchen? ]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/mssql/dist/features.mssql.canceledLinkedAzureAccountSelection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted.]]></Val>
@@ -555,6 +582,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.commandTimeout.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Zeitspanne (in Sekunden), die auf die Ausführung eines Befehls gewartet wird, bevor der Versuch beendet und ein Fehler generiert wird.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.commandTimeout.displayName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Command timeout]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Befehlstimeout]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.connectRetryCount.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Number of attempts to restore connection]]></Val>
@@ -735,12 +780,42 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.encrypt.categoryValues.false" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Optional (False)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Optional (FALSCH)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.encrypt.categoryValues.strict" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Strict]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Streng]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.encrypt.categoryValues.true" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Mandatory (True)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Obligatorisch (WAHR)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.encrypt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed]]></Val>
+          <Val><![CDATA[When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' encryption is supported on SQL Server 2022 onwards.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Bei Festlegung auf TRUE verwendet SQL Server die SSL-Verschlüsselung für alle zwischen Client und Server gesendeten Daten, sofern auf dem Server ein Zertifikat installiert ist.]]></Val>
+            <Val><![CDATA[Bei „Obligatorisch“ oder „Streng“ verwendet SQL Server SSL-Verschlüsselung für alle Daten, die zwischen Client und Server gesendet werden, wenn auf dem Server ein Zertifikat installiert ist. Bei Festlegung auf „Streng“ verwendet SQL Server TDS 8.0 für die gesamte Datenübertragung zwischen Client und Server. Die Verschlüsselung „Streng“ wird ab SQL Server 2022 unterstützt.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -839,6 +914,24 @@
           <Val><![CDATA[Source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Quelle]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.hostNameInCertificate.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Gibt den im TLS-Zertifikat angegebenen Hostnamen an, der von SQL Server zum Überprüfen des Serverzertifikats verwendet wird. Wenn keine Angabe erfolgt, wird der Servername standardmäßig für die Zertifikatüberprüfung verwendet.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.hostNameInCertificate.displayName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Host name in certificate]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Hostname im Zertifikat]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1610,6 +1703,15 @@
           <Val><![CDATA[Whether to preload the database model when the database node in the object explorer is expanded. When enabled, the loading time of table designer can be reduced. Note: You might see higher than normal memory usage if you need to expand a lot of database nodes.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Gibt an, ob das Datenbankmodell vorab geladen werden soll, wenn der Datenbankknoten im Objekt-Explorer erweitert wird. Wenn diese Option aktiviert ist, kann die Ladezeit des Tabellen-Designers reduziert werden. Hinweis: Wenn Sie viele Datenbankknoten erweitern müssen, wird möglicherweise eine höhere Speicherauslastung als normal angezeigt.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.tracing.desc" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Traces the communication between Azure Data Studio and SQL Tools Service to the SQL Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Überwacht die Kommunikation zwischen Azure Data Studio und dem SQL-Tools-Dienst zum SQL-Tools-Ausgabekanal. WARNUNG: Dies kann vertrauliche Informationen enthalten, wenn die ausführliche Protokollierung aktiviert ist.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

@@ -137,7 +137,8 @@ export class DeployConfigPage extends DacFxConfigPage {
 	protected async createDeployDatabaseDropdown(): Promise<azdata.FormComponent> {
 		const targetDatabaseTitle = loc.databaseName;
 		this.databaseDropdown = this.view.modelBuilder.dropDown().withProps({
-			ariaLabel: targetDatabaseTitle
+			ariaLabel: targetDatabaseTitle,
+			required: true
 		}).component();
 
 		//Handle database changes

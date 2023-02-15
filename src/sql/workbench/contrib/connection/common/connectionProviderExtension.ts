@@ -26,6 +26,10 @@ const ConnectionProviderContrib: IJSONSchema = {
 			type: 'string',
 			description: localize('schema.displayName', "Display Name for the provider")
 		},
+		azureResource: {
+			type: 'string',
+			description: localize('schema.azureResource', "Azure resource endpoint for the provider.")
+		},
 		notebookKernelAlias: {
 			type: 'string',
 			description: localize('schema.notebookKernelAlias', "Notebook Kernel Alias for the provider")

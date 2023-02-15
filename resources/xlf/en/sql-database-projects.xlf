@@ -202,9 +202,6 @@
     <trans-unit id="dataSourceRadioButtonLabel">
       <source xml:lang="en">Data sources</source>
     </trans-unit>
-    <trans-unit id="dataSourcesNodeName">
-      <source xml:lang="en">Data Sources</source>
-    </trans-unit>
     <trans-unit id="databaseLocation">
       <source xml:lang="en">Database location is required for adding a reference to a database</source>
     </trans-unit>
@@ -267,6 +264,9 @@
     </trans-unit>
     <trans-unit id="deleteReferenceConfirmation">
       <source xml:lang="en">Are you sure you want to delete the reference to {0}?</source>
+    </trans-unit>
+    <trans-unit id="deleteSqlCmdVariableConfirmation">
+      <source xml:lang="en">Are you sure you want to delete the SQLCMD Variable '{0}'?</source>
     </trans-unit>
     <trans-unit id="deployAppSettingUpdateFailed">
       <source xml:lang="en">Failed to update app setting '{0}'</source>
@@ -375,6 +375,15 @@
     </trans-unit>
     <trans-unit id="enterNewDatabaseName">
       <source xml:lang="en">Enter new database name</source>
+    </trans-unit>
+    <trans-unit id="enterNewName">
+      <source xml:lang="en">Enter new name</source>
+    </trans-unit>
+    <trans-unit id="enterNewSqlCmdVariableDefaultValue">
+      <source xml:lang="en">Enter default value for SQLCMD variable '{0}'</source>
+    </trans-unit>
+    <trans-unit id="enterNewSqlCmdVariableName">
+      <source xml:lang="en">Enter new SQLCMD Variable name</source>
     </trans-unit>
     <trans-unit id="enterNewValueForVar">
       <source xml:lang="en">Enter new value for variable '{0}'</source>
@@ -792,6 +801,12 @@
     <trans-unit id="sameDatabase">
       <source xml:lang="en">Same database</source>
     </trans-unit>
+    <trans-unit id="save">
+      <source xml:lang="en">Save</source>
+    </trans-unit>
+    <trans-unit id="saveProfileAsButtonText">
+      <source xml:lang="en">Save Profile As...</source>
+    </trans-unit>
     <trans-unit id="schema">
       <source xml:lang="en">Schema</source>
     </trans-unit>
@@ -914,6 +929,12 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.outputChannel">
       <source xml:lang="en">Database Projects</source>
+    </trans-unit>
+    <trans-unit id="sqlcmdVariableAlreadyExists">
+      <source xml:lang="en">A SQLCMD Variable with the same name already exists in this project</source>
+    </trans-unit>
+    <trans-unit id="sqlcmdVariablesNodeName">
+      <source xml:lang="en">SQLCMD Variables</source>
     </trans-unit>
     <trans-unit id="storedProcedureFriendlyName">
       <source xml:lang="en">Stored Procedure</source>
@@ -1038,6 +1059,9 @@
     <trans-unit id="sqlDatabaseProjects.addExistingItem">
       <source xml:lang="en">Add Existing Item...</source>
     </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.addSqlCmdVariable">
+      <source xml:lang="en">Add SQLCMD Variable</source>
+    </trans-unit>
     <trans-unit id="sqlDatabaseProjects.autorestSqlVersion">
       <source xml:lang="en">Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.</source>
     </trans-unit>
@@ -1070,6 +1094,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.dotnetInstallLocation">
       <source xml:lang="en">Full path to .NET SDK on the machine. For example, if dotnet.exe is located at C:\folder1\dotnet\dotnet.exe, set the path for this setting to C:\folder1\dotnet</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.edit">
+      <source xml:lang="en">Edit</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.editProjectFile">
       <source xml:lang="en">Edit .sqlproj File</source>
@@ -1136,6 +1163,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.publish">
       <source xml:lang="en">Publish</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.rename">
+      <source xml:lang="en">Rename</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.schemaCompare">
       <source xml:lang="en">Schema Compare</source>

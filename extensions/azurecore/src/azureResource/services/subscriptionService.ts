@@ -50,10 +50,12 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 					void vscode.window.showWarningMessage(errorMsg);
 				}
 			} catch (error) {
-				const errorMsg = localize('azure.resource.tenantSubscriptionsError', "Failed to get subscriptions for account {0} (tenant '{1}'). {2}", account.displayInfo.displayName, tenantId, AzureResourceErrorMessageUtil.getErrorMessage(error));
-				Logger.error(`Failed to get subscriptions for account ${account.displayInfo.displayName} (tenant '${tenantId}'). ${AzureResourceErrorMessageUtil.getErrorMessage(error)}`);
-				errors.push(error);
-				void vscode.window.showWarningMessage(errorMsg);
+				if (!account.isStale) {
+					const errorMsg = localize('azure.resource.tenantSubscriptionsError', "Failed to get subscriptions for account {0} (tenant '{1}'). {2}", account.displayInfo.displayName, tenantId, AzureResourceErrorMessageUtil.getErrorMessage(error));
+					Logger.error(`Failed to get subscriptions for account ${account.displayInfo.displayName} (tenant '${tenantId}'). ${AzureResourceErrorMessageUtil.getErrorMessage(error)}`);
+					errors.push(error);
+					void vscode.window.showWarningMessage(errorMsg);
+				}
 			}
 		}
 		if (!gotSubscriptions) {

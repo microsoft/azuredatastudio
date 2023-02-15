@@ -104,17 +104,11 @@
     <trans-unit id="chinaCloudDisplayName">
       <source xml:lang="en">Azure (China)</source>
     </trans-unit>
-    <trans-unit id="germanyCloud">
-      <source xml:lang="en">Azure (Germany)</source>
-    </trans-unit>
     <trans-unit id="publicCloudDisplayName">
       <source xml:lang="en">Azure</source>
     </trans-unit>
     <trans-unit id="usGovCloudDisplayName">
       <source xml:lang="en">Azure (US Government)</source>
-    </trans-unit>
-    <trans-unit id="usNatCloudDisplayName">
-      <source xml:lang="en">Azure (US National)</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/commands" source-language="en" datatype="plaintext"><body>

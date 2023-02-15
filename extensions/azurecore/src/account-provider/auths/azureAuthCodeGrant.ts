@@ -233,7 +233,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 				codeChallenge: this.pkceCodes.codeChallenge,
 				codeChallengeMethod: this.pkceCodes.challengeMethod,
 				prompt: Constants.SELECT_ACCOUNT,
-				authority: `https://login.microsoftonline.com/${tenant.id}`,
+				authority: `${this.loginEndpointUrl}${tenant.id}`,
 				state: state
 			};
 			let authCodeRequest: AuthorizationCodeRequest;
@@ -241,7 +241,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 				scopes: this.scopes,
 				redirectUri: `${this.redirectUri}:${serverPort}/redirect`,
 				codeVerifier: this.pkceCodes.codeVerifier,
-				authority: `https://login.microsoftonline.com/${tenant.id}`,
+				authority: `${this.loginEndpointUrl}${tenant.id}`,
 				code: ''
 			};
 			let authCodeUrl = await this.clientApplication.getAuthCodeUrl(authUrlRequest);
