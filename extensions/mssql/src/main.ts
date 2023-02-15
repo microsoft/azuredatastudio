@@ -22,7 +22,7 @@ import { IconPathHelper } from './iconHelper';
 import * as nls from 'vscode-nls';
 import { INotebookConvertService } from './notebookConvert/notebookConvertService';
 import { registerTableDesignerCommands } from './tableDesigner/tableDesigner';
-import { TelemetryReporter } from './telemetry';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from './telemetry';
 
 const localize = nls.loadMessageBundle();
 
@@ -97,8 +97,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 
 	vscode.workspace.onDidChangeConfiguration(async e => {
 		if (e.affectsConfiguration(Constants.configObjectExplorerGroupBySchemaFlagName)) {
-			const groupBySchemaTelemetryActionEvent = vscode.workspace.getConfiguration().get(Constants.configObjectExplorerGroupBySchemaFlagName) ? 'objectExplorerGroupBySchemaEnabled' : 'objectExplorerGroupBySchemaDisabled';
-			TelemetryReporter.sendActionEvent('mssql.objectExplorer', groupBySchemaTelemetryActionEvent);
+			const groupBySchemaTelemetryActionEvent = vscode.workspace.getConfiguration().get(Constants.configObjectExplorerGroupBySchemaFlagName) ? TelemetryActions.GroupBySchemaEnabled : TelemetryActions.GroupBySchemaDisabled;
+			TelemetryReporter.sendActionEvent(TelemetryViews.MssqlObjectExplorer, groupBySchemaTelemetryActionEvent);
 			const activeConnections = await azdata.objectexplorer.getActiveConnectionNodes();
 			const connections = await azdata.connection.getConnections();
 			activeConnections.forEach(async node => {
