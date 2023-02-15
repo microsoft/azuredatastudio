@@ -518,22 +518,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			}
 
 			finalResult.nodes = allNodes;
-			if (allNodes.length === 0) {
-				const expansionReturnedNoNodesDisplayString = nls.localize('nodeExpansionNoNodes', "Expansion returned no nodes");
-				alert(expansionReturnedNoNodesDisplayString);
-				allNodes.push({
-					nodePath: '',
-					nodeType: '',
-					label: expansionReturnedNoNodesDisplayString,
-					isLeaf: true,
-					nodeSubType: '',
-					nodeStatus: '',
-					metadata: undefined,
-					objectType: '',
-					errorMessage: undefined,
-					iconType: ''
-				})
-			}
 		}
 		return finalResult;
 	}
