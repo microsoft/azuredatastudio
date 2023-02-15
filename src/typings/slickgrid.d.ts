@@ -680,6 +680,11 @@ declare namespace Slick {
 		 * Link to the accessibility issue: https://github.com/microsoft/azuredatastudio/issues/20784
 		 */
 		disableColumnBasedCellVirtualization?: boolean;
+
+		/**
+		 * Whether tab/shift+tab can be used to navigate within the grid, if disabled, the focus will move out of the grid. The default value is true.
+		 */
+		enableInGridTabNavigation?: boolean;
 	}
 
 	export interface DataProvider<T extends SlickData> {
