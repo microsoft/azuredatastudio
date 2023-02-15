@@ -92,7 +92,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	});
 
 	vscode.commands.registerCommand(Constants.cmdObjectExplorerDisableGroupBySchemaCommand, async () => {
-		await vscode.workspace.getConfiguration().update(Constants.cmdObjectExplorerGroupBySchemaFlagName, true, true);
+		await vscode.workspace.getConfiguration().update(Constants.cmdObjectExplorerGroupBySchemaFlagName, false, true);
 	});
 
 	vscode.workspace.onDidChangeConfiguration(async e => {
