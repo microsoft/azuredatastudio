@@ -35,7 +35,9 @@ export class SqlNotebookController implements vscode.Disposable {
 	private _queryCompleteHandler: QueryCompletionHandler;
 	private _queryMessageHandler: QueryMessageHandler;
 	private _queryProvider: azdata.QueryProvider;
+	private _connProvider: azdata.ConnectionProvider;
 	private _connectionLabelItem: vscode.StatusBarItem;
+	private _activeCellUri: string;
 
 	constructor() {
 		this._controller = vscode.notebooks.createNotebookController(
@@ -51,6 +53,8 @@ export class SqlNotebookController implements vscode.Disposable {
 		this._queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>('MSSQL', azdata.DataProviderType.QueryProvider);
 		this._queryProvider.registerOnQueryComplete(result => this.handleQueryComplete(result));
 		this._queryProvider.registerOnMessage(message => this.handleQueryMessage(message));
+
+		this._connProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>('MSSQL', azdata.DataProviderType.ConnectionProvider);
 
 		const commandName = 'mssql.changeNotebookConnection';
 		let changeConnectionCommand = vscode.commands.registerCommand(commandName, async () => await this.changeConnection());
@@ -97,7 +101,7 @@ export class SqlNotebookController implements vscode.Disposable {
 				this._connectionLabelItem.text = this._connectionLabel(connection.options['server']);
 
 				// If this editor is for a cell, then update the connection for it
-				await this.updateCellConnection(notebook.uri, connection);
+				this.updateCellConnection(notebook.uri, connection);
 			} else {
 				this._connectionLabelItem.text = this._disconnectedLabel;
 			}
@@ -132,14 +136,23 @@ export class SqlNotebookController implements vscode.Disposable {
 		}
 	}
 
-	private async updateCellConnection(notebookUri: vscode.Uri, connection: azdata.connection.Connection): Promise<void> {
+	private updateCellConnection(notebookUri: vscode.Uri, connection: azdata.connection.Connection): void {
 		let docUri = vscode.window.activeTextEditor?.document.uri;
 		if (docUri?.scheme === this._cellUriScheme && docUri?.path === notebookUri.path) {
-			let profile = this.getConnectionProfile(connection);
-			let result = await azdata.connection.connect(profile, false, false, docUri.toString());
-			if (!result.connected) {
-				console.log(`Failed to update cell connection. Error: ${result.errorMessage}`);
+			if (this._activeCellUri) {
+				this._connProvider.disconnect(this._activeCellUri).then(() => undefined, error => console.log(error));
 			}
+			this._activeCellUri = docUri.toString();
+			// Delay connecting in case user is clicking between cells a lot
+			setTimeout(async () => {
+				if (this._activeCellUri === docUri.toString()) {
+					let profile = this.getConnectionProfile(connection);
+					let connected = await this._connProvider.connect(docUri.toString(), profile);
+					if (!connected) {
+						console.log(`Failed to update cell connection for cell: ${docUri.toString()}`);
+					}
+				}
+			}, 200);
 		}
 	}
 
@@ -153,7 +166,7 @@ export class SqlNotebookController implements vscode.Disposable {
 				this._connectionLabelItem.text = this._connectionLabel(connection.options['server']);
 
 				// Connect current notebook cell, if there is one
-				await this.updateCellConnection(notebookUri, connection);
+				this.updateCellConnection(notebookUri, connection);
 			} else {
 				this._connectionLabelItem.text = this._disconnectedLabel;
 			}
