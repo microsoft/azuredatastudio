@@ -25,7 +25,9 @@ export const NotebookConvertService = 'notebookConvertService';
 export const AzureBlobService = 'azureBlobService';
 export const TdeMigrationService = 'tdeMigrationService';
 
+// CONFIGURATION VALUES //////////////////////////////////////////////////////////
+export const configObjectExplorerGroupBySchemaFlagName = 'mssql.objectExplorer.groupBySchema';
+
 // COMMANDNAMES //////////////////////////////////////////////////////////
-export const cmdObjectExplorerGroupBySchemaFlagName = 'mssql.objectExplorer.groupBySchema';
 export const cmdObjectExplorerEnableGroupBySchemaCommand = 'mssql.enableGroupBySchema';
 export const cmdObjectExplorerDisableGroupBySchemaCommand = 'mssql.disableGroupBySchema';
