@@ -408,7 +408,8 @@ export class ProfilerEditor extends EditorPane {
 			]
 		}, {
 			forceFitColumns: true,
-			dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
+			dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor,
+			enableInGridTabNavigation: false
 		});
 
 		this._detailTableData.onRowCountChange(() => {
