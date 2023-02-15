@@ -312,7 +312,10 @@ suite('ConnectionDialogService tests', () => {
 		await (connectionDialogService as any).handleFillInConnectionInputs(connectionProfile);
 
 		let connectionControllerMap = (connectionDialogService as any)._connectionControllerMap;
+		assert(!!connectionControllerMap);
+
 		let returnedModel = (connectionControllerMap['MSSQL'] as any)._model;
+		assert(!!returnedModel);
 
 		assert.strictEqual(returnedModel._groupName, 'testGroup');
 		assert(called);
