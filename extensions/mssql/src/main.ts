@@ -97,7 +97,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 
 	vscode.workspace.onDidChangeConfiguration(async e => {
 		if (e.affectsConfiguration(Constants.configObjectExplorerGroupBySchemaFlagName)) {
-			TelemetryReporter.sendActionEvent('mssql.objectExplorer', vscode.workspace.getConfiguration().get(Constants.configObjectExplorerGroupBySchemaFlagName) ? 'objectExplorerGroupBySchemaEnabled' : 'objectExplorerGroupBySchemaDisabled');
+			const groupBySchemaTelemetryActionEvent = vscode.workspace.getConfiguration().get(Constants.configObjectExplorerGroupBySchemaFlagName) ? 'objectExplorerGroupBySchemaEnabled' : 'objectExplorerGroupBySchemaDisabled';
+			TelemetryReporter.sendActionEvent('mssql.objectExplorer', groupBySchemaTelemetryActionEvent);
 			const activeConnections = await azdata.objectexplorer.getActiveConnectionNodes();
 			const connections = await azdata.connection.getConnections();
 			activeConnections.forEach(async node => {
