@@ -101,9 +101,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 				groupBySchema: vscode.workspace.getConfiguration().get(Constants.cmdObjectExplorerGroupBySchemaFlagName)
 			});
 			const activeConnections = await azdata.objectexplorer.getActiveConnectionNodes();
+			const connections = await azdata.connection.getConnections();
 			activeConnections.forEach(async node => {
-				const connectionProfile = (await azdata.connection.getConnections()).filter(c => c.connectionId === node.connectionId)[0];
-				if (connectionProfile.providerId === Constants.providerId) {
+				const connectionProfile = connections.filter(c => c.connectionId === node.connectionId)[0];
+				if (connectionProfile?.providerId === Constants.providerId) {
 					await node.refresh();
 				}
 			});
