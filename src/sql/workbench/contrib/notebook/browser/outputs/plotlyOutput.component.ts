@@ -78,7 +78,6 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 			PlotlyOutputComponent.Plotly = import('plotly.js-dist-min');
 		}
 		this._plotDiv = this.output.nativeElement;
-		this._plotDiv.style.maxWidth = '700px';
 		this._plotDiv.style.width = '100%';
 		this.renderPlotly();
 		this._initialized = true;
