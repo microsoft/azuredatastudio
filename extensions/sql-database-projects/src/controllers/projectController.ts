@@ -1863,9 +1863,11 @@ export class ProjectsController {
 
 		// Calculate the new file path
 		let folderPath;
-		if (target.element.projectFileUri.fsPath === target.element.relativeProjectUri.fsPath) {
+		// target is the root of project, which is the .sqlproj
+		if (target.element.projectFileUri.fsPath === target.element.fileSystemUri.fsPath) {
 			folderPath = path.dirname(target.element.projectFileUri.fsPath!);
 		} else {
+			// target is another file or folder
 			folderPath = target.element.fileSystemUri.fsPath.endsWith(constants.sqlFileExtension) ? path.dirname(target.element.fileSystemUri.fsPath) : target.element.fileSystemUri.fsPath;
 		}
 
