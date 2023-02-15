@@ -144,13 +144,18 @@ export class SqlNotebookController implements vscode.Disposable {
 			}
 			this._activeCellUri = docUri.toString();
 			// Delay connecting in case user is clicking between cells a lot
-			setTimeout(async () => {
+			setTimeout(() => {
 				if (this._activeCellUri === docUri.toString()) {
 					let profile = this.getConnectionProfile(connection);
-					let connected = await this._connProvider.connect(docUri.toString(), profile);
-					if (!connected) {
-						console.log(`Failed to update cell connection for cell: ${docUri.toString()}`);
-					}
+					this._connProvider.connect(docUri.toString(), profile).then(
+						connected => {
+							if (!connected) {
+								console.log(`Failed to update cell connection for cell: ${docUri.toString()}`);
+							}
+						},
+						error => {
+							console.log(error);
+						});
 				}
 			}, 200);
 		}
