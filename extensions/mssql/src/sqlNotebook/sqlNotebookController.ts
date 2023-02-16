@@ -27,11 +27,11 @@ export class SqlNotebookController implements vscode.Disposable {
 	private readonly _disposables = new Array<vscode.Disposable>();
 	private readonly _controller: vscode.NotebookController;
 	private readonly _connectionsMap = new Map<vscode.Uri, azdata.connection.Connection>();
+	private readonly _executionOrderMap = new Map<vscode.Uri, number>();
 	private readonly _queryProvider: azdata.QueryProvider;
 	private readonly _connProvider: azdata.ConnectionProvider;
 	private readonly _connectionLabelItem: vscode.StatusBarItem;
 
-	private _executionOrder = 0;
 	private _queryCompleteHandler: QueryCompletionHandler;
 	private _queryMessageHandler: QueryMessageHandler;
 	private _activeCellUri: string;
@@ -125,8 +125,9 @@ export class SqlNotebookController implements vscode.Disposable {
 	private handleDocumentClosed(editor: vscode.TextDocument): void {
 		// Have to check isClosed here since this event is also emitted on doc language changes
 		if (editor.notebook && editor.isClosed) {
-			// Remove the connection association if the doc is closed, but don't close the connection since it might be re-used elsewhere
+			// Remove the connection & execution associations if the doc is closed, but don't close the connection since it might be re-used elsewhere
 			this._connectionsMap.delete(editor.notebook.uri);
+			this._executionOrderMap.delete(editor.notebook.uri);
 		}
 	}
 
@@ -184,14 +185,16 @@ export class SqlNotebookController implements vscode.Disposable {
 			connection = await this.changeConnection(notebook);
 		}
 
+		let executionOrder = this._executionOrderMap.get(notebook.uri) ?? 0;
 		for (let cell of cells) {
-			await this.doExecution(cell, connection);
+			await this.doExecution(cell, connection, ++executionOrder);
 		}
+		this._executionOrderMap.set(notebook.uri, executionOrder);
 	}
 
-	private async doExecution(cell: vscode.NotebookCell, connection: azdata.connection.Connection | undefined): Promise<void> {
+	private async doExecution(cell: vscode.NotebookCell, connection: azdata.connection.Connection | undefined, executionOrder: number): Promise<void> {
 		const execution = this._controller.createNotebookCellExecution(cell);
-		execution.executionOrder = ++this._executionOrder;
+		execution.executionOrder = executionOrder;
 		execution.start(Date.now());
 		await execution.clearOutput();
 		if (!connection) {
