@@ -642,20 +642,7 @@ export class Project implements ISqlProject {
 	}
 
 	public async updateProjectForRoundTrip(): Promise<void> {
-		const sqlProjectsService = await utils.getSqlProjectsService();
-		// TODO: remove this openProject here after we swap to opening the project using the STS api. Temporarily have this here before the cross plat compatibility check
-		const openResult = await sqlProjectsService.openProject(this.projectFilePath);
-
-		// use new apis to check
-		if (openResult.success) {
-			const crossPlatCompatibleResult = await sqlProjectsService.getCrossPlatformCompatiblityRequest(this.projectFilePath);
-
-			if (crossPlatCompatibleResult.success && crossPlatCompatibleResult.isCrossPlatformCompatible) {
-				return;
-			}
-		}
-		// if for some reason that fails, fall back to the old check
-		else if (this._importedTargets.includes(constants.NetCoreTargets) && !this.containsSSDTOnlySystemDatabaseReferences() // old style project check
+		if (this._importedTargets.includes(constants.NetCoreTargets) && !this.containsSSDTOnlySystemDatabaseReferences() // old style project check
 			|| this.isSdkStyleProject) { // new style project check
 			return;
 		}
