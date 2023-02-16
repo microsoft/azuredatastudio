@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { getStorageAccountAccessKeys, SqlVMServer } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { Blob, MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, NetworkShare, StateChangeEvent, ValidateIrState, ValidationResult } from '../models/stateMachine';
+import { MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, NetworkShare, StateChangeEvent, ValidateIrState, ValidationResult } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
@@ -892,7 +892,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						? this.migrationStateModel._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? sourceDatabaseName
 						: sourceDatabaseName;
 					let networkShare = <NetworkShare>{};
-					let blob = <Blob>{};
+					let blob = <utils.Blob>{};
 
 					if (this.migrationStateModel._didUpdateDatabasesForMigration ||
 						this.migrationStateModel._didDatabaseMappingChange) {

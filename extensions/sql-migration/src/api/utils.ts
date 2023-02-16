@@ -705,6 +705,15 @@ export async function getAzureSqlMigrationServices(account?: Account, subscripti
 	return [];
 }
 
+export interface Blob {
+	resourceGroup: azureResource.AzureResourceResourceGroup;
+	storageAccount: azureResource.AzureGraphResource;
+	blobContainer: azureResource.BlobContainer;
+	storageKey: string;
+	lastBackupFile?: string;
+	folderName?: string;
+}
+
 export async function getBlobContainer(account?: Account, subscription?: azureResource.AzureResourceSubscription, storageAccount?: azure.StorageAccount): Promise<azureResource.BlobContainer[]> {
 	let blobContainers: azureResource.BlobContainer[] = [];
 	try {
@@ -759,12 +768,35 @@ export async function getBlobFolders(account?: Account, subscription?: azureReso
 	return folders;
 }
 
-export function getBlobContainerNameWithFolder(blob: azureResource.BlobContainer, folderName: string | undefined): string {
-	if (folderName === '/' || folderName === 'undefined' || !folderName) {
-		return blob.name;
+export function getBlobContainerNameWithFolder(blob: Blob, isOfflineMigration: boolean): string {
+	const blobContainerName = blob.blobContainer.name;
+
+	if (isOfflineMigration) {
+		const lastBackupFile = blob.lastBackupFile;
+		if (!lastBackupFile || lastBackupFile.split('/').length !== 2) {
+			return blobContainerName;
+		}
+
+		// for offline scenario, take the folder name out of the blob name and add it to the container name instead
+		return blobContainerName + '/' + lastBackupFile.split('/')[0];
+	} else {
+		const folderName = blob.folderName;
+		if (!folderName || folderName === '/' || folderName === 'undefined') {
+			return blobContainerName;
+		}
+
+		// for online scenario, take the explicitly provided folder name
+		return blobContainerName + '/' + folderName;
+	}
+}
+
+export function getLastBackupFileNameWithoutFolder(blob: Blob) {
+	const lastBackupFile = blob.lastBackupFile;
+	if (!lastBackupFile || lastBackupFile.split('/').length !== 2) {
+		return lastBackupFile;
 	}
 
-	return blob.name + '/' + folderName;
+	return lastBackupFile.split('/')[1];
 }
 
 export function getAzureResourceDropdownValues(
