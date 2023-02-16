@@ -8,41 +8,45 @@ import * as path from 'path';
 import * as constants from '../../common/constants';
 
 import { BaseProjectTreeItem } from './baseTreeItem';
-import { ProjectRootTreeItem } from './projectTreeItem';
 import { IconPathHelper } from '../../common/iconHelper';
 
 /**
  * Folder for containing SQLCMD variable nodes in the tree
  */
 export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
-	private sqlcmdVariables: SqlCmdVariableTreeItem[] = [];
+	private sqlcmdVariableTreeItems: SqlCmdVariableTreeItem[] = [];
 
-	constructor(project: ProjectRootTreeItem) {
-		super(vscode.Uri.file(path.join(project.projectUri.fsPath, constants.sqlcmdVariablesNodeName)), project);
+	/**
+	 * Constructor
+	 * @param projectNodeName Name of the project node. Used for creating the relative path of the SQLCMD Variables node to the project
+	 * @param sqlprojUri Full URI to the .sqlproj
+	 * @param sqlCmdVariables Collection of SQLCMD variables in the project
+	 * @param project
+	 */
+	constructor(projectNodeName: string, sqlprojUri: vscode.Uri, sqlCmdVariables: Record<string, string>) {
+		super(vscode.Uri.file(path.join(projectNodeName, constants.sqlcmdVariablesNodeName)), sqlprojUri);
 
-		this.construct();
+		this.construct(sqlCmdVariables);
 	}
 
-	private construct() {
-		const sqlCmdVariables = (this.parent as ProjectRootTreeItem).project.sqlCmdVariables;
-
+	private construct(sqlCmdVariables: Record<string, string>) {
 		if (!sqlCmdVariables) {
 			return;
 		}
 
 		for (const sqlCmdVariable of Object.keys(sqlCmdVariables)) {
 			if (sqlCmdVariable) {
-				this.sqlcmdVariables.push(new SqlCmdVariableTreeItem(sqlCmdVariable, this));
+				this.sqlcmdVariableTreeItems.push(new SqlCmdVariableTreeItem(sqlCmdVariable, this.relativeProjectUri, this.projectFileUri));
 			}
 		}
 	}
 
 	public get children(): SqlCmdVariableTreeItem[] {
-		return this.sqlcmdVariables;
+		return this.sqlcmdVariableTreeItems;
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		const sqlCmdVariableFolderItem = new vscode.TreeItem(this.projectUri, vscode.TreeItemCollapsibleState.Collapsed);
+		const sqlCmdVariableFolderItem = new vscode.TreeItem(this.relativeProjectUri, vscode.TreeItemCollapsibleState.Collapsed);
 		sqlCmdVariableFolderItem.contextValue = constants.DatabaseProjectItemType.sqlcmdVariablesRoot;
 		sqlCmdVariableFolderItem.iconPath = IconPathHelper.sqlCmdVariablesGroup;
 
@@ -54,8 +58,8 @@ export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
  * Represents a SQLCMD variable in a .sqlproj
  */
 export class SqlCmdVariableTreeItem extends BaseProjectTreeItem {
-	constructor(private sqlcmdVar: string, sqlcmdVarsTreeItem: SqlCmdVariablesTreeItem) {
-		super(vscode.Uri.file(path.join(sqlcmdVarsTreeItem.projectUri.fsPath, sqlcmdVar)), sqlcmdVarsTreeItem);
+	constructor(private sqlcmdVar: string, sqlprojUri: vscode.Uri, sqlCmdNodeRelativeProjectUri: vscode.Uri) {
+		super(vscode.Uri.file(path.join(sqlCmdNodeRelativeProjectUri.fsPath, sqlcmdVar)), sqlprojUri);
 	}
 
 	public get children(): BaseProjectTreeItem[] {
@@ -63,7 +67,7 @@ export class SqlCmdVariableTreeItem extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		const sqlcmdVariableItem = new vscode.TreeItem(this.projectUri, vscode.TreeItemCollapsibleState.None);
+		const sqlcmdVariableItem = new vscode.TreeItem(this.relativeProjectUri, vscode.TreeItemCollapsibleState.None);
 		sqlcmdVariableItem.label = this.sqlcmdVar;
 		sqlcmdVariableItem.contextValue = constants.DatabaseProjectItemType.sqlcmdVariable;
 		sqlcmdVariableItem.iconPath = IconPathHelper.sqlCmdVariable;

@@ -4626,6 +4626,9 @@ Error: {1}</source>
     <trans-unit id="maxColumnWidth">
       <source xml:lang="en">The maximum width in pixels for auto-sized columns</source>
     </trans-unit>
+    <trans-unit id="resultsGrid.showJsonAsLink">
+      <source xml:lang="en">Whether to show cells with JSON formatted string as hyperlink. When enabled, upon click the JSON value will be opened in another tab. The default value is true.</source>
+    </trans-unit>
     <trans-unit id="resultsGridConfigurationTitle">
       <source xml:lang="en">Results Grid and Messages</source>
     </trans-unit>
@@ -5605,6 +5608,12 @@ Error: {1}</source>
       <source xml:lang="en">Step {0}</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/dialog/browser/wizardNavigation.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="wizardNavigation.stepName">
+      <source xml:lang="en">Step {0}: {1}</source>
+      <note>Name of a step in wizard. {0}: step number, {1}: step name.</note>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/dialog/common/dialogTypes" source-language="en" datatype="plaintext"><body>
     <trans-unit id="dialogModalCancelButtonLabel">
       <source xml:lang="en">Cancel</source>
@@ -6118,6 +6127,9 @@ Error: {1}</source>
     <trans-unit id="profilerFilterDialog.addClauseText">
       <source xml:lang="en">Add a clause</source>
     </trans-unit>
+    <trans-unit id="profilerFilterDialog.allClausesCleared">
+      <source xml:lang="en">All clauses have been cleared.</source>
+    </trans-unit>
     <trans-unit id="profilerFilterDialog.apply">
       <source xml:lang="en">Apply</source>
     </trans-unit>
@@ -6141,6 +6153,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="profilerFilterDialog.loadFilter">
       <source xml:lang="en">Load Filter</source>
+    </trans-unit>
+    <trans-unit id="profilerFilterDialog.newClauseAdded">
+      <source xml:lang="en">A new clause has been added.</source>
     </trans-unit>
     <trans-unit id="profilerFilterDialog.notContainsOperator">
       <source xml:lang="en">Not Contains</source>

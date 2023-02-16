@@ -138,7 +138,7 @@ export class ServerGroupDialog extends Modal {
 	private focusNextColor(moveRight: boolean): void {
 		let focusIndex: number = -1;
 		for (let i = 0; i < this._colorColorBoxesMap.length; i++) {
-			if (document.activeElement === this._colorColorBoxesMap[i].colorbox.domNode) {
+			if (document.activeElement === this._colorColorBoxesMap[i].colorbox.radioButton) {
 				focusIndex = i;
 				break;
 			}
@@ -194,7 +194,6 @@ export class ServerGroupDialog extends Modal {
 
 			const colorBox = new Colorbox(container, {
 				name: 'server-group-color',
-				class: ['server-group-color'],
 				label: color
 			});
 

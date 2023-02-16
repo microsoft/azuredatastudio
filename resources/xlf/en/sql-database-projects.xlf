@@ -801,6 +801,12 @@
     <trans-unit id="sameDatabase">
       <source xml:lang="en">Same database</source>
     </trans-unit>
+    <trans-unit id="save">
+      <source xml:lang="en">Save</source>
+    </trans-unit>
+    <trans-unit id="saveProfileAsButtonText">
+      <source xml:lang="en">Save Profile As...</source>
+    </trans-unit>
     <trans-unit id="schema">
       <source xml:lang="en">Schema</source>
     </trans-unit>

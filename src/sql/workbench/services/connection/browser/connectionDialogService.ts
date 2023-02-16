@@ -361,15 +361,20 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this.uiController.initDialog(this._params && this._params.providers, this._model);
 	}
 
-	private handleFillInConnectionInputs(connectionInfo: IConnectionProfile): void {
-		this._connectionManagementService.addSavedPassword(connectionInfo).then(connectionWithPassword => {
+	private async handleFillInConnectionInputs(connectionInfo: IConnectionProfile): Promise<void> {
+		try {
+			const connectionWithPassword = await this.createModel(connectionInfo);
+
 			if (this._model) {
 				this._model.dispose();
 			}
-			this._model = this.createModel(connectionWithPassword);
-
+			this._model = connectionWithPassword;
 			this.uiController.fillInConnectionInputs(this._model);
-		}).catch(err => onUnexpectedError(err));
+		}
+		catch (err) {
+			this._logService.error(`Error filling in connection inputs with password. Original error message: ${err}`);
+		}
+
 		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[connectionInfo.providerName]);
 	}
 
@@ -381,11 +386,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this.uiController.handleOnConnecting();
 	}
 
-	private updateModelServerCapabilities(model: IConnectionProfile) {
+	private async updateModelServerCapabilities(model: IConnectionProfile) {
 		if (this._model) {
 			this._model.dispose();
 		}
-		this._model = this.createModel(model);
+		this._model = await this.createModel(model);
 		if (this._model.providerName) {
 			this._currentProviderType = this._model.providerName;
 			if (this._connectionDialog) {
@@ -394,7 +399,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 	}
 
-	private createModel(model: IConnectionProfile): ConnectionProfile {
+	private async createModel(model: IConnectionProfile): Promise<ConnectionProfile> {
 		const defaultProvider = this.getDefaultProviderName();
 		let providerName = model ? model.providerName : defaultProvider;
 		providerName = providerName ? providerName : defaultProvider;
@@ -410,6 +415,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 
 		let newProfile = new ConnectionProfile(this._capabilitiesService, model || providerName);
+		if (model && !model.password) {
+			try {
+				await this._connectionManagementService.addSavedPassword(newProfile);
+			}
+			catch (err) {
+				this._logService.error(`Error filling in password for connection dialog model. Original error message: ${err}`);
+			}
+		}
 		newProfile.saveProfile = true;
 		newProfile.generateNewId();
 		// If connecting from a query editor set "save connection" to false
@@ -420,7 +433,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	private async showDialogWithModel(): Promise<void> {
-		this.updateModelServerCapabilities(this._inputModel);
+		await this.updateModelServerCapabilities(this._inputModel);
 		await this.doShowDialog(this._params);
 	}
 
@@ -459,7 +472,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._params = params;
 		this._inputModel = model;
 
-		this.updateModelServerCapabilities(model);
+		await this.updateModelServerCapabilities(model);
 
 		// If connecting from a query editor set "save connection" to false
 		if (params && (params.input && params.connectionType === ConnectionType.editor ||

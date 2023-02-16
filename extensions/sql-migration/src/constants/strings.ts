@@ -11,6 +11,20 @@ import { formatNumber, ParallelCopyTypeCodes, PipelineStatusCodes } from './help
 import { ValidationError } from '../api/azure';
 const localize = nls.loadMessageBundle();
 
+export const serviceName = 'Sql Migration Service';
+export const providerId = 'SqlMigration';
+export const extensionConfigSectionName = 'sqlMigration';
+export const sqlConfigSectionName = 'sql';
+export const configLogDebugInfo = 'logDebugInfo';
+export function serviceCrashMessage(error: string): string {
+	return localize('serviceCrashMessage', "Migration service component could not start. {0}", error);
+}
+export const serviceCrashed = localize('serviceCrashed', "Service component crashed.");
+export function waitingForService(serviceName: string): string {
+	return localize('waitingForService', "Waiting for {0} component to start.", serviceName);
+}
+export const serviceProviderInitializationError = localize('serviceProviderIntializationError', "Service provider could not be initialized.");
+
 // mirrors MigrationState as defined in RP
 export enum MigrationState {
 	Canceled = 'Canceled',

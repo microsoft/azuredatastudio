@@ -92,7 +92,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		await this._loadLoginList(false);
 
 		// load unfiltered table list and pre-select list of logins saved in state
-		await this._filterTableList('', this.migrationStateModel._loginsForMigration);
+		await this._filterTableList('', this.migrationStateModel._loginMigrationModel.loginsForMigration);
 	}
 
 	public async onPageLeave(): Promise<void> {
@@ -115,7 +115,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		}).component();
 
 		this._disposables.push(
-			resourceSearchBox.onTextChanged(value => this._filterTableList(value, this.migrationStateModel._loginsForMigration || [])));
+			resourceSearchBox.onTextChanged(value => this._filterTableList(value, this.migrationStateModel._loginMigrationModel.loginsForMigration || [])));
 
 		const searchContainer = this._view.modelBuilder.divContainer().withItems([resourceSearchBox]).withProps({
 			CSSStyles: {
@@ -326,7 +326,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		}));
 
 		// load unfiltered table list and pre-select list of logins saved in state
-		await this._filterTableList('', this.migrationStateModel._loginsForMigration);
+		await this._filterTableList('', this.migrationStateModel._loginMigrationModel.loginsForMigration);
 
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
@@ -416,7 +416,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 	private async _loadLoginList(runQuery: boolean = true): Promise<void> {
 		const stateMachine: MigrationStateModel = this.migrationStateModel;
-		const selectedLogins: LoginTableInfo[] = stateMachine._loginsForMigration || [];
+		const selectedLogins: LoginTableInfo[] = stateMachine._loginMigrationModel.loginsForMigration || [];
 
 		// Get source logins if caller asked us to or if we haven't collected in the past
 		if (runQuery || !stateMachine._loginMigrationModel.collectedSourceLogins) {
@@ -488,7 +488,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		await utils.updateControlDisplay(this._aadDomainNameContainer, hasSelectedWindowsLogins);
 		await this._loginSelectorTable.updateProperty("height", hasSelectedWindowsLogins ? 600 : 650);
 
-		this.migrationStateModel._loginsForMigration = selectedLogins;
+		this.migrationStateModel._loginMigrationModel.loginsForMigration = selectedLogins;
 		this.updateNextButton();
 	}
 
@@ -496,7 +496,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		// Only uppdate next label if we are currently on this page
 		if (this._isCurrentPage) {
 			this.wizard.nextButton.label = constants.LOGIN_MIGRATE_BUTTON_TEXT;
-			this.wizard.nextButton.enabled = this.migrationStateModel?._loginsForMigration?.length > 0;
+			this.wizard.nextButton.enabled = this.migrationStateModel?._loginMigrationModel.loginsForMigration?.length > 0;
 		}
 	}
 
