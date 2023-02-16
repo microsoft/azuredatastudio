@@ -760,7 +760,7 @@ export async function getBlobFolders(account?: Account, subscription?: azureReso
 }
 
 export function getBlobContainerNameWithFolder(blob: azureResource.BlobContainer, folderName: string | undefined): string {
-	if (folderName === '/') {	// todo: what other situations should folderName be ignored
+	if (folderName === '/' || folderName === 'undefined' || !folderName) {
 		return blob.name;
 	}
 
