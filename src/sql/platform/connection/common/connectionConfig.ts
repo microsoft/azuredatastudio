@@ -86,11 +86,14 @@ export class ConnectionConfig {
 				let connectionProfile = this.getConnectionProfileInstance(profile, groupId);
 				let newProfile = ConnectionProfile.convertToProfileStore(this._capabilitiesService, connectionProfile);
 
+				// Profile to be stored during an edit, used to check for duplicate profile edits.
 				let firstMatchProfile = undefined;
+
 				// Remove the profile if already set
 				let sameProfileInList = profiles.find(value => {
 					const providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
 					const match = matcher(providerConnectionProfile, connectionProfile);
+					// If we have a profile match, and the matcher is an edit, we must store this match.
 					if (match && (matcher.toString() !== ConnectionProfile.matchesProfile.toString())) {
 						firstMatchProfile = value;
 					}
@@ -98,13 +101,16 @@ export class ConnectionConfig {
 					return match;
 				});
 
+				// If a profile edit, we must now check to see it does not match the other profiles available.
 				if (firstMatchProfile) {
+					// Copy over profile list so that we can remove the actual profile we want to edit.
 					let absentProfiles = deepClone(profiles);
 					const index = profiles.indexOf(firstMatchProfile);
 					if (index > -1) {
 						absentProfiles.splice(index, 1);
 					}
 
+					// Use the regular profile matching here to find if edit is duplicate.
 					let matchesExistingProfile = absentProfiles.find(value => {
 						const providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
 						const match = ConnectionProfile.matchesProfile(providerConnectionProfile, connectionProfile);
@@ -112,9 +118,10 @@ export class ConnectionConfig {
 						return match;
 					});
 
+					// Throw error if we have a match as we cannot have two profiles with the exact same data.
 					if (matchesExistingProfile) {
-						this._logService.error(`Profile edit for '${profile.id}' matches an existing profile with data: '${profile.getOptionsKey()}'`);
-						throw new Error(nls.localize('connectionConfig.profileMatchEdit', 'This profile edit is already an existing profile with data: {0}', profile.getOptionsKey()));
+						this._logService.error(`Profile edit for '${profile.id}' exactly matches an existing profile with data: '${profile.getOptionsKey()}'`);
+						throw new Error(`This profile edit is identical to an already existing profile with data: ${profile.getOptionsKey()}`);
 					}
 				}
 
