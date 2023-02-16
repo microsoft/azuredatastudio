@@ -574,7 +574,7 @@ export function DATABASE_ALREADY_EXISTS_MI(dbName: string, targetName: string): 
 export const DATABASE_ALREADY_EXISTS_VM_INFO = localize('sql.migration.database.already.exists.vm.info', "Ensure that the provided database name(s) do not already exist on the target SQL Server on Azure Virtual Machine.");
 export const DATABASE_BACKUP_BLOB_STORAGE_HEADER_TEXT = localize('sql.migration.blob.storage.header.text', "Azure Storage Blob Container details");
 export const DATABASE_BACKUP_BLOB_STORAGE_HELP_TEXT = localize('sql.migration.blob.storage.help.text', "Provide the Azure Storage Blob Container that contains the backups.");
-export const DATABASE_BACKUP_BLOB_STORAGE_TABLE_HELP_TEXT = localize('sql.migration.blob.storage.table.help', "Enter target database name and select resource group, storage account and container for the selected source databases.");
+export const DATABASE_BACKUP_BLOB_STORAGE_TABLE_HELP_TEXT = localize('sql.migration.blob.storage.table.help', "Enter target database name and select resource group, storage account, container and folder for the selected source databases.");
 export const DATABASE_BACKUP_BLOB_STORAGE_SUBSCRIPTION_LABEL = localize('sql.migration.blob.storage.subscription.label', "Subscription");
 export const DATABASE_BACKUP_MIGRATION_MODE_LABEL = localize('sql.migration.database.migration.mode.label', "Migration mode");
 export const DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION = localize('sql.migration.database.migration.mode.description', "To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.");
@@ -603,6 +603,7 @@ export const NO_STORAGE_ACCOUNT_FOUND = localize('sql.migration.no.storageAccoun
 export const NO_FILESHARES_FOUND = localize('sql.migration.no.fileShares.found', "No file shares found.");
 export const NO_BLOBCONTAINERS_FOUND = localize('sql.migration.no.blobContainers.found', "No blob containers found.");
 export const NO_BLOBFILES_FOUND = localize('sql.migration.no.blobFiles.found', "No blob files found.");
+export const NO_BLOBFOLDERS_FOUND = localize('sql.migration.no.blobFolders.found', "No blob folders found.");		//
 export const INVALID_SUBSCRIPTION_ERROR = localize('sql.migration.invalid.subscription.error', "To continue, select a valid subscription.");
 export const INVALID_LOCATION_ERROR = localize('sql.migration.invalid.location.error', "To continue, select a valid location.");
 export const INVALID_RESOURCE_GROUP_ERROR = localize('sql.migration.invalid.resourceGroup.error', "To continue, select a valid resource group.");
@@ -634,6 +635,9 @@ export function INVALID_BLOB_CONTAINER_ERROR(sourceDb: string): string {
 }
 export function INVALID_BLOB_LAST_BACKUP_FILE_ERROR(sourceDb: string): string {
 	return localize('sql.migration.invalid.blob.lastBackupFile.error', "To continue, select a valid last backup file for source database '{0}'.", sourceDb);
+}
+export function INVALID_BLOB_LAST_BACKUP_FOLDER_ERROR(sourceDb: string): string {
+	return localize('sql.migration.invalid.blob.lastBackupFolder.error', "To continue, select a valid backup folder for source database '{0}'.", sourceDb);
 }
 export function INVALID_NON_PAGE_BLOB_BACKUP_FILE_ERROR(sourceDb: string): string {
 	return localize('sql.migration.invalid.non.page.blob.backupFile.error', "To continue, select a blob container where all the backup files are page blobs for source database '{0}', as block blobs are supported only for targets running SQL Server 2016 or later. Learn more: https://aka.ms/dms-migrations-troubleshooting", sourceDb);

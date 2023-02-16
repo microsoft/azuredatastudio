@@ -27,6 +27,7 @@ const blobResourceGroupErrorStrings = [constants.RESOURCE_GROUP_NOT_FOUND];
 const blobStorageAccountErrorStrings = [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP_PROMPT];
 const blobContainerErrorStrings = [constants.NO_BLOBCONTAINERS_FOUND, constants.SELECT_STORAGE_ACCOUNT];
 const blobFileErrorStrings = [constants.NO_BLOBFILES_FOUND, constants.SELECT_BLOB_CONTAINER];
+const blobFolderErrorStrings = [constants.NO_BLOBFOLDERS_FOUND, constants.SELECT_BLOB_CONTAINER];
 
 export class DatabaseBackupPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -729,6 +730,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 									errors.push(constants.INVALID_BLOB_LAST_BACKUP_FILE_ERROR(this.migrationStateModel._databasesForMigration[index]));
 								}
 							});
+						} else {
+							this._blobContainerFolderDropdowns.forEach((v, index) => {
+								if (this.shouldDisplayBlobDropdownError(v, blobFolderErrorStrings)) {
+									errors.push(constants.INVALID_BLOB_LAST_BACKUP_FOLDER_ERROR(this.migrationStateModel._databasesForMigration[index]));
+								}
+							});
 						}
 
 						if (this.migrationStateModel.isSqlVmTarget && utils.isTargetSqlVm2014OrBelow(this.migrationStateModel._targetServerInstance as SqlVMServer)) {
@@ -1130,7 +1137,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						this._disposables.push(
 							blobContainerFolderDropdown.onValueChanged(value => {
 								if (value && value !== 'undefined') {
-									if (this.migrationStateModel._blobContainerFolders.includes(value)) {
+									if (this.migrationStateModel._blobContainerFolders.includes(value) && !blobFolderErrorStrings.includes(value)) {
 										const selectedFolder = value;
 										this.migrationStateModel._databaseBackup.blobs[index].folderName = selectedFolder;
 									}

@@ -819,7 +819,7 @@ export async function getBlobLastBackupFileNamesValues(blobs: azureResource.Blob
 
 export async function getBlobFolderValues(folders: string[]): Promise<CategoryValue[]> {
 	return folders?.map(folder => { return { name: folder, displayName: folder }; })
-		|| [{ name: '/', displayName: '/' }];
+		|| [{ name: '', displayName: constants.NO_BLOBFOLDERS_FOUND }];
 }
 
 export async function updateControlDisplay(control: Component, visible: boolean, displayStyle: DisplayType = 'inline'): Promise<void> {
