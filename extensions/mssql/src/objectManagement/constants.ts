@@ -52,7 +52,9 @@ export const AlterLoginDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/sta
 export enum TelemetryActions {
 	CreateObject = 'CreateObject',
 	UpdateObject = 'UpdateObject',
-	DeleteObject = 'DeleteObject'
+	DeleteObject = 'DeleteObject',
+	OpenNewObjectDialog = 'OpenNewObjectDialog',
+	OpenPropertiesDialog = 'OpenPropertiesDialog'
 }
 
 export enum TelemetryViews {

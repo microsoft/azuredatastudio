@@ -129,12 +129,18 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 						}
 						catch (err) {
 							operation.updateStatus(azdata.TaskStatus.Failed, getErrorMessage(err));
-							TelemetryReporter.sendErrorEvent(TelemetryViews.ObjectManagement, actionName);
+							TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, actionName).withAdditionalProperties({
+								objectType: this.objectType
+							}).send();
 						}
 					}
 				});
 				azdata.window.openDialog(this.dialogObject);
 			} catch (err) {
+				const actionName = this.isNewObject ? TelemetryActions.OpenNewObjectDialog : TelemetryActions.OpenPropertiesDialog;
+				TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, actionName).withAdditionalProperties({
+					objectType: this.objectType
+				}).send();
 				void vscode.window.showErrorMessage(getErrorMessage(err));
 			}
 		});

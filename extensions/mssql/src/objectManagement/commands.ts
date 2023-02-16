@@ -49,6 +49,9 @@ async function handleNewLoginDialogCommand(context: azdata.ObjectExplorerContext
 		await dialog.open();
 	}
 	catch (err) {
+		TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, TelemetryActions.OpenNewObjectDialog).withAdditionalProperties({
+			objectType: NodeType.Login
+		}).send();
 		await vscode.window.showErrorMessage(localizedConstants.OpenNewObjectDialogError(localizedConstants.LoginTypeDisplayName, getErrorMessage(err)));
 	}
 }
@@ -60,6 +63,9 @@ async function handleNewUserDialogCommand(context: azdata.ObjectExplorerContext,
 		await dialog.open();
 	}
 	catch (err) {
+		TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, TelemetryActions.OpenNewObjectDialog).withAdditionalProperties({
+			objectType: NodeType.User
+		}).send();
 		await vscode.window.showErrorMessage(localizedConstants.OpenNewObjectDialogError(localizedConstants.UserTypeDisplayName, getErrorMessage(err)));
 	}
 }
@@ -84,6 +90,9 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		}
 	}
 	catch (err) {
+		TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, TelemetryActions.OpenPropertiesDialog).withAdditionalProperties({
+			objectType: context.nodeInfo.nodeType
+		}).send();
 		await vscode.window.showErrorMessage(localizedConstants.OpenObjectPropertiesDialogError(nodeTypeDisplayName, context.nodeInfo.label, getErrorMessage(err)));
 	}
 }
@@ -132,7 +141,9 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 			}
 			catch (err) {
 				operation.updateStatus(azdata.TaskStatus.Failed, localizedConstants.DeleteObjectError(nodeTypeDisplayName, context.nodeInfo.label, getErrorMessage(err)));
-				TelemetryReporter.sendErrorEvent(TelemetryViews.ObjectManagement, TelemetryActions.DeleteObject);
+				TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, TelemetryActions.DeleteObject).withAdditionalProperties({
+					objectType: context.nodeInfo.nodeType
+				}).send();
 				return;
 			}
 			await refreshParentNode(context);
