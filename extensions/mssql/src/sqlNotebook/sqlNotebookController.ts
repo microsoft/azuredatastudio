@@ -23,38 +23,32 @@ export class SqlNotebookController implements vscode.Disposable {
 	private readonly _cellUriScheme = 'vscode-notebook-cell';
 	private readonly _connectionLabel = (serverName: string) => localize('notebookConnection', 'Connected to: {0}', serverName);
 	private readonly _disconnectedLabel = localize('notebookDisconnected', 'Disconnected');
-	private readonly _controllerId = 'sql-controller-id';
-	private readonly _notebookType = 'jupyter-notebook';
-	private readonly _label = 'SQL';
-	private readonly _supportedLanguages = ['sql'];
-	private _disposables = new Array<vscode.Disposable>();
 
+	private readonly _disposables = new Array<vscode.Disposable>();
 	private readonly _controller: vscode.NotebookController;
+	private readonly _connectionsMap = new Map<vscode.Uri, azdata.connection.Connection>();
+	private readonly _queryProvider: azdata.QueryProvider;
+	private readonly _connProvider: azdata.ConnectionProvider;
+	private readonly _connectionLabelItem: vscode.StatusBarItem;
+
 	private _executionOrder = 0;
-	private _connectionsMap = new Map<vscode.Uri, azdata.connection.Connection>();
 	private _queryCompleteHandler: QueryCompletionHandler;
 	private _queryMessageHandler: QueryMessageHandler;
-	private _queryProvider: azdata.QueryProvider;
-	private _connProvider: azdata.ConnectionProvider;
-	private _connectionLabelItem: vscode.StatusBarItem;
 	private _activeCellUri: string;
 
 	constructor() {
-		this._controller = vscode.notebooks.createNotebookController(
-			this._controllerId,
-			this._notebookType,
-			this._label
-		);
+		this._controller = vscode.notebooks.createNotebookController('sql-controller-id', 'jupyter-notebook', 'SQL');
 
-		this._controller.supportedLanguages = this._supportedLanguages;
+		this._controller.supportedLanguages = ['sql'];
 		this._controller.supportsExecutionOrder = true;
 		this._controller.executeHandler = this.execute.bind(this);
 
-		this._queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>('MSSQL', azdata.DataProviderType.QueryProvider);
+		const sqlProvider = 'MSSQL';
+		this._queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(sqlProvider, azdata.DataProviderType.QueryProvider);
 		this._queryProvider.registerOnQueryComplete(result => this.handleQueryComplete(result));
 		this._queryProvider.registerOnMessage(message => this.handleQueryMessage(message));
 
-		this._connProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>('MSSQL', azdata.DataProviderType.ConnectionProvider);
+		this._connProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(sqlProvider, azdata.DataProviderType.ConnectionProvider);
 
 		const commandName = 'mssql.changeNotebookConnection';
 		let changeConnectionCommand = vscode.commands.registerCommand(commandName, async () => await this.changeConnection());
