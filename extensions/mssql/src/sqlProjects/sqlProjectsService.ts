@@ -50,7 +50,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 			const result = await this.client.sendRequest(contracts.GetCrossPlatformCompatiblityRequest.type, params);
 			return result;
 		} catch (e) {
-			this.client.logFailedRequest(contracts.OpenSqlProjectRequest.type, e);
+			this.client.logFailedRequest(contracts.GetCrossPlatformCompatiblityRequest.type, e);
 			throw e;
 		}
 	}
