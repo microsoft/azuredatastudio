@@ -66,6 +66,16 @@
         "command": "mssql.designTable",
         "category": "MSSQL",
         "title": "%title.designTable%"
+      },
+      {
+        "command": "mssql.enableGroupBySchema",
+        "category": "MSSQL",
+        "title": "%mssql.objectExplorer.enableGroupBySchema%"
+      },
+      {
+        "command": "mssql.disableGroupBySchema",
+        "category": "MSSQL",
+        "title": "%mssql.objectExplorer.disableGroupBySchema%"
       }
     ],
     "outputChannels": [
@@ -356,6 +366,11 @@
           "type": "boolean",
           "default": false,
           "description": "%mssql.tableDesigner.preloadDatabaseModel%"
+        },
+        "mssql.objectExplorer.groupBySchema": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.objectExplorer.groupBySchema%"
         }
       }
     },
@@ -388,6 +403,14 @@
           "command": "mssql.newTable",
           "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables",
           "group": "0_query@1"
+        },
+        {
+          "command": "mssql.enableGroupBySchema",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && !config.mssql.objectExplorer.groupBySchema"
+        },
+        {
+          "command": "mssql.disableGroupBySchema",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && config.mssql.objectExplorer.groupBySchema"
         }
       ],
       "dataExplorer/context": [
@@ -400,6 +423,14 @@
           "command": "mssql.newTable",
           "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables",
           "group": "connection@1"
+        },
+        {
+          "command": "mssql.enableGroupBySchema",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && !config.mssql.objectExplorer.groupBySchema"
+        },
+        {
+          "command": "mssql.disableGroupBySchema",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && config.mssql.objectExplorer.groupBySchema"
         }
       ],
       "notebook/toolbar": [

@@ -255,11 +255,9 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		if (e.isRevealed) {
 			if (this._findState.isRevealed) {
 				node.style.top = '0px';
-				node.style.display = '';
 				this._updateFinderMatchState();
 			} else {
 				node.style.top = '';
-				node.style.display = 'none';
 			}
 		}
 
