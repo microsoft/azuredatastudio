@@ -432,7 +432,6 @@ declare module 'azdata' {
 		azurePortalEndpoint?: string;
 	}
 
-
 	export namespace diagnostics {
 		/**
 		 * Represents a diagnostics provider of accounts.
@@ -447,13 +446,35 @@ declare module 'azdata' {
 
 		export interface ConnectionDiagnosticsResult {
 			/**
-			 * Status indicating if the error was handled or not.
+			 * Whether the error was handled or not.
 			 */
 			handled: boolean,
+			/**
+			 * Whether reconnect should be attempted.
+			 */
+			reconnect?: boolean,
 			/**
 			 * If given, the new set of connection options to assign to the original connection profile, overwriting any previous options.
 			 */
 			options?: { [name: string]: any };
+		}
+
+		/**
+		 * Provides error information
+		 */
+		export interface IErrorInformation {
+			/**
+			 * Error code
+			 */
+			errorCode: number,
+			/**
+			 * Error Message
+			 */
+			errorMessage: string,
+			/**
+			 * Stack trace of error
+			 */
+			messageDetails: string
 		}
 
 		/**
@@ -462,12 +483,11 @@ declare module 'azdata' {
 		export interface ErrorDiagnosticsProvider {
 			/**
 			 * Called when a connection error occurs, allowing the provider to optionally handle the error and fix any issues before continuing with completing the connection.
-			 * @param errorCode The error code of the connection error.
-			 * @param errorMessage The error message of the connection error.
+			 * @param errorInfo The error information of the connection error.
 			 * @param connection The connection profile that caused the error.
 			 * @returns ConnectionDiagnosticsResult: The result from the provider for whether the error was handled.
 			 */
-			handleConnectionError(errorCode: number, errorMessage: string, connection: connection.ConnectionProfile): Thenable<ConnectionDiagnosticsResult>;
+			handleConnectionError(errorInfo: IErrorInformation, connection: connection.ConnectionProfile): Thenable<ConnectionDiagnosticsResult>;
 		}
 
 		/**
@@ -536,6 +556,38 @@ declare module 'azdata' {
 		 * and not the Advanced Options window.
 		 */
 		showOnConnectionDialog?: boolean;
+
+		/**
+		 * Used to define list of values based on which another option is rendered visible/hidden.
+		 */
+		onSelectionChange?: SelectionChangeEvent[];
+	}
+
+	/**
+	 * This change event defines actions
+	 */
+	export interface SelectionChangeEvent {
+		/**
+		 * Values that affect actions defined in this event.
+		 */
+		values: string[];
+
+		/**
+		 * Action to be taken on another option when selected value matches to the list of values provided.
+		 */
+		dependentOptionActions: DependentOptionAction[];
+	}
+
+	export interface DependentOptionAction {
+		/**
+		 * Name of option affected by defined action.
+		 */
+		optionName: string,
+
+		/**
+		 * Action to be taken, Supported values: 'show', 'hide'.
+		 */
+		action: string;
 	}
 
 	// Object Explorer interfaces  --------------------------------
@@ -1800,6 +1852,70 @@ declare module 'azdata' {
 		}
 
 		export interface Dialog extends LoadingComponentBase {
+		}
+
+		/**
+		 * Opens the error dialog with customization options provided.
+		 * @param options Dialog options to customize error dialog.
+		 * @returns Id of action button clicked by user, e.g. ok, cancel
+		 */
+		export function openCustomErrorDialog(options: IErrorDialogOptions): Thenable<string | undefined>;
+
+		/**
+		 * Provides dialog options to customize modal dialog content and layout
+		 */
+		export interface IErrorDialogOptions {
+			/**
+			 * Severity Level to identify icon of modal dialog.
+			 */
+			severity: MessageLevel;
+			/**
+			 * Title of modal dialog header.
+			 */
+			headerTitle: string;
+			/**
+			 * Message text to show on dialog.
+			 */
+			message: string;
+			/**
+			 * (Optional) Detailed message, e.g stack trace of error.
+			 */
+			messageDetails?: string;
+			/**
+			 * Telemetry View to be used for emitting telemetry events.
+			 */
+			telemetryView?: string,
+			/**
+			 * (Optional) List of custom actions to include in modal dialog alongwith a 'Cancel' button.
+			 * If custom 'actions' are not provided, 'OK' button will be shown by default.
+			 */
+			actions?: IDialogAction[];
+			/**
+			 * (Optional) If provided, instruction text is shown in bold below message.
+			 */
+			instructionText?: string;
+			/**
+			 * (Optional) If provided, appends read more link after instruction text.
+			 */
+			readMoreLink?: string;
+		}
+
+		/**
+		 * An action that will be rendered as a button on the dialog.
+		 */
+		export interface IDialogAction {
+			/**
+			 * Identifier of action.
+			 */
+			id: string;
+			/**
+			 * Label of Action button.
+			 */
+			label: string;
+			/**
+			 * Defines if button styling and focus should be based on primary action.
+			 */
+			isPrimary: boolean;
 		}
 	}
 }

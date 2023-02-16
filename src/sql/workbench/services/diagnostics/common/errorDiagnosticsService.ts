@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { IConnectionResult } from 'sql/platform/connection/common/connectionManagement';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 export const SERVICE_ID = 'errorDiagnosticsService';
@@ -34,5 +35,5 @@ export interface IErrorDiagnosticsService {
 	 * @param connection Connection profile that is utilized for connection
 	 * @returns a Promise containing a ConnectionDiagnosticsResult object (with handling status and altered options)
 	 */
-	tryHandleConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.IConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult>;
+	tryHandleConnectionError(connectionResult: IConnectionResult, providerId: string, connection: azdata.IConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult>;
 }

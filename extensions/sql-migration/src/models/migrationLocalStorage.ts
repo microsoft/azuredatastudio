@@ -9,6 +9,7 @@ import { DatabaseMigration, SqlMigrationService, getSubscriptions, getServiceMig
 import { deepClone } from '../api/utils';
 import * as loc from '../constants/strings';
 import { ServiceContextChangeEvent } from '../dashboard/tabBase';
+import { getSourceConnectionProfile } from '../api/sqlUtils';
 
 export class MigrationLocalStorage {
 	private static context: vscode.ExtensionContext;
@@ -19,7 +20,7 @@ export class MigrationLocalStorage {
 	}
 
 	public static async getMigrationServiceContext(): Promise<MigrationServiceContext> {
-		const connectionProfile = await azdata.connection.getCurrentConnection();
+		const connectionProfile = await getSourceConnectionProfile();
 		if (connectionProfile) {
 			const serverContextKey = `${this.mementoToken}.${connectionProfile.serverName}.serviceContext`;
 			return deepClone(await this.context.globalState.get(serverContextKey)) || {};
@@ -28,7 +29,7 @@ export class MigrationLocalStorage {
 	}
 
 	public static async saveMigrationServiceContext(serviceContext: MigrationServiceContext, serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>): Promise<void> {
-		const connectionProfile = await azdata.connection.getCurrentConnection();
+		const connectionProfile = await getSourceConnectionProfile();
 		if (connectionProfile) {
 			const serverContextKey = `${this.mementoToken}.${connectionProfile.serverName}.serviceContext`;
 			await this.context.globalState.update(serverContextKey, deepClone(serviceContext));

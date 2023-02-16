@@ -206,6 +206,11 @@
         "command": "sqlDatabaseProjects.addSqlCmdVariable",
         "title": "%sqlDatabaseProjects.addSqlCmdVariable%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.rename",
+        "title": "%sqlDatabaseProjects.rename%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -333,6 +338,10 @@
         {
           "command": "sqlDatabaseProjects.addSqlCmdVariable",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.rename",
+          "when": "false"
         }
       ],
       "view/item/context": [
@@ -425,6 +434,11 @@
           "command": "sqlDatabaseProjects.delete",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/ || viewItem == databaseProject.itemType.reference || viewItem == databaseProject.itemType.sqlcmdVariable",
           "group": "9_dbProjectsLast@2"
+        },
+        {
+          "command": "sqlDatabaseProjects.rename",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^databaseProject.itemType.file/",
+          "group": "9_dbProjectsLast@3"
         },
         {
           "command": "sqlDatabaseProjects.changeTargetPlatform",

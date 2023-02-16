@@ -50,7 +50,7 @@ suite('SQL Connection Tree Action tests', () => {
 		connected: true,
 		errorMessage: undefined,
 		errorCode: undefined,
-		callStack: undefined
+		messageDetails: undefined
 	};
 	let capabilitiesService = new TestCapabilitiesService();
 	const logService = new LogService(new ConsoleLogger());

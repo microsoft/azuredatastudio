@@ -4,9 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IConfig, Events, LogLevel } from '@microsoft/ads-service-downloader';
-import { ServerOptions, TransportKind } from 'vscode-languageclient';
+import { RevealOutputChannelOn, ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import * as path from 'path';
 import { getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getOrDownloadServer, getParallelMessageProcessingConfig, TracingLevel } from './utils';
 import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
@@ -200,6 +201,8 @@ function getClientOptions(context: AppContext): ClientOptions {
 			TdeMigrationService.asFeature(context),
 			ObjectManagementService.asFeature(context)
 		],
-		outputChannel: outputChannel
+		outputChannel: outputChannel,
+		// Automatically reveal the output channel only in dev mode, so that the users are not impacted and issues can still be caught during development.
+		revealOutputChannelOn: azdata.env.quality === azdata.env.AppQuality.dev ? RevealOutputChannelOn.Error : RevealOutputChannelOn.Never
 	};
 }

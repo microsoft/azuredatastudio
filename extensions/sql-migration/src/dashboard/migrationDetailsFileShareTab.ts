@@ -15,6 +15,7 @@ import { getResourceName } from '../api/azure';
 import { EmptySettingValue } from './tabBase';
 import { InfoFieldSchema, infoFieldWidth, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
 import { DashboardStatusBar } from './DashboardStatusBar';
+import { getSourceConnectionServerInfo } from '../api/sqlUtils';
 
 const MigrationDetailsFileShareTabId = 'MigrationDetailsFileShareTab';
 
@@ -92,7 +93,7 @@ export class MigrationDetailsFileShareTab extends MigrationDetailsTabBase<Migrat
 
 			const sqlServerName = migration.properties.sourceServerName;
 			const sourceDatabaseName = migration.properties.sourceDatabaseName;
-			const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
+			const sqlServerInfo = await getSourceConnectionServerInfo();
 			const versionName = getSqlServerName(sqlServerInfo.serverMajorVersion!);
 			const sqlServerVersion = versionName ? versionName : sqlServerInfo.serverVersion;
 			const targetDatabaseName = migration.name;

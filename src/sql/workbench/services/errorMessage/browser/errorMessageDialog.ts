@@ -15,7 +15,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
-import { IAction } from 'vs/base/common/actions';
+import { Action, IAction } from 'vs/base/common/actions';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
@@ -26,6 +26,8 @@ import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { Link } from 'vs/platform/opener/browser/link';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { Deferred } from 'sql/base/common/promise';
+import { IErrorDialogOptions, MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 const maxActions = 1;
 
@@ -44,6 +46,7 @@ export class ErrorMessageDialog extends Modal {
 	private _okLabel: string;
 	private _closeLabel: string;
 	private _readMoreLabel: string;
+	private _promiseResolver: (value: string) => void;
 
 	private _onOk = new Emitter<void>();
 	public onOk: Event<void> = this._onOk.event;
@@ -56,7 +59,8 @@ export class ErrorMessageDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
-		@IOpenerService private readonly _openerService: IOpenerService
+		@IOpenerService private readonly _openerService: IOpenerService,
+		protected _telemetryView: TelemetryKeys.TelemetryView | string = TelemetryKeys.TelemetryView.ErrorMessageDialog,
 	) {
 		super('', TelemetryKeys.ModalDialogName.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
 		this._okLabel = localize('errorMessageDialog.ok', "OK");
@@ -101,11 +105,15 @@ export class ErrorMessageDialog extends Modal {
 	}
 
 	private onActionSelected(index: number): void {
-		// Call OK so it always closes
-		this.ok();
-		// Run the action if possible
 		if (this._actions && index < this._actions.length) {
+			const actionId = this._actions[index].id;
+			this._telemetryService.sendActionEvent(this._telemetryView, actionId);
+			// Call OK to close dialog.
+			this.ok(false);
+			// Run the action if possible
 			this._actions[index].run();
+			// Resolve promise after running action.
+			this._promiseResolver(actionId);
 		}
 	}
 
@@ -157,16 +165,23 @@ export class ErrorMessageDialog extends Modal {
 		this.ok();
 	}
 
-	public ok(): void {
+	public ok(resolvePromise: boolean = true): void {
+		this._telemetryService.sendActionEvent(this._telemetryView, 'ok');
 		this._onOk.fire();
-		this.close('ok');
+		this.close('ok', resolvePromise);
 	}
 
-	public close(hideReason: HideReason = 'close') {
+	public close(hideReason: HideReason = 'close', resolvePromise: boolean) {
+		this._telemetryService.sendActionEvent(this._telemetryView, hideReason.toString());
 		this.hide(hideReason);
+		if (resolvePromise) {
+			this._promiseResolver(hideReason.toString());
+		}
 	}
 
-	public open(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[], instructionText?: string, readMoreLink?: string): void {
+	public open(telemetryView: TelemetryKeys.TelemetryView | string, severity: Severity, headerTitle: string, message: string, messageDetails?: string,
+		actions?: IAction[], instructionText?: string, readMoreLink?: string, resetActions: boolean = true): void {
+		this._telemetryView = telemetryView;
 		this._severity = severity;
 		this._message = message;
 		this._instructionText = instructionText;
@@ -181,7 +196,9 @@ export class ErrorMessageDialog extends Modal {
 		if (this._message) {
 			this._bodyContainer.setAttribute('aria-description', this._message);
 		}
-		this.resetActions();
+		if (resetActions) {
+			this.resetActions();
+		}
 		if (actions?.length > 0) {
 			for (let i = 0; i < maxActions && i < actions.length; i++) {
 				this._actions.push(actions[i]);
@@ -207,6 +224,42 @@ export class ErrorMessageDialog extends Modal {
 		} else {
 			this._okButton!.focus();
 		}
+	}
+
+	public openCustomAsync(options: IErrorDialogOptions): Promise<string | undefined> {
+		if (!options) {
+			return undefined;
+		}
+
+		let actions: IAction[] = [];
+		this.resetActions();
+		options.actions?.forEach(action => {
+			actions.push(new Action(action.id, action.label, '', true, () => { }));
+		});
+
+		this.open(options.telemetryView, this.convertToSeverity(options.severity),
+			options.headerTitle, options.message, options.messageDetails, actions,
+			options.instructionText, options.readMoreLink, false);
+
+		const deferred = new Deferred<string | undefined>();
+		this._promiseResolver = deferred.resolve;
+		return deferred.promise;
+	}
+
+	private convertToSeverity(messageLevel: MessageLevel): Severity {
+		let severity: Severity = Severity.Error;
+		switch (messageLevel) {
+			case MessageLevel.Error:
+				severity = Severity.Error;
+				break;
+			case MessageLevel.Information:
+				severity = Severity.Info;
+				break;
+			case MessageLevel.Warning:
+				severity = Severity.Warning;
+				break;
+		}
+		return severity;
 	}
 
 	private resetActions(): void {

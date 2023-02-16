@@ -77,7 +77,6 @@ export const vscodeOpenCommand = 'vscode.open';
 export const refreshDataWorkspaceCommand = 'dataworkspace.refresh';
 
 // UI Strings
-export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources");
 export const databaseReferencesNodeName = localize('databaseReferencesNodeName', "Database References");
 export const sqlcmdVariablesNodeName = localize('sqlcmdVariablesNodeName', "SQLCMD Variables");
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
@@ -111,6 +110,7 @@ export function currentTargetPlatform(projectName: string, currentTargetPlatform
 export function projectUpdatedToSdkStyle(projectName: string) { return localize('projectUpdatedToSdkStyle', "The project {0} has been updated to be an SDK-style project. Click 'Learn More' for details on the Microsoft.Build.Sql SDK and ways to simplify the project file.", projectName); }
 export function convertToSdkStyleConfirmation(projectName: string) { return localize('convertToSdkStyleConfirmation', "The project '{0}' will not be fully compatible with SSDT after conversion. A backup copy of the project file will be created in the project folder prior to conversion. More information is available at https://aka.ms/sqlprojsdk. Continue with converting to SDK-style project?", projectName); }
 export function updatedToSdkStyleError(projectName: string) { return localize('updatedToSdkStyleError', "Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.", projectName); }
+export const enterNewName = localize('enterNewName', "Enter new name");
 
 // Publish dialog strings
 export const publishDialogName = localize('publishDialogName', "Publish project");
@@ -135,6 +135,8 @@ export const server = localize('server', "Server");
 export const defaultUser = localize('default', "default");
 export const selectProfileToUse = localize('selectProfileToUse', "Select publish profile to load");
 export const selectProfile = localize('selectProfile', "Select Profile");
+export const saveProfileAsButtonText = localize('saveProfileAsButtonText', "Save Profile As...");
+export const save = localize('save', "Save");
 export const dontUseProfile = localize('dontUseProfile', "Don't use profile");
 export const browseForProfileWithIcon = `$(folder) ${localize('browseForProfile', "Browse for profile")}`;
 export const chooseAction = localize('chooseAction', "Choose action");

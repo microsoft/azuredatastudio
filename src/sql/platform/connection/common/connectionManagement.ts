@@ -68,7 +68,7 @@ export interface IConnectionResult {
 	connected: boolean;
 	errorMessage: string;
 	errorCode: number;
-	callStack: string;
+	messageDetails: string;
 	errorHandled?: boolean;
 	connectionProfile?: IConnectionProfile;
 }

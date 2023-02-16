@@ -27,8 +27,7 @@ import * as types from 'vs/base/common/types';
 import { trim } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 import { CmsConnectionController } from 'sql/workbench/services/connection/browser/cmsConnectionController';
 import { entries } from 'sql/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
@@ -91,7 +90,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService,
 		@ILogService private _logService: ILogService,
-		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		this.initializeConnectionProviders();
 	}
@@ -285,7 +283,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this._logService.debug(`ConnectionDialogService: Error handled and connection reset - Error: ${connectionResult.errorMessage}`);
 			} else {
 				this._connectionDialog.resetConnection();
-				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack, connectionResult.errorCode);
+				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.messageDetails);
 				this._logService.debug(`ConnectionDialogService: Connection error: ${connectionResult.errorMessage}`);
 			}
 		} catch (err) {
@@ -363,15 +361,20 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this.uiController.initDialog(this._params && this._params.providers, this._model);
 	}
 
-	private handleFillInConnectionInputs(connectionInfo: IConnectionProfile): void {
-		this._connectionManagementService.addSavedPassword(connectionInfo).then(connectionWithPassword => {
+	private async handleFillInConnectionInputs(connectionInfo: IConnectionProfile): Promise<void> {
+		try {
+			const connectionWithPassword = await this.createModel(connectionInfo);
+
 			if (this._model) {
 				this._model.dispose();
 			}
-			this._model = this.createModel(connectionWithPassword);
-
+			this._model = connectionWithPassword;
 			this.uiController.fillInConnectionInputs(this._model);
-		}).catch(err => onUnexpectedError(err));
+		}
+		catch (err) {
+			this._logService.error(`Error filling in connection inputs with password. Original error message: ${err}`);
+		}
+
 		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[connectionInfo.providerName]);
 	}
 
@@ -383,11 +386,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this.uiController.handleOnConnecting();
 	}
 
-	private updateModelServerCapabilities(model: IConnectionProfile) {
+	private async updateModelServerCapabilities(model: IConnectionProfile) {
 		if (this._model) {
 			this._model.dispose();
 		}
-		this._model = this.createModel(model);
+		this._model = await this.createModel(model);
 		if (this._model.providerName) {
 			this._currentProviderType = this._model.providerName;
 			if (this._connectionDialog) {
@@ -396,7 +399,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 	}
 
-	private createModel(model: IConnectionProfile): ConnectionProfile {
+	private async createModel(model: IConnectionProfile): Promise<ConnectionProfile> {
 		const defaultProvider = this.getDefaultProviderName();
 		let providerName = model ? model.providerName : defaultProvider;
 		providerName = providerName ? providerName : defaultProvider;
@@ -412,6 +415,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 
 		let newProfile = new ConnectionProfile(this._capabilitiesService, model || providerName);
+		if (model && !model.password) {
+			try {
+				await this._connectionManagementService.addSavedPassword(newProfile);
+			}
+			catch (err) {
+				this._logService.error(`Error filling in password for connection dialog model. Original error message: ${err}`);
+			}
+		}
 		newProfile.saveProfile = true;
 		newProfile.generateNewId();
 		// If connecting from a query editor set "save connection" to false
@@ -422,7 +433,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	private async showDialogWithModel(): Promise<void> {
-		this.updateModelServerCapabilities(this._inputModel);
+		await this.updateModelServerCapabilities(this._inputModel);
 		await this.doShowDialog(this._params);
 	}
 
@@ -461,7 +472,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._params = params;
 		this._inputModel = model;
 
-		this.updateModelServerCapabilities(model);
+		await this.updateModelServerCapabilities(model);
 
 		// If connecting from a query editor set "save connection" to false
 		if (params && (params.input && params.connectionType === ConnectionType.editor ||
@@ -471,7 +482,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		await this.showDialogWithModel();
 
 		if (connectionResult && connectionResult.errorMessage) {
-			this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack, connectionResult.errorCode);
+			this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.messageDetails);
 		}
 	}
 
@@ -503,8 +514,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		recentConnections.forEach(conn => conn.dispose());
 	}
 
-
-	private showErrorDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, errorCode?: number): void {
+	private showErrorDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string): void {
 		// Kerberos errors are currently very hard to understand, so adding handling of these to solve the common scenario
 		// note that ideally we would have an extensible service to handle errors by error code and provider, but for now
 		// this solves the most common "hard error" that we've noticed
@@ -532,22 +542,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 		this._logService.error(message);
 
-		// Set instructionText for MSSQL Provider Encryption error code -2146893019 thrown by SqlClient when certificate validation fails.
-		if (errorCode === -2146893019) {
-			let enableTrustServerCert = localize('enableTrustServerCertificate', "Enable Trust server certificate");
-			let instructionText = localize('trustServerCertInstructionText', `Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable 'Trust server certificate' in the connection dialog.
-
-			Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? `);
-			let readMoreLink = "https://learn.microsoft.com/sql/database-engine/configure-windows/enable-encrypted-connections-to-the-database-engine"
-			actions.push(new Action('trustServerCert', enableTrustServerCert, undefined, true, async () => {
-				this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ConnectionDialog, TelemetryKeys.TelemetryAction.EnableTrustServerCertificate);
-				this._model.options[Constants.trustServerCertificate] = true;
-				await this.handleOnConnect(this._connectionDialog.newConnectionParams, this._model as IConnectionProfile);
-				return;
-			}));
-			this._errorMessageService.showDialog(severity, headerTitle, message, messageDetails, actions, instructionText, readMoreLink);
-		} else {
-			this._errorMessageService.showDialog(severity, headerTitle, message, messageDetails, actions);
-		}
+		this._errorMessageService.showDialog(severity, headerTitle, message, messageDetails, TelemetryView.ConnectionErrorDialog, actions, undefined, undefined);
 	}
 }

@@ -15,6 +15,7 @@ import { logError, TelemetryViews } from '../telemetry';
 import { SelectMigrationServiceDialog } from '../dialog/selectMigrationService/selectMigrationServiceDialog';
 import { AdsMigrationStatus, EmptySettingValue, ServiceContextChangeEvent, TabBase } from './tabBase';
 import { DashboardStatusBar } from './DashboardStatusBar';
+import { getSourceConnectionId } from '../api/sqlUtils';
 
 export const MigrationsListTabId = 'MigrationsListTab';
 
@@ -174,11 +175,10 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 					await dialog.initialize();
 				}));
 
-		const connectionProfile = await azdata.connection.getCurrentConnection();
 		this.disposables.push(
 			this.serviceContextChangedEvent.event(
 				async (e) => {
-					if (e.connectionId === connectionProfile.connectionId) {
+					if (e.connectionId === await getSourceConnectionId()) {
 						await this.updateServiceContext(this._serviceContextButton);
 						await this.refresh();
 					}
@@ -408,7 +408,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 				(<azdata.CategoryValue>this._columnSortDropdown.value).name,
 				this._columnSortCheckbox.checked === true);
 
-			const connectionProfile = await azdata.connection.getCurrentConnection();
+			const connectionProfileId = await getSourceConnectionId();
 			const data: any[] = this._filteredMigrations.map((migration, index) => {
 				return [
 					<azdata.HyperlinkColumnCellValue>{
@@ -432,7 +432,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 					<azdata.ContextMenuColumnCellValue>{
 						title: '',
 						context: {
-							connectionId: connectionProfile.connectionId,
+							connectionId: connectionProfileId,
 							migrationId: migration.id,
 							migrationOperationId: migration.properties.migrationOperationId,
 						},

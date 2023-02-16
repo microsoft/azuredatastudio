@@ -44,12 +44,15 @@ const query_target_databases_sql = `
 		AND is_distributor <> 1
 	ORDER BY db.name;`;
 
+// NOTES: Converting the size to BIGINT is need to handle the large database scenarios.
+// Size column in sys.master_files represents the number of pages and each page is 8 KB
+// The end result is size in MB, 8/1024 = 1/128.
 const query_databases_with_size = `
 	WITH
 		db_size
 		AS
 		(
-			SELECT database_id, CAST(SUM(size) * 8.0 / 1024 AS INTEGER) size
+			SELECT database_id, CAST(SUM(CAST(size as BIGINT)) / 128 AS BIGINT) size
 			FROM sys.master_files with (nolock)
 			GROUP BY database_id
 		)
@@ -127,6 +130,40 @@ export interface LoginTableInfo {
 	status: string;
 }
 
+export async function getSourceConnectionProfile(): Promise<azdata.connection.ConnectionProfile> {
+	return await azdata.connection.getCurrentConnection();
+}
+
+export async function getSourceConnectionId(): Promise<string> {
+	return (await getSourceConnectionProfile()).connectionId;
+}
+
+export async function getSourceConnectionServerInfo(): Promise<azdata.ServerInfo> {
+	return await azdata.connection.getServerInfo(await getSourceConnectionId());
+}
+
+export async function getSourceConnectionUri(): Promise<string> {
+	return await azdata.connection.getUriForConnection(await getSourceConnectionId());
+}
+
+export async function getSourceConnectionCredentials(): Promise<{ [name: string]: string }> {
+	return await azdata.connection.getCredentials(await getSourceConnectionId());
+}
+
+export async function getSourceConnectionQueryProvider(): Promise<azdata.QueryProvider> {
+	return azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+		(await getSourceConnectionProfile()).providerId,
+		azdata.DataProviderType.QueryProvider);
+}
+
+export function getEncryptConnectionValue(connection: azdata.connection.ConnectionProfile): boolean {
+	return connection?.options?.encrypt === true || connection?.options?.encrypt === 'true';
+}
+
+export function getTrustServerCertificateValue(connection: azdata.connection.ConnectionProfile): boolean {
+	return connection?.options?.trustServerCertificate === true || connection?.options?.trustServerCertificate === 'true';
+}
+
 function getSqlDbConnectionProfile(
 	serverName: string,
 	tenantId: string,
@@ -153,6 +190,7 @@ function getSqlDbConnectionProfile(
 			password: password,
 			connectionTimeout: 60,
 			columnEncryptionSetting: 'Enabled',
+			// when connecting to a target Azure SQL DB, use true/false
 			encrypt: true,
 			trustServerCertificate: false,
 			connectRetryCount: '1',
@@ -165,12 +203,13 @@ function getSqlDbConnectionProfile(
 	};
 }
 
-export function getConnectionProfile(
+export function getTargetConnectionProfile(
 	serverName: string,
 	azureResourceId: string,
 	userName: string,
 	password: string,
-	trustServerCert: boolean = false): azdata.IConnectionProfile {
+	encryptConnection: boolean,
+	trustServerCert: boolean): azdata.IConnectionProfile {
 
 	const connectId = generateGuid();
 	return {
@@ -194,7 +233,7 @@ export function getConnectionProfile(
 			password: password,
 			connectionTimeout: 60,
 			columnEncryptionSetting: 'Enabled',
-			encrypt: true,
+			encrypt: encryptConnection,
 			trustServerCertificate: trustServerCert,
 			connectRetryCount: '1',
 			connectRetryInterval: '10',
@@ -203,8 +242,36 @@ export function getConnectionProfile(
 	};
 }
 
-export async function collectSourceDatabaseTableInfo(sourceConnectionId: string, sourceDatabase: string): Promise<TableInfo[]> {
-	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
+export async function getSourceConnectionString(): Promise<string> {
+	return await azdata.connection.getConnectionString((await getSourceConnectionProfile()).connectionId, true);
+}
+
+export async function getTargetConnectionString(
+	serverName: string,
+	azureResourceId: string,
+	username: string,
+	password: string,
+	encryptConnection: boolean,
+	trustServerCertificate: boolean): Promise<string> {
+
+	const connectionProfile = getTargetConnectionProfile(
+		serverName,
+		azureResourceId,
+		username,
+		password,
+		encryptConnection,
+		trustServerCertificate);
+
+	const result = await azdata.connection.connect(connectionProfile, false, false);
+	if (result.connected && result.connectionId) {
+		return azdata.connection.getConnectionString(result.connectionId, true);
+	}
+
+	return '';
+}
+
+export async function collectSourceDatabaseTableInfo(sourceDatabase: string): Promise<TableInfo[]> {
+	const ownerUri = await azdata.connection.getUriForConnection((await getSourceConnectionProfile()).connectionId);
 	const connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(
 		'MSSQL',
 		azdata.DataProviderType.ConnectionProvider);
@@ -269,11 +336,14 @@ export async function collectTargetDatabaseInfo(
 	userName: string,
 	password: string): Promise<TargetDatabaseInfo[]> {
 
-	const connectionProfile = getConnectionProfile(
+	const connectionProfile = getTargetConnectionProfile(
 		targetServer.properties.fullyQualifiedDomainName,
 		targetServer.id,
 		userName,
-		password);
+		password,
+		// when connecting to a target Azure SQL DB, use true/false
+		true /* encryptConnection */,
+		false /* trustServerCertificate */);
 
 	const result = await azdata.connection.connect(connectionProfile, false, false);
 	if (result.connected && result.connectionId) {
@@ -394,11 +464,14 @@ export async function collectTargetLogins(
 	password: string,
 	includeWindowsAuth: boolean = true): Promise<string[]> {
 
-	const connectionProfile = getConnectionProfile(
+	const connectionProfile = getTargetConnectionProfile(
 		serverName,
 		azureResourceId,
 		userName,
 		password,
+		// for login migration, connect to target Azure SQL with true/true
+		// to-do: take as input from the user, should be true/false for DB/MI but true/true for VM
+		true /* encryptConnection */,
 		true /* trustServerCertificate */);
 
 	const result = await azdata.connection.connect(connectionProfile, false, false);
@@ -419,7 +492,8 @@ export async function collectTargetLogins(
 	throw new Error(result.errorMessage);
 }
 
-export async function isSysAdmin(sourceConnectionId: string): Promise<boolean> {
+export async function isSourceConnectionSysAdmin(): Promise<boolean> {
+	const sourceConnectionId = await getSourceConnectionId();
 	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
 	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
 		'MSSQL',

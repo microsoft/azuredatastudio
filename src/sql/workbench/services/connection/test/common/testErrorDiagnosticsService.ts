@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { IConnectionResult } from 'sql/platform/connection/common/connectionManagement';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 
 export class TestErrorDiagnosticsService implements IErrorDiagnosticsService {
@@ -15,7 +16,7 @@ export class TestErrorDiagnosticsService implements IErrorDiagnosticsService {
 	unregisterDiagnosticsProvider(ProviderId: string): void {
 	}
 
-	tryHandleConnectionError(errorCode: number, errorMessage: string, providerId: string, connection: azdata.IConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
+	tryHandleConnectionError(connectionResult: IConnectionResult, providerId: string, connection: azdata.IConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
 		return Promise.resolve({ handled: false });
 	}
 }

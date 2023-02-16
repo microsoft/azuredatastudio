@@ -91,7 +91,7 @@ export class SavedAssessmentDialog {
 			this.stateModel,
 			this._serviceContextChangedEvent);
 
-		await wizardController.openWizard(this.stateModel.sourceConnectionId);
+		await wizardController.openWizard();
 		this._isOpen = false;
 	}
 

@@ -203,7 +203,7 @@ suite('SQL ConnectionManagementService tests', () => {
 				TypeMoq.It.isAny(),
 				TypeMoq.It.is<INewConnectionParams>(p => p.connectionType === connectionType && (uri === undefined || p.input.uri === uri)),
 				TypeMoq.It.is<IConnectionProfile>(c => c !== undefined && c.serverName === connectionProfile.serverName),
-				connectionResult ? TypeMoq.It.is<IConnectionResult>(r => r.errorMessage === connectionResult.errorMessage && r.callStack === connectionResult.callStack) : undefined,
+				connectionResult ? TypeMoq.It.is<IConnectionResult>(r => r.errorMessage === connectionResult.errorMessage && r.messageDetails === connectionResult.messageDetails) : undefined,
 				options ? TypeMoq.It.isAny() : undefined),
 				didShow ? TypeMoq.Times.once() : TypeMoq.Times.never());
 
@@ -212,7 +212,7 @@ suite('SQL ConnectionManagementService tests', () => {
 				TypeMoq.It.isAny(),
 				TypeMoq.It.is<INewConnectionParams>(p => p.connectionType === connectionType && ((uri === undefined && p.input === undefined) || p.input.uri === uri)),
 				undefined,
-				connectionResult ? TypeMoq.It.is<IConnectionResult>(r => r.errorMessage === connectionResult.errorMessage && r.callStack === connectionResult.callStack) : undefined,
+				connectionResult ? TypeMoq.It.is<IConnectionResult>(r => r.errorMessage === connectionResult.errorMessage && r.messageDetails === connectionResult.messageDetails) : undefined,
 				options ? TypeMoq.It.isAny() : undefined),
 				didShow ? TypeMoq.Times.once() : TypeMoq.Times.never());
 		}
@@ -422,7 +422,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			connected: expectedConnection,
 			errorMessage: error,
 			errorCode: errorCode,
-			callStack: errorCallStack
+			messageDetails: errorCallStack
 		};
 
 		let result = await connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack);
@@ -450,7 +450,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			connected: expectedConnection,
 			errorMessage: error,
 			errorCode: errorCode,
-			callStack: errorCallStack
+			messageDetails: errorCallStack
 		};
 
 		let result = await connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack);
@@ -1097,7 +1097,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			connected: expectedConnection,
 			errorMessage: error,
 			errorCode: errorCode,
-			callStack: errorCallStack
+			messageDetails: errorCallStack
 		};
 
 		let result = await connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack);
@@ -1177,7 +1177,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			connected: expectedConnection,
 			errorMessage: error,
 			errorCode: errorCode,
-			callStack: errorCallStack
+			messageDetails: errorCallStack
 		};
 
 		let result = await connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack);
@@ -1209,7 +1209,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			connected: expectedConnection,
 			errorMessage: error,
 			errorCode: errorCode,
-			callStack: errorCallStack
+			messageDetails: errorCallStack
 		};
 
 		let result = await connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack);
@@ -1233,7 +1233,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			connected: expectedConnection,
 			errorMessage: undefined,
 			errorCode: undefined,
-			callStack: undefined
+			messageDetails: undefined
 		};
 
 		let result = await connect(uri, options, false, connectionProfileWithEmptyUnsavedPassword);
@@ -1258,7 +1258,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			connected: expectedConnection,
 			errorMessage: undefined,
 			errorCode: undefined,
-			callStack: undefined
+			messageDetails: undefined
 		};
 
 		let result = await connect(uri, options, false, connectionProfileWithEmptySavedPassword);
@@ -1294,7 +1294,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			connected: expectedConnection,
 			errorMessage: undefined,
 			errorCode: undefined,
-			callStack: undefined
+			messageDetails: undefined
 		};
 
 		let result = await connect(uri, options, false, connectionProfileWithEmptySavedPassword);

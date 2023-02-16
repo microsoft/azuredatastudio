@@ -202,9 +202,6 @@
     <trans-unit id="dataSourceRadioButtonLabel">
       <source xml:lang="en">Data sources</source>
     </trans-unit>
-    <trans-unit id="dataSourcesNodeName">
-      <source xml:lang="en">Data Sources</source>
-    </trans-unit>
     <trans-unit id="databaseLocation">
       <source xml:lang="en">Database location is required for adding a reference to a database</source>
     </trans-unit>
@@ -378,6 +375,9 @@
     </trans-unit>
     <trans-unit id="enterNewDatabaseName">
       <source xml:lang="en">Enter new database name</source>
+    </trans-unit>
+    <trans-unit id="enterNewName">
+      <source xml:lang="en">Enter new name</source>
     </trans-unit>
     <trans-unit id="enterNewSqlCmdVariableDefaultValue">
       <source xml:lang="en">Enter default value for SQLCMD variable '{0}'</source>
@@ -801,6 +801,12 @@
     <trans-unit id="sameDatabase">
       <source xml:lang="en">Same database</source>
     </trans-unit>
+    <trans-unit id="save">
+      <source xml:lang="en">Save</source>
+    </trans-unit>
+    <trans-unit id="saveProfileAsButtonText">
+      <source xml:lang="en">Save Profile As...</source>
+    </trans-unit>
     <trans-unit id="schema">
       <source xml:lang="en">Schema</source>
     </trans-unit>
@@ -1157,6 +1163,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.publish">
       <source xml:lang="en">Publish</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.rename">
+      <source xml:lang="en">Rename</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.schemaCompare">
       <source xml:lang="en">Schema Compare</source>
