@@ -488,6 +488,15 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="mssql.logRetentionMinutes">
       <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
     </trans-unit>
+    <trans-unit id="mssql.objectExplorer.disableGroupBySchema">
+      <source xml:lang="en">Disable Group By Schema</source>
+    </trans-unit>
+    <trans-unit id="mssql.objectExplorer.enableGroupBySchema">
+      <source xml:lang="en">Enable Group By Schema</source>
+    </trans-unit>
+    <trans-unit id="mssql.objectExplorer.groupBySchema">
+      <source xml:lang="en">When enabled, the database objects in Object Explorer will be categorized by schema.</source>
+    </trans-unit>
     <trans-unit id="mssql.parallelMessageProcessing">
       <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.</source>
     </trans-unit>
