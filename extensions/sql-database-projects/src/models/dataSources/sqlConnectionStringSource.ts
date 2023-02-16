@@ -114,7 +114,8 @@ export class SqlConnectionDataSource extends DataSource {
 			id: this.name + '-dataSource',
 			options: {
 				'encrypt': this.encrypt,
-				'trustServerCertificate': this.trustServerCertificate
+				'trustServerCertificate': this.trustServerCertificate,
+				'hostnameInCertificate': this.hostnameInCertificate
 			}
 		};
 
