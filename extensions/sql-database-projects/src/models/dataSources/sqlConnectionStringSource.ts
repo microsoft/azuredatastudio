@@ -62,6 +62,18 @@ export class SqlConnectionDataSource extends DataSource {
 		return this.getSetting(constants.passwordSetting);
 	}
 
+	public get encrypt(): string {
+		return this.getSetting(constants.encryptSetting);
+	}
+
+	public get trustServerCertificate(): string {
+		return this.getSetting(constants.trustServerCertificateSetting);
+	}
+
+	public get hostnameInCertificate(): string {
+		return this.getSetting(constants.hostnameInCertificateSetting);
+	}
+
 	constructor(name: string, connectionString: string) {
 		super(name);
 
@@ -100,7 +112,10 @@ export class SqlConnectionDataSource extends DataSource {
 			providerName: 'MSSQL',
 			saveProfile: true,
 			id: this.name + '-dataSource',
-			options: []
+			options: {
+				'encrypt': this.encrypt,
+				'trustServerCertificate': this.trustServerCertificate
+			}
 		};
 
 		return connProfile;
