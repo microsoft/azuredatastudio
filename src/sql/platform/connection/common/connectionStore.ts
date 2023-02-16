@@ -33,7 +33,7 @@ const CRED_PROFILE_USER = 'Profile';
  */
 export class ConnectionStore {
 	private groupIdMap = new ReverseLookUpMap<string, string | undefined>();
-	private connectionConfig = new ConnectionConfig(this.configurationService, this.capabilitiesService, this.logService);
+	private connectionConfig = new ConnectionConfig(this.configurationService, this.capabilitiesService);
 	private mru: Array<IConnectionProfile>;
 
 	constructor(
@@ -149,6 +149,17 @@ export class ConnectionStore {
 		} else {
 			return Promise.resolve(profile);
 		}
+	}
+
+	/**
+	 * Checks to see if a connection profile edit is not identical to an existing saved profile.
+	 *
+	 * @param profile the profile group that is being edited.
+	 * @param matcher the profile matching function for the actual connection we want to edit.
+	 * @returns a boolean value indicating if there's an identical profile to the edit.
+	 */
+	public isDuplicateEdit(profile: IConnectionProfile, matcher?: ProfileMatcher): Promise<boolean> {
+		return this.connectionConfig.isDuplicateEdit(profile, matcher);
 	}
 
 	/**

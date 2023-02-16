@@ -16,11 +16,9 @@ import * as TypeMoq from 'typemoq';
 import { Emitter } from 'vs/base/common/event';
 import { deepClone, deepFreeze } from 'vs/base/common/objects';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
-import { NullLogService } from 'vs/platform/log/common/log';
 
 suite('ConnectionConfig', () => {
 	let capabilitiesService: TypeMoq.Mock<TestCapabilitiesService>;
-	let logService = new NullLogService();
 	let msSQLCapabilities: ProviderFeatures;
 	let capabilities: ProviderFeatures[];
 	let onCapabilitiesRegistered = new Emitter<ProviderFeatures>();
@@ -234,7 +232,7 @@ suite('ConnectionConfig', () => {
 		// we intentionally overlap these values with the expectation that the function to should return each group once
 		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups).slice(2, testGroups.length), ConfigurationTarget.WORKSPACE);
 
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let allGroups = config.getAllGroups();
 
 		assert.strictEqual(allGroups.length, testGroups.length, 'did not meet the expected length');
@@ -247,7 +245,7 @@ suite('ConnectionConfig', () => {
 		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups).slice(2, testGroups.length), ConfigurationTarget.WORKSPACE);
 		configurationService.updateValue(CONNECTIONS_SORT_BY_CONFIG_KEY, ConnectionsSortOrder.displayName, ConfigurationTarget.USER);
 
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let allGroups = config.getAllGroups();
 
 		assert.strictEqual(allGroups.length, testGroups.length, 'did not meet the expected length');
@@ -261,7 +259,7 @@ suite('ConnectionConfig', () => {
 		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups).slice(2, testGroups.length).reverse(), ConfigurationTarget.WORKSPACE);
 		configurationService.updateValue(CONNECTIONS_SORT_BY_CONFIG_KEY, ConnectionsSortOrder.dateAdded, ConfigurationTarget.USER);
 
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let allGroups = config.getAllGroups();
 		let expectedGroups = deepClone(testGroups).slice(0, 3).reverse().concat(deepClone(testGroups).slice(3, testGroups.length).reverse());
 		assert.strictEqual(allGroups.length, expectedGroups.length, 'The result groups length is invalid');
@@ -292,7 +290,7 @@ suite('ConnectionConfig', () => {
 		configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		connectionProfile.options['databaseDisplayName'] = 'database';
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let savedConnectionProfile = await config.addConnection(connectionProfile);
 
 		assert.ok(!!savedConnectionProfile.id);
@@ -326,7 +324,7 @@ suite('ConnectionConfig', () => {
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		connectionProfile.options['databaseDisplayName'] = existingConnection.options['databaseName'];
 
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.addConnection(connectionProfile);
 
 		assert.strictEqual(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!.length, testConnections.length);
@@ -356,7 +354,7 @@ suite('ConnectionConfig', () => {
 		configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.addConnection(connectionProfile);
 
 		assert.strictEqual(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!.length, testConnections.length + 1);
@@ -368,7 +366,7 @@ suite('ConnectionConfig', () => {
 		configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(0, 1), ConfigurationTarget.USER);
 		configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(1, testConnections.length), ConfigurationTarget.WORKSPACE);
 
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let allConnections = config.getConnections(true);
 		assert.strictEqual(allConnections.length, testConnections.length);
 	});
@@ -378,7 +376,7 @@ suite('ConnectionConfig', () => {
 		configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(0, 2), ConfigurationTarget.USER);
 		configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(2, testConnections.length), ConfigurationTarget.WORKSPACE);
 
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let allConnections = config.getConnections(false);
 		assert.strictEqual(allConnections.length, 2);
 	});
@@ -396,7 +394,7 @@ suite('ConnectionConfig', () => {
 		configurationService.updateValue('datasource.connections', userConnections, ConfigurationTarget.USER);
 		configurationService.updateValue('datasource.connections', workspaceConnections, ConfigurationTarget.WORKSPACE);
 
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let allConnections = config.getConnections(false);
 		assert.strictEqual(allConnections.length, testConnections.length);
 		allConnections.forEach(connection => {
@@ -418,7 +416,7 @@ suite('ConnectionConfig', () => {
 		configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(2, testConnections.length).reverse(), ConfigurationTarget.WORKSPACE);
 		configurationService.updateValue(CONNECTIONS_SORT_BY_CONFIG_KEY, ConnectionsSortOrder.displayName, ConfigurationTarget.USER);
 
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let allConnections = config.getConnections(true);
 		assert.strictEqual(allConnections.length, testConnections.length, 'The result connections length is invalid');
 		assert.ok(allConnections.slice(1).every((item, i) => allConnections[i].title.localeCompare(item.title) <= 0), 'The connections are not sorted correctly');
@@ -429,7 +427,7 @@ suite('ConnectionConfig', () => {
 		configurationService.updateValue('datasource.connections', deepClone(testConnections).reverse(), ConfigurationTarget.USER);
 		configurationService.updateValue(CONNECTIONS_SORT_BY_CONFIG_KEY, ConnectionsSortOrder.dateAdded, ConfigurationTarget.USER);
 
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let allConnections = config.getConnections(false);
 		let expectedConnections = deepClone(testConnections).reverse();
 		assert.strictEqual(allConnections.length, expectedConnections.length, 'The result connections length is invalid');
@@ -437,7 +435,7 @@ suite('ConnectionConfig', () => {
 	});
 
 	test('saveGroup should save the new groups to tree and return the id of the last group name', () => {
-		let config = new ConnectionConfig(undefined!, undefined!, undefined!);
+		let config = new ConnectionConfig(undefined!, undefined!);
 		let groups: IConnectionProfileGroup[] = deepClone(testGroups);
 		let newGroups: string = 'ROOT/g1/g1-1/new-group/new-group2';
 		let color: string = 'red';
@@ -450,7 +448,7 @@ suite('ConnectionConfig', () => {
 	});
 
 	test('saveGroup should only add the groups that are not in the tree', () => {
-		let config = new ConnectionConfig(undefined!, undefined!, undefined!);
+		let config = new ConnectionConfig(undefined!, undefined!);
 		let groups: IConnectionProfileGroup[] = deepClone(testGroups);
 		let newGroups: string = 'ROOT/g2/g2-5';
 		let color: string = 'red';
@@ -463,7 +461,7 @@ suite('ConnectionConfig', () => {
 	});
 
 	test('saveGroup should not add any new group if tree already has all the groups in the full path', () => {
-		let config = new ConnectionConfig(undefined!, undefined!, undefined!);
+		let config = new ConnectionConfig(undefined!, undefined!);
 		let groups: IConnectionProfileGroup[] = deepClone(testGroups);
 		let newGroups: string = 'ROOT/g2/g2-1';
 		let color: string = 'red';
@@ -499,7 +497,7 @@ suite('ConnectionConfig', () => {
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		connectionProfile.options['databaseDisplayName'] = 'database';
 
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.deleteConnection(connectionProfile);
 
 		assert.strictEqual(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!.length, testConnections.length - 1);
@@ -535,7 +533,7 @@ suite('ConnectionConfig', () => {
 		connectionProfileGroup.addGroups([childGroup]);
 		connectionProfileGroup.addConnections([connectionProfile]);
 
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.deleteGroup(connectionProfileGroup);
 
 		assert.strictEqual(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!.length, testConnections.length - 1);
@@ -564,7 +562,7 @@ suite('ConnectionConfig', () => {
 		configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.deleteConnection(connectionProfile);
 
 		assert.strictEqual(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!.length, testConnections.length);
@@ -575,7 +573,7 @@ suite('ConnectionConfig', () => {
 		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
 
 		let connectionProfileGroup = new ConnectionProfileGroup('g-renamed', undefined, 'g2', undefined, undefined);
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.editGroup(connectionProfileGroup);
 
 		let editedGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue!;
@@ -591,7 +589,7 @@ suite('ConnectionConfig', () => {
 		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
 
 		let sameNameGroup = new ConnectionProfileGroup('g3', undefined, 'g2', undefined, undefined);
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 
 		try {
 			await config.editGroup(sameNameGroup);
@@ -610,7 +608,7 @@ suite('ConnectionConfig', () => {
 
 		let sourceProfileGroup = new ConnectionProfileGroup('g2', undefined, 'g2', undefined, undefined);
 		let targetProfileGroup = new ConnectionProfileGroup('g3', undefined, 'g3', undefined, undefined);
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.changeGroupIdForConnectionGroup(sourceProfileGroup, targetProfileGroup);
 
 		let editedGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue!;
@@ -665,7 +663,7 @@ suite('ConnectionConfig', () => {
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, changingProfile);
 
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		try {
 			await config.changeGroupIdForConnection(connectionProfile, 'test');
 			assert.fail();
@@ -704,7 +702,7 @@ suite('ConnectionConfig', () => {
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		let newId = 'newid';
 
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.changeGroupIdForConnection(connectionProfile, newId);
 
 		let editedConnections = configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!;
@@ -719,7 +717,7 @@ suite('ConnectionConfig', () => {
 		let configurationService = new TestConfigurationService();
 		configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
 		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 
 		// Clone a connection and modify an option
 		const connectionIndex = 1;
@@ -750,7 +748,7 @@ suite('ConnectionConfig', () => {
 		let configurationService = new TestConfigurationService();
 		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
 
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 
 		await config.addGroup(newGroup);
 
@@ -770,7 +768,7 @@ suite('ConnectionConfig', () => {
 		let configurationService = new TestConfigurationService();
 		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
 
-		const config = new ConnectionConfig(configurationService, capabilitiesService.object, logService);
+		const config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		try {
 			await config.addGroup(existingGroupName);
 			assert.fail();

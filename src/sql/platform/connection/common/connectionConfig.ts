@@ -5,7 +5,6 @@
 
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ILogService } from 'vs/platform/log/common/log';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { IConnectionProfile, IConnectionProfileStore, ProfileMatcher } from 'sql/platform/connection/common/interfaces';
@@ -37,8 +36,7 @@ export class ConnectionConfig {
 
 	public constructor(
 		private configurationService: IConfigurationService,
-		private _capabilitiesService: ICapabilitiesService,
-		private _logService: ILogService,
+		private _capabilitiesService: ICapabilitiesService
 	) { }
 
 	/**
@@ -73,6 +71,53 @@ export class ConnectionConfig {
 	}
 
 	/**
+	 * Checks to make sure that the profile that is being edited is not identical to another profile.
+	 */
+	public isDuplicateEdit(profile: IConnectionProfile, matcher: ProfileMatcher = ConnectionProfile.matchesProfile): Promise<boolean> {
+		let profiles = deepClone(this.configurationService.inspect<IConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).userValue as IConnectionProfileStore[]);
+		if (!profiles) {
+			profiles = [];
+		}
+
+		return this.addGroupFromProfile(profile).then(groupId => {
+			let connectionProfile = this.getConnectionProfileInstance(profile, groupId);
+			// Profile to be stored during an edit, used to check for duplicate profile edits.
+			let firstMatchProfile = undefined;
+
+			profiles.find(value => {
+				const providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
+				const match = matcher(providerConnectionProfile, connectionProfile);
+				// If we have a profile match, and the matcher is an edit, we must store this match.
+				if (match && (matcher.toString() !== ConnectionProfile.matchesProfile.toString())) {
+					firstMatchProfile = value;
+				}
+				providerConnectionProfile.dispose();
+				return match;
+			});
+
+			// If a profile edit, we must now check to see it does not match the other profiles available.
+			if (firstMatchProfile) {
+				// Copy over profile list so that we can remove the actual profile we want to edit.
+				const index = profiles.indexOf(firstMatchProfile);
+				if (index > -1) {
+					profiles.splice(index, 1);
+				}
+
+				// Use the regular profile matching here to find if edit is duplicate.
+				let matchesExistingProfile = profiles.find(value => {
+					const providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
+					const match = ConnectionProfile.matchesProfile(providerConnectionProfile, connectionProfile);
+					providerConnectionProfile.dispose();
+					return match;
+				});
+
+				return Promise.resolve(matchesExistingProfile !== undefined);
+			}
+			return Promise.resolve(false);
+		});
+	}
+
+	/**
 	 * Add a new connection to the connection config.
 	 */
 	public addConnection(profile: IConnectionProfile, matcher: ProfileMatcher = ConnectionProfile.matchesProfile): Promise<IConnectionProfile> {
@@ -86,46 +131,13 @@ export class ConnectionConfig {
 				let connectionProfile = this.getConnectionProfileInstance(profile, groupId);
 				let newProfile = ConnectionProfile.convertToProfileStore(this._capabilitiesService, connectionProfile);
 
-				// Profile to be stored during an edit, used to check for duplicate profile edits.
-				let firstMatchProfile = undefined;
-
 				// Remove the profile if already set
 				let sameProfileInList = profiles.find(value => {
 					const providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
 					const match = matcher(providerConnectionProfile, connectionProfile);
-					// If we have a profile match, and the matcher is an edit, we must store this match.
-					if (match && (matcher.toString() !== ConnectionProfile.matchesProfile.toString())) {
-						firstMatchProfile = value;
-					}
 					providerConnectionProfile.dispose();
 					return match;
 				});
-
-				// If a profile edit, we must now check to see it does not match the other profiles available.
-				if (firstMatchProfile) {
-					// Copy over profile list so that we can remove the actual profile we want to edit.
-					let absentProfiles = deepClone(profiles);
-					const index = profiles.indexOf(firstMatchProfile);
-					if (index > -1) {
-						absentProfiles.splice(index, 1);
-					}
-
-					// Use the regular profile matching here to find if edit is duplicate.
-					let matchesExistingProfile = absentProfiles.find(value => {
-						const providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
-						const match = ConnectionProfile.matchesProfile(providerConnectionProfile, connectionProfile);
-						providerConnectionProfile.dispose();
-						return match;
-					});
-
-					// Throw error if we have a match as we cannot have two profiles with the exact same data.
-					if (matchesExistingProfile) {
-						this._logService.error(`Profile edit for '${profile.id}' exactly matches an existing profile with data: '${profile.getOptionsKey()}'`);
-						throw new Error(`This profile edit is identical to an already existing profile with data: ${profile.getOptionsKey()}`);
-					}
-				}
-
-
 				if (sameProfileInList) {
 					let profileIndex = profiles.findIndex(value => value === sameProfileInList);
 					profiles[profileIndex] = newProfile;

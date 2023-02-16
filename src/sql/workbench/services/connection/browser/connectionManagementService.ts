@@ -466,6 +466,19 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		let isEdit = options?.params?.isEditConnection ?? false;
 
+		let matcher: interfaces.ProfileMatcher;
+		if (isEdit) {
+			matcher = (a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile) => a.id === options.params.oldProfileId;
+
+			//Check to make sure the edits are not identical to another connection.
+			await this._connectionStore.isDuplicateEdit(connection, matcher).then(result => {
+				if (result) {
+					this._logService.error(`Profile edit for '${connection.id}' exactly matches an existing profile with data: '${connection.getOptionsKey()}'`);
+					throw new Error(`This profile edit is identical to an already existing profile with data: ${connection.getOptionsKey()}`);
+				}
+			})
+		}
+
 		if (!uri) {
 			uri = Utils.generateUri(connection);
 		}
@@ -514,11 +527,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
 				}
 				if (options.saveTheConnection || isEdit) {
-					let matcher: interfaces.ProfileMatcher;
-					if (isEdit) {
-						matcher = (a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile) => a.id === options.params.oldProfileId;
-					}
-
 					await this.saveToSettings(uri, connection, matcher).then(value => {
 						this._onAddConnectionProfile.fire(connection);
 						this.doActionsAfterConnectionComplete(value, options);
