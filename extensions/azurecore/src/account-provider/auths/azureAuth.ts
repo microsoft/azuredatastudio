@@ -198,13 +198,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return account;
 	}
 
-	public async getAccountSecurityTokenAdal(account: AzureAccount, tenantId: string, azureResource: azdata.AzureResource | string): Promise<Token | undefined> {
+	public async getAccountSecurityTokenAdal(account: AzureAccount, tenantId: string, azureResource: azdata.AzureResource): Promise<Token | undefined> {
 		if (account.isStale === true) {
 			Logger.error('Account was stale. No tokens being fetched.');
 			return undefined;
 		}
 
-		const resource = this.getResource(azureResource);
+		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 
 		if (!resource) {
 			Logger.error(`Unable to find Azure resource ${azureResource}`);
@@ -316,8 +316,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * @param azureResource
 	 * @returns The authentication result, including the access token
 	 */
-	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource | string, tenantId: string): Promise<AuthenticationResult | null> {
-		const resource = this.getResource(azureResource);
+	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource, tenantId: string): Promise<AuthenticationResult | null> {
+		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 
 		if (!resource) {
 			Logger.error(`Unable to find Azure resource ${azureResource}`);
@@ -365,27 +365,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 			Logger.error('Failed to silently acquire token, not InteractionRequiredAuthError');
 			return null;
 		}
-	}
-
-	private getResource(azureResource: string | azdata.AzureResource): Resource | undefined {
-		let resource: Resource | undefined;
-		if (typeof azureResource === 'string') {
-			Logger.verbose(`Token Request received for resource URI: ${azureResource}`);
-			// Find existing resource if exists for received resource URI
-			resource = this.resources.find(s => s.endpoint === azureResource as string);
-			if (!resource) {
-				// Create custom resource for URIs that are not hard-coded but received from server endpoint.
-				resource = {
-					id: 'custom',
-					endpoint: azureResource as string,
-					azureResourceId: azdata.AzureResource.Custom
-				}
-			}
-		} else {
-			resource = this.resources.find(s => s.azureResourceId === azureResource);
-		}
-
-		return resource;
 	}
 
 	public async getAccountFromMsalCache(accountId: string): Promise<AccountInfo | null> {

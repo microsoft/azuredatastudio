@@ -539,28 +539,6 @@ declare module 'azdata' {
 		export function openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined>;
 	}
 
-	export namespace accounts {
-
-		/**
-		 * Generates a security token by asking the account's provider.
-		 * @param account The account to retrieve the security token for.
-		 * @param tenantId The ID of the tenant associated with this account.
-		 * @param resourceUri Uri of resource against whihc access token should be requested.
-		 */
-		export function getAccountSecurityTokenForResourceUri(account: Account, tenantId: string, resourceUri: string): Thenable<AccountSecurityToken | undefined>;
-	}
-
-	export interface AccountProvider {
-
-		/**
-		 * Generates a security token by asking the account's provider.
-		 * @param account The account to retrieve the security token for.
-		 * @param tenantId The ID of the tenant associated with this account.
-		 * @param resourceUri Uri of resource against whihc access token should be requested.
-		 */
-		getAccountSecurityTokenForResourceUri(account: Account, tenantId: string, resourceUri: string): Thenable<accounts.AccountSecurityToken | undefined>;
-	}
-
 	/*
 	 * Add optional per-OS default value.
 	 */

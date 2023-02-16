@@ -114,16 +114,6 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		});
 	}
 
-	public override $getAccountSecurityTokenForResourceUri(account: azdata.Account, tenant: string, resourceUri: string): Thenable<azdata.accounts.AccountSecurityToken> {
-		return this.getAllProvidersAndAccounts().then(providerAndAccounts => {
-			const providerAndAccount = providerAndAccounts.find(providerAndAccount => providerAndAccount.account.key.accountId === account.key.accountId);
-			if (providerAndAccount) {
-				return providerAndAccount.provider.getAccountSecurityTokenForResourceUri(account, tenant, resourceUri);
-			}
-			throw new Error(`Account ${account.key.accountId} not found.`);
-		});
-	}
-
 	public get onDidChangeAccounts(): Event<azdata.DidChangeAccountsParams> {
 		return this._onDidChangeAccounts.event;
 	}

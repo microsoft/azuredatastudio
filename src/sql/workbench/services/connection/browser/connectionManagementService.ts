@@ -304,55 +304,55 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param owner of the connection. Can be the editors
 	 * @param options to use after the connection is complete
 	 */
-	private async tryConnect(connection: interfaces.IConnectionProfile, owner: IConnectableInput, options?: IConnectionCompletionOptions): Promise<IConnectionResult> {
+	private tryConnect(connection: interfaces.IConnectionProfile, owner: IConnectableInput, options?: IConnectionCompletionOptions): Promise<IConnectionResult> {
 		// Load the password if it's not already loaded
-		let result = await this._connectionStore.addSavedPassword(connection);
+		return this._connectionStore.addSavedPassword(connection).then(async result => {
+			let newConnection = result.profile;
+			let foundPassword = result.savedCred;
 
-		let newConnection = result.profile;
-		let foundPassword = result.savedCred;
-
-		// If there is no password, try to load it from an existing connection
-		if (!foundPassword && this._connectionStore.isPasswordRequired(newConnection)) {
-			let existingConnection = this._connectionStatusManager.findConnectionProfile(connection);
-			if (existingConnection && existingConnection.connectionProfile) {
-				newConnection.password = existingConnection.connectionProfile.password;
-				foundPassword = true;
-			}
-		}
-
-		// Fill in the Azure account token if needed and open the connection dialog if it fails
-		let tokenFillSuccess = await this.fillInOrClearToken(newConnection);
-
-		// If there is no authentication type set, set it using configuration
-		if (!newConnection.authenticationType || newConnection.authenticationType === '') {
-			newConnection.authenticationType = this.getDefaultAuthenticationTypeId(newConnection.providerName);
-		}
-
-		// If this is Azure MFA Authentication, fix username to azure Account user.
-		// This is required, as by default, server login / administrator is the username.
-		if (newConnection.authenticationType === 'AzureMFA') {
-			let accounts = await this._accountManagementService.getAccountsForProvider(newConnection.providerName);
-			newConnection.userName = accounts.find(a => a.key.accountId === newConnection.azureAccount).displayInfo.displayName;
-		}
-
-		// If the password is required and still not loaded show the dialog
-		if ((!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
-			return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, messageDetails: undefined, errorCode: undefined }, options);
-		} else {
-			// Try to connect
-			return this.connectWithOptions(newConnection, owner.uri, options, owner).then(connectionResult => {
-				if (!connectionResult.connected && !connectionResult.errorHandled) {
-					// If connection fails show the dialog
-					return this.showConnectionDialogOnError(connection, owner, connectionResult, options);
-				} else if (!connectionResult.connected && connectionResult.errorHandled) {
-					// Cancelled firewall dialog
-					return undefined;
-				} else {
-					//Resolve with the connection result
-					return connectionResult;
+			// If there is no password, try to load it from an existing connection
+			if (!foundPassword && this._connectionStore.isPasswordRequired(newConnection)) {
+				let existingConnection = this._connectionStatusManager.findConnectionProfile(connection);
+				if (existingConnection && existingConnection.connectionProfile) {
+					newConnection.password = existingConnection.connectionProfile.password;
+					foundPassword = true;
 				}
-			});
-		}
+			}
+
+			// Fill in the Azure account token if needed and open the connection dialog if it fails
+			let tokenFillSuccess = await this.fillInOrClearToken(newConnection);
+
+			// If there is no authentication type set, set it using configuration
+			if (!newConnection.authenticationType || newConnection.authenticationType === '') {
+				newConnection.authenticationType = this.getDefaultAuthenticationTypeId(newConnection.providerName);
+			}
+
+			// If this is Azure MFA Authentication, fix username to azure Account user.
+			// This is required, as by default, server login / administrator is the username.
+			if (newConnection.authenticationType === 'AzureMFA') {
+				let accounts = await this._accountManagementService.getAccountsForProvider(newConnection.providerName);
+				newConnection.userName = accounts?.find(a => a.key.accountId === newConnection.azureAccount)?.displayInfo.displayName;
+			}
+
+			// If the password is required and still not loaded show the dialog
+			if ((!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
+				return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, messageDetails: undefined, errorCode: undefined }, options);
+			} else {
+				// Try to connect
+				return this.connectWithOptions(newConnection, owner.uri, options, owner).then(connectionResult => {
+					if (!connectionResult.connected && !connectionResult.errorHandled) {
+						// If connection fails show the dialog
+						return this.showConnectionDialogOnError(connection, owner, connectionResult, options);
+					} else if (!connectionResult.connected && connectionResult.errorHandled) {
+						// Cancelled firewall dialog
+						return undefined;
+					} else {
+						//Resolve with the connection result
+						return connectionResult;
+					}
+				});
+			}
+		});
 	}
 
 	/**

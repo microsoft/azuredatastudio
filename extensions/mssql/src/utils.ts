@@ -154,12 +154,13 @@ export function getParallelMessageProcessingConfig(): boolean {
 }
 
 export function getAzureAuthenticationLibraryConfig(): string {
-	const config = getConfiguration();
-	if (!config) {
-		return 'MSAL'; // default Auth library
+	const config = getAzureCoreExtConfiguration();
+	if (config) {
+		return config.has(azureAuthenticationLibraryConfig) ? config[azureAuthenticationLibraryConfig] : 'MSAL'; // default Auth library
 	}
-	const setting = config.inspect(azureAuthenticationLibraryConfig);
-	return (azdata.env.quality === azdata.env.AppQuality.dev && setting.globalValue === undefined && setting.workspaceValue === undefined) ? true : config[azureAuthenticationLibraryConfig];
+	else {
+		return 'MSAL';
+	}
 }
 
 export function getEnableSqlAuthenticationProviderConfig(): boolean {
@@ -193,7 +194,7 @@ export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileNa
 	launchArgs.push('--tracing-level');
 	launchArgs.push(getConfigTracingLevel());
 	if (getConfigPiiLogging()) {
-		launchArgs.push('--piiLogging');
+		launchArgs.push('--pii-logging');
 	}
 	// Always enable autoflush so that log entries are written immediately to disk, otherwise we can end up with partial logs
 	launchArgs.push('--autoflush-log');
