@@ -809,12 +809,12 @@
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.encrypt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' encryption is supported on SQL Server 2022 onwards.]]></Val>
+          <Val><![CDATA[When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' is supported on SQL Server 2022 onwards.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Bei „Obligatorisch“ oder „Streng“ verwendet SQL Server SSL-Verschlüsselung für alle Daten, die zwischen Client und Server gesendet werden, wenn auf dem Server ein Zertifikat installiert ist. Bei Festlegung auf „Streng“ verwendet SQL Server TDS 8.0 für die gesamte Datenübertragung zwischen Client und Server. Die Verschlüsselung „Streng“ wird ab SQL Server 2022 unterstützt.]]></Val>
+            <Val><![CDATA[Bei „Mandatory“ oder „Strict“ verwendet SQL Server die SSL-Verschlüsselung für alle Daten, die zwischen Client und Server gesendet werden, wenn auf dem Server ein Zertifikat installiert ist. Bei Festlegung auf „Strict“ verwendet SQL Server TDS 8.0 für die gesamte Datenübertragung zwischen Client und Server. „Strict“ wird ab SQL Server 2022 unterstützt.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed]]></Val>
+            <Val><![CDATA[When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' encryption is supported on SQL Server 2022 onwards.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1136,10 +1136,13 @@
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.trustServerCertificate.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate]]></Val>
+          <Val><![CDATA[When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Bei Festlegung auf TRUE (und encrypt=true) verwendet SQL Server die SSL-Verschlüsselung für alle zwischen Client und Server gesendeten Daten, ohne das Serverzertifikat zu überprüfen.]]></Val>
+            <Val><![CDATA[Bei WAHR (und encrypt=true) verwendet SQL Server SSL-Verschlüsselung für alle Daten, die zwischen Client und Server gesendet werden, ohne das Serverzertifikat zu überprüfen. Diese Eigenschaft wird bei Encrypt=Strict nicht unterstützt.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
