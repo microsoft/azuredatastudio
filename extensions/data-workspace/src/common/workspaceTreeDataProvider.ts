@@ -17,7 +17,7 @@ import Logger from './logger';
 export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<WorkspaceTreeItem>, vscode.TreeDragAndDropController<WorkspaceTreeItem> {
 
 	dropMimeTypes = ['application/vnd.code.tree.WorkspaceTreeDataProvider'];
-	dragMimeTypes = ['text/uri-list'];
+	dragMimeTypes = []; // The recommended mime type of the tree (`application/vnd.code.tree.WorkspaceTreeDataProvider`) is automatically added.
 
 	constructor(private _workspaceService: IWorkspaceService) {
 		this._workspaceService.onDidWorkspaceProjectsChange(() => {
