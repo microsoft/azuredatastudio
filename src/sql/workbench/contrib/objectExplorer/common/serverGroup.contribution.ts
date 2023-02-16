@@ -26,8 +26,8 @@ const serverGroupConfig: IConfigurationNode = {
 				'#A1634D',
 				'#7F0000',
 				'#914576',
-				'#85AE72',
-				'#98AFC7',
+				'#6E9B59',
+				'#5F82A5',
 				'#4452A6',
 				'#6A6599',
 				DefaultServerGroupColor
