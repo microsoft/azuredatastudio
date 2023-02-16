@@ -41,6 +41,11 @@ declare module 'vscode-mssql' {
 		readonly schemaCompare: ISchemaCompareService;
 
 		/**
+		 * Service for accessing SQL Projects file functionality
+		 */
+		readonly sqlProjects: ISqlProjectsService;
+
+		/**
 		 * Service for accessing Azure Account functionality
 		 */
 		readonly azureAccountService: IAzureAccountService;
@@ -429,6 +434,10 @@ declare module 'vscode-mssql' {
 		savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<ResultStatus>;
 	}
 
+	export interface ISqlProjectsService {
+		getDatabaseReferences(projectUri: string): Thenable<GetDatabaseReferencesResult>;
+	}
+
 	/**
 	 * Represents a tenant information for an account.
 	 */
@@ -729,6 +738,66 @@ declare module 'vscode-mssql' {
 		sqlCommandVariableValues?: Record<string, string>;
 		deploymentOptions?: DeploymentOptions;
 	}
+
+	//#region ISqlProjectsService
+
+	//#region Parameters
+
+	export interface SqlProjectParams {
+		projectUri: string;
+	}
+
+	//#endregion
+
+	//#region Results
+
+	export interface GetDatabaseReferencesResult extends ResultStatus {
+		systemDatabaseReferences: SystemDatabaseReference[];
+		sqlProjectReferences: SqlProjectReference[];
+		dacpacReferences: DacpacReference[];
+	}
+
+	//#endregion
+
+	//#region Types
+
+	export interface DatabaseReference {
+		suppressMissingDependencies: boolean;
+		databaseVariableLiteralName?: string;
+	}
+
+	interface UserDatabaseReference extends DatabaseReference {
+		databaseVariable: SqlCmdVariable;
+		serverVariable?: SqlCmdVariable;
+	}
+
+	export interface SystemDatabaseReference extends DatabaseReference {
+		systemDb: SystemDatabase;
+	}
+
+	export interface SqlProjectReference extends UserDatabaseReference {
+		projectPath: string;
+		projectGuid?: string;
+	}
+
+	export interface DacpacReference extends UserDatabaseReference {
+		dacpacPath: string;
+	}
+
+	export const enum SystemDatabase {
+		Master = 0,
+		MSDB = 1
+	}
+
+	export interface SqlCmdVariable {
+		varName: string;
+		value: string;
+		defaultValue: string
+	}
+
+	//#endregion
+
+	//#endregion
 
 	export interface ITreeNodeInfo extends vscode.TreeItem {
 		readonly connectionInfo: IConnectionInfo;
