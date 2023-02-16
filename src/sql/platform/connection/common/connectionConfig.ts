@@ -5,6 +5,7 @@
 
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ILogService } from 'vs/platform/log/common/log';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { IConnectionProfile, IConnectionProfileStore, ProfileMatcher } from 'sql/platform/connection/common/interfaces';
@@ -36,7 +37,8 @@ export class ConnectionConfig {
 
 	public constructor(
 		private configurationService: IConfigurationService,
-		private _capabilitiesService: ICapabilitiesService
+		private _capabilitiesService: ICapabilitiesService,
+		private _logService: ILogService,
 	) { }
 
 	/**
@@ -84,13 +86,39 @@ export class ConnectionConfig {
 				let connectionProfile = this.getConnectionProfileInstance(profile, groupId);
 				let newProfile = ConnectionProfile.convertToProfileStore(this._capabilitiesService, connectionProfile);
 
+				let firstMatchProfile = undefined;
 				// Remove the profile if already set
 				let sameProfileInList = profiles.find(value => {
 					const providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
 					const match = matcher(providerConnectionProfile, connectionProfile);
+					if (match && (matcher.toString() !== ConnectionProfile.matchesProfile.toString())) {
+						firstMatchProfile = value;
+					}
 					providerConnectionProfile.dispose();
 					return match;
 				});
+
+				if (firstMatchProfile) {
+					let absentProfiles = deepClone(profiles);
+					const index = profiles.indexOf(firstMatchProfile);
+					if (index > -1) {
+						absentProfiles.splice(index, 1);
+					}
+
+					let matchesExistingProfile = absentProfiles.find(value => {
+						const providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
+						const match = ConnectionProfile.matchesProfile(providerConnectionProfile, connectionProfile);
+						providerConnectionProfile.dispose();
+						return match;
+					});
+
+					if (matchesExistingProfile) {
+						this._logService.error(`Profile edit for '${profile.id}' matches an existing profile with data: '${profile.getOptionsKey()}'`);
+						throw new Error(nls.localize('connectionConfig.profileMatchEdit', 'This profile edit is already an existing profile with data: {0}', profile.getOptionsKey()));
+					}
+				}
+
+
 				if (sameProfileInList) {
 					let profileIndex = profiles.findIndex(value => value === sameProfileInList);
 					profiles[profileIndex] = newProfile;
