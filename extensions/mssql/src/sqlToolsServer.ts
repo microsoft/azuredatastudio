@@ -9,7 +9,7 @@ import * as Constants from './constants';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as path from 'path';
-import { getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, TracingLevel } from './utils';
+import { getAzureAuthenticationLibraryConfig, getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, TracingLevel } from './utils';
 import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature } from './features';
@@ -124,7 +124,8 @@ function generateServerOptions(logPath: string, executablePath: string): ServerO
 		launchArgs.push('--parallel-message-processing');
 	}
 	const enableSqlAuthenticationProvider = getEnableSqlAuthenticationProviderConfig();
-	if (enableSqlAuthenticationProvider) {
+	const azureAuthLibrary = getAzureAuthenticationLibraryConfig();
+	if (azureAuthLibrary === 'MSAL' && enableSqlAuthenticationProvider) {
 		launchArgs.push('--enable-sql-authentication-provider');
 	}
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
