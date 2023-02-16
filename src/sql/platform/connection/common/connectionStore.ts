@@ -15,7 +15,6 @@ import { ICredentialsService } from 'sql/platform/credentials/common/credentials
 import { isDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
-import { ILogService } from 'vs/platform/log/common/log';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
@@ -40,8 +39,7 @@ export class ConnectionStore {
 		@IStorageService private storageService: IStorageService,
 		@IConfigurationService private configurationService: IConfigurationService,
 		@ICredentialsService private credentialService: ICredentialsService,
-		@ICapabilitiesService private capabilitiesService: ICapabilitiesService,
-		@ILogService private logService: ILogService
+		@ICapabilitiesService private capabilitiesService: ICapabilitiesService
 	) {
 		try {
 			const configRaw = this.storageService.get(RECENT_CONNECTIONS_STATE_KEY, StorageScope.GLOBAL, '[]');
