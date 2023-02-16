@@ -1130,14 +1130,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						this._disposables.push(
 							blobContainerFolderDropdown.onValueChanged(value => {
 								if (value && value !== 'undefined') {
-									/////
-
-									// if (this.migrationStateModel._lastFileNames) {
-									// 	const selectedLastBackupFile = this.migrationStateModel._lastFileNames.find(fileName => fileName.name === value);
-									// 	if (selectedLastBackupFile && !blobFileErrorStrings.includes(value)) {
-									// 		this.migrationStateModel._databaseBackup.blobs[index].lastBackupFile = selectedLastBackupFile.name;
-									// 	}
-									// }
+									if (this.migrationStateModel._blobContainerFolders.includes(value)) {
+										const selectedFolder = value;
+										this.migrationStateModel._databaseBackup.blobs[index].folderName = selectedFolder;
+									}
 								}
 							}));
 						this._blobContainerFolderDropdowns.push(blobContainerFolderDropdown);
@@ -1496,7 +1492,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this.migrationStateModel._databaseBackup.subscription,
 					this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount,
 					this.migrationStateModel._databaseBackup.blobs[index]?.blobContainer);
-				dropDown.values = this.migrationStateModel._blobContainerFolders;
+				dropDown.values = await utils.getBlobFolderValues(this.migrationStateModel._blobContainerFolders);
 				utils.selectDefaultDropdownValue(
 					dropDown,
 					this.migrationStateModel._blobContainerFolders[0],

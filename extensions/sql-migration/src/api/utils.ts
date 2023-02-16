@@ -737,12 +737,11 @@ export async function getBlobFolders(account?: Account, subscription?: azureReso
 		if (account && subscription && storageAccount && blobContainer) {
 			const blobs = await azure.getBlobs(account, subscription, storageAccount, blobContainer.name);
 
-			/////
 			blobs.forEach(blob => {
 				const blobName = blob.name;
 				let folder: string;
 
-				if (blobName.split('/').length > 1) {
+				if (blobName.split('/').length > 1) {		// to-do: what to do about >1 level deep folders?
 					folder = blobName.split('/')[0];
 				} else {
 					folder = '/';	// root, no folder
@@ -758,6 +757,14 @@ export async function getBlobFolders(account?: Account, subscription?: azureReso
 	}
 	folders.sort();
 	return folders;
+}
+
+export function getBlobContainerNameWithFolder(blob: azureResource.BlobContainer, folderName: string | undefined): string {
+	if (folderName === '/') {	// todo: what other situations should folderName be ignored
+		return blob.name;
+	}
+
+	return blob.name + '/' + folderName;
 }
 
 export function getAzureResourceDropdownValues(
@@ -808,6 +815,11 @@ export async function getAzureLocationsDropdownValues(locations: azureResource.A
 export async function getBlobLastBackupFileNamesValues(blobs: azureResource.Blob[]): Promise<CategoryValue[]> {
 	return blobs?.map(blob => { return { name: blob.name, displayName: blob.name }; })
 		|| [{ name: '', displayName: constants.NO_BLOBFILES_FOUND }];
+}
+
+export async function getBlobFolderValues(folders: string[]): Promise<CategoryValue[]> {
+	return folders?.map(folder => { return { name: folder, displayName: folder }; })
+		|| [{ name: '/', displayName: '/' }];
 }
 
 export async function updateControlDisplay(control: Component, visible: boolean, displayStyle: DisplayType = 'inline'): Promise<void> {
