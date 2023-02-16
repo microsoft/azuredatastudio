@@ -750,7 +750,7 @@ export async function getBlobFolders(account?: Account, subscription?: azureReso
 				const blobName = blob.name;
 				let folder: string;
 
-				if (blobName.split('/').length > 1) {		// to-do: what to do about >1 level deep folders?
+				if (blobName.split('/').length > 1) {				// to-do: what to do about >1 level deep folders?
 					folder = blobName.split('/')[0];
 				} else {
 					folder = '/';	// root, no folder

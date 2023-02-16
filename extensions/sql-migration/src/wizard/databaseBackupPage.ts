@@ -800,7 +800,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				await this._loadTableData();
 			}
 			try {
-				/////
 				const isOfflineMigration = this.migrationStateModel._databaseBackup?.migrationMode === MigrationMode.OFFLINE;
 
 				// for offline migrations, show last backup file column
