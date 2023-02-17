@@ -40,6 +40,8 @@ declare module 'mssql' {
 
 		readonly dacFx: IDacFxService;
 
+		readonly sqlProjects: ISqlProjectsService;
+
 		readonly sqlAssessment: ISqlAssessmentService;
 
 		readonly sqlMigration: ISqlMigrationService;
@@ -244,6 +246,7 @@ declare module 'mssql' {
 		getOptionsFromProfile(profilePath: string): Thenable<DacFxOptionsResult>;
 		validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<ValidateStreamingJobResult>;
 		parseTSqlScript(filePath: string, databaseSchemaProvider: string): Thenable<ParseTSqlScriptResult>;
+		savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<azdata.ResultStatus>;
 	}
 
 	export interface DacFxResult extends azdata.ResultStatus {
@@ -309,6 +312,19 @@ declare module 'mssql' {
 		databaseName: string;
 		ownerUri: string;
 		taskExecutionMode: azdata.TaskExecutionMode;
+	}
+
+	//#endregion
+
+	//#region --- Sql Projects
+
+	export interface ISqlProjectsService {
+		openProject(projectUri: string): Promise<azdata.ResultStatus>;
+		getCrossPlatformCompatiblityRequest(projectUri: string): Promise<GetCrossPlatformCompatiblityResult>;
+	}
+
+	export interface GetCrossPlatformCompatiblityResult extends azdata.ResultStatus {
+		isCrossPlatformCompatible: boolean;
 	}
 
 	//#endregion

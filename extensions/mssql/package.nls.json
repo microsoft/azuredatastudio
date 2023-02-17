@@ -118,13 +118,16 @@
 	"mssql.connectionOptions.enclaveAttestationUrl.displayName": "Enclave Attestation URL",
 	"mssql.connectionOptions.enclaveAttestationUrl.description": "Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with secure enclaves",
 	"mssql.connectionOptions.encrypt.displayName": "Encrypt",
-	"mssql.connectionOptions.encrypt.description": "When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed",
+	"mssql.connectionOptions.encrypt.description": "When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' is supported on SQL Server 2022 onwards.",
+	"mssql.connectionOptions.encrypt.categoryValues.strict": "Strict",
+	"mssql.connectionOptions.encrypt.categoryValues.true": "Mandatory (True)",
+	"mssql.connectionOptions.encrypt.categoryValues.false": "Optional (False)",
 	"mssql.connectionOptions.persistSecurityInfo.displayName": "Persist security info",
 	"mssql.connectionOptions.persistSecurityInfo.description": "When false, security-sensitive information, such as the password, is not returned as part of the connection",
 	"mssql.connectionOptions.hostNameInCertificate.displayName": "Host name in certificate",
 	"mssql.connectionOptions.hostNameInCertificate.description": "Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.",
 	"mssql.connectionOptions.trustServerCertificate.displayName": "Trust server certificate",
-	"mssql.connectionOptions.trustServerCertificate.description": "When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate",
+	"mssql.connectionOptions.trustServerCertificate.description": "When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.",
 	"mssql.connectionOptions.attachedDBFileName.displayName": "Attached DB file name",
 	"mssql.connectionOptions.attachedDBFileName.description": "The name of the primary file, including the full path name, of an attachable database",
 	"mssql.connectionOptions.contextConnection.displayName": "Context connection",
@@ -175,5 +178,9 @@
 	"title.newTable": "New Table",
 	"title.designTable": "Design",
 	"mssql.parallelMessageProcessing" : "[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.",
-	"mssql.tableDesigner.preloadDatabaseModel": "Whether to preload the database model when the database node in the object explorer is expanded. When enabled, the loading time of table designer can be reduced. Note: You might see higher than normal memory usage if you need to expand a lot of database nodes."
+	"mssql.tableDesigner.preloadDatabaseModel": "Whether to preload the database model when the database node in the object explorer is expanded. When enabled, the loading time of table designer can be reduced. Note: You might see higher than normal memory usage if you need to expand a lot of database nodes.",
+
+	"mssql.objectExplorer.groupBySchema": "When enabled, the database objects in Object Explorer will be categorized by schema.",
+	"mssql.objectExplorer.enableGroupBySchema":"Enable Group By Schema",
+	"mssql.objectExplorer.disableGroupBySchema":"Disable Group By Schema"
 }

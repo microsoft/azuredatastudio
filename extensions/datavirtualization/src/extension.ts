@@ -16,6 +16,7 @@ import { DataSourceWizardService } from './services/contracts';
 import { managerInstance, ApiType } from './services/serviceApiManager';
 import { OpenVirtualizeDataWizardCommand, OpenVirtualizeDataWizardTask, OpenMssqlHdfsTableFromFileWizardCommand } from './wizards/wizardCommands';
 import { ServiceClient } from './services/serviceClient';
+import { TelemetryReporter } from './services/telemetry';
 
 export function activate(extensionContext: vscode.ExtensionContext): void {
 	let apiWrapper = new ApiWrapper();
@@ -38,4 +39,5 @@ export function activate(extensionContext: vscode.ExtensionContext): void {
 	serviceClient.startService(extensionContext).then(success => undefined, err => {
 		apiWrapper.showErrorMessage(utils.getErrorMessage(err));
 	});
+	extensionContext.subscriptions.push(TelemetryReporter);
 }

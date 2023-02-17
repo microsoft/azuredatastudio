@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { NotificationType, RequestType } from 'vscode-languageclient';
-import { ITelemetryEventProperties, ITelemetryEventMeasures } from './telemetry';
+import * as telemetry from '@microsoft/ads-extension-telemetry';
 import * as azdata from 'azdata';
 import { ConnectParams } from 'dataprotocol-client/lib/protocol';
 import * as mssql from 'mssql';
@@ -24,8 +24,8 @@ export namespace TelemetryNotification {
 export class TelemetryParams {
 	public params: {
 		eventName: string;
-		properties: ITelemetryEventProperties;
-		measures: ITelemetryEventMeasures;
+		properties: telemetry.TelemetryEventProperties;
+		measures: telemetry.TelemetryEventMeasures;
 	};
 }
 
@@ -551,6 +551,14 @@ export interface ParseTSqlScriptParams {
 	databaseSchemaProvider: string;
 }
 
+export interface SavePublishProfileParams {
+	profilePath: string;
+	databaseName: string;
+	connectionString: string;
+	sqlCommandVariableValues?: Record<string, string>;
+	deploymentOptions?: mssql.DeploymentOptions;
+}
+
 export namespace ExportRequest {
 	export const type = new RequestType<ExportParams, mssql.DacFxResult, void, void>('dacfx/export');
 }
@@ -587,7 +595,27 @@ export namespace ParseTSqlScriptRequest {
 	export const type = new RequestType<ParseTSqlScriptParams, mssql.ParseTSqlScriptResult, void, void>('dacfx/parseTSqlScript');
 }
 
+export namespace SavePublishProfileRequest {
+	export const type = new RequestType<SavePublishProfileParams, azdata.ResultStatus, void, void>('dacfx/savePublishProfile');
+}
+
 // ------------------------------- </ DacFx > ------------------------------------
+
+// ------------------------------- < Sql Projects > ------------------------------------
+
+export namespace OpenSqlProjectRequest {
+	export const type = new RequestType<SqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/openProject');
+}
+
+export namespace GetCrossPlatformCompatiblityRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetCrossPlatformCompatiblityResult, void, void>('sqlProjects/getCrossPlatformCompatibility');
+}
+
+export interface SqlProjectParams {
+	projectUri: string;
+}
+
+// ------------------------------- </ Sql Projects > -----------------------------------
 
 // ------------------------------- <CMS> ----------------------------------------
 

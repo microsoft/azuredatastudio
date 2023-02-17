@@ -17,18 +17,24 @@
 }
 
 .slick-cell a,
-.slick-cell a:link,
-.resultsMessageValue a,
-.resultsMessageValue a:link {
+.resultsMessageValue a {
 	color: var(--color-grid-link);
-	text-decoration: underline;
 	cursor: pointer;
 	white-space: inherit;
+}
+
+.resultsMessageValue a {
+	text-decoration: underline;
+}
+
+.slick-cell a {
+	text-decoration: none;
 }
 
 .slick-cell a:hover,
 .resultsMessageValue a:hover {
 	color: var(--color-grid-link-hover);
+	text-decoration: underline;
 }
 
 /*

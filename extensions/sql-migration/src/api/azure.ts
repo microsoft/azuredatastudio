@@ -10,12 +10,14 @@ import * as constants from '../constants/strings';
 import { getSessionIdHeader } from './utils';
 import { URL } from 'url';
 import { MigrationSourceAuthenticationType, MigrationStateModel, NetworkShare } from '../models/stateMachine';
+import { NetworkInterface } from './dataModels/azure/networkInterfaceModel';
 
 const ARM_MGMT_API_VERSION = '2021-04-01';
 const SQL_VM_API_VERSION = '2021-11-01-preview';
 const SQL_MI_API_VERSION = '2021-11-01-preview';
 const SQL_SQLDB_API_VERSION = '2021-11-01-preview';
 const DMSV2_API_VERSION = '2022-03-30-preview';
+const COMPUTE_VM_API_VERSION = '2022-08-01';
 
 async function getAzureCoreAPI(): Promise<azurecore.IExtension> {
 	const api = (await vscode.extensions.getExtension(azurecore.extension.name)?.activate()) as azurecore.IExtension;
@@ -168,11 +170,6 @@ export interface ServerPrivateEndpointConnection {
 	readonly id?: string;
 	readonly properties?: PrivateEndpointConnectionProperties;
 }
-
-export function isAzureSqlDatabaseServer(instance: any): instance is AzureSqlDatabaseServer {
-	return (instance as AzureSqlDatabaseServer) !== undefined;
-}
-
 export interface AzureSqlDatabaseServer {
 	id: string,
 	name: string,
@@ -210,7 +207,8 @@ export type SqlVMServer = {
 	name: string,
 	type: string,
 	tenantId: string,
-	subscriptionId: string
+	subscriptionId: string,
+	networkInterfaces: Map<string, NetworkInterface>,
 };
 
 export type VirtualMachineInstanceView = {
@@ -224,6 +222,7 @@ export type VirtualMachineInstanceView = {
 	hyperVGeneration: string,
 	patchStatus: { [propertyName: string]: string; },
 	statuses: InstanceViewStatus[],
+	networkProfile: any,
 }
 
 export type InstanceViewStatus = {
@@ -282,7 +281,7 @@ export async function getAvailableSqlVMs(account: azdata.Account, subscription: 
 
 export async function getVMInstanceView(sqlVm: SqlVMServer, account: azdata.Account, subscription: Subscription): Promise<VirtualMachineInstanceView> {
 	const api = await getAzureCoreAPI();
-	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${getResourceGroupFromId(sqlVm.id)}/providers/Microsoft.Compute/virtualMachines/${sqlVm.name}/instanceView?api-version=2022-08-01`);
+	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${getResourceGroupFromId(sqlVm.id)}/providers/Microsoft.Compute/virtualMachines/${sqlVm.name}/instanceView?api-version=${COMPUTE_VM_API_VERSION}`);
 	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
 
@@ -291,6 +290,24 @@ export async function getVMInstanceView(sqlVm: SqlVMServer, account: azdata.Acco
 	}
 
 	return response.response.data;
+}
+
+export async function getAzureResourceGivenId(account: azdata.Account, subscription: Subscription, id: string, apiVersion: string): Promise<any> {
+	const api = await getAzureCoreAPI();
+	const path = encodeURI(`${id}?api-version=${apiVersion}`);
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
+
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.toString());
+	}
+
+	return response.response.data;
+}
+
+export async function getComputeVM(sqlVm: SqlVMServer, account: azdata.Account, subscription: Subscription): Promise<any> {
+	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${getResourceGroupFromId(sqlVm.id)}/providers/Microsoft.Compute/virtualMachines/${sqlVm.name}`);
+	return getAzureResourceGivenId(account, subscription, path, COMPUTE_VM_API_VERSION);
 }
 
 export type StorageAccount = AzureProduct;
@@ -611,6 +628,7 @@ export async function getLocationDisplayName(location: string): Promise<string> 
 export async function validateIrSqlDatabaseMigrationSettings(
 	migration: MigrationStateModel,
 	sourceServerName: string,
+	encryptConnection: boolean,
 	trustServerCertificate: boolean,
 	sourceDatabaseName: string,
 	targetDatabaseName: string,
@@ -637,17 +655,18 @@ export async function validateIrSqlDatabaseMigrationSettings(
 			userName: migration._sqlServerUsername,
 			password: migration._sqlServerPassword,
 			authentication: migration._authenticationType,
+			encryptConnection: encryptConnection,
 			trustServerCertificate: trustServerCertificate,
-			// encryptConnection: true,
 		},
 		targetSqlConnection: {
 			testConnectivity: testTargetConnectivity,
 			dataSource: targetDatabaseServer.properties.fullyQualifiedDomainName,
 			userName: migration._targetUserName,
 			password: migration._targetPassword,
+			authentication: MigrationSourceAuthenticationType.Sql,
+			// when connecting to a target Azure SQL DB, use true/false
 			encryptConnection: true,
 			trustServerCertificate: false,
-			authentication: MigrationSourceAuthenticationType.Sql,
 		}
 	};
 
@@ -669,6 +688,7 @@ export async function validateIrSqlDatabaseMigrationSettings(
 export async function validateIrDatabaseMigrationSettings(
 	migration: MigrationStateModel,
 	sourceServerName: string,
+	encryptConnection: boolean,
 	trustServerCertificate: boolean,
 	sourceDatabaseName: string,
 	networkShare: NetworkShare,
@@ -711,8 +731,8 @@ export async function validateIrDatabaseMigrationSettings(
 			dataSource: sourceServerName,
 			userName: migration._sqlServerUsername,
 			password: migration._sqlServerPassword,
+			encryptConnection: encryptConnection,
 			trustServerCertificate: trustServerCertificate,
-			encryptConnection: true,
 			authentication: migration._authenticationType,
 		}
 	};
@@ -937,8 +957,8 @@ export interface ValdiateIrDatabaseMigrationResponse {
 	sourceDatabaseName: string,
 	sourceSqlConnection: {
 		testConnectivity: boolean,
-		encryptConnection: true,
-		trustServerCertificate: false,
+		encryptConnection: boolean,
+		trustServerCertificate: boolean,
 		dataSource: string,
 	},
 	backupConfiguration: {
@@ -1023,15 +1043,6 @@ export interface CopyProgressDetail {
 	copyThroughput: number,
 	copyDuration: number;
 	errors: string[];
-}
-
-export interface SqlConnectionInfo {
-	dataSource: string;
-	authentication: string;
-	username: string;
-	password: string;
-	encryptConnection: string;
-	trustServerCertificate: string;
 }
 
 export interface BackupConfiguration {

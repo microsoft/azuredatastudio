@@ -11,7 +11,7 @@ import * as constants from '../constants/strings';
 import { debounce } from '../api/utils';
 import * as styles from '../constants/styles';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { getDatabasesList, excludeDatabases, SourceDatabaseInfo } from '../api/sqlUtils';
+import { getDatabasesList, excludeDatabases, SourceDatabaseInfo, getSourceConnectionProfile } from '../api/sqlUtils';
 
 export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -228,7 +228,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	}
 
 	private async _loadDatabaseList(stateMachine: MigrationStateModel, selectedDatabases: string[]): Promise<void> {
-		const allDatabases = (<azdata.DatabaseInfo[]>await getDatabasesList(await stateMachine.getSourceConnectionProfile()));
+		const allDatabases = (<azdata.DatabaseInfo[]>await getDatabasesList(await getSourceConnectionProfile()));
 
 		const databaseList = allDatabases
 			.filter(database => !excludeDatabases.includes(database.options.name))

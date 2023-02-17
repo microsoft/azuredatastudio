@@ -16,6 +16,7 @@ import { ProjectDashboard } from './dialogs/projectDashboard';
 import { getAzdataApi } from './common/utils';
 import { createNewProjectWithQuickpick } from './dialogs/newProjectQuickpick';
 import Logger from './common/logger';
+import { TelemetryReporter } from './common/telemetry';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const startTime = new Date().getTime();
@@ -103,6 +104,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	IconPathHelper.setExtensionContext(context);
 	Logger.log(`IconPathHelper took ${new Date().getTime() - iconPathHelperTime}ms`);
 
+	context.subscriptions.push(TelemetryReporter);
 	Logger.log(`Finished activating Data Workspace extension. Total time = ${new Date().getTime() - startTime}ms`);
 	return Promise.resolve(dataWorkspaceExtension);
 }

@@ -7,6 +7,15 @@
     <trans-unit id="azure.accounts.accountStaleError">
       <source xml:lang="en">The access token for selected account '{0}' and tenant '{1}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.</source>
     </trans-unit>
+    <trans-unit id="serviceCrashMessage">
+      <source xml:lang="en">Migration service component could not start. {0}</source>
+    </trans-unit>
+    <trans-unit id="serviceCrashed">
+      <source xml:lang="en">Service component crashed.</source>
+    </trans-unit>
+    <trans-unit id="serviceProviderIntializationError">
+      <source xml:lang="en">Service provider could not be initialized.</source>
+    </trans-unit>
     <trans-unit id="sql-migration.login.wizard.title">
       <source xml:lang="en">Migrate logins from '{0}' to Azure SQL</source>
     </trans-unit>
@@ -2437,16 +2446,16 @@ This may take some time.</source>
       <source xml:lang="en">Error getting login information: {0}</source>
     </trans-unit>
     <trans-unit id="sql.migration.wizard.target.mapping.error.duplicate">
-      <source xml:lang="en">Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.</source>
+      <source xml:lang="en">Database mapping error. Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '{2}' is already selected as a migration target for database '{3}'.  Please select a different target database.</source>
     </trans-unit>
     <trans-unit id="sql.migration.wizard.target.missing">
       <source xml:lang="en">Database mapping error. Missing target databases to migrate.  Please configure the target server connection and click connect to collect the list of available database migration targets.</source>
     </trans-unit>
     <trans-unit id="sql.migration.wizard.target.source.collation.error">
-      <source xml:lang="en">A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.</source>
+      <source xml:lang="en">Database mapping error (Error code: {0}) was found between '{1}' and '{2}' databases. The source database collation '{3}' does not match the target database collation '{4}'. Please select or re-create a target database with the same collation as the source database.</source>
     </trans-unit>
     <trans-unit id="sql.migration.wizard.target.source.mapping.error">
-      <source xml:lang="en">Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.</source>
+      <source xml:lang="en">Database mapping error. Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.</source>
     </trans-unit>
     <trans-unit id="sql.migration.wizard.target.title">
       <source xml:lang="en">Azure SQL target</source>
@@ -2463,6 +2472,9 @@ This may take some time.</source>
     <trans-unit id="total.tables.selected.of.total">
       <source xml:lang="en">{0} of {1}</source>
     </trans-unit>
+    <trans-unit id="waitingForService">
+      <source xml:lang="en">Waiting for {0} component to start.</source>
+    </trans-unit>
 </body></file>
   <file original="extensions/sql-migration/dist/models/stateMachine" source-language="en" datatype="plaintext"><body>
     <trans-unit id="sql.migration.starting.migration.error">
@@ -2470,6 +2482,41 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.starting.migration.message">
       <source xml:lang="en">Starting migration for database {0} to {1} - {2}</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/sql-migration/dist/service/serviceClient" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="downloadingService">
+      <source xml:lang="en">Downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceComplete">
+      <source xml:lang="en">Done downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceSize">
+      <source xml:lang="en">({0} KB)</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceStatus">
+      <source xml:lang="en">Downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="entryExtractedChannelMsg">
+      <source xml:lang="en">Extracted {0} ({1}/{2})</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.serviceStartFailed">
+      <source xml:lang="en">Failed to start {0}: {1}</source>
+    </trans-unit>
+    <trans-unit id="installingService">
+      <source xml:lang="en">Installing {0} Service</source>
+    </trans-unit>
+    <trans-unit id="installingServiceDetailed">
+      <source xml:lang="en">Installing {0} to {1}</source>
+    </trans-unit>
+    <trans-unit id="serviceInstalled">
+      <source xml:lang="en">Installed {0}</source>
+    </trans-unit>
+    <trans-unit id="serviceStarted">
+      <source xml:lang="en">{0} Started</source>
+    </trans-unit>
+    <trans-unit id="serviceStarting">
+      <source xml:lang="en">Starting {0}</source>
     </trans-unit>
 </body></file>
   <file original="extensions/sql-migration/package" source-language="en" datatype="plaintext"><body>
