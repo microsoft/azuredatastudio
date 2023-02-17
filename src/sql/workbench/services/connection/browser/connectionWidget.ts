@@ -936,7 +936,11 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						// If account was not filled in from received configuration, select the first account.
 						this._azureAccountDropdown.select(0);
 						account = this._azureAccountList[0];
-						accountName = account.key.accountId;
+						if (this._azureAccountList.length > 0) {
+							accountName = account.key.accountId;
+						} else {
+							this._logService.info('No accounts available');
+						}
 					}
 					await this.onAzureAccountSelected();
 
@@ -957,7 +961,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						this.onAzureTenantSelected(0);
 					}
 					else {
-						this._logService.error(`fillInConnectionInputs : Could not find any tenants for account ${accountName}`);
+						if (accountName) {
+							this._logService.error(`fillInConnectionInputs : Could not find any tenants for account ${accountName}`);
+						}
 					}
 				}).catch(err => this._logService.error(`Unexpected error populating initial Azure Account options : ${err}`));
 			}
