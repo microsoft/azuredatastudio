@@ -319,8 +319,14 @@ declare module 'mssql' {
 	//#region --- Sql Projects
 
 	export interface ISqlProjectsService {
+		newProject(projectUri: string, sqlProjectType: ProjectType, databaseSchemaProvider: string, buildSdkVersion?: string): Promise<azdata.ResultStatus>;
 		openProject(projectUri: string): Promise<azdata.ResultStatus>;
 		getCrossPlatformCompatiblityRequest(projectUri: string): Promise<GetCrossPlatformCompatiblityResult>;
+	}
+
+	export const enum ProjectType {
+		SdkStyle = 0,
+		LegacyStyle = 1
 	}
 
 	export interface GetCrossPlatformCompatiblityResult extends azdata.ResultStatus {
