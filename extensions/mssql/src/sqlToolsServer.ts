@@ -28,6 +28,7 @@ import { NotebookConvertService } from './notebookConvert/notebookConvertService
 import { SqlCredentialService } from './credentialstore/sqlCredentialService';
 import { AzureBlobService } from './azureBlob/azureBlobService';
 import { ErrorDiagnosticsProvider } from './errorDiagnostics/errorDiagnosticsProvider';
+import { SqlProjectsService } from './sqlProjects/sqlProjectsService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -186,6 +187,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 			SchemaCompareService.asFeature(context),
 			LanguageExtensionService.asFeature(context),
 			DacFxService.asFeature(context),
+			SqlProjectsService.asFeature(context),
 			CmsService.asFeature(context),
 			SqlAssessmentService.asFeature(context),
 			NotebookConvertService.asFeature(context),
