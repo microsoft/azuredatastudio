@@ -122,17 +122,17 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
 
 
-	test('onAddConnectionProfile handler selects the new profile when no profile is already selected', async () => {
+	test('onAddConnectionProfile handler focuses the new profile when no profile is already selected', async () => {
 		let newProfile = <IConnectionProfile>{
 			id: 'test_connection'
 		};
 		await runAddConnectionProfileHandler(undefined, newProfile);
 		mockRefreshTreeMethod.verify(x => x(), TypeMoq.Times.once());
 		mockTree.verify(x => x.clearSelection(), TypeMoq.Times.never());
-		mockTree.verify(x => x.select(TypeMoq.It.is(profile => profile === newProfile)), TypeMoq.Times.once());
+		mockTree.verify(x => x.setFocus(TypeMoq.It.is(profile => profile === newProfile)), TypeMoq.Times.once());
 	});
 
-	test('onAddConnectionProfile handler selects the new profile when a different profile is already selected', async () => {
+	test('onAddConnectionProfile handler focuses the new profile when a different profile is already selected', async () => {
 		let oldProfile = <IConnectionProfile>{
 			id: 'old_connection'
 		};
@@ -142,7 +142,7 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 		await runAddConnectionProfileHandler(oldProfile, newProfile);
 		mockRefreshTreeMethod.verify(x => x(), TypeMoq.Times.once());
 		mockTree.verify(x => x.clearSelection(), TypeMoq.Times.once());
-		mockTree.verify(x => x.select(TypeMoq.It.is(profile => profile === newProfile)), TypeMoq.Times.once());
+		mockTree.verify(x => x.setFocus(TypeMoq.It.is(profile => profile === newProfile)), TypeMoq.Times.once());
 	});
 
 	test('onAddConnectionProfile handler does not clear the selection when the new profile is already selected', async () => {

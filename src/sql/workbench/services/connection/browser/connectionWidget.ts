@@ -309,7 +309,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	 */
 	protected registerOnSelectionChangeEvents(): void {
 		//Register on selection change event for custom options
-		this._customOptionWidgets.forEach((widget, i) => {
+		this._customOptionWidgets?.forEach((widget, i) => {
 			if (widget instanceof SelectBox) {
 				this._registerSelectionChangeEvents([this._customOptionWidgets], this._customOptions[i], widget);
 			}
