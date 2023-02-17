@@ -1153,14 +1153,6 @@ export namespace GetSqlMigrationSkuRecommendationsRequest {
 	export const type = new RequestType<SqlMigrationSkuRecommendationsParams, mssql.SkuRecommendationResult, void, void>('migration/getskurecommendations');
 }
 
-// export interface SqlMigrationGenerateProvisioningScriptParams {
-// 	skuRecommendations: mssql.SkuRecommendationResultItem[];
-// }
-
-// export namespace SqlMigrationGenerateProvisioningScriptRequest {
-// 	export const type = new RequestType<SqlMigrationGenerateProvisioningScriptParams, mssql.ProvisioningScriptResult, void, void>('migration/generateprovisioningscript');
-// }
-
 export interface SqlMigrationStartPerfDataCollectionParams {
 	ownerUri: string,
 	dataFolder: string,
