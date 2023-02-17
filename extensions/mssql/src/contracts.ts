@@ -601,6 +601,209 @@ export namespace SavePublishProfileRequest {
 
 // ------------------------------- </ DacFx > ------------------------------------
 
+//#region SqlProjects
+
+//#region Functions
+
+//#region Project-level functions
+
+export namespace NewSqlProjectRequest {
+	export const type = new RequestType<NewSqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/newProject');
+}
+
+export namespace OpenSqlProjectRequest {
+	export const type = new RequestType<SqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/openProject');
+}
+
+export namespace CloseSqlProjectRequest {
+	export const type = new RequestType<SqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/closeProject');
+}
+
+export namespace GetCrossPlatformCompatiblityRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetCrossPlatformCompatiblityResult, void, void>('sqlProjects/getCrossPlatformCompatibility');
+}
+
+export namespace UpdateProjectForCrossPlatformRequest {
+	export const type = new RequestType<SqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/updateProjectForCrossPlatform');
+}
+
+//#endregion
+
+//#region File/folder functions
+
+//#region SQL object script functions
+
+export namespace AddSqlObjectScriptRequest {
+	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/addSqlObjectScript');
+}
+
+export namespace DeleteSqlObjectScriptRequest {
+	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/deleteSqlObjectScript');
+}
+
+export namespace ExcludeSqlObjectScriptRequest {
+	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/excludeSqlObjectScript');
+}
+
+export namespace MoveSqlObjectScriptRequest {
+	export const type = new RequestType<MoveItemParams, azdata.ResultStatus, void, void>('sqlProjects/moveSqlObjectScript');
+}
+
+//#endregion
+
+//#region Folder functions
+
+export namespace AddFolderRequest {
+	export const type = new RequestType<FolderParams, azdata.ResultStatus, void, void>('sqlProjects/addFolder');
+}
+
+export namespace DeleteFolderRequest {
+	export const type = new RequestType<FolderParams, azdata.ResultStatus, void, void>('sqlProjects/deleteFolder');
+}
+
+//#endregion
+
+//#region Pre/Post-deployment script functions
+
+export namespace AddPostDeploymentScriptRequest {
+	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/addPostDeploymentScript');
+}
+
+export namespace AddPreDeploymentScriptRequest {
+	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/addPreDeploymentScript');
+}
+
+export namespace DeletePostDeploymentScriptRequest {
+	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/deletePostDeploymentScript');
+}
+
+export namespace DeletePreDeploymentScriptRequest {
+	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/deletePreDeploymentScript');
+}
+
+export namespace ExcludePostDeploymentScriptRequest {
+	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/excludePostDeploymentScript');
+}
+
+export namespace ExcludePreDeploymentScriptRequest {
+	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/excludePreDeploymentScript');
+}
+
+export namespace MovePostDeploymentScriptRequest {
+	export const type = new RequestType<MoveItemParams, azdata.ResultStatus, void, void>('sqlProjects/movePostDeploymentScript');
+}
+
+export namespace MovePreDeploymentScriptRequest {
+	export const type = new RequestType<MoveItemParams, azdata.ResultStatus, void, void>('sqlProjects/movePreDeploymentScript');
+}
+
+//#endregion
+
+//#endregion
+
+//#region SQLCMD variable functions
+
+export namespace AddSqlCmdVariableRequest {
+	export const type = new RequestType<AddSqlCmdVariableParams, azdata.ResultStatus, void, void>('sqlProjects/addSqlCmdVariable');
+}
+
+export namespace DeleteSqlCmdVariableRequest {
+	export const type = new RequestType<DeleteSqlCmdVariableParams, azdata.ResultStatus, void, void>('sqlProjects/deleteSqlCmdVariable');
+}
+
+export namespace UpdateSqlCmdVariableRequest {
+	export const type = new RequestType<AddSqlCmdVariableParams, azdata.ResultStatus, void, void>('sqlProjects/updateSqlCmdVariable');
+}
+
+//#endregion
+
+//#region Database reference functions
+
+export namespace AddDacpacReferenceRequest {
+	export const type = new RequestType<AddDacpacReferenceParams, azdata.ResultStatus, void, void>('sqlprojects/addDacpacReference');
+}
+
+export namespace AddSqlProjectReferenceRequest {
+	export const type = new RequestType<AddSqlProjectReferenceParams, azdata.ResultStatus, void, void>('sqlprojects/addSqlProjectReference');
+}
+
+export namespace AddSystemDatabaseReferenceRequest {
+	export const type = new RequestType<AddSystemDatabaseReferenceParams, azdata.ResultStatus, void, void>('sqlprojects/addSystemDatabaseReference');
+}
+
+export namespace DeleteDatabaseReferenceRequest {
+	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlprojects/deleteDatabaseReference');
+}
+
+//#endregion
+
+//#endregion
+
+//#region Parameters
+
+export interface SqlProjectParams {
+	projectUri: string;
+}
+
+export interface SqlProjectScriptParams extends SqlProjectParams {
+	path: string;
+}
+
+export interface AddDacpacReferenceParams extends AddUserDatabaseReferenceParams {
+	dacpacPath: string;
+}
+
+export interface AddDatabaseReferenceParams extends SqlProjectParams {
+	suppressMissingDependencies: boolean;
+	databaseLiteral?: string;
+}
+
+export interface AddSqlProjectReferenceParams extends AddUserDatabaseReferenceParams {
+	projectPath: string;
+	projectGuid: string;
+}
+
+export interface AddSystemDatabaseReferenceParams extends AddDatabaseReferenceParams {
+	systemDatabase: mssql.SystemDatabase;
+}
+
+export interface AddUserDatabaseReferenceParams extends AddDatabaseReferenceParams {
+	databaseVariable?: string;
+	serverVariable?: string;
+}
+
+export interface DeleteDatabaseReferenceParams extends SqlProjectParams {
+	name: string;
+}
+
+export interface FolderParams extends SqlProjectParams {
+	path: string;
+}
+
+export interface MoveItemParams extends SqlProjectScriptParams {
+	destinationPath: string;
+}
+
+export interface NewSqlProjectParams extends SqlProjectParams {
+	sqlProjectType: mssql.ProjectType;
+	databaseSchemaProvider?: string;
+	buildSdkVersion?: string;
+}
+
+export interface AddSqlCmdVariableParams extends SqlProjectParams {
+	name: string;
+	defaultValue: string;
+	value: string;
+}
+
+export interface DeleteSqlCmdVariableParams extends SqlProjectParams {
+	name?: string;
+}
+
+//#endregion
+
+//#endregion
+
 // ------------------------------- <CMS> ----------------------------------------
 
 

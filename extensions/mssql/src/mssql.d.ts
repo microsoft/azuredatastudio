@@ -319,7 +319,32 @@ declare module 'mssql' {
 	//#region ISqlProjectsService
 
 	export interface ISqlProjectsService {
-		getDatabaseReferences(projectUri: string): Thenable<GetDatabaseReferencesResult>;
+		addDacpacReference(projectUri: string, dacpacPath: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Thenable<azdata.ResultStatus>;
+		addSqlProjectReference(projectUri: string, projectPath: string, projectGuid: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Thenable<azdata.ResultStatus>;
+		addSystemDatabaseReference(projectUri: string, systemDatabase: SystemDatabase, suppressMissingDependencies: boolean, databaseLiteral?: string): Thenable<azdata.ResultStatus>;
+		deleteDatabaseReference(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
+		addFolder(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
+		deleteFolder(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
+		addPostDeploymentScript(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
+		addPreDeploymentScript(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
+		deletePostDeploymentScript(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
+		deletePreDeploymentScript(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
+		excludePostDeploymentScript(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
+		excludePreDeploymentScript(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
+		movePostDeploymentScript(projectUri: string, destinationPath: string, path: string): Thenable<azdata.ResultStatus>;
+		movePreDeploymentScript(projectUri: string, destinationPath: string, path: string): Thenable<azdata.ResultStatus>;
+		closeProject(projectUri: string): Thenable<azdata.ResultStatus>;
+		getCrossPlatformCompatibility(projectUri: string): Thenable<GetCrossPlatformCompatiblityResult>;
+		newProject(projectUri: string, sqlProjectType: ProjectType, databaseSchemaProvider?: string, buildSdkVersion?: string): Thenable<azdata.ResultStatus>;
+		openProject(projectUri: string): Thenable<azdata.ResultStatus>;
+		updateProjectForCrossPlatform(projectUri: string): Thenable<azdata.ResultStatus>;
+		addSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Thenable<azdata.ResultStatus>;
+		deleteSqlCmdVariable(projectUri: string, name?: string): Thenable<azdata.ResultStatus>;
+		updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Thenable<azdata.ResultStatus>;
+		addSqlObjectScript(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
+		deleteSqlObjectScript(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
+		excludeSqlObjectScript(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
+		moveSqlObjectScript(projectUri: string, destinationPath: string, path: string): Thenable<azdata.ResultStatus>;
 	}
 
 	//#region Parameters
@@ -332,10 +357,8 @@ declare module 'mssql' {
 
 	//#region Results
 
-	export interface GetDatabaseReferencesResult extends azdata.ResultStatus {
-		systemDatabaseReferences: SystemDatabaseReference[];
-		sqlProjectReferences: SqlProjectReference[];
-		dacpacReferences: DacpacReference[];
+	export interface GetCrossPlatformCompatiblityResult extends azdata.ResultStatus {
+		isCrossPlatformCompatible: boolean;
 	}
 
 	//#endregion
@@ -366,8 +389,13 @@ declare module 'mssql' {
 	}
 
 	export const enum SystemDatabase {
-		Master = 0,
-		MSDB = 1
+		master = 0,
+		msdb = 1
+	}
+
+	export const enum ProjectType {
+		sdkStyle = 0,
+		legacyStyle = 1
 	}
 
 	export interface SqlCmdVariable {
