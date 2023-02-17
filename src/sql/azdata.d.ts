@@ -196,7 +196,7 @@ declare module 'azdata' {
 		 * @param showDashboard Whether to show the dashboard for the connection upon success. Default is true
 		 * @param ownerUri The URI string of the document that owns the resulting connection. Default is undefined
 		 */
-		export function connect(connectionProfile: IConnectionProfile, saveConnection?: boolean, showDashboard?: boolean, ownerUri?: string): Thenable<ConnectionResult>;
+		export function connect(connectionProfile: IConnectionProfile, saveConnection?: boolean, showDashboard?: boolean): Thenable<ConnectionResult>;
 
 		/**
 		 * Supported connection event types

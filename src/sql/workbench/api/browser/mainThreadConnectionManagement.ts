@@ -239,10 +239,10 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		return connection;
 	}
 
-	public $connect(connectionProfile: IConnectionProfile, saveConnection: boolean = true, showDashboard: boolean = true, ownerUri?: string): Thenable<azdata.ConnectionResult> {
+	public $connect(connectionProfile: IConnectionProfile, saveConnection: boolean = true, showDashboard: boolean = true): Thenable<azdata.ConnectionResult> {
 		let profile = new ConnectionProfile(this._capabilitiesService, connectionProfile);
 		profile.id = generateUuid();
-		return this._connectionManagementService.connectAndSaveProfile(profile, ownerUri, {
+		return this._connectionManagementService.connectAndSaveProfile(profile, undefined, {
 			saveTheConnection: saveConnection,
 			showDashboard: showDashboard,
 			params: undefined,

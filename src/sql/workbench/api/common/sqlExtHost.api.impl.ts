@@ -150,8 +150,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				getUriForConnection(connectionId: string): Thenable<string> {
 					return extHostConnectionManagement.$getUriForConnection(connectionId);
 				},
-				connect(connectionProfile: azdata.IConnectionProfile, saveConnection: boolean, showDashboard: boolean, ownerUri?: string): Thenable<azdata.ConnectionResult> {
-					return extHostConnectionManagement.$connect(connectionProfile, saveConnection, showDashboard, ownerUri);
+				connect(connectionProfile: azdata.IConnectionProfile, saveConnection: boolean, showDashboard: boolean): Thenable<azdata.ConnectionResult> {
+					return extHostConnectionManagement.$connect(connectionProfile, saveConnection, showDashboard);
 				}
 			};
 
