@@ -1475,7 +1475,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this.migrationStateModel._databaseBackup.subscription,
 					this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount,
 					this.migrationStateModel._databaseBackup.blobs[index]?.blobContainer);
-				dropDown.values = await utils.getBlobLastBackupFileNamesValues(
+				dropDown.values = utils.getBlobLastBackupFileNamesValues(
 					this.migrationStateModel._lastFileNames);
 				utils.selectDefaultDropdownValue(
 					dropDown,
@@ -1498,7 +1498,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this.migrationStateModel._databaseBackup.subscription,
 					this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount,
 					this.migrationStateModel._databaseBackup.blobs[index]?.blobContainer);
-				dropDown.values = await utils.getBlobFolderValues(this.migrationStateModel._blobContainerFolders);
+				dropDown.values = utils.getBlobFolderValues(this.migrationStateModel._blobContainerFolders);
 				utils.selectDefaultDropdownValue(
 					dropDown,
 					this.migrationStateModel._blobContainerFolders[0],
