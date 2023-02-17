@@ -16,6 +16,7 @@ export const sqlProviderName = 'MSSQL';
 export const ObjectExplorerService = 'objectexplorer';
 export const CmsService = 'cmsService';
 export const DacFxService = 'dacfxService';
+export const SqlProjectsService = 'sqlProjectsService';
 export const SchemaCompareService = 'schemaCompareService';
 export const LanguageExtensionService = 'languageExtensionService';
 export const objectExplorerPrefix: string = 'objectexplorer://';

@@ -30,6 +30,7 @@ import { SqlCredentialService } from './credentialstore/sqlCredentialService';
 import { AzureBlobService } from './azureBlob/azureBlobService';
 import { ErrorDiagnosticsProvider } from './errorDiagnostics/errorDiagnosticsProvider';
 import { TdeMigrationService } from './tdeMigration/tdeMigrationService';
+import { SqlProjectsService } from './sqlProjects/sqlProjectsService';
 import { ObjectManagementService } from './objectManagement/objectManagementService';
 
 const localize = nls.loadMessageBundle();
@@ -189,6 +190,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 			SchemaCompareService.asFeature(context),
 			LanguageExtensionService.asFeature(context),
 			DacFxService.asFeature(context),
+			SqlProjectsService.asFeature(context),
 			CmsService.asFeature(context),
 			SqlAssessmentService.asFeature(context),
 			NotebookConvertService.asFeature(context),
