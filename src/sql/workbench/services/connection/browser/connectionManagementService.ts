@@ -327,13 +327,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				newConnection.authenticationType = this.getDefaultAuthenticationTypeId(newConnection.providerName);
 			}
 
-			// If this is Azure MFA Authentication, fix username to azure Account user.
-			// This is required, as by default, server login / administrator is the username.
-			if (newConnection.authenticationType === 'AzureMFA') {
-				let accounts = await this._accountManagementService?.getAccounts();
-				newConnection.userName = accounts?.find(a => a.key.accountId === newConnection.azureAccount)?.displayInfo.displayName;
-			}
-
 			// If the password is required and still not loaded show the dialog
 			if ((!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
 				return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, messageDetails: undefined, errorCode: undefined }, options);
