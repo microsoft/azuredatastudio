@@ -40,6 +40,8 @@ declare module 'mssql' {
 
 		readonly dacFx: IDacFxService;
 
+		readonly sqlProjects: ISqlProjectsService;
+
 		readonly sqlAssessment: ISqlAssessmentService;
 
 		readonly sqlMigration: ISqlMigrationService;
@@ -310,6 +312,19 @@ declare module 'mssql' {
 		databaseName: string;
 		ownerUri: string;
 		taskExecutionMode: azdata.TaskExecutionMode;
+	}
+
+	//#endregion
+
+	//#region --- Sql Projects
+
+	export interface ISqlProjectsService {
+		openProject(projectUri: string): Promise<azdata.ResultStatus>;
+		getCrossPlatformCompatiblityRequest(projectUri: string): Promise<GetCrossPlatformCompatiblityResult>;
+	}
+
+	export interface GetCrossPlatformCompatiblityResult extends azdata.ResultStatus {
+		isCrossPlatformCompatible: boolean;
 	}
 
 	//#endregion
