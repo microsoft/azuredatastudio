@@ -939,7 +939,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						if (this._azureAccountList.length > 0) {
 							accountName = account.key.accountId;
 						} else {
-							this._logService.info('No accounts available');
+							this._logService.debug('No accounts available');
 						}
 					}
 					await this.onAzureAccountSelected();
