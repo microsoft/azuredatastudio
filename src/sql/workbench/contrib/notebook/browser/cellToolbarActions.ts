@@ -17,7 +17,7 @@ import Severity from 'vs/base/common/severity';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { CellEditModes, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { MoveDirection, TextCellEditMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 const moreActionsLabel = localize('moreActionsLabel', "More");
 
@@ -80,11 +80,8 @@ export class SplitCellAction extends CellActionBase {
 		return Promise.resolve();
 	}
 	public setListener(context: CellContext) {
-		this._register(context.cell.onCurrentEditModeChanged(currentMode => {
-			this.enabled = currentMode === CellEditModes.WYSIWYG ? false : true;
-		}));
-		this._register(context.cell.notebookModel.onCellTypeChanged(_ => {
-			this.enabled = context.cell.currentMode === CellEditModes.WYSIWYG ? false : true;
+		this._register(context.cell.onTextCellEditModeChanged(textCellEditMode => {
+			this.enabled = textCellEditMode === TextCellEditMode.RichText ? false : true;
 		}));
 	}
 }

@@ -460,13 +460,13 @@ export interface ICellModel {
 	isEditMode: boolean;
 	showPreview: boolean;
 	showMarkdown: boolean;
-	defaultTextEditMode: string;
+	defaultTextCellEditMode: TextCellEditMode;
 	sendChangeToNotebook(change: NotebookChangeType): void;
 	cellSourceChanged: boolean;
 	readonly savedConnectionName: string | undefined;
 	attachments: nb.ICellAttachments | undefined;
-	readonly onCurrentEditModeChanged: Event<CellEditModes>;
-	readonly currentMode: CellEditModes;
+	readonly onTextCellEditModeChanged: Event<TextCellEditMode>;
+	readonly textCellEditMode: TextCellEditMode;
 	/**
 	 * Adds image as an attachment to cell metadata
 	 * @param mimeType a string defining mimeType of the image. Examples: image/png, image/jpeg
@@ -563,9 +563,8 @@ export interface INotebookContentsEditable {
 	nbformat_minor: number;
 }
 
-export enum CellEditModes {
-	'CODE',
-	'MARKDOWN',
-	'SPLIT',
-	'WYSIWYG'
+export enum TextCellEditMode {
+	RichText = 'Rich Text',
+	SplitView = 'Split View',
+	Markdown = 'Markdown'
 }

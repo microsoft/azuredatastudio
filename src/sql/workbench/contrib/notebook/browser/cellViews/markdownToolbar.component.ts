@@ -7,7 +7,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
 import { Component, Input, Inject, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { localize } from 'vs/nls';
-import { CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, TextCellEditMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { TransformMarkdownAction, MarkdownTextTransformer, MarkdownButtonType, ToggleViewAction, insertFormattedMarkdown } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
@@ -23,7 +23,6 @@ import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 import { escape } from 'vs/base/common/strings';
 import { IImageCalloutDialogOptions, ImageCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/imageCalloutDialog';
-import { TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookLinkHandler } from 'sql/workbench/contrib/notebook/browser/notebookLinkHandler';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
@@ -41,7 +40,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 
 	@HostListener('document:keydown', ['$event'])
 	async onkeydown(e: KeyboardEvent) {
-		if (this.cellModel?.currentMode === CellEditModes.SPLIT || this.cellModel?.currentMode === CellEditModes.MARKDOWN) {
+		if (this.cellModel?.textCellEditMode === TextCellEditMode.SplitView || this.cellModel?.textCellEditMode === TextCellEditMode.Markdown) {
 			const keyEvent = new StandardKeyboardEvent(e);
 			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
 			if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KeyB) {
@@ -154,9 +153,9 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		let heading3 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading3', this.optionHeading3, 'heading 3', this.optionHeading3, this.cellModel, MarkdownButtonType.HEADING3);
 		let paragraph = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.paragraph', this.optionParagraph, 'paragraph', this.optionParagraph, this.cellModel, MarkdownButtonType.PARAGRAPH);
 
-		this._toggleTextViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleTextView', '', this.cellModel.defaultTextEditMode === TextCellEditModes.RichText ? 'masked-icon show-text active' : 'masked-icon show-text', this.richTextViewButton, true, false);
-		this._toggleSplitViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleSplitView', '', this.cellModel.defaultTextEditMode === TextCellEditModes.SplitView ? 'masked-icon split-toggle-on active' : 'masked-icon split-toggle-on', this.splitViewButton, true, true);
-		this._toggleMarkdownViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleMarkdownView', '', this.cellModel.defaultTextEditMode === TextCellEditModes.Markdown ? 'masked-icon show-markdown active' : 'masked-icon show-markdown', this.markdownViewButton, false, true);
+		this._toggleTextViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleTextView', '', this.cellModel.defaultTextCellEditMode === TextCellEditMode.RichText ? 'masked-icon show-text active' : 'masked-icon show-text', this.richTextViewButton, true, false);
+		this._toggleSplitViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleSplitView', '', this.cellModel.defaultTextCellEditMode === TextCellEditMode.SplitView ? 'masked-icon split-toggle-on active' : 'masked-icon split-toggle-on', this.splitViewButton, true, true);
+		this._toggleMarkdownViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleMarkdownView', '', this.cellModel.defaultTextCellEditMode === TextCellEditMode.Markdown ? 'masked-icon show-markdown active' : 'masked-icon show-markdown', this.markdownViewButton, false, true);
 
 		let taskbar = <HTMLElement>this.mdtoolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar);
@@ -232,7 +231,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				return;
 			}
 			// If cell edit mode isn't WYSIWYG, use result from callout. No need for further transformation.
-			if (this.cellModel.currentMode !== CellEditModes.WYSIWYG) {
+			if (this.cellModel.textCellEditMode !== TextCellEditMode.RichText) {
 				needsTransform = false;
 			} else {
 				let notebookLink = new NotebookLinkHandler(this.cellModel?.notebookModel?.notebookUri, linkCalloutResult.insertUnescapedLinkUrl, this._configurationService);
@@ -247,7 +246,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		} else if (type === MarkdownButtonType.IMAGE_PREVIEW) {
 			imageCalloutResult = await this.createCallout(type, triggerElement);
 			// If cell edit mode isn't WYSIWYG, use result from callout. No need for further transformation.
-			if (this.cellModel.currentMode !== CellEditModes.WYSIWYG) {
+			if (this.cellModel.textCellEditMode !== TextCellEditMode.RichText) {
 				needsTransform = false;
 			}
 		}
@@ -298,10 +297,10 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	public updateActiveViewAction() {
 		this.removeActiveClassFromModeActions();
 		const activeClass = ' active';
-		switch (this.cellModel.currentMode) {
-			case CellEditModes.MARKDOWN: this._toggleMarkdownViewAction.class += activeClass; break;
-			case CellEditModes.SPLIT: this._toggleSplitViewAction.class += activeClass; break;
-			case CellEditModes.WYSIWYG: this._toggleTextViewAction.class += activeClass; break;
+		switch (this.cellModel.textCellEditMode) {
+			case TextCellEditMode.Markdown: this._toggleMarkdownViewAction.class += activeClass; break;
+			case TextCellEditMode.SplitView: this._toggleSplitViewAction.class += activeClass; break;
+			case TextCellEditMode.RichText: this._toggleTextViewAction.class += activeClass; break;
 		}
 	}
 
@@ -333,7 +332,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	}
 
 	private getCurrentLinkLabel(): string {
-		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
+		if (this.cellModel.textCellEditMode === TextCellEditMode.RichText) {
 			return document.getSelection()?.toString() || '';
 		} else {
 			const editorControl = this.getCellEditorControl();
@@ -349,7 +348,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	}
 
 	private getCurrentLinkUrl(): string {
-		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
+		if (this.cellModel.textCellEditMode === TextCellEditMode.RichText) {
 			const anchorNode = document.getSelection().anchorNode;
 			if (!anchorNode) {
 				return '';

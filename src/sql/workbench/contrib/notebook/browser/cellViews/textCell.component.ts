@@ -21,7 +21,7 @@ import { toDisposable } from 'vs/base/common/lifecycle';
 
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
-import { ICaretPosition, CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICaretPosition, ICellModel, TextCellEditMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/services/notebook/browser/outputs/sanitizer';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
@@ -61,7 +61,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	@HostListener('document:keydown', ['$event'])
 	onkeydown(e: KeyboardEvent) {
-		if (DOM.getActiveElement() === this.output?.nativeElement && this.isActive() && this.cellModel?.currentMode === CellEditModes.WYSIWYG) {
+		if (DOM.getActiveElement() === this.output?.nativeElement && this.isActive() && this.cellModel?.textCellEditMode === TextCellEditMode.RichText) {
 			const keyEvent = new StandardKeyboardEvent(e);
 			// Select all text
 			if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KeyA) {
@@ -214,8 +214,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this.toggleEditMode(mode);
 			}
 		}));
-		this._register(this.cellModel.onCurrentEditModeChanged(editMode => {
-			let markdown: boolean = editMode !== CellEditModes.WYSIWYG;
+		this._register(this.cellModel.onTextCellEditModeChanged(textCellEditMode => {
+			let markdown: boolean = textCellEditMode !== TextCellEditMode.RichText;
 			if (!markdown) {
 				let editorControl = this.cellEditors.length > 0 ? this.cellEditors[0].getEditor().getControl() : undefined;
 				if (editorControl) {
@@ -255,7 +255,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 					this.cellModel.richTextCursorPosition = cursorPosition;
 				}
 			}
-			this.previewMode = editMode !== CellEditModes.MARKDOWN;
+			this.previewMode = textCellEditMode !== TextCellEditMode.Markdown;
 			this.markdownMode = markdown;
 			this.focusIfPreviewMode();
 		}));

@@ -14,7 +14,7 @@ import { DeleteCellAction, EditCellAction, CellToggleMoreActions, MoveCellAction
 import { AddCellAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { TextCellEditMode, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
@@ -97,7 +97,7 @@ export class CellToolbarComponent {
 
 		let splitCellButton = this.instantiationService.createInstance(SplitCellAction, 'notebook.SplitCellAtCursor', this.buttonSplitCell, 'masked-icon icon-split-cell');
 		splitCellButton.setListener(this._cellContext);
-		splitCellButton.enabled = this.cellModel.cellType !== 'markdown';
+		splitCellButton.enabled = this.cellModel.cellType === 'code' || this.cellModel.textCellEditMode !== TextCellEditMode.RichText;
 		this._disposableActions.add(splitCellButton);
 
 		let deleteButton = this.instantiationService.createInstance(DeleteCellAction, 'notebook.DeleteCell', 'masked-icon delete', this.buttonDelete);

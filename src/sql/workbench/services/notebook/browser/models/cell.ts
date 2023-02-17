@@ -10,9 +10,9 @@ import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
-import { CellTypes, CellType, NotebookChangeType, TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
+import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes, ICaretPosition, ICellEdit, CellEditType } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, ICaretPosition, ICellEdit, CellEditType, TextCellEditMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';
@@ -62,7 +62,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _onTableUpdated = new Emitter<ITableUpdatedEvent>();
 	private _onCellEditModeChanged = new Emitter<boolean>();
 	private _onExecutionStateChanged = new Emitter<CellExecutionState>();
-	private _onCurrentEditModeChanged = new Emitter<CellEditModes>();
+	private _onTextCellEditModeChanged = new Emitter<TextCellEditMode>();
 	private _isTrusted: boolean;
 	private _active: boolean;
 	private _hover: boolean;
@@ -81,7 +81,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _showPreview: boolean = true;
 	private _showMarkdown: boolean = false;
 	private _cellSourceChanged: boolean = false;
-	private _defaultTextEditMode: string;
+	private _defaultTextCellEditMode: TextCellEditMode;
 	private _isParameter: boolean;
 	private _onParameterStateChanged = new Emitter<boolean>();
 	private _isInjectedParameter: boolean;
@@ -89,7 +89,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _outputCounter = 0; // When re-executing the same cell, ensure that we apply chart options in the same order
 	private _attachments: nb.ICellAttachments | undefined;
 	private _preventNextChartCache: boolean = false;
-	private _lastEditMode: string | undefined;
+	private _lastTextCellEditMode: TextCellEditMode | undefined;
 	public richTextCursorPosition: ICaretPosition | undefined;
 	public markdownCursorPosition: IPosition | undefined;
 
@@ -244,12 +244,12 @@ export class CellModel extends Disposable implements ICellModel {
 		if (this._isEditMode !== isEditMode) {
 			this._isEditMode = isEditMode;
 			if (this._isEditMode) {
-				const newEditMode = this._lastEditMode ?? this._defaultTextEditMode;
-				this.showPreview = newEditMode !== TextCellEditModes.Markdown;
-				this.showMarkdown = newEditMode !== TextCellEditModes.RichText;
+				const newTextCellEditMode = this._lastTextCellEditMode ?? this._defaultTextCellEditMode;
+				this.showPreview = newTextCellEditMode !== TextCellEditMode.Markdown;
+				this.showMarkdown = newTextCellEditMode !== TextCellEditMode.RichText;
 			} else {
 				// when not in edit mode, default the values since they are only valid when editing.
-				// And to return the correct currentMode value.
+				// And to return the correct textCellEditMode value.
 				this._showMarkdown = false;
 				this._showPreview = true;
 			}
@@ -442,8 +442,8 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._onExecutionStateChanged.event;
 	}
 
-	public get onCurrentEditModeChanged(): Event<CellEditModes> {
-		return this._onCurrentEditModeChanged.event;
+	public get onTextCellEditModeChanged(): Event<TextCellEditMode> {
+		return this._onTextCellEditModeChanged.event;
 	}
 
 	private fireExecutionStateChanged(): void {
@@ -493,13 +493,13 @@ export class CellModel extends Disposable implements ICellModel {
 
 	private doModeUpdates() {
 		if (this._isEditMode) {
-			this._lastEditMode = this._showPreview && this._showMarkdown ? TextCellEditModes.SplitView : (this._showMarkdown ? TextCellEditModes.Markdown : TextCellEditModes.RichText);
+			this._lastTextCellEditMode = this._showPreview && this._showMarkdown ? TextCellEditMode.SplitView : (this._showMarkdown ? TextCellEditMode.Markdown : TextCellEditMode.RichText);
 		}
-		this._onCurrentEditModeChanged.fire(this.currentMode);
+		this._onTextCellEditModeChanged.fire(this.textCellEditMode);
 	}
 
-	public get defaultTextEditMode(): string {
-		return this._defaultTextEditMode;
+	public get defaultTextCellEditMode(): TextCellEditMode {
+		return this._defaultTextCellEditMode;
 	}
 
 	public get cellSourceChanged(): boolean {
@@ -1016,17 +1016,14 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 	}
 
-	public get currentMode(): CellEditModes {
-		if (this._cellType === CellTypes.Code) {
-			return CellEditModes.CODE;
-		}
+	public get textCellEditMode(): TextCellEditMode {
 		if (this._showMarkdown && this._showPreview) {
-			return CellEditModes.SPLIT;
+			return TextCellEditMode.SplitView;
 		} else if (this._showMarkdown && !this._showPreview) {
-			return CellEditModes.MARKDOWN;
+			return TextCellEditMode.Markdown;
 		}
 		// defaulting to WYSIWYG
-		return CellEditModes.WYSIWYG;
+		return TextCellEditMode.RichText;
 	}
 
 	public processEdits(edits: ICellEdit[]): void {
@@ -1156,7 +1153,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private populatePropertiesFromSettings() {
 		if (this._configurationService) {
 			const defaultTextModeKey = 'notebook.defaultTextEditMode';
-			this._defaultTextEditMode = this._configurationService.getValue(defaultTextModeKey);
+			this._defaultTextCellEditMode = this._configurationService.getValue(defaultTextModeKey);
 
 			const allowADSCommandsKey = 'notebook.allowAzureDataStudioCommands';
 			this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
@@ -1164,7 +1161,7 @@ export class CellModel extends Disposable implements ICellModel {
 				if (e.affectsConfiguration(allowADSCommandsKey)) {
 					this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
 				} else if (e.affectsConfiguration(defaultTextModeKey)) {
-					this._defaultTextEditMode = this._configurationService.getValue(defaultTextModeKey);
+					this._defaultTextCellEditMode = this._configurationService.getValue(defaultTextModeKey);
 				}
 			}));
 		}

@@ -13,7 +13,7 @@ import { CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/c
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { NotebookModelStub, ClientSessionStub, KernelStub, FutureStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { EmptyFuture } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
-import { CellEditModes, ICellModel, ICellModelOptions, IClientSession, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, ICellModelOptions, IClientSession, INotebookModel, TextCellEditMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { isUndefinedOrNull } from 'vs/base/common/types';
@@ -1423,7 +1423,7 @@ suite('Cell Model', function (): void {
 		assert.deepStrictEqual(model.attachments, attachments, 'we should still have one attachment after removing the other');
 	});
 
-	test('cell should fire onCurrentEditModeChanged on edit', async function () {
+	test('cell should fire onTextCellEditModeChanged on edit', async function () {
 
 		let notebookModel = new NotebookModelStub({
 			name: '',
@@ -1438,10 +1438,10 @@ suite('Cell Model', function (): void {
 
 		let cellModel = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
 
-		let editModeChangePromise = () => {
+		let textCellEditModeChangePromise = () => {
 			return new Promise((resolve, reject) => {
 				setTimeout(() => reject(), 2000);
-				cellModel.onCurrentEditModeChanged(editMode => {
+				cellModel.onTextCellEditModeChanged(editMode => {
 					resolve(editMode);
 				});
 			});
@@ -1449,15 +1449,15 @@ suite('Cell Model', function (): void {
 
 		assert(!cellModel.isEditMode);
 
-		let editModePromise = editModeChangePromise();
+		let textCellEditModePromise = textCellEditModeChangePromise();
 		cellModel.isEditMode = true;
 
-		let editMode = await editModePromise;
-		assert(editMode);
-		assert.strictEqual(editMode, CellEditModes.WYSIWYG, 'Default edit mode should be WYSIWYG.');
+		let textCellEditMode = await textCellEditModePromise;
+		assert(textCellEditMode);
+		assert.strictEqual(textCellEditMode, TextCellEditMode.RichText, 'Default text cell edit mode should be RichText.');
 	});
 
-	test('cell should have lastEditMode set to whatever the user edited out of last', async function () {
+	test('cell should have lastTextCellEditMode set to whatever the user edited out of last', async function () {
 		let notebookModel = new NotebookModelStub({
 			name: '',
 			version: '',
@@ -1474,45 +1474,45 @@ suite('Cell Model', function (): void {
 		assert(cellModel.showPreview, 'showPreview should default to true when not in editMode');
 		assert(!cellModel.showMarkdown, 'showMarkdown should be false when not in editMode');
 
-		let getCurrentCellEditModePromise = () => {
+		let getCurrentTextCellEditModePromise = () => {
 			return new Promise((resolve, reject) => {
-				cellModel.onCurrentEditModeChanged(cellEditMode => {
-					resolve(cellEditMode);
+				cellModel.onTextCellEditModeChanged(textCellEditMode => {
+					resolve(textCellEditMode);
 				});
 			});
 		};
 
-		let cellModePromise = getCurrentCellEditModePromise();
+		let textCellEditModePromise = getCurrentTextCellEditModePromise();
 		// Initially mode is defaulted be WYSIWYG -> showPreview is true and showMarkdown is false
-		assert.strictEqual(cellModel.currentMode, CellEditModes.WYSIWYG, 'Current mode should be WYSIWYG when not in edit mode');
+		assert.strictEqual(cellModel.textCellEditMode, TextCellEditMode.RichText, 'Current mode should be WYSIWYG when not in edit mode');
 		assert.strictEqual(cellModel.isEditMode, false, 'cell should not default to edit mode');
 
 		cellModel.isEditMode = true;
-		let lastEditMode = await cellModePromise;
-		assert.strictEqual(lastEditMode, CellEditModes.WYSIWYG, 'Default edit mode should be WYSIWYG');
+		let lastTextCellEditMode = await textCellEditModePromise;
+		assert.strictEqual(lastTextCellEditMode, TextCellEditMode.RichText, 'Default text cell edit mode should be WYSIWYG');
 		// update mode to SPLITVIEW -> showMarkdown and showPreview both are true
-		cellModePromise = getCurrentCellEditModePromise();
+		textCellEditModePromise = getCurrentTextCellEditModePromise();
 		cellModel.showMarkdown = true;
-		lastEditMode = await cellModePromise;
-		assert.strictEqual(lastEditMode, CellEditModes.SPLIT, 'LastEditMode should be set to split view');
+		lastTextCellEditMode = await textCellEditModePromise;
+		assert.strictEqual(lastTextCellEditMode, TextCellEditMode.SplitView, 'LastTextCellEditMode should be set to split view');
 
 		// come out of edit mode and enter edit mode again to check edit mode.
 		cellModel.isEditMode = false;
-		assert.strictEqual(cellModel.currentMode, CellEditModes.WYSIWYG, 'Should default to WYSIWYG when not editing');
+		assert.strictEqual(cellModel.textCellEditMode, TextCellEditMode.RichText, 'Should default to WYSIWYG when not editing');
 		cellModel.isEditMode = true;
-		assert.strictEqual(cellModel.currentMode, CellEditModes.SPLIT, 'Should persist lastEditMode and be in Split View');
+		assert.strictEqual(cellModel.textCellEditMode, TextCellEditMode.SplitView, 'Should persist lastTextCellEditMode and be in Split View');
 
 		// update mode to markdown mode only -> showPreview is false and showMarkdown is true
-		cellModePromise = getCurrentCellEditModePromise();
+		textCellEditModePromise = getCurrentTextCellEditModePromise();
 		cellModel.showPreview = false;
-		lastEditMode = await cellModePromise;
-		assert.strictEqual(lastEditMode, CellEditModes.MARKDOWN, 'LastEditMode should be set to markdown');
+		lastTextCellEditMode = await textCellEditModePromise;
+		assert.strictEqual(lastTextCellEditMode, TextCellEditMode.Markdown, 'LastTextCellEditMode should be set to markdown');
 
 		// come out of edit mode and enter edit mode again to check edit mode.
 		cellModel.isEditMode = false;
-		assert.strictEqual(cellModel.currentMode, CellEditModes.WYSIWYG, 'Should default to WYSIWYG when not editing');
+		assert.strictEqual(cellModel.textCellEditMode, TextCellEditMode.RichText, 'Should default to WYSIWYG when not editing');
 		cellModel.isEditMode = true;
-		assert.strictEqual(cellModel.currentMode, CellEditModes.MARKDOWN, 'Should persist lastEditMode and be in markdown only');
+		assert.strictEqual(cellModel.textCellEditMode, TextCellEditMode.Markdown, 'Should persist lastTextCellEditMode and be in markdown only');
 
 	});
 });

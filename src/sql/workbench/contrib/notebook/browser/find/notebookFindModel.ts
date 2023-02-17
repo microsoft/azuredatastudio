@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vs/base/common/lifecycle';
-import { CellEditModes, ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, INotebookModel, TextCellEditMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as types from 'vs/base/common/types';
@@ -526,7 +526,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 
 	private searchFn(cell: ICellModel, exp: string, matchCase: boolean = false, wholeWord: boolean = false, maxMatches?: number): NotebookRange[] {
 		let findResults: NotebookRange[] = [];
-		if (cell.cellType === 'markdown' && (cell.showMarkdown || cell.currentMode === CellEditModes.SPLIT) && typeof cell.source !== 'string') {
+		if (cell.cellType === 'markdown' && (cell.showMarkdown || cell.textCellEditMode === TextCellEditMode.SplitView) && typeof cell.source !== 'string') {
 			let cellSource = cell.source;
 			for (let j = 0; j < cellSource.length; j++) {
 				let findStartResults = this.search(cellSource[j], exp, matchCase, wholeWord, maxMatches - findResults.length);
@@ -538,7 +538,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 			}
 		}
 		// if it's markdown cell in Markdown only mode, don't search on renderedOutput.
-		let cellVal = cell.cellType === 'markdown' ? (cell.currentMode === CellEditModes.SPLIT || !cell.showMarkdown ? cell.renderedOutputTextContent : undefined) : cell.source;
+		let cellVal = cell.cellType === 'markdown' ? (cell.textCellEditMode === TextCellEditMode.SplitView || !cell.showMarkdown ? cell.renderedOutputTextContent : undefined) : cell.source;
 		if (cellVal) {
 			if (typeof cellVal === 'string') {
 				let findStartResults = this.search(cellVal, exp, matchCase, wholeWord, maxMatches);
