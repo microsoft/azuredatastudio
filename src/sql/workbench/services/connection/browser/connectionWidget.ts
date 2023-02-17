@@ -960,10 +960,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						this._azureTenantId = account.properties.tenants[0].id;
 						this.onAzureTenantSelected(0);
 					}
-					else {
-						if (accountName) {
-							this._logService.error(`fillInConnectionInputs : Could not find any tenants for account ${accountName}`);
-						}
+					else if (accountName) {
+						this._logService.error(`fillInConnectionInputs : Could not find any tenants for account ${accountName}`);
 					}
 				}).catch(err => this._logService.error(`Unexpected error populating initial Azure Account options : ${err}`));
 			}
