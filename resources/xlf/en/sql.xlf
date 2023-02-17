@@ -6127,6 +6127,9 @@ Error: {1}</source>
     <trans-unit id="profilerFilterDialog.addClauseText">
       <source xml:lang="en">Add a clause</source>
     </trans-unit>
+    <trans-unit id="profilerFilterDialog.allClausesCleared">
+      <source xml:lang="en">All clauses have been cleared.</source>
+    </trans-unit>
     <trans-unit id="profilerFilterDialog.apply">
       <source xml:lang="en">Apply</source>
     </trans-unit>
@@ -6150,6 +6153,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="profilerFilterDialog.loadFilter">
       <source xml:lang="en">Load Filter</source>
+    </trans-unit>
+    <trans-unit id="profilerFilterDialog.newClauseAdded">
+      <source xml:lang="en">A new clause has been added.</source>
     </trans-unit>
     <trans-unit id="profilerFilterDialog.notContainsOperator">
       <source xml:lang="en">Not Contains</source>

@@ -34,6 +34,7 @@ export class PublishDatabaseDialog {
 	private dataSourcesDropDown: azdataType.DropDownComponent | undefined;
 	private targetDatabaseDropDown: azdataType.DropDownComponent | undefined;
 	private targetDatabaseTextBox: azdataType.TextComponent | undefined;
+	private selectConnectionButton: azdataType.ButtonComponent | undefined;
 	private connectionsRadioButton: azdataType.RadioButtonComponent | undefined;
 	private existingServerRadioButton: azdataType.RadioButtonComponent | undefined;
 	private dockerServerRadioButton: azdataType.RadioButtonComponent | undefined;
@@ -807,37 +808,33 @@ export class PublishDatabaseDialog {
 	}
 
 	private createSelectConnectionButton(view: azdataType.ModelView): azdataType.Component {
-		let selectConnectionButton: azdataType.ButtonComponent = view.modelBuilder.button().withProps({
+		this.selectConnectionButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.selectConnection,
 			iconPath: IconPathHelper.selectConnection,
 			height: '16px',
 			width: '16px'
 		}).component();
 
-		selectConnectionButton.onDidClick(async () => {
+		this.selectConnectionButton.onDidClick(async () => {
 			let connection = await utils.getAzdataApi()!.connection.openConnectionDialog();
 			this.connectionId = connection.connectionId;
 			this.serverName = connection.options['server'];
 
 			let connectionTextboxValue: string = getConnectionName(connection);
 
-			await this.updateConnectionComponents(connectionTextboxValue, this.connectionId);
-
-			// change the database inputbox value to the connection's database if there is one
-			if (connection.options.database && connection.options.database !== constants.master) {
-				this.targetDatabaseDropDown!.value = connection.options.database;
-			}
-
-			// change icon to the one without a plus sign
-			selectConnectionButton.iconPath = IconPathHelper.connect;
+			await this.updateConnectionComponents(connectionTextboxValue, this.connectionId, connection.options.database);
 		});
 
-		return selectConnectionButton;
+		return this.selectConnectionButton;
 	}
 
-	private async updateConnectionComponents(connectionTextboxValue: string, connectionId: string) {
+	private async updateConnectionComponents(connectionTextboxValue: string, connectionId: string, database: string) {
 		this.targetConnectionTextBox!.value = connectionTextboxValue;
 		await this.targetConnectionTextBox!.updateProperty('title', connectionTextboxValue);
+
+		if (database && database !== constants.master) {
+			this.targetDatabaseName = database;
+		}
 
 		// populate database dropdown with the databases for this connection
 		if (connectionId) {
@@ -846,6 +843,9 @@ export class PublishDatabaseDialog {
 				.filter(db => !constants.systemDbs.includes(db));
 
 			this.targetDatabaseDropDown!.values = databaseValues;
+
+			// change icon to the one without a plus sign
+			this.selectConnectionButton!.iconPath = IconPathHelper.connect;
 		}
 	}
 
@@ -873,11 +873,7 @@ export class PublishDatabaseDialog {
 
 				this.connectionId = result.connectionId;
 				this.serverName = result.serverName;
-				await this.updateConnectionComponents(result.connection, <string>this.connectionId);
-
-				if (result.databaseName) {
-					this.targetDatabaseName = result.databaseName;
-				}
+				await this.updateConnectionComponents(result.connection, <string>this.connectionId, result.databaseName);
 
 				// set options coming from the publish profiles to deployment options
 				this.setDeploymentOptions(result.options);
@@ -909,6 +905,8 @@ export class PublishDatabaseDialog {
 
 				this.profileUsed = true;
 				this.publishProfileUri = fileUris[0];
+
+				this.tryEnableGenerateScriptAndOkButtons();
 			}
 		});
 

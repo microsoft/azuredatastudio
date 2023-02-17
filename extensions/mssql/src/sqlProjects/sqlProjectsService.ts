@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as mssql from 'mssql';
-import { AppContext } from '../appContext';
-import { ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
-import { ClientCapabilities } from 'vscode-languageclient';
 import * as constants from '../constants';
 import * as Utils from '../utils';
 import * as azdata from 'azdata';
 import * as contracts from '../contracts';
+import { AppContext } from '../appContext';
+import { ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
+import { ClientCapabilities } from 'vscode-languageclient';
 
 export class SqlProjectsService implements mssql.ISqlProjectsService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
@@ -32,7 +32,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		context.registerService(constants.SqlProjectsService, this);
 	}
 
-	public addDacpacReference(projectUri: string, dacpacPath: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Thenable<azdata.ResultStatus> {
+	public addDacpacReference(projectUri: string, dacpacPath: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Promise<azdata.ResultStatus> {
 		const params: contracts.AddDacpacReferenceParams = { projectUri: projectUri, dacpacPath: dacpacPath, databaseVariable: databaseVariable, serverVariable: serverVariable, suppressMissingDependencies: suppressMissingDependencies, databaseLiteral: databaseLiteral };
 		return this.client.sendRequest(contracts.AddDacpacReferenceRequest.type, params).then(
 			undefined,
@@ -43,7 +43,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public addSqlProjectReference(projectUri: string, projectPath: string, projectGuid: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Thenable<azdata.ResultStatus> {
+	public addSqlProjectReference(projectUri: string, projectPath: string, projectGuid: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Promise<azdata.ResultStatus> {
 		const params: contracts.AddSqlProjectReferenceParams = { projectUri: projectUri, projectPath: projectPath, projectGuid: projectGuid, databaseVariable: databaseVariable, serverVariable: serverVariable, suppressMissingDependencies: suppressMissingDependencies, databaseLiteral: databaseLiteral };
 		return this.client.sendRequest(contracts.AddSqlProjectReferenceRequest.type, params).then(
 			undefined,
@@ -54,7 +54,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public addSystemDatabaseReference(projectUri: string, systemDatabase: mssql.SystemDatabase, suppressMissingDependencies: boolean, databaseLiteral?: string): Thenable<azdata.ResultStatus> {
+	public addSystemDatabaseReference(projectUri: string, systemDatabase: mssql.SystemDatabase, suppressMissingDependencies: boolean, databaseLiteral?: string): Promise<azdata.ResultStatus> {
 		const params: contracts.AddSystemDatabaseReferenceParams = { projectUri: projectUri, systemDatabase: systemDatabase, suppressMissingDependencies: suppressMissingDependencies, databaseLiteral: databaseLiteral };
 		return this.client.sendRequest(contracts.AddSystemDatabaseReferenceRequest.type, params).then(
 			undefined,
@@ -65,7 +65,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public deleteDatabaseReference(projectUri: string, path: string): Thenable<azdata.ResultStatus> {
+	public deleteDatabaseReference(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
 		return this.client.sendRequest(contracts.DeleteDatabaseReferenceRequest.type, params).then(
 			undefined,
@@ -76,7 +76,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public addFolder(projectUri: string, path: string): Thenable<azdata.ResultStatus> {
+	public addFolder(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.FolderParams = { projectUri: projectUri, path: path };
 		return this.client.sendRequest(contracts.AddFolderRequest.type, params).then(
 			undefined,
@@ -87,7 +87,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public deleteFolder(projectUri: string, path: string): Thenable<azdata.ResultStatus> {
+	public deleteFolder(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.FolderParams = { projectUri: projectUri, path: path };
 		return this.client.sendRequest(contracts.DeleteFolderRequest.type, params).then(
 			undefined,
@@ -98,7 +98,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public addPostDeploymentScript(projectUri: string, path: string): Thenable<azdata.ResultStatus> {
+	public addPostDeploymentScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
 		return this.client.sendRequest(contracts.AddPostDeploymentScriptRequest.type, params).then(
 			undefined,
@@ -109,7 +109,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public addPreDeploymentScript(projectUri: string, path: string): Thenable<azdata.ResultStatus> {
+	public addPreDeploymentScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
 		return this.client.sendRequest(contracts.AddPreDeploymentScriptRequest.type, params).then(
 			undefined,
@@ -120,7 +120,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public deletePostDeploymentScript(projectUri: string, path: string): Thenable<azdata.ResultStatus> {
+	public deletePostDeploymentScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
 		return this.client.sendRequest(contracts.DeletePostDeploymentScriptRequest.type, params).then(
 			undefined,
@@ -131,7 +131,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public deletePreDeploymentScript(projectUri: string, path: string): Thenable<azdata.ResultStatus> {
+	public deletePreDeploymentScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
 		return this.client.sendRequest(contracts.DeletePreDeploymentScriptRequest.type, params).then(
 			undefined,
@@ -142,7 +142,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public excludePostDeploymentScript(projectUri: string, path: string): Thenable<azdata.ResultStatus> {
+	public excludePostDeploymentScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
 		return this.client.sendRequest(contracts.ExcludePostDeploymentScriptRequest.type, params).then(
 			undefined,
@@ -153,7 +153,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public excludePreDeploymentScript(projectUri: string, path: string): Thenable<azdata.ResultStatus> {
+	public excludePreDeploymentScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
 		return this.client.sendRequest(contracts.ExcludePreDeploymentScriptRequest.type, params).then(
 			undefined,
@@ -164,7 +164,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public movePostDeploymentScript(projectUri: string, destinationPath: string, path: string): Thenable<azdata.ResultStatus> {
+	public movePostDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
 		return this.client.sendRequest(contracts.MovePostDeploymentScriptRequest.type, params).then(
 			undefined,
@@ -175,7 +175,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public movePreDeploymentScript(projectUri: string, destinationPath: string, path: string): Thenable<azdata.ResultStatus> {
+	public movePreDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
 		return this.client.sendRequest(contracts.MovePreDeploymentScriptRequest.type, params).then(
 			undefined,
@@ -186,7 +186,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public closeProject(projectUri: string): Thenable<azdata.ResultStatus> {
+	public closeProject(projectUri: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectParams = { projectUri: projectUri };
 		return this.client.sendRequest(contracts.CloseSqlProjectRequest.type, params).then(
 			undefined,
@@ -197,7 +197,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public getCrossPlatformCompatibility(projectUri: string): Thenable<mssql.GetCrossPlatformCompatiblityResult> {
+	public getCrossPlatformCompatibility(projectUri: string): Promise<mssql.GetCrossPlatformCompatiblityResult> {
 		const params: contracts.SqlProjectParams = { projectUri: projectUri };
 		return this.client.sendRequest(contracts.GetCrossPlatformCompatiblityRequest.type, params).then(
 			undefined,
@@ -208,7 +208,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public newProject(projectUri: string, sqlProjectType: mssql.ProjectType, databaseSchemaProvider?: string, buildSdkVersion?: string): Thenable<azdata.ResultStatus> {
+	public newProject(projectUri: string, sqlProjectType: mssql.ProjectType, databaseSchemaProvider?: string, buildSdkVersion?: string): Promise<azdata.ResultStatus> {
 		const params: contracts.NewSqlProjectParams = { projectUri: projectUri, sqlProjectType: sqlProjectType, databaseSchemaProvider: databaseSchemaProvider, buildSdkVersion: buildSdkVersion };
 		return this.client.sendRequest(contracts.NewSqlProjectRequest.type, params).then(
 			undefined,
@@ -219,7 +219,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public openProject(projectUri: string): Thenable<azdata.ResultStatus> {
+	public openProject(projectUri: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectParams = { projectUri: projectUri };
 		return this.client.sendRequest(contracts.OpenSqlProjectRequest.type, params).then(
 			undefined,
@@ -230,7 +230,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public updateProjectForCrossPlatform(projectUri: string): Thenable<azdata.ResultStatus> {
+	public updateProjectForCrossPlatform(projectUri: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectParams = { projectUri: projectUri };
 		return this.client.sendRequest(contracts.UpdateProjectForCrossPlatformRequest.type, params).then(
 			undefined,
@@ -241,7 +241,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public addSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Thenable<azdata.ResultStatus> {
+	public addSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<azdata.ResultStatus> {
 		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue, value: value };
 		return this.client.sendRequest(contracts.AddSqlCmdVariableRequest.type, params).then(
 			undefined,
@@ -252,7 +252,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public deleteSqlCmdVariable(projectUri: string, name?: string): Thenable<azdata.ResultStatus> {
+	public deleteSqlCmdVariable(projectUri: string, name?: string): Promise<azdata.ResultStatus> {
 		const params: contracts.DeleteSqlCmdVariableParams = { projectUri: projectUri, name: name };
 		return this.client.sendRequest(contracts.DeleteSqlCmdVariableRequest.type, params).then(
 			undefined,
@@ -263,7 +263,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Thenable<azdata.ResultStatus> {
+	public updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<azdata.ResultStatus> {
 		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue, value: value };
 		return this.client.sendRequest(contracts.UpdateSqlCmdVariableRequest.type, params).then(
 			undefined,
@@ -274,7 +274,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public addSqlObjectScript(projectUri: string, path: string): Thenable<azdata.ResultStatus> {
+	public addSqlObjectScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
 		return this.client.sendRequest(contracts.AddSqlObjectScriptRequest.type, params).then(
 			undefined,
@@ -285,7 +285,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public deleteSqlObjectScript(projectUri: string, path: string): Thenable<azdata.ResultStatus> {
+	public deleteSqlObjectScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
 		return this.client.sendRequest(contracts.DeleteSqlObjectScriptRequest.type, params).then(
 			undefined,
@@ -296,7 +296,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public excludeSqlObjectScript(projectUri: string, path: string): Thenable<azdata.ResultStatus> {
+	public excludeSqlObjectScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
 		return this.client.sendRequest(contracts.ExcludeSqlObjectScriptRequest.type, params).then(
 			undefined,
@@ -307,7 +307,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		);
 	}
 
-	public moveSqlObjectScript(projectUri: string, destinationPath: string, path: string): Thenable<azdata.ResultStatus> {
+	public moveSqlObjectScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
 		return this.client.sendRequest(contracts.MoveSqlObjectScriptRequest.type, params).then(
 			undefined,
@@ -316,5 +316,27 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 				return Promise.resolve(undefined);
 			}
 		);
+	}
+
+	public async openProject(projectUri: string): Promise<azdata.ResultStatus> {
+		const params: contracts.SqlProjectParams = { projectUri };
+		try {
+			const result = await this.client.sendRequest(contracts.OpenSqlProjectRequest.type, params);
+			return result;
+		} catch (e) {
+			this.client.logFailedRequest(contracts.OpenSqlProjectRequest.type, e);
+			throw e;
+		}
+	}
+
+	public async getCrossPlatformCompatiblityRequest(projectUri: string): Promise<mssql.GetCrossPlatformCompatiblityResult> {
+		const params: contracts.SqlProjectParams = { projectUri };
+		try {
+			const result = await this.client.sendRequest(contracts.GetCrossPlatformCompatiblityRequest.type, params);
+			return result;
+		} catch (e) {
+			this.client.logFailedRequest(contracts.GetCrossPlatformCompatiblityRequest.type, e);
+			throw e;
+		}
 	}
 }

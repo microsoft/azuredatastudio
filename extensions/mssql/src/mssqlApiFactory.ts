@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AppContext } from './appContext';
-import { IExtension, ICmsService, IDacFxService, ISchemaCompareService, ILanguageExtensionService, ISqlAssessmentService, ISqlMigrationService, IAzureBlobService, ITdeMigrationService } from 'mssql';
+import { IExtension, ICmsService, IDacFxService, ISqlProjectsService, ISchemaCompareService, ILanguageExtensionService, ISqlAssessmentService, ISqlMigrationService, IAzureBlobService, ITdeMigrationService } from 'mssql';
 import * as constants from './constants';
 import { SqlToolsServer } from './sqlToolsServer';
 
@@ -18,6 +18,9 @@ export function createMssqlApi(context: AppContext, sqlToolsServer: SqlToolsServ
 		},
 		get dacFx() {
 			return context.getService<IDacFxService>(constants.DacFxService);
+		},
+		get sqlProjects() {
+			return context.getService<ISqlProjectsService>(constants.SqlProjectsService);
 		},
 		get schemaCompare() {
 			return context.getService<ISchemaCompareService>(constants.SchemaCompareService);

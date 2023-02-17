@@ -601,6 +601,7 @@ export namespace SavePublishProfileRequest {
 
 // ------------------------------- </ DacFx > ------------------------------------
 
+// ------------------------------- < Sql Projects > ------------------------------------
 //#region SqlProjects
 
 //#region Functions
@@ -803,6 +804,7 @@ export interface DeleteSqlCmdVariableParams extends SqlProjectParams {
 //#endregion
 
 //#endregion
+// ------------------------------- </ Sql Projects > -----------------------------------
 
 // ------------------------------- <CMS> ----------------------------------------
 

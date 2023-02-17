@@ -316,35 +316,35 @@ declare module 'mssql' {
 
 	//#endregion
 
-	//#region ISqlProjectsService
+	//#region --- Sql Projects
 
 	export interface ISqlProjectsService {
-		addDacpacReference(projectUri: string, dacpacPath: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Thenable<azdata.ResultStatus>;
-		addSqlProjectReference(projectUri: string, projectPath: string, projectGuid: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Thenable<azdata.ResultStatus>;
-		addSystemDatabaseReference(projectUri: string, systemDatabase: SystemDatabase, suppressMissingDependencies: boolean, databaseLiteral?: string): Thenable<azdata.ResultStatus>;
-		deleteDatabaseReference(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
-		addFolder(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
-		deleteFolder(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
-		addPostDeploymentScript(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
-		addPreDeploymentScript(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
-		deletePostDeploymentScript(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
-		deletePreDeploymentScript(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
-		excludePostDeploymentScript(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
-		excludePreDeploymentScript(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
-		movePostDeploymentScript(projectUri: string, destinationPath: string, path: string): Thenable<azdata.ResultStatus>;
-		movePreDeploymentScript(projectUri: string, destinationPath: string, path: string): Thenable<azdata.ResultStatus>;
-		closeProject(projectUri: string): Thenable<azdata.ResultStatus>;
-		getCrossPlatformCompatibility(projectUri: string): Thenable<GetCrossPlatformCompatiblityResult>;
-		newProject(projectUri: string, sqlProjectType: ProjectType, databaseSchemaProvider?: string, buildSdkVersion?: string): Thenable<azdata.ResultStatus>;
-		openProject(projectUri: string): Thenable<azdata.ResultStatus>;
-		updateProjectForCrossPlatform(projectUri: string): Thenable<azdata.ResultStatus>;
-		addSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Thenable<azdata.ResultStatus>;
-		deleteSqlCmdVariable(projectUri: string, name?: string): Thenable<azdata.ResultStatus>;
-		updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Thenable<azdata.ResultStatus>;
-		addSqlObjectScript(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
-		deleteSqlObjectScript(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
-		excludeSqlObjectScript(projectUri: string, path: string): Thenable<azdata.ResultStatus>;
-		moveSqlObjectScript(projectUri: string, destinationPath: string, path: string): Thenable<azdata.ResultStatus>;
+		addDacpacReference(projectUri: string, dacpacPath: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Promise<azdata.ResultStatus>;
+		addSqlProjectReference(projectUri: string, projectPath: string, projectGuid: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Promise<azdata.ResultStatus>;
+		addSystemDatabaseReference(projectUri: string, systemDatabase: SystemDatabase, suppressMissingDependencies: boolean, databaseLiteral?: string): Promise<azdata.ResultStatus>;
+		deleteDatabaseReference(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+		addFolder(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+		deleteFolder(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+		addPostDeploymentScript(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+		addPreDeploymentScript(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+		deletePostDeploymentScript(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+		deletePreDeploymentScript(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+		excludePostDeploymentScript(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+		excludePreDeploymentScript(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+		movePostDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
+		movePreDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
+		closeProject(projectUri: string): Promise<azdata.ResultStatus>;
+		getCrossPlatformCompatibility(projectUri: string): Promise<GetCrossPlatformCompatiblityResult>;
+		newProject(projectUri: string, sqlProjectType: ProjectType, databaseSchemaProvider?: string, buildSdkVersion?: string): Promise<azdata.ResultStatus>;
+		openProject(projectUri: string): Promise<azdata.ResultStatus>;
+		updateProjectForCrossPlatform(projectUri: string): Promise<azdata.ResultStatus>;
+		addSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<azdata.ResultStatus>;
+		deleteSqlCmdVariable(projectUri: string, name?: string): Promise<azdata.ResultStatus>;
+		updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<azdata.ResultStatus>;
+		addSqlObjectScript(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+		deleteSqlObjectScript(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+		excludeSqlObjectScript(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+		moveSqlObjectScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
 	}
 
 	//#region Parameters

@@ -76,3 +76,12 @@ export class LanguageClientErrorHandler implements ErrorHandler {
 		return CloseAction.DoNotRestart;
 	}
 }
+
+export enum TelemetryViews {
+	MssqlObjectExplorer = 'mssqlObjectExplorer'
+}
+
+export enum TelemetryActions {
+	GroupBySchemaEnabled = 'objectExplorerGroupBySchemaEnabled',
+	GroupBySchemaDisabled = 'objectExplorerGroupBySchemaDisabled',
+}

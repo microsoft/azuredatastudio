@@ -415,7 +415,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 
 		let newProfile = new ConnectionProfile(this._capabilitiesService, model || providerName);
-		if (!model.password) {
+		if (model && !model.password) {
 			try {
 				await this._connectionManagementService.addSavedPassword(newProfile);
 			}
