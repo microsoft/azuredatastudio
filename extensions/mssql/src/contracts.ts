@@ -601,6 +601,22 @@ export namespace SavePublishProfileRequest {
 
 // ------------------------------- </ DacFx > ------------------------------------
 
+// ------------------------------- < Sql Projects > ------------------------------------
+
+export namespace OpenSqlProjectRequest {
+	export const type = new RequestType<SqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/openProject');
+}
+
+export namespace GetCrossPlatformCompatiblityRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetCrossPlatformCompatiblityResult, void, void>('sqlProjects/getCrossPlatformCompatibility');
+}
+
+export interface SqlProjectParams {
+	projectUri: string;
+}
+
+// ------------------------------- </ Sql Projects > -----------------------------------
+
 // ------------------------------- <CMS> ----------------------------------------
 
 
