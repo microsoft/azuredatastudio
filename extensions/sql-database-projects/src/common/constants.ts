@@ -14,6 +14,7 @@ const localize = nls.loadMessageBundle();
 export const dataSourcesFileName = 'datasources.json';
 export const sqlprojExtension = '.sqlproj';
 export const sqlFileExtension = '.sql';
+export const publishProfileExtension = '.publish.xml';
 export const openApiSpecFileExtensions = ['yaml', 'yml', 'json'];
 export const schemaCompareExtensionId = 'microsoft.schema-compare';
 export const master = 'master';
@@ -485,6 +486,7 @@ export const ImportElements = localize('importElements', "Import Elements");
 export const ProjectReferenceNameElement = localize('projectReferenceNameElement', "Project reference name element");
 export const ProjectReferenceElement = localize('projectReferenceElement', "Project reference");
 export const DacpacReferenceElement = localize('dacpacReferenceElement', "Dacpac reference");
+export const PublishProfileElements = localize('publishProfileElements', "Publish profile Elements");
 
 /** Name of the property item in the project file that defines default database collation. */
 export const DefaultCollationProperty = 'DefaultCollation';

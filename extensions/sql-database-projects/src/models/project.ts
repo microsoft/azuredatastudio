@@ -46,6 +46,7 @@ export class Project implements ISqlProject {
 	private _isSdkStyleProject: boolean = false; // https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview
 	private _outputPath: string = '';
 	private _configuration: Configuration = Configuration.Debug;
+	private _publishProfiles: FileProjectEntry[] = [];
 
 	public get dacpacOutputPath(): string {
 		return path.join(this.outputPath, `${this._projectFileName}.dacpac`);
@@ -111,6 +112,10 @@ export class Project implements ISqlProject {
 		return this._configuration;
 	}
 
+	public get publishProfiles(): FileProjectEntry[] {
+		return this._publishProfiles;
+	}
+
 	private projFileXmlDoc: Document | undefined = undefined;
 
 	constructor(projectFilePath: string) {
@@ -152,6 +157,9 @@ export class Project implements ISqlProject {
 
 		this._databaseReferences = this.readDatabaseReferences();
 		this._importedTargets = this.readImportedTargets();
+
+		// get publish profiles specified in the sqlproj
+		this._publishProfiles = this.readPublishProfiles();
 
 		// find all SQLCMD variables to include
 		try {
@@ -468,7 +476,7 @@ export class Project implements ISqlProject {
 				const noneItems = itemGroup.getElementsByTagName(constants.None);
 				for (let n = 0; n < noneItems.length; n++) {
 					const includeAttribute = noneItems[n].getAttribute(constants.Include);
-					if (includeAttribute) {
+					if (includeAttribute && !utils.isPublishProfile(includeAttribute)) {
 						noneDeployScripts.push(this.createFileProjectEntry(includeAttribute, EntryType.File));
 					}
 				}
@@ -503,6 +511,34 @@ export class Project implements ISqlProject {
 		}
 
 		return noneRemoveScripts;
+	}
+
+	/**
+	 *
+	 * @returns all the publish profiles (ending with *.publish.xml) specified as <None Include="file.publish.xml" /> in the sqlproj
+	 */
+	private readPublishProfiles(): FileProjectEntry[] {
+		const publishProfiles: FileProjectEntry[] = [];
+
+		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
+			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
+
+			// find all publish profile scripts to include
+			try {
+				const noneItems = itemGroup.getElementsByTagName(constants.None);
+				for (let n = 0; n < noneItems.length; n++) {
+					const includeAttribute = noneItems[n].getAttribute(constants.Include);
+					if (includeAttribute && utils.isPublishProfile(includeAttribute)) {
+						publishProfiles.push(this.createFileProjectEntry(includeAttribute, EntryType.File));
+					}
+				}
+			} catch (e) {
+				void window.showErrorMessage(constants.errorReadingProject(constants.PublishProfileElements, this.projectFilePath));
+				console.error(utils.getErrorMessage(e));
+			}
+		}
+
+		return publishProfiles;
 	}
 
 	private readDatabaseReferences(): IDatabaseReferenceProjectEntry[] {
