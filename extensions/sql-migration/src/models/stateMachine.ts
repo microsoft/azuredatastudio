@@ -245,7 +245,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _skuRecommendationApiResponse!: contracts.SkuRecommendationResult;
 	public _skuRecommendationReportFilePaths: string[];
 	public _skuRecommendationPerformanceLocation!: string;
-	public _provisioningScriptApiResponse!: mssql.ProvisioningScriptResult;
+	public _provisioningScriptApiResponse!: contracts.ProvisioningScriptResult;
 	public _provisioningScriptResult!: ProvisioningScript;
 	public _perfDataCollectionStartDate!: Date | undefined;
 	public _perfDataCollectionStopDate!: Date | undefined;
@@ -1424,7 +1424,7 @@ export interface SkuRecommendation {
 }
 
 export interface ProvisioningScript {
-	result: mssql.ProvisioningScriptResult;
+	result: contracts.ProvisioningScriptResult;
 	error?: Error;
 }
 

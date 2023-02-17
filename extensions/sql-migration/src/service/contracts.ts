@@ -392,12 +392,24 @@ export namespace GetSqlMigrationSkuRecommendationsRequest {
 	export const type = new RequestType<SqlMigrationSkuRecommendationsParams, SkuRecommendationResult, void, void>('migration/getskurecommendations');
 }
 
+export interface SqlMigrationGenerateProvisioningScriptParams {
+	skuRecommendations: SkuRecommendationResultItem[];
+}
+
+export namespace SqlMigrationGenerateProvisioningScriptRequest {
+	export const type = new RequestType<SqlMigrationGenerateProvisioningScriptParams, ProvisioningScriptResult, void, void>('migration/generateprovisioningscript');
+}
+
 export interface SqlMigrationStartPerfDataCollectionParams {
 	connectionString: string,
 	dataFolder: string,
 	perfQueryIntervalInSec: number,
 	staticQueryIntervalInSec: number,
 	numberOfIterations: number
+}
+
+export interface ProvisioningScriptResult {
+	provisioningScriptFilePath: string;
 }
 
 export interface StartPerfDataCollectionResult {
@@ -484,6 +496,7 @@ export interface ISqlMigrationService {
 	providerId: string;
 	getAssessments(ownerUri: string, databases: string[], xEventsFilesFolderPath: string): Thenable<AssessmentResult | undefined>;
 	getSkuRecommendations(dataFolder: string, perfQueryIntervalInSec: number, targetPlatforms: string[], targetSqlInstance: string, targetPercentile: number, scalingFactor: number, startTime: string, endTime: string, includePreviewSkus: boolean, databaseAllowList: string[]): Promise<SkuRecommendationResult | undefined>;
+	generateProvisioningScript(skuRecommendations: SkuRecommendationResultItem[]): Promise<ProvisioningScriptResult | undefined>;
 	startPerfDataCollection(ownerUri: string, dataFolder: string, perfQueryIntervalInSec: number, staticQueryIntervalInSec: number, numberOfIterations: number): Promise<StartPerfDataCollectionResult | undefined>;
 	stopPerfDataCollection(): Promise<StopPerfDataCollectionResult | undefined>;
 	refreshPerfDataCollection(lastRefreshedTime: Date): Promise<RefreshPerfDataCollectionResult | undefined>;

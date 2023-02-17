@@ -75,18 +75,18 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 		return undefined;
 	}
 
-	async generateProvisioningScript(skuRecommendations: mssql.SkuRecommendationResultItem[]): Promise<mssql.ProvisioningScriptResult | undefined> {
-		let params: contracts.SqlMigrationGenerateProvisioningScriptParams = { skuRecommendations: skuRecommendations };
+	// async generateProvisioningScript(skuRecommendations: mssql.SkuRecommendationResultItem[]): Promise<mssql.ProvisioningScriptResult | undefined> {
+	// 	let params: contracts.SqlMigrationGenerateProvisioningScriptParams = { skuRecommendations: skuRecommendations };
 
-		try {
-			return this.client.sendRequest(contracts.SqlMigrationGenerateProvisioningScriptRequest.type, params);
-		}
-		catch (e) {
-			this.client.logFailedRequest(contracts.SqlMigrationGenerateProvisioningScriptRequest.type, e);
-		}
+	// 	try {
+	// 		return this.client.sendRequest(contracts.SqlMigrationGenerateProvisioningScriptRequest.type, params);
+	// 	}
+	// 	catch (e) {
+	// 		this.client.logFailedRequest(contracts.SqlMigrationGenerateProvisioningScriptRequest.type, e);
+	// 	}
 
-		return undefined;
-	}
+	// 	return undefined;
+	// }
 
 	async startPerfDataCollection(
 		ownerUri: string,

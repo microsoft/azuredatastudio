@@ -8,8 +8,8 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import { join } from 'path';
+import * as contracts from '../../service/contracts';
 import * as styles from '../../constants/styles';
-import * as mssql from 'mssql';
 import * as utils from '../../api/utils';
 import { logError, TelemetryViews } from '../../telemetry';
 import { IconPathHelper } from '../../constants/iconPathHelper';
@@ -229,7 +229,7 @@ export class GenerateArmTemplateDialog {
 		}
 	}
 
-	public async openDialog(dialogName?: string, recommendations?: mssql.SkuRecommendationResult) {
+	public async openDialog(dialogName?: string, recommendations?: contracts.SkuRecommendationResult) {
 		if (!this._isOpen) {
 			this._isOpen = true;
 
