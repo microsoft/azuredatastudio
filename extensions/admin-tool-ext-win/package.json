@@ -75,7 +75,7 @@
         },
         {
           "command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
-          "when": "isWindows && connectionProvider == MSSQL && serverInfo && !isCloud && nodeType && mssql:engineedition != 11 && nodeType =~ /^(DatabaseRole|ApplicationRole|Schema|SecurityPolicy)$/",
+          "when": "isWindows && connectionProvider == MSSQL && serverInfo && !isCloud && nodeType && mssql:engineedition != 11 && nodeType =~ /^(ServerLevelLogin|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy)$/",
           "group": "z-AdminToolExt@2"
         }
       ],
@@ -97,7 +97,7 @@
         },
         {
           "command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
-          "when": "isWindows && connectionProvider == MSSQL && !isCloud && nodeType && mssql:engineedition != 11 && nodeType =~ /^(DatabaseRole|ApplicationRole|Schema|SecurityPolicy)$/",
+          "when": "isWindows && connectionProvider == MSSQL && !isCloud && nodeType && mssql:engineedition != 11 && nodeType =~ /^(ServerLevelLogin|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy)$/",
           "group": "z-AdminToolExt@2"
         }
       ]

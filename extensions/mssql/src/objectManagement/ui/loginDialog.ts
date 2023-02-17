@@ -127,6 +127,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		}).component();
 		this.nameInput.onTextChanged(async () => {
 			this.objectInfo.name = this.nameInput.value;
+			this.onObjectValueChange();
 			await this.runValidation(false);
 		});
 
@@ -151,6 +152,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		this.authTypeDropdown.onValueChanged(async () => {
 			this.objectInfo.authenticationType = getAuthenticationTypeByDisplayName(<string>this.authTypeDropdown.value);
 			this.setViewByAuthenticationType();
+			this.onObjectValueChange();
 			await this.runValidation(false);
 		});
 		const authTypeContainer = this.createLabelInputContainer(view, localizedConstants.AuthTypeText, this.authTypeDropdown);
@@ -158,6 +160,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		this.enabledCheckbox = this.createCheckbox(view, localizedConstants.EnabledText, this.objectInfo.isEnabled);
 		this.enabledCheckbox.onChanged(() => {
 			this.objectInfo.isEnabled = this.enabledCheckbox.checked;
+			this.onObjectValueChange();
 		});
 		this.generalSection = this.createGroup(view, localizedConstants.GeneralSectionHeader, [nameContainer, authTypeContainer, this.enabledCheckbox], false);
 	}
@@ -169,6 +172,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		this.confirmPasswordInput = this.createPasswordInputBox(view, localizedConstants.ConfirmPasswordText, this.objectInfo.password ?? '');
 		this.passwordInput.onTextChanged(async () => {
 			this.objectInfo.password = this.passwordInput.value;
+			this.onObjectValueChange();
 			await this.runValidation(false);
 		});
 		this.confirmPasswordInput.onTextChanged(async () => {
@@ -187,10 +191,12 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 				if (!this.specifyOldPasswordCheckbox.checked) {
 					this.oldPasswordInput.value = '';
 				}
+				this.onObjectValueChange();
 				await this.runValidation(false);
 			});
 			this.oldPasswordInput.onTextChanged(async () => {
 				this.objectInfo.oldPassword = this.oldPasswordInput.value;
+				this.onObjectValueChange();
 				await this.runValidation(false);
 			});
 			items.push(this.specifyOldPasswordCheckbox, oldPasswordRow);
@@ -207,6 +213,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 				this.mustChangePasswordCheckbox.enabled = enforcePolicy;
 				this.enforcePasswordExpirationCheckbox.checked = enforcePolicy;
 				this.mustChangePasswordCheckbox.checked = enforcePolicy;
+				this.onObjectValueChange();
 				await this.runValidation(false);
 			});
 			this.enforcePasswordExpirationCheckbox.onChanged(() => {
@@ -214,9 +221,11 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 				this.objectInfo.enforcePasswordExpiration = enforceExpiration;
 				this.mustChangePasswordCheckbox.enabled = enforceExpiration;
 				this.mustChangePasswordCheckbox.checked = enforceExpiration;
+				this.onObjectValueChange();
 			});
 			this.mustChangePasswordCheckbox.onChanged(() => {
 				this.objectInfo.mustChangePassword = this.mustChangePasswordCheckbox.checked;
+				this.onObjectValueChange();
 			});
 			items.push(this.enforcePasswordPolicyCheckbox, this.enforcePasswordExpirationCheckbox, this.mustChangePasswordCheckbox);
 			if (!this.isNewObject) {
@@ -224,6 +233,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 				items.push(this.lockedOutCheckbox);
 				this.lockedOutCheckbox.onChanged(() => {
 					this.objectInfo.isLockedOut = this.lockedOutCheckbox.checked;
+					this.onObjectValueChange();
 				});
 			}
 		}
@@ -243,6 +253,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 			const defaultDatabaseContainer = this.createLabelInputContainer(view, localizedConstants.DefaultDatabaseText, this.defaultDatabaseDropdown);
 			this.defaultDatabaseDropdown.onValueChanged(() => {
 				this.objectInfo.defaultDatabase = <string>this.defaultDatabaseDropdown.value;
+				this.onObjectValueChange();
 			});
 
 			this.defaultLanguageDropdown = view.modelBuilder.dropDown().withProps({
@@ -254,11 +265,13 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 			const defaultLanguageContainer = this.createLabelInputContainer(view, localizedConstants.DefaultLanguageText, this.defaultLanguageDropdown);
 			this.defaultLanguageDropdown.onValueChanged(() => {
 				this.objectInfo.defaultLanguage = <string>this.defaultLanguageDropdown.value;
+				this.onObjectValueChange();
 			});
 
 			this.connectPermissionCheckbox = this.createCheckbox(view, localizedConstants.PermissionToConnectText, this.objectInfo.connectPermission);
 			this.connectPermissionCheckbox.onChanged(() => {
 				this.objectInfo.connectPermission = this.connectPermissionCheckbox.checked;
+				this.onObjectValueChange();
 			});
 			items.push(defaultDatabaseContainer, defaultLanguageContainer, this.connectPermissionCheckbox);
 		}

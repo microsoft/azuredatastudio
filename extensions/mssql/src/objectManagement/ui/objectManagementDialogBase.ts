@@ -78,6 +78,10 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	protected abstract onDispose(): Promise<void>;
 	protected abstract validateInput(): Promise<string[]>;
 
+	protected onObjectValueChange(): void {
+		this.dialogObject.okButton.enabled = JSON.stringify(this.objectInfo) !== JSON.stringify(this._originalObjectInfo);
+	}
+
 	protected async onConfirmation(): Promise<boolean> {
 		return true;
 	}
@@ -124,8 +128,8 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 								}, {
 									ellapsedTime: Date.now() - startTime
 								});
+								operation.updateStatus(azdata.TaskStatus.Succeeded);
 							}
-							operation.updateStatus(azdata.TaskStatus.Succeeded);
 						}
 						catch (err) {
 							operation.updateStatus(azdata.TaskStatus.Failed, getErrorMessage(err));
@@ -233,6 +237,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			} else if (!arg.checked && idx !== -1) {
 				selectedValues.splice(idx, 1)
 			}
+			this.onObjectValueChange();
 		});
 		return table;
 	}

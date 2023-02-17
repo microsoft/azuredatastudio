@@ -239,9 +239,10 @@ export class TestObjectManagementService implements IObjectManagementService {
 						objectInfo: <ObjectManagement.User>{
 							name: '',
 							type: UserType.WithLogin,
-							defaultSchema: '',
+							defaultSchema: 'dbo',
 							defaultLanguage: '<default>',
-							loginName: '',
+							authenticationType: AuthenticationType.Sql,
+							loginName: 'sa',
 							ownedSchemas: [],
 							databaseRoles: []
 						},
@@ -259,9 +260,10 @@ export class TestObjectManagementService implements IObjectManagementService {
 						objectInfo: <ObjectManagement.User>{
 							name: name,
 							type: UserType.WithLogin,
-							defaultSchema: '',
+							defaultSchema: 'dbo',
 							defaultLanguage: '<default>',
-							loginName: '',
+							loginName: 'sa',
+							authenticationType: AuthenticationType.Sql,
 							ownedSchemas: ['dbo'],
 							databaseRoles: ['dbmanager', 'bulkadmin']
 						},

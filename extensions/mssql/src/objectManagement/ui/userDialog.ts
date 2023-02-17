@@ -99,6 +99,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		}).component();
 		this.nameInput.onTextChanged(async () => {
 			this.objectInfo.name = this.nameInput.value;
+			this.onObjectValueChange();
 			await this.runValidation(false);
 		});
 		const nameContainer = this.createLabelInputContainer(view, localizedConstants.NameText, this.nameInput);
@@ -112,6 +113,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		this.defaultSchemaContainer = this.createLabelInputContainer(view, localizedConstants.DefaultSchemaText, this.defaultSchemaDropdown);
 		this.defaultSchemaDropdown.onValueChanged(() => {
 			this.objectInfo.defaultSchema = <string>this.defaultSchemaDropdown.value;
+			this.onObjectValueChange();
 		});
 
 		this.typeDropdown = view.modelBuilder.dropDown().withProps({
@@ -123,6 +125,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		}).component();
 		this.typeDropdown.onValueChanged(async () => {
 			this.objectInfo.type = getUserTypeByDisplayName(<string>this.typeDropdown.value);
+			this.onObjectValueChange();
 			this.setViewByUserType();
 			await this.runValidation(false);
 		});
@@ -137,6 +140,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		}).component();
 		this.loginDropdown.onValueChanged(() => {
 			this.objectInfo.loginName = <string>this.loginDropdown.value;
+			this.onObjectValueChange();
 		});
 		this.loginContainer = this.createLabelInputContainer(view, localizedConstants.LoginText, this.loginDropdown);
 
@@ -160,6 +164,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		this.authTypeContainer = this.createLabelInputContainer(view, localizedConstants.AuthTypeText, this.authTypeDropdown);
 		this.authTypeDropdown.onValueChanged(async () => {
 			this.objectInfo.authenticationType = getAuthenticationTypeByDisplayName(<string>this.authTypeDropdown.value);
+			this.onObjectValueChange();
 			this.setViewByAuthenticationType();
 			await this.runValidation(false);
 		});
@@ -170,6 +175,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		this.confirmPasswordContainer = this.createLabelInputContainer(view, localizedConstants.ConfirmPasswordText, this.confirmPasswordInput);
 		this.passwordInput.onTextChanged(async () => {
 			this.objectInfo.password = this.passwordInput.value;
+			this.onObjectValueChange();
 			await this.runValidation(false);
 		});
 		this.confirmPasswordInput.onTextChanged(async () => {
@@ -206,6 +212,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		}).component();
 		this.defaultLanguageDropdown.onValueChanged(() => {
 			this.objectInfo.defaultLanguage = <string>this.defaultLanguageDropdown.value;
+			this.onObjectValueChange();
 		});
 		const container = this.createLabelInputContainer(view, localizedConstants.DefaultLanguageText, this.defaultLanguageDropdown);
 		this.advancedSection = this.createGroup(view, localizedConstants.AdvancedSectionHeader, [container]);

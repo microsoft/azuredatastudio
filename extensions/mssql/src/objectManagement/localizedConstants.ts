@@ -78,14 +78,14 @@ export function NewObjectDialogTitle(objectType: string): string {
 	return localize({
 		key: 'objectManagement.newObjectDialogTitle',
 		comment: ['{0} object type.']
-	}, '{0} - New', objectType);
+	}, '{0} - New (Preview)', objectType);
 }
 
 export function ObjectPropertiesDialogTitle(objectType: string, objectName: string): string {
 	return localize({
 		key: 'objectManagement.objectPropertiesDialogTitle',
 		comment: ['{0} object type, {1}: object name.']
-	}, '{0} - {1}', objectType, objectName);
+	}, '{0} - {1} (Preview)', objectType, objectName);
 }
 
 export const NameText = localize('objectManagement.nameLabel', "Name");
