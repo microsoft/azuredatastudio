@@ -748,21 +748,21 @@ export async function getBlobFolders(account?: Account, subscription?: azureReso
 
 			blobs.forEach(blob => {
 				const blobName = blob.name;
-				let folder: string;
+				let folder: string = '';
 
-				if (blobName.split('/').length > 1) {				// to-do: what to do about >1 level deep folders?
-					folder = blobName.split('/')[0];
-				} else {
-					folder = '/';	// root, no folder
+				if (blobName.split('/').length === 1) {
+					folder = '/';							// no folder (root)
+				} else if (blobName.split('/').length === 2) {
+					folder = blobName.split('/')[0];		// one folder deep
 				}
 
-				if (!folders.includes(folder)) {
+				if (folder && !folders.includes(folder)) {
 					folders.push(folder);
 				}
 			});
 		}
 	} catch (e) {
-		logError(TelemetryViews.Utils, 'utils.getBlobLastBackupFileNames', e);
+		logError(TelemetryViews.Utils, 'utils.getBlobLastBackupFolders', e);
 	}
 	folders.sort();
 	return folders;
