@@ -25,11 +25,9 @@ import * as nls from 'vscode-nls';
 import { LanguageExtensionService } from './languageExtension/languageExtensionService';
 import { SqlAssessmentService } from './sqlAssessment/sqlAssessmentService';
 import { NotebookConvertService } from './notebookConvert/notebookConvertService';
-import { SqlMigrationService } from './sqlMigration/sqlMigrationService';
 import { SqlCredentialService } from './credentialstore/sqlCredentialService';
 import { AzureBlobService } from './azureBlob/azureBlobService';
 import { ErrorDiagnosticsProvider } from './errorDiagnostics/errorDiagnosticsProvider';
-import { TdeMigrationService } from './tdeMigration/tdeMigrationService';
 import { SqlProjectsService } from './sqlProjects/sqlProjectsService';
 import { ObjectManagementService } from './objectManagement/objectManagementService';
 
@@ -195,12 +193,10 @@ function getClientOptions(context: AppContext): ClientOptions {
 			SqlAssessmentService.asFeature(context),
 			NotebookConvertService.asFeature(context),
 			ProfilerFeature,
-			SqlMigrationService.asFeature(context),
 			SqlCredentialService.asFeature(context),
 			TableDesignerFeature,
 			ExecutionPlanServiceFeature,
 			ErrorDiagnosticsProvider.asFeature(context),
-			TdeMigrationService.asFeature(context),
 			ObjectManagementService.asFeature(context)
 		],
 		outputChannel: outputChannel,
