@@ -330,7 +330,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			// If this is Azure MFA Authentication, fix username to azure Account user.
 			// This is required, as by default, server login / administrator is the username.
 			if (newConnection.authenticationType === 'AzureMFA') {
-				let accounts = await this._accountManagementService.getAccountsForProvider(newConnection.providerName);
+				let accounts = await this._accountManagementService?.getAccounts();
 				newConnection.userName = accounts?.find(a => a.key.accountId === newConnection.azureAccount)?.displayInfo.displayName;
 			}
 
