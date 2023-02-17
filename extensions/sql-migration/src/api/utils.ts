@@ -751,9 +751,9 @@ export async function getBlobFolders(account?: Account, subscription?: azureReso
 				let folder: string = '';
 
 				if (blobName.split('/').length === 1) {
-					folder = '/';							// no folder (root)
+					folder = '/';	// no folder (root)
 				} else if (blobName.split('/').length === 2) {
-					folder = blobName.split('/')[0];		// one folder deep
+					folder = blobName.split('/')[0];	// one folder deep
 				}
 
 				if (folder && !folders.includes(folder)) {
@@ -831,6 +831,10 @@ export function getResourceDropdownValues(resources: { id: string, name: string 
 }
 
 export async function getAzureTenantsDropdownValues(tenants: Tenant[]): Promise<CategoryValue[]> {
+	if (!tenants || !tenants.length) {
+		return [{ name: '', displayName: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR }];
+	}
+
 	return tenants?.map(tenant => { return { name: tenant.id, displayName: tenant.displayName }; })
 		|| [{ name: '', displayName: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR }];
 }
@@ -845,11 +849,19 @@ export async function getAzureLocationsDropdownValues(locations: azureResource.A
 }
 
 export async function getBlobLastBackupFileNamesValues(blobs: azureResource.Blob[]): Promise<CategoryValue[]> {
+	if (!blobs || !blobs.length) {
+		return [{ name: '', displayName: constants.NO_BLOBFILES_FOUND }];
+	}
+
 	return blobs?.map(blob => { return { name: blob.name, displayName: blob.name }; })
 		|| [{ name: '', displayName: constants.NO_BLOBFILES_FOUND }];
 }
 
 export async function getBlobFolderValues(folders: string[]): Promise<CategoryValue[]> {
+	if (!folders || !folders.length) {
+		return [{ name: '', displayName: constants.NO_BLOBFOLDERS_FOUND }];
+	}
+
 	return folders?.map(folder => { return { name: folder, displayName: folder }; })
 		|| [{ name: '', displayName: constants.NO_BLOBFOLDERS_FOUND }];
 }
