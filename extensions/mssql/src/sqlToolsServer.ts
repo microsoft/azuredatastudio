@@ -25,11 +25,9 @@ import * as nls from 'vscode-nls';
 import { LanguageExtensionService } from './languageExtension/languageExtensionService';
 import { SqlAssessmentService } from './sqlAssessment/sqlAssessmentService';
 import { NotebookConvertService } from './notebookConvert/notebookConvertService';
-import { SqlMigrationService } from './sqlMigration/sqlMigrationService';
 import { SqlCredentialService } from './credentialstore/sqlCredentialService';
 import { AzureBlobService } from './azureBlob/azureBlobService';
 import { ErrorDiagnosticsProvider } from './errorDiagnostics/errorDiagnosticsProvider';
-import { TdeMigrationService } from './tdeMigration/tdeMigrationService';
 import { SqlProjectsService } from './sqlProjects/sqlProjectsService';
 
 const localize = nls.loadMessageBundle();
@@ -194,12 +192,10 @@ function getClientOptions(context: AppContext): ClientOptions {
 			SqlAssessmentService.asFeature(context),
 			NotebookConvertService.asFeature(context),
 			ProfilerFeature,
-			SqlMigrationService.asFeature(context),
 			SqlCredentialService.asFeature(context),
 			TableDesignerFeature,
 			ExecutionPlanServiceFeature,
-			ErrorDiagnosticsProvider.asFeature(context),
-			TdeMigrationService.asFeature(context)
+			ErrorDiagnosticsProvider.asFeature(context)
 		],
 		outputChannel: outputChannel,
 		// Automatically reveal the output channel only in dev mode, so that the users are not impacted and issues can still be caught during development.

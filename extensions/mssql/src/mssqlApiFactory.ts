@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AppContext } from './appContext';
-import { IExtension, ICmsService, IDacFxService, ISqlProjectsService, ISchemaCompareService, ILanguageExtensionService, ISqlAssessmentService, ISqlMigrationService, IAzureBlobService, ITdeMigrationService } from 'mssql';
+import { IExtension, ICmsService, IDacFxService, ISqlProjectsService, ISchemaCompareService, ILanguageExtensionService, ISqlAssessmentService, IAzureBlobService } from 'mssql';
 import * as constants from './constants';
 import { SqlToolsServer } from './sqlToolsServer';
 
@@ -31,14 +31,8 @@ export function createMssqlApi(context: AppContext, sqlToolsServer: SqlToolsServ
 		get sqlAssessment() {
 			return context.getService<ISqlAssessmentService>(constants.SqlAssessmentService);
 		},
-		get sqlMigration() {
-			return context.getService<ISqlMigrationService>(constants.SqlMigrationService);
-		},
 		get azureBlob() {
 			return context.getService<IAzureBlobService>(constants.AzureBlobService);
-		},
-		get tdeMigration() {
-			return context.getService<ITdeMigrationService>(constants.TdeMigrationService);
 		}
 	};
 }
