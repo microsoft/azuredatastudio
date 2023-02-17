@@ -16,6 +16,7 @@ export const sqlProviderName = 'MSSQL';
 export const ObjectExplorerService = 'objectexplorer';
 export const CmsService = 'cmsService';
 export const DacFxService = 'dacfxService';
+export const SqlProjectsService = 'sqlProjectsService';
 export const SchemaCompareService = 'schemaCompareService';
 export const LanguageExtensionService = 'languageExtensionService';
 export const objectExplorerPrefix: string = 'objectexplorer://';
@@ -24,3 +25,10 @@ export const SqlMigrationService = 'sqlMigrationService';
 export const NotebookConvertService = 'notebookConvertService';
 export const AzureBlobService = 'azureBlobService';
 export const TdeMigrationService = 'tdeMigrationService';
+
+// CONFIGURATION VALUES //////////////////////////////////////////////////////////
+export const configObjectExplorerGroupBySchemaFlagName = 'mssql.objectExplorer.groupBySchema';
+
+// COMMANDNAMES //////////////////////////////////////////////////////////
+export const cmdObjectExplorerEnableGroupBySchemaCommand = 'mssql.enableGroupBySchema';
+export const cmdObjectExplorerDisableGroupBySchemaCommand = 'mssql.disableGroupBySchema';
