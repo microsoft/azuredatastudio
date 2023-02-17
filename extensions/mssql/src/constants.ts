@@ -23,7 +23,6 @@ export const objectExplorerPrefix: string = 'objectexplorer://';
 export const SqlAssessmentService = 'sqlAssessmentService';
 export const NotebookConvertService = 'notebookConvertService';
 export const AzureBlobService = 'azureBlobService';
-export const TdeMigrationService = 'tdeMigrationService';
 export const ObjectManagementService = 'objectManagementService';
 
 // CONFIGURATION VALUES //////////////////////////////////////////////////////////
