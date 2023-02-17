@@ -731,7 +731,14 @@ export async function getBlobLastBackupFileNames(account?: Account, subscription
 	let lastFileNames: azureResource.Blob[] = [];
 	try {
 		if (account && subscription && storageAccount && blobContainer) {
-			lastFileNames = await azure.getBlobs(account, subscription, storageAccount, blobContainer.name);
+			const blobs = await azure.getBlobs(account, subscription, storageAccount, blobContainer.name);
+
+			blobs.forEach(blob => {
+				// only show at most one folder deep
+				if ((blob.name.split('/').length === 1 || blob.name.split('/').length === 2) && !lastFileNames.includes(blob)) {
+					lastFileNames.push(blob);
+				}
+			});
 		}
 	} catch (e) {
 		logError(TelemetryViews.Utils, 'utils.getBlobLastBackupFileNames', e);
@@ -747,13 +754,12 @@ export async function getBlobFolders(account?: Account, subscription?: azureReso
 			const blobs = await azure.getBlobs(account, subscription, storageAccount, blobContainer.name);
 
 			blobs.forEach(blob => {
-				const blobName = blob.name;
 				let folder: string = '';
 
-				if (blobName.split('/').length === 1) {
+				if (blob.name.split('/').length === 1) {
 					folder = '/';	// no folder (root)
-				} else if (blobName.split('/').length === 2) {
-					folder = blobName.split('/')[0];	// one folder deep
+				} else if (blob.name.split('/').length === 2) {
+					folder = blob.name.split('/')[0];	// one folder deep
 				}
 
 				if (folder && !folders.includes(folder)) {
