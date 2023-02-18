@@ -183,5 +183,5 @@
 	"mssql.objectExplorer.groupBySchema": "When enabled, the database objects in Object Explorer will be categorized by schema.",
 	"mssql.objectExplorer.enableGroupBySchema":"Enable Group By Schema",
 	"mssql.objectExplorer.disableGroupBySchema":"Disable Group By Schema",
-	"mssql.objectExplorer.ExpandTimeout": "The timeout in seconds for expanding a node in Object Explorer. The default value is 45 seconds."
+	"mssql.objectExplorer.expandTimeout": "The timeout in seconds for expanding a node in Object Explorer. The default value is 45 seconds."
 }

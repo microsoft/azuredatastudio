@@ -372,10 +372,10 @@
           "default": false,
           "description": "%mssql.objectExplorer.groupBySchema%"
         },
-        "mssql.objectExplorer.ExpandTimeout": {
+        "mssql.objectExplorer.expandTimeout": {
           "type": "number",
           "default": 45,
-          "description": "%mssql.objectExplorer.ExpandTimeout%"
+          "description": "%mssql.objectExplorer.expandTimeout%"
         }
       }
     },
