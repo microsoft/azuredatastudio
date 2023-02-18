@@ -23,6 +23,7 @@ export const objectExplorerPrefix: string = 'objectexplorer://';
 export const SqlAssessmentService = 'sqlAssessmentService';
 export const NotebookConvertService = 'notebookConvertService';
 export const AzureBlobService = 'azureBlobService';
+export const ObjectManagementService = 'objectManagementService';
 
 // CONFIGURATION VALUES //////////////////////////////////////////////////////////
 export const configObjectExplorerGroupBySchemaFlagName = 'mssql.objectExplorer.groupBySchema';

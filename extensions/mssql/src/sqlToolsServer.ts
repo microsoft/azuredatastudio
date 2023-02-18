@@ -29,6 +29,7 @@ import { SqlCredentialService } from './credentialstore/sqlCredentialService';
 import { AzureBlobService } from './azureBlob/azureBlobService';
 import { ErrorDiagnosticsProvider } from './errorDiagnostics/errorDiagnosticsProvider';
 import { SqlProjectsService } from './sqlProjects/sqlProjectsService';
+import { ObjectManagementService } from './objectManagement/objectManagementService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -195,7 +196,8 @@ function getClientOptions(context: AppContext): ClientOptions {
 			SqlCredentialService.asFeature(context),
 			TableDesignerFeature,
 			ExecutionPlanServiceFeature,
-			ErrorDiagnosticsProvider.asFeature(context)
+			ErrorDiagnosticsProvider.asFeature(context),
+			ObjectManagementService.asFeature(context)
 		],
 		outputChannel: outputChannel,
 		// Automatically reveal the output channel only in dev mode, so that the users are not impacted and issues can still be caught during development.
