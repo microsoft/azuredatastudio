@@ -20,7 +20,6 @@ import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { localize } from 'vs/nls';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { UserCancelledConnectionError } from 'sql/base/common/errors';
-import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
@@ -43,15 +42,14 @@ export class OEShimService extends Disposable implements IOEShimService {
 	constructor(
 		@IObjectExplorerService private oe: IObjectExplorerService,
 		@IConnectionManagementService private cm: IConnectionManagementService,
-		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@ICapabilitiesService private capabilities: ICapabilitiesService,
-		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super();
 	}
 
 	private async createSession(viewId: string, providerId: string, node: ITreeItem): Promise<string> {
-		let connProfile = new ConnectionProfile(this.capabilities, node.payload);
+		let payload = await this.cm.fixProfile(node.payload);
+		let connProfile = new ConnectionProfile(this.capabilities, payload);
 		connProfile.saveProfile = false;
 		if (this.cm.providerRegistered(providerId)) {
 			connProfile = await this.connectOrPrompt(connProfile);
@@ -121,17 +119,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 	public async getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]> {
 		if (node.payload) {
-			if (node.payload.authenticationType !== undefined && node.payload.authenticationType === '') {
-				// we need to set auth type here, because it's value is part of the session key
-				node.payload.authenticationType = this.getDefaultAuthenticationType(this.configurationService);
-			}
-
-			// If this is Azure MFA Authentication, fix username to azure Account user.
-			// This is required, as by default, server login / administrator is the username.
-			if (node.payload.authenticationType === 'AzureMFA') {
-				let accounts = await this._accountManagementService?.getAccounts();
-				node.payload.userName = accounts?.find(a => a.key.accountId === node.payload.azureAccount)?.displayInfo.displayName;
-			}
+			node.payload = await this.cm.fixProfile(node.payload);
 
 			if (node.sessionId === undefined) {
 				node.sessionId = await this.createSession(viewId, node.childProvider!, node);
