@@ -180,6 +180,7 @@ export interface SkuRecommendationResultItem {
 	ranking: number;
 	positiveJustifications: string[];
 	negativeJustifications: string[];
+	recommendationReasonings: any[];
 }
 
 export interface SqlInstanceRequirements {

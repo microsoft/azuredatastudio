@@ -18,7 +18,7 @@ import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as styles from '../constants/styles';
 import { SkuEditParametersDialog } from '../dialog/skuRecommendationResults/skuEditParametersDialog';
-import { GenerateArmTemplateDialog } from '../dialog/skuRecommendationResults/generateArmTemplateDialog';
+import { GenerateProvisioningScriptDialog } from '../dialog/skuRecommendationResults/generateProvisioningScriptDialog';
 import { logError, TelemetryViews } from '../telemetry';
 import { TdeConfigurationDialog } from '../dialog/tdeConfiguration/tdeConfigurationDialog';
 import { TdeMigrationModel } from '../models/tdeModels';
@@ -342,7 +342,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					if (this.hasRecommendations()) {
 						if (e.cardId === product.type) {
 							const skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, product.type);
-							const generateArmTemplateDialog = new GenerateArmTemplateDialog(this.migrationStateModel, product.type);
+							const generateArmTemplateDialog = new GenerateProvisioningScriptDialog(this.migrationStateModel, product.type);
 							if (e.description.linkDisplayValue === e.card.descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue) {
 								if (e.cardId === skuRecommendationResultsDialog._targetType) {
 									await skuRecommendationResultsDialog.openDialog(e.cardId, this.migrationStateModel._skuRecommendationResults.recommendations);
@@ -686,10 +686,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (!this.migrationStateModel._assessmentResults) {
 				this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue = '';
 			} else {
-				if (this.hasRecommendations()) {
+				if (this.hasRecommendations()) {			/////
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = constants.VIEW_DETAILS;
-					// Replace with a localized string in the future
-					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = 'View template';
+					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = constants.TARGET_PROVISIONING_LINK;
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
 						...styles.BODY_CSS,
 						'font-weight': '500',

@@ -310,6 +310,25 @@ export function TIME_IN_MINUTES(val: number): number {
 	return val * 60000;
 }
 
+// Target provisioning
+export const TARGET_PROVISIONING_LINK = localize('sql.migration.targetprovisioning.link', "Generate provisioning script");
+export const TARGET_PROVISIONING_TITLE = localize('sql.migration.targetprovisioning.title', "Provisioning script");
+export const TARGET_PROVISIONING_DESCRIPTION = localize('sql.migration.targetprovisioning.description', "If you don't already have an existing Azure SQL target, you can use this quick-start template to help you provision one. An Azure Resource Manager (ARM) template is a JavaScript Object Notation (JSON) file that defines Azure resources to deploy, as well as the properties for those resources. The recommended sizing configuration has already been prefilled.");
+export const TARGET_PROVISIONING_MI_DETAILS = localize('sql.migration.targetprovisioning.mi', "");		/////
+export const TARGET_PROVISIONING_VM_DETAILS = localize('sql.migration.targetprovisioning.vm', "");
+export const TARGET_PROVISIONING_DB_DETAILS = localize('sql.migration.targetprovisioning.db', "");
+
+
+export const TARGET_PROVISIONING_HYPERLINK_LABEL = localize('sql.migration.targetprovisioning.hyperlink', "Learn more on how to deploy ARM templates");
+export const TARGET_PROVISIONING_IN_PROGRESS = localize('sql.migration.targetprovisioning.inprogress', "Provisioning script generation in progress...");
+export const TARGET_PROVISIONING_ERROR = localize('sql.migration.targetprovisioning.error', "An error occurred while generating the provisoning script. Please try again.");
+export const COPY_TO_CLIPBOARD = localize('sql.migration.copytoclipboard', "Copy to clipboard");
+export const COPIED_TO_CLIPBOARD = localize('sql.migration.copiedtoclipboard', "Copied to clipboard");
+
+export function TARGET_PROVISIONING_SAVE_SUCCESS(filePath: string): string {
+	return localize('sql.migration.targetprovisioning.save.success', "Successfully saved provisioning script to {0}.", filePath);
+}
+
 // Login Migrations
 export function LOGIN_WIZARD_TITLE(instanceName: string): string {
 	return localize('sql-migration.login.wizard.title', "Migrate logins from '{0}' to Azure SQL", instanceName);

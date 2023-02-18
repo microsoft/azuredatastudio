@@ -8,13 +8,14 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import { join } from 'path';
+import * as constants from '../../constants/strings';
 import * as contracts from '../../service/contracts';
 import * as styles from '../../constants/styles';
 import * as utils from '../../api/utils';
 import { logError, TelemetryViews } from '../../telemetry';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 
-export class GenerateArmTemplateDialog {
+export class GenerateProvisioningScriptDialog {
 
 	private static readonly CloseButtonText: string = 'Close';
 
@@ -30,9 +31,7 @@ export class GenerateArmTemplateDialog {
 	private _armTemplateTextBox!: azdata.TextComponent;
 	private _armTemplateText!: string;
 
-	constructor(public model: MigrationStateModel, public _targetType: MigrationTargetType) {
-
-	}
+	constructor(public model: MigrationStateModel, public _targetType: MigrationTargetType) { }
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
@@ -57,7 +56,7 @@ export class GenerateArmTemplateDialog {
 	private createContainer(_view: azdata.ModelView): azdata.FlexContainer {
 		const container = _view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
-				'margin': '8px 16px',
+				'margin': '0px 16px',
 				'flex-direction': 'column',
 			}
 		}).component();
@@ -75,10 +74,8 @@ export class GenerateArmTemplateDialog {
 	private CreateGenerateArmTemplateContainer(_view: azdata.ModelView): azdata.FlexContainer {
 
 		const armTemplateLoader = _view.modelBuilder.loadingComponent().component();
-
 		const armTemplateProgress = _view.modelBuilder.text().withProps({
-			// Replace with localized string in the future
-			value: 'ARM template generation in progress...',
+			value: constants.TARGET_PROVISIONING_IN_PROGRESS,
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'margin-right': '20px'
@@ -93,26 +90,26 @@ export class GenerateArmTemplateDialog {
 		armTemplateLoadingContainer.addItem(armTemplateProgress, { flex: '0 0 auto' });
 		armTemplateLoadingContainer.addItem(armTemplateLoader, { flex: '0 0 auto' });
 
-		const armTemplateLoadingInfo = _view.modelBuilder.text().withProps({
-			// Replace with localized string in the future
-			value: 'We are generating an ARM template according to your recommended SKU. This may take some time.',
-			CSSStyles: {
-				...styles.BODY_CSS,
-			}
-		}).component();
+		// const armTemplateLoadingInfo = _view.modelBuilder.text().withProps({
+		// 	// Replace with localized string in the future
+		// 	value: 'We are generating an ARM template according to your recommended SKU. This may take some time.',
+		// 	CSSStyles: {
+		// 		...styles.BODY_CSS,
+		// 	}
+		// }).component();
 
-		const armTemplateLoadingInfoCcontainer = _view.modelBuilder.flexContainer().withLayout({
-			height: '100%',
-			flexFlow: 'row',
-		}).component();
+		// const armTemplateLoadingInfoCcontainer = _view.modelBuilder.flexContainer().withLayout({
+		// 	height: '100%',
+		// 	flexFlow: 'row',
+		// }).component();
 
-		armTemplateLoadingInfoCcontainer.addItem(armTemplateLoadingInfo, { flex: '0 0 auto' });
+		// armTemplateLoadingInfoCcontainer.addItem(armTemplateLoadingInfo, { flex: '0 0 auto' });
 
 		const container = _view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
 		}).withItems([
 			armTemplateLoadingContainer,
-			armTemplateLoadingInfoCcontainer
+			// armTemplateLoadingInfoCcontainer
 		]).component();
 
 		return container;
@@ -120,8 +117,7 @@ export class GenerateArmTemplateDialog {
 
 	private CreateSaveArmTemplateContainer(_view: azdata.ModelView): azdata.FlexContainer {
 		const armTemplateDescription = _view.modelBuilder.text().withProps({
-			// Replace with localized string in the future
-			value: 'ARM templates enable you to define the infrastructure requirements for your deployments on Azure.',
+			value: constants.TARGET_PROVISIONING_DESCRIPTION,
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'margin-bottom': '8px',
@@ -129,13 +125,13 @@ export class GenerateArmTemplateDialog {
 		}).component();
 
 		const armTemplateLearnMoreLink = _view.modelBuilder.hyperlink().withProps({
-			// Replace with localized string in the future
 			position: 'absolute',
-			label: 'Learn more on how to deploy ARM templates',
+			label: constants.TARGET_PROVISIONING_HYPERLINK_LABEL,
 			url: 'https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/quickstart-create-templates-use-the-portal#edit-and-deploy-the-template',
 			CSSStyles: {
 				...styles.BODY_CSS,
-			}
+			},
+			showLinkIcon: true,
 		}).component();
 
 		const armTemplateLearnMoreContainer = _view.modelBuilder.flexContainer().withItems([
@@ -152,17 +148,30 @@ export class GenerateArmTemplateDialog {
 			width: '100%',
 			height: '100%',
 			CSSStyles: {
-				'font': '14px "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New", monospace',
+				'font': '12px "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New", monospace',
 				'margin': '0',
 				'white-space': 'pre',
 				'background-color': '#eeeeee',
 			}
-
 		}).component();
+
+		const copyToClipboardButton = _view.modelBuilder.hyperlink().withProps({
+			position: 'absolute',
+			label: constants.COPY_TO_CLIPBOARD,
+			url: '',
+			CSSStyles: {
+				...styles.BODY_CSS,
+			}
+		}).component();
+
+		this._disposables.push(copyToClipboardButton.onDidClick(async () => {
+			await vscode.env.clipboard.writeText(this._armTemplateText);
+			void vscode.window.showInformationMessage(constants.COPIED_TO_CLIPBOARD);
+		}));
 
 		const textContainer = _view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
-			height: 600,
+			height: 500,
 		}).withProps({
 			CSSStyles: {
 				'overflow': 'auto',
@@ -181,7 +190,8 @@ export class GenerateArmTemplateDialog {
 		}).withItems([
 			armTemplateDescription,
 			armTemplateLearnMoreContainer,
-			textContainer
+			textContainer,
+			copyToClipboardButton
 		]).component();
 
 		return container;
@@ -198,8 +208,7 @@ export class GenerateArmTemplateDialog {
 		}).component();
 
 		const errorText = _view.modelBuilder.text().withProps({
-			// Replace with localized string in the future
-			value: 'An error occurred while generating the ARM template. Please try again.',
+			value: constants.TARGET_PROVISIONING_ERROR,
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'margin-left': '8px'
@@ -233,9 +242,9 @@ export class GenerateArmTemplateDialog {
 		if (!this._isOpen) {
 			this._isOpen = true;
 
-			this.dialog = azdata.window.createModelViewDialog('Generate ARM template', 'ViewArmTemplateDialog', 'medium');
+			this.dialog = azdata.window.createModelViewDialog(constants.TARGET_PROVISIONING_TITLE, 'ViewArmTemplateDialog', 'medium');
 
-			this.dialog.okButton.label = GenerateArmTemplateDialog.CloseButtonText;
+			this.dialog.okButton.label = GenerateProvisioningScriptDialog.CloseButtonText;
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 			this.dialog.cancelButton.hidden = true;
 
@@ -281,7 +290,7 @@ export class GenerateArmTemplateDialog {
 		});
 
 		fs.writeFileSync(filePath!.fsPath, this._armTemplateText);
-		void vscode.window.showInformationMessage('Successfully saved ARM template to ' + filePath + '.');
+		void vscode.window.showInformationMessage(constants.TARGET_PROVISIONING_SAVE_SUCCESS(filePath?.path!));
 	}
 
 }
