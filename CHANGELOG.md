@@ -1,5 +1,87 @@
 # Change Log
 
+## Version 1.41.2
+* Release date: February 10, 2023
+* Release status: General Availability
+
+### Bug fixes in 1.41.2
+
+| New Item | Details |
+| --- | --- |
+| Connection | Fixed a regression blocking connections to sovereign Azure clouds |
+| Query Editor | Fixed a regression causing the Output window to display on each query execution |
+
+## Version 1.41.1
+* Release date: January 30, 2023
+* Release status: General Availability
+
+### Bug fixes in 1.41.1
+
+| New Item | Details |
+| --- | --- |
+| Connection | Fixed a bug causing incorrect Azure account tenant selection when connecting to server through Azure view |
+| Object Explorer | Fixed a regression causing Object Explorer to not show database objects for Azure SQL DB Basic SLO |
+
+## Version 1.41.0
+* Release date: January 25, 2023
+* Release status: General Availability
+
+### What's new in 1.41.0
+
+| New Item | Details |
+| --- | --- |
+| Azure Subscriptions |  Introduced Azure Synapse Analytics and Dedicated SQL Pools nodes. |
+| Azure SQL Migration Extension | Premium series memory optimized SQL MI SKUs included in recommendations. |
+| Connection | Migrated Azure authentication library from ADAL to MSAL. MSAL is the library used by default starting with release 1.41.  However, if you encounter issues, you can change back to ADAL within **Settings > Azure: Authentication Library**.  |
+| Connection | Added ability to provide a description when creating a firewall rule from Azure Data Studio. |
+| Connection | Include ability to change password for new or expired login. |
+| Connection | Add support for SQL Server Alias use when connecting to a server. |
+| MongoDB Atlas Extension | Provides the ability to connect to and query data on MongoDB Atlas (Preview). |
+| Notebooks | Provide option for users to convert markdown to a table or not when HMTL table tag is present. |
+| Object Explorer | Databases are no longer brought online in serverless Azure SQL when Databases node is expanded. |
+| Object Explorer | Added support for Ledger views. |
+| Object Explorer | Fixed issue with key binding for objectExplorer.manage not working. |
+| Query Editor | Fixes and updates to SQL grammar (colorization and auto-complete). |
+| Query Plan Viewer | Changed default folder to be user’s home directory when saving a query plan. |
+| Query Results | Added ability to only copy Column Headers, and only for cells that are highlighted. |
+| Query Results | Added option to show or hide the action bar in the results window. |
+| Query Results | Increased height of horizontal scrollbar in results window. |
+| Query Results | Added new aggregate details in the results toolbar when selecting multiple cells. |
+| SQL Projects Extension | Provide the ability select an existing project via a new dropdown. |
+
+### Bug fixes in 1.41.0
+
+| New Item | Details |
+| --- | --- |
+| Accessibility | Accessibility improvements were made in the Query Plan Viewer, Query History Extension and Migration Extension. |
+| Big Data Cluster | Fix missing connect icon in BDC view header bar. |
+| Big Data Cluster | Fixed issue preventing HDFS nodes for BDC servers in Object Explorer from expanding. |
+| Connection | Added ability to delete a connection that has expired AAD credentials. |
+| Connection | Improved experience when Azure Active Directory token expiration occurs. |
+| Connection | Improved connection experience when using multiple Azure tenants. |
+| Connection | Addressed problem with adding a firewall exception for a non-default Azure subscription. |
+| Migration Extension | Added support for non-public clouds for migration scenarios. |
+| MySQL Extension | Updated resource endpoints to support AAD logins in the MySQL extension. |
+| Notebooks | Improve Intellisense refresh in Notebook cells. |
+| Notebooks | Address issue with "New Notebook Job" resulting in an empty form. |
+| Object Explorer | Fixed issue with database list not loading. |
+| Query Execution | Fixed error generated when executing a query with LEFT JOIN and NULL values. |
+| Query Plan Viewer | When saving query plans (.sqlplan file), the filename will numerically increment to prevent duplicate filenames. |
+| Query Results | Fixed issue where users were unable to open JSON data as a new file. |
+| Query Results | Provide proper cell selection and navigation in the query results grid. |
+| Query Results | Improved the handling of line breaks when copying cell contents. |
+| Query Results | Addressed issue where a column would re-size incorrectly when auto-sizing in the results output. |
+| Query Results | Improved JSON cell handling from query results. |
+| Query Results | Fixed behavior where focus was incorrectly set on a cell using keyboard navigation. |
+| Resource Deployment | Remove 'Preview' flag for SQL Server 2022 deployment types. |
+| Schema Compare Extension | Fixed problem where differences in schema compare were not being highlighted. |
+| Schema Compare Extension | Permissions are now included in schema compare when the "Include Permissions" option is selected. |
+| SQL Projects Extension | Changes to db_datawriter or db_datareader roles are now supported. |
+| SQL Projects Extension | Updated Database Projects Net Core SDK Location dialog to be more descriptive. |
+| Table Designer | Updated Table Designer to disable transaction support for Azure Synapse databases. |
+| Table Designer | Addressed problem of the table name not refreshing after being updated prior to publishing. |
+| Table Designer | Fixed issue where table designer could not be opened for existing Ledger tables. |
+
 ## Version 1.40.2
 * Release date: December 27, 2022
 * Release status: General Availability

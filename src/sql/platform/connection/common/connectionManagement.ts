@@ -68,7 +68,7 @@ export interface IConnectionResult {
 	connected: boolean;
 	errorMessage: string;
 	errorCode: number;
-	callStack: string;
+	messageDetails: string;
 	errorHandled?: boolean;
 	connectionProfile?: IConnectionProfile;
 }
@@ -333,6 +333,13 @@ export interface IConnectionManagementService {
 	 * @returns Promise with a boolean value indicating whether the user has accepted the suggestion.
 	 */
 	handleUnsupportedProvider(providerId: string): Promise<boolean>;
+
+	/**
+	 * Launches the password change dialog.
+	 * @param profile The connection profile to change the password.
+	 * @returns the new valid password that is entered, or undefined if cancelled or errored.
+	 */
+	openChangePasswordDialog(profile: IConnectionProfile): Promise<string | undefined>;
 }
 
 export enum RunQueryOnConnectionMode {

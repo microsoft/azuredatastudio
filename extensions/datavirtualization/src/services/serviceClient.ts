@@ -12,7 +12,7 @@ const localize = nls.loadMessageBundle();
 import * as path from 'path';
 import { EventAndListener } from 'eventemitter2';
 
-import { Telemetry, LanguageClientErrorHandler } from './telemetry';
+import { LanguageClientErrorHandler, TelemetryReporter } from './telemetry';
 import { ApiWrapper } from '../apiWrapper';
 import * as Constants from '../constants';
 import { TelemetryFeature, DataSourceWizardFeature } from './features';
@@ -51,7 +51,7 @@ export class ServiceClient {
 					setTimeout(() => {
 						this.statusView.hide();
 					}, 1500);
-					Telemetry.sendTelemetryEvent('startup/LanguageClientStarted', {
+					TelemetryReporter.sendTelemetryEvent('startup/LanguageClientStarted', {
 						installationTime: String(installationComplete - installationStart),
 						processStartupTime: String(processEnd - processStart),
 						totalTime: String(processEnd - installationStart),
@@ -64,7 +64,7 @@ export class ServiceClient {
 				context.subscriptions.push(disposable);
 				resolve();
 			}, e => {
-				Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
+				TelemetryReporter.sendTelemetryEvent('ServiceInitializingFailed');
 				this.apiWrapper.showErrorMessage(localize('serviceStartFailed', 'Failed to start {0}: {1}', Constants.serviceName, e));
 				// Just resolve to avoid unhandled promise. We show the error to the user.
 				resolve();

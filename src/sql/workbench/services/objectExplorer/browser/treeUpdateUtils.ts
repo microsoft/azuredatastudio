@@ -137,7 +137,7 @@ export class TreeUpdateUtils {
 							await tree.expandAll(targetsToExpand);
 						}
 						if (selectedElement) {
-							tree.select(selectedElement);
+							tree.setFocus(selectedElement);
 						}
 						tree.getFocus();
 					}, onUnexpectedError);

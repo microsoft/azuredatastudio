@@ -13442,6 +13442,17 @@
 			"onDidDisconnectMessage": "Desconectado",
 			"unsavedGroupLabel": "Conexões Não Salvas"
 		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "Cancelar",
+			"passwordChangeDialog.confirmPassword": "Confirmar senha:",
+			"passwordChangeDialog.connecting": "Conectando",
+			"passwordChangeDialog.errorHeader": "Falha ao tentar alterar a senha",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "As senhas digitadas não correspondem",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Pressione OK e insira exatamente a mesma senha nas duas caixas.",
+			"passwordChangeDialog.newPassword": "Nova senha:",
+			"passwordChangeDialog.ok": "OK",
+			"passwordChangeDialog.title": "Alterar Senha"
+		},
 		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
 			"newDashboardTab.cancel": "Cancelar",
 			"newDashboardTab.ok": "OK",
@@ -13899,17 +13910,6 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "I&&ntrodução",
 			"showReleaseNotes": "Mostrar Introdução"
-		},
-		"sql/workbench/services/connection/browser/passwordChangeDialog": {
-			"passwordChangeDialog.cancel": "Cancelar",
-			"passwordChangeDialog.confirmPassword": "Confirmar senha:",
-			"passwordChangeDialog.connecting": "Conectando",
-			"passwordChangeDialog.errorHeader": "Falha ao tentar alterar a senha",
-			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "As senhas digitadas não correspondem",
-			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Pressione OK e insira exatamente a mesma senha nas duas caixas.",
-			"passwordChangeDialog.newPassword": "Nova senha:",
-			"passwordChangeDialog.ok": "OK",
-			"passwordChangeDialog.title": "Alterar Senha"
 		}
 	}
 }

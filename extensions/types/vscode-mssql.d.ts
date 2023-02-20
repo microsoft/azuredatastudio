@@ -296,6 +296,11 @@ declare module 'vscode-mssql' {
 		trustServerCertificate: boolean | undefined;
 
 		/**
+		 * Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.
+		 */
+		hostNameInCertificate: string | undefined;
+
+		/**
 		 * Gets or sets a Boolean value that indicates if security-sensitive information, such as the password, is not returned as part of the connection
 		 * if the connection is open or has ever been in an open state.
 		 */
@@ -421,6 +426,7 @@ declare module 'vscode-mssql' {
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 		getOptionsFromProfile(profilePath: string): Thenable<DacFxOptionsResult>;
 		validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<ValidateStreamingJobResult>;
+		savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<ResultStatus>;
 	}
 
 	/**
@@ -714,6 +720,14 @@ declare module 'vscode-mssql' {
 
 	export interface SchemaCompareOptionsResult extends ResultStatus {
 		defaultDeploymentOptions: DeploymentOptions;
+	}
+
+	export interface SavePublishProfileParams {
+		profilePath: string;
+		databaseName: string;
+		connectionString: string;
+		sqlCommandVariableValues?: Record<string, string>;
+		deploymentOptions?: DeploymentOptions;
 	}
 
 	export interface ITreeNodeInfo extends vscode.TreeItem {

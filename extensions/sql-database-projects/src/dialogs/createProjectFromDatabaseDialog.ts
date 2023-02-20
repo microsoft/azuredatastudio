@@ -14,7 +14,7 @@ import { cssStyles } from '../common/uiConstants';
 import { ImportDataModel } from '../models/api/import';
 import { Deferred } from '../common/promise';
 import { getConnectionName, mapExtractTargetEnum } from './utils';
-import { exists, getAzdataApi, getDataWorkspaceExtensionApi } from '../common/utils';
+import { exists, getAzdataApi, getDataWorkspaceExtensionApi, isValidBasename, isValidBasenameErrorMessage, sanitizeStringForFilename } from '../common/utils';
 
 export class CreateProjectFromDatabaseDialog {
 	public dialog: azdataType.window.Dialog;
@@ -218,7 +218,7 @@ export class CreateProjectFromDatabaseDialog {
 	}
 
 	public setProjectName() {
-		this.projectNameTextBox!.value = newProjectTool.defaultProjectNameFromDb(<string>this.sourceDatabaseDropDown!.value);
+		this.projectNameTextBox!.value = newProjectTool.defaultProjectNameFromDb(sanitizeStringForFilename(<string>this.sourceDatabaseDropDown!.value));
 	}
 
 	private createSourceConnectionComponent(view: azdataType.ModelView): azdataType.InputBoxComponent {
@@ -290,17 +290,26 @@ export class CreateProjectFromDatabaseDialog {
 	}
 
 	private createProjectNameRow(view: azdataType.ModelView): azdataType.FlexContainer {
-		this.projectNameTextBox = view.modelBuilder.inputBox().withProps({
-			ariaLabel: constants.projectNamePlaceholderText,
-			placeHolder: constants.projectNamePlaceholderText,
-			required: true,
-			width: cssStyles.createProjectFromDatabaseTextboxWidth
-		}).component();
+		this.projectNameTextBox = view.modelBuilder.inputBox().withValidation(
+			component => isValidBasename(component.value)
+		)
+			.withProps({
+				ariaLabel: constants.projectNamePlaceholderText,
+				placeHolder: constants.projectNamePlaceholderText,
+				required: true,
+				width: cssStyles.createProjectFromDatabaseTextboxWidth
+			}).component();
 
-		this.projectNameTextBox.onTextChanged(() => {
-			this.projectNameTextBox!.value = this.projectNameTextBox!.value?.trim();
-			void this.projectNameTextBox!.updateProperty('title', this.projectNameTextBox!.value);
-			this.tryEnableCreateButton();
+		this.projectNameTextBox.onTextChanged(text => {
+			const errorMessage = isValidBasenameErrorMessage(text);
+			if (errorMessage) {
+				// Set validation error message if project name is invalid
+				void this.projectNameTextBox!.updateProperty('validationErrorMessage', errorMessage);
+			} else {
+				this.projectNameTextBox!.value = this.projectNameTextBox!.value?.trim();
+				void this.projectNameTextBox!.updateProperty('title', this.projectNameTextBox!.value);
+				this.tryEnableCreateButton();
+			}
 		});
 
 		const projectNameLabel = view.modelBuilder.text().withProps({

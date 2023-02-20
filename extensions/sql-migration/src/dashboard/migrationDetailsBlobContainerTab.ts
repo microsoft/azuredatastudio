@@ -7,12 +7,13 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as loc from '../constants/strings';
 import { getSqlServerName, getMigrationStatusImage } from '../api/utils';
-import { logError, TelemetryViews } from '../telemtery';
+import { logError, TelemetryViews } from '../telemetry';
 import { canCancelMigration, canCutoverMigration, canRetryMigration, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation } from '../constants/helper';
 import { getResourceName } from '../api/azure';
 import { InfoFieldSchema, infoFieldWidth, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
 import { EmptySettingValue } from './tabBase';
 import { DashboardStatusBar } from './DashboardStatusBar';
+import { getSourceConnectionServerInfo } from '../api/sqlUtils';
 
 const MigrationDetailsBlobContainerTabId = 'MigrationDetailsBlobContainerTab';
 
@@ -79,7 +80,7 @@ export class MigrationDetailsBlobContainerTab extends MigrationDetailsTabBase<Mi
 
 		const sqlServerName = migration.properties.sourceServerName;
 		const sourceDatabaseName = migration.properties.sourceDatabaseName;
-		const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
+		const sqlServerInfo = await getSourceConnectionServerInfo();
 		const versionName = getSqlServerName(sqlServerInfo.serverMajorVersion!);
 		const sqlServerVersion = versionName ? versionName : sqlServerInfo.serverVersion;
 		const targetDatabaseName = migration.name;

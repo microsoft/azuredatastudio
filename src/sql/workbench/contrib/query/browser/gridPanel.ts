@@ -43,7 +43,7 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { Progress } from 'vs/platform/progress/common/progress';
 import { ScrollableView, IView } from 'sql/base/browser/ui/scrollableView/scrollableView';
-import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { IQueryEditorConfiguration, IResultGridConfiguration } from 'sql/platform/query/common/query';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { FilterButtonWidth, HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
@@ -362,6 +362,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private dataProvider: HybridDataProvider<T>;
 	private filterPlugin: HeaderFilter<T>;
 	private isDisposed: boolean = false;
+	private gridConfig: IResultGridConfiguration;
 
 	private columns: Slick.Column<T>[];
 
@@ -417,8 +418,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		super();
 
 		this.options = { ...defaultGridTableOptions, ...options };
-		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
-		this.rowHeight = config && config.rowHeight ? config.rowHeight : ROW_HEIGHT;
+		this.gridConfig = this.configurationService.getValue<IResultGridConfiguration>('resultsGrid');
+		this.rowHeight = this.gridConfig.rowHeight ?? ROW_HEIGHT;
 		this.state = state;
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
@@ -430,7 +431,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					? localize('xmlShowplan', "XML Showplan")
 					: escape(c.columnName),
 				field: i.toString(),
-				formatter: c.isXml ? hyperLinkFormatter : queryResultTextFormatter,
+				formatter: c.isXml ? hyperLinkFormatter : (row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string => {
+					return queryResultTextFormatter(this.gridConfig.showJsonAsLink, row, cell, value, columnDef, dataContext);
+				},
 				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined
 			};
 		});
@@ -535,8 +538,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.table.setTableTitle(localize('resultsGrid', "Results grid"));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
-		const autoSizeOnRender: boolean = !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns');
-		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: autoSizeOnRender, maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth'), extraColumnHeaderWidth: FilterButtonWidth }));
+		const autoSizeOnRender: boolean = !this.state.columnSizes && this.gridConfig.autoSizeColumns;
+		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: autoSizeOnRender, maxWidth: this.gridConfig.maxColumnWidth, extraColumnHeaderWidth: FilterButtonWidth }));
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
 		this._register(this.dataProvider.onFilterStateChange(() => { this.layout(); }));
@@ -730,8 +733,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		if (column) {
 			const subset = await this.getRowData(event.cell.row, 1);
 			const value = subset[0][event.cell.cell - 1];
-			const isJson = isJsonCell(value);
-			if (column.isXml || isJson) {
+			if (column.isXml || (this.gridConfig.showJsonAsLink && isJsonCell(value))) {
 				const result = await this.executionPlanService.isExecutionPlan(this.providerId, value.displayValue);
 				if (result.isExecutionPlan) {
 					const executionPlanGraphInfo = {
@@ -1002,8 +1004,8 @@ function isJsonCell(value: ICellValue): boolean {
 	return !!(value && !value.isNull && value.displayValue?.match(IsJsonRegex));
 }
 
-function queryResultTextFormatter(row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string {
-	if (isJsonCell(value)) {
+function queryResultTextFormatter(showJsonAsLink: boolean, row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string {
+	if (showJsonAsLink && isJsonCell(value)) {
 		return hyperLinkFormatter(row, cell, value, columnDef, dataContext);
 	} else {
 		return textFormatter(row, cell, value, columnDef, dataContext);

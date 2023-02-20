@@ -67,6 +67,11 @@ const resultsGridConfiguration: IConfigurationNode = {
 			type: 'number',
 			default: 212,
 			description: nls.localize('maxColumnWidth', "The maximum width in pixels for auto-sized columns")
+		},
+		'resultsGrid.showJsonAsLink': {
+			'type': 'boolean',
+			'description': nls.localize('resultsGrid.showJsonAsLink', "Whether to show cells with JSON formatted string as hyperlink. When enabled, upon click the JSON value will be opened in another tab. The default value is true."),
+			'default': true
 		}
 	}
 };

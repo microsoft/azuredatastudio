@@ -125,6 +125,12 @@
     <trans-unit id="cms.connectionOptions.columnEncryptionSetting.displayName">
       <source xml:lang="en">Column encryption</source>
     </trans-unit>
+    <trans-unit id="cms.connectionOptions.commandTimeout.description">
+      <source xml:lang="en">The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.commandTimeout.displayName">
+      <source xml:lang="en">Command timeout</source>
+    </trans-unit>
     <trans-unit id="cms.connectionOptions.connectRetryCount.description">
       <source xml:lang="en">Number of attempts to restore connection</source>
     </trans-unit>
@@ -161,8 +167,17 @@
     <trans-unit id="cms.connectionOptions.currentLanguage.displayName">
       <source xml:lang="en">Current language</source>
     </trans-unit>
+    <trans-unit id="cms.connectionOptions.encrypt.categoryValues.false">
+      <source xml:lang="en">Optional (False)</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.encrypt.categoryValues.strict">
+      <source xml:lang="en">Strict</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.encrypt.categoryValues.true">
+      <source xml:lang="en">Mandatory (True)</source>
+    </trans-unit>
     <trans-unit id="cms.connectionOptions.encrypt.description">
-      <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
+      <source xml:lang="en">When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' is supported on SQL Server 2022 onwards.</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.encrypt.displayName">
       <source xml:lang="en">Encrypt</source>
@@ -196,6 +211,12 @@
     </trans-unit>
     <trans-unit id="cms.connectionOptions.groupName.source">
       <source xml:lang="en">Source</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.hostNameInCertificate.description">
+      <source xml:lang="en">Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.hostNameInCertificate.displayName">
+      <source xml:lang="en">Host name in certificate</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.loadBalanceTimeout.description">
       <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
@@ -270,7 +291,7 @@
       <source xml:lang="en">Server</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.trustServerCertificate.description">
-      <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
+      <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.trustServerCertificate.displayName">
       <source xml:lang="en">Trust server certificate</source>

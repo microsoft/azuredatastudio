@@ -89,8 +89,12 @@ async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string
 			if (dataSource.integratedSecurity) {
 				if (azdataApi) {
 					const connectionResult = await utils.getAzdataApi()!.connection.connect(connectionProfile, false, false);
-					utils.throwIfNotConnected(connectionResult);
-					connId = connectionResult.connectionId!;
+					if (!connectionResult.connected) {
+						const connection = await utils.getAzdataApi()!.connection.openConnectionDialog(undefined, connectionProfile);
+						connId = connection.connectionId;
+					} else {
+						connId = connectionResult.connectionId!;
+					}
 				} else {
 					// TODO@chgagnon - hook up VS Code MSSQL
 				}
@@ -120,4 +124,12 @@ async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string
 		connection: targetConnection,
 		server: server
 	};
+}
+
+/**
+ * saves publish settings to the specified profile file
+ */
+export async function savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: mssql.DeploymentOptions): Promise<void> {
+	const dacFxService = await utils.getDacFxService();
+	await dacFxService.savePublishProfile(profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions);
 }

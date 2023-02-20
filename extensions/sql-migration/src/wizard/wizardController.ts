@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as mssql from 'mssql';
 import { MigrationStateModel, NetworkContainerType, Page } from '../models/stateMachine';
 import * as loc from '../constants/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
@@ -17,11 +16,12 @@ import { SummaryPage } from './summaryPage';
 import { LoginMigrationStatusPage } from './loginMigrationStatusPage';
 import { DatabaseSelectorPage } from './databaseSelectorPage';
 import { LoginSelectorPage } from './loginSelectorPage';
-import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
+import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
 import * as styles from '../constants/styles';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
 import { azureResource } from 'azurecore';
 import { ServiceContextChangeEvent } from '../dashboard/tabBase';
+import { getSourceConnectionProfile } from '../api/sqlUtils';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
@@ -33,24 +33,18 @@ export class WizardController {
 		private readonly _serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>) {
 	}
 
-	public async openWizard(connectionId: string): Promise<void> {
-		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
-		if (api) {
-			this.extensionContext.subscriptions.push(this._model);
-			await this.createWizard(this._model);
-		}
+	public async openWizard(): Promise<void> {
+		this.extensionContext.subscriptions.push(this._model);
+		await this.createWizard(this._model);
 	}
 
-	public async openLoginWizard(connectionId: string): Promise<void> {
-		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
-		if (api) {
-			this.extensionContext.subscriptions.push(this._model);
-			await this.createLoginWizard(this._model);
-		}
+	public async openLoginWizard(): Promise<void> {
+		this.extensionContext.subscriptions.push(this._model);
+		await this.createLoginWizard(this._model);
 	}
 
 	private async createWizard(stateModel: MigrationStateModel): Promise<void> {
-		const serverName = (await stateModel.getSourceConnectionProfile()).serverName;
+		const serverName = (await getSourceConnectionProfile()).serverName;
 		this._wizardObject = azdata.window.createWizard(
 			loc.WIZARD_TITLE(serverName),
 			'MigrationWizard',
@@ -79,7 +73,13 @@ export class WizardController {
 		validateButton.secondary = false;
 		validateButton.hidden = true;
 
-		this._wizardObject.customButtons = [validateButton, saveAndCloseButton];
+		const tdeMigrateButton = azdata.window.createButton(
+			loc.TDE_MIGRATE_BUTTON,
+			'left');
+		tdeMigrateButton.secondary = false;
+		tdeMigrateButton.hidden = true;
+
+		this._wizardObject.customButtons = [validateButton, tdeMigrateButton, saveAndCloseButton];
 		const databaseSelectorPage = new DatabaseSelectorPage(this._wizardObject, stateModel);
 		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
 		const targetSelectionPage = new TargetSelectionPage(this._wizardObject, stateModel);
@@ -112,10 +112,14 @@ export class WizardController {
 				this._model.refreshDatabaseBackupPage = true;
 			}
 
-			// if the user selected network share and selected save & close afterwards, it should always return to the database backup page so that
-			// the user can input their password again
-			if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime &&
+			if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime && this._model.isSqlDbTarget) {
+				// if the user selected the tables and selected save & close afterwards in SQLDB scenario,
+				// it should always return to the target database selection page so that the user can input their password again
+				wizardSetupPromises.push(this._wizardObject.setCurrentPage(Page.TargetSelection));
+			} else if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime &&
 				this._model.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
+				// if the user selected network share and selected save & close afterwards, it should always return to the database backup page so that
+				// the user can input their password again
 				wizardSetupPromises.push(this._wizardObject.setCurrentPage(Page.IntegrationRuntime));
 			} else {
 				wizardSetupPromises.push(this._wizardObject.setCurrentPage(this._model.savedInfo.closedPage));
@@ -188,7 +192,7 @@ export class WizardController {
 	}
 
 	private async createLoginWizard(stateModel: MigrationStateModel): Promise<void> {
-		const serverName = (await stateModel.getSourceConnectionProfile()).serverName;
+		const serverName = (await getSourceConnectionProfile()).serverName;
 		this._wizardObject = azdata.window.createWizard(
 			loc.LOGIN_WIZARD_TITLE(serverName),
 			'LoginMigrationWizard',

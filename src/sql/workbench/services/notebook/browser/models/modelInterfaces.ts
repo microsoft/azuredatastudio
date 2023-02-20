@@ -455,7 +455,7 @@ export interface ICellModel {
 	readonly onLanguageChanged: Event<string>;
 	readonly onCollapseStateChanged: Event<boolean>;
 	readonly onParameterStateChanged: Event<boolean>;
-	readonly onCellModeChanged: Event<boolean>;
+	readonly onCellEditModeChanged: Event<boolean>;
 	modelContentChangedEvent: IModelContentChangedEvent;
 	isEditMode: boolean;
 	showPreview: boolean;
