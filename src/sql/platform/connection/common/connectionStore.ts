@@ -230,7 +230,7 @@ export class ConnectionStore {
 
 		// Remove the connection from the list if it already exists
 		list = list.filter(value => {
-			let equal = value && value.getConnectionInfoId() === savedProfile.getConnectionInfoId();
+			let equal = value && value.getOptionsKey() === savedProfile.getOptionsKey();
 			if (equal && savedProfile.saveProfile) {
 				equal = value.groupId === savedProfile.groupId ||
 					ConnectionProfileGroup.sameGroupName(value.groupFullName, savedProfile.groupFullName);
@@ -250,7 +250,7 @@ export class ConnectionStore {
 
 		// Remove the connection from the list if it already exists
 		list = list.filter(value => {
-			let equal = value && value.getConnectionInfoId() === savedProfile.getConnectionInfoId();
+			let equal = value && value.getOptionsKey() === savedProfile.getOptionsKey();
 			if (equal && savedProfile.saveProfile) {
 				equal = value.groupId === savedProfile.groupId ||
 					ConnectionProfileGroup.sameGroupName(value.groupFullName, savedProfile.groupFullName);
@@ -285,6 +285,8 @@ export class ConnectionStore {
 
 	private doSavePassword(conn: IConnectionProfile): Promise<boolean> {
 		if (conn.password) {
+			// Credentials are currently shared between profiles with the same basic details.
+			// Credentials are currently not cleared upon deletion of a profile.
 			const credentialId = this.formatCredentialId(conn);
 			return this.credentialService.saveCredential(credentialId, conn.password);
 		} else {
