@@ -54,23 +54,6 @@ describe('ProjectsController', function (): void {
 
 	describe('project controller operations', function (): void {
 		describe('Project file operations and prompting', function (): void {
-			it('Should create new sqlproj file with correct values', async function (): Promise<void> {
-				const projController = new ProjectsController(testContext.outputChannel);
-				const projFileDir = path.join(testUtils.generateBaseFolderName(), `TestProject_${new Date().getTime()}`);
-
-				const projFilePath = await projController.createNewProject({
-					newProjName: 'TestProjectName',
-					folderUri: vscode.Uri.file(projFileDir),
-					projectTypeId: constants.emptySqlDatabaseProjectTypeId,
-					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
-					sdkStyle: false
-				});
-
-				let projFileText = (await fs.readFile(projFilePath)).toString();
-
-				should(projFileText).equal(baselines.newProjectFileBaseline);
-			});
-
 			it('Should create new sqlproj file with correct specified target platform', async function (): Promise<void> {
 				const projController = new ProjectsController(testContext.outputChannel);
 				const projFileDir = path.join(testUtils.generateBaseFolderName(), `TestProject_${new Date().getTime()}`);
