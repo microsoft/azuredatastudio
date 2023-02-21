@@ -33,7 +33,7 @@ export class HyperlinkColumn<T extends Slick.SlickData> extends BaseClickableCol
 				const cssClasses = iconValue.iconCssClass ? `codicon icon slick-plugin-icon ${iconValue.iconCssClass}` : '';
 				const urlPart = cellValue?.url ? `href="${encodeURI(cellValue.url)}" target="blank"` : '';
 				const disabledAttribute = this.isCellEnabled(row, cell) ? '' : 'disabled';
-				return `<a ${urlPart} class="slick-hyperlink-cell ${cssClasses}" tabindex=-1 title="${escapedTitle}" aria-label="${escapedTitle}" role="${cellValue.role}" ${disabledAttribute}>${escapedTitle}</a>`;
+				return `<a ${urlPart} class="slick-hyperlink-cell ${cssClasses}" tabindex=-1 title="${escapedTitle}" aria-label="${escapedTitle}" role="${cellValue.role ?? 'link'}" ${disabledAttribute}>${escapedTitle}</a>`;
 			},
 			name: this.options.name,
 			resizable: true,
