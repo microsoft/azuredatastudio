@@ -32,6 +32,16 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		context.registerService(constants.SqlProjectsService, this);
 	}
 
+	public async newProject(projectUri: string, sqlProjectType: mssql.ProjectType, databaseSchemaProvider: string, buildSdkVersion?: string): Promise<azdata.ResultStatus> {
+		const params: contracts.NewSqlProjectParams = { projectUri, sqlProjectType, databaseSchemaProvider, buildSdkVersion };
+		try {
+			const result = await this.client.sendRequest(contracts.NewSqlProjectRequest.type, params);
+			return result;
+		} catch (e) {
+			this.client.logFailedRequest(contracts.NewSqlProjectRequest.type, e);
+			throw e;
+		}
+	}
 
 	public async openProject(projectUri: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectParams = { projectUri };

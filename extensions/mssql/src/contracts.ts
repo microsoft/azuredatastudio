@@ -603,6 +603,10 @@ export namespace SavePublishProfileRequest {
 
 // ------------------------------- < Sql Projects > ------------------------------------
 
+export namespace NewSqlProjectRequest {
+	export const type = new RequestType<NewSqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/newProject');
+}
+
 export namespace OpenSqlProjectRequest {
 	export const type = new RequestType<SqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/openProject');
 }
@@ -613,6 +617,12 @@ export namespace GetCrossPlatformCompatiblityRequest {
 
 export interface SqlProjectParams {
 	projectUri: string;
+}
+
+export interface NewSqlProjectParams extends SqlProjectParams {
+	sqlProjectType: mssql.ProjectType,
+	databaseSchemaProvider: string,
+	buildSdkVersion?: string
 }
 
 // ------------------------------- </ Sql Projects > -----------------------------------
