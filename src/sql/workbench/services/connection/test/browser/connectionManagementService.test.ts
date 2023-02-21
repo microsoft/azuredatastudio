@@ -514,7 +514,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		assert.ok(called, 'expected changeGroupIdForConnectionGroup to be called on ConnectionStore');
 	});
 
-	test('findExistingConnection should find connection for connectionProfile with same info', async () => {
+	test('findExistingConnection should find connection for connectionProfile with same basic info', async () => {
 		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		let uri1 = 'connection:connectionId';
 		let options: IConnectionCompletionOptions = {

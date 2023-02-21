@@ -67,6 +67,7 @@ export class ConnectionStore {
 		}
 
 		cred.push(CRED_ITEMTYPE_PREFIX.concat(itemType));
+		// Use basic info for credentials so that passwords can be shared among similar profiles for now.
 		cred.push(CRED_ID_PREFIX.concat(connectionProfileInstance.getConnectionInfoId()));
 		return cred.join(CRED_SEPARATOR);
 	}
