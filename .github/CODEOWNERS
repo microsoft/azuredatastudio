@@ -8,6 +8,7 @@
 /extensions/azurecore/ @cssuh @cheenamalhotra
 /extensions/dacpac/ @kisantia
 /extensions/datavirtualization @Charles-Gagnon
+/extensions/import @aasimkhan30
 /extensions/machine-learning @llali
 /extensions/notebook @azure-data-studio-notebook-devs
 /extensions/query-history/ @Charles-Gagnon
@@ -15,6 +16,7 @@
 /extensions/schema-compare/ @kisantia
 /extensions/sql-bindings/ @vasubhog @Charles-Gagnon @lucyzhang929 @chlafreniere @MaddyDev
 /extensions/sql-database-projects/ @Benjin @kisantia
+/extensions/sql-migration @AkshayMata @raymondtruong @brian-harris @junierch @siyangMicrosoft
 /extensions/mssql/config.json @Charles-Gagnon @alanrenmsft @kburtram
 
 /src/sql/*.d.ts @alanrenmsft @Charles-Gagnon
