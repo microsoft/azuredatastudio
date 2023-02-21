@@ -984,7 +984,7 @@ export class Project implements ISqlProject {
 		return fileEntry;
 	}
 
-	public async exclude(entry: FileProjectEntry): Promise<void> {
+	public async exclude(entry: FileProjectEntry): Promise<void> {//TODO: Check publish profile to be added
 		const toExclude: FileProjectEntry[] = this._files.concat(this._preDeployScripts).concat(this._postDeployScripts).concat(this._noneDeployScripts).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
 		await this.removeFromProjFile(toExclude);
 
@@ -995,7 +995,7 @@ export class Project implements ISqlProject {
 	}
 
 	public async deleteFileFolder(entry: FileProjectEntry): Promise<void> {
-		// compile a list of folder contents to delete; if entry is a file, contents will contain only itself
+		// compile a list of folder contents to delete; if entry is a file, contents will contain only itself//TODO: Check publishProfile to be added
 		const toDeleteFiles: FileProjectEntry[] = this._files.concat(this._preDeployScripts).concat(this._postDeployScripts).concat(this._noneDeployScripts).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.File);
 		const toDeleteFolders: FileProjectEntry[] = this._files.filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.Folder);
 
@@ -1201,6 +1201,24 @@ export class Project implements ISqlProject {
 		return this.getCollectionProjectPropertyValue(constants.DatabaseSource);
 	}
 
+	/**
+	 * Adds publish profile to the project
+	 *
+	 * @param relativeFilePath Relative path of the file
+	 */
+	public async addPublishProfileToProjFile(absolutePublishProfilePath: string): Promise<FileProjectEntry> {
+		const relativePublishProfilePath = (utils.trimUri(Uri.file(this.projectFilePath), Uri.file(absolutePublishProfilePath)));
+
+		// Update sqlproj XML
+
+		const fileEntry = this.createFileProjectEntry(relativePublishProfilePath, EntryType.File);
+		this._publishProfiles.push(fileEntry);
+
+		await this.addToProjFile(fileEntry, constants.None);
+
+		return fileEntry;
+	}
+
 	public createFileProjectEntry(relativePath: string, entryType: EntryType, sqlObjectType?: string, containsCreateTableStatement?: boolean): FileProjectEntry {
 		let platformSafeRelativePath = utils.getPlatformSafeFileEntryPath(relativePath);
 		return new FileProjectEntry(
@@ -1212,7 +1230,8 @@ export class Project implements ISqlProject {
 	}
 
 	private findOrCreateItemGroup(containedTag?: string, prePostScriptExist?: { scriptExist: boolean; }): Element {
-		let outputItemGroup = undefined;
+		let outputItemGroup: Element[] = [];	// "None" can have more than one ItemGroup, for "None Include" (for pre/post deploy scripts and publish profiles), "None Remove"
+		let returnItemGroup;
 
 		// search for a particular item goup if a child type is provided
 		if (containedTag) {
@@ -1220,25 +1239,45 @@ export class Project implements ISqlProject {
 			for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
 				const currentItemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
 
-				// if we find the tag, use the ItemGroup
 				if (currentItemGroup.getElementsByTagName(containedTag).length > 0) {
-					outputItemGroup = currentItemGroup;
-					break;
+					outputItemGroup.push(currentItemGroup);
 				}
 			}
 		}
 
 		// if none already exist, make a new ItemGroup for it
 		if (!outputItemGroup) {
-			outputItemGroup = this.projFileXmlDoc!.createElement(constants.ItemGroup);
-			this.projFileXmlDoc!.documentElement.appendChild(outputItemGroup);
+			returnItemGroup = this.projFileXmlDoc!.createElement(constants.ItemGroup);
+			this.projFileXmlDoc!.documentElement.appendChild(returnItemGroup);
 
 			if (prePostScriptExist) {
 				prePostScriptExist.scriptExist = false;
 			}
+		} else {	// if item group exists and containedTag = None, read the content to find None Include with publish profile
+			if (containedTag === constants.None) {
+				for (let ig = 0; ig < outputItemGroup.length; ig++) {
+					const itemGroup = outputItemGroup[ig];
+
+					// find all none remove scripts to specified in the sqlproj
+					const noneItems = itemGroup.getElementsByTagName(constants.None);
+					for (let n = 0; n < noneItems.length; n++) {
+						let noneIncludeItem = noneItems[n].getAttribute(constants.Include);
+						if (noneIncludeItem && utils.isPublishProfile(noneIncludeItem)) {
+							returnItemGroup = itemGroup;
+							break;
+						}
+					}
+				}
+				if (!returnItemGroup) {
+					returnItemGroup = this.projFileXmlDoc!.createElement(constants.ItemGroup);
+					this.projFileXmlDoc!.documentElement.appendChild(returnItemGroup);
+				}
+			} else {
+				returnItemGroup = outputItemGroup[0]; 	// Return the first item group that was found, to match prior implementation
+			}
 		}
 
-		return outputItemGroup;
+		return returnItemGroup;
 	}
 
 	private async addFileToProjFile(filePath: string, xmlTag: string, attributes?: Map<string, string>): Promise<void> {
@@ -1256,6 +1295,8 @@ export class Project implements ISqlProject {
 				void window.showInformationMessage(constants.deployScriptExists(xmlTag));
 				xmlTag = constants.None;	// Add only one pre-deploy and post-deploy script. All additional ones get added in the same item group with None tag
 			}
+		} else if (xmlTag === constants.None) {		// Add publish profiles with None tag
+			itemGroup = this.findOrCreateItemGroup(xmlTag);
 		}
 		else {
 			if (this.isSdkStyleProject) {
@@ -1296,7 +1337,7 @@ export class Project implements ISqlProject {
 		itemGroup.appendChild(newFileNode);
 	}
 
-	private async removeFileFromProjFile(path: string): Promise<void> {
+	private async removeFileFromProjFile(path: string): Promise<void> {//TODO: publish profile
 		const fileNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Build);
 		const preDeployNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.PreDeploy);
 		const postDeployNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.PostDeploy);
@@ -1355,7 +1396,7 @@ export class Project implements ISqlProject {
 	 * @returns True when a node has been removed, false otherwise.
 	 */
 	private removeNode(includeString: string, nodes: HTMLCollectionOf<Element>, undoRemove: boolean = false): boolean {
-		// Default function behavior removes nodes like <Compile Include="..." />
+		// Default function behavior removes nodes like <Compile Include="..." />//TODO: publish profile
 		// However when undoRemove is true, this function removes <Compile Remove="..." />
 		const xmlAttribute = undoRemove ? constants.Remove : constants.Include;
 		for (let i = 0; i < nodes.length; i++) {
@@ -1738,7 +1779,7 @@ export class Project implements ISqlProject {
 		await this.serializeToProjFile(this.projFileXmlDoc!);
 	}
 
-	private async removeFromProjFile(entries: IProjectEntry | IProjectEntry[]): Promise<void> {
+	private async removeFromProjFile(entries: IProjectEntry | IProjectEntry[]): Promise<void> {//TODO: publish profile
 		if (!Array.isArray(entries)) {
 			entries = [entries];
 		}
