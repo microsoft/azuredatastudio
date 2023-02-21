@@ -76,6 +76,26 @@
         "title": "%title.changeNotebookConnection%"
       },
       {
+        "command": "mssql.newLogin",
+        "category": "MSSQL",
+        "title": "%title.newLogin%"
+      },
+      {
+        "command": "mssql.newUser",
+        "category": "MSSQL",
+        "title": "%title.newUser%"
+      },
+      {
+        "command": "mssql.objectProperties",
+        "category": "MSSQL",
+        "title": "%title.objectProperties%"
+      },
+      {
+        "command": "mssql.deleteObject",
+        "category": "MSSQL",
+        "title": "%title.deleteObject%"
+      },
+      {
         "command": "mssql.enableGroupBySchema",
         "category": "MSSQL",
         "title": "%mssql.objectExplorer.enableGroupBySchema%"
@@ -229,12 +249,12 @@
           ],
           "enumDescriptions": [
             "%mssql.executionPlan.expensiveOperationMetric.off%",
-	          "%mssql.executionPlan.expensiveOperationMetric.actualElapsedTime%",
-	          "%mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime%",
-	          "%mssql.executionPlan.cost%",
-	          "%mssql.executionPlan.subtreeCost%",
-	          "%mssql.executionPlan.actualNumberOfRowsForAllExecutions%",
-	          "%mssql.executionPlan.numberOfRowsRead%"
+            "%mssql.executionPlan.expensiveOperationMetric.actualElapsedTime%",
+            "%mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime%",
+            "%mssql.executionPlan.cost%",
+            "%mssql.executionPlan.subtreeCost%",
+            "%mssql.executionPlan.actualNumberOfRowsForAllExecutions%",
+            "%mssql.executionPlan.numberOfRowsRead%"
           ]
         },
         "mssql.query.rowCount": {
@@ -379,6 +399,12 @@
           "type": "boolean",
           "default": false,
           "description": "%mssql.objectExplorer.groupBySchema%"
+        },
+        "mssql.objectExplorer.expandTimeout": {
+          "type": "number",
+          "default": 45,
+          "minimum": 1,
+          "description": "%mssql.objectExplorer.expandTimeout%"
         }
       }
     },
@@ -403,6 +429,34 @@
         {
           "command": "mssql.changeNotebookConnection",
           "when": "false"
+        },
+        {
+          "command": "mssql.newServerRole",
+          "when": "false"
+        },
+        {
+          "command": "mssql.newLogin",
+          "when": "false"
+        },
+        {
+          "command": "mssql.newDatabaseRole",
+          "when": "false"
+        },
+        {
+          "command": "mssql.newUser",
+          "when": "false"
+        },
+        {
+          "command": "mssql.newApplicationRole",
+          "when": "false"
+        },
+        {
+          "command": "mssql.objectProperties",
+          "when": "false"
+        },
+        {
+          "command": "mssql.deleteObject",
+          "when": "false"
         }
       ],
       "objectExplorer/item/context": [
@@ -415,6 +469,26 @@
           "command": "mssql.newTable",
           "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables",
           "group": "0_query@1"
+        },
+        {
+          "command": "mssql.newLogin",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ServerLevelLogins && config.workbench.enablePreviewFeatures",
+          "group": "0_query@1"
+        },
+        {
+          "command": "mssql.newUser",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Users && config.workbench.enablePreviewFeatures",
+          "group": "0_query@1"
+        },
+        {
+          "command": "mssql.objectProperties",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
+          "group": "0_query@1"
+        },
+        {
+          "command": "mssql.deleteObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
+          "group": "0_query@2"
         },
         {
           "command": "mssql.enableGroupBySchema",
@@ -435,6 +509,26 @@
           "command": "mssql.newTable",
           "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables",
           "group": "connection@1"
+        },
+        {
+          "command": "mssql.newLogin",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ServerLevelLogins && config.workbench.enablePreviewFeatures",
+          "group": "connection@1"
+        },
+        {
+          "command": "mssql.newUser",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Users && config.workbench.enablePreviewFeatures",
+          "group": "connection@1"
+        },
+        {
+          "command": "mssql.objectProperties",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
+          "group": "connection@1"
+        },
+        {
+          "command": "mssql.deleteObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
+          "group": "connection@2"
         },
         {
           "command": "mssql.enableGroupBySchema",
@@ -913,7 +1007,9 @@
           "showOnConnectionDialog": true,
           "onSelectionChange": [
             {
-              "values": ["strict"],
+              "values": [
+                "strict"
+              ],
               "dependentOptionActions": [
                 {
                   "optionName": "trustServerCertificate",
