@@ -32,3 +32,17 @@ This extension adds Data Virtualization support for SQL Server 2019 and above. T
 # Known Issues
 * You will not be able to preview files in HDFS which are over 30MB.
 * All the files in the HDFS folder for Virtualize Data From CSV Files to work properly would need to have the same file extension (.csv) and conform to the same schema. If there are .csv files which are of different schema then the wizard will still open but you will not be able to create the external table.
+
+## Telemetry
+
+This extensions collects telemetry data, which is used to help understand how to improve the product. For example, this usage data helps to debug issues, such as slow start-up times, and to prioritize new features. While we appreciate the insights this data provides, we also know that not everyone wants to send usage data and you can disable telemetry as described [here](https://github.com/Microsoft/azuredatastudio/wiki/How-to-Disable-Telemetry-Reporting#how-to-disable-telemetry-reporting).
+
+## Privacy Statement
+
+The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.microsoft.com/privacystatement) describes the privacy statement of this software.
+
+## License
+
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+Licensed under the [Source EULA](https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt).
