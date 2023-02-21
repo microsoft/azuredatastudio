@@ -601,6 +601,32 @@ export namespace SavePublishProfileRequest {
 
 // ------------------------------- </ DacFx > ------------------------------------
 
+// ------------------------------- < Sql Projects > ------------------------------------
+
+export namespace NewSqlProjectRequest {
+	export const type = new RequestType<NewSqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/newProject');
+}
+
+export namespace OpenSqlProjectRequest {
+	export const type = new RequestType<SqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/openProject');
+}
+
+export namespace GetCrossPlatformCompatiblityRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetCrossPlatformCompatiblityResult, void, void>('sqlProjects/getCrossPlatformCompatibility');
+}
+
+export interface SqlProjectParams {
+	projectUri: string;
+}
+
+export interface NewSqlProjectParams extends SqlProjectParams {
+	sqlProjectType: mssql.ProjectType,
+	databaseSchemaProvider: string,
+	buildSdkVersion?: string
+}
+
+// ------------------------------- </ Sql Projects > -----------------------------------
+
 // ------------------------------- <CMS> ----------------------------------------
 
 
@@ -1109,93 +1135,6 @@ export namespace ProfilerSessionCreatedNotification {
 
 // ------------------------------- < SQL Profiler > ------------------------------------
 
-/// ------------------------------- <Sql Migration> -----------------------------
-export interface SqlMigrationAssessmentParams {
-	ownerUri: string;
-	databases: string[];
-	xEventsFilesFolderPath: string;
-}
-
-export namespace GetSqlMigrationAssessmentItemsRequest {
-	export const type = new RequestType<SqlMigrationAssessmentParams, mssql.AssessmentResult, void, void>('migration/getassessments');
-}
-
-export interface SqlMigrationSkuRecommendationsParams {
-	dataFolder: string;
-	perfQueryIntervalInSec: number;
-	targetPlatforms: string[];
-	targetSqlInstance: string;
-	targetPercentile: number;
-	scalingFactor: number;
-	startTime: string;
-	endTime: string;
-	includePreviewSkus: boolean;
-	databaseAllowList: string[];
-}
-
-export namespace GetSqlMigrationSkuRecommendationsRequest {
-	export const type = new RequestType<SqlMigrationSkuRecommendationsParams, mssql.SkuRecommendationResult, void, void>('migration/getskurecommendations');
-}
-
-export interface SqlMigrationStartPerfDataCollectionParams {
-	ownerUri: string,
-	dataFolder: string,
-	perfQueryIntervalInSec: number,
-	staticQueryIntervalInSec: number,
-	numberOfIterations: number
-}
-
-export namespace SqlMigrationStartPerfDataCollectionRequest {
-	export const type = new RequestType<SqlMigrationStartPerfDataCollectionParams, mssql.StartPerfDataCollectionResult, void, void>('migration/startperfdatacollection');
-}
-
-export interface SqlMigrationStopPerfDataCollectionParams {
-}
-
-export namespace SqlMigrationStopPerfDataCollectionRequest {
-	export const type = new RequestType<SqlMigrationStopPerfDataCollectionParams, mssql.StopPerfDataCollectionResult, void, void>('migration/stopperfdatacollection');
-}
-
-export interface SqlMigrationRefreshPerfDataCollectionParams {
-	lastRefreshTime: Date
-}
-
-export namespace SqlMigrationRefreshPerfDataCollectionRequest {
-	export const type = new RequestType<SqlMigrationRefreshPerfDataCollectionParams, mssql.RefreshPerfDataCollectionResult, void, void>('migration/refreshperfdatacollection');
-}
-
-export interface StartLoginMigrationsParams {
-	sourceConnectionString: string;
-	targetConnectionString: string;
-	loginList: string[];
-	aadDomainName: string;
-}
-
-export namespace StartLoginMigrationRequest {
-	export const type = new RequestType<StartLoginMigrationsParams, mssql.StartLoginMigrationResult, void, void>('migration/startloginmigration');
-}
-
-export namespace ValidateLoginMigrationRequest {
-	export const type = new RequestType<StartLoginMigrationsParams, mssql.StartLoginMigrationResult, void, void>('migration/validateloginmigration');
-}
-
-export namespace MigrateLoginsRequest {
-	export const type = new RequestType<StartLoginMigrationsParams, mssql.StartLoginMigrationResult, void, void>('migration/migratelogins');
-}
-
-export namespace EstablishUserMappingRequest {
-	export const type = new RequestType<StartLoginMigrationsParams, mssql.StartLoginMigrationResult, void, void>('migration/establishusermapping');
-}
-
-export namespace MigrateServerRolesAndSetPermissionsRequest {
-	export const type = new RequestType<StartLoginMigrationsParams, mssql.StartLoginMigrationResult, void, void>('migration/migrateserverrolesandsetpermissions');
-}
-
-export namespace LoginMigrationNotification {
-	export const type = new NotificationType<mssql.StartLoginMigrationResult, void>('migration/loginmigrationnotification"');
-}
-// ------------------------------- <Sql Migration> -----------------------------
-
 // ------------------------------- < Table Designer > ------------------------------------
 
 export interface TableDesignerEditRequestParams {
@@ -1263,34 +1202,99 @@ export namespace ExecutionPlanComparisonRequest {
 
 // ------------------------------- < Execution Plan > ------------------------------------
 
-// ------------------------------- < Tde Migration > ------------------------------------
-
-export namespace TdeMigrateRequest {
-	export const type = new RequestType<TdeMigrationParams, mssql.TdeMigrationResult, void, void>('migration/tdemigration');
+// ------------------------------- < Object Management > ------------------------------------
+export interface InitializeLoginViewRequestParams {
+	connectionUri: string;
+	contextId: string;
+	isNewObject: boolean;
+	name: string | undefined;
 }
 
-export interface TdeMigrationParams {
-	encryptedDatabases: string[];
-	sourceSqlConnectionString: string;
-	targetSubscriptionId: string;
-	targetResourceGroupName: string;
-	targetManagedInstanceName: string;
-	networkSharePath: string;
-	networkShareDomain: string;
-	networkShareUserName: string;
-	networkSharePassword: string;
-	accessToken: string;
+export namespace InitializeLoginViewRequest {
+	export const type = new RequestType<InitializeLoginViewRequestParams, mssql.ObjectManagement.LoginViewInfo, void, void>('objectManagement/initializeLoginView');
 }
 
-export namespace TdeMigrateProgressEvent {
-	export const type = new NotificationType<TdeMigrateProgressParams, void>('migration/tdemigrationprogress');
+export interface CreateLoginRequestParams {
+	contextId: string;
+	login: mssql.ObjectManagement.Login;
 }
 
+export namespace CreateLoginRequest {
+	export const type = new RequestType<CreateLoginRequestParams, void, void, void>('objectManagement/createLogin');
+}
 
-export interface TdeMigrateProgressParams {
+export interface UpdateLoginRequestParams {
+	contextId: string;
+	login: mssql.ObjectManagement.Login;
+}
+
+export namespace UpdateLoginRequest {
+	export const type = new RequestType<UpdateLoginRequestParams, void, void, void>('objectManagement/updateLogin');
+}
+
+export interface DeleteLoginRequestParams {
+	connectionUri: string;
 	name: string;
-	success: boolean;
-	message: string;
 }
 
-// ------------------------------- < Tde Migration > ------------------------------------
+export namespace DeleteLoginRequest {
+	export const type = new RequestType<DeleteLoginRequestParams, void, void, void>('objectManagement/deleteLogin');
+}
+
+export interface DisposeLoginViewRequestParams {
+	contextId: string;
+}
+
+export namespace DisposeLoginViewRequest {
+	export const type = new RequestType<DisposeLoginViewRequestParams, void, void, void>('objectManagement/disposeLoginView');
+}
+
+export interface InitializeUserViewRequestParams {
+	connectionUri: string;
+	contextId: string;
+	isNewObject: boolean;
+	database: string;
+	name: string | undefined;
+}
+
+export namespace InitializeUserViewRequest {
+	export const type = new RequestType<InitializeUserViewRequestParams, mssql.ObjectManagement.UserViewInfo, void, void>('objectManagement/initializeUserView');
+}
+
+export interface CreateUserRequestParams {
+	contextId: string;
+	user: mssql.ObjectManagement.User;
+}
+
+export namespace CreateUserRequest {
+	export const type = new RequestType<CreateUserRequestParams, void, void, void>('objectManagement/createUser');
+}
+
+export interface UpdateUserRequestParams {
+	contextId: string;
+	user: mssql.ObjectManagement.User;
+}
+
+export namespace UpdateUserRequest {
+	export const type = new RequestType<UpdateUserRequestParams, void, void, void>('objectManagement/updateUser');
+}
+
+export interface DeleteUserRequestParams {
+	connectionUri: string;
+	database: string;
+	name: string;
+}
+
+export namespace DeleteUserRequest {
+	export const type = new RequestType<DeleteUserRequestParams, void, void, void>('objectManagement/deleteUser');
+}
+
+export interface DisposeUserViewRequestParams {
+	contextId: string;
+}
+
+export namespace DisposeUserViewRequest {
+	export const type = new RequestType<DisposeUserViewRequestParams, void, void, void>('objectManagement/disposeUserView');
+}
+
+// ------------------------------- < Object Management > ------------------------------------
