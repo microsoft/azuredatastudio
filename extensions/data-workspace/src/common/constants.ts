@@ -21,8 +21,8 @@ export const noPreviousData = (tableName: string): string => { return localize('
 export const gitCloneMessage = (url: string): string => { return localize('gitCloneMessage', "Cloning git repository '{0}'...", url); };
 export const gitCloneError = localize('gitCloneError', "Error during git clone. View git output for more details");
 export const openedProjectsUndefinedAfterRefresh = localize('openedProjectsUndefinedAfterRefresh', "List of opened projects should not be undefined after refresh from disk.");
-export const dragAndDropNotSupported = localize('dragAndDropNotSupported', "This project type does not support drag and drop");
-export const onlyMovingOneFileIsSupported = localize('onlyMovingOneFileIsSupported', "Only moving one file at a time is supported");
+export const dragAndDropNotSupported = localize('dragAndDropNotSupported', "This project type does not support drag and drop.");
+export const onlyMovingOneFileIsSupported = localize('onlyMovingOneFileIsSupported', "Only moving one file at a time is supported.");
 
 // UI
 export const OkButtonText = localize('dataworkspace.ok', "OK");

@@ -15,7 +15,6 @@ import Logger from './logger';
  * Tree data provider for the workspace main view
  */
 export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<WorkspaceTreeItem>, vscode.TreeDragAndDropController<WorkspaceTreeItem> {
-
 	dropMimeTypes = ['application/vnd.code.tree.WorkspaceTreeDataProvider'];
 	dragMimeTypes = []; // The recommended mime type of the tree (`application/vnd.code.tree.WorkspaceTreeDataProvider`) is automatically added.
 
@@ -133,7 +132,7 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 			return;
 		}
 
-		let projectUri = transferItem?.value[0].projectFileUri;
+		const projectUri = transferItem?.value[0].projectFileUri;
 		if (!projectUri) {
 			return;
 		}
