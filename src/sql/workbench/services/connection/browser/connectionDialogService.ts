@@ -257,7 +257,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			return;
 		}
 		let fromEditor = params && params.connectionType === ConnectionType.editor;
-		let isTemporaryConnection = params && params.connectionType === ConnectionType.temporary;
+		let isTemporaryConnection = params && (params.connectionType === ConnectionType.temporary || !connection.saveProfile); // When the server group is "<default>" or named their saveProfile flag will be true, but not for "<Do not save>"
 		let uri: string = undefined;
 		if (fromEditor && params && params.input) {
 			uri = params.input.uri;
