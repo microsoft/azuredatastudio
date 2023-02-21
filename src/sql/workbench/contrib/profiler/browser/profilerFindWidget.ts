@@ -262,6 +262,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 			setTimeout(() => {
 				this._domNode.classList.add('visible');
 				this._domNode.setAttribute('aria-hidden', 'false');
+				this._domNode.style.display = '';
 				if (!animate) {
 					this._domNode.classList.add('noanimation');
 					setTimeout(() => {
@@ -281,6 +282,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 
 			this._domNode.classList.remove('visible');
 			this._domNode.setAttribute('aria-hidden', 'true');
+			this._domNode.style.display = 'none';
 			if (focusTheEditor) {
 				this._tableController.focus();
 			}
@@ -471,6 +473,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 		this._domNode = document.createElement('div');
 		this._domNode.className = 'editor-widget find-widget';
 		this._domNode.setAttribute('aria-hidden', 'true');
+		this._domNode.style.display = 'none';
 
 		this._domNode.appendChild(findPart);
 

@@ -809,12 +809,12 @@
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.encrypt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' encryption is supported on SQL Server 2022 onwards.]]></Val>
+          <Val><![CDATA[When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' is supported on SQL Server 2022 onwards.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Cuando es "Mandatory" o "Strict", SQL Server usa cifrado SSL para todos los datos enviados entre el cliente y el servidor si el servidor tiene un certificado instalado. Cuando se establece en "Strict", SQL Server usa TDS 8.0 para toda la transferencia de datos entre el cliente y el servidor. El cifrado "Strict" se admite en SQL Server 2022 y posteriores.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed]]></Val>
+            <Val><![CDATA[When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' encryption is supported on SQL Server 2022 onwards.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1136,10 +1136,13 @@
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.trustServerCertificate.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate]]></Val>
+          <Val><![CDATA[When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Cuando es true (y encrypt=true), SQL Server usa el cifrado SSL para todos los datos enviados entre el cliente y el servidor sin validar el certificado del servidor]]></Val>
+            <Val><![CDATA[Cuando es true (y encrypt=true), SQL Server usa el cifrado SSL para todos los datos enviados entre el cliente y el servidor sin validar el certificado de servidor. Esta propiedad no se admite con Encrypt=Strict.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1439,6 +1442,33 @@
           <Val><![CDATA[Number of minutes to retain log files for backend services. Default is 1 week.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Número de minutos para conservar los archivos de registro para los servicios back-end. El valor predeterminado es 1 semana.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.objectExplorer.disableGroupBySchema" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Disable Group By Schema]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Deshabilitar Agrupar por esquema]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.objectExplorer.enableGroupBySchema" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enable Group By Schema]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Habilitar Agrupar por esquema]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.objectExplorer.groupBySchema" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[When enabled, the database objects in Object Explorer will be categorized by schema.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cuando se habilita, los objetos de base de datos del Explorador de objetos se clasificarán por esquema.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

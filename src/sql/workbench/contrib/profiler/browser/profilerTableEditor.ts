@@ -96,7 +96,11 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 				}
 			}
 		}, {
-			dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
+			dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor,
+			// The details component in profiler UI is refreshed based on the selected row in this table.
+			// If in grid tab navigation is enabled, keyboard-only users will never be able to reach the details component
+			// when a particular row is selected.
+			enableInGridTabNavigation: false
 		});
 		this._profilerTable.setSelectionModel(new RowSelectionModel());
 		const copyKeybind = new CopyKeybind();
@@ -255,11 +259,9 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		if (e.isRevealed) {
 			if (this._findState.isRevealed) {
 				node.style.top = '0px';
-				node.style.display = '';
 				this._updateFinderMatchState();
 			} else {
 				node.style.top = '';
-				node.style.display = 'none';
 			}
 		}
 

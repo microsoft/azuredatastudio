@@ -13533,6 +13533,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/common/resultsGrid.contribution.resultsGrid.showJsonAsLink" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether to show cells with JSON formatted string as hyperlink. When enabled, upon click the JSON value will be opened in another tab. The default value is true.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Gibt an, ob Zellen mit JSON-formatierter Zeichenfolge als Link angezeigt werden sollen. Wenn diese Option aktiviert ist, wird der JSON-Wert beim Klicken in einer anderen Registerkarte geöffnet. Der Standardwert ist WAHR.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/common/resultsGrid.contribution.resultsGridConfigurationTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Results Grid and Messages]]></Val>
@@ -15456,15 +15465,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionDialogService.enableTrustServerCertificate" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Enable Trust server certificate]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Vertrauensserverzertifikat aktivieren]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionDialogService.kerberosErrorStart" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connection failed due to Kerberos error.]]></Val>
@@ -15497,15 +15497,6 @@
           <Val><![CDATA[Run Kinit]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Kinit ausführen]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionDialogService.trustServerCertInstructionText" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable 'Trust server certificate' in the connection dialog.]D;]A;]D;]A;			Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? ]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Die Verschlüsselung wurde für diese Verbindung aktiviert, überprüfen Sie Ihre SSL- und Zertifikatkonfiguration für die Ziel-SQL Server, oder aktivieren Sie "Serverzertifikat vertrauen" im Verbindungsdialogfeld.]D;]A;]D;]A;Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und ist keine empfohlene Vorgehensweise für Produktionsumgebungen. Möchten Sie "Serverzertifikat vertrauen" für diese Verbindung aktivieren und es erneut versuchen? ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -16004,6 +15995,15 @@
           <Val><![CDATA[Step {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Schritt {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/dialog/browser/wizardNavigation.component.wizardNavigation.stepName" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Step {0}: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Schritt {0}: {1}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -17331,6 +17331,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/profiler/browser/profilerFilterDialog.profilerFilterDialog.allClausesCleared" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[All clauses have been cleared.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Alle Klauseln wurden gelöscht.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/profiler/browser/profilerFilterDialog.profilerFilterDialog.apply" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Apply]]></Val>
@@ -17399,6 +17408,15 @@
           <Val><![CDATA[Load Filter]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Filter laden]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/profiler/browser/profilerFilterDialog.profilerFilterDialog.newClauseAdded" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[A new clause has been added.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Eine neue Klausel wurde hinzugefügt.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

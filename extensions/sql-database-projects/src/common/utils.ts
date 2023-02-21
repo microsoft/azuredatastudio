@@ -302,6 +302,14 @@ export async function getSchemaCompareService(): Promise<ISchemaCompareService> 
 	}
 }
 
+export async function getSqlProjectsService(): Promise<mssql.ISqlProjectsService> {
+	const ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
+	const api = await ext.activate();
+	return api.sqlProjects;
+
+	// TODO: add vscode-mssql support
+}
+
 export async function getVscodeMssqlApi(): Promise<vscodeMssql.IExtension> {
 	const ext = vscode.extensions.getExtension(vscodeMssql.extension.name) as vscode.Extension<vscodeMssql.IExtension>;
 	return ext.activate();

@@ -546,6 +546,9 @@ export const authenticationSetting = 'Authentication';
 export const activeDirectoryInteractive = 'active directory interactive';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
+export const encryptSetting = 'Encrypt';
+export const trustServerCertificateSetting = 'Trust Server Certificate';
+export const hostnameInCertificateSetting = 'Host Name in Certificate';
 
 export const azureAddAccount = localize('azureAddAccount', "Add an Account...");
 
