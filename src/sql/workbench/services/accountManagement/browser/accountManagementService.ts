@@ -147,9 +147,7 @@ export class AccountManagementService implements IAccountManagementService {
 				if (this.isCanceledResult(accountResult)) {
 					return;
 				} else if (this.isErrorResult(accountResult)) {
-					let message = this.getMessage(accountResult);
-					let code = this.getCode(accountResult);
-					throw Error(`\nError Code: ${code}\nError Message: ${message}`);
+					throw Error(localize('error', `Error Code: ${accountResult.errorCode} Error Message: ${accountResult.errorMessage}`));
 				}
 				let result = await this._accountStore.addOrUpdate(accountResult);
 				if (!result) {
@@ -199,13 +197,6 @@ export class AccountManagementService implements IAccountManagementService {
 
 	private isErrorResult(result: azdata.Account | azdata.PromptFailedResult): result is azdata.PromptFailedResult {
 		return (<azdata.PromptFailedResult>result).error;
-	}
-
-	private getMessage(result: azdata.Account | azdata.PromptFailedResult): string {
-		return (<azdata.PromptFailedResult>result).errorMessage;
-	}
-	private getCode(result: azdata.Account | azdata.PromptFailedResult): string {
-		return (<azdata.PromptFailedResult>result).errorCode;
 	}
 
 	/**
