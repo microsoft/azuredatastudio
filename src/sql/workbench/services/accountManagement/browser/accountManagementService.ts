@@ -210,7 +210,7 @@ export class AccountManagementService implements IAccountManagementService {
 			if (self.isPromptFailedResult(refreshedAccount)) {
 				if (refreshedAccount.canceled) {
 					// Pattern here is to throw if this fails. Handled upstream.
-					throw new Error(localize('refreshFailed', "Refresh account was canceled by the user"));
+					throw new Error(localize('refreshCanceled', "Refresh account was canceled by the user"));
 				} else {
 					throw Error(localize('refreshFailed', `${refreshedAccount.errorCode} \nError Message: ${refreshedAccount.errorMessage}`));
 				}
