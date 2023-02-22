@@ -235,11 +235,18 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	}
 
 	/**
-	 * Returns the unique id for the connection that doesn't include the group name and only contains basic identity information
-	 * Used primarily for retrieving shared passwords among different connections.
+	 * Returns the unique id for the connection that doesn't include the group name.
+	 * Used primarily for retrieving shared passwords among different connections in default state.
+	 * @param getOriginalOptions will return the original URI format regardless if useFullOptions was set or not. (used for retrieving passwords)
 	 */
-	public getConnectionInfoId(): string {
-		return super.getOptionsKey(true);
+	public getConnectionInfoId(getOriginalOptions = true): string {
+		let id = super.getOptionsKey(getOriginalOptions);
+		let databaseDisplayName: string = this.options['databaseDisplayName'];
+		if (databaseDisplayName && !getOriginalOptions) {
+			id += ProviderConnectionInfo.idSeparator + 'databaseDisplayName' + ProviderConnectionInfo.nameValueSeparator + databaseDisplayName;
+		}
+
+		return id;
 	}
 
 	public toIConnectionProfile(): interfaces.IConnectionProfile {
