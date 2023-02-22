@@ -144,10 +144,12 @@ export class AccountManagementService implements IAccountManagementService {
 			const notificationHandler = this._notificationService.notify(loginNotification);
 			try {
 				let accountResult = await provider.provider.prompt();
-				if (this.isCanceledResult(accountResult)) {
-					return;
-				} else if (this.isErrorResult(accountResult)) {
-					throw Error(localize('error', `Error Code: ${accountResult.errorCode} Error Message: ${accountResult.errorMessage}`));
+				if (this.isPromptFailedResult(accountResult)) {
+					if (accountResult.canceled === true) {
+						return;
+					} else {
+						throw Error(localize('error', `${accountResult.errorCode} \nError Message: ${accountResult.errorMessage}`));
+					}
 				}
 				let result = await this._accountStore.addOrUpdate(accountResult);
 				if (!result) {
@@ -191,12 +193,8 @@ export class AccountManagementService implements IAccountManagementService {
 		});
 	}
 
-	private isCanceledResult(result: azdata.Account | azdata.PromptFailedResult): result is azdata.PromptFailedResult {
-		return (<azdata.PromptFailedResult>result).canceled;
-	}
-
-	private isErrorResult(result: azdata.Account | azdata.PromptFailedResult): result is azdata.PromptFailedResult {
-		return (<azdata.PromptFailedResult>result).error;
+	private isPromptFailedResult(result: azdata.Account | azdata.PromptFailedResult): result is azdata.PromptFailedResult {
+		return typeof (<azdata.PromptFailedResult>result).canceled === 'boolean';
 	}
 
 	/**
@@ -209,9 +207,11 @@ export class AccountManagementService implements IAccountManagementService {
 
 		return this.doWithProvider(account.key.providerId, async (provider) => {
 			let refreshedAccount = await provider.provider.refresh(account);
-			if (self.isCanceledResult(refreshedAccount)) {
-				// Pattern here is to throw if this fails. Handled upstream.
-				throw new Error(localize('refreshFailed', "Refresh account was canceled by the user"));
+			if (self.isPromptFailedResult(refreshedAccount)) {
+				if (refreshedAccount.canceled) {
+					// Pattern here is to throw if this fails. Handled upstream.
+					throw new Error(localize('refreshFailed', "Refresh account was canceled by the user"));
+				}
 			} else {
 				account = refreshedAccount;
 			}
