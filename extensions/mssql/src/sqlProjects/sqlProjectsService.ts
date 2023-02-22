@@ -34,7 +34,6 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		context.registerService(constants.SqlProjectsService, this);
 	}
 
-
 	/**
 	 * Add a dacpac reference to a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
