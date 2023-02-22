@@ -233,7 +233,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
 		// **IMPORTANT** This should NEVER change without thorough review and consideration of side effects. This key controls
 		//				 things like how passwords are saved, which means if its changed then serious side effects will occur.
-		let expectedId = 'providerName:MSSQL|authenticationType:|databaseName:database|serverName:new server|userName:user';
+		let expectedId = 'providerName:MSSQL|databaseName:database|serverName:new server|userName:user';
 		let id = conn.getOptionsKey();
 		assert.strictEqual(id, expectedId);
 	});
