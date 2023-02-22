@@ -11,6 +11,8 @@ import * as contracts from '../contracts';
 import { AppContext } from '../appContext';
 import { ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
 import { ClientCapabilities } from 'vscode-languageclient';
+import { CancellationToken } from 'vscode';
+import { RequestType } from 'vscode-languageclient';
 
 export class SqlProjectsService implements mssql.ISqlProjectsService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
@@ -32,288 +34,293 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		context.registerService(constants.SqlProjectsService, this);
 	}
 
+
+	/**
+	 * Add a dacpac reference to a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param dacpacPath Path to the .dacpac file
+	 * @param suppressMissingDependencies Whether to suppress missing dependencies
+	 * @param databaseVariable SQLCMD variable name for specifying the other database this reference is to, if different from that of the current project
+	 * @param serverVariable SQLCMD variable name for specifying the other server this reference is to, if different from that of the current project.
+	 * If this is set, DatabaseVariable must also be set.
+	 * @param databaseLiteral Literal name used to reference another database in the same server, if not using SQLCMD variables
+	 */
 	public async addDacpacReference(projectUri: string, dacpacPath: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Promise<azdata.ResultStatus> {
-		const params: contracts.AddDacpacReferenceParams = { projectUri: projectUri, dacpacPath: dacpacPath, databaseVariable: databaseVariable, serverVariable: serverVariable, suppressMissingDependencies: suppressMissingDependencies, databaseLiteral: databaseLiteral };
-		try {
-			const result = await this.client.sendRequest(contracts.AddDacpacReferenceRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.AddDacpacReferenceRequest.type, e);
-			throw e;
-		}
+		const params: contracts.AddDacpacReferenceParams = { projectUri: projectUri, dacpacPath: dacpacPath, suppressMissingDependencies: suppressMissingDependencies, databaseVariable: databaseVariable, serverVariable: serverVariable, databaseLiteral: databaseLiteral };
+		return await this.runWithErrorHandling(contracts.AddDacpacReferenceRequest.type, params);
 	}
 
+	/**
+	 * Add a SQL Project reference to a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param projectPath Path to the referenced .sqlproj file
+	 * @param projectGuid GUID for the referenced SQL project
+	 * @param suppressMissingDependencies Whether to suppress missing dependencies
+	 * @param databaseVariable SQLCMD variable name for specifying the other database this reference is to, if different from that of the current project
+	 * @param serverVariable SQLCMD variable name for specifying the other server this reference is to, if different from that of the current project.
+	 * If this is set, DatabaseVariable must also be set.
+	 * @param databaseLiteral Literal name used to reference another database in the same server, if not using SQLCMD variables
+	 */
 	public async addSqlProjectReference(projectUri: string, projectPath: string, projectGuid: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Promise<azdata.ResultStatus> {
-		const params: contracts.AddSqlProjectReferenceParams = { projectUri: projectUri, projectPath: projectPath, projectGuid: projectGuid, databaseVariable: databaseVariable, serverVariable: serverVariable, suppressMissingDependencies: suppressMissingDependencies, databaseLiteral: databaseLiteral };
-		try {
-			const result = await this.client.sendRequest(contracts.AddSqlProjectReferenceRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.AddSqlProjectReferenceRequest.type, e);
-			throw e;
-		}
+		const params: contracts.AddSqlProjectReferenceParams = { projectUri: projectUri, projectPath: projectPath, projectGuid: projectGuid, suppressMissingDependencies: suppressMissingDependencies, databaseVariable: databaseVariable, serverVariable: serverVariable, databaseLiteral: databaseLiteral };
+		return await this.runWithErrorHandling(contracts.AddSqlProjectReferenceRequest.type, params);
 	}
 
+	/**
+	 * Add a system database reference to a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param systemDatabase Type of system database
+	 * @param suppressMissingDependencies Whether to suppress missing dependencies
+	 * @param databaseLiteral Literal name used to reference another database in the same server, if not using SQLCMD variables
+	 */
 	public async addSystemDatabaseReference(projectUri: string, systemDatabase: mssql.SystemDatabase, suppressMissingDependencies: boolean, databaseLiteral?: string): Promise<azdata.ResultStatus> {
 		const params: contracts.AddSystemDatabaseReferenceParams = { projectUri: projectUri, systemDatabase: systemDatabase, suppressMissingDependencies: suppressMissingDependencies, databaseLiteral: databaseLiteral };
-		try {
-			const result = await this.client.sendRequest(contracts.AddSystemDatabaseReferenceRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.AddSystemDatabaseReferenceRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.AddSystemDatabaseReferenceRequest.type, params);
 	}
 
+	/**
+	 * Delete a database reference from a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 */
 	public async deleteDatabaseReference(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
-		try {
-			const result = await this.client.sendRequest(contracts.DeleteDatabaseReferenceRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.DeleteDatabaseReferenceRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.DeleteDatabaseReferenceRequest.type, params);
 	}
 
+	/**
+	 * Add a folder to a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param path Path of the folder, typically relative to the .sqlproj file
+	 */
 	public async addFolder(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.FolderParams = { projectUri: projectUri, path: path };
-		try {
-			const result = await this.client.sendRequest(contracts.AddFolderRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.AddFolderRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.AddFolderRequest.type, params);
 	}
 
+	/**
+	 * Delete a folder from a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param path Path of the folder, typically relative to the .sqlproj file
+	 */
 	public async deleteFolder(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.FolderParams = { projectUri: projectUri, path: path };
-		try {
-			const result = await this.client.sendRequest(contracts.DeleteFolderRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.DeleteFolderRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.DeleteFolderRequest.type, params);
 	}
 
+	/**
+	 * Add a post-deployment script to a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 */
 	public async addPostDeploymentScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
-		try {
-			const result = await this.client.sendRequest(contracts.AddPostDeploymentScriptRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.AddPostDeploymentScriptRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.AddPostDeploymentScriptRequest.type, params);
 	}
 
+	/**
+	 * Add a pre-deployment script to a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 */
 	public async addPreDeploymentScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
-		try {
-			const result = await this.client.sendRequest(contracts.AddPreDeploymentScriptRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.AddPreDeploymentScriptRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.AddPreDeploymentScriptRequest.type, params);
 	}
 
+	/**
+	 * Delete a post-deployment script from a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 */
 	public async deletePostDeploymentScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
-		try {
-			const result = await this.client.sendRequest(contracts.DeletePostDeploymentScriptRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.DeletePostDeploymentScriptRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.DeletePostDeploymentScriptRequest.type, params);
 	}
 
+	/**
+	 * Delete a pre-deployment script from a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 */
 	public async deletePreDeploymentScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
-		try {
-			const result = await this.client.sendRequest(contracts.DeletePreDeploymentScriptRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.DeletePreDeploymentScriptRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.DeletePreDeploymentScriptRequest.type, params);
 	}
 
+	/**
+	 * Exclude a post-deployment script from a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 */
 	public async excludePostDeploymentScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
-		try {
-			const result = await this.client.sendRequest(contracts.ExcludePostDeploymentScriptRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.ExcludePostDeploymentScriptRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.ExcludePostDeploymentScriptRequest.type, params);
 	}
 
+	/**
+	 * Exclude a pre-deployment script from a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 */
 	public async excludePreDeploymentScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
-		try {
-			const result = await this.client.sendRequest(contracts.ExcludePreDeploymentScriptRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.ExcludePreDeploymentScriptRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.ExcludePreDeploymentScriptRequest.type, params);
 	}
 
+	/**
+	 * Move a post-deployment script in a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
+	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 */
 	public async movePostDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
-		try {
-			const result = await this.client.sendRequest(contracts.MovePostDeploymentScriptRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.MovePostDeploymentScriptRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.MovePostDeploymentScriptRequest.type, params);
 	}
 
+	/**
+	 * Move a pre-deployment script in a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
+	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 */
 	public async movePreDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
-		try {
-			const result = await this.client.sendRequest(contracts.MovePreDeploymentScriptRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.MovePreDeploymentScriptRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.MovePreDeploymentScriptRequest.type, params);
 	}
 
+	/**
+	 * Close a SQL project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 */
 	public async closeProject(projectUri: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectParams = { projectUri: projectUri };
-		try {
-			const result = await this.client.sendRequest(contracts.CloseSqlProjectRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.CloseSqlProjectRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.CloseSqlProjectRequest.type, params);
 	}
 
+	/**
+	 * Create a new SQL project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param sqlProjectType Type of SQL Project: SDK-style or Legacy
+	 * @param databaseSchemaProvider Database schema provider for the project, in the format
+	 * "Microsoft.Data.Tools.Schema.Sql.SqlXYZDatabaseSchemaProvider".
+	 * Case sensitive.
+	 * @param buildSdkVersion Version of the Microsoft.Build.Sql SDK for the project, if overriding the default
+	 */
+	public async createProject(projectUri: string, sqlProjectType: mssql.ProjectType, databaseSchemaProvider?: string, buildSdkVersion?: string): Promise<azdata.ResultStatus> {
+		const params: contracts.CreateSqlProjectParams = { projectUri: projectUri, sqlProjectType: sqlProjectType, databaseSchemaProvider: databaseSchemaProvider, buildSdkVersion: buildSdkVersion };
+		return await this.runWithErrorHandling(contracts.CreateSqlProjectRequest.type, params);
+	}
+
+	/**
+	 * Get the cross-platform compatibility status for a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 */
 	public async getCrossPlatformCompatibility(projectUri: string): Promise<mssql.GetCrossPlatformCompatiblityResult> {
 		const params: contracts.SqlProjectParams = { projectUri: projectUri };
-		try {
-			const result = await this.client.sendRequest(contracts.GetCrossPlatformCompatiblityRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.GetCrossPlatformCompatiblityRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.GetCrossPlatformCompatiblityRequest.type, params);
 	}
 
-	public async newProject(projectUri: string, sqlProjectType: mssql.ProjectType, databaseSchemaProvider?: string, buildSdkVersion?: string): Promise<azdata.ResultStatus> {
-		const params: contracts.NewSqlProjectParams = { projectUri: projectUri, sqlProjectType: sqlProjectType, databaseSchemaProvider: databaseSchemaProvider, buildSdkVersion: buildSdkVersion };
-		try {
-			const result = await this.client.sendRequest(contracts.NewSqlProjectRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.NewSqlProjectRequest.type, e);
-			throw e;
-		}
-	}
-
+	/**
+	 * Open an existing SQL project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 */
 	public async openProject(projectUri: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectParams = { projectUri: projectUri };
-		try {
-			const result = await this.client.sendRequest(contracts.OpenSqlProjectRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.OpenSqlProjectRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.OpenSqlProjectRequest.type, params);
 	}
 
+	/**
+	 * Update a SQL project to be cross-platform compatible
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 */
 	public async updateProjectForCrossPlatform(projectUri: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectParams = { projectUri: projectUri };
-		try {
-			const result = await this.client.sendRequest(contracts.UpdateProjectForCrossPlatformRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.UpdateProjectForCrossPlatformRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.UpdateProjectForCrossPlatformRequest.type, params);
 	}
 
+	/**
+	 * Add a SQLCMD variable to a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param name Name of the SQLCMD variable
+	 * @param defaultValue Default value of the SQLCMD variable
+	 * @param value Value of the SQLCMD variable, with or without the $()
+	 */
 	public async addSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<azdata.ResultStatus> {
 		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue, value: value };
-		try {
-			const result = await this.client.sendRequest(contracts.AddSqlCmdVariableRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.AddSqlCmdVariableRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.AddSqlCmdVariableRequest.type, params);
 	}
 
+	/**
+	 * Delete a SQLCMD variable from a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param name Name of the SQLCMD variable to be deleted
+	 */
 	public async deleteSqlCmdVariable(projectUri: string, name?: string): Promise<azdata.ResultStatus> {
 		const params: contracts.DeleteSqlCmdVariableParams = { projectUri: projectUri, name: name };
-		try {
-			const result = await this.client.sendRequest(contracts.DeleteSqlCmdVariableRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.DeleteSqlCmdVariableRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.DeleteSqlCmdVariableRequest.type, params);
 	}
 
+	/**
+	 * Update an existing SQLCMD variable in a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param name Name of the SQLCMD variable
+	 * @param defaultValue Default value of the SQLCMD variable
+	 * @param value Value of the SQLCMD variable, with or without the $()
+	 */
 	public async updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<azdata.ResultStatus> {
 		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue, value: value };
-		try {
-			const result = await this.client.sendRequest(contracts.UpdateSqlCmdVariableRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.UpdateSqlCmdVariableRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.UpdateSqlCmdVariableRequest.type, params);
 	}
 
+	/**
+	 * Add a SQL object script to a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 */
 	public async addSqlObjectScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
-		try {
-			const result = await this.client.sendRequest(contracts.AddSqlObjectScriptRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.AddSqlObjectScriptRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.AddSqlObjectScriptRequest.type, params);
 	}
 
+	/**
+	 * Delete a SQL object script from a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 */
 	public async deleteSqlObjectScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
-		try {
-			const result = await this.client.sendRequest(contracts.DeleteSqlObjectScriptRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.DeleteSqlObjectScriptRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.DeleteSqlObjectScriptRequest.type, params);
 	}
 
+	/**
+	 * Exclude a SQL object script from a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 */
 	public async excludeSqlObjectScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
-		try {
-			const result = await this.client.sendRequest(contracts.ExcludeSqlObjectScriptRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.ExcludeSqlObjectScriptRequest.type, e);
-			throw e;
-		}
+		return await this.runWithErrorHandling(contracts.ExcludeSqlObjectScriptRequest.type, params);
 	}
 
+	/**
+	 * Move a SQL object script in a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
+	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 */
 	public async moveSqlObjectScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
+		return await this.runWithErrorHandling(contracts.MoveSqlObjectScriptRequest.type, params);
+	}
+
+	private async runWithErrorHandling<P, R, E, RO>(type: RequestType<P, R, E, RO>, params: P, token?: CancellationToken): Promise<R> {
 		try {
-			const result = await this.client.sendRequest(contracts.MoveSqlObjectScriptRequest.type, params);
+			const result = await this.client.sendRequest(type, params, token);
 			return result;
 		} catch (e) {
-			this.client.logFailedRequest(contracts.MoveSqlObjectScriptRequest.type, e);
+			this.client.logFailedRequest(type, e);
 			throw e;
 		}
 	}
