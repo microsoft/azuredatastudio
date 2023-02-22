@@ -27,7 +27,6 @@ import { Action } from 'vs/base/common/actions';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ADAL_AUTH_LIBRARY, AuthLibrary, filterAccounts, MSAL_AUTH_LIBRARY } from 'sql/workbench/services/accountManagement/browser/accountDialog';
-import { ErrorMessage } from 'azdata';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -144,14 +143,15 @@ export class AccountManagementService implements IAccountManagementService {
 		return this.doWithProvider(providerId, async (provider) => {
 			const notificationHandler = this._notificationService.notify(loginNotification);
 			try {
-				let account = await provider.provider.prompt();
-				if (this.isCanceledResult(account)) {
+				let accountResult = await provider.provider.prompt();
+				if (this.isCanceledResult(accountResult)) {
 					return;
-				} else if (this.isErrorResult(account)) {
-					let message = this.getMessage(account);
-					throw Error(`\nError Code: ${message.errorCode}\nError Message: ${message.errorMessage}`);
+				} else if (this.isErrorResult(accountResult)) {
+					let message = this.getMessage(accountResult);
+					let code = this.getCode(accountResult);
+					throw Error(`\nError Code: ${code}\nError Message: ${message}`);
 				}
-				let result = await this._accountStore.addOrUpdate(account);
+				let result = await this._accountStore.addOrUpdate(accountResult);
 				if (!result) {
 					this._logService.error('adding account failed');
 					throw Error('Adding account failed, check Azure Accounts log for more info.')
@@ -201,8 +201,11 @@ export class AccountManagementService implements IAccountManagementService {
 		return (<azdata.PromptFailedResult>result).error;
 	}
 
-	private getMessage(result: azdata.Account | azdata.PromptFailedResult): ErrorMessage {
-		return (<azdata.PromptFailedResult>result).message;
+	private getMessage(result: azdata.Account | azdata.PromptFailedResult): string {
+		return (<azdata.PromptFailedResult>result).errorMessage;
+	}
+	private getCode(result: azdata.Account | azdata.PromptFailedResult): string {
+		return (<azdata.PromptFailedResult>result).errorCode;
 	}
 
 	/**
