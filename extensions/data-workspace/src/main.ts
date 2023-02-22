@@ -10,7 +10,6 @@ import { WorkspaceTreeItem, IExtension } from 'dataworkspace';
 import { DataWorkspaceExtension } from './common/dataWorkspaceExtension';
 import { NewProjectDialog } from './dialogs/newProjectDialog';
 import { browseForProject, OpenExistingDialog } from './dialogs/openExistingDialog';
-import { IWorkspaceService } from './common/interfaces';
 import { IconPathHelper } from './common/iconHelper';
 import { ProjectDashboard } from './dialogs/projectDashboard';
 import { getAzdataApi } from './common/utils';
@@ -41,13 +40,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	const dataWorkspaceExtensionStartTime = new Date().getTime();
 	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	Logger.log(`DataWorkspaceExtension constructor took ${new Date().getTime() - dataWorkspaceExtensionStartTime}ms`);
-
-	const settingProjectProviderContextStartTime = new Date().getTime();
-	context.subscriptions.push(vscode.extensions.onDidChange(() => {
-		setProjectProviderContextValue(workspaceService);
-	}));
-	setProjectProviderContextValue(workspaceService);
-	Logger.log(`setProjectProviderContextValue took ${new Date().getTime() - settingProjectProviderContextStartTime}ms`);
 
 	const registerCommandStartTime = new Date().getTime();
 	context.subscriptions.push(vscode.commands.registerCommand('projects.new', async () => {
@@ -103,10 +95,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	context.subscriptions.push(TelemetryReporter);
 	Logger.log(`Finished activating Data Workspace extension. Total time = ${new Date().getTime() - startTime}ms`);
 	return Promise.resolve(dataWorkspaceExtension);
-}
-
-function setProjectProviderContextValue(workspaceService: IWorkspaceService): void {
-	void vscode.commands.executeCommand('setContext', 'isProjectProviderAvailable', workspaceService.isProjectProviderAvailable);
 }
 
 export function deactivate(): void {
