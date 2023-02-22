@@ -148,13 +148,13 @@ export class AccountManagementService implements IAccountManagementService {
 					if (accountResult.canceled === true) {
 						return;
 					} else {
-						throw Error(localize('addAccountFailed', `${accountResult.errorCode} \nError Message: ${accountResult.errorMessage}`));
+						throw new Error(localize('addAccountFailedMessage', `${accountResult.errorCode} \nError Message: ${accountResult.errorMessage}`));
 					}
 				}
 				let result = await this._accountStore.addOrUpdate(accountResult);
 				if (!result) {
 					this._logService.error('adding account failed');
-					throw Error('Adding account failed, check Azure Accounts log for more info.')
+					throw new Error(localize('addAccountFailedGeneric', 'Adding account failed, check Azure Accounts log for more info.'));
 				}
 				if (result.accountAdded) {
 					// Add the account to the list
@@ -212,7 +212,7 @@ export class AccountManagementService implements IAccountManagementService {
 					// Pattern here is to throw if this fails. Handled upstream.
 					throw new Error(localize('refreshCanceled', "Refresh account was canceled by the user"));
 				} else {
-					throw Error(localize('refreshFailed', `${refreshedAccount.errorCode} \nError Message: ${refreshedAccount.errorMessage}`));
+					throw new Error(localize('refreshFailed', `${refreshedAccount.errorCode} \nError Message: ${refreshedAccount.errorMessage}`));
 				}
 			} else {
 				account = refreshedAccount;
