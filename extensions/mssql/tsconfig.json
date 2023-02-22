@@ -7,7 +7,6 @@
 		"strictNullChecks": false
 	},
 	"include": [
-		"src/**/*",
-		"../../src/vscode-dts/vscode.proposed.textDocumentNotebook.d.ts"
+		"src/**/*"
 	]
 }
