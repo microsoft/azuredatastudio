@@ -343,13 +343,10 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 			}
 		}
 		if (e.searchScope) {
+			this._findDecorations.clearDecorations();
 			await this.notebookInput.notebookFindModel.find(this._findState.searchString, this._findState.matchCase, this._findState.wholeWord, NOTEBOOK_MAX_MATCHES);
 			this._findDecorations.set(this.notebookFindModel.findMatches, this.notebookFindModel.findArray);
-			this._findState.changeMatchInfo(
-				this.notebookFindModel.getIndexByRange(this._currentMatch),
-				this._findDecorations.getCount(),
-				this._currentMatch
-			);
+			this._updateFinderMatchState();
 		}
 	}
 
