@@ -145,13 +145,14 @@ export abstract class AzureAuth implements vscode.Disposable {
 					Logger.error(ex.originalMessageAndException);
 				}
 			} else {
-				if (ex.message) {
-					loginComplete?.reject(new AzureAuthError(`${ex.errorMessage || ex.message}`, `${ex.errorMessage || ex.message}`, undefined));
+				const message = ex.errorMessage || ex.message;
+				if (message) {
+					loginComplete?.reject(new AzureAuthError(message, message, undefined));
 					return {
 						canceled: false,
 						error: true,
 						errorCode: ex.errorCode,
-						errorMessage: ex.errorMessage || ex.message
+						errorMessage: message
 					};
 				}
 				Logger.error(ex);
