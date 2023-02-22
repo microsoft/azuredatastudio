@@ -151,6 +151,9 @@
     <trans-unit id="dataworkspace.yesRecommended">
       <source xml:lang="en">Yes (Recommended)</source>
     </trans-unit>
+    <trans-unit id="dragAndDropNotSupported">
+      <source xml:lang="en">This project type does not support drag and drop.</source>
+    </trans-unit>
     <trans-unit id="fileDoesNotExist">
       <source xml:lang="en">File '{0}' doesn't exist</source>
     </trans-unit>
@@ -168,6 +171,9 @@
     </trans-unit>
     <trans-unit id="noPreviousData">
       <source xml:lang="en">Prior {0} for the current project will appear here, please run to see the results.</source>
+    </trans-unit>
+    <trans-unit id="onlyMovingOneFileIsSupported">
+      <source xml:lang="en">Only moving one file at a time is supported.</source>
     </trans-unit>
     <trans-unit id="openedProjectsUndefinedAfterRefresh">
       <source xml:lang="en">List of opened projects should not be undefined after refresh from disk.</source>

@@ -810,6 +810,111 @@ describe('ProjectsController', function (): void {
 			should(project.files.filter(f => f.type === EntryType.Folder).length).equal(expectedFolders.length, 'Unexpected number of folders in project');
 		});
 	});
+
+	describe('Move file', function (): void {
+		it('Should move a file to another folder', async function (): Promise<void> {
+			const spy = sinon.spy(vscode.window, 'showErrorMessage');
+			sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.move));
+
+			let proj = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+
+			const projTreeRoot = await setupMoveTest(proj);
+
+			const projController = new ProjectsController(testContext.outputChannel);
+
+			// try to move a file from the root folder into the UpperFolder
+			const sqlFileNode = projTreeRoot.children.find(x => x.friendlyName === 'script1.sql');
+			const folderWorkspaceTreeItem = createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!);
+			await projController.moveFile(vscode.Uri.file(proj.projectFilePath), sqlFileNode, folderWorkspaceTreeItem);
+
+			should(spy.notCalled).be.true('showErrorMessage should not have been called');
+
+			// reload project and verify file was moved
+			proj = await Project.openProject(proj.projectFilePath);
+			should(proj.files.find(f => f.relativePath === 'UpperFolder\\script1.sql') !== undefined).be.true('The file path should have been updated');
+			should(await utils.exists(path.join(proj.projectFolderPath, 'UpperFolder', 'script1.sql'))).be.true('The moved file should exist');
+		});
+
+		it('Should not allow moving a file to Database References or SQLCMD folder', async function (): Promise<void> {
+			const spy = sinon.spy(vscode.window, 'showErrorMessage');
+			sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.move));
+
+			let proj = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			const projTreeRoot = await setupMoveTest(proj);
+			const projController = new ProjectsController(testContext.outputChannel);
+
+			const foldersToTest = ['SQLCMD Variables', 'Database References'];
+
+			for (const folder of foldersToTest) {
+				// try to move a file from the root folder into the UpperFolder
+				const sqlFileNode = projTreeRoot.children.find(x => x.friendlyName === 'script1.sql');
+				const sqlCmdVariablesWorkspaceTreeItem = createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === folder)!);
+				await projController.moveFile(vscode.Uri.file(proj.projectFilePath), sqlFileNode, sqlCmdVariablesWorkspaceTreeItem);
+
+				// reload project and verify file was not moved
+				proj = await Project.openProject(proj.projectFilePath);
+				should(proj.files.find(f => f.relativePath === 'script1.sql') !== undefined).be.true(`The file path should not have been updated when trying to move script1.sql to ${folder}`);
+				should(spy.notCalled).be.true('showErrorMessage should not have been called.');
+				spy.restore();
+			}
+		});
+
+		it('Should only allow moving files', async function (): Promise<void> {
+			const spy = sinon.spy(vscode.window, 'showErrorMessage');
+			let proj = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			const projTreeRoot = await setupMoveTest(proj);
+			const projController = new ProjectsController(testContext.outputChannel);
+
+			// try to move sqlcmd variable
+			const sqlcmdVarNode = projTreeRoot.children.find(x => x.friendlyName === 'SQLCMD Variables')!.children[0];
+			const projectRootWorkspaceTreeItem = createWorkspaceTreeItem(projTreeRoot);
+			await projController.moveFile(vscode.Uri.file(proj.projectFilePath), sqlcmdVarNode, projectRootWorkspaceTreeItem);
+
+			should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once when trying to move a sqlcmd variable');
+			should(spy.calledWith(constants.onlyMoveSqlFilesSupported)).be.true(`showErrorMessage not called with expected message '${constants.onlyMoveSqlFilesSupported}' Actual '${spy.getCall(0).args[0]}'`);
+			spy.restore();
+
+			// try moving a database reference
+			const dbRefNode = projTreeRoot.children.find(x => x.friendlyName === 'Database References')!.children[0];
+			await projController.moveFile(vscode.Uri.file(proj.projectFilePath), dbRefNode, projectRootWorkspaceTreeItem);
+
+			should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once when trying to move a database reference');
+			should(spy.calledWith(constants.onlyMoveSqlFilesSupported)).be.true(`showErrorMessage not called with expected message '${constants.onlyMoveSqlFilesSupported}' Actual '${spy.getCall(0).args[0]}'`);
+			spy.restore();
+
+			// try moving a folder
+			const folderNode = projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder');
+			await projController.moveFile(vscode.Uri.file(proj.projectFilePath), folderNode, projectRootWorkspaceTreeItem);
+
+			should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once when trying to move a folder');
+			should(spy.calledWith(constants.onlyMoveSqlFilesSupported)).be.true(`showErrorMessage not called with expected message '${constants.onlyMoveSqlFilesSupported}' Actual '${spy.getCall(0).args[0]}'`);
+			spy.restore();
+		});
+
+		it('Should not allow moving files between projects', async function (): Promise<void> {
+			const spy = sinon.spy(vscode.window, 'showErrorMessage');
+			sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.move));
+
+			let proj1 = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			let proj2 = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+
+			const projTreeRoot1 = await setupMoveTest(proj1);
+			const projTreeRoot2 = await setupMoveTest(proj2);
+			const projController = new ProjectsController(testContext.outputChannel);
+
+			// try to move a file from the root folder of proj1 to the UpperFolder of proj2
+			const proj1SqlFileNode = projTreeRoot1.children.find(x => x.friendlyName === 'script1.sql');
+			const proj2FolderWorkspaceTreeItem = createWorkspaceTreeItem(projTreeRoot2.children.find(x => x.friendlyName === 'UpperFolder')!);
+			await projController.moveFile(vscode.Uri.file(proj1.projectFilePath), proj1SqlFileNode, proj2FolderWorkspaceTreeItem);
+
+			should(spy.called).be.true('showErrorMessage should have been called');
+			should(spy.calledWith(constants.movingFilesBetweenProjectsNotSupported)).be.true(`showErrorMessage not called with expected message '${constants.movingFilesBetweenProjectsNotSupported}' Actual '${spy.getCall(0).args[0]}'`);
+
+			// verify script1.sql was not moved
+			proj1 = await Project.openProject(proj1.projectFilePath);
+			should(proj1.files.find(f => f.relativePath === 'script1.sql') !== undefined).be.true(`The file path should not have been updated when trying to move script1.sql to proj2`);
+		});
+	});
 });
 
 async function setupDeleteExcludeTest(proj: Project): Promise<[FileProjectEntry, ProjectRootTreeItem, FileProjectEntry, FileProjectEntry, FileProjectEntry]> {
@@ -834,6 +939,18 @@ async function setupDeleteExcludeTest(proj: Project): Promise<[FileProjectEntry,
 	should((await fs.readFile(scriptEntry.fsUri.fsPath)).toString()).equal('not a real script');
 
 	return [scriptEntry, projTreeRoot, preDeployEntry, postDeployEntry, noneEntry];
+}
+
+async function setupMoveTest(proj: Project): Promise<ProjectRootTreeItem> {
+	await proj.addFolderItem('UpperFolder');
+	await proj.addFolderItem('UpperFolder/LowerFolder');
+	await proj.addScriptItem('UpperFolder/LowerFolder/someScript.sql', 'not a real script');
+	await proj.addScriptItem('UpperFolder/LowerFolder/someOtherScript.sql', 'Also not a real script');
+	await proj.addScriptItem('../anotherScript.sql', 'Also not a real script');
+	await proj.addScriptItem('script1.sql', 'Also not a real script');
+
+	const projTreeRoot = new ProjectRootTreeItem(proj);
+	return projTreeRoot;
 }
 
 function createWorkspaceTreeItem(node: BaseProjectTreeItem): dataworkspace.WorkspaceTreeItem {
