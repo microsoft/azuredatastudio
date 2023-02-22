@@ -434,8 +434,220 @@ declare module 'vscode-mssql' {
 		savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<ResultStatus>;
 	}
 
+	/**
+	 * Interface for working with .sqlproj files
+	 */
 	export interface ISqlProjectsService {
-		getDatabaseReferences(projectUri: string): Thenable<GetDatabaseReferencesResult>;
+		/**
+		 * Add a dacpac reference to a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param dacpacPath Path to the .dacpac file
+		 * @param suppressMissingDependencies Whether to suppress missing dependencies
+		 * @param databaseVariable SQLCMD variable name for specifying the other database this reference is to, if different from that of the current project
+		 * @param serverVariable SQLCMD variable name for specifying the other server this reference is to, if different from that of the current project.
+			 If this is set, DatabaseVariable must also be set.
+		 * @param databaseLiteral Literal name used to reference another database in the same server, if not using SQLCMD variables
+		 */
+		addDacpacReference(projectUri: string, dacpacPath: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Promise<ResultStatus>;
+
+		/**
+		 * Add a SQL Project reference to a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param projectPath Path to the referenced .sqlproj file
+		 * @param projectGuid GUID for the referenced SQL project
+		 * @param suppressMissingDependencies Whether to suppress missing dependencies
+		 * @param databaseVariable SQLCMD variable name for specifying the other database this reference is to, if different from that of the current project
+		 * @param serverVariable SQLCMD variable name for specifying the other server this reference is to, if different from that of the current project.
+			 If this is set, DatabaseVariable must also be set.
+		 * @param databaseLiteral Literal name used to reference another database in the same server, if not using SQLCMD variables
+		 */
+		addSqlProjectReference(projectUri: string, projectPath: string, projectGuid: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Promise<ResultStatus>;
+
+		/**
+		 * Add a system database reference to a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param systemDatabase Type of system database
+		 * @param suppressMissingDependencies Whether to suppress missing dependencies
+		 * @param databaseLiteral Literal name used to reference another database in the same server, if not using SQLCMD variables
+		 */
+		addSystemDatabaseReference(projectUri: string, systemDatabase: SystemDatabase, suppressMissingDependencies: boolean, databaseLiteral?: string): Promise<ResultStatus>;
+
+		/**
+		 * Delete a database reference from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 */
+		deleteDatabaseReference(projectUri: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Add a folder to a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the folder, typically relative to the .sqlproj file
+		 */
+		addFolder(projectUri: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Delete a folder from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the folder, typically relative to the .sqlproj file
+		 */
+		deleteFolder(projectUri: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Add a post-deployment script to a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 */
+		addPostDeploymentScript(projectUri: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Add a pre-deployment script to a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 */
+		addPreDeploymentScript(projectUri: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Delete a post-deployment script from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 */
+		deletePostDeploymentScript(projectUri: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Delete a pre-deployment script from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 */
+		deletePreDeploymentScript(projectUri: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Exclude a post-deployment script from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 */
+		excludePostDeploymentScript(projectUri: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Exclude a pre-deployment script from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 */
+		excludePreDeploymentScript(projectUri: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Move a post-deployment script in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
+		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 */
+		movePostDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Move a pre-deployment script in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
+		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 */
+		movePreDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Close a SQL project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		closeProject(projectUri: string): Promise<ResultStatus>;
+
+		/**
+		 * Create a new SQL project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param sqlProjectType Type of SQL Project: SDK-style or Legacy
+		 * @param databaseSchemaProvider Database schema provider for the project, in the format
+			 "Microsoft.Data.Tools.Schema.Sql.SqlXYZDatabaseSchemaProvider".
+			 Case sensitive.
+		 * @param buildSdkVersion Version of the Microsoft.Build.Sql SDK for the project, if overriding the default
+		 */
+		createProject(projectUri: string, sqlProjectType: ProjectType, databaseSchemaProvider?: string, buildSdkVersion?: string): Promise<ResultStatus>;
+
+		/**
+		 * Get the cross-platform compatibility status for a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getCrossPlatformCompatibility(projectUri: string): Promise<GetCrossPlatformCompatiblityResult>;
+
+		/**
+		 * Open an existing SQL project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		openProject(projectUri: string): Promise<ResultStatus>;
+
+		/**
+		 * Update a SQL project to be cross-platform compatible
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		updateProjectForCrossPlatform(projectUri: string): Promise<ResultStatus>;
+
+		/**
+		 * Add a SQLCMD variable to a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param name Name of the SQLCMD variable
+		 * @param defaultValue Default value of the SQLCMD variable
+		 * @param value Value of the SQLCMD variable, with or without the $()
+		 */
+		addSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<ResultStatus>;
+
+		/**
+		 * Delete a SQLCMD variable from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param name Name of the SQLCMD variable to be deleted
+		 */
+		deleteSqlCmdVariable(projectUri: string, name?: string): Promise<ResultStatus>;
+
+		/**
+		 * Update an existing SQLCMD variable in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param name Name of the SQLCMD variable
+		 * @param defaultValue Default value of the SQLCMD variable
+		 * @param value Value of the SQLCMD variable, with or without the $()
+		 */
+		updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<ResultStatus>;
+
+		/**
+		 * Add a SQL object script to a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 */
+		addSqlObjectScript(projectUri: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Delete a SQL object script from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 */
+		deleteSqlObjectScript(projectUri: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Exclude a SQL object script from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 */
+		excludeSqlObjectScript(projectUri: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Move a SQL object script in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
+		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 */
+		moveSqlObjectScript(projectUri: string, destinationPath: string, path: string): Promise<ResultStatus>;
+	}
+
+	export interface GetCrossPlatformCompatiblityResult extends ResultStatus {
+		isCrossPlatformCompatible: boolean;
+	}
+
+	export const enum ProjectType {
+		SdkStyle = 0,
+		LegacyStyle = 1
 	}
 
 	/**
