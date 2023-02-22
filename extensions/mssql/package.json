@@ -9,9 +9,6 @@
   "engines": {
     "vscode": "*"
   },
-  "enabledApiProposals": [
-    "textDocumentNotebook"
-  ],
   "main": "./out/main",
   "typings": "./src/mssql",
   "extensionDependencies": [
