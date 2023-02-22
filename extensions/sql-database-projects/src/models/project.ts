@@ -1247,7 +1247,7 @@ export class Project implements ISqlProject {
 		}
 
 		// if none already exist, make a new ItemGroup for it
-		if (!outputItemGroup) {
+		if (outputItemGroup.length === 0) {
 			returnItemGroup = this.projFileXmlDoc!.createElement(constants.ItemGroup);
 			this.projFileXmlDoc!.documentElement.appendChild(returnItemGroup);
 
@@ -1259,7 +1259,7 @@ export class Project implements ISqlProject {
 				for (let ig = 0; ig < outputItemGroup.length; ig++) {
 					const itemGroup = outputItemGroup[ig];
 
-					// find all none remove scripts to specified in the sqlproj
+					// find all none include scripts specified in the sqlproj
 					const noneItems = itemGroup.getElementsByTagName(constants.None);
 					for (let n = 0; n < noneItems.length; n++) {
 						let noneIncludeItem = noneItems[n].getAttribute(constants.Include);
