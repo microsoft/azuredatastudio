@@ -41,10 +41,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	Logger.log(`DataWorkspaceExtension constructor took ${new Date().getTime() - dataWorkspaceExtensionStartTime}ms`);
 
-	const registerTreeDataProvidertartTime = new Date().getTime();
-	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
-	Logger.log(`registerTreeDataProvider took ${new Date().getTime() - registerTreeDataProvidertartTime}ms`);
-
 	const registerCommandStartTime = new Date().getTime();
 	context.subscriptions.push(vscode.commands.registerCommand('projects.new', async () => {
 		// Make sure all project providing extensions are activated to be sure the project templates show up
@@ -83,7 +79,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('projects.removeProject', async (treeItem: WorkspaceTreeItem) => {
-		await workspaceService.removeProject(vscode.Uri.file(treeItem.element.project.projectFilePath));
+		await workspaceService.removeProject(treeItem.element.projectFileUri);
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('projects.manageProject', async (treeItem: WorkspaceTreeItem) => {
