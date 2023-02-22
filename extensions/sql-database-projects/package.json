@@ -26,7 +26,8 @@
   },
   "extensionDependencies": [
     "Microsoft.mssql",
-    "Microsoft.schema-compare"
+    "Microsoft.schema-compare",
+    "Microsoft.data-workspace"
   ],
   "capabilities": {
     "virtualWorkspaces": false,
