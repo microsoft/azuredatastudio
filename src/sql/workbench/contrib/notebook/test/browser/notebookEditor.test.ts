@@ -439,7 +439,7 @@ suite('Test class NotebookEditor:', () => {
 				TypeMoq.It.isAny(),
 				TypeMoq.It.isAnyNumber()
 			), TypeMoq.Times.once());
-			findDecorationsMock.verify(x => x.clearDecorations(), TypeMoq.Times.never());
+			findDecorationsMock.verify(x => x.clearDecorations(), TypeMoq.Times.once());
 			notebookFindModelMock.verify(x => x.clearFind(), TypeMoq.Times.never());
 			if (visibility === 'visible') {
 				assert.strictEqual(notebookEditor.getPosition(), currentMatch, `position must be set to the same NotebookRange that we set for '_currentMatch' property of notebookEditor`);
