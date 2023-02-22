@@ -194,7 +194,6 @@ declare module 'azdata' {
 		 * @param connectionProfile The {@link IConnectionProfile} containing the information for the connection
 		 * @param saveConnection Whether to save the connection in the saved connections list of the Servers view. Default is true
 		 * @param showDashboard Whether to show the dashboard for the connection upon success. Default is true
-		 * @param ownerUri The URI string of the document that owns the resulting connection. Default is undefined
 		 */
 		export function connect(connectionProfile: IConnectionProfile, saveConnection?: boolean, showDashboard?: boolean): Thenable<ConnectionResult>;
 
