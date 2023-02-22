@@ -148,7 +148,7 @@ export class AccountManagementService implements IAccountManagementService {
 					if (accountResult.canceled === true) {
 						return;
 					} else {
-						throw Error(localize('error', `${accountResult.errorCode} \nError Message: ${accountResult.errorMessage}`));
+						throw Error(localize('addAccountFailed', `${accountResult.errorCode} \nError Message: ${accountResult.errorMessage}`));
 					}
 				}
 				let result = await this._accountStore.addOrUpdate(accountResult);
@@ -211,6 +211,8 @@ export class AccountManagementService implements IAccountManagementService {
 				if (refreshedAccount.canceled) {
 					// Pattern here is to throw if this fails. Handled upstream.
 					throw new Error(localize('refreshFailed', "Refresh account was canceled by the user"));
+				} else {
+					throw Error(localize('refreshFailed', `${refreshedAccount.errorCode} \nError Message: ${refreshedAccount.errorMessage}`));
 				}
 			} else {
 				account = refreshedAccount;
