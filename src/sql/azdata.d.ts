@@ -2520,21 +2520,6 @@ declare module 'azdata' {
 		 * Type guard for differentiating user cancelled sign in errors from other errors
 		 */
 		canceled: boolean;
-
-		/**
-		 * Signals that an error other than the user cancelled sign in error has occurred
-		 */
-		error?: boolean;
-
-		/**
-		 * Error code used for non-user cancelled sign in errors
-		 */
-		errorCode?: string;
-
-		/**
-		 * Error message used for non-user cancelled sign in errors
-		 */
-		errorMessage?: string;
 	}
 	/**
 	 * Represents a provider of accounts.
