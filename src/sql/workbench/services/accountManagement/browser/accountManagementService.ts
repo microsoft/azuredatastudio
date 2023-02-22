@@ -149,7 +149,7 @@ export class AccountManagementService implements IAccountManagementService {
 					return;
 				} else if (this.isErrorResult(account)) {
 					let message = this.getMessage(account);
-					throw Error(`Code: ${message.errorCode}\n Error Message: ${message.errorMessage}`);
+					throw Error(`\nError Code: ${message.errorCode}\nError Message: ${message.errorMessage}`);
 				}
 				let result = await this._accountStore.addOrUpdate(account);
 				if (!result) {
