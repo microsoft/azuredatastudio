@@ -27,6 +27,7 @@ import { Action } from 'vs/base/common/actions';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ADAL_AUTH_LIBRARY, AuthLibrary, filterAccounts, MSAL_AUTH_LIBRARY } from 'sql/workbench/services/accountManagement/browser/accountDialog';
+import { ErrorMessage } from 'azdata';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -146,8 +147,10 @@ export class AccountManagementService implements IAccountManagementService {
 				let account = await provider.provider.prompt();
 				if (this.isCanceledResult(account)) {
 					return;
+				} else if (this.isErrorResult(account)) {
+					let message = this.getMessage(account);
+					throw Error(`Code: ${message.errorCode}\n Error Message: ${message.errorMessage}`);
 				}
-
 				let result = await this._accountStore.addOrUpdate(account);
 				if (!result) {
 					this._logService.error('adding account failed');
@@ -192,6 +195,14 @@ export class AccountManagementService implements IAccountManagementService {
 
 	private isCanceledResult(result: azdata.Account | azdata.PromptFailedResult): result is azdata.PromptFailedResult {
 		return (<azdata.PromptFailedResult>result).canceled;
+	}
+
+	private isErrorResult(result: azdata.Account | azdata.PromptFailedResult): result is azdata.PromptFailedResult {
+		return (<azdata.PromptFailedResult>result).error;
+	}
+
+	private getMessage(result: azdata.Account | azdata.PromptFailedResult): ErrorMessage {
+		return (<azdata.PromptFailedResult>result).message;
 	}
 
 	/**

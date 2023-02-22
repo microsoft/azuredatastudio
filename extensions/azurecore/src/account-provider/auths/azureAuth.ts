@@ -145,14 +145,24 @@ export abstract class AzureAuth implements vscode.Disposable {
 					Logger.error(ex.originalMessageAndException);
 				}
 			} else {
+				if (ex.message) {
+					loginComplete?.reject(new AzureAuthError(localize('azureAuth.unidentifiedError', `${ex.message}`), `${ex.message}`, undefined));
+					let error: azdata.ErrorMessage = {
+						errorCode: ex.errorCode,
+						errorMessage: ex.errorMessage || ex.message
+					};
+					return {
+						canceled: false,
+						error: true,
+						message: error
+					};
+				}
 				Logger.error(ex);
 
 			}
 			return {
 				canceled: false
 			};
-		} finally {
-			loginComplete?.reject(new AzureAuthError(localize('azureAuth.unidentifiedError', "Unidentified error with azure authentication"), 'Unidentified error with azure auth', undefined));
 		}
 	}
 
