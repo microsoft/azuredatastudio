@@ -2521,6 +2521,7 @@ declare module 'azdata' {
 		 */
 		canceled: boolean;
 	}
+
 	/**
 	 * Represents a provider of accounts.
 	 */
