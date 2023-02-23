@@ -63,7 +63,6 @@ export class PublishDatabaseDialog {
 	private publishOptionsDialog: PublishOptionsDialog | undefined;
 	public publishOptionsModified: boolean = false;
 	private publishProfileUri: vscode.Uri | undefined;
-	public profileSaved: boolean = false;
 
 	private completionPromise: Deferred = new Deferred();
 
@@ -95,8 +94,6 @@ export class PublishDatabaseDialog {
 
 		this.dialog.customButtons = [];
 		this.dialog.customButtons.push(generateScriptButton);
-
-		this.profileSaved = false;		// Reset
 
 		utils.getAzdataApi()!.window.openDialog(this.dialog);
 	}
@@ -953,9 +950,8 @@ export class PublishDatabaseDialog {
 			this.profileUsed = true;
 			this.publishProfileUri = filePath;
 
-			this.profileSaved = true;
-
-			void this.project.addPublishProfileToProjFile(filePath.fsPath);		//add profile to the sqlproj in background
+			await this.project.addPublishProfileToProjFile(filePath.fsPath);
+			void vscode.commands.executeCommand(constants.refreshDataWorkspaceCommand);		//refresh data workspace to load the newly added profile to the tree
 		});
 
 		return saveProfileAsButton;

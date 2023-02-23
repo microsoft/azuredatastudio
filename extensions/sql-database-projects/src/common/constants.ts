@@ -486,7 +486,7 @@ export const ImportElements = localize('importElements', "Import Elements");
 export const ProjectReferenceNameElement = localize('projectReferenceNameElement', "Project reference name element");
 export const ProjectReferenceElement = localize('projectReferenceElement', "Project reference");
 export const DacpacReferenceElement = localize('dacpacReferenceElement', "Dacpac reference");
-export const PublishProfileElements = localize('publishProfileElements', "Publish profile Elements");
+export const PublishProfileElements = localize('publishProfileElements', "Publish profile elements");
 
 /** Name of the property item in the project file that defines default database collation. */
 export const DefaultCollationProperty = 'DefaultCollation';

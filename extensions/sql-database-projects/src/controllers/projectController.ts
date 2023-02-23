@@ -422,11 +422,7 @@ export class ProjectsController {
 
 			publishDatabaseDialog.openDialog();
 
-			await publishDatabaseDialog.waitForClose();
-
-			if (publishDatabaseDialog.profileSaved) {
-				this.refreshProjectsTree(context as dataworkspace.WorkspaceTreeItem);
-			}
+			return publishDatabaseDialog.waitForClose();
 		} else {
 			return this.publishDatabase(project);
 		}
