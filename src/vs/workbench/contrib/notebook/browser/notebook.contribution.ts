@@ -105,6 +105,7 @@ import { ILanguageFeaturesService } from 'vs/editor/common/services/languageFeat
 import { NotebookInfo } from 'vs/editor/common/languageFeatureRegistry';
 import { COMMENTEDITOR_DECORATION_KEY } from 'vs/workbench/contrib/comments/browser/commentReply';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
+import * as locConstants from 'sql/base/common/locConstants';
 
 /*--------------------------------------------------------------------------------------------- */
 
@@ -728,7 +729,7 @@ for (const editorOption of editorOptionsRegistry) {
 }
 
 const editorOptionsCustomizationSchema: IConfigurationPropertySchema = {
-	description: nls.localize('notebook.editorOptions.experimentalCustomization', 'Settings for code editors used in notebooks. This can be used to customize most editor.* settings.'),
+	description: locConstants.experimentalCustomizationDescription,
 	default: {},
 	allOf: [
 		{
@@ -755,7 +756,7 @@ configurationRegistry.registerConfiguration({
 	type: 'object',
 	properties: {
 		[NotebookSetting.displayOrder]: {
-			description: nls.localize('notebook.displayOrder.description', "Priority list for output mime types"),
+			description: locConstants.displayOrderDescription,
 			type: 'array',
 			items: {
 				type: 'string'
@@ -763,7 +764,7 @@ configurationRegistry.registerConfiguration({
 			default: []
 		},
 		[NotebookSetting.cellToolbarLocation]: {
-			description: nls.localize('notebook.cellToolbarLocation.description', "Where the cell toolbar should be shown, or whether it should be hidden."),
+			description: locConstants.cellToolbarLocationDescription,
 			type: 'object',
 			additionalProperties: {
 				markdownDescription: nls.localize('notebook.cellToolbarLocation.viewType', "Configure the cell toolbar position for for specific file types"),
@@ -776,7 +777,7 @@ configurationRegistry.registerConfiguration({
 			tags: ['notebookLayout']
 		},
 		[NotebookSetting.showCellStatusBar]: {
-			description: nls.localize('notebook.showCellStatusbar.description', "Whether the cell status bar should be shown."),
+			description: locConstants.showCellStatusbarDescription,
 			type: 'string',
 			enum: ['hidden', 'visible', 'visibleAfterExecute'],
 			enumDescriptions: [
@@ -787,39 +788,39 @@ configurationRegistry.registerConfiguration({
 			tags: ['notebookLayout']
 		},
 		[NotebookSetting.textDiffEditorPreview]: {
-			description: nls.localize('notebook.diff.enablePreview.description', "Whether to use the enhanced text diff editor for notebook."),
+			description: locConstants.diffEnablePreviewDescription,
 			type: 'boolean',
 			default: true,
 			tags: ['notebookLayout']
 		},
 		[NotebookSetting.cellToolbarVisibility]: {
-			markdownDescription: nls.localize('notebook.cellToolbarVisibility.description', "Whether the cell toolbar should appear on hover or click."),
+			markdownDescription: locConstants.cellToolbarVisibilityDescription,
 			type: 'string',
 			enum: ['hover', 'click'],
 			default: 'click',
 			tags: ['notebookLayout']
 		},
 		[NotebookSetting.undoRedoPerCell]: {
-			description: nls.localize('notebook.undoRedoPerCell.description', "Whether to use separate undo/redo stack for each cell."),
+			description: locConstants.undoRedoPerCellDescription,
 			type: 'boolean',
 			default: true,
 			tags: ['notebookLayout']
 		},
 		[NotebookSetting.compactView]: {
-			description: nls.localize('notebook.compactView.description', "Control whether the notebook editor should be rendered in a compact form. For example, when turned on, it will decrease the left margin width."),
+			description: locConstants.compactViewDescription,
 			type: 'boolean',
 			default: true,
 			tags: ['notebookLayout']
 		},
 		[NotebookSetting.focusIndicator]: {
-			description: nls.localize('notebook.focusIndicator.description', "Controls where the focus indicator is rendered, either along the cell borders or on the left gutter"),
+			description: locConstants.focusIndicatorDescription,
 			type: 'string',
 			enum: ['border', 'gutter'],
 			default: 'gutter',
 			tags: ['notebookLayout']
 		},
 		[NotebookSetting.insertToolbarLocation]: {
-			description: nls.localize('notebook.insertToolbarPosition.description', "Control where the insert cell actions should appear."),
+			description: locConstants.insertToolbarPositionDescription,
 			type: 'string',
 			enum: ['betweenCells', 'notebookToolbar', 'both', 'hidden'],
 			enumDescriptions: [
@@ -832,19 +833,19 @@ configurationRegistry.registerConfiguration({
 			tags: ['notebookLayout']
 		},
 		[NotebookSetting.globalToolbar]: {
-			description: nls.localize('notebook.globalToolbar.description', "Control whether to render a global toolbar inside the notebook editor."),
+			description: locConstants.globalToolbarDescription,
 			type: 'boolean',
 			default: true,
 			tags: ['notebookLayout']
 		},
 		[NotebookSetting.consolidatedOutputButton]: {
-			description: nls.localize('notebook.consolidatedOutputButton.description', "Control whether outputs action should be rendered in the output toolbar."),
+			description: locConstants.consolidatedOutputButtonDescription,
 			type: 'boolean',
 			default: true,
 			tags: ['notebookLayout']
 		},
 		[NotebookSetting.showFoldingControls]: {
-			description: nls.localize('notebook.showFoldingControls.description', "Controls when the Markdown header folding arrow is shown."),
+			description: locConstants.showFoldingControlsDescription,
 			type: 'string',
 			enum: ['always', 'mouseover'],
 			enumDescriptions: [
@@ -855,57 +856,57 @@ configurationRegistry.registerConfiguration({
 			tags: ['notebookLayout']
 		},
 		[NotebookSetting.dragAndDropEnabled]: {
-			description: nls.localize('notebook.dragAndDrop.description', "Control whether the notebook editor should allow moving cells through drag and drop."),
+			description: locConstants.dragAndDropDescription,
 			type: 'boolean',
 			default: true,
 			tags: ['notebookLayout']
 		},
 		[NotebookSetting.consolidatedRunButton]: {
-			description: nls.localize('notebook.consolidatedRunButton.description', "Control whether extra actions are shown in a dropdown next to the run button."),
+			description: locConstants.consolidatedRunButtonDescription,
 			type: 'boolean',
 			default: false,
 			tags: ['notebookLayout']
 		},
 		[NotebookSetting.globalToolbarShowLabel]: {
-			description: nls.localize('notebook.globalToolbarShowLabel', "Control whether the actions on the notebook toolbar should render label or not."),
+			description: locConstants.globalToolbarShowLabelDescription,
 			type: 'string',
 			enum: ['always', 'never', 'dynamic'],
 			default: 'always',
 			tags: ['notebookLayout']
 		},
 		[NotebookSetting.textOutputLineLimit]: {
-			description: nls.localize('notebook.textOutputLineLimit', "Control how many lines of text in a text output is rendered."),
+			description: locConstants.textOutputLineLimitDescription,
 			type: 'number',
 			default: 30,
 			tags: ['notebookLayout']
 		},
 		[NotebookSetting.markupFontSize]: {
-			markdownDescription: nls.localize('notebook.markup.fontSize', "Controls the font size in pixels of rendered markup in notebooks. When set to `0`, 120% of `#editor.fontSize#` is used."),
+			markdownDescription: locConstants.markupFontSizeDescription,
 			type: 'number',
 			default: 0,
 			tags: ['notebookLayout']
 		},
 		[NotebookSetting.cellEditorOptionsCustomizations]: editorOptionsCustomizationSchema,
 		[NotebookSetting.interactiveWindowCollapseCodeCells]: {
-			markdownDescription: nls.localize('notebook.interactiveWindow.collapseCodeCells', "Controls whether code cells in the interactive window are collapsed by default."),
+			markdownDescription: locConstants.interactiveWindowCollapseCodeCellsDescription,
 			type: 'string',
 			enum: ['always', 'never', 'fromEditor'],
 			default: 'fromEditor'
 		},
 		[NotebookSetting.outputLineHeight]: {
-			markdownDescription: nls.localize('notebook.outputLineHeight', "Line height of the output text for notebook cells.\n - Values between 0 and 8 will be used as a multiplier with the font size.\n - Values greater than or equal to 8 will be used as effective values."),
+			markdownDescription: locConstants.outputLineHeightDescription,
 			type: 'number',
 			default: 22,
 			tags: ['notebookLayout']
 		},
 		[NotebookSetting.outputFontSize]: {
-			markdownDescription: nls.localize('notebook.outputFontSize', "Font size for the output text for notebook cells. When set to 0 `#editor.fontSize#` is used."),
+			markdownDescription: locConstants.outputFontSizeDescription,
 			type: 'number',
 			default: 0,
 			tags: ['notebookLayout']
 		},
 		[NotebookSetting.outputFontFamily]: {
-			markdownDescription: nls.localize('notebook.outputFontFamily', "The font family for the output text for notebook cells. When set to empty, the `#editor.fontFamily#` is used."),
+			markdownDescription: locConstants.outputFontFamilyDescription,
 			type: 'string',
 			tags: ['notebookLayout']
 		},
