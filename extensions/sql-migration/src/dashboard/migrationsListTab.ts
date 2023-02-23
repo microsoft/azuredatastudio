@@ -414,11 +414,13 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 					<azdata.HyperlinkColumnCellValue>{
 						icon: IconPathHelper.sqlDatabaseLogo,
 						title: migration.properties.sourceDatabaseName ?? EmptySettingValue,
+						role: 'button'
 					},															// sourceDatabase
 					migration.properties.sourceServerName ?? EmptySettingValue, // sourceServer
 					<azdata.HyperlinkColumnCellValue>{
 						icon: getMigrationStatusImage(migration),
 						title: getMigrationStatusWithErrors(migration),
+						role: 'button'
 					},															// statue
 					getMigrationMode(migration),								// mode
 					getMigrationTargetType(migration),							// targetType

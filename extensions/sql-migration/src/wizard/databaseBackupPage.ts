@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { getStorageAccountAccessKeys, SqlVMServer } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { Blob, MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, NetworkShare, StateChangeEvent, ValidateIrState, ValidationResult } from '../models/stateMachine';
+import { MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, NetworkShare, StateChangeEvent, ValidateIrState, ValidationResult } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
@@ -27,6 +27,7 @@ const blobResourceGroupErrorStrings = [constants.RESOURCE_GROUP_NOT_FOUND];
 const blobStorageAccountErrorStrings = [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP_PROMPT];
 const blobContainerErrorStrings = [constants.NO_BLOBCONTAINERS_FOUND, constants.SELECT_STORAGE_ACCOUNT];
 const blobFileErrorStrings = [constants.NO_BLOBFILES_FOUND, constants.SELECT_BLOB_CONTAINER];
+const blobFolderErrorStrings = [constants.NO_BLOBFOLDERS_FOUND, constants.SELECT_BLOB_CONTAINER];
 
 export class DatabaseBackupPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -46,6 +47,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _blobContainerStorageAccountDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerLastBackupFileDropdowns!: azdata.DropDownComponent[];
+	private _blobContainerFolderDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerVmDatabaseAlreadyExistsInfoBox!: azdata.TextComponent;
 
 	private _networkShareStorageAccountDetails!: azdata.FlexContainer;
@@ -390,7 +392,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
 						isReadOnly: true,
-						width: WIZARD_TABLE_COLUMN_WIDTH
+						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL
 					},
 					{
 						displayName: constants.NETWORK_SHARE_PATH,
@@ -412,7 +414,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
 						isReadOnly: true,
-						width: WIZARD_TABLE_COLUMN_WIDTH,
+						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL,
 					},
 					{
 						displayName: constants.TARGET_DATABASE_NAME,
@@ -420,7 +422,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
 						isReadOnly: true,
-						width: WIZARD_TABLE_COLUMN_WIDTH
+						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL
 					},
 					{
 						displayName: constants.RESOURCE_GROUP,
@@ -428,7 +430,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
 						isReadOnly: true,
-						width: WIZARD_TABLE_COLUMN_WIDTH
+						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL
 					},
 					{
 						displayName: constants.STORAGE_ACCOUNT,
@@ -436,7 +438,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
 						isReadOnly: true,
-						width: WIZARD_TABLE_COLUMN_WIDTH
+						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL
 					},
 					{
 						displayName: constants.BLOB_CONTAINER,
@@ -444,7 +446,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
 						isReadOnly: true,
-						width: WIZARD_TABLE_COLUMN_WIDTH
+						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL
 					},
 					{
 						displayName: constants.BLOB_CONTAINER_LAST_BACKUP_FILE,
@@ -452,9 +454,18 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
 						isReadOnly: true,
-						width: WIZARD_TABLE_COLUMN_WIDTH,
+						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL,
 						hidden: true
-					}
+					},
+					{
+						displayName: constants.BLOB_CONTAINER_FOLDER,
+						valueType: azdata.DeclarativeDataType.component,
+						rowCssStyles: rowCssStyle,
+						headerCssStyles: headerCssStyles,
+						isReadOnly: true,
+						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL,
+						hidden: true
+					},
 				]
 			}).component();
 
@@ -719,6 +730,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 									errors.push(constants.INVALID_BLOB_LAST_BACKUP_FILE_ERROR(this.migrationStateModel._databasesForMigration[index]));
 								}
 							});
+						} else {
+							this._blobContainerFolderDropdowns.forEach((v, index) => {
+								if (this.shouldDisplayBlobDropdownError(v, blobFolderErrorStrings)) {
+									errors.push(constants.INVALID_BLOB_LAST_BACKUP_FOLDER_ERROR(this.migrationStateModel._databasesForMigration[index]));
+								}
+							});
 						}
 
 						if (this.migrationStateModel.isSqlVmTarget && utils.isTargetSqlVm2014OrBelow(this.migrationStateModel._targetServerInstance as SqlVMServer)) {
@@ -784,21 +801,32 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 			try {
 				const isOfflineMigration = this.migrationStateModel._databaseBackup?.migrationMode === MigrationMode.OFFLINE;
-				const lastBackupFileColumnIndex = this._blobContainerTargetDatabaseNamesTable.columns.length - 1;
-				const oldHidden = this._blobContainerTargetDatabaseNamesTable.columns[lastBackupFileColumnIndex].hidden;
-				const newHidden = !isOfflineMigration;
-				if (oldHidden !== newHidden) {
+
+				// for offline migrations, show last backup file column
+				const lastBackupFileColumnIndex = 5;
+				const lastBackupFileColumnOldHidden = this._blobContainerTargetDatabaseNamesTable.columns[lastBackupFileColumnIndex].hidden;
+				const lastBackupFileColumnNewHidden = !isOfflineMigration;
+				if (lastBackupFileColumnOldHidden !== lastBackupFileColumnNewHidden) {
 					// clear values prior to hiding columns if changing column visibility
 					//  to prevent null DeclarativeTableComponent - exception / _view null
 					await this._blobContainerTargetDatabaseNamesTable.setDataValues([]);
 				}
+				this._blobContainerTargetDatabaseNamesTable.columns[lastBackupFileColumnIndex].hidden = lastBackupFileColumnNewHidden;
 
-				this._blobContainerTargetDatabaseNamesTable.columns[lastBackupFileColumnIndex].hidden = newHidden;
-				this._blobContainerTargetDatabaseNamesTable.columns.forEach(column => {
-					column.width = isOfflineMigration
-						? WIZARD_TABLE_COLUMN_WIDTH_SMALL
-						: WIZARD_TABLE_COLUMN_WIDTH;
-				});
+				// for online migrations, show folder column
+				const folderColumnIndex = 6;
+				const folderColumnOldHidden = this._blobContainerTargetDatabaseNamesTable.columns[folderColumnIndex].hidden;
+				const folderColumnNewHidden = isOfflineMigration;
+				if (folderColumnOldHidden !== folderColumnNewHidden) {
+					// clear values prior to hiding columns if changing column visibility
+					//  to prevent null DeclarativeTableComponent - exception / _view null
+					await this._blobContainerTargetDatabaseNamesTable.setDataValues([]);
+				}
+				this._blobContainerTargetDatabaseNamesTable.columns[folderColumnIndex].hidden = folderColumnNewHidden;
+
+
+
+
 
 				const connectionProfile = await getSourceConnectionProfile();
 				const queryProvider = await getSourceConnectionQueryProvider();
@@ -841,6 +869,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				this._blobContainerStorageAccountDropdowns = [];
 				this._blobContainerDropdowns = [];
 				this._blobContainerLastBackupFileDropdowns = [];
+				this._blobContainerFolderDropdowns = [];
 
 				if (this.migrationStateModel.isSqlMiTarget) {
 					this._existingDatabases = await this.migrationStateModel.getManagedDatabases();
@@ -862,7 +891,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						? this.migrationStateModel._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? sourceDatabaseName
 						: sourceDatabaseName;
 					let networkShare = <NetworkShare>{};
-					let blob = <Blob>{};
+					let blob = <utils.Blob>{};
 
 					if (this.migrationStateModel._didUpdateDatabasesForMigration ||
 						this.migrationStateModel._didDatabaseMappingChange) {
@@ -1013,6 +1042,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							required: true,
 							enabled: false,
 						}).component();
+					const blobContainerFolderDropdown = this._view.modelBuilder.dropDown()
+						.withProps({
+							ariaLabel: constants.BLOB_CONTAINER_FOLDER,
+							editable: true,
+							fireOnTextChange: true,
+							required: true,
+							enabled: false,
+						}).component();
+
 
 					this._disposables.push(
 						blobContainerResourceDropdown.onValueChanged(async (value) => {
@@ -1070,6 +1108,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 									if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 										await this.loadBlobLastBackupFileDropdown(index);
 										await blobContainerLastBackupFileDropdown.updateProperties({ enabled: true });
+									} else {
+										await this.loadBlobFolderDropdown(index);
+										await blobContainerFolderDropdown.updateProperties({ enabled: true });
 									}
 								} else {
 									await this.disableBlobTableDropdowns(index, constants.BLOB_CONTAINER);
@@ -1091,6 +1132,17 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 								}
 							}));
 						this._blobContainerLastBackupFileDropdowns.push(blobContainerLastBackupFileDropdown);
+					} else {
+						this._disposables.push(
+							blobContainerFolderDropdown.onValueChanged(value => {
+								if (value && value !== 'undefined') {
+									if (this.migrationStateModel._blobContainerFolders.includes(value) && !blobFolderErrorStrings.includes(value)) {
+										const selectedFolder = value;
+										this.migrationStateModel._databaseBackup.blobs[index].folderName = selectedFolder;
+									}
+								}
+							}));
+						this._blobContainerFolderDropdowns.push(blobContainerFolderDropdown);
 					}
 				});
 				this.migrationStateModel._sourceDatabaseNames = this.migrationStateModel._databasesForMigration;
@@ -1109,7 +1161,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						{ value: this._blobContainerResourceGroupDropdowns[index] },
 						{ value: this._blobContainerStorageAccountDropdowns[index] },
 						{ value: this._blobContainerDropdowns[index] },
-						{ value: this._blobContainerLastBackupFileDropdowns[index] }]);
+						{ value: this._blobContainerLastBackupFileDropdowns[index] },
+						{ value: this._blobContainerFolderDropdowns[index] }]);
 				await this._blobContainerTargetDatabaseNamesTable.setDataValues([]);
 				await this._blobContainerTargetDatabaseNamesTable.setDataValues(blobContainerTargetData);
 				await this.getSubscriptionValues();
@@ -1266,6 +1319,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 			if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 				await this._blobContainerLastBackupFileDropdowns[i]?.validate();
+			} else {
+				await this._blobContainerFolderDropdowns[i]?.validate();
 			}
 		}
 		if (this.migrationStateModel.isIrMigration) {
@@ -1420,7 +1475,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this.migrationStateModel._databaseBackup.subscription,
 					this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount,
 					this.migrationStateModel._databaseBackup.blobs[index]?.blobContainer);
-				dropDown.values = await utils.getBlobLastBackupFileNamesValues(
+				dropDown.values = utils.getBlobLastBackupFileNamesValues(
 					this.migrationStateModel._lastFileNames);
 				utils.selectDefaultDropdownValue(
 					dropDown,
@@ -1428,6 +1483,28 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					false);
 			} catch (error) {
 				logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobLastBackupFiles', error);
+			} finally {
+				dropDown.loading = false;
+			}
+		}
+	}
+
+	private async loadBlobFolderDropdown(index: number): Promise<void> {
+		const dropDown = this._blobContainerFolderDropdowns[index];
+		if (dropDown) {
+			try {
+				dropDown.loading = true;
+				this.migrationStateModel._blobContainerFolders = await utils.getBlobFolders(this.migrationStateModel._azureAccount,
+					this.migrationStateModel._databaseBackup.subscription,
+					this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount,
+					this.migrationStateModel._databaseBackup.blobs[index]?.blobContainer);
+				dropDown.values = utils.getBlobFolderValues(this.migrationStateModel._blobContainerFolders);
+				utils.selectDefaultDropdownValue(
+					dropDown,
+					this.migrationStateModel._blobContainerFolders[0],
+					false);
+			} catch (error) {
+				logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobFolders', error);
 			} finally {
 				dropDown.loading = false;
 			}
@@ -1446,6 +1523,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._blobContainerLastBackupFileDropdowns[rowIndex].values = createDropdownValuesWithPrereq(constants.SELECT_BLOB_CONTAINER);
 			utils.selectDropDownIndex(this._blobContainerLastBackupFileDropdowns[rowIndex], 0);
 			await this._blobContainerLastBackupFileDropdowns[rowIndex]?.updateProperties(dropdownProps);
+		} else {
+			this._blobContainerFolderDropdowns[rowIndex].values = createDropdownValuesWithPrereq(constants.SELECT_BLOB_CONTAINER);
+			utils.selectDropDownIndex(this._blobContainerFolderDropdowns[rowIndex], 0);
+			await this._blobContainerFolderDropdowns[rowIndex]?.updateProperties(dropdownProps);
 		}
 		if (columnName === constants.BLOB_CONTAINER) { return; }
 

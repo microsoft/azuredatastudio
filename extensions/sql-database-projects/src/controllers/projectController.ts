@@ -14,6 +14,7 @@ import * as vscode from 'vscode';
 import type * as azdataType from 'azdata';
 import * as dataworkspace from 'dataworkspace';
 import type * as mssqlVscode from 'vscode-mssql';
+import * as fse from 'fs-extra';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
@@ -198,7 +199,7 @@ export class ProjectsController {
 		}
 
 		const sqlProjectsService = await utils.getSqlProjectsService();
-		await sqlProjectsService.newProject(newProjFilePath, sdkStyle, targetPlatform);
+		await sqlProjectsService.createProject(newProjFilePath, sdkStyle, targetPlatform);
 
 		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);
 
@@ -1824,6 +1825,68 @@ export class ProjectsController {
 	}
 
 	//#endregion
+
+	/**
+	 * Move a file in the project tree
+	 * @param projectUri URI of the project
+	 * @param source
+	 * @param target
+	 */
+	public async moveFile(projectUri: vscode.Uri, source: any, target: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const sourceFileNode = source as FileNode;
+
+		// only moving files is supported
+		if (!sourceFileNode || !(sourceFileNode instanceof FileNode)) {
+			void vscode.window.showErrorMessage(constants.onlyMoveSqlFilesSupported);
+			return;
+		}
+
+		// Moving files to the SQLCMD variables and Database references folders isn't allowed
+		// TODO: should there be an error displayed if a file attempting to move a file to sqlcmd variables or database references? Or just silently fail and do nothing?
+		if (!target.element.fileSystemUri) {
+			return;
+		}
+
+		// TODO: handle moving between different projects
+		if (projectUri.fsPath !== target.element.projectFileUri.fsPath) {
+			void vscode.window.showErrorMessage(constants.movingFilesBetweenProjectsNotSupported);
+			return;
+		}
+
+		// Calculate the new file path
+		let folderPath;
+		// target is the root of project, which is the .sqlproj
+		if (target.element.projectFileUri.fsPath === target.element.fileSystemUri.fsPath) {
+			folderPath = path.dirname(target.element.projectFileUri.fsPath!);
+		} else {
+			// target is another file or folder
+			folderPath = target.element.fileSystemUri.fsPath.endsWith(constants.sqlFileExtension) ? path.dirname(target.element.fileSystemUri.fsPath) : target.element.fileSystemUri.fsPath;
+		}
+
+		const newPath = path.join(folderPath!, sourceFileNode.friendlyName);
+
+		// don't do anything if the path is the same
+		if (newPath === sourceFileNode.fileSystemUri.fsPath) {
+			return;
+		}
+
+		const result = await vscode.window.showWarningMessage(constants.moveConfirmationPrompt(path.basename(sourceFileNode.fileSystemUri.fsPath), path.basename(folderPath)), { modal: true }, constants.move)
+		if (result !== constants.move) {
+			return;
+		}
+
+		// Move the file
+		try {
+			const project = await Project.openProject(projectUri.fsPath);
+
+			// TODO: swap out with DacFx projects apis - currently moving pre/post deploy scripts don't work, but they should work after the swap
+			await fse.move(sourceFileNode.fileSystemUri.fsPath, newPath!);
+			await project.exclude(project.files.find(f => f.fsUri.fsPath === sourceFileNode.fileSystemUri.fsPath)!);
+			await project.addExistingItem(newPath!);
+		} catch (e) {
+			void vscode.window.showErrorMessage(constants.errorMovingFile(sourceFileNode.fileSystemUri.fsPath, newPath, utils.getErrorMessage(e)));
+		}
+	}
 }
 
 export interface NewProjectParams {

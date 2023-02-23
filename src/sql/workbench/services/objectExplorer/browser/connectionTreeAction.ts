@@ -290,7 +290,8 @@ export class DeleteConnectionAction extends Action {
 		const deleteConnectionConfirmationNo = localize('deleteConnectionConfirmationNo', "No");
 
 		if (this.element instanceof ConnectionProfile) {
-			const modalResult = await this._dialogService.show(Severity.Warning, localize('deleteConnectionConfirmation', "Are you sure you want to delete connection '{0}'?", this.element.connectionName),
+			const name = this.element.connectionName || this.element.serverName;
+			const modalResult = await this._dialogService.show(Severity.Warning, localize('deleteConnectionConfirmation', "Are you sure you want to delete connection '{0}'?", name),
 				[deleteConnectionConfirmationYes, deleteConnectionConfirmationNo]);
 			if (modalResult.choice === 0) {
 				await this._connectionManagementService.deleteConnection(this.element);

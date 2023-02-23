@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { IWorkspaceService } from './interfaces';
-import { ProjectsFailedToLoad, UnknownProjectsError } from './constants';
+import { dragAndDropNotSupported, onlyMovingOneFileIsSupported, ProjectsFailedToLoad, UnknownProjectsError } from './constants';
 import { WorkspaceTreeItem } from 'dataworkspace';
 import { TelemetryReporter } from './telemetry';
 import Logger from './logger';
@@ -14,11 +14,16 @@ import Logger from './logger';
 /**
  * Tree data provider for the workspace main view
  */
-export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<WorkspaceTreeItem>{
+export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<WorkspaceTreeItem>, vscode.TreeDragAndDropController<WorkspaceTreeItem> {
+	dropMimeTypes = ['application/vnd.code.tree.WorkspaceTreeDataProvider'];
+	dragMimeTypes = []; // The recommended mime type of the tree (`application/vnd.code.tree.WorkspaceTreeDataProvider`) is automatically added.
+
 	constructor(private _workspaceService: IWorkspaceService) {
 		this._workspaceService.onDidWorkspaceProjectsChange(() => {
 			return this.refresh();
 		});
+
+		vscode.window.createTreeView('dataworkspace.views.main', { canSelectMany: false, treeDataProvider: this, dragAndDropController: this });
 	}
 
 	private _onDidChangeTreeData: vscode.EventEmitter<void | WorkspaceTreeItem | null | undefined> | undefined = new vscode.EventEmitter<WorkspaceTreeItem | undefined | void>();
@@ -107,5 +112,43 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 		}
 
 		typeMetric[ext]++;
+	}
+
+	handleDrag(treeItems: readonly WorkspaceTreeItem[], dataTransfer: vscode.DataTransfer): void | Thenable<void> {
+		dataTransfer.set('application/vnd.code.tree.WorkspaceTreeDataProvider', new vscode.DataTransferItem(treeItems.map(t => t.element)));
+	}
+
+	async handleDrop(target: WorkspaceTreeItem | undefined, sources: vscode.DataTransfer): Promise<void> {
+		if (!target) {
+			return;
+		}
+
+		const transferItem = sources.get('application/vnd.code.tree.WorkspaceTreeDataProvider');
+
+		// Only support moving one file at a time
+		// canSelectMany is set to false for the WorkspaceTreeDataProvider, so this condition should never be true
+		if (transferItem?.value.length > 1) {
+			void vscode.window.showErrorMessage(onlyMovingOneFileIsSupported);
+			return;
+		}
+
+		const projectUri = transferItem?.value[0].projectFileUri;
+		if (!projectUri) {
+			return;
+		}
+
+		const projectProvider = await this._workspaceService.getProjectProvider(projectUri);
+		if (!projectProvider) {
+			return;
+		}
+
+		if (!projectProvider?.supportsDragAndDrop || !projectProvider.moveFile) {
+			void vscode.window.showErrorMessage(dragAndDropNotSupported);
+			return;
+		}
+
+		// Move the file
+		await projectProvider!.moveFile(projectUri, transferItem?.value[0], target);
+		void this.refresh();
 	}
 }
