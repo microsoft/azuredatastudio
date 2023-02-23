@@ -809,7 +809,9 @@ export class ProjectsController {
 				success = true;
 			}
 		} else if (node instanceof SqlCmdVariableTreeItem) {
-			// TODO: handle deleting sqlcmd var from project after swap
+			const sqlProjectsService = await utils.getSqlProjectsService();
+			const result = await sqlProjectsService.deleteSqlCmdVariable(project.projectFilePath, node.friendlyName);
+			success = result.success;
 		} else if (node instanceof FileNode || FolderNode) {
 			const fileEntry = this.getFileProjectEntry(project, node);
 
@@ -924,6 +926,8 @@ export class ProjectsController {
 
 		// TODO: update after swap
 		await project.addSqlCmdVariable(variableName, defaultValue);
+		// const sqlProjectsService = await utils.getSqlProjectsService();
+		// sqlProjectsService.addSqlCmdVariable(project.projectFilePath, variableName, defaultValue);
 
 		this.refreshProjectsTree(context);
 	}

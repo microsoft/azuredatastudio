@@ -9,7 +9,7 @@ import * as sqldbproj from 'sqldbproj';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { IconPathHelper } from '../common/iconHelper';
-import { getDataWorkspaceExtensionApi } from '../common/utils';
+import { getDataWorkspaceExtensionApi, getSqlProjectsService } from '../common/utils';
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
 import { Project } from '../models/project';
@@ -41,6 +41,11 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	public async getProjectTreeDataProvider(projectFilePath: vscode.Uri): Promise<vscode.TreeDataProvider<BaseProjectTreeItem>> {
 		const provider = new SqlDatabaseProjectTreeViewProvider();
 		const project = await Project.openProject(projectFilePath.fsPath);
+
+		// open project in STS
+		const sqlProjectsService = await getSqlProjectsService();
+		await sqlProjectsService.openProject(projectFilePath.fsPath);
+
 		provider.load([project]);
 		return provider;
 	}
