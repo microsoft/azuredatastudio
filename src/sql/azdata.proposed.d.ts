@@ -434,11 +434,6 @@ declare module 'azdata' {
 
 	export interface PromptFailedResult {
 		/**
-		 * Signals that an error other than the user cancelled sign in error has occurred
-		 */
-		error?: boolean;
-
-		/**
 		 * Error code used for non-user cancelled sign in errors
 		 */
 		errorCode?: string;
