@@ -728,6 +728,7 @@ for (const editorOption of editorOptionsRegistry) {
 	}
 }
 
+// {{SQL CARBON EDIT}} Add updated description
 const editorOptionsCustomizationSchema: IConfigurationPropertySchema = {
 	description: locConstants.experimentalCustomizationDescription,
 	default: {},
@@ -748,6 +749,7 @@ const editorOptionsCustomizationSchema: IConfigurationPropertySchema = {
 	tags: ['notebookLayout']
 };
 
+// {{SQL CARBON EDIT}} Add updated descriptions
 const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
 configurationRegistry.registerConfiguration({
 	id: 'notebook',
