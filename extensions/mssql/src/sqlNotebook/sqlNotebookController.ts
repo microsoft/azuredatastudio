@@ -233,10 +233,10 @@ export class SqlNotebookController implements vscode.Disposable {
 										.output_container .sqlNotebookResults td, .output_container .sqlNotebookResults th {
 											text-align: left;
 										}
-									</style>`;
-								tableHtml += '<table class="sqlNotebookResults"><thead><tr>';
+									</style>
+									<table class="sqlNotebookResults"><thead><tr>`;
 								for (let column of resultSummary.columnInfo) {
-									tableHtml += `<th>${column.columnName}</th>`;
+									tableHtml += `<th>${htmlEscape(column.columnName)}</th>`;
 								}
 								tableHtml += '</tr></thead>';
 
@@ -252,7 +252,7 @@ export class SqlNotebookController implements vscode.Disposable {
 								for (let row of subsetResult.resultSubset.rows) {
 									tableHtml += '<tr>';
 									for (let cell of row) {
-										tableHtml += `<td>${cell.displayValue}</td>`;
+										tableHtml += `<td>${htmlEscape(cell.displayValue)}</td>`;
 									}
 									tableHtml += '</tr>';
 								}
@@ -313,4 +313,17 @@ export class SqlNotebookController implements vscode.Disposable {
 	dispose() {
 		this._disposables.forEach(d => d.dispose());
 	}
+}
+
+function htmlEscape(html: string): string {
+	return html.replace(/[<|>|&|"]/g, function (match) {
+		switch (match) {
+			case '<': return '&lt;';
+			case '>': return '&gt;';
+			case '&': return '&amp;';
+			case '"': return '&quot;';
+			case '\'': return '&#39';
+			default: return match;
+		}
+	});
 }
