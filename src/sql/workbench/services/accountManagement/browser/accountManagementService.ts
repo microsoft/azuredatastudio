@@ -144,7 +144,7 @@ export class AccountManagementService implements IAccountManagementService {
 			const notificationHandler = this._notificationService.notify(loginNotification);
 			try {
 				let accountResult = await provider.provider.prompt();
-				if (this.isPromptFailedResult(accountResult)) {
+				if (!this.isAccountResult(accountResult)) {
 					if (accountResult.canceled === true) {
 						return;
 					} else {
@@ -193,8 +193,8 @@ export class AccountManagementService implements IAccountManagementService {
 		});
 	}
 
-	private isPromptFailedResult(result: azdata.Account | azdata.PromptFailedResult): result is azdata.PromptFailedResult {
-		return typeof (<azdata.PromptFailedResult>result).canceled === 'boolean';
+	private isAccountResult(result: azdata.Account | azdata.PromptFailedResult): result is azdata.Account {
+		return typeof (<azdata.Account>result).displayInfo === 'object';
 	}
 
 	/**
@@ -203,11 +203,9 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @return Promise to return an account
 	 */
 	public refreshAccount(account: azdata.Account): Promise<azdata.Account> {
-		let self = this;
-
 		return this.doWithProvider(account.key.providerId, async (provider) => {
 			let refreshedAccount = await provider.provider.refresh(account);
-			if (self.isPromptFailedResult(refreshedAccount)) {
+			if (!this.isAccountResult(refreshedAccount)) {
 				if (refreshedAccount.canceled) {
 					// Pattern here is to throw if this fails. Handled upstream.
 					throw new Error(localize('refreshCanceled', "Refresh account was canceled by the user"));
@@ -218,12 +216,12 @@ export class AccountManagementService implements IAccountManagementService {
 				account = refreshedAccount;
 			}
 
-			let result = await self._accountStore.addOrUpdate(account);
+			let result = await this._accountStore.addOrUpdate(account);
 			if (result.accountAdded) {
 				// Double check that there isn't a matching account
 				let indexToRemove = this.findAccountIndex(provider.accounts, result.changedAccount);
 				if (indexToRemove >= 0) {
-					self._accountStore.remove(provider.accounts[indexToRemove].key);
+					this._accountStore.remove(provider.accounts[indexToRemove].key);
 					provider.accounts.splice(indexToRemove, 1);
 				}
 				// Add the account to the list
@@ -239,7 +237,7 @@ export class AccountManagementService implements IAccountManagementService {
 				}
 			}
 
-			self.fireAccountListUpdate(provider, result.accountAdded);
+			this.fireAccountListUpdate(provider, result.accountAdded);
 			return result.changedAccount!;
 		});
 	}
