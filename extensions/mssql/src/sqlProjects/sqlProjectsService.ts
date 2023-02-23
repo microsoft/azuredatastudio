@@ -11,7 +11,6 @@ import * as contracts from '../contracts';
 import { AppContext } from '../appContext';
 import { ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
 import { ClientCapabilities } from 'vscode-languageclient';
-import { CancellationToken } from 'vscode';
 import { RequestType } from 'vscode-languageclient';
 
 export class SqlProjectsService implements mssql.ISqlProjectsService {
@@ -314,9 +313,9 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		return await this.runWithErrorHandling(contracts.MoveSqlObjectScriptRequest.type, params);
 	}
 
-	private async runWithErrorHandling<P, R, E, RO>(type: RequestType<P, R, E, RO>, params: P, token?: CancellationToken): Promise<R> {
+	private async runWithErrorHandling<P, R, E, RO>(type: RequestType<P, R, E, RO>, params: P): Promise<R> {
 		try {
-			const result = await this.client.sendRequest(type, params, token);
+			const result = await this.client.sendRequest(type, params);
 			return result;
 		} catch (e) {
 			this.client.logFailedRequest(type, e);

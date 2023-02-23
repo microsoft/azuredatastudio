@@ -609,7 +609,7 @@ export namespace SavePublishProfileRequest {
 //#region Project-level functions
 
 export namespace CreateSqlProjectRequest {
-	export const type = new RequestType<CreateSqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/createProject');
+	export const type = new RequestType<CreateSqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/newProject'); // TODO: switch to "createProject" with next Tools Service update
 }
 
 export namespace OpenSqlProjectRequest {
