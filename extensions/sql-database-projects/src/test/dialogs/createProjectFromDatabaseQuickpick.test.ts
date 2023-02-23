@@ -12,6 +12,7 @@ import * as constants from '../../common/constants';
 import * as utils from '../../common/utils'
 import * as quickpickHelper from '../../dialogs/quickpickHelper'
 import * as createProjectFromDatabaseQuickpick from '../../dialogs/createProjectFromDatabaseQuickpick';
+import * as newProjectTool from '../../tools/newProjectTool';
 import { createTestUtils, mockConnectionInfo, TestUtils } from './testUtils';
 import { promises as fs } from 'fs';
 import { ImportDataModel } from '../../models/api/import';
@@ -25,6 +26,9 @@ describe('Create Project From Database Quickpick', () => {
 	beforeEach(function (): void {
 		testUtils = createTestUtils();
 		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);	//set vscode mssql extension api
+		sinon.stub(newProjectTool, 'defaultProjectSaveLocation').returns(undefined);
+		sinon.stub(newProjectTool, 'defaultProjectNameFromDb').returns('DatabaseProjectTestProject');
+		sinon.stub(utils, 'sanitizeStringForFilename').returns('TestProject');
 	});
 
 	afterEach(async function (): Promise<void> {

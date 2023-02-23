@@ -749,6 +749,10 @@ declare module 'azdata' {
 		 * The url to open.
 		 */
 		url?: string;
+		/**
+		 * The role of the hyperlink. By default, the role is 'link' and the url will be opened in a new tab.
+		 */
+		role?: 'button' | 'link';
 	}
 
 	export interface ContextMenuColumnCellValue {
