@@ -131,6 +131,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 		connectionStore.setup(x => x.getConnectionProfileGroups(false, undefined)).returns(() => [root]);
 		connectionStore.setup(x => x.savePassword(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
+		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.is<IConnectionProfile>(c => c.serverName === connectionProfile.serverName), TypeMoq.It.isAny())).returns(() => Promise.resolve(false));
 
 		mssqlConnectionProvider.setup(x => x.connect(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => undefined);
 
