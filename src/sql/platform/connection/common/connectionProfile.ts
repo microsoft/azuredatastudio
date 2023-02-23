@@ -242,7 +242,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	public getConnectionInfoId(getOriginalOptions = true): string {
 		let id = super.getOptionsKey(getOriginalOptions);
 		let databaseDisplayName: string = this.options['databaseDisplayName'];
-		if (databaseDisplayName && !getOriginalOptions) {
+		if (databaseDisplayName && !getOriginalOptions && this.serverCapabilities?.useFullOptions) {
 			id += ProviderConnectionInfo.idSeparator + 'databaseDisplayName' + ProviderConnectionInfo.nameValueSeparator + databaseDisplayName;
 		}
 

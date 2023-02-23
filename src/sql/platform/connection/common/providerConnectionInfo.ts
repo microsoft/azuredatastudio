@@ -218,7 +218,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		if (this.serverCapabilities) {
 			idNames = this.serverCapabilities.connectionOptions.map(o => {
 				// All options enabled, use every property besides password.
-				let newProperty = this.serverCapabilities.useFullOptions && o.specialValueType !== ConnectionOptionSpecialType.password && !getOriginalOptions
+				let newProperty = this.serverCapabilities?.useFullOptions && o.specialValueType !== ConnectionOptionSpecialType.password && !getOriginalOptions
 				// Fallback to original base IsIdentity properties otherwise.
 				let originalProperty = (o.specialValueType || o.isIdentity) && o.specialValueType !== ConnectionOptionSpecialType.password
 					&& o.specialValueType !== ConnectionOptionSpecialType.connectionName;
