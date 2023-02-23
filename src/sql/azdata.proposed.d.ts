@@ -563,6 +563,12 @@ declare module 'azdata' {
 		onSelectionChange?: SelectionChangeEvent[];
 	}
 
+	export interface ServiceOption {
+		/**
+		 * Used to define list of values based on which another option is rendered visible/hidden.
+		 */
+		onSelectionChange?: SelectionChangeEvent[];
+	}
 	/**
 	 * This change event defines actions
 	 */
