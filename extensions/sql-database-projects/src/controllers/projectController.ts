@@ -926,6 +926,8 @@ export class ProjectsController {
 
 		// TODO: update after swap
 		await project.addSqlCmdVariable(variableName, defaultValue);
+		// const sqlProjectsService = await utils.getSqlProjectsService();
+		// sqlProjectsService.addSqlCmdVariable(project.projectFilePath, variableName, defaultValue);
 
 		this.refreshProjectsTree(context);
 	}
