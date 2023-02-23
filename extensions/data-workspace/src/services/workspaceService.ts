@@ -31,6 +31,21 @@ export class WorkspaceService implements IWorkspaceService {
 		this.getProjectsInWorkspace(undefined, true).catch(err => Logger.error(`Error initializing projects in workspace ${err}`));
 	}
 
+	get isProjectProviderAvailable(): boolean {
+		Logger.log(`Checking ${vscode.extensions.all.length} extensions to see if there is a project provider is available`);
+		const startTime = new Date().getTime();
+		for (const extension of vscode.extensions.all) {
+			const projectTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.projects as string[];
+			if (projectTypes && projectTypes.length > 0) {
+				Logger.log(`Project provider found. Total time = ${new Date().getTime() - startTime}ms`);
+				return true;
+			}
+		}
+
+		Logger.log(`No project providers found. Total time = ${new Date().getTime() - startTime}ms`);
+		return false;
+	}
+
 	/**
 	 * Verify that a workspace is open or that if one isn't and we're running in ADS, it's ok to create a workspace and restart ADS
 	 */
