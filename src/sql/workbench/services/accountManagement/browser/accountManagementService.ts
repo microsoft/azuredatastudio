@@ -148,7 +148,7 @@ export class AccountManagementService implements IAccountManagementService {
 					if (accountResult.canceled === true) {
 						return;
 					} else {
-						throw new Error(localize('addAccountFailedMessage', `${accountResult.errorCode} \nError Message: ${accountResult.errorMessage}`));
+						throw new Error(localize('addAccountFailedMessage', `${0} \nError Message: ${1}`, accountResult.errorCode, accountResult.errorMessage));
 					}
 				}
 				let result = await this._accountStore.addOrUpdate(accountResult);
