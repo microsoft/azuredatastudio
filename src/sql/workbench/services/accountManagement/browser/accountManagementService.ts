@@ -212,7 +212,7 @@ export class AccountManagementService implements IAccountManagementService {
 					// Pattern here is to throw if this fails. Handled upstream.
 					throw new Error(localize('refreshCanceled', "Refresh account was canceled by the user"));
 				} else {
-					throw new Error(localize('refreshFailed', `${refreshedAccount.errorCode} \nError Message: ${refreshedAccount.errorMessage}`));
+					throw new Error(localize('refreshFailed', `${0} \nError Message: ${1}`, refreshedAccount.errorCode, refreshedAccount.errorMessage));
 				}
 			} else {
 				account = refreshedAccount;
