@@ -469,6 +469,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/data-workspace/dist/common/constants.dragAndDropNotSupported" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[This project type does not support drag and drop.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[이 프로젝트 형식은 끌어서 놓기 기능이 지원되지 않습니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.fileDoesNotExist" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File '{0}' doesn't exist]]></Val>
@@ -519,6 +528,15 @@
           <Val><![CDATA[Prior {0} for the current project will appear here, please run to see the results.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[현재 프로젝트에 대한 이전 {0}이(가) 여기에 표시됩니다. 실행하여 결과를 확인하세요.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/data-workspace/dist/common/constants.onlyMovingOneFileIsSupported" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Only moving one file at a time is supported.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[한 번에 하나의 파일만 이동할 수 있습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
