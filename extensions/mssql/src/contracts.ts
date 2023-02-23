@@ -847,10 +847,6 @@ export interface AddSqlCmdVariableParams extends SqlProjectParams {
 	 * Default value of the SQLCMD variable
 	 */
 	defaultValue: string;
-	/**
-	 * Value of the SQLCMD variable, with or without the $()
-	 */
-	value: string;
 }
 
 export interface DeleteSqlCmdVariableParams extends SqlProjectParams {
