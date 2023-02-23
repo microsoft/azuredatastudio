@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { IAdsTelemetryService, ITelemetryEvent, ITelemetryEventMeasures, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITelemetryInfo, ITelemetryService, TelemetryLevel } from 'vs/platform/telemetry/common/telemetry';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { EventName } from 'sql/platform/telemetry/common/telemetryKeys';
 
 
@@ -87,23 +87,6 @@ export class AdsTelemetryService implements IAdsTelemetryService {
 		@ITelemetryService private telemetryService: ITelemetryService,
 		@ILogService private logService: ILogService
 	) { }
-
-	setEnabled(value: boolean): void {
-		// if (value) {
-		// 	this.telemetryService.telemetryLevel = TelemetryLevel.USAGE;
-		// } else {
-		// 	this.telemetryService.telemetryLevel = TelemetryLevel.NONE;
-		// }
-		throw "Telemetry level is readonly";
-	}
-
-	get isOptedIn(): boolean {
-		return this.telemetryService.telemetryLevel.value !== TelemetryLevel.NONE;
-	}
-
-	getTelemetryInfo(): Promise<ITelemetryInfo> {
-		return this.telemetryService.getTelemetryInfo();
-	}
 
 	/**
 	 * Creates a View event that can be sent later. This is used to log that a particular page or item was seen.
@@ -222,19 +205,6 @@ export class NullAdsTelemetryService implements IAdsTelemetryService {
 
 	_serviceBrand: undefined;
 
-	get isOptedIn(): boolean {
-		return false;
-	}
-
-	setEnabled(value: boolean): void { }
-	getTelemetryInfo(): Promise<ITelemetryInfo> {
-		return Promise.resolve({
-			sessionId: '',
-			machineId: '',
-			firstSessionDate: '',
-			msftInternal: false
-		});
-	}
 	createViewEvent(view: string): ITelemetryEvent { return new NullTelemetryEventImpl(); }
 	sendViewEvent(view: string): void { }
 	createActionEvent(view: string, action: string, target?: string, source?: string, durationInMs?: number): ITelemetryEvent { return new NullTelemetryEventImpl(); }
