@@ -177,6 +177,7 @@ export class GetAzureRecommendationDialog {
 				readOnly: true,
 				width: 320,
 				CSSStyles: { 'margin-right': '12px' },
+				ariaLabel: constants.AZURE_RECOMMENDATION_COLLECT_DATA_FOLDER
 			}).component();
 		this._disposables.push(
 			this._collectDataFolderInput.onTextChanged(async (value) => {
@@ -229,6 +230,7 @@ export class GetAzureRecommendationDialog {
 			readOnly: true,
 			width: 320,
 			CSSStyles: { 'margin-right': '12px' },
+			ariaLabel: constants.AZURE_RECOMMENDATION_OPEN_EXISTING_FOLDER
 		}).component();
 		this._disposables.push(
 			this._openExistingFolderInput.onTextChanged(async (value) => {
