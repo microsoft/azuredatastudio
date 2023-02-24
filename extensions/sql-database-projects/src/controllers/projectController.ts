@@ -623,7 +623,7 @@ export class ProjectsController {
 
 	public async addFolderPrompt(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project = await this.getProjectFromContext(treeNode);
-		const projectRelativeUri = vscode.Uri.file(path.basename((treeNode.element as BaseProjectTreeItem).sqlprojUri.fsPath, constants.sqlprojExtension));
+		const projectRelativeUri = vscode.Uri.file(path.basename((treeNode.element as BaseProjectTreeItem).projectFileUri.fsPath, constants.sqlprojExtension));
 		const relativePathToParent = this.getRelativePath(projectRelativeUri, treeNode.element);
 		const absolutePathToParent = path.join(project.projectFolderPath, relativePathToParent);
 		const newFolderName = await this.promptForNewObjectName(new templates.ProjectScriptType(ItemType.folder, constants.folderFriendlyName, ''),
@@ -679,7 +679,7 @@ export class ProjectsController {
 	}
 
 	public async addItemPromptFromNode(treeNode: dataworkspace.WorkspaceTreeItem, itemTypeName?: string): Promise<void> {
-		const projectRelativeUri = vscode.Uri.file(path.basename((treeNode.element as BaseProjectTreeItem).sqlprojUri.fsPath, constants.sqlprojExtension));
+		const projectRelativeUri = vscode.Uri.file(path.basename((treeNode.element as BaseProjectTreeItem).projectFileUri.fsPath, constants.sqlprojExtension));
 		await this.addItemPrompt(await this.getProjectFromContext(treeNode), this.getRelativePath(projectRelativeUri, treeNode.element), { itemType: itemTypeName }, treeNode.treeDataProvider as SqlDatabaseProjectTreeViewProvider);
 	}
 
@@ -1004,7 +1004,7 @@ export class ProjectsController {
 	 */
 	public async openFileWithWatcher(fileSystemUri: vscode.Uri, node: FileNode): Promise<void> {
 		await vscode.commands.executeCommand(constants.vscodeOpenCommand, fileSystemUri);
-		const project = await Project.openProject(node.sqlprojUri.fsPath);
+		const project = await Project.openProject(node.projectFileUri.fsPath);
 		const projectTargetVersion = project.getProjectTargetVersion();
 		const initiallyContainsCreateTableStatement = await utils.fileContainsCreateTableStatement(fileSystemUri.fsPath, projectTargetVersion);
 
@@ -1452,10 +1452,10 @@ export class ProjectsController {
 			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts);
 
 			// trim trailing slash since folders with and without a trailing slash are allowed in a sqlproj
-			const trimmedUri = utils.trimChars(utils.getPlatformSafeFileEntryPath(utils.trimUri(fileOrFolder.sqlprojUri, fileOrFolder.fileSystemUri)), '/');
+			const trimmedUri = utils.trimChars(utils.getPlatformSafeFileEntryPath(utils.trimUri(fileOrFolder.projectFileUri, fileOrFolder.fileSystemUri)), '/');
 			return allFileEntries.find(x => utils.trimChars(utils.getPlatformSafeFileEntryPath(x.relativePath), '/') === trimmedUri);
 		}
-		const projectRelativeUri = vscode.Uri.file(path.basename(context.sqlprojUri.fsPath, constants.sqlprojExtension));
+		const projectRelativeUri = vscode.Uri.file(path.basename(context.projectFileUri.fsPath, constants.sqlprojExtension));
 		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(projectRelativeUri, context.relativeProjectUri)));
 	}
 
@@ -1469,7 +1469,7 @@ export class ProjectsController {
 		}
 
 		if (context instanceof BaseProjectTreeItem) {
-			return Project.openProject(context.sqlprojUri.fsPath);
+			return Project.openProject(context.projectFileUri.fsPath);
 		} else {
 			throw new Error(constants.unexpectedProjectContext(JSON.stringify(context)));
 		}

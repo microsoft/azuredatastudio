@@ -95,7 +95,7 @@ export default class MainController implements vscode.Disposable {
 			if (node?.element instanceof TableFileNode) {
 				const tableFileNode = node.element as TableFileNode;
 
-				const projectPath = tableFileNode.sqlprojUri.fsPath;
+				const projectPath = tableFileNode.projectFileUri.fsPath;
 				const project = await Project.openProject(projectPath);
 				const targetVersion = project.getProjectTargetVersion();
 				const filePath = tableFileNode.fileSystemUri.fsPath;

@@ -37,7 +37,7 @@ export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
 
 		for (const sqlCmdVariable of Object.keys(sqlCmdVariables)) {
 			if (sqlCmdVariable) {
-				this.sqlcmdVariableTreeItems.push(new SqlCmdVariableTreeItem(sqlCmdVariable, this.relativeProjectUri, this.sqlprojUri, this));
+				this.sqlcmdVariableTreeItems.push(new SqlCmdVariableTreeItem(sqlCmdVariable, this.relativeProjectUri, this.projectFileUri, this));
 			}
 		}
 	}
