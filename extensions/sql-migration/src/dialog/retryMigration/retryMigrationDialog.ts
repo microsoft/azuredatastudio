@@ -42,6 +42,7 @@ export class RetryMigrationDialog {
 
 			// SKURecommendation
 			databaseList: [sourceDatabaseName],
+			databaseInfoList: [],
 			serverAssessment: null,
 			skuRecommendation: null,
 			migrationTargetType: getMigrationTargetTypeEnum(migration)!,
