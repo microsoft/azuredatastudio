@@ -62,6 +62,8 @@
 	"cms.connectionOptions.applicationIntent.description": "Declares the application workload type when connecting to a server",
 	"cms.connectionOptions.connectTimeout.displayName": "Connect timeout",
 	"cms.connectionOptions.connectTimeout.description": "The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error",
+	"cms.connectionOptions.commandTimeout.displayName": "Command timeout",
+	"cms.connectionOptions.commandTimeout.description": "The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error",
 	"cms.connectionOptions.currentLanguage.displayName": "Current language",
 	"cms.connectionOptions.currentLanguage.description": "The SQL Server language record name",
 	"cms.connectionOptions.columnEncryptionSetting.displayName": "Column encryption",

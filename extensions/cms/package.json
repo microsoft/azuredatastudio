@@ -182,6 +182,20 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "name": "commandTimeout",
+          "displayName": "%cms.connectionOptions.commandTimeout.displayName%",
+          "description": "%cms.connectionOptions.commandTimeout.description%",
+          "groupName": "%cms.connectionOptions.groupName.initialization%",
+          "valueType": "number",
+          "defaultValue": "30",
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
           "name": "currentLanguage",
           "displayName": "%cms.connectionOptions.currentLanguage.displayName%",
           "description": "%cms.connectionOptions.currentLanguage.description%",

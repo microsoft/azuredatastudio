@@ -143,6 +143,12 @@
     <trans-unit id="cms.connectionOptions.connectTimeout.displayName">
       <source xml:lang="en">Connect timeout</source>
     </trans-unit>
+    <trans-unit id="cms.connectionOptions.commandTimeout.description">
+      <source xml:lang="en">The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.commandTimeout.displayName">
+      <source xml:lang="en">Command timeout</source>
+    </trans-unit>
     <trans-unit id="cms.connectionOptions.connectionName.description">
       <source xml:lang="en">Custom name of the connection</source>
     </trans-unit>
