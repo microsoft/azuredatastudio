@@ -132,12 +132,14 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 
 	private toggleCellCheckbox(row: number): void {
 		const currentValue = this.getCheckboxPropertyValue(row);
-		this.setCheckboxPropertyValue(row, !currentValue.checked);
-		this._grid.invalidateRow(row);
-		this._grid.render();
-		this._grid.setActiveCell(row, this.index);
-		this.updateSelectAllCheckboxState();
-		this._onChange.fire({ checked: !currentValue.checked, row: row, column: this.index });
+		if (currentValue.enabled) {
+			this.setCheckboxPropertyValue(row, !currentValue.checked);
+			this._grid.invalidateRow(row);
+			this._grid.render();
+			this._grid.setActiveCell(row, this.index);
+			this.updateSelectAllCheckboxState();
+			this._onChange.fire({ checked: !currentValue.checked, row: row, column: this.index });
+		}
 	}
 
 	private handleHeaderClick(e: Event, args?: Slick.OnHeaderClickEventArgs<T>): void {
