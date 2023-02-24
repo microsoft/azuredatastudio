@@ -8,7 +8,7 @@ import { azureResource } from 'azurecore';
 import { AzureSqlDatabase, AzureSqlDatabaseServer } from './azure';
 import { generateGuid } from './utils';
 import * as utils from '../api/utils';
-import { TelemetryAction, TelemetryViews, logError } from '../telemtery';
+import { TelemetryAction, TelemetryViews, logError } from '../telemetry';
 
 const query_database_tables_sql = `
 	SELECT

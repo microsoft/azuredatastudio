@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../../constants/strings';
-import { logError, TelemetryErrorName, TelemetryViews } from '../../telemtery';
+import { logError, TelemetryErrorName, TelemetryViews } from '../../telemetry';
 import { EOL } from 'os';
 import { MigrationStateModel, OperationResult } from '../../models/stateMachine';
 import { IconPathHelper } from '../../constants/iconPathHelper';
