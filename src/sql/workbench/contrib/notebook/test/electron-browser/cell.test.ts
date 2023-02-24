@@ -998,7 +998,7 @@ suite('Cell Model', function (): void {
 		let createCellModePromise = () => {
 			return new Promise((resolve, reject) => {
 				setTimeout((error) => reject(error), 2000);
-				model.onCellModeChanged(isEditMode => {
+				model.onCellEditModeChanged(isEditMode => {
 					resolve(isEditMode);
 				});
 			});
