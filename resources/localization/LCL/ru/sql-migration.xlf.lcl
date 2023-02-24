@@ -7785,10 +7785,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.target.mapping.error.duplicate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.]]></Val>
+          <Val><![CDATA[Database mapping error. Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '{2}' is already selected as a migration target for database '{3}'.  Please select a different target database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ошибка сопоставления базы данных. Невозможно выбрать целевую базу данных "{0}" в качестве цели миграции для базы данных "{1}". Целевая база данных "${targetDatabaseName}" уже выбрана в качестве цели миграции для базы данных "{2}". Выберите другую целевую базу данных.]]></Val>
+            <Val><![CDATA[Ошибка сопоставления базы данных. Невозможно выбрать целевую базу данных "{0}" в качестве цели миграции для базы "{1}". Целевая база данных "{2}" уже выбрана в качестве цели миграции для базы "{3}". Выберите другую целевую базу данных.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7803,19 +7806,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.target.source.collation.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.]]></Val>
+          <Val><![CDATA[Database mapping error (Error code: {0}) was found between '{1}' and '{2}' databases. The source database collation '{3}' does not match the target database collation '{4}'. Please select or re-create a target database with the same collation as the source database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Обнаружена ошибка сопоставления между базами данных "{0}" и "{1}". Параметры сортировки базы данных-источника "{2}" не совпадают с параметрами сортировки целевой базы данных "{3}". Выберите или повторно создайте целевую базу данных с параметрами сортировки, совпадающими с параметрами сортировки базы данных-источника.]]></Val>
+            <Val><![CDATA[Обнаружена ошибка сопоставления между базами данных "{1}" и "{2}" (код ошибки: {0}). Параметры сортировки базы данных-источника "{3}" не совпадают с параметрами сортировки целевой базы "{4}". Выберите или повторно создайте целевую базу данных с такими же параметрами сортировки, как у источника.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.target.source.mapping.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.]]></Val>
+          <Val><![CDATA[Database mapping error. Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ошибка сопоставления баз данных. База данных-источник "{0}" не сопоставлена с целевой базой данных. Выберите целевую базу данных для миграции.]]></Val>
+            <Val><![CDATA[Ошибка сопоставления баз данных. База данных-источник "{0}" не сопоставлена с целевой базой. Выберите целевую базу данных для миграции.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
