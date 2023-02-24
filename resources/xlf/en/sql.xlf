@@ -4261,6 +4261,9 @@ Error: {1}</source>
     <trans-unit id="chart">
       <source xml:lang="en">Chart</source>
     </trans-unit>
+    <trans-unit id="copyHeaders">
+      <source xml:lang="en">Copy Headers</source>
+    </trans-unit>
     <trans-unit id="copySelection">
       <source xml:lang="en">Copy</source>
     </trans-unit>
@@ -4465,6 +4468,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.saveAsXml.formatted">
       <source xml:lang="en">When true, XML output will be formatted when saving results as XML</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.showActionBar">
+      <source xml:lang="en">Whether to show the action bar in the query results view</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.streaming">
       <source xml:lang="en">Enable results streaming; contains few minor visual issues</source>
