@@ -311,7 +311,7 @@
           },
           {
             "name": "sql-windows-setup_2022",
-            "webPageUrl": "https://go.microsoft.com/fwlink/?linkid=2195585",
+            "webPageUrl": "https://go.microsoft.com/fwlink/?linkid=2215158",
             "requiredTools": [],
             "when": "version=sql2022"
           }
