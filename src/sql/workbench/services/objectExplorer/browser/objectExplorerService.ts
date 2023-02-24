@@ -238,16 +238,19 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 
 		let sessionStatus = this._sessions[expandResponse.sessionId!];
-		let foundSession = false;
 		if (sessionStatus) {
-			let nodeStatus = this._sessions[expandResponse.sessionId!].nodes[expandResponse.nodePath];
-			foundSession = !!nodeStatus;
-			if (foundSession && nodeStatus.expandEmitter) {
-				nodeStatus.expandEmitter.fire(expandResponse);
+			const nodeStatus = sessionStatus.nodes[expandResponse.nodePath];
+			if (nodeStatus) {
+				if (!nodeStatus.expandEmitter) {
+					this.logService.warn(`No expand emitter for session: ${expandResponse.sessionId} and node path: ${expandResponse.nodePath}`);
+				} else {
+					nodeStatus.expandEmitter.fire(expandResponse);
+				}
+			} else {
+				this.logService.warn(`Cannot find node status for session: ${expandResponse.sessionId} and node path: ${expandResponse.nodePath}`);
 			}
-		}
-		if (!foundSession) {
-			this.logService.warn(`Cannot find node status for session: ${expandResponse.sessionId} and node path: ${expandResponse.nodePath}`);
+		} else {
+			this.logService.warn(`Cannot find session ${expandResponse.sessionId} for node path: ${expandResponse.nodePath}`);
 		}
 	}
 
@@ -351,11 +354,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		const provider = this._providers[providerId];
 		if (provider) {
 			const result = await provider.createNewSession(connection.toConnectionInfo());
+			if (this._sessions[result.sessionId]) {
+				this.logService.trace(`Overwriting session ${result.sessionId}`);
+			}
 			this._sessions[result.sessionId] = {
 				connection: connection,
 				nodes: {}
 			};
-
 			return result;
 		} else {
 			throw new Error(`Provider doesn't exist. id: ${providerId}`);
@@ -397,6 +402,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					self._sessions[session.sessionId!].nodes[node.nodePath] = {
 						expandEmitter: new Emitter<NodeExpandInfoWithProviderId>()
 					};
+					this.logService.trace(`Adding node ${node.nodePath} to session ${session.sessionId}`);
 					newRequest = true;
 				}
 				let provider = this._providers[providerId];
@@ -437,6 +443,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							// Have to delete it after get all responses otherwise couldn't find session for not the first response
 							if (newRequest) {
 								delete self._sessions[session.sessionId!].nodes[node.nodePath];
+								this.logService.trace(`Deleted node ${node.nodePath} from session ${session.sessionId}`);
 							}
 						}
 					});
