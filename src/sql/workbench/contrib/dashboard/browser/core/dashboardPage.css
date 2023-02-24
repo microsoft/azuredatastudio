@@ -53,7 +53,8 @@ dashboard-page .editor-toolbar {
 	background-size: 8px;
 }
 
-.dashboardEditor breadcrumb {
+.dashboardEditor breadcrumb,
+.hc-light .dashboardEditor breadcrumb {
 	font-size: 13px;
 	color: #323130;
 }

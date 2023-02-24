@@ -18,6 +18,13 @@
 	background-color: unset;
 }
 
+.hc-light .wizardNavigation-container {
+	border-right-color: rgb(111, 195, 223);
+	border-right-style: solid;
+	border-right-width: 1px;
+	background-color: unset;
+}
+
 .wizardNavigation-pageNumber {
 	flex-grow: 1;
 	display: flex;
@@ -52,6 +59,13 @@
 	border-color: white;
 }
 
+.hc-light .wizardNavigation-dot {
+	flex-grow: 1;
+	border-style: solid;
+	border-width: 1px;
+	color: black;
+}
+
 .wizardNavigation-connector {
 	width: 3px;
 	display: inline-block;
@@ -60,7 +74,16 @@
 }
 
 .hc-black .wizardNavigation-connector {
-	display: none;
+	width: 3px;
+	display: inline-block;
+	flex-grow: 1;
+	background-color: rgb(200, 200, 200);
+}
+
+.hc-light .wizardNavigation-connector {
+	width: 3px;
+	display: inline-block;
+	flex-grow: 1;
 }
 
 .wizardNavigation-connector.active,
@@ -74,9 +97,19 @@
 	border-style: solid;
 }
 
+.hc-light .wizardNavigation-dot.active {
+	background-color: unset;
+	border-style: solid;
+}
+
 .hc-black .wizardNavigation-dot.active:hover,
 .hc-black .wizardNavigation-dot.active.currentPage:hover {
 	border-color: #F38518;
+	border-style: dashed;
+}
+
+.hc-light .wizardNavigation-dot.active:hover,
+.hc-light .wizardNavigation-dot.active.currentPage:hover {
 	border-style: dashed;
 }
 
@@ -87,6 +120,10 @@
 .hc-black .wizardNavigation-dot.active.currentPage {
 	border-style: solid;
 	border-color: #F38518;
+}
+
+.hc-light .wizardNavigation-dot.active.currentPage {
+	border-style: solid;
 }
 
 .wizardNavigation-connector.invisible {
