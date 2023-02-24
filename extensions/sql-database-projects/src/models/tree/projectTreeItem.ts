@@ -5,7 +5,6 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { DataSourcesTreeItem } from './dataSourceTreeItem';
 import { BaseProjectTreeItem } from './baseTreeItem';
 import * as fileTree from './fileFolderTreeItem';
 import { Project } from '../project';
@@ -22,7 +21,6 @@ import { SqlCmdVariablesTreeItem } from './sqlcmdVariableTreeItem';
  * TreeNode root that represents an entire project
  */
 export class ProjectRootTreeItem extends BaseProjectTreeItem {
-	dataSourceNode: DataSourcesTreeItem;
 	databaseReferencesNode: DatabaseReferencesTreeItem;
 	sqlCmdVariablesNode: SqlCmdVariablesTreeItem;
 	fileChildren: { [childName: string]: (fileTree.FolderNode | fileTree.FileNode) } = {};
@@ -34,7 +32,6 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 		this.project = project;
 		this.fileSystemUri = vscode.Uri.file(project.projectFilePath);
-		this.dataSourceNode = new DataSourcesTreeItem(this);
 		this.databaseReferencesNode = new DatabaseReferencesTreeItem(this);
 		this.sqlCmdVariablesNode = new SqlCmdVariablesTreeItem(this);
 		this.construct();
@@ -42,8 +39,6 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 	public get children(): BaseProjectTreeItem[] {
 		const output: BaseProjectTreeItem[] = [];
-		// [8/31/2020] Hiding Data source for Preview since we do not have a way to add or update those.
-		// output.push(this.dataSourceNode);
 		output.push(this.databaseReferencesNode);
 		output.push(this.sqlCmdVariablesNode);
 
