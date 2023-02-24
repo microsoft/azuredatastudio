@@ -41,7 +41,7 @@ export class WorkspaceService implements IWorkspaceService {
 		Logger.log(`Checking ${vscode.extensions.all.length} extensions to see if there is a project provider is available`);
 		const startTime = new Date().getTime();
 
-		this._isProjectProviderAvailable = vscode.extensions.all.find(e => e.packageJSON.contributes?.projects?.length > 0) !== undefined;
+		this._isProjectProviderAvailable = vscode.extensions.all.some(e => e.packageJSON.contributes?.projects?.length > 0);
 		Logger.log(`isProjectProviderAvailable is ${this._isProjectProviderAvailable}. Total time = ${new Date().getTime() - startTime}ms`);
 	}
 
