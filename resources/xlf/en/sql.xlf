@@ -5395,9 +5395,6 @@ Error: {1}</source>
     <trans-unit id="connectionError">
       <source xml:lang="en">Connection error</source>
     </trans-unit>
-    <trans-unit id="enableTrustServerCertificate">
-      <source xml:lang="en">Enable Trust server certificate</source>
-    </trans-unit>
     <trans-unit id="kerberosErrorStart">
       <source xml:lang="en">Connection failed due to Kerberos error.</source>
     </trans-unit>
@@ -5409,11 +5406,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="runKinit">
       <source xml:lang="en">Run Kinit</source>
-    </trans-unit>
-    <trans-unit id="trustServerCertInstructionText">
-      <source xml:lang="en">Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable 'Trust server certificate' in the connection dialog.
-
-			Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? </source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/connection/browser/connectionDialogWidget" source-language="en" datatype="plaintext"><body>
