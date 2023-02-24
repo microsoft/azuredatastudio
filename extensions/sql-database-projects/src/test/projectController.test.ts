@@ -922,6 +922,34 @@ describe('ProjectsController', function (): void {
 			should(proj1.files.find(f => f.relativePath === 'script1.sql') !== undefined).be.true(`The file path should not have been updated when trying to move script1.sql to proj2`);
 		});
 	});
+
+	describe('SqlCmd Variables', function (): void {
+		it('Should delete sqlcmd variable', async function (): Promise<void> {
+			let project = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			const sqlProjectsService = await utils.getSqlProjectsService();
+			await sqlProjectsService.openProject(project.projectFilePath);
+
+			const projController = new ProjectsController(testContext.outputChannel);
+			const projRoot = new ProjectRootTreeItem(project);
+
+			should(Object.keys(project.sqlCmdVariables).length).equal(2, 'The project should start with 2 sqlcmd variables');
+
+			sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Cancel'));
+			await projController.delete(createWorkspaceTreeItem(projRoot.children.find(x => x.friendlyName === constants.sqlcmdVariablesNodeName)!.children[0]));
+
+			// reload project
+			project = await Project.openProject(project.projectFilePath);
+			should(Object.keys(project.sqlCmdVariables).length).equal(2, 'The project should still have 2 sqlcmd variables if no was selected');
+
+			sinon.restore();
+			sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Yes'));
+			await projController.delete(createWorkspaceTreeItem(projRoot.children.find(x => x.friendlyName === constants.sqlcmdVariablesNodeName)!.children[0]));
+
+			// reload project
+			project = await Project.openProject(project.projectFilePath);
+			should(Object.keys(project.sqlCmdVariables).length).equal(1, 'The project should only have 1 sqlcmd variable after deletion');
+		});
+	});
 });
 
 async function setupDeleteExcludeTest(proj: Project): Promise<[FileProjectEntry, ProjectRootTreeItem, FileProjectEntry, FileProjectEntry, FileProjectEntry]> {

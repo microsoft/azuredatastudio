@@ -58,7 +58,7 @@ export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
  * Represents a SQLCMD variable in a .sqlproj
  */
 export class SqlCmdVariableTreeItem extends BaseProjectTreeItem {
-	constructor(private sqlcmdVar: string, sqlprojUri: vscode.Uri, sqlCmdNodeRelativeProjectUri: vscode.Uri) {
+	constructor(private sqlcmdVar: string, sqlCmdNodeRelativeProjectUri: vscode.Uri, sqlprojUri: vscode.Uri,) {
 		super(vscode.Uri.file(path.join(sqlCmdNodeRelativeProjectUri.fsPath, sqlcmdVar)), sqlprojUri);
 	}
 
