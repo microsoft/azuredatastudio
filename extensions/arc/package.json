@@ -54,7 +54,7 @@
       {
         "command": "arc.connectToController",
         "title": "%command.connectToController.title%",
-        "icon": "$(disconnect)"
+        "icon": "$(plug)"
       },
       {
         "command": "arc.removeController",
