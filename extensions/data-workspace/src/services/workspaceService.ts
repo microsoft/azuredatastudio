@@ -25,25 +25,24 @@ export class WorkspaceService implements IWorkspaceService {
 
 	private openedProjects: vscode.Uri[] | undefined = undefined;
 	private excludedProjects: string[] | undefined;
+	private _isProjectProviderAvailable: boolean = false;
 
 	constructor() {
 		Logger.log(`Calling getProjectsInWorkspace() from WorkspaceService constructor`);
+		this.updateIfProjectProviderAvailable();
 		this.getProjectsInWorkspace(undefined, true).catch(err => Logger.error(`Error initializing projects in workspace ${err}`));
 	}
 
 	get isProjectProviderAvailable(): boolean {
+		return this._isProjectProviderAvailable;
+	}
+
+	public updateIfProjectProviderAvailable(): void {
 		Logger.log(`Checking ${vscode.extensions.all.length} extensions to see if there is a project provider is available`);
 		const startTime = new Date().getTime();
-		for (const extension of vscode.extensions.all) {
-			const projectTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.projects as string[];
-			if (projectTypes && projectTypes.length > 0) {
-				Logger.log(`Project provider found. Total time = ${new Date().getTime() - startTime}ms`);
-				return true;
-			}
-		}
 
-		Logger.log(`No project providers found. Total time = ${new Date().getTime() - startTime}ms`);
-		return false;
+		this._isProjectProviderAvailable = vscode.extensions.all.some(e => e.packageJSON.contributes?.projects?.length > 0);
+		Logger.log(`isProjectProviderAvailable is ${this._isProjectProviderAvailable}. Total time = ${new Date().getTime() - startTime}ms`);
 	}
 
 	/**

@@ -91,7 +91,8 @@ describe('ProjectsController', function (): void {
 
 			it('Should return silently when no SQL object name provided in prompts', async function (): Promise<void> {
 				for (const name of ['', '    ', undefined]) {
-					const showInputBoxStub = sinon.stub(vscode.window, 'showInputBox').resolves(name);
+					sinon.stub(vscode.window, 'showInputBox').resolves(name);
+					sinon.stub(utils, 'sanitizeStringForFilename').returns('');
 					const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 					const projController = new ProjectsController(testContext.outputChannel);
 					const project = new Project('FakePath');
@@ -100,14 +101,14 @@ describe('ProjectsController', function (): void {
 					await projController.addItemPrompt(new Project('FakePath'), '', { itemType: ItemType.script });
 					should(project.files.length).equal(0, 'Expected to return without throwing an exception or adding a file when an empty/undefined name is provided.');
 					should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
-					showInputBoxStub.restore();
-					showErrorMessageSpy.restore();
+					sinon.restore();
 				}
 			});
 
 			it('Should show error if trying to add a file that already exists', async function (): Promise<void> {
 				const tableName = 'table1';
 				sinon.stub(vscode.window, 'showInputBox').resolves(tableName);
+				sinon.stub(utils, 'sanitizeStringForFilename').returns(tableName);
 				const spy = sinon.spy(vscode.window, 'showErrorMessage');
 				const projController = new ProjectsController(testContext.outputChannel);
 				let project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
@@ -137,6 +138,7 @@ describe('ProjectsController', function (): void {
 			it('Should add existing item', async function (): Promise<void> {
 				const tableName = 'table1';
 				sinon.stub(vscode.window, 'showInputBox').resolves(tableName);
+				sinon.stub(utils, 'sanitizeStringForFilename').returns(tableName);
 				const spy = sinon.spy(vscode.window, 'showErrorMessage');
 				const projController = new ProjectsController(testContext.outputChannel);
 				let project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
@@ -166,6 +168,7 @@ describe('ProjectsController', function (): void {
 			it('Should show error if trying to add a folder that already exists', async function (): Promise<void> {
 				const folderName = 'folder1';
 				const stub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
+				sinon.stub(utils, 'sanitizeStringForFilename').returns(folderName);
 
 				const projController = new ProjectsController(testContext.outputChannel);
 				let project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
@@ -189,7 +192,8 @@ describe('ProjectsController', function (): void {
 
 			it('Should be able to add folder with reserved name as long as not at project root', async function (): Promise<void> {
 				const folderName = 'folder1';
-				const stub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
+				sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
+				sinon.stub(utils, 'sanitizeStringForFilename').returns(folderName);
 
 				const projController = new ProjectsController(testContext.outputChannel);
 				let project = await testUtils.createTestProject(baselines.openProjectFileBaseline);
@@ -197,7 +201,7 @@ describe('ProjectsController', function (): void {
 
 				// make sure it's ok to add these folders if they aren't where the reserved folders are at the root of the project
 				let node = projectRoot.children.find(c => c.friendlyName === 'Tables');
-				stub.restore();
+				sinon.restore();
 				for (let i in reservedProjectFolders) {
 					// reload project
 					project = await Project.openProject(project.projectFilePath);
@@ -208,13 +212,14 @@ describe('ProjectsController', function (): void {
 			async function verifyFolderAdded(folderName: string, projController: ProjectsController, project: Project, node: BaseProjectTreeItem): Promise<void> {
 				const beforeFileCount = project.files.length;
 				let beforeFiles = project.files.map(f => f.relativePath);
-				const stub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
+				sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
+				sinon.stub(utils, 'sanitizeStringForFilename').returns(folderName);
 				await projController.addFolderPrompt(createWorkspaceTreeItem(node));
 
 				// reload project
 				project = await Project.openProject(project.projectFilePath);
 				should(project.files.length).equal(beforeFileCount + 1, `File count should be increased by one after adding the folder ${folderName}. before files: ${JSON.stringify(beforeFiles)}/n after files: ${JSON.stringify(project.files.map(f => f.relativePath))}`);
-				stub.restore();
+				sinon.restore();
 			}
 
 			async function verifyFolderNotAdded(folderName: string, projController: ProjectsController, project: Project, node: BaseProjectTreeItem): Promise<void> {
@@ -386,12 +391,14 @@ describe('ProjectsController', function (): void {
 				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
 
 				sinon.stub(vscode.window, 'showInputBox').resolves(preDeployScriptName);
+				sinon.stub(utils, 'sanitizeStringForFilename').returns(preDeployScriptName);
 				should(project.preDeployScripts.length).equal(0, 'There should be no pre deploy scripts');
 				await projController.addItemPrompt(project, '', { itemType: ItemType.preDeployScript });
 				should(project.preDeployScripts.length).equal(1, `Pre deploy script should be successfully added. ${project.preDeployScripts.length}, ${project.files.length}`);
 
 				sinon.restore();
 				sinon.stub(vscode.window, 'showInputBox').resolves(postDeployScriptName);
+				sinon.stub(utils, 'sanitizeStringForFilename').returns(postDeployScriptName);
 				should(project.postDeployScripts.length).equal(0, 'There should be no post deploy scripts');
 				await projController.addItemPrompt(project, '', { itemType: ItemType.postDeployScript });
 				should(project.postDeployScripts.length).equal(1, 'Post deploy script should be successfully added');
@@ -913,6 +920,34 @@ describe('ProjectsController', function (): void {
 			// verify script1.sql was not moved
 			proj1 = await Project.openProject(proj1.projectFilePath);
 			should(proj1.files.find(f => f.relativePath === 'script1.sql') !== undefined).be.true(`The file path should not have been updated when trying to move script1.sql to proj2`);
+		});
+	});
+
+	describe('SqlCmd Variables', function (): void {
+		it('Should delete sqlcmd variable', async function (): Promise<void> {
+			let project = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			const sqlProjectsService = await utils.getSqlProjectsService();
+			await sqlProjectsService.openProject(project.projectFilePath);
+
+			const projController = new ProjectsController(testContext.outputChannel);
+			const projRoot = new ProjectRootTreeItem(project);
+
+			should(Object.keys(project.sqlCmdVariables).length).equal(2, 'The project should start with 2 sqlcmd variables');
+
+			sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Cancel'));
+			await projController.delete(createWorkspaceTreeItem(projRoot.children.find(x => x.friendlyName === constants.sqlcmdVariablesNodeName)!.children[0]));
+
+			// reload project
+			project = await Project.openProject(project.projectFilePath);
+			should(Object.keys(project.sqlCmdVariables).length).equal(2, 'The project should still have 2 sqlcmd variables if no was selected');
+
+			sinon.restore();
+			sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Yes'));
+			await projController.delete(createWorkspaceTreeItem(projRoot.children.find(x => x.friendlyName === constants.sqlcmdVariablesNodeName)!.children[0]));
+
+			// reload project
+			project = await Project.openProject(project.projectFilePath);
+			should(Object.keys(project.sqlCmdVariables).length).equal(1, 'The project should only have 1 sqlcmd variable after deletion');
 		});
 	});
 });

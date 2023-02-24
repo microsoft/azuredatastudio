@@ -313,13 +313,6 @@ class ExtensionHostManager extends Disposable implements IExtensionHostManager {
 		// {{SQL CARBON EDIT}} filter out services we don't expose
 		const filtered: ProxyIdentifier<any>[] = [
 			MainContext.MainThreadDebugService,
-			MainContext.MainThreadNotebook,
-			MainContext.MainThreadNotebookDocuments,
-			MainContext.MainThreadNotebookEditors,
-			MainContext.MainThreadNotebookKernels,
-			MainContext.MainThreadNotebookProxyKernels,
-			MainContext.MainThreadNotebookRenderers,
-			MainContext.MainThreadNotebookProxyKernels,
 			MainContext.MainThreadInteractive
 		];
 		const expected: ProxyIdentifier<any>[] = Object.keys(MainContext).map((key) => (<any>MainContext)[key]).filter(v => !filtered.some(x => x === v));

@@ -199,7 +199,7 @@ export class ProjectsController {
 		}
 
 		const sqlProjectsService = await utils.getSqlProjectsService();
-		await sqlProjectsService.newProject(newProjFilePath, sdkStyle, targetPlatform);
+		await sqlProjectsService.createProject(newProjFilePath, sdkStyle, targetPlatform);
 
 		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);
 
@@ -809,7 +809,9 @@ export class ProjectsController {
 				success = true;
 			}
 		} else if (node instanceof SqlCmdVariableTreeItem) {
-			// TODO: handle deleting sqlcmd var from project after swap
+			const sqlProjectsService = await utils.getSqlProjectsService();
+			const result = await sqlProjectsService.deleteSqlCmdVariable(project.projectFilePath, node.friendlyName);
+			success = result.success;
 		} else if (node instanceof FileNode || FolderNode) {
 			const fileEntry = this.getFileProjectEntry(project, node);
 
@@ -1442,7 +1444,7 @@ export class ProjectsController {
 
 		if (fileOrFolder) {
 			// use relative path and not tree paths for files and folder
-			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts);
+			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts).concat(project.publishProfiles);
 
 			// trim trailing slash since folders with and without a trailing slash are allowed in a sqlproj
 			const trimmedUri = utils.trimChars(utils.getPlatformSafeFileEntryPath(utils.trimUri(fileOrFolder.projectFileUri, fileOrFolder.fileSystemUri)), '/');

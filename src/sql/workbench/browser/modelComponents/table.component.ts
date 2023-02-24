@@ -205,7 +205,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 									cellValue = <HyperlinkCellValue>{
 										iconCssClass: hyperlinkValue.icon ? this.createIconCssClassInternal(hyperlinkValue.icon) : undefined,
 										title: hyperlinkValue.title,
-										url: hyperlinkValue.url
+										url: hyperlinkValue.url,
+										role: hyperlinkValue.role
 									};
 									break;
 								}

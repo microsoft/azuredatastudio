@@ -469,6 +469,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/data-workspace/dist/common/constants.dragAndDropNotSupported" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[This project type does not support drag and drop.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[此项目类型不支持拖放。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.fileDoesNotExist" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File '{0}' doesn't exist]]></Val>
@@ -519,6 +528,15 @@
           <Val><![CDATA[Prior {0} for the current project will appear here, please run to see the results.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[当前项目的前期 {0} 将在此处显示，请运行以查看结果。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/data-workspace/dist/common/constants.onlyMovingOneFileIsSupported" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Only moving one file at a time is supported.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[仅支持一次移动一个文件。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
