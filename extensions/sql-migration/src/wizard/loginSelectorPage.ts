@@ -11,7 +11,6 @@ import * as constants from '../constants/strings';
 import { debounce, getLoginStatusImage, getLoginStatusMessage } from '../api/utils';
 import * as styles from '../constants/styles';
 import { collectSourceLogins, collectTargetLogins, LoginTableInfo } from '../api/sqlUtils';
-import { AzureSqlDatabaseServer } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import * as utils from '../api/utils';
 import { LoginType } from '../models/loginMigrationModel';
@@ -377,7 +376,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		try {
 			if (this.isTargetInstanceSet()) {
 				targetLogins.push(...await collectTargetLogins(
-					stateMachine._targetServerInstance as AzureSqlDatabaseServer,
+					stateMachine.targetServerName,
+					stateMachine._targetServerInstance.id,
 					stateMachine._targetUserName,
 					stateMachine._targetPassword,
 					stateMachine.isWindowsAuthMigrationSupported));

@@ -194,10 +194,6 @@ export interface AzureSqlDatabaseServer {
 	},
 }
 
-export function isAzureSqlDatabaseServer(instance: any): instance is AzureSqlDatabaseServer {
-	return (instance as AzureSqlDatabaseServer) !== undefined;
-}
-
 export type SqlVMServer = {
 	properties: {
 		virtualMachineResourceId: string,
@@ -214,10 +210,6 @@ export type SqlVMServer = {
 	subscriptionId: string,
 	networkInterfaces: Map<string, NetworkInterface>,
 };
-
-export function isSqlVMServer(instance: any): instance is SqlVMServer {
-	return (instance as SqlVMServer) !== undefined;
-}
 
 export type VirtualMachineInstanceView = {
 	computerName: string,
