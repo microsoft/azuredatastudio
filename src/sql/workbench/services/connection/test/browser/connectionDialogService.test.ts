@@ -108,10 +108,9 @@ suite('ConnectionDialogService tests', () => {
 		testInstantiationService.stub(ICapabilitiesService, new TestCapabilitiesService());
 
 		let logService: ILogService = new NullLogService();
-		let telemetryService: IAdsTelemetryService = new NullAdsTelemetryService();
 
 		connectionDialogService = new ConnectionDialogService(testInstantiationService, capabilitiesService, errorMessageService.object,
-			new TestConfigurationService(), new BrowserClipboardService(layoutService, logService), NullCommandService, logService, telemetryService);
+			new TestConfigurationService(), new BrowserClipboardService(layoutService, logService), NullCommandService, logService);
 		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;
 		let providerDisplayNames = ['Mock SQL Server'];
 		let providerNameToDisplayMap = { 'MSSQL': 'Mock SQL Server' };
@@ -290,7 +289,7 @@ suite('ConnectionDialogService tests', () => {
 			connected: false,
 			errorMessage: 'test_error',
 			errorCode: -1,
-			callStack: 'testCallStack'
+			messageDetails: 'testCallStack'
 		};
 		// promise only resolves upon handleDefaultOnConnect, must return it at the end
 		let connectionPromise = connectionDialogService.openDialogAndWait(mockConnectionManagementService.object, testConnectionParams, connectionProfile, connectionResult, false);

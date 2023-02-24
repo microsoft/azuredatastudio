@@ -329,7 +329,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 			// If the password is required and still not loaded show the dialog
 			if ((!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
-				return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options);
+				return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, messageDetails: undefined, errorCode: undefined }, options);
 			} else {
 				// Try to connect
 				return this.connectWithOptions(newConnection, owner.uri, options, owner).then(connectionResult => {
@@ -564,14 +564,22 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				return this.connectWithOptions(connection, uri, options, callbacks);
 			}
 			else {
-				let connectionErrorHandled = await this._errorDiagnosticsService.tryHandleConnectionError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, connection);
-				if (connectionErrorHandled.handled) {
+				let connectionErrorHandleResult = await this._errorDiagnosticsService.tryHandleConnectionError(connectionResult, connection.providerName, connection);
+				if (connectionErrorHandleResult.handled) {
 					connectionResult.errorHandled = true;
-					if (connectionErrorHandled.options) {
+					if (connectionErrorHandleResult.options) {
 						//copy over altered connection options from the result if provided.
-						connection.options = connectionErrorHandled.options;
+						connection.options = connectionErrorHandleResult.options;
 					}
-					return this.connectWithOptions(connection, uri, options, callbacks);
+					if (connectionErrorHandleResult.reconnect) {
+						// Attempt reconnect if requested by provider
+						return this.connectWithOptions(connection, uri, options, callbacks);
+					} else {
+						if (callbacks.onConnectCanceled) {
+							callbacks.onConnectCanceled();
+						}
+						return connectionResult;
+					}
 				}
 				else {
 					// Error not handled by any registered providers so fail the connection
@@ -1299,18 +1307,18 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				if (connectionMngInfo && connectionMngInfo.deleted) {
 					this._logService.info(`Found deleted connection management info for ${uri} - removing`);
 					this._connectionStatusManager.deleteConnection(uri);
-					resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, callStack: undefined, errorHandled: true, connectionProfile: connection });
+					resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, messageDetails: undefined, errorHandled: true, connectionProfile: connection });
 				} else {
 					if (errorMessage) {
 						// Connection to the server failed
 						this._logService.info(`Error occurred while connecting, removing connection management info for ${uri}`);
 						this._connectionStatusManager.deleteConnection(uri);
-						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, messageDetails: callStack, connectionProfile: connection });
 					} else {
 						if (connectionMngInfo.serverInfo) {
 							connection.options.isCloud = connectionMngInfo.serverInfo.isCloud;
 						}
-						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, messageDetails: callStack, connectionProfile: connection });
 					}
 				}
 			});
