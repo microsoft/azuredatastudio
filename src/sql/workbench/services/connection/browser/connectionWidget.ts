@@ -670,14 +670,17 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._passwordInputBox.enable();
 			this._rememberPasswordCheckBox.enabled = true;
 
-			this._initialConnectionInfo.authenticationType = AuthenticationType.SqlLogin;
-			if (this._initialConnectionInfo && this._initialConnectionInfo.userName) {
-				const setPasswordInputBox = (profile: IConnectionProfile) => {
-					this._passwordInputBox.value = profile.password;
-				};
+			if (this._initialConnectionInfo) {
+				this._initialConnectionInfo.authenticationType = AuthenticationType.SqlLogin;
 
-				this._rememberPasswordCheckBox.checked = this._initialConnectionInfo.savePassword;
-				this._connectionManagementService.addSavedPassword(this._initialConnectionInfo, true).then(setPasswordInputBox)
+				if (this._initialConnectionInfo.userName) {
+					const setPasswordInputBox = (profile: IConnectionProfile) => {
+						this._passwordInputBox.value = profile.password;
+					};
+
+					this._rememberPasswordCheckBox.checked = this._initialConnectionInfo.savePassword;
+					this._connectionManagementService.addSavedPassword(this._initialConnectionInfo, true).then(setPasswordInputBox)
+				}
 			}
 		}
 	}
