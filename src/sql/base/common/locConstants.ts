@@ -67,3 +67,28 @@ export const terminalIntegratedEnvOsxDescription = localize('terminal.integrated
 export const terminalIntegratedEnvLinuxDescription = localize('terminal.integrated.env.linux', "Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on Linux. Set to `null` to delete the environment variable.")
 export const terminalIntegratedEnvWindowsDescription = localize('terminal.integrated.env.windows', "Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on Windows. Set to `null` to delete the environment variable.")
 export const terminalIntegratedInheritEnvDescription = localize('terminal.integrated.inheritEnv', "Whether new shells should inherit their environment from Azure Data Studio, which may source a login shell to ensure $PATH and other development variables are initialized. This has no effect on Windows.")
+
+//#region VS Code Notebook settings
+export const displayOrderDescription = localize('notebook.displayOrder.description', "Priority list for output mime types. (for VS Code Notebooks only)");
+export const cellToolbarLocationDescription = localize('notebook.cellToolbarLocation.description', "Where the cell toolbar should be shown, or whether it should be hidden. (for VS Code Notebooks only)");
+export const showCellStatusbarDescription = localize('notebook.showCellStatusbar.description', "Whether the cell status bar should be shown. (for VS Code Notebooks only)");
+export const diffEnablePreviewDescription = localize('notebook.diff.enablePreview.description', "Whether to use the enhanced text diff editor for notebook. (for VS Code Notebooks only)");
+export const cellToolbarVisibilityDescription = localize('notebook.cellToolbarVisibility.description', "Whether the cell toolbar should appear on hover or click. (for VS Code Notebooks only)");
+export const undoRedoPerCellDescription = localize('notebook.undoRedoPerCell.description', "Whether to use separate undo/redo stack for each cell. (for VS Code Notebooks only)");
+export const compactViewDescription = localize('notebook.compactView.description', "Control whether the notebook editor should be rendered in a compact form. For example, when turned on, it will decrease the left margin width. (for VS Code Notebooks only)");
+export const focusIndicatorDescription = localize('notebook.focusIndicator.description', "Controls where the focus indicator is rendered, either along the cell borders or on the left gutter. (for VS Code Notebooks only)");
+export const insertToolbarPositionDescription = localize('notebook.insertToolbarPosition.description', "Control where the insert cell actions should appear. (for VS Code Notebooks only)");
+export const globalToolbarDescription = localize('notebook.globalToolbar.description', "Control whether to render a global toolbar inside the notebook editor. (for VS Code Notebooks only)");
+export const consolidatedOutputButtonDescription = localize('notebook.consolidatedOutputButton.description', "Control whether outputs action should be rendered in the output toolbar. (for VS Code Notebooks only)");
+export const showFoldingControlsDescription = localize('notebook.showFoldingControls.description', "Controls when the Markdown header folding arrow is shown. (for VS Code Notebooks only)");
+export const dragAndDropDescription = localize('notebook.dragAndDrop.description', "Control whether the notebook editor should allow moving cells through drag and drop. (for VS Code Notebooks only)");
+export const consolidatedRunButtonDescription = localize('notebook.consolidatedRunButton.description', "Control whether extra actions are shown in a dropdown next to the run button. (for VS Code Notebooks only)");
+export const globalToolbarShowLabelDescription = localize('notebook.globalToolbarShowLabel', "Control whether the actions on the notebook toolbar should render label or not. (for VS Code Notebooks only)");
+export const textOutputLineLimitDescription = localize('notebook.textOutputLineLimit', "Control how many lines of text in a text output is rendered. (for VS Code Notebooks only)");
+export const markupFontSizeDescription = localize('notebook.markup.fontSize', "Controls the font size in pixels of rendered markup in notebooks. When set to `0`, 120% of `#editor.fontSize#` is used. (for VS Code Notebooks only)");
+export const interactiveWindowCollapseCodeCellsDescription = localize('notebook.interactiveWindow.collapseCodeCells', "Controls whether code cells in the interactive window are collapsed by default. (for VS Code Notebooks only)");
+export const outputLineHeightDescription = localize('notebook.outputLineHeight', "Line height of the output text for notebook cells.\n - Values between 0 and 8 will be used as a multiplier with the font size.\n - Values greater than or equal to 8 will be used as effective values. (for VS Code Notebooks only)");
+export const outputFontSizeDescription = localize('notebook.outputFontSize', "Font size for the output text for notebook cells. When set to 0 `#editor.fontSize#` is used. (for VS Code Notebooks only)");
+export const outputFontFamilyDescription = localize('notebook.outputFontFamily', "The font family for the output text for notebook cells. When set to empty, the `#editor.fontFamily#` is used. (for VS Code Notebooks only)");
+export const experimentalCustomizationDescription = localize('notebook.editorOptions.experimentalCustomization', 'Settings for code editors used in notebooks. This can be used to customize most editor.* settings. (for VS Code Notebooks only)');
+//#endregion

@@ -20,3 +20,7 @@ output-area-component .notebook-output {
 	white-space: pre-wrap;
 	word-wrap: break-word;
 }
+
+output-area-component .notebook-output .output-userselect {
+	overflow: scroll;
+}

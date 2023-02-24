@@ -432,6 +432,18 @@ declare module 'azdata' {
 		azurePortalEndpoint?: string;
 	}
 
+	export interface PromptFailedResult {
+		/**
+		 * Error code used for non-user cancelled sign in errors
+		 */
+		errorCode?: string;
+
+		/**
+		 * Error message used for non-user cancelled sign in errors
+		 */
+		errorMessage?: string;
+	}
+
 	export namespace diagnostics {
 		/**
 		 * Represents a diagnostics provider of accounts.
@@ -556,6 +568,38 @@ declare module 'azdata' {
 		 * and not the Advanced Options window.
 		 */
 		showOnConnectionDialog?: boolean;
+
+		/**
+		 * Used to define list of values based on which another option is rendered visible/hidden.
+		 */
+		onSelectionChange?: SelectionChangeEvent[];
+	}
+
+	/**
+	 * This change event defines actions
+	 */
+	export interface SelectionChangeEvent {
+		/**
+		 * Values that affect actions defined in this event.
+		 */
+		values: string[];
+
+		/**
+		 * Action to be taken on another option when selected value matches to the list of values provided.
+		 */
+		dependentOptionActions: DependentOptionAction[];
+	}
+
+	export interface DependentOptionAction {
+		/**
+		 * Name of option affected by defined action.
+		 */
+		optionName: string,
+
+		/**
+		 * Action to be taken, Supported values: 'show', 'hide'.
+		 */
+		action: string;
 	}
 
 	// Object Explorer interfaces  --------------------------------
@@ -717,6 +761,10 @@ declare module 'azdata' {
 		 * The url to open.
 		 */
 		url?: string;
+		/**
+		 * The role of the hyperlink. By default, the role is 'link' and the url will be opened in a new tab.
+		 */
+		role?: 'button' | 'link';
 	}
 
 	export interface ContextMenuColumnCellValue {

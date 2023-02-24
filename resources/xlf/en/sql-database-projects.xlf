@@ -13,6 +13,9 @@
     <trans-unit id="InProgress">
       <source xml:lang="en">In progress</source>
     </trans-unit>
+    <trans-unit id="Move">
+      <source xml:lang="en">Move</source>
+    </trans-unit>
     <trans-unit id="PublishHistory">
       <source xml:lang="en">Publish History</source>
     </trans-unit>
@@ -412,6 +415,9 @@
     <trans-unit id="errorFindingBuildFilesLocation">
       <source xml:lang="en">Error finding build files location: {0}</source>
     </trans-unit>
+    <trans-unit id="errorMovingFile">
+      <source xml:lang="en">Error when moving file from {0} to {1}. Error: {2}</source>
+    </trans-unit>
     <trans-unit id="errorReadingProjectGuid">
       <source xml:lang="en">Error trying to read {0} of project '{1}'</source>
     </trans-unit>
@@ -564,6 +570,12 @@
     <trans-unit id="missingVersion">
       <source xml:lang="en">Missing 'version' entry in {0}</source>
     </trans-unit>
+    <trans-unit id="moveConfirmationPrompt">
+      <source xml:lang="en">Are you sure you want to move {0} to {1}?</source>
+    </trans-unit>
+    <trans-unit id="movingFilesBetweenProjectsNotSupported">
+      <source xml:lang="en">Moving files between projects is not supported</source>
+    </trans-unit>
     <trans-unit id="msec">
       <source xml:lang="en">msec</source>
     </trans-unit>
@@ -629,6 +641,9 @@
     </trans-unit>
     <trans-unit id="okString">
       <source xml:lang="en">Ok</source>
+    </trans-unit>
+    <trans-unit id="onlyMoveSqlFilesSupported">
+      <source xml:lang="en">Only moving .sql files is supported</source>
     </trans-unit>
     <trans-unit id="openEulaString">
       <source xml:lang="en">Open License Agreement</source>
@@ -723,6 +738,9 @@
     <trans-unit id="publishOptions">
       <source xml:lang="en">Publish Options</source>
     </trans-unit>
+    <trans-unit id="publishProfileElements">
+      <source xml:lang="en">Publish profile elements</source>
+    </trans-unit>
     <trans-unit id="publishProjectSucceed">
       <source xml:lang="en">Database project published successfully</source>
     </trans-unit>
@@ -800,6 +818,12 @@
     </trans-unit>
     <trans-unit id="sameDatabase">
       <source xml:lang="en">Same database</source>
+    </trans-unit>
+    <trans-unit id="save">
+      <source xml:lang="en">Save</source>
+    </trans-unit>
+    <trans-unit id="saveProfileAsButtonText">
+      <source xml:lang="en">Save Profile As...</source>
     </trans-unit>
     <trans-unit id="schema">
       <source xml:lang="en">Schema</source>

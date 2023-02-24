@@ -7,6 +7,15 @@
     <trans-unit id="azure.accounts.accountStaleError">
       <source xml:lang="en">The access token for selected account '{0}' and tenant '{1}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.</source>
     </trans-unit>
+    <trans-unit id="serviceCrashMessage">
+      <source xml:lang="en">Migration service component could not start. {0}</source>
+    </trans-unit>
+    <trans-unit id="serviceCrashed">
+      <source xml:lang="en">Service component crashed.</source>
+    </trans-unit>
+    <trans-unit id="serviceProviderIntializationError">
+      <source xml:lang="en">Service provider could not be initialized.</source>
+    </trans-unit>
     <trans-unit id="sql-migration.login.wizard.title">
       <source xml:lang="en">Migrate logins from '{0}' to Azure SQL</source>
     </trans-unit>
@@ -273,6 +282,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.bc.info">
       <source xml:lang="en">A SQL Managed Instance migration cutover to the Business Critical service tier can take significantly longer than General Purpose because three secondary replicas have to be seeded for Always On High Availability group. The duration of the operation depends on the size of the data. Seeding speed in 90% of cases is 220 GB/hour or higher.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.blob.container.folder.label">
+      <source xml:lang="en">Folder</source>
     </trans-unit>
     <trans-unit id="sql.migration.blob.container.label">
       <source xml:lang="en">Blob container resource group</source>
@@ -784,6 +796,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.invalid.blob.lastBackupFile.error">
       <source xml:lang="en">To continue, select a valid last backup file for source database '{0}'.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.invalid.blob.lastBackupFolder.error">
+      <source xml:lang="en">To continue, select a valid backup folder for source database '{0}'.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.invalid.blob.resourceGroup.error">
       <source xml:lang="en">To continue, select a valid resource group for source database '{0}'.</source>
     </trans-unit>
@@ -1059,6 +1074,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.no.blobFiles.found">
       <source xml:lang="en">No blob files found.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.no.blobFolders.found">
+      <source xml:lang="en">No blob folders found.</source>
     </trans-unit>
     <trans-unit id="sql.migration.no.fileShares.found">
       <source xml:lang="en">No file shares found.</source>
@@ -2463,6 +2481,9 @@ This may take some time.</source>
     <trans-unit id="total.tables.selected.of.total">
       <source xml:lang="en">{0} of {1}</source>
     </trans-unit>
+    <trans-unit id="waitingForService">
+      <source xml:lang="en">Waiting for {0} component to start.</source>
+    </trans-unit>
 </body></file>
   <file original="extensions/sql-migration/dist/models/stateMachine" source-language="en" datatype="plaintext"><body>
     <trans-unit id="sql.migration.starting.migration.error">
@@ -2470,6 +2491,41 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.starting.migration.message">
       <source xml:lang="en">Starting migration for database {0} to {1} - {2}</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/sql-migration/dist/service/serviceClient" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="downloadingService">
+      <source xml:lang="en">Downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceComplete">
+      <source xml:lang="en">Done downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceSize">
+      <source xml:lang="en">({0} KB)</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceStatus">
+      <source xml:lang="en">Downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="entryExtractedChannelMsg">
+      <source xml:lang="en">Extracted {0} ({1}/{2})</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.serviceStartFailed">
+      <source xml:lang="en">Failed to start {0}: {1}</source>
+    </trans-unit>
+    <trans-unit id="installingService">
+      <source xml:lang="en">Installing {0} Service</source>
+    </trans-unit>
+    <trans-unit id="installingServiceDetailed">
+      <source xml:lang="en">Installing {0} to {1}</source>
+    </trans-unit>
+    <trans-unit id="serviceInstalled">
+      <source xml:lang="en">Installed {0}</source>
+    </trans-unit>
+    <trans-unit id="serviceStarted">
+      <source xml:lang="en">{0} Started</source>
+    </trans-unit>
+    <trans-unit id="serviceStarting">
+      <source xml:lang="en">Starting {0}</source>
     </trans-unit>
 </body></file>
   <file original="extensions/sql-migration/package" source-language="en" datatype="plaintext"><body>

@@ -14,6 +14,7 @@ const localize = nls.loadMessageBundle();
 export const dataSourcesFileName = 'datasources.json';
 export const sqlprojExtension = '.sqlproj';
 export const sqlFileExtension = '.sql';
+export const publishProfileExtension = '.publish.xml';
 export const openApiSpecFileExtensions = ['yaml', 'yml', 'json'];
 export const schemaCompareExtensionId = 'microsoft.schema-compare';
 export const master = 'master';
@@ -135,6 +136,8 @@ export const server = localize('server', "Server");
 export const defaultUser = localize('default', "default");
 export const selectProfileToUse = localize('selectProfileToUse', "Select publish profile to load");
 export const selectProfile = localize('selectProfile', "Select Profile");
+export const saveProfileAsButtonText = localize('saveProfileAsButtonText', "Save Profile As...");
+export const save = localize('save', "Save");
 export const dontUseProfile = localize('dontUseProfile', "Don't use profile");
 export const browseForProfileWithIcon = `$(folder) ${localize('browseForProfile', "Browse for profile")}`;
 export const chooseAction = localize('chooseAction', "Choose action");
@@ -483,6 +486,7 @@ export const ImportElements = localize('importElements', "Import Elements");
 export const ProjectReferenceNameElement = localize('projectReferenceNameElement', "Project reference name element");
 export const ProjectReferenceElement = localize('projectReferenceElement', "Project reference");
 export const DacpacReferenceElement = localize('dacpacReferenceElement', "Dacpac reference");
+export const PublishProfileElements = localize('publishProfileElements', "Publish profile elements");
 
 /** Name of the property item in the project file that defines default database collation. */
 export const DefaultCollationProperty = 'DefaultCollation';
@@ -544,6 +548,9 @@ export const authenticationSetting = 'Authentication';
 export const activeDirectoryInteractive = 'active directory interactive';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
+export const encryptSetting = 'Encrypt';
+export const trustServerCertificateSetting = 'Trust Server Certificate';
+export const hostnameInCertificateSetting = 'Host Name in Certificate';
 
 export const azureAddAccount = localize('azureAddAccount', "Add an Account...");
 
@@ -647,3 +654,10 @@ export function downloadingFromTo(from: string, to: string) { return localize('d
 export function extractingDacFxDlls(location: string) { return localize('extractingDacFxDlls', "Extracting DacFx build DLLs to {0}", location); }
 export function errorDownloading(url: string, error: string) { return localize('errorDownloading', "Error downloading {0}. Error: {1}", url, error); }
 export function errorExtracting(path: string, error: string) { return localize('errorExtracting', "Error extracting files from {0}. Error: {1}", path, error); }
+
+// move
+export const onlyMoveSqlFilesSupported = localize('onlyMoveSqlFilesSupported', "Only moving .sql files is supported");
+export const movingFilesBetweenProjectsNotSupported = localize('movingFilesBetweenProjectsNotSupported', "Moving files between projects is not supported");
+export function errorMovingFile(source: string, destination: string, error: string) { return localize('errorMovingFile', "Error when moving file from {0} to {1}. Error: {2}", source, destination, error); }
+export function moveConfirmationPrompt(source: string, destination: string) { return localize('moveConfirmationPrompt', "Are you sure you want to move {0} to {1}?", source, destination); }
+export const move = localize('Move', "Move");
