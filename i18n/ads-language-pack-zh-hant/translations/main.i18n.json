@@ -11317,9 +11317,9 @@
 			"rowDetailView.loadError": "正在載入錯誤..."
 		},
 		"sql/base/browser/ui/table/table": {
-			"table.resizeColumn": "Provide new column width",
-			"table.resizeColumn.invalid": "Invalid column width",
-			"table.resizeColumn.negativeSize": "Size cannot be 0 or negative"
+			"table.resizeColumn": "提供新的資料行寬度",
+			"table.resizeColumn.invalid": "資料行寬度無效",
+			"table.resizeColumn.negativeSize": "大小不可以是 0 或負數"
 		},
 		"sql/base/browser/ui/taskbar/overflowActionbar": {
 			"toggleMore": "切換更多"
@@ -11337,7 +11337,6 @@
 			"dataExplorer.context": "Dataexplorer 項目操作功能表",
 			"dataGrid.context": "資料格項目操作功能表",
 			"default": "啟用自動更新檢查。Azure Data Studio 會自動並定期檢查更新。",
-			"docNotFoundForUriError": "無法開啟指定 URI 的筆記本文件。",
 			"enable locally": "請重新載入 Azure Data Studio 以在本機啟用此延伸模組。",
 			"enable remote": "請重新載入 Azure Data Studio 以在 {0} 中啟用此延伸模組。",
 			"enableWindowsBackgroundUpdates": "啟用以在 Windows 背景中下載並安裝新的 Azure Data Studio 版本",
@@ -11350,7 +11349,6 @@
 			"miinstallVsix": "從 VSIX 套件安裝延伸模組",
 			"newQuery": "新增查詢",
 			"notebook.cellTitle": "筆記本儲存格標題功能表",
-			"notebook.cellToolbarLocation.compatibilityDescription": "儲存格工具列應顯示在何處，或是否應隱藏。注意: 此設定僅針對延伸模組相容性目的啟用，因此不會影響任何項目。",
 			"notebook.title": "筆記本標題功能表",
 			"notebook.toolbar": "筆記本工具列功能表",
 			"objectExplorer.context": "物件總管項目操作功能表",
@@ -11377,9 +11375,7 @@
 			"terminal.integrated.inheritEnv": "新殼層是否應該從 Azure Data Studio 繼承其環境，而 VS Code 可能會提供登入殼層，以確保 $PATH 和其他開發變數已初始化。這對 Windows 沒有影響。",
 			"uninstallExtensionComplete": "請重新載入 Azure Data Studio 以完成延伸模組 {0} 的解除安裝。",
 			"updateLocale": "您想要變更 Azure Data Studio 的 UI 語言為 {0} 並重新啟動嗎?",
-			"vscodeDocCreationFailedError": "無法建立筆記本文件。",
-			"vscodeFunctionalityNotSupportedError": "Azure Data Studio 不支持此 VS Code 功能。",
-			"vscodeInvalidArgumentsError": "無效的引數。",
+			"vscodeNotebooksNotSupportedError": "Azure Data Studio 中不支援 VS Code 筆記本延伸模組。",
 			"watermark.newNotebook": "新增筆記本",
 			"watermark.newSqlFile": "新增 SQL 檔案",
 			"workspace.trust.description": "控制是否在 Azure Data Studio 內啟用工作區信任。",
@@ -11530,9 +11526,6 @@
 		},
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
 			"navigationProviderRequired": "必須將具有有效 providerId 的 NavigationProvider 傳遞給此方法"
-		},
-		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "無法啟動工作階段，管理員尚未初始化"
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "清除所有儲存的帳戶",
@@ -12702,6 +12695,7 @@
 			"notebook.markdownModeDescription": "文字顯示為 Markdown。",
 			"notebook.markdownPreviewLineHeight": "控制筆記本 Markdown 預覽中使用的行高。此數字相對於字型大小。",
 			"notebook.maxRichTextUndoHistory": "筆記本 RTF 文字編輯器復原歷程記錄中儲存的變更數目上限。",
+			"notebook.renderTablesInHtml": "在文字儲存格中以 HTML 格式顯示和儲存資料表，而不是轉換成 Markdown 資料表。",
 			"notebook.richTextModeDescription": "文字顯示為 RTF 文字 (也稱為 WYSIWYG)。",
 			"notebook.saveConnectionName": "(預覽) 儲存筆記本中繼資料中的連線名稱。",
 			"notebook.showAllKernels": "(預覽) 顯示目前筆記本提供者的所有核心。",
@@ -12947,6 +12941,7 @@
 		},
 		"sql/workbench/contrib/query/browser/actions": {
 			"chart": "圖表",
+			"copyHeaders": "複製標頭",
 			"copySelection": "複製",
 			"copyWithHeaders": "隨標題一同複製",
 			"jsonEncoding": "匯出至 JSON 時將不會儲存結果編碼，請務必在建立檔案後儲存所需的編碼。",
@@ -13022,6 +13017,7 @@
 			"queryEditor.results.saveAsMarkdown.lineSeparator": "匯出至 Markdown 時，要用於分隔行的字元，預設為系統行結尾",
 			"queryEditor.results.saveAsXml.encoding": "將結果另存為 XML 時，要使用的檔案編碼",
 			"queryEditor.results.saveAsXml.formatted": "若設定為 true，會在將結果另存為 XML 時將輸出格式化",
+			"queryEditor.results.showActionBar": "是否要在查詢結果檢視中顯示動作列",
 			"queryEditor.results.streaming": "啟用結果串流；包含些許輕微視覺效果問題",
 			"queryEditor.showConnectionInfoInTitle": "控制是否要在標題中顯示索引標籤的連線資訊。",
 			"queryEditor.tabColorMode": "依據連線的伺服器群組控制索引標籤如何著色",
@@ -13067,6 +13063,8 @@
 			"status.query.selection-summary": "選取摘要",
 			"status.query.status": "執行狀態",
 			"status.query.summaryText": "平均: {0} 計數: {1} 總和: {2}",
+			"status.query.summaryTextNonNumeric": "計數: {0}  相異計數: {1}  Null 計數: {2}",
+			"status.query.summaryTooltip": "平均: {0}  計數: {1}  相異計數: {2}  最大值: {3}  最小值: {4}  Null 計數:  {5}  總和: {6}",
 			"status.query.timeElapsed": "已耗用時間"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13186,7 +13184,7 @@
 			"enablePreviewFeatures.yes": "是 (建議)"
 		},
 		"sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog": {
-			"notifyEncryption.message": "Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.",
+			"notifyEncryption.message": "Azure Data Studio 現在會針對所有 SQL Server 連線預設啟用加密。除非您變更特定加密相關連線屬性，否則這可能會導致現有的連線無法再使用。{0}建議您檢閱下列連結以了解更多詳細資料。",
 			"notifyEncryption.moreInfoLink": "詳細資訊",
 			"notifyEncryption.title": "重要更新"
 		},
@@ -13583,6 +13581,7 @@
 			"deleteCellFailed": "無法刪除資料格。",
 			"injectedParametersMsg": "# 個插入的參數\r\n",
 			"kernelRequiresConnection": "請選取要為此核心執行資料格的連線",
+			"savedKernelNotSupported": "不支援此筆記本的 '{0}' 核心。改為預設為 SQL 核心。",
 			"shutdownClientSessionError": "關閉筆記本時發生用戶端工作階段錯誤: {0}",
 			"startSessionFailed": "無法啟動工作階段: {0}"
 		},
@@ -13619,14 +13618,13 @@
 			"unknownCellType": "資料格類型 {0} 不明"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "這個 magic 指示的選擇性執行目標，例如 Spark vs SQL",
+			"carbon.extension.contributes.notebook.executionTarget": "這個 magic 指示的選擇性執行目標，例如 Python vs SQL",
 			"carbon.extension.contributes.notebook.fileExtensions": "應向此筆記本提供者註冊的檔案副檔名",
-			"carbon.extension.contributes.notebook.kernels": "適用於像是 python3、pyspark、sql 等等的選擇性核心集",
+			"carbon.extension.contributes.notebook.kernels": "適用於像是 Python3、SQL 等等的選擇性核心集",
 			"carbon.extension.contributes.notebook.language": "資料格中包含此資料格 magic 時，要使用的資料格語言",
 			"carbon.extension.contributes.notebook.magic": "資料格 magic 的名稱，例如 '%%sql'。",
 			"carbon.extension.contributes.notebook.provider": "筆記本提供者的識別碼。",
 			"carbon.extension.contributes.notebook.standardKernels": "應為此筆記本提供者之標準的核心",
-			"providerNotInRegistryError": "指定的提供者 '{0}' 不存在於筆記本登錄中。",
 			"vscode.extension.contributes.notebook.languagemagics": "提供筆記本語言。",
 			"vscode.extension.contributes.notebook.providersDescriptions": "提供筆記本提供者描述。"
 		},
@@ -13724,8 +13722,9 @@
 			"filewallRule": "防火牆規則",
 			"firewall.cancel": "取消",
 			"firewall.ok": "確定",
-			"firewallRuleDialogDescription": "您的用戶端 IP 位址無法存取伺服器。登錄到 Azure 帳戶並建立新的防火牆規則以啟用存取權限。",
-			"firewallRuleHelpDescription": "深入了解防火牆設定",
+			"firewall.ruleName": "規則名稱",
+			"firewallRuleDescription": "需要防火牆規則才能存取 SQL Server 執行個體。按一下下方連結以建立新的防火牆規則。",
+			"firewallRuleHelpLink": "深入了解防火牆規則",
 			"from": "從",
 			"to": "至"
 		},
@@ -13900,6 +13899,17 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "開始使用(&&S)",
 			"showReleaseNotes": "顯示入門指南"
+		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "取消",
+			"passwordChangeDialog.confirmPassword": "確認密碼:",
+			"passwordChangeDialog.connecting": "正在連線",
+			"passwordChangeDialog.errorHeader": "嘗試變更密碼時失敗",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "輸入的密碼不相符",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "請按 [確定]，然後在兩個方塊中輸入完全相同的密碼。",
+			"passwordChangeDialog.newPassword": "新密碼:",
+			"passwordChangeDialog.ok": "確定",
+			"passwordChangeDialog.title": "變更密碼"
 		}
 	}
 }

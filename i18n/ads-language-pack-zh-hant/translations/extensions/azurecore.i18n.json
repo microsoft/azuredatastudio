@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "將您的帳戶新增至快取時發生錯誤。",
 			"azure.cacheErrorGet": "從快取取得您的帳戶時發生錯誤",
 			"azure.cacheErrorParse": "從快取剖析您的帳戶時發生錯誤",
-			"azure.cacheErrrorRemove": "從快取移除您的帳戶時發生錯誤。",
 			"azure.microsoftAccountDisplayName": "Microsoft 帳戶",
 			"azure.microsoftCorpAccount": "Microsoft Corp.",
 			"azure.noBaseToken": "驗證失敗，或您的權杖已從系統中刪除。請嘗試再次將帳戶新增至 Azure Data Studio。",
@@ -22,7 +21,6 @@
 			"azure.responseError": "權杖擷取失敗，發生錯誤。[開啟開發人員工具]({0}) 以了解更多詳細資料。",
 			"azure.tenantNotFound": "找不到識別碼為 '{0}' 的指定租用戶。",
 			"azureAuth.unidentifiedError": "Azure 驗證發生無法辨識的錯誤",
-			"azureWorkAccountDisplayName": "公司或學校帳戶",
 			"azurecore.consentDialog.body": "您的租用戶 '{0} ({1})' 需要再次重新驗證，才能存取 {2} 資源。請按 [開啟] 啟動驗證程序。",
 			"azurecore.consentDialog.cancel": "取消",
 			"azurecore.consentDialog.ignore": "忽略租用戶",
@@ -99,6 +97,12 @@
 		},
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
 			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL 受控執行個體 - Azure Arc"
+		},
+		"dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider": {
+			"azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel": "專用 SQL 集區"
+		},
+		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
+			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
 		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "找不到任何資源"
@@ -188,6 +192,8 @@
 			"azurecore.norwaywest": "挪威西部",
 			"azurecore.postgresServer": "適用於 PostgreSQL 的 Azure 資料庫伺服器",
 			"azurecore.reload": "重新載入",
+			"azurecore.reloadChoice": "重新載入 Azure Data Studio",
+			"azurecore.reloadPrompt": "驗證程式庫已更新，請重新載入 Azure Data Studio。",
 			"azurecore.requiresReload": "修改此設定需要重新載入視窗，使所有變更生效。",
 			"azurecore.resourceGroup": "資源群組",
 			"azurecore.resourceType": "資源類型",
@@ -233,6 +239,7 @@
 			"azure.resource.view.title": "Azure (預覽)",
 			"azure.tenant.config.filter.description": "查詢 Azure 資源時要忽略的租用戶識別碼清單。每個項目都是租用戶識別碼。",
 			"azure.title": "Azure",
+			"config.authenticationLibrary": "用於 AAD 驗證流程的程式庫。請先變更此選項，然後重新啟動 ADS。",
 			"config.azureAccountConfigurationSection": "Azure 帳戶組態",
 			"config.azureAuthMethodConfigurationSection": "Azure 驗證方法",
 			"config.azureCodeGrantMethod": "代碼授與方法",

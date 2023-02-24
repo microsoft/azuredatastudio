@@ -75,7 +75,6 @@
 			"newMarkdown": "Nouvel Aperçu Markdown (Aperçu)",
 			"newNotebook": "Nouveau bloc-notes (Aperçu)",
 			"newSection": "Nouvelle section (Aperçu)",
-			"noBDCConnectionError": "Les noyaux Spark nécessitent une connexion a une instance maître de cluster Big Data SQL Server.",
 			"noBooksSelected": "Aucun Jupyter Book n'est actuellement sélectionné dans la viewlet.",
 			"onGitHub": "GitHub",
 			"onsharedFile": "Fichier partagé",
@@ -87,7 +86,6 @@
 			"openNotebookCommand": "Ouvrir le notebook",
 			"openNotebookError": "L'ouverture du notebook {0} a échoué : {1}",
 			"openUntitledNotebookError": "Ouvrez un notebook {0} sans titre, car le {1} sans titre a échoué",
-			"providerNotValidError": "Les fournisseurs non-MSSQL ne sont pas pris en charge pour les noyaux Spark.",
 			"readBookError": "Échec de la lecture du Jupyter Book {0} : {1}",
 			"releases": "Mises en production",
 			"repoUrl": "URL du dépôt",
@@ -101,7 +99,6 @@
 			"version": "Version"
 		},
 		"dist/common/notebookUtils": {
-			"msgSampleCodeDataFrame": "Cet exemple de code charge le fichier dans un cadre de données et affiche les 10 premiers résultats.",
 			"noNotebookVisible": "Aucun éditeur de notebook actif",
 			"notebookFiles": "Notebooks"
 		},
@@ -219,12 +216,7 @@
 			"shutdownError": "L'arrêt du serveur de notebook a échoué : {0}"
 		},
 		"dist/jupyter/jupyterSessionManager": {
-			"bdcConnectError": "Erreur : {0}. ",
-			"clusterControllerConnectionRequired": "Une connexion au contrôleur de cluster est nécessaire pour exécuter les travaux Spark",
-			"errorStartBeforeReady": "Impossible de démarrer une session, le gestionnaire n'est pas encore initialisé",
-			"notebook.couldNotFindKnoxGateway": "Point de terminaison de passerelle Knox introuvable",
-			"promptBDCPassword": "Fournissez le mot de passe pour se connecter au contrôleur BDC",
-			"promptBDCUsername": "{0}Fournissez le nom d'utilisateur pour se connecter au contrôleur BDC :"
+			"errorStartBeforeReady": "Impossible de démarrer une session, le gestionnaire n'est pas encore initialisé"
 		},
 		"dist/jupyter/pypiClient": {
 			"managePackages.packageRequestError": "La demande d'informations de package a échoué avec l'erreur : {0} {1}"

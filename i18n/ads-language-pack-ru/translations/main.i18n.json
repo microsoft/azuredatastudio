@@ -11337,7 +11337,6 @@
 			"dataExplorer.context": "Контекстное меню элемента обозревателя данных",
 			"dataGrid.context": "Контекстное меню элемента сетки данных",
 			"default": "Включение автоматических проверок обновлений. Azure Data Studio будет периодически проверять наличие обновлений в автоматическом режиме.",
-			"docNotFoundForUriError": "Не удалось открыть документ записной книжки для указанного универсального кода ресурса (URI).",
 			"enable locally": "Перезапустите Azure Data Studio, чтобы включить это расширение локально.",
 			"enable remote": "Перезапустите Azure Data Studio, чтобы включить это расширение в {0}.",
 			"enableWindowsBackgroundUpdates": "Включите, чтобы скачивать и устанавливать новые версии Azure Data Studio в Windows в фоновом режиме",
@@ -11350,7 +11349,6 @@
 			"miinstallVsix": "Установить расширение из пакета VSIX",
 			"newQuery": "Создать запрос",
 			"notebook.cellTitle": "Меню заголовка ячейки записной книжки",
-			"notebook.cellToolbarLocation.compatibilityDescription": "Где следует отображать панель инструментов ячейки (или следует ли ее скрыть). Примечание. Этот параметр включен только в целях совместимости расширений, он ни на что не влияет.",
 			"notebook.title": "Меню раздела записной книжки",
 			"notebook.toolbar": "Меню панели инструментов записной книжки",
 			"objectExplorer.context": "Контекстное меню элемента обозревателя объектов",
@@ -11377,9 +11375,7 @@
 			"terminal.integrated.inheritEnv": "Должны ли новые оболочки наследовать свою среду от Azure Data Studio, который может попытаться получить оболочку входа для обеспечения инициализации $PATH и других переменных разработки. Это не влияет на Windows.",
 			"uninstallExtensionComplete": "Перезапустите Azure Data Studio, чтобы завершить удаление расширения {0}.",
 			"updateLocale": "Хотите изменить язык пользовательского интерфейса Azure Data Studio на {0} и выполнить перезапуск?",
-			"vscodeDocCreationFailedError": "Не удалось создать документ записной книжки.",
-			"vscodeFunctionalityNotSupportedError": "Этот VS Code не поддерживается в Azure Data Studio.",
-			"vscodeInvalidArgumentsError": "Недопустимые аргументы.",
+			"vscodeNotebooksNotSupportedError": "Расширения записной книжки VS Code не поддерживаются в Azure Data Studio.",
 			"watermark.newNotebook": "Новая записная книжка",
 			"watermark.newSqlFile": "Новый файл SQL",
 			"workspace.trust.description": "Определяет, включено ли доверие рабочей области в Azure Data Studio.",
@@ -11530,9 +11526,6 @@
 		},
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
 			"navigationProviderRequired": "В качестве параметра этого метода необходимо указать NavigationProvider с действительным providerId"
-		},
-		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "Не удается запустить сеанс, диспетчер еще не инициализирован"
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "Очистить все сохраненные учетные записи",
@@ -12268,7 +12261,7 @@
 			"epCompare.zoomInAction": "Увеличить масштаб",
 			"epCompare.zoomOutAction": "Уменьшить масштаб",
 			"epCompare.zoomReset": "Сбросить масштаб",
-			"epCompare.zoomToFit": "Масштаб по размеру экрана",
+			"epCompare.zoomToFit": "Масштабировать по размеру",
 			"executionPlanComparison.bottomPlanDiagram.name": "Последний план выполнения {0}",
 			"executionPlanComparison.topPlanDiagram.name": "Основной план выполнения {0}",
 			"executionPlanDisableTooltip": "Подсказки отключены",
@@ -12293,8 +12286,8 @@
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
 			"executionPlan.tooltips.enableOnHoverTooltips": "Если значение равно true, при наведении указателя на план выполнения включает всплывающие подсказки. Если значение равно false, подсказки отображаются при щелчке по узлу или при нажатии клавиши F3.",
-			"executionPlanCompareCommandOriginalValue": "Сравнение планов выполнения",
-			"executionPlanCompareCommandValue": "Сравнение планов выполнения",
+			"executionPlanCompareCommandOriginalValue": "Сравнить планы выполнения",
+			"executionPlanCompareCommandValue": "Сравнить планы выполнения",
 			"executionPlanConfigurationTitle": "План выполнения"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
@@ -12333,13 +12326,13 @@
 		"sql/workbench/contrib/executionPlan/browser/executionPlanView": {
 			"executionPlan.SaveFileDescription": "Файлы плана выполнения",
 			"executionPlan.diagram.ariaLabel": "План выполнения {0}",
-			"executionPlanCompareExecutionPlanAction": "Сравнение плана выполнения",
+			"executionPlanCompareExecutionPlanAction": "Сравнение планов выполнения",
 			"executionPlanContextMenuDisableTooltip": "Отключить подсказки",
 			"executionPlanContextMenuEnableTooltip": "Включить подсказки",
 			"executionPlanCustomZoom": "Пользовательское увеличение",
 			"executionPlanDisableTooltip": "Подсказки отключены",
 			"executionPlanEnableTooltip": "Подсказки включены",
-			"executionPlanFitGraphLabel": "Масштаб по размеру экрана",
+			"executionPlanFitGraphLabel": "Масштабировать по размеру",
 			"executionPlanHighlightExpensiveOperationAction": "Выделить ресурсоемкую операцию",
 			"executionPlanOpenGraphFile": "Показать XML-файл плана запроса",
 			"executionPlanPropertiesActionLabel": "Свойства",
@@ -12702,6 +12695,7 @@
 			"notebook.markdownModeDescription": "Текст отображается как Markdown.",
 			"notebook.markdownPreviewLineHeight": "Определяет высоту строки, используемую в области предварительного просмотра Markdown в записной книжке. Это значение задается относительно размера шрифта.",
 			"notebook.maxRichTextUndoHistory": "Максимальное количество изменений, сохраняемых в журнале отмены для редактора форматированного текста записной книжки.",
+			"notebook.renderTablesInHtml": "Отображение и сохранение таблиц в формате HTML в текстовых ячейках вместо преобразования в таблицы Markdown.",
 			"notebook.richTextModeDescription": "Текст отображается как форматированный текст (другое название — WYSIWYG).",
 			"notebook.saveConnectionName": "(Предварительная версия.) Сохранение имени подключения в метаданных записной книжки.",
 			"notebook.showAllKernels": "(Предварительная версия.) Отображение всех ядер для текущего поставщика записной книжки.",
@@ -12947,6 +12941,7 @@
 		},
 		"sql/workbench/contrib/query/browser/actions": {
 			"chart": "Диаграмма",
+			"copyHeaders": "Копировать заголовки",
 			"copySelection": "Копировать",
 			"copyWithHeaders": "Копировать с заголовками",
 			"jsonEncoding": "Кодировка результатов не будет сохранена при экспорте в JSON; не забудьте выполнить сохранение с требуемой кодировкой после создания файла.",
@@ -13022,6 +13017,7 @@
 			"queryEditor.results.saveAsMarkdown.lineSeparator": "Символы для разделения строк при экспорте в Markdown, по умолчанию используются системные окончания строк",
 			"queryEditor.results.saveAsXml.encoding": "Кодировка файла, которая используется при сохранении результатов в формате XML",
 			"queryEditor.results.saveAsXml.formatted": "Если этот параметр имеет значение true, выходные данные XML будут отформатированы при сохранении результатов в формате XML",
+			"queryEditor.results.showActionBar": "Отображать ли панель действий в представлении результатов запроса",
 			"queryEditor.results.streaming": "Включить потоковую передачу результатов; имеется несколько небольших проблем с отображением",
 			"queryEditor.showConnectionInfoInTitle": "Управляет тем, следует ли отображать сведения о подключении для вкладки в названии.",
 			"queryEditor.tabColorMode": "Управляет тем, как определяются цвета вкладок на основе группы серверов активного подключения",
@@ -13067,6 +13063,8 @@
 			"status.query.selection-summary": "Сводка по выбранным элементам",
 			"status.query.status": "Состояние выполнения",
 			"status.query.summaryText": "Среднее значение: {0}  Количество: {1}  Сумма: {2}",
+			"status.query.summaryTextNonNumeric": "Количество: {0}, число уникальных значений: {1}, число значений NULL: {2}",
+			"status.query.summaryTooltip": "Среднее: {0}, количество: {1}, число уникальных значений: {2}, максимум: {3}, минимум: {4}, число значений NULL: {5}, сумма: {6}",
 			"status.query.timeElapsed": "Прошедшее время"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13583,6 +13581,7 @@
 			"deleteCellFailed": "Не удалось удалить ячейку.",
 			"injectedParametersMsg": "Число внедренных параметров\r\n",
 			"kernelRequiresConnection": "Выберите подключение, на котором будут выполняться ячейки для этого ядра",
+			"savedKernelNotSupported": "Ядро \"{0} этой записной книжки не поддерживается. По умолчанию для ядра SQL.",
 			"shutdownClientSessionError": "При закрытии записной книжки произошла ошибка сеанса клиента: {0}",
 			"startSessionFailed": "Не удалось запустить сеанс: {0}"
 		},
@@ -13619,14 +13618,13 @@
 			"unknownCellType": "Неизвестный тип ячейки {0}"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "Необязательная цель выполнения, указанная в этой магической команде, например, Spark vs SQL",
+			"carbon.extension.contributes.notebook.executionTarget": "Необязательная цель выполнения, указанная в этой магической команде, например Python vs SQL",
 			"carbon.extension.contributes.notebook.fileExtensions": "Расширения файлов, которые должны быть зарегистрированы для этого поставщика записных книжек",
-			"carbon.extension.contributes.notebook.kernels": "Необязательный набор ядер, для которых это действительно, например, python3, pyspark, sql",
+			"carbon.extension.contributes.notebook.kernels": "Необязательный набор ядер, для которых это действительно, например python3, sql",
 			"carbon.extension.contributes.notebook.language": "Язык ячейки, который будет использоваться, если эта магическая команда ячейки включена в ячейку",
 			"carbon.extension.contributes.notebook.magic": "Название магической команды ячейки, например, \"%%sql\".",
 			"carbon.extension.contributes.notebook.provider": "Идентификатор поставщика записных книжек.",
 			"carbon.extension.contributes.notebook.standardKernels": "Какие ядра следует использовать в качестве стандартных для этого поставщика записных книжек",
-			"providerNotInRegistryError": "Указанный поставщик, \"{0}\", отсутствует в реестре записных книжек.",
 			"vscode.extension.contributes.notebook.languagemagics": "Определяет язык записной книжки.",
 			"vscode.extension.contributes.notebook.providersDescriptions": "Добавляет описания поставщиков записных книжек."
 		},
@@ -13724,8 +13722,9 @@
 			"filewallRule": "Правило брандмауэра",
 			"firewall.cancel": "Отмена",
 			"firewall.ok": "OK",
-			"firewallRuleDialogDescription": "Ваш клиентский IP-адрес не имеет доступа к серверу. Войдите в учетную запись Azure и создайте правило брандмауэра, чтобы разрешить доступ.",
-			"firewallRuleHelpDescription": "Дополнительные сведения о параметрах брандмауэра",
+			"firewall.ruleName": "Имя правила",
+			"firewallRuleDescription": "Для доступа к экземпляру SQL Server требуется правило брандмауэра. Щелкните ссылку ниже, чтобы создать правило брандмауэра.",
+			"firewallRuleHelpLink": "Дополнительные сведения о правилах брандмауэра",
 			"from": "С",
 			"to": "До"
 		},
@@ -13900,6 +13899,17 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "Начало р&&аботы",
 			"showReleaseNotes": "Показать раздел \"Начало работы\""
+		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.cancel": "Отмена",
+			"passwordChangeDialog.confirmPassword": "Подтверждение пароля:",
+			"passwordChangeDialog.connecting": "Идет подключение",
+			"passwordChangeDialog.errorHeader": "Сбой при попытке изменить пароль",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "Введенные пароли не совпадают",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Нажмите \"ОК\" и введите в обоих полях одинаковый пароль.",
+			"passwordChangeDialog.newPassword": "Новый пароль:",
+			"passwordChangeDialog.ok": "OK",
+			"passwordChangeDialog.title": "Смена пароля"
 		}
 	}
 }

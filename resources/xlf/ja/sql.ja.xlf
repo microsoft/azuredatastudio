@@ -186,15 +186,15 @@
     <body>
       <trans-unit id="table.resizeColumn">
         <source xml:lang="en">Provide new column width</source>
-        <target state="new">Provide new column width</target>
+        <target state="translated">新しい列幅を指定する</target>
       </trans-unit>
       <trans-unit id="table.resizeColumn.invalid">
         <source xml:lang="en">Invalid column width</source>
-        <target state="new">Invalid column width</target>
+        <target state="translated">列の幅が無効です</target>
       </trans-unit>
       <trans-unit id="table.resizeColumn.negativeSize">
         <source xml:lang="en">Size cannot be 0 or negative</source>
-        <target state="new">Size cannot be 0 or negative</target>
+        <target state="translated">サイズを 0 または負にすることはできません</target>
       </trans-unit>
     </body>
   </file>
@@ -256,10 +256,6 @@
         <source xml:lang="en">Enable automatic update checks. Azure Data Studio will check for updates automatically and periodically.</source>
         <target state="translated">自動更新チェックを有効にします。Azure Data Studio は、更新プログラムを自動的かつ定期的に確認します。</target>
       </trans-unit>
-      <trans-unit id="docNotFoundForUriError">
-        <source xml:lang="en">Could not open a notebook document for the specified URI.</source>
-        <target state="translated">指定した URI のノートブック ドキュメントを開けませんでした。</target>
-      </trans-unit>
       <trans-unit id="enable locally">
         <source xml:lang="en">Please reload Azure Data Studio to enable this extension locally.</source>
         <target state="translated">この拡張機能をローカルで有効にするには、Azure Data Studio を再度読み込んでください。</target>
@@ -310,10 +306,6 @@
       <trans-unit id="notebook.cellTitle">
         <source xml:lang="en">The notebook cell title menu</source>
         <target state="translated">ノートブックのセル タイトル メニュー</target>
-      </trans-unit>
-      <trans-unit id="notebook.cellToolbarLocation.compatibilityDescription">
-        <source xml:lang="en">Where the cell toolbar should be shown, or whether it should be hidden. Note: This setting is only enabled for extension compatibility purposes, and so does not affect anything.</source>
-        <target state="translated">セル ツール バーを表示すべき場所、または非表示にする必要があるかどうか。注: この設定は拡張機能の互換性の目的のみで有効で、何も影響しません。</target>
       </trans-unit>
       <trans-unit id="notebook.title">
         <source xml:lang="en">The notebook title menu</source>
@@ -465,17 +457,9 @@ Default Skipped Commands:
         <source xml:lang="en">Would you like to change Azure Data Studio's UI language to {0} and restart?</source>
         <target state="translated">Azure Data Studio の UI 言語を {0} に変更して再起動しますか?</target>
       </trans-unit>
-      <trans-unit id="vscodeDocCreationFailedError">
-        <source xml:lang="en">Failed to create notebook document.</source>
-        <target state="translated">ノートブック ドキュメントを作成できませんでした。</target>
-      </trans-unit>
-      <trans-unit id="vscodeFunctionalityNotSupportedError">
-        <source xml:lang="en">This VS Code functionality is not supported in Azure Data Studio.</source>
-        <target state="translated">この VS Code 機能は、Azure Data Studio ではサポートされていません。</target>
-      </trans-unit>
-      <trans-unit id="vscodeInvalidArgumentsError">
-        <source xml:lang="en">Invalid arguments.</source>
-        <target state="translated">引数が無効です。</target>
+      <trans-unit id="vscodeNotebooksNotSupportedError">
+        <source xml:lang="en">VS Code notebook extensions are not supported in Azure Data Studio.</source>
+        <target state="translated">VS Code ノートブック拡張機能は、Azure Data Studioではサポートされていません。</target>
       </trans-unit>
       <trans-unit id="watermark.newNotebook">
         <source xml:lang="en">New Notebook</source>
@@ -1004,14 +988,6 @@ Default Skipped Commands:
       <trans-unit id="navigationProviderRequired">
         <source xml:lang="en">A NavigationProvider with valid providerId must be passed to this method</source>
         <target state="translated">有効な providerId を持つ NavigationProvider をこのメソッドに渡す必要があります</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/api/common/notebooks/vscodeExecuteProvider" source-language="en" datatype="plaintext" target-language="ja">
-    <body>
-      <trans-unit id="errorStartBeforeReady">
-        <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
-        <target state="translated">セッションを開始できません。マネージャーがまだ初期化されていません</target>
       </trans-unit>
     </body>
   </file>
@@ -3543,8 +3519,8 @@ Default Skipped Commands:
         <target state="translated">ズームのリセット</target>
       </trans-unit>
       <trans-unit id="epCompare.zoomToFit">
-        <source xml:lang="en">Zoom to fit</source>
-        <target state="translated">ウィンドウのサイズに合わせて拡大</target>
+        <source xml:lang="en">Zoom to Fit</source>
+        <target state="translated">拡大して合わせる</target>
       </trans-unit>
       <trans-unit id="executionPlanComparison.bottomPlanDiagram.name">
         <source xml:lang="en">Bottom execution Plan {0}</source>
@@ -3635,11 +3611,11 @@ Default Skipped Commands:
         <target state="translated">true の場合、実行プランのホバー時にヒントを有効にします。false の場合、ノードのクリックまたは F3 キーを押すとヒントが表示されます。</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareCommandOriginalValue">
-        <source xml:lang="en">Compare execution plans</source>
+        <source xml:lang="en">Compare Execution Plans</source>
         <target state="translated">比較実行プラン</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareCommandValue">
-        <source xml:lang="en">Compare execution plans</source>
+        <source xml:lang="en">Compare Execution Plans</source>
         <target state="translated">比較実行プラン</target>
       </trans-unit>
       <trans-unit id="executionPlanConfigurationTitle">
@@ -3767,8 +3743,8 @@ Default Skipped Commands:
         <target state="translated">実行プラン {0}</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareExecutionPlanAction">
-        <source xml:lang="en">Compare execution plan</source>
-        <target state="translated">比較実行プラン</target>
+        <source xml:lang="en">Compare Execution Plan</source>
+        <target state="translated">実行プランの比較</target>
       </trans-unit>
       <trans-unit id="executionPlanContextMenuDisableTooltip">
         <source xml:lang="en">Disable Tooltips</source>
@@ -3791,8 +3767,8 @@ Default Skipped Commands:
         <target state="translated">ツールヒントが有効</target>
       </trans-unit>
       <trans-unit id="executionPlanFitGraphLabel">
-        <source xml:lang="en">Zoom to fit</source>
-        <target state="translated">ウィンドウのサイズに合わせて拡大</target>
+        <source xml:lang="en">Zoom to Fit</source>
+        <target state="translated">拡大して合わせる</target>
       </trans-unit>
       <trans-unit id="executionPlanHighlightExpensiveOperationAction">
         <source xml:lang="en">Highlight Expensive Operation</source>
@@ -5114,6 +5090,10 @@ Error: {1}</source>
         <source xml:lang="en">The maximum number of changes stored in the undo history for the notebook Rich Text editor.</source>
         <target state="translated">ノートブックのリッチ テキスト エディターを元に戻す操作の履歴に格納される変更の最大数です。</target>
       </trans-unit>
+      <trans-unit id="notebook.renderTablesInHtml">
+        <source xml:lang="en">Display and save tables in HTML format in text cells instead of converting to markdown tables.</source>
+        <target state="translated">テーブルを、Markdown テーブルに変換するのではなく、HTML 形式でテキスト セルに表示し保存します。</target>
+      </trans-unit>
       <trans-unit id="notebook.richTextModeDescription">
         <source xml:lang="en">Text is displayed as Rich Text (also known as WYSIWYG).</source>
         <target state="translated">テキストはリッチ テキスト (WYSIWYG とも呼ばれる) として表示されます。</target>
@@ -5994,6 +5974,10 @@ Error: {1}</source>
         <source xml:lang="en">Chart</source>
         <target state="translated">グラフ</target>
       </trans-unit>
+      <trans-unit id="copyHeaders">
+        <source xml:lang="en">Copy Headers</source>
+        <target state="translated">ヘッダーのコピー</target>
+      </trans-unit>
       <trans-unit id="copySelection">
         <source xml:lang="en">Copy</source>
         <target state="translated">コピー</target>
@@ -6274,6 +6258,10 @@ Error: {1}</source>
         <source xml:lang="en">When true, XML output will be formatted when saving results as XML</source>
         <target state="translated">true の場合、XML として結果を保存すると XML 出力がフォーマットされます</target>
       </trans-unit>
+      <trans-unit id="queryEditor.results.showActionBar">
+        <source xml:lang="en">Whether to show the action bar in the query results view</source>
+        <target state="translated">クエリ結果ビューにアクション バーを表示するかどうか</target>
+      </trans-unit>
       <trans-unit id="queryEditor.results.streaming">
         <source xml:lang="en">Enable results streaming; contains few minor visual issues</source>
         <target state="translated">結果のストリーミングを有効にします。視覚上の小さな問題がいくつかあります</target>
@@ -6437,6 +6425,14 @@ Error: {1}</source>
       <trans-unit id="status.query.summaryText">
         <source xml:lang="en">Average: {0}  Count: {1}  Sum: {2}</source>
         <target state="translated">平均: {0}  数: {1}  合計: {2}</target>
+      </trans-unit>
+      <trans-unit id="status.query.summaryTextNonNumeric">
+        <source xml:lang="en">Count: {0}  Distinct Count: {1}  Null Count: {2}</source>
+        <target state="translated">カウント: {0} 個別カウント: {1} Null カウント: {2}</target>
+      </trans-unit>
+      <trans-unit id="status.query.summaryTooltip">
+        <source xml:lang="en">Average: {0}  Count: {1}  Distinct Count: {2}  Max: {3}  Min: {4}  Null Count: {5}  Sum: {6}</source>
+        <target state="translated">平均: {0} カウント: {1} Distinct Count: {2} Max : {3} 最小値: {4} Null カウント: {5} 合計: {6}</target>
       </trans-unit>
       <trans-unit id="status.query.timeElapsed">
         <source xml:lang="en">Time Elapsed</source>
@@ -6830,7 +6826,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="notifyEncryption.message">
         <source xml:lang="en">Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.</source>
-        <target state="new">Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.</target>
+        <target state="translated">Azure Data Studio、すべてのSQL Server接続で既定で暗号化が有効になりました。これにより、特定の暗号化関連の接続プロパティが変更されない限り、既存の接続が機能しなくなる可能性があります。{0}詳細については、以下のリンクを確認することをお勧めします。</target>
       </trans-unit>
       <trans-unit id="notifyEncryption.moreInfoLink">
         <source xml:lang="en">More information</source>
@@ -7773,6 +7769,46 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/connection/browser/passwordChangeDialog" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="passwordChangeDialog.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">キャンセル</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.confirmPassword">
+        <source xml:lang="en">Confirm password:</source>
+        <target state="translated">パスワードの確認入力:</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.connecting">
+        <source xml:lang="en">Connecting</source>
+        <target state="translated">接続しています</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.errorHeader">
+        <source xml:lang="en">Failure when attempting to change password</source>
+        <target state="translated">パスワードを変更しようとしたときにエラーが発生しました</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.errorPasswordMismatchErrorMessage">
+        <source xml:lang="en">Passwords entered do not match</source>
+        <target state="translated">入力されたパスワードが一致しません</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.errorPasswordMismatchRecoveryInstructions">
+        <source xml:lang="en">Press OK and enter the exact same password in both boxes.</source>
+        <target state="translated">[OK] を押し、両方のボックスにまったく同じパスワードを入力します。</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.newPassword">
+        <source xml:lang="en">New password:</source>
+        <target state="translated">新しいパスワード:</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">OK</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.title">
+        <source xml:lang="en">Change Password</source>
+        <target state="translated">パスワードの変更</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="newDashboardTab.cancel">
@@ -8240,6 +8276,10 @@ Error: {1}</source>
         <source xml:lang="en">Please select a connection to run cells for this kernel</source>
         <target state="translated">このカーネルのセルを実行する接続を選択してください</target>
       </trans-unit>
+      <trans-unit id="savedKernelNotSupported">
+        <source xml:lang="en">This notebook's '{0}' kernel is not supported. Defaulting to SQL kernel instead.</source>
+        <target state="translated">このノートブックの '{0}' カーネルはサポートされていません。代わりに SQL カーネルに既定値を設定します。</target>
+      </trans-unit>
       <trans-unit id="shutdownClientSessionError">
         <source xml:lang="en">A client session error occurred when closing the notebook: {0}</source>
         <target state="translated">ノートブックを閉じるときにクライアント セッション エラーが発生しました: {0}</target>
@@ -8357,15 +8397,15 @@ Error: {1}</source>
   <file original="src/sql/workbench/services/notebook/common/notebookRegistry" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="carbon.extension.contributes.notebook.executionTarget">
-        <source xml:lang="en">Optional execution target this magic indicates, for example Spark vs SQL</source>
-        <target state="translated">Spark / SQL など、このマジックが示すオプションの実行対象</target>
+        <source xml:lang="en">Optional execution target this magic indicates, for example Python vs SQL</source>
+        <target state="translated">このマジックが示すオプションの実行ターゲット (Python vs SQL など)</target>
       </trans-unit>
       <trans-unit id="carbon.extension.contributes.notebook.fileExtensions">
         <source xml:lang="en">What file extensions should be registered to this notebook provider</source>
         <target state="translated">このノートブック プロバイダーにどのファイル拡張子を登録する必要があるか</target>
       </trans-unit>
       <trans-unit id="carbon.extension.contributes.notebook.kernels">
-        <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, pyspark, sql</source>
+        <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, sql</source>
         <target state="translated">これが有効なカーネルのオプションのセット (python3、pyspark、sql など)</target>
       </trans-unit>
       <trans-unit id="carbon.extension.contributes.notebook.language">
@@ -8383,10 +8423,6 @@ Error: {1}</source>
       <trans-unit id="carbon.extension.contributes.notebook.standardKernels">
         <source xml:lang="en">What kernels should be standard with this notebook provider</source>
         <target state="translated">このノートブック プロバイダーへの標準装備が必要なカーネル</target>
-      </trans-unit>
-      <trans-unit id="providerNotInRegistryError">
-        <source xml:lang="en">The specified provider '{0}' is not present in the notebook registry.</source>
-        <target state="translated">指定されたプロバイダー '{0}' がノートブック レジストリに存在しません。</target>
       </trans-unit>
       <trans-unit id="vscode.extension.contributes.notebook.languagemagics">
         <source xml:lang="en">Contributes notebook language.</source>
@@ -8732,13 +8768,17 @@ Error: {1}</source>
         <source xml:lang="en">OK</source>
         <target state="translated">OK</target>
       </trans-unit>
-      <trans-unit id="firewallRuleDialogDescription">
-        <source xml:lang="en">Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.</source>
-        <target state="translated">このクライアント IP アドレスではサーバーにアクセスできません。アクセスできるようにするには、Azure アカウントにサインインし、新しいファイアウォール規則を作成します。</target>
+      <trans-unit id="firewall.ruleName">
+        <source xml:lang="en">Rule name</source>
+        <target state="translated">ルール名</target>
       </trans-unit>
-      <trans-unit id="firewallRuleHelpDescription">
-        <source xml:lang="en">Learn more about firewall settings</source>
-        <target state="translated">ファイアウォール設定の詳細情報</target>
+      <trans-unit id="firewallRuleDescription">
+        <source xml:lang="en">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</source>
+        <target state="translated">SQL Server インスタンスにアクセスするには、ファイアウォール規則が必要です。新しいファイアウォール規則を作成するには、下のリンクをクリックしてください。</target>
+      </trans-unit>
+      <trans-unit id="firewallRuleHelpLink">
+        <source xml:lang="en">Learn more about firewall rules</source>
+        <target state="translated">ファイアウォール規則の詳細</target>
       </trans-unit>
       <trans-unit id="from">
         <source xml:lang="en">From</source>

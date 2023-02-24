@@ -18,10 +18,6 @@
         <source xml:lang="en">Error when parsing your account from the cache</source>
         <target state="translated">캐시에서 계정을 구문 분석하는 동안 오류 발생</target>
       </trans-unit>
-      <trans-unit id="azure.cacheErrrorRemove">
-        <source xml:lang="en">Error when removing your account from the cache.</source>
-        <target state="translated">캐시에서 계정을 제거하는 동안 오류가 발생했습니다.</target>
-      </trans-unit>
       <trans-unit id="azure.microsoftAccountDisplayName">
         <source xml:lang="en">Microsoft Account</source>
         <target state="translated">Microsoft 계정</target>
@@ -53,10 +49,6 @@
       <trans-unit id="azureAuth.unidentifiedError">
         <source xml:lang="en">Unidentified error with azure authentication</source>
         <target state="translated">Azure 인증에서 식별되지 않은 오류 발생</target>
-      </trans-unit>
-      <trans-unit id="azureWorkAccountDisplayName">
-        <source xml:lang="en">Work or school account</source>
-        <target state="translated">회사 또는 학교 계정</target>
       </trans-unit>
       <trans-unit id="azurecore.consentDialog.body">
         <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
@@ -293,6 +285,22 @@
       <trans-unit id="azure.resource.providers.sqlInstanceArcContainerLabel">
         <source xml:lang="en">SQL managed instance – Azure Arc</source>
         <target state="translated">SQL 관리형 인스턴스 - Azure Arc</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel">
+        <source xml:lang="en">Dedicated SQL Pools</source>
+        <target state="translated">전용 SQL 풀</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel">
+        <source xml:lang="en">Azure Synapse Analytics</source>
+        <target state="translated">Azure Synapse Analytics</target>
       </trans-unit>
     </body>
   </file>
@@ -611,6 +619,14 @@
         <source xml:lang="en">Reload</source>
         <target state="translated">다시 로드</target>
       </trans-unit>
+      <trans-unit id="azurecore.reloadChoice">
+        <source xml:lang="en">Reload Azure Data Studio</source>
+        <target state="translated">Azure 데이터 스튜디오 다시 로드</target>
+      </trans-unit>
+      <trans-unit id="azurecore.reloadPrompt">
+        <source xml:lang="en">Authentication Library has changed, please reload Azure Data Studio.</source>
+        <target state="translated">인증 라이브러리가 변경되었습니다. Azure Data Studio를 다시 로드하세요.</target>
+      </trans-unit>
       <trans-unit id="azurecore.requiresReload">
         <source xml:lang="en">Modifying this setting requires reloading the window for all changes to take effect.</source>
         <target state="translated">이 설정을 수정하려면 모든 변경 내용이 적용되도록 창을 다시 로드해야 합니다.</target>
@@ -786,6 +802,10 @@
       <trans-unit id="azure.title">
         <source xml:lang="en">Azure</source>
         <target state="translated">Azure</target>
+      </trans-unit>
+      <trans-unit id="config.authenticationLibrary">
+        <source xml:lang="en">The library used for the AAD auth flow. Please restart ADS after changing this option.</source>
+        <target state="translated">AAD 인증 흐름에 사용되는 라이브러리입니다. 이 옵션을 변경한 후 ADS를 다시 시작하세요.</target>
       </trans-unit>
       <trans-unit id="config.azureAccountConfigurationSection">
         <source xml:lang="en">Azure Account Configuration</source>
