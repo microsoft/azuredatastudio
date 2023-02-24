@@ -738,6 +738,9 @@
     <trans-unit id="publishOptions">
       <source xml:lang="en">Publish Options</source>
     </trans-unit>
+    <trans-unit id="publishProfileElements">
+      <source xml:lang="en">Publish profile elements</source>
+    </trans-unit>
     <trans-unit id="publishProjectSucceed">
       <source xml:lang="en">Database project published successfully</source>
     </trans-unit>
