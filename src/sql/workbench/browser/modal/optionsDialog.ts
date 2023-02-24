@@ -276,7 +276,13 @@ export class OptionsDialog extends Modal {
 	 * @returns Widget if found, undefined otherwise
 	 */
 	private _findWidget(collections: { [optionName: string]: OptionsDialogHelper.IOptionElement }[], id: string): AdsWidget | undefined {
-		return collections.find(collection => collection[id].optionWidget);
+		let foundWidget: AdsWidget | undefined;
+		collections.forEach((collection) => {
+			if (!foundWidget) {
+				foundWidget = collection[id].optionWidget;
+			}
+		});
+		return foundWidget;
 	}
 
 	protected layout(height?: number): void {
