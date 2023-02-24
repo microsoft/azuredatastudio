@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-.vs .chevron-right.codicon {
+.vs .chevron-right.codicon,
+.hc-light .chevron-right.codicon {
 	background-image: url("chevron_right.svg");
 }
 
