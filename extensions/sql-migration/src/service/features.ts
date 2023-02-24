@@ -117,8 +117,15 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 		return undefined;
 	}
 
-	async generateProvisioningScript(skuRecommendations: contracts.SkuRecommendationResultItem[]): Promise<contracts.ProvisioningScriptResult | undefined> {
-		let params: contracts.SqlMigrationGenerateProvisioningScriptParams = { skuRecommendations: skuRecommendations };
+	async generateProvisioningScript(
+		skuRecommendations: contracts.SkuRecommendationResultItem[],
+		serverLevelCollation: string,
+		databaseLevelCollations: contracts.DatabaseCollationMapping[]): Promise<contracts.ProvisioningScriptResult | undefined> {
+		let params: contracts.SqlMigrationGenerateProvisioningScriptParams = {
+			skuRecommendations,
+			serverLevelCollation,
+			databaseLevelCollations
+		};
 
 		try {
 			return this._client.sendRequest(contracts.SqlMigrationGenerateProvisioningScriptRequest.type, params);

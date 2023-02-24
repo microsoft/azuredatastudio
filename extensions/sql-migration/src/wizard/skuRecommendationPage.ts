@@ -686,7 +686,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (!this.migrationStateModel._assessmentResults) {
 				this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue = '';
 			} else {
-				if (this.hasRecommendations()) {			/////
+				if (this.hasRecommendations()) {			// to-do: hide view details and provisioning script when no recommendation per target platform
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = constants.VIEW_DETAILS;
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = constants.TARGET_PROVISIONING_LINK;
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
@@ -715,7 +715,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue =
 							constants.CAN_BE_MIGRATED(dbWithoutIssuesForMiCount, dbCount);
 
-						if (this.hasRecommendations()) {
+						if (this.hasRecommendations()) {			//////
 							if (this.migrationStateModel._skuEnableElastic) {
 								recommendation = this.migrationStateModel._skuRecommendationResults.recommendations?.elasticSqlMiRecommendationResults[0];
 							} else {

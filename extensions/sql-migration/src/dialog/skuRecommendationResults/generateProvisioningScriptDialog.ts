@@ -155,19 +155,37 @@ export class GenerateProvisioningScriptDialog {
 			}
 		}).component();
 
-		const copyToClipboardButton = _view.modelBuilder.hyperlink().withProps({
-			position: 'absolute',
+		const copyToClipboardButton = _view.modelBuilder.button().withProps({
+			iconPath: IconPathHelper.copy,
+			iconHeight: '16px',
+			iconWidth: '16px',
 			label: constants.COPY_TO_CLIPBOARD,
-			url: '',
+			height: 20,
+			position: 'absolute',
 			CSSStyles: {
 				...styles.BODY_CSS,
 			}
 		}).component();
 
-		this._disposables.push(copyToClipboardButton.onDidClick(async () => {
-			await vscode.env.clipboard.writeText(this._armTemplateText);
-			void vscode.window.showInformationMessage(constants.COPIED_TO_CLIPBOARD);
-		}));
+		this._disposables.push(
+			copyToClipboardButton.onDidClick(async () => {
+				await vscode.env.clipboard.writeText(this._armTemplateText);
+				void vscode.window.showInformationMessage(constants.COPIED_TO_CLIPBOARD);
+			}));
+
+		// const copyToClipboardButton = _view.modelBuilder.hyperlink().withProps({
+		// 	position: 'absolute',
+		// 	label: constants.COPY_TO_CLIPBOARD,
+		// 	url: '',
+		// 	CSSStyles: {
+		// 		...styles.BODY_CSS,
+		// 	}
+		// }).component();
+
+		// this._disposables.push(copyToClipboardButton.onDidClick(async () => {
+		// 	await vscode.env.clipboard.writeText(this._armTemplateText);
+		// 	void vscode.window.showInformationMessage(constants.COPIED_TO_CLIPBOARD);
+		// }));
 
 		const textContainer = _view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',

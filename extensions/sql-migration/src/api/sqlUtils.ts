@@ -9,6 +9,7 @@ import { AzureSqlDatabase, AzureSqlDatabaseServer } from './azure';
 import { generateGuid } from './utils';
 import * as utils from '../api/utils';
 import { TelemetryAction, TelemetryViews, logError } from '../telemetry';
+import { DatabaseCollationMapping } from '../service/contracts';
 
 const query_database_tables_sql = `
 	SELECT
@@ -88,6 +89,16 @@ const query_login_tables_include_windows_auth_sql = `
 	ORDER BY sp.name;`;
 
 const query_is_sys_admin_sql = `SELECT IS_SRVROLEMEMBER('sysadmin');`;
+
+const query_get_server_collation_sql = `SELECT SERVERPROPERTY('collation');`;
+
+const query_get_database_collations_sql = `
+	SELECT
+		db.name as database_name,
+		db.collation_name as database_collation
+	FROM sys.databases db
+	WHERE db.name not in ('master', 'tempdb', 'model', 'msdb')
+	AND is_distributor <> 1;`;
 
 export const excludeDatabases: string[] = [
 	'master',
@@ -504,4 +515,40 @@ export async function isSourceConnectionSysAdmin(): Promise<boolean> {
 		query_is_sys_admin_sql);
 
 	return getSqlBoolean(results.rows[0][0]);
+}
+
+export async function getSourceServerLevelCollation(): Promise<string> {
+	const sourceConnectionId = await getSourceConnectionId();
+	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
+	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+		'MSSQL',
+		azdata.DataProviderType.QueryProvider);
+
+	const results = await queryProvider.runQueryAndReturn(
+		ownerUri,
+		query_get_server_collation_sql);
+
+	return getSqlString(results.rows[0][0]);
+}
+
+export async function getSourceDatabaseLevelCollations(): Promise<DatabaseCollationMapping[]> {
+	const sourceConnectionId = await getSourceConnectionId();
+	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
+	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+		'MSSQL',
+		azdata.DataProviderType.QueryProvider);
+
+	const results = await queryProvider.runQueryAndReturn(
+		ownerUri,
+		query_get_database_collations_sql);
+
+	const databaseNames = results.rows.map(row => getSqlString(row[0])) ?? [];
+	const collations = results.rows.map(row => getSqlString(row[1])) ?? [];
+
+	return databaseNames.map((databaseName, index) => {
+		return {
+			databaseName: databaseName,
+			databaseCollation: collations[index]
+		};
+	});
 }
