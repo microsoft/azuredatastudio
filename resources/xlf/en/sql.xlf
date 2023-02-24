@@ -216,11 +216,79 @@
     <trans-unit id="notebook.cellTitle">
       <source xml:lang="en">The notebook cell title menu</source>
     </trans-unit>
+    <trans-unit id="notebook.cellToolbarLocation.description">
+      <source xml:lang="en">Where the cell toolbar should be shown, or whether it should be hidden. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.cellToolbarVisibility.description">
+      <source xml:lang="en">Whether the cell toolbar should appear on hover or click. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.compactView.description">
+      <source xml:lang="en">Control whether the notebook editor should be rendered in a compact form. For example, when turned on, it will decrease the left margin width. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.consolidatedOutputButton.description">
+      <source xml:lang="en">Control whether outputs action should be rendered in the output toolbar. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.consolidatedRunButton.description">
+      <source xml:lang="en">Control whether extra actions are shown in a dropdown next to the run button. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.diff.enablePreview.description">
+      <source xml:lang="en">Whether to use the enhanced text diff editor for notebook. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.displayOrder.description">
+      <source xml:lang="en">Priority list for output mime types. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.dragAndDrop.description">
+      <source xml:lang="en">Control whether the notebook editor should allow moving cells through drag and drop. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.editorOptions.experimentalCustomization">
+      <source xml:lang="en">Settings for code editors used in notebooks. This can be used to customize most editor.* settings. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.focusIndicator.description">
+      <source xml:lang="en">Controls where the focus indicator is rendered, either along the cell borders or on the left gutter. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.globalToolbar.description">
+      <source xml:lang="en">Control whether to render a global toolbar inside the notebook editor. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.globalToolbarShowLabel">
+      <source xml:lang="en">Control whether the actions on the notebook toolbar should render label or not. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.insertToolbarPosition.description">
+      <source xml:lang="en">Control where the insert cell actions should appear. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.interactiveWindow.collapseCodeCells">
+      <source xml:lang="en">Controls whether code cells in the interactive window are collapsed by default. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.markup.fontSize">
+      <source xml:lang="en">Controls the font size in pixels of rendered markup in notebooks. When set to `0`, 120% of `#editor.fontSize#` is used. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.outputFontFamily">
+      <source xml:lang="en">The font family for the output text for notebook cells. When set to empty, the `#editor.fontFamily#` is used. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.outputFontSize">
+      <source xml:lang="en">Font size for the output text for notebook cells. When set to 0 `#editor.fontSize#` is used. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.outputLineHeight">
+      <source xml:lang="en">Line height of the output text for notebook cells.
+ - Values between 0 and 8 will be used as a multiplier with the font size.
+ - Values greater than or equal to 8 will be used as effective values. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.showCellStatusbar.description">
+      <source xml:lang="en">Whether the cell status bar should be shown. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.showFoldingControls.description">
+      <source xml:lang="en">Controls when the Markdown header folding arrow is shown. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.textOutputLineLimit">
+      <source xml:lang="en">Control how many lines of text in a text output is rendered. (for VS Code Notebooks only)</source>
+    </trans-unit>
     <trans-unit id="notebook.title">
       <source xml:lang="en">The notebook title menu</source>
     </trans-unit>
     <trans-unit id="notebook.toolbar">
       <source xml:lang="en">The notebook toolbar menu</source>
+    </trans-unit>
+    <trans-unit id="notebook.undoRedoPerCell.description">
+      <source xml:lang="en">Whether to use separate undo/redo stack for each cell. (for VS Code Notebooks only)</source>
     </trans-unit>
     <trans-unit id="objectExplorer.context">
       <source xml:lang="en">The object explorer item context menu</source>
@@ -728,6 +796,12 @@ Default Skipped Commands:
     </trans-unit>
     <trans-unit id="showConnectDialogOnStartup">
       <source xml:lang="en">Show connect dialog on startup</source>
+    </trans-unit>
+    <trans-unit id="useVSCodeNotebooks">
+      <source xml:lang="en">(Preview) Use VS Code notebooks as the default notebook experience. Note: Azure Data Studio will need to be restarted to enable this setting.</source>
+    </trans-unit>
+    <trans-unit id="useVSCodeNotebooksTitle">
+      <source xml:lang="en">Use VS Code notebooks</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/designer/designer" source-language="en" datatype="plaintext"><body>
@@ -5224,11 +5298,22 @@ Error: {1}</source>
     <trans-unit id="accountManagementService.close">
       <source xml:lang="en">Close</source>
     </trans-unit>
+    <trans-unit id="addAccountFailedGeneric">
+      <source xml:lang="en">Adding account failed, check Azure Accounts log for more info.</source>
+    </trans-unit>
+    <trans-unit id="addAccountFailedMessage">
+      <source xml:lang="en">0 
+Error Message: 1</source>
+    </trans-unit>
     <trans-unit id="loggingIn">
       <source xml:lang="en">Adding account...</source>
     </trans-unit>
-    <trans-unit id="refreshFailed">
+    <trans-unit id="refreshCanceled">
       <source xml:lang="en">Refresh account was canceled by the user</source>
+    </trans-unit>
+    <trans-unit id="refreshFailed">
+      <source xml:lang="en">0 
+Error Message: 1</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/accountManagement/browser/accountPickerImpl" source-language="en" datatype="plaintext"><body>
