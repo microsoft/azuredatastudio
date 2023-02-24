@@ -895,9 +895,9 @@ simple-get@^4.0.0:
     once "^1.3.1"
     simple-concat "^1.0.0"
 
-"slickgrid@github:Microsoft/SlickGrid.ADS#2.3.41":
-  version "2.3.41"
-  resolved "https://codeload.github.com/Microsoft/SlickGrid.ADS/tar.gz/6e20c859bf5a1b6956b74fd133138224a62fca60"
+"slickgrid@github:Microsoft/SlickGrid.ADS#2.3.42":
+  version "2.3.42"
+  resolved "https://codeload.github.com/Microsoft/SlickGrid.ADS/tar.gz/29021c4410512d0d644a3b8eb5115bc84ed277e9"
 
 smart-buffer@^4.2.0:
   version "4.2.0"

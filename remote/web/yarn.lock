@@ -442,9 +442,9 @@ semver-umd@^5.5.7:
   resolved "https://registry.yarnpkg.com/semver-umd/-/semver-umd-5.5.7.tgz#966beb5e96c7da6fbf09c3da14c2872d6836c528"
   integrity sha512-XgjPNlD0J6aIc8xoTN6GQGwWc2Xg0kq8NzrqMVuKG/4Arl6ab1F8+Am5Y/XKKCR+FceFr2yN/Uv5ZJBhRyRqKg==
 
-"slickgrid@github:Microsoft/SlickGrid.ADS#2.3.41":
-  version "2.3.41"
-  resolved "https://codeload.github.com/Microsoft/SlickGrid.ADS/tar.gz/6e20c859bf5a1b6956b74fd133138224a62fca60"
+"slickgrid@github:Microsoft/SlickGrid.ADS#2.3.42":
+  version "2.3.42"
+  resolved "https://codeload.github.com/Microsoft/SlickGrid.ADS/tar.gz/29021c4410512d0d644a3b8eb5115bc84ed277e9"
 
 source-map@^0.6.1:
   version "0.6.1"
