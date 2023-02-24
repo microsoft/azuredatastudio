@@ -85,6 +85,7 @@ export default class MainController implements vscode.Disposable {
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.convertToSdkStyleProject', async (node: WorkspaceTreeItem) => { return this.projectsController.convertToSdkStyleProject(node); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.delete', async (node: WorkspaceTreeItem) => { return this.projectsController.delete(node); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: WorkspaceTreeItem) => { return this.projectsController.exclude(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.rename', async (node: WorkspaceTreeItem) => { return this.projectsController.rename(node); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.editSqlCmdVariable', async (node: WorkspaceTreeItem) => { return this.projectsController.editSqlCmdVariable(node); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.addSqlCmdVariable', async (node: WorkspaceTreeItem) => { return this.projectsController.addSqlCmdVariable(node); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.changeTargetPlatform', async (node: WorkspaceTreeItem) => { return this.projectsController.changeTargetPlatform(node); }));
