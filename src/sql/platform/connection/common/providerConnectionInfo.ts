@@ -326,8 +326,8 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 				if (((isServerInfo && element.specialValueType !== ConnectionOptionSpecialType.serverName &&
 					element.specialValueType !== ConnectionOptionSpecialType.databaseName &&
 					element.specialValueType !== ConnectionOptionSpecialType.authType &&
-					element.specialValueType !== ConnectionOptionSpecialType.connectionName &&
 					element.specialValueType !== ConnectionOptionSpecialType.userName) || !isServerInfo) &&
+					element.specialValueType !== ConnectionOptionSpecialType.connectionName &&
 					element.specialValueType !== ConnectionOptionSpecialType.password) {
 					let value = this.getOptionValue(element.name);
 					if (value && value !== element.defaultValue) {
