@@ -258,16 +258,6 @@ suite('SQL ProviderConnectionInfo tests', () => {
 		assert.notStrictEqual(conn.getOptionsKey(), conn2.getOptionsKey());
 	});
 
-	test('titleParts should return server, database and auth type as first items', () => {
-		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
-		let titleParts = conn.titleParts;
-		assert.strictEqual(titleParts.length, 4);
-		assert.strictEqual(titleParts[0], connectionProfile.serverName);
-		assert.strictEqual(titleParts[1], connectionProfile.databaseName);
-		assert.strictEqual(titleParts[2], connectionProfile.authenticationType);
-		assert.strictEqual(titleParts[3], connectionProfile.userName);
-	});
-
 	test('getProviderFromOptionsKey should return the provider name from the options key successfully', () => {
 		let optionsKey = `providerName:${mssqlProviderName}|authenticationType:|databaseName:database|serverName:new server|userName:user`;
 		let actual = ProviderConnectionInfo.getProviderFromOptionsKey(optionsKey);

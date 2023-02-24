@@ -9,7 +9,7 @@ import { isString } from 'vs/base/common/types';
 import * as azdata from 'azdata';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
+import { ConnectionOptionSpecialType } from 'sql/platform/connection/common/interfaces';
 import { localize } from 'vs/nls';
 
 type SettableProperty = 'serverName' | 'authenticationType' | 'databaseName' | 'password' | 'connectionName' | 'userName';
@@ -169,6 +169,9 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 			} else {
 				label = this.getServerInfo();
 			}
+			if (this.serverCapabilities.useFullOptions) {
+				label += this.getNonDefaultOptionsKeyOptions();
+			}
 		}
 		// The provider capabilities are registered at the same time at load time, we can assume all providers are registered as long as the collection is not empty.
 		else if (Object.keys(this.capabilitiesService.providers).length > 0) {
@@ -180,7 +183,11 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public get serverInfo(): string {
-		return this.getServerInfo();
+		let value = this.getServerInfo();
+		if (this.serverCapabilities?.useFullOptions) {
+			value += this.getNonDefaultOptionsKeyOptions(true);
+		}
+		return value;
 	}
 
 	public isPasswordRequired(): boolean {
@@ -309,12 +316,8 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		return ':';
 	}
 
-	public get titleParts(): string[] {
-		let parts: string[] = [];
-		// Always put these three on top. TODO: maybe only for MSSQL?
-		parts.push(this.serverName);
-		parts.push(this.databaseName);
-		parts.push(this.authenticationTypeDisplayName);
+	private getNonDefaultOptionsKeyOptions(isTooltip?: boolean): string {
+		let parts: string = "";
 
 		if (this.serverCapabilities) {
 			this.serverCapabilities.connectionOptions.forEach(element => {
@@ -323,13 +326,20 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 					element.specialValueType !== ConnectionOptionSpecialType.authType &&
 					element.specialValueType !== ConnectionOptionSpecialType.password &&
 					element.specialValueType !== ConnectionOptionSpecialType.connectionName &&
-					element.isIdentity && element.valueType === ServiceOptionType.string) {
+					!(isTooltip && element.specialValueType === ConnectionOptionSpecialType.userName)) {
 					let value = this.getOptionValue(element.name);
-					if (value) {
-						parts.push(value);
+					if (value && value !== element.defaultValue) {
+						if (parts.length === 0) {
+							parts = " (";
+						}
+						let addValue = element.name + ProviderConnectionInfo.nameValueSeparator + `${value}`;
+						parts += parts === " (" ? addValue : (ProviderConnectionInfo.idSeparator + addValue);
 					}
 				}
 			});
+			if (parts.length > 0) {
+				parts += ")";
+			}
 		}
 
 		return parts;
