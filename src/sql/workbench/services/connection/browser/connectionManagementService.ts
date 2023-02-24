@@ -1155,7 +1155,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			}
 		} else {
 			connection.connectHandler(false, info.errorMessage, info.errorNumber, info.messages);
-			this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.DatabaseConnectionError, info.errorNumber.toString())
+			this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.DatabaseConnectionError, info.errorNumber?.toString())
 				.withConnectionInfo(connection.connectionProfile)
 				.withAdditionalMeasurements({
 					extensionConnectionTimeMs: connection.extensionTimer.elapsed() - connection.serviceTimer.elapsed(),
