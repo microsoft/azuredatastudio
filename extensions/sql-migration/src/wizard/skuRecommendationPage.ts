@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as utils from '../api/utils';
 import * as mssql from 'mssql';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, MigrationTargetType, PerformanceDataSourceOptions, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, MigrationTargetType, PerformanceDataSourceOptions, StateChangeEvent, AssessmentRuleId } from '../models/stateMachine';
 import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
 import { SkuRecommendationResultsDialog } from '../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
 import { GetAzureRecommendationDialog } from '../dialog/skuRecommendationResults/getAzureRecommendationDialog';
@@ -19,6 +19,9 @@ import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as styles from '../constants/styles';
 import { SkuEditParametersDialog } from '../dialog/skuRecommendationResults/skuEditParametersDialog';
 import { logError, TelemetryViews } from '../telemtery';
+import { TdeConfigurationDialog } from '../dialog/tdeConfiguration/tdeConfigurationDialog';
+import { TdeMigrationModel } from '../models/tdeModels';
+import * as os from 'os';
 
 export interface Product {
 	type: MigrationTargetType;
@@ -46,6 +49,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _rootContainer!: azdata.FlexContainer;
 	private _viewAssessmentsHelperText!: azdata.TextComponent;
 	private _databaseSelectedHelperText!: azdata.TextComponent;
+	private _tdedatabaseSelectedHelperText!: azdata.TextComponent;
 
 	private _azureRecommendationSectionText!: azdata.TextComponent;
 
@@ -71,7 +75,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _skuEnableElasticRecommendationsText!: azdata.TextComponent;
 
 	private assessmentGroupContainer!: azdata.FlexContainer;
+	private _tdeInfoContainer!: azdata.FlexContainer;
 	private _disposables: vscode.Disposable[] = [];
+	private _tdeConfigurationDialog!: TdeConfigurationDialog;
+	private _previousMiTdeMigrationConfig: TdeMigrationModel = new TdeMigrationModel(); // avoid null checks
 
 	private _serverName: string = '';
 	private _supportedProducts: Product[] = [
@@ -172,12 +179,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._chooseTargetComponent = await this.createChooseTargetComponent(view);
 		const _azureRecommendationsContainer = this.createAzureRecommendationContainer(view);
 		this.assessmentGroupContainer = await this.createViewAssessmentsContainer();
+		this._tdeInfoContainer = await this.createTdeInfoContainer();
 		this._formContainer = view.modelBuilder.formContainer()
 			.withFormItems([
 				{ component: statusContainer, title: '' },
 				{ component: this._chooseTargetComponent },
 				{ component: _azureRecommendationsContainer },
-				{ component: this.assessmentGroupContainer }])
+				{ component: this.assessmentGroupContainer },
+				{ component: this._tdeInfoContainer }])
 			.withProps({
 				CSSStyles: {
 					'display': 'none',
@@ -206,6 +215,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		await this._view.initializeModel(this._rootContainer);
 	}
+
 
 	private createStatusComponent(view: azdata.ModelView): azdata.TextComponent {
 		const component = view.modelBuilder.text()
@@ -333,6 +343,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (value) {
 				this.assessmentGroupContainer.display = 'inline';
 				this.changeTargetType(value.cardId);
+				await this.refreshTdeView();
 			}
 		}));
 
@@ -344,6 +355,40 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			.withItems([chooseYourTargetText, this._rbgLoader])
 			.component();
 		return component;
+	}
+
+	private async createTdeInfoContainer(): Promise<azdata.FlexContainer> {
+		const container = this._view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'flex-direction': 'column'
+			}
+		}).component();
+
+		const editButton = this._view.modelBuilder.button().withProps({
+			label: constants.TDE_BUTTON_CAPTION,
+			width: 180,
+			CSSStyles: {
+				...styles.BODY_CSS,
+				'margin': '0',
+			}
+		}).component();
+		this._tdeConfigurationDialog = new TdeConfigurationDialog(this, this.wizard, this.migrationStateModel, () => this._onTdeConfigClosed());
+		this._disposables.push(editButton.onDidClick(
+			async (e) => await this._tdeConfigurationDialog.openDialog()));
+
+		this._tdedatabaseSelectedHelperText = this._view.modelBuilder.text()
+			.withProps({
+				CSSStyles: { ...styles.BODY_CSS },
+				ariaLive: 'polite',
+			}).component();
+
+		container.addItems([
+			editButton,
+			this._tdedatabaseSelectedHelperText]);
+
+		await utils.updateControlDisplay(container, false);
+
+		return container;
 	}
 
 	private async createViewAssessmentsContainer(): Promise<azdata.FlexContainer> {
@@ -586,6 +631,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		});
 		await this.constructDetails();
 		this.wizard.nextButton.enabled = this.migrationStateModel._assessmentResults !== undefined;
+		this._previousMiTdeMigrationConfig = this.migrationStateModel.tdeMigrationConfig;
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
@@ -739,8 +785,76 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this.changeTargetType(this._rbg.selectedCardId);
 		}
 
+		await this.refreshTdeView();
+
 		this._rbgLoader.loading = false;
 	}
+
+
+	private _resetTdeConfiguration() {
+		this._previousMiTdeMigrationConfig = this.migrationStateModel.tdeMigrationConfig;
+		this.migrationStateModel.tdeMigrationConfig = new TdeMigrationModel();
+	}
+
+	private async refreshTdeView() {
+
+		if (this.migrationStateModel._targetType !== MigrationTargetType.SQLMI) {
+
+			//Reset the encrypted databases counter on the model to ensure the certificates migration is ignored.
+			this._resetTdeConfiguration();
+
+		} else {
+
+			const encryptedDbFound = this.migrationStateModel._assessmentResults.databaseAssessments
+				.filter(
+					db => this.migrationStateModel._databasesForMigration.findIndex(dba => dba === db.name) >= 0 &&
+						db.issues.findIndex(iss => iss.ruleId === AssessmentRuleId.TdeEnabled && iss.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) >= 0
+				)
+				.map(db => db.name);
+
+			if (this._matchWithEncryptedDatabases(encryptedDbFound)) {
+				this.migrationStateModel.tdeMigrationConfig = this._previousMiTdeMigrationConfig;
+			} else {
+				if (os.platform() !== 'win32') //Only available for windows for now.
+					return;
+
+				//Set encrypted databases
+				this.migrationStateModel.tdeMigrationConfig.setTdeEnabledDatabasesCount(encryptedDbFound);
+
+				if (this.migrationStateModel.tdeMigrationConfig.hasTdeEnabledDatabases()) {
+					//Set the text when there are encrypted databases.
+
+					if (!this.migrationStateModel.tdeMigrationConfig.shownBefore()) {
+						await this._tdeConfigurationDialog.openDialog();
+					}
+				} else {
+					this._tdedatabaseSelectedHelperText.value = constants.TDE_WIZARD_MSG_EMPTY;
+				}
+
+			}
+		}
+
+		await utils.updateControlDisplay(this._tdeInfoContainer, this.migrationStateModel.tdeMigrationConfig.hasTdeEnabledDatabases());
+	}
+
+	private _onTdeConfigClosed() {
+		const tdeMsg = (this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAdsConfirmed()) ? constants.TDE_WIZARD_MSG_TDE : constants.TDE_WIZARD_MSG_MANUAL;
+		this._tdedatabaseSelectedHelperText.value = constants.TDE_MSG_DATABASES_SELECTED(this.migrationStateModel.tdeMigrationConfig.getTdeEnabledDatabasesCount(), tdeMsg);
+	}
+
+	private _matchWithEncryptedDatabases(encryptedDbList: string[]): boolean {
+		var currentTdeDbs = this._previousMiTdeMigrationConfig.getTdeEnabledDatabases();
+
+		if (encryptedDbList.length === 0 || encryptedDbList.length !== currentTdeDbs.length)
+			return false;
+
+		if (encryptedDbList.filter(db => currentTdeDbs.findIndex(dba => dba === db) < 0).length > 0)
+			return false; //There is at least one element that is not in the other array. There should be no risk of duplicates table names
+
+
+		return true;
+	}
+
 
 	public async startCardLoading(): Promise<void> {
 		// TO-DO: ideally the short SKU recommendation loading time should have a spinning indicator,
