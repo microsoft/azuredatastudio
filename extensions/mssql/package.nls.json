@@ -65,6 +65,7 @@
 	"mssql.query.ansiWarnings": "Enable SET ANSI_WARNINGS",
 	"mssql.query.ansiNulls": "Enable SET ANSI_NULLS",
 	"mssql.query.alwaysEncryptedParameterization": "Enable Parameterization for Always Encrypted",
+	"mssql.tracing.desc": "Traces the communication between Azure Data Studio and SQL Tools Service to the SQL Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.",
 	"mssql.ignorePlatformWarning": "[Optional] Do not show unsupported platform warnings",
 
 	"onprem.databaseProperties.recoveryModel": "Recovery Model",
