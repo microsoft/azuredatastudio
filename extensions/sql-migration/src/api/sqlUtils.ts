@@ -68,7 +68,19 @@ const query_login_tables_sql = `
 	LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id
 	WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN (
 		'SQL_LOGIN'
-		--, 'WINDOWS_LOGIN'
+	) AND sp.name NOT LIKE '##%##'
+	ORDER BY sp.name;`;
+
+const query_login_tables_include_windows_auth_sql = `
+	SELECT
+		sp.name as login,
+		sp.type_desc as login_type,
+		sp.default_database_name,
+		case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status
+	FROM sys.server_principals sp
+	LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id
+	WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN (
+		'SQL_LOGIN', 'WINDOWS_LOGIN'
 	) AND sp.name NOT LIKE '##%##'
 	ORDER BY sp.name;`;
 
@@ -351,15 +363,18 @@ export async function getDatabasesList(connectionProfile: azdata.connection.Conn
 	}
 }
 
-export async function collectSourceLogins(sourceConnectionId: string): Promise<LoginTableInfo[]> {
+export async function collectSourceLogins(
+	sourceConnectionId: string,
+	includeWindowsAuth: boolean = true): Promise<LoginTableInfo[]> {
 	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
 	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
 		'MSSQL',
 		azdata.DataProviderType.QueryProvider);
 
+	const query = includeWindowsAuth ? query_login_tables_include_windows_auth_sql : query_login_tables_sql;
 	const results = await queryProvider.runQueryAndReturn(
 		ownerUri,
-		query_login_tables_sql);
+		query);
 
 	return results.rows.map(row => {
 		return {
@@ -374,7 +389,8 @@ export async function collectSourceLogins(sourceConnectionId: string): Promise<L
 export async function collectTargetLogins(
 	targetServer: AzureSqlDatabaseServer,
 	userName: string,
-	password: string): Promise<string[]> {
+	password: string,
+	includeWindowsAuth: boolean = true): Promise<string[]> {
 
 	const connectionProfile = getConnectionProfile(
 		targetServer.properties.fullyQualifiedDomainName,
@@ -388,10 +404,11 @@ export async function collectTargetLogins(
 			'MSSQL',
 			azdata.DataProviderType.QueryProvider);
 
+		const query = includeWindowsAuth ? query_login_tables_include_windows_auth_sql : query_login_tables_sql;
 		const ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
 		const results = await queryProvider.runQueryAndReturn(
 			ownerUri,
-			query_login_tables_sql);
+			query);
 
 		return results.rows.map(row => getSqlString(row[0])) ?? [];
 	}
