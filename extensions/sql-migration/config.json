@@ -1,12 +1,12 @@
 {
 	"downloadUrl": "https://github.com/Microsoft/sqltoolsservice/releases/download/{#version#}/microsoft.sqltools.migration-{#fileName#}",
 	"useDefaultLinuxRuntime": true,
-	"version": "4.5.0.12",
+	"version": "4.5.0.28",
 	"downloadFileNames": {
-		"Windows_86": "win-x86-net6.0.zip",
-		"Windows_64": "win-x64-net6.0.zip",
-		"OSX": "osx-x64-net6.0.tar.gz",
-		"Linux": "rhel-x64-net6.0.tar.gz"
+		"Windows_86": "win-x86-net7.0.zip",
+		"Windows_64": "win-x64-net7.0.zip",
+		"OSX": "osx-x64-net7.0.tar.gz",
+		"Linux": "rhel-x64-net7.0.tar.gz"
 	},
 	"installDirectory": "./migrationService/{#platform#}/{#version#}",
 	"executableFiles": ["MicrosoftSqlToolsMigration", "MicrosoftSqlToolsMigration.exe"],
