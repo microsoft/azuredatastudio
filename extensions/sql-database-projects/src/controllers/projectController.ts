@@ -199,7 +199,7 @@ export class ProjectsController {
 		}
 
 		const sqlProjectsService = await utils.getSqlProjectsService();
-		await sqlProjectsService.newProject(newProjFilePath, sdkStyle, targetPlatform);
+		await sqlProjectsService.createProject(newProjFilePath, sdkStyle, targetPlatform);
 
 		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);
 
