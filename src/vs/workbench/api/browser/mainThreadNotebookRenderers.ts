@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vs/base/common/lifecycle';
-import { ExtHostContext, ExtHostNotebookRenderersShape, MainThreadNotebookRenderersShape } from 'vs/workbench/api/common/extHost.protocol';
-import { IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { ExtHostContext, ExtHostNotebookRenderersShape, MainContext, MainThreadNotebookRenderersShape } from 'vs/workbench/api/common/extHost.protocol';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { INotebookRendererMessagingService } from 'vs/workbench/contrib/notebook/common/notebookRendererMessagingService';
 
-// @extHostNamedCustomer(MainContext.MainThreadNotebookRenderers) {{SQL CARBON EDIT}} Disable VS Code notebooks
+@extHostNamedCustomer(MainContext.MainThreadNotebookRenderers)
 export class MainThreadNotebookRenderers extends Disposable implements MainThreadNotebookRenderersShape {
 	private readonly proxy: ExtHostNotebookRenderersShape;
 

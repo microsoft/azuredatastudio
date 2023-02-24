@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
@@ -31,7 +31,7 @@ export class MdTableOfContentsWatcher extends Disposable {
 
 	private readonly _pending = new ResourceMap<void>();
 
-	private readonly _onTocChanged = this._register(new vscode.EventEmitter<{ readonly uri: vscode.Uri }>);
+	private readonly _onTocChanged = this._register(new vscode.EventEmitter<{ readonly uri: vscode.Uri }>()); // {{SQL CARBON EDIT}} lewissanchez - Added parenthesis
 	public readonly onTocChanged = this._onTocChanged.event;
 
 	private readonly delayer: Delayer<void>;

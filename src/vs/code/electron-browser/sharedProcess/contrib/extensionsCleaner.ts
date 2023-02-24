@@ -44,7 +44,7 @@ export class ExtensionsCleaner extends Disposable {
 
 class ProfileExtensionsCleaner extends Disposable {
 
-	private profileExtensionsLocations = new Map<string, URI[]>;
+	private profileExtensionsLocations = new Map<string, URI[]>(); // {{SQL CARBON EDIT}} lewissanchez - Added parenthesis
 
 	private readonly profileModeDisposables = this._register(new MutableDisposable<DisposableStore>());
 
