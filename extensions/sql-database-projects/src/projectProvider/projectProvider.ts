@@ -22,6 +22,18 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 
 	}
 
+	supportsDragAndDrop: boolean = true;
+
+	/**
+	 * Move a file in the project tree
+	 * @param projectUri
+	 * @param source
+	 * @param target
+	 */
+	public async moveFile(projectUri: vscode.Uri, source: any, target: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		return this.projectController.moveFile(projectUri, source, target);
+	}
+
 	/**
 	 * Gets the project tree data provider
 	 * @param projectFilePath The project file Uri
