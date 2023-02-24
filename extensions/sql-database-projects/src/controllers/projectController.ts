@@ -651,7 +651,7 @@ export class ProjectsController {
 	}
 
 	private async promptForNewObjectName(itemType: templates.ProjectScriptType, _project: ISqlProject, folderPath: string, fileExtension?: string, defaultName?: string): Promise<string | undefined> {
-		const suggestedName = defaultName ?? itemType.friendlyName.replace(/\s+/g, '');
+		const suggestedName = utils.sanitizeStringForFilename(defaultName ?? itemType.friendlyName.replace(/\s+/g, ''));
 		let counter: number = 0;
 
 		do {
@@ -662,6 +662,9 @@ export class ProjectsController {
 		const itemObjectName = await vscode.window.showInputBox({
 			prompt: constants.newObjectNamePrompt(itemType.friendlyName),
 			value: `${suggestedName}${counter}`,
+			validateInput: (value) => {
+				return utils.isValidBasename(value) ? undefined : utils.isValidBasenameErrorMessage(value);
+			},
 			ignoreFocusOut: true,
 		});
 
@@ -1279,7 +1282,7 @@ export class ProjectsController {
 			prompt: constants.autorestProjectName,
 			value: defaultName,
 			validateInput: (value) => {
-				return value.trim() ? undefined : constants.nameMustNotBeEmpty;
+				return utils.isValidBasename(value.trim()) ? undefined : utils.isValidBasenameErrorMessage(value.trim());
 			}
 		});
 
