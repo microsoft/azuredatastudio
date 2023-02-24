@@ -5,11 +5,13 @@
 
 import * as vscode from 'vscode';
 import { DashboardWidget } from './dashboard/sqlServerDashboard';
+import { TelemetryReporter } from './telemetry';
 
 let widget: DashboardWidget;
 export async function activate(context: vscode.ExtensionContext): Promise<DashboardWidget> {
 	widget = new DashboardWidget(context);
 	await widget.register();
+	context.subscriptions.push(TelemetryReporter);
 	return widget;
 }
 

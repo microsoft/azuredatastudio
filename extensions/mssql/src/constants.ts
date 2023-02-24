@@ -7,6 +7,7 @@ export const serviceName = 'SQL Tools Service';
 export const providerId = 'MSSQL';
 export const serviceCrashLink = 'https://github.com/Microsoft/vscode-mssql/wiki/SqlToolsService-Known-Issues';
 export const extensionConfigSectionName = 'mssql';
+export const packageName = 'Microsoft.mssql';
 
 // DATA PROTOCOL VALUES ///////////////////////////////////////////////////////////
 export const sqlProviderName = 'MSSQL';

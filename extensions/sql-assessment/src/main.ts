@@ -7,12 +7,14 @@
 import * as vscode from 'vscode';
 
 import MainController from './maincontroller';
+import { TelemetryReporter } from './telemetry';
 
 let mainController: MainController;
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
 	mainController = new MainController(context);
-	mainController.activate();
+	await mainController.activate();
+	context.subscriptions.push(TelemetryReporter);
 }
 
 // this method is called when your extension is deactivated

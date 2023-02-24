@@ -4,129 +4,30 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import TelemetryReporter from '@microsoft/ads-extension-telemetry';
+import AdsTelemetryReporter from '@microsoft/ads-extension-telemetry';
 import { ErrorAction, ErrorHandler, Message, CloseAction } from 'vscode-languageclient';
 
-import * as Utils from './utils';
 import * as Constants from './constants';
 import * as nls from 'vscode-nls';
 import { ServerInfo } from 'azdata';
 
 
 const localize = nls.loadMessageBundle();
-const packageJson = require('../package.json');
 const viewKnownIssuesAction = localize('viewKnownIssuesText', "View Known Issues");
 
-export interface ITelemetryEventProperties {
-	[key: string]: string;
-}
-
-export interface ITelemetryEventMeasures {
-	[key: string]: number;
-}
+const packageInfo = vscode.extensions.getExtension(Constants.packageName)?.packageJSON;
+export const TelemetryReporter = new AdsTelemetryReporter<string, string>(packageInfo?.name, packageInfo?.version, packageInfo?.aiKey);
 
 /**
- * Filters error paths to only include source files. Exported to support testing
+ * Collects server information from ServerInfo to put into a
+ * property bag
  */
-function FilterErrorPath(line: string): string {
-	if (line) {
-		let values: string[] = line.split('/out/');
-		if (values.length <= 1) {
-			// Didn't match expected format
-			return line;
-		} else {
-			return values[1];
-		}
-	}
-	return undefined;
-}
-
-export class Telemetry {
-	private static reporter: TelemetryReporter;
-	private static disabled: boolean;
-
-	/**
-	 * Disable telemetry reporting
-	 */
-	public static disable(): void {
-		this.disabled = true;
-	}
-
-	/**
-	 * Initialize the telemetry reporter for use.
-	 */
-	public static initialize(): void {
-		if (typeof this.reporter === 'undefined') {
-			// Check if the user has opted out of telemetry
-			if (!vscode.workspace.getConfiguration('telemetry').get<boolean>('enableTelemetry', true)) {
-				this.disable();
-				return;
-			}
-
-			let packageInfo = Utils.getPackageInfo(packageJson);
-			this.reporter = new TelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
-		}
-	}
-
-	/**
-	 * Send a telemetry event for an exception
-	 */
-	public static sendTelemetryEventForException(
-		err: any, methodName: string, extensionConfigName: string): void {
-		let stackArray: string[];
-		let firstLine: string = '';
-		if (err !== undefined && err.stack !== undefined) {
-			stackArray = err.stack.split('\n');
-			if (stackArray !== undefined && stackArray.length >= 2) {
-				firstLine = stackArray[1]; // The fist line is the error message and we don't want to send that telemetry event
-				firstLine = FilterErrorPath(firstLine);
-			}
-		}
-
-		// Only adding the method name and the fist line of the stack trace. We don't add the error message because it might have PII
-		this.sendTelemetryEvent('Exception', { methodName: methodName, errorLine: firstLine });
-	}
-
-	/**
-	 * Send a telemetry event using application insights
-	 */
-	public static sendTelemetryEvent(
-		eventName: string,
-		properties?: ITelemetryEventProperties,
-		measures?: ITelemetryEventMeasures): void {
-
-		if (typeof this.disabled === 'undefined') {
-			this.disabled = false;
-		}
-
-		if (this.disabled || typeof (this.reporter) === 'undefined') {
-			// Don't do anything if telemetry is disabled
-			return;
-		}
-
-		if (!properties || typeof properties === 'undefined') {
-			properties = {};
-		}
-
-		try {
-			this.reporter.sendTelemetryEvent(eventName, properties, measures);
-		} catch (telemetryErr) {
-			// If sending telemetry event fails ignore it so it won't break the extension
-			console.error('Failed to send telemetry event. error: ' + telemetryErr);
-		}
-	}
-
-	/**
-	 * Collects server information from ServerInfo to put into a
-	 * property bag
-	 */
-	public static fillServerInfo(telemetryInfo: { [key: string]: string }, serverInfo: ServerInfo): void {
-		telemetryInfo['serverEdition'] = serverInfo?.serverEdition;
-		telemetryInfo['serverLevel'] = serverInfo?.serverLevel;
-		telemetryInfo['serverMajorVersion'] = serverInfo?.serverMajorVersion.toString();
-		telemetryInfo['serverMinorVersion'] = serverInfo?.serverMinorVersion.toString();
-		telemetryInfo['isCloud'] = serverInfo?.isCloud.toString();
-	}
+export function fillServerInfo(telemetryInfo: { [key: string]: string }, serverInfo: ServerInfo): void {
+	telemetryInfo['serverEdition'] = serverInfo?.serverEdition;
+	telemetryInfo['serverLevel'] = serverInfo?.serverLevel;
+	telemetryInfo['serverMajorVersion'] = serverInfo?.serverMajorVersion.toString();
+	telemetryInfo['serverMinorVersion'] = serverInfo?.serverMinorVersion.toString();
+	telemetryInfo['isCloud'] = serverInfo?.isCloud.toString();
 }
 
 /**
@@ -139,7 +40,7 @@ export class LanguageClientErrorHandler implements ErrorHandler {
 	 * @memberOf LanguageClientErrorHandler
 	 */
 	showOnErrorPrompt(): void {
-		Telemetry.sendTelemetryEvent(Constants.serviceName + 'Crash');
+		TelemetryReporter.sendTelemetryEvent(Constants.serviceName + 'Crash');
 		void vscode.window.showErrorMessage(
 			localize('serviceCrashMessage', "{0} component exited unexpectedly. Please restart Azure Data Studio.", Constants.serviceName),
 			viewKnownIssuesAction).then(action => {
@@ -175,5 +76,3 @@ export class LanguageClientErrorHandler implements ErrorHandler {
 		return CloseAction.DoNotRestart;
 	}
 }
-
-Telemetry.initialize();

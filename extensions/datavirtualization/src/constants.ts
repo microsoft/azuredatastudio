@@ -53,6 +53,7 @@ export const sqlFileExtension = 'sql';
 export const virtualizeDataCommand = 'virtualizedatawizard.cmd.open';
 export const virtualizeDataTask = 'virtualizedatawizard.task.open';
 export const mssqlHdfsTableFromFileCommand = 'mssqlHdfsTableWizard.cmd.open';
+export const packageName = 'Microsoft.datavirtualization';
 
 export const ctp24Version = 'CTP2.4';
 export const ctp25Version = 'CTP2.5';
