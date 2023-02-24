@@ -562,6 +562,9 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.tooLongFilenameErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File name cannot be over 255 characters]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Le nom de fichier ne peut pas dépasser 255 caractères]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -578,7 +581,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Undefined name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nom non indéfini]]></Val>
+            <Val><![CDATA[Nom non défini]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
