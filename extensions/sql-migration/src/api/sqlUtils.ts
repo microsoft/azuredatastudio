@@ -49,7 +49,7 @@ const query_databases_with_size = `
 		db_size
 		AS
 		(
-			SELECT database_id, CAST(SUM(size) * 8.0 / 1024 AS INTEGER) size
+			SELECT database_id, CAST(SUM(size) / 128 AS bigint) size
 			FROM sys.master_files with (nolock)
 			GROUP BY database_id
 		)
