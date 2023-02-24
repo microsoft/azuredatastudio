@@ -316,7 +316,8 @@ However we always want it to be the width of the container it is resizing.
 	z-index: 3;
 }
 
-.eps-container .ep-save-plan-icon {
+.eps-container .ep-save-plan-icon,
+.hc-light .eps-container .ep-save-plan-icon {
 	background-image: url(../images/actionIcons/save.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -331,7 +332,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-open-properties-icon {
+.eps-container .ep-open-properties-icon,
+.hc-light .eps-container .ep-open-properties-icon {
 	background-image: url(../images/actionIcons/openProperties.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -346,7 +348,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-open-query-icon {
+.eps-container .ep-open-query-icon,
+.hc-light .eps-container .ep-open-query-icon {
 	background-image: url(../images/actionIcons/openQuery.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -361,7 +364,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-open-plan-file-icon {
+.eps-container .ep-open-plan-file-icon,
+.hc-light .eps-container .ep-open-plan-file-icon {
 	background-image: url(../images/actionIcons/openPlanFile.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -378,7 +382,9 @@ However we always want it to be the width of the container it is resizing.
 
 
 .eps-container .ep-search-icon,
-.top-operations-tab .ep-search-icon {
+.top-operations-tab .ep-search-icon,
+.hc-light .eps-container .ep-search-icon,
+.hc-light .top-operations-tab .ep-search-icon {
 	background-image: url(../images/actionIcons/search.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -396,7 +402,9 @@ However we always want it to be the width of the container it is resizing.
 }
 
 .eps-container .ep-filter-icon,
-.top-operations-tab .ep-filter-icon {
+.top-operations-tab .ep-filter-icon,
+.hc-light .eps-container .ep-filter-icon,
+.hc-light .top-operations-tab .ep-filter-icon {
 	background-image: url(../images/actionIcons/filter.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -413,7 +421,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-sort-alphabetically-icon {
+.eps-container .ep-sort-alphabetically-icon,
+.hc-light .eps-container .ep-sort-alphabetically-icon {
 	background-image: url(../images/actionIcons/sortAlphabetically.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -428,7 +437,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-sort-reverse-alphabetically-icon {
+.eps-container .ep-sort-reverse-alphabetically-icon,
+.hc-light .eps-container .ep-sort-reverse-alphabetically-icon {
 	background-image: url(../images/actionIcons/sortReverseAlphabetically.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -443,7 +453,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-sort-display-order-icon {
+.eps-container .ep-sort-display-order-icon,
+.hc-light .eps-container .ep-sort-display-order-icon {
 	background-image: url(../images/actionIcons/sortByDisplayOrder.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -458,7 +469,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-zoom-in-icon {
+.eps-container .ep-zoom-in-icon,
+.hc-light .eps-container .ep-zoom-in-icon {
 	background-image: url(../images/actionIcons/zoomIn.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -473,7 +485,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-zoom-out-icon {
+.eps-container .ep-zoom-out-icon,
+.hc-light .eps-container .ep-zoom-out-icon {
 	background-image: url(../images/actionIcons/zoomOut.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -488,7 +501,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-custom-zoom-icon {
+.eps-container .ep-custom-zoom-icon,
+.hc-light .eps-container .ep-custom-zoom-icon {
 	background-image: url(../images/actionIcons/customZoom.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -503,7 +517,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-zoom-to-fit-icon {
+.eps-container .ep-zoom-to-fit-icon,
+.hc-light .eps-container .ep-zoom-to-fit-icon {
 	background-image: url(../images/actionIcons/zoomToFit.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -518,21 +533,24 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-zoom-icon {
+.eps-container .ep-zoom-icon,
+.hc-light .eps-container .ep-zoom-icon {
 	background-image: url(../images/actionIcons/zoom.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-zoom-icon {
+.eps-container .ep-zoom-icon,
+.hc-light .eps-container .ep-zoom-icon {
 	background-image: url(../images/actionIcons/zoomDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-highlight-expensive-operation-icon {
+.eps-container .ep-highlight-expensive-operation-icon,
+.hc-light .eps-container .ep-highlight-expensive-operation-icon {
 	background-image: url(../images/actionIcons/highlightExpensiveOperation.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -547,7 +565,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-enable-tooltip-icon {
+.eps-container .ep-enable-tooltip-icon,
+.hc-light .eps-container .ep-enable-tooltip-icon {
 	background-image: url(../images/actionIcons/enableTooltip.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -562,7 +581,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-disable-tooltip-icon {
+.eps-container .ep-disable-tooltip-icon,
+.hc-light .eps-container .ep-disable-tooltip-icon {
 	background-image: url(../images/actionIcons/disableTooltip.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -577,7 +597,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-add-icon {
+.eps-container .ep-add-icon,
+.hc-light .eps-container .ep-add-icon {
 	background-image: url(../images/actionIcons/add.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -592,14 +613,16 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-settings-icon {
+.eps-container .ep-settings-icon,
+.hc-light .eps-container .ep-settings-icon {
 	background-image: url(../images/actionIcons/settings.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-split-screen-horizontally-icon {
+.ep-split-screen-horizontally-icon,
+.hc-light .ep-split-screen-horizontally-icon {
 	background-image: url(../images/actionIcons/splitScreenHorizontally.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -614,7 +637,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-split-screen-vertically-icon {
+.eps-container .ep-split-screen-vertically-icon,
+.hc-light .eps-container .ep-split-screen-vertically-icon {
 	background-image: url(../images/actionIcons/splitScreenVertically.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -629,7 +653,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-reset-zoom-icon {
+.eps-container .ep-reset-zoom-icon,
+.hc-light .eps-container .ep-reset-zoom-icon {
 	background-image: url(../images/actionIcons/resetZoom.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -645,7 +670,8 @@ However we always want it to be the width of the container it is resizing.
 }
 
 
-.eps-container .ep-plan-compare-icon {
+.eps-container .ep-plan-compare-icon,
+.hc-light .eps-container .ep-plan-compare-icon {
 	background-image: url(../images/actionIcons/execution-plan-compare.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -660,7 +686,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.eps-container .ep-properties-different {
+.eps-container .ep-properties-different,
+.hc-light .eps-container .ep-properties-different {
 	background-image: url(../images/actionIcons/different.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -689,7 +716,8 @@ However we always want it to be the width of the container it is resizing.
 	margin-left: -28px;
 }
 
-.eps-container .ep-properties-down-arrow {
+.eps-container .ep-properties-down-arrow,
+.hc-light .eps-container .ep-properties-down-arrow {
 	background-image: url(../images/actionIcons/downArrow.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -708,7 +736,8 @@ However we always want it to be the width of the container it is resizing.
 	height: 16px;
 }
 
-.eps-container .ep-properties-up-arrow {
+.eps-container .ep-properties-up-arrow,
+.hc-light .eps-container .ep-properties-up-arrow {
 	background-image: url(../images/actionIcons/upArrow.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -727,7 +756,8 @@ However we always want it to be the width of the container it is resizing.
 	height: 16px;
 }
 
-.eps-container .ep-top-operations {
+.eps-container .ep-top-operations,
+.hc-light .eps-container .ep-top-operations {
 	background-image: url(../images/actionIcons/topOperations.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -850,7 +880,6 @@ However we always want it to be the width of the container it is resizing.
 	width: fit-content;
 	height: fit-content;
 }
-
 
 .eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-diagram {
 	flex: 1;
