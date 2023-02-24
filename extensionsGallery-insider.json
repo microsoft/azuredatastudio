@@ -4520,34 +4520,34 @@
 					},
 					"versions": [
 						{
-							"version": "4.0.1",
-							"lastUpdated": "02/13/2023",
+							"version": "4.0.2",
+							"lastUpdated": "02/17/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.0.1/azuredatastudio-dma-oracle-4.0.1.vsix"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.0.2/azuredatastudio-dma-oracle-4.0.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.0.1/extension.png"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.0.2/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.0.1/README.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.0.2/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.0.1/CHANGELOG.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.0.2/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.0.1/package.json"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.0.2/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.0.1/LICENSE.rtf"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.0.2/LICENSE.rtf"
 								}
 							],
 							"properties": [
@@ -4585,14 +4585,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.2.0",
-							"lastUpdated": "1/23/2023",
+							"version": "0.2.1",
+							"lastUpdated": "2/20/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.2.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.2.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
