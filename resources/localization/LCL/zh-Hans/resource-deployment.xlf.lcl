@@ -2958,8 +2958,8 @@
       <Item ItemId=";extensions/resource-deployment/package.docker-sql-2022-title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deploy SQL Server 2022 container images]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[部署 SQL Server 2022 预览版容器映像]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[部署 SQL Server 2022 容器映像]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Deploy SQL Server 2022 Preview container images]]></Val>
