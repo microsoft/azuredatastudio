@@ -793,7 +793,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Strict]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Strict]]></Val>
+            <Val><![CDATA[Streng]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -810,8 +810,8 @@
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.encrypt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' encryption is supported on SQL Server 2022 onwards.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Bei Festlegung auf TRUE verwendet SQL Server die SSL-Verschlüsselung für alle zwischen Client und Server gesendeten Daten, sofern auf dem Server ein Zertifikat installiert ist.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Bei „Obligatorisch“ oder „Streng“ verwendet SQL Server SSL-Verschlüsselung für alle Daten, die zwischen Client und Server gesendet werden, wenn auf dem Server ein Zertifikat installiert ist. Bei Festlegung auf „Streng“ verwendet SQL Server TDS 8.0 für die gesamte Datenübertragung zwischen Client und Server. Die Verschlüsselung „Streng“ wird ab SQL Server 2022 unterstützt.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed]]></Val>

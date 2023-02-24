@@ -802,7 +802,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Mandatory (True)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[必需(True)]]></Val>
+            <Val><![CDATA[强制(True)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -810,8 +810,8 @@
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.encrypt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' encryption is supported on SQL Server 2022 onwards.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[当为 true 时，如果服务器安装了证书，则 SQL Server 对客户端与服务器之间发送的所有数据使用 SSL 加密]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[设为“强制”或“严格”时，如果服务器安装了证书，则 SQL Server 会对客户端和服务器之间发送的所有数据使用 SSL 加密。设置为“严格”时，SQL Server 会使用 TDS 8.0 在客户端和服务器之间传输所有数据。从 2022 开始的 SQL Server 支持“严格”加密。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed]]></Val>

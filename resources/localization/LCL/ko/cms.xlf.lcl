@@ -496,7 +496,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Strict]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Strict]]></Val>
+            <Val><![CDATA[엄격]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -513,8 +513,8 @@
       <Item ItemId=";extensions/cms/package.cms.connectionOptions.encrypt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' encryption is supported on SQL Server 2022 onwards.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[true인 경우 서버에 인증서가 설치되어 있으면 SQL Server는 클라이언트와 서버 간에 전송된 모든 데이터에 대해 SSL 암호화를 사용합니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['필수' 또는 '엄격'으로 설정되면 SQL Server는 인증서가 설치된 경우 클라이언트와 서버 간의 모든 데이터 전송에 SSL 암호화를 사용합니다. '엄격'으로 설정되면 SQL Server는 클라이언트와 서버 간의 모든 데이터 전송에 TDS 8.0을 사용합니다. '엄격' 암호화는 SQL Server 2022 이상에서 지원됩니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed]]></Val>
