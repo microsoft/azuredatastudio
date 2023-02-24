@@ -848,13 +848,37 @@
           "displayName": "%mssql.connectionOptions.encrypt.displayName%",
           "description": "%mssql.connectionOptions.encrypt.description%",
           "groupName": "%mssql.connectionOptions.groupName.security%",
-          "valueType": "boolean",
+          "valueType": "category",
           "defaultValue": "true",
           "objectType": null,
-          "categoryValues": null,
+          "categoryValues": [
+            {
+              "displayName": "%mssql.connectionOptions.encrypt.categoryValues.true%",
+              "name": "true"
+            },
+            {
+              "displayName": "%mssql.connectionOptions.encrypt.categoryValues.strict%",
+              "name": "strict"
+            },
+            {
+              "displayName": "%mssql.connectionOptions.encrypt.categoryValues.false%",
+              "name": "false"
+            }
+          ],
           "isRequired": false,
           "isArray": false,
-          "showOnConnectionDialog": true
+          "showOnConnectionDialog": true,
+          "onSelectionChange": [
+            {
+              "values": ["strict"],
+              "dependentOptionActions": [
+                {
+                  "optionName": "trustServerCertificate",
+                  "action": "hide"
+                }
+              ]
+            }
+          ]
         },
         {
           "specialValueType": null,
