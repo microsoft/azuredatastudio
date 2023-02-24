@@ -144,7 +144,8 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf(Constants.Saw) > 0;
 		const noSystemKeychain = vscode.workspace.getConfiguration(Constants.AzureSection).get<boolean>(Constants.NoSystemKeyChainSection);
 		const tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
-		const tokenCacheKeyMsal = `azureTokenCacheMsal-${provider.metadata.id}`;
+		// Hardcode the MSAL Cache Key so there is only one cache location
+		const tokenCacheKeyMsal = `azureTokenCacheMsal-azure_publicCloud`;
 		try {
 			if (!this._credentialProvider) {
 				throw new Error('Credential provider not registered');
