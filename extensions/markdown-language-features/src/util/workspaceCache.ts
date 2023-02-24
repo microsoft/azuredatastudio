@@ -31,7 +31,7 @@ class LazyResourceMap<T> {
 
 	public entries(): Promise<Array<[vscode.Uri, T]>> {
 		return Promise.all(Array.from(this._map.entries(), async ([key, entry]) => {
-			return [key, await entry.value];
+			return [key, await entry.value] as [vscode.Uri, T]; // {{SQL CARBON EDIT}} lewissanchez - Added strict typing
 		}));
 	}
 }
