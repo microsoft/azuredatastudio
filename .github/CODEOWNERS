@@ -8,6 +8,7 @@
 /extensions/azurecore/ @cssuh @cheenamalhotra
 /extensions/dacpac/ @kisantia
 /extensions/datavirtualization @Charles-Gagnon
+/extensions/machine-learning @llali
 /extensions/notebook @azure-data-studio-notebook-devs
 /extensions/query-history/ @Charles-Gagnon
 /extensions/resource-deployment/ @Charles-Gagnon
