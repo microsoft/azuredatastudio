@@ -100,7 +100,7 @@ export function sortFileFolderNodes(a: (FolderNode | FileNode), b: (FolderNode |
 	} else if (!(a instanceof FolderNode) && b instanceof FolderNode) {
 		return 1;
 	} else {
-		return a.projectUri.fsPath.localeCompare(b.projectUri.fsPath);
+		return a.relativeProjectUri.fsPath.localeCompare(b.relativeProjectUri.fsPath);
 	}
 }
 
@@ -120,5 +120,5 @@ function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootT
 		localUri = parts[parts.length - 1];
 	}
 
-	return vscode.Uri.file(path.join(projectNode.projectUri.fsPath, localUri));
+	return vscode.Uri.file(path.join(projectNode.relativeProjectUri.fsPath, localUri));
 }

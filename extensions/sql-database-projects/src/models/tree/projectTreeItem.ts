@@ -50,7 +50,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 		const projectItem = new vscode.TreeItem(this.fileSystemUri, collapsibleState);
 		projectItem.contextValue = this.project.isSdkStyleProject ? DatabaseProjectItemType.project : DatabaseProjectItemType.legacyProject;
 		projectItem.iconPath = IconPathHelper.databaseProject;
-		projectItem.label = path.basename(this.projectUri.fsPath, sqlprojExtension);
+		projectItem.label = path.basename(this.relativeProjectUri.fsPath, sqlprojExtension);
 
 		return projectItem;
 	}

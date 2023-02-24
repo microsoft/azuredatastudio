@@ -44,7 +44,7 @@ describe('Project Tree tests', function (): void {
 			new FileNode(vscode.Uri.file(`${root}D`), parent)
 		];
 
-		should(inputNodes.map(n => n.projectUri.path)).deepEqual(expectedNodes.map(n => n.projectUri.path));
+		should(inputNodes.map(n => n.relativeProjectUri.path)).deepEqual(expectedNodes.map(n => n.relativeProjectUri.path));
 	});
 
 	it('Should build tree from Project file correctly', function (): void {
@@ -68,14 +68,14 @@ describe('Project Tree tests', function (): void {
 		proj.files.push(proj.createFileProjectEntry('duplicateFolder', EntryType.Folder));
 
 		const tree = new ProjectRootTreeItem(proj);
-		should(tree.children.map(x => x.projectUri.path)).deepEqual([
+		should(tree.children.map(x => x.relativeProjectUri.path)).deepEqual([
 			'/TestProj/Database References',
 			'/TestProj/SQLCMD Variables',
 			'/TestProj/duplicateFolder',
 			'/TestProj/someFolder',
 			'/TestProj/duplicate.sql']);
 
-		should(tree.children.find(x => x.projectUri.path === '/TestProj/someFolder')?.children.map(y => y.projectUri.path)).deepEqual([
+		should(tree.children.find(x => x.relativeProjectUri.path === '/TestProj/someFolder')?.children.map(y => y.relativeProjectUri.path)).deepEqual([
 			'/TestProj/someFolder/aNestedFolder',
 			'/TestProj/someFolder/bNestedFolder',
 			'/TestProj/someFolder/aNestedTest.sql',
@@ -88,7 +88,7 @@ describe('Project Tree tests', function (): void {
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.file]);
 
-		should(tree.children.find(x => x.projectUri.path === '/TestProj/someFolder')?.children.map(y => y.treeItem.contextValue)).deepEqual([
+		should(tree.children.find(x => x.relativeProjectUri.path === '/TestProj/someFolder')?.children.map(y => y.treeItem.contextValue)).deepEqual([
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.file,
@@ -106,12 +106,12 @@ describe('Project Tree tests', function (): void {
 		proj.files.push(proj.createFileProjectEntry('someFolder1\\MyFile2.sql', EntryType.File));
 
 		const tree = new ProjectRootTreeItem(proj);
-		should(tree.children.map(x => x.projectUri.path)).deepEqual([
+		should(tree.children.map(x => x.relativeProjectUri.path)).deepEqual([
 			'/TestProj/Database References',
 			'/TestProj/SQLCMD Variables',
 			'/TestProj/someFolder1']);
 
-		should(tree.children.find(x => x.projectUri.path === '/TestProj/someFolder1')?.children.map(y => y.projectUri.path)).deepEqual([
+		should(tree.children.find(x => x.relativeProjectUri.path === '/TestProj/someFolder1')?.children.map(y => y.relativeProjectUri.path)).deepEqual([
 			'/TestProj/someFolder1/MyNestedFolder1',
 			'/TestProj/someFolder1/MyNestedFolder2',
 			'/TestProj/someFolder1/MyFile2.sql']);
@@ -128,7 +128,7 @@ describe('Project Tree tests', function (): void {
 		proj.files.push(proj.createFileProjectEntry('..\\..\\someFolder3', EntryType.Folder)); // folder should not be counted (same as SSDT)
 
 		const tree = new ProjectRootTreeItem(proj);
-		should(tree.children.map(x => x.projectUri.path)).deepEqual([
+		should(tree.children.map(x => x.relativeProjectUri.path)).deepEqual([
 			'/TestProj/Database References',
 			'/TestProj/SQLCMD Variables',
 			'/TestProj/MyFile1.sql',
