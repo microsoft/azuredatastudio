@@ -391,6 +391,12 @@
           "type": "boolean",
           "default": false,
           "description": "%mssql.objectExplorer.groupBySchema%"
+        },
+        "mssql.objectExplorer.expandTimeout": {
+          "type": "number",
+          "default": 45,
+          "minimum": 1,
+          "description": "%mssql.objectExplorer.expandTimeout%"
         }
       }
     },
