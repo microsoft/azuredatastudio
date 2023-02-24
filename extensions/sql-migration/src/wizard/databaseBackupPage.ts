@@ -45,6 +45,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _blobContainerStorageAccountDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerLastBackupFileDropdowns!: azdata.DropDownComponent[];
+	private _blobContainerVmDatabaseAlreadyExistsInfoBox!: azdata.TextComponent;
 
 	private _networkShareStorageAccountDetails!: azdata.FlexContainer;
 	private _networkShareContainerSubscription!: azdata.TextComponent;
@@ -52,6 +53,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _networkShareStorageAccountResourceGroupDropdown!: azdata.DropDownComponent;
 	private _networkShareContainerStorageAccountDropdown!: azdata.DropDownComponent;
 	private _networkShareContainerStorageAccountRefreshButton!: azdata.ButtonComponent;
+	private _networkShareVmDatabaseAlreadyExistsInfoBox!: azdata.TextComponent;
 
 	private _targetDatabaseContainer!: azdata.FlexContainer;
 	private _networkShareTargetDatabaseNamesTable!: azdata.DeclarativeTableComponent;
@@ -454,9 +456,18 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				]
 			}).component();
 
+		this._networkShareVmDatabaseAlreadyExistsInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				text: constants.DATABASE_ALREADY_EXISTS_VM_INFO,
+				style: 'information',
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: { ...styles.BODY_CSS, 'display': 'none' }
+			}).component();
+
 		this._networkTableContainer = this._view.modelBuilder.flexContainer()
 			.withItems([
 				networkShareTableText,
+				this._networkShareVmDatabaseAlreadyExistsInfoBox,
 				this._networkShareTargetDatabaseNamesTable])
 			.withProps({ CSSStyles: { 'display': 'none', } })
 			.component();
@@ -467,10 +478,19 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
+		this._blobContainerVmDatabaseAlreadyExistsInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				text: constants.DATABASE_ALREADY_EXISTS_VM_INFO,
+				style: 'information',
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: { ...styles.BODY_CSS, 'display': 'none' }
+			}).component();
+
 		this._blobTableContainer = this._view.modelBuilder.flexContainer()
 			.withItems([
 				blobTableText,
 				allFieldsRequiredLabel,
+				this._blobContainerVmDatabaseAlreadyExistsInfoBox,
 				this._blobContainerTargetDatabaseNamesTable])
 			.withProps({ CSSStyles: { 'display': 'none', } })
 			.component();
@@ -627,6 +647,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	private async _updatePageControlsVisibility(): Promise<void> {
 		const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
+		const isSqlVmTarget = this.migrationStateModel.isSqlVmTarget;
 		const isNetworkShare = this.migrationStateModel.isBackupContainerNetworkShare;
 		const isBlobContainer = this.migrationStateModel.isBackupContainerBlobContainer;
 
@@ -634,12 +655,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		await utils.updateControlDisplay(this._migrationTableSection, isSqlDbTarget);
 		await utils.updateControlDisplay(this._networkDetailsContainer, !isSqlDbTarget);
 		await utils.updateControlDisplay(this._targetDatabaseContainer, !isSqlDbTarget);
-		await utils.updateControlDisplay(this._networkShareStorageAccountDetails, !isSqlDbTarget);
 
 		await utils.updateControlDisplay(this._networkShareContainer, isNetworkShare && !isSqlDbTarget);
 		await utils.updateControlDisplay(this._networkShareStorageAccountDetails, isNetworkShare && !isSqlDbTarget);
+		await utils.updateControlDisplay(this._networkShareVmDatabaseAlreadyExistsInfoBox, isSqlVmTarget);
 		await utils.updateControlDisplay(this._networkTableContainer, isNetworkShare && !isSqlDbTarget);
 		await utils.updateControlDisplay(this._blobContainer, isBlobContainer && !isSqlDbTarget);
+		await utils.updateControlDisplay(this._blobContainerVmDatabaseAlreadyExistsInfoBox, isSqlVmTarget);
 		await utils.updateControlDisplay(this._blobTableContainer, isBlobContainer && !isSqlDbTarget);
 
 		await this._windowsUserAccountText.updateProperties({ required: isNetworkShare && !isSqlDbTarget });
