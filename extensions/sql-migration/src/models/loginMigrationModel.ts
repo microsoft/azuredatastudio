@@ -106,6 +106,10 @@ export class LoginMigrationModel {
 		return LoginType.Mixed_Mode;
 	}
 
+	public get hasSystemError(): boolean {
+		return this.loginMigrationsError ? true : false;
+	}
+
 	public async MigrateLogins(stateMachine: MigrationStateModel): Promise<boolean> {
 		this.addNewLogins(stateMachine._loginMigrationModel.loginsForMigration.map(row => row.loginName));
 		return await this.runLoginMigrationStep(LoginMigrationStep.MigrateLogins, stateMachine);
@@ -153,37 +157,12 @@ export class LoginMigrationModel {
 		return loginResults;
 	}
 
-	public GetLoginMigrationsErrorCountMap(): Map<any, any> {
-		let errorCountsPerStep = new Map<LoginMigrationStep, any>();
-
-		for (const login of this._logins.values()) {
-			for (const [step, stepState] of login.statusPerStep) {
-				let errorCounts = this.getErrorCountsMapPerStep(stepState.errors);
-				if (errorCountsPerStep.has(step)) {
-				} else {
-					errorCountsPerStep.set(step, errorCounts);
-
-				}
-			}
-
-		}
-
-		return errorCountsPerStep;
+	private setErrorCountMapPerStep(step: LoginMigrationStep, result: mssql.StartLoginMigrationResult) {
+		const errorCount = result.exceptionMap ? Object.keys(result.exceptionMap).length : 0;
+		this.errorCountMap.set(step, errorCount);
 	}
 
-	private getErrorCountsMapPerStep(errors: string[]): Map<string, number> {
-		let errorCountMap = new Map<string, number>();
-		errors.forEach(error => {
-			// TODO AKMA: use error code instead of error message
-			if (errorCountMap.has(error)) {
-				errorCountMap.set(error, errorCountMap.get(error)! + 1);
-			} else {
-				errorCountMap.set(error, 1);
-			}
-		});
 
-		return errorCountMap;
-	}
 
 	private setLoginMigrationSteps(steps: LoginMigrationStep[] = []) {
 		this._loginMigrationSteps = [];
@@ -254,6 +233,7 @@ export class LoginMigrationModel {
 
 			this.updateLoginMigrationResults(response);
 			this.addLoginMigrationResults(LoginMigrationStep.MigrateLogins, response);
+			this.setErrorCountMapPerStep(LoginMigrationStep.MigrateLogins, response);
 			return true;
 
 		} catch (error) {
@@ -275,7 +255,7 @@ export class LoginMigrationModel {
 
 			this.updateLoginMigrationResults(response);
 			this.addLoginMigrationResults(LoginMigrationStep.EstablishUserMapping, response);
-			return false;
+			return true;
 
 		} catch (error) {
 			logError(TelemetryViews.LoginMigrationWizard, 'EstablishingUserMappingFailed', error);
@@ -296,14 +276,13 @@ export class LoginMigrationModel {
 
 			this.updateLoginMigrationResults(response);
 			this.addLoginMigrationResults(LoginMigrationStep.MigrateServerRolesAndSetPermissions, response);
-			return false;
+			return true;
 
 		} catch (error) {
 			logError(TelemetryViews.LoginMigrationWizard, 'MigratingServerRolesAndSettingPermissionsFailed', error);
 			this.reportException(LoginMigrationStep.MigrateServerRolesAndSetPermissions, error);
 			this.loginMigrationsError = error;
-			return true;
-
+			return false;
 		}
 	}
 
@@ -413,10 +392,4 @@ export class LoginMigrationModel {
 			this.addStepStateForLogin(loginName, this._loginMigrationSteps[i], status, []);
 		}
 	}
-
-	// private getErrorCountMap(exceptionMap: ExceptionMap, loginName: string): any {
-	// 	return exceptionMap[loginName].map((exception: any) => typeof exception.InnerException !== 'undefined'
-	// 		&& exception.InnerException !== null ? exception.InnerException.Message : exception.Message);
-	// }
-
 }

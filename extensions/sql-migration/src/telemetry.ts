@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import AdsTelemetryReporter, { TelemetryEventMeasures, TelemetryEventProperties } from '@microsoft/ads-extension-telemetry';
+import { MigrationStateModel } from './models/stateMachine';
 const packageJson = require('../package.json');
 let packageInfo = {
 	name: packageJson.name,
@@ -38,7 +39,9 @@ export enum TelemetryViews {
 	Utils = 'Utils',
 	LoginMigrationWizardController = 'LoginMigrationWizardController',
 	LoginMigrationWizard = 'LoginMigrationWizard',
-	LoginMigrationStatusWizard = 'LoginMigrationStatusWizard',
+	LoginMigrationTargetSelectionPage = 'LoginMigrationTargetSelectionPage',
+	LoginMigrationSelectorPage = 'LoginMigrationSelectorPage',
+	LoginMigrationStatusPage = 'LoginMigrationStatusPage',
 	TdeConfigurationDialog = 'TdeConfigurationDialog',
 }
 
@@ -66,6 +69,8 @@ export enum TelemetryAction {
 	StartDataCollection = 'StartDataCollection',
 	StopDataCollection = 'StopDataCollection',
 	GetDatabasesListFailed = 'GetDatabasesListFailed',
+	ConnectToTarget = 'ConnectToTarget',
+	LoginMigrationStarted = 'LoginMigrationStarted',
 	LoginMigrationCompleted = 'LoginMigrationCompleted'
 }
 
@@ -83,4 +88,15 @@ export function sendSqlMigrationActionEvent(telemetryView: TelemetryViews, telem
 		.withAdditionalProperties(additionalProps)
 		.withAdditionalMeasurements(additionalMeasurements)
 		.send();
+}
+
+export function getTelemetryProps(migrationStateModel: MigrationStateModel): TelemetryEventProperties {
+	return {
+		'sessionId': migrationStateModel._sessionId,
+		'subscriptionId': migrationStateModel._targetSubscription?.id,
+		'resourceGroup': migrationStateModel._resourceGroup?.name,
+		'targetType': migrationStateModel._targetType,
+		'tenantId': migrationStateModel._azureAccount?.properties?.tenants[0]?.id,
+		'extensionVersion': migrationStateModel.extensionContext.extension.packageJSON.version,
+	};
 }

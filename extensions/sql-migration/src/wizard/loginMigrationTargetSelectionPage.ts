@@ -16,7 +16,7 @@ import { azureResource } from 'azurecore';
 import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/azure';
 import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionProfile, isSourceConnectionSysAdmin, LoginTableInfo } from '../api/sqlUtils';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
-import { logError, TelemetryViews } from '../telemetry';
+import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
 
 export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -607,6 +607,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				const userName = this.migrationStateModel._targetUserName;
 				const password = this.migrationStateModel._targetPassword;
 				const loginsOnTarget: string[] = [];
+				let connectionSuccessful = false;
 				if (targetDatabaseServer && userName && password) {
 					try {
 						connectionButtonLoadingContainer.loading = true;
@@ -623,6 +624,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._loginMigrationModel.loginsOnTarget = loginsOnTarget;
 
 						await this._showConnectionResults(loginsOnTarget);
+						connectionSuccessful = true;
 					} catch (error) {
 						this.wizard.message = {
 							level: azdata.window.MessageLevel.Error,
@@ -633,10 +635,19 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 							loginsOnTarget,
 							constants.AZURE_SQL_TARGET_CONNECTION_ERROR_TITLE);
 
-						logError(TelemetryViews.LoginMigrationWizard, 'ConnectingToTargetFailed', error);
+						logError(TelemetryViews.LoginMigrationTargetSelectionPage, 'ConnectingToTargetFailed', error);
+						connectionSuccessful = false;
 					}
 					finally {
 						connectionButtonLoadingContainer.loading = false;
+						sendSqlMigrationActionEvent(
+							TelemetryViews.LoginMigrationTargetSelectionPage,
+							TelemetryAction.ConnectToTarget,
+							{
+								...getTelemetryProps(this.migrationStateModel),
+								'connectionSuccessful': connectionSuccessful ? 'true' : 'false'
+							},
+							{});
 					}
 				}
 			}));
