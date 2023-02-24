@@ -17,6 +17,7 @@ import { logError, TelemetryViews } from '../telemetry';
 import * as styles from '../constants/styles';
 import { TableMigrationSelectionDialog } from '../dialog/tableMigrationSelection/tableMigrationSelectionDialog';
 import { ValidateIrDialog } from '../dialog/validationResults/validateIrDialog';
+import { getSourceConnectionCredentials, getSourceConnectionProfile, getSourceConnectionQueryProvider, getSourceConnectionUri } from '../api/sqlUtils';
 
 const WIZARD_TABLE_COLUMN_WIDTH = '200px';
 const WIZARD_TABLE_COLUMN_WIDTH_SMALL = '170px';
@@ -799,15 +800,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						: WIZARD_TABLE_COLUMN_WIDTH;
 				});
 
-				const connectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
-				const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
-					(await this.migrationStateModel.getSourceConnectionProfile()).providerId,
-					azdata.DataProviderType.QueryProvider);
-
+				const connectionProfile = await getSourceConnectionProfile();
+				const queryProvider = await getSourceConnectionQueryProvider();
 				let username = '';
 				try {
 					const query = 'select SUSER_NAME()';
-					const ownerUri = await azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId);
+					const ownerUri = await getSourceConnectionUri();
 					const results = await queryProvider.runQueryAndReturn(ownerUri, query);
 					username = results.rows[0][0]?.displayValue;
 				} catch (e) {
@@ -825,7 +823,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					connectionProfile.serverName);
 
 				this._sqlSourceUsernameInput.value = username;
-				this._sqlSourcePassword.value = (await azdata.connection.getCredentials(this.migrationStateModel.sourceConnectionId)).password;
+				this._sqlSourcePassword.value = (await getSourceConnectionCredentials()).password;
 
 				this._windowsUserAccountText.value =
 					this.migrationStateModel._databaseBackup.networkShares[0]?.windowsUser

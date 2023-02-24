@@ -26,6 +26,7 @@ import { DashboardStatusBar, ErrorEvent } from './DashboardStatusBar';
 import { DashboardTab } from './dashboardTab';
 import { MigrationsTab, MigrationsTabId } from './migrationsTab';
 import { AdsMigrationStatus, MigrationDetailsEvent, ServiceContextChangeEvent } from './tabBase';
+import { getSourceConnectionId, getSourceConnectionProfile } from '../api/sqlUtils';
 
 export interface MenuCommandArgs {
 	connectionId: string,
@@ -73,10 +74,9 @@ export class DashboardWidget {
 					CSSStyles: { 'font-size': '14px', 'display': 'none', },
 				}).component();
 
-			const connectionProfile = await azdata.connection.getCurrentConnection();
 			const statusBar = new DashboardStatusBar(
 				this._context,
-				connectionProfile.connectionId,
+				await getSourceConnectionId(),
 				statusInfoBox,
 				this._errorEvent);
 
@@ -133,8 +133,7 @@ export class DashboardWidget {
 			let migrationsTabInitialized = false;
 			disposables.push(
 				tabs.onTabChanged(async tabId => {
-					const connectionProfile = await azdata.connection.getCurrentConnection();
-					await this.clearError(connectionProfile.connectionId);
+					await this.clearError(await getSourceConnectionId());
 					if (tabId === MigrationsTabId && !migrationsTabInitialized) {
 						migrationsTabInitialized = true;
 						await migrationsTab.refresh();
@@ -428,23 +427,20 @@ export class DashboardWidget {
 	}
 
 	public async launchMigrationWizard(): Promise<void> {
-		const activeConnection = await azdata.connection.getCurrentConnection();
-		let connectionId: string = '';
+		const activeConnection = await getSourceConnectionProfile();
 		let serverName: string = '';
 		if (!activeConnection) {
 			const connection = await azdata.connection.openConnectionDialog();
 			if (connection) {
-				connectionId = connection.connectionId;
 				serverName = connection.options.server;
 			}
 		} else {
-			connectionId = activeConnection.connectionId;
 			serverName = activeConnection.serverName;
 		}
 		if (serverName) {
 			const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 			if (api) {
-				this.stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration, api.tdeMigration);
+				this.stateModel = new MigrationStateModel(this._context, api.sqlMigration, api.tdeMigration);
 				this._context.subscriptions.push(this.stateModel);
 				const savedInfo = this.checkSavedInfo(serverName);
 				if (savedInfo) {
@@ -460,36 +456,33 @@ export class DashboardWidget {
 						this._context,
 						this.stateModel,
 						this._onServiceContextChanged);
-					await wizardController.openWizard(connectionId);
+					await wizardController.openWizard();
 				}
 			}
 		}
 	}
 
 	public async launchLoginMigrationWizard(): Promise<void> {
-		const activeConnection = await azdata.connection.getCurrentConnection();
-		let connectionId: string = '';
+		const activeConnection = await getSourceConnectionProfile();
 		let serverName: string = '';
 		if (!activeConnection) {
 			const connection = await azdata.connection.openConnectionDialog();
 			if (connection) {
-				connectionId = connection.connectionId;
 				serverName = connection.options.server;
 			}
 		} else {
-			connectionId = activeConnection.connectionId;
 			serverName = activeConnection.serverName;
 		}
 		if (serverName) {
 			const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 			if (api) {
-				this.stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration, api.tdeMigration);
+				this.stateModel = new MigrationStateModel(this._context, api.sqlMigration, api.tdeMigration);
 				this._context.subscriptions.push(this.stateModel);
 				const wizardController = new WizardController(
 					this._context,
 					this.stateModel,
 					this._onServiceContextChanged);
-				await wizardController.openLoginWizard(connectionId);
+				await wizardController.openLoginWizard();
 			}
 		}
 	}

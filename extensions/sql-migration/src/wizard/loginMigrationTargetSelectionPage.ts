@@ -14,7 +14,7 @@ import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as utils from '../api/utils';
 import { azureResource } from 'azurecore';
 import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/azure';
-import { collectSourceLogins, collectTargetLogins, isSysAdmin, LoginTableInfo } from '../api/sqlUtils';
+import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionProfile, isSourceConnectionSysAdmin, LoginTableInfo } from '../api/sqlUtils';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
 
 export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
@@ -66,8 +66,8 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
-		const hasSysAdminPermissions: boolean = await isSysAdmin(this.migrationStateModel.sourceConnectionId);
-		const connectionProfile: azdata.connection.ConnectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
+		const hasSysAdminPermissions: boolean = await isSourceConnectionSysAdmin();
+		const connectionProfile: azdata.connection.ConnectionProfile = await getSourceConnectionProfile();
 		const permissionsInfoBox = this._view.modelBuilder.infoBox()
 			.withProps({
 				style: 'warning',
@@ -331,7 +331,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			// Collect source login info here, as it will speed up loading the next page
 			const sourceLogins: LoginTableInfo[] = [];
 			sourceLogins.push(...await collectSourceLogins(
-				this.migrationStateModel.sourceConnectionId,
+				await getSourceConnectionId(),
 				this.migrationStateModel.isWindowsAuthMigrationSupported));
 			this.migrationStateModel._loginMigrationModel.collectedSourceLogins = true;
 			this.migrationStateModel._loginMigrationModel.loginsOnSource = sourceLogins;
