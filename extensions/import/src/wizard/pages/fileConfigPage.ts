@@ -231,13 +231,8 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	private async createFileBrowser(): Promise<azdata.FormComponent> {
-		const fileBrowserFlexContainer = this.view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column',
-			width: '100%'
-		}).component();
 		this.fileTextBox = this.view.modelBuilder.inputBox().withProps({
 			required: true,
-			ariaLabel: constants.fileTextboxArialabel,
 			validationErrorMessage: constants.invalidFileLocationError
 		}).withValidation(async (component) => {
 			if (component.value) {
@@ -250,18 +245,14 @@ export class FileConfigPage extends ImportPage {
 			}
 			return false;
 		}).component();
-		fileBrowserFlexContainer.addItem(this.fileTextBox);
+
 		this.fileTextBox.onTextChanged(e => {
 			this.model.newFileSelected = true;
 		});
 
 		this.fileButton = this.view.modelBuilder.button().withProps({
 			label: constants.browseFilesText,
-			ariaLabel: constants.browseFileAriaLabel,
-			width: '70px',
-			CSSStyles: {
-				'margin-top': '5px'
-			}
+			secondary: true
 		}).component();
 
 		this.fileButton.onDidClick(async (click) => {
@@ -321,11 +312,11 @@ export class FileConfigPage extends ImportPage {
 			// Let then model know about the file path
 			this.model.filePath = fileUri.fsPath;
 		});
-		fileBrowserFlexContainer.addItem(this.fileButton);
 
 		return {
-			component: fileBrowserFlexContainer,
-			title: constants.fileTextboxTitleText
+			component: this.fileTextBox,
+			title: constants.fileTextboxTitleText,
+			actions: [this.fileButton]
 		};
 	}
 
