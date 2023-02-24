@@ -2155,6 +2155,12 @@ This may take some time.</source>
     <trans-unit id="sql.migration.view.select.button.label">
       <source xml:lang="en">View/Select</source>
     </trans-unit>
+    <trans-unit id="sql.migration.vm.not.ready.iaas.extension">
+      <source xml:lang="en">The virtual machine '{0}' is unavailable for migration because the SQL Server IaaS Agent extension is currently in '{1}' mode instead of Full mode. Learn more: https://aka.ms/sql-iaas-extension</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.vm.not.ready.power.state">
+      <source xml:lang="en">The virtual machine '{0}' is unavailable for migration because the underlying virtual machine is not running. Please make sure it is powered on before retrying.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.warning">
       <source xml:lang="en">Warning</source>
     </trans-unit>
