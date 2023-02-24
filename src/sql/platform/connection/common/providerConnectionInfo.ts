@@ -170,7 +170,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 				label = this.getServerInfo();
 			}
 			if (this.serverCapabilities.useFullOptions) {
-				label += this.getNonDefaultOptionsKeyOptions();
+				label += this.getNonDefaultOptionsString(!this.connectionName);
 			}
 		}
 		// The provider capabilities are registered at the same time at load time, we can assume all providers are registered as long as the collection is not empty.
@@ -185,7 +185,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	public get serverInfo(): string {
 		let value = this.getServerInfo();
 		if (this.serverCapabilities?.useFullOptions) {
-			value += this.getNonDefaultOptionsKeyOptions(true);
+			value += this.getNonDefaultOptionsString(true);
 		}
 		return value;
 	}
@@ -316,17 +316,19 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		return ':';
 	}
 
-	private getNonDefaultOptionsKeyOptions(isTooltip?: boolean): string {
+	// Append non default options to connection title or tooltip info if useFullOptions is enabled.
+	// Includes all non password options (and other non server info options if appended to serverInfo).
+	private getNonDefaultOptionsString(isServerInfo?: boolean): string {
 		let parts: string = "";
 
 		if (this.serverCapabilities) {
 			this.serverCapabilities.connectionOptions.forEach(element => {
-				if (element.specialValueType !== ConnectionOptionSpecialType.serverName &&
+				if (((isServerInfo && element.specialValueType !== ConnectionOptionSpecialType.serverName &&
 					element.specialValueType !== ConnectionOptionSpecialType.databaseName &&
 					element.specialValueType !== ConnectionOptionSpecialType.authType &&
-					element.specialValueType !== ConnectionOptionSpecialType.password &&
 					element.specialValueType !== ConnectionOptionSpecialType.connectionName &&
-					!(isTooltip && element.specialValueType === ConnectionOptionSpecialType.userName)) {
+					element.specialValueType !== ConnectionOptionSpecialType.userName) || !isServerInfo) &&
+					element.specialValueType !== ConnectionOptionSpecialType.password) {
 					let value = this.getOptionValue(element.name);
 					if (value && value !== element.defaultValue) {
 						if (parts.length === 0) {
