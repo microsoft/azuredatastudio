@@ -16,14 +16,23 @@
     <trans-unit id="sql.cancel.migration.confirmation">
       <source xml:lang="en">Are you sure you want to cancel this migration?</source>
     </trans-unit>
-    <trans-unit id="sql.login.migration..error">
-      <source xml:lang="en">Login migration error: {0}</source>
+    <trans-unit id="sql.login.migration.aad.domain.name.input.box.label">
+      <source xml:lang="en">Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.aad.domain.name.input.box.placeholder">
+      <source xml:lang="en">Enter AAD Domain Name</source>
     </trans-unit>
     <trans-unit id="sql.login.migration.complete">
       <source xml:lang="en">Completed migrating logins</source>
     </trans-unit>
     <trans-unit id="sql.login.migration.db.title">
       <source xml:lang="en">Azure SQL Database</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.enter.AAD.domain.name.to.continue">
+      <source xml:lang="en">Azure Active Directory (AAD) Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.error">
+      <source xml:lang="en">Login migration error: {0}</source>
     </trans-unit>
     <trans-unit id="sql.login.migration.establish.user.mappings">
       <source xml:lang="en">Validating and migrating logins completed.
@@ -44,6 +53,9 @@ Establishing user mappings.</source>
     </trans-unit>
     <trans-unit id="sql.login.migration.in.progress">
       <source xml:lang="en">Login migration in progress</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.login.status.details.title">
+      <source xml:lang="en">Migration status details for {0}</source>
     </trans-unit>
     <trans-unit id="sql.login.migration.logins.found">
       <source xml:lang="en">Login found</source>
@@ -112,6 +124,12 @@ Currently, migrating server roles, establishing server mappings and setting perm
     </trans-unit>
     <trans-unit id="sql.login.migration.status.succeeded">
       <source xml:lang="en">Succeeded</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.steps.migrate.logins">
+      <source xml:lang="en">Migrate logins</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.steps.not.started">
+      <source xml:lang="en">Not started</source>
     </trans-unit>
     <trans-unit id="sql.login.migration.target.status.column">
       <source xml:lang="en">Target Status</source>
@@ -322,6 +340,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.complete.cutover">
       <source xml:lang="en">Complete cutover</source>
     </trans-unit>
+    <trans-unit id="sql.migration.completed.multi.steps.heading">
+      <source xml:lang="en">We ran the following steps:</source>
+    </trans-unit>
     <trans-unit id="sql.migration.completing.cutover.warning">
       <source xml:lang="en">Completing cutover without restoring all the backups may result in a data loss.</source>
     </trans-unit>
@@ -510,6 +531,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.already.exists">
       <source xml:lang="en">Database '{0}' already exists on the target managed instance '{1}'.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.already.exists.vm.info">
+      <source xml:lang="en">Ensure that the provided database name(s) do not already exist on the target SQL Server on Azure Virtual Machine.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.assessment.description">
       <source xml:lang="en">Select the databases that you want to assess for migration to Azure SQL.</source>
@@ -781,6 +805,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.invalid.network.share.location">
       <source xml:lang="en">Invalid network share location format. Example: {0}</source>
     </trans-unit>
+    <trans-unit id="sql.migration.invalid.non.page.blob.backupFile.error">
+      <source xml:lang="en">To continue, select a blob container where all the backup files are page blobs for source database '{0}', as block blobs are supported only for targets running SQL Server 2016 or later. Learn more: https://aka.ms/dms-migrations-troubleshooting</source>
+    </trans-unit>
     <trans-unit id="sql.migration.invalid.owner.uri.error">
       <source xml:lang="en">Cannot connect to the database due to invalid OwnerUri (Parameter 'OwnerUri')</source>
     </trans-unit>
@@ -933,6 +960,30 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.more.info">
       <source xml:lang="en">More info</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.multi.step.all.steps.completed.errors">
+      <source xml:lang="en">All steps completed with the following error(s):{0}{1}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.multi.step.all.steps.succeeded">
+      <source xml:lang="en">All steps succeeded.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.multi.step.some.steps.are.still.running">
+      <source xml:lang="en">Some steps are still running.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.multi.step.status">
+      <source xml:lang="en">Step status: {0}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.multi.step.status.dialog.copy.results">
+      <source xml:lang="en">Copy results</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.multi.step.status.dialog.heading">
+      <source xml:lang="en">Step details</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.multi.step.status.errors">
+      <source xml:lang="en">Step status: {0}{1}{2}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.multi.step.status.steps.title">
+      <source xml:lang="en">Steps</source>
     </trans-unit>
     <trans-unit id="sql.migration.na">
       <source xml:lang="en">N/A</source>
@@ -1167,6 +1218,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.run.validation">
       <source xml:lang="en">Run validation</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.running.multi.steps.heading">
+      <source xml:lang="en">We are running the following steps:</source>
     </trans-unit>
     <trans-unit id="sql.migration.save.assessment.report">
       <source xml:lang="en">Save assessment report</source>
@@ -1755,6 +1809,12 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sql.virtual.machine">
       <source xml:lang="en">SQL Virtual Machine</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.sql.vm.page.blob.info">
+      <source xml:lang="en">For target servers running SQL Server 2014 or below, you must store your database backups in an Azure Storage Blob Container instead of uploading them using the network share option. Additionally, you must store the backup files as page blobs, as block blobs are supported only for targets running SQL Server 2016 or later. Learn more: {0}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.sql.vm.page.blob.url.label">
+      <source xml:lang="en">Known issues, limitations, and troubleshooting</source>
     </trans-unit>
     <trans-unit id="sql.migration.sqldb.column.copyduration">
       <source xml:lang="en">Copy duration</source>
