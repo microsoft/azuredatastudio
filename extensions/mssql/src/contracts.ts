@@ -1250,3 +1250,35 @@ export namespace ExecutionPlanComparisonRequest {
 }
 
 // ------------------------------- < Execution Plan > ------------------------------------
+
+// ------------------------------- < Tde Migration > ------------------------------------
+
+export namespace TdeMigrateRequest {
+	export const type = new RequestType<TdeMigrationParams, mssql.TdeMigrationResult, void, void>('migration/tdemigration');
+}
+
+export interface TdeMigrationParams {
+	encryptedDatabases: string[];
+	sourceSqlConnectionString: string;
+	targetSubscriptionId: string;
+	targetResourceGroupName: string;
+	targetManagedInstanceName: string;
+	networkSharePath: string;
+	networkShareDomain: string;
+	networkShareUserName: string;
+	networkSharePassword: string;
+	accessToken: string;
+}
+
+export namespace TdeMigrateProgressEvent {
+	export const type = new NotificationType<TdeMigrateProgressParams, void>('migration/tdemigrationprogress');
+}
+
+
+export interface TdeMigrateProgressParams {
+	name: string;
+	success: boolean;
+	message: string;
+}
+
+// ------------------------------- < Tde Migration > ------------------------------------

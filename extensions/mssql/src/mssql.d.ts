@@ -45,6 +45,8 @@ declare module 'mssql' {
 		readonly sqlMigration: ISqlMigrationService;
 
 		readonly azureBlob: IAzureBlobService;
+
+		readonly tdeMigration: ITdeMigrationService;
 	}
 
 	/**
@@ -831,4 +833,36 @@ declare module 'mssql' {
 		completedStep: LoginMigrationStep;
 		elapsedTime: string;
 	}
+
+	// TDEMigration interfaces  BEGIN -----------------------------------------------------------------------
+	export interface TdeMigrationRequest {
+		encryptedDatabases: string[];
+		sourceSqlConnectionString: string;
+		targetSubscriptionId: string;
+		targetResourceGroupName: string;
+		targetManagedInstanceName: string;
+	}
+
+	export interface TdeMigrationEntryResult {
+		dbName: string;
+		success: boolean;
+		message: string;
+	}
+
+	export interface TdeMigrationResult {
+		migrationStatuses: TdeMigrationEntryResult[];
+	}
+
+	export interface ITdeMigrationService {
+		migrateCertificate(
+			encryptedDatabases: string[],
+			sourceSqlConnectionString: string,
+			targetSubscriptionId: string,
+			targetResourceGroupName: string,
+			targetManagedInstanceName: string,
+			networkSharePath: string,
+			accessToken: string,
+			reportUpdate: (dbName: string, succeeded: boolean, message: string) => void): Promise<TdeMigrationResult>;
+	}
+	// TDEMigration interfaces END -----------------------------------------------------------------------
 }
