@@ -143,15 +143,18 @@ export class AccountManagementService implements IAccountManagementService {
 		return this.doWithProvider(providerId, async (provider) => {
 			const notificationHandler = this._notificationService.notify(loginNotification);
 			try {
-				let account = await provider.provider.prompt();
-				if (this.isCanceledResult(account)) {
-					return;
+				let accountResult = await provider.provider.prompt();
+				if (!this.isAccountResult(accountResult)) {
+					if (accountResult.canceled === true) {
+						return;
+					} else {
+						throw new Error(localize('addAccountFailedMessage', `${0} \nError Message: ${1}`, accountResult.errorCode, accountResult.errorMessage));
+					}
 				}
-
-				let result = await this._accountStore.addOrUpdate(account);
+				let result = await this._accountStore.addOrUpdate(accountResult);
 				if (!result) {
 					this._logService.error('adding account failed');
-					throw Error('Adding account failed, check Azure Accounts log for more info.')
+					throw new Error(localize('addAccountFailedGeneric', 'Adding account failed, check Azure Accounts log for more info.'));
 				}
 				if (result.accountAdded) {
 					// Add the account to the list
@@ -190,8 +193,8 @@ export class AccountManagementService implements IAccountManagementService {
 		});
 	}
 
-	private isCanceledResult(result: azdata.Account | azdata.PromptFailedResult): result is azdata.PromptFailedResult {
-		return (<azdata.PromptFailedResult>result).canceled;
+	private isAccountResult(result: azdata.Account | azdata.PromptFailedResult): result is azdata.Account {
+		return typeof (<azdata.Account>result).displayInfo === 'object';
 	}
 
 	/**
@@ -200,23 +203,25 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @return Promise to return an account
 	 */
 	public refreshAccount(account: azdata.Account): Promise<azdata.Account> {
-		let self = this;
-
 		return this.doWithProvider(account.key.providerId, async (provider) => {
 			let refreshedAccount = await provider.provider.refresh(account);
-			if (self.isCanceledResult(refreshedAccount)) {
-				// Pattern here is to throw if this fails. Handled upstream.
-				throw new Error(localize('refreshFailed', "Refresh account was canceled by the user"));
+			if (!this.isAccountResult(refreshedAccount)) {
+				if (refreshedAccount.canceled) {
+					// Pattern here is to throw if this fails. Handled upstream.
+					throw new Error(localize('refreshCanceled', "Refresh account was canceled by the user"));
+				} else {
+					throw new Error(localize('refreshFailed', `${0} \nError Message: ${1}`, refreshedAccount.errorCode, refreshedAccount.errorMessage));
+				}
 			} else {
 				account = refreshedAccount;
 			}
 
-			let result = await self._accountStore.addOrUpdate(account);
+			let result = await this._accountStore.addOrUpdate(account);
 			if (result.accountAdded) {
 				// Double check that there isn't a matching account
 				let indexToRemove = this.findAccountIndex(provider.accounts, result.changedAccount);
 				if (indexToRemove >= 0) {
-					self._accountStore.remove(provider.accounts[indexToRemove].key);
+					this._accountStore.remove(provider.accounts[indexToRemove].key);
 					provider.accounts.splice(indexToRemove, 1);
 				}
 				// Add the account to the list
@@ -232,7 +237,7 @@ export class AccountManagementService implements IAccountManagementService {
 				}
 			}
 
-			self.fireAccountListUpdate(provider, result.accountAdded);
+			this.fireAccountListUpdate(provider, result.accountAdded);
 			return result.changedAccount!;
 		});
 	}
