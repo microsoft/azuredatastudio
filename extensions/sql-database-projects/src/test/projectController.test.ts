@@ -91,7 +91,8 @@ describe('ProjectsController', function (): void {
 
 			it('Should return silently when no SQL object name provided in prompts', async function (): Promise<void> {
 				for (const name of ['', '    ', undefined]) {
-					const showInputBoxStub = sinon.stub(vscode.window, 'showInputBox').resolves(name);
+					sinon.stub(vscode.window, 'showInputBox').resolves(name);
+					sinon.stub(utils, 'sanitizeStringForFilename').returns('');
 					const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 					const projController = new ProjectsController(testContext.outputChannel);
 					const project = new Project('FakePath');
@@ -100,14 +101,14 @@ describe('ProjectsController', function (): void {
 					await projController.addItemPrompt(new Project('FakePath'), '', { itemType: ItemType.script });
 					should(project.files.length).equal(0, 'Expected to return without throwing an exception or adding a file when an empty/undefined name is provided.');
 					should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
-					showInputBoxStub.restore();
-					showErrorMessageSpy.restore();
+					sinon.restore();
 				}
 			});
 
 			it('Should show error if trying to add a file that already exists', async function (): Promise<void> {
 				const tableName = 'table1';
 				sinon.stub(vscode.window, 'showInputBox').resolves(tableName);
+				sinon.stub(utils, 'sanitizeStringForFilename').returns(tableName);
 				const spy = sinon.spy(vscode.window, 'showErrorMessage');
 				const projController = new ProjectsController(testContext.outputChannel);
 				let project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
@@ -137,6 +138,7 @@ describe('ProjectsController', function (): void {
 			it('Should add existing item', async function (): Promise<void> {
 				const tableName = 'table1';
 				sinon.stub(vscode.window, 'showInputBox').resolves(tableName);
+				sinon.stub(utils, 'sanitizeStringForFilename').returns(tableName);
 				const spy = sinon.spy(vscode.window, 'showErrorMessage');
 				const projController = new ProjectsController(testContext.outputChannel);
 				let project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
@@ -166,6 +168,7 @@ describe('ProjectsController', function (): void {
 			it('Should show error if trying to add a folder that already exists', async function (): Promise<void> {
 				const folderName = 'folder1';
 				const stub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
+				sinon.stub(utils, 'sanitizeStringForFilename').returns(folderName);
 
 				const projController = new ProjectsController(testContext.outputChannel);
 				let project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
@@ -189,7 +192,8 @@ describe('ProjectsController', function (): void {
 
 			it('Should be able to add folder with reserved name as long as not at project root', async function (): Promise<void> {
 				const folderName = 'folder1';
-				const stub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
+				sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
+				sinon.stub(utils, 'sanitizeStringForFilename').returns(folderName);
 
 				const projController = new ProjectsController(testContext.outputChannel);
 				let project = await testUtils.createTestProject(baselines.openProjectFileBaseline);
@@ -197,7 +201,7 @@ describe('ProjectsController', function (): void {
 
 				// make sure it's ok to add these folders if they aren't where the reserved folders are at the root of the project
 				let node = projectRoot.children.find(c => c.friendlyName === 'Tables');
-				stub.restore();
+				sinon.restore();
 				for (let i in reservedProjectFolders) {
 					// reload project
 					project = await Project.openProject(project.projectFilePath);
@@ -208,13 +212,14 @@ describe('ProjectsController', function (): void {
 			async function verifyFolderAdded(folderName: string, projController: ProjectsController, project: Project, node: BaseProjectTreeItem): Promise<void> {
 				const beforeFileCount = project.files.length;
 				let beforeFiles = project.files.map(f => f.relativePath);
-				const stub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
+				sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
+				sinon.stub(utils, 'sanitizeStringForFilename').returns(folderName);
 				await projController.addFolderPrompt(createWorkspaceTreeItem(node));
 
 				// reload project
 				project = await Project.openProject(project.projectFilePath);
 				should(project.files.length).equal(beforeFileCount + 1, `File count should be increased by one after adding the folder ${folderName}. before files: ${JSON.stringify(beforeFiles)}/n after files: ${JSON.stringify(project.files.map(f => f.relativePath))}`);
-				stub.restore();
+				sinon.restore();
 			}
 
 			async function verifyFolderNotAdded(folderName: string, projController: ProjectsController, project: Project, node: BaseProjectTreeItem): Promise<void> {
@@ -386,12 +391,14 @@ describe('ProjectsController', function (): void {
 				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
 
 				sinon.stub(vscode.window, 'showInputBox').resolves(preDeployScriptName);
+				sinon.stub(utils, 'sanitizeStringForFilename').returns(preDeployScriptName);
 				should(project.preDeployScripts.length).equal(0, 'There should be no pre deploy scripts');
 				await projController.addItemPrompt(project, '', { itemType: ItemType.preDeployScript });
 				should(project.preDeployScripts.length).equal(1, `Pre deploy script should be successfully added. ${project.preDeployScripts.length}, ${project.files.length}`);
 
 				sinon.restore();
 				sinon.stub(vscode.window, 'showInputBox').resolves(postDeployScriptName);
+				sinon.stub(utils, 'sanitizeStringForFilename').returns(postDeployScriptName);
 				should(project.postDeployScripts.length).equal(0, 'There should be no post deploy scripts');
 				await projController.addItemPrompt(project, '', { itemType: ItemType.postDeployScript });
 				should(project.postDeployScripts.length).equal(1, 'Post deploy script should be successfully added');
