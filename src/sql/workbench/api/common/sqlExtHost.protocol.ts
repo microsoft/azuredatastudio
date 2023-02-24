@@ -604,7 +604,16 @@ export abstract class ExtHostResourceProviderShape {
 	 * Handle firewall rule
 	 */
 	$handleFirewallRule(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.HandleFirewallRuleResponse> { throw ni(); }
+}
 
+/**
+ * ResourceProvider extension host class.
+ */
+export abstract class ExtHostErrorDiagnosticsShape {
+	/**
+	 * Handle other connection error types
+	 */
+	$handleConnectionError(handle: number, errorCode: number, errorMessage: string, connection: azdata.connection.ConnectionProfile): Thenable<azdata.diagnostics.ConnectionDiagnosticsResult> { throw ni(); }
 }
 
 /**
@@ -644,6 +653,11 @@ export interface MainThreadAzureBlobShape extends IDisposable {
 export interface MainThreadResourceProviderShape extends IDisposable {
 	$registerResourceProvider(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any>;
 	$unregisterResourceProvider(handle: number): Thenable<any>;
+}
+
+export interface MainThreadErrorDiagnosticsShape extends IDisposable {
+	$registerDiagnosticsProvider(providerMetadata: azdata.diagnostics.ErrorDiagnosticsProviderMetadata, handle: number): Thenable<any>;
+	$unregisterDiagnosticsProvider(handle: number): Thenable<any>;
 }
 
 export interface MainThreadDataProtocolShape extends IDisposable {
@@ -708,6 +722,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
 	$getServerInfo(connectedId: string): Thenable<azdata.ServerInfo>;
 	$openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection>;
+	$openChangePasswordDialog(profile: azdata.IConnectionProfile): Thenable<string | undefined>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;

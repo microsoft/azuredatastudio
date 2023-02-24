@@ -55,6 +55,8 @@ import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/b
 import { ViewContainerLocation } from 'vs/workbench/common/views';
 import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
+import { PasswordChangeDialog } from 'sql/workbench/services/connection/browser/passwordChangeDialog';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -94,6 +96,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IQuickInputService private _quickInputService: IQuickInputService,
 		@INotificationService private _notificationService: INotificationService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
+		@IErrorDiagnosticsService private _errorDiagnosticsService: IErrorDiagnosticsService,
 		@IAngularEventingService private _angularEventing: IAngularEventingService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@ILogService private _logService: ILogService,
@@ -430,7 +433,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Changes password of the connection profile's user.
 	 */
-	public changePassword(connection: interfaces.IConnectionProfile, uri: string, newPassword: string):
+	public async changePassword(connection: interfaces.IConnectionProfile, uri: string, newPassword: string):
 		Promise<azdata.PasswordChangeResult> {
 		return this.sendChangePasswordRequest(connection, uri, newPassword);
 	}
@@ -552,20 +555,32 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private handleConnectionError(connection: interfaces.IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
+	private async handleConnectionError(connection: interfaces.IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
 		let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', "Connection Not Accepted");
 		if (options.showFirewallRuleOnError && connectionResult.errorCode) {
-			return this.handleFirewallRuleError(connection, connectionResult).then(success => {
-				if (success) {
-					options.showFirewallRuleOnError = false;
+			let firewallRuleErrorHandled = await this.handleFirewallRuleError(connection, connectionResult);
+			if (firewallRuleErrorHandled) {
+				options.showFirewallRuleOnError = false;
+				return this.connectWithOptions(connection, uri, options, callbacks);
+			}
+			else {
+				let connectionErrorHandled = await this._errorDiagnosticsService.tryHandleConnectionError(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName, connection);
+				if (connectionErrorHandled.handled) {
+					connectionResult.errorHandled = true;
+					if (connectionErrorHandled.options) {
+						//copy over altered connection options from the result if provided.
+						connection.options = connectionErrorHandled.options;
+					}
 					return this.connectWithOptions(connection, uri, options, callbacks);
-				} else {
+				}
+				else {
+					// Error not handled by any registered providers so fail the connection
 					if (callbacks.onConnectReject) {
 						callbacks.onConnectReject(connectionNotAcceptedError);
 					}
 					return connectionResult;
 				}
-			});
+			}
 		} else {
 			if (callbacks.onConnectReject) {
 				callbacks.onConnectReject(connectionNotAcceptedError);
@@ -583,6 +598,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				return false;
 			}
 		});
+	}
+
+	public async openChangePasswordDialog(profile: interfaces.IConnectionProfile): Promise<string | undefined> {
+		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
+		let result = await dialog.open(profile);
+		return result;
 	}
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {

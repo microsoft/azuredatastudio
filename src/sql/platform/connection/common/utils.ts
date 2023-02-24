@@ -6,6 +6,8 @@
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { deepClone } from 'vs/base/common/objects';
+import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes'
 
 // CONSTANTS //////////////////////////////////////////////////////////////////////////////////////
 const msInH = 3.6e6;
@@ -136,4 +138,43 @@ export function findProfileInGroup(og: IConnectionProfile, groups: ConnectionPro
 export function isServerConnection(profile: IConnectionProfile): boolean {
 	// If the user did not specify a database in the original connection, then this is considered a server-level connection
 	return !profile.options.originalDatabase;
+}
+
+/**
+ * Convert a IConnectionProfile with services to an azdata.connection.ConnectionProfile
+ * shaped object that can be sent via RPC.
+ * @param profile The profile to be converted.
+ * @param deepCopyOptions whether to deep copy the options or not.
+ * @param removeFunction the function that strips the credentials from the connection profile if provided.
+ * @returns An azdata.connection.ConnectionProfile shaped object that contains only the data and none of the services.
+ */
+export function convertToRpcConnectionProfile(profile: IConnectionProfile | undefined, deepCopyOptions: boolean = false, removeFunction?: (profile: IConnectionProfile) => IConnectionProfile): sqlExtHostTypes.ConnectionProfile | undefined {
+	if (!profile) {
+		return undefined;
+	}
+
+	// If provided, that means the connection profile must be stripped of credentials.
+	if (removeFunction) {
+		profile = removeFunction(profile);
+	}
+
+	let connection: sqlExtHostTypes.ConnectionProfile = {
+		providerId: profile.providerName,
+		connectionId: profile.id,
+		options: deepCopyOptions ? deepClone(profile.options) : profile.options,
+		connectionName: profile.connectionName,
+		serverName: profile.serverName,
+		databaseName: profile.databaseName,
+		userName: profile.userName,
+		password: profile.password,
+		authenticationType: profile.authenticationType,
+		savePassword: profile.savePassword,
+		groupFullName: profile.groupFullName,
+		groupId: profile.groupId,
+		saveProfile: profile.saveProfile,
+		azureTenantId: profile.azureTenantId,
+		azureAccount: profile.azureAccount
+	}
+
+	return connection;
 }
