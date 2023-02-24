@@ -1101,6 +1101,7 @@ export namespace ProfilerSessionCreatedNotification {
 export interface SqlMigrationAssessmentParams {
 	ownerUri: string;
 	databases: string[];
+	xEventsFilesFolderPath: string;
 }
 
 export namespace GetSqlMigrationAssessmentItemsRequest {
