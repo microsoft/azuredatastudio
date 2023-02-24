@@ -1444,7 +1444,7 @@ export class ProjectsController {
 
 		if (fileOrFolder) {
 			// use relative path and not tree paths for files and folder
-			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts);
+			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts).concat(project.publishProfiles);
 
 			// trim trailing slash since folders with and without a trailing slash are allowed in a sqlproj
 			const trimmedUri = utils.trimChars(utils.getPlatformSafeFileEntryPath(utils.trimUri(fileOrFolder.projectFileUri, fileOrFolder.fileSystemUri)), '/');
