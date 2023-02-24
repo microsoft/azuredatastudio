@@ -488,7 +488,12 @@ export function ACCOUNT_ACCESS_ERROR(account: AzureAccount, error: Error) {
 export function MI_NOT_READY_ERROR(miName: string, state: string): string {
 	return localize('sql.migration.mi.not.ready', "The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.", miName, state);
 }
-
+export function VM_NOT_READY_IAAS_EXTENSION_ERROR(vmName: string, extensionState: string): string {
+	return localize('sql.migration.vm.not.ready.iaas.extension', "The virtual machine '{0}' is unavailable for migration because the SQL Server IaaS Agent extension is currently in '{1}' mode instead of Full mode. Learn more: https://aka.ms/sql-iaas-extension", vmName, extensionState);
+}
+export function VM_NOT_READY_POWER_STATE_ERROR(vmName: string): string {
+	return localize('sql.migration.vm.not.ready.power.state', "The virtual machine '{0}' is unavailable for migration because the underlying virtual machine is not running. Please make sure it is powered on before retrying.", vmName);
+}
 export function SQLDB_NOT_READY_ERROR(sqldbName: string, state: string): string {
 	return localize('sql.migration.sqldb.not.ready', "The SQL database server '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available SQL database server.", sqldbName, state);
 }

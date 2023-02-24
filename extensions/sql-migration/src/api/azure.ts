@@ -213,6 +213,27 @@ export type SqlVMServer = {
 	subscriptionId: string
 };
 
+export type VirtualMachineInstanceView = {
+	computerName: string,
+	osName: string,
+	osVersion: string,
+	vmAgent: { [propertyName: string]: string; },
+	disks: { [propertyName: string]: string; }[],
+	bootDiagnostics: { [propertyName: string]: string; },
+	extensions: { [propertyName: string]: string; }[],
+	hyperVGeneration: string,
+	patchStatus: { [propertyName: string]: string; },
+	statuses: InstanceViewStatus[],
+}
+
+export type InstanceViewStatus = {
+	code: string,
+	displayStatus: string,
+	level: string,
+	message: string,
+	time: string,
+}
+
 export async function getAvailableSqlDatabaseServers(account: azdata.Account, subscription: Subscription): Promise<AzureSqlDatabaseServer[]> {
 	const api = await getAzureCoreAPI();
 	const path = encodeURI(`/subscriptions/${subscription.id}/providers/Microsoft.Sql/servers?api-version=${SQL_SQLDB_API_VERSION}`);
@@ -257,6 +278,19 @@ export async function getAvailableSqlVMs(account: azdata.Account, subscription: 
 	}
 	sortResourceArrayByName(response.response.data.value);
 	return response.response.data.value;
+}
+
+export async function getVMInstanceView(sqlVm: SqlVMServer, account: azdata.Account, subscription: Subscription): Promise<VirtualMachineInstanceView> {
+	const api = await getAzureCoreAPI();
+	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${getResourceGroupFromId(sqlVm.id)}/providers/Microsoft.Compute/virtualMachines/${sqlVm.name}/instanceView?api-version=2022-08-01`);
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
+
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.toString());
+	}
+
+	return response.response.data;
 }
 
 export type StorageAccount = AzureProduct;
