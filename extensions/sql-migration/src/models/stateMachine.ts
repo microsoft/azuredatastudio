@@ -6,7 +6,8 @@
 import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
-import * as mssql from 'mssql';
+import * as contracts from '../service/contracts';
+import * as features from '../service/features';
 import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView } from '../api/azure';
 import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
@@ -222,7 +223,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _assessmentResults!: ServerAssessment;
 	public _assessedDatabaseList!: string[];
 	public _runAssessments: boolean = true;
-	private _assessmentApiResponse!: mssql.AssessmentResult;
+	private _assessmentApiResponse!: contracts.AssessmentResult;
 	public _assessmentReportFilePath: string;
 	public mementoString: string;
 
@@ -241,7 +242,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public _skuRecommendationResults!: SkuRecommendation;
 	public _skuRecommendationPerformanceDataSource!: PerformanceDataSourceOptions;
-	private _skuRecommendationApiResponse!: mssql.SkuRecommendationResult;
+	private _skuRecommendationApiResponse!: contracts.SkuRecommendationResult;
 	public _skuRecommendationReportFilePaths: string[];
 	public _skuRecommendationPerformanceLocation!: string;
 
@@ -254,7 +255,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public _loginsForMigration!: LoginTableInfo[];
 	public _aadDomainName!: string;
-	public _loginMigrationsResult!: mssql.StartLoginMigrationResult;
+	public _loginMigrationsResult!: contracts.StartLoginMigrationResult;
 	public _loginMigrationsError: any;
 	public _loginMigrationModel: LoginMigrationModel;
 
@@ -288,16 +289,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _currentState: State;
 	private _gatheringInformationError: string | undefined;
 	private _skuRecommendationRecommendedDatabaseList!: string[];
-	private _startPerfDataCollectionApiResponse!: mssql.StartPerfDataCollectionResult;
-	private _stopPerfDataCollectionApiResponse!: mssql.StopPerfDataCollectionResult;
-	private _refreshPerfDataCollectionApiResponse!: mssql.RefreshPerfDataCollectionResult;
+	private _startPerfDataCollectionApiResponse!: contracts.StartPerfDataCollectionResult;
+	private _stopPerfDataCollectionApiResponse!: contracts.StopPerfDataCollectionResult;
+	private _refreshPerfDataCollectionApiResponse!: contracts.RefreshPerfDataCollectionResult;
 	private _autoRefreshPerfDataCollectionHandle!: NodeJS.Timeout;
 	private _autoRefreshGetSkuRecommendationHandle!: NodeJS.Timeout;
 
 	constructor(
 		public extensionContext: vscode.ExtensionContext,
-		public readonly migrationService: mssql.ISqlMigrationService,
-		public readonly tdeMigrationService: mssql.ITdeMigrationService
+		public readonly migrationService: features.SqlMigrationService,
 	) {
 		this._currentState = State.INIT;
 		this._databaseBackup = {} as DatabaseBackupModel;
@@ -398,10 +398,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 	public async getDatabaseAssessments(targetType: MigrationTargetType[]): Promise<ServerAssessment> {
-		const ownerUri = await getSourceConnectionUri();
+		const connectionString = await getSourceConnectionString();
 		try {
 			const xEventsFilesFolderPath = '';		// to-do: collect by prompting the user in the UI - for now, blank = disabled
-			const response = (await this.migrationService.getAssessments(ownerUri, this._databasesForAssessment, xEventsFilesFolderPath))!;
+			const response = (await this.migrationService.getAssessments(connectionString, this._databasesForAssessment, xEventsFilesFolderPath))!;
 			this._assessmentApiResponse = response;
 			this._assessedDatabaseList = this._databasesForAssessment.slice();
 
@@ -548,7 +548,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._targetServerName;
 	}
 
-	private updateLoginMigrationResults(newResult: mssql.StartLoginMigrationResult): void {
+	private updateLoginMigrationResults(newResult: contracts.StartLoginMigrationResult): void {
 		if (this._loginMigrationsResult && this._loginMigrationsResult.exceptionMap) {
 			for (var key in newResult.exceptionMap) {
 				this._loginMigrationsResult.exceptionMap[key] = [...this._loginMigrationsResult.exceptionMap[key] || [], newResult.exceptionMap[key]]
@@ -781,9 +781,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		page: SKURecommendationPage): Promise<boolean> {
 		try {
 			if (!this.performanceCollectionInProgress()) {
-				const ownerUri = await getSourceConnectionUri();
+				const connectionString = await getSourceConnectionString();
 				const response = await this.migrationService.startPerfDataCollection(
-					ownerUri,
+					connectionString,
 					dataFolder,
 					perfQueryIntervalInSec,
 					staticQueryIntervalInSec,
@@ -1106,7 +1106,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 		try {
 
-			const migrationResult = await this.tdeMigrationService.migrateCertificate(
+			const migrationResult = await this.migrationService.migrateCertificate(
 				tdeEnabledDatabases,
 				connectionString,
 				this._targetSubscription?.id,
@@ -1116,11 +1116,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				accessToken,
 				reportUpdate);
 
-			opResult.errors = migrationResult.migrationStatuses
+			opResult.errors = migrationResult!.migrationStatuses
 				.filter(entry => !entry.success)
 				.map(entry => constants.TDE_MIGRATION_ERROR_DB(entry.dbName, entry.message));
 
-			opResult.result = migrationResult.migrationStatuses.map(m => ({
+			opResult.result = migrationResult!.migrationStatuses.map(m => ({
 				name: m.dbName,
 				success: m.success,
 				message: m.message
@@ -1477,18 +1477,18 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 }
 
 export interface ServerAssessment {
-	issues: mssql.SqlMigrationAssessmentResultItem[];
+	issues: contracts.SqlMigrationAssessmentResultItem[];
 	databaseAssessments: {
 		name: string;
-		issues: mssql.SqlMigrationAssessmentResultItem[];
-		errors?: mssql.ErrorModel[];
+		issues: contracts.SqlMigrationAssessmentResultItem[];
+		errors?: contracts.ErrorModel[];
 	}[];
-	errors?: mssql.ErrorModel[];
+	errors?: contracts.ErrorModel[];
 	assessmentError?: Error;
 }
 
 export interface SkuRecommendation {
-	recommendations?: mssql.SkuRecommendationResult;
+	recommendations?: contracts.SkuRecommendationResult;
 	recommendationError?: Error;
 }
 
