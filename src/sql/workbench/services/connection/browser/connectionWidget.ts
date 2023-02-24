@@ -44,6 +44,7 @@ import { createCSSRule } from 'vs/base/browser/dom';
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
 export class ConnectionWidget extends lifecycle.Disposable {
+	private _initialConnectionInfo: IConnectionProfile;
 	private _defaultInputOptionRadioButton: RadioButton;
 	private _connectionStringRadioButton: RadioButton;
 	private _previousGroupOption: string;
@@ -612,7 +613,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._callbacks.onSetConnectButton(shouldEnableConnectButton);
 	}
 
-	protected onAuthTypeSelected(selectedAuthType: string) {
+	protected onAuthTypeSelected(selectedAuthType: string): void {
 		let currentAuthType = this.getMatchingAuthType(selectedAuthType);
 		if (currentAuthType !== AuthenticationType.SqlLogin) {
 			if (currentAuthType !== AuthenticationType.AzureMFA && currentAuthType !== AuthenticationType.AzureMFAAndUser) {
@@ -668,6 +669,16 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._userNameInputBox.enable();
 			this._passwordInputBox.enable();
 			this._rememberPasswordCheckBox.enabled = true;
+
+			this._initialConnectionInfo.authenticationType = AuthenticationType.SqlLogin;
+			if (this._initialConnectionInfo && this._initialConnectionInfo.userName) {
+				const setPasswordInputBox = (profile: IConnectionProfile) => {
+					this._passwordInputBox.value = profile.password;
+				};
+
+				this._rememberPasswordCheckBox.checked = this._initialConnectionInfo.savePassword;
+				this._connectionManagementService.addSavedPassword(this._initialConnectionInfo, true).then(setPasswordInputBox)
+			}
 		}
 	}
 
@@ -822,6 +833,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	public initDialog(connectionInfo: IConnectionProfile): void {
+		this._initialConnectionInfo = connectionInfo;
 		this.fillInConnectionInputs(connectionInfo);
 	}
 

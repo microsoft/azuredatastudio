@@ -306,9 +306,16 @@ suite('ConnectionDialogService tests', () => {
 		mockWidget.setup(x => x.fillInConnectionInputs(TypeMoq.It.isAny())).returns(() => {
 			called = true;
 		});
+
 		await connectionDialogService.showDialog(mockConnectionManagementService.object, testConnectionParams, connectionProfile);
 		await (connectionDialogService as any).handleFillInConnectionInputs(connectionProfile);
-		let returnedModel = ((connectionDialogService as any)._connectionControllerMap['MSSQL'] as any)._model;
+
+		let connectionControllerMap = (connectionDialogService as any)._connectionControllerMap;
+		assert(!!connectionControllerMap);
+
+		let returnedModel = (connectionControllerMap['MSSQL'] as any)._model;
+		assert(!!returnedModel);
+
 		assert.strictEqual(returnedModel._groupName, 'testGroup');
 		assert(called);
 	});
