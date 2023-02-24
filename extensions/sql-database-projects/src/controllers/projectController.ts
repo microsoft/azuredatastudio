@@ -183,14 +183,7 @@ export class ProjectsController {
 		}
 
 		const targetPlatform = creationParams.targetPlatform ? constants.targetPlatformToVersion.get(creationParams.targetPlatform)! : constants.defaultDSP;
-
-		const macroDict: Record<string, string> = {
-			'PROJECT_NAME': creationParams.newProjName,
-			'PROJECT_GUID': creationParams.projectGuid ?? UUID.generateUuid().toUpperCase(),
-			'PROJECT_DSP': targetPlatform
-		};
-
-		let newProjFileContents = creationParams.sdkStyle ? templates.macroExpansion(templates.newSdkSqlProjectTemplate, macroDict) : templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
+		const sdkStyle = creationParams.sdkStyle ? mssql.ProjectType.SdkStyle : mssql.ProjectType.LegacyStyle;
 
 		let newProjFileName = creationParams.newProjName;
 
@@ -204,9 +197,8 @@ export class ProjectsController {
 			throw new Error(constants.projectAlreadyExists(newProjFileName, path.parse(newProjFilePath).dir));
 		}
 
-		const projectFolderPath = path.dirname(newProjFilePath);
-		await fs.mkdir(projectFolderPath, { recursive: true });
-		await fs.writeFile(newProjFilePath, newProjFileContents);
+		const sqlProjectsService = await utils.getSqlProjectsService();
+		await sqlProjectsService.newProject(newProjFilePath, sdkStyle, targetPlatform);
 
 		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);
 
