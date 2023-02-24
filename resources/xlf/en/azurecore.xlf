@@ -34,9 +34,6 @@
     <trans-unit id="azure.tenantNotFound">
       <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
     </trans-unit>
-    <trans-unit id="azureAuth.unidentifiedError">
-      <source xml:lang="en">Unidentified error with azure authentication</source>
-    </trans-unit>
     <trans-unit id="azurecore.consentDialog.body">
       <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
     </trans-unit>
