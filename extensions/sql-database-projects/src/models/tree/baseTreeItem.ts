@@ -25,14 +25,4 @@ export abstract class BaseProjectTreeItem {
 	public get friendlyName(): string {
 		return path.parse(this.relativeProjectUri.path).base;
 	}
-
-	public get root() {
-		let node: BaseProjectTreeItem = this;
-
-		while (node.parent !== undefined) {
-			node = node.parent;
-		}
-
-		return node;
-	}
 }

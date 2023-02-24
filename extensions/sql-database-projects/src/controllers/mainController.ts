@@ -18,8 +18,8 @@ import * as constants from '../common/constants';
 import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
 import { EntryType, GenerateProjectFromOpenApiSpecOptions, ItemType } from 'sqldbproj';
 import { FileNode, TableFileNode } from '../models/tree/fileFolderTreeItem';
-import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { getAzdataApi } from '../common/utils';
+import { Project } from '../models/project';
 
 /**
  * The main controller class that initializes the extension
@@ -94,10 +94,12 @@ export default class MainController implements vscode.Disposable {
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.openInDesigner', async (node: WorkspaceTreeItem) => {
 			if (node?.element instanceof TableFileNode) {
 				const tableFileNode = node.element as TableFileNode;
-				const projectNode = tableFileNode.root as ProjectRootTreeItem;
+
+				const projectPath = tableFileNode.sqlprojUri.fsPath;
+				const project = await Project.openProject(projectPath);
+				const targetVersion = project.getProjectTargetVersion();
 				const filePath = tableFileNode.fileSystemUri.fsPath;
-				const projectPath = projectNode.project.projectFilePath;
-				const targetVersion = projectNode.project.getProjectTargetVersion();
+
 				await getAzdataApi()!.designers.openTableDesigner('MSSQL', {
 					title: tableFileNode.friendlyName,
 					tooltip: `${projectPath} - ${tableFileNode.friendlyName}`,
@@ -105,7 +107,7 @@ export default class MainController implements vscode.Disposable {
 					isNewTable: false,
 					tableScriptPath: filePath,
 					projectFilePath: projectPath,
-					allScripts: projectNode.project.files.filter(entry => entry.type === EntryType.File && path.extname(entry.fsUri.fsPath).toLowerCase() === constants.sqlFileExtension)
+					allScripts: project.files.filter(entry => entry.type === EntryType.File && path.extname(entry.fsUri.fsPath).toLowerCase() === constants.sqlFileExtension)
 						.map(entry => entry.fsUri.fsPath),
 					targetVersion: targetVersion
 				}, {
