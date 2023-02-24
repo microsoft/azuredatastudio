@@ -833,7 +833,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		// default to SQL if there are no provides or registered resources
 		let provider = this._providers.get(connection.providerName);
 		if (!provider || !provider.properties || !provider.properties.azureResource) {
-			this._logService.warn('Connection providers incorrectly registered. Defaulting to SQL Azure resource,');
+			this._logService.warn(`Connection provider '${connection.providerName}' is incorrectly registered, defaulting to 'SQL' Azure resource. Provider must specify applicable 'azureResource' in 'connectionProvider' configuration.`);
 			return AzureResource.Sql;
 		}
 
