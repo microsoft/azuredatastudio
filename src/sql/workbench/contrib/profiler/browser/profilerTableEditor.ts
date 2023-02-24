@@ -251,12 +251,15 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 	}
 
 	private _onFindStateChange(e: FindReplaceStateChangedEvent): void {
+		const node = this._finder.getDomNode();
 		if (e.isRevealed) {
 			if (this._findState.isRevealed) {
-				this._finder.getDomNode().style.top = '0px';
+				node.style.top = '0px';
+				node.style.display = '';
 				this._updateFinderMatchState();
 			} else {
-				this._finder.getDomNode().style.top = '';
+				node.style.top = '';
+				node.style.display = 'none';
 			}
 		}
 
