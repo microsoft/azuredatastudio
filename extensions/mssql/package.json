@@ -852,6 +852,20 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "name": "hostNameInCertificate",
+          "displayName": "%mssql.connectionOptions.hostNameInCertificate.displayName%",
+          "description": "%mssql.connectionOptions.hostNameInCertificate.description%",
+          "groupName": "%mssql.connectionOptions.groupName.security%",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
           "name": "trustServerCertificate",
           "displayName": "%mssql.connectionOptions.trustServerCertificate.displayName%",
           "description": "%mssql.connectionOptions.trustServerCertificate.description%",

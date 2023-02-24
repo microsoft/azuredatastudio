@@ -248,6 +248,20 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "name": "hostNameInCertificate",
+          "displayName": "%cms.connectionOptions.hostNameInCertificate.displayName%",
+          "description": "%cms.connectionOptions.hostNameInCertificate.description%",
+          "groupName": "%cms.connectionOptions.groupName.security%",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
           "name": "trustServerCertificate",
           "displayName": "%cms.connectionOptions.trustServerCertificate.displayName%",
           "description": "%cms.connectionOptions.trustServerCertificate.description%",
