@@ -16,6 +16,7 @@ import { getAzdataApi } from './common/utils';
 import { createNewProjectWithQuickpick } from './dialogs/newProjectQuickpick';
 import Logger from './common/logger';
 import { TelemetryReporter } from './common/telemetry';
+import { noProjectProvidingExtensionsInstalled } from './common/constants';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const startTime = new Date().getTime();
@@ -46,6 +47,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		// Make sure all project providing extensions are activated to be sure the project templates show up
 		await workspaceService.ensureProviderExtensionLoaded(undefined, true);
 
+		if (!workspaceService.isProjectProviderAvailable) {
+			void vscode.window.showErrorMessage(noProjectProvidingExtensionsInstalled);
+			return;
+		}
+
 		if (azdataApi) {
 			const dialog = new NewProjectDialog(workspaceService);
 			await dialog.open();
@@ -57,6 +63,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	context.subscriptions.push(vscode.commands.registerCommand('projects.openExisting', async () => {
 		// Make sure all project providing extensions are activated so that all supported project types show up in the file filter
 		await workspaceService.ensureProviderExtensionLoaded(undefined, true);
+
+		if (!workspaceService.isProjectProviderAvailable) {
+			void vscode.window.showErrorMessage(noProjectProvidingExtensionsInstalled);
+			return;
+		}
 
 		if (azdataApi) {
 			const dialog = new OpenExistingDialog(workspaceService);
@@ -87,6 +98,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		await dashboard.showDashboard();
 	}));
 	Logger.log(`Registering commands took ${new Date().getTime() - registerCommandStartTime}ms`);
+
+	context.subscriptions.push(vscode.extensions.onDidChange(() => {
+		workspaceService.updateIfProjectProviderAvailable();
+	}));
 
 	const iconPathHelperTime = new Date().getTime();
 	IconPathHelper.setExtensionContext(context);
