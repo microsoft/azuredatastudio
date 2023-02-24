@@ -221,11 +221,13 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	 * @param getOriginalOptions will return the original URI format regardless if useFullOptions was set or not. (used for retrieving passwords)
 	 */
 	public getOptionsKey(getOriginalOptions?: boolean): string {
+		let useFullOptions = false;
 		let idNames = [];
 		if (this.serverCapabilities) {
+			useFullOptions = this.serverCapabilities.useFullOptions
 			idNames = this.serverCapabilities.connectionOptions.map(o => {
 				// All options enabled, use every property besides password.
-				let newProperty = this.serverCapabilities?.useFullOptions && o.specialValueType !== ConnectionOptionSpecialType.password && !getOriginalOptions
+				let newProperty = useFullOptions && o.specialValueType !== ConnectionOptionSpecialType.password && !getOriginalOptions
 				// Fallback to original base IsIdentity properties otherwise.
 				let originalProperty = (o.specialValueType || o.isIdentity) && o.specialValueType !== ConnectionOptionSpecialType.password
 					&& o.specialValueType !== ConnectionOptionSpecialType.connectionName;
@@ -248,8 +250,8 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		let idValues: string[] = [];
 		for (let index = 0; index < idNames.length; index++) {
 			let value = this.options[idNames[index]!];
-			// If we're using the new URI format, we do not include any values that are empty.
-			value = value ? value : (this.serverCapabilities?.useFullOptions && !getOriginalOptions ? undefined : '');
+			// If we're using the new URI format, we do not include any values that are empty or are default.
+			value = value ? value : ((useFullOptions && !getOriginalOptions) ? undefined : '');
 			if (value) {
 				idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
 			}
