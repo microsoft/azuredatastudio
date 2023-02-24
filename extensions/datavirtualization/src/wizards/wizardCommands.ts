@@ -96,24 +96,7 @@ export class OpenMssqlHdfsTableFromFileWizardCommand extends Command {
 }
 
 function convertIConnectionProfile(profile: azdata.IConnectionProfile): azdata.connection.ConnectionProfile {
-	let connection: azdata.connection.ConnectionProfile;
-	if (profile) {
-		connection = {
-			providerId: profile.providerName,
-			connectionId: profile.id,
-			connectionName: profile.connectionName,
-			serverName: profile.serverName,
-			databaseName: profile.databaseName,
-			userName: profile.userName,
-			password: profile.password,
-			authenticationType: profile.authenticationType,
-			savePassword: profile.savePassword,
-			groupFullName: profile.groupFullName,
-			groupId: profile.groupId,
-			saveProfile: profile.saveProfile,
-			azureTenantId: profile.azureTenantId,
-			options: {}
-		};
-	}
+	const connection = azdata.connection.ConnectionProfile.createFrom(profile.options);
+	connection.providerId = profile.providerName;
 	return connection;
 }

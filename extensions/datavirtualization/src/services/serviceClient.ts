@@ -47,7 +47,7 @@ export class ServiceClient {
 				const processStart = Date.now();
 				client.onReady().then(() => {
 					const processEnd = Date.now();
-					this.statusView.text = localize('serviceStarted', 'Service Started');
+					this.statusView.text = localize('serviceStarted', '{0} started', Constants.serviceName);
 					setTimeout(() => {
 						this.statusView.hide();
 					}, 1500);
@@ -59,13 +59,13 @@ export class ServiceClient {
 					});
 				});
 				this.statusView.show();
-				this.statusView.text = localize('serviceStarting', 'Starting service');
+				this.statusView.text = localize('serviceStarting', 'Starting {0}...', Constants.serviceName);
 				let disposable = client.start();
 				context.subscriptions.push(disposable);
 				resolve();
 			}, e => {
 				Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
-				this.apiWrapper.showErrorMessage(localize('serviceStartFailed', 'Failed to start Scale Out Data service:{0}', e));
+				this.apiWrapper.showErrorMessage(localize('serviceStartFailed', 'Failed to start {0}: {1}', Constants.serviceName, e));
 				// Just resolve to avoid unhandled promise. We show the error to the user.
 				resolve();
 			});
