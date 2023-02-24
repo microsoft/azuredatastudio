@@ -197,6 +197,12 @@
     <trans-unit id="cms.connectionOptions.groupName.source">
       <source xml:lang="en">Source</source>
     </trans-unit>
+    <trans-unit id="cms.connectionOptions.hostNameInCertificate.description">
+      <source xml:lang="en">Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.hostNameInCertificate.displayName">
+      <source xml:lang="en">Host name in certificate</source>
+    </trans-unit>
     <trans-unit id="cms.connectionOptions.loadBalanceTimeout.description">
       <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
     </trans-unit>
@@ -268,12 +274,6 @@
     </trans-unit>
     <trans-unit id="cms.connectionOptions.serverName.displayName">
       <source xml:lang="en">Server</source>
-    </trans-unit>
-    <trans-unit id="cms.connectionOptions.hostNameInCertificate.description">
-      <source xml:lang="en">Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.</source>
-    </trans-unit>
-    <trans-unit id="cms.connectionOptions.hostNameInCertificate.displayName">
-      <source xml:lang="en">Host name in certificate</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.trustServerCertificate.description">
       <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
