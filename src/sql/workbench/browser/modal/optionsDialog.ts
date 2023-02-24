@@ -228,7 +228,7 @@ export class OptionsDialog extends Modal {
 	}
 
 	private _registerSelectionChangeEvents(collections: { [optionName: string]: OptionsDialogHelper.IOptionElement }[], option: azdata.ServiceOption, widget: SelectBox, container: HTMLElement) {
-		if (option && option.onSelectionChange) {
+		if (option?.onSelectionChange) {
 			option.onSelectionChange.forEach((event) => {
 				this._register(widget.onDidSelect(value => {
 					let selectedValue = value.selected;
@@ -276,13 +276,7 @@ export class OptionsDialog extends Modal {
 	 * @returns Widget if found, undefined otherwise
 	 */
 	private _findWidget(collections: { [optionName: string]: OptionsDialogHelper.IOptionElement }[], id: string): AdsWidget | undefined {
-		let foundWidget: AdsWidget | undefined;
-		collections.forEach((collection) => {
-			if (!foundWidget) {
-				foundWidget = collection[id].optionWidget;
-			}
-		});
-		return foundWidget;
+		return collections.find(collection => collection[id].optionWidget);
 	}
 
 	protected layout(height?: number): void {
