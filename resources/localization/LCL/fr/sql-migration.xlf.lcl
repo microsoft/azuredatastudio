@@ -7785,10 +7785,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.target.mapping.error.duplicate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.]]></Val>
+          <Val><![CDATA[Database mapping error. Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '{2}' is already selected as a migration target for database '{3}'.  Please select a different target database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Erreur de mappage de base de données. La base de données cible '{0}' ne peut pas être sélectionnée comme cible de migration pour la base de données '{1}'. La base de données cible '${targetDatabaseName}' est déjà sélectionnée comme cible de migration pour la base de données '{2}'. Veuillez sélectionner une autre base de données cible.]]></Val>
+            <Val><![CDATA[Erreur de mappage de base de données. La base de données cible '{0}' ne peut pas être sélectionnée comme cible de migration pour la base de données '{1}'. La base de données cible '{2}' est déjà sélectionnée comme cible de migration pour la base de données '{3}'. Veuillez sélectionner une autre base de données cible.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7803,19 +7806,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.target.source.collation.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.]]></Val>
+          <Val><![CDATA[Database mapping error (Error code: {0}) was found between '{1}' and '{2}' databases. The source database collation '{3}' does not match the target database collation '{4}'. Please select or re-create a target database with the same collation as the source database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Une erreur de mappage a été trouvée entre les bases de données « {0} » et « {1} ». Le classement de base de données source « {2} » ne correspond pas au classement de base de données cible « {3} ». Veuillez sélectionner ou recréer une base de données cible avec le même classement que la base de données source.]]></Val>
+            <Val><![CDATA[Une erreur de mappage de base de données (code d’erreur : {0}) a été trouvée entre les bases de données '{1}' et '{2}'. Le classement de base de données source '{3}' ne correspond pas au classement de base de données cible '{4}'. Sélectionnez ou recréez une base de données cible avec le même classement que la base de données source.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.target.source.mapping.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.]]></Val>
+          <Val><![CDATA[Database mapping error. Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Erreur de mappage de base de données. La base de données source '{0}' n'est pas mappée à une base de données cible. Veuillez sélectionner une base de données cible vers laquelle migrer.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
