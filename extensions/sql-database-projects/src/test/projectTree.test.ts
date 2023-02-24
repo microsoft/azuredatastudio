@@ -70,6 +70,7 @@ describe('Project Tree tests', function (): void {
 		const tree = new ProjectRootTreeItem(proj);
 		should(tree.children.map(x => x.projectUri.path)).deepEqual([
 			'/TestProj/Database References',
+			'/TestProj/SQLCMD Variables',
 			'/TestProj/duplicateFolder',
 			'/TestProj/someFolder',
 			'/TestProj/duplicate.sql']);
@@ -82,6 +83,7 @@ describe('Project Tree tests', function (): void {
 
 		should(tree.children.map(x => x.treeItem.contextValue)).deepEqual([
 			DatabaseProjectItemType.referencesRoot,
+			DatabaseProjectItemType.sqlcmdVariablesRoot,
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.file]);
@@ -106,12 +108,13 @@ describe('Project Tree tests', function (): void {
 		const tree = new ProjectRootTreeItem(proj);
 		should(tree.children.map(x => x.projectUri.path)).deepEqual([
 			'/TestProj/Database References',
+			'/TestProj/SQLCMD Variables',
 			'/TestProj/someFolder1']);
 
 		should(tree.children.find(x => x.projectUri.path === '/TestProj/someFolder1')?.children.map(y => y.projectUri.path)).deepEqual([
-				'/TestProj/someFolder1/MyNestedFolder1',
-				'/TestProj/someFolder1/MyNestedFolder2',
-				'/TestProj/someFolder1/MyFile2.sql']);
+			'/TestProj/someFolder1/MyNestedFolder1',
+			'/TestProj/someFolder1/MyNestedFolder2',
+			'/TestProj/someFolder1/MyFile2.sql']);
 	});
 
 	it('Should be able to parse and include relative paths outside project folder', function (): void {
@@ -127,6 +130,7 @@ describe('Project Tree tests', function (): void {
 		const tree = new ProjectRootTreeItem(proj);
 		should(tree.children.map(x => x.projectUri.path)).deepEqual([
 			'/TestProj/Database References',
+			'/TestProj/SQLCMD Variables',
 			'/TestProj/MyFile1.sql',
 			'/TestProj/MyFile2.sql']);
 	});
