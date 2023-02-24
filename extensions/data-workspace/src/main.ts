@@ -99,6 +99,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	}));
 	Logger.log(`Registering commands took ${new Date().getTime() - registerCommandStartTime}ms`);
 
+	context.subscriptions.push(vscode.extensions.onDidChange(() => {
+		workspaceService.checkIfProjectProviderAvailable();
+	}));
+
 	const iconPathHelperTime = new Date().getTime();
 	IconPathHelper.setExtensionContext(context);
 	Logger.log(`IconPathHelper took ${new Date().getTime() - iconPathHelperTime}ms`);
