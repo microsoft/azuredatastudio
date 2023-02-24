@@ -250,6 +250,11 @@ export class UpdateProjectFromDatabaseDialog {
 				values: values,
 				value: values[0],
 			});
+
+			// change the database dropdown value to the connection's database if there is one
+			if (connectionProfile.options.database && connectionProfile.options.database !== constants.master) {
+				this.databaseDropdown!.value = connectionProfile.options.database;
+			}
 		}
 
 		this.databaseDropdown!.loading = false;
