@@ -90,7 +90,7 @@ export interface NativeParsedArgs {
 	'logsPath'?: string;
 	'__enable-file-policy'?: boolean;
 	editSessionId?: string;
-	'shell-integration'?: string;
+	'locate-shell-integration-path'?: string;
 
 	// {{SQL CARBON EDIT}} Start
 	aad?: boolean;

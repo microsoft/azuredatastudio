@@ -128,7 +128,7 @@ export const OPTIONS: OptionDescriptions<Required<NativeParsedArgs>> = {
 	'logsPath': { type: 'string' },
 	'__enable-file-policy': { type: 'boolean' },
 	'editSessionId': { type: 'string' },
-	'shell-integration': { type: 'string', args: ['bash', 'pwsh', 'zsh'] },
+	'locate-shell-integration-path': { type: 'string', args: ['bash', 'pwsh', 'zsh'] },
 
 	// {{SQL CARBON EDIT}} Start
 	'command': { type: 'string', alias: 'c', cat: 'o', args: 'command-name', description: localize('commandParameter', 'Name of command to run') },
