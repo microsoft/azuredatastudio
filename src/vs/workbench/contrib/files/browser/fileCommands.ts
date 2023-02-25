@@ -632,7 +632,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 			{
 				isOptional: true,
 				name: 'New Untitled File args',
-				description: 'The editor view type and language ID if known',
+				description: 'The editor view type, language ID, or resource path if known',
 				schema: {
 					'type': 'object',
 					'properties': {
@@ -640,6 +640,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 							'type': 'string'
 						},
 						'languageId': {
+							'type': 'string'
+						},
+						'path': {
 							'type': 'string'
 						}
 					}
@@ -664,7 +667,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		const editorService = accessor.get(IEditorService);
 
 		await editorService.openEditor({
-			resource: undefined,
+			resource: args?.path ? URI.from({ scheme: Schemas.untitled, path: args.path }) : undefined,
 			options: {
 				override: args?.viewType,
 				pinned: true

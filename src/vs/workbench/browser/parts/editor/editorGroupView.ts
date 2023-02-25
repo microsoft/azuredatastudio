@@ -1561,7 +1561,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 
 			// Let editor handle confirmation if implemented
 			if (typeof editor.closeHandler?.confirm === 'function') {
-				confirmation = await editor.closeHandler.confirm();
+				confirmation = await editor.closeHandler.confirm([{ editor, groupId: this.id }]);
 			}
 
 			// Show a file specific confirmation

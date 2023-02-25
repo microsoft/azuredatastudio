@@ -389,11 +389,6 @@ import 'vs/workbench/contrib/keybindings/browser/keybindings.contribution';
 
 // Snippets
 import 'vs/workbench/contrib/snippets/browser/snippets.contribution';
-import 'vs/workbench/contrib/snippets/browser/snippetsService';
-import 'vs/workbench/contrib/snippets/browser/insertSnippet';
-import 'vs/workbench/contrib/snippets/browser/surroundWithSnippet';
-import 'vs/workbench/contrib/snippets/browser/configureSnippets';
-import 'vs/workbench/contrib/snippets/browser/tabCompletion';
 
 // Formatter Help
 import 'vs/workbench/contrib/format/browser/format.contribution';
@@ -578,5 +573,8 @@ import 'sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution';
 
 // execution plan
 import 'sql/workbench/contrib/executionPlan/browser/executionPlanContribution';
+
+// Deprecated Extension Migrator
+import 'vs/workbench/contrib/deprecatedExtensionMigrator/browser/deprecatedExtensionMigrator.contribution';
 
 //#endregion

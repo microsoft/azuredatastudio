@@ -18,6 +18,7 @@ export interface NativeParsedArgs {
 	wait?: boolean;
 	waitMarkerFilePath?: string;
 	diff?: boolean;
+	merge?: boolean;
 	add?: boolean;
 	goto?: boolean;
 	'new-window'?: boolean;
@@ -89,6 +90,7 @@ export interface NativeParsedArgs {
 	'logsPath'?: string;
 	'__enable-file-policy'?: boolean;
 	editSessionId?: string;
+	'shell-integration'?: string;
 
 	// {{SQL CARBON EDIT}} Start
 	aad?: boolean;
