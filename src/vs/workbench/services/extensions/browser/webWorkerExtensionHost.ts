@@ -283,7 +283,7 @@ export class WebWorkerExtensionHost extends Disposable implements IExtensionHost
 			version: this._productService.version,
 			vscodeVersion: this._productService.vscodeVersion, // {{SQL CARBON EDIT}} add vscode version
 			quality: this._productService.quality, // {{SQL CARBON EDIT}} Add quality
-			parentPid: -1,
+			parentPid: 0,
 			environment: {
 				isExtensionDevelopmentDebug: this._environmentService.debugRenderer,
 				appName: this._productService.nameLong,

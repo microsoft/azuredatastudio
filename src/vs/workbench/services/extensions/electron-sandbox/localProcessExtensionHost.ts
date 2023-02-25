@@ -439,7 +439,7 @@ export class SandboxLocalProcessExtensionHost implements IExtensionHost {
 			version: this._productService.version,
 			vscodeVersion: this._productService.vscodeVersion, // {{SQL CARBON EDIT}} add vscode version
 			quality: this._productService.quality, // {{SQL CARBON EDIT}} Add quality
-			parentPid: process.pid,
+			parentPid: process.sandboxed ? 0 : process.pid,
 			environment: {
 				isExtensionDevelopmentDebug: this._isExtensionDevDebug,
 				appRoot: this._environmentService.appRoot ? URI.file(this._environmentService.appRoot) : undefined,
