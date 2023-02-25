@@ -129,23 +129,6 @@ export interface IMenuEntryActionViewItemOptions {
 	hoverDelegate?: IHoverDelegate;
 }
 
-function registerConfigureMenu(contextMenuService: IContextMenuService, item: BaseActionViewItem, action: MenuItemAction | SubmenuItemAction): IDisposable {
-	assertType(item.element);
-	return addDisposableListener(item.element, 'contextmenu', event => {
-		if (!action.hideActions) {
-			return;
-		}
-
-		event.preventDefault();
-		event.stopPropagation();
-
-		contextMenuService.showContextMenu({
-			getAnchor: () => item.element!,
-			getActions: () => action.hideActions!.asList()
-		});
-	}, true);
-}
-
 export class MenuEntryActionViewItem extends ActionViewItem {
 
 	private _wantsAltCommand: boolean = false;
@@ -220,8 +203,6 @@ export class MenuEntryActionViewItem extends ActionViewItem {
 			mouseOver = true;
 			updateAltState();
 		}));
-
-		this._register(registerConfigureMenu(this._contextMenuService, this, this._menuItemAction));
 	}
 
 	override updateLabel(): void {
@@ -347,8 +328,6 @@ export class SubmenuEntryActionViewItem extends DropdownMenuActionViewItem {
 				setBackgroundImage();
 			}));
 		}
-
-		this._register(registerConfigureMenu(this._contextMenuService, this, action));
 	}
 }
 
@@ -468,8 +447,6 @@ export class DropdownWithDefaultActionViewItem extends BaseActionViewItem {
 				event.stopPropagation();
 			}
 		}));
-
-		this._register(registerConfigureMenu(this._contextMenuService, this, (<SubmenuItemAction>this.action)));
 	}
 
 	override focus(fromRight?: boolean): void {
