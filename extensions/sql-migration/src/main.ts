@@ -9,6 +9,7 @@ import * as constants from './constants/strings';
 import { ServiceClient } from './service/serviceClient';
 import { migrationServiceProvider } from './service/provider';
 import { TelemetryReporter } from './telemetry';
+import { SqlOpsDataClient } from 'dataprotocol-client';
 
 let widget: DashboardWidget;
 let migrationServiceClient: SqlOpsDataClient | undefined;
