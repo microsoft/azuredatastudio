@@ -311,15 +311,19 @@ export function TIME_IN_MINUTES(val: number): number {
 }
 
 // Target provisioning
-export const TARGET_PROVISIONING_LINK = localize('sql.migration.targetprovisioning.link', "Generate provisioning script");
-export const TARGET_PROVISIONING_TITLE = localize('sql.migration.targetprovisioning.title', "Provisioning script");
-export const TARGET_PROVISIONING_DESCRIPTION = localize('sql.migration.targetprovisioning.description', "If you don't already have an existing Azure SQL target, you can use this quick-start template to help you provision one. An Azure Resource Manager (ARM) template is a JavaScript Object Notation (JSON) file that defines Azure resources to deploy, as well as the properties for those resources. The recommended sizing configuration has already been prefilled.");
-export const TARGET_PROVISIONING_MI_DETAILS = localize('sql.migration.targetprovisioning.mi', "");		/////
-export const TARGET_PROVISIONING_VM_DETAILS = localize('sql.migration.targetprovisioning.vm', "");
-export const TARGET_PROVISIONING_DB_DETAILS = localize('sql.migration.targetprovisioning.db', "");
+export const TARGET_PROVISIONING_LINK = localize('sql.migration.targetprovisioning.link', "Deploy");
+export const TARGET_PROVISIONING_TITLE = localize('sql.migration.targetprovisioning.title', "Deployment script");
+export const TARGET_PROVISIONING_HEADER = localize('sql.migration.targetprovisioning.header', "Quickstart ARM template");
+export const TARGET_PROVISIONING_DESCRIPTION = localize('sql.migration.targetprovisioning.description', "If you don't already have an existing 	Azure SQL target, you can use this quickstart ARM template to help you provision one. An ARM (Azure Resource Manager) template defines Azure resources to deploy as well as their properties.");
+export const TARGET_PROVISIONING_MI_DETAILS = localize('sql.migration.targetprovisioning.mi', "This template allows you to create an Azure Virtual Network with a properly configured subnet and deploy a Managed Instance inside. The recommended sizing configuration has been prefilled.");		/////
+export const TARGET_PROVISIONING_VM_DETAILS = localize('sql.migration.targetprovisioning.vm', "This template allows you to deploy a SQL Virtual Machine. The recommended sizing configuration has been prefilled.");
+export function TARGET_PROVISIONING_DB_DETAILS(dbCount: number): string {
+	return dbCount === 1
+		? localize('sql.migration.targetprovisioning.db.one', "This template allows you to create a SQL Server and {0} SQL Database. The recommended sizing configuration has been prefilled.", dbCount)
+		: localize('sql.migration.targetprovisioning.db.many', "This template allows you to create a SQL Server and {0} SQL Databases. The recommended sizing configurations have already been prefilled.", dbCount);
+}
 
-
-export const TARGET_PROVISIONING_HYPERLINK_LABEL = localize('sql.migration.targetprovisioning.hyperlink', "Learn more on how to deploy ARM templates");
+export const TARGET_PROVISIONING_HYPERLINK_LABEL = localize('sql.migration.targetprovisioning.hyperlink', "Learn more about ARM templates");
 export const TARGET_PROVISIONING_IN_PROGRESS = localize('sql.migration.targetprovisioning.inprogress', "Provisioning script generation in progress...");
 export const TARGET_PROVISIONING_ERROR = localize('sql.migration.targetprovisioning.error', "An error occurred while generating the provisoning script. Please try again.");
 export const COPY_TO_CLIPBOARD = localize('sql.migration.copytoclipboard', "Copy to clipboard");

@@ -72,7 +72,6 @@ export class GenerateProvisioningScriptDialog {
 	}
 
 	private CreateGenerateArmTemplateContainer(_view: azdata.ModelView): azdata.FlexContainer {
-
 		const armTemplateLoader = _view.modelBuilder.loadingComponent().component();
 		const armTemplateProgress = _view.modelBuilder.text().withProps({
 			value: constants.TARGET_PROVISIONING_IN_PROGRESS,
@@ -116,6 +115,12 @@ export class GenerateProvisioningScriptDialog {
 	}
 
 	private CreateSaveArmTemplateContainer(_view: azdata.ModelView): azdata.FlexContainer {
+		const armTemplateLabel = _view.modelBuilder.text()
+			.withProps({
+				value: constants.TARGET_PROVISIONING_HEADER,
+				CSSStyles: { ...styles.LABEL_CSS, 'margin': '12px 0 0', }
+			}).component();
+
 		const armTemplateDescription = _view.modelBuilder.text().withProps({
 			value: constants.TARGET_PROVISIONING_DESCRIPTION,
 			CSSStyles: {
@@ -130,6 +135,7 @@ export class GenerateProvisioningScriptDialog {
 			url: 'https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/quickstart-create-templates-use-the-portal#edit-and-deploy-the-template',
 			CSSStyles: {
 				...styles.BODY_CSS,
+				'margin-bottom': '24px'
 			},
 			showLinkIcon: true,
 		}).component();
@@ -143,6 +149,31 @@ export class GenerateProvisioningScriptDialog {
 			}
 		}).component();
 
+		const armTemplateWarning = _view.modelBuilder.infoBox().withProps({
+			text: "The provided template is a quickstart template. After deployment, we recommend reviewing the {0} on how to solve common security requirements. Not all requirements are applicable to all environments, and you should consult your database and security team on which features to implement.",
+			style: 'information',
+			// width: '300px',
+			CSSStyles: { ...styles.BODY_CSS, },
+			links: [{
+				text: "security best practices",
+				url: 'https://learn.microsoft.com/azure/azure-sql/managed-instance/tde-certificate-migrate',
+			}]
+		}).component();
+
+		const armTemplateSummary = _view.modelBuilder.text().withProps({
+			value: this._targetType === MigrationTargetType.SQLMI
+				? constants.TARGET_PROVISIONING_MI_DETAILS
+				: this._targetType === MigrationTargetType.SQLVM
+					? constants.TARGET_PROVISIONING_VM_DETAILS
+					: constants.TARGET_PROVISIONING_DB_DETAILS(this.model._skuEnableElastic
+						? this.model._skuRecommendationResults.recommendations?.sqlDbRecommendationResults.length!
+						: this.model._skuRecommendationResults.recommendations?.sqlDbRecommendationResults.length!),
+			CSSStyles: {
+				...styles.BODY_CSS,
+				'margin-bottom': '16px',
+			},
+		}).component();
+
 		this._armTemplateTextBox = _view.modelBuilder.text().withProps({
 			value: this._armTemplateText,
 			width: '100%',
@@ -150,46 +181,17 @@ export class GenerateProvisioningScriptDialog {
 			CSSStyles: {
 				'font': '12px "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New", monospace',
 				'margin': '0',
+				'padding': '8px',
 				'white-space': 'pre',
 				'background-color': '#eeeeee',
+				'overflow-x': 'hidden',
+				'word-break': 'break-all'
 			}
 		}).component();
-
-		const copyToClipboardButton = _view.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.copy,
-			iconHeight: '16px',
-			iconWidth: '16px',
-			label: constants.COPY_TO_CLIPBOARD,
-			height: 20,
-			position: 'absolute',
-			CSSStyles: {
-				...styles.BODY_CSS,
-			}
-		}).component();
-
-		this._disposables.push(
-			copyToClipboardButton.onDidClick(async () => {
-				await vscode.env.clipboard.writeText(this._armTemplateText);
-				void vscode.window.showInformationMessage(constants.COPIED_TO_CLIPBOARD);
-			}));
-
-		// const copyToClipboardButton = _view.modelBuilder.hyperlink().withProps({
-		// 	position: 'absolute',
-		// 	label: constants.COPY_TO_CLIPBOARD,
-		// 	url: '',
-		// 	CSSStyles: {
-		// 		...styles.BODY_CSS,
-		// 	}
-		// }).component();
-
-		// this._disposables.push(copyToClipboardButton.onDidClick(async () => {
-		// 	await vscode.env.clipboard.writeText(this._armTemplateText);
-		// 	void vscode.window.showInformationMessage(constants.COPIED_TO_CLIPBOARD);
-		// }));
 
 		const textContainer = _view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
-			height: 500,
+			height: 400,
 		}).withProps({
 			CSSStyles: {
 				'overflow': 'auto',
@@ -206,10 +208,12 @@ export class GenerateProvisioningScriptDialog {
 		}).withProps({
 			display: 'none',
 		}).withItems([
+			armTemplateLabel,
 			armTemplateDescription,
 			armTemplateLearnMoreContainer,
+			armTemplateWarning,
+			armTemplateSummary,
 			textContainer,
-			copyToClipboardButton
 		]).component();
 
 		return container;
@@ -263,13 +267,20 @@ export class GenerateProvisioningScriptDialog {
 			this.dialog = azdata.window.createModelViewDialog(constants.TARGET_PROVISIONING_TITLE, 'ViewArmTemplateDialog', 'medium');
 
 			this.dialog.okButton.label = GenerateProvisioningScriptDialog.CloseButtonText;
+			this.dialog.okButton.position = 'left';
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 			this.dialog.cancelButton.hidden = true;
 
-			const armTemplateSaveButton = azdata.window.createButton('Save template', 'left');
+			const armTemplateSaveButton = azdata.window.createButton('Save template', 'right');
 			this._disposables.push(armTemplateSaveButton.onClick(async () => await this.saveArmTemplate()));
 
-			this.dialog.customButtons = [armTemplateSaveButton];
+			const armTemplateCopyButton = azdata.window.createButton(constants.COPY_TO_CLIPBOARD, 'right');
+			this._disposables.push(armTemplateCopyButton.onClick(async () => await this.copyArmTemplate()));
+
+			const armTemplatePortalButton = azdata.window.createButton('Deploy in Azure Portal', 'right');
+			this._disposables.push(armTemplatePortalButton.onClick(() => vscode.env.openExternal(vscode.Uri.parse("https://portal.azure.com/#create/Microsoft.Template"))));
+
+			this.dialog.customButtons = [armTemplateSaveButton, armTemplateCopyButton, armTemplatePortalButton];
 
 			const dialogSetupPromises: Thenable<void>[] = [];
 			dialogSetupPromises.push(this.initializeDialog(this.dialog));
@@ -311,4 +322,8 @@ export class GenerateProvisioningScriptDialog {
 		void vscode.window.showInformationMessage(constants.TARGET_PROVISIONING_SAVE_SUCCESS(filePath?.path!));
 	}
 
+	private async copyArmTemplate(): Promise<void> {
+		await vscode.env.clipboard.writeText(this._armTemplateText);
+		void vscode.window.showInformationMessage(constants.COPIED_TO_CLIPBOARD);
+	}
 }

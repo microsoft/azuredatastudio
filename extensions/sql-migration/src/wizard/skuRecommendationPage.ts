@@ -686,14 +686,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (!this.migrationStateModel._assessmentResults) {
 				this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue = '';
 			} else {
-				if (this.hasRecommendations()) {			// to-do: hide view details and provisioning script when no recommendation per target platform
-					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = constants.VIEW_DETAILS;
-					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = constants.TARGET_PROVISIONING_LINK;
-					this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
-						...styles.BODY_CSS,
-						'font-weight': '500',
-					};
-				} else {
+				if (!this.hasRecommendations()) {
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = '';
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = '';
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
@@ -726,8 +719,20 @@ export class SKURecommendationPage extends MigrationWizardPage {
 							if (!recommendation?.targetSku) {
 								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue =
 									constants.SKU_RECOMMENDATION_NO_RECOMMENDATION;
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = '';
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = '';
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
+									...styles.BODY_CSS,
+								};
 							}
 							else {
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = constants.VIEW_DETAILS;
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = constants.TARGET_PROVISIONING_LINK;
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
+									...styles.BODY_CSS,
+									'font-weight': '500',
+								};
+
 								const serviceTier = recommendation.targetSku.category?.sqlServiceTier === contracts.AzureSqlPaaSServiceTier.GeneralPurpose
 									? constants.GENERAL_PURPOSE
 									: constants.BUSINESS_CRITICAL;
@@ -759,8 +764,20 @@ export class SKURecommendationPage extends MigrationWizardPage {
 								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue =
 									constants.SKU_RECOMMENDATION_NO_RECOMMENDATION;
 								this._rbg.cards[index].descriptions[CardDescriptionIndex.VM_CONFIGURATIONS].textValue = '';
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = '';
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = '';
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
+									...styles.BODY_CSS,
+								};
 							}
 							else {
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = constants.VIEW_DETAILS;
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = constants.TARGET_PROVISIONING_LINK;
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
+									...styles.BODY_CSS,
+									'font-weight': '500',
+								};
+
 								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue =
 									constants.VM_CONFIGURATION(
 										recommendation.targetSku.virtualMachineSize!.sizeName,
@@ -794,6 +811,21 @@ export class SKURecommendationPage extends MigrationWizardPage {
 							const successfulRecommendationsCount = recommendations.filter(r => r.targetSku !== null).length;
 							this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue =
 								constants.RECOMMENDATIONS_AVAILABLE(successfulRecommendationsCount);
+
+							if (successfulRecommendationsCount < 1) {
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = '';
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = '';
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
+									...styles.BODY_CSS,
+								};
+							} else {
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = constants.VIEW_DETAILS;
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = constants.TARGET_PROVISIONING_LINK;
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
+									...styles.BODY_CSS,
+									'font-weight': '500',
+								};
+							}
 						}
 						break;
 				}
