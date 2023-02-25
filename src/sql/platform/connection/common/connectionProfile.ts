@@ -104,7 +104,6 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public matches(other: interfaces.IConnectionProfile): boolean {
 		return ConnectionProfile.matchesProfile(this, other);
-
 	}
 
 	public generateNewId() {
