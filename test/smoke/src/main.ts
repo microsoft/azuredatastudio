@@ -27,7 +27,8 @@ import { setup as setupDataStatusbarTests } from './areas/statusbar/statusbar.te
 import { setup as setupDataExtensionTests } from './areas/extensions/extensions.test';
 import { setup as setupDataMultirootTests } from './areas/multiroot/multiroot.test';
 import { setup as setupDataLocalizationTests } from './areas/workbench/localization.test';
-import { setup as setupLaunchTests } from './areas/workbench/launch.test';*/
+import { setup as setupLaunchTests } from './areas/workbench/launch.test';
+import { setup as setupTaskTests } from './areas/task/task.test';*/
 
 const testDataPath = path.join(os.tmpdir(), 'vscsmoke');
 if (fs.existsSync(testDataPath)) {

@@ -48,8 +48,10 @@ import { isBoolean, isUndefined } from 'vs/base/common/types';
 import { IExtensionManifestPropertiesService } from 'vs/workbench/services/extensions/common/extensionManifestPropertiesService';
 import { IExtensionService, IExtensionsStatus } from 'vs/workbench/services/extensions/common/extensions';
 import { ExtensionEditor } from 'vs/workbench/contrib/extensions/browser/extensionEditor';
-import { isWeb } from 'vs/base/common/platform';
+import { isWeb, language } from 'vs/base/common/platform';
 import { GDPRClassification } from 'vs/platform/telemetry/common/gdprTypings';
+import { ILanguagePackService } from 'vs/platform/languagePacks/common/languagePacks';
+import { ILocaleService } from 'vs/workbench/contrib/localization/common/locale';
 
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 
@@ -731,6 +733,8 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		@IExtensionManifestPropertiesService private readonly extensionManifestPropertiesService: IExtensionManifestPropertiesService,
 		@ILogService private readonly logService: ILogService,
 		@IExtensionService private readonly extensionService: IExtensionService,
+		@ILanguagePackService private readonly languagePackService: ILanguagePackService,
+		@ILocaleService private readonly localeService: ILocaleService,
 	) {
 		super();
 		const preferPreReleasesValue = configurationService.getValue('_extensions.preferPreReleases');
@@ -1302,6 +1306,34 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		}
 	}
 	// {{SQL CARBON EDIT}} - End
+
+	canSetLanguage(extension: IExtension): boolean {
+		if (!isWeb) {
+			return false;
+		}
+
+		if (!extension.gallery) {
+			return false;
+		}
+
+		const locale = this.languagePackService.getLocale(extension.gallery);
+		if (!locale) {
+			return false;
+		}
+
+		return true;
+	}
+
+	async setLanguage(extension: IExtension): Promise<void> {
+		if (!this.canSetLanguage(extension)) {
+			throw new Error('Can not set language');
+		}
+		const locale = this.languagePackService.getLocale(extension.gallery!);
+		if (locale === language) {
+			return;
+		}
+		return this.localeService.setLocale({ id: locale, galleryExtension: extension.gallery, extensionId: extension.identifier.id, label: extension.displayName });
+	}
 
 	setEnablement(extensions: IExtension | IExtension[], enablementState: EnablementState): Promise<void> {
 		extensions = Array.isArray(extensions) ? extensions : [extensions];

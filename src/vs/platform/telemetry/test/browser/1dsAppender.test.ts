@@ -13,12 +13,12 @@ class AppInsightsCoreMock implements IAppInsightsCore {
 	public IsTrackingPageView: boolean = false;
 	public exceptions: any[] = [];
 
-	public track(event: ITelemetryItem) {
+	public override track(event: any) {
 		this.events.push(event.baseData);
 	}
 
-	public unload(isAsync: boolean, unloadComplete: (unloadState: ITelemetryUnloadState) => void): void {
-		// No-op
+	public override flush(options: any): void {
+		// called on dispose
 	}
 }
 

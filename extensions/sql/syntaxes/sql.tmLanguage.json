@@ -259,6 +259,10 @@
 			}
 		},
 		{
+			"match": "(?i)\\b(datalength|ident_current|ident_incr|ident_seed|identity|sql_variant_property)\\b",
+			"name": "support.function.datatype.sql"
+		},
+		{
 			"match": "(?i)\\b(coalesce|nullif)\\b\\s*\\(",
 			"captures": {
 				"1": {

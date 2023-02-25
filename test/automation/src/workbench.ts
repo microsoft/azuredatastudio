@@ -21,6 +21,7 @@ import { Code } from './code';
 import { Terminal } from './terminal';
 import { Notebook } from './notebook';
 import { Localization } from './localization';
+import { Task } from './task';
 
 // {{SQL CARBON EDIT}}
 import { ConnectionDialog } from './sql/connectionDialog';
@@ -59,6 +60,7 @@ export class Workbench {
 	readonly terminal: Terminal;
 	readonly notebook: Notebook;
 	readonly localization: Localization;
+	readonly task: Task;
 
 	// {{SQL CARBON EDIT}}
 	readonly connectionDialog: ConnectionDialog;
@@ -105,5 +107,6 @@ export class Workbench {
 		// {{END}}
 		this.notebook = new Notebook(this.quickaccess, this.quickinput, code);
 		this.localization = new Localization(code);
+		this.task = new Task(code, this.editor, this.editors, this.quickaccess, this.quickinput, this.terminal);
 	}
 }

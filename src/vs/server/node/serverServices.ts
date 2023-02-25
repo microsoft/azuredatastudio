@@ -71,6 +71,7 @@ import { IExtensionsScannerService } from 'vs/platform/extensionManagement/commo
 import { ExtensionsScannerService } from 'vs/server/node/extensionsScannerService';
 import { IUserDataProfilesService, UserDataProfilesService } from 'vs/platform/userDataProfile/common/userDataProfile';
 import { NullPolicyService } from 'vs/platform/policy/common/policy';
+import { OneDataSystemAppender } from 'vs/platform/telemetry/node/1dsAppender';
 
 const eventPrefix = 'adsworkbench'; // {{SQL CARBON EDIT}} Use our own event prefix
 
@@ -108,8 +109,12 @@ export async function setupServerServices(connectionToken: ServerConnectionToken
 	services.set(IFileService, fileService);
 	fileService.registerProvider(Schemas.file, disposables.add(new DiskFileSystemProvider(logService)));
 
+	// URI Identity
+	const uriIdentityService = new UriIdentityService(fileService);
+	services.set(IUriIdentityService, uriIdentityService);
+
 	// User Data Profiles
-	const userDataProfilesService = new UserDataProfilesService(environmentService, fileService, logService);
+	const userDataProfilesService = new UserDataProfilesService(environmentService, fileService, uriIdentityService, logService);
 	services.set(IUserDataProfilesService, userDataProfilesService);
 
 	// Configuration
@@ -119,9 +124,6 @@ export async function setupServerServices(connectionToken: ServerConnectionToken
 
 	const extensionHostStatusService = new ExtensionHostStatusService();
 	services.set(IExtensionHostStatusService, extensionHostStatusService);
-
-	// URI Identity
-	services.set(IUriIdentityService, new UriIdentityService(fileService));
 
 	// Request
 	services.set(IRequestService, new SyncDescriptor(RequestService));
