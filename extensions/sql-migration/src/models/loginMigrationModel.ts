@@ -66,7 +66,7 @@ export class LoginMigrationModel {
 	public loginMigrationsError: any;
 	public loginsForMigration!: LoginTableInfo[];
 	public errorCountMap: Map<LoginMigrationStep, any> = new Map<LoginMigrationStep, any>();
-	public durationPerStep: Map<LoginMigrationStep, string> = new Map<LoginMigrationStep, string>();
+	public durationPerStep: Map<string, string> = new Map<string, string>();
 	private _currentStepIdx: number = 0;
 	private _logins: Map<string, Login>;
 	private _loginMigrationSteps: LoginMigrationStep[] = [];
@@ -160,11 +160,11 @@ export class LoginMigrationModel {
 
 	private setErrorCountMapPerStep(step: LoginMigrationStep, result: mssql.StartLoginMigrationResult) {
 		const errorCount = result.exceptionMap ? Object.keys(result.exceptionMap).length : 0;
-		this.errorCountMap.set(step, errorCount);
+		this.errorCountMap.set(LoginMigrationStep[step], errorCount);
 	}
 
 	private setDurationPerStep(step: LoginMigrationStep, result: mssql.StartLoginMigrationResult) {
-		this.durationPerStep.set(step, result.elapsedTime);
+		this.durationPerStep.set(LoginMigrationStep[step], result.elapsedTime);
 	}
 
 	private setLoginMigrationSteps(steps: LoginMigrationStep[] = []) {

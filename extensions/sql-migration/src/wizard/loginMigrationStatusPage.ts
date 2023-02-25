@@ -446,8 +446,8 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			{
 				...getTelemetryProps(this.migrationStateModel),
 				'loginsAuthType': this.migrationStateModel._loginMigrationModel.loginsAuthType,
-				'numberLoginsFailingPerStep': JSON.stringify(this.migrationStateModel._loginMigrationModel.errorCountMap),
-				'durationPerStep': JSON.stringify(this.migrationStateModel._loginMigrationModel.durationPerStep),
+				'numberLoginsFailingPerStep': JSON.stringify(Array.from(this.migrationStateModel._loginMigrationModel.errorCountMap)),
+				'durationPerStep': JSON.stringify(Array.from(this.migrationStateModel._loginMigrationModel.durationPerStep)),
 				'hasSystemError': JSON.stringify(this.migrationStateModel._loginMigrationModel.hasSystemError),
 				// AKMA TODO: add error code string count map
 			},
