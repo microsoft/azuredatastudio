@@ -236,8 +236,6 @@ export class LoginMigrationModel {
 				stateMachine._aadDomainName
 			))!;
 
-			console.log("AKMA DEBUG: ", response);
-
 			this.addLoginMigrationResults(LoginMigrationStep.MigrateLogins, response);
 			return true;
 

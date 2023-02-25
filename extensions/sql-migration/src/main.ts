@@ -12,7 +12,6 @@ import { TelemetryReporter } from './telemetry';
 import { SqlOpsDataClient } from 'dataprotocol-client';
 
 let widget: DashboardWidget;
-let serviceClient: ServiceClient;
 let migrationServiceClient: SqlOpsDataClient | undefined;
 export async function activate(context: vscode.ExtensionContext): Promise<DashboardWidget> {
 	if (!migrationServiceProvider) {
@@ -20,7 +19,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<Dashbo
 	}
 	// asynchronously starting the service
 	const outputChannel = vscode.window.createOutputChannel(constants.serviceName);
-	serviceClient = new ServiceClient(outputChannel);
+	let serviceClient = new ServiceClient(outputChannel);
 	migrationServiceClient = await serviceClient.startService(context).catch((e) => {
 		console.error(e);
 		return undefined;

@@ -321,13 +321,13 @@ export class WizardController {
 		return undefined;
 	}
 
-	private async sendPageButtonClickEvent(telemetryVew: TelemetryViews, pageChangeInfo: azdata.window.WizardPageChangeInfo) {
+	private async sendPageButtonClickEvent(telemetryView: TelemetryViews, pageChangeInfo: azdata.window.WizardPageChangeInfo) {
 		const buttonPressed = pageChangeInfo.newPage > pageChangeInfo.lastPage
 			? TelemetryAction.Next
 			: TelemetryAction.Prev;
 		const pageTitle = this._wizardObject.pages[pageChangeInfo.lastPage]?.title;
 		sendSqlMigrationActionEvent(
-			telemetryVew,
+			telemetryView,
 			TelemetryAction.PageButtonClick,
 			{
 				...getTelemetryProps(this._model),
