@@ -70,8 +70,8 @@ export class EditorResolverService extends Disposable implements IEditorResolver
 	) {
 		super();
 		// Read in the cache on statup
-		// this.cache = new Set<string>(JSON.parse(this.storageService.get(EditorOverrideService.overrideCacheStorageID, StorageScope.GLOBAL, JSON.stringify([])))); {{SQL CARBON EDIT}} Remove unused
-		this.storageService.remove(EditorResolverService.cacheStorageID, StorageScope.GLOBAL);
+		// this.cache = new Set<string>(JSON.parse(this.storageService.get(EditorOverrideService.overrideCacheStorageID, StorageScope.APPLICATION, JSON.stringify([])))); {{SQL CARBON EDIT}} Remove unused
+		this.storageService.remove(EditorResolverService.cacheStorageID, StorageScope.APPLICATION);
 		this.convertOldAssociationFormat();
 
 		this._register(this.storageService.onWillSaveState(() => {
@@ -443,7 +443,7 @@ export class EditorResolverService extends Disposable implements IEditorResolver
 		// If it's a merge editor we trigger the create merge editor input
 		if (isResourceMergeEditorInput(editor)) {
 			if (!selectedEditor.createMergeEditorInput) {
-				return;
+				return undefined; // {{SQL CARBON EDIT}} Strict nulls
 			}
 			const inputWithOptions = await selectedEditor.createMergeEditorInput(editor, group);
 			return { editor: inputWithOptions.editor, options: inputWithOptions.options ?? options };

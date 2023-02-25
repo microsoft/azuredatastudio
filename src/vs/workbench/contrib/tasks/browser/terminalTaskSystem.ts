@@ -276,7 +276,7 @@ export class TerminalTaskSystem extends Disposable implements ITaskSystem {
 	public reconnect(task: Task, resolver: ITaskResolver, trigger: string = Triggers.command): ITaskExecuteResult | undefined {
 		const terminals = this._terminalService.getReconnectedTerminals(ReconnectionType);
 		if (!terminals || terminals?.length === 0) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 		if (!this._hasReconnected && terminals && terminals.length > 0) {
 			this._reviveTerminals();

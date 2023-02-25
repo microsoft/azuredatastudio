@@ -15,6 +15,24 @@ export type IStringDictionary<V> = Record<string, V>;
  */
 export type INumberDictionary<V> = Record<number, V>;
 
+// {{ SQL CARBON EDIT }} - BEGIN - Needed to retrives values from IStringDictionary's and INumberDictionary's
+const hasOwnProperty = Object.prototype.hasOwnProperty;
+
+/**
+ * Returns an array which contains all values that reside
+ * in the given dictionary.
+ */
+export function values<T>(from: IStringDictionary<T> | INumberDictionary<T>): T[] {
+	const result: T[] = [];
+	for (let key in from) {
+		if (hasOwnProperty.call(from, key)) {
+			result.push((from as any)[key]);
+		}
+	}
+	return result;
+}
+// {{SQL CARBON EDIT}} - END
+
 /**
  * Iterates over each entry in the provided dictionary. The iterator will stop when the callback returns `false`.
  *

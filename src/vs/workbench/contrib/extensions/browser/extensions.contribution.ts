@@ -79,8 +79,6 @@ import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/b
 import { UnsupportedExtensionsMigrationContrib } from 'vs/workbench/contrib/extensions/browser/unsupportedExtensionsMigrationContribution';
 import { isWeb } from 'vs/base/common/platform';
 import { ExtensionStorageService } from 'vs/platform/extensionManagement/common/extensionStorage';
-import { IStorageService } from 'vs/platform/storage/common/storage';
-import product from 'vs/platform/product/common/product';
 import { IStringDictionary } from 'vs/base/common/collections';
 
 // Singletons
@@ -844,7 +842,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 					}
 					const extensions = Array.isArray(resources) ? resources : [resources];
 					await Promises.settled(extensions.map(async (vsix) => {
-						if (!storageService.getBoolean(vsix.fsPath, StorageScope.GLOBAL)) {
+						if (!storageService.getBoolean(vsix.fsPath, StorageScope.APPLICATION)) {
 							const accept = await new Promise<boolean>(resolve => {
 								notificationService.prompt(
 									Severity.Warning,
@@ -862,7 +860,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 											label: localize('thirdPartyExt.dontShowAgain', 'Don\'t Show Again'),
 											isSecondary: true,
 											run: () => {
-												storageService.store(vsix.fsPath, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
+												storageService.store(vsix.fsPath, true, StorageScope.APPLICATION, StorageTarget.MACHINE);
 												resolve(true);
 											}
 										}

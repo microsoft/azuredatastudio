@@ -46,7 +46,7 @@ export class UserDataSyncEnablementService extends Disposable implements IUserDa
 			case 'off':
 				return false;
 		}
-		// return this.storageService.getBoolean(enablementKey, StorageScope.GLOBAL, false); // {{SQL CARBON EDIT}} - unreachable code
+		// return this.storageService.getBoolean(enablementKey, StorageScope.APPLICATION, false); // {{SQL CARBON EDIT}} - unreachable code
 	}
 
 	canToggleEnablement(): boolean {
