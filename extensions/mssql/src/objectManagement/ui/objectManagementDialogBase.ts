@@ -45,9 +45,10 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	private _originalObjectInfo: ObjectInfoType;
 	private _modelView: azdata.ModelView;
 	private _formContainer: azdata.DivContainer;
+	private _helpButton: azdata.window.Button;
 
 	constructor(private readonly objectType: NodeType,
-		private readonly docUrl: string,
+		docUrl: string,
 		protected readonly objectManagementService: IObjectManagementService,
 		protected readonly connectionUri: string,
 		protected isNewObject: boolean,
@@ -59,6 +60,13 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		this.dialogObject = azdata.window.createModelViewDialog(dialogTitle, getDialogName(objectType, isNewObject), dialogWidth);
 		this.dialogObject.okButton.label = OkText;
 		this.disposables.push(this.dialogObject.onClosed(async () => { await this.dispose(); }));
+		this._helpButton = azdata.window.createButton(HelpText, 'left');
+		this.disposables.push(this._helpButton.onClick(async () => {
+			await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(docUrl));
+		}));
+		this.dialogObject.customButtons = [this._helpButton];
+		this.dialogObject.okButton.hidden = true;
+		this._helpButton.hidden = true;
 		this.contextId = generateUuid();
 		this.dialogObject.registerCloseValidator(async (): Promise<boolean> => {
 			const confirmed = await this.onConfirmation();
@@ -113,7 +121,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			azdata.window.openDialog(this.dialogObject);
 			this.dialogObject.loading = true;
 			this.dialogObject.loadingText = LoadingDialogText;
-			this.dialogObject.okButton.hidden = true;
+
 			this._viewInfo = await this.initializeData();
 			await this.initializeUI();
 			this._originalObjectInfo = deepClone(this.objectInfo);
@@ -149,12 +157,8 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 					}
 				}
 			});
-			const helpButton = azdata.window.createButton(HelpText, 'left');
-			this.disposables.push(helpButton.onClick(async () => {
-				await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(this.docUrl));
-			}));
-			this.dialogObject.customButtons = [helpButton];
 			this.dialogObject.okButton.hidden = false;
+			this._helpButton.hidden = false;
 			this.dialogObject.loading = false;
 		} catch (err) {
 			const actionName = this.isNewObject ? TelemetryActions.OpenNewObjectDialog : TelemetryActions.OpenPropertiesDialog;
