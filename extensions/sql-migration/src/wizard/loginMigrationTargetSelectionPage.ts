@@ -645,7 +645,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 							TelemetryAction.ConnectToTarget,
 							{
 								...getTelemetryProps(this.migrationStateModel),
-								'connectionSuccessful': connectionSuccessful ? 'true' : 'false'
+								'connectionSuccessful': JSON.stringify(connectionSuccessful)
 							},
 							{});
 					}

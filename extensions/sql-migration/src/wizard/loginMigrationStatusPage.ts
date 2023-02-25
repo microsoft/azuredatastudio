@@ -311,6 +311,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 				status = LoginMigrationStatusCodes.Succeeded;
 				title = constants.LOGIN_MIGRATION_STATUS_SUCCEEDED;
 				var didLoginFail = Object.keys(stateMachine._loginMigrationModel.loginMigrationsResult.exceptionMap).some(key => key.toLocaleLowerCase() === loginName.toLocaleLowerCase());
+
 				if (didLoginFail) {
 					status = LoginMigrationStatusCodes.Failed;
 					title = constants.LOGIN_MIGRATION_STATUS_FAILED;
@@ -432,7 +433,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			{
 				...getTelemetryProps(this.migrationStateModel),
 				'loginsAuthType': this.migrationStateModel._loginMigrationModel.loginsAuthType,
-				'numberLogins': this.migrationStateModel._loginMigrationModel.loginsForMigration.length.toString(),
+				'numberLogins': JSON.stringify(this.migrationStateModel._loginMigrationModel.loginsForMigration.length),
 			},
 			{}
 		);
@@ -445,9 +446,10 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			{
 				...getTelemetryProps(this.migrationStateModel),
 				'loginsAuthType': this.migrationStateModel._loginMigrationModel.loginsAuthType,
-				'numberLoginsFailingPerStep': this.migrationStateModel._loginMigrationModel.errorCountMap.toString(),
-				// each step, will Success : ogin count, Failure and the failure type count. Also duration of the step
-				'hasSystemError': this.migrationStateModel._loginMigrationModel.hasSystemError ? 'true' : 'false',
+				'numberLoginsFailingPerStep': JSON.stringify(this.migrationStateModel._loginMigrationModel.errorCountMap),
+				'durationPerStep': JSON.stringify(this.migrationStateModel._loginMigrationModel.durationPerStep),
+				'hasSystemError': JSON.stringify(this.migrationStateModel._loginMigrationModel.hasSystemError),
+				// AKMA TODO: add error code string count map
 			},
 			{}
 		);

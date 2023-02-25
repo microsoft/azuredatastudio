@@ -66,6 +66,7 @@ export class LoginMigrationModel {
 	public loginMigrationsError: any;
 	public loginsForMigration!: LoginTableInfo[];
 	public errorCountMap: Map<LoginMigrationStep, any> = new Map<LoginMigrationStep, any>();
+	public durationPerStep: Map<LoginMigrationStep, string> = new Map<LoginMigrationStep, string>();
 	private _currentStepIdx: number = 0;
 	private _logins: Map<string, Login>;
 	private _loginMigrationSteps: LoginMigrationStep[] = [];
@@ -162,7 +163,9 @@ export class LoginMigrationModel {
 		this.errorCountMap.set(step, errorCount);
 	}
 
-
+	private setDurationPerStep(step: LoginMigrationStep, result: mssql.StartLoginMigrationResult) {
+		this.durationPerStep.set(step, result.elapsedTime);
+	}
 
 	private setLoginMigrationSteps(steps: LoginMigrationStep[] = []) {
 		this._loginMigrationSteps = [];
@@ -194,6 +197,10 @@ export class LoginMigrationModel {
 				this.markLoginStatus(loginName, loginStatus);
 			}
 		}
+
+		this.updateLoginMigrationResults(newResult);
+		this.setErrorCountMapPerStep(step, newResult);
+		this.setDurationPerStep(step, newResult);
 	}
 
 	private updateLoginMigrationResults(newResult: contracts.StartLoginMigrationResult): void {
@@ -231,9 +238,7 @@ export class LoginMigrationModel {
 
 			console.log("AKMA DEBUG: ", response);
 
-			this.updateLoginMigrationResults(response);
 			this.addLoginMigrationResults(LoginMigrationStep.MigrateLogins, response);
-			this.setErrorCountMapPerStep(LoginMigrationStep.MigrateLogins, response);
 			return true;
 
 		} catch (error) {
@@ -253,7 +258,6 @@ export class LoginMigrationModel {
 				stateMachine._aadDomainName
 			))!;
 
-			this.updateLoginMigrationResults(response);
 			this.addLoginMigrationResults(LoginMigrationStep.EstablishUserMapping, response);
 			return true;
 
@@ -274,7 +278,6 @@ export class LoginMigrationModel {
 				stateMachine._aadDomainName
 			))!;
 
-			this.updateLoginMigrationResults(response);
 			this.addLoginMigrationResults(LoginMigrationStep.MigrateServerRolesAndSetPermissions, response);
 			return true;
 
