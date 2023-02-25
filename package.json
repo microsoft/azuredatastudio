@@ -57,7 +57,8 @@
     "core-ci": "node --max_old_space_size=4095 ./node_modules/gulp/bin/gulp.js core-ci",
     "extensions-ci": "node --max_old_space_size=4095 ./node_modules/gulp/bin/gulp.js extensions-ci",
     "sqllint": "node --max_old_space_size=4095 ./node_modules/eslint/bin/eslint.js --no-eslintrc -c .eslintrc.sql.ts.json --rulesdir ./build/lib/eslint --ext .ts ./src/sql",
-    "extensions-lint": "node --max_old_space_size=4095 ./node_modules/eslint/bin/eslint.js --rulesdir ./build/lib/eslint --ext .ts ./extensions"
+    "extensions-lint": "node --max_old_space_size=4095 ./node_modules/eslint/bin/eslint.js --rulesdir ./build/lib/eslint --ext .ts ./extensions",
+    "webview-generate-csp-hash": "npx github:apaatsio/csp-hash-from-html csp-hash ./src/vs/workbench/contrib/webview/browser/pre/index.html"
   },
   "dependencies": {
     "@angular/animations": "~4.1.3",
