@@ -30,7 +30,7 @@ export class DefaultExtensionsProfileInitService extends Disposable implements I
 		const extensionsProfileResource = this.getDefaultExtensionsProfileResource();
 		try { await this.fileService.del(extensionsProfileResource); } catch (error) { /* ignore */ }
 		const userExtensions = await this.extensionManagementService.getInstalled(ExtensionType.User);
-		const extensions: [ILocalExtension, Metadata | undefined][] = await Promise.all(userExtensions.map(async e => ([e, await this.extensionManagementService.getMetadata(e)])));
+		const extensions: [ILocalExtension, Metadata | undefined][] = await Promise.all(userExtensions.map(async e => ([e, await this.extensionManagementService.getMetadata(e)]) as [ILocalExtension, Metadata | undefined])); // {{SQL CARBON EDIT}} Added typing
 		await this.extensionsProfileScannerService.addExtensionsToProfile(extensions, extensionsProfileResource);
 	}
 

@@ -10,7 +10,7 @@ interface ICSSPluginConfig {
 /**
  * Invoked by the loader at run-time
  */
-export function load(name: string, req: AMDLoader.IRelativeRequire, load: AMDLoader.IPluginLoadCallback, config: AMDLoader.IConfigurationOptions): void {
+export function load(name: string, req: AMDLoader.IRelativeRequire, load: AMDLoader.IPluginLoadCallback, config: AMDLoader.IConfigurationOptions | { isBuild?: boolean }): void { // {{SQL CARBON EDIT}} Added type to config
 	config = config || {};
 	const cssConfig = <ICSSPluginConfig>(config['vs/css'] || {});
 

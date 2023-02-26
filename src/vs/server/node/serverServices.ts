@@ -72,6 +72,7 @@ import { ExtensionsScannerService } from 'vs/server/node/extensionsScannerServic
 import { IUserDataProfilesService, UserDataProfilesService } from 'vs/platform/userDataProfile/common/userDataProfile';
 import { NullPolicyService } from 'vs/platform/policy/common/policy';
 import { OneDataSystemAppender } from 'vs/platform/telemetry/node/1dsAppender';
+import { ExtensionsProfileScannerService, IExtensionsProfileScannerService } from 'vs/platform/extensionManagement/common/extensionsProfileScannerService'; // {{SQL CARBON EDIT}} Added import
 
 const eventPrefix = 'adsworkbench'; // {{SQL CARBON EDIT}} Use our own event prefix
 

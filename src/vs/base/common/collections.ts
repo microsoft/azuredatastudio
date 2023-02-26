@@ -15,7 +15,7 @@ export type IStringDictionary<V> = Record<string, V>;
  */
 export type INumberDictionary<V> = Record<number, V>;
 
-// {{ SQL CARBON EDIT }} - BEGIN - Needed to retrives values from IStringDictionary's and INumberDictionary's
+// {{ SQL CARBON EDIT }} - BEGIN - Needed to retrive values from IStringDictionary's and INumberDictionary's
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 /**
@@ -31,23 +31,30 @@ export function values<T>(from: IStringDictionary<T> | INumberDictionary<T>): T[
 	}
 	return result;
 }
-// {{SQL CARBON EDIT}} - END
+// {{SQL CARBON EDIT}} - END - Needed to retrive values from IStringDictionary's and INumberDictionary's
+
+// {{ SQL CARBON EDIT }} - BEGIN - Adding forEach definition
 
 /**
- * Iterates over each entry in the provided dictionary. The iterator will stop when the callback returns `false`.
- *
- * @deprecated Use `Object.entries(x)` with a `for...of` loop.
+ * Iterates over each entry in the provided dictionary. The iterator allows
+ * to remove elements and will stop when the callback returns {{false}}.
  */
 export function forEach<T>(from: IStringDictionary<T>, callback: (entry: { key: string; value: T; }, remove: () => void) => any): void; // {{SQL CARBON EDIT}} @anthonydresser add hard typings
 export function forEach<T>(from: INumberDictionary<T>, callback: (entry: { key: number; value: T; }, remove: () => void) => any): void;
-export function forEach<T>(from: IStringDictionary<T> | INumberDictionary<T>, callback: (entry: { key: any; value: T }) => any): void {
-	for (const [key, value] of Object.entries(from)) {
-		const result = callback({ key, value });
-		if (result === false) {
-			return;
+export function forEach<T>(from: IStringDictionary<T> | INumberDictionary<T>, callback: (entry: { key: any; value: T }, remove: () => void) => any): void {
+	for (let key in from) {
+		if (hasOwnProperty.call(from, key)) {
+			const result = callback({ key: key, value: (from as any)[key] }, function () {
+				delete (from as any)[key];
+			});
+			if (result === false) {
+				return;
+			}
 		}
 	}
 }
+
+// {{ SQL CARBON EDIT }} - END - Adding forEach definition
 
 /**
  * Groups the collection into a dictionary based on the provided

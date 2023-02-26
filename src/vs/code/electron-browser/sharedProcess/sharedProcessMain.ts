@@ -104,7 +104,7 @@ import { ExtensionsProfileScannerService, IExtensionsProfileScannerService } fro
 import { PolicyChannelClient } from 'vs/platform/policy/common/policyIpc';
 import { IPolicyService, NullPolicyService } from 'vs/platform/policy/common/policy';
 import { UserDataProfilesNativeService } from 'vs/platform/userDataProfile/electron-sandbox/userDataProfile';
-import { OneDataSystemWebAppender } from 'vs/platform/telemetry/browser/1dsAppender';
+// import { OneDataSystemWebAppender } from 'vs/platform/telemetry/browser/1dsAppender'; {{SQL CARBON EDIT}} Unsed import
 import { DefaultExtensionsProfileInitService } from 'vs/platform/extensionManagement/electron-sandbox/defaultExtensionsProfileInit';
 import { SharedProcessRequestService } from 'vs/platform/request/electron-browser/sharedProcessRequestService';
 

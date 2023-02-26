@@ -9,7 +9,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { TextResourceEditorModel } from 'vs/workbench/common/editor/textResourceEditorModel';
 import * as editorCommon from 'vs/editor/common/editorCommon';
 
-import { BaseTextEditor, IEditorConfiguration } from 'vs/workbench/browser/parts/editor/textEditor';
+import { IEditorConfiguration } from 'vs/workbench/browser/parts/editor/textEditor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -24,11 +24,13 @@ import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfiguration';
+import { AbstractTextCodeEditor } from 'vs/workbench/browser/parts/editor/textCodeEditor';
+import { IFileService } from 'vs/platform/files/common/files';
 
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
  */
-export class QueryTextEditor extends BaseTextEditor<editorCommon.ICodeEditorViewState> {
+export class QueryTextEditor extends AbstractTextCodeEditor<editorCommon.ICodeEditorViewState> {
 
 	public static ID = 'modelview.editors.textEditor';
 	private _dimension: DOM.Dimension;
@@ -47,11 +49,12 @@ export class QueryTextEditor extends BaseTextEditor<editorCommon.ICodeEditorView
 		@ITextResourceConfigurationService configurationService: ITextResourceConfigurationService,
 		@IThemeService themeService: IThemeService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
-		@IEditorService editorService: IEditorService
+		@IEditorService editorService: IEditorService,
+		@IFileService fileService: IFileService
 	) {
 		super(
 			QueryTextEditor.ID, telemetryService, instantiationService, storageService,
-			configurationService, themeService, editorService, editorGroupService);
+			configurationService, themeService, editorService, editorGroupService, fileService);
 	}
 
 	public override createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {

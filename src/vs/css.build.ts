@@ -50,7 +50,7 @@ const inlinedResources: string[] = [];
 /**
  * Invoked by the loader at build-time
  */
-export function load(name: string, req: AMDLoader.IRelativeRequire, load: AMDLoader.IPluginLoadCallback, config: AMDLoader.IConfigurationOptions): void {
+export function load(name: string, req: AMDLoader.IRelativeRequire, load: AMDLoader.IPluginLoadCallback, config: AMDLoader.IConfigurationOptions | { isBuild?: boolean }): void { // {{SQL CARBON EDIT}} Added type to config
 	if (!fs) {
 		throw new Error(`Cannot load files without 'fs'!`);
 	}

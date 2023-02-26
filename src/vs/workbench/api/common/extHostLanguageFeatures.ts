@@ -517,7 +517,7 @@ class DocumentPasteEditProvider {
 
 		const edit = await this._provider.provideDocumentPasteEdits(doc, vscodeRanges, dataTransfer, token);
 		if (!edit) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict nulls
 		}
 
 		return {

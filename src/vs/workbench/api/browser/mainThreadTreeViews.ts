@@ -225,11 +225,11 @@ class TreeViewDragAndDropController implements ITreeViewDragAndDropController {
 
 	async handleDrag(sourceTreeItemHandles: string[], operationUuid: string, token: CancellationToken): Promise<VSDataTransfer | undefined> {
 		if (!this.hasWillDrop) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict nulls
 		}
 		const additionalDataTransferDTO = await this._proxy.$handleDrag(this.treeViewId, sourceTreeItemHandles, operationUuid, token);
 		if (!additionalDataTransferDTO) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict nulls
 		}
 
 		const additionalDataTransfer = new VSDataTransfer();

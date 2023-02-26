@@ -15,8 +15,7 @@ import * as  vsTreeExt from 'vs/workbench/api/common/extHostTreeViews';
 import { Emitter } from 'vs/base/common/event';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { ILogService } from 'vs/platform/log/common/log';
-import { DataTransferDTO } from 'vs/workbench/api/common/shared/dataTransfer';
-import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { SqlMainContext, DataTransferDTO } from 'vs/workbench/api/common/extHost.protocol';
 
 export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape {
 	private _proxy: MainThreadModelViewShape;

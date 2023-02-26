@@ -15,12 +15,24 @@ const NotebookEditorContribution = Object.freeze({
 	priority: 'priority',
 });
 
+// {{SQL CARBON TODO}} - BEGIN - Removing computed properties. Review for correctness
+/*
 export interface INotebookEditorContribution {
 	readonly [NotebookEditorContribution.type]: string;
 	readonly [NotebookEditorContribution.displayName]: string;
 	readonly [NotebookEditorContribution.selector]?: readonly { filenamePattern?: string; excludeFileNamePattern?: string }[];
 	readonly [NotebookEditorContribution.priority]?: string;
 }
+*/
+
+export interface INotebookEditorContribution {
+	readonly type: string;
+	readonly displayName: string;
+	readonly selector?: readonly { filenamePattern?: string; excludeFileNamePattern?: string }[];
+	readonly priority?: string;
+}
+
+// {{SQL CARBON TODO}} - END - Removing computed properties. Review for correctness
 
 const NotebookRendererContribution = Object.freeze({
 	id: 'id',
@@ -32,6 +44,8 @@ const NotebookRendererContribution = Object.freeze({
 	requiresMessaging: 'requiresMessaging',
 });
 
+// {{SQL CARBON TODO}} - BEGIN - Removing computed properties. Review for correctness
+/*
 export interface INotebookRendererContribution {
 	readonly [NotebookRendererContribution.id]?: string;
 	readonly [NotebookRendererContribution.displayName]: string;
@@ -41,6 +55,18 @@ export interface INotebookRendererContribution {
 	readonly [NotebookRendererContribution.optionalDependencies]: readonly string[];
 	readonly [NotebookRendererContribution.requiresMessaging]: RendererMessagingSpec;
 }
+*/
+
+export interface INotebookRendererContribution {
+	readonly id?: string;
+	readonly displayName: string;
+	readonly mimeTypes?: readonly string[];
+	readonly entrypoint: NotebookRendererEntrypoint;
+	readonly hardDependencies: readonly string[];
+	readonly optionalDependencies: readonly string[];
+	readonly requiresMessaging: RendererMessagingSpec;
+}
+// {{SQL CARBON TODO}} - END - Removing computed properties. Review for correctness
 
 const notebookProviderContribution: IJSONSchema = {
 	description: nls.localize('contributes.notebook.provider', 'Contributes notebook document provider.'),

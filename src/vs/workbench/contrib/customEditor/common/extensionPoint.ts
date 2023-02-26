@@ -16,12 +16,23 @@ const Fields = Object.freeze({
 	priority: 'priority',
 });
 
+// {{SQL CARBON TODO}} - BEGIN - Removing computed properties. Review for correctness
+/*
 export interface ICustomEditorsExtensionPoint {
 	readonly [Fields.viewType]: string;
 	readonly [Fields.displayName]: string;
 	readonly [Fields.selector]?: readonly CustomEditorSelector[];
 	readonly [Fields.priority]?: string;
 }
+*/
+
+export interface ICustomEditorsExtensionPoint {
+	readonly viewType: string;
+	readonly displayName: string;
+	readonly selector?: readonly CustomEditorSelector[];
+	readonly priority?: string;
+}
+// {{SQL CARBON TODO}} - END - Removing computed properties. Review for correctness
 
 const CustomEditorsContribution: IJSONSchema = {
 	description: nls.localize('contributes.customEditors', 'Contributed custom editors.'),

@@ -501,7 +501,7 @@ export class EditorResolverService extends Disposable implements IEditorResolver
 
 		// If no factory is above, return flow back to caller letting them know we could not resolve it
 		if (!selectedEditor.editorFactoryObject.createEditorInput) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict nulls
 		}
 
 		// Respect options passed back

@@ -26,7 +26,7 @@ import { IExtensionDescription } from 'vs/platform/extensions/common/extensions'
 import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
-import { DataTransferDTO } from 'vs/workbench/api/common/shared/dataTransfer';
+import { DataTransferDTO } from 'vs/workbench/api/common/extHost.protocol';
 
 export abstract class ExtHostAzureBlobShape {
 	public $createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse> { throw ni(); }

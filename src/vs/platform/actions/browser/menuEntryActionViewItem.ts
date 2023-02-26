@@ -296,12 +296,10 @@ export class SubmenuEntryActionViewItem extends DropdownMenuActionViewItem {
 		@IContextMenuService protected _contextMenuService: IContextMenuService,
 		@IThemeService protected _themeService: IThemeService
 	) {
-		const dropdownOptions = Object.assign({}, options ?? Object.create(null), {
+		super(action, { getActions: () => action.actions }, _contextMenuService, Object.assign({}, options ?? Object.create(null), { // {{SQL CARBON EDIT}} Removed dropDownOptions assignment to fix super must be called before anything else error
 			menuAsChild: options?.menuAsChild ?? false,
 			classNames: options?.classNames ?? (ThemeIcon.isThemeIcon(action.item.icon) ? ThemeIcon.asClassName(action.item.icon) : undefined),
-		});
-
-		super(action, { getActions: () => action.actions }, _contextMenuService, dropdownOptions);
+		}));
 	}
 
 	override render(container: HTMLElement): void {
