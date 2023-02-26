@@ -9,7 +9,7 @@ import * as cp from 'child_process';
 import * as glob from 'glob';
 import * as gulp from 'gulp';
 import * as path from 'path';
-import * as through2 from 'through2';
+import * as through2 from 'through2'
 import got from 'got';
 import { Stream } from 'stream';
 import * as File from 'vinyl';
@@ -286,6 +286,7 @@ const excludedExtensions = [
 	'ms-vscode.node-debug',
 	'ms-vscode.node-debug2',
 	'vscode-custom-editor-tests',
+	'vscode-notebook-tests',
 	'integration-tests', // {{SQL CARBON EDIT}}
 ];
 
