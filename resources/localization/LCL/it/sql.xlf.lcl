@@ -2613,126 +2613,189 @@
       <Item ItemId=";src/sql/base/common/locConstants.notebook.cellToolbarLocation.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Where the cell toolbar should be shown, or whether it should be hidden. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Indica la posizione in cui visualizzare la barra degli strumenti della cella o se deve essere nascosta (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.cellToolbarVisibility.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Whether the cell toolbar should appear on hover or click. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Indica se la barra degli strumenti della cella deve essere presente nel passaggio del mouse o fare clic (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.compactView.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Control whether the notebook editor should be rendered in a compact form. For example, when turned on, it will decrease the left margin width. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controlla se l'editor del blocco appunti deve essere sottoposto a rendering in formato compatto. Ad esempio, se l'opzione è attivata, diminuisce la larghezza del margine sinistro (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.consolidatedOutputButton.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Control whether outputs action should be rendered in the output toolbar. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controlla se è necessario eseguire il rendering dell'azione Outputs nella barra degli strumenti di output (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.consolidatedRunButton.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Control whether extra actions are shown in a dropdown next to the run button. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controlla se le azioni aggiuntive vengono visualizzate in un elenco a discesa accanto al pulsante Esegui (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.diff.enablePreview.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Whether to use the enhanced text diff editor for notebook. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Indica se usare l'editor diff di testo avanzato per il notebook (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.displayOrder.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Priority list for output mime types. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Elenco di priorità per i tipi MIME di output (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.dragAndDrop.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Control whether the notebook editor should allow moving cells through drag and drop. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controlla se l'editor del blocco appunti deve consentire lo spostamento delle celle tramite il trascinamento della selezione (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.editorOptions.experimentalCustomization" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Settings for code editors used in notebooks. This can be used to customize most editor.* settings. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Impostazioni per gli editor di codice usati nei blocchi appunti. Può essere usato per personalizzare la maggior parte delle impostazioni dell'editor.* (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.focusIndicator.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls where the focus indicator is rendered, either along the cell borders or on the left gutter. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controlla dove eseguire il rendering dell'indicatore di messa a fuoco, ovvero lungo i bordi delle celle o sulla rilegatura sinistra (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.globalToolbar.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Control whether to render a global toolbar inside the notebook editor. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controlla se eseguire il rendering di una barra degli strumenti globale all'interno dell'editor del blocco appunti (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.globalToolbarShowLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Control whether the actions on the notebook toolbar should render label or not. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controlla se le azioni sulla barra degli strumenti del notebook devono eseguire il rendering dell'etichetta (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.insertToolbarPosition.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Control where the insert cell actions should appear. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controlla dove visualizzare le azioni di inserimento cella (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.interactiveWindow.collapseCodeCells" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls whether code cells in the interactive window are collapsed by default. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controlla se le celle di codice nella finestra interattiva sono compresse per impostazione predefinita (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.markup.fontSize" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls the font size in pixels of rendered markup in notebooks. When set to `0`, 120% of `#editor.fontSize#` is used. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controlla le dimensioni del carattere del markup di cui è stato eseguito il rendering nei blocchi appunti. Se impostato su '0', viene usato il 120% di '#editor.fontSize#' (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.outputFontFamily" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The font family for the output text for notebook cells. When set to empty, the `#editor.fontFamily#` is used. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Famiglia di caratteri per il testo di output per le celle del notebook. Se impostato su vuoto, viene usato '#editor.fontFamily#' (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.outputFontSize" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Font size for the output text for notebook cells. When set to 0 `#editor.fontSize#` is used. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Dimensioni del carattere per il testo di output per le celle del blocco appunti. Se impostato su 0, viene usato '#editor.fontSize#' (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.outputLineHeight" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Line height of the output text for notebook cells.]D;]A; - Values between 0 and 8 will be used as a multiplier with the font size.]D;]A; - Values greater than or equal to 8 will be used as effective values. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Altezza della riga del testo di output per le celle del blocco appunti.]D;]A; - I valori compresi tra 0 e 8 verranno usati come moltiplicatore con le dimensioni del carattere.]D;]A; - I valori maggiori o uguali a 8 verranno usati come valori effettivi (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.showCellStatusbar.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Whether the cell status bar should be shown. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Indica se la barra di stato della cella deve essere visualizzata (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.showFoldingControls.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls when the Markdown header folding arrow is shown. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controlla quando visualizzare la freccia di riduzione dell'intestazione Markdown (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.textOutputLineLimit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Control how many lines of text in a text output is rendered. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controlla il numero di righe di testo di cui viene eseguito il rendering in un output di testo (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2757,6 +2820,9 @@
       <Item ItemId=";src/sql/base/common/locConstants.notebook.undoRedoPerCell.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Whether to use separate undo/redo stack for each cell. (for VS Code Notebooks only)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Indica se utilizzare il gruppo di annullamento/ripetizione separato per ogni cella (solo per Notebooks di VS Code).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4080,12 +4146,18 @@
       <Item ItemId=";src/sql/workbench/browser/actions.contribution.useVSCodeNotebooks" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[(Preview) Use VS Code notebooks as the default notebook experience. Note: Azure Data Studio will need to be restarted to enable this setting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[(Anteprima) Usare Notebooks di VS Code come esperienza predefinita per i notebook. Nota: per abilitare questa impostazione, è necessario riavviare Azure Data Studio.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/browser/actions.contribution.useVSCodeNotebooksTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Use VS Code notebooks]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Usa Notebooks di VS Code]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -15222,12 +15294,18 @@
       <Item ItemId=";src/sql/workbench/services/accountManagement/browser/accountManagementService.addAccountFailedGeneric" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Adding account failed, check Azure Accounts log for more info.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L'aggiunta dell'account non è riuscita. Per altre informazioni, vedere il log degli account di Azure.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/services/accountManagement/browser/accountManagementService.addAccountFailedMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[0 ]D;]A;Error Message: 1]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[0 ]D;]A;Messaggio di errore: 1]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -15252,8 +15330,8 @@
       <Item ItemId=";src/sql/workbench/services/accountManagement/browser/accountManagementService.refreshFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[0 ]D;]A;Error Message: 1]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[L'aggiornamento dell'account è stato annullato dall'utente]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[0 ]D;]A;Messaggio di errore: 1]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Refresh account was canceled by the user]]></Val>

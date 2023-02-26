@@ -2605,6 +2605,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.blob.lastBackupFolder.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[To continue, select a valid backup folder for source database '{0}'.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Para continuar, selecione uma pasta de backup válida para o banco de dados de origem '{0}'.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3526,6 +3529,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.no.blobFolders.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No blob folders found.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nenhuma pasta de blob encontrada.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
