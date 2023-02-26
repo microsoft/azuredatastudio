@@ -114,7 +114,7 @@
   {
     "kind": 2,
     "language": "github-issues",
-    "value": "$repos assignee:@me is:open label:\"needs more info\"",
+    "value": "$repos assignee:@me is:open label:\"needs more info\""
   },
   {
     "kind": 1,

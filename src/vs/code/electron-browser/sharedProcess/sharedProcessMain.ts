@@ -284,14 +284,14 @@ class SharedProcessMain extends Disposable {
 			appenders.push(logAppender);
 			const { installSourcePath } = environmentService;
 			if (productService.aiConfig?.ariaKey) {
-				const collectorAppender = new OneDataSystemAppender(internalTelemetry, 'adsworkbench', null, productService.aiConfig.ariaKey); // {{SQL CARBON EDIT}} Use our own event prefix
+				const collectorAppender = new OneDataSystemWebAppender(internalTelemetry, 'adsworkbench', null, productService.aiConfig.ariaKey); // {{SQL CARBON EDIT}} Use our own event prefix
 				this._register(toDisposable(() => collectorAppender.flush())); // Ensure the 1DS appender is disposed so that it flushes remaining data
 				appenders.push(collectorAppender);
 			}
 
 			telemetryService = new TelemetryService({
 				appenders,
-				commonProperties: resolveCommonProperties(fileService, release(), hostname(), process.arch, productService.commit, productService.version, this.configuration.machineId, productService.msftInternalDomains, installSourcePath),
+				commonProperties: resolveCommonProperties(fileService, release(), hostname(), process.arch, productService.commit, productService.version, this.configuration.machineId, internalTelemetry, installSourcePath),
 				sendErrorTelemetry: true,
 				piiPaths: getPiiPathsFromEnvironment(environmentService),
 			}, configurationService, productService);

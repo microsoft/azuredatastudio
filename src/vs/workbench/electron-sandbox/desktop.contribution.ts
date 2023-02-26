@@ -256,6 +256,7 @@ import product from 'vs/platform/product/common/product'; // {{SQL CARBON EDIT}}
 				type: 'boolean',
 				description: localize('experimentalUseSandbox', "Experimental: When enabled, the window will have sandbox mode enabled via Electron API."),
 				default: false,
+				'scope': ConfigurationScope.APPLICATION,
 				ignoreSync: true
 			},
 		}

@@ -247,7 +247,6 @@ export class TextDiffEditor extends AbstractTextEditor<IDiffEditorViewState> imp
 		return {
 			...super.getConfigurationOverrides(),
 			readOnly,
-			enableDropIntoEditor: !readOnly,
 			originalEditable: this.input instanceof DiffEditorInput && !this.input.original.hasCapability(EditorInputCapabilities.Readonly),
 			lineDecorationsWidth: '2ch'
 		};
@@ -258,7 +257,6 @@ export class TextDiffEditor extends AbstractTextEditor<IDiffEditorViewState> imp
 			this.diffEditorControl?.updateOptions({
 				readOnly: input.hasCapability(EditorInputCapabilities.Readonly),
 				originalEditable: !input.original.hasCapability(EditorInputCapabilities.Readonly),
-				enableDropIntoEditor: !input.hasCapability(EditorInputCapabilities.Readonly)
 			});
 		} else {
 			super.updateReadonly(input);

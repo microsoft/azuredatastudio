@@ -475,6 +475,7 @@ const esbuildMediaScripts = [
     'markdown-language-features/esbuild-preview.js',
     'markdown-math/esbuild.js',
     'notebook-renderers/esbuild.js',
+    'ipynb/esbuild.js',
     'simple-browser/esbuild-preview.js',
 ];
 async function webpackExtensions(taskName, isWatch, webpackConfigLocations) {
