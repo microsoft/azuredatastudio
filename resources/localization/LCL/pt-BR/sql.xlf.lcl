@@ -15330,8 +15330,6 @@
       <Item ItemId=";src/sql/workbench/services/accountManagement/browser/accountManagementService.refreshFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[0 ]D;]A;Error Message: 1]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[0 ]D;]A;Mensagem de erro: 1]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Refresh account was canceled by the user]]></Val>
