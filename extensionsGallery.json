@@ -4898,7 +4898,7 @@
 					"extensionId": "97",
 					"extensionName": "postgresql-migration",
 					"displayName": "Azure PostgreSQL migration",
-					"shortDescription": "Provides a tool to assess and migrate PostgreSQL database(s) to Azure database for PostgreSQL",
+					"shortDescription": "Provides a tool to assess and migrate PostgreSQL databases to Azure database for PostgreSQL",
 					"publisher": {
 						"displayName": "Microsoft",
 						"publisherId": "Microsoft",
