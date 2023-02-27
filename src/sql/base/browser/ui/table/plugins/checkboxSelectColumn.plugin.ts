@@ -60,7 +60,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 	private _handler = new Slick.EventHandler();
 	private _options: ICheckboxSelectColumnOptions;
 	public index: number;
-	private _headerCheckbox: HTMLInputElement;
+	private _headerCheckbox: HTMLInputElement | undefined;
 	private _onChange = new Emitter<ICheckboxCellActionEventArgs>();
 	private _onCheckAllChange = new Emitter<ICheckAllActionEventArgs>();
 	public readonly onChange: vsEvent<ICheckboxCellActionEventArgs> = this._onChange.event;
@@ -193,7 +193,9 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 				break;
 			}
 		}
-		this._headerCheckbox.checked = checked;
+		if (this._headerCheckbox) {
+			this._headerCheckbox.checked = checked;
+		}
 	}
 
 	public destroy(): void {
@@ -234,7 +236,8 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 	private setCheckboxPropertyValue(row: number, value: boolean): void {
 		const dataItem = this._grid?.getDataItem(row);
 		const propertyValue = dataItem[this._options.title];
-		if (typeof propertyValue === 'boolean') {
+		// If property value is undefined we treat the cell value as a boolean
+		if (propertyValue === undefined || typeof propertyValue === 'boolean') {
 			(<any>dataItem)[this._options.title] = value;
 		} else {
 			(<any>dataItem)[this._options.title] = {
