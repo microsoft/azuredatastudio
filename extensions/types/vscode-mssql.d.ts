@@ -572,7 +572,7 @@ declare module 'vscode-mssql' {
 		 * Get the cross-platform compatibility status for a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
-		getCrossPlatformCompatibility(projectUri: string): Promise<GetCrossPlatformCompatiblityResult>;
+		getCrossPlatformCompatibility(projectUri: string): Promise<GetCrossPlatformCompatibilityResult>;
 
 		/**
 		 * Open an existing SQL project
@@ -665,12 +665,6 @@ declare module 'vscode-mssql' {
 		getPreDeploymentScripts(projectUri: string): Promise<GetScriptsResult>;
 
 		/**
-		 * Get the cross-platform compatibility status for a project
-		 * @param projectUri Absolute path of the project, including .sqlproj
-		 */
-		getCrossPlatformCompatibility(projectUri: string): Promise<GetCrossPlatformCompatiblityResult>;
-
-		/**
 		 * getSqlCmdVariables
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
@@ -683,7 +677,7 @@ declare module 'vscode-mssql' {
 		getSqlObjectScripts(projectUri: string): Promise<GetScriptsResult>;
 	}
 
-	export interface GetCrossPlatformCompatiblityResult extends ResultStatus {
+	export interface GetCrossPlatformCompatibilityResult extends ResultStatus {
 		/**
 		 * Whether the project is cross-platform compatible
 		 */

@@ -620,8 +620,8 @@ export namespace CloseSqlProjectRequest {
 	export const type = new RequestType<SqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/closeProject');
 }
 
-export namespace GetCrossPlatformCompatiblityRequest {
-	export const type = new RequestType<SqlProjectParams, mssql.GetCrossPlatformCompatiblityResult, void, void>('sqlProjects/getCrossPlatformCompatibility');
+export namespace GetCrossPlatformCompatibilityRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetCrossPlatformCompatibilityResult, void, void>('sqlProjects/getCrossPlatformCompatibility');
 }
 
 export namespace UpdateProjectForCrossPlatformRequest {

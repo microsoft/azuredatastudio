@@ -452,7 +452,7 @@ declare module 'mssql' {
 		 * Get the cross-platform compatibility status for a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
-		getCrossPlatformCompatibility(projectUri: string): Promise<GetCrossPlatformCompatiblityResult>;
+		getCrossPlatformCompatibility(projectUri: string): Promise<GetCrossPlatformCompatibilityResult>;
 
 		/**
 		 * Open an existing SQL project
@@ -545,12 +545,6 @@ declare module 'mssql' {
 		getPreDeploymentScripts(projectUri: string): Promise<GetScriptsResult>;
 
 		/**
-		 * Get the cross-platform compatibility status for a project
-		 * @param projectUri Absolute path of the project, including .sqlproj
-		 */
-		getCrossPlatformCompatibility(projectUri: string): Promise<GetCrossPlatformCompatiblityResult>;
-
-		/**
 		 * getSqlCmdVariables
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
@@ -565,10 +559,6 @@ declare module 'mssql' {
 
 
 	//#region Results
-
-	export interface GetCrossPlatformCompatiblityResult extends azdata.ResultStatus {
-		isCrossPlatformCompatible: boolean;
-	}
 
 	export interface GetDatabaseReferencesResult extends azdata.ResultStatus {
 		/**
@@ -592,7 +582,7 @@ declare module 'mssql' {
 		folders: string[];
 	}
 
-	export interface GetCrossPlatformCompatiblityResult extends azdata.ResultStatus {
+	export interface GetCrossPlatformCompatibilityResult extends azdata.ResultStatus {
 		/**
 		 * Whether the project is cross-platform compatible
 		 */

@@ -215,9 +215,9 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	 * Get the cross-platform compatibility status for a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
 	 */
-	public async getCrossPlatformCompatibility(projectUri: string): Promise<mssql.GetCrossPlatformCompatiblityResult> {
+	public async getCrossPlatformCompatibility(projectUri: string): Promise<mssql.GetCrossPlatformCompatibilityResult> {
 		const params: contracts.SqlProjectParams = { projectUri: projectUri };
-		return await this.runWithErrorHandling(contracts.GetCrossPlatformCompatiblityRequest.type, params);
+		return await this.runWithErrorHandling(contracts.GetCrossPlatformCompatibilityRequest.type, params);
 	}
 
 	/**
