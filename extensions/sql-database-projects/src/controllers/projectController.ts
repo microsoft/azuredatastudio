@@ -858,21 +858,16 @@ export class ProjectsController {
 		}
 
 		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(file?.relativePath!)), `${newFileName}.sql`);
-
-		// TODO: swap this out and hookup to "Move" file/folder api
-		// need to determine if the file is in sqlObjects, predeployscripts, postdeployscripts, or none deploy scripts to know which move() to call
 		const sqlProjectsService = await utils.getSqlProjectsService();
-		const sqlObjectScripts = await sqlProjectsService.getSqlObjectScripts(project.projectFilePath);
 
-		if (sqlObjectScripts.scripts.includes(file!.relativePath)) {
-			const result = await sqlProjectsService.moveSqlObjectScript(project.projectFilePath, utils.convertSlashesForSqlProj(newFilePath), utils.convertSlashesForSqlProj(file!.relativePath))
-			console.error(JSON.stringify(result));
+		if ((await sqlProjectsService.getSqlObjectScripts(project.projectFilePath)).scripts.includes(file!.relativePath)) {
+			await sqlProjectsService.moveSqlObjectScript(project.projectFilePath, newFilePath, file!.relativePath)
+		} else if ((await sqlProjectsService.getPreDeploymentScripts(project.projectFilePath)).scripts.includes(file!.relativePath)) {
+			await sqlProjectsService.movePreDeploymentScript(project.projectFilePath, newFilePath, file!.relativePath)
+		} else if ((await sqlProjectsService.getPostDeploymentScripts(project.projectFilePath)).scripts.includes(file!.relativePath)) {
+			await sqlProjectsService.movePostDeploymentScript(project.projectFilePath, newFilePath, file!.relativePath)
 		}
-
-		// rename the file
-		// await fs.rename(file?.fsUri.fsPath!, newFilePath);
-		// await project.exclude(file!);
-		// await project.addExistingItem(newFilePath);
+		// TODO add support for renaming none scripts after those are added in STS
 
 		this.refreshProjectsTree(context);
 	}
