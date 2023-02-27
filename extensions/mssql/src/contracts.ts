@@ -650,7 +650,6 @@ export namespace MoveSqlObjectScriptRequest {
 	export const type = new RequestType<MoveItemParams, azdata.ResultStatus, void, void>('sqlProjects/moveSqlObjectScript');
 }
 
-
 export namespace GetDatabaseReferencesRequest {
 	export const type = new RequestType<SqlProjectParams, mssql.GetDatabaseReferencesResult, void, void>('sqlProjects/getDatabaseReferences');
 }
@@ -674,7 +673,6 @@ export namespace GetSqlCmdVariablesRequest {
 export namespace GetSqlObjectScriptsRequest {
 	export const type = new RequestType<SqlProjectParams, mssql.GetScriptsResult, void, void>('sqlProjects/getSqlObjectScripts');
 }
-
 
 //#endregion
 
