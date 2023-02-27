@@ -44,6 +44,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	private _viewInfo: ViewInfoType;
 	private _originalObjectInfo: ObjectInfoType;
 	private _modelView: azdata.ModelView;
+	private _loadingComponent: azdata.LoadingComponent;
 	private _formContainer: azdata.DivContainer;
 	private _helpButton: azdata.window.Button;
 
@@ -116,12 +117,18 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			await this.dialogObject.registerContent(async view => {
 				this._modelView = view;
 				this._formContainer = this.createFormContainer([]);
-				return view.initializeModel(this._formContainer)
+				this._loadingComponent = view.modelBuilder.loadingComponent().withItem(this._formContainer).withProps({
+					loading: true,
+					loadingText: LoadingDialogText,
+					showText: true,
+					CSSStyles: {
+						width: "100%",
+						height: "100%"
+					}
+				}).component();
+				return view.initializeModel(this._loadingComponent);
 			});
 			azdata.window.openDialog(this.dialogObject);
-			this.dialogObject.loading = true;
-			this.dialogObject.loadingText = LoadingDialogText;
-
 			this._viewInfo = await this.initializeData();
 			await this.initializeUI();
 			this._originalObjectInfo = deepClone(this.objectInfo);
@@ -159,7 +166,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			});
 			this.dialogObject.okButton.hidden = false;
 			this._helpButton.hidden = false;
-			this.dialogObject.loading = false;
+			this._loadingComponent.loading = false;
 		} catch (err) {
 			const actionName = this.isNewObject ? TelemetryActions.OpenNewObjectDialog : TelemetryActions.OpenPropertiesDialog;
 			TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, actionName).withAdditionalProperties({
@@ -248,7 +255,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				height: getTableHeight(tableData.length)
 			}
 		).component();
-		table.onCellAction((arg: azdata.ICheckboxCellActionEventArgs) => {
+		this.disposables.push(table.onCellAction((arg: azdata.ICheckboxCellActionEventArgs) => {
 			const name = listValues[arg.row];
 			const idx = selectedValues.indexOf(name);
 			if (arg.checked && idx === -1) {
@@ -257,7 +264,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				selectedValues.splice(idx, 1)
 			}
 			this.onObjectValueChange();
-		});
+		}));
 		return table;
 	}
 

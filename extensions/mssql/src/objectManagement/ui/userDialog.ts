@@ -91,11 +91,11 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 			value: this.objectInfo.name,
 			width: DefaultInputWidth
 		}).component();
-		this.nameInput.onTextChanged(async () => {
+		this.disposables.push(this.nameInput.onTextChanged(async () => {
 			this.objectInfo.name = this.nameInput.value;
 			this.onObjectValueChange();
 			await this.runValidation(false);
-		});
+		}));
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
 
 		this.defaultSchemaDropdown = this.modelView.modelBuilder.dropDown().withProps({
@@ -105,10 +105,10 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 			width: DefaultInputWidth
 		}).component();
 		this.defaultSchemaContainer = this.createLabelInputContainer(localizedConstants.DefaultSchemaText, this.defaultSchemaDropdown);
-		this.defaultSchemaDropdown.onValueChanged(() => {
+		this.disposables.push(this.defaultSchemaDropdown.onValueChanged(() => {
 			this.objectInfo.defaultSchema = <string>this.defaultSchemaDropdown.value;
 			this.onObjectValueChange();
-		});
+		}));
 
 		this.typeDropdown = this.modelView.modelBuilder.dropDown().withProps({
 			ariaLabel: localizedConstants.UserTypeText,
@@ -117,12 +117,12 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 			width: DefaultInputWidth,
 			enabled: this.isNewObject
 		}).component();
-		this.typeDropdown.onValueChanged(async () => {
+		this.disposables.push(this.typeDropdown.onValueChanged(async () => {
 			this.objectInfo.type = getUserTypeByDisplayName(<string>this.typeDropdown.value);
 			this.onObjectValueChange();
 			this.setViewByUserType();
 			await this.runValidation(false);
-		});
+		}));
 		this.typeContainer = this.createLabelInputContainer(localizedConstants.UserTypeText, this.typeDropdown);
 
 		this.loginDropdown = this.modelView.modelBuilder.dropDown().withProps({
@@ -132,10 +132,10 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 			width: DefaultInputWidth,
 			enabled: this.isNewObject
 		}).component();
-		this.loginDropdown.onValueChanged(() => {
+		this.disposables.push(this.loginDropdown.onValueChanged(() => {
 			this.objectInfo.loginName = <string>this.loginDropdown.value;
 			this.onObjectValueChange();
-		});
+		}));
 		this.loginContainer = this.createLabelInputContainer(localizedConstants.LoginText, this.loginDropdown);
 
 		const authTypes = [];
@@ -156,25 +156,25 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 			enabled: this.isNewObject
 		}).component();
 		this.authTypeContainer = this.createLabelInputContainer(localizedConstants.AuthTypeText, this.authTypeDropdown);
-		this.authTypeDropdown.onValueChanged(async () => {
+		this.disposables.push(this.authTypeDropdown.onValueChanged(async () => {
 			this.objectInfo.authenticationType = getAuthenticationTypeByDisplayName(<string>this.authTypeDropdown.value);
 			this.onObjectValueChange();
 			this.setViewByAuthenticationType();
 			await this.runValidation(false);
-		});
+		}));
 
 		this.passwordInput = this.createPasswordInputBox(localizedConstants.PasswordText, this.objectInfo.password ?? '');
 		this.passwordContainer = this.createLabelInputContainer(localizedConstants.PasswordText, this.passwordInput);
 		this.confirmPasswordInput = this.createPasswordInputBox(localizedConstants.ConfirmPasswordText, this.objectInfo.password ?? '');
 		this.confirmPasswordContainer = this.createLabelInputContainer(localizedConstants.ConfirmPasswordText, this.confirmPasswordInput);
-		this.passwordInput.onTextChanged(async () => {
+		this.disposables.push(this.passwordInput.onTextChanged(async () => {
 			this.objectInfo.password = this.passwordInput.value;
 			this.onObjectValueChange();
 			await this.runValidation(false);
-		});
-		this.confirmPasswordInput.onTextChanged(async () => {
+		}));
+		this.disposables.push(this.confirmPasswordInput.onTextChanged(async () => {
 			await this.runValidation(false);
-		});
+		}));
 
 		this.generalSection = this.createGroup(localizedConstants.GeneralSectionHeader, [
 			nameContainer,
@@ -204,10 +204,10 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 			value: this.objectInfo.defaultLanguage,
 			width: DefaultInputWidth
 		}).component();
-		this.defaultLanguageDropdown.onValueChanged(() => {
+		this.disposables.push(this.defaultLanguageDropdown.onValueChanged(() => {
 			this.objectInfo.defaultLanguage = <string>this.defaultLanguageDropdown.value;
 			this.onObjectValueChange();
-		});
+		}));
 		const container = this.createLabelInputContainer(localizedConstants.DefaultLanguageText, this.defaultLanguageDropdown);
 		this.advancedSection = this.createGroup(localizedConstants.AdvancedSectionHeader, [container]);
 	}
