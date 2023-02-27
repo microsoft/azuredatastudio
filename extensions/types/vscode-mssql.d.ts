@@ -639,10 +639,91 @@ declare module 'vscode-mssql' {
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
 		 */
 		moveSqlObjectScript(projectUri: string, destinationPath: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * getDatabaseReferences
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getDatabaseReferences(projectUri: string): Promise<GetDatabaseReferencesResult>;
+
+		/**
+		 * getFolders
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getFolders(projectUri: string): Promise<GetFoldersResult>;
+
+		/**
+		 * getPostDeploymentScripts
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getPostDeploymentScripts(projectUri: string): Promise<GetScriptsResult>;
+
+		/**
+		 * getPreDeploymentScripts
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getPreDeploymentScripts(projectUri: string): Promise<GetScriptsResult>;
+
+		/**
+		 * Get the cross-platform compatibility status for a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getCrossPlatformCompatibility(projectUri: string): Promise<GetCrossPlatformCompatiblityResult>;
+
+		/**
+		 * getSqlCmdVariables
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getSqlCmdVariables(projectUri: string): Promise<GetSqlCmdVariablesResult>;
+
+		/**
+		 * getSqlObjectScripts
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getSqlObjectScripts(projectUri: string): Promise<GetScriptsResult>;
 	}
 
 	export interface GetCrossPlatformCompatiblityResult extends ResultStatus {
+		/**
+		 * Whether the project is cross-platform compatible
+		 */
 		isCrossPlatformCompatible: boolean;
+	}
+
+	export interface GetDatabaseReferencesResult extends ResultStatus {
+		/**
+		 * Array of system database references contained in the project
+		 */
+		systemDatabaseReferences: SystemDatabaseReference[];
+		/**
+		 * Array of dacpac references contained in the project
+		 */
+		dacpacReferences: DacpacReference[];
+		/**
+		 * Array of SQL project references contained in the project
+		 */
+		sqlProjectReferences: SqlProjectReference[];
+	}
+
+	export interface GetFoldersResult extends ResultStatus {
+		/**
+		 * Array of folders contained in the project
+		 */
+		folders: string[];
+	}
+
+	export interface GetSqlCmdVariablesResult extends ResultStatus {
+		/**
+		 * Array of SQLCMD variables contained in the project
+		 */
+		sqlCmdVariables: SqlCmdVariable[];
+	}
+
+	export interface GetScriptsResult extends ResultStatus {
+		/**
+		 * Array of scripts contained in the project
+		 */
+		scripts: string[];
 	}
 
 	export const enum ProjectType {

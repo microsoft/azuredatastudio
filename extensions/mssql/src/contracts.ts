@@ -650,6 +650,32 @@ export namespace MoveSqlObjectScriptRequest {
 	export const type = new RequestType<MoveItemParams, azdata.ResultStatus, void, void>('sqlProjects/moveSqlObjectScript');
 }
 
+
+export namespace GetDatabaseReferencesRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetDatabaseReferencesResult, void, void>('sqlProjects/getDatabaseReferences');
+}
+
+export namespace GetFoldersRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetFoldersResult, void, void>('sqlProjects/getFolders');
+}
+
+export namespace GetPostDeploymentScriptsRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetScriptsResult, void, void>('sqlProjects/getPostDeploymentScripts');
+}
+
+export namespace GetPreDeploymentScriptsRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetScriptsResult, void, void>('sqlProjects/getPreDeploymentScripts');
+}
+
+export namespace GetSqlCmdVariablesRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetSqlCmdVariablesResult, void, void>('sqlProjects/getSqlCmdVariables');
+}
+
+export namespace GetSqlObjectScriptsRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetScriptsResult, void, void>('sqlProjects/getSqlObjectScripts');
+}
+
+
 //#endregion
 
 //#region Folder functions
