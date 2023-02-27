@@ -857,12 +857,22 @@ export class ProjectsController {
 			return;
 		}
 
+		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(file?.relativePath!)), `${newFileName}.sql`);
+
 		// TODO: swap this out and hookup to "Move" file/folder api
+		// need to determine if the file is in sqlObjects, predeployscripts, postdeployscripts, or none deploy scripts to know which move() to call
+		const sqlProjectsService = await utils.getSqlProjectsService();
+		const sqlObjectScripts = await sqlProjectsService.getSqlObjectScripts(project.projectFilePath);
+
+		if (sqlObjectScripts.scripts.includes(file!.relativePath)) {
+			const result = await sqlProjectsService.moveSqlObjectScript(project.projectFilePath, utils.convertSlashesForSqlProj(newFilePath), utils.convertSlashesForSqlProj(file!.relativePath))
+			console.error(JSON.stringify(result));
+		}
+
 		// rename the file
-		const newFilePath = path.join(path.dirname(file?.fsUri.fsPath!), `${newFileName}.sql`);
-		await fs.rename(file?.fsUri.fsPath!, newFilePath);
-		await project.exclude(file!);
-		await project.addExistingItem(newFilePath);
+		// await fs.rename(file?.fsUri.fsPath!, newFilePath);
+		// await project.exclude(file!);
+		// await project.addExistingItem(newFilePath);
 
 		this.refreshProjectsTree(context);
 	}
