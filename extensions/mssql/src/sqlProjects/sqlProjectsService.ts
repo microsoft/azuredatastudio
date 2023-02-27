@@ -215,9 +215,9 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	 * Get the cross-platform compatibility status for a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
 	 */
-	public async getCrossPlatformCompatibility(projectUri: string): Promise<mssql.GetCrossPlatformCompatiblityResult> {
+	public async getCrossPlatformCompatibility(projectUri: string): Promise<mssql.GetCrossPlatformCompatibilityResult> {
 		const params: contracts.SqlProjectParams = { projectUri: projectUri };
-		return await this.runWithErrorHandling(contracts.GetCrossPlatformCompatiblityRequest.type, params);
+		return await this.runWithErrorHandling(contracts.GetCrossPlatformCompatibilityRequest.type, params);
 	}
 
 	/**
@@ -311,6 +311,60 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	public async moveSqlObjectScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
 		return await this.runWithErrorHandling(contracts.MoveSqlObjectScriptRequest.type, params);
+	}
+
+	/**
+	 * getDatabaseReferences
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 */
+	public async getDatabaseReferences(projectUri: string): Promise<mssql.GetDatabaseReferencesResult> {
+		const params: contracts.SqlProjectParams = { projectUri: projectUri };
+		return await this.runWithErrorHandling(contracts.GetDatabaseReferencesRequest.type, params);
+	}
+
+	/**
+	 * getFolders
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 */
+	public async getFolders(projectUri: string): Promise<mssql.GetFoldersResult> {
+		const params: contracts.SqlProjectParams = { projectUri: projectUri };
+		return await this.runWithErrorHandling(contracts.GetFoldersRequest.type, params);
+	}
+
+	/**
+	 * getPostDeploymentScripts
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 */
+	public async getPostDeploymentScripts(projectUri: string): Promise<mssql.GetScriptsResult> {
+		const params: contracts.SqlProjectParams = { projectUri: projectUri };
+		return await this.runWithErrorHandling(contracts.GetPostDeploymentScriptsRequest.type, params);
+	}
+
+	/**
+	 * getPreDeploymentScripts
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 */
+	public async getPreDeploymentScripts(projectUri: string): Promise<mssql.GetScriptsResult> {
+		const params: contracts.SqlProjectParams = { projectUri: projectUri };
+		return await this.runWithErrorHandling(contracts.GetPreDeploymentScriptsRequest.type, params);
+	}
+
+	/**
+	 * getSqlCmdVariables
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 */
+	public async getSqlCmdVariables(projectUri: string): Promise<mssql.GetSqlCmdVariablesResult> {
+		const params: contracts.SqlProjectParams = { projectUri: projectUri };
+		return await this.runWithErrorHandling(contracts.GetSqlCmdVariablesRequest.type, params);
+	}
+
+	/**
+	 * getSqlObjectScripts
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 */
+	public async getSqlObjectScripts(projectUri: string): Promise<mssql.GetScriptsResult> {
+		const params: contracts.SqlProjectParams = { projectUri: projectUri };
+		return await this.runWithErrorHandling(contracts.GetSqlObjectScriptsRequest.type, params);
 	}
 
 	private async runWithErrorHandling<P, R, E, RO>(type: RequestType<P, R, E, RO>, params: P): Promise<R> {
