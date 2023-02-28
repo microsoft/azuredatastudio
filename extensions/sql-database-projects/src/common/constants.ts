@@ -564,7 +564,12 @@ export enum DatabaseProjectItemType {
 	reference = 'databaseProject.itemType.reference',
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
 	sqlcmdVariablesRoot = 'databaseProject.itemType.sqlcmdVariablesRoot',
-	sqlcmdVariable = 'databaseProject.itemType.sqlcmdVariable'
+	sqlcmdVariable = 'databaseProject.itemType.sqlcmdVariable',
+	preDeploy = 'databaseProject.itemType.file.preDeploymentScript',
+	postDeploy = 'databaseProject.itemType.file.postDeployScript',
+	none = 'databaseProject.itemType.file.noneFile',
+	sqlObjectFile = 'databaseProject.itemType.file.sqlObjectScript',
+	publishProfile = 'databaseProject.itemType.file.publishProfile'
 }
 
 // AutoRest
