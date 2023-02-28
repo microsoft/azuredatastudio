@@ -322,7 +322,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * @param azureResource
 	 * @returns The authentication result, including the access token
 	 */
-	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource, tenantId: string): Promise<AuthenticationResult | null> {
+	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource, tenantId: string): Promise<AuthenticationResult | azdata.MsalError | null> {
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 		if (!resource) {
 			Logger.error(`Error: Could not fetch the azure resource ${azureResource} `);
@@ -364,10 +364,19 @@ export abstract class AzureAuth implements vscode.Disposable {
 				};
 				return this.handleInteractionRequiredMsal(tenant, resource);
 			} else if (e.name === 'ClientAuthError') {
-				Logger.error(e.message);
+				Logger.error('[ClientAuthError] Failed to silently acquire token');
+				return {
+					name: e.name,
+					errorCode: e.errorCode,
+					errorMessage: e.errorMessage || e.message
+				}
+			} else {
+				return {
+					name: e.name,
+					errorCode: e.errorCode,
+					errorMessage: e.errorMessage || e.message
+				}
 			}
-			Logger.error('Failed to silently acquire token, not InteractionRequiredAuthError');
-			return null;
 		}
 	}
 
