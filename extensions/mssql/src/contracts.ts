@@ -551,14 +551,6 @@ export interface ParseTSqlScriptParams {
 	databaseSchemaProvider: string;
 }
 
-export interface SavePublishProfileParams {
-	profilePath: string;
-	databaseName: string;
-	connectionString: string;
-	sqlCommandVariableValues?: Record<string, string>;
-	deploymentOptions?: mssql.DeploymentOptions;
-}
-
 export namespace ExportRequest {
 	export const type = new RequestType<ExportParams, mssql.DacFxResult, void, void>('dacfx/export');
 }
@@ -595,10 +587,6 @@ export namespace ParseTSqlScriptRequest {
 	export const type = new RequestType<ParseTSqlScriptParams, mssql.ParseTSqlScriptResult, void, void>('dacfx/parseTSqlScript');
 }
 
-export namespace SavePublishProfileRequest {
-	export const type = new RequestType<SavePublishProfileParams, azdata.ResultStatus, void, void>('dacfx/savePublishProfile');
-}
-
 // ------------------------------- </ DacFx > ------------------------------------
 
 // ------------------------------- < Sql Projects > ------------------------------------
@@ -609,7 +597,7 @@ export namespace SavePublishProfileRequest {
 //#region Project-level functions
 
 export namespace CreateSqlProjectRequest {
-	export const type = new RequestType<CreateSqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/newProject'); // TODO: switch to "createProject" with next Tools Service update
+	export const type = new RequestType<CreateSqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/createProject');
 }
 
 export namespace OpenSqlProjectRequest {
@@ -620,8 +608,8 @@ export namespace CloseSqlProjectRequest {
 	export const type = new RequestType<SqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/closeProject');
 }
 
-export namespace GetCrossPlatformCompatiblityRequest {
-	export const type = new RequestType<SqlProjectParams, mssql.GetCrossPlatformCompatiblityResult, void, void>('sqlProjects/getCrossPlatformCompatibility');
+export namespace GetCrossPlatformCompatibilityRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetCrossPlatformCompatibilityResult, void, void>('sqlProjects/getCrossPlatformCompatibility');
 }
 
 export namespace UpdateProjectForCrossPlatformRequest {
@@ -648,6 +636,30 @@ export namespace ExcludeSqlObjectScriptRequest {
 
 export namespace MoveSqlObjectScriptRequest {
 	export const type = new RequestType<MoveItemParams, azdata.ResultStatus, void, void>('sqlProjects/moveSqlObjectScript');
+}
+
+export namespace GetDatabaseReferencesRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetDatabaseReferencesResult, void, void>('sqlProjects/getDatabaseReferences');
+}
+
+export namespace GetFoldersRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetFoldersResult, void, void>('sqlProjects/getFolders');
+}
+
+export namespace GetPostDeploymentScriptsRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetScriptsResult, void, void>('sqlProjects/getPostDeploymentScripts');
+}
+
+export namespace GetPreDeploymentScriptsRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetScriptsResult, void, void>('sqlProjects/getPreDeploymentScripts');
+}
+
+export namespace GetSqlCmdVariablesRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetSqlCmdVariablesResult, void, void>('sqlProjects/getSqlCmdVariables');
+}
+
+export namespace GetSqlObjectScriptsRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetScriptsResult, void, void>('sqlProjects/getSqlObjectScripts');
 }
 
 //#endregion

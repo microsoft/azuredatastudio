@@ -316,18 +316,25 @@ export class ConnectionConfig {
 		subgroups.push(group);
 		// Get all connections in the settings
 		let profiles = this.configurationService.inspect<IConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).userValue;
-		// Remove the profiles from the connections
-		profiles = profiles!.filter(value => {
-			let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
-			return !connections.some((val) => val.getOptionsKey() === providerConnectionProfile.getOptionsKey());
-		});
+
+		if (profiles) {
+			// Remove the profiles from the connections
+			profiles = profiles!.filter(value => {
+				let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
+				return !connections.some((val) => val.getOptionsKey() === providerConnectionProfile.getOptionsKey());
+			});
+		}
 
 		// Get all groups in the settings
 		let groups = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).userValue;
-		// Remove subgroups in the settings
-		groups = groups!.filter((grp) => {
-			return !subgroups.some((item) => item.id === grp.id);
-		});
+
+		if (groups) {
+			// Remove subgroups in the settings
+			groups = groups!.filter((grp) => {
+				return !subgroups.some((item) => item.id === grp.id);
+			});
+		}
+
 		return Promise.all([
 			this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, ConfigurationTarget.USER),
 			this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER)

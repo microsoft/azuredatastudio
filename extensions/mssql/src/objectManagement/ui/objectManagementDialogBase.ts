@@ -43,6 +43,10 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	protected readonly contextId: string;
 	private _viewInfo: ViewInfoType;
 	private _originalObjectInfo: ObjectInfoType;
+	private _modelView: azdata.ModelView;
+	private _loadingComponent: azdata.LoadingComponent;
+	private _formContainer: azdata.DivContainer;
+	private _helpButton: azdata.window.Button;
 
 	constructor(private readonly objectType: NodeType,
 		docUrl: string,
@@ -57,11 +61,13 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		this.dialogObject = azdata.window.createModelViewDialog(dialogTitle, getDialogName(objectType, isNewObject), dialogWidth);
 		this.dialogObject.okButton.label = OkText;
 		this.disposables.push(this.dialogObject.onClosed(async () => { await this.dispose(); }));
-		const helpButton = azdata.window.createButton(HelpText, 'left');
-		this.disposables.push(helpButton.onClick(async () => {
+		this._helpButton = azdata.window.createButton(HelpText, 'left');
+		this.disposables.push(this._helpButton.onClick(async () => {
 			await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(docUrl));
 		}));
-		this.dialogObject.customButtons = [helpButton];
+		this.dialogObject.customButtons = [this._helpButton];
+		this.dialogObject.okButton.hidden = true;
+		this._helpButton.hidden = true;
 		this.contextId = generateUuid();
 		this.dialogObject.registerCloseValidator(async (): Promise<boolean> => {
 			const confirmed = await this.onConfirmation();
@@ -98,56 +104,76 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		return this._originalObjectInfo;
 	}
 
-	public async open(): Promise<void> {
-		await vscode.window.withProgress({
-			location: vscode.ProgressLocation.Notification,
-			title: LoadingDialogText
-		}, async () => {
-			try {
-				this._viewInfo = await this.initializeData();
-				this._originalObjectInfo = deepClone(this.objectInfo);
-				await this.initializeUI();
-				const typeDisplayName = getNodeTypeDisplayName(this.objectType);
-				this.dialogObject.registerOperation({
-					displayName: this.isNewObject ? CreateObjectOperationDisplayName(typeDisplayName)
-						: UpdateObjectOperationDisplayName(typeDisplayName, this.objectName),
-					description: '',
-					isCancelable: false,
-					operation: async (operation: azdata.BackgroundOperation): Promise<void> => {
-						const actionName = this.isNewObject ? TelemetryActions.CreateObject : TelemetryActions.UpdateObject;
-						try {
-							if (JSON.stringify(this.objectInfo) !== JSON.stringify(this._originalObjectInfo)) {
-								const startTime = Date.now();
-								await this.onComplete();
-								if (this.isNewObject && this.objectExplorerContext) {
-									await refreshNode(this.objectExplorerContext);
-								}
+	protected get formContainer(): azdata.DivContainer {
+		return this._formContainer;
+	}
 
-								TelemetryReporter.sendTelemetryEvent(actionName, {
-									objectType: this.objectType
-								}, {
-									ellapsedTime: Date.now() - startTime
-								});
-								operation.updateStatus(azdata.TaskStatus.Succeeded);
+	protected get modelView(): azdata.ModelView {
+		return this._modelView;
+	}
+
+	public async open(): Promise<void> {
+		try {
+			await this.dialogObject.registerContent(async view => {
+				this._modelView = view;
+				this._formContainer = this.createFormContainer([]);
+				this._loadingComponent = view.modelBuilder.loadingComponent().withItem(this._formContainer).withProps({
+					loading: true,
+					loadingText: LoadingDialogText,
+					showText: true,
+					CSSStyles: {
+						width: "100%",
+						height: "100%"
+					}
+				}).component();
+				return view.initializeModel(this._loadingComponent);
+			});
+			azdata.window.openDialog(this.dialogObject);
+			this._viewInfo = await this.initializeData();
+			await this.initializeUI();
+			this._originalObjectInfo = deepClone(this.objectInfo);
+			const typeDisplayName = getNodeTypeDisplayName(this.objectType);
+			this.dialogObject.registerOperation({
+				displayName: this.isNewObject ? CreateObjectOperationDisplayName(typeDisplayName)
+					: UpdateObjectOperationDisplayName(typeDisplayName, this.objectName),
+				description: '',
+				isCancelable: false,
+				operation: async (operation: azdata.BackgroundOperation): Promise<void> => {
+					const actionName = this.isNewObject ? TelemetryActions.CreateObject : TelemetryActions.UpdateObject;
+					try {
+						if (JSON.stringify(this.objectInfo) !== JSON.stringify(this._originalObjectInfo)) {
+							const startTime = Date.now();
+							await this.onComplete();
+							if (this.isNewObject && this.objectExplorerContext) {
+								await refreshNode(this.objectExplorerContext);
 							}
-						}
-						catch (err) {
-							operation.updateStatus(azdata.TaskStatus.Failed, getErrorMessage(err));
-							TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, actionName).withAdditionalProperties({
+
+							TelemetryReporter.sendTelemetryEvent(actionName, {
 								objectType: this.objectType
-							}).send();
+							}, {
+								ellapsedTime: Date.now() - startTime
+							});
+							operation.updateStatus(azdata.TaskStatus.Succeeded);
 						}
 					}
-				});
-				azdata.window.openDialog(this.dialogObject);
-			} catch (err) {
-				const actionName = this.isNewObject ? TelemetryActions.OpenNewObjectDialog : TelemetryActions.OpenPropertiesDialog;
-				TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, actionName).withAdditionalProperties({
-					objectType: this.objectType
-				}).send();
-				void vscode.window.showErrorMessage(getErrorMessage(err));
-			}
-		});
+					catch (err) {
+						operation.updateStatus(azdata.TaskStatus.Failed, getErrorMessage(err));
+						TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, actionName).withAdditionalProperties({
+							objectType: this.objectType
+						}).send();
+					}
+				}
+			});
+			this.dialogObject.okButton.hidden = false;
+			this._helpButton.hidden = false;
+			this._loadingComponent.loading = false;
+		} catch (err) {
+			const actionName = this.isNewObject ? TelemetryActions.OpenNewObjectDialog : TelemetryActions.OpenPropertiesDialog;
+			TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, actionName).withAdditionalProperties({
+				objectType: this.objectType
+			}).send();
+			void vscode.window.showErrorMessage(getErrorMessage(err));
+		}
 	}
 
 	private async dispose(): Promise<void> {
@@ -168,43 +194,43 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		return errors.length === 0;
 	}
 
-	protected createLabelInputContainer(view: azdata.ModelView, label: string, input: azdata.InputBoxComponent | azdata.DropDownComponent): azdata.FlexContainer {
-		const labelComponent = view.modelBuilder.text().withProps({ width: DefaultLabelWidth, value: label, requiredIndicator: input.required }).component();
-		const row = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent, input]).component();
+	protected createLabelInputContainer(label: string, input: azdata.InputBoxComponent | azdata.DropDownComponent): azdata.FlexContainer {
+		const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth, value: label, requiredIndicator: input.required }).component();
+		const row = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent, input]).component();
 		return row;
 	}
 
-	protected createCheckbox(view: azdata.ModelView, label: string, checked: boolean = false, enabled: boolean = true): azdata.CheckBoxComponent {
-		return view.modelBuilder.checkBox().withProps({
+	protected createCheckbox(label: string, checked: boolean = false, enabled: boolean = true): azdata.CheckBoxComponent {
+		return this.modelView.modelBuilder.checkBox().withProps({
 			label: label,
 			checked: checked,
 			enabled: enabled
 		}).component();
 	}
 
-	protected createPasswordInputBox(view: azdata.ModelView, ariaLabel: string, value: string = '', enabled: boolean = true, width: number = DefaultInputWidth): azdata.InputBoxComponent {
-		return this.createInputBox(view, ariaLabel, value, enabled, 'password', width);
+	protected createPasswordInputBox(ariaLabel: string, value: string = '', enabled: boolean = true, width: number = DefaultInputWidth): azdata.InputBoxComponent {
+		return this.createInputBox(ariaLabel, value, enabled, 'password', width);
 	}
 
-	protected createInputBox(view: azdata.ModelView, ariaLabel: string, value: string = '', enabled: boolean = true, type: azdata.InputBoxInputType = 'text', width: number = DefaultInputWidth): azdata.InputBoxComponent {
-		return view.modelBuilder.inputBox().withProps({ inputType: type, enabled: enabled, ariaLabel: ariaLabel, value: value, width: width }).component();
+	protected createInputBox(ariaLabel: string, value: string = '', enabled: boolean = true, type: azdata.InputBoxInputType = 'text', width: number = DefaultInputWidth): azdata.InputBoxComponent {
+		return this.modelView.modelBuilder.inputBox().withProps({ inputType: type, enabled: enabled, ariaLabel: ariaLabel, value: value, width: width }).component();
 	}
 
-	protected createGroup(view: azdata.ModelView, header: string, items: azdata.Component[], collapsible: boolean = true, collapsed: boolean = false): azdata.GroupContainer {
-		return view.modelBuilder.groupContainer().withLayout({
+	protected createGroup(header: string, items: azdata.Component[], collapsible: boolean = true, collapsed: boolean = false): azdata.GroupContainer {
+		return this.modelView.modelBuilder.groupContainer().withLayout({
 			header: header,
 			collapsed: false,
 			collapsible: collapsible
 		}).withProps({ collapsed: collapsed }).withItems(items).component();
 	}
 
-	protected createFormContainer(view: azdata.ModelView, items: azdata.Component[]): azdata.DivContainer {
-		return view.modelBuilder.divContainer().withLayout({ width: 'calc(100% - 20px)', height: 'calc(100% - 20px)' }).withProps({
+	protected createFormContainer(items: azdata.Component[]): azdata.DivContainer {
+		return this.modelView.modelBuilder.divContainer().withLayout({ width: 'calc(100% - 20px)', height: 'calc(100% - 20px)' }).withProps({
 			CSSStyles: { 'padding': '10px' }
 		}).withItems(items, { CSSStyles: { 'margin-block-end': '10px' } }).component();
 	}
 
-	protected createTableList(view: azdata.ModelView, ariaLabel: string, listValues: string[], selectedValues: string[], data?: any[][]): azdata.TableComponent {
+	protected createTableList(ariaLabel: string, listValues: string[], selectedValues: string[], data?: any[][]): azdata.TableComponent {
 		let tableData = data;
 		if (tableData === undefined) {
 			tableData = listValues.map(name => {
@@ -212,7 +238,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				return [isSelected, name];
 			});
 		}
-		const table = view.modelBuilder.table().withProps(
+		const table = this.modelView.modelBuilder.table().withProps(
 			{
 				ariaLabel: ariaLabel,
 				data: tableData,
@@ -229,7 +255,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				height: getTableHeight(tableData.length)
 			}
 		).component();
-		table.onCellAction((arg: azdata.ICheckboxCellActionEventArgs) => {
+		this.disposables.push(table.onCellAction((arg: azdata.ICheckboxCellActionEventArgs) => {
 			const name = listValues[arg.row];
 			const idx = selectedValues.indexOf(name);
 			if (arg.checked && idx === -1) {
@@ -238,7 +264,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				selectedValues.splice(idx, 1)
 			}
 			this.onObjectValueChange();
-		});
+		}));
 		return table;
 	}
 
