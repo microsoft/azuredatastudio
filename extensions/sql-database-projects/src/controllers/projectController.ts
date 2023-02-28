@@ -856,17 +856,7 @@ export class ProjectsController {
 		}
 
 		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(file?.relativePath!)), `${newFileName}.sql`);
-		const sqlProjectsService = await utils.getSqlProjectsService();
-
-		if (node instanceof SqlObjectFileNode) {
-			await sqlProjectsService.moveSqlObjectScript(project.projectFilePath, newFilePath, file!.relativePath)
-		} else if (node instanceof PreDeployNode) {
-			await sqlProjectsService.movePreDeploymentScript(project.projectFilePath, newFilePath, file!.relativePath)
-		} else if (node instanceof PostDeployNode) {
-			await sqlProjectsService.movePostDeploymentScript(project.projectFilePath, newFilePath, file!.relativePath)
-		}
-		// TODO add support for renaming none scripts after those are added in STS
-		// TODO add support for renaming publish profiles when support is added in DacFx
+		await this.move(node, node.projectFileUri.fsPath, newFilePath, node.relativeProjectUri.fsPath);
 
 		this.refreshProjectsTree(context);
 	}
@@ -1896,7 +1886,7 @@ export class ProjectsController {
 	 * @param destinationRelativePath path of the destination, relative to .sqlproj
 	 * @param originalRelativePath path of the original location, relative to .sqlproj
 	 */
-	private async move(node: FileNode, projectFilePath: string, destinationRelativePath: string, originalRelativePath: string): Promise<void> {
+	private async move(node: BaseProjectTreeItem, projectFilePath: string, destinationRelativePath: string, originalRelativePath: string): Promise<void> {
 		if (originalRelativePath === destinationRelativePath) {
 			return;
 		}
