@@ -136,8 +136,6 @@ export const server = localize('server', "Server");
 export const defaultUser = localize('default', "default");
 export const selectProfileToUse = localize('selectProfileToUse', "Select publish profile to load");
 export const selectProfile = localize('selectProfile', "Select Profile");
-export const saveProfileAsButtonText = localize('saveProfileAsButtonText', "Save Profile As...");
-export const save = localize('save', "Save");
 export const dontUseProfile = localize('dontUseProfile', "Don't use profile");
 export const browseForProfileWithIcon = `$(folder) ${localize('browseForProfile', "Browse for profile")}`;
 export const chooseAction = localize('chooseAction', "Choose action");
@@ -566,7 +564,12 @@ export enum DatabaseProjectItemType {
 	reference = 'databaseProject.itemType.reference',
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
 	sqlcmdVariablesRoot = 'databaseProject.itemType.sqlcmdVariablesRoot',
-	sqlcmdVariable = 'databaseProject.itemType.sqlcmdVariable'
+	sqlcmdVariable = 'databaseProject.itemType.sqlcmdVariable',
+	preDeploy = 'databaseProject.itemType.file.preDeploymentScript',
+	postDeploy = 'databaseProject.itemType.file.postDeployScript',
+	none = 'databaseProject.itemType.file.noneFile',
+	sqlObjectFile = 'databaseProject.itemType.file.sqlObjectScript',
+	publishProfile = 'databaseProject.itemType.file.publishProfile'
 }
 
 // AutoRest
