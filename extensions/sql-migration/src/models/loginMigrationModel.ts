@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as mssql from 'mssql';
 import { MultiStepResult, MultiStepState } from '../dialog/generic/multiStepStatusDialog';
 import * as constants from '../constants/strings';
 import { getSourceConnectionString, getTargetConnectionString, LoginTableInfo } from '../api/sqlUtils';
@@ -57,7 +56,7 @@ export interface Login {
 }
 
 export class LoginMigrationModel {
-	public resultsPerStep: Map<mssql.LoginMigrationStep, mssql.StartLoginMigrationResult>;
+	public resultsPerStep: Map<contracts.LoginMigrationStep, contracts.StartLoginMigrationResult>;
 	public collectedSourceLogins: boolean = false;
 	public collectedTargetLogins: boolean = false;;
 	public loginsOnSource: LoginTableInfo[] = [];
@@ -70,7 +69,7 @@ export class LoginMigrationModel {
 	private _loginMigrationSteps: LoginMigrationStep[] = [];
 
 	constructor() {
-		this.resultsPerStep = new Map<mssql.LoginMigrationStep, mssql.StartLoginMigrationResult>();
+		this.resultsPerStep = new Map<contracts.LoginMigrationStep, contracts.StartLoginMigrationResult>();
 		this._logins = new Map<string, Login>();
 		this.setLoginMigrationSteps();
 	}
@@ -146,7 +145,7 @@ export class LoginMigrationModel {
 		logins.forEach(login => this.addNewLogin(login));
 	}
 
-	public addLoginMigrationResults(step: LoginMigrationStep, newResult: mssql.StartLoginMigrationResult): void {
+	public addLoginMigrationResults(step: LoginMigrationStep, newResult: contracts.StartLoginMigrationResult): void {
 		const exceptionMap = this.getExceptionMapWithNormalizedKeys(newResult.exceptionMap);
 		this._currentStepIdx = this._loginMigrationSteps.findIndex(s => s === step) + 1;
 

@@ -266,16 +266,12 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			this.migrationStateModel._resourceGroup = undefined!;
 			this.migrationStateModel._targetServerInstance = undefined!;
 
-			const clearDropDown = async (dropDown: azdata.DropDownComponent): Promise<void> => {
-				dropDown.values = [];
-				dropDown.value = undefined;
-			};
-			await clearDropDown(this._azureAccountsDropdown);
-			await clearDropDown(this._accountTenantDropdown);
-			await clearDropDown(this._azureSubscriptionDropdown);
-			await clearDropDown(this._azureLocationDropdown);
-			await clearDropDown(this._azureResourceGroupDropdown);
-			await clearDropDown(this._azureResourceDropdown);
+			this._clearDropDown(this._azureAccountsDropdown);
+			this._clearDropDown(this._accountTenantDropdown);
+			this._clearDropDown(this._azureSubscriptionDropdown);
+			this._clearDropDown(this._azureLocationDropdown);
+			this._clearDropDown(this._azureResourceGroupDropdown);
+			this._clearDropDown(this._azureResourceDropdown);
 		}
 
 		await this.populateAzureAccountsDropdown();
@@ -416,6 +412,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						: undefined!;
 					this.migrationStateModel.refreshDatabaseBackupPage = true;
 				}
+				this._clearDropDown(this._azureLocationDropdown);
 				await this.populateLocationDropdown();
 			}));
 
@@ -446,6 +443,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						: undefined!;
 				}
 				this.migrationStateModel.refreshDatabaseBackupPage = true;
+				this._clearDropDown(this._azureResourceGroupDropdown);
 				await this.populateResourceGroupDropdown();
 			}));
 
@@ -672,6 +670,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						? utils.deepClone(selectedResourceGroup)!
 						: undefined!;
 				}
+				this._clearDropDown(this._azureResourceDropdown);
 				await this.populateResourceInstanceDropdown();
 			}));
 
@@ -891,7 +890,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				this.migrationStateModel._azureAccount?.properties?.tenants?.length > 0) {
 				this.migrationStateModel._accountTenants = utils.getAzureTenants(this.migrationStateModel._azureAccount);
 
-				this._accountTenantDropdown.values = await utils.getAzureTenantsDropdownValues(this.migrationStateModel._accountTenants);
+				this._accountTenantDropdown.values = utils.getAzureTenantsDropdownValues(this.migrationStateModel._accountTenants);
 			}
 			const tenantId =
 				this.migrationStateModel._azureTenant?.id ??
@@ -964,7 +963,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._targetSqlDatabaseServers);
 					break;
 			}
-			this._azureLocationDropdown.values = await utils.getAzureLocationsDropdownValues(this.migrationStateModel._locations);
+			this._azureLocationDropdown.values = utils.getAzureLocationsDropdownValues(this.migrationStateModel._locations);
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -1207,5 +1206,10 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			targetDatabaseCollation !== undefined &&
 			targetDatabaseCollation.length > 0 &&
 			sourceDatabaseCollation.toLocaleLowerCase() === targetDatabaseCollation.toLocaleLowerCase();
+	}
+
+	private _clearDropDown(dropDown: azdata.DropDownComponent): void {
+		dropDown.values = [];
+		dropDown.value = undefined;
 	}
 }
