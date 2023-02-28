@@ -481,6 +481,7 @@ export const TARGET_SUBSCRIPTION_INFO = localize('sql.migration.sku.subscription
 export const TARGET_LOCATION_INFO = localize('sql.migration.sku.location', "Azure region for your Azure SQL target. Only regions that contain a target eligible for migration will be shown.");
 export const TARGET_RESOURCE_GROUP_INFO = localize('sql.migration.sku.resource_group', "Resource group for your Azure SQL target. Only resource groups that contain a target eligible for migration will be shown.");
 export const TARGET_RESOURCE_INFO = localize('sql.migration.sku.resource', "Your Azure SQL target resource name");
+export const TARGET_AUTHENTICATION_TYPE = localize('sql.migration.authentication.type', "Authenication type for your Azure SQL target. Only supported types will be shown.");
 
 // DMS tooltip
 export const DMS_SUBSCRIPTION_INFO = localize('sql.migration.dms.subscription', "Subscription name for your Azure Database Migration Service");
@@ -547,6 +548,7 @@ export function ACCOUNT_CREDENTIALS_REFRESH(accountName: string): string {
 		accountName);
 }
 export const SELECT_SERVICE_PLACEHOLDER = localize('sql.migration.select.service.select.migration.target', "Select a target server.");
+export const SELECT_AUTHENTICATION_TYPE = localize('sql.migration.select.authentication.type', "Select an authentication type");
 
 // database backup page
 export const DATA_SOURCE_CONFIGURATION_PAGE_TITLE = localize('sql.migration.data.source.configuration.page.title', "Data source configuration");

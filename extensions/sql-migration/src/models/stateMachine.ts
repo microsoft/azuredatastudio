@@ -205,6 +205,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _targetServerName!: string;
 	public _targetUserName!: string;
 	public _targetPassword!: string;
+	public _targetAuthType!: azdata.connection.AuthenticationType;
 	public _sourceTargetMapping: Map<string, TargetDatabaseInfo | undefined> = new Map();
 
 	public _sqlMigrationServiceResourceGroup!: azurecore.azureResource.AzureResourceResourceGroup;

@@ -39,6 +39,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private _testConectionButton!: azdata.ButtonComponent;
 	private _connectionResultsInfoBox!: azdata.InfoBoxComponent;
 	private _migrationTargetPlatform!: MigrationTargetType;
+	private _authenticationTypeDropdown!: azdata.DropDownComponent;
 
 	constructor(
 		wizard: azdata.window.Wizard,
@@ -522,6 +523,41 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	}
 
 	private _createResourceAuthenticationContainer(): azdata.FlexContainer {
+		const authenticationTypeLabel = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.AUTHENTICATION_TYPE,
+				description: constants.TARGET_AUTHENTICATION_TYPE,
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				requiredIndicator: true,
+				CSSStyles: { ...styles.LABEL_CSS }
+			}).component();
+		this._authenticationTypeDropdown = this._view.modelBuilder.dropDown()
+			.withProps({
+				ariaLabel: constants.AUTHENTICATION_TYPE,
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				editable: true,
+				required: true,
+				fireOnTextChange: true,
+				placeholder: constants.SELECT_AUTHENTICATION_TYPE,
+				CSSStyles: { 'margin-top': '-1em' },
+			}).component();
+		this._authenticationTypeDropdown.values = [
+			{
+				displayName: 'SQL Login',
+				name: azdata.connection.AuthenticationType.SqlLogin
+			},
+			{
+				displayName: 'Windows Authentication',
+				name: azdata.connection.AuthenticationType.Integrated
+			},
+		];
+		this._disposables.push(
+			this._authenticationTypeDropdown.onValueChanged(async (value) => {
+				if (value && value !== 'undefined') {
+					this.migrationStateModel._targetAuthType = value.name;
+				}
+			}));
+
 		// target user name
 		const targetUserNameLabel = this._view.modelBuilder.text()
 			.withProps({
@@ -617,7 +653,8 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 								targetDatabaseServer.id,
 								userName,
 								password,
-								this.migrationStateModel.isWindowsAuthMigrationSupported));
+								this.migrationStateModel.isWindowsAuthMigrationSupported,
+								this.migrationStateModel._targetAuthType));
 						this.migrationStateModel._loginMigrationModel.collectedTargetLogins = true;
 						this.migrationStateModel._loginMigrationModel.loginsOnTarget = loginsOnTarget;
 
@@ -653,6 +690,8 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 
 		return this._view.modelBuilder.flexContainer()
 			.withItems([
+				authenticationTypeLabel,
+				this._authenticationTypeDropdown,
 				targetUserNameLabel,
 				this._targetUserNameInputBox,
 				targetPasswordLabel,

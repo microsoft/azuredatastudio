@@ -209,7 +209,8 @@ export function getTargetConnectionProfile(
 	userName: string,
 	password: string,
 	encryptConnection: boolean,
-	trustServerCert: boolean): azdata.IConnectionProfile {
+	trustServerCert: boolean,
+	authType: azdata.connection.AuthenticationType = azdata.connection.AuthenticationType.SqlLogin): azdata.IConnectionProfile {
 
 	const connectId = generateGuid();
 	return {
@@ -219,7 +220,7 @@ export function getTargetConnectionProfile(
 		azureResourceId: azureResourceId,
 		userName: userName,
 		password: password,
-		authenticationType: azdata.connection.AuthenticationType.SqlLogin,
+		authenticationType: authType,
 		savePassword: false,
 		groupFullName: connectId,
 		groupId: connectId,
@@ -228,7 +229,7 @@ export function getTargetConnectionProfile(
 		options: {
 			conectionName: connectId,
 			server: serverName,
-			authenticationType: azdata.connection.AuthenticationType.SqlLogin,
+			authenticationType: authType,
 			user: userName,
 			password: password,
 			connectionTimeout: 60,
@@ -462,7 +463,8 @@ export async function collectTargetLogins(
 	azureResourceId: string,
 	userName: string,
 	password: string,
-	includeWindowsAuth: boolean = true): Promise<string[]> {
+	includeWindowsAuth: boolean,
+	authType: azdata.connection.AuthenticationType): Promise<string[]> {
 
 	const connectionProfile = getTargetConnectionProfile(
 		serverName,
@@ -472,7 +474,8 @@ export async function collectTargetLogins(
 		// for login migration, connect to target Azure SQL with true/true
 		// to-do: take as input from the user, should be true/false for DB/MI but true/true for VM
 		true /* encryptConnection */,
-		true /* trustServerCertificate */);
+		true /* trustServerCertificate */,
+		authType);
 
 	const result = await azdata.connection.connect(connectionProfile, false, false);
 	if (result.connected && result.connectionId) {
