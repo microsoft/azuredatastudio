@@ -148,7 +148,6 @@ export class AccountManagementService implements IAccountManagementService {
 					if (accountResult.canceled === true) {
 						return;
 					} else {
-						//TODO: Case where only error code or only error message returned, need to display those
 						if (accountResult.errorCode && accountResult.errorMessage) {
 							throw new Error(localize('addAccountFailedCodeMessage', `{0} \nError Message: {1}`, accountResult.errorCode, accountResult.errorMessage));
 						} else if (accountResult.errorMessage) {
