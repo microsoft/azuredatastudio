@@ -2,7 +2,7 @@
 The [Azure SQL Migration extension for Azure Data Studio](https://docs.microsoft.com/sql/azure-data-studio/extensions/azure-sql-migration-extension) brings together a simplified assessment, recommendation, and migration experience that delivers the following capabilities:
 - A responsive UI for an end-to-end migration experience. The extension starts with a migration readiness assessment and SKU recommendation (preview) (based on performance data).
 - An enhanced assessment mechanism that can evaluate SQL Server instances. The extension identifies databases that are ready to migrate to Azure SQL targets.
-- An SKU recommendation engine that collects performance data from the on-premises source SQL Server instance and then generates right-sized SKU recommendations based on your Azure SQL target.
+- An Azure recommendation engine that collects performance data from the on-premises source SQL Server instance and then generates right-sized SKU recommendations based on your Azure SQL target.
 - A reliable Azure service powered by Azure Database Migration Service that orchestrates data movement activities to deliver a seamless migration experience.
 - You can run your migration online (for migrations that require minimal downtime) or offline (for migrations where downtime persists throughout the migration) depending on your business requirements.
 - You can configure a self-hosted integration runtime to use your own compute resources to access the source SQL Server instance backup files in your on-premises environment.
@@ -15,7 +15,7 @@ Open the Azure Data Studio marketplace, select and install the latest version of
 
 
 ## Things you need before starting your Azure SQL migration
-- An Azure account (**not required for assessment or SKU recommendation functionality**).
+- An Azure account (**not required for assessment or Azure recommendation functionality**).
 - A source SQL Server database(s) running on-premises, or on SQL Server on Azure Virtual Machine or any virtual machine running in the cloud (private, public).
 - An Azure SQL Managed Instance, SQL Server on Azure Virtual Machine, or Azure SQL Database to migrate your database(s) to.
     > Azure SQL Database offline migrations are still in public preview.
@@ -23,8 +23,8 @@ Open the Azure Data Studio marketplace, select and install the latest version of
 ## Getting started
 Refer to [Migrate databases using the Azure SQL Migration extension for Azure Data Studio](https://docs.microsoft.com/azure/dms/migration-using-azure-data-studio) for detailed documentation on capabilities and concepts.
 
-## Assessment and SKU recommendation (Preview)
-The assessment and SKU recommendation feature evaluates the source SQL Server database(s) for migration readiness.
+## Assessment and Azure recommendations (Preview)
+The assessment and Azure recommendations feature evaluates the source SQL Server database(s) for migration readiness.
 
 It also generates right-sized SKU recommendations for your Azure target to meet the performance requirements of the source SQL Server database(s) with minimal cost. [Learn more.](https://aka.ms/ads-sql-sku-recommend)
 
