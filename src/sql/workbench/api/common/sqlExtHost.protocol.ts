@@ -710,6 +710,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	 * Callback when a session has completed initialization
 	 */
 	$onEditSessionReady(handle: number, ownerUri: string, success: boolean, message: string);
+	$mark(name: string): void;
 }
 
 export interface MainThreadConnectionManagementShape extends IDisposable {

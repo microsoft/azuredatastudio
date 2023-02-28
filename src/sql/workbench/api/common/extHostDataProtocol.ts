@@ -291,19 +291,22 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		if (this.uriTransformer) {
 			ownerUri = this._getTransformedUri(ownerUri, this.uriTransformer.transformIncoming);
 		}
-
+		this._proxy.$mark(`sql/query/${ownerUri}/ext_$runQuery`);
 		return this._resolveProvider<azdata.QueryProvider>(handle).runQuery(ownerUri, selection, runOptions);
 	}
 
 	override $runQueryStatement(handle: number, ownerUri: string, line: number, column: number): Thenable<void> {
+		this._proxy.$mark(`sql/query/${ownerUri}/ext_$runQueryStatement`);
 		return this._resolveProvider<azdata.QueryProvider>(handle).runQueryStatement(ownerUri, line, column);
 	}
 
 	override $runQueryString(handle: number, ownerUri: string, queryString: string): Thenable<void> {
+		this._proxy.$mark(`sql/query/${ownerUri}/ext_$runQueryString`);
 		return this._resolveProvider<azdata.QueryProvider>(handle).runQueryString(ownerUri, queryString);
 	}
 
 	override $runQueryAndReturn(handle: number, ownerUri: string, queryString: string): Thenable<azdata.SimpleExecuteResult> {
+		this._proxy.$mark(`sql/query/${ownerUri}/ext_$runQueryAndReturn`);
 		return this._resolveProvider<azdata.QueryProvider>(handle).runQueryAndReturn(ownerUri, queryString);
 	}
 
@@ -349,6 +352,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		if (this.uriTransformer) {
 			result.ownerUri = this._getTransformedUri(result.ownerUri, this.uriTransformer.transformOutgoing);
 		}
+		this._proxy.$mark(`sql/query/${result.ownerUri}/ext_$onQueryComplete`);
 		// clear messages to maintain the order of things
 		if (this.messageRunner.isScheduled()) {
 			this.messageRunner.cancel();
