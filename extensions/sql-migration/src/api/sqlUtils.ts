@@ -494,7 +494,6 @@ export async function collectTargetLogins(
 	const error = new Error(result.errorMessage);
 	logError(TelemetryViews.LoginMigrationWizard, errorMessage, error);
 	throw error;
-
 }
 
 export async function isSourceConnectionSysAdmin(): Promise<boolean> {
