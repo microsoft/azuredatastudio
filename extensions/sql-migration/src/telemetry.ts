@@ -97,6 +97,5 @@ export function getTelemetryProps(migrationStateModel: MigrationStateModel): Tel
 		'resourceGroup': migrationStateModel._resourceGroup?.name,
 		'targetType': migrationStateModel._targetType,
 		'tenantId': migrationStateModel._azureAccount?.properties?.tenants[0]?.id,
-		'extensionVersion': migrationStateModel.extensionContext.extension.packageJSON.version,
 	};
 }
