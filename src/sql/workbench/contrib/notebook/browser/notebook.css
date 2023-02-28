@@ -107,7 +107,8 @@
 }
 
 /* non-preview */
-.notebookEditor :not(.in-preview) .codicon.icon-add {
+.notebookEditor :not(.in-preview) .codicon.icon-add,
+.hc-light .notebookEditor :not(.in-preview) .codicon.icon-add {
 	background-image: url("./media/light/add.svg");
 }
 
@@ -116,7 +117,8 @@
 	background-image: url("./media/dark/add_inverse.svg");
 }
 
-.notebookEditor :not(.in-preview) .codicon.icon-run-cells {
+.notebookEditor :not(.in-preview) .codicon.icon-run-cells,
+.hc-light .notebookEditor :not(.in-preview) .codicon.icon-run-cells {
 	background-image: url("./media/light/run_cells.svg");
 }
 
@@ -125,7 +127,8 @@
 	background-image: url("./media/dark/run_cells_inverse.svg");
 }
 
-.notebookEditor :not(.in-preview) .codicon.icon-trusted {
+.notebookEditor :not(.in-preview) .codicon.icon-trusted,
+.hc-light .notebookEditor :not(.in-preview) .codicon.icon-trusted {
 	background-image: url("./media/light/trusted.svg");
 }
 
@@ -133,7 +136,9 @@
 .hc-black .notebookEditor :not(.in-preview) .codicon.icon-trusted {
 	background-image: url("./media/dark/trusted_inverse.svg");
 }
-.notebookEditor :not(.in-preview) .codicon.icon-notTrusted {
+
+.notebookEditor :not(.in-preview) .codicon.icon-notTrusted,
+.hc-light .notebookEditor :not(.in-preview) .codicon.icon-notTrusted {
 	background-image: url("./media/light/nottrusted.svg");
 }
 
@@ -142,7 +147,8 @@
 	background-image: url("./media/dark/nottrusted_inverse.svg");
 }
 
-.notebookEditor :not(.in-preview) .codicon.icon-show-cells {
+.notebookEditor :not(.in-preview) .codicon.icon-show-cells,
+.hc-light .notebookEditor :not(.in-preview) .codicon.icon-show-cells {
 	background-image: url("./media/light/show_code.svg");
 }
 
@@ -151,7 +157,8 @@
 	background-image: url("./media/dark/show_code_inverse.svg");
 }
 
-.notebookEditor :not(.in-preview) .codicon.icon-hide-cells {
+.notebookEditor :not(.in-preview) .codicon.icon-hide-cells,
+.hc-light .notebookEditor :not(.in-preview) .codicon.icon-hide-cells {
 	background-image: url("./media/light/hide_code.svg");
 }
 
@@ -160,7 +167,8 @@
 	background-image: url("./media/dark/hide_code_inverse.svg");
 }
 
-.notebookEditor :not(.in-preview) .codicon.icon-clear-results {
+.notebookEditor :not(.in-preview) .codicon.icon-clear-results,
+.hc-light .notebookEditor :not(.in-preview) .codicon.icon-clear-results {
 	background-image: url("./media/light/clear_results.svg");
 }
 
@@ -170,6 +178,7 @@
 }
 
 .notebookEditor .in-preview .codicon.masked-icon,
+.hc-light .nodebookEditor .in-preview .codicon.masked-icon,
 .vs-dark .notebookEditor .in-preview .codicon.icon-clear-results,
 .hc-black .notebookEditor .in-preview .codicon.icon-clear-results {
 	background-image: none;
@@ -215,7 +224,8 @@
 	min-height: 39px;
 }
 
-.monaco-workbench .notebook-action.new-notebook {
+.monaco-workbench .notebook-action.new-notebook,
+.monaco-workbench.hc-light .notebook-action.new-notebook {
 	background: url("./media/light/new_notebook.svg") center center no-repeat;
 }
 

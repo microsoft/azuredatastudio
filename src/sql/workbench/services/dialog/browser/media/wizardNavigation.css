@@ -110,6 +110,7 @@
 
 .hc-light .wizardNavigation-dot.active:hover,
 .hc-light .wizardNavigation-dot.active.currentPage:hover {
+	border-color: #0F4A85;
 	border-style: dashed;
 }
 
@@ -124,6 +125,7 @@
 
 .hc-light .wizardNavigation-dot.active.currentPage {
 	border-style: solid;
+	border-color: #0F4A85;
 }
 
 .wizardNavigation-connector.invisible {

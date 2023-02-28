@@ -5,7 +5,7 @@
 
 /* Icons for various account actions */
 .monaco-workbench .account-view .actions-container .action-label.codicon-add-linked-account-action,
-.monaco-workbench.hc-white .account-view .actions-container .action-label.codicon-add-linked-account-action {
+.monaco-workbench.hc-light .account-view .actions-container .action-label.codicon-add-linked-account-action {
 	background-image: url('new_account.svg') !important;
 }
 
