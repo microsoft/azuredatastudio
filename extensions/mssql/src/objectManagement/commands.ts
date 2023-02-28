@@ -49,7 +49,7 @@ async function handleNewLoginDialogCommand(context: azdata.ObjectExplorerContext
 		await dialog.open();
 	}
 	catch (err) {
-		TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, TelemetryActions.OpenNewObjectDialog).withAdditionalProperties({
+		TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, TelemetryActions.OpenNewObjectDialog, err).withAdditionalProperties({
 			objectType: NodeType.Login
 		}).send();
 		await vscode.window.showErrorMessage(localizedConstants.OpenNewObjectDialogError(localizedConstants.LoginTypeDisplayName, getErrorMessage(err)));
