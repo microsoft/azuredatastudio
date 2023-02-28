@@ -20,7 +20,7 @@ import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, reservedProjectFolders } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
+import { FolderNode, FileNode, SqlObjectFileNode, PreDeployNode, PostDeployNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
@@ -856,12 +856,18 @@ export class ProjectsController {
 			return;
 		}
 
-		// TODO: swap this out and hookup to "Move" file/folder api
-		// rename the file
-		const newFilePath = path.join(path.dirname(file?.fsUri.fsPath!), `${newFileName}.sql`);
-		await fs.rename(file?.fsUri.fsPath!, newFilePath);
-		await project.exclude(file!);
-		await project.addExistingItem(newFilePath);
+		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(file?.relativePath!)), `${newFileName}.sql`);
+		const sqlProjectsService = await utils.getSqlProjectsService();
+
+		if (node instanceof SqlObjectFileNode) {
+			await sqlProjectsService.moveSqlObjectScript(project.projectFilePath, newFilePath, file!.relativePath)
+		} else if (node instanceof PreDeployNode) {
+			await sqlProjectsService.movePreDeploymentScript(project.projectFilePath, newFilePath, file!.relativePath)
+		} else if (node instanceof PostDeployNode) {
+			await sqlProjectsService.movePostDeploymentScript(project.projectFilePath, newFilePath, file!.relativePath)
+		}
+		// TODO add support for renaming none scripts after those are added in STS
+		// TODO add support for renaming publish profiles when support is added in DacFx
 
 		this.refreshProjectsTree(context);
 	}
