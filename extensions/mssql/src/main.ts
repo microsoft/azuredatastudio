@@ -115,7 +115,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	registerTableDesignerCommands(appContext);
 	registerObjectManagementCommands(appContext);
 
-	// context.subscriptions.push(new SqlNotebookController()); Temporarily isabled due to breaking query editor
+	// context.subscriptions.push(new SqlNotebookController()); Temporarily disabled due to breaking query editor
 
 	context.subscriptions.push(TelemetryReporter);
 
