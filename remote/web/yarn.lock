@@ -329,11 +329,6 @@ jschardet@3.0.0:
   resolved "https://registry.yarnpkg.com/jschardet/-/jschardet-3.0.0.tgz#898d2332e45ebabbdb6bf2feece9feea9a99e882"
   integrity sha512-lJH6tJ77V8Nzd5QWRkFYCLc13a3vADkh3r/Fi8HupZGWk2OVVDfnZP8V/VgQgZ+lzW0kG2UGb5hFgt3V3ndotQ==
 
-kburtram-query-plan@2.6.1:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/kburtram-query-plan/-/kburtram-query-plan-2.6.1.tgz#6b86128ec30c53694b53c4ee0e32d64350eb0c2c"
-  integrity sha512-7Brjwp0YOCGug1cmfvcG8s1kN4MOwiLgOmKWS0+QSq5qCH9Bcv78vKAI7Pq1Ro6rTbpiTIRITsFKYrF4XTVlQw==
-
 lodash.clonedeep@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
