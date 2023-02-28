@@ -70,8 +70,9 @@ export enum TelemetryAction {
 	StopDataCollection = 'StopDataCollection',
 	GetDatabasesListFailed = 'GetDatabasesListFailed',
 	ConnectToTarget = 'ConnectToTarget',
+	OpenLoginMigrationWizard = 'OpenLoginMigrationWizard',
 	LoginMigrationStarted = 'LoginMigrationStarted',
-	LoginMigrationCompleted = 'LoginMigrationCompleted'
+	LoginMigrationCompleted = 'LoginMigrationCompleted',
 }
 
 export enum TelemetryErrorName {
@@ -98,4 +99,17 @@ export function getTelemetryProps(migrationStateModel: MigrationStateModel): Tel
 		'targetType': migrationStateModel._targetType,
 		'tenantId': migrationStateModel._azureAccount?.properties?.tenants[0]?.id,
 	};
+}
+
+export function sendButtonClickEvent(migrationStateModel: MigrationStateModel, telemetryView: TelemetryViews, buttonPressed: TelemetryAction, pageTitle: string, newPageTitle: string): void {
+	sendSqlMigrationActionEvent(
+		telemetryView,
+		TelemetryAction.PageButtonClick,
+		{
+			...getTelemetryProps(migrationStateModel),
+			'buttonPressed': buttonPressed,
+			'pageTitle': pageTitle,
+			'newPageTitle': newPageTitle
+		},
+		{});
 }

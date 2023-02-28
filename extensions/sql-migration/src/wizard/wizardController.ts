@@ -16,7 +16,7 @@ import { SummaryPage } from './summaryPage';
 import { LoginMigrationStatusPage } from './loginMigrationStatusPage';
 import { DatabaseSelectorPage } from './databaseSelectorPage';
 import { LoginSelectorPage } from './loginSelectorPage';
-import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError, getTelemetryProps } from '../telemetry';
+import { sendSqlMigrationActionEvent, sendButtonClickEvent, TelemetryAction, TelemetryViews, logError, getTelemetryProps } from '../telemetry';
 import * as styles from '../constants/styles';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
 import { azureResource } from 'azurecore';
@@ -216,6 +216,10 @@ export class WizardController {
 		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
 		wizardSetupPromises.push(this._wizardObject.open());
 
+		// Emit telemetry for starting login migration wizard
+		const firstPageTitle = this._wizardObject.pages.length > 0 ? this._wizardObject.pages[0].title : "";
+		sendButtonClickEvent(this._model, TelemetryViews.LoginMigrationWizard, TelemetryAction.OpenLoginMigrationWizard, "", firstPageTitle);
+
 		this._model.extensionContext.subscriptions.push(
 			this._wizardObject.onPageChanged(
 				async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
@@ -326,15 +330,8 @@ export class WizardController {
 			? TelemetryAction.Next
 			: TelemetryAction.Prev;
 		const pageTitle = this._wizardObject.pages[pageChangeInfo.lastPage]?.title;
-		sendSqlMigrationActionEvent(
-			telemetryView,
-			TelemetryAction.PageButtonClick,
-			{
-				...getTelemetryProps(this._model),
-				'buttonPressed': buttonPressed,
-				'pageTitle': pageTitle
-			},
-			{});
+		const newPageTitle = this._wizardObject.pages[pageChangeInfo.newPage]?.title;
+		sendButtonClickEvent(this._model, telemetryView, buttonPressed, pageTitle, newPageTitle);
 	}
 
 }
