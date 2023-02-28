@@ -856,7 +856,12 @@ export class ProjectsController {
 		}
 
 		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(file?.relativePath!)), `${newFileName}.sql`);
-		await this.move(node, node.projectFileUri.fsPath, newFilePath, node.relativeProjectUri.fsPath);
+
+		try {
+			await this.move(node, node.projectFileUri.fsPath, newFilePath, node.relativeProjectUri.fsPath);
+		} catch (e) {
+			void vscode.window.showErrorMessage(constants.errorRenamingFile(file?.relativePath!, newFilePath, utils.getErrorMessage(e)));
+		}
 
 		this.refreshProjectsTree(context);
 	}
