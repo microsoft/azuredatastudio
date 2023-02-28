@@ -19,10 +19,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<Dashbo
 	}
 	// asynchronously starting the service
 	const outputChannel = vscode.window.createOutputChannel(constants.serviceName);
-	let serviceClient = new ServiceClient(outputChannel);
+	const serviceClient = new ServiceClient(outputChannel);
 	migrationServiceClient = await serviceClient.startService(context).catch((e) => {
 		console.error(e);
-		return undefined;
 		return undefined;
 	});
 
