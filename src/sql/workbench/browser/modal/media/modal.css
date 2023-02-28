@@ -256,12 +256,11 @@
 }
 
 .hc-black .dialog-message.warning .close-message-icon,
-.vs-dark .dialog-message-warning .close-message-icon,
-.vs .dialog-message-warning .close-message-icon {
+.close-message-icon {
 	background: url('close_inverse.svg') center center no-repeat;
 }
 
-.hc-light .dialog-message.warning .close-message-icon {
+.dialog-message.warning .close-message-icon {
 	background: url('close.svg') center center no-repeat;
 }
 
@@ -270,8 +269,7 @@
 	background: url('copy_inverse.svg') center center no-repeat;
 }
 
-.dialog-message.warning .copy-message-icon,
-.hc-light .dialog-message.warning .copy-message-icon {
+.dialog-message.warning .copy-message-icon {
 	background: url('copy.svg') center center no-repeat;
 }
 
@@ -280,8 +278,7 @@
 	background: url('show_details_inverse.svg') center center no-repeat;
 }
 
-.dialog-message.warning .message-details-icon,
-.hc-light .dialog-message.warning .message-details-icon {
+.dialog-message.warning .message-details-icon {
 	background: url('show_details.svg') center center no-repeat;
 }
 
@@ -289,16 +286,11 @@
 	background: url('info_notification_inverse.svg') center center no-repeat;
 }
 
-.hc-light .dialog-message.info .dialog-message-icon {
-	background: url('info_notification.svg') center center no-repeat;
-}
-
 .hc-black .dialog-message.warning .dialog-message-icon {
 	background: url('warning_notification_inverse.svg') center center no-repeat;
 }
 
-.dialog-message.warning .dialog-message-icon,
-.hc-light .dialog-message.warning .dialog-message-icon {
+.dialog-message.warning .dialog-message-icon {
 	background: url('warning_notification.svg') center center no-repeat;
 }
 
@@ -306,8 +298,24 @@
 	background: url('error_notification_inverse.svg') center center no-repeat;
 }
 
+.hc-light .dialog-message.info .dialog-message-icon {
+	background: url('info_notification.svg') center center no-repeat !important;
+}
+
 .hc-light .dialog-message.error .dialog-message-icon {
-	background: url('error_notification.svg') center center no-repeat;
+	background: url('error_notification.svg') center center no-repeat !important;
+}
+
+.hc-light .dialog-message.warning .dialog-message-icon {
+	background: url('warning_notification.svg') center center no-repeat !important;
+}
+
+.hc-light .copy-message-icon {
+	background: url('copy.svg') center center no-repeat !important;
+}
+
+.hc-light .close-message-icon {
+	background: url('close.svg') center center no-repeat !important;
 }
 
 .codicon.masked-icon.browse-local {
