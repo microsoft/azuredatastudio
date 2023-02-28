@@ -857,10 +857,15 @@ export class ProjectsController {
 
 		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(file?.relativePath!)), `${newFileName}.sql`);
 
-		try {
-			await this.move(node, node.projectFileUri.fsPath, newFilePath);
-		} catch (e) {
-			void vscode.window.showErrorMessage(constants.errorRenamingFile(file?.relativePath!, newFilePath, utils.getErrorMessage(e)));
+		const renameResult = await this.move(node, node.projectFileUri.fsPath, newFilePath);
+
+		if (!renameResult) { // file wasn't renamed
+			return;
+		} else if (renameResult?.success) {
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.rename).send();
+		} else {
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.rename).send();
+			void vscode.window.showErrorMessage(constants.errorRenamingFile(file?.relativePath!, newFilePath, utils.getErrorMessage(renameResult.errorMessage)));
 		}
 
 		this.refreshProjectsTree(context);
@@ -1877,10 +1882,15 @@ export class ProjectsController {
 		}
 
 		// Move the file
-		try {
-			await this.move(sourceFileNode, projectUri.fsPath, newPath);
-		} catch (e) {
-			void vscode.window.showErrorMessage(constants.errorMovingFile(sourceFileNode.fileSystemUri.fsPath, newPath, utils.getErrorMessage(e)));
+		const moveResult = await this.move(sourceFileNode, projectUri.fsPath, newPath);
+
+		if (!moveResult) { // file wasn't moved
+			return;
+		} else if (moveResult?.success) {
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.move).send();
+		} else {
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.move).send();
+			void vscode.window.showErrorMessage(constants.errorMovingFile(sourceFileNode.fileSystemUri.fsPath, newPath, utils.getErrorMessage(moveResult.errorMessage)));
 		}
 	}
 
@@ -1890,7 +1900,7 @@ export class ProjectsController {
 	 * @param projectFilePath Full file path to .sqlproj
 	 * @param destinationRelativePath path of the destination, relative to .sqlproj
 	 */
-	private async move(node: BaseProjectTreeItem, projectFilePath: string, destinationRelativePath: string): Promise<void> {
+	private async move(node: BaseProjectTreeItem, projectFilePath: string, destinationRelativePath: string): Promise<azdataType.ResultStatus | undefined> {
 		// trim off the project folder at the beginning of the relative path stored in the tree
 		const projectRelativeUri = vscode.Uri.file(path.basename(projectFilePath, constants.sqlprojExtension));
 		const originalRelativePath = utils.trimUri(projectRelativeUri, node.relativeProjectUri);
@@ -1902,15 +1912,18 @@ export class ProjectsController {
 
 		const sqlProjectsService = await utils.getSqlProjectsService();
 
+		let result;
 		if (node instanceof SqlObjectFileNode) {
-			await sqlProjectsService.moveSqlObjectScript(projectFilePath, destinationRelativePath, originalRelativePath)
+			result = await sqlProjectsService.moveSqlObjectScript(projectFilePath, destinationRelativePath, originalRelativePath)
 		} else if (node instanceof PreDeployNode) {
-			await sqlProjectsService.movePreDeploymentScript(projectFilePath, destinationRelativePath, originalRelativePath)
+			result = await sqlProjectsService.movePreDeploymentScript(projectFilePath, destinationRelativePath, originalRelativePath)
 		} else if (node instanceof PostDeployNode) {
-			await sqlProjectsService.movePostDeploymentScript(projectFilePath, destinationRelativePath, originalRelativePath)
+			result = await sqlProjectsService.movePostDeploymentScript(projectFilePath, destinationRelativePath, originalRelativePath)
 		}
 		// TODO add support for renaming none scripts after those are added in STS
 		// TODO add support for renaming publish profiles when support is added in DacFx
+
+		return result;
 	}
 }
 
