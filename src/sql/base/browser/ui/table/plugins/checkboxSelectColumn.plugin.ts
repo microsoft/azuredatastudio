@@ -219,12 +219,16 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 		const propertyValue = dataItem[this._options.title];
 		let checkboxEnabled: boolean = true;
 		let checkboxChecked: boolean = false;
+
 		if (typeof propertyValue === 'boolean') {
 			checkboxEnabled = true;
 			checkboxChecked = propertyValue;
 		} else if (propertyValue !== undefined) {
 			checkboxEnabled = propertyValue.enabled === undefined ? true : propertyValue.enabled;
 			checkboxChecked = propertyValue.checked === undefined ? false : propertyValue.checked;
+		} else if (propertyValue === undefined) { // If the value is undefined the checkbox will be enabled and unchecked
+			checkboxEnabled = true;
+			checkboxChecked = false;
 		}
 
 		return {
