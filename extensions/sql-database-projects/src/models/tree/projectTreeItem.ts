@@ -114,6 +114,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	}
 
 	private addNode(newNode: fileTree.FileNode | fileTree.FolderNode, entry: FileProjectEntry): void {
+		// Don't add external folders
 		if (entry.type !== EntryType.File && entry.relativePath.startsWith(RelativeOuterPath)) {
 			return;
 		}

@@ -567,10 +567,10 @@ export enum DatabaseProjectItemType {
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
 	sqlcmdVariablesRoot = 'databaseProject.itemType.sqlcmdVariablesRoot',
 	sqlcmdVariable = 'databaseProject.itemType.sqlcmdVariable',
-	preDeploy = 'databaseProject.itemType.file.preDeploy',
-	postDeploy = 'databaseProject.itemType.file.postDeploy',
-	none = 'databaseProject.itemType.file.none',
-	sqlObjectFile = 'databaseProject.itemType.file.sqlObject',
+	preDeploy = 'databaseProject.itemType.file.preDeploymentScript',
+	postDeploy = 'databaseProject.itemType.file.postDeployScript',
+	none = 'databaseProject.itemType.file.noneFile',
+	sqlObjectFile = 'databaseProject.itemType.file.sqlObjectScript',
 	publishProfile = 'databaseProject.itemType.file.publishProfile'
 }
 
