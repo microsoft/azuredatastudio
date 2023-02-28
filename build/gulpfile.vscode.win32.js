@@ -113,6 +113,10 @@ function buildWin32Setup(arch, target) {
 			ProductJsonPath: productJsonPath
 		};
 
+		if (target === 'system') {
+			definitions['DefaultDirName'] = `{pf}\\${product.win32DirName}`;
+		}
+
 		packageInnoSetup(issPath, { definitions }, cb);
 	};
 }
