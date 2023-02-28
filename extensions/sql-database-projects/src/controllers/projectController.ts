@@ -1904,8 +1904,7 @@ export class ProjectsController {
 		const sqlProjectsService = await utils.getSqlProjectsService();
 
 		if (node instanceof SqlObjectFileNode) {
-			const result = await sqlProjectsService.moveSqlObjectScript(projectFilePath, destinationRelativePath, originalRelativePath)
-			console.error(JSON.stringify(result));
+			await sqlProjectsService.moveSqlObjectScript(projectFilePath, destinationRelativePath, originalRelativePath)
 		} else if (node instanceof PreDeployNode) {
 			await sqlProjectsService.movePreDeploymentScript(projectFilePath, destinationRelativePath, originalRelativePath)
 		} else if (node instanceof PostDeployNode) {
