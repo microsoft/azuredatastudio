@@ -14,7 +14,6 @@ import * as vscode from 'vscode';
 import type * as azdataType from 'azdata';
 import * as dataworkspace from 'dataworkspace';
 import type * as mssqlVscode from 'vscode-mssql';
-import * as fse from 'fs-extra';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
@@ -1864,10 +1863,10 @@ export class ProjectsController {
 		let folderPath;
 		// target is the root of project, which is the .sqlproj
 		if (target.element.projectFileUri.fsPath === target.element.fileSystemUri.fsPath) {
-			folderPath = path.dirname(target.element.projectFileUri.fsPath!);
+			folderPath = path.basename(path.dirname(target.element.projectFileUri.fsPath!));
 		} else {
 			// target is another file or folder
-			folderPath = target.element.fileSystemUri.fsPath.endsWith(constants.sqlFileExtension) ? path.dirname(target.element.fileSystemUri.fsPath) : target.element.fileSystemUri.fsPath;
+			folderPath = target.element.relativeProjectUri.fsPath.endsWith(constants.sqlFileExtension) ? path.dirname(target.element.relativeProjectUri.fsPath) : target.element.relativeProjectUri.fsPath;
 		}
 
 		const newPath = path.join(folderPath!, sourceFileNode.friendlyName);
@@ -1884,15 +1883,41 @@ export class ProjectsController {
 
 		// Move the file
 		try {
-			const project = await Project.openProject(projectUri.fsPath);
-
-			// TODO: swap out with DacFx projects apis - currently moving pre/post deploy scripts don't work, but they should work after the swap
-			await fse.move(sourceFileNode.fileSystemUri.fsPath, newPath!);
-			await project.exclude(project.files.find(f => f.fsUri.fsPath === sourceFileNode.fileSystemUri.fsPath)!);
-			await project.addExistingItem(newPath!);
+			await this.move(sourceFileNode, projectUri.fsPath, newPath, sourceFileNode.relativeProjectUri.fsPath);
 		} catch (e) {
 			void vscode.window.showErrorMessage(constants.errorMovingFile(sourceFileNode.fileSystemUri.fsPath, newPath, utils.getErrorMessage(e)));
 		}
+	}
+
+	/**
+	 * Moves a file to a different location
+	 * @param node Node being moved
+	 * @param projectFilePath Full file path to .sqlproj
+	 * @param destinationRelativePath path of the destination, relative to .sqlproj
+	 * @param originalRelativePath path of the original location, relative to .sqlproj
+	 */
+	private async move(node: FileNode, projectFilePath: string, destinationRelativePath: string, originalRelativePath: string): Promise<void> {
+		if (originalRelativePath === destinationRelativePath) {
+			return;
+		}
+
+		// trim off the project folder at the beginning of the relative path stored in the tree
+		const projectRelativeUri = vscode.Uri.file(path.basename(projectFilePath, constants.sqlprojExtension));
+		originalRelativePath = utils.trimUri(projectRelativeUri, vscode.Uri.file(originalRelativePath));
+		destinationRelativePath = utils.trimUri(projectRelativeUri, vscode.Uri.file(destinationRelativePath));
+
+		const sqlProjectsService = await utils.getSqlProjectsService();
+
+		if (node instanceof SqlObjectFileNode) {
+			const result = await sqlProjectsService.moveSqlObjectScript(projectFilePath, destinationRelativePath, originalRelativePath)
+			console.error(JSON.stringify(result));
+		} else if (node instanceof PreDeployNode) {
+			await sqlProjectsService.movePreDeploymentScript(projectFilePath, destinationRelativePath, originalRelativePath)
+		} else if (node instanceof PostDeployNode) {
+			await sqlProjectsService.movePostDeploymentScript(projectFilePath, destinationRelativePath, originalRelativePath)
+		}
+		// TODO add support for renaming none scripts after those are added in STS
+		// TODO add support for renaming publish profiles when support is added in DacFx
 	}
 }
 
