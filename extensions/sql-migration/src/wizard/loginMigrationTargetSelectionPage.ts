@@ -535,7 +535,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			.withProps({
 				ariaLabel: constants.AUTHENTICATION_TYPE,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
-				editable: true,
+				editable: false,
 				required: true,
 				fireOnTextChange: true,
 				placeholder: constants.SELECT_AUTHENTICATION_TYPE,
