@@ -105,7 +105,7 @@ function buildWin32Setup(arch, target) {
 			IncompatibleArchAppId: { 'ia32': x64AppId, 'x64': ia32AppId, 'arm64': ia32AppId }[arch],
 			AppUserId: product.win32AppUserModelId,
 			ArchitecturesAllowed: { 'ia32': '', 'x64': 'x64', 'arm64': 'arm64 x64' }[arch], //{{SQL CARBON EDIT}} - we still have x64 binaries in SqlToolsService, need to allow x64 binaries for arm64 arch.
-			ArchitecturesInstallIn64BitMode: { 'ia32': '', 'x64': 'x64', 'arm64': 'arm64' }[arch],
+			ArchitecturesInstallIn64BitMode: { 'ia32': '', 'x64': 'x64', 'arm64': 'arm64 x64' }[arch],
 			SourceDir: sourcePath,
 			RepoDir: repoPath,
 			OutputDir: outputPath,
@@ -113,9 +113,9 @@ function buildWin32Setup(arch, target) {
 			ProductJsonPath: productJsonPath
 		};
 
-		if (target === 'system') {
-			definitions['DefaultDirName'] = `{pf}\\${product.win32DirName}`;
-		}
+		// if (target === 'system') {
+		// 	definitions['DefaultDirName'] = `{commonpf}\\${product.win32DirName}`;
+		// }
 
 		packageInnoSetup(issPath, { definitions }, cb);
 	};
