@@ -858,7 +858,7 @@ export class ProjectsController {
 		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(file?.relativePath!)), `${newFileName}.sql`);
 
 		try {
-			await this.move(node, node.projectFileUri.fsPath, newFilePath, node.relativeProjectUri.fsPath);
+			await this.move(node, node.projectFileUri.fsPath, newFilePath);
 		} catch (e) {
 			void vscode.window.showErrorMessage(constants.errorRenamingFile(file?.relativePath!, newFilePath, utils.getErrorMessage(e)));
 		}
@@ -1878,7 +1878,7 @@ export class ProjectsController {
 
 		// Move the file
 		try {
-			await this.move(sourceFileNode, projectUri.fsPath, newPath, sourceFileNode.relativeProjectUri.fsPath);
+			await this.move(sourceFileNode, projectUri.fsPath, newPath);
 		} catch (e) {
 			void vscode.window.showErrorMessage(constants.errorMovingFile(sourceFileNode.fileSystemUri.fsPath, newPath, utils.getErrorMessage(e)));
 		}
@@ -1889,17 +1889,16 @@ export class ProjectsController {
 	 * @param node Node being moved
 	 * @param projectFilePath Full file path to .sqlproj
 	 * @param destinationRelativePath path of the destination, relative to .sqlproj
-	 * @param originalRelativePath path of the original location, relative to .sqlproj
 	 */
-	private async move(node: BaseProjectTreeItem, projectFilePath: string, destinationRelativePath: string, originalRelativePath: string): Promise<void> {
+	private async move(node: BaseProjectTreeItem, projectFilePath: string, destinationRelativePath: string): Promise<void> {
+		// trim off the project folder at the beginning of the relative path stored in the tree
+		const projectRelativeUri = vscode.Uri.file(path.basename(projectFilePath, constants.sqlprojExtension));
+		const originalRelativePath = utils.trimUri(projectRelativeUri, node.relativeProjectUri);
+		destinationRelativePath = utils.trimUri(projectRelativeUri, vscode.Uri.file(destinationRelativePath));
+
 		if (originalRelativePath === destinationRelativePath) {
 			return;
 		}
-
-		// trim off the project folder at the beginning of the relative path stored in the tree
-		const projectRelativeUri = vscode.Uri.file(path.basename(projectFilePath, constants.sqlprojExtension));
-		originalRelativePath = utils.trimUri(projectRelativeUri, vscode.Uri.file(originalRelativePath));
-		destinationRelativePath = utils.trimUri(projectRelativeUri, vscode.Uri.file(destinationRelativePath));
 
 		const sqlProjectsService = await utils.getSqlProjectsService();
 
