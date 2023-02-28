@@ -131,7 +131,8 @@ export class ExtensionManagementChannelClient extends Disposable implements IExt
 	}
 
 	unzip(zipLocation: URI): Promise<IExtensionIdentifier> {
-		return Promise.resolve(this.channel.call('unzip', [zipLocation]));
+		// return Promise.resolve(this.channel.call('unzip', [zipLocation])); // {{SQL CARBON TODO}} Put this back and remove bottom line.
+		return undefined;
 	}
 
 	install(vsix: URI, options?: ServerInstallVSIXOptions): Promise<ILocalExtension> {
@@ -147,11 +148,13 @@ export class ExtensionManagementChannelClient extends Disposable implements IExt
 	}
 
 	uninstall(extension: ILocalExtension, options?: ServerUninstallOptions): Promise<void> {
-		return Promise.resolve(this.channel.call('uninstall', [extension!, options]));
+		// return Promise.resolve(this.channel.call('uninstall', [extension!, options])); {{SQL CARBON TODO}} Put this back and remove bottom line
+		return undefined;
 	}
 
 	reinstallFromGallery(extension: ILocalExtension): Promise<void> {
-		return Promise.resolve(this.channel.call('reinstallFromGallery', [extension]));
+		// return Promise.resolve(this.channel.call('reinstallFromGallery', [extension])); {{SQL CARBON TODO}} Put this back and remove bottom line
+		return undefined;
 	}
 
 	getInstalled(type: ExtensionType | null = null, extensionsProfileResource?: URI): Promise<ILocalExtension[]> {
@@ -174,7 +177,8 @@ export class ExtensionManagementChannelClient extends Disposable implements IExt
 	}
 
 	getExtensionsControlManifest(): Promise<IExtensionsControlManifest> {
-		return Promise.resolve(this.channel.call('getExtensionsControlManifest'));
+		// return Promise.resolve(this.channel.call('getExtensionsControlManifest')); {{SQL CARBON TODO}} Put this back and remove bottom line
+		return undefined;
 	}
 
 	registerParticipant() { throw new Error('Not Supported'); }
