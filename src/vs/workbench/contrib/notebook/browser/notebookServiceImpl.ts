@@ -484,7 +484,7 @@ export class NotebookService extends Disposable implements INotebookService {
 							entrypoint: notebookContribution.entrypoint,
 							displayName: notebookContribution.displayName,
 							mimeTypes: notebookContribution.mimeTypes || [],
-							dependencies: notebookContribution.dependencies,
+							dependencies: notebookContribution.hardDependencies,
 							optionalDependencies: notebookContribution.optionalDependencies,
 							requiresMessaging: notebookContribution.requiresMessaging,
 						}));

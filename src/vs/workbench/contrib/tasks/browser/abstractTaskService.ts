@@ -81,7 +81,7 @@ import { IViewsService, IViewDescriptorService } from 'vs/workbench/common/views
 import { isWorkspaceFolder, ITaskQuickPickEntry, QUICKOPEN_DETAIL_CONFIG, TaskQuickPick, QUICKOPEN_SKIP_CONFIG, configureTaskIcon, ITaskTwoLevelQuickPickEntry } from 'vs/workbench/contrib/tasks/browser/taskQuickPick';
 import { ILogService } from 'vs/platform/log/common/log';
 import { once } from 'vs/base/common/functional';
-import { ThemeIcon } from 'vs/platform/theme/common/themeService';
+import { IThemeService, ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { IWorkspaceTrustManagementService, IWorkspaceTrustRequestService } from 'vs/platform/workspace/common/workspaceTrust';
 import { VirtualWorkspaceContext } from 'vs/workbench/common/contextkeys';
 import { Schemas } from 'vs/base/common/network';
@@ -267,7 +267,8 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		@IViewDescriptorService private readonly _viewDescriptorService: IViewDescriptorService,
 		@IWorkspaceTrustRequestService private readonly _workspaceTrustRequestService: IWorkspaceTrustRequestService,
 		@IWorkspaceTrustManagementService private readonly _workspaceTrustManagementService: IWorkspaceTrustManagementService,
-		@ILogService private readonly logService: ILogService,
+		@ILogService private readonly _logService: ILogService,
+		@IThemeService private readonly _themeService: IThemeService,
 		@ISqlTaskService private readonly sqlTaskService: ISqlTaskService // {{SQL CARBON EDIT}}
 	) {
 		super();
@@ -1803,7 +1804,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 	// {{SQL CARBON EDIT}}
 	private async handleExecuteResult(executeResult: ITaskExecuteResult, runSource?: TaskRunSource, taskNodeId?: string): Promise<ITaskSummary> {
 		if (runSource === TaskRunSource.User) {
-			await this.setRecentlyUsedTask(executeResult.task);
+			await this._setRecentlyUsedTask(executeResult.task);
 		}
 		if (executeResult.kind === TaskExecuteKind.Active) {
 			const active = executeResult.active;

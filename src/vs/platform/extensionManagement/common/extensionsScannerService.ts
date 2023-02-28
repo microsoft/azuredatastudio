@@ -515,7 +515,7 @@ class ExtensionsScanner extends Disposable {
 				if (input.type === ExtensionType.User && basename(c.resource).indexOf('.') === 0) {
 					return null;
 				}
-				const extensionScannerInput = new ExtensionScannerInput(c.resource, input.mtime, input.type, input.excludeObsolete, input.validate, input.productVersion, input.vsCodeProductVersion, input.productDate, input.productCommit, input.devMode, input.language, input.translations); // {{SQL CARBON EDIT}} Add vs code version so we can compare both engines
+				const extensionScannerInput = new ExtensionScannerInput(c.resource, input.mtime, input.applicationExtensionslocation, input.applicationExtensionslocationMtime, input.profile, input.type, input.excludeObsolete, input.validate, input.productVersion, input.vsCodeProductVersion, input.productDate, input.productCommit, input.devMode, input.language, input.translations); // {{SQL CARBON EDIT}} Add vs code version so we can compare both engines
 				return this.scanExtension(extensionScannerInput);
 			}));
 		return coalesce(extensions)
@@ -541,7 +541,7 @@ class ExtensionsScanner extends Disposable {
 		const extensions = await Promise.all<IRelaxedScannedExtension | null>(
 			scannedProfileExtensions.map(async extensionInfo => {
 				if (filter(extensionInfo)) {
-					const extensionScannerInput = new ExtensionScannerInput(extensionInfo.location, input.mtime, input.applicationExtensionslocation, input.applicationExtensionslocationMtime, input.profile, input.type, input.excludeObsolete, input.validate, input.productVersion, input.productDate, input.productCommit, input.devMode, input.language, input.translations);
+					const extensionScannerInput = new ExtensionScannerInput(extensionInfo.location, input.mtime, input.applicationExtensionslocation, input.applicationExtensionslocationMtime, input.profile, input.type, input.excludeObsolete, input.validate, input.productVersion, input.vsCodeProductVersion, input.productDate, input.productCommit, input.devMode, input.language, input.translations); // {{SQL CARBON EDIT}} Add vs code version so we can compare both engines
 					return this.scanExtension(extensionScannerInput, extensionInfo.metadata);
 				}
 				return null;

@@ -577,17 +577,19 @@ export class QueryEditorOverrideContribution extends Disposable implements IWork
 				},
 				{
 					// Fall back to using the normal text based diff editor - we don't want the query bar and related items showing up in the diff editor
-					canHandleDiff: () => false
+					// canHandleDiff: () => false
 				},
-				async (editorInput, group) => {
-					const fileInput = await this._editorService.createEditorInput(editorInput) as FileEditorInput;
-					const langAssociation = languageAssociationRegistry.getAssociationForLanguage(lang);
-					const queryEditorInput = langAssociation?.syncConvertInput?.(fileInput);
-					if (!queryEditorInput) {
-						this._logService.warn('Unable to create input for resolving editor ', editorInput.resource);
-						return undefined;
+				{
+					createEditorInput: async (editorInput, group) => {
+						const fileInput = await this._editorService.createEditorInput(editorInput) as FileEditorInput;
+						const langAssociation = languageAssociationRegistry.getAssociationForLanguage(lang);
+						const queryEditorInput = langAssociation?.syncConvertInput?.(fileInput);
+						if (!queryEditorInput) {
+							this._logService.warn('Unable to create input for resolving editor ', editorInput.resource);
+							return undefined;
+						}
+						return { editor: queryEditorInput, options: editorInput.options, group: group };
 					}
-					return { editor: queryEditorInput, options: editorInput.options, group: group };
 				}
 			));
 		});

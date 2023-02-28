@@ -988,6 +988,7 @@ export interface IListStyles extends IFindInputStyles {
 	listFilterWidgetOutline?: Color;
 	listFilterWidgetNoMatchesOutline?: Color;
 	listFilterWidgetShadow?: Color;
+	listMatchesShadow?: Color; // {{SQL CARBON EDIT}}
 	treeIndentGuidesStroke?: Color;
 	tableColumnsBorder?: Color;
 	tableOddRowsBackgroundColor?: Color;

@@ -282,7 +282,7 @@ export abstract class AbstractTunnelService implements ITunnelService {
 		// Prevent tunnel factories from calling openTunnel from within the factory
 		if (this._tunnelProvider && this._factoryInProgress.has(remotePort)) {
 			this.logService.debug(`ForwardedPorts: (TunnelService) Another call to create a tunnel with the same address has occurred before the last one completed. This call will be ignored.`);
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		const resolvedTunnel = this.retainOrCreateTunnel(addressProvider, remoteHost, remotePort, localPort, elevateIfNeeded, privacy, protocol);

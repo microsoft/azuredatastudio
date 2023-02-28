@@ -49,9 +49,10 @@ export class TelemetryService extends Disposable implements ITelemetryService {
 				sendErrorTelemetry: this.sendErrorTelemetry,
 			};
 
-			return this._register(new BaseTelemetryService(config, configurationService, productService));
+			this.impl = this._register(new BaseTelemetryService(config, configurationService, productService));
+		} else {
+			this.impl = NullTelemetryService;
 		}
-		return this.impl;
 	}
 
 	setExperimentProperty(name: string, value: string): void {

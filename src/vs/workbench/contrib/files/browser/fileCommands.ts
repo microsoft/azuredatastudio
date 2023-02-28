@@ -661,7 +661,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	weight: KeybindingWeight.WorkbenchContrib,
 	when: null,
 	id: NEW_UNTITLED_PLAIN_FILE_COMMAND_ID,
-	handler: async (accessor, args?: { viewType: string }) => {
+	handler: async (accessor, args?: { languageId?: string; viewType: string }) => {
 		const editorService = accessor.get(IEditorService);
 
 		await editorService.openEditor({

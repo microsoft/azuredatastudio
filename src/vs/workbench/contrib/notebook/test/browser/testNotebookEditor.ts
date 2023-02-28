@@ -409,7 +409,7 @@ class TestCellExecution implements INotebookCellExecution {
 class TestNotebookExecutionStateService implements INotebookExecutionStateService {
 
 	getLastFailedCellForNotebook(notebook: URI): number | undefined {
-		return;
+		return undefined; // {{SQL CARBON EDIT}} strict nulls
 	}
 
 	_serviceBrand: undefined;

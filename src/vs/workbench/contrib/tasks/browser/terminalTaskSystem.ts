@@ -1424,7 +1424,7 @@ export class TerminalTaskSystem extends Disposable implements ITaskSystem {
 		}
 
 		this._terminalCreationQueue = this._terminalCreationQueue.then(() => this._doCreateTerminal(group, launchConfigs!));
-		const terminal: ITerminalInstance = (await this._terminalCreationQueue)!;
+		const terminal: any = (await this._terminalCreationQueue)!; // {{SQL CARBON EDIT}} Specified type any
 		terminal.shellLaunchConfig.task = { lastTask: taskKey, group, label: task._label, id: task._id };
 		terminal.shellLaunchConfig.reconnectionOwner = ReconnectionType;
 		const terminalKey = terminal.instanceId.toString();

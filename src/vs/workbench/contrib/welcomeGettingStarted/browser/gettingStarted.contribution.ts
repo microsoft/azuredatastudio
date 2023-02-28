@@ -30,7 +30,7 @@ import { isLinux, isMacintosh, isWindows, OperatingSystem as OS } from 'vs/base/
 import { IExtensionManagementServerService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { StartupPageContribution, } from 'vs/workbench/contrib/welcomeGettingStarted/browser/startupPage';
-import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput';
+// import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput'; {{SQL CARBON EDIT}} Remove unused
 
 
 export * as icons from 'vs/workbench/contrib/welcomeGettingStarted/browser/gettingStartedIcons';
