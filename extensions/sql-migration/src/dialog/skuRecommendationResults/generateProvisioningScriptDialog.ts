@@ -150,13 +150,12 @@ export class GenerateProvisioningScriptDialog {
 		}).component();
 
 		const armTemplateWarning = _view.modelBuilder.infoBox().withProps({
-			text: "The provided template is a quickstart template. After deployment, we recommend reviewing the {0} on how to solve common security requirements. Not all requirements are applicable to all environments, and you should consult your database and security team on which features to implement.",
+			text: constants.TARGET_PROVISIONING_WARNING,
 			style: 'information',
-			// width: '300px',
 			CSSStyles: { ...styles.BODY_CSS, },
 			links: [{
-				text: "security best practices",
-				url: 'https://learn.microsoft.com/azure/azure-sql/managed-instance/tde-certificate-migrate',
+				text: constants.TARGET_PROVISIONING_BEST_PRACTICES,
+				url: 'https://learn.microsoft.com/azure/azure-sql/database/security-best-practice',
 			}]
 		}).component();
 
@@ -271,14 +270,14 @@ export class GenerateProvisioningScriptDialog {
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 			this.dialog.cancelButton.hidden = true;
 
-			const armTemplateSaveButton = azdata.window.createButton('Save template', 'right');
+			const armTemplateSaveButton = azdata.window.createButton(constants.TARGET_PROVISIONING_SAVE, 'right');
 			this._disposables.push(armTemplateSaveButton.onClick(async () => await this.saveArmTemplate()));
 
 			const armTemplateCopyButton = azdata.window.createButton(constants.COPY_TO_CLIPBOARD, 'right');
 			this._disposables.push(armTemplateCopyButton.onClick(async () => await this.copyArmTemplate()));
 
-			const armTemplatePortalButton = azdata.window.createButton('Deploy in Azure Portal', 'right');
-			this._disposables.push(armTemplatePortalButton.onClick(() => vscode.env.openExternal(vscode.Uri.parse("https://portal.azure.com/#create/Microsoft.Template"))));
+			const armTemplatePortalButton = azdata.window.createButton(constants.TARGET_PROVISIONING_DEPLOY, 'right');
+			this._disposables.push(armTemplatePortalButton.onClick(() => vscode.env.openExternal(vscode.Uri.parse('https://portal.azure.com/#create/Microsoft.Template'))));
 
 			this.dialog.customButtons = [armTemplateSaveButton, armTemplateCopyButton, armTemplatePortalButton];
 
