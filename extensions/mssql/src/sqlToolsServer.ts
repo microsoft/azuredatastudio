@@ -25,11 +25,11 @@ import * as nls from 'vscode-nls';
 import { LanguageExtensionService } from './languageExtension/languageExtensionService';
 import { SqlAssessmentService } from './sqlAssessment/sqlAssessmentService';
 import { NotebookConvertService } from './notebookConvert/notebookConvertService';
-import { SqlMigrationService } from './sqlMigration/sqlMigrationService';
 import { SqlCredentialService } from './credentialstore/sqlCredentialService';
 import { AzureBlobService } from './azureBlob/azureBlobService';
 import { ErrorDiagnosticsProvider } from './errorDiagnostics/errorDiagnosticsProvider';
-import { TdeMigrationService } from './tdeMigration/tdeMigrationService';
+import { SqlProjectsService } from './sqlProjects/sqlProjectsService';
+import { ObjectManagementService } from './objectManagement/objectManagementService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -188,16 +188,16 @@ function getClientOptions(context: AppContext): ClientOptions {
 			SchemaCompareService.asFeature(context),
 			LanguageExtensionService.asFeature(context),
 			DacFxService.asFeature(context),
+			SqlProjectsService.asFeature(context),
 			CmsService.asFeature(context),
 			SqlAssessmentService.asFeature(context),
 			NotebookConvertService.asFeature(context),
 			ProfilerFeature,
-			SqlMigrationService.asFeature(context),
 			SqlCredentialService.asFeature(context),
 			TableDesignerFeature,
 			ExecutionPlanServiceFeature,
 			ErrorDiagnosticsProvider.asFeature(context),
-			TdeMigrationService.asFeature(context)
+			ObjectManagementService.asFeature(context)
 		],
 		outputChannel: outputChannel,
 		// Automatically reveal the output channel only in dev mode, so that the users are not impacted and issues can still be caught during development.

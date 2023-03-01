@@ -9,18 +9,18 @@ import { Emitter } from 'vs/base/common/event';
 import { DisposableStore, dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { NotebookDto } from 'vs/workbench/api/browser/mainThreadNotebookDto';
-import { IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers'; // {{SQL CARBON EDIT}} Remove unused
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { INotebookCellStatusBarService } from 'vs/workbench/contrib/notebook/common/notebookCellStatusBarService';
 import { INotebookCellStatusBarItemProvider, INotebookContributionData, NotebookData as NotebookData, NotebookExtensionDescription, TransientCellMetadata, TransientDocumentMetadata, TransientOptions } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { INotebookContentProvider, INotebookService, SimpleNotebookProviderInfo } from 'vs/workbench/contrib/notebook/common/notebookService';
 import { SerializableObjectWithBuffers } from 'vs/workbench/services/extensions/common/proxyIdentifier';
-import { ExtHostContext, ExtHostNotebookShape, MainThreadNotebookShape } from '../common/extHost.protocol'; // {{SQL CARBON EDIT}} Remove unused
+import { ExtHostContext, ExtHostNotebookShape, MainContext, MainThreadNotebookShape } from '../common/extHost.protocol';
 import { ILogService } from 'vs/platform/log/common/log';
 import { StopWatch } from 'vs/base/common/stopwatch';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { assertType } from 'vs/base/common/types';
 
-// @extHostNamedCustomer(MainContext.MainThreadNotebook) {{SQL CARBON EDIT}} Disable VS Code notebooks
+@extHostNamedCustomer(MainContext.MainThreadNotebook)
 export class MainThreadNotebooks implements MainThreadNotebookShape {
 
 	private readonly _disposables = new DisposableStore();
@@ -196,7 +196,7 @@ CommandsRegistry.registerCommand('_executeDataToNotebook', async (accessor, ...a
 	const notebookService = accessor.get(INotebookService);
 	const info = await notebookService.withNotebookDataProvider(notebookType);
 	if (!(info instanceof SimpleNotebookProviderInfo)) {
-		return undefined;
+		return undefined; // {{SQL CARBON EDIT}} strict nulls
 	}
 
 	const dto = await info.serializer.dataToNotebook(bytes);
@@ -212,7 +212,7 @@ CommandsRegistry.registerCommand('_executeNotebookToData', async (accessor, ...a
 	const notebookService = accessor.get(INotebookService);
 	const info = await notebookService.withNotebookDataProvider(notebookType);
 	if (!(info instanceof SimpleNotebookProviderInfo)) {
-		return undefined;
+		return undefined; // {{SQL CARBON EDIT}} strict nulls
 	}
 
 	const data = NotebookDto.fromNotebookDataDto(dto.value);

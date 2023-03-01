@@ -44,6 +44,7 @@ import { createCSSRule } from 'vs/base/browser/dom';
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
 export class ConnectionWidget extends lifecycle.Disposable {
+	private _initialConnectionInfo: IConnectionProfile;
 	private _defaultInputOptionRadioButton: RadioButton;
 	private _connectionStringRadioButton: RadioButton;
 	private _previousGroupOption: string;
@@ -308,7 +309,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	 */
 	protected registerOnSelectionChangeEvents(): void {
 		//Register on selection change event for custom options
-		this._customOptionWidgets.forEach((widget, i) => {
+		this._customOptionWidgets?.forEach((widget, i) => {
 			if (widget instanceof SelectBox) {
 				this._registerSelectionChangeEvents([this._customOptionWidgets], this._customOptions[i], widget);
 			}
@@ -612,7 +613,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._callbacks.onSetConnectButton(shouldEnableConnectButton);
 	}
 
-	protected onAuthTypeSelected(selectedAuthType: string) {
+	protected onAuthTypeSelected(selectedAuthType: string): void {
 		let currentAuthType = this.getMatchingAuthType(selectedAuthType);
 		if (currentAuthType !== AuthenticationType.SqlLogin) {
 			if (currentAuthType !== AuthenticationType.AzureMFA && currentAuthType !== AuthenticationType.AzureMFAAndUser) {
@@ -668,6 +669,19 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._userNameInputBox.enable();
 			this._passwordInputBox.enable();
 			this._rememberPasswordCheckBox.enabled = true;
+
+			if (this._initialConnectionInfo) {
+				this._initialConnectionInfo.authenticationType = AuthenticationType.SqlLogin;
+
+				if (this._initialConnectionInfo.userName) {
+					const setPasswordInputBox = (profile: IConnectionProfile) => {
+						this._passwordInputBox.value = profile.password;
+					};
+
+					this._rememberPasswordCheckBox.checked = this._initialConnectionInfo.savePassword;
+					this._connectionManagementService.addSavedPassword(this._initialConnectionInfo, true).then(setPasswordInputBox)
+				}
+			}
 		}
 	}
 
@@ -822,6 +836,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	public initDialog(connectionInfo: IConnectionProfile): void {
+		this._initialConnectionInfo = connectionInfo;
 		this.fillInConnectionInputs(connectionInfo);
 	}
 
@@ -924,7 +939,11 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						// If account was not filled in from received configuration, select the first account.
 						this._azureAccountDropdown.select(0);
 						account = this._azureAccountList[0];
-						accountName = account.key.accountId;
+						if (this._azureAccountList.length > 0) {
+							accountName = account.key.accountId;
+						} else {
+							this._logService.debug('fillInConnectionInputs: No accounts available');
+						}
 					}
 					await this.onAzureAccountSelected();
 
@@ -944,7 +963,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						this._azureTenantId = account.properties.tenants[0].id;
 						this.onAzureTenantSelected(0);
 					}
-					else {
+					else if (accountName) {
 						this._logService.error(`fillInConnectionInputs : Could not find any tenants for account ${accountName}`);
 					}
 				}).catch(err => this._logService.error(`Unexpected error populating initial Azure Account options : ${err}`));

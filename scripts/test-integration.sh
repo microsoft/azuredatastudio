@@ -34,11 +34,10 @@ else
 	# and the build bundles extensions into .build webpacked
 	# {{SQL CARBON EDIT}} Don't compile unused extensions
 	yarn gulp 	compile-extension:azurecore \
-				compile-extension:git
+				compile-extension:git \
 				# compile-extension:vscode-api-tests \
 				# compile-extension:vscode-colorize-tests \
 				# compile-extension:vscode-custom-editor-tests \
-				# compile-extension:vscode-notebook-tests \
 				# compile-extension:markdown-language-features \
 				# compile-extension:typescript-language-features \
 				# compile-extension:emmet \

@@ -29,14 +29,14 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	projectNodeName: string;
 
 	constructor(project: Project) {
-		super(vscode.Uri.parse(path.basename(project.projectFilePath, sqlprojExtension)), vscode.Uri.file(project.projectFilePath), undefined);
+		super(vscode.Uri.parse(path.basename(project.projectFilePath, sqlprojExtension)), vscode.Uri.file(project.projectFilePath));
 
 		this.project = project;
 		this.fileSystemUri = vscode.Uri.file(project.projectFilePath);
 		this.projectNodeName = path.basename(project.projectFilePath, sqlprojExtension);
 
-		this.databaseReferencesNode = new DatabaseReferencesTreeItem(this.projectNodeName, this.sqlprojUri, project.databaseReferences, this);
-		this.sqlCmdVariablesNode = new SqlCmdVariablesTreeItem(this.projectNodeName, this.sqlprojUri, project.sqlCmdVariables, this);
+		this.databaseReferencesNode = new DatabaseReferencesTreeItem(this.projectNodeName, this.projectFileUri, project.databaseReferences);
+		this.sqlCmdVariablesNode = new SqlCmdVariablesTreeItem(this.projectNodeName, this.projectFileUri, project.sqlCmdVariables);
 		this.construct();
 	}
 
@@ -62,52 +62,77 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	 * Processes the list of files in a project file to constructs the tree
 	 */
 	private construct() {
-		let treeItemList = this.project.files
-			.concat(this.project.preDeployScripts)
-			.concat(this.project.postDeployScripts)
-			.concat(this.project.noneDeployScripts);
+		// pre deploy scripts
+		for (const preDeployEntry of this.project.preDeployScripts) {
+			const newNode = new fileTree.PreDeployNode(preDeployEntry.fsUri, this.projectFileUri);
+			this.addNode(newNode, preDeployEntry);
+		}
 
-		for (const entry of treeItemList) {
-			if (entry.type !== EntryType.File && entry.relativePath.startsWith(RelativeOuterPath)) {
-				continue;
-			}
+		// post deploy scripts
+		for (const postDeployEntry of this.project.postDeployScripts) {
+			const newNode = new fileTree.PostDeployNode(postDeployEntry.fsUri, this.projectFileUri);
+			this.addNode(newNode, postDeployEntry);
+		}
 
-			const parentNode = this.getEntryParentNode(entry);
+		// none scripts
+		for (const noneEntry of this.project.noneDeployScripts) {
+			const newNode = new fileTree.NoneNode(noneEntry.fsUri, this.projectFileUri);
+			this.addNode(newNode, noneEntry);
+		}
 
-			if (Object.keys(parentNode.fileChildren).includes(path.basename(entry.fsUri.path))) {
-				continue; // ignore duplicate entries
-			}
+		// publish profiles
+		for (const publishProfile of this.project.publishProfiles) {
+			const newNode = new fileTree.PublishProfileNode(publishProfile.fsUri, this.projectFileUri);
+			this.addNode(newNode, publishProfile);
+		}
 
+		// sql object scripts and folders
+		for (const entry of this.project.files) {
 			let newNode: fileTree.FolderNode | fileTree.FileNode;
 
 			switch (entry.type) {
 				case EntryType.File:
 					if (entry.sqlObjectType === ExternalStreamingJob) {
-						newNode = new fileTree.ExternalStreamingJobFileNode(entry.fsUri, this.sqlprojUri, parentNode);
+						newNode = new fileTree.ExternalStreamingJobFileNode(entry.fsUri, this.projectFileUri);
 					} else if (entry.containsCreateTableStatement) {
-						newNode = new fileTree.TableFileNode(entry.fsUri, this.sqlprojUri, parentNode);
+						newNode = new fileTree.TableFileNode(entry.fsUri, this.projectFileUri);
 					}
 					else {
-						newNode = new fileTree.FileNode(entry.fsUri, this.sqlprojUri, parentNode);
+						newNode = new fileTree.SqlObjectFileNode(entry.fsUri, this.projectFileUri);
 					}
 
 					break;
 				case EntryType.Folder:
-					newNode = new fileTree.FolderNode(entry.fsUri, this.sqlprojUri, parentNode);
+					newNode = new fileTree.FolderNode(entry.fsUri, this.projectFileUri);
 					break;
 				default:
 					throw new Error(`Unknown EntryType: '${entry.type}'`);
 			}
 
-			parentNode.fileChildren[path.basename(entry.fsUri.path)] = newNode;
+			this.addNode(newNode, entry);
 		}
+	}
+
+	private addNode(newNode: fileTree.FileNode | fileTree.FolderNode, entry: FileProjectEntry): void {
+		// Don't add external folders
+		if (entry.type !== EntryType.File && entry.relativePath.startsWith(RelativeOuterPath)) {
+			return;
+		}
+
+		const parentNode = this.getEntryParentNode(entry);
+
+		if (Object.keys(parentNode.fileChildren).includes(path.basename(entry.fsUri.path))) {
+			return; // ignore duplicate entries
+		}
+
+		parentNode.fileChildren[path.basename(entry.fsUri.path)] = newNode;
 	}
 
 	/**
 	 * Gets the immediate parent tree node for an entry in a project file
 	 */
 	private getEntryParentNode(entry: FileProjectEntry): fileTree.FolderNode | ProjectRootTreeItem {
-		const relativePathParts = utils.trimChars(utils.trimUri(this.sqlprojUri, entry.fsUri), '/').split('/').slice(0, -1); // remove the last part because we only care about the parent
+		const relativePathParts = utils.trimChars(utils.trimUri(this.projectFileUri, entry.fsUri), '/').split('/').slice(0, -1); // remove the last part because we only care about the parent
 
 		if (relativePathParts.length === 0) {
 			return this; // if nothing left after trimming the entry itself, must been root
@@ -122,7 +147,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 		for (const part of relativePathParts) {
 			if (current.fileChildren[part] === undefined) {
 				const parentPath = current instanceof ProjectRootTreeItem ? path.dirname(current.fileSystemUri.fsPath) : current.fileSystemUri.fsPath;
-				current.fileChildren[part] = new fileTree.FolderNode(vscode.Uri.file(path.join(parentPath, part)), this.sqlprojUri, current);
+				current.fileChildren[part] = new fileTree.FolderNode(vscode.Uri.file(path.join(parentPath, part)), this.projectFileUri);
 			}
 
 			if (current.fileChildren[part] instanceof fileTree.FileNode) {

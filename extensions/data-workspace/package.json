@@ -13,7 +13,9 @@
     "azdata": ">=1.25.0"
   },
   "activationEvents": [
-    "*"
+    "onView:dataworkspace.views.main",
+    "onCommand:projects.openExisting",
+    "onCommand:projects.new"
   ],
   "main": "./out/main",
   "repository": {
@@ -158,8 +160,7 @@
           "id": "dataworkspace.views.main",
           "name": "%main-view-name%",
           "contextualTitle": "%data-workspace-view-container-name%",
-          "icon": "images/data-workspace.svg",
-          "when": "isProjectProviderAvailable"
+          "icon": "images/data-workspace.svg"
         }
       ]
     },
@@ -178,7 +179,7 @@
   },
   "dependencies": {
     "fast-glob": "^3.2.7",
-    "@microsoft/ads-extension-telemetry": "^1.3.4",
+    "@microsoft/ads-extension-telemetry": "^1.4.0",
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {

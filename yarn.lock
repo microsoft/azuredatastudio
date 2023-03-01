@@ -6536,11 +6536,6 @@ just-extend@^4.0.2:
   resolved "https://registry.yarnpkg.com/just-extend/-/just-extend-4.2.1.tgz#ef5e589afb61e5d66b24eca749409a8939a8c744"
   integrity sha512-g3UB796vUFIY90VIv/WX3L2c8CS2MdWUww3CNrYmqza1Fg0DURc2K/O4YrnklBdQarSJ/y8JnJYDGc+1iumQjg==
 
-kburtram-query-plan@2.6.1:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/kburtram-query-plan/-/kburtram-query-plan-2.6.1.tgz#6b86128ec30c53694b53c4ee0e32d64350eb0c2c"
-  integrity sha512-7Brjwp0YOCGug1cmfvcG8s1kN4MOwiLgOmKWS0+QSq5qCH9Bcv78vKAI7Pq1Ro6rTbpiTIRITsFKYrF4XTVlQw==
-
 keygrip@~1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/keygrip/-/keygrip-1.1.0.tgz#871b1681d5e159c62a445b0c74b615e0917e7226"
@@ -9521,9 +9516,9 @@ slice-ansi@^2.1.0:
     astral-regex "^1.0.0"
     is-fullwidth-code-point "^2.0.0"
 
-"slickgrid@github:Microsoft/SlickGrid.ADS#2.3.41":
-  version "2.3.41"
-  resolved "https://codeload.github.com/Microsoft/SlickGrid.ADS/tar.gz/6e20c859bf5a1b6956b74fd133138224a62fca60"
+"slickgrid@github:Microsoft/SlickGrid.ADS#2.3.42":
+  version "2.3.42"
+  resolved "https://codeload.github.com/Microsoft/SlickGrid.ADS/tar.gz/29021c4410512d0d644a3b8eb5115bc84ed277e9"
 
 smart-buffer@^4.2.0:
   version "4.2.0"

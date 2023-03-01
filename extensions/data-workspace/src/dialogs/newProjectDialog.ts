@@ -95,7 +95,7 @@ export class NewProjectDialog extends DialogBase {
 		}
 		catch (err) {
 
-			TelemetryReporter.createErrorEvent(TelemetryViews.NewProjectDialog, TelemetryActions.NewProjectDialogCompleted)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.NewProjectDialog, TelemetryActions.NewProjectDialogCompleted, err)
 				.withAdditionalProperties({ projectFileExtension: this.model.projectFileExtension, projectTemplateId: this.model.projectTypeId, error: err?.message ? err.message : err })
 				.send();
 

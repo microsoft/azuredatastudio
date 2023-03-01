@@ -21,8 +21,6 @@ import { getContentHeight, getContentWidth, Dimension, isAncestor } from 'vs/bas
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { ActionOnCheck, CheckboxSelectColumn, ICheckboxCellActionEventArgs } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { slickGridDataItemColumnValueWithNoData, textFormatter, iconCssFormatter, CssIconCellValue } from 'sql/base/browser/ui/table/formatters';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
@@ -207,7 +205,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 									cellValue = <HyperlinkCellValue>{
 										iconCssClass: hyperlinkValue.icon ? this.createIconCssClassInternal(hyperlinkValue.icon) : undefined,
 										title: hyperlinkValue.title,
-										url: hyperlinkValue.url
+										url: hyperlinkValue.url,
+										role: hyperlinkValue.role
 									};
 									break;
 								}
@@ -276,7 +275,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				enableColumnReorder: false,
 				enableCellNavigation: true,
 				forceFitColumns: true, // default to true during init, actual value will be updated when setProperties() is called
-				dataItemColumnValueExtractor: slickGridDataItemColumnValueWithNoData // must change formatter if you are changing explicit column value extractor
+				dataItemColumnValueExtractor: slickGridDataItemColumnValueWithNoData, // must change formatter if you are changing explicit column value extractor,
+				enableInGridTabNavigation: this.moveFocusOutWithTab
 			};
 
 			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, this.accessibilityService, this.quickInputService, { dataProvider: this._tableData, columns: this._tableColumns }, options);
@@ -295,20 +295,6 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 					args: e
 				});
 			}));
-
-			this._table.grid.onKeyDown.subscribe((e: DOMEvent) => {
-				if (this.moveFocusOutWithTab) {
-					let event = new StandardKeyboardEvent(e as KeyboardEvent);
-					if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
-						e.stopImmediatePropagation();
-						(<HTMLElement>(<HTMLElement>this._inputContainer.nativeElement).previousElementSibling).focus();
-
-					} else if (event.equals(KeyCode.Tab)) {
-						e.stopImmediatePropagation();
-						(<HTMLElement>(<HTMLElement>this._inputContainer.nativeElement).nextElementSibling).focus();
-					}
-				}
-			});
 		}
 		this.baseInit();
 	}

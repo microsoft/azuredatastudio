@@ -167,11 +167,8 @@
     <trans-unit id="cms.connectionOptions.currentLanguage.displayName">
       <source xml:lang="en">Current language</source>
     </trans-unit>
-    <trans-unit id="cms.connectionOptions.encrypt.description">
-      <source xml:lang="en">When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' encryption is supported on SQL Server 2022 onwards.</source>
-    </trans-unit>
-    <trans-unit id="cms.connectionOptions.encrypt.displayName">
-      <source xml:lang="en">Encrypt</source>
+    <trans-unit id="cms.connectionOptions.encrypt.categoryValues.false">
+      <source xml:lang="en">Optional (False)</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.encrypt.categoryValues.strict">
       <source xml:lang="en">Strict</source>
@@ -179,8 +176,11 @@
     <trans-unit id="cms.connectionOptions.encrypt.categoryValues.true">
       <source xml:lang="en">Mandatory (True)</source>
     </trans-unit>
-    <trans-unit id="cms.connectionOptions.encrypt.categoryValues.false">
-      <source xml:lang="en">Optional (False)</source>
+    <trans-unit id="cms.connectionOptions.encrypt.description">
+      <source xml:lang="en">When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' is supported on SQL Server 2022 onwards.</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.encrypt.displayName">
+      <source xml:lang="en">Encrypt</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.failoverPartner.description">
       <source xml:lang="en">The name or network address of the instance of SQL Server that acts as a failover partner</source>
@@ -291,7 +291,7 @@
       <source xml:lang="en">Server</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.trustServerCertificate.description">
-      <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
+      <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.trustServerCertificate.displayName">
       <source xml:lang="en">Trust server certificate</source>

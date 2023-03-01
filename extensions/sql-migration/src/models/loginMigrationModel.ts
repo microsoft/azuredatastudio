@@ -3,10 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as mssql from 'mssql';
 import { MultiStepResult, MultiStepState } from '../dialog/generic/multiStepStatusDialog';
 import * as constants from '../constants/strings';
-import { LoginTableInfo } from '../api/sqlUtils';
+import { getSourceConnectionString, getTargetConnectionString, LoginTableInfo } from '../api/sqlUtils';
+import { MigrationStateModel } from './stateMachine';
+import { logError, TelemetryViews } from '../telemetry';
+import * as contracts from '../service/contracts';
 
 type ExceptionMap = { [login: string]: any }
 
@@ -54,19 +56,22 @@ export interface Login {
 }
 
 export class LoginMigrationModel {
-	public resultsPerStep: Map<mssql.LoginMigrationStep, mssql.StartLoginMigrationResult>;
+	public resultsPerStep: Map<contracts.LoginMigrationStep, contracts.StartLoginMigrationResult>;
 	public collectedSourceLogins: boolean = false;
 	public collectedTargetLogins: boolean = false;;
 	public loginsOnSource: LoginTableInfo[] = [];
 	public loginsOnTarget: string[] = [];
-	private _currentStepIdx: number = 0;;
+	public loginMigrationsResult!: contracts.StartLoginMigrationResult;
+	public loginMigrationsError: any;
+	public loginsForMigration!: LoginTableInfo[];
+	private _currentStepIdx: number = 0;
 	private _logins: Map<string, Login>;
 	private _loginMigrationSteps: LoginMigrationStep[] = [];
 
 	constructor() {
-		this.resultsPerStep = new Map<mssql.LoginMigrationStep, mssql.StartLoginMigrationResult>();
+		this.resultsPerStep = new Map<contracts.LoginMigrationStep, contracts.StartLoginMigrationResult>();
 		this._logins = new Map<string, Login>();
-		this.SetLoginMigrationSteps();
+		this.setLoginMigrationSteps();
 	}
 
 	public get currentStep(): LoginMigrationStep {
@@ -77,39 +82,29 @@ export class LoginMigrationModel {
 		return this._currentStepIdx === this._loginMigrationSteps.length;
 	}
 
-	public AddLoginMigrationResults(step: LoginMigrationStep, newResult: mssql.StartLoginMigrationResult): void {
-		const exceptionMap = this._getExceptionMapWithNormalizedKeys(newResult.exceptionMap);
-		this._currentStepIdx = this._loginMigrationSteps.findIndex(s => s === step) + 1;
+	public async MigrateLogins(stateMachine: MigrationStateModel): Promise<boolean> {
+		this.addNewLogins(stateMachine._loginMigrationModel.loginsForMigration.map(row => row.loginName));
+		return await this.runLoginMigrationStep(LoginMigrationStep.MigrateLogins, stateMachine);
 
-		for (const loginName of this._logins.keys()) {
-			const status = loginName in exceptionMap ? MultiStepState.Failed : MultiStepState.Succeeded;
-			const errors = loginName in exceptionMap ? this._extractErrors(exceptionMap, loginName) : [];
-			this._addStepStateForLogin(loginName, step, status, errors);
-
-			if (this.isMigrationComplete) {
-				const loginStatus = this._didAnyStepFail(loginName) ? MultiStepState.Failed : MultiStepState.Succeeded;
-				this._markLoginStatus(loginName, loginStatus);
-			}
-		}
+		// TODO AKMA : emit telemetry
 	}
 
-	public ReportException(step: LoginMigrationStep, error: any): void {
-		this._currentStepIdx = this._loginMigrationSteps.findIndex(s => s === step) + 1;
+	public async EstablishUserMappings(stateMachine: MigrationStateModel): Promise<boolean> {
+		return await this.runLoginMigrationStep(LoginMigrationStep.EstablishUserMapping, stateMachine);
 
-		for (const loginName of this._logins.keys()) {
-			// Mark current step as failed with the error message and mark remaining messages as canceled
-			let errors = [error.message];
-			this._addStepStateForLogin(loginName, step, MultiStepState.Failed, errors);
-			this._markRemainingSteps(loginName, MultiStepState.Canceled);
-			this._markLoginStatus(loginName, MultiStepState.Failed);
-		}
-
-		this._markMigrationComplete();
+		// TODO AKMA : emit telemetry
 	}
+
+	public async MigrateServerRolesAndSetPermissions(stateMachine: MigrationStateModel): Promise<boolean> {
+		return await this.runLoginMigrationStep(LoginMigrationStep.MigrateServerRolesAndSetPermissions, stateMachine);
+
+		// TODO AKMA : emit telemetry
+	}
+
 
 	public GetLoginMigrationResults(loginName: string): MultiStepResult[] {
 		let loginResults: MultiStepResult[] = [];
-		let login = this._getLogin(loginName);
+		let login = this.getLogin(loginName);
 
 		for (const step of this._loginMigrationSteps) {
 			// The default steps and state will be added if no steps have completed
@@ -134,11 +129,7 @@ export class LoginMigrationModel {
 		return loginResults;
 	}
 
-	public AddNewLogins(logins: string[]) {
-		logins.forEach(login => this._addNewLogin(login));
-	}
-
-	public SetLoginMigrationSteps(steps: LoginMigrationStep[] = []) {
+	private setLoginMigrationSteps(steps: LoginMigrationStep[] = []) {
 		this._loginMigrationSteps = [];
 
 		if (steps.length === 0) {
@@ -150,12 +141,144 @@ export class LoginMigrationModel {
 		}
 	}
 
+	private addNewLogins(logins: string[]) {
+		logins.forEach(login => this.addNewLogin(login));
+	}
 
-	private _getLogin(loginName: string) {
+	public addLoginMigrationResults(step: LoginMigrationStep, newResult: contracts.StartLoginMigrationResult): void {
+		const exceptionMap = this.getExceptionMapWithNormalizedKeys(newResult.exceptionMap);
+		this._currentStepIdx = this._loginMigrationSteps.findIndex(s => s === step) + 1;
+
+		for (const loginName of this._logins.keys()) {
+			const status = loginName in exceptionMap ? MultiStepState.Failed : MultiStepState.Succeeded;
+			const errors = loginName in exceptionMap ? this.extractErrors(exceptionMap, loginName) : [];
+			this.addStepStateForLogin(loginName, step, status, errors);
+
+			if (this.isMigrationComplete) {
+				const loginStatus = this.didAnyStepFail(loginName) ? MultiStepState.Failed : MultiStepState.Succeeded;
+				this.markLoginStatus(loginName, loginStatus);
+			}
+		}
+	}
+
+	private updateLoginMigrationResults(newResult: contracts.StartLoginMigrationResult): void {
+		if (this.loginMigrationsResult && this.loginMigrationsResult.exceptionMap) {
+			for (var key in newResult.exceptionMap) {
+				this.loginMigrationsResult.exceptionMap[key] = [...this.loginMigrationsResult.exceptionMap[key] || [], newResult.exceptionMap[key]]
+			}
+		} else {
+			this.loginMigrationsResult = newResult;
+		}
+	}
+
+	public reportException(step: LoginMigrationStep, error: any): void {
+		this._currentStepIdx = this._loginMigrationSteps.findIndex(s => s === step) + 1;
+
+		for (const loginName of this._logins.keys()) {
+			// Mark current step as failed with the error message and mark remaining messages as canceled
+			let errors = [error.message];
+			this.addStepStateForLogin(loginName, step, MultiStepState.Failed, errors);
+			this.markRemainingSteps(loginName, MultiStepState.Canceled);
+			this.markLoginStatus(loginName, MultiStepState.Failed);
+		}
+
+		this.markMigrationComplete();
+	}
+
+	private async runMigrateLoginsTask(sourceConnStr: string, targetConnStr: string, stateMachine: MigrationStateModel): Promise<boolean> {
+		try {
+			var response = (await stateMachine.migrationService.migrateLogins(
+				sourceConnStr,
+				targetConnStr,
+				stateMachine._loginMigrationModel.loginsForMigration.map(row => row.loginName),
+				stateMachine._aadDomainName
+			))!;
+
+			this.updateLoginMigrationResults(response);
+			this.addLoginMigrationResults(LoginMigrationStep.MigrateLogins, response);
+			return true;
+
+		} catch (error) {
+			logError(TelemetryViews.LoginMigrationWizard, 'MigratinLoginsFailed', error);
+			this.reportException(LoginMigrationStep.MigrateLogins, error);
+			this.loginMigrationsError = error;
+			return false;
+		}
+	}
+
+	private async runEstablishUserMappingTask(sourceConnStr: string, targetConnStr: string, stateMachine: MigrationStateModel): Promise<boolean> {
+		try {
+			var response = (await stateMachine.migrationService.establishUserMapping(
+				sourceConnStr,
+				targetConnStr,
+				stateMachine._loginMigrationModel.loginsForMigration.map(row => row.loginName),
+				stateMachine._aadDomainName
+			))!;
+
+			this.updateLoginMigrationResults(response);
+			this.addLoginMigrationResults(LoginMigrationStep.EstablishUserMapping, response);
+			return false;
+
+		} catch (error) {
+			logError(TelemetryViews.LoginMigrationWizard, 'EstablishingUserMappingFailed', error);
+			this.reportException(LoginMigrationStep.EstablishUserMapping, error);
+			this.loginMigrationsError = error;
+			return false;
+		}
+	}
+
+	private async runMigrateServerRolesAndSetPermissionsTask(sourceConnStr: string, targetConnStr: string, stateMachine: MigrationStateModel): Promise<boolean> {
+		try {
+			var response = (await stateMachine.migrationService.migrateServerRolesAndSetPermissions(
+				sourceConnStr,
+				targetConnStr,
+				stateMachine._loginMigrationModel.loginsForMigration.map(row => row.loginName),
+				stateMachine._aadDomainName
+			))!;
+
+			this.updateLoginMigrationResults(response);
+			this.addLoginMigrationResults(LoginMigrationStep.MigrateServerRolesAndSetPermissions, response);
+			return false;
+
+		} catch (error) {
+			logError(TelemetryViews.LoginMigrationWizard, 'MigratingServerRolesAndSettingPermissionsFailed', error);
+			this.reportException(LoginMigrationStep.MigrateServerRolesAndSetPermissions, error);
+			this.loginMigrationsError = error;
+			return true;
+
+		}
+	}
+
+	private async runLoginMigrationStep(step: LoginMigrationStep, stateMachine: MigrationStateModel): Promise<boolean> {
+		const sourceConnectionString = await getSourceConnectionString();
+		const targetConnectionString = await getTargetConnectionString(
+			stateMachine.targetServerName,
+			stateMachine._targetServerInstance.id,
+			stateMachine._targetUserName,
+			stateMachine._targetPassword,
+			// for login migration, connect to target Azure SQL with true/true
+			// to-do: take as input from the user, should be true/false for DB/MI but true/true for VM
+			true /* encryptConnection */,
+			true /* trustServerCertificate */);
+
+		// Get telemtry values
+		switch (step) {
+			case LoginMigrationStep.MigrateLogins:
+				return await this.runMigrateLoginsTask(sourceConnectionString, targetConnectionString, stateMachine);
+			case LoginMigrationStep.EstablishUserMapping:
+				return await this.runEstablishUserMappingTask(sourceConnectionString, targetConnectionString, stateMachine);
+			case LoginMigrationStep.MigrateServerRolesAndSetPermissions:
+				return await this.runMigrateServerRolesAndSetPermissionsTask(sourceConnectionString, targetConnectionString, stateMachine);
+		}
+
+		return false;
+	}
+
+	private getLogin(loginName: string) {
 		return this._logins.get(loginName.toLocaleLowerCase());
 	}
 
-	private _addNewLogin(loginName: string, status: MultiStepState = MultiStepState.Pending) {
+	private addNewLogin(loginName: string, status: MultiStepState = MultiStepState.Pending) {
 		let newLogin: Login = {
 			loginName: loginName,
 			overallStatus: status,
@@ -165,14 +288,14 @@ export class LoginMigrationModel {
 		this._logins.set(loginName.toLocaleLowerCase(), newLogin);
 	}
 
-	private _addStepStateForLogin(loginName: string, step: LoginMigrationStep, stepStatus: MultiStepState, errors: string[] = []) {
+	private addStepStateForLogin(loginName: string, step: LoginMigrationStep, stepStatus: MultiStepState, errors: string[] = []) {
 		const loginExist = this._logins.has(loginName);
 
 		if (!loginExist) {
-			this._addNewLogin(loginName, MultiStepState.Running);
+			this.addNewLogin(loginName, MultiStepState.Running);
 		}
 
-		const login = this._getLogin(loginName);
+		const login = this.getLogin(loginName);
 
 		if (login) {
 			login.overallStatus = MultiStepState.Running;
@@ -188,22 +311,22 @@ export class LoginMigrationModel {
 		}
 	}
 
-	private _markLoginStatus(loginName: string, status: MultiStepState) {
+	private markLoginStatus(loginName: string, status: MultiStepState) {
 		const loginExist = this._logins.has(loginName);
 
 		if (!loginExist) {
-			this._addNewLogin(loginName, MultiStepState.Running);
+			this.addNewLogin(loginName, MultiStepState.Running);
 		}
 
-		let login = this._getLogin(loginName);
+		let login = this.getLogin(loginName);
 
 		if (login) {
 			login.overallStatus = status;
 		}
 	}
 
-	private _didAnyStepFail(loginName: string) {
-		const login = this._getLogin(loginName);
+	private didAnyStepFail(loginName: string) {
+		const login = this.getLogin(loginName);
 		if (login) {
 			return Object.values(login.statusPerStep).every(status => status === MultiStepState.Failed);
 		}
@@ -211,25 +334,25 @@ export class LoginMigrationModel {
 		return false;
 	}
 
-	private _getExceptionMapWithNormalizedKeys(exceptionMap: ExceptionMap): ExceptionMap {
+	private getExceptionMapWithNormalizedKeys(exceptionMap: ExceptionMap): ExceptionMap {
 		return Object.keys(exceptionMap).reduce((result: ExceptionMap, key: string) => {
 			result[key.toLocaleLowerCase()] = exceptionMap[key];
 			return result;
 		}, {});
 	}
 
-	private _extractErrors(exceptionMap: ExceptionMap, loginName: string): string[] {
+	private extractErrors(exceptionMap: ExceptionMap, loginName: string): string[] {
 		return exceptionMap[loginName].map((exception: any) => typeof exception.InnerException !== 'undefined'
 			&& exception.InnerException !== null ? exception.InnerException.Message : exception.Message);
 	}
 
-	private _markMigrationComplete() {
+	private markMigrationComplete() {
 		this._currentStepIdx = this._loginMigrationSteps.length;
 	}
 
-	private _markRemainingSteps(loginName: string, status: MultiStepState) {
+	private markRemainingSteps(loginName: string, status: MultiStepState) {
 		for (let i = this._currentStepIdx; i < this._loginMigrationSteps.length; i++) {
-			this._addStepStateForLogin(loginName, this._loginMigrationSteps[i], status, []);
+			this.addStepStateForLogin(loginName, this._loginMigrationSteps[i], status, []);
 		}
 	}
 }

@@ -474,7 +474,7 @@ const esbuildMediaScripts = [
     'markdown-language-features/esbuild-notebook.js',
     'markdown-language-features/esbuild-preview.js',
     'markdown-math/esbuild.js',
-    // 'notebook-renderers/esbuild.js', {{SQL CARBON EDIT}} We don't have this extension
+    'notebook-renderers/esbuild.js',
     'simple-browser/esbuild-preview.js',
 ];
 async function webpackExtensions(taskName, isWatch, webpackConfigLocations) {

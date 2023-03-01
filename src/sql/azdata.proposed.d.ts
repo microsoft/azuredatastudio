@@ -432,6 +432,18 @@ declare module 'azdata' {
 		azurePortalEndpoint?: string;
 	}
 
+	export interface PromptFailedResult {
+		/**
+		 * Error code used for non-user cancelled sign in errors
+		 */
+		errorCode?: string;
+
+		/**
+		 * Error message used for non-user cancelled sign in errors
+		 */
+		errorMessage?: string;
+	}
+
 	export namespace diagnostics {
 		/**
 		 * Represents a diagnostics provider of accounts.
@@ -749,6 +761,10 @@ declare module 'azdata' {
 		 * The url to open.
 		 */
 		url?: string;
+		/**
+		 * The role of the hyperlink. By default, the role is 'link' and the url will be opened in a new tab.
+		 */
+		role?: 'button' | 'link';
 	}
 
 	export interface ContextMenuColumnCellValue {

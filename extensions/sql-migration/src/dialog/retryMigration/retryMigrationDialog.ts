@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as mssql from 'mssql';
+import * as features from '../../service/features';
 import { azureResource } from 'azurecore';
 import { getLocations, getResourceGroupFromId, getBlobContainerId, getFullResourceGroupFromId, getResourceName, DatabaseMigration, getMigrationTargetInstance } from '../../api/azure';
 import { MigrationMode, MigrationStateModel, NetworkContainerType, SavedInfo } from '../../models/stateMachine';
@@ -14,6 +14,7 @@ import { WizardController } from '../../wizard/wizardController';
 import { getMigrationModeEnum, getMigrationTargetTypeEnum } from '../../constants/helper';
 import * as constants from '../../constants/strings';
 import { ServiceContextChangeEvent } from '../../dashboard/tabBase';
+import { migrationServiceProvider } from '../../service/provider';
 import { getSourceConnectionProfile } from '../../api/sqlUtils';
 
 export class RetryMigrationDialog {
@@ -29,10 +30,10 @@ export class RetryMigrationDialog {
 		serviceContext: MigrationServiceContext,
 		migration: DatabaseMigration,
 		serverName: string,
-		api: mssql.IExtension,
+		migrationService: features.SqlMigrationService,
 		location: azureResource.AzureLocation): Promise<MigrationStateModel> {
 
-		const stateModel = new MigrationStateModel(this._context, api.sqlMigration, api.tdeMigration);
+		const stateModel = new MigrationStateModel(this._context, migrationService);
 		const sourceDatabaseName = migration.properties.sourceDatabaseName;
 		const savedInfo: SavedInfo = {
 			closedPage: 0,
@@ -160,8 +161,8 @@ export class RetryMigrationDialog {
 			serverName = activeConnection.serverName;
 		}
 
-		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
-		const stateModel = await this.createMigrationStateModel(this._serviceContext, this._migration, serverName, api, location!);
+		const migrationService = <features.SqlMigrationService>await migrationServiceProvider.getService(features.ApiType.SqlMigrationProvider)!;
+		const stateModel = await this.createMigrationStateModel(this._serviceContext, this._migration, serverName, migrationService, location!);
 
 		if (await stateModel.loadSavedInfo()) {
 			const wizardController = new WizardController(
