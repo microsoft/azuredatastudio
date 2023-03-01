@@ -665,3 +665,4 @@ export function errorMovingFile(source: string, destination: string, error: stri
 export function moveConfirmationPrompt(source: string, destination: string) { return localize('moveConfirmationPrompt', "Are you sure you want to move {0} to {1}?", source, destination); }
 export const move = localize('Move', "Move");
 export function errorRenamingFile(source: string, destination: string, error: string) { return localize('errorRenamingFile', "Error when renaming file from {0} to {1}. Error: {2}", source, destination, error); }
+export const unhandledMoveNode = localize('unhandledMoveNode', "Unhandled node type for move");
