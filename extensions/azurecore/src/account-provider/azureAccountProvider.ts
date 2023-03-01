@@ -159,7 +159,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 				} else {
 					Logger.error(`MSAL: getToken call failed`);
 					// Throw error with MSAL-specific code/message, else throw generic error message
-					if (this.isMsalError(authResult)) {
+					if (this.isProviderError(authResult)) {
 						throw new Error(localize('msalTokenError', `{0} \n{1}`, authResult.errorCode, authResult.errorMessage));
 					} else {
 						throw new Error(localize('genericTokenError', 'Failed to get token'));
@@ -176,7 +176,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		}
 	}
 
-	private isAuthenticationResult(result: AuthenticationResult | azdata.MsalError | null): result is AuthenticationResult {
+	private isAuthenticationResult(result: AuthenticationResult | azdata.ProviderError | null): result is AuthenticationResult {
 		if (result) {
 			return typeof (<AuthenticationResult>result).accessToken === 'string';
 		} else {
@@ -184,9 +184,9 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		}
 	}
 
-	private isMsalError(result: AuthenticationResult | azdata.MsalError | null): result is azdata.MsalError {
+	private isProviderError(result: AuthenticationResult | azdata.ProviderError | null): result is azdata.ProviderError {
 		if (result) {
-			return typeof (<azdata.MsalError>result).errorMessage === 'string';
+			return typeof (<azdata.ProviderError>result).errorMessage === 'string';
 		} else {
 			return false;
 		}

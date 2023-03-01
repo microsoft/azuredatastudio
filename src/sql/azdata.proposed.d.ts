@@ -444,7 +444,7 @@ declare module 'azdata' {
 		errorMessage?: string;
 	}
 
-	export interface MsalError {
+	export interface ProviderError {
 		/**
 		 * Error name used for non-user cancelled
 		 */
