@@ -10,6 +10,8 @@ import * as utils from '../common/utils';
 import * as xmlFormat from 'xml-formatter';
 import * as os from 'os';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+import type * as azdataType from 'azdata';
+import * as vscode from 'vscode';
 
 import { Uri, window } from 'vscode';
 import { EntryType, IDatabaseReferenceProjectEntry, IProjectEntry, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
@@ -18,6 +20,8 @@ import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase, SystemDatabaseReferenceProjectEntry } from './projectEntry';
+import { BaseProjectTreeItem } from './tree/baseTreeItem';
+import { PostDeployNode, PreDeployNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
 
 /**
  * Represents the configuration based on the Configuration property in the sqlproj
@@ -2139,6 +2143,38 @@ export class Project implements ISqlProject {
 		}
 
 		return folderEntry;
+	}
+
+	/**
+	 * Moves a file to a different location
+	 * @param node Node being moved
+	 * @param projectFilePath Full file path to .sqlproj
+	 * @param destinationRelativePath path of the destination, relative to .sqlproj
+	 */
+	public async move(node: BaseProjectTreeItem, destinationRelativePath: string): Promise<azdataType.ResultStatus | undefined> {
+		// trim off the project folder at the beginning of the relative path stored in the tree
+		const projectRelativeUri = vscode.Uri.file(path.basename(this.projectFilePath, constants.sqlprojExtension));
+		const originalRelativePath = utils.trimUri(projectRelativeUri, node.relativeProjectUri);
+		destinationRelativePath = utils.trimUri(projectRelativeUri, vscode.Uri.file(destinationRelativePath));
+
+		if (originalRelativePath === destinationRelativePath) {
+			return;
+		}
+
+		const sqlProjectsService = await utils.getSqlProjectsService();
+		let result;
+
+		if (node instanceof SqlObjectFileNode) {
+			result = await sqlProjectsService.moveSqlObjectScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+		} else if (node instanceof PreDeployNode) {
+			result = await sqlProjectsService.movePreDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+		} else if (node instanceof PostDeployNode) {
+			result = await sqlProjectsService.movePostDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+		}
+		// TODO add support for renaming none scripts after those are added in STS
+		// TODO add support for renaming publish profiles when support is added in DacFx
+
+		return result;
 	}
 }
 

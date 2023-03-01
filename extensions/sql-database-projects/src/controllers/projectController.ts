@@ -19,7 +19,7 @@ import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, reservedProjectFolders } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { FolderNode, FileNode, SqlObjectFileNode, PreDeployNode, PostDeployNode } from '../models/tree/fileFolderTreeItem';
+import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
@@ -857,10 +857,12 @@ export class ProjectsController {
 
 		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(file?.relativePath!)), `${newFileName}.sql`);
 
-		try {
-			await this.move(node, node.projectFileUri.fsPath, newFilePath);
-		} catch (e) {
-			void vscode.window.showErrorMessage(constants.errorRenamingFile(file?.relativePath!, newFilePath, utils.getErrorMessage(e)));
+		const renameResult = await project.move(node, newFilePath);
+
+		if (!renameResult) { // file wasn't renamed
+			return;
+		} else if (!renameResult.success) { // TODO adding telemetry
+			void vscode.window.showErrorMessage(constants.errorRenamingFile(file?.relativePath!, newFilePath, utils.getErrorMessage(renameResult.errorMessage)));
 		}
 
 		this.refreshProjectsTree(context);
@@ -1835,6 +1837,7 @@ export class ProjectsController {
 	 */
 	public async moveFile(projectUri: vscode.Uri, source: any, target: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const sourceFileNode = source as FileNode;
+		const project = await this.getProjectFromContext(sourceFileNode);
 
 		// only moving files is supported
 		if (!sourceFileNode || !(sourceFileNode instanceof FileNode)) {
@@ -1877,40 +1880,13 @@ export class ProjectsController {
 		}
 
 		// Move the file
-		try {
-			await this.move(sourceFileNode, projectUri.fsPath, newPath);
-		} catch (e) {
-			void vscode.window.showErrorMessage(constants.errorMovingFile(sourceFileNode.fileSystemUri.fsPath, newPath, utils.getErrorMessage(e)));
-		}
-	}
+		const moveResult = await project.move(sourceFileNode, newPath);
 
-	/**
-	 * Moves a file to a different location
-	 * @param node Node being moved
-	 * @param projectFilePath Full file path to .sqlproj
-	 * @param destinationRelativePath path of the destination, relative to .sqlproj
-	 */
-	private async move(node: BaseProjectTreeItem, projectFilePath: string, destinationRelativePath: string): Promise<void> {
-		// trim off the project folder at the beginning of the relative path stored in the tree
-		const projectRelativeUri = vscode.Uri.file(path.basename(projectFilePath, constants.sqlprojExtension));
-		const originalRelativePath = utils.trimUri(projectRelativeUri, node.relativeProjectUri);
-		destinationRelativePath = utils.trimUri(projectRelativeUri, vscode.Uri.file(destinationRelativePath));
-
-		if (originalRelativePath === destinationRelativePath) {
+		if (!moveResult) { // file wasn't moved
 			return;
+		} else if (!moveResult?.success) {// TODO adding telemetry
+			void vscode.window.showErrorMessage(constants.errorMovingFile(sourceFileNode.fileSystemUri.fsPath, newPath, utils.getErrorMessage(moveResult.errorMessage)));
 		}
-
-		const sqlProjectsService = await utils.getSqlProjectsService();
-
-		if (node instanceof SqlObjectFileNode) {
-			await sqlProjectsService.moveSqlObjectScript(projectFilePath, destinationRelativePath, originalRelativePath)
-		} else if (node instanceof PreDeployNode) {
-			await sqlProjectsService.movePreDeploymentScript(projectFilePath, destinationRelativePath, originalRelativePath)
-		} else if (node instanceof PostDeployNode) {
-			await sqlProjectsService.movePostDeploymentScript(projectFilePath, destinationRelativePath, originalRelativePath)
-		}
-		// TODO add support for renaming none scripts after those are added in STS
-		// TODO add support for renaming publish profiles when support is added in DacFx
 	}
 }
 
