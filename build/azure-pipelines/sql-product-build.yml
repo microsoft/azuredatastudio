@@ -123,6 +123,7 @@ stages:
       - job: Windows_ARM64
         variables:
           VSCODE_ARCH: arm64
+          AZDATA_RUNTIME: Windows_ARM64
         condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32_ARM64'], 'true'))
         steps:
         - template: win32/sql-product-build-win32.yml
