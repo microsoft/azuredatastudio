@@ -693,7 +693,7 @@ describe.only('Project: sqlproj content operations', function (): void {
 			'Folders outside the project folder should not be added.');
 	});
 
-	it.only('Project entry relative path should not change after reload', async function (): Promise<void> {
+	it('Project entry relative path should not change after reload', async function (): Promise<void> {
 		// Create new sqlproj
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const projectFolder = path.dirname(projFilePath);
@@ -722,7 +722,8 @@ describe.only('Project: sqlproj content operations', function (): void {
 
 		// Validate that relative path of the file entry matches the original
 		// There will be additional folder
-		should(project.files.length).equal(2, 'Two entries are expected in the loaded project');
+		should(project.files.length).equal(1, 'Two entries are expected in the loaded project');
+		should(project.folders.length).equal(1, 'Two entries are expected in the loaded project');
 
 		fileEntry = project.files.find(f => f.relativePath.endsWith('test.sql'));
 		should.exist(fileEntry, 'Entry for the file should be present in the project after reload');

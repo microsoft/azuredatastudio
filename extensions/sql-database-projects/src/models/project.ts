@@ -18,7 +18,7 @@ import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase, SystemDatabaseReferenceProjectEntry } from './projectEntry';
-import { GetScriptsResult } from 'vscode-mssql';
+import { GetFoldersResult, GetScriptsResult } from 'vscode-mssql';
 
 /**
  * Represents the configuration based on the Configuration property in the sqlproj
@@ -37,6 +37,7 @@ export class Project implements ISqlProject {
 	private _projectFileName: string;
 	private _projectGuid: string | undefined;
 	private _files: FileProjectEntry[] = [];
+	private _folders: FileProjectEntry[] = [];
 	private _dataSources: DataSource[] = [];
 	private _importedTargets: string[] = [];
 	private _databaseReferences: IDatabaseReferenceProjectEntry[] = [];
@@ -71,6 +72,10 @@ export class Project implements ISqlProject {
 
 	public get files(): FileProjectEntry[] {
 		return this._files;
+	}
+
+	public get folders(): FileProjectEntry[] {
+		return this._folders;
 	}
 
 	public get dataSources(): DataSource[] {
@@ -152,9 +157,11 @@ export class Project implements ISqlProject {
 		this._postDeployScripts = this.readPostDeployScripts();
 		this._noneDeployScripts = this.readNoneDeployScripts();
 
-		// get files and folders
+		// get SQL object scripts
 		this._files = await this.readFilesInProject();
-		this.files.push(...await this.readFolders());
+
+		// get folders
+		this._folders = await this.readFolders();
 
 		this._databaseReferences = this.readDatabaseReferences();
 		this._importedTargets = this.readImportedTargets();
@@ -282,37 +289,24 @@ export class Project implements ISqlProject {
 	}
 
 	private async readFolders(): Promise<FileProjectEntry[]> {
-		const folderEntries: FileProjectEntry[] = [];
+		const sqlProjectsService = await utils.getSqlProjectsService();
 
-		const foldersSet = new Set<string>();
+		var result: GetFoldersResult = await sqlProjectsService.getFolders(this.projectFilePath);
 
-		// get any folders listed in the project file
-		const sqlprojFolders = await this.foldersListedInSqlproj();
-		sqlprojFolders.forEach(f => foldersSet.add(f));
-
-		// glob style getting folders for sdk style projects
-		if (this._isSdkStyleProject) {
-			this.files.forEach(file => {
-				// if file is in the project's folder, add the folders from the project file to this file to the list of folders. This is so that only non-empty folders in the project folder will be added by default.
-				// Empty folders won't be shown unless specified in the sqlproj (same as how it's handled for csproj in VS)
-				if (!file.relativePath.startsWith('..') && path.dirname(file.fsUri.fsPath) !== this.projectFolderPath) {
-					const foldersToFile = utils.getFoldersToFile(this.projectFolderPath, file.fsUri.fsPath);
-					foldersToFile.forEach(f => foldersSet.add(utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)))));
-				}
-			});
-
-			// add any intermediate folders of the folders that are listed in the sqlproj
-			// If there are nested empty folders, there will only be a Folder entry for the inner most folder, so we need to add entries for the intermediate folders
-			sqlprojFolders.forEach(folder => {
-				const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(folder));
-				const intermediateFolders = utils.getFoldersAlongPath(this.projectFolderPath, utils.getPlatformSafeFileEntryPath(fullPath));
-				intermediateFolders.forEach(f => foldersSet.add(utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)))));
-			});
+		if (!result.success) {
+			void window.showErrorMessage(result.errorMessage);
+			console.error('Error: ' + result.errorMessage);
 		}
 
-		foldersSet.forEach(f => {
-			folderEntries.push(this.createFileProjectEntry(f, EntryType.Folder));
-		});
+		const folderEntries: FileProjectEntry[] = [];
+
+		if (result.folders?.length > 0) { // empty array from SqlToolsService is deserialized as null
+			for (var folderPath of result.folders) {
+				folderEntries.push(this.createFileProjectEntry(folderPath, EntryType.Folder));
+			}
+		}
+
+		console.log('===Folders: ' + folderEntries.length);
 
 		return folderEntries;
 	}
@@ -800,6 +794,7 @@ export class Project implements ISqlProject {
 	 * @param itemType Type of the project entry to add. This maps to the build action for the item.
 	 */
 	public async addScriptItem(relativeFilePath: string, contents?: string, itemType?: string): Promise<FileProjectEntry> {
+		// Ensure the file exists
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
 
 		if (contents) {
@@ -823,6 +818,34 @@ export class Project implements ISqlProject {
 				throw new Error(constants.noFileExist(absoluteFilePath));
 			}
 		}
+
+		// Add the new script
+		const service = await utils.getSqlProjectsService();
+
+		switch (itemType) {
+			case ItemType.preDeployScript:
+				await service.addPreDeploymentScript(this.projectFilePath, relativeFilePath);
+				this._preDeployScripts = this.readPreDeployScripts();
+				this._noneDeployScripts = this.readNoneDeployScripts();
+
+				this._preDeployScripts
+				break;
+			case ItemType.postDeployScript:
+				await service.addPostDeploymentScript(this.projectFilePath, relativeFilePath);
+				this._postDeployScripts = this.readPostDeployScripts();
+				this._noneDeployScripts = this.readNoneDeployScripts();
+				break;
+			default:
+				await service.addSqlObjectScript(this.projectFilePath, relativeFilePath);
+				this._files = await this.readFilesInProject();
+				break;
+		}
+
+		this._folders = await this.readFolders();
+
+		this._preDeployScripts = this.readPreDeployScripts();
+		this._noneDeployScripts = this.readNoneDeployScripts();
+
 
 		// Ensure that parent folder item exist in the project for the corresponding file path
 		await this.ensureFolderItems(path.relative(this.projectFolderPath, path.dirname(absoluteFilePath)));
