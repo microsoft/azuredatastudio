@@ -34,9 +34,6 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	public groupId?: string;
 	public saveProfile: boolean;
 
-	// Used to determine if we are connecting to get the default database name.
-	public getDefaultDatabase: boolean;
-
 	public iconPath?: IconPath;
 
 	public isDisconnecting: boolean = false;
@@ -271,8 +268,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			azureTenantId: this.azureTenantId,
 			azureAccount: this.azureAccount,
 			azurePortalEndpoint: this.azurePortalEndpoint,
-			azureResourceId: this.azureResourceId,
-			getDefaultDatabase: this.getDefaultDatabase
+			azureResourceId: this.azureResourceId
 		};
 
 		return result;

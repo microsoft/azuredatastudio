@@ -430,7 +430,6 @@ declare module 'azdata' {
 		azureAccount?: string;
 		azureResourceId?: string;
 		azurePortalEndpoint?: string;
-		getDefaultDatabase?: boolean;
 	}
 
 	export interface PromptFailedResult {

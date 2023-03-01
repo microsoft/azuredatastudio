@@ -461,8 +461,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	private async connectWithOptions(connection: interfaces.IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
-		let defaultDatabaseName = await this.getDefaultDatabase(connection)
-
 		connection.options['groupId'] = connection.groupId;
 		connection.options['databaseDisplayName'] = connection.databaseName;
 
@@ -1147,23 +1145,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	protected async getDefaultDatabase(connectionProfile: interfaces.IConnectionProfile): Promise<string> {
-		let tempProfile = connectionProfile;
-		tempProfile.groupFullName = '';
-		tempProfile.saveProfile = false;
-		tempProfile.getDefaultDatabase = true;
-		tempProfile.databaseName = '';
-		let uri = this.getConnectionUri(tempProfile);
-
-		const connResult = await this.connect(tempProfile, uri);
-		if (connResult && connResult.connected) {
-			return '';
-		} else {
-			throw new Error(connResult.errorMessage);
-		}
-	}
-
-
 	public onConnectionComplete(handle: number, info: azdata.ConnectionInfoSummary): void {
 		let connection = this._connectionStatusManager.onConnectionComplete(info);
 
@@ -1171,10 +1152,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			if (info.connectionSummary && info.connectionSummary.databaseName) {
 				this._connectionStatusManager.updateDatabaseName(info);
 			}
-			if (!connection.connectionProfile.getDefaultDatabase) {
-				//console.log("uri is " + info.ownerUri + " default database name is " + info.connectionSummary.databaseName);
-			}
-
 			connection.serverInfo = info.serverInfo;
 			connection.extensionTimer.stop();
 
