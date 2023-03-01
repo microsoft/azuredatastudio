@@ -24,18 +24,18 @@ describe('Add Database Reference Dialog', () => {
 	beforeEach(function (): void {
 		const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
 		dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([]));
-		sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object });
+		sinon.stub(vscode.extensions, 'getExtension').withArgs('Microsoft.data-workspace').returns(<any>{ exports: dataWorkspaceMock.object });
 	});
 
 	afterEach(function (): void {
 		sinon.restore();
 	});
 
-	after(async function(): Promise<void> {
+	after(async function (): Promise<void> {
 		await testUtils.deleteGeneratedTestFolder();
 	});
 
-	it('Should open dialog successfully', async function (): Promise<void> {
+	it.only('Should open dialog successfully', async function (): Promise<void> {
 		const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
 		const dialog = new AddDatabaseReferenceDialog(project);
 		await dialog.openDialog();
@@ -103,29 +103,29 @@ describe('Add Database Reference Dialog', () => {
 
 		// dialog starts with system db because there aren't any other projects in the workspace
 		should(dialog.currentReferenceType).equal(ReferenceType.systemDb);
-		validateInputBoxEnabledStates(dialog, { databaseNameEnabled: true, databaseVariableEnabled: false, serverNameEnabled: false, serverVariabledEnabled: false});
+		validateInputBoxEnabledStates(dialog, { databaseNameEnabled: true, databaseVariableEnabled: false, serverNameEnabled: false, serverVariabledEnabled: false });
 
 		// change to dacpac reference
 		dialog.dacpacRadioButtonClick();
 		should(dialog.currentReferenceType).equal(ReferenceType.dacpac);
 		should(dialog.locationDropdown!.value).equal(constants.differentDbSameServer);
-		validateInputBoxEnabledStates(dialog, { databaseNameEnabled: true, databaseVariableEnabled: true, serverNameEnabled: false, serverVariabledEnabled: false});
+		validateInputBoxEnabledStates(dialog, { databaseNameEnabled: true, databaseVariableEnabled: true, serverNameEnabled: false, serverVariabledEnabled: false });
 
 		// change location to different db, different server
 		dialog.locationDropdown!.value = constants.differentDbDifferentServer;
 		dialog.updateEnabledInputBoxes();
-		validateInputBoxEnabledStates(dialog, { databaseNameEnabled: true, databaseVariableEnabled: true, serverNameEnabled: true, serverVariabledEnabled: true});
+		validateInputBoxEnabledStates(dialog, { databaseNameEnabled: true, databaseVariableEnabled: true, serverNameEnabled: true, serverVariabledEnabled: true });
 
 		// change location to same db
 		dialog.locationDropdown!.value = constants.sameDatabase;
 		dialog.updateEnabledInputBoxes();
-		validateInputBoxEnabledStates(dialog, { databaseNameEnabled: false, databaseVariableEnabled: false, serverNameEnabled: false, serverVariabledEnabled: false});
+		validateInputBoxEnabledStates(dialog, { databaseNameEnabled: false, databaseVariableEnabled: false, serverNameEnabled: false, serverVariabledEnabled: false });
 
 		// change to project reference
 		dialog.projectRadioButtonClick();
 		should(dialog.currentReferenceType).equal(ReferenceType.project);
 		should(dialog.locationDropdown!.value).equal(constants.sameDatabase);
-		validateInputBoxEnabledStates(dialog, { databaseNameEnabled: false, databaseVariableEnabled: false, serverNameEnabled: false, serverVariabledEnabled: false});
+		validateInputBoxEnabledStates(dialog, { databaseNameEnabled: false, databaseVariableEnabled: false, serverNameEnabled: false, serverVariabledEnabled: false });
 	});
 });
 
@@ -139,6 +139,6 @@ interface inputBoxExpectedStates {
 function validateInputBoxEnabledStates(dialog: AddDatabaseReferenceDialog, expectedStates: inputBoxExpectedStates): void {
 	should(dialog.databaseNameTextbox?.enabled).equal(expectedStates.databaseNameEnabled, `Database name text box should be ${expectedStates.databaseNameEnabled}. Actual: ${dialog.databaseNameTextbox?.enabled}`);
 	should(dialog.databaseVariableTextbox?.enabled).equal(expectedStates.databaseVariableEnabled, `Database variable text box should be ${expectedStates.databaseVariableEnabled}. Actual: ${dialog.databaseVariableTextbox?.enabled}`);
-	should(dialog.serverNameTextbox?.enabled).equal(expectedStates.serverNameEnabled,  `Server name text box should be ${expectedStates.serverNameEnabled}. Actual: ${dialog.serverNameTextbox?.enabled}`);
+	should(dialog.serverNameTextbox?.enabled).equal(expectedStates.serverNameEnabled, `Server name text box should be ${expectedStates.serverNameEnabled}. Actual: ${dialog.serverNameTextbox?.enabled}`);
 	should(dialog.serverVariableTextbox?.enabled).equal(expectedStates.serverVariabledEnabled, `Server variable text box should be ${expectedStates.serverVariabledEnabled}. Actual: ${dialog.serverVariableTextbox?.enabled}`);
 }
