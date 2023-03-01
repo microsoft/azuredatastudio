@@ -18,6 +18,7 @@ import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase, SystemDatabaseReferenceProjectEntry } from './projectEntry';
+import { GetScriptsResult } from 'vscode-mssql';
 
 /**
  * Represents the configuration based on the Configuration property in the sqlproj
@@ -250,97 +251,29 @@ export class Project implements ISqlProject {
 	 */
 	private async readFilesInProject(): Promise<FileProjectEntry[]> {
 		const filesSet: Set<string> = new Set();
-		const entriesWithType: { relativePath: string, typeAttribute: string }[] = [];
 
-		// default glob include pattern for sdk style projects
-		if (this._isSdkStyleProject) {
-			try {
-				const globFiles = await utils.getSqlFilesInFolder(this.projectFolderPath, true);
-				globFiles.forEach(f => {
-					filesSet.add(utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f))));
-				});
-			} catch (e) {
-				console.error(utils.getErrorMessage(e));
-			}
+		const sqlProjectsService = await utils.getSqlProjectsService();
+
+		var scriptsResult: GetScriptsResult = await sqlProjectsService.getSqlObjectScripts(this.projectFilePath);
+
+		if (!scriptsResult.success) {
+			void window.showErrorMessage(scriptsResult.errorMessage);
+			console.error('Error: ' + scriptsResult.errorMessage);
 		}
 
-		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
-			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
-
-			// find all files to include that are specified to be included and removed (for sdk style projects) in the project file
-			// the build elements are evaluated in the order they are in the sqlproj (same way sdk style csproj handles this)
-			try {
-				const buildElements = itemGroup.getElementsByTagName(constants.Build);
-
-				for (let b = 0; b < buildElements.length; b++) {
-					// <Build Include....>
-					const includeRelativePath = buildElements[b].getAttribute(constants.Include)!;
-
-					if (includeRelativePath) {
-						const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(includeRelativePath));
-
-						// sdk style projects can handle other globbing patterns like <Build Include="folder1\*.sql" /> and <Build Include="Production*.sql" />
-						if (this._isSdkStyleProject && !(await utils.exists(fullPath))) {
-							// add files from the glob pattern
-							const globFiles = await utils.globWithPattern(fullPath);
-							globFiles.forEach(gf => {
-								const newFileRelativePath = utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(gf)));
-								filesSet.add(newFileRelativePath);
-							});
-						} else {
-							filesSet.add(includeRelativePath);
-
-							// Right now only used for external streaming jobs
-							const typeAttribute = buildElements[b].getAttribute(constants.Type)!;
-							if (typeAttribute) {
-								entriesWithType.push({ relativePath: includeRelativePath, typeAttribute: typeAttribute });
-							}
-						}
-					}
-
-					// <Build Remove....>
-					// remove files specified in the sqlproj to remove if this is an sdk style project
-					if (this._isSdkStyleProject) {
-						const removeRelativePath = buildElements[b].getAttribute(constants.Remove)!;
-
-						if (removeRelativePath) {
-							const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(removeRelativePath));
-
-							const globRemoveFiles = await utils.globWithPattern(fullPath);
-							globRemoveFiles.forEach(gf => {
-								const removeFileRelativePath = utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(gf)));
-								filesSet.delete(removeFileRelativePath);
-							});
-						}
-					}
-				}
-			} catch (e) {
-				void window.showErrorMessage(constants.errorReadingProject(constants.BuildElements, this.projectFilePath));
-				console.error(utils.getErrorMessage(e));
-			}
-		}
-
-		if (this.isSdkStyleProject) {
-			// remove any pre/post/none deploy scripts that were specified in the sqlproj so they aren't counted twice
-			this.preDeployScripts.forEach(f => filesSet.delete(f.relativePath));
-			this.postDeployScripts.forEach(f => filesSet.delete(f.relativePath));
-			this.noneDeployScripts.forEach(f => filesSet.delete(f.relativePath));
-
-			// remove any none remove scripts (these would be pre/post/none deploy scripts that were excluded)
-			const noneRemoveScripts = this.readNoneRemoveScripts();
-			noneRemoveScripts.forEach(f => filesSet.delete(f.relativePath));
+		for (var script of scriptsResult.scripts) {
+			filesSet.add(script);
 		}
 
 		// create a FileProjectEntry for each file
 		const fileEntries: FileProjectEntry[] = [];
 		for (let f of Array.from(filesSet.values())) {
-			const typeEntry = entriesWithType.find(e => e.relativePath === f);
 
 			// read file to check if it has a "Create Table" statement
 			const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(f));
-			const containsCreateTableStatement = await utils.fileContainsCreateTableStatement(fullPath, this.getProjectTargetVersion());
+			const containsCreateTableStatement: boolean = await utils.fileContainsCreateTableStatement(fullPath, this.getProjectTargetVersion());
 
-			fileEntries.push(this.createFileProjectEntry(f, EntryType.File, typeEntry ? typeEntry.typeAttribute : undefined, containsCreateTableStatement));
+			fileEntries.push(this.createFileProjectEntry(f, EntryType.File, undefined, containsCreateTableStatement));
 		}
 
 		return fileEntries;
@@ -487,30 +420,6 @@ export class Project implements ISqlProject {
 		}
 
 		return noneDeployScripts;
-	}
-
-	/**
-	 * @returns all the files specified as  <None Remove="file.sql" /> in the sqlproj
-	 */
-	private readNoneRemoveScripts(): FileProjectEntry[] {
-		const noneRemoveScripts: FileProjectEntry[] = [];
-
-		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
-			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
-
-			// find all none remove scripts to specified in the sqlproj
-			try {
-				const noneItems = itemGroup.getElementsByTagName(constants.None);
-				for (let n = 0; n < noneItems.length; n++) {
-					noneRemoveScripts.push(this.createFileProjectEntry(noneItems[n].getAttribute(constants.Remove)!, EntryType.File));
-				}
-			} catch (e) {
-				void window.showErrorMessage(constants.errorReadingProject(constants.NoneElements, this.projectFilePath));
-				console.error(utils.getErrorMessage(e));
-			}
-		}
-
-		return noneRemoveScripts;
 	}
 
 	/**
