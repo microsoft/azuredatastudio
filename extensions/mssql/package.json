@@ -95,12 +95,20 @@
       {
         "command": "mssql.enableGroupBySchema",
         "category": "MSSQL",
-        "title": "%mssql.objectExplorer.enableGroupBySchema%"
+        "title": "%mssql.objectExplorer.enableGroupBySchema%",
+        "icon": {
+          "dark": "resources/dark/groupBySchemaDisabled_inverse.svg",
+          "light": "resources/light/groupBySchemaDisabled.svg"
+        }
       },
       {
         "command": "mssql.disableGroupBySchema",
         "category": "MSSQL",
-        "title": "%mssql.objectExplorer.disableGroupBySchema%"
+        "title": "%mssql.objectExplorer.disableGroupBySchema%",
+        "icon": {
+          "dark": "resources/dark/groupBySchemaEnabled_inverse.svg",
+          "light": "resources/light/groupBySchemaEnabled.svg"
+        }
       }
     ],
     "outputChannels": [
@@ -540,6 +548,18 @@
         {
           "command": "mssql.exportNotebookToSql",
           "when": "config.workbench.enablePreviewFeatures && providerId == sql"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "mssql.enableGroupBySchema",
+          "when": "view == dataExplorer.servers && !config.mssql.objectExplorer.groupBySchema",
+          "group": "navigation"
+        },
+        {
+          "command": "mssql.disableGroupBySchema",
+          "when": "view == dataExplorer.servers && config.mssql.objectExplorer.groupBySchema",
+          "group": "navigation"
         }
       ]
     },
