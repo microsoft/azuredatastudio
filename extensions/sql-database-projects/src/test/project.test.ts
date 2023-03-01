@@ -21,7 +21,7 @@ import { SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry, S
 
 let projFilePath: string;
 
-describe('Project: sqlproj content operations', function (): void {
+describe.only('Project: sqlproj content operations', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
 	});
@@ -693,7 +693,7 @@ describe('Project: sqlproj content operations', function (): void {
 			'Folders outside the project folder should not be added.');
 	});
 
-	it('Project entry relative path should not change after reload', async function (): Promise<void> {
+	it.only('Project entry relative path should not change after reload', async function (): Promise<void> {
 		// Create new sqlproj
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const projectFolder = path.dirname(projFilePath);

@@ -22,9 +22,9 @@ describe('Add Database Reference Dialog', () => {
 	});
 
 	beforeEach(function (): void {
-		const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
-		dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([]));
-		sinon.stub(vscode.extensions, 'getExtension').withArgs('Microsoft.data-workspace').returns(<any>{ exports: dataWorkspaceMock.object });
+		// const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
+		// dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([]));
+		// sinon.stub(vscode.extensions, 'getExtension').withArgs('Microsoft.data-workspace').returns(<any>{ exports: dataWorkspaceMock.object });
 	});
 
 	afterEach(function (): void {
@@ -35,8 +35,13 @@ describe('Add Database Reference Dialog', () => {
 		await testUtils.deleteGeneratedTestFolder();
 	});
 
-	it.only('Should open dialog successfully', async function (): Promise<void> {
+	it('Should open dialog successfully', async function (): Promise<void> {
 		const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+
+		const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
+		dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([]));
+		sinon.stub(vscode.extensions, 'getExtension').withArgs('Microsoft.data-workspace').returns(<any>{ exports: dataWorkspaceMock.object });
+
 		const dialog = new AddDatabaseReferenceDialog(project);
 		await dialog.openDialog();
 		should.notEqual(dialog.addDatabaseReferenceTab, undefined);
@@ -44,6 +49,11 @@ describe('Add Database Reference Dialog', () => {
 
 	it('Should enable ok button correctly', async function (): Promise<void> {
 		const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+
+		const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
+		dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([]));
+		sinon.stub(vscode.extensions, 'getExtension').withArgs('Microsoft.data-workspace').returns(<any>{ exports: dataWorkspaceMock.object });
+
 		const dialog = new AddDatabaseReferenceDialog(project);
 		await dialog.openDialog();
 
@@ -98,6 +108,11 @@ describe('Add Database Reference Dialog', () => {
 
 	it('Should enable and disable input boxes depending on the reference type', async function (): Promise<void> {
 		const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+
+		const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
+		dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([]));
+		sinon.stub(vscode.extensions, 'getExtension').withArgs('Microsoft.data-workspace').returns(<any>{ exports: dataWorkspaceMock.object });
+
 		const dialog = new AddDatabaseReferenceDialog(project);
 		await dialog.openDialog();
 

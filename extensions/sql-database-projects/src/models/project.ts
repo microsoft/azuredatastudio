@@ -261,8 +261,10 @@ export class Project implements ISqlProject {
 			console.error('Error: ' + scriptsResult.errorMessage);
 		}
 
-		for (var script of scriptsResult.scripts) {
-			filesSet.add(script);
+		if (scriptsResult.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
+			for (var script of scriptsResult.scripts) {
+				filesSet.add(script);
+			}
 		}
 
 		// create a FileProjectEntry for each file
