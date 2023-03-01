@@ -96,7 +96,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		this.scopesString = this.scopes.join(' ');
 	}
 
-	public async startLogin(): Promise<AzureAccount | azdata.PromptFailedResult> {
+	public async startLogin(): Promise<AzureAccount | azdata.ProviderError> {
 		let loginComplete: Deferred<void, Error> | undefined = undefined;
 		try {
 			Logger.verbose('Starting login');
@@ -368,6 +368,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 					Logger.error('[ClientAuthError] Failed to silently acquire token');
 				}
 				return {
+					canceled: false,
 					name: e.name,
 					errorCode: e.errorCode,
 					errorMessage: e.errorMessage || e.message

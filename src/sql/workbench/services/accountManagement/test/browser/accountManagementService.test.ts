@@ -573,13 +573,13 @@ function getFailingMockAccountProvider(cancel: boolean): TypeMoq.Mock<azdata.Acc
 	mockProvider.setup(x => x.prompt())
 		.returns(() => {
 			return cancel
-				? Promise.resolve(<azdata.PromptFailedResult>{ canceled: true }).then()
+				? Promise.resolve(<azdata.ProviderError>{ canceled: true }).then()
 				: Promise.reject(new Error()).then();
 		});
 	mockProvider.setup(x => x.refresh(TypeMoq.It.isAny()))
 		.returns(() => {
 			return cancel
-				? Promise.resolve(<azdata.PromptFailedResult>{ canceled: true }).then()
+				? Promise.resolve(<azdata.ProviderError>{ canceled: true }).then()
 				: Promise.reject(new Error()).then();
 		});
 	return mockProvider;

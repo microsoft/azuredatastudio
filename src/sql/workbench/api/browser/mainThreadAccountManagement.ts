@@ -82,10 +82,10 @@ export class MainThreadAccountManagement extends Disposable implements MainThrea
 			initialize(restoredAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
 				return self._proxy.$initialize(handle, restoredAccounts);
 			},
-			prompt(): Thenable<azdata.Account | azdata.PromptFailedResult> {
+			prompt(): Thenable<azdata.Account | azdata.ProviderError> {
 				return self._proxy.$prompt(handle);
 			},
-			refresh(account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> {
+			refresh(account: azdata.Account): Thenable<azdata.Account | azdata.ProviderError> {
 				return self._proxy.$refresh(handle, account);
 			},
 			clearTokenCache(): Thenable<void> {

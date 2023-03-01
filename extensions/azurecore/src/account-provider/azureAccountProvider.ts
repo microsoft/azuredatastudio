@@ -204,11 +204,11 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		return response;
 	}
 
-	prompt(): Thenable<AzureAccount | azdata.PromptFailedResult> {
+	prompt(): Thenable<AzureAccount | azdata.ProviderError> {
 		return this._prompt();
 	}
 
-	private async _prompt(): Promise<AzureAccount | azdata.PromptFailedResult> {
+	private async _prompt(): Promise<AzureAccount | azdata.ProviderError> {
 		const noAuthSelected = localize('azure.NoAuthMethod.Selected', "No Azure auth method selected. You must select what method of authentication you want to use.");
 		const noAuthAvailable = localize('azure.NoAuthMethod.Available', "No Azure auth method available. You must enable the auth methods in ADS configuration.");
 
@@ -245,11 +245,11 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 		return pick.azureAuth.startLogin();
 	}
-	refresh(account: AzureAccount): Thenable<AzureAccount | azdata.PromptFailedResult> {
+	refresh(account: AzureAccount): Thenable<AzureAccount | azdata.ProviderError> {
 		return this._refresh(account);
 	}
 
-	private async _refresh(account: AzureAccount): Promise<AzureAccount | azdata.PromptFailedResult> {
+	private async _refresh(account: AzureAccount): Promise<AzureAccount | azdata.ProviderError> {
 		await this._clear(account.key);
 		return this.prompt();
 	}

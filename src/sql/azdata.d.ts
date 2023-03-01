@@ -2515,7 +2515,7 @@ declare module 'azdata' {
 	 * AccountProvider.refresh or AccountProvider.prompt are rejected with this error, the error
 	 * will not be reported to the user.
 	 */
-	export interface PromptFailedResult {
+	export interface ProviderError {
 		/**
 		 * Type guard for differentiating user cancelled sign in errors from other errors
 		 */
@@ -2579,7 +2579,7 @@ declare module 'azdata' {
 		 * Prompts the user to enter account information.
 		 * Returns an error if the user canceled the operation.
 		 */
-		prompt(): Thenable<Account | PromptFailedResult>;
+		prompt(): Thenable<Account | ProviderError>;
 
 		/**
 		 * Refreshes a stale account.
@@ -2587,7 +2587,7 @@ declare module 'azdata' {
 		 * Otherwise, returns a new updated account instance.
 		 * @param account - An account.
 		 */
-		refresh(account: Account): Thenable<Account | PromptFailedResult>;
+		refresh(account: Account): Thenable<Account | ProviderError>;
 
 		/**
 		 * Clears sensitive information for an account. To be called when account is removed
