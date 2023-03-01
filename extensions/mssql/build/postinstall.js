@@ -15,15 +15,6 @@
 	async function installService() {
 		const absoluteConfigPath = require.resolve('../config.json');
 		const config = require(absoluteConfigPath);
-		let runtime = (await platform.PlatformInformation.getCurrent()).runtimeId;
-		const arch = process.env['npm_config_arch'];
-
-		// In the build pipeline, macOS x64 image is used to produce arm64 build,
-		// we need to check the environment variable to determine the actual target runtime.
-		if (runtime === platform.Runtime.OSX && arch === 'arm64') {
-			console.log(`Set the target runtime to OSX_ARM64`);
-			runtime = platform.Runtime.OSX_ARM64;
-		}
 		// fix path since it won't be correct
 		config.installDirectory = path.join(path.dirname(absoluteConfigPath), config.installDirectory);
 		let installer = new serviceDownloader(config);
@@ -32,6 +23,7 @@
 			readline.clearLine(process.stdout, 0);
 			process.stdout.write(`${event}${values && values.length > 0 ? ` - ${values.join(' ')}` : ''}`);
 		});
+		let runtime = (await platform.PlatformInformation.getCurrent()).runtimeId;
 		console.log(`Installing SQL tools service, target runtime: ${runtime}.`);
 		let serviceInstallFolder = installer.getInstallDirectory(runtime);
 		await new Promise((rs, rj) => rimraf(serviceInstallFolder, (e) => e ? rj(e) : rs()));
