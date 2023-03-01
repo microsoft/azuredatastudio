@@ -155,7 +155,7 @@ export class Project implements ISqlProject {
 		// get pre and post deploy scripts specified in the sqlproj
 		this._preDeployScripts = this.readPreDeployScripts();
 		this._postDeployScripts = this.readPostDeployScripts();
-		this._noneDeployScripts = this.readNoneDeployScripts();
+		this._noneDeployScripts = this.readNoneScripts();
 
 		// get SQL object scripts
 		this._files = await this.readFilesInProject();
@@ -340,82 +340,75 @@ export class Project implements ISqlProject {
 		return folders;
 	}
 
-	private readPreDeployScripts(): FileProjectEntry[] {
-		const preDeployScripts: FileProjectEntry[] = [];
-		// find all pre-deployment scripts to include
-		let preDeployScriptCount: number = 0;
+	private async readPreDeployScripts(): Promise<FileProjectEntry[]> {
+		const sqlProjectsService = await utils.getSqlProjectsService();
 
-		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
-			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
+		var result: GetScriptsResult = await sqlProjectsService.getPreDeploymentScripts(this.projectFilePath);
 
-			try {
-				const preDeploy = itemGroup.getElementsByTagName(constants.PreDeploy);
-				for (let pre = 0; pre < preDeploy.length; pre++) {
-					preDeployScripts.push(this.createFileProjectEntry(preDeploy[pre].getAttribute(constants.Include)!, EntryType.File));
-					preDeployScriptCount++;
-				}
-			} catch (e) {
-				void window.showErrorMessage(constants.errorReadingProject(constants.PreDeployElements, this.projectFilePath));
-				console.error(utils.getErrorMessage(e));
+		if (!result.success) {
+			void window.showErrorMessage(result.errorMessage);
+			console.error('Error: ' + result.errorMessage);
+		}
+
+		const preDeploymentScriptEntries: FileProjectEntry[] = [];
+
+		if (result.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
+			for (var scriptPath of result.scripts) {
+				preDeploymentScriptEntries.push(this.createFileProjectEntry(scriptPath, EntryType.File));
 			}
 		}
 
-		if (preDeployScriptCount > 1) {
+		if (preDeploymentScriptEntries.length > 1) {
 			void window.showWarningMessage(constants.prePostDeployCount, constants.okString);
 		}
 
-		return preDeployScripts;
+		return preDeploymentScriptEntries;
 	}
 
-	private readPostDeployScripts(): FileProjectEntry[] {
-		const postDeployScripts: FileProjectEntry[] = [];
-		// find all post-deployment scripts to include
-		let postDeployScriptCount: number = 0;
+	private async readPostDeployScripts(): Promise<FileProjectEntry[]> {
+		const sqlProjectsService = await utils.getSqlProjectsService();
 
-		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
-			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
+		var result: GetScriptsResult = await sqlProjectsService.getPostDeploymentScripts(this.projectFilePath);
 
-			try {
-				const postDeploy = itemGroup.getElementsByTagName(constants.PostDeploy);
-				for (let post = 0; post < postDeploy.length; post++) {
-					postDeployScripts.push(this.createFileProjectEntry(postDeploy[post].getAttribute(constants.Include)!, EntryType.File));
-					postDeployScriptCount++;
-				}
-			} catch (e) {
-				void window.showErrorMessage(constants.errorReadingProject(constants.PostDeployElements, this.projectFilePath));
-				console.error(utils.getErrorMessage(e));
+		if (!result.success) {
+			void window.showErrorMessage(result.errorMessage);
+			console.error('Error: ' + result.errorMessage);
+		}
+
+		const postDeploymentScriptEntries: FileProjectEntry[] = [];
+
+		if (result.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
+			for (var scriptPath of result.scripts) {
+				postDeploymentScriptEntries.push(this.createFileProjectEntry(scriptPath, EntryType.File));
 			}
 		}
 
-		if (postDeployScriptCount > 1) {
+		if (postDeploymentScriptEntries.length > 1) {
 			void window.showWarningMessage(constants.prePostDeployCount, constants.okString);
 		}
 
-		return postDeployScripts;
+		return postDeploymentScriptEntries;
 	}
 
-	private readNoneDeployScripts(): FileProjectEntry[] {
-		const noneDeployScripts: FileProjectEntry[] = [];
+	private async readNoneScripts(): Promise<FileProjectEntry[]> {
+		const sqlProjectsService = await utils.getSqlProjectsService();
 
-		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
-			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
+		var result: GetScriptsResult = await sqlProjectsService.getNoneScripts(this.projectFilePath);
 
-			// find all none-deployment scripts to include
-			try {
-				const noneItems = itemGroup.getElementsByTagName(constants.None);
-				for (let n = 0; n < noneItems.length; n++) {
-					const includeAttribute = noneItems[n].getAttribute(constants.Include);
-					if (includeAttribute && !utils.isPublishProfile(includeAttribute)) {
-						noneDeployScripts.push(this.createFileProjectEntry(includeAttribute, EntryType.File));
-					}
-				}
-			} catch (e) {
-				void window.showErrorMessage(constants.errorReadingProject(constants.NoneElements, this.projectFilePath));
-				console.error(utils.getErrorMessage(e));
+		if (!result.success) {
+			void window.showErrorMessage(result.errorMessage);
+			console.error('Error: ' + result.errorMessage);
+		}
+
+		const noneScriptEntries: FileProjectEntry[] = [];
+
+		if (result.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
+			for (var scriptPath of result.scripts) {
+				noneScriptEntries.push(this.createFileProjectEntry(scriptPath, EntryType.File));
 			}
 		}
 
-		return noneDeployScripts;
+		return noneScriptEntries;
 	}
 
 	/**
@@ -794,6 +787,14 @@ export class Project implements ISqlProject {
 	 * @param itemType Type of the project entry to add. This maps to the build action for the item.
 	 */
 	public async addScriptItem(relativeFilePath: string, contents?: string, itemType?: string): Promise<FileProjectEntry> {
+		// Check if file already has been added to sqlproj
+		const normalizedRelativeFilePath = utils.convertSlashesForSqlProj(relativeFilePath);
+
+		const existingEntry = this.files.find(f => f.relativePath.toUpperCase() === normalizedRelativeFilePath.toUpperCase());
+		if (existingEntry) {
+			return existingEntry;
+		}
+
 		// Ensure the file exists
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
 
@@ -826,14 +827,14 @@ export class Project implements ISqlProject {
 			case ItemType.preDeployScript:
 				await service.addPreDeploymentScript(this.projectFilePath, relativeFilePath);
 				this._preDeployScripts = this.readPreDeployScripts();
-				this._noneDeployScripts = this.readNoneDeployScripts();
+				this._noneDeployScripts = this.readNoneScripts();
 
 				this._preDeployScripts
 				break;
 			case ItemType.postDeployScript:
 				await service.addPostDeploymentScript(this.projectFilePath, relativeFilePath);
 				this._postDeployScripts = this.readPostDeployScripts();
-				this._noneDeployScripts = this.readNoneDeployScripts();
+				this._noneDeployScripts = this.readNoneScripts();
 				break;
 			default:
 				await service.addSqlObjectScript(this.projectFilePath, relativeFilePath);
@@ -844,48 +845,9 @@ export class Project implements ISqlProject {
 		this._folders = await this.readFolders();
 
 		this._preDeployScripts = this.readPreDeployScripts();
-		this._noneDeployScripts = this.readNoneDeployScripts();
+		this._noneDeployScripts = this.readNoneScripts();
 
-
-		// Ensure that parent folder item exist in the project for the corresponding file path
-		await this.ensureFolderItems(path.relative(this.projectFolderPath, path.dirname(absoluteFilePath)));
-
-		// Check if file already has been added to sqlproj
-		const normalizedRelativeFilePath = utils.convertSlashesForSqlProj(relativeFilePath);
-
-		const existingEntry = this.files.find(f => f.relativePath.toUpperCase() === normalizedRelativeFilePath.toUpperCase());
-		if (existingEntry) {
-			return existingEntry;
-		}
-
-		// Update sqlproj XML
-		const fileEntry = this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
-
-		let xmlTag;
-		switch (itemType) {
-			case ItemType.preDeployScript:
-				xmlTag = constants.PreDeploy;
-				this._preDeployScripts.length === 0 ? this._preDeployScripts.push(fileEntry) : this._noneDeployScripts.push(fileEntry);
-				break;
-			case ItemType.postDeployScript:
-				xmlTag = constants.PostDeploy;
-				this._postDeployScripts.length === 0 ? this._postDeployScripts.push(fileEntry) : this._noneDeployScripts.push(fileEntry);
-				break;
-			default:
-				xmlTag = constants.Build;
-				this._files.push(fileEntry);
-		}
-
-		const attributes = new Map<string, string>();
-
-		if (itemType === ItemType.externalStreamingJob) {
-			fileEntry.sqlObjectType = constants.ExternalStreamingJob;
-			attributes.set(constants.Type, constants.ExternalStreamingJob);
-		}
-
-		await this.addToProjFile(fileEntry, xmlTag, attributes);
-
-		return fileEntry;
+		return this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
 	}
 
 	/**
@@ -1306,7 +1268,7 @@ export class Project implements ISqlProject {
 			}
 			this._preDeployScripts = this.readPreDeployScripts();
 			this._postDeployScripts = this.readPostDeployScripts();
-			this._noneDeployScripts = this.readNoneDeployScripts();
+			this._noneDeployScripts = this.readNoneScripts();
 			const currentFiles = await this.readFilesInProject();
 
 			// only add a Remove node to exclude the file if it's still included by a glob
