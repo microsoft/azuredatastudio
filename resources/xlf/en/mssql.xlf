@@ -232,26 +232,6 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <source xml:lang="en">Yes</source>
     </trans-unit>
 </body></file>
-  <file original="extensions/mssql/dist/sqlNotebook/sqlNotebookController" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="cellExecutionCancelled">
-      <source xml:lang="en">Cell execution cancelled.</source>
-    </trans-unit>
-    <trans-unit id="changeNotebookConnection">
-      <source xml:lang="en">Change SQL Notebook Connection</source>
-    </trans-unit>
-    <trans-unit id="noConnectionError">
-      <source xml:lang="en">No connection provided.</source>
-    </trans-unit>
-    <trans-unit id="notebookConnection">
-      <source xml:lang="en">Connected to: {0}</source>
-    </trans-unit>
-    <trans-unit id="notebookDisconnected">
-      <source xml:lang="en">Disconnected</source>
-    </trans-unit>
-    <trans-unit id="queryInProgressError">
-      <source xml:lang="en">Another query is currently in progress. Please wait for that query to complete before running these cells.</source>
-    </trans-unit>
-</body></file>
   <file original="extensions/mssql/dist/sqlToolsServer" source-language="en" datatype="plaintext"><body>
     <trans-unit id="downloadServiceDoneChannelMsg">
       <source xml:lang="en">Downloaded {0}</source>
