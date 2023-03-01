@@ -554,6 +554,41 @@ declare module 'mssql' {
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
 		getSqlObjectScripts(projectUri: string): Promise<GetScriptsResult>;
+
+		/**
+		 * Add a SQL object script to a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 */
+		addNoneScript(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+
+		/**
+		 * Delete a SQL object script from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 */
+		deleteNoneScript(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+
+		/**
+		 * Exclude a SQL object script from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 */
+		excludeNoneScript(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+
+		/**
+		 * getNoneScripts
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getNoneScripts(projectUri: string): Promise<GetScriptsResult>;
+
+		/**
+		 * Move a SQL object script in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
+		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 */
+		moveNoneScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
 	}
 
 
