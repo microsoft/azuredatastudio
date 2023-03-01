@@ -19,6 +19,9 @@
       "supported": true
     }
   },
+  "enabledApiProposals": [
+    "notebookEditor"
+  ],
   "contributes": {
     "configuration": {
       "type": "object",

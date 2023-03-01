@@ -9,7 +9,7 @@ import * as os from 'os';
 import * as path from 'path';
 
 import { Project } from '../models/project';
-import { FolderNode, FileNode, sortFileFolderNodes } from '../models/tree/fileFolderTreeItem';
+import { FolderNode, FileNode, sortFileFolderNodes, SqlObjectFileNode } from '../models/tree/fileFolderTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { DatabaseProjectItemType } from '../common/constants';
 import { EntryType } from 'sqldbproj';
@@ -21,12 +21,12 @@ describe('Project Tree tests', function (): void {
 		const sqlprojUri = vscode.Uri.file(`${root}Fake.sqlproj`);
 
 		let inputNodes: (FileNode | FolderNode)[] = [
-			new FileNode(vscode.Uri.file(`${root}C`), sqlprojUri),
-			new FileNode(vscode.Uri.file(`${root}D`), sqlprojUri),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}C`), sqlprojUri),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}D`), sqlprojUri),
 			new FolderNode(vscode.Uri.file(`${root}Z`), sqlprojUri),
 			new FolderNode(vscode.Uri.file(`${root}X`), sqlprojUri),
-			new FileNode(vscode.Uri.file(`${root}B`), sqlprojUri),
-			new FileNode(vscode.Uri.file(`${root}A`), sqlprojUri),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}B`), sqlprojUri),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}A`), sqlprojUri),
 			new FolderNode(vscode.Uri.file(`${root}W`), sqlprojUri),
 			new FolderNode(vscode.Uri.file(`${root}Y`), sqlprojUri)
 		];
@@ -38,10 +38,10 @@ describe('Project Tree tests', function (): void {
 			new FolderNode(vscode.Uri.file(`${root}X`), sqlprojUri),
 			new FolderNode(vscode.Uri.file(`${root}Y`), sqlprojUri),
 			new FolderNode(vscode.Uri.file(`${root}Z`), sqlprojUri),
-			new FileNode(vscode.Uri.file(`${root}A`), sqlprojUri),
-			new FileNode(vscode.Uri.file(`${root}B`), sqlprojUri),
-			new FileNode(vscode.Uri.file(`${root}C`), sqlprojUri),
-			new FileNode(vscode.Uri.file(`${root}D`), sqlprojUri)
+			new SqlObjectFileNode(vscode.Uri.file(`${root}A`), sqlprojUri),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}B`), sqlprojUri),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}C`), sqlprojUri),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}D`), sqlprojUri)
 		];
 
 		should(inputNodes.map(n => n.relativeProjectUri.path)).deepEqual(expectedNodes.map(n => n.relativeProjectUri.path));
@@ -86,13 +86,13 @@ describe('Project Tree tests', function (): void {
 			DatabaseProjectItemType.sqlcmdVariablesRoot,
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.folder,
-			DatabaseProjectItemType.file]);
+			DatabaseProjectItemType.sqlObjectScript]);
 
 		should(tree.children.find(x => x.relativeProjectUri.path === '/TestProj/someFolder')?.children.map(y => y.treeItem.contextValue)).deepEqual([
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.folder,
-			DatabaseProjectItemType.file,
-			DatabaseProjectItemType.file]);
+			DatabaseProjectItemType.sqlObjectScript,
+			DatabaseProjectItemType.sqlObjectScript]);
 	});
 
 	it('Should be able to parse windows relative path as platform safe path', function (): void {

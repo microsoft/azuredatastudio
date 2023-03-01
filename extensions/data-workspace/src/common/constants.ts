@@ -23,6 +23,7 @@ export const gitCloneError = localize('gitCloneError', "Error during git clone. 
 export const openedProjectsUndefinedAfterRefresh = localize('openedProjectsUndefinedAfterRefresh', "List of opened projects should not be undefined after refresh from disk.");
 export const dragAndDropNotSupported = localize('dragAndDropNotSupported', "This project type does not support drag and drop.");
 export const onlyMovingOneFileIsSupported = localize('onlyMovingOneFileIsSupported', "Only moving one file at a time is supported.");
+export const noProjectProvidingExtensionsInstalled = localize('noProjectProvidingExtensionsInstalled', "No database project extensions are installed. Please install a database project extension to use this feature.");
 
 // UI
 export const OkButtonText = localize('dataworkspace.ok', "OK");

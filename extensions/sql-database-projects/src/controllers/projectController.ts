@@ -14,19 +14,18 @@ import * as vscode from 'vscode';
 import type * as azdataType from 'azdata';
 import * as dataworkspace from 'dataworkspace';
 import type * as mssqlVscode from 'vscode-mssql';
-import * as fse from 'fs-extra';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, reservedProjectFolders } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
+import { FolderNode, FileNode, SqlObjectFileNode, PreDeployNode, PostDeployNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
 import { ShellCommandOptions } from '../tools/shellExecutionHelper';
 import { BuildHelper } from '../tools/buildHelper';
-import { readPublishProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
+import { readPublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
@@ -411,7 +410,6 @@ export class ProjectsController {
 			publishDatabaseDialog.publishToContainer = async (proj, prof) => this.publishToDockerContainer(proj, prof);
 			publishDatabaseDialog.generateScript = async (proj, prof) => this.publishOrScriptProject(proj, prof, false);
 			publishDatabaseDialog.readPublishProfile = async (profileUri) => readPublishProfile(profileUri);
-			publishDatabaseDialog.savePublishProfile = async (profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions) => savePublishProfile(profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions);
 
 			publishDatabaseDialog.openDialog();
 
@@ -857,12 +855,13 @@ export class ProjectsController {
 			return;
 		}
 
-		// TODO: swap this out and hookup to "Move" file/folder api
-		// rename the file
-		const newFilePath = path.join(path.dirname(file?.fsUri.fsPath!), `${newFileName}.sql`);
-		await fs.rename(file?.fsUri.fsPath!, newFilePath);
-		await project.exclude(file!);
-		await project.addExistingItem(newFilePath);
+		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(file?.relativePath!)), `${newFileName}.sql`);
+
+		try {
+			await this.move(node, node.projectFileUri.fsPath, newFilePath);
+		} catch (e) {
+			void vscode.window.showErrorMessage(constants.errorRenamingFile(file?.relativePath!, newFilePath, utils.getErrorMessage(e)));
+		}
 
 		this.refreshProjectsTree(context);
 	}
@@ -1447,7 +1446,7 @@ export class ProjectsController {
 
 		if (fileOrFolder) {
 			// use relative path and not tree paths for files and folder
-			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts);
+			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts).concat(project.publishProfiles);
 
 			// trim trailing slash since folders with and without a trailing slash are allowed in a sqlproj
 			const trimmedUri = utils.trimChars(utils.getPlatformSafeFileEntryPath(utils.trimUri(fileOrFolder.projectFileUri, fileOrFolder.fileSystemUri)), '/');
@@ -1862,10 +1861,10 @@ export class ProjectsController {
 		let folderPath;
 		// target is the root of project, which is the .sqlproj
 		if (target.element.projectFileUri.fsPath === target.element.fileSystemUri.fsPath) {
-			folderPath = path.dirname(target.element.projectFileUri.fsPath!);
+			folderPath = path.basename(path.dirname(target.element.projectFileUri.fsPath!));
 		} else {
 			// target is another file or folder
-			folderPath = target.element.fileSystemUri.fsPath.endsWith(constants.sqlFileExtension) ? path.dirname(target.element.fileSystemUri.fsPath) : target.element.fileSystemUri.fsPath;
+			folderPath = target.element.relativeProjectUri.fsPath.endsWith(constants.sqlFileExtension) ? path.dirname(target.element.relativeProjectUri.fsPath) : target.element.relativeProjectUri.fsPath;
 		}
 
 		const newPath = path.join(folderPath!, sourceFileNode.friendlyName);
@@ -1882,15 +1881,39 @@ export class ProjectsController {
 
 		// Move the file
 		try {
-			const project = await Project.openProject(projectUri.fsPath);
-
-			// TODO: swap out with DacFx projects apis - currently moving pre/post deploy scripts don't work, but they should work after the swap
-			await fse.move(sourceFileNode.fileSystemUri.fsPath, newPath!);
-			await project.exclude(project.files.find(f => f.fsUri.fsPath === sourceFileNode.fileSystemUri.fsPath)!);
-			await project.addExistingItem(newPath!);
+			await this.move(sourceFileNode, projectUri.fsPath, newPath);
 		} catch (e) {
 			void vscode.window.showErrorMessage(constants.errorMovingFile(sourceFileNode.fileSystemUri.fsPath, newPath, utils.getErrorMessage(e)));
 		}
+	}
+
+	/**
+	 * Moves a file to a different location
+	 * @param node Node being moved
+	 * @param projectFilePath Full file path to .sqlproj
+	 * @param destinationRelativePath path of the destination, relative to .sqlproj
+	 */
+	private async move(node: BaseProjectTreeItem, projectFilePath: string, destinationRelativePath: string): Promise<void> {
+		// trim off the project folder at the beginning of the relative path stored in the tree
+		const projectRelativeUri = vscode.Uri.file(path.basename(projectFilePath, constants.sqlprojExtension));
+		const originalRelativePath = utils.trimUri(projectRelativeUri, node.relativeProjectUri);
+		destinationRelativePath = utils.trimUri(projectRelativeUri, vscode.Uri.file(destinationRelativePath));
+
+		if (originalRelativePath === destinationRelativePath) {
+			return;
+		}
+
+		const sqlProjectsService = await utils.getSqlProjectsService();
+
+		if (node instanceof SqlObjectFileNode) {
+			await sqlProjectsService.moveSqlObjectScript(projectFilePath, destinationRelativePath, originalRelativePath)
+		} else if (node instanceof PreDeployNode) {
+			await sqlProjectsService.movePreDeploymentScript(projectFilePath, destinationRelativePath, originalRelativePath)
+		} else if (node instanceof PostDeployNode) {
+			await sqlProjectsService.movePostDeploymentScript(projectFilePath, destinationRelativePath, originalRelativePath)
+		}
+		// TODO add support for renaming none scripts after those are added in STS
+		// TODO add support for renaming publish profiles when support is added in DacFx
 	}
 }
 

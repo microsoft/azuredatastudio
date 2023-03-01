@@ -14,6 +14,7 @@ const localize = nls.loadMessageBundle();
 export const dataSourcesFileName = 'datasources.json';
 export const sqlprojExtension = '.sqlproj';
 export const sqlFileExtension = '.sql';
+export const publishProfileExtension = '.publish.xml';
 export const openApiSpecFileExtensions = ['yaml', 'yml', 'json'];
 export const schemaCompareExtensionId = 'microsoft.schema-compare';
 export const master = 'master';
@@ -135,8 +136,6 @@ export const server = localize('server', "Server");
 export const defaultUser = localize('default', "default");
 export const selectProfileToUse = localize('selectProfileToUse', "Select publish profile to load");
 export const selectProfile = localize('selectProfile', "Select Profile");
-export const saveProfileAsButtonText = localize('saveProfileAsButtonText', "Save Profile As...");
-export const save = localize('save', "Save");
 export const dontUseProfile = localize('dontUseProfile', "Don't use profile");
 export const browseForProfileWithIcon = `$(folder) ${localize('browseForProfile', "Browse for profile")}`;
 export const chooseAction = localize('chooseAction', "Choose action");
@@ -485,6 +484,7 @@ export const ImportElements = localize('importElements', "Import Elements");
 export const ProjectReferenceNameElement = localize('projectReferenceNameElement', "Project reference name element");
 export const ProjectReferenceElement = localize('projectReferenceElement', "Project reference");
 export const DacpacReferenceElement = localize('dacpacReferenceElement', "Dacpac reference");
+export const PublishProfileElements = localize('publishProfileElements', "Publish profile elements");
 
 /** Name of the property item in the project file that defines default database collation. */
 export const DefaultCollationProperty = 'DefaultCollation';
@@ -564,7 +564,12 @@ export enum DatabaseProjectItemType {
 	reference = 'databaseProject.itemType.reference',
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
 	sqlcmdVariablesRoot = 'databaseProject.itemType.sqlcmdVariablesRoot',
-	sqlcmdVariable = 'databaseProject.itemType.sqlcmdVariable'
+	sqlcmdVariable = 'databaseProject.itemType.sqlcmdVariable',
+	preDeploymentScript = 'databaseProject.itemType.file.preDeploymentScript',
+	postDeploymentScript = 'databaseProject.itemType.file.postDeployScript',
+	noneFile = 'databaseProject.itemType.file.noneFile',
+	sqlObjectScript = 'databaseProject.itemType.file.sqlObjectScript',
+	publishProfile = 'databaseProject.itemType.file.publishProfile'
 }
 
 // AutoRest
@@ -659,3 +664,4 @@ export const movingFilesBetweenProjectsNotSupported = localize('movingFilesBetwe
 export function errorMovingFile(source: string, destination: string, error: string) { return localize('errorMovingFile', "Error when moving file from {0} to {1}. Error: {2}", source, destination, error); }
 export function moveConfirmationPrompt(source: string, destination: string) { return localize('moveConfirmationPrompt', "Are you sure you want to move {0} to {1}?", source, destination); }
 export const move = localize('Move', "Move");
+export function errorRenamingFile(source: string, destination: string, error: string) { return localize('errorRenamingFile', "Error when renaming file from {0} to {1}. Error: {2}", source, destination, error); }

@@ -66,6 +66,12 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.postDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PostDeployment1.sql')).not.equal(undefined, 'File Script.PostDeployment1.sql not read');
 		should(project.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment2.sql')).not.equal(undefined, 'File Script.PostDeployment2.sql not read');
 		should(project.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Tables\\Script.PostDeployment1.sql')).not.equal(undefined, 'File Tables\\Script.PostDeployment1.sql not read');
+
+		// Publish profiles
+		should(project.publishProfiles.length).equal(3);
+		should(project.publishProfiles.find(f => f.type === EntryType.File && f.relativePath === 'TestProjectName_1.publish.xml')).not.equal(undefined, 'Profile TestProjectName_1.publish.xml not read');
+		should(project.publishProfiles.find(f => f.type === EntryType.File && f.relativePath === 'TestProjectName_2.publish.xml')).not.equal(undefined, 'Profile TestProjectName_2.publish.xml not read');
+		should(project.publishProfiles.find(f => f.type === EntryType.File && f.relativePath === 'TestProjectName_3.publish.xml')).not.equal(undefined, 'Profile TestProjectName_3.publish.xml not read');
 	});
 
 	it('Should read Project with Project reference from sqlproj', async function (): Promise<void> {
@@ -1589,6 +1595,30 @@ describe('Project: add SQLCMD Variables', function (): void {
 
 		const projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).equal(baselines.openSqlProjectWithAdditionalSqlCmdVariablesBaseline.trim());
+	});
+});
+
+describe('Project: add publish profiles', function (): void {
+	before(async function (): Promise<void> {
+		await baselines.loadBaselines();
+	});
+
+	after(async function (): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
+	});
+
+	it('Should update .sqlproj with new publish profiles', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+		should(Object.keys(project.publishProfiles).length).equal(3);
+
+		// add a new publish profile
+		await project.addPublishProfileToProjFile(path.join(projFilePath, 'TestProjectName_4.publish.xml'));
+
+		should(Object.keys(project.publishProfiles).length).equal(4);
+
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).equal(baselines.openSqlProjectWithAdditionalPublishProfileBaseline.trim());
 	});
 });
 

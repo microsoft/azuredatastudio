@@ -9,6 +9,7 @@ import { WorkspaceService } from '../services/workspaceService';
 import { defaultProjectSaveLocation } from './projectLocationHelper';
 import { openSpecificProjectNewProjectDialog } from '../dialogs/newProjectDialog';
 import { isValidBasename, isValidBasenameErrorMessage, isValidFilenameCharacter, sanitizeStringForFilename } from './pathUtilsHelper';
+import { noProjectProvidingExtensionsInstalled } from './constants';
 
 export class DataWorkspaceExtension implements IExtension {
 	constructor(private workspaceService: WorkspaceService) {
@@ -39,6 +40,10 @@ export class DataWorkspaceExtension implements IExtension {
 	}
 
 	openSpecificProjectNewProjectDialog(projectType: IProjectType): Promise<vscode.Uri | undefined> {
+		if (!this.workspaceService.isProjectProviderAvailable) {
+			void vscode.window.showErrorMessage(noProjectProvidingExtensionsInstalled);
+		}
+
 		return openSpecificProjectNewProjectDialog(projectType, this.workspaceService);
 	}
 

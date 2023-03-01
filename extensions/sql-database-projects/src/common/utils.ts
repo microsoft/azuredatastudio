@@ -771,3 +771,13 @@ export function isValidBasename(name?: string): boolean {
 export function isValidBasenameErrorMessage(name?: string): string {
 	return getDataWorkspaceExtensionApi().isValidBasenameErrorMessage(name);
 }
+
+/**
+ * Checks if the provided file is a publish profile
+ * @param fileName filename to check
+ * @returns True if it is a publish profile, otherwise false
+ */
+export function isPublishProfile(fileName: string): boolean {
+	const hasPublishExtension = fileName.trim().toLowerCase().endsWith(constants.publishProfileExtension);
+	return hasPublishExtension;
+}
