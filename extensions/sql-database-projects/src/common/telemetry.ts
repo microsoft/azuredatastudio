@@ -47,5 +47,7 @@ export enum TelemetryActions {
 	optionsChanged = 'optionsChanged',
 	profileLoaded = 'profileLoaded',
 	SchemaComparisonFinished = 'SchemaComparisonFinished',
-	SchemaComparisonStarted = 'SchemaComparisonStarted'
+	SchemaComparisonStarted = 'SchemaComparisonStarted',
+	rename = "rename",
+	move = "move"
 }
