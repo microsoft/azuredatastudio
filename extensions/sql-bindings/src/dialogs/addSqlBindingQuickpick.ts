@@ -110,7 +110,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 
 			if (!result.success) {
 				void vscode.window.showErrorMessage(result.errorMessage);
-				TelemetryReporter.createErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.finishAddSqlBinding)
+				TelemetryReporter.createErrorEvent2(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.finishAddSqlBinding, undefined)
 					.withAdditionalProperties(propertyBag).send();
 				return;
 			}
@@ -126,7 +126,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 				.withAdditionalProperties(propertyBag).send();
 		} catch (e) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(e));
-			TelemetryReporter.createErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.finishAddSqlBinding, undefined, utils.getErrorType(e))
+			TelemetryReporter.createErrorEvent2(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.finishAddSqlBinding, e, undefined, utils.getErrorType(e))
 				.withAdditionalProperties(propertyBag).send();
 			return;
 		}
@@ -135,7 +135,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 		exitReason = 'error';
 		void vscode.window.showErrorMessage(utils.getErrorMessage(e));
 
-		TelemetryReporter.createErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.exitSqlBindingsQuickpick, undefined, utils.getErrorType(e))
+		TelemetryReporter.createErrorEvent2(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.exitSqlBindingsQuickpick, e, undefined, utils.getErrorType(e))
 			.withAdditionalProperties(propertyBag).send();
 	} finally {
 		propertyBag.quickPickStep = quickPickStep;
