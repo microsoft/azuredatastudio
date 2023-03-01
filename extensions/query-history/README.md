@@ -6,13 +6,13 @@ Adds a Query History view for viewing and running past executed queries.
 
 Query History is initially as a tab in the tab panel, which is toggled by the **View: Toggle Panel** or **Query History: Focus on Query History View** commands.
 
-![Query History tab](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/query-history/images/QueryHistoryTab.PNG)
+![Query History tab](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/query-history/images/QueryHistoryTab.png)
 
 This view can be moved similar to other views into other view containers by dragging and dropping into the desired view container.
 
 Initially this view will be empty but once you execute a query editor that will be captured in the window - with a separate row displayed for every query executed.
 
-![Query History tab with queries](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/query-history/images/QueryHistoryTabWithQueries.PNG)
+![Query History tab with queries](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/query-history/images/QueryHistoryTabWithQueries.png)
 
 Each row consists of 4 parts :
 - Status icon : This will be a ✔️ if the query executed successfully. If any errors occurred a ❌ is shown.
@@ -30,7 +30,7 @@ Query History capture can be enabled/disabled in one of two ways :
 
 Right clicking on a history row will bring up a menu with a number of actions available.
 
-![Query History action menu](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/query-history/images/QueryHistoryActionMenu.PNG)
+![Query History action menu](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/query-history/images/QueryHistoryActionMenu.png)
 
 #### Open Query
 
