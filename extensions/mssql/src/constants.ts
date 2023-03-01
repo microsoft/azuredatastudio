@@ -31,3 +31,5 @@ export const configObjectExplorerGroupBySchemaFlagName = 'mssql.objectExplorer.g
 // COMMANDNAMES //////////////////////////////////////////////////////////
 export const cmdObjectExplorerEnableGroupBySchemaCommand = 'mssql.enableGroupBySchema';
 export const cmdObjectExplorerDisableGroupBySchemaCommand = 'mssql.disableGroupBySchema';
+export const cmdObjectExplorerEnabbleGroupBySchemaTitleCommand = 'mssql.enableGroupBySchemaTitle';
+export const cmdObjectExplorerDisableGroupBySchemaTitleCommand = 'mssql.disableGroupBySchemaTitle';
