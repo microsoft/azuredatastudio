@@ -2151,14 +2151,14 @@ export class Project implements ISqlProject {
 	 * @param projectFilePath Full file path to .sqlproj
 	 * @param destinationRelativePath path of the destination, relative to .sqlproj
 	 */
-	public async move(node: BaseProjectTreeItem, destinationRelativePath: string): Promise<azdataType.ResultStatus | undefined> {
+	public async move(node: BaseProjectTreeItem, destinationRelativePath: string): Promise<azdataType.ResultStatus> {
 		// trim off the project folder at the beginning of the relative path stored in the tree
 		const projectRelativeUri = vscode.Uri.file(path.basename(this.projectFilePath, constants.sqlprojExtension));
 		const originalRelativePath = utils.trimUri(projectRelativeUri, node.relativeProjectUri);
 		destinationRelativePath = utils.trimUri(projectRelativeUri, vscode.Uri.file(destinationRelativePath));
 
 		if (originalRelativePath === destinationRelativePath) {
-			return;
+			return { success: true, errorMessage: '' };
 		}
 
 		const sqlProjectsService = await utils.getSqlProjectsService();
@@ -2173,6 +2173,9 @@ export class Project implements ISqlProject {
 		}
 		// TODO add support for renaming none scripts after those are added in STS
 		// TODO add support for renaming publish profiles when support is added in DacFx
+		else {
+			result = { success: false, errorMessage: constants.unhandledMoveNode }
+		}
 
 		return result;
 	}

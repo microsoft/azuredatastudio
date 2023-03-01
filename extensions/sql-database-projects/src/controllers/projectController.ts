@@ -1884,7 +1884,7 @@ export class ProjectsController {
 
 		if (!moveResult) { // file wasn't moved
 			return;
-		} else if (!moveResult?.success) {// TODO adding telemetry
+		} else if (!moveResult.success) {// TODO adding telemetry
 			void vscode.window.showErrorMessage(constants.errorMovingFile(sourceFileNode.fileSystemUri.fsPath, newPath, utils.getErrorMessage(moveResult.errorMessage)));
 		}
 	}
