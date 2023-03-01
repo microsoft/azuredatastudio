@@ -860,9 +860,9 @@ export class ProjectsController {
 		const renameResult = await this.move(node, node.projectFileUri.fsPath, newFilePath);
 
 		if (renameResult?.success) {
-			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.rename).send();
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.rename);
 		} else {
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.rename).send();
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.rename);
 			void vscode.window.showErrorMessage(constants.errorRenamingFile(file?.relativePath!, newFilePath, utils.getErrorMessage(renameResult?.errorMessage)));
 		}
 
@@ -1883,9 +1883,9 @@ export class ProjectsController {
 		const moveResult = await this.move(sourceFileNode, projectUri.fsPath, newPath);
 
 		if (moveResult?.success) {
-			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.move).send();
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.move);
 		} else {
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.move).send();
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.move);
 			void vscode.window.showErrorMessage(constants.errorMovingFile(sourceFileNode.fileSystemUri.fsPath, newPath, utils.getErrorMessage(moveResult?.errorMessage)));
 		}
 	}
