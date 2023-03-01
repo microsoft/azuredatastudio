@@ -878,7 +878,7 @@ export class ProjectsController {
 		const node = context.element as SqlCmdVariableTreeItem;
 		const project = await this.getProjectFromContext(node);
 		const variableName = node.friendlyName;
-		const originalValue = project.sqlCmdVariables[variableName]; // TODO: update to hookup with however sqlcmd vars work after swap
+		const originalValue = project.sqlCmdVariables[variableName];
 
 		const newValue = await vscode.window.showInputBox(
 			{
@@ -891,8 +891,8 @@ export class ProjectsController {
 			return;
 		}
 
-		const sqlProjectsService = await utils.getSqlProjectsService();
-		await sqlProjectsService.updateSqlCmdVariable(project.projectFilePath, variableName, newValue);
+		await project.updateSqlCmdVariable(variableName, newValue)
+		this.refreshProjectsTree(context);
 	}
 
 	/**
@@ -925,10 +925,7 @@ export class ProjectsController {
 			return;
 		}
 
-		// TODO: update after swap
-		const sqlProjectsService = await utils.getSqlProjectsService();
-		await sqlProjectsService.updateSqlCmdVariable(project.projectFilePath, variableName, defaultValue);
-
+		await project.addSqlCmdVariable(variableName, defaultValue);
 		this.refreshProjectsTree(context);
 	}
 
