@@ -39,6 +39,7 @@ export enum TelemetryViews {
 	LoginMigrationWizardController = 'LoginMigrationWizardController',
 	LoginMigrationWizard = 'LoginMigrationWizard',
 	TdeConfigurationDialog = 'TdeConfigurationDialog',
+	ValidIrDialog = 'validIrDialog',
 }
 
 export enum TelemetryAction {

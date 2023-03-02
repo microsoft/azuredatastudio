@@ -11,6 +11,7 @@ import { MigrationStateModel, MigrationTargetType, NetworkShare, ValidateIrState
 import { EOL } from 'os';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { getEncryptConnectionValue, getSourceConnectionProfile, getTrustServerCertificateValue } from '../../api/sqlUtils';
+import { logError, TelemetryViews } from '../../telemetry';
 
 const DialogName = 'ValidateIrDialog';
 
@@ -414,6 +415,7 @@ export class ValidateIrDialog {
 				}
 			} catch (error) {
 				const err = this._formatError(error);
+				logError(TelemetryViews.ValidIrDialog, err.message, error);
 				await this._updateValidateIrResults(
 					testNumber,
 					ValidateIrState.Failed,
@@ -508,6 +510,7 @@ export class ValidateIrDialog {
 				}
 			} catch (error) {
 				const err = this._formatError(error);
+				logError(TelemetryViews.ValidIrDialog, err.message, error);
 				await this._updateValidateIrResults(
 					testNumber,
 					ValidateIrState.Failed,
