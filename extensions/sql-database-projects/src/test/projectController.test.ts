@@ -1013,6 +1013,66 @@ describe('ProjectsController', function (): void {
 			project = await Project.openProject(project.projectFilePath);
 			should(Object.keys(project.sqlCmdVariables).length).equal(1, 'The project should only have 1 sqlcmd variable after deletion');
 		});
+
+		it('Should add sqlcmd variable', async function (): Promise<void> {
+			let project = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			const sqlProjectsService = await utils.getSqlProjectsService();
+			await sqlProjectsService.openProject(project.projectFilePath);
+
+			const projController = new ProjectsController(testContext.outputChannel);
+			const projRoot = new ProjectRootTreeItem(project);
+
+			should(Object.keys(project.sqlCmdVariables).length).equal(2, 'The project should start with 2 sqlcmd variables');
+
+			const inputBoxStub = sinon.stub(vscode.window, 'showInputBox');
+			inputBoxStub.resolves('');
+			await projController.addSqlCmdVariable(createWorkspaceTreeItem(projRoot.children.find(x => x.friendlyName === constants.sqlcmdVariablesNodeName)!));
+
+			// reload project
+			project = await Project.openProject(project.projectFilePath);
+			should(Object.keys(project.sqlCmdVariables).length).equal(2, 'The project should still have 2 sqlcmd variables if no name was provided');
+
+			inputBoxStub.reset();
+			inputBoxStub.onFirstCall().resolves('newVariable');
+			inputBoxStub.onSecondCall().resolves('testValue');
+			await projController.addSqlCmdVariable(createWorkspaceTreeItem(projRoot.children.find(x => x.friendlyName === constants.sqlcmdVariablesNodeName)!));
+
+			// reload project
+			project = await Project.openProject(project.projectFilePath);
+			should(Object.keys(project.sqlCmdVariables).length).equal(3, 'The project should have 3 sqlcmd variable after adding a new one');
+		});
+
+		it('Should update sqlcmd variable', async function (): Promise<void> {
+			let project = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			const sqlProjectsService = await utils.getSqlProjectsService();
+			await sqlProjectsService.openProject(project.projectFilePath);
+
+			const projController = new ProjectsController(testContext.outputChannel);
+			const projRoot = new ProjectRootTreeItem(project);
+
+			should(Object.keys(project.sqlCmdVariables).length).equal(2, 'The project should start with 2 sqlcmd variables');
+
+			const inputBoxStub = sinon.stub(vscode.window, 'showInputBox');
+			inputBoxStub.resolves('');
+			const sqlcmdVarToUpdate = projRoot.children.find(x => x.friendlyName === constants.sqlcmdVariablesNodeName)!.children[0];
+			const originalValue = project.sqlCmdVariables[sqlcmdVarToUpdate.friendlyName];
+			await projController.editSqlCmdVariable(createWorkspaceTreeItem(sqlcmdVarToUpdate));
+
+			// reload project
+			project = await Project.openProject(project.projectFilePath);
+			should(Object.keys(project.sqlCmdVariables).length).equal(2, 'The project should still have 2 sqlcmd variables');
+			should(project.sqlCmdVariables[sqlcmdVarToUpdate.friendlyName]).equal(originalValue, 'The value of the sqlcmd variable should not have changed');
+
+			inputBoxStub.reset();
+			const updatedValue = 'newValue';
+			inputBoxStub.resolves(updatedValue);
+			await projController.editSqlCmdVariable(createWorkspaceTreeItem(sqlcmdVarToUpdate));
+
+			// reload project
+			project = await Project.openProject(project.projectFilePath);
+			should(Object.keys(project.sqlCmdVariables).length).equal(2, 'The project should still have 2 sqlcmd variables');
+			should(project.sqlCmdVariables[sqlcmdVarToUpdate.friendlyName]).equal(updatedValue, 'The value of the sqlcmd variable should have been updated');
+		});
 	});
 });
 
