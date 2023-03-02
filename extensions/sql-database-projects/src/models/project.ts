@@ -153,9 +153,9 @@ export class Project implements ISqlProject {
 		this._isSdkStyleProject = this.CheckForSdkStyleProject();
 
 		// get pre and post deploy scripts specified in the sqlproj
-		this._preDeployScripts = this.readPreDeployScripts();
-		this._postDeployScripts = this.readPostDeployScripts();
-		this._noneDeployScripts = this.readNoneScripts();
+		this._preDeployScripts = await this.readPreDeployScripts();
+		this._postDeployScripts = await this.readPostDeployScripts();
+		this._noneDeployScripts = await this.readNoneScripts();
 
 		// get SQL object scripts
 		this._files = await this.readFilesInProject();
@@ -391,22 +391,22 @@ export class Project implements ISqlProject {
 	}
 
 	private async readNoneScripts(): Promise<FileProjectEntry[]> {
-		const sqlProjectsService = await utils.getSqlProjectsService();
+		//const sqlProjectsService = await utils.getSqlProjectsService();
 
-		var result: GetScriptsResult = await sqlProjectsService.getNoneScripts(this.projectFilePath);
+		//var result: GetScriptsResult = await sqlProjectsService.getNoneScripts(this.projectFilePath);
 
-		if (!result.success) {
-			void window.showErrorMessage(result.errorMessage);
-			console.error('Error: ' + result.errorMessage);
-		}
+		// if (!result.success) {
+		// 	void window.showErrorMessage(result.errorMessage);
+		// 	console.error('Error: ' + result.errorMessage);
+		// }
 
 		const noneScriptEntries: FileProjectEntry[] = [];
 
-		if (result.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
-			for (var scriptPath of result.scripts) {
-				noneScriptEntries.push(this.createFileProjectEntry(scriptPath, EntryType.File));
-			}
-		}
+		// if (result.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
+		// 	for (var scriptPath of result.scripts) {
+		// 		noneScriptEntries.push(this.createFileProjectEntry(scriptPath, EntryType.File));
+		// 	}
+		// }
 
 		return noneScriptEntries;
 	}
@@ -795,7 +795,7 @@ export class Project implements ISqlProject {
 			return existingEntry;
 		}
 
-		// Ensure the file exists
+		// Ensure the file exists // TODO: can be pushed down to DacFx
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
 
 		if (contents) {
@@ -826,15 +826,15 @@ export class Project implements ISqlProject {
 		switch (itemType) {
 			case ItemType.preDeployScript:
 				await service.addPreDeploymentScript(this.projectFilePath, relativeFilePath);
-				this._preDeployScripts = this.readPreDeployScripts();
-				this._noneDeployScripts = this.readNoneScripts();
+				this._preDeployScripts = await this.readPreDeployScripts();
+				this._noneDeployScripts = await this.readNoneScripts();
 
 				this._preDeployScripts
 				break;
 			case ItemType.postDeployScript:
 				await service.addPostDeploymentScript(this.projectFilePath, relativeFilePath);
-				this._postDeployScripts = this.readPostDeployScripts();
-				this._noneDeployScripts = this.readNoneScripts();
+				this._postDeployScripts = await this.readPostDeployScripts();
+				this._noneDeployScripts = await this.readNoneScripts();
 				break;
 			default:
 				await service.addSqlObjectScript(this.projectFilePath, relativeFilePath);
@@ -844,8 +844,8 @@ export class Project implements ISqlProject {
 
 		this._folders = await this.readFolders();
 
-		this._preDeployScripts = this.readPreDeployScripts();
-		this._noneDeployScripts = this.readNoneScripts();
+		this._preDeployScripts = await this.readPreDeployScripts();
+		this._noneDeployScripts = await this.readNoneScripts();
 
 		return this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
 	}
@@ -1266,9 +1266,9 @@ export class Project implements ISqlProject {
 			if (deleted) {
 				await this.serializeToProjFile(this.projFileXmlDoc!);
 			}
-			this._preDeployScripts = this.readPreDeployScripts();
-			this._postDeployScripts = this.readPostDeployScripts();
-			this._noneDeployScripts = this.readNoneScripts();
+			this._preDeployScripts = await this.readPreDeployScripts();
+			this._postDeployScripts = await this.readPostDeployScripts();
+			this._noneDeployScripts = await this.readNoneScripts();
 			const currentFiles = await this.readFilesInProject();
 
 			// only add a Remove node to exclude the file if it's still included by a glob
