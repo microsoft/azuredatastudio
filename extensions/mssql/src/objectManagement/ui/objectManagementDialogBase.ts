@@ -158,7 +158,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 					}
 					catch (err) {
 						operation.updateStatus(azdata.TaskStatus.Failed, getErrorMessage(err));
-						TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, actionName).withAdditionalProperties({
+						TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, actionName, err).withAdditionalProperties({
 							objectType: this.objectType
 						}).send();
 					}
@@ -169,7 +169,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			this._loadingComponent.loading = false;
 		} catch (err) {
 			const actionName = this.isNewObject ? TelemetryActions.OpenNewObjectDialog : TelemetryActions.OpenPropertiesDialog;
-			TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, actionName).withAdditionalProperties({
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, actionName, err).withAdditionalProperties({
 				objectType: this.objectType
 			}).send();
 			void vscode.window.showErrorMessage(getErrorMessage(err));
