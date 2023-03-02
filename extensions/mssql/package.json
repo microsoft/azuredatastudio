@@ -95,12 +95,38 @@
       {
         "command": "mssql.enableGroupBySchema",
         "category": "MSSQL",
-        "title": "%mssql.objectExplorer.enableGroupBySchema%"
+        "title": "%mssql.objectExplorer.enableGroupBySchema%",
+        "icon": {
+          "dark": "resources/dark/groupBySchemaEnabled_inverse.svg",
+          "light": "resources/light/groupBySchemaEnabled.svg"
+        }
       },
       {
         "command": "mssql.disableGroupBySchema",
         "category": "MSSQL",
-        "title": "%mssql.objectExplorer.disableGroupBySchema%"
+        "title": "%mssql.objectExplorer.disableGroupBySchema%",
+        "icon": {
+          "dark": "resources/dark/groupBySchemaDisabled_inverse.svg",
+          "light": "resources/light/groupBySchemaDisabled.svg"
+        }
+      },
+      {
+        "command": "mssql.enableGroupBySchemaTitle",
+        "category": "MSSQL",
+        "title": "%mssql.objectExplorer.enableGroupBySchemaTitle%",
+        "icon": {
+          "dark": "resources/dark/groupBySchemaEnabled_inverse.svg",
+          "light": "resources/light/groupBySchemaEnabled.svg"
+        }
+      },
+      {
+        "command": "mssql.disableGroupBySchemaTitle",
+        "category": "MSSQL",
+        "title": "%mssql.objectExplorer.disableGroupBySchemaTitle%",
+        "icon": {
+          "dark": "resources/dark/groupBySchemaDisabled_inverse.svg",
+          "light": "resources/light/groupBySchemaDisabled.svg"
+        }
       }
     ],
     "outputChannels": [
@@ -540,6 +566,18 @@
         {
           "command": "mssql.exportNotebookToSql",
           "when": "config.workbench.enablePreviewFeatures && providerId == sql"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "mssql.enableGroupBySchemaTitle",
+          "when": "view == dataExplorer.servers && !config.mssql.objectExplorer.groupBySchema",
+          "group": "navigation@4"
+        },
+        {
+          "command": "mssql.disableGroupBySchemaTitle",
+          "when": "view == dataExplorer.servers && config.mssql.objectExplorer.groupBySchema",
+          "group": "navigation@5"
         }
       ]
     },
