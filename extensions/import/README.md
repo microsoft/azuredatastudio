@@ -45,4 +45,4 @@ This extension collects telemetry data, which is used to help understand how to 
 
 ## Privacy Statement
 
-The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.microsoft.com/privacystatement) describes the privacy statement of this software.
+To learn more about our Privacy Statement visit [this link](https://go.microsoft.com/fwlink/?LinkID=824704).
