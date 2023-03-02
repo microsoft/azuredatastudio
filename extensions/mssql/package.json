@@ -572,12 +572,12 @@
         {
           "command": "mssql.enableGroupBySchemaTitle",
           "when": "view == dataExplorer.servers && !config.mssql.objectExplorer.groupBySchema",
-          "group": "navigation"
+          "group": "navigation@4"
         },
         {
           "command": "mssql.disableGroupBySchemaTitle",
           "when": "view == dataExplorer.servers && config.mssql.objectExplorer.groupBySchema",
-          "group": "navigation"
+          "group": "navigation@5"
         }
       ]
     },
