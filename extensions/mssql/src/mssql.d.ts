@@ -548,7 +548,7 @@ declare module 'mssql' {
 		getSqlCmdVariables(projectUri: string): Promise<GetSqlCmdVariablesResult>;
 
 		/**
-		 * getSqlObjectScripts
+		 * Get all the SQL object scripts in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
 		getSqlObjectScripts(projectUri: string): Promise<GetScriptsResult>;

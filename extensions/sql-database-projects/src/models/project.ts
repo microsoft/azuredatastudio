@@ -173,6 +173,8 @@ export class Project implements ISqlProject {
 			console.error(utils.getErrorMessage(e));
 		}
 
+		await this.readProjectProperties();
+
 		// get projectGUID
 		try {
 			this._projectGuid = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ProjectGuid)[0].childNodes[0].nodeValue!;
@@ -246,6 +248,11 @@ export class Project implements ISqlProject {
 			// If output path isn't specified in .sqlproj, set it to the default output path .\bin\Debug\
 			this._outputPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(constants.defaultOutputPath(this.configuration.toString())));
 		}
+	}
+
+	private async readProjectProperties(): Promise<void> {
+		//const service = await utils.getSqlProjectsService();
+
 	}
 
 	/**
