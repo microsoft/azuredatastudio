@@ -895,6 +895,11 @@ export class Project implements ISqlProject {
 		this._databaseReferences = this._databaseReferences.filter(x => x !== entry);
 	}
 
+	public async deleteSqlCmdVariable(variableName: string): Promise<azdataType.ResultStatus> {
+		const sqlProjectsService = await utils.getSqlProjectsService();
+		return sqlProjectsService.deleteSqlCmdVariable(this.projectFilePath, variableName);
+	}
+
 	/**
 	 * Set the target platform of the project
 	 * @param compatLevel compat level of project
