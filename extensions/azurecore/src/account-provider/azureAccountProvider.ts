@@ -245,11 +245,11 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 		return pick.azureAuth.startLogin();
 	}
-	refresh(account: AzureAccount): Thenable<AzureAccount | azdata.ProviderError> {
+	refresh(account: AzureAccount): Thenable<AzureAccount | azdata.PromptFailedResult> {
 		return this._refresh(account);
 	}
 
-	private async _refresh(account: AzureAccount): Promise<AzureAccount | azdata.ProviderError> {
+	private async _refresh(account: AzureAccount): Promise<AzureAccount | azdata.PromptFailedResult> {
 		await this._clear(account.key);
 		return this.prompt();
 	}
