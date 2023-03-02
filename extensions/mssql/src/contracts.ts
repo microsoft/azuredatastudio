@@ -616,6 +616,14 @@ export namespace UpdateProjectForCrossPlatformRequest {
 	export const type = new RequestType<SqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/updateProjectForCrossPlatform');
 }
 
+export namespace GetProjectPropertiesRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetProjectPropertiesResult, void, void>('sqlProjects/getProjectProperties');
+}
+
+export namespace SetDatabaseSourceRequest {
+	export const type = new RequestType<SetDatabaseSourceParams, azdata.ResultStatus, void, void>('sqlProjects/setDatabaseSource');
+}
+
 //#endregion
 
 //#region File/folder functions
@@ -792,6 +800,13 @@ export interface SqlProjectScriptParams extends SqlProjectParams {
 	 * Path of the script, including .sql, relative to the .sqlproj
 	 */
 	path: string;
+}
+
+export interface SetDatabaseSourceParams extends SqlProjectParams {
+	/**
+	 * Source of the database schema, used in telemetry
+	 */
+	databaseSource: string;
 }
 
 export interface AddDacpacReferenceParams extends AddUserDatabaseReferenceParams {

@@ -586,6 +586,19 @@ declare module 'vscode-mssql' {
 		updateProjectForCrossPlatform(projectUri: string): Promise<ResultStatus>;
 
 		/**
+		 * Set the DatabaseSource property of a .sqlproj file
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param databaseSource Source of the database schema, used in telemetry
+		 */
+		setDatabaseSource(projectUri: string, databaseSource: string): Promise<ResultStatus>;
+
+		/**
+		 * Get the cross-platform compatibility status for a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getProjectProperties(projectUri: string): Promise<GetProjectPropertiesResult>;
+
+		/**
 		 * Add a SQLCMD variable to a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 * @param name Name of the SQLCMD variable
@@ -714,6 +727,34 @@ declare module 'vscode-mssql' {
 		 * Whether the project is cross-platform compatible
 		 */
 		isCrossPlatformCompatible: boolean;
+	}
+
+	export interface GetProjectPropertiesResult extends ResultStatus {
+		/**
+		 * GUID for the SQL project
+		 */
+		projectGuid: string;
+		/**
+		 * Build configuration, defaulted to Debug if not specified
+		 */
+		configuration: string;
+		/**
+		 * Build platform, defaulted to AnyCPU if not specified
+		 */
+		platform: string;
+		/**
+		 * Output path for build, defaulted to "bin/Debug" if not specified.
+			 May be absolute or relative.
+		 */
+		outputPath: string;
+		/**
+		 * Default collation for the project, defaulted to SQL_Latin1_General_CP1_CI_AS if not specified
+		 */
+		defaultCollation: string;
+		/**
+		 * Source of the database schema, used in telemetry
+		 */
+		databaseSource?: string;
 	}
 
 	export interface GetDatabaseReferencesResult extends ResultStatus {

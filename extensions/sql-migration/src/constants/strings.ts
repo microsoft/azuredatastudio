@@ -113,7 +113,7 @@ export const REFRESH_ASSESSMENT_BUTTON_LABEL = localize('sql.migration.refresh.a
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose your Azure SQL target");
 
 export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure SQL Managed Instance");
-export const SKU_RECOMMENDATION_SQLDB_CARD_TEXT = localize('sql.migration.sku.sqldb.card.title', "Azure SQL Database (PREVIEW)");
+export const SKU_RECOMMENDATION_SQLDB_CARD_TEXT = localize('sql.migration.sku.sqldb.card.title', "Azure SQL Database");
 export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "SQL Server on Azure Virtual Machine");
 export const SKU_RECOMMENDATION_MI_TARGET_TEXT = localize('sql.migration.sku.mi.target.title', "Azure SQL Managed Instance");
 export const SKU_RECOMMENDATION_SQLDB_TARGET_TEXT = localize('sql.migration.sku.sqldb.target.title', "Azure SQL Database");
@@ -122,7 +122,7 @@ export const SELECT_AZURE_MI = localize('sql.migration.select.azure.mi', "Select
 export const SELECT_AZURE_VM = localize('sql.migration.select.azure.vm', "Select your target Azure Subscription and your target SQL Server on Azure Virtual Machine for your target.");
 export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI = localize('sql.migration.sku.recommendation.view.assessment.mi', "To migrate to Azure SQL Managed Instance, view assessment results and select one or more databases.");
 export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM = localize('sql.migration.sku.recommendation.view.assessment.vm', "To migrate to SQL Server on Azure Virtual Machine, view assessment results and select one or more databases.");
-export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_SQLDB = localize('sql.migration.sku.recommendation.view.assessment.sqldb', "To migrate to Azure SQL Database (PREVIEW), view assessment results and select one or more databases.");
+export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_SQLDB = localize('sql.migration.sku.recommendation.view.assessment.sqldb', "To migrate to Azure SQL Database, view assessment results and select one or more databases.");
 export const VIEW_SELECT_BUTTON_LABEL = localize('sql.migration.view.select.button.label', "View/Select");
 export function TOTAL_DATABASES_SELECTED(selectedDbCount: number, totalDbCount: number): string {
 	return localize('total.databases.selected', "{0} of {1} databases selected", selectedDbCount, totalDbCount);
@@ -796,6 +796,8 @@ export function VALIDATE_IR_VALIDATION_STATUS(state: string | undefined, errors?
 	}
 }
 
+export const VALIDATE_IR_ERROR_GATEWAY_TIMEOUT = localize('sql.migration.validate.error.gatewaytimeout', "A time-out was encountered while validating a resource connection. Learn more: https://aka.ms/dms-migrations-troubleshooting.");
+
 export function VALIDATE_IR_VALIDATION_STATUS_ERROR_COUNT(state: string | undefined, errorCount: number): string {
 	const status = state ?? '';
 	return errorCount > 1
@@ -1322,8 +1324,8 @@ export const DASHBOARD_HELP_LINK_MI_TUTORIAL = localize('sql.migration.dashboard
 export const DASHBOARD_HELP_DESCRIPTION_MI_TUTORIAL = localize('sql.migration.dashboard.help.description.mi', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Managed Instance with minimal downtime.');
 export const DASHBOARD_HELP_LINK_VM_TUTORIAL = localize('sql.migration.dashboard.help.link.vm', 'Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)');
 export const DASHBOARD_HELP_DESCRIPTION_VMTUTORIAL = localize('sql.migration.dashboard.help.description.vm', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.');
-export const DASHBOARD_HELP_LINK_SQLDB_TUTORIAL = localize('sql.migration.dashboard.help.link.sqldb', 'Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)');
-export const DASHBOARD_HELP_DESCRIPTION_SQLDBTUTORIAL = localize('sql.migration.dashboard.help.description.sqldb', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).');
+export const DASHBOARD_HELP_LINK_SQLDB_TUTORIAL = localize('sql.migration.dashboard.help.link.sqldb', 'Tutorial:  Migrate to SQL Server on Azure SQL Database (offline)');
+export const DASHBOARD_HELP_DESCRIPTION_SQLDBTUTORIAL = localize('sql.migration.dashboard.help.description.sqldb', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database.');
 export const DASHBOARD_HELP_LINK_DMS_GUIDE = localize('sql.migration.dashboard.help.link.dmsGuide', 'Azure Database Migration Guides');
 export const DASHBOARD_HELP_DESCRIPTION_DMS_GUIDE = localize('sql.migration.dashboard.help.description.dmsGuide', 'A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.');
 
