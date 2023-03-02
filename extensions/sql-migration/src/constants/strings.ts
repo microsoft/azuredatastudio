@@ -794,6 +794,8 @@ export function VALIDATE_IR_VALIDATION_STATUS(state: string | undefined, errors?
 	}
 }
 
+export const VALIDATE_IR_ERROR_GATEWAY_TIMEOUT = localize('sql.migration.validate.error.gatewaytimeout', "A time-out was encountered while validating a resource connection. Learn more: https://aka.ms/dms-migrations-troubleshooting.");
+
 export function VALIDATE_IR_VALIDATION_STATUS_ERROR_COUNT(state: string | undefined, errorCount: number): string {
 	const status = state ?? '';
 	return errorCount > 1

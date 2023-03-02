@@ -14,6 +14,14 @@ import { getEncryptConnectionValue, getSourceConnectionProfile, getTrustServerCe
 
 const DialogName = 'ValidateIrDialog';
 
+enum HttpStatusCodes {
+	GatewayTimeout = "504\r\n",
+}
+
+enum HttpStatusExceptionCodes {
+	ConnectionTimeoutError = "ConnectionTimeoutError",
+}
+
 enum ValidationResultIndex {
 	message = 0,
 	icon = 1,
@@ -405,10 +413,11 @@ export class ValidateIrDialog {
 					return true;
 				}
 			} catch (error) {
+				const err = this._formatError(error);
 				await this._updateValidateIrResults(
 					testNumber,
 					ValidateIrState.Failed,
-					[constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabase, error)]);
+					[constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabase, err)]);
 			}
 			return false;
 		};
@@ -447,6 +456,16 @@ export class ValidateIrDialog {
 		}
 	}
 
+	private _formatError(error: Error): Error {
+		if (error?.message?.startsWith(HttpStatusCodes.GatewayTimeout)) {
+			return {
+				name: HttpStatusExceptionCodes.ConnectionTimeoutError,
+				message: constants.VALIDATE_IR_ERROR_GATEWAY_TIMEOUT,
+			};
+		}
+		return error;
+	}
+
 	private async _validateSqlDbMigration(): Promise<void> {
 		const currentConnection = await getSourceConnectionProfile();
 		const sourceServerName = currentConnection?.serverName!;
@@ -464,8 +483,8 @@ export class ValidateIrDialog {
 			testSourceConnectivity: boolean,
 			testTargetConnectivity: boolean): Promise<boolean> => {
 
-			await this._updateValidateIrResults(testNumber, ValidateIrState.Running);
 			try {
+				await this._updateValidateIrResults(testNumber, ValidateIrState.Running);
 				const response = await validateIrSqlDatabaseMigrationSettings(
 					this._model,
 					sourceServerName,
@@ -488,10 +507,11 @@ export class ValidateIrDialog {
 					return true;
 				}
 			} catch (error) {
+				const err = this._formatError(error);
 				await this._updateValidateIrResults(
 					testNumber,
 					ValidateIrState.Failed,
-					[constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabase, error)]);
+					[constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabase, err)]);
 			}
 			return false;
 		};
