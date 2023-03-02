@@ -97,8 +97,8 @@
         "category": "MSSQL",
         "title": "%mssql.objectExplorer.enableGroupBySchema%",
         "icon": {
-          "dark": "resources/dark/groupBySchemaDisabled_inverse.svg",
-          "light": "resources/light/groupBySchemaDisabled.svg"
+          "dark": "resources/dark/groupBySchemaEnabled_inverse.svg",
+          "light": "resources/light/groupBySchemaEnabled.svg"
         }
       },
       {
@@ -106,26 +106,26 @@
         "category": "MSSQL",
         "title": "%mssql.objectExplorer.disableGroupBySchema%",
         "icon": {
-          "dark": "resources/dark/groupBySchemaEnabled_inverse.svg",
-          "light": "resources/light/groupBySchemaEnabled.svg"
-        }
-      },
-      {
-        "command": "mssql.enableGroupBySchemaTitle",
-        "category": "MSSQL",
-        "title": "%mssql.objectExplorer.enableGroupBySchema%",
-        "icon": {
           "dark": "resources/dark/groupBySchemaDisabled_inverse.svg",
           "light": "resources/light/groupBySchemaDisabled.svg"
         }
       },
       {
-        "command": "mssql.disableGroupBySchemaTitle",
+        "command": "mssql.enableGroupBySchemaTitle",
         "category": "MSSQL",
-        "title": "%mssql.objectExplorer.disableGroupBySchema%",
+        "title": "%mssql.objectExplorer.enableGroupBySchemaTitle%",
         "icon": {
           "dark": "resources/dark/groupBySchemaEnabled_inverse.svg",
           "light": "resources/light/groupBySchemaEnabled.svg"
+        }
+      },
+      {
+        "command": "mssql.disableGroupBySchemaTitle",
+        "category": "MSSQL",
+        "title": "%mssql.objectExplorer.disableGroupBySchemaTitle%",
+        "icon": {
+          "dark": "resources/dark/groupBySchemaDisabled_inverse.svg",
+          "light": "resources/light/groupBySchemaDisabled.svg"
         }
       }
     ],
