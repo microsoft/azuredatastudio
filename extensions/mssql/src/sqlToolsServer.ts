@@ -125,7 +125,7 @@ function generateServerOptions(logPath: string, executablePath: string): ServerO
 	}
 	const enableSqlAuthenticationProvider = getEnableSqlAuthenticationProviderConfig();
 	const azureAuthLibrary = getAzureAuthenticationLibraryConfig();
-	if (azureAuthLibrary === 'MSAL' && enableSqlAuthenticationProvider) {
+	if (azureAuthLibrary === 'MSAL' && enableSqlAuthenticationProvider === true) {
 		launchArgs.push('--enable-sql-authentication-provider');
 	}
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };

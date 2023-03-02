@@ -156,7 +156,9 @@ export function getParallelMessageProcessingConfig(): boolean {
 export function getAzureAuthenticationLibraryConfig(): string {
 	const config = getAzureCoreExtConfiguration();
 	if (config) {
-		return config.has(azureAuthenticationLibraryConfig) ? config[azureAuthenticationLibraryConfig] : 'MSAL'; // default Auth library
+		return config.has(azureAuthenticationLibraryConfig)
+			? config.get<string>(azureAuthenticationLibraryConfig)
+			: 'MSAL'; // default Auth library
 	}
 	else {
 		return 'MSAL';
@@ -165,11 +167,14 @@ export function getAzureAuthenticationLibraryConfig(): string {
 
 export function getEnableSqlAuthenticationProviderConfig(): boolean {
 	const config = getConfiguration();
-	if (!config) {
+	if (config) {
+		return config.has(enableSqlAuthenticationProviderConfig)
+			? config.get<boolean>(enableSqlAuthenticationProviderConfig)
+			: false; // disabled by default
+	}
+	else {
 		return false;
 	}
-	const setting = config.inspect(enableSqlAuthenticationProviderConfig);
-	return (azdata.env.quality === azdata.env.AppQuality.dev && setting.globalValue === undefined && setting.workspaceValue === undefined) ? true : config[enableSqlAuthenticationProviderConfig];
 }
 
 export function getLogFileName(prefix: string, pid: number): string {
