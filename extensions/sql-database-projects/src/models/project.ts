@@ -18,7 +18,8 @@ import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase, SystemDatabaseReferenceProjectEntry } from './projectEntry';
-import { GetFoldersResult, GetScriptsResult } from 'vscode-mssql';
+import { GetFoldersResult, GetScriptsResult } from 'mssql';
+import { ResultStatus } from 'azdata';
 
 /**
  * Represents the configuration based on the Configuration property in the sqlproj
@@ -822,30 +823,30 @@ export class Project implements ISqlProject {
 
 		// Add the new script
 		const service = await utils.getSqlProjectsService();
+		let result: ResultStatus;
 
 		switch (itemType) {
 			case ItemType.preDeployScript:
-				await service.addPreDeploymentScript(this.projectFilePath, relativeFilePath);
+				result = await service.addPreDeploymentScript(this.projectFilePath, relativeFilePath);
 				this._preDeployScripts = await this.readPreDeployScripts();
 				this._noneDeployScripts = await this.readNoneScripts();
-
-				this._preDeployScripts
 				break;
 			case ItemType.postDeployScript:
-				await service.addPostDeploymentScript(this.projectFilePath, relativeFilePath);
+				result = await service.addPostDeploymentScript(this.projectFilePath, relativeFilePath);
 				this._postDeployScripts = await this.readPostDeployScripts();
 				this._noneDeployScripts = await this.readNoneScripts();
 				break;
 			default:
-				await service.addSqlObjectScript(this.projectFilePath, relativeFilePath);
+				result = await service.addSqlObjectScript(this.projectFilePath, relativeFilePath);
 				this._files = await this.readFilesInProject();
 				break;
 		}
 
 		this._folders = await this.readFolders();
 
-		this._preDeployScripts = await this.readPreDeployScripts();
-		this._noneDeployScripts = await this.readNoneScripts();
+		if (!result.success) {
+			throw new Error(result.errorMessage);
+		}
 
 		return this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
 	}
@@ -861,23 +862,24 @@ export class Project implements ISqlProject {
 			throw new Error(constants.noFileExist(filePath));
 		}
 
-		// Check if file already has been added to sqlproj
+		const service = await utils.getSqlProjectsService();
 		const normalizedRelativeFilePath = utils.convertSlashesForSqlProj(path.relative(this.projectFolderPath, filePath));
-		const existingEntry = this.files.find(f => f.relativePath.toUpperCase() === normalizedRelativeFilePath.toUpperCase());
-		if (existingEntry) {
-			return existingEntry;
+		let result: ResultStatus;
+
+		if (path.extname(filePath) === constants.sqlFileExtension) {
+			result = await service.addSqlObjectScript(this.projectFilePath, filePath)
+			this._files = await this.readFilesInProject();
+		} else {
+			result = { success: false, errorMessage: 'NoneItems not yet implemented' };
+			// result = await service.addNoneItem(this.projectFilePath, filePath);
+			// this._noneDeployScripts = await this.readNoneScripts();
 		}
 
-		// Ensure that parent folder item exist in the project for the corresponding file path
-		await this.ensureFolderItems(path.relative(this.projectFolderPath, path.dirname(filePath)));
+		if (!result.success) {
+			throw new Error(result.errorMessage);
+		}
 
-		// Update sqlproj XML
-		const fileEntry = this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
-		const xmlTag = path.extname(filePath) === constants.sqlFileExtension ? constants.Build : constants.None;
-		await this.addToProjFile(fileEntry, xmlTag);
-		this._files.push(fileEntry);
-
-		return fileEntry;
+		return this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
 	}
 
 	public async exclude(entry: FileProjectEntry): Promise<void> {
