@@ -239,6 +239,25 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	}
 
 	/**
+	 * Get the cross-platform compatibility status for a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 */
+	public async getProjectProperties(projectUri: string): Promise<mssql.GetProjectPropertiesResult> {
+		const params: contracts.SqlProjectParams = { projectUri: projectUri };
+		return await this.runWithErrorHandling(contracts.GetProjectPropertiesRequest.type, params);
+	}
+
+	/**
+	 * Set the DatabaseSource property of a .sqlproj file
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param databaseSource Source of the database schema, used in telemetry
+	 */
+	public async setDatabaseSource(projectUri: string, databaseSource: string): Promise<azdata.ResultStatus> {
+		const params: contracts.SetDatabaseSourceParams = { projectUri: projectUri, databaseSource: databaseSource };
+		return await this.runWithErrorHandling(contracts.SetDatabaseSourceRequest.type, params);
+	}
+
+	/**
 	 * Add a SQLCMD variable to a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
 	 * @param name Name of the SQLCMD variable
