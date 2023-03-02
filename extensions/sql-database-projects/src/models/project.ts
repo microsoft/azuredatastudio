@@ -168,7 +168,7 @@ export class Project implements ISqlProject {
 		this._importedTargets = this.readImportedTargets();
 
 		// get publish profiles specified in the sqlproj
-		this._publishProfiles = this.readPublishProfiles();
+		this._publishProfiles = await this.readPublishProfiles();
 
 		// find all SQLCMD variables to include
 		try {
@@ -261,16 +261,12 @@ export class Project implements ISqlProject {
 		const filesSet: Set<string> = new Set();
 
 		const sqlProjectsService = await utils.getSqlProjectsService();
+		var result: GetScriptsResult = await sqlProjectsService.getSqlObjectScripts(this.projectFilePath);
 
-		var scriptsResult: GetScriptsResult = await sqlProjectsService.getSqlObjectScripts(this.projectFilePath);
+		this.throwIfFailed(result);
 
-		if (!scriptsResult.success) {
-			void window.showErrorMessage(scriptsResult.errorMessage);
-			console.error('Error: ' + scriptsResult.errorMessage);
-		}
-
-		if (scriptsResult.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
-			for (var script of scriptsResult.scripts) {
+		if (result.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
+			for (var script of result.scripts) {
 				filesSet.add(script);
 			}
 		}
@@ -293,11 +289,7 @@ export class Project implements ISqlProject {
 		const sqlProjectsService = await utils.getSqlProjectsService();
 
 		var result: GetFoldersResult = await sqlProjectsService.getFolders(this.projectFilePath);
-
-		if (!result.success) {
-			void window.showErrorMessage(result.errorMessage);
-			console.error('Error: ' + result.errorMessage);
-		}
+		this.throwIfFailed(result);
 
 		const folderEntries: FileProjectEntry[] = [];
 
@@ -345,11 +337,7 @@ export class Project implements ISqlProject {
 		const sqlProjectsService = await utils.getSqlProjectsService();
 
 		var result: GetScriptsResult = await sqlProjectsService.getPreDeploymentScripts(this.projectFilePath);
-
-		if (!result.success) {
-			void window.showErrorMessage(result.errorMessage);
-			console.error('Error: ' + result.errorMessage);
-		}
+		this.throwIfFailed(result);
 
 		const preDeploymentScriptEntries: FileProjectEntry[] = [];
 
@@ -370,11 +358,7 @@ export class Project implements ISqlProject {
 		const sqlProjectsService = await utils.getSqlProjectsService();
 
 		var result: GetScriptsResult = await sqlProjectsService.getPostDeploymentScripts(this.projectFilePath);
-
-		if (!result.success) {
-			void window.showErrorMessage(result.errorMessage);
-			console.error('Error: ' + result.errorMessage);
-		}
+		this.throwIfFailed(result);
 
 		const postDeploymentScriptEntries: FileProjectEntry[] = [];
 
@@ -394,50 +378,39 @@ export class Project implements ISqlProject {
 	private async readNoneScripts(): Promise<FileProjectEntry[]> {
 		//const sqlProjectsService = await utils.getSqlProjectsService();
 
-		//var result: GetScriptsResult = await sqlProjectsService.getNoneScripts(this.projectFilePath);
+		//var result: GetScriptsResult = await sqlProjectsService.getNoneItems(this.projectFilePath);
+		// this.throwIfFailed(result);
 
-		// if (!result.success) {
-		// 	void window.showErrorMessage(result.errorMessage);
-		// 	console.error('Error: ' + result.errorMessage);
-		// }
-
-		const noneScriptEntries: FileProjectEntry[] = [];
+		const noneItemEntries: FileProjectEntry[] = [];
 
 		// if (result.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
-		// 	for (var scriptPath of result.scripts) {
-		// 		noneScriptEntries.push(this.createFileProjectEntry(scriptPath, EntryType.File));
+		// 	for (var path of result.scripts) {
+		// 		noneItemEntries.push(this.createFileProjectEntry(path, EntryType.File));
 		// 	}
 		// }
 
-		return noneScriptEntries;
+		return noneItemEntries.filter(f => !utils.isPublishProfile(f.relativePath));
 	}
 
 	/**
 	 *
 	 * @returns all the publish profiles (ending with *.publish.xml) specified as <None Include="file.publish.xml" /> in the sqlproj
 	 */
-	private readPublishProfiles(): FileProjectEntry[] {
-		const publishProfiles: FileProjectEntry[] = [];
+	private async readPublishProfiles(): Promise<FileProjectEntry[]> {
+		//const sqlProjectsService = await utils.getSqlProjectsService();
 
-		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
-			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
+		//var result: GetScriptsResult = await sqlProjectsService.getNoneItems(this.projectFilePath);
+		// this.throwIfFailed(result);
 
-			// find all publish profile scripts to include
-			try {
-				const noneItems = itemGroup.getElementsByTagName(constants.None);
-				for (let n = 0; n < noneItems.length; n++) {
-					const includeAttribute = noneItems[n].getAttribute(constants.Include);
-					if (includeAttribute && utils.isPublishProfile(includeAttribute)) {
-						publishProfiles.push(this.createFileProjectEntry(includeAttribute, EntryType.File));
-					}
-				}
-			} catch (e) {
-				void window.showErrorMessage(constants.errorReadingProject(constants.PublishProfileElements, this.projectFilePath));
-				console.error(utils.getErrorMessage(e));
-			}
-		}
+		const noneItemEntries: FileProjectEntry[] = [];
 
-		return publishProfiles;
+		// if (result.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
+		// 	for (var path of result.scripts) {
+		// 		noneItemEntries.push(this.createFileProjectEntry(path, EntryType.File));
+		// 	}
+		// }
+
+		return noneItemEntries.filter(f => utils.isPublishProfile(f.relativePath));
 	}
 
 	private readDatabaseReferences(): IDatabaseReferenceProjectEntry[] {
@@ -743,7 +716,7 @@ export class Project implements ISqlProject {
 			const folders = this.files.filter(f => f.type === EntryType.Folder);
 			for (const folder of beforeFolders) {
 				if (!folders.find(f => f.relativePath === folder.relativePath)) {
-					await this.addFolderItem(folder.relativePath);
+					await this.addFolder(folder.relativePath);
 				}
 			}
 		} catch (e) {
@@ -770,14 +743,17 @@ export class Project implements ISqlProject {
 	 *
 	 * @param relativeFolderPath Relative path of the folder
 	 */
-	public async addFolderItem(relativeFolderPath: string): Promise<FileProjectEntry> {
-		const folderEntry = await this.ensureFolderItems(relativeFolderPath);
+	public async addFolder(relativeFolderPath: string): Promise<FileProjectEntry> {
+		const service = await utils.getSqlProjectsService();
 
-		if (folderEntry) {
-			return folderEntry;
-		} else {
-			throw new Error(constants.outsideFolderPath);
+		const result = await service.addFolder(this.projectFilePath, relativeFolderPath);
+
+		if (!result.success) {
+			void window.showErrorMessage(result.errorMessage);
+			console.error('Error: ' + result.errorMessage);
 		}
+
+		return this.createFileProjectEntry(utils.ensureTrailingSlash(relativeFolderPath), EntryType.Folder);
 	}
 
 	/**
@@ -1748,7 +1724,7 @@ export class Project implements ISqlProject {
 				if (fileStat.isFile() && file.fsPath.toLowerCase().endsWith(constants.sqlFileExtension)) {
 					await this.addScriptItem(relativePath);
 				} else if (fileStat.isDirectory()) {
-					await this.addFolderItem(relativePath);
+					await this.addFolder(relativePath);
 				}
 			}
 		}
@@ -1971,72 +1947,10 @@ export class Project implements ISqlProject {
 		}
 	}
 
-	/**
-	 * Adds all folders in the path to the project and saves the project file, if provided path is under the project folder.
-	 * If path is outside the project folder, then no action is taken.
-	 *
-	 * @param relativeFolderPath Relative folder path to add folders from.
-	 * @returns Project entry for the last folder in the path, if path is under the project folder; otherwise `undefined`.
-	 */
-	private async ensureFolderItems(relativeFolderPath: string): Promise<FileProjectEntry | undefined> {
-		if (!relativeFolderPath) {
-			return;
+	private throwIfFailed(result: ResultStatus) {
+		if (!result.success) {
+			throw new Error('Error: ' + result.errorMessage);
 		}
-
-		const absoluteFolderPath = path.join(this.projectFolderPath, relativeFolderPath);
-		const normalizedProjectFolderPath = path.normalize(this.projectFolderPath);
-
-		// Only add folders within the project folder. When adding files outside the project folder,
-		// they should be copied to the project root and there will be no additional folders to add.
-		if (!absoluteFolderPath.toUpperCase().startsWith(normalizedProjectFolderPath.toUpperCase())) {
-			return;
-		}
-
-		// If folder doesn't exist, create it
-		await fs.mkdir(absoluteFolderPath, { recursive: true });
-
-		// for SDK style projects, only add this folder to the sqlproj if needed
-		// intermediate folders don't need to be added in the sqlproj
-		if (this.isSdkStyleProject) {
-			let folderEntry = this.files.find(f => utils.ensureTrailingSlash(f.relativePath.toUpperCase()) === utils.ensureTrailingSlash((relativeFolderPath.toUpperCase())));
-
-			if (!folderEntry) {
-				folderEntry = this.createFileProjectEntry(utils.ensureTrailingSlash(relativeFolderPath), EntryType.Folder);
-				this.files.push(folderEntry);
-				await this.addToProjFile(folderEntry);
-			}
-
-			return folderEntry;
-		}
-
-		// Add project file entries for all folders in the path.
-		// SSDT expects all folders to be explicitly listed in the project file, so we construct
-		// folder paths for all intermediate folders and ensure they are present in the project as well.
-		// We do not use `path.relative` here, because it may return '.' if paths are the same,
-		// but in our case we actually want an empty string, that will result in an empty segments
-		// array and nothing will be added.
-		const relativePath = utils.convertSlashesForSqlProj(absoluteFolderPath.substring(normalizedProjectFolderPath.length));
-		const pathSegments = utils.trimChars(relativePath, ' \\').split(constants.SqlProjPathSeparator);
-		let folderEntryPath = '';
-		let folderEntry: FileProjectEntry | undefined;
-
-		// Add folder items for all segments, including the requested folder itself
-		for (let segment of pathSegments) {
-			if (segment) {
-				folderEntryPath += segment + constants.SqlProjPathSeparator;
-				folderEntry =
-					this.files.find(f => utils.ensureTrailingSlash(f.relativePath.toUpperCase()) === folderEntryPath.toUpperCase());
-
-				if (!folderEntry) {
-					// If there is no <Folder/> item for the folder - add it
-					folderEntry = this.createFileProjectEntry(folderEntryPath, EntryType.Folder);
-					this.files.push(folderEntry);
-					await this.addToProjFile(folderEntry);
-				}
-			}
-		}
-
-		return folderEntry;
 	}
 }
 

@@ -1017,8 +1017,8 @@ describe('ProjectsController', function (): void {
 });
 
 async function setupDeleteExcludeTest(proj: Project): Promise<[FileProjectEntry, ProjectRootTreeItem, FileProjectEntry, FileProjectEntry, FileProjectEntry]> {
-	await proj.addFolderItem('UpperFolder');
-	await proj.addFolderItem('UpperFolder/LowerFolder');
+	await proj.addFolder('UpperFolder');
+	await proj.addFolder('UpperFolder/LowerFolder');
 	const scriptEntry = await proj.addScriptItem('UpperFolder/LowerFolder/someScript.sql', 'not a real script');
 	await proj.addScriptItem('UpperFolder/LowerFolder/someOtherScript.sql', 'Also not a real script');
 	await proj.addScriptItem('../anotherScript.sql', 'Also not a real script');
@@ -1041,8 +1041,8 @@ async function setupDeleteExcludeTest(proj: Project): Promise<[FileProjectEntry,
 }
 
 async function setupMoveTest(proj: Project): Promise<ProjectRootTreeItem> {
-	await proj.addFolderItem('UpperFolder');
-	await proj.addFolderItem('UpperFolder/LowerFolder');
+	await proj.addFolder('UpperFolder');
+	await proj.addFolder('UpperFolder/LowerFolder');
 	await proj.addScriptItem('UpperFolder/LowerFolder/someScript.sql', 'not a real script');
 	await proj.addScriptItem('UpperFolder/LowerFolder/someOtherScript.sql', 'Also not a real script');
 	await proj.addScriptItem('../anotherScript.sql', 'Also not a real script');

@@ -160,7 +160,7 @@ declare module 'sqldbproj' {
 		 *
 		 * @param relativeFolderPath Relative path of the folder
 		 */
-		addFolderItem(relativeFolderPath: string): Promise<IFileProjectEntry>;
+		addFolder(relativeFolderPath: string): Promise<IFileProjectEntry>;
 
 		/**
 		 * Writes a file to disk if contents are provided, adds that file to the project, and writes it to disk

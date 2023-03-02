@@ -116,7 +116,7 @@ describe.only('Project: sqlproj content operations', function (): void {
 		const scriptPathTagged = path.join(folderPath, 'Fake External Streaming Job.sql');
 		const scriptContentsTagged = 'EXEC sys.sp_create_streaming_job \'job\', \'SELECT 7\'';
 
-		await project.addFolderItem(folderPath);
+		await project.addFolder(folderPath);
 		await project.addScriptItem(scriptPath, scriptContents);
 		await project.addScriptItem(scriptPathTagged, scriptContentsTagged, ItemType.externalStreamingJob);
 
@@ -549,7 +549,7 @@ describe.only('Project: sqlproj content operations', function (): void {
 		const postDeploymentScriptFilePath = path.join(folderPath, 'Script.PostDeployment1.sql');
 		const fileContents = ' ';
 
-		await project.addFolderItem(folderPath);
+		await project.addFolder(folderPath);
 		await project.addScriptItem(preDeploymentScriptFilePath, fileContents, ItemType.preDeployScript);
 		await project.addScriptItem(postDeploymentScriptFilePath, fileContents, ItemType.postDeployScript);
 
@@ -572,7 +572,7 @@ describe.only('Project: sqlproj content operations', function (): void {
 		const postDeploymentScriptFilePath2 = path.join(folderPath, 'Script.PostDeployment2.sql');
 		const fileContents = ' ';
 
-		await project.addFolderItem(folderPath);
+		await project.addFolder(folderPath);
 		await project.addScriptItem(preDeploymentScriptFilePath, fileContents, ItemType.preDeployScript);
 		await project.addScriptItem(postDeploymentScriptFilePath, fileContents, ItemType.postDeployScript);
 
@@ -1179,7 +1179,7 @@ describe('Project: sdk style project content operations', function (): void {
 		await project.addScriptItem(scriptPath, scriptContents);
 		await project.addScriptItem(scriptPathTagged, scriptContentsTagged, ItemType.externalStreamingJob);
 		await project.addScriptItem(outsideFolderScriptPath, outsideFolderScriptContents);
-		await project.addFolderItem(otherFolderPath);
+		await project.addFolder(otherFolderPath);
 
 		const newProject = await Project.openProject(projFilePath);
 
@@ -1301,10 +1301,10 @@ describe('Project: sdk style project content operations', function (): void {
 		should(project.files.find(f => f.relativePath === 'folder2\\')!).not.equal(undefined);
 
 		// try to add a new folder
-		await project.addFolderItem('folder3\\');
+		await project.addFolder('folder3\\');
 
 		// try to add a new folder without trailing backslash
-		await project.addFolderItem('folder4');
+		await project.addFolder('folder4');
 
 		// verify folders were added
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
@@ -1342,10 +1342,10 @@ describe('Project: sdk style project content operations', function (): void {
 		should(project.files.find(f => f.relativePath === 'folder2\\')!).not.equal(undefined);
 
 		// try to add a new folder
-		await project.addFolderItem('folder3\\');
+		await project.addFolder('folder3\\');
 
 		// try to add a nested folder
-		await project.addFolderItem('folder3\\innerFolder\\');
+		await project.addFolder('folder3\\innerFolder\\');
 
 		// verify folders were added
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
@@ -1394,7 +1394,7 @@ describe('Project: sdk style project content operations', function (): void {
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(0);
 
 		// add an empty folder
-		await project.addFolderItem('folder1');
+		await project.addFolder('folder1');
 
 		// verify folder was added
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(1);
@@ -2008,9 +2008,9 @@ describe('Project: legacy to SDK-style updates', function (): void {
 		const project = await Project.openProject(projFilePath);
 		await project.addToProject(list);
 
-		await project.addFolderItem('folder3');
-		await project.addFolderItem('folder3\\nestedFolder');
-		await project.addFolderItem('folder4');
+		await project.addFolder('folder3');
+		await project.addFolder('folder3\\nestedFolder');
+		await project.addFolder('folder4');
 
 		const beforeFolderCount = project.files.filter(f => f.type === EntryType.Folder).length;
 		should(beforeFolderCount).equal(5);
@@ -2033,9 +2033,9 @@ describe('Project: legacy to SDK-style updates', function (): void {
 
 		// add an empty folder so that addFolderItem() will get called during the conversion. Empty folders aren't included by glob, so they need to be added to the sqlproj
 		// to show up in the project tree
-		await project.addFolderItem('folder1');
+		await project.addFolder('folder1');
 
-		sinon.stub(Project.prototype, 'addFolderItem').throwsException('error');
+		sinon.stub(Project.prototype, 'addFolder').throwsException('error');
 		const result = await project.convertProjectToSdkStyle();
 
 		should(result).equal(false);

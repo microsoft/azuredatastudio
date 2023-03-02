@@ -635,7 +635,7 @@ export class ProjectsController {
 				throw new Error(constants.folderAlreadyExists(path.parse(absoluteFolderPath).name));
 			}
 
-			await project.addFolderItem(relativeFolderPath);
+			await project.addFolder(relativeFolderPath);
 			this.refreshProjectsTree(treeNode);
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
