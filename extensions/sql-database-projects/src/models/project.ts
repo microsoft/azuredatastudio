@@ -995,8 +995,7 @@ export class Project implements ISqlProject {
 	 * @param defaultValue
 	 */
 	public async addSqlCmdVariable(name: string, defaultValue: string): Promise<void> {
-		const sqlProjectsService = await utils.getSqlProjectsService();
-		await sqlProjectsService.addSqlCmdVariable(this.projectFilePath, name, defaultValue);
+		await this.sqlProjService.addSqlCmdVariable(this.projectFilePath, name, defaultValue);
 	}
 
 	/**
@@ -1005,8 +1004,7 @@ export class Project implements ISqlProject {
 	 * @param defaultValue
 	 */
 	public async updateSqlCmdVariable(name: string, defaultValue: string): Promise<void> {
-		const sqlProjectsService = await utils.getSqlProjectsService();
-		await sqlProjectsService.updateSqlCmdVariable(this.projectFilePath, name, defaultValue);
+		await this.sqlProjService.updateSqlCmdVariable(this.projectFilePath, name, defaultValue);
 	}
 
 	/**
@@ -1024,8 +1022,7 @@ export class Project implements ISqlProject {
 		}
 
 		sources.push(databaseSource);
-		const service = await utils.getSqlProjectsService();
-		await service.setDatabaseSource(this.projectFilePath, sources.join(';'));
+		await this.sqlProjService.setDatabaseSource(this.projectFilePath, sources.join(';'));
 	}
 
 	/**
@@ -1043,8 +1040,7 @@ export class Project implements ISqlProject {
 		}
 
 		sources.splice(index, 1);
-		const service = await utils.getSqlProjectsService();
-		await service.setDatabaseSource(this.projectFilePath, sources.join(';'));
+		await this.sqlProjService.setDatabaseSource(this.projectFilePath, sources.join(';'));
 	}
 
 	/**
@@ -1794,15 +1790,14 @@ export class Project implements ISqlProject {
 			return { success: true, errorMessage: '' };
 		}
 
-		const sqlProjectsService = await utils.getSqlProjectsService();
 		let result;
 
 		if (node instanceof SqlObjectFileNode) {
-			result = await sqlProjectsService.moveSqlObjectScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+			result = await this.sqlProjService.moveSqlObjectScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
 		} else if (node instanceof PreDeployNode) {
-			result = await sqlProjectsService.movePreDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+			result = await this.sqlProjService.movePreDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
 		} else if (node instanceof PostDeployNode) {
-			result = await sqlProjectsService.movePostDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+			result = await this.sqlProjService.movePostDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
 		}
 		// TODO add support for renaming none scripts after those are added in STS
 		// TODO add support for renaming publish profiles when support is added in DacFx
