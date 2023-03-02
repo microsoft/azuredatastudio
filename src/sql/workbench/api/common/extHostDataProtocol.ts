@@ -293,7 +293,6 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		if (this.uriTransformer) {
 			ownerUri = this._getTransformedUri(ownerUri, this.uriTransformer.transformIncoming);
 		}
-		this._perfProxy.$mark(`extTestMark at ${Date.now()}`);
 		this._perfProxy.$mark(`sql/query/${ownerUri}/ext_$runQuery`);
 		return this._resolveProvider<azdata.QueryProvider>(handle).runQuery(ownerUri, selection, runOptions);
 	}
