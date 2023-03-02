@@ -4036,14 +4036,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.4.0",
-							"lastUpdated": "02/13/2023",
+							"version": "1.4.2",
+							"lastUpdated": "03/01/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-1.4.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-1.4.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
