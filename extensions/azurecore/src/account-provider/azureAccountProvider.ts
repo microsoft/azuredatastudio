@@ -160,7 +160,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 					Logger.error(`MSAL: getToken call failed`);
 					// Throw error with MSAL-specific code/message, else throw generic error message
 					if (this.isProviderError(authResult)) {
-						throw new Error(localize('msalTokenError', `{0} \n{1}`, authResult.errorCode, authResult.errorMessage));
+						throw new Error(localize('msalTokenError', `{0} occurred when acquiring token. \n{1}`, authResult.errorCode, authResult.errorMessage));
 					} else {
 						throw new Error(localize('genericTokenError', 'Failed to get token'));
 					}

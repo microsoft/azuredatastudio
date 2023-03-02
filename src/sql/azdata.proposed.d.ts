@@ -432,19 +432,19 @@ declare module 'azdata' {
 		azurePortalEndpoint?: string;
 	}
 
-	export interface ProviderError {
+	export interface ProviderError extends PromptFailedResult {
 		/**
-		 * Error name used for non-user cancelled errors
+		 * Error name
 		 */
 		name?: string;
 
 		/**
-		 * Error code used for non-user cancelled sign in errors
+		 * Error code
 		 */
 		errorCode?: string;
 
 		/**
-		 * Error message used for non-user cancelled sign in errors
+		 * Error message
 		 */
 		errorMessage?: string;
 	}

@@ -2515,7 +2515,7 @@ declare module 'azdata' {
 	 * AccountProvider.refresh or AccountProvider.prompt are rejected with this error, the error
 	 * will not be reported to the user.
 	 */
-	export interface ProviderError {
+	export interface PromptFailedResult {
 		/**
 		 * Type guard for differentiating user cancelled sign in errors from other errors
 		 */
