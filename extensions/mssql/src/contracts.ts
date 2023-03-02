@@ -708,23 +708,23 @@ export namespace GetPreDeploymentScriptsRequest {
 
 //#region None functions
 
-export namespace AddNoneScriptRequest {
+export namespace AddNoneItemRequest {
 	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/addNoneScript');
 }
 
-export namespace DeleteNoneScriptRequest {
+export namespace DeleteNoneItemRequest {
 	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/deleteNoneScript');
 }
 
-export namespace ExcludeNoneScriptRequest {
+export namespace ExcludeNoneItemRequest {
 	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/excludeNoneScript');
 }
 
-export namespace GetNoneScriptsRequest {
+export namespace GetNoneItemsRequest {
 	export const type = new RequestType<SqlProjectParams, mssql.GetScriptsResult, void, void>('sqlProjects/getNoneScripts');
 }
 
-export namespace MoveNoneScriptRequest {
+export namespace MoveNoneItemRequest {
 	export const type = new RequestType<MoveItemParams, azdata.ResultStatus, void, void>('sqlProjects/moveNoneScript');
 }
 

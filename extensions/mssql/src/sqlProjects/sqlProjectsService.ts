@@ -372,9 +372,9 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	 * @param projectUri Absolute path of the project, including .sqlproj
 	 * @param path Path of the script, including .sql, relative to the .sqlproj
 	 */
-	public async addNoneScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
+	public async addNoneItem(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
-		return await this.runWithErrorHandling(contracts.AddNoneScriptRequest.type, params);
+		return await this.runWithErrorHandling(contracts.AddNoneItemRequest.type, params);
 	}
 
 	/**
@@ -382,9 +382,9 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	 * @param projectUri Absolute path of the project, including .sqlproj
 	 * @param path Path of the script, including .sql, relative to the .sqlproj
 	 */
-	public async deleteNoneScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
+	public async deleteNoneItem(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
-		return await this.runWithErrorHandling(contracts.DeleteNoneScriptRequest.type, params);
+		return await this.runWithErrorHandling(contracts.DeleteNoneItemRequest.type, params);
 	}
 
 	/**
@@ -392,18 +392,18 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	 * @param projectUri Absolute path of the project, including .sqlproj
 	 * @param path Path of the script, including .sql, relative to the .sqlproj
 	 */
-	public async excludeNoneScript(projectUri: string, path: string): Promise<azdata.ResultStatus> {
+	public async excludeNoneItem(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
-		return await this.runWithErrorHandling(contracts.ExcludeNoneScriptRequest.type, params);
+		return await this.runWithErrorHandling(contracts.ExcludeNoneItemRequest.type, params);
 	}
 
 	/**
 	 * getNoneScripts
 	 * @param projectUri Absolute path of the project, including .sqlproj
 	 */
-	public async getNoneScripts(projectUri: string): Promise<mssql.GetScriptsResult> {
+	public async getNoneItems(projectUri: string): Promise<mssql.GetScriptsResult> {
 		const params: contracts.SqlProjectParams = { projectUri: projectUri };
-		return await this.runWithErrorHandling(contracts.GetNoneScriptsRequest.type, params);
+		return await this.runWithErrorHandling(contracts.GetNoneItemsRequest.type, params);
 	}
 
 	/**
@@ -412,9 +412,9 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 	 * @param path Path of the script, including .sql, relative to the .sqlproj
 	 */
-	public async moveNoneScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
+	public async moveNoneItem(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
-		return await this.runWithErrorHandling(contracts.MoveNoneScriptRequest.type, params);
+		return await this.runWithErrorHandling(contracts.MoveNoneItemRequest.type, params);
 	}
 
 	private async runWithErrorHandling<P, R, E, RO>(type: RequestType<P, R, E, RO>, params: P): Promise<R> {
