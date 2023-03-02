@@ -48,6 +48,7 @@ stages:
         variables:
           NPM_CONFIG_ARCH: arm64
           VSCODE_ARCH: arm64
+          AZDATA_RUNTIME: OSX_ARM64
           # Do not run tests for arm64 build
           RUN_TESTS: false
           RUN_SMOKE_TESTS: false

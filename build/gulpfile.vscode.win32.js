@@ -104,8 +104,8 @@ function buildWin32Setup(arch, target) {
 			IncompatibleTargetAppId: { 'ia32': product.win32AppId, 'x64': product.win32x64AppId, 'arm64': product.win32arm64AppId }[arch],
 			IncompatibleArchAppId: { 'ia32': x64AppId, 'x64': ia32AppId, 'arm64': ia32AppId }[arch],
 			AppUserId: product.win32AppUserModelId,
-			ArchitecturesAllowed: { 'ia32': '', 'x64': 'x64', 'arm64': 'arm64 x64' }[arch], //{{SQL CARBON EDIT}} - we still have x64 binaries in SqlToolsService, need to allow x64 binaries for arm64 arch.
-			ArchitecturesInstallIn64BitMode: { 'ia32': '', 'x64': 'x64', 'arm64': 'arm64 x64' }[arch], //{{SQL CARBON EDIT}} - same as line above.
+			ArchitecturesAllowed: { 'ia32': '', 'x64': 'x64', 'arm64': 'arm64' }[arch], //{{SQL CARBON EDIT}} - we still have x64 binaries in SqlToolsService, need to allow x64 binaries for arm64 arch.
+			ArchitecturesInstallIn64BitMode: { 'ia32': '', 'x64': 'x64', 'arm64': 'arm64' }[arch], //{{SQL CARBON EDIT}} - same as line above.
 			SourceDir: sourcePath,
 			RepoDir: repoPath,
 			OutputDir: outputPath,
