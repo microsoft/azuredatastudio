@@ -10,6 +10,8 @@ import * as utils from '../common/utils';
 import * as xmlFormat from 'xml-formatter';
 import * as os from 'os';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+import type * as azdataType from 'azdata';
+import * as vscode from 'vscode';
 
 import { Uri, window } from 'vscode';
 import { EntryType, IDatabaseReferenceProjectEntry, IProjectEntry, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
@@ -20,6 +22,8 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase, SystemDatabaseReferenceProjectEntry } from './projectEntry';
 import { GetFoldersResult, GetScriptsResult } from 'mssql';
 import { ResultStatus } from 'azdata';
+import { BaseProjectTreeItem } from './tree/baseTreeItem';
+import { PostDeployNode, PreDeployNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
 
 /**
  * Represents the configuration based on the Configuration property in the sqlproj
@@ -611,126 +615,6 @@ export class Project implements ISqlProject {
 		await this.createCleanFileNode(beforeBuildNode);
 	}
 
-	public async convertProjectToSdkStyle(): Promise<boolean> {
-		// don't do anything if the project is already SDK style or it's an SSDT project that hasn't been updated to build in ADS
-		if (this.isSdkStyleProject || !this._importedTargets.includes(constants.NetCoreTargets)) {
-			return false;
-		}
-
-		// make backup copy of project
-		await fs.copyFile(this._projectFilePath, this._projectFilePath + '_backup');
-
-		try {
-			// remove Build includes and folder includes
-			const beforeFiles = this.files.filter(f => f.type === EntryType.File);
-			const beforeFolders = this.files.filter(f => f.type === EntryType.Folder);
-
-			// remove Build includes
-			for (const file of beforeFiles) {
-				// only remove build includes in the same folder as the project
-				if (!file.relativePath.includes('..')) {
-					await this.exclude(file);
-				}
-			}
-
-			// remove Folder includes
-			for (const folder of beforeFolders) {
-				await this.exclude(folder);
-			}
-
-			// remove "Properties" folder if it's there. This isn't tracked in the project's folders here because ADS doesn't support it.
-			// It's a reserved folder only used for the UI in SSDT
-			try {
-				await this.removeFolderFromProjFile('Properties');
-			} catch { }
-
-			// remove SSDT and ADS SqlTasks imports
-			const importsToRemove = [];
-			for (let i = 0; i < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import).length; i++) {
-				const importTarget = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import)[i];
-				const projectAttributeVal = importTarget.getAttribute(constants.Project);
-
-				if (projectAttributeVal === constants.NetCoreTargets || projectAttributeVal === constants.SqlDbTargets || projectAttributeVal === constants.MsBuildtargets) {
-					importsToRemove.push(importTarget);
-				}
-			}
-
-			const importsParent = importsToRemove[0]?.parentNode;
-			importsToRemove.forEach(i => {
-				importsParent?.removeChild(i);
-			});
-
-			// remove VisualStudio properties
-			const vsPropsToRemove = [];
-			for (let i = 0; i < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.VisualStudioVersion).length; i++) {
-				const visualStudioVersionNode = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.VisualStudioVersion)[i];
-				const conditionAttributeVal = visualStudioVersionNode.getAttribute(constants.Condition);
-
-				if (conditionAttributeVal === constants.VSVersionCondition || conditionAttributeVal === constants.SsdtExistsCondition) {
-					vsPropsToRemove.push(visualStudioVersionNode);
-				}
-			}
-
-			for (let i = 0; i < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.SSDTExists).length; i++) {
-				const ssdtExistsNode = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.SSDTExists)[i];
-				const conditionAttributeVal = ssdtExistsNode.getAttribute(constants.Condition);
-
-				if (conditionAttributeVal === constants.targetsExistsCondition) {
-					vsPropsToRemove.push(ssdtExistsNode);
-				}
-			}
-
-			const vsPropsParent = vsPropsToRemove[0]?.parentNode;
-			vsPropsToRemove.forEach(i => {
-				vsPropsParent?.removeChild(i);
-
-				// Remove the parent PropertyGroup if there aren't any other nodes. Only count element nodes, not text nodes
-				const otherChildren = Array.from(vsPropsParent!.childNodes).filter((c: ChildNode) => c.childNodes);
-
-				if (otherChildren.length === 0) {
-					vsPropsParent!.parentNode?.removeChild(vsPropsParent!);
-				}
-			});
-
-			// add SDK node
-			const sdkNode = this.projFileXmlDoc!.createElement(constants.Sdk);
-			sdkNode.setAttribute(constants.Name, constants.sqlProjectSdk);
-			sdkNode.setAttribute(constants.Version, constants.sqlProjectSdkVersion);
-
-			const projectNode = this.projFileXmlDoc!.documentElement;
-			projectNode.insertBefore(sdkNode, projectNode.firstChild);
-
-			// TODO: also update system dacpac path, but might as well wait for them to get included in the SDK since the path will probably change again
-
-			await this.serializeToProjFile(this.projFileXmlDoc!);
-			await this.readProjFile();
-
-			// Make sure the same files are included as before and there aren't extra files included by the default **/*.sql glob
-			for (const file of this.files.filter(f => f.type === EntryType.File)) {
-				if (!beforeFiles.find(f => f.pathForSqlProj() === file.pathForSqlProj())) {
-					await this.exclude(file);
-				}
-			}
-
-			// add back any folders that were previously specified in the sqlproj, but aren't included by the **/*.sql glob because they're empty
-			const folders = this.files.filter(f => f.type === EntryType.Folder);
-			for (const folder of beforeFolders) {
-				if (!folders.find(f => f.relativePath === folder.relativePath)) {
-					await this.addFolder(folder.relativePath);
-				}
-			}
-		} catch (e) {
-			console.error(e);
-
-			// if there was an uncaught error during conversion, rollback project update
-			await fs.copyFile(this._projectFilePath + '_backup', this._projectFilePath);
-			await this.readProjFile();
-			return false;
-		}
-
-		return true;
-	}
-
 	private async createCleanFileNode(parentNode: Element): Promise<void> {
 		const deleteFileNode = this.projFileXmlDoc!.createElement(constants.Delete);
 		deleteFileNode.setAttribute(constants.Files, constants.ProjJsonToClean);
@@ -883,6 +767,11 @@ export class Project implements ISqlProject {
 	public async deleteDatabaseReference(entry: IDatabaseReferenceProjectEntry): Promise<void> {
 		await this.removeFromProjFile(entry);
 		this._databaseReferences = this._databaseReferences.filter(x => x !== entry);
+	}
+
+	public async deleteSqlCmdVariable(variableName: string): Promise<azdataType.ResultStatus> {
+		const sqlProjectsService = await utils.getSqlProjectsService();
+		return sqlProjectsService.deleteSqlCmdVariable(this.projectFilePath, variableName);
 	}
 
 	/**
@@ -1043,8 +932,18 @@ export class Project implements ISqlProject {
 	 * @param defaultValue
 	 */
 	public async addSqlCmdVariable(name: string, defaultValue: string): Promise<void> {
-		const sqlCmdVariableEntry = new SqlCmdVariableProjectEntry(name, defaultValue);
-		await this.addToProjFile(sqlCmdVariableEntry);
+		const sqlProjectsService = await utils.getSqlProjectsService();
+		await sqlProjectsService.addSqlCmdVariable(this.projectFilePath, name, defaultValue);
+	}
+
+	/**
+	 * Updates a SQLCMD variable in the project
+	 * @param name name of the variable
+	 * @param defaultValue
+	 */
+	public async updateSqlCmdVariable(name: string, defaultValue: string): Promise<void> {
+		const sqlProjectsService = await utils.getSqlProjectsService();
+		await sqlProjectsService.updateSqlCmdVariable(this.projectFilePath, name, defaultValue);
 	}
 
 	/**
@@ -1951,6 +1850,41 @@ export class Project implements ISqlProject {
 		if (!result.success) {
 			throw new Error('Error: ' + result.errorMessage);
 		}
+	}
+
+	/**
+	 * Moves a file to a different location
+	 * @param node Node being moved
+	 * @param projectFilePath Full file path to .sqlproj
+	 * @param destinationRelativePath path of the destination, relative to .sqlproj
+	 */
+	public async move(node: BaseProjectTreeItem, destinationRelativePath: string): Promise<azdataType.ResultStatus> {
+		// trim off the project folder at the beginning of the relative path stored in the tree
+		const projectRelativeUri = vscode.Uri.file(path.basename(this.projectFilePath, constants.sqlprojExtension));
+		const originalRelativePath = utils.trimUri(projectRelativeUri, node.relativeProjectUri);
+		destinationRelativePath = utils.trimUri(projectRelativeUri, vscode.Uri.file(destinationRelativePath));
+
+		if (originalRelativePath === destinationRelativePath) {
+			return { success: true, errorMessage: '' };
+		}
+
+		const sqlProjectsService = await utils.getSqlProjectsService();
+		let result;
+
+		if (node instanceof SqlObjectFileNode) {
+			result = await sqlProjectsService.moveSqlObjectScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+		} else if (node instanceof PreDeployNode) {
+			result = await sqlProjectsService.movePreDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+		} else if (node instanceof PostDeployNode) {
+			result = await sqlProjectsService.movePostDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+		}
+		// TODO add support for renaming none scripts after those are added in STS
+		// TODO add support for renaming publish profiles when support is added in DacFx
+		else {
+			result = { success: false, errorMessage: constants.unhandledMoveNode }
+		}
+
+		return result;
 	}
 }
 

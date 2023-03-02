@@ -189,11 +189,6 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.convertToSdkStyleProject",
-        "title": "%sqlDatabaseProjects.convertToSdkStyleProject%",
-        "category": "%sqlDatabaseProjects.displayName%"
-      },
-      {
         "command": "sqlDatabaseProjects.openInDesigner",
         "title": "%sqlDatabaseProjects.openInDesigner%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -318,10 +313,6 @@
         },
         {
           "command": "sqlDatabaseProjects.changeTargetPlatform",
-          "when": "false"
-        },
-        {
-          "command": "sqlDatabaseProjects.convertToSdkStyleProject",
           "when": "false"
         },
         {

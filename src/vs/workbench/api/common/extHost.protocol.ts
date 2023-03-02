@@ -85,7 +85,9 @@ import {
 	ExtHostBackgroundTaskManagementShape, ExtHostDashboardWebviewsShape, ExtHostModelViewShape, ExtHostModelViewTreeViewsShape,
 	ExtHostDashboardShape, ExtHostModelViewDialogShape, ExtHostQueryEditorShape, ExtHostExtensionManagementShape, ExtHostAzureBlobShape,
 	ExtHostNotebookShape as SqlExtHostNotebookShape, ExtHostWorkspaceShape as SqlExtHostWorkspaceShape,
-	ExtHostNotebookDocumentsAndEditorsShape as SqlExtHostNotebookDocumentsAndEditorsShape
+	ExtHostNotebookDocumentsAndEditorsShape as SqlExtHostNotebookDocumentsAndEditorsShape,
+	ExtHostPerfShape,
+	MainThreadPerfShape
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 
 export interface IWorkspaceData extends IStaticWorkspaceData {
@@ -2406,6 +2408,7 @@ export const SqlMainContext = {
 	MainThreadExtensionManagement: createProxyIdentifier<MainThreadExtensionManagementShape>('MainThreadExtensionManagement'),
 	MainThreadWorkspace: createProxyIdentifier<SqlMainThreadWorkspaceShape>('MainThreadWorkspace'),
 	MainThreadAzureBlob: createProxyIdentifier<MainThreadAzureBlobShape>('MainThreadAzureBlob'),
+	MainThreadPerf: createProxyIdentifier<MainThreadPerfShape>('MainThreadPerf')
 };
 
 export const SqlExtHostContext = {
@@ -2430,5 +2433,6 @@ export const SqlExtHostContext = {
 	ExtHostNotebookDocumentsAndEditors: createProxyIdentifier<SqlExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors'),
 	ExtHostExtensionManagement: createProxyIdentifier<ExtHostExtensionManagementShape>('ExtHostExtensionManagement'),
 	ExtHostWorkspace: createProxyIdentifier<SqlExtHostWorkspaceShape>('ExtHostWorkspace'),
-	ExtHostAzureBlob: createProxyIdentifier<ExtHostAzureBlobShape>('ExtHostAzureBlob')
+	ExtHostAzureBlob: createProxyIdentifier<ExtHostAzureBlobShape>('ExtHostAzureBlob'),
+	ExtHostPerf: createProxyIdentifier<ExtHostPerfShape>('ExtHostPerf')
 };
