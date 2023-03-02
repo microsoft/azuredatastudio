@@ -6,7 +6,7 @@ This guide is meant to provide details on what this extension does and how other
 
 This extension provides a way for other extension authors to contribute types to the Resource Deployment Wizard which allows users to create and deploy resources such as servers.
 
-This wizard is launched by either running the `Deployment: New Deployment...` command from the command palette or by clicking the `...` on the `Connections` pane and selecting `New Deployment...`
+This wizard is launched by either running the `Deployment: New Deployment...` command from the command palette or by clicking on `File` on the menu bar and selecting `New Deployment...`
 
 ## How to Contribute a new Type
 
