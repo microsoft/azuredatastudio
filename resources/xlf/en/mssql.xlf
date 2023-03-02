@@ -437,6 +437,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS">
       <source xml:lang="en">Host Guardian Service</source>
     </trans-unit>
+    <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None">
+      <source xml:lang="en">None</source>
+    </trans-unit>
     <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.description">
       <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
     </trans-unit>
@@ -559,6 +562,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.replication.displayName">
       <source xml:lang="en">Replication</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.secureEnclaves.description">
+      <source xml:lang="en">Enables or disables Secure Enclaves for the connection</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.secureEnclaves.displayName">
+      <source xml:lang="en">Secure Enclaves</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.serverName.description">
       <source xml:lang="en">Name of the SQL Server instance</source>
