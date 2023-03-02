@@ -2,7 +2,7 @@
   "name": "sql-migration",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "publisher": "Microsoft",
   "preview": false,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",

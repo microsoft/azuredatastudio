@@ -640,31 +640,31 @@ declare module 'vscode-mssql' {
 		moveSqlObjectScript(projectUri: string, destinationPath: string, path: string): Promise<ResultStatus>;
 
 		/**
-		 * getDatabaseReferences
+		 * Get all the database references in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
 		getDatabaseReferences(projectUri: string): Promise<GetDatabaseReferencesResult>;
 
 		/**
-		 * getFolders
+		 * Get all the folders in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
 		getFolders(projectUri: string): Promise<GetFoldersResult>;
 
 		/**
-		 * getPostDeploymentScripts
+		 * Get all the post-deployment scripts in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
 		getPostDeploymentScripts(projectUri: string): Promise<GetScriptsResult>;
 
 		/**
-		 * getPreDeploymentScripts
+		 * Get all the pre-deployment scripts in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
 		getPreDeploymentScripts(projectUri: string): Promise<GetScriptsResult>;
 
 		/**
-		 * getSqlCmdVariables
+		 * Get all the SQLCMD variables in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
 		getSqlCmdVariables(projectUri: string): Promise<GetSqlCmdVariablesResult>;
@@ -674,6 +674,41 @@ declare module 'vscode-mssql' {
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
 		getSqlObjectScripts(projectUri: string): Promise<GetScriptsResult>;
+
+		/**
+		 * Add a None item to a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the item, including extension, relative to the .sqlproj
+		 */
+		addNoneItem(projectUri: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Delete a None item from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the item, including extension, relative to the .sqlproj
+		 */
+		deleteNoneItem(projectUri: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Exclude a None item from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the item, including extension, relative to the .sqlproj
+		 */
+		excludeNoneItem(projectUri: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Get all the None items in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getNoneItems(projectUri: string): Promise<GetScriptsResult>;
+
+		/**
+		 * Move a None item in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
+		 * @param path Path of the item, including extension, relative to the .sqlproj
+		 */
+		moveNoneItem(projectUri: string, destinationPath: string, path: string): Promise<ResultStatus>;
 	}
 
 	export interface GetCrossPlatformCompatibilityResult extends ResultStatus {
