@@ -245,8 +245,8 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	 * @param defaultValue Default value of the SQLCMD variable
 	 * @param value Value of the SQLCMD variable, with or without the $()
 	 */
-	public async addSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<azdata.ResultStatus> {
-		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue, value: value };
+	public async addSqlCmdVariable(projectUri: string, name: string, defaultValue: string): Promise<azdata.ResultStatus> {
+		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue };
 		return await this.runWithErrorHandling(contracts.AddSqlCmdVariableRequest.type, params);
 	}
 
@@ -267,8 +267,8 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	 * @param defaultValue Default value of the SQLCMD variable
 	 * @param value Value of the SQLCMD variable, with or without the $()
 	 */
-	public async updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<azdata.ResultStatus> {
-		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue, value: value };
+	public async updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string): Promise<azdata.ResultStatus> {
+		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue };
 		return await this.runWithErrorHandling(contracts.UpdateSqlCmdVariableRequest.type, params);
 	}
 

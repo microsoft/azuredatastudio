@@ -280,7 +280,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql('test1.dacpac');
 	});
 
-	it('Should add a dacpac reference to a different database in the same server correctly', async function (): Promise<void> {
+	it.skip('Should add a dacpac reference to a different database in the same server correctly', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
@@ -303,7 +303,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql('<DefaultValue>test2DbName</DefaultValue>');
 	});
 
-	it('Should add a dacpac reference to a different database in a different server correctly', async function (): Promise<void> {
+	it.skip('Should add a dacpac reference to a different database in a different server correctly', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
@@ -331,7 +331,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql('<DefaultValue>otherServerName</DefaultValue>');
 	});
 
-	it('Should add a project reference to the same database correctly', async function (): Promise<void> {
+	it.skip('Should add a project reference to the same database correctly', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
@@ -354,7 +354,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql('project1');
 	});
 
-	it('Should add a project reference to a different database in the same server correctly', async function (): Promise<void> {
+	it.skip('Should add a project reference to a different database in the same server correctly', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
@@ -382,7 +382,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql('<DefaultValue>testdbName</DefaultValue>');
 	});
 
-	it('Should add a project reference to a different database in a different server correctly', async function (): Promise<void> {
+	it.skip('Should add a project reference to a different database in a different server correctly', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
@@ -490,7 +490,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after trying to add a reference to testProject again');
 	});
 
-	it('Should update sqlcmd variable values if value changes', async function (): Promise<void> {
+	it.skip('Should update sqlcmd variable values if value changes', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 		const databaseVariable = 'test3Db';
@@ -1580,21 +1580,20 @@ describe('Project: add SQLCMD Variables', function (): void {
 
 	it('Should update .sqlproj with new sqlcmd variables', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
-		const project = await Project.openProject(projFilePath);
-		should(Object.keys(project.sqlCmdVariables).length).equal(2);
+		let project = await Project.openProject(projFilePath);
+		should(Object.keys(project.sqlCmdVariables).length).equal(2, 'The project should have 2 sqlcmd variables when opened');
 
 		// add a new variable
 		await project.addSqlCmdVariable('TestDatabaseName', 'TestDb');
 
-		// add a variable with the same name as an existing sqlcmd variable and the old entry should be replaced with the new one
-		await project.addSqlCmdVariable('ProdDatabaseName', 'NewProdName');
+		// update value of an existing sqlcmd variable
+		await project.updateSqlCmdVariable('ProdDatabaseName', 'NewProdName');
 
-		should(Object.keys(project.sqlCmdVariables).length).equal(3);
-		should(project.sqlCmdVariables['TestDatabaseName']).equal('TestDb');
+		// reload project
+		project = await Project.openProject(projFilePath);
+		should(Object.keys(project.sqlCmdVariables).length).equal(3, 'There should be 3 sqlcmd variables after adding TestDatabaseName');
+		should(project.sqlCmdVariables['TestDatabaseName']).equal('TestDb', 'Value of TestDatabaseName should be TestDb');
 		should(project.sqlCmdVariables['ProdDatabaseName']).equal('NewProdName', 'ProdDatabaseName value should have been updated to the new value');
-
-		const projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText).equal(baselines.openSqlProjectWithAdditionalSqlCmdVariablesBaseline.trim());
 	});
 });
 

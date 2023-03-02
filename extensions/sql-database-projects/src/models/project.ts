@@ -1053,8 +1053,18 @@ export class Project implements ISqlProject {
 	 * @param defaultValue
 	 */
 	public async addSqlCmdVariable(name: string, defaultValue: string): Promise<void> {
-		const sqlCmdVariableEntry = new SqlCmdVariableProjectEntry(name, defaultValue);
-		await this.addToProjFile(sqlCmdVariableEntry);
+		const sqlProjectsService = await utils.getSqlProjectsService();
+		await sqlProjectsService.addSqlCmdVariable(this.projectFilePath, name, defaultValue);
+	}
+
+	/**
+	 * Updates a SQLCMD variable in the project
+	 * @param name name of the variable
+	 * @param defaultValue
+	 */
+	public async updateSqlCmdVariable(name: string, defaultValue: string): Promise<void> {
+		const sqlProjectsService = await utils.getSqlProjectsService();
+		await sqlProjectsService.updateSqlCmdVariable(this.projectFilePath, name, defaultValue);
 	}
 
 	/**
