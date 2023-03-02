@@ -38,11 +38,11 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		return this._withProvider(handle, (provider: azdata.AccountProvider) => provider.initialize(restoredAccounts));
 	}
 
-	public override $prompt(handle: number): Thenable<azdata.Account | azdata.ProviderError> {
+	public override $prompt(handle: number): Thenable<azdata.Account | azdata.PromptFailedResult> {
 		return this._withProvider(handle, (provider: azdata.AccountProvider) => provider.prompt());
 	}
 
-	public override $refresh(handle: number, account: azdata.Account): Thenable<azdata.Account | azdata.ProviderError> {
+	public override $refresh(handle: number, account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> {
 		return this._withProvider(handle, (provider: azdata.AccountProvider) => provider.refresh(account));
 	}
 

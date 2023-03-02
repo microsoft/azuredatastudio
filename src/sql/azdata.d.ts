@@ -2579,7 +2579,7 @@ declare module 'azdata' {
 		 * Prompts the user to enter account information.
 		 * Returns an error if the user canceled the operation.
 		 */
-		prompt(): Thenable<Account | ProviderError>;
+		prompt(): Thenable<Account | PromptFailedResult>;
 
 		/**
 		 * Refreshes a stale account.
@@ -2587,7 +2587,7 @@ declare module 'azdata' {
 		 * Otherwise, returns a new updated account instance.
 		 * @param account - An account.
 		 */
-		refresh(account: Account): Thenable<Account | ProviderError>;
+		refresh(account: Account): Thenable<Account | PromptFailedResult>;
 
 		/**
 		 * Clears sensitive information for an account. To be called when account is removed
