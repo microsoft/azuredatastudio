@@ -1081,9 +1081,6 @@ export class Project implements ISqlProject {
 		}
 
 		await this.addToProjFile(projectReferenceEntry);
-
-		// const sqlProjectsService = await utils.getSqlProjectsService();
-		// await sqlProjectsService.addSqlProjectReference(this.projectFilePath, settings.)
 	}
 
 	/**
