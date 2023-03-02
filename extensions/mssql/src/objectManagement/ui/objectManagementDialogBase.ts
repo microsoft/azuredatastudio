@@ -130,9 +130,8 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 					}).component();
 					await view.initializeModel(this._loadingComponent);
 				});
-				azdata.window.openDialog(this.dialogObject);
 			}));
-
+			azdata.window.openDialog(this.dialogObject);
 			this._viewInfo = await this.initializeData();
 			await initializeViewPromise;
 			await this.initializeUI();
