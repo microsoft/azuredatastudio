@@ -1031,11 +1031,42 @@ export class Project implements ISqlProject {
 		const databaseReferenceEntry = new DacpacReferenceProjectEntry(settings);
 
 		// check if reference to this database already exists
+		// if it does, throw an error that will get displayed to the user
 		if (this.databaseReferenceExists(databaseReferenceEntry)) {
 			throw new Error(constants.databaseReferenceAlreadyExists);
 		}
 
-		await this.addToProjFile(databaseReferenceEntry);
+
+		const sqlProjectsService = await utils.getSqlProjectsService();
+
+		// create database variable
+		if (settings.databaseVariable && settings.databaseName) {
+			await sqlProjectsService.addSqlCmdVariable(this.projectFilePath, settings.databaseVariable, settings.databaseName);
+		}
+
+		// create server variable
+		if (settings.serverVariable && settings.serverName) {
+			await sqlProjectsService.addSqlCmdVariable(this.projectFilePath, settings.serverVariable, settings.serverName);
+		}
+
+		// need to set these to undefined if they are empty strings
+		const databaseVariable = settings.databaseVariable ? settings.databaseVariable : undefined;
+		const databaseName = settings.databaseName ? settings.databaseName : undefined;
+		const serverVariable = settings.serverVariable ? settings.serverVariable : undefined;
+
+		let result;
+
+		// dacpac reference uses database sqlcmd variable and possibly server sqlcmd variable
+		if (databaseVariable) {
+			result = await sqlProjectsService.addDacpacReference(this.projectFilePath, settings.dacpacFileLocation.fsPath, settings.suppressMissingDependenciesErrors, databaseVariable, serverVariable);
+		} else {
+			// dacpac reference is to same db or uses database literal
+			result = await sqlProjectsService.addDacpacReference(this.projectFilePath, settings.dacpacFileLocation.fsPath, settings.suppressMissingDependenciesErrors, undefined, undefined, databaseName);
+		}
+
+		if (!result.success && result.errorMessage) {
+			throw new Error(constants.errorAddingDatabaseReference(settings.dacpacFileLocation.fsPath, result.errorMessage));
+		}
 	}
 
 	/**
@@ -1050,6 +1081,9 @@ export class Project implements ISqlProject {
 		}
 
 		await this.addToProjFile(projectReferenceEntry);
+
+		// const sqlProjectsService = await utils.getSqlProjectsService();
+		// await sqlProjectsService.addSqlProjectReference(this.projectFilePath, settings.)
 	}
 
 	/**
