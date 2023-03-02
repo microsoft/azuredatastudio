@@ -678,8 +678,4 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 
 		return undefined;
 	}
-
-	public $mark(name: string): void {
-		perf.mark(name);
-	}
 }
