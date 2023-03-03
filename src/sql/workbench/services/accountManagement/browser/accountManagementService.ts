@@ -128,7 +128,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 */
 	public addAccount(providerId: string): Promise<void> {
 		const closeAction: Action = new Action('closeAddingAccount', localize('accountManagementService.close', "Close"), undefined, true);
-
+		const genericAccountErrorMessage = localize('addAccountFailedGenericMessage', 'Adding account failed, check Azure Accounts log for more info.')
 		const loginNotification: INotification = {
 			severity: Severity.Info,
 			message: localize('loggingIn', "Adding account..."),
@@ -148,13 +148,19 @@ export class AccountManagementService implements IAccountManagementService {
 					if (accountResult.canceled === true) {
 						return;
 					} else {
-						throw new Error(localize('addAccountFailedMessage', `${0} \nError Message: ${1}`, accountResult.errorCode, accountResult.errorMessage));
+						if (accountResult.errorCode && accountResult.errorMessage) {
+							throw new Error(localize('addAccountFailedCodeMessage', `{0} \nError Message: {1}`, accountResult.errorCode, accountResult.errorMessage));
+						} else if (accountResult.errorMessage) {
+							throw new Error(localize('addAccountFailedMessage', `{0}`, accountResult.errorMessage));
+						} else {
+							throw new Error(genericAccountErrorMessage);
+						}
 					}
 				}
 				let result = await this._accountStore.addOrUpdate(accountResult);
 				if (!result) {
 					this._logService.error('adding account failed');
-					throw new Error(localize('addAccountFailedGeneric', 'Adding account failed, check Azure Accounts log for more info.'));
+					throw new Error(genericAccountErrorMessage);
 				}
 				if (result.accountAdded) {
 					// Add the account to the list
