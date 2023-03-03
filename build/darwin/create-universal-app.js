@@ -29,7 +29,7 @@ async function main() {
     const productJsonPath = path.resolve(outAppPath, 'Contents', 'Resources', 'app', 'product.json');
     // {{SQL CARBON EDIT}}
     // STS binaries for x64 and arm64 have different file count and cannot be combined
-    // Remove them from the package before the makeUniversalApp call and copy them to the package after it.
+    // Remove them from the package before the makeUniversalApp step and copy them to the universal package after it.
     const stsPath = '/Contents/Resources/app/extensions/mssql/sqltoolsservice';
     const tempSTSDir = path.join(buildDir, 'sqltoolsservice');
     const x64STSDir = path.join(x64AppPath, stsPath);
