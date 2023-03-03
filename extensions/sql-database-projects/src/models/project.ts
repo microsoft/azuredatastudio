@@ -853,8 +853,7 @@ export class Project implements ISqlProject {
 	}
 
 	public async deleteSqlCmdVariable(variableName: string): Promise<azdataType.ResultStatus> {
-		const sqlProjectsService = await utils.getSqlProjectsService();
-		return sqlProjectsService.deleteSqlCmdVariable(this.projectFilePath, variableName);
+		return this.sqlProjService.deleteSqlCmdVariable(this.projectFilePath, variableName);
 	}
 
 	/**
