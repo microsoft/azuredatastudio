@@ -10,6 +10,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { Event, Emitter } from 'vs/base/common/event';
+import { setInterval } from 'timers';
 
 interface ExecutionPlanProviderRegisteredEvent {
 	id: string,
@@ -27,19 +28,37 @@ export class ExecutionPlanService implements IExecutionPlanService {
 		this._providerRegisterEvent = this._onProviderRegister.event;
 	}
 
-	private async ensureCapabilitiesRegistered(): Promise<void> {
-		let providers = Object.keys(this._capabilitiesService.providers);
-		if (!providers) {
-			await new Promise<void>(resolve => {
-				this._capabilitiesService.onCapabilitiesRegistered(e => {
-					resolve();
-				});
-			});
-		}
+	/**
+	 * This ensures that the capabilities service has registered the providers to handle execution plan requests.
+	 * @param providerId Optional provider id to wait for.
+	 */
+	private async ensureCapabilitiesRegistered(providerId?: string): Promise<void> {
+		let providers: string[] = [];
+		// Wait until the capabilities service has registered some providers.
+		await new Promise<void>(resolve => {
+			let retryCount = 0;
+			const intervalId = setInterval(() => {
+				while (retryCount < 5) {
+					providers = Object.keys(this._capabilitiesService.providers);
+					if (providers) {
+						if (providerId && providers[providerId]) {
+							clearInterval(intervalId);
+							resolve();
+						} else if (providers) {
+							clearInterval(intervalId);
+							resolve();
+						}
+					}
+					retryCount++;
+				}
+				clearInterval(intervalId);
+				resolve();
+			}, 1000);
+		});
 	}
 
 	private async getExecutionPlanProvider(providerId: string): Promise<azdata.executionPlan.ExecutionPlanProvider> {
-		await this.ensureCapabilitiesRegistered();
+		await this.ensureCapabilitiesRegistered(providerId);
 		const provider = this._capabilitiesService.providers[providerId];
 		// Return undefined if the provider is not registered or it is not a execution plan provider.
 		if (!provider || !provider.connection?.isExecutionPlanProvider) {
