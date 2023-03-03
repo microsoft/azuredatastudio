@@ -15,7 +15,7 @@ import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookE
 import { NBTestQueryManagementService } from 'sql/workbench/contrib/notebook/test/nbTestQueryManagementService';
 import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
-import { ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellEditModes, ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookEditor, INotebookParams, INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
@@ -463,7 +463,7 @@ suite('Test class NotebookEditor:', () => {
 		const notebookModel = <NotebookModelStub>await notebookEditor.getNotebookModel();
 		notebookModel['_cells'] = [new CellModel({ cell_type: 'code', source: '' }, { isTrusted: true, notebook: notebookModel })];
 		notebookEditor['registerModelChanges']();
-		notebookModel.cells[0]['_onCellEditModeChanged'].fire(true); //fire cellEditModeChanged event on the first sell of our test notebookModel
+		notebookModel.cells[0]['_onCurrentEditModeChanged'].fire(CellEditModes.SPLIT); //fire onCurrentEditModeChanged event on the first cell of our test notebookModel
 		notebookModel.contentChangedEmitter.fire({ changeType: NotebookChangeType.Saved });
 		(<NotebookService>notebookService)['_onNotebookEditorAdd'].fire(<INotebookEditor>{});
 		notebookFindModelMock.verify(x => x.find(
