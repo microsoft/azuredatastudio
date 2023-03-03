@@ -154,6 +154,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.login.migration.collecting.target.logins.failed" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Collecting target login failed with error code {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[收集目標登入失敗，錯誤碼為 {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.login.migration.complete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Completed migrating logins]]></Val>
@@ -507,10 +516,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.login.migration.wizard.target.data.migration.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please note that login migration feature is in private preview mode.]]></Val>
+          <Val><![CDATA[Please note that login migration feature is in public preview mode.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[請注意，登入移轉功能處於個人預覽版模式。]]></Val>
+            <Val><![CDATA[請注意，登入移轉功能處於公開預覽版模式。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please note that login migration feature is in private preview mode.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
