@@ -198,6 +198,10 @@
     <trans-unit id="maxMemoryForLargeFilesMB">
       <source xml:lang="en">Controls the memory available to Azure Data Studio after restart when trying to open large files. Same effect as specifying `--max-memory=NEWSIZE` on the command line.</source>
     </trans-unit>
+    <trans-unit id="miNewDeployment">
+      <source xml:lang="en">New &amp;&amp;Deployment...</source>
+      <note>&amp;&amp; denotes a mnemonic</note>
+    </trans-unit>
     <trans-unit id="miNewNotebook">
       <source xml:lang="en">&amp;&amp;New Notebook</source>
       <note>&amp;&amp; denotes a mnemonic</note>
@@ -5298,12 +5302,15 @@ Error: {1}</source>
     <trans-unit id="accountManagementService.close">
       <source xml:lang="en">Close</source>
     </trans-unit>
-    <trans-unit id="addAccountFailedGeneric">
+    <trans-unit id="addAccountFailedCodeMessage">
+      <source xml:lang="en">{0} 
+Error Message: {1}</source>
+    </trans-unit>
+    <trans-unit id="addAccountFailedGenericMessage">
       <source xml:lang="en">Adding account failed, check Azure Accounts log for more info.</source>
     </trans-unit>
     <trans-unit id="addAccountFailedMessage">
-      <source xml:lang="en">0 
-Error Message: 1</source>
+      <source xml:lang="en">{0}</source>
     </trans-unit>
     <trans-unit id="loggingIn">
       <source xml:lang="en">Adding account...</source>
