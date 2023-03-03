@@ -2,17 +2,17 @@
 # yarn lockfile v1
 
 
-"@microsoft/ads-extension-telemetry@^1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@microsoft/ads-extension-telemetry/-/ads-extension-telemetry-1.4.0.tgz#73b156f399c810b58949e83021da9071335a29a0"
-  integrity sha512-uiPD12Jeu3/CGPCQctyZKE+2FLwn+/iXLoLn80EoJ0MTnonHo1AREvbtR1y6JpOjh8hJXBdh6LjCxs15giIESg==
+"@microsoft/ads-extension-telemetry@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-extension-telemetry/-/ads-extension-telemetry-2.0.0.tgz#18ce267c7ed05c3b9dd99604a743e59f684c4e7c"
+  integrity sha512-hExe/akhgq15v/h19LAFqiKNV6N9VxD19lOwGxEmO55yoWUm3E2cYealxvoYCwGDmSJfCbjR9fz/KM8Yz4XWAA==
   dependencies:
     "@vscode/extension-telemetry" "0.6.1"
 
-"@microsoft/ads-service-downloader@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-1.2.0.tgz#e7b1febc89fe310256ed168fbe0aed1b90f1db1d"
-  integrity sha512-8QYnRGvzYDiJavuITnLcLTGIcXN66LP6AuNByiBA/iRc1SHypjaCqXPOK1gDHDP6KTKuXmTrKBkhojkKFE8GKA==
+"@microsoft/ads-service-downloader@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-1.2.1.tgz#b0216cb0486db6697ccf9e166ec81a9764bdb3aa"
+  integrity sha512-xB3VUaEYauXtm3zFko5clHnhF7l7QbX0AnnULGDrd2JANu1zThBR6toUQ9+zAMO+0KCHs71XLSuoP2A24G3WCw==
   dependencies:
     async-retry "^1.2.3"
     eventemitter2 "^5.0.1"

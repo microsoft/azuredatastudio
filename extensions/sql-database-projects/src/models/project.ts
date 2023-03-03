@@ -725,8 +725,7 @@ export class Project implements ISqlProject {
 	}
 
 	public async deleteSqlCmdVariable(variableName: string): Promise<azdataType.ResultStatus> {
-		const sqlProjectsService = await utils.getSqlProjectsService();
-		return sqlProjectsService.deleteSqlCmdVariable(this.projectFilePath, variableName);
+		return this.sqlProjService.deleteSqlCmdVariable(this.projectFilePath, variableName);
 	}
 
 	/**
@@ -845,11 +844,27 @@ export class Project implements ISqlProject {
 		const databaseReferenceEntry = new DacpacReferenceProjectEntry(settings);
 
 		// check if reference to this database already exists
+		// if it does, throw an error that will get displayed to the user
 		if (this.databaseReferenceExists(databaseReferenceEntry)) {
 			throw new Error(constants.databaseReferenceAlreadyExists);
 		}
 
-		await this.addToProjFile(databaseReferenceEntry);
+		// create database variable
+		if (settings.databaseVariable && settings.databaseName) {
+			await this.sqlProjService.addSqlCmdVariable(this.projectFilePath, settings.databaseVariable, settings.databaseName);
+
+			// create server variable - only can be set when there's also a database variable (reference to different database on different server)
+			if (settings.serverVariable && settings.serverName) {
+				await this.sqlProjService.addSqlCmdVariable(this.projectFilePath, settings.serverVariable, settings.serverName);
+			}
+		}
+
+		const databaseLiteral = settings.databaseVariable ? undefined : settings.databaseName;
+		const result = await this.sqlProjService.addDacpacReference(this.projectFilePath, settings.dacpacFileLocation.fsPath, settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
+
+		if (!result.success && result.errorMessage) {
+			throw new Error(constants.errorAddingDatabaseReference(settings.dacpacFileLocation.fsPath, result.errorMessage));
+		}
 	}
 
 	/**

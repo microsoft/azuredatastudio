@@ -266,11 +266,15 @@ describe.only('Project: sqlproj content operations', function (): void {
 
 	it('Should add a dacpac reference to the same database correctly', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project = await Project.openProject(projFilePath);
+		let project = await Project.openProject(projFilePath);
 
 		// add database reference in the same database
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 		await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test1.dacpac'), suppressMissingDependenciesErrors: true });
+
+		// reload project
+		project = await Project.openProject(projFilePath);
+
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to test1');
 		should(project.databaseReferences[0].databaseName).equal('test1', 'The database reference should be test1');
 		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(true, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be true');
@@ -416,17 +420,24 @@ describe.only('Project: sqlproj content operations', function (): void {
 
 	it('Should not allow adding duplicate dacpac references', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project = await Project.openProject(projFilePath);
+		let project = await Project.openProject(projFilePath);
 
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 
 		const dacpacReference: IDacpacReferenceSettings = { dacpacFileLocation: Uri.file('test.dacpac'), suppressMissingDependenciesErrors: false };
 		await project.addDatabaseReference(dacpacReference);
+
+		// reload project
+		project = await Project.openProject(projFilePath);
+
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to test.dacpac');
 		should(project.databaseReferences[0].databaseName).equal('test', 'project.databaseReferences[0].databaseName should be test');
 
 		// try to add reference to test.dacpac again
 		await testUtils.shouldThrowSpecificError(async () => await project.addDatabaseReference(dacpacReference), constants.databaseReferenceAlreadyExists);
+
+		// reload project
+		project = await Project.openProject(projFilePath);
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after trying to add a reference to test.dacpac again');
 	});
 

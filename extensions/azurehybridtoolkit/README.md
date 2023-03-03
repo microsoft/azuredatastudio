@@ -5,7 +5,7 @@ Adds a Jupyter Book that has several utilities for Azure SQL Hybrid Cloud. To op
 * Type <code>Jupyter Books: Azure SQL Hybrid Cloud Toolkit</code> and select it as a command
 * Press Enter
 
-The Book will be displayed in the <code>Provided Books</code> panel in the Notebooks viewlet. 
+The Book will be displayed in the <code>Provided Books</code> panel in the Notebooks viewlet.
 
 ## Code of Conduct
 
@@ -13,7 +13,7 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Privacy Statement
 
-The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.microsoft.com/privacystatement) describes the privacy statement of this software.
+To learn more about our Privacy Statement visit [this link](https://go.microsoft.com/fwlink/?LinkID=824704).
 
 ## License
 
