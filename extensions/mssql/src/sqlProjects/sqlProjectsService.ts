@@ -239,6 +239,25 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	}
 
 	/**
+	 * Get the cross-platform compatibility status for a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 */
+	public async getProjectProperties(projectUri: string): Promise<mssql.GetProjectPropertiesResult> {
+		const params: contracts.SqlProjectParams = { projectUri: projectUri };
+		return await this.runWithErrorHandling(contracts.GetProjectPropertiesRequest.type, params);
+	}
+
+	/**
+	 * Set the DatabaseSource property of a .sqlproj file
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param databaseSource Source of the database schema, used in telemetry
+	 */
+	public async setDatabaseSource(projectUri: string, databaseSource: string): Promise<azdata.ResultStatus> {
+		const params: contracts.SetDatabaseSourceParams = { projectUri: projectUri, databaseSource: databaseSource };
+		return await this.runWithErrorHandling(contracts.SetDatabaseSourceRequest.type, params);
+	}
+
+	/**
 	 * Add a SQLCMD variable to a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
 	 * @param name Name of the SQLCMD variable
@@ -365,6 +384,56 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	public async getSqlObjectScripts(projectUri: string): Promise<mssql.GetScriptsResult> {
 		const params: contracts.SqlProjectParams = { projectUri: projectUri };
 		return await this.runWithErrorHandling(contracts.GetSqlObjectScriptsRequest.type, params);
+	}
+
+	/**
+	 * Add a SQL object script to a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 */
+	public async addNoneItem(projectUri: string, path: string): Promise<azdata.ResultStatus> {
+		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
+		return await this.runWithErrorHandling(contracts.AddNoneItemRequest.type, params);
+	}
+
+	/**
+	 * Delete a SQL object script from a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 */
+	public async deleteNoneItem(projectUri: string, path: string): Promise<azdata.ResultStatus> {
+		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
+		return await this.runWithErrorHandling(contracts.DeleteNoneItemRequest.type, params);
+	}
+
+	/**
+	 * Exclude a SQL object script from a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 */
+	public async excludeNoneItem(projectUri: string, path: string): Promise<azdata.ResultStatus> {
+		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
+		return await this.runWithErrorHandling(contracts.ExcludeNoneItemRequest.type, params);
+	}
+
+	/**
+	 * getNoneScripts
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 */
+	public async getNoneItems(projectUri: string): Promise<mssql.GetScriptsResult> {
+		const params: contracts.SqlProjectParams = { projectUri: projectUri };
+		return await this.runWithErrorHandling(contracts.GetNoneItemsRequest.type, params);
+	}
+
+	/**
+	 * Move a SQL object script in a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
+	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 */
+	public async moveNoneItem(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
+		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
+		return await this.runWithErrorHandling(contracts.MoveNoneItemRequest.type, params);
 	}
 
 	private async runWithErrorHandling<P, R, E, RO>(type: RequestType<P, R, E, RO>, params: P): Promise<R> {

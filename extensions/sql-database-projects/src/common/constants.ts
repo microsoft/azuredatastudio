@@ -564,7 +564,12 @@ export enum DatabaseProjectItemType {
 	reference = 'databaseProject.itemType.reference',
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
 	sqlcmdVariablesRoot = 'databaseProject.itemType.sqlcmdVariablesRoot',
-	sqlcmdVariable = 'databaseProject.itemType.sqlcmdVariable'
+	sqlcmdVariable = 'databaseProject.itemType.sqlcmdVariable',
+	preDeploymentScript = 'databaseProject.itemType.file.preDeploymentScript',
+	postDeploymentScript = 'databaseProject.itemType.file.postDeployScript',
+	noneFile = 'databaseProject.itemType.file.noneFile',
+	sqlObjectScript = 'databaseProject.itemType.file.sqlObjectScript',
+	publishProfile = 'databaseProject.itemType.file.publishProfile'
 }
 
 // AutoRest
@@ -659,3 +664,4 @@ export const movingFilesBetweenProjectsNotSupported = localize('movingFilesBetwe
 export function errorMovingFile(source: string, destination: string, error: string) { return localize('errorMovingFile', "Error when moving file from {0} to {1}. Error: {2}", source, destination, error); }
 export function moveConfirmationPrompt(source: string, destination: string) { return localize('moveConfirmationPrompt', "Are you sure you want to move {0} to {1}?", source, destination); }
 export const move = localize('Move', "Move");
+export function errorRenamingFile(source: string, destination: string, error: string) { return localize('errorRenamingFile', "Error when renaming file from {0} to {1}. Error: {2}", source, destination, error); }

@@ -114,22 +114,26 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 
 	public async open(): Promise<void> {
 		try {
-			await this.dialogObject.registerContent(async view => {
-				this._modelView = view;
-				this._formContainer = this.createFormContainer([]);
-				this._loadingComponent = view.modelBuilder.loadingComponent().withItem(this._formContainer).withProps({
-					loading: true,
-					loadingText: LoadingDialogText,
-					showText: true,
-					CSSStyles: {
-						width: "100%",
-						height: "100%"
-					}
-				}).component();
-				return view.initializeModel(this._loadingComponent);
-			});
+			const initializeViewPromise = new Promise<void>((async resolve => {
+				await this.dialogObject.registerContent(async view => {
+					this._modelView = view;
+					resolve();
+					this._formContainer = this.createFormContainer([]);
+					this._loadingComponent = view.modelBuilder.loadingComponent().withItem(this._formContainer).withProps({
+						loading: true,
+						loadingText: LoadingDialogText,
+						showText: true,
+						CSSStyles: {
+							width: "100%",
+							height: "100%"
+						}
+					}).component();
+					await view.initializeModel(this._loadingComponent);
+				});
+			}));
 			azdata.window.openDialog(this.dialogObject);
 			this._viewInfo = await this.initializeData();
+			await initializeViewPromise;
 			await this.initializeUI();
 			this._originalObjectInfo = deepClone(this.objectInfo);
 			const typeDisplayName = getNodeTypeDisplayName(this.objectType);
@@ -158,7 +162,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 					}
 					catch (err) {
 						operation.updateStatus(azdata.TaskStatus.Failed, getErrorMessage(err));
-						TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, actionName).withAdditionalProperties({
+						TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, actionName, err).withAdditionalProperties({
 							objectType: this.objectType
 						}).send();
 					}
@@ -169,7 +173,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			this._loadingComponent.loading = false;
 		} catch (err) {
 			const actionName = this.isNewObject ? TelemetryActions.OpenNewObjectDialog : TelemetryActions.OpenPropertiesDialog;
-			TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, actionName).withAdditionalProperties({
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, actionName, err).withAdditionalProperties({
 				objectType: this.objectType
 			}).send();
 			void vscode.window.showErrorMessage(getErrorMessage(err));

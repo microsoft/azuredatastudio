@@ -14,13 +14,12 @@ import * as vscode from 'vscode';
 import type * as azdataType from 'azdata';
 import * as dataworkspace from 'dataworkspace';
 import type * as mssqlVscode from 'vscode-mssql';
-import * as fse from 'fs-extra';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, reservedProjectFolders } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
+import { FolderNode, FileNode, SqlObjectFileNode, PreDeployNode, PostDeployNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
@@ -298,7 +297,7 @@ export class ProjectsController {
 			this.buildInfo[currentBuildIndex].status = Status.failed;
 			this.buildInfo[currentBuildIndex].timeToCompleteAction = utils.timeConversion(timeToFailureBuild);
 
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.build)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectController, TelemetryActions.build, err)
 				.withAdditionalMeasurements({ duration: timeToFailureBuild })
 				.withAdditionalProperties({ databaseSource: utils.getWellKnownDatabaseSources(project.getDatabaseSourceValues()).join(';') })
 				.send();
@@ -347,7 +346,7 @@ export class ProjectsController {
 			}
 		} catch (error) {
 			void utils.showErrorMessageWithOutputChannel(constants.publishToNewAzureServerFailed, error, this._outputChannel);
-			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishToNewAzureServer);
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectController, TelemetryActions.publishToNewAzureServer, error);
 		}
 	}
 
@@ -385,7 +384,7 @@ export class ProjectsController {
 			}
 		} catch (error) {
 			void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, error, this._outputChannel);
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectController, TelemetryActions.publishToContainer, error)
 				.withAdditionalProperties({ dockerBaseImage: dockerImageNameForTelemetry })
 				.send();
 		}
@@ -486,7 +485,7 @@ export class ProjectsController {
 		telemetryProps.databaseSource = utils.getWellKnownDatabaseSources(project.getDatabaseSourceValues()).join(';');
 
 		if (!dacpacPath) {
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectController, TelemetryActions.publishProject)
 				.withAdditionalProperties(telemetryProps)
 				.withAdditionalMeasurements(telemetryMeasures)
 				.send();
@@ -539,7 +538,7 @@ export class ProjectsController {
 			telemetryProps.actionDuration = timeToFailurePublish.toString();
 			telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
 
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectController, TelemetryActions.publishProject, err)
 				.withAdditionalProperties(telemetryProps)
 				.send();
 
@@ -603,7 +602,7 @@ export class ProjectsController {
 				props.errorMessage = message;
 			}
 
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked, err)
 				.withAdditionalProperties(props)
 				.send();
 
@@ -728,7 +727,7 @@ export class ProjectsController {
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.addItemFromTree)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.addItemFromTree, err)
 				.withAdditionalProperties(telemetryProps)
 				.withAdditionalMeasurements(telemetryMeasurements)
 				.send();
@@ -756,7 +755,7 @@ export class ProjectsController {
 			this.refreshProjectsTree(treeNode);
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
-			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.addExistingItem);
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.addExistingItem, err);
 		}
 	}
 
@@ -770,7 +769,7 @@ export class ProjectsController {
 			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.excludeFromProject);
 			await project.exclude(fileEntry);
 		} else {
-			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.excludeFromProject);
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.excludeFromProject);
 			void vscode.window.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, node.relativeProjectUri.path));
 		}
 
@@ -827,7 +826,7 @@ export class ProjectsController {
 
 			this.refreshProjectsTree(context);
 		} else {
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.deleteObjectFromProject)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.deleteObjectFromProject)
 				.withAdditionalProperties({ objectType: node.constructor.name })
 				.send();
 
@@ -856,12 +855,16 @@ export class ProjectsController {
 			return;
 		}
 
-		// TODO: swap this out and hookup to "Move" file/folder api
-		// rename the file
-		const newFilePath = path.join(path.dirname(file?.fsUri.fsPath!), `${newFileName}.sql`);
-		await fs.rename(file?.fsUri.fsPath!, newFilePath);
-		await project.exclude(file!);
-		await project.addExistingItem(newFilePath);
+		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(file?.relativePath!)), `${newFileName}.sql`);
+
+		const renameResult = await this.move(node, node.projectFileUri.fsPath, newFilePath);
+
+		if (renameResult?.success) {
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.rename);
+		} else {
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.rename);
+			void vscode.window.showErrorMessage(constants.errorRenamingFile(file?.relativePath!, newFilePath, utils.getErrorMessage(renameResult?.errorMessage)));
+		}
 
 		this.refreshProjectsTree(context);
 	}
@@ -1394,7 +1397,7 @@ export class ProjectsController {
 			return project;
 		} catch (err) {
 			void vscode.window.showErrorMessage(constants.generatingProjectFailed(utils.getErrorMessage(err)));
-			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.generateProjectFromOpenApiSpec);
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectController, TelemetryActions.generateProjectFromOpenApiSpec, err);
 			this._outputChannel.show();
 			return;
 		}
@@ -1580,7 +1583,7 @@ export class ProjectsController {
 			await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
-			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.createProjectFromDatabase);
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectController, TelemetryActions.createProjectFromDatabase, err);
 		}
 	}
 
@@ -1691,7 +1694,7 @@ export class ProjectsController {
 				.send();
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
-			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectFromDatabase);
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectController, TelemetryActions.updateProjectFromDatabase, err);
 		}
 	}
 
@@ -1747,7 +1750,7 @@ export class ProjectsController {
 		);
 
 		if (!comparisonResult || !comparisonResult.success) {
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, 'SchemaComparisonFailed')
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectController, 'SchemaComparisonFailed')
 				.withAdditionalProperties({
 					operationId: comparisonResult.operationId
 				}).send();
@@ -1858,16 +1861,16 @@ export class ProjectsController {
 		let folderPath;
 		// target is the root of project, which is the .sqlproj
 		if (target.element.projectFileUri.fsPath === target.element.fileSystemUri.fsPath) {
-			folderPath = path.dirname(target.element.projectFileUri.fsPath!);
+			folderPath = path.basename(path.dirname(target.element.projectFileUri.fsPath!));
 		} else {
 			// target is another file or folder
-			folderPath = target.element.fileSystemUri.fsPath.endsWith(constants.sqlFileExtension) ? path.dirname(target.element.fileSystemUri.fsPath) : target.element.fileSystemUri.fsPath;
+			folderPath = target.element.relativeProjectUri.fsPath.endsWith(constants.sqlFileExtension) ? path.dirname(target.element.relativeProjectUri.fsPath) : target.element.relativeProjectUri.fsPath;
 		}
 
 		const newPath = path.join(folderPath!, sourceFileNode.friendlyName);
 
 		// don't do anything if the path is the same
-		if (newPath === sourceFileNode.fileSystemUri.fsPath) {
+		if (newPath === sourceFileNode.relativeProjectUri.fsPath) {
 			return;
 		}
 
@@ -1877,16 +1880,46 @@ export class ProjectsController {
 		}
 
 		// Move the file
-		try {
-			const project = await Project.openProject(projectUri.fsPath);
+		const moveResult = await this.move(sourceFileNode, projectUri.fsPath, newPath);
 
-			// TODO: swap out with DacFx projects apis - currently moving pre/post deploy scripts don't work, but they should work after the swap
-			await fse.move(sourceFileNode.fileSystemUri.fsPath, newPath!);
-			await project.exclude(project.files.find(f => f.fsUri.fsPath === sourceFileNode.fileSystemUri.fsPath)!);
-			await project.addExistingItem(newPath!);
-		} catch (e) {
-			void vscode.window.showErrorMessage(constants.errorMovingFile(sourceFileNode.fileSystemUri.fsPath, newPath, utils.getErrorMessage(e)));
+		if (moveResult?.success) {
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.move);
+		} else {
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.move);
+			void vscode.window.showErrorMessage(constants.errorMovingFile(sourceFileNode.fileSystemUri.fsPath, newPath, utils.getErrorMessage(moveResult?.errorMessage)));
 		}
+	}
+
+	/**
+	 * Moves a file to a different location
+	 * @param node Node being moved
+	 * @param projectFilePath Full file path to .sqlproj
+	 * @param destinationRelativePath path of the destination, relative to .sqlproj
+	 */
+	private async move(node: BaseProjectTreeItem, projectFilePath: string, destinationRelativePath: string): Promise<azdataType.ResultStatus | undefined> {
+		// trim off the project folder at the beginning of the relative path stored in the tree
+		const projectRelativeUri = vscode.Uri.file(path.basename(projectFilePath, constants.sqlprojExtension));
+		const originalRelativePath = utils.trimUri(projectRelativeUri, node.relativeProjectUri);
+		destinationRelativePath = utils.trimUri(projectRelativeUri, vscode.Uri.file(destinationRelativePath));
+
+		if (originalRelativePath === destinationRelativePath) {
+			return;
+		}
+
+		const sqlProjectsService = await utils.getSqlProjectsService();
+
+		let result;
+		if (node instanceof SqlObjectFileNode) {
+			result = await sqlProjectsService.moveSqlObjectScript(projectFilePath, destinationRelativePath, originalRelativePath)
+		} else if (node instanceof PreDeployNode) {
+			result = await sqlProjectsService.movePreDeploymentScript(projectFilePath, destinationRelativePath, originalRelativePath)
+		} else if (node instanceof PostDeployNode) {
+			result = await sqlProjectsService.movePostDeploymentScript(projectFilePath, destinationRelativePath, originalRelativePath)
+		}
+		// TODO add support for renaming none scripts after those are added in STS
+		// TODO add support for renaming publish profiles when support is added in DacFx
+
+		return result;
 	}
 }
 
