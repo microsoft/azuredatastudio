@@ -9,7 +9,6 @@ import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as xmlFormat from 'xml-formatter';
 import * as os from 'os';
-import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 
@@ -22,6 +21,7 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase, SystemDatabaseReferenceProjectEntry } from './projectEntry';
 import { BaseProjectTreeItem } from './tree/baseTreeItem';
 import { PostDeployNode, PreDeployNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
+import { ISqlProjectsService } from 'mssql';
 
 /**
  * Represents the configuration based on the Configuration property in the sqlproj
@@ -36,6 +36,8 @@ enum Configuration {
  * Class representing a Project, and providing functions for operating on it
  */
 export class Project implements ISqlProject {
+	private sqlProjService!: ISqlProjectsService;
+
 	private _projectFilePath: string;
 	private _projectFileName: string;
 	private _projectGuid: string | undefined;
@@ -50,7 +52,10 @@ export class Project implements ISqlProject {
 	private _isSdkStyleProject: boolean = false; // https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview
 	private _outputPath: string = '';
 	private _configuration: Configuration = Configuration.Debug;
+	private _databaseSource: string = '';
 	private _publishProfiles: FileProjectEntry[] = [];
+	private _defaultCollation: string = '';
+	private _databaseSchemaProvider: string = '';
 
 	public get dacpacOutputPath(): string {
 		return path.join(this.outputPath, `${this._projectFileName}.dacpac`);
@@ -132,6 +137,9 @@ export class Project implements ISqlProject {
 	 */
 	public static async openProject(projectFilePath: string): Promise<Project> {
 		const proj = new Project(projectFilePath);
+
+		proj.sqlProjService = await utils.getSqlProjectsService();
+
 		await proj.readProjFile();
 		await proj.updateProjectForRoundTrip();
 
@@ -147,6 +155,7 @@ export class Project implements ISqlProject {
 		const projFileText = await fs.readFile(this._projectFilePath);
 		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
 
+		await this.readProjectProperties();
 		// check if this is an sdk style project https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview
 		this._isSdkStyleProject = this.CheckForSdkStyleProject();
 
@@ -172,80 +181,28 @@ export class Project implements ISqlProject {
 			void window.showErrorMessage(constants.errorReadingProject(constants.sqlCmdVariables, this.projectFilePath));
 			console.error(utils.getErrorMessage(e));
 		}
+	}
 
-		// get projectGUID
-		try {
-			this._projectGuid = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ProjectGuid)[0].childNodes[0].nodeValue!;
-		} catch (e) {
-			// if no project guid, add a new one
-			this._projectGuid = UUID.generateUuid();
-			const newProjectGuidNode = this.projFileXmlDoc!.createElement(constants.ProjectGuid);
-			const newProjectGuidTextNode = this.projFileXmlDoc!.createTextNode(`{${this._projectGuid}}`);
-			newProjectGuidNode.appendChild(newProjectGuidTextNode);
-			this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.PropertyGroup)[0]?.appendChild(newProjectGuidNode);
-			await this.serializeToProjFile(this.projFileXmlDoc);
+	private async readProjectProperties(): Promise<void> {
+		const props = await this.sqlProjService.getProjectProperties(this.projectFilePath);
+
+		this._projectGuid = props.projectGuid;
+
+		switch (props.configuration.toLowerCase()) {
+			case Configuration.Debug.toString().toLowerCase():
+				this._configuration = Configuration.Debug;
+				break;
+			case Configuration.Release.toString().toLowerCase():
+				this._configuration = Configuration.Release;
+				break;
+			default:
+				this._configuration = Configuration.Output; // if the configuration doesn't match release or debug, the dacpac will get created in ./bin/Output
 		}
 
-		// get configuration
-		const configurationNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Configuration);
-		if (configurationNodes.length > 0) {
-			const configuration = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Configuration)[0].childNodes[0].nodeValue!;
-			switch (configuration.toLowerCase()) {
-				case Configuration.Debug.toString().toLowerCase():
-					this._configuration = Configuration.Debug;
-					break;
-				case Configuration.Release.toString().toLowerCase():
-					this._configuration = Configuration.Release;
-					break;
-				default:
-					// if the configuration doesn't match release or debug, the dacpac will get created in ./bin/Output
-					this._configuration = Configuration.Output;
-			}
-		} else {
-			// If configuration isn't specified in .sqlproj, set it to the default debug
-			this._configuration = Configuration.Debug;
-		}
-
-		// get platform
-		const platformNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Platform);
-		let platform = '';
-		if (platformNodes.length > 0) {
-			for (let i = 0; i < platformNodes.length; i++) {
-				const condition = platformNodes[i].getAttribute(constants.Condition);
-				if (condition?.trim() === constants.EmptyPlatformCondition.trim()) {
-					platform = platformNodes[i].childNodes[0].nodeValue ?? '';
-					break;
-				}
-			}
-		} else {
-			platform = constants.AnyCPU;
-		}
-
-		// get output path
-		let outputPath;
-		const outputPathNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.OutputPath);
-		if (outputPathNodes.length > 0) {
-			// go through all the OutputPath nodes and use the last one in the .sqlproj that the condition matches
-			for (let i = 0; i < outputPathNodes.length; i++) {
-				// check if parent has a condition
-				const parent = outputPathNodes[i].parentNode as Element;
-				const condition = parent?.getAttribute(constants.Condition);
-
-				// only handle the default conditions format that are there when creating a sqlproj in VS or ADS
-				if (condition?.toLowerCase().trim() === constants.ConfigurationPlatformCondition(this.configuration.toString(), platform).toLowerCase()) {
-					outputPath = outputPathNodes[i].childNodes[0].nodeValue;
-				} else if (!condition) {
-					outputPath = outputPathNodes[i].childNodes[0].nodeValue;
-				}
-			}
-		}
-
-		if (outputPath) {
-			this._outputPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(outputPath));
-		} else {
-			// If output path isn't specified in .sqlproj, set it to the default output path .\bin\Debug\
-			this._outputPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(constants.defaultOutputPath(this.configuration.toString())));
-		}
+		this._outputPath = props.outputPath;
+		this._databaseSource = props.databaseSource ?? '';
+		this._defaultCollation = props.defaultCollation;
+		this._databaseSchemaProvider = 'Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider'; // TODO: replace this stub once latest Tools Service is brought over
 	}
 
 	/**
@@ -985,27 +942,12 @@ export class Project implements ISqlProject {
 	 * Gets the project target version specified in the DSP property in the sqlproj
 	 */
 	public getProjectTargetVersion(): string {
-		let dsp: string | undefined;
-
-		try {
-			dsp = this.evaluateProjectPropertyValue(constants.DSP);
-		}
-		catch {
-			// We will throw specialized error instead
-		}
-
-		// Check if DSP is missing or invalid
-		if (!dsp) {
-			throw new Error(constants.invalidDataSchemaProvider);
-		}
-
-		// get version from dsp, which is a string like Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider
-		// Remove prefix and suffix to only get the actual version number/name. For the example above the result
-		// should be just '130'.
+		// Get version from dsp, which is a string like "Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider"
+		// Remove prefix and suffix to only get the actual version number/name. For the example above, the result should be just '130'.
 		const version =
-			dsp.substring(
+			this._databaseSchemaProvider.substring(
 				constants.MicrosoftDatatoolsSchemaSqlSql.length,
-				dsp.length - constants.databaseSchemaProvider.length);
+				this._databaseSchemaProvider.length - constants.databaseSchemaProvider.length);
 
 		// make sure version is valid
 		if (!Array.from(constants.targetPlatformToVersion.values()).includes(version)) {
@@ -1021,7 +963,7 @@ export class Project implements ISqlProject {
 	 * @returns Default collation for the database set in the project.
 	 */
 	public getDatabaseDefaultCollation(): string {
-		return this.evaluateProjectPropertyValue(constants.DefaultCollationProperty, constants.DefaultCollation);
+		return this._defaultCollation;
 	}
 
 	/**
@@ -1089,8 +1031,7 @@ export class Project implements ISqlProject {
 	 * @param defaultValue
 	 */
 	public async addSqlCmdVariable(name: string, defaultValue: string): Promise<void> {
-		const sqlProjectsService = await utils.getSqlProjectsService();
-		await sqlProjectsService.addSqlCmdVariable(this.projectFilePath, name, defaultValue);
+		await this.sqlProjService.addSqlCmdVariable(this.projectFilePath, name, defaultValue);
 	}
 
 	/**
@@ -1099,8 +1040,7 @@ export class Project implements ISqlProject {
 	 * @param defaultValue
 	 */
 	public async updateSqlCmdVariable(name: string, defaultValue: string): Promise<void> {
-		const sqlProjectsService = await utils.getSqlProjectsService();
-		await sqlProjectsService.updateSqlCmdVariable(this.projectFilePath, name, defaultValue);
+		await this.sqlProjService.updateSqlCmdVariable(this.projectFilePath, name, defaultValue);
 	}
 
 	/**
@@ -1109,8 +1049,16 @@ export class Project implements ISqlProject {
 	 *
 	 * @param databaseSource Source of the database to add
 	 */
-	public addDatabaseSource(databaseSource: string): Promise<void> {
-		return this.addValueToCollectionProjectProperty(constants.DatabaseSource, databaseSource);
+	public async addDatabaseSource(databaseSource: string): Promise<void> {
+		const sources: string[] = this._databaseSource.split(';');
+		const index = sources.findIndex(x => x === databaseSource);
+
+		if (index !== -1) {
+			return;
+		}
+
+		sources.push(databaseSource);
+		await this.sqlProjService.setDatabaseSource(this.projectFilePath, sources.join(';'));
 	}
 
 	/**
@@ -1119,8 +1067,16 @@ export class Project implements ISqlProject {
 	 *
 	 * @param databaseSource Source of the database to remove
 	 */
-	public removeDatabaseSource(databaseSource: string): Promise<void> {
-		return this.removeValueFromCollectionProjectProperty(constants.DatabaseSource, databaseSource);
+	public async removeDatabaseSource(databaseSource: string): Promise<void> {
+		const sources: string[] = this._databaseSource.split(';');
+		const index = sources.findIndex(x => x === databaseSource);
+
+		if (index === -1) {
+			return;
+		}
+
+		sources.splice(index, 1);
+		await this.sqlProjService.setDatabaseSource(this.projectFilePath, sources.join(';'));
 	}
 
 	/**
@@ -1129,7 +1085,7 @@ export class Project implements ISqlProject {
 	 * @returns Array of all database sources
 	 */
 	public getDatabaseSourceValues(): string[] {
-		return this.getCollectionProjectPropertyValue(constants.DatabaseSource);
+		return this._databaseSource.split(';');
 	}
 
 	/**
@@ -1787,223 +1743,6 @@ export class Project implements ISqlProject {
 	}
 
 	/**
-	 * Adds a value to the project property, where multiple values are separated by semicolon.
-	 * If property does not exist, the new one will be added. Otherwise a value will be appended
-	 * to the existing property.
-	 *
-	 * @param propertyName Name of the project property
-	 * @param valueToAdd Value to add to the project property. Values containing semicolon are not supported
-	 * @param caseSensitive Flag that indicates whether to use case-sensitive comparison when determining, if value is already present
-	 */
-	private async addValueToCollectionProjectProperty(propertyName: string, valueToAdd: string, caseSensitive: boolean = false): Promise<void> {
-		if (valueToAdd.includes(';')) {
-			throw new Error(constants.invalidProjectPropertyValueProvided(valueToAdd));
-		}
-
-		let collectionValues = this.getCollectionProjectPropertyValue(propertyName);
-
-		// Respect case-sensitivity flag
-		const normalizedValueToAdd = caseSensitive ? valueToAdd : valueToAdd.toUpperCase();
-
-		// Only add value if it is not present yet
-		if (collectionValues.findIndex(value => (caseSensitive ? value : value.toUpperCase()) === normalizedValueToAdd) < 0) {
-			collectionValues.push(valueToAdd);
-			await this.setProjectPropertyValue(propertyName, collectionValues.join(';'));
-		}
-	}
-
-	/**
-	 * Removes a value from the project property, where multiple values are separated by semicolon.
-	 * If property becomes empty after the removal of the value, then it will be completely removed
-	 * from the project file.
-	 * If value appears in the collection multiple times, only the first occurance will be removed.
-	 *
-	 * @param propertyName Name of the project property
-	 * @param valueToRemove Value to remove from the project property. Values containing semicolon are not supported
-	 * @param caseSensitive Flag that indicates whether to use case-sensitive comparison when removing the value
-	 */
-	protected async removeValueFromCollectionProjectProperty(propertyName: string, valueToRemove: string, caseSensitive: boolean = false): Promise<void> {
-		if (this.projFileXmlDoc === undefined) {
-			return;
-		}
-
-		if (valueToRemove.includes(';')) {
-			throw new Error(constants.invalidProjectPropertyValueProvided(valueToRemove));
-		}
-
-		let collectionValues = this.getCollectionProjectPropertyValue(propertyName);
-
-		// Respect case-sensitivity flag
-		const normalizedValueToRemove = caseSensitive ? valueToRemove : valueToRemove.toUpperCase();
-
-		const indexToRemove =
-			collectionValues.findIndex(value => (caseSensitive ? value : value.toUpperCase()) === normalizedValueToRemove);
-
-		if (indexToRemove >= 0) {
-			collectionValues.splice(indexToRemove, 1);
-
-			if (collectionValues.length === 0) {
-				// No elements left in the collection - remove the property entirely
-				this.removeProjectPropertyTag(propertyName);
-				await this.serializeToProjFile(this.projFileXmlDoc);
-			} else {
-				// Update property value with modified collection
-				await this.setProjectPropertyValue(propertyName, collectionValues.join(';'));
-			}
-		}
-	}
-
-	/**
-	 * Evaluates the value of the property item in the loaded project.
-	 *
-	 * @param propertyName Name of the property item to evaluate.
-	 * @returns Value of the property or `undefined`, if property is missing.
-	 */
-	private evaluateProjectPropertyValue(propertyName: string): string | undefined;
-
-	/**
-	 * Evaluates the value of the property item in the loaded project.
-	 *
-	 * @param propertyName Name of the property item to evaluate.
-	 * @param defaultValue Default value to return, if property is not set.
-	 * @returns Value of the property or `defaultValue`, if property is missing.
-	 */
-	private evaluateProjectPropertyValue(propertyName: string, defaultValue: string): string;
-
-	/**
-	 * Evaluates the value of the property item in the loaded project.
-	 *
-	 * @param propertyName Name of the property item to evaluate.
-	 * @param defaultValue Default value to return, if property is not set.
-	 * @returns Value of the property or `defaultValue`, if property is missing.
-	 */
-	private evaluateProjectPropertyValue(propertyName: string, defaultValue?: string): string | undefined {
-		// TODO: Currently we simply read the value of the first matching element. The code should be updated to:
-		//       1) Narrow it down to items under <PropertyGroup> only
-		//       2) Respect the `Condition` attribute on group and property itself
-		//       3) Evaluate any expressions within the property value
-
-		// Check if property is set in the project
-		const propertyElements = this.projFileXmlDoc!.getElementsByTagName(propertyName);
-		if (propertyElements.length === 0) {
-			return defaultValue;
-		}
-
-		// Try to extract the value from the first matching element
-		const firstPropertyElement = propertyElements[0];
-		if (firstPropertyElement.childNodes.length !== 1) {
-			// Property items are expected to have simple string content
-			throw new Error(constants.invalidProjectPropertyValueInSqlProj(propertyName));
-		}
-
-		return firstPropertyElement.childNodes[0].nodeValue!;
-	}
-
-	/**
-	 * Retrieves all semicolon-separated values specified in the project property.
-	 *
-	 * @param propertyName Name of the project property
-	 * @returns Array of semicolon-separated values specified in the property
-	 */
-	private getCollectionProjectPropertyValue(propertyName: string): string[] {
-		const propertyValue = this.evaluateProjectPropertyValue(propertyName);
-		if (propertyValue === undefined) {
-			return [];
-		}
-
-		return propertyValue.split(';')
-			.filter(value => value.length > 0);
-	}
-
-	/**
-	 * Sets the value of the project property.
-	 *
-	 * @param propertyName Name of the project property
-	 * @param propertyValue New value of the project property
-	 */
-	private async setProjectPropertyValue(propertyName: string, propertyValue: string): Promise<void> {
-		if (this.projFileXmlDoc === undefined) {
-			return;
-		}
-
-		let propertyElement: Element | undefined;
-
-		// Try to find an existing property element with the requested name.
-		// There could be multiple elements in different property groups or even within the
-		// same property group (different `Condition` attribute, for example). As of now,
-		// we always choose the first one and update it.
-		const propertyGroups = this.projFileXmlDoc.getElementsByTagName(constants.PropertyGroup);
-		for (let propertyGroupIndex = 0; propertyGroupIndex < propertyGroups.length; ++propertyGroupIndex) {
-			const propertyElements = propertyGroups[propertyGroupIndex].getElementsByTagName(propertyName);
-
-			if (propertyElements.length > 0) {
-				propertyElement = propertyElements[0];
-				break;
-			}
-		}
-
-		if (propertyElement === undefined) {
-			// If existing property element was not found, then we add a new one
-			propertyElement = this.addProjectPropertyTag(propertyName);
-		}
-
-		// Ensure property element was found or successfully added
-		if (propertyElement) {
-			if (propertyElement.childNodes.length > 0) {
-				propertyElement.replaceChild(this.projFileXmlDoc.createTextNode(propertyValue), propertyElement.childNodes[0]);
-			} else {
-				propertyElement.appendChild(this.projFileXmlDoc.createTextNode(propertyValue));
-			}
-
-			await this.serializeToProjFile(this.projFileXmlDoc);
-		}
-	}
-
-	/**
-	 * Adds an empty project property tag.
-	 *
-	 * @param propertyTag Tag to add
-	 * @returns Added HTMLElement tag
-	 */
-	private addProjectPropertyTag(propertyTag: string): HTMLElement | undefined {
-		if (this.projFileXmlDoc === undefined) {
-			return;
-		}
-
-		const propertyGroups = this.projFileXmlDoc.getElementsByTagName(constants.PropertyGroup);
-		let propertyGroup = propertyGroups.length > 0 ? propertyGroups[0] : undefined;
-		if (propertyGroup === undefined) {
-			propertyGroup = this.projFileXmlDoc.createElement(constants.PropertyGroup);
-			this.projFileXmlDoc.documentElement?.appendChild(propertyGroup);
-		}
-
-		const propertyElement = this.projFileXmlDoc.createElement(propertyTag);
-		propertyGroup.appendChild(propertyElement);
-		return propertyElement;
-	}
-
-	/**
-	 * Removes first occurrence of the project property.
-	 *
-	 * @param propertyTag Tag to remove
-	 */
-	private removeProjectPropertyTag(propertyTag: string) {
-		if (this.projFileXmlDoc === undefined) {
-			return;
-		}
-
-		const propertyGroups = this.projFileXmlDoc.getElementsByTagName(constants.PropertyGroup);
-
-		for (let propertyGroupIndex in propertyGroups) {
-			let propertiesWithTagName = propertyGroups[propertyGroupIndex].getElementsByTagName(propertyTag);
-			if (propertiesWithTagName.length > 0) {
-				propertiesWithTagName[0].parentNode?.removeChild(propertiesWithTagName[0]);
-				return;
-			}
-		}
-	}
-
-	/**
 	 * Adds all folders in the path to the project and saves the project file, if provided path is under the project folder.
 	 * If path is outside the project folder, then no action is taken.
 	 *
@@ -2087,15 +1826,14 @@ export class Project implements ISqlProject {
 			return { success: true, errorMessage: '' };
 		}
 
-		const sqlProjectsService = await utils.getSqlProjectsService();
 		let result;
 
 		if (node instanceof SqlObjectFileNode) {
-			result = await sqlProjectsService.moveSqlObjectScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+			result = await this.sqlProjService.moveSqlObjectScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
 		} else if (node instanceof PreDeployNode) {
-			result = await sqlProjectsService.movePreDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+			result = await this.sqlProjService.movePreDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
 		} else if (node instanceof PostDeployNode) {
-			result = await sqlProjectsService.movePostDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+			result = await this.sqlProjService.movePostDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
 		}
 		// TODO add support for renaming none scripts after those are added in STS
 		// TODO add support for renaming publish profiles when support is added in DacFx
