@@ -260,8 +260,6 @@ export class Project implements ISqlProject {
 			}
 		}
 
-		console.log('===Folders: ' + folderEntries.length);
-
 		return folderEntries;
 	}
 
