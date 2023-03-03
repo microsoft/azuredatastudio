@@ -48,11 +48,9 @@ import { Iterable } from 'vs/base/common/iterator';
 import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 import { Tenant, TenantListDelegate, TenantListRenderer } from 'sql/workbench/services/accountManagement/browser/tenantListRenderer';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
+import { ADAL_AUTH_LIBRARY, AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManagement/utils';
 
 export const VIEWLET_ID = 'workbench.view.accountpanel';
-export type AuthLibrary = 'ADAL' | 'MSAL';
-export const MSAL_AUTH_LIBRARY: AuthLibrary = 'MSAL'; // default
-export const ADAL_AUTH_LIBRARY: AuthLibrary = 'ADAL';
 
 export class AccountPaneContainer extends ViewPaneContainer { }
 
@@ -392,7 +390,7 @@ export class AccountDialog extends Modal {
 		this._splitView!.layout(DOM.getContentHeight(this._container!));
 
 		// Set the initial items of the list
-		const authLibrary: AuthLibrary = this._configurationService.getValue('azure.authenticationLibrary');
+		const authLibrary: AuthLibrary = getAuthLibrary(this._configurationService);
 		let updatedAccounts: azdata.Account[];
 		if (authLibrary) {
 			updatedAccounts = filterAccounts(newProvider.initialAccounts, authLibrary);
@@ -443,7 +441,7 @@ export class AccountDialog extends Modal {
 		if (!providerMapping || !providerMapping.view) {
 			return;
 		}
-		const authLibrary: AuthLibrary = this._configurationService.getValue('azure.authenticationLibrary');
+		const authLibrary: AuthLibrary = getAuthLibrary(this._configurationService);
 		let updatedAccounts: azdata.Account[];
 		if (authLibrary) {
 			updatedAccounts = filterAccounts(args.accountList, authLibrary);

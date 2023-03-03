@@ -474,7 +474,8 @@ export enum AzureResource {
 	AzureLogAnalytics = 8,
 	AzureStorage = 9,
 	AzureKusto = 10,
-	PowerBi = 11
+	PowerBi = 11,
+	Custom = 12 // Handles custom resource URIs as received from server endpoint.
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {
