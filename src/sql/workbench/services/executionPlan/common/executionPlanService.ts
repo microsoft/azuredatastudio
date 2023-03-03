@@ -53,8 +53,13 @@ export class ExecutionPlanService implements IExecutionPlanService {
 					}
 					retryCount++;
 				}
+
 				clearInterval(intervalId);
-				resolve();
+				if (providerId) {
+					throw new Error(localize('providerNotRegisteredError', "Provider {0} is not found to handle execution plans", providerId));
+				} else {
+					throw new Error(localize('providerNotRegisteredError', "No providers are found to handle execution plans"));
+				}
 			}, 1000);
 		});
 	}
