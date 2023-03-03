@@ -20,7 +20,6 @@
 			"azure.owningTenantNotFound": "Для учетной записи не найдены сведения о владении клиентом.",
 			"azure.responseError": "Не удалось получить токен из-за ошибки. [Откройте инструменты разработчика]({0}), чтобы узнать подробности.",
 			"azure.tenantNotFound": "Указанный клиент с идентификатором \"{0}\" не найден.",
-			"azureAuth.unidentifiedError": "Неизвестная ошибка при проверке подлинности Azure",
 			"azurecore.consentDialog.body": "Клиент \"{0} ({1})\" требует повторной проверки подлинности для доступа к ресурсам {2}. Нажмите кнопку \"Открыть\", чтобы начать процесс проверки подлинности.",
 			"azurecore.consentDialog.cancel": "Отмена",
 			"azurecore.consentDialog.ignore": "Игнорировать клиента",
@@ -42,7 +41,9 @@
 		"dist/account-provider/azureAccountProvider": {
 			"azure.NoAuthMethod.Available": "Методы проверки подлинности Azure недоступны. Необходимо включить методы проверки подлинности в конфигурации ADS.",
 			"azure.NoAuthMethod.Selected": "Метод проверки подлинности Azure не выбран. Необходимо выбрать метод проверки подлинности, который будет использоваться.",
-			"azure.deprecatedGetSecurityToken": "Выполнен вызов метода azdata.accounts.getSecurityToken. Этот метод является устаревшим и будет удален в будущих выпусках. Используйте вместо него метод getAccountSecurityToken."
+			"azure.deprecatedGetSecurityToken": "Выполнен вызов метода azdata.accounts.getSecurityToken. Этот метод является устаревшим и будет удален в будущих выпусках. Используйте вместо него метод getAccountSecurityToken.",
+			"genericTokenError": "Failed to get token",
+			"msalTokenError": "{0} occurred when acquiring token. \r\n{1}"
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "Не удалось очистить кэш токена",
@@ -50,10 +51,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure для Китая",
-			"germanyCloud": "Azure для Германии",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure для государственных организаций США",
-			"usNatCloudDisplayName": "Azure (национальное облако для США)"
+			"usGovCloudDisplayName": "Azure для государственных организаций США"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "Для работы этой функции необходимо выбрать учетную запись Azure.",

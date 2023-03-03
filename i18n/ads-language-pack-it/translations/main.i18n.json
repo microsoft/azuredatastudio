@@ -11344,13 +11344,36 @@
 			"incompatible": "Non è possibile installare la versione '{0}' dell'estensione '{1}' perché non è compatibile con Azure Data Studio '{2}'. Eseguire l'aggiornamento ad Azure Data Studio {3} per installare l'estensione.",
 			"installExtensionCompletedAndReloadRequired": "L'installazione dell'estensione {0} è stata completata. Ricaricare Azure Data Studio per abilitarla.",
 			"maxMemoryForLargeFilesMB": "Controlla la memoria disponibile per Azure Data Studio dopo il riavvio durante il tentativo di aprire file di grandi dimensioni. Il risultato è uguale a quando si specifica `--max-memory=NEWSIZE` sulla riga di comando.",
+			"miNewDeployment": "New &&Deployment...",
 			"miNewNotebook": "&&Nuovo notebook",
 			"miNewQuery": "Nuova &&query",
 			"miinstallVsix": "Installare l'estensione dal pacchetto VSIX",
 			"newQuery": "Nuova query",
 			"notebook.cellTitle": "Menu del titolo della cella del notebook",
+			"notebook.cellToolbarLocation.description": "Indica la posizione in cui visualizzare la barra degli strumenti della cella o se deve essere nascosta (solo per Notebooks di VS Code).",
+			"notebook.cellToolbarVisibility.description": "Indica se la barra degli strumenti della cella deve essere presente nel passaggio del mouse o fare clic (solo per Notebooks di VS Code).",
+			"notebook.compactView.description": "Controlla se l'editor del blocco appunti deve essere sottoposto a rendering in formato compatto. Ad esempio, se l'opzione è attivata, diminuisce la larghezza del margine sinistro (solo per Notebooks di VS Code).",
+			"notebook.consolidatedOutputButton.description": "Controlla se è necessario eseguire il rendering dell'azione Outputs nella barra degli strumenti di output (solo per Notebooks di VS Code).",
+			"notebook.consolidatedRunButton.description": "Controlla se le azioni aggiuntive vengono visualizzate in un elenco a discesa accanto al pulsante Esegui (solo per Notebooks di VS Code).",
+			"notebook.diff.enablePreview.description": "Indica se usare l'editor diff di testo avanzato per il notebook (solo per Notebooks di VS Code).",
+			"notebook.displayOrder.description": "Elenco di priorità per i tipi MIME di output (solo per Notebooks di VS Code).",
+			"notebook.dragAndDrop.description": "Controlla se l'editor del blocco appunti deve consentire lo spostamento delle celle tramite il trascinamento della selezione (solo per Notebooks di VS Code).",
+			"notebook.editorOptions.experimentalCustomization": "Impostazioni per gli editor di codice usati nei blocchi appunti. Può essere usato per personalizzare la maggior parte delle impostazioni dell'editor.* (solo per Notebooks di VS Code).",
+			"notebook.focusIndicator.description": "Controlla dove eseguire il rendering dell'indicatore di messa a fuoco, ovvero lungo i bordi delle celle o sulla rilegatura sinistra (solo per Notebooks di VS Code).",
+			"notebook.globalToolbar.description": "Controlla se eseguire il rendering di una barra degli strumenti globale all'interno dell'editor del blocco appunti (solo per Notebooks di VS Code).",
+			"notebook.globalToolbarShowLabel": "Controlla se le azioni sulla barra degli strumenti del notebook devono eseguire il rendering dell'etichetta (solo per Notebooks di VS Code).",
+			"notebook.insertToolbarPosition.description": "Controlla dove visualizzare le azioni di inserimento cella (solo per Notebooks di VS Code).",
+			"notebook.interactiveWindow.collapseCodeCells": "Controlla se le celle di codice nella finestra interattiva sono compresse per impostazione predefinita (solo per Notebooks di VS Code).",
+			"notebook.markup.fontSize": "Controlla le dimensioni del carattere del markup di cui è stato eseguito il rendering nei blocchi appunti. Se impostato su '0', viene usato il 120% di '#editor.fontSize#' (solo per Notebooks di VS Code).",
+			"notebook.outputFontFamily": "Famiglia di caratteri per il testo di output per le celle del notebook. Se impostato su vuoto, viene usato '#editor.fontFamily#' (solo per Notebooks di VS Code).",
+			"notebook.outputFontSize": "Dimensioni del carattere per il testo di output per le celle del blocco appunti. Se impostato su 0, viene usato '#editor.fontSize#' (solo per Notebooks di VS Code).",
+			"notebook.outputLineHeight": "Altezza della riga del testo di output per le celle del blocco appunti.\r\n - I valori compresi tra 0 e 8 verranno usati come moltiplicatore con le dimensioni del carattere.\r\n - I valori maggiori o uguali a 8 verranno usati come valori effettivi (solo per Notebooks di VS Code).",
+			"notebook.showCellStatusbar.description": "Indica se la barra di stato della cella deve essere visualizzata (solo per Notebooks di VS Code).",
+			"notebook.showFoldingControls.description": "Controlla quando visualizzare la freccia di riduzione dell'intestazione Markdown (solo per Notebooks di VS Code).",
+			"notebook.textOutputLineLimit": "Controlla il numero di righe di testo di cui viene eseguito il rendering in un output di testo (solo per Notebooks di VS Code).",
 			"notebook.title": "Menu del titolo del notebook",
 			"notebook.toolbar": "Menu della barra degli strumenti del notebook",
+			"notebook.undoRedoPerCell.description": "Indica se utilizzare il gruppo di annullamento/ripetizione separato per ogni cella (solo per Notebooks di VS Code).",
 			"objectExplorer.context": "Menu di scelta rapida elemento Esplora oggetti",
 			"openDefaultSettingsJson": "Apri il file JSON delle impostazioni predefinite",
 			"openDefaultSettingsJson.capitalized": "Apri impostazioni predefinite (JSON)",
@@ -11538,7 +11561,9 @@
 			"enableObsoleteApiUsageNotificationTitle": "Notifica API obsolete",
 			"previewFeatures.configEnable": "Abilita le funzionalità di anteprima non rilasciate",
 			"previewFeatures.configTitle": "Funzionalità di anteprima",
-			"showConnectDialogOnStartup": "Mostra la finestra di dialogo della connessione all'avvio"
+			"showConnectDialogOnStartup": "Mostra la finestra di dialogo della connessione all'avvio",
+			"useVSCodeNotebooks": "(Anteprima) Usare Notebooks di VS Code come esperienza predefinita per i notebook. Nota: per abilitare questa impostazione, è necessario riavviare Azure Data Studio.",
+			"useVSCodeNotebooksTitle": "Usa Notebooks di VS Code"
 		},
 		"sql/workbench/browser/designer/designer": {
 			"designer.actions": "Altre azioni",
@@ -11901,6 +11926,7 @@
 			"status.connection.status": "Stato della connessione"
 		},
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
+			"schema.azureResource": "Endpoint delle risorse di Azure per il provider.",
 			"schema.connectionOptions": "Opzioni per la connessione",
 			"schema.displayName": "Nome visualizzato del provider",
 			"schema.enableConnectionStringOption": "Indica se il provider supporta la stringa di connessione come opzione di input. Il valore predefinito è false.",
@@ -12854,7 +12880,7 @@
 			"viewOptionsModal.title": "Configura visualizzazione"
 		},
 		"sql/workbench/contrib/notebook/browser/outputs/gridOutput.component": {
-			"copyFailed": "La copia non è riuscita. Errore: {0}",
+			"copyFailed": "La copia non è stata completata. Errore: {0}",
 			"notebook.showChart": "Mostra grafico",
 			"notebook.showTable": "Mostra tabella"
 		},
@@ -13075,6 +13101,7 @@
 			"fontWeight": "Controlla lo spessore del carattere.",
 			"letterSpacing": "Controlla la spaziatura tra le lettere in pixel.",
 			"maxColumnWidth": "Larghezza massima in pixel per colonne con ridimensionamento automatico",
+			"resultsGrid.showJsonAsLink": "Indica se visualizzare le celle con una stringa in formato JSON come collegamento ipertestuale. Quando questa opzione è abilitata, facendo clic sul valore JSON verrà aperto in un'altra scheda. Il valore predefinito è true.",
 			"resultsGridConfigurationTitle": "Messaggi e griglia dei risultati",
 			"rowHeight": "Controlla l'altezza delle righe in pixel"
 		},
@@ -13309,8 +13336,12 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "Chiudi",
+			"addAccountFailedCodeMessage": "{0} \r\nError Message: {1}",
+			"addAccountFailedGenericMessage": "Adding account failed, check Azure Accounts log for more info.",
+			"addAccountFailedMessage": "{0}",
 			"loggingIn": "Aggiunta dell'account...",
-			"refreshFailed": "L'aggiornamento dell'account è stato annullato dall'utente"
+			"refreshCanceled": "L'aggiornamento dell'account è stato annullato dall'utente",
+			"refreshFailed": "0 \r\nMessaggio di errore: 1"
 		},
 		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
 			"azureAccount": "Account Azure",
@@ -13383,12 +13414,10 @@
 		},
 		"sql/workbench/services/connection/browser/connectionDialogService": {
 			"connectionError": "Errore di connessione",
-			"enableTrustServerCertificate": "Abilitare Certificato del server attendibile",
 			"kerberosErrorStart": "La connessione non è riuscita a causa di un errore di Kerberos.",
 			"kerberosHelpLink": "Le informazioni sulla configurazione di Kerberos sono disponibili all'indirizzo {0}",
 			"kerberosKinit": "Se si è già eseguita la connessione, può essere necessario eseguire di nuovo kinit.",
-			"runKinit": "Eseguire Kinit",
-			"trustServerCertInstructionText": "La crittografia è stata abilitata in questa connessione, rivedere la configurazione SSL e del certificato per SQL Server di destinazione o abilitare 'Certificato del server attendibile' nella finestra di dialogo di connessione.\r\n\r\nNota: un certificato autofirmato offre solo una protezione limitata e non è una procedura consigliata per gli ambienti di produzione. Abilitare 'Certificato del server attendibile' in questa connessione e riprovare? "
+			"runKinit": "Eseguire Kinit"
 		},
 		"sql/workbench/services/connection/browser/connectionDialogWidget": {
 			"connectType": "Tipo di connessione",
@@ -13443,6 +13472,8 @@
 			"unsavedGroupLabel": "Connessioni non salvate"
 		},
 		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.Message1": "È necessario modificare la password per '{0}' per continuare l'accesso a '{1}'.",
+			"passwordChangeDialog.Message2": "Immettere una nuova password di seguito:",
 			"passwordChangeDialog.cancel": "Annulla",
 			"passwordChangeDialog.confirmPassword": "Conferma password:",
 			"passwordChangeDialog.connecting": "Connessione",
@@ -13451,6 +13482,7 @@
 			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Premere OK e immettere la stessa password in entrambe le caselle.",
 			"passwordChangeDialog.newPassword": "Nuova password:",
 			"passwordChangeDialog.ok": "OK",
+			"passwordChangeDialog.passwordChangeInProgress": "La modifica della password è già in corso",
 			"passwordChangeDialog.title": "Cambia password"
 		},
 		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
@@ -13648,7 +13680,11 @@
 			"connectionTree.editServerGroup": "Modifica gruppo di server",
 			"connectionTree.refresh": "Aggiorna",
 			"deleteConnection": "Elimina connessione",
+			"deleteConnectionConfirmation": "Eliminare la connessione '{0}'?",
+			"deleteConnectionConfirmationNo": "No",
+			"deleteConnectionConfirmationYes": "Sì",
 			"deleteConnectionGroup": "Elimina gruppo",
+			"deleteConnectionGroupConfirmation": "Eliminare il gruppo di connessioni '{0}'?",
 			"showAllConnections": "Mostra tutte le connessioni"
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
@@ -13674,6 +13710,7 @@
 		},
 		"sql/workbench/services/profiler/browser/profilerFilterDialog": {
 			"profilerFilterDialog.addClauseText": "Aggiungi una clausola",
+			"profilerFilterDialog.allClausesCleared": "Tutte le clausole sono state cancellate.",
 			"profilerFilterDialog.apply": "Applica",
 			"profilerFilterDialog.cancel": "Annulla",
 			"profilerFilterDialog.clear": "Cancella tutto",
@@ -13682,6 +13719,7 @@
 			"profilerFilterDialog.isNotNullOperator": "Non è Null",
 			"profilerFilterDialog.isNullOperator": "È Null",
 			"profilerFilterDialog.loadFilter": "Carica filtro",
+			"profilerFilterDialog.newClauseAdded": "È stata aggiunta una nuova clausola.",
 			"profilerFilterDialog.notContainsOperator": "Non contiene",
 			"profilerFilterDialog.notStartsWithOperator": "Non inizia con",
 			"profilerFilterDialog.ok": "OK",
@@ -13706,7 +13744,7 @@
 			"updateCellFailed": "Aggiornamento della cella non riuscito: "
 		},
 		"sql/workbench/services/query/common/queryRunner": {
-			"copyFailed": "La copia non è riuscita. Errore: {0}",
+			"copyFailed": "La copia non è stata completata. Errore: {0}",
 			"elapsedBatchTime": "Tempo di esecuzione del batch: {0}",
 			"query.ExecutionFailedError": "L'esecuzione non è riuscita a causa di un errore imprevisto: {0}\t{1}",
 			"query.message.executionTime": "Tempo di esecuzione totale: {0}",
@@ -13910,6 +13948,9 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "&&Introduzione",
 			"showReleaseNotes": "Mostra introduzione"
+		},
+		"sql/workbench/services/dialog/browser/wizardNavigation.component": {
+			"wizardNavigation.stepName": "Passaggio {0}: {1}"
 		}
 	}
 }

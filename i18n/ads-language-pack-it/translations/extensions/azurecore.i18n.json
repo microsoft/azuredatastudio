@@ -20,7 +20,6 @@
 			"azure.owningTenantNotFound": "Informazioni sul tenant proprietario non trovate per l'account.",
 			"azure.responseError": "Il recupero del token non è riuscito generando un errore. [Aprire gli strumenti di sviluppo] ({0}) per ulteriori dettagli.",
 			"azure.tenantNotFound": "Il tenant specificato con ID '{0}' non è stato trovato.",
-			"azureAuth.unidentifiedError": "Errore non identificato con l'autenticazione di Azure",
 			"azurecore.consentDialog.body": "Il tenant '{0} ({1})' richiede una nuova autenticazione per accedere alle risorse {2}. Premere Apri per avviare il processo di autenticazione.",
 			"azurecore.consentDialog.cancel": "Annulla",
 			"azurecore.consentDialog.ignore": "Ignora tenant",
@@ -42,7 +41,9 @@
 		"dist/account-provider/azureAccountProvider": {
 			"azure.NoAuthMethod.Available": "Nessun metodo di autenticazione di Azure disponibile. È necessario abilitare i metodi di autenticazione nella configurazione di ADS.",
 			"azure.NoAuthMethod.Selected": "Non è stato selezionato alcun metodo di autenticazione di Azure. È necessario selezionare il metodo di autenticazione che si vuole usare.",
-			"azure.deprecatedGetSecurityToken": "È stata effettuata una chiamata ad azdata.accounts.getSecurityToken. Questo metodo è deprecato e verrà rimosso nelle versioni future. Usare getAccountSecurityToken."
+			"azure.deprecatedGetSecurityToken": "È stata effettuata una chiamata ad azdata.accounts.getSecurityToken. Questo metodo è deprecato e verrà rimosso nelle versioni future. Usare getAccountSecurityToken.",
+			"genericTokenError": "Failed to get token",
+			"msalTokenError": "{0} occurred when acquiring token. \r\n{1}"
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "Non è stato possibile cancellare la cache dei token",
@@ -50,10 +51,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure (Cina)",
-			"germanyCloud": "Azure (Germania)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (US Government)",
-			"usNatCloudDisplayName": "Azure (US National)"
+			"usGovCloudDisplayName": "Azure (US Government)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "Per usare questa funzionalità, è necessario selezionare un account Azure.",
