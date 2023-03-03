@@ -46,10 +46,6 @@
         <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
         <target state="translated">找不到带有 ID '{0}' 的指定租户。</target>
       </trans-unit>
-      <trans-unit id="azureAuth.unidentifiedError">
-        <source xml:lang="en">Unidentified error with azure authentication</source>
-        <target state="translated">使用 Azure 身份验证时出现不明错误</target>
-      </trans-unit>
       <trans-unit id="azurecore.consentDialog.body">
         <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
         <target state="translated">你的租户“{0} ({1})”需要你重新进行身份验证才能访问 {2} 资源。请按“打开”启动身份验证过程。</target>
@@ -146,10 +142,6 @@
         <source xml:lang="en">Azure (China)</source>
         <target state="translated">Azure (中国)</target>
       </trans-unit>
-      <trans-unit id="germanyCloud">
-        <source xml:lang="en">Azure (Germany)</source>
-        <target state="translated">Azure (德国)</target>
-      </trans-unit>
       <trans-unit id="publicCloudDisplayName">
         <source xml:lang="en">Azure</source>
         <target state="translated">Azure</target>
@@ -157,10 +149,6 @@
       <trans-unit id="usGovCloudDisplayName">
         <source xml:lang="en">Azure (US Government)</source>
         <target state="translated">Azure (美国政府)</target>
-      </trans-unit>
-      <trans-unit id="usNatCloudDisplayName">
-        <source xml:lang="en">Azure (US National)</source>
-        <target state="translated">Azure (美国国家)</target>
       </trans-unit>
     </body>
   </file>

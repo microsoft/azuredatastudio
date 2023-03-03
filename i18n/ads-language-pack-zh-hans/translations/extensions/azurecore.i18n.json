@@ -20,7 +20,6 @@
 			"azure.owningTenantNotFound": "找不到帐户的拥有租户信息。",
 			"azure.responseError": "令牌检索失败，出现错误。[打开开发人员工具]({0})了解更多详细信息。",
 			"azure.tenantNotFound": "找不到带有 ID '{0}' 的指定租户。",
-			"azureAuth.unidentifiedError": "使用 Azure 身份验证时出现不明错误",
 			"azurecore.consentDialog.body": "你的租户“{0} ({1})”需要你重新进行身份验证才能访问 {2} 资源。请按“打开”启动身份验证过程。",
 			"azurecore.consentDialog.cancel": "取消",
 			"azurecore.consentDialog.ignore": "忽略租户",
@@ -50,10 +49,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure (中国)",
-			"germanyCloud": "Azure (德国)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (美国政府)",
-			"usNatCloudDisplayName": "Azure (美国国家)"
+			"usGovCloudDisplayName": "Azure (美国政府)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "必须选择一个 Azure 帐户才能使用此功能。",

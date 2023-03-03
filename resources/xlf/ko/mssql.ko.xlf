@@ -1,5 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/mssql/dist/errorDiagnostics/errorDiagnosticsConstants" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="connectionError">
+        <source xml:lang="en">Connection error</source>
+        <target state="translated">연결 오류</target>
+      </trans-unit>
+      <trans-unit id="enableTrustServerCertificate">
+        <source xml:lang="en">Enable Trust server certificate</source>
+        <target state="translated">신뢰 서버 인증서 활성화</target>
+      </trans-unit>
+      <trans-unit id="trustServerCertInstructionText">
+        <source xml:lang="en">Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable 'Trust server certificate' in the connection dialog.
+
+Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? </source>
+        <target state="translated">이 연결에 암호화를 사용합니다. 대상 SQL Server의 SSL과 인증서 구성을 검토하거나, 연결 대화에서 '신뢰할 수 있는 서버 인증서'를 활성화하세요.
+
+참고: 자체 서명된 인증서는 제한된 보호만 제공하며 프로덕션 환경에서는 권장되지 않습니다. 이 연결에서 '신뢰할 수 있는 서버 인증서'를 활성화하고 다시 시도하시겠어요? </target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/mssql/dist/features" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="mssql.canceledLinkedAzureAccountSelection">
@@ -53,6 +73,244 @@
       <trans-unit id="mssql.searchServers">
         <source xml:lang="en">Search Server Names</source>
         <target state="translated">서버 이름 검색</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/objectManagement/localizedConstants" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="objectManagement.LoginTypeDisplayName">
+        <source xml:lang="en">login</source>
+        <target state="translated">로그인</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.LoginTypeDisplayNameInTitle">
+        <source xml:lang="en">Login</source>
+        <target state="translated">로그인</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.OkText">
+        <source xml:lang="en">OK</source>
+        <target state="translated">확인</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.UserDisplayName">
+        <source xml:lang="en">user</source>
+        <target state="translated">사용자</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.UserTypeDisplayNameInTitle">
+        <source xml:lang="en">User</source>
+        <target state="translated">사용자</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.advancedSectionHeader">
+        <source xml:lang="en">Advanced</source>
+        <target state="translated">고급</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.blankPasswordConfirmation">
+        <source xml:lang="en">Creating a login with a blank password is a security risk.  Are you sure you want to continue?</source>
+        <target state="translated">암호가 없는 로그인을 만들면 보안상 위험합니다. 계속하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.confirmPasswordLabel">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">암호 확인</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.createObjectOperationName">
+        <source xml:lang="en">Create {0}</source>
+        <note>{0} object type</note>
+        <target state="translated">{0} 만들기</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.deleteLoginConfirmation">
+        <source xml:lang="en">Deleting server logins does not delete the database users associated with the logins. To complete the process, delete the users in each database. It may be necessary to first transfer the ownership of schemas to new users.</source>
+        <target state="translated">서버 로그인을 삭제해도 로그인과 관련된 데이터베이스 사용자는 삭제되지 않습니다. 프로세스를 완료하려면 각 데이터베이스에서 사용자를 삭제하십시오. 먼저 스키마의 소유권을 새 사용자에게 전송해야만 사용자를 삭제할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.deleteObjectConfirmation">
+        <source xml:lang="en">Are you sure you want to delete the {0}: {1}?</source>
+        <note>{0} object type, {1}: object name.</note>
+        <target state="translated">{0} '{1}'을(를) 삭제하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.deleteObjectError">
+        <source xml:lang="en">An error occurred while deleting the {0}: {1}. {2}</source>
+        <note>{0} object type, {1}: object name, {2}: error message.</note>
+        <target state="translated">{0}: {1}을(를) 삭제하는 동안 오류가 발생했습니다. {2}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.deleteObjectOperationName">
+        <source xml:lang="en">Delete {0} '{1}'</source>
+        <note>{0} object type, {1}: object name.</note>
+        <target state="translated">{0} '{1}' 삭제</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.enabledLabel">
+        <source xml:lang="en">Enabled</source>
+        <target state="translated">사용</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.generalSectionHeader">
+        <source xml:lang="en">General</source>
+        <target state="translated">일반</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.helpText">
+        <source xml:lang="en">Help</source>
+        <target state="translated">도움말</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.invalidPasswordError">
+        <source xml:lang="en">Password doesn't meet the complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
+        <target state="translated">암호가 복잡성 요구 사항을 충족하지 않습니다. 자세한 내용은 https://docs.microsoft.com/sql/relational-databases/security/password-policy를 참조하세요.</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.loadingDialog">
+        <source xml:lang="en">Loading dialog...</source>
+        <target state="translated">대화 상자를 로드하는 중...</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.aadAuthenticationType">
+        <source xml:lang="en">Azure Active Directory Authentication</source>
+        <target state="translated">Azure Active Directory 인증</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.authenticateType">
+        <source xml:lang="en">Authentication</source>
+        <target state="translated">인증</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.defaultDatabaseLabel">
+        <source xml:lang="en">Default database</source>
+        <target state="translated">기본 데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.defaultLanguageLabel">
+        <source xml:lang="en">Default language</source>
+        <target state="translated">기본 언어</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.enforcePasswordExpirationLabel">
+        <source xml:lang="en">Enforce password expiration</source>
+        <target state="translated">암호 만료 적용</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.enforcePasswordPolicyLabel">
+        <source xml:lang="en">Enforce password policy</source>
+        <target state="translated">암호 정책 적용</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.lockedOutLabel">
+        <source xml:lang="en">Login is locked out</source>
+        <target state="translated">로그인 잠겨 있음</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.mustChangePasswordLabel">
+        <source xml:lang="en">User must change password at next login</source>
+        <target state="translated">다음 로그인할 때 반드시 암호 변경</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.oldPasswordCannotBeEmptyError">
+        <source xml:lang="en">Old password cannot be empty.</source>
+        <target state="translated">이전 암호는 비워 둘 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.oldPasswordLabel">
+        <source xml:lang="en">Old password</source>
+        <target state="translated">이전 암호</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.permissionToConnectLabel">
+        <source xml:lang="en">Permission to connect to database engine</source>
+        <target state="translated">데이터베이스 엔진 연결 권한</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.serverRoleSectionHeader">
+        <source xml:lang="en">Server Roles</source>
+        <target state="translated">서버 역할</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.specifyOldPasswordLabel">
+        <source xml:lang="en">Specify old password</source>
+        <target state="translated">이전 암호 지정</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.sqlAuthSectionHeader">
+        <source xml:lang="en">SQL Authentication</source>
+        <target state="translated">SQL 인증</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.sqlAuthenticationType">
+        <source xml:lang="en">SQL Authentication</source>
+        <target state="translated">SQL 인증</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.windowsAuthenticationType">
+        <source xml:lang="en">Windows Authentication</source>
+        <target state="translated">Windows 인증</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.nameCannotBeEmptyError">
+        <source xml:lang="en">Name cannot be empty.</source>
+        <target state="translated">이름은 비워둘 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.nameLabel">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.newObjectDialogTitle">
+        <source xml:lang="en">{0} - New (Preview)</source>
+        <note>{0} object type.</note>
+        <target state="translated">{0} 신규(미리 보기)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.objectPropertiesDialogTitle">
+        <source xml:lang="en">{0} - {1} (Preview)</source>
+        <note>{0} object type, {1}: object name.</note>
+        <target state="translated">{0} - {1}(미리 보기)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.openNewObjectDialogError">
+        <source xml:lang="en">An error occurred while opening the new {0} dialog. {1}</source>
+        <note>{0} object type, {1}: error message.</note>
+        <target state="translated">새 {0} 대화 상자를 여는 동안 오류가 발생했습니다. {1}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.openObjectPropertiesDialogError">
+        <source xml:lang="en">An error occurred while opening the properties dialog for {0}: {1}. {2}</source>
+        <note>{0} object type, {1}: object name, {2}: error message.</note>
+        <target state="translated">{0}: {1}에 대한 속성 대화 상자를 여는 동안 오류가 발생했습니다. {2}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.passwordCannotBeEmptyError">
+        <source xml:lang="en">Password cannot be empty.</source>
+        <target state="translated">암호는 비워 둘 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.passwordLabel">
+        <source xml:lang="en">Password</source>
+        <target state="translated">암호</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.passwordsNotMatchError">
+        <source xml:lang="en">Password must match the confirm password.</source>
+        <target state="translated">암호는 확인 암호와 일치해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.refreshOEError">
+        <source xml:lang="en">An error occurred while while refreshing the object explorer. {0}</source>
+        <note>{0}: error message.</note>
+        <target state="translated">개체 탐색기를 새로 고치는 동안 오류가 발생했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.selectedLabel">
+        <source xml:lang="en">Selected</source>
+        <target state="translated">선택됨</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.updateObjectOperationName">
+        <source xml:lang="en">Update {0} '{1}'</source>
+        <note>{0} object type, {1}: object name.</note>
+        <target state="translated">{0} '{1}' 업데이트</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.containedUser">
+        <source xml:lang="en">Contained user</source>
+        <target state="translated">포함된 사용자</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.defaultSchemaLabel">
+        <source xml:lang="en">Default schema</source>
+        <target state="translated">기본 스키마</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.loginLabel">
+        <source xml:lang="en">Login</source>
+        <target state="translated">로그인</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.membershipLabel">
+        <source xml:lang="en">Membership</source>
+        <target state="translated">멤버십</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.ownedSchemasLabel">
+        <source xml:lang="en">Owned Schemas</source>
+        <target state="translated">소유한 스키마</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.type">
+        <source xml:lang="en">Type</source>
+        <target state="translated">유형</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.userWithGroupLogin">
+        <source xml:lang="en">User with Windows group login</source>
+        <target state="translated">Windows 그룹 로그인을 사용하는 사용자</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.userWithLogin">
+        <source xml:lang="en">User with login</source>
+        <target state="translated">로그인한 사용자</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.userWithNoConnectAccess">
+        <source xml:lang="en">User with no connect access</source>
+        <target state="translated">연결 액세스 권한이 없는 사용자</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.yesText">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">예</target>
       </trans-unit>
     </body>
   </file>
@@ -262,6 +520,14 @@
         <source xml:lang="en">Always Encrypted</source>
         <target state="translated">Always Encrypted</target>
       </trans-unit>
+      <trans-unit id="mssql.connectionOptions.commandTimeout.description">
+        <source xml:lang="en">The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error</source>
+        <target state="translated">시도를 종료하고 오류를 생성하기 전에 명령이 실행되기를 기다리는 시간(초)입니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.commandTimeout.displayName">
+        <source xml:lang="en">Command timeout</source>
+        <target state="translated">명령 시간 제한</target>
+      </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectRetryCount.description">
         <source xml:lang="en">Number of attempts to restore connection</source>
         <target state="translated">연결 복구 시도의 횟수</target>
@@ -326,6 +592,10 @@
         <source xml:lang="en">Host Guardian Service</source>
         <target state="translated">호스트 보호 서비스</target>
       </trans-unit>
+      <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None">
+        <source xml:lang="en">None</source>
+        <target state="new">None</target>
+      </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.description">
         <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
         <target state="translated">보안 enclave를 사용한 Always Encrypted와 함께 사용되는 서버 쪽 enclave를 증명하기 위한 프로토콜 지정</target>
@@ -342,9 +612,21 @@
         <source xml:lang="en">Enclave Attestation URL</source>
         <target state="translated">Enclave 증명 URL</target>
       </trans-unit>
+      <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.false">
+        <source xml:lang="en">Optional (False)</source>
+        <target state="translated">선택 사항(False)</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.strict">
+        <source xml:lang="en">Strict</source>
+        <target state="translated">엄격</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.true">
+        <source xml:lang="en">Mandatory (True)</source>
+        <target state="translated">필수(True)</target>
+      </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.description">
-        <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
-        <target state="translated">true인 경우 서버에 인증서가 설치되어 있으면 SQL Server는 클라이언트와 서버 간에 전송된 모든 데이터에 대해 SSL 암호화를 사용합니다.</target>
+        <source xml:lang="en">When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' is supported on SQL Server 2022 onwards.</source>
+        <target state="translated">'Mandatory' 또는 'Strict'로 설정하면 SQL Server는 인증서가 설치된 경우 클라이언트와 서버 간의 모든 데이터 전송에 SSL 암호화를 사용합니다. 'Strict'로 설정하면 SQL Server는 클라이언트와 서버 간의 모든 데이터 전송에 TDS 8.0을 사용합니다. 'Strict'는 SQL Server 2022 이상에서 지원됩니다.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.displayName">
         <source xml:lang="en">Encrypt</source>
@@ -389,6 +671,14 @@
       <trans-unit id="mssql.connectionOptions.groupName.source">
         <source xml:lang="en">Source</source>
         <target state="translated">원본</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.hostNameInCertificate.description">
+        <source xml:lang="en">Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.</source>
+        <target state="translated">SQL Server 서버 인증서에서 유효성을 검사하는 데 사용할 TLS 인증서에 지정된 호스트 이름을 나타냅니다. 지정하지 않으면 서버 이름이 인증서 유효성 검사에 기본적으로 사용됩니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.hostNameInCertificate.displayName">
+        <source xml:lang="en">Host name in certificate</source>
+        <target state="translated">인증서의 호스트 이름</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.loadBalanceTimeout.description">
         <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
@@ -470,6 +760,14 @@
         <source xml:lang="en">Replication</source>
         <target state="translated">복제</target>
       </trans-unit>
+      <trans-unit id="mssql.connectionOptions.secureEnclaves.description">
+        <source xml:lang="en">Enables or disables Secure Enclaves for the connection</source>
+        <target state="new">Enables or disables Secure Enclaves for the connection</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.secureEnclaves.displayName">
+        <source xml:lang="en">Secure Enclaves</source>
+        <target state="new">Secure Enclaves</target>
+      </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.description">
         <source xml:lang="en">Name of the SQL Server instance</source>
         <target state="translated">SQL Server 인스턴스의 이름</target>
@@ -479,8 +777,8 @@
         <target state="translated">서버</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.trustServerCertificate.description">
-        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
-        <target state="translated">true(및 encrypt=true)인 경우 SQL Server는 서버 인증서의 유효성을 검사하지 않고 클라이언트와 서버 간에 전송된 모든 데이터에 대해 SSL 암호화를 사용합니다.</target>
+        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.</source>
+        <target state="translated">true(및 encrypt=true)인 경우 SQL Server는 서버 인증서의 유효성을 검사하지 않고 클라이언트와 서버 간에 전송되는 모든 데이터에 SSL 암호화를 사용합니다. 이 속성은 Encrypt=Strict와는 지원되지 않습니다.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.trustServerCertificate.displayName">
         <source xml:lang="en">Trust server certificate</source>
@@ -614,6 +912,30 @@
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
         <target state="translated">백 엔드 서비스의 로그 파일을 유지하는 시간(분)입니다. 기본값은 1주일입니다.</target>
       </trans-unit>
+      <trans-unit id="mssql.objectExplorer.disableGroupBySchema">
+        <source xml:lang="en">Disable Group By Schema</source>
+        <target state="translated">스키마별 그룹화 사용 안 함</target>
+      </trans-unit>
+      <trans-unit id="mssql.objectExplorer.disableGroupBySchemaTitle">
+        <source xml:lang="en">SQL Server: Disable Group By Schema</source>
+        <target state="new">SQL Server: Disable Group By Schema</target>
+      </trans-unit>
+      <trans-unit id="mssql.objectExplorer.enableGroupBySchema">
+        <source xml:lang="en">Enable Group By Schema</source>
+        <target state="translated">스키마별 그룹화 사용</target>
+      </trans-unit>
+      <trans-unit id="mssql.objectExplorer.enableGroupBySchemaTitle">
+        <source xml:lang="en">SQL Server: Enable Group By Schema</source>
+        <target state="new">SQL Server: Enable Group By Schema</target>
+      </trans-unit>
+      <trans-unit id="mssql.objectExplorer.expandTimeout">
+        <source xml:lang="en">The timeout in seconds for expanding a node in Object Explorer. The default value is 45 seconds.</source>
+        <target state="translated">개체 탐색기 노드를 확장하기 위한 시간 제한(초)입니다. 기본값은 45초입니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.objectExplorer.groupBySchema">
+        <source xml:lang="en">When enabled, the database objects in Object Explorer will be categorized by schema.</source>
+        <target state="translated">사용하도록 설정하면 개체 탐색기의 데이터베이스 개체가 스키마로 분류됩니다.</target>
+      </trans-unit>
       <trans-unit id="mssql.parallelMessageProcessing">
         <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.</source>
         <target state="translated">[실험적] SQL 도구 서비스에 대한 요청을 병렬로 처리할지 여부입니다. 모든 요청을 병렬로 처리할 때 발생할 수 있는 문제를 검색하기 위해 도입되었습니다. 기본값은 false입니다. 값을 변경하면 ADS를 다시 시작해야 합니다.</target>
@@ -730,6 +1052,10 @@
         <source xml:lang="en">Whether to preload the database model when the database node in the object explorer is expanded. When enabled, the loading time of table designer can be reduced. Note: You might see higher than normal memory usage if you need to expand a lot of database nodes.</source>
         <target state="translated">개체 탐색기에서 데이터베이스 노드를 확장할 때 데이터베이스 모델을 미리 로드할지 여부입니다. 활성화하면 테이블 디자이너의 로딩 시간을 줄일 수 있습니다. 참고: 많은 데이터베이스 노드를 확장해야 하는 경우 일반 메모리 사용량보다 높을 수 있습니다.</target>
       </trans-unit>
+      <trans-unit id="mssql.tracing.desc">
+        <source xml:lang="en">Traces the communication between Azure Data Studio and SQL Tools Service to the SQL Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.</source>
+        <target state="translated">Azure Data Studio와 SQL Tools Service 간에 SQL Tools Service 출력 채널로의 통신을 추적합니다. 경고: 자세한 로깅을 사용하는 경우 중요한 정보가 포함될 수 있습니다.</target>
+      </trans-unit>
       <trans-unit id="mssql.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
         <target state="translated">[옵션] 백 엔드 서비스의 로그 수준입니다. Azure Data Studio는 시작할 때마다 파일 이름을 생성하며 파일이 이미 있으면 로그 항목이 해당 파일에 추가됩니다. 이전 로그 파일을 정리하려면 logRetentionMinutes 및 logFilesRemovalLimit 설정을 참조하세요. 기본 tracingLevel에서는 많은 양의 로그가 기록되지 않습니다. 세부 정보 표시를 변경하면 로깅이 광범위해지고 로그의 디스크 공간 요구 사항이 커질 수 있습니다. 오류이면 중요가 포함되고 경고이면 오류가 포함되고 정보이면 경고가 포함되고 세부 정보 표시이면 정보가 포함됩니다.</target>
@@ -774,17 +1100,49 @@
         <source xml:lang="en">Version</source>
         <target state="translated">버전</target>
       </trans-unit>
+      <trans-unit id="title.changeNotebookConnection">
+        <source xml:lang="en">Change SQL Notebook Connection</source>
+        <target state="translated">SQL Notebook 연결 변경</target>
+      </trans-unit>
       <trans-unit id="title.clearSearchServerResult">
         <source xml:lang="en">Search: Clear Search Server Results</source>
         <target state="translated">검색: 검색 서버 결과 지우기</target>
+      </trans-unit>
+      <trans-unit id="title.deleteObject">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">삭제</target>
       </trans-unit>
       <trans-unit id="title.designTable">
         <source xml:lang="en">Design</source>
         <target state="translated">디자인</target>
       </trans-unit>
+      <trans-unit id="title.newApplicationRole">
+        <source xml:lang="en">New Application Role</source>
+        <target state="translated">새 애플리케이션 역할</target>
+      </trans-unit>
+      <trans-unit id="title.newDatabaseRole">
+        <source xml:lang="en">New Database Role</source>
+        <target state="translated">새 데이터베이스 역할</target>
+      </trans-unit>
+      <trans-unit id="title.newLogin">
+        <source xml:lang="en">New Login</source>
+        <target state="translated">새 로그인</target>
+      </trans-unit>
+      <trans-unit id="title.newServerRole">
+        <source xml:lang="en">New Server Role</source>
+        <target state="translated">새 서버 역할</target>
+      </trans-unit>
       <trans-unit id="title.newTable">
         <source xml:lang="en">New Table</source>
         <target state="translated">새 테이블</target>
+      </trans-unit>
+      <trans-unit id="title.newUser">
+        <source xml:lang="en">New User</source>
+        <target state="translated">새 사용자</target>
+      </trans-unit>
+      <trans-unit id="title.objectProperties">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">속성</target>
       </trans-unit>
       <trans-unit id="title.searchServers">
         <source xml:lang="en">Search: Servers</source>

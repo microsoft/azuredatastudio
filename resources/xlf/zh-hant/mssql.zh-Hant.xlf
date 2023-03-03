@@ -1,5 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/mssql/dist/errorDiagnostics/errorDiagnosticsConstants" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="connectionError">
+        <source xml:lang="en">Connection error</source>
+        <target state="translated">連線錯誤</target>
+      </trans-unit>
+      <trans-unit id="enableTrustServerCertificate">
+        <source xml:lang="en">Enable Trust server certificate</source>
+        <target state="translated">啟用信任伺服器憑證</target>
+      </trans-unit>
+      <trans-unit id="trustServerCertInstructionText">
+        <source xml:lang="en">Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable 'Trust server certificate' in the connection dialog.
+
+Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? </source>
+        <target state="translated">已在此連線上啟用加密、檢閱目標 SQL Server 的 SSL 與憑證設定，或在連線對話方塊中啟用 [信任伺服器憑證]。			
+
+注意: 自我簽署憑證只提供有限的保護，且不是實際執行環境的建議做法。您要在此連線上啟用 [信任伺服器憑證] 並重試嗎? </target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/mssql/dist/features" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="mssql.canceledLinkedAzureAccountSelection">
@@ -53,6 +73,244 @@
       <trans-unit id="mssql.searchServers">
         <source xml:lang="en">Search Server Names</source>
         <target state="translated">搜尋伺服器名稱</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/objectManagement/localizedConstants" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="objectManagement.LoginTypeDisplayName">
+        <source xml:lang="en">login</source>
+        <target state="translated">登入</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.LoginTypeDisplayNameInTitle">
+        <source xml:lang="en">Login</source>
+        <target state="translated">登入</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.OkText">
+        <source xml:lang="en">OK</source>
+        <target state="translated">確定</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.UserDisplayName">
+        <source xml:lang="en">user</source>
+        <target state="translated">使用者</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.UserTypeDisplayNameInTitle">
+        <source xml:lang="en">User</source>
+        <target state="translated">使用者</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.advancedSectionHeader">
+        <source xml:lang="en">Advanced</source>
+        <target state="translated">進階</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.blankPasswordConfirmation">
+        <source xml:lang="en">Creating a login with a blank password is a security risk.  Are you sure you want to continue?</source>
+        <target state="translated">建立密碼為空白的登入，會有安全性的風險。您確定要繼續嗎?</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.confirmPasswordLabel">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">確認密碼</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.createObjectOperationName">
+        <source xml:lang="en">Create {0}</source>
+        <note>{0} object type</note>
+        <target state="translated">建立 {0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.deleteLoginConfirmation">
+        <source xml:lang="en">Deleting server logins does not delete the database users associated with the logins. To complete the process, delete the users in each database. It may be necessary to first transfer the ownership of schemas to new users.</source>
+        <target state="translated">刪除伺服器登入不會刪除與登入相關聯的資料庫使用者。若要完成流程，請刪除每個資料庫中的使用者。可能必須先將結構描述的擁有權轉移給新使用者。</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.deleteObjectConfirmation">
+        <source xml:lang="en">Are you sure you want to delete the {0}: {1}?</source>
+        <note>{0} object type, {1}: object name.</note>
+        <target state="translated">確定要刪除 {0}: {1} 嗎?</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.deleteObjectError">
+        <source xml:lang="en">An error occurred while deleting the {0}: {1}. {2}</source>
+        <note>{0} object type, {1}: object name, {2}: error message.</note>
+        <target state="translated">刪除事件時發生錯誤 {0}: {1}。{2}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.deleteObjectOperationName">
+        <source xml:lang="en">Delete {0} '{1}'</source>
+        <note>{0} object type, {1}: object name.</note>
+        <target state="translated">刪除 {0} '{1}'</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.enabledLabel">
+        <source xml:lang="en">Enabled</source>
+        <target state="translated">已啟用</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.generalSectionHeader">
+        <source xml:lang="en">General</source>
+        <target state="translated">一般</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.helpText">
+        <source xml:lang="en">Help</source>
+        <target state="translated">說明</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.invalidPasswordError">
+        <source xml:lang="en">Password doesn't meet the complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
+        <target state="translated">密碼不符合複雜度要求。如需詳細資訊，請前往: https://docs.microsoft.com/sql/relational-databases/security/password-policy</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.loadingDialog">
+        <source xml:lang="en">Loading dialog...</source>
+        <target state="translated">正在載入對話方塊...</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.aadAuthenticationType">
+        <source xml:lang="en">Azure Active Directory Authentication</source>
+        <target state="translated">Azure Active Directory 驗證</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.authenticateType">
+        <source xml:lang="en">Authentication</source>
+        <target state="translated">驗證</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.defaultDatabaseLabel">
+        <source xml:lang="en">Default database</source>
+        <target state="translated">預設資料庫</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.defaultLanguageLabel">
+        <source xml:lang="en">Default language</source>
+        <target state="translated">預設語言</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.enforcePasswordExpirationLabel">
+        <source xml:lang="en">Enforce password expiration</source>
+        <target state="translated">強制執行密碼逾期</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.enforcePasswordPolicyLabel">
+        <source xml:lang="en">Enforce password policy</source>
+        <target state="translated">強制執行密碼原則</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.lockedOutLabel">
+        <source xml:lang="en">Login is locked out</source>
+        <target state="translated">登入已經鎖定</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.mustChangePasswordLabel">
+        <source xml:lang="en">User must change password at next login</source>
+        <target state="translated">使用者必須在下次登入時變更密碼</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.oldPasswordCannotBeEmptyError">
+        <source xml:lang="en">Old password cannot be empty.</source>
+        <target state="translated">舊密碼不可為空白。</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.oldPasswordLabel">
+        <source xml:lang="en">Old password</source>
+        <target state="translated">舊密碼</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.permissionToConnectLabel">
+        <source xml:lang="en">Permission to connect to database engine</source>
+        <target state="translated">連線到資料庫引擎的權限</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.serverRoleSectionHeader">
+        <source xml:lang="en">Server Roles</source>
+        <target state="translated">伺服器角色</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.specifyOldPasswordLabel">
+        <source xml:lang="en">Specify old password</source>
+        <target state="translated">指定舊密碼</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.sqlAuthSectionHeader">
+        <source xml:lang="en">SQL Authentication</source>
+        <target state="translated">SQL 驗證</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.sqlAuthenticationType">
+        <source xml:lang="en">SQL Authentication</source>
+        <target state="translated">SQL 驗證</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.windowsAuthenticationType">
+        <source xml:lang="en">Windows Authentication</source>
+        <target state="translated">Windows 驗證</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.nameCannotBeEmptyError">
+        <source xml:lang="en">Name cannot be empty.</source>
+        <target state="translated">名稱不能空白。</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.nameLabel">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名稱</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.newObjectDialogTitle">
+        <source xml:lang="en">{0} - New (Preview)</source>
+        <note>{0} object type.</note>
+        <target state="translated">{0} - 新增 (預覽)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.objectPropertiesDialogTitle">
+        <source xml:lang="en">{0} - {1} (Preview)</source>
+        <note>{0} object type, {1}: object name.</note>
+        <target state="translated">{0} - {1} (預覽)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.openNewObjectDialogError">
+        <source xml:lang="en">An error occurred while opening the new {0} dialog. {1}</source>
+        <note>{0} object type, {1}: error message.</note>
+        <target state="translated">開啟新 {0} 對話方塊時發生錯誤。{1}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.openObjectPropertiesDialogError">
+        <source xml:lang="en">An error occurred while opening the properties dialog for {0}: {1}. {2}</source>
+        <note>{0} object type, {1}: object name, {2}: error message.</note>
+        <target state="translated">開啟 {0} 的內容對話方塊時發生錯誤: {1}。{2}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.passwordCannotBeEmptyError">
+        <source xml:lang="en">Password cannot be empty.</source>
+        <target state="translated">密碼不可以是空的。</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.passwordLabel">
+        <source xml:lang="en">Password</source>
+        <target state="translated">密碼</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.passwordsNotMatchError">
+        <source xml:lang="en">Password must match the confirm password.</source>
+        <target state="translated">密碼必須與確認密碼相符。</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.refreshOEError">
+        <source xml:lang="en">An error occurred while while refreshing the object explorer. {0}</source>
+        <note>{0}: error message.</note>
+        <target state="translated">重新整理物件總管時發生錯誤。{0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.selectedLabel">
+        <source xml:lang="en">Selected</source>
+        <target state="translated">已選取</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.updateObjectOperationName">
+        <source xml:lang="en">Update {0} '{1}'</source>
+        <note>{0} object type, {1}: object name.</note>
+        <target state="translated">更新 {0} '{1}'</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.containedUser">
+        <source xml:lang="en">Contained user</source>
+        <target state="translated">包含的使用者</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.defaultSchemaLabel">
+        <source xml:lang="en">Default schema</source>
+        <target state="translated">預設結構描述</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.loginLabel">
+        <source xml:lang="en">Login</source>
+        <target state="translated">登入</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.membershipLabel">
+        <source xml:lang="en">Membership</source>
+        <target state="translated">成員資格</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.ownedSchemasLabel">
+        <source xml:lang="en">Owned Schemas</source>
+        <target state="translated">擁有的結構描述</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.type">
+        <source xml:lang="en">Type</source>
+        <target state="translated">類型</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.userWithGroupLogin">
+        <source xml:lang="en">User with Windows group login</source>
+        <target state="translated">具有 Windows 群組登入的使用者</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.userWithLogin">
+        <source xml:lang="en">User with login</source>
+        <target state="translated">含有登入的使用者</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.userWithNoConnectAccess">
+        <source xml:lang="en">User with no connect access</source>
+        <target state="translated">沒有連線存取權的使用者</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.yesText">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">是</target>
       </trans-unit>
     </body>
   </file>
@@ -262,6 +520,14 @@
         <source xml:lang="en">Always Encrypted</source>
         <target state="translated">Always Encrypted</target>
       </trans-unit>
+      <trans-unit id="mssql.connectionOptions.commandTimeout.description">
+        <source xml:lang="en">The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error</source>
+        <target state="translated">終止嘗試並產生錯誤前，要等待命令執行的時間長度 (以秒為單位)</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.commandTimeout.displayName">
+        <source xml:lang="en">Command timeout</source>
+        <target state="translated">命令逾時</target>
+      </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectRetryCount.description">
         <source xml:lang="en">Number of attempts to restore connection</source>
         <target state="translated">嘗試還原連線的次數</target>
@@ -326,6 +592,10 @@
         <source xml:lang="en">Host Guardian Service</source>
         <target state="translated">主機守護者服務</target>
       </trans-unit>
+      <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None">
+        <source xml:lang="en">None</source>
+        <target state="new">None</target>
+      </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.description">
         <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
         <target state="translated">指定通訊協定，以證明與安全記憶體保護區一起使用 Always Encrypted 的伺服器端記憶體保護區</target>
@@ -342,9 +612,21 @@
         <source xml:lang="en">Enclave Attestation URL</source>
         <target state="translated">記憶體保護區證明 URL</target>
       </trans-unit>
+      <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.false">
+        <source xml:lang="en">Optional (False)</source>
+        <target state="translated">選用 (False)</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.strict">
+        <source xml:lang="en">Strict</source>
+        <target state="translated">嚴格</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.true">
+        <source xml:lang="en">Mandatory (True)</source>
+        <target state="translated">強制 (True)</target>
+      </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.description">
-        <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
-        <target state="translated">若為 True，則 SQL Server 會在伺服器已安裝憑證的情況下，對用戶端和伺服器間傳送的所有資料使用 SSL 加密</target>
+        <source xml:lang="en">When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' is supported on SQL Server 2022 onwards.</source>
+        <target state="translated">當 [強制] 或 [嚴格] 時，若伺服器已安裝憑證，SQL Server 會為所有在用戶端和伺服器之間傳輸的資料使用 SSL 加密。當設定為 [嚴格] 時，SQL Server 會為所有在用戶端和伺服器之間傳輸的資料使用 TDS 8.0。SQL Server 2022 與更新版本支援 [嚴格]。</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.displayName">
         <source xml:lang="en">Encrypt</source>
@@ -389,6 +671,14 @@
       <trans-unit id="mssql.connectionOptions.groupName.source">
         <source xml:lang="en">Source</source>
         <target state="translated">來源</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.hostNameInCertificate.description">
+        <source xml:lang="en">Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.</source>
+        <target state="translated">指出 SQL Server 會用來驗證伺服器憑證之 TLS 憑證中指定的主機名稱。未指定時，預設會使用伺服器名稱進行憑證驗證。</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.hostNameInCertificate.displayName">
+        <source xml:lang="en">Host name in certificate</source>
+        <target state="translated">憑證中的主機名稱</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.loadBalanceTimeout.description">
         <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
@@ -470,6 +760,14 @@
         <source xml:lang="en">Replication</source>
         <target state="translated">複寫</target>
       </trans-unit>
+      <trans-unit id="mssql.connectionOptions.secureEnclaves.description">
+        <source xml:lang="en">Enables or disables Secure Enclaves for the connection</source>
+        <target state="new">Enables or disables Secure Enclaves for the connection</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.secureEnclaves.displayName">
+        <source xml:lang="en">Secure Enclaves</source>
+        <target state="new">Secure Enclaves</target>
+      </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.description">
         <source xml:lang="en">Name of the SQL Server instance</source>
         <target state="translated">SQL Server 執行個體的名稱</target>
@@ -479,8 +777,8 @@
         <target state="translated">伺服器</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.trustServerCertificate.description">
-        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
-        <target state="translated">若為 True (且 encrypt=true)，則 SQL Server 會對用戶端和伺服器間傳送的所有資料使用 SSL 加密，而不驗證伺服器憑證</target>
+        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.</source>
+        <target state="translated">當 True 時 (且 encrypt=true)，SQL Server 會為所有在用戶端和伺服器之間傳輸的資料使用 SSL 加密，且不驗證伺服器憑證。Encrypt=Strict 不支援此屬性。</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.trustServerCertificate.displayName">
         <source xml:lang="en">Trust server certificate</source>
@@ -614,6 +912,30 @@
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
         <target state="translated">為後端服務保留記錄檔的分鐘數。預設為 1 週。</target>
       </trans-unit>
+      <trans-unit id="mssql.objectExplorer.disableGroupBySchema">
+        <source xml:lang="en">Disable Group By Schema</source>
+        <target state="translated">依架構停用群組</target>
+      </trans-unit>
+      <trans-unit id="mssql.objectExplorer.disableGroupBySchemaTitle">
+        <source xml:lang="en">SQL Server: Disable Group By Schema</source>
+        <target state="new">SQL Server: Disable Group By Schema</target>
+      </trans-unit>
+      <trans-unit id="mssql.objectExplorer.enableGroupBySchema">
+        <source xml:lang="en">Enable Group By Schema</source>
+        <target state="translated">依架構啟用群組</target>
+      </trans-unit>
+      <trans-unit id="mssql.objectExplorer.enableGroupBySchemaTitle">
+        <source xml:lang="en">SQL Server: Enable Group By Schema</source>
+        <target state="new">SQL Server: Enable Group By Schema</target>
+      </trans-unit>
+      <trans-unit id="mssql.objectExplorer.expandTimeout">
+        <source xml:lang="en">The timeout in seconds for expanding a node in Object Explorer. The default value is 45 seconds.</source>
+        <target state="translated">在物件總管中展開節點的逾時秒數。預設值為 45 秒。</target>
+      </trans-unit>
+      <trans-unit id="mssql.objectExplorer.groupBySchema">
+        <source xml:lang="en">When enabled, the database objects in Object Explorer will be categorized by schema.</source>
+        <target state="translated">啟用時，物件總管中的資料庫物件會依架構分類。</target>
+      </trans-unit>
       <trans-unit id="mssql.parallelMessageProcessing">
         <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.</source>
         <target state="translated">[實驗性] 是否應該平行處理對 SQL Tools Service 的要求。這是為了發現探索平行處理所有要求時可能的問題。預設值為 FALSE。當變更值時，需要重新啟動 ADS。</target>
@@ -730,6 +1052,10 @@
         <source xml:lang="en">Whether to preload the database model when the database node in the object explorer is expanded. When enabled, the loading time of table designer can be reduced. Note: You might see higher than normal memory usage if you need to expand a lot of database nodes.</source>
         <target state="translated">當物件總管中的資料庫節點展開時，是否要預先載入資料庫模型。啟用時，可以縮短資料表設計工具的載入時間。注意: 如果您需要展開許多資料庫節點，可能會看到高於一般的記憶體使用量。</target>
       </trans-unit>
+      <trans-unit id="mssql.tracing.desc">
+        <source xml:lang="en">Traces the communication between Azure Data Studio and SQL Tools Service to the SQL Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.</source>
+        <target state="translated">追蹤 Azure Data Studio 與 SQL Tools 服務之間的通訊至 SQL Tools 服務輸出通道。警告: 啟用詳細資訊記錄時，這可能包含機密資訊。</target>
+      </trans-unit>
       <trans-unit id="mssql.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
         <target state="translated">[選用] 後端服務的記錄層級。每當 Azure Data Studio 啟動，或是檔案已經有附加至該檔案的記錄項目時，Azure Data Studio 都會產生檔案名稱。如需清除舊記錄檔，請查看 logRetentionMinutes 和 logFilesRemovalLimit 設定。預設 tracingLevel 不會記錄太多項目。變更詳細資訊可能會導致大量記錄和記錄的磁碟空間需求。錯誤包含嚴重，警告包含錯誤，資訊包含警告而詳細資訊包含資訊</target>
@@ -774,17 +1100,49 @@
         <source xml:lang="en">Version</source>
         <target state="translated">版本</target>
       </trans-unit>
+      <trans-unit id="title.changeNotebookConnection">
+        <source xml:lang="en">Change SQL Notebook Connection</source>
+        <target state="translated">變更 SQL Notebook 連線</target>
+      </trans-unit>
       <trans-unit id="title.clearSearchServerResult">
         <source xml:lang="en">Search: Clear Search Server Results</source>
         <target state="translated">搜尋: 清除搜尋伺服器結果</target>
+      </trans-unit>
+      <trans-unit id="title.deleteObject">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">刪除</target>
       </trans-unit>
       <trans-unit id="title.designTable">
         <source xml:lang="en">Design</source>
         <target state="translated">設計</target>
       </trans-unit>
+      <trans-unit id="title.newApplicationRole">
+        <source xml:lang="en">New Application Role</source>
+        <target state="translated">新增應用程式角色</target>
+      </trans-unit>
+      <trans-unit id="title.newDatabaseRole">
+        <source xml:lang="en">New Database Role</source>
+        <target state="translated">新增資料庫角色</target>
+      </trans-unit>
+      <trans-unit id="title.newLogin">
+        <source xml:lang="en">New Login</source>
+        <target state="translated">新增登入</target>
+      </trans-unit>
+      <trans-unit id="title.newServerRole">
+        <source xml:lang="en">New Server Role</source>
+        <target state="translated">新增伺服器角色</target>
+      </trans-unit>
       <trans-unit id="title.newTable">
         <source xml:lang="en">New Table</source>
         <target state="translated">新增資料表</target>
+      </trans-unit>
+      <trans-unit id="title.newUser">
+        <source xml:lang="en">New User</source>
+        <target state="translated">新使用者</target>
+      </trans-unit>
+      <trans-unit id="title.objectProperties">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">屬性</target>
       </trans-unit>
       <trans-unit id="title.searchServers">
         <source xml:lang="en">Search: Servers</source>

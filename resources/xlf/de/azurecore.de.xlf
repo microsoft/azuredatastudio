@@ -46,10 +46,6 @@
         <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
         <target state="translated">Der angegebene Mandant mit der ID "{0}" wurde nicht gefunden.</target>
       </trans-unit>
-      <trans-unit id="azureAuth.unidentifiedError">
-        <source xml:lang="en">Unidentified error with azure authentication</source>
-        <target state="translated">Unbekannter Fehler bei der Azure-Authentifizierung.</target>
-      </trans-unit>
       <trans-unit id="azurecore.consentDialog.body">
         <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
         <target state="translated">Für Ihren Mandanten "{0} ({1})" müssen Sie sich erneut authentifizieren, um auf {2}-Ressourcen zuzugreifen. Klicken Sie auf "Öffnen", um den Authentifizierungsvorgang zu starten.</target>
@@ -146,10 +142,6 @@
         <source xml:lang="en">Azure (China)</source>
         <target state="translated">Azure (China)</target>
       </trans-unit>
-      <trans-unit id="germanyCloud">
-        <source xml:lang="en">Azure (Germany)</source>
-        <target state="translated">Azure (Deutschland)</target>
-      </trans-unit>
       <trans-unit id="publicCloudDisplayName">
         <source xml:lang="en">Azure</source>
         <target state="translated">Azure</target>
@@ -157,10 +149,6 @@
       <trans-unit id="usGovCloudDisplayName">
         <source xml:lang="en">Azure (US Government)</source>
         <target state="translated">Azure (US-Regierungsbehörden)</target>
-      </trans-unit>
-      <trans-unit id="usNatCloudDisplayName">
-        <source xml:lang="en">Azure (US National)</source>
-        <target state="translated">Azure (USA, national)</target>
       </trans-unit>
     </body>
   </file>

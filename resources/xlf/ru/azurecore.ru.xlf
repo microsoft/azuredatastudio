@@ -46,10 +46,6 @@
         <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
         <target state="translated">Указанный клиент с идентификатором "{0}" не найден.</target>
       </trans-unit>
-      <trans-unit id="azureAuth.unidentifiedError">
-        <source xml:lang="en">Unidentified error with azure authentication</source>
-        <target state="translated">Неизвестная ошибка при проверке подлинности Azure</target>
-      </trans-unit>
       <trans-unit id="azurecore.consentDialog.body">
         <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
         <target state="translated">Клиент "{0} ({1})" требует повторной проверки подлинности для доступа к ресурсам {2}. Нажмите кнопку "Открыть", чтобы начать процесс проверки подлинности.</target>
@@ -146,10 +142,6 @@
         <source xml:lang="en">Azure (China)</source>
         <target state="translated">Azure для Китая</target>
       </trans-unit>
-      <trans-unit id="germanyCloud">
-        <source xml:lang="en">Azure (Germany)</source>
-        <target state="translated">Azure для Германии</target>
-      </trans-unit>
       <trans-unit id="publicCloudDisplayName">
         <source xml:lang="en">Azure</source>
         <target state="translated">Azure</target>
@@ -157,10 +149,6 @@
       <trans-unit id="usGovCloudDisplayName">
         <source xml:lang="en">Azure (US Government)</source>
         <target state="translated">Azure для государственных организаций США</target>
-      </trans-unit>
-      <trans-unit id="usNatCloudDisplayName">
-        <source xml:lang="en">Azure (US National)</source>
-        <target state="translated">Azure (национальное облако для США)</target>
       </trans-unit>
     </body>
   </file>

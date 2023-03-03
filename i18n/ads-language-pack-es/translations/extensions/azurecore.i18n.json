@@ -20,7 +20,6 @@
 			"azure.owningTenantNotFound": "No se encontró la información del inquilino propietario para la cuenta.",
 			"azure.responseError": "Error al recuperar el token. [Abra las herramientas de desarrollo]({0}) para obtener más detalles.",
 			"azure.tenantNotFound": "No se encuentra el inquilino especificado con el id. \"{0}\".",
-			"azureAuth.unidentifiedError": "Error no identificado con la autenticación de Azure.",
 			"azurecore.consentDialog.body": "El inquilino \"{0} ({1})\" requiere que vuelva a autenticarse para acceder a {2} recursos. Presione Abrir para iniciar el proceso de autenticación.",
 			"azurecore.consentDialog.cancel": "Cancelar",
 			"azurecore.consentDialog.ignore": "Omitir inquilino",
@@ -50,10 +49,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure (China)",
-			"germanyCloud": "Azure (Alemania)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (Gobierno de EE. UU.)",
-			"usNatCloudDisplayName": "Azure (Nacional de EE. UU.)"
+			"usGovCloudDisplayName": "Azure (Gobierno de EE. UU.)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "Debe seleccionar una cuenta de Azure para que esta característica funcione.",

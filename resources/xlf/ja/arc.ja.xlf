@@ -46,6 +46,14 @@
         <source xml:lang="en">{0} backups</source>
         <target state="translated">{0} 個のバックアップ</target>
       </trans-unit>
+      <trans-unit id="arc.booleanfalse">
+        <source xml:lang="en">False</source>
+        <target state="translated">False</target>
+      </trans-unit>
+      <trans-unit id="arc.booleantrue">
+        <source xml:lang="en">True</source>
+        <target state="translated">True</target>
+      </trans-unit>
       <trans-unit id="arc.businessCriticalLabel">
         <source xml:lang="en">BusinessCritical</source>
         <target state="translated">BusinessCritical</target>
@@ -345,6 +353,18 @@
         <source xml:lang="en">Emergency</source>
         <target state="translated">緊急</target>
       </trans-unit>
+      <trans-unit id="arc.enableTrustServerCert">
+        <source xml:lang="en">Enable Trust Server Certificate</source>
+        <target state="translated">信頼サーバー証明書を有効にする</target>
+      </trans-unit>
+      <trans-unit id="arc.encrypt">
+        <source xml:lang="en">Encrypt</source>
+        <target state="translated">暗号化</target>
+      </trans-unit>
+      <trans-unit id="arc.encryptDescription">
+        <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed.</source>
+        <target state="translated">True の場合、SQL Server は、クライアントとサーバーの間で送信されるすべてのデータに対し、サーバーに証明書がインストールされている場合は SSL 暗号化を適用します。</target>
+      </trans-unit>
       <trans-unit id="arc.endpoint">
         <source xml:lang="en">Endpoint</source>
         <target state="translated">エンドポイント</target>
@@ -629,6 +649,10 @@
         <source xml:lang="en">You can check the status of the upgrade by running the following command:</source>
         <target state="translated">次のコマンドを実行すると、アップグレードのステータスを確認できます:</target>
       </trans-unit>
+      <trans-unit id="arc.msgPromptSSLCertificateValidationFailed">
+        <source xml:lang="en">Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or set 'Trust server certificate' to 'true' in the settings file. Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry?</source>
+        <target state="translated">この接続で暗号化が有効になっているか、ターゲット SQL Serverの SSL と証明書の構成を確認するか、設定ファイルで 'Trust server certificate' を 'true' に設定します。注: 自己署名証明書では保護が制限されるだけで、運用環境では推奨されません。この接続で 'サーバー証明書の信頼' を有効にして再試行しますか?</target>
+      </trans-unit>
       <trans-unit id="arc.name">
         <source xml:lang="en">Name</source>
         <target state="translated">名前</target>
@@ -889,6 +913,10 @@
         <source xml:lang="en">Value is expected to be in the range {0} - {1}</source>
         <target state="translated">値は {0} から {1} の範囲内である必要があります</target>
       </trans-unit>
+      <trans-unit id="arc.readMore">
+        <source xml:lang="en">Read more</source>
+        <target state="translated">詳細情報</target>
+      </trans-unit>
       <trans-unit id="arc.ready">
         <source xml:lang="en">Ready</source>
         <target state="translated">準備完了</target>
@@ -1116,6 +1144,14 @@
       <trans-unit id="arc.troubleshoot">
         <source xml:lang="en">Troubleshoot</source>
         <target state="translated">トラブルシューティング</target>
+      </trans-unit>
+      <trans-unit id="arc.trustServerCertDescription">
+        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate.</source>
+        <target state="translated">True の場合 (かつ encrypt=true の場合)、SQL Server は、クライアントとサーバーの間で送信されるすべてのデータに対し、サーバー証明書を確認せず SSL 暗号化を適用します。</target>
+      </trans-unit>
+      <trans-unit id="arc.trustServerCertificate">
+        <source xml:lang="en">Trust Server Certificate</source>
+        <target state="translated">サーバー証明書を信頼する</target>
       </trans-unit>
       <trans-unit id="arc.type">
         <source xml:lang="en">Type</source>

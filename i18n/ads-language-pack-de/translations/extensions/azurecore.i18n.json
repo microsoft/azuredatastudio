@@ -20,7 +20,6 @@
 			"azure.owningTenantNotFound": "Informationen zum Besitzer des Mandanten wurden für das Konto nicht gefunden.",
 			"azure.responseError": "Fehler beim Abrufen des Tokens. [Entwicklertools öffnen] ({0}) für weitere Details.",
 			"azure.tenantNotFound": "Der angegebene Mandant mit der ID \"{0}\" wurde nicht gefunden.",
-			"azureAuth.unidentifiedError": "Unbekannter Fehler bei der Azure-Authentifizierung.",
 			"azurecore.consentDialog.body": "Für Ihren Mandanten \"{0} ({1})\" müssen Sie sich erneut authentifizieren, um auf {2}-Ressourcen zuzugreifen. Klicken Sie auf \"Öffnen\", um den Authentifizierungsvorgang zu starten.",
 			"azurecore.consentDialog.cancel": "Abbrechen",
 			"azurecore.consentDialog.ignore": "Mandanten ignorieren",
@@ -50,10 +49,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure (China)",
-			"germanyCloud": "Azure (Deutschland)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (US-Regierungsbehörden)",
-			"usNatCloudDisplayName": "Azure (USA, national)"
+			"usGovCloudDisplayName": "Azure (US-Regierungsbehörden)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "Sie müssen ein Azure-Konto auswählen, damit dieses Feature funktioniert.",

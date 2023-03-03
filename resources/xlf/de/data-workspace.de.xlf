@@ -202,9 +202,17 @@
         <source xml:lang="en">Yes (Recommended)</source>
         <target state="translated">Ja (empfohlen)</target>
       </trans-unit>
+      <trans-unit id="dragAndDropNotSupported">
+        <source xml:lang="en">This project type does not support drag and drop.</source>
+        <target state="translated">Dieser Projekttyp unterstützt Drag &amp;amp; Drop nicht.</target>
+      </trans-unit>
       <trans-unit id="fileDoesNotExist">
         <source xml:lang="en">File '{0}' doesn't exist</source>
         <target state="translated">Die Datei "{0}" ist nicht vorhanden</target>
+      </trans-unit>
+      <trans-unit id="filenameEndingInPeriodErrorMessage">
+        <source xml:lang="en">File name cannot end with a period</source>
+        <target state="translated">Der Dateiname darf nicht mit einem Punkt enden.</target>
       </trans-unit>
       <trans-unit id="gitCloneError">
         <source xml:lang="en">Error during git clone. View git output for more details</source>
@@ -214,9 +222,21 @@
         <source xml:lang="en">Cloning git repository '{0}'...</source>
         <target state="translated">Das Git-Repository "{0}" wird geklont ...</target>
       </trans-unit>
+      <trans-unit id="invalidFileCharsErrorMessage">
+        <source xml:lang="en">Invalid file characters</source>
+        <target state="translated">Ungültige Dateizeichen</target>
+      </trans-unit>
       <trans-unit id="noPreviousData">
         <source xml:lang="en">Prior {0} for the current project will appear here, please run to see the results.</source>
         <target state="translated">Vorherige "{0}" für das aktuelle Projekt werden hier angezeigt. Führen Sie die Ausführung aus, um die Ergebnisse anzuzeigen.</target>
+      </trans-unit>
+      <trans-unit id="noProjectProvidingExtensionsInstalled">
+        <source xml:lang="en">No database project extensions are installed. Please install a database project extension to use this feature.</source>
+        <target state="translated">Es sind keine Datenbankprojekterweiterungen installiert. Installieren Sie eine Datenbankprojekterweiterung, um dieses Feature zu verwenden.</target>
+      </trans-unit>
+      <trans-unit id="onlyMovingOneFileIsSupported">
+        <source xml:lang="en">Only moving one file at a time is supported.</source>
+        <target state="translated">Es kann immer nur eine Datei auf einmal verschoben werden.</target>
       </trans-unit>
       <trans-unit id="openedProjectsUndefinedAfterRefresh">
         <source xml:lang="en">List of opened projects should not be undefined after refresh from disk.</source>
@@ -225,6 +245,30 @@
       <trans-unit id="projectNameNull">
         <source xml:lang="en">Project name is null</source>
         <target state="translated">Projektname ist Null</target>
+      </trans-unit>
+      <trans-unit id="reservedValueErrorMessage">
+        <source xml:lang="en">Reserved file name. Choose another name and try again</source>
+        <target state="translated">Reservierter Dateiname. Wählen Sie einen anderen Namen aus, und versuchen Sie es noch mal.</target>
+      </trans-unit>
+      <trans-unit id="reservedWindowsFilenameErrorMessage">
+        <source xml:lang="en">This file name is reserved for use by Windows. Choose another name and try again</source>
+        <target state="translated">Dieser Dateiname ist für Windows reserviert. Wählen Sie einen anderen Namen, und versuchen Sie es noch mal.</target>
+      </trans-unit>
+      <trans-unit id="tooLongFilenameErrorMessage">
+        <source xml:lang="en">File name cannot be over 255 characters</source>
+        <target state="translated">Der Dateiname darf nicht mehr als 255 Zeichen umfassen</target>
+      </trans-unit>
+      <trans-unit id="trailingWhitespaceErrorMessage">
+        <source xml:lang="en">File name cannot end with a whitespace</source>
+        <target state="translated">Der Dateiname darf nicht mit einem Leerzeichen enden.</target>
+      </trans-unit>
+      <trans-unit id="undefinedFilenameErrorMessage">
+        <source xml:lang="en">Undefined name</source>
+        <target state="translated">Nicht definierter Name</target>
+      </trans-unit>
+      <trans-unit id="whitespaceFilenameErrorMessage">
+        <source xml:lang="en">File name cannot be whitespace</source>
+        <target state="translated">Der Dateiname darf nicht aus Leerzeichen bestehen.</target>
       </trans-unit>
     </body>
   </file>

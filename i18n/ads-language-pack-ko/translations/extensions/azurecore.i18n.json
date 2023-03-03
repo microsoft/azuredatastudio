@@ -20,7 +20,6 @@
 			"azure.owningTenantNotFound": "계정에 대한 소유 테넌트 정보를 찾을 수 없습니다.",
 			"azure.responseError": "오류로 인해 토큰 검색에 실패했습니다. 자세한 내용은 [개발자 도구 열기]({0})를 참조하세요.",
 			"azure.tenantNotFound": "ID가 '{0}'인 지정된 테넌트를 찾을 수 없습니다.",
-			"azureAuth.unidentifiedError": "Azure 인증에서 식별되지 않은 오류 발생",
 			"azurecore.consentDialog.body": "'{0}({1})' 테넌트에서는 {2} 리소스에 액세스하려면 다시 재인증해야 합니다. [열기]를 눌러 인증 프로세스를 시작합니다.",
 			"azurecore.consentDialog.cancel": "취소",
 			"azurecore.consentDialog.ignore": "테넌트 무시",
@@ -50,10 +49,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure(중국)",
-			"germanyCloud": "Azure(독일)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure(미국 정부)",
-			"usNatCloudDisplayName": "Azure(미국 국가)"
+			"usGovCloudDisplayName": "Azure(미국 정부)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "이 기능이 작동하려면 Azure 계정을 선택해야 합니다.",

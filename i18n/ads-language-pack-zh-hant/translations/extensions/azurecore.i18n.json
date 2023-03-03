@@ -20,7 +20,6 @@
 			"azure.owningTenantNotFound": "找不到帳戶的擁有租用戶資訊。",
 			"azure.responseError": "權杖擷取失敗，發生錯誤。[開啟開發人員工具]({0}) 以了解更多詳細資料。",
 			"azure.tenantNotFound": "找不到識別碼為 '{0}' 的指定租用戶。",
-			"azureAuth.unidentifiedError": "Azure 驗證發生無法辨識的錯誤",
 			"azurecore.consentDialog.body": "您的租用戶 '{0} ({1})' 需要再次重新驗證，才能存取 {2} 資源。請按 [開啟] 啟動驗證程序。",
 			"azurecore.consentDialog.cancel": "取消",
 			"azurecore.consentDialog.ignore": "忽略租用戶",
@@ -50,10 +49,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure (中國)",
-			"germanyCloud": "Azure (德國)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (美國政府)",
-			"usNatCloudDisplayName": "Azure (美國國民)"
+			"usGovCloudDisplayName": "Azure (美國政府)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "您必須選取 Azure 帳戶，此功能才能運作。",

@@ -46,10 +46,6 @@
         <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
         <target state="translated">ID가 '{0}'인 지정된 테넌트를 찾을 수 없습니다.</target>
       </trans-unit>
-      <trans-unit id="azureAuth.unidentifiedError">
-        <source xml:lang="en">Unidentified error with azure authentication</source>
-        <target state="translated">Azure 인증에서 식별되지 않은 오류 발생</target>
-      </trans-unit>
       <trans-unit id="azurecore.consentDialog.body">
         <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
         <target state="translated">'{0}({1})' 테넌트에서는 {2} 리소스에 액세스하려면 다시 재인증해야 합니다. [열기]를 눌러 인증 프로세스를 시작합니다.</target>
@@ -146,10 +142,6 @@
         <source xml:lang="en">Azure (China)</source>
         <target state="translated">Azure(중국)</target>
       </trans-unit>
-      <trans-unit id="germanyCloud">
-        <source xml:lang="en">Azure (Germany)</source>
-        <target state="translated">Azure(독일)</target>
-      </trans-unit>
       <trans-unit id="publicCloudDisplayName">
         <source xml:lang="en">Azure</source>
         <target state="translated">Azure</target>
@@ -157,10 +149,6 @@
       <trans-unit id="usGovCloudDisplayName">
         <source xml:lang="en">Azure (US Government)</source>
         <target state="translated">Azure(미국 정부)</target>
-      </trans-unit>
-      <trans-unit id="usNatCloudDisplayName">
-        <source xml:lang="en">Azure (US National)</source>
-        <target state="translated">Azure(미국 국가)</target>
       </trans-unit>
     </body>
   </file>

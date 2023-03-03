@@ -307,6 +307,94 @@
         <source xml:lang="en">The notebook cell title menu</source>
         <target state="translated">笔记本单元格标题菜单</target>
       </trans-unit>
+      <trans-unit id="notebook.cellToolbarLocation.description">
+        <source xml:lang="en">Where the cell toolbar should be shown, or whether it should be hidden. (for VS Code Notebooks only)</source>
+        <target state="translated">单元格工具栏应显示在何处，或者是否应将其隐藏。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.cellToolbarVisibility.description">
+        <source xml:lang="en">Whether the cell toolbar should appear on hover or click. (for VS Code Notebooks only)</source>
+        <target state="translated">单元格工具栏应在悬停还是单击时显示。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.compactView.description">
+        <source xml:lang="en">Control whether the notebook editor should be rendered in a compact form. For example, when turned on, it will decrease the left margin width. (for VS Code Notebooks only)</source>
+        <target state="translated">控制是否应以紧凑形式呈现笔记本编辑器。例如在打开时，它将减小左边距宽度。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.consolidatedOutputButton.description">
+        <source xml:lang="en">Control whether outputs action should be rendered in the output toolbar. (for VS Code Notebooks only)</source>
+        <target state="translated">控制是否应在输出工具栏中呈现输出操作。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.consolidatedRunButton.description">
+        <source xml:lang="en">Control whether extra actions are shown in a dropdown next to the run button. (for VS Code Notebooks only)</source>
+        <target state="translated">控制是否在“运行”按钮旁边的下拉列表中显示额外的操作。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.diff.enablePreview.description">
+        <source xml:lang="en">Whether to use the enhanced text diff editor for notebook. (for VS Code Notebooks only)</source>
+        <target state="translated">是否对笔记本使用增强型文本差异编辑器。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.displayOrder.description">
+        <source xml:lang="en">Priority list for output mime types. (for VS Code Notebooks only)</source>
+        <target state="translated">输出 mime 类型的优先级列表。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.dragAndDrop.description">
+        <source xml:lang="en">Control whether the notebook editor should allow moving cells through drag and drop. (for VS Code Notebooks only)</source>
+        <target state="translated">控制笔记本编辑器是否应允许通过拖放移动单元格。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.editorOptions.experimentalCustomization">
+        <source xml:lang="en">Settings for code editors used in notebooks. This can be used to customize most editor.* settings. (for VS Code Notebooks only)</source>
+        <target state="translated">笔记本中使用的代码编辑器的设置。这可用于自定义大多数编辑器.* 设置。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.focusIndicator.description">
+        <source xml:lang="en">Controls where the focus indicator is rendered, either along the cell borders or on the left gutter. (for VS Code Notebooks only)</source>
+        <target state="translated">控制焦点指示器是沿单元格边框，还是在左侧装订线上呈现。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.globalToolbar.description">
+        <source xml:lang="en">Control whether to render a global toolbar inside the notebook editor. (for VS Code Notebooks only)</source>
+        <target state="translated">控制是否在笔记本编辑器中呈现全局工具栏。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.globalToolbarShowLabel">
+        <source xml:lang="en">Control whether the actions on the notebook toolbar should render label or not. (for VS Code Notebooks only)</source>
+        <target state="translated">控制笔记本工具栏上的操作是否应呈现标签。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.insertToolbarPosition.description">
+        <source xml:lang="en">Control where the insert cell actions should appear. (for VS Code Notebooks only)</source>
+        <target state="translated">控制插入单元格操作应显示的位置。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.interactiveWindow.collapseCodeCells">
+        <source xml:lang="en">Controls whether code cells in the interactive window are collapsed by default. (for VS Code Notebooks only)</source>
+        <target state="translated">控制是否默认折叠交互窗口中的代码单元格。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.markup.fontSize">
+        <source xml:lang="en">Controls the font size in pixels of rendered markup in notebooks. When set to `0`, 120% of `#editor.fontSize#` is used. (for VS Code Notebooks only)</source>
+        <target state="translated">控制笔记本中所呈现标记的字号(以像素为单位)。设置为 `0` 时，将使用 120% 的 `#editor.fontSize#`。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.outputFontFamily">
+        <source xml:lang="en">The font family for the output text for notebook cells. When set to empty, the `#editor.fontFamily#` is used. (for VS Code Notebooks only)</source>
+        <target state="translated">笔记本单元格输出文本的字体系列。设置为空时，将使用 `#editor.fontFamily#`。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.outputFontSize">
+        <source xml:lang="en">Font size for the output text for notebook cells. When set to 0 `#editor.fontSize#` is used. (for VS Code Notebooks only)</source>
+        <target state="translated">笔记本单元格输出文本的字号。如果设置为 0，则使用 `#editor.fontSize#`。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.outputLineHeight">
+        <source xml:lang="en">Line height of the output text for notebook cells.
+ - Values between 0 and 8 will be used as a multiplier with the font size.
+ - Values greater than or equal to 8 will be used as effective values. (for VS Code Notebooks only)</source>
+        <target state="translated">笔记本单元格输出文本的行高。
+ - 将使用介于 0 和 8 之间的值作为字号的乘数。
+ - 将使用大于或等于 8 的值作为有效值。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.showCellStatusbar.description">
+        <source xml:lang="en">Whether the cell status bar should be shown. (for VS Code Notebooks only)</source>
+        <target state="translated">是否应显示单元格状态栏。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.showFoldingControls.description">
+        <source xml:lang="en">Controls when the Markdown header folding arrow is shown. (for VS Code Notebooks only)</source>
+        <target state="translated">控制何时显示 Markdown 标头折叠箭头。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
+      <trans-unit id="notebook.textOutputLineLimit">
+        <source xml:lang="en">Control how many lines of text in a text output is rendered. (for VS Code Notebooks only)</source>
+        <target state="translated">控制文本输出中呈现的文本行数。(仅适用于 VS Code 笔记本)</target>
+      </trans-unit>
       <trans-unit id="notebook.title">
         <source xml:lang="en">The notebook title menu</source>
         <target state="translated">笔记本标题菜单</target>
@@ -314,6 +402,10 @@
       <trans-unit id="notebook.toolbar">
         <source xml:lang="en">The notebook toolbar menu</source>
         <target state="translated">笔记本工具栏菜单</target>
+      </trans-unit>
+      <trans-unit id="notebook.undoRedoPerCell.description">
+        <source xml:lang="en">Whether to use separate undo/redo stack for each cell. (for VS Code Notebooks only)</source>
+        <target state="translated">是否对每个单元格使用单独的撤消/重做堆栈。(仅适用于 VS Code 笔记本)</target>
       </trans-unit>
       <trans-unit id="objectExplorer.context">
         <source xml:lang="en">The object explorer item context menu</source>
@@ -1032,6 +1124,14 @@ Default Skipped Commands:
       <trans-unit id="showConnectDialogOnStartup">
         <source xml:lang="en">Show connect dialog on startup</source>
         <target state="translated">在启动时显示连接对话框</target>
+      </trans-unit>
+      <trans-unit id="useVSCodeNotebooks">
+        <source xml:lang="en">(Preview) Use VS Code notebooks as the default notebook experience. Note: Azure Data Studio will need to be restarted to enable this setting.</source>
+        <target state="translated">(预览)将 VS Code 笔记本用作默认笔记本体验。注意: 需要重启 Azure Data Studio 才能启用此设置。</target>
+      </trans-unit>
+      <trans-unit id="useVSCodeNotebooksTitle">
+        <source xml:lang="en">Use VS Code notebooks</source>
+        <target state="translated">使用 VS Code 笔记本</target>
       </trans-unit>
     </body>
   </file>
@@ -2286,6 +2386,10 @@ Default Skipped Commands:
   </file>
   <file original="src/sql/workbench/contrib/connection/common/connectionProviderExtension" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
+      <trans-unit id="schema.azureResource">
+        <source xml:lang="en">Azure resource endpoint for the provider.</source>
+        <target state="translated">提供程序的 Azure 资源终结点。</target>
+      </trans-unit>
       <trans-unit id="schema.connectionOptions">
         <source xml:lang="en">Options for connection</source>
         <target state="translated">连接选项</target>
@@ -5675,8 +5779,8 @@ Error: {1}</source>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error {0}</source>
-        <target state="translated">复制失败，出现错误 {0}</target>
+        <source xml:lang="en">Copy failed with error: {0}</source>
+        <target state="translated">复制失败，出现错误: {0}</target>
       </trans-unit>
       <trans-unit id="notebook.showChart">
         <source xml:lang="en">Show chart</source>
@@ -6469,6 +6573,10 @@ Error: {1}</source>
       <trans-unit id="maxColumnWidth">
         <source xml:lang="en">The maximum width in pixels for auto-sized columns</source>
         <target state="translated">自动调整大小的列的最大宽度(像素)</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.showJsonAsLink">
+        <source xml:lang="en">Whether to show cells with JSON formatted string as hyperlink. When enabled, upon click the JSON value will be opened in another tab. The default value is true.</source>
+        <target state="translated">是否将含有 JSON 格式字符串的单元格显示为超链接。启用后，单击 JSON 值时将在另一个标签页中打开。默认值为 true。</target>
       </trans-unit>
       <trans-unit id="resultsGridConfigurationTitle">
         <source xml:lang="en">Results Grid and Messages</source>
@@ -7299,13 +7407,29 @@ Error: {1}</source>
         <source xml:lang="en">Close</source>
         <target state="translated">关闭</target>
       </trans-unit>
+      <trans-unit id="addAccountFailedGeneric">
+        <source xml:lang="en">Adding account failed, check Azure Accounts log for more info.</source>
+        <target state="translated">添加帐户失败，有关详细信息，请查看 Azure 帐户日志。</target>
+      </trans-unit>
+      <trans-unit id="addAccountFailedMessage">
+        <source xml:lang="en">0 
+Error Message: 1</source>
+        <target state="translated">0 
+错误消息: 1</target>
+      </trans-unit>
       <trans-unit id="loggingIn">
         <source xml:lang="en">Adding account...</source>
         <target state="translated">正在添加帐户...</target>
       </trans-unit>
-      <trans-unit id="refreshFailed">
+      <trans-unit id="refreshCanceled">
         <source xml:lang="en">Refresh account was canceled by the user</source>
         <target state="translated">用户已取消刷新帐户</target>
+      </trans-unit>
+      <trans-unit id="refreshFailed">
+        <source xml:lang="en">0 
+Error Message: 1</source>
+        <target state="translated">0 
+错误消息: 1</target>
       </trans-unit>
     </body>
   </file>
@@ -7547,10 +7671,6 @@ Error: {1}</source>
         <source xml:lang="en">Connection error</source>
         <target state="translated">连接错误</target>
       </trans-unit>
-      <trans-unit id="enableTrustServerCertificate">
-        <source xml:lang="en">Enable Trust server certificate</source>
-        <target state="translated">启用信任服务器证书</target>
-      </trans-unit>
       <trans-unit id="kerberosErrorStart">
         <source xml:lang="en">Connection failed due to Kerberos error.</source>
         <target state="translated">由于 Kerberos 错误，连接失败。</target>
@@ -7566,14 +7686,6 @@ Error: {1}</source>
       <trans-unit id="runKinit">
         <source xml:lang="en">Run Kinit</source>
         <target state="translated">运行 Kinit</target>
-      </trans-unit>
-      <trans-unit id="trustServerCertInstructionText">
-        <source xml:lang="en">Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable 'Trust server certificate' in the connection dialog.
-
-			Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? </source>
-        <target state="translated">已在此连接上启用加密、查看目标 SQL Server 的 SSL 和证书配置，或在连接对话框中启用“信任服务器证书”。
-
-			注意: 自签名证书仅提供有限的保护，不建议用于生产环境。是否要在此连接上启用“信任服务器证书”，然后重试?</target>
       </trans-unit>
     </body>
   </file>
@@ -7771,6 +7883,14 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/services/connection/browser/passwordChangeDialog" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
+      <trans-unit id="passwordChangeDialog.Message1">
+        <source xml:lang="en">Password must be changed for '{0}' to continue logging into '{1}'.</source>
+        <target state="translated">必须更改“{0}”的密码才能继续登录到“{1}”。</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.Message2">
+        <source xml:lang="en">Please enter a new password below:</source>
+        <target state="translated">请在下面输入新密码:</target>
+      </trans-unit>
       <trans-unit id="passwordChangeDialog.cancel">
         <source xml:lang="en">Cancel</source>
         <target state="translated">取消</target>
@@ -7803,6 +7923,10 @@ Error: {1}</source>
         <source xml:lang="en">OK</source>
         <target state="translated">确定</target>
       </trans-unit>
+      <trans-unit id="passwordChangeDialog.passwordChangeInProgress">
+        <source xml:lang="en">Password change already in progress</source>
+        <target state="translated">密码更改已在进行中</target>
+      </trans-unit>
       <trans-unit id="passwordChangeDialog.title">
         <source xml:lang="en">Change Password</source>
         <target state="translated">更改密码</target>
@@ -7834,6 +7958,15 @@ Error: {1}</source>
       <trans-unit id="wizardPageNumberDisplayText">
         <source xml:lang="en">Step {0}</source>
         <target state="translated">步骤 {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/dialog/browser/wizardNavigation.component" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="wizardNavigation.stepName">
+        <source xml:lang="en">Step {0}: {1}</source>
+        <note>Name of a step in wizard. {0}: step number, {1}: step name.</note>
+        <target state="translated">第 {0} 步: {1}</target>
       </trans-unit>
     </body>
   </file>
@@ -8468,9 +8601,25 @@ Error: {1}</source>
         <source xml:lang="en">Delete Connection</source>
         <target state="translated">删除连接</target>
       </trans-unit>
+      <trans-unit id="deleteConnectionConfirmation">
+        <source xml:lang="en">Are you sure you want to delete connection '{0}'?</source>
+        <target state="translated">是否确定要删除连接“{0}”?</target>
+      </trans-unit>
+      <trans-unit id="deleteConnectionConfirmationNo">
+        <source xml:lang="en">No</source>
+        <target state="translated">否</target>
+      </trans-unit>
+      <trans-unit id="deleteConnectionConfirmationYes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">是</target>
+      </trans-unit>
       <trans-unit id="deleteConnectionGroup">
         <source xml:lang="en">Delete Group</source>
         <target state="translated">删除组</target>
+      </trans-unit>
+      <trans-unit id="deleteConnectionGroupConfirmation">
+        <source xml:lang="en">Are you sure you want to delete connection group '{0}'?</source>
+        <target state="translated">是否确定要删除连接“{0}”?</target>
       </trans-unit>
       <trans-unit id="showAllConnections">
         <source xml:lang="en">Show All Connections</source>
@@ -8552,6 +8701,10 @@ Error: {1}</source>
         <source xml:lang="en">Add a clause</source>
         <target state="translated">添加子句</target>
       </trans-unit>
+      <trans-unit id="profilerFilterDialog.allClausesCleared">
+        <source xml:lang="en">All clauses have been cleared.</source>
+        <target state="translated">已清除所有子句。</target>
+      </trans-unit>
       <trans-unit id="profilerFilterDialog.apply">
         <source xml:lang="en">Apply</source>
         <target state="translated">应用</target>
@@ -8583,6 +8736,10 @@ Error: {1}</source>
       <trans-unit id="profilerFilterDialog.loadFilter">
         <source xml:lang="en">Load Filter</source>
         <target state="translated">加载筛选器</target>
+      </trans-unit>
+      <trans-unit id="profilerFilterDialog.newClauseAdded">
+        <source xml:lang="en">A new clause has been added.</source>
+        <target state="translated">已添加新子句。</target>
       </trans-unit>
       <trans-unit id="profilerFilterDialog.notContainsOperator">
         <source xml:lang="en">Not Contains</source>
@@ -8669,8 +8826,8 @@ Error: {1}</source>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error {0}</source>
-        <target state="translated">复制失败，出现错误 {0}</target>
+        <source xml:lang="en">Copy failed with error: {0}</source>
+        <target state="translated">复制失败，出现错误: {0}</target>
       </trans-unit>
       <trans-unit id="elapsedBatchTime">
         <source xml:lang="en">Batch execution time: {0}</source>

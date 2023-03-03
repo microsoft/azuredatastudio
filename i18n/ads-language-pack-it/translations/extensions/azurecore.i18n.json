@@ -20,7 +20,6 @@
 			"azure.owningTenantNotFound": "Informazioni sul tenant proprietario non trovate per l'account.",
 			"azure.responseError": "Il recupero del token non è riuscito generando un errore. [Aprire gli strumenti di sviluppo] ({0}) per ulteriori dettagli.",
 			"azure.tenantNotFound": "Il tenant specificato con ID '{0}' non è stato trovato.",
-			"azureAuth.unidentifiedError": "Errore non identificato con l'autenticazione di Azure",
 			"azurecore.consentDialog.body": "Il tenant '{0} ({1})' richiede una nuova autenticazione per accedere alle risorse {2}. Premere Apri per avviare il processo di autenticazione.",
 			"azurecore.consentDialog.cancel": "Annulla",
 			"azurecore.consentDialog.ignore": "Ignora tenant",
@@ -50,10 +49,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure (Cina)",
-			"germanyCloud": "Azure (Germania)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (US Government)",
-			"usNatCloudDisplayName": "Azure (US National)"
+			"usGovCloudDisplayName": "Azure (US Government)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "Per usare questa funzionalità, è necessario selezionare un account Azure.",

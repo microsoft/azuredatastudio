@@ -11349,8 +11349,30 @@
 			"miinstallVsix": "Instalar extensão do pacote VSIX",
 			"newQuery": "Nova consulta",
 			"notebook.cellTitle": "O menu de título da célula do bloco de anotações",
+			"notebook.cellToolbarLocation.description": "Onde a barra de ferramentas da célula deve ser exibida ou se deve ser ocultada. (somente para Notebooks VS Code)",
+			"notebook.cellToolbarVisibility.description": "Se a barra de ferramentas celular deve aparecer no mouse ou clique. (apenas para cadernos de código vs)",
+			"notebook.compactView.description": "Controle se o editor de notebook deve ser renderizado em um formulário compacto. Por exemplo, quando ligado, diminuirá a largura da margem esquerda. (apenas para cadernos de código vs)",
+			"notebook.consolidatedOutputButton.description": "Controle se a ação de saídas deve ser renderizada na barra de ferramentas de saída. (apenas para cadernos de código vs)",
+			"notebook.consolidatedRunButton.description": "Controle se as ações extras são mostradas em um suspensão ao lado do botão Executar. (apenas para cadernos de código vs)",
+			"notebook.diff.enablePreview.description": "Se deve usar o editor de diff de texto aprimorado para notebook. (apenas para cadernos de código vs)",
+			"notebook.displayOrder.description": "Lista de prioridades para os tipos de MIME de saída. (apenas para cadernos de código vs)",
+			"notebook.dragAndDrop.description": "Controle se o editor de notebook deve permitir a movimentação de células através de arrasto e soltamento. (apenas para cadernos de código vs)",
+			"notebook.editorOptions.experimentalCustomization": "Configurações para editores de código usados em notebooks. Isso pode ser usado para personalizar a maioria dos editores.* Configurações. (apenas para cadernos de código vs)",
+			"notebook.focusIndicator.description": "Controla onde o indicador de foco é renderizado, ao longo das fronteiras da célula ou na calha esquerda. (apenas para cadernos de código vs)",
+			"notebook.globalToolbar.description": "Controle se deve renderizar uma barra de ferramentas global dentro do editor de notebooks. (apenas para cadernos de código vs)",
+			"notebook.globalToolbarShowLabel": "Controle se as ações na barra de ferramentas do notebook devem renderizar ou não. (apenas para cadernos de código vs)",
+			"notebook.insertToolbarPosition.description": "Controle onde as ações da célula de inserção devem aparecer. (apenas para cadernos de código vs)",
+			"notebook.interactiveWindow.collapseCodeCells": "Controla se as células de código na janela interativa são colapsadas por padrão. (apenas para cadernos de código vs)",
+			"notebook.markup.fontSize": "Controla o tamanho da fonte em pixels de marcação renderizada em notebooks. Quando definido como `0`, 120% do`#editor.fontsize#`é usado. (apenas para cadernos de código vs)",
+			"notebook.outputFontFamily": "A família de fontes para o texto de saída para células de notebook. Quando configurado para esvaziar, o `#editor.fontfamily#` é usado. (apenas para cadernos de código vs)",
+			"notebook.outputFontSize": "Tamanho da fonte para o texto de saída para células de notebook. Quando definido como 0 `#editor.fontsize#` é usado. (apenas para cadernos de código vs)",
+			"notebook.outputLineHeight": "Altura de linha do texto de saída para células de notebook.\r\n - Os valo\r\nres entre 0 e 8 serão usados como multiplicador com o tamanho da fonte.\r\n - Valores maiores ou iguais a 8 serão usados como valores efetivos. (apenas para cadernos de código vs)",
+			"notebook.showCellStatusbar.description": "Se a barra de status da célula deve ser mostrada. (apenas para cadernos de código vs)",
+			"notebook.showFoldingControls.description": "Controla quando o cabeçalho da seta dobrável do cabeçalho é mostrado. (apenas para cadernos de código vs)",
+			"notebook.textOutputLineLimit": "Controle quantas linhas de texto em uma saída de texto são renderizadas. (apenas para cadernos de código vs)",
 			"notebook.title": "O menu de título do bloco de anotações",
 			"notebook.toolbar": "O menu da barra de ferramentas do bloco de anotações.",
+			"notebook.undoRedoPerCell.description": "Se deve usar a pilha de desfazer/refazer para cada célula. (apenas para cadernos de código vs)",
 			"objectExplorer.context": "O menu de contexto do item do explorador de objetos",
 			"openDefaultSettingsJson": "abrir as configurações padrão JSON",
 			"openDefaultSettingsJson.capitalized": "Abrir Configurações Padrão (JSON)",
@@ -11538,7 +11560,9 @@
 			"enableObsoleteApiUsageNotificationTitle": "Notificação de API obsoleta",
 			"previewFeatures.configEnable": "Habilitar versões prévias dos recursos não liberadas",
 			"previewFeatures.configTitle": "Versões prévias dos recursos",
-			"showConnectDialogOnStartup": "Mostrar caixa de diálogo de conexão na inicialização"
+			"showConnectDialogOnStartup": "Mostrar caixa de diálogo de conexão na inicialização",
+			"useVSCodeNotebooks": "(Visualizar) Use o Code Notebooks como a experiência padrão do Notebook. Nota: O Azure Data Studio precisará ser reiniciado para ativar essa configuração.",
+			"useVSCodeNotebooksTitle": "Use vs notebooks de código"
 		},
 		"sql/workbench/browser/designer/designer": {
 			"designer.actions": "Mais ações",
@@ -11901,6 +11925,7 @@
 			"status.connection.status": "Status da Conexão"
 		},
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
+			"schema.azureResource": "Ponto de extremidade do recurso do Azure para o provedor.",
 			"schema.connectionOptions": "Opções de conexão",
 			"schema.displayName": "Nome de Exibição do provedor",
 			"schema.enableConnectionStringOption": "Se o provedor oferece suporte à cadeia de conexão como uma opção de entrada. O valor padrão é falso.",
@@ -12854,7 +12879,7 @@
 			"viewOptionsModal.title": "Configurar Modo de Exibição"
 		},
 		"sql/workbench/contrib/notebook/browser/outputs/gridOutput.component": {
-			"copyFailed": "Falha na cópia com o erro {0}",
+			"copyFailed": "A cópia falhou com o erro: {0}",
 			"notebook.showChart": "Mostrar gráfico",
 			"notebook.showTable": "Mostrar tabela"
 		},
@@ -13075,6 +13100,7 @@
 			"fontWeight": "Controla a espessura da fonte.",
 			"letterSpacing": "Controla o espaçamento de letras em pixels.",
 			"maxColumnWidth": "A largura máxima em pixels para colunas dimensionadas automaticamente",
+			"resultsGrid.showJsonAsLink": "Se as células com cadeia de caracteres formatada em JSON devem ser mostradas como hiperlink. Quando ativado, ao clicar, o valor JSON será aberto em outra guia. O valor padrão é verdadeiro.",
 			"resultsGridConfigurationTitle": "Grade de Resultados e Mensagens",
 			"rowHeight": "Controla a altura da linha em pixels"
 		},
@@ -13309,8 +13335,11 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "Fechar",
+			"addAccountFailedGeneric": "Adicionando falha na conta, verifique o log do Azure Contas para obter mais informações.",
+			"addAccountFailedMessage": "0 \r\nMensagem de erro: 1",
 			"loggingIn": "Adicionando conta...",
-			"refreshFailed": "A conta de atualização foi cancelada pelo usuário"
+			"refreshCanceled": "A conta de atualização foi cancelada pelo usuário",
+			"refreshFailed": "0 \r\nError Message: 1"
 		},
 		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
 			"azureAccount": "Conta do Azure",
@@ -13383,12 +13412,10 @@
 		},
 		"sql/workbench/services/connection/browser/connectionDialogService": {
 			"connectionError": "Erro de conexão",
-			"enableTrustServerCertificate": "Certificado do servidor de confiança",
 			"kerberosErrorStart": "A conexão falhou devido a um erro do Kerberos.",
 			"kerberosHelpLink": "Ajuda para configurar o Kerberos está disponível em {0}",
 			"kerberosKinit": "Se você já se conectou anteriormente, pode ser necessário executar novamente o kinit.",
-			"runKinit": "Executar o Kinit",
-			"trustServerCertInstructionText": "A criptografia foi habilitada nesta conexão, examine sua configuração de SSL e certificado para a configuração de SQL Server, ou habilite 'Certificado do servidor de confiança' na caixa de diálogo de conexão.\r\n\r\n\t\t\tObservação: um certificado autoassinado oferece apenas proteção limitada e não é uma prática recomendada para ambientes de produção. Deseja habilitar o 'Certificado do servidor de confiança' nesta conexão e tentar novamente? "
+			"runKinit": "Executar o Kinit"
 		},
 		"sql/workbench/services/connection/browser/connectionDialogWidget": {
 			"connectType": "Tipo de conexão",
@@ -13443,6 +13470,8 @@
 			"unsavedGroupLabel": "Conexões Não Salvas"
 		},
 		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.Message1": "A senha deve ser alterada para '{0}' para continuar fazendo logon em '{1}'.",
+			"passwordChangeDialog.Message2": "Insira uma nova senha abaixo:",
 			"passwordChangeDialog.cancel": "Cancelar",
 			"passwordChangeDialog.confirmPassword": "Confirmar senha:",
 			"passwordChangeDialog.connecting": "Conectando",
@@ -13451,6 +13480,7 @@
 			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Pressione OK e insira exatamente a mesma senha nas duas caixas.",
 			"passwordChangeDialog.newPassword": "Nova senha:",
 			"passwordChangeDialog.ok": "OK",
+			"passwordChangeDialog.passwordChangeInProgress": "A alteração de senha já está em andamento",
 			"passwordChangeDialog.title": "Alterar Senha"
 		},
 		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
@@ -13648,7 +13678,11 @@
 			"connectionTree.editServerGroup": "Editar Grupo de Servidores",
 			"connectionTree.refresh": "Atualizar",
 			"deleteConnection": "Excluir Conexão",
+			"deleteConnectionConfirmation": "Tem certeza de que deseja excluir a conexão '{0}'?",
+			"deleteConnectionConfirmationNo": "Não",
+			"deleteConnectionConfirmationYes": "Sim",
 			"deleteConnectionGroup": "Excluir Grupo",
+			"deleteConnectionGroupConfirmation": "Tem certeza de que deseja excluir o grupo de conexões '{0}'?",
 			"showAllConnections": "Mostrar Todas as Conexões"
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
@@ -13674,6 +13708,7 @@
 		},
 		"sql/workbench/services/profiler/browser/profilerFilterDialog": {
 			"profilerFilterDialog.addClauseText": "Adicionar uma cláusula",
+			"profilerFilterDialog.allClausesCleared": "Todas as cláusulas foram limpas.",
 			"profilerFilterDialog.apply": "Aplicar",
 			"profilerFilterDialog.cancel": "Cancelar",
 			"profilerFilterDialog.clear": "Limpar tudo",
@@ -13682,6 +13717,7 @@
 			"profilerFilterDialog.isNotNullOperator": "Não É Nulo",
 			"profilerFilterDialog.isNullOperator": "É Nulo",
 			"profilerFilterDialog.loadFilter": "Carregar Filtro",
+			"profilerFilterDialog.newClauseAdded": "Uma nova cláusula foi adicionada.",
 			"profilerFilterDialog.notContainsOperator": "Não Contém",
 			"profilerFilterDialog.notStartsWithOperator": "Não Começa Com",
 			"profilerFilterDialog.ok": "OK",
@@ -13706,7 +13742,7 @@
 			"updateCellFailed": "Falha na célula de atualização: "
 		},
 		"sql/workbench/services/query/common/queryRunner": {
-			"copyFailed": "Falha na cópia com o erro {0}",
+			"copyFailed": "A cópia falhou com o erro: {0}",
 			"elapsedBatchTime": "Tempo de execução em lote: {0}",
 			"query.ExecutionFailedError": "A execução falhou devido a um erro inesperado: {0} {1}",
 			"query.message.executionTime": "Tempo total de execução: {0}",
@@ -13910,6 +13946,9 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "I&&ntrodução",
 			"showReleaseNotes": "Mostrar Introdução"
+		},
+		"sql/workbench/services/dialog/browser/wizardNavigation.component": {
+			"wizardNavigation.stepName": "Etapa {0}: {1}"
 		}
 	}
 }

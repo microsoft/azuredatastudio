@@ -11349,8 +11349,30 @@
 			"miinstallVsix": "Установить расширение из пакета VSIX",
 			"newQuery": "Создать запрос",
 			"notebook.cellTitle": "Меню заголовка ячейки записной книжки",
+			"notebook.cellToolbarLocation.description": "Следует ли отображать панель инструментов ячейки или скрыть ее. (Только для Записных книжек VS Code)",
+			"notebook.cellToolbarVisibility.description": "Следует ли отображать панель инструментов ячейки при наведении указателя мыши или щелчке. (Только для Записных книжек VS Code)",
+			"notebook.compactView.description": "Укажите, должен ли редактор записных книжек отображаться в компактном виде. Например, если этот параметр включен, это приведет к уменьшению ширины левого поля. (Только для Записных книжек VS Code)",
+			"notebook.consolidatedOutputButton.description": "Определяет, следует ли отображать действие выходных данных на панели инструментов выходных данных. (Только для Записных книжек VS Code)",
+			"notebook.consolidatedRunButton.description": "Определяет, будут ли отображаться дополнительные действия в раскрывающемся меню рядом с кнопкой \"Выполнить\". (Только для Записных книжек VS Code)",
+			"notebook.diff.enablePreview.description": "Следует ли использовать расширенный редактор несовпадений в тексте для записной книжки. (Только для Записных книжек VS Code)",
+			"notebook.displayOrder.description": "Список приоритетов для типов MIME выходных данных. (Только для Записных книжек VS Code)",
+			"notebook.dragAndDrop.description": "Определяет, должен ли редактор записной книжки разрешать перемещение ячеек путем перетаскивания. (Только для Записных книжек VS Code)",
+			"notebook.editorOptions.experimentalCustomization": "Параметры для редакторов кода, используемых в записных книжках. Их можно использовать для настройки большинства параметров редактора. (Только для Записных книжек VS Code)",
+			"notebook.focusIndicator.description": "Определяет, где выводится указатель фокуса: на границах ячеек или по левому краю. (Только для Записных книжек VS Code)",
+			"notebook.globalToolbar.description": "Определяет, следует ли отображать глобальную панель инструментов в редакторе записной книжки. (Только для Записных книжек VS Code)",
+			"notebook.globalToolbarShowLabel": "Указать, следует ли отображать метку в действиях на панели инструментов записной книжки. (Только для Записных книжек VS Code)",
+			"notebook.insertToolbarPosition.description": "Управление расположением действий вставки ячеек. (Только для Записных книжек VS Code)",
+			"notebook.interactiveWindow.collapseCodeCells": "Определяет, свернуты ли по умолчанию ячейки кода в интерактивном окне. (Только для Записных книжек VS Code)",
+			"notebook.markup.fontSize": "Управляет размером шрифта (в пикселях) отрисовки разметки в записных книжках. Если задано значение \"0\", используется 120 % размера \"#editor.fontSize#\". (Только для Записных книжек VS Code)",
+			"notebook.outputFontFamily": "Семейство шрифтов выходного текста ячеек записной книжки. Если задано `нет значения`, используется `#editor.fontFamily#`. (Только для Записных книжек VS Code)",
+			"notebook.outputFontSize": "Размер шрифта для выходного текста ячеек записной книжки. Если задано значение `0`, используется `#editor.fontSize#`. (Только для Записных книжек VS Code)",
+			"notebook.outputLineHeight": "Высота строки выходного текста ячеек записной книжки.\r\n - значения от 0 до 8 будут использоваться в качестве множителя размера шрифта.\r\n - значения больше или равные 8 будут использоваться в качестве эффективных значений. (Только для Записных книжек VS Code)",
+			"notebook.showCellStatusbar.description": "Должна ли отображаться строка состояния ячейки. (Только для Записных книжек VS Code)",
+			"notebook.showFoldingControls.description": "Определяет, отображается ли стрелка папки заголовка Markdown. (Только для Записных книжек VS Code)",
+			"notebook.textOutputLineLimit": "Управление количеством отображаемых строк в выходном тексте. (Только для Записных книжек VS Code)",
 			"notebook.title": "Меню раздела записной книжки",
 			"notebook.toolbar": "Меню панели инструментов записной книжки",
+			"notebook.undoRedoPerCell.description": "Следует ли использовать отдельный стек отмены или повтора для каждой ячейки. (Только для Записных книжек VS Code)",
 			"objectExplorer.context": "Контекстное меню элемента обозревателя объектов",
 			"openDefaultSettingsJson": "открыть файл JSON параметров по умолчанию",
 			"openDefaultSettingsJson.capitalized": "Открыть параметры по умолчанию (JSON)",
@@ -11538,7 +11560,9 @@
 			"enableObsoleteApiUsageNotificationTitle": "Уведомление об устаревших API",
 			"previewFeatures.configEnable": "Включить невыпущенные предварительные версии функции",
 			"previewFeatures.configTitle": "Предварительные версии функции",
-			"showConnectDialogOnStartup": "Показывать диалоговое окно подключения при запуске"
+			"showConnectDialogOnStartup": "Показывать диалоговое окно подключения при запуске",
+			"useVSCodeNotebooks": "(Предварительная версия) Используйте записные книжки VS Code в качестве записной книжки по умолчанию. Примечание. Чтобы включить этот параметр, необходимо перезапустить Azure Data Studio.",
+			"useVSCodeNotebooksTitle": "Использовать записные книжки VS Code"
 		},
 		"sql/workbench/browser/designer/designer": {
 			"designer.actions": "Дополнительные действия",
@@ -11901,6 +11925,7 @@
 			"status.connection.status": "Состояние подключения"
 		},
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
+			"schema.azureResource": "Конечная точка ресурса Azure для поставщика.",
 			"schema.connectionOptions": "Параметры подключения",
 			"schema.displayName": "Отображаемое имя поставщика",
 			"schema.enableConnectionStringOption": "Указывает, поддерживает ли поставщик услуг строку подключения в качестве параметра подключения. Значение по умолчанию — false.",
@@ -12854,7 +12879,7 @@
 			"viewOptionsModal.title": "Настроить представление"
 		},
 		"sql/workbench/contrib/notebook/browser/outputs/gridOutput.component": {
-			"copyFailed": "Не удалось выполнить копирование. Ошибка: {0}",
+			"copyFailed": "Не удалось копировать. Ошибка: {0}",
 			"notebook.showChart": "Показать диаграмму",
 			"notebook.showTable": "Показать таблицу"
 		},
@@ -13075,6 +13100,7 @@
 			"fontWeight": "Управляет насыщенностью шрифта.",
 			"letterSpacing": "Управляет интервалом между буквами в пикселях.",
 			"maxColumnWidth": "Максимальная ширина в пикселях для столбцов, размер которых определяется автоматически",
+			"resultsGrid.showJsonAsLink": "Следует ли отображать ячейки со строкой в формате JSON в виде гиперссылки. Если этот параметр включен, значение JSON при щелчке будет открываться на другой вкладке. Значение по умолчанию — \"true\".",
 			"resultsGridConfigurationTitle": "Сетка результатов и сообщения",
 			"rowHeight": "Определяет высоту строки в пикселах"
 		},
@@ -13309,8 +13335,11 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "Закрыть",
+			"addAccountFailedGeneric": "Не удалось добавить учетную запись. Дополнительные сведения см. в журнале учетных записей Azure.",
+			"addAccountFailedMessage": "0 \r\nСообщение об ошибке: 1",
 			"loggingIn": "Добавление учетной записи…",
-			"refreshFailed": "Обновление учетной записи было отменено пользователем"
+			"refreshCanceled": "Обновление учетной записи было отменено пользователем",
+			"refreshFailed": "0 \r\nСообщение об ошибке: 1"
 		},
 		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
 			"azureAccount": "Учетная запись Azure",
@@ -13383,12 +13412,10 @@
 		},
 		"sql/workbench/services/connection/browser/connectionDialogService": {
 			"connectionError": "Ошибка подключения",
-			"enableTrustServerCertificate": "Доверять сертификату сервера",
 			"kerberosErrorStart": "Сбой подключения из-за ошибки Kerberos.",
 			"kerberosHelpLink": "Справка по настройке Kerberos доступна на странице {0}",
 			"kerberosKinit": "Если вы подключались ранее, может потребоваться запустить kinit повторно.",
-			"runKinit": "Запуск Kinit",
-			"trustServerCertInstructionText": "Для этого подключения включено шифрование. Проверьте конфигурацию SSL и сертификата для целевого SQL Server или включите \"Доверять сертификату сервера\" в диалоговом окне подключения.\r\n\r\n\t\t\tПримечание. Самозаверяющий сертификат обеспечивает только ограниченную защиту и не рекомендуется для рабочих сред. Вы хотите включить \"Доверять сертификату сервера\" для этого подключения и повторить попытку? "
+			"runKinit": "Запуск Kinit"
 		},
 		"sql/workbench/services/connection/browser/connectionDialogWidget": {
 			"connectType": "Тип подключения",
@@ -13443,6 +13470,8 @@
 			"unsavedGroupLabel": "Несохраненные подключения"
 		},
 		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.Message1": "Чтобы продолжить вход в \"{1}\", необходимо изменить пароль для \"{0}''.",
+			"passwordChangeDialog.Message2": "Введите новый пароль ниже:",
 			"passwordChangeDialog.cancel": "Отмена",
 			"passwordChangeDialog.confirmPassword": "Подтверждение пароля:",
 			"passwordChangeDialog.connecting": "Идет подключение",
@@ -13451,6 +13480,7 @@
 			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Нажмите \"ОК\" и введите в обоих полях одинаковый пароль.",
 			"passwordChangeDialog.newPassword": "Новый пароль:",
 			"passwordChangeDialog.ok": "OK",
+			"passwordChangeDialog.passwordChangeInProgress": "Смена пароля уже выполняется.",
 			"passwordChangeDialog.title": "Смена пароля"
 		},
 		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
@@ -13648,7 +13678,11 @@
 			"connectionTree.editServerGroup": "Изменить группу серверов",
 			"connectionTree.refresh": "Обновить",
 			"deleteConnection": "Удалить подключение",
+			"deleteConnectionConfirmation": "Вы действительно хотите удалить подключение: \"{0}\"?",
+			"deleteConnectionConfirmationNo": "Нет",
+			"deleteConnectionConfirmationYes": "Да",
 			"deleteConnectionGroup": "Удалить группу",
+			"deleteConnectionGroupConfirmation": "Вы действительно хотите удалить группу подключений: \"{0}\"?",
 			"showAllConnections": "Показать все подключения"
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
@@ -13674,6 +13708,7 @@
 		},
 		"sql/workbench/services/profiler/browser/profilerFilterDialog": {
 			"profilerFilterDialog.addClauseText": "Добавить предложение",
+			"profilerFilterDialog.allClausesCleared": "Все предложения очищены.",
 			"profilerFilterDialog.apply": "Применить",
 			"profilerFilterDialog.cancel": "Отмена",
 			"profilerFilterDialog.clear": "Очистить все",
@@ -13682,6 +13717,7 @@
 			"profilerFilterDialog.isNotNullOperator": "Не имеет значение NULL",
 			"profilerFilterDialog.isNullOperator": "Имеет значение NULL",
 			"profilerFilterDialog.loadFilter": "Загрузить фильтр",
+			"profilerFilterDialog.newClauseAdded": "Добавлено новое предложение.",
 			"profilerFilterDialog.notContainsOperator": "Не содержит",
 			"profilerFilterDialog.notStartsWithOperator": "Не начинается с",
 			"profilerFilterDialog.ok": "OK",
@@ -13706,7 +13742,7 @@
 			"updateCellFailed": "Сбой обновления ячейки: "
 		},
 		"sql/workbench/services/query/common/queryRunner": {
-			"copyFailed": "Не удалось выполнить копирование. Ошибка: {0}",
+			"copyFailed": "Не удалось копировать. Ошибка: {0}",
 			"elapsedBatchTime": "Время выполнения пакета: {0}",
 			"query.ExecutionFailedError": "Сбой выполнения из-за непредвиденной ошибки: {0} {1}",
 			"query.message.executionTime": "Общее время выполнения: {0}",
@@ -13910,6 +13946,9 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "Начало р&&аботы",
 			"showReleaseNotes": "Показать раздел \"Начало работы\""
+		},
+		"sql/workbench/services/dialog/browser/wizardNavigation.component": {
+			"wizardNavigation.stepName": "Шаг {0}: {1}"
 		}
 	}
 }

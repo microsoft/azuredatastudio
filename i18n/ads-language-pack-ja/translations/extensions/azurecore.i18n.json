@@ -20,7 +20,6 @@
 			"azure.owningTenantNotFound": "アカウントの所有テナント情報が見つかりません。",
 			"azure.responseError": "トークンの取得がエラーで失敗しました。詳細は、[開発者ツールを開く]({0})。",
 			"azure.tenantNotFound": "ID '{0}' の指定されたテナントが見つかりません。",
-			"azureAuth.unidentifiedError": "Azure 認証で不明なエラーが発生しました",
 			"azurecore.consentDialog.body": "テナント '{0} ({1})' では、{2} リソースにアクセスするために、もう一度再認証する必要があります。[開く] をクリックして、認証プロセスを開始してください。",
 			"azurecore.consentDialog.cancel": "キャンセル",
 			"azurecore.consentDialog.ignore": "テナントの無視",
@@ -50,10 +49,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure (China)",
-			"germanyCloud": "Azure (Germany)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (US Government)",
-			"usNatCloudDisplayName": "Azure (US National)"
+			"usGovCloudDisplayName": "Azure (US Government)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "この機能を動作させるには、Azure アカウントを選択する必要があります。",
