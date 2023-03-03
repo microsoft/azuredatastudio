@@ -534,7 +534,8 @@ function getTestState(): AccountManagementState {
 	const testConfigurationService = new TestConfigurationService();
 
 	// Create the account management service
-	let ams = new AccountManagementService(mockInstantiationService.object, new TestStorageService(), undefined!, undefined!, undefined!, testNotificationService, testConfigurationService);
+	let ams = new AccountManagementService(mockInstantiationService.object, new TestStorageService(),
+		undefined, undefined, undefined, testNotificationService, testConfigurationService);
 
 	// Wire up event handlers
 	let evUpdate = new EventVerifierSingle<UpdateAccountListEventParams>();
