@@ -33,7 +33,8 @@ const noAccountProvider: azdata.AccountProviderMetadata = {
 const account: azdata.Account = {
 	key: {
 		providerId: hasAccountProvider.id,
-		accountId: 'testAccount1'
+		accountId: 'testAccount1',
+		authLibrary: 'MSAL'
 	},
 	displayInfo: {
 		displayName: 'Test Account 1',
@@ -320,7 +321,12 @@ suite('Account Management Service Tests:', () => {
 		return ams.getAccountsForProvider(hasAccountProvider.id)
 			.then(result => {
 				// Then: I should get back the list of accounts
-				assert.strictEqual(result, accountList);
+				// Since account are filtered by AuthLibrary and list is prepared again, they are not strict equal.
+				// We compare strict equality of actual accounts here.
+				assert.strictEqual(accountList.length, result.length);
+				for (var i = 0; i < accountList.length; i++) {
+					assert.strictEqual(result[i], accountList[i]);
+				}
 			});
 	});
 
