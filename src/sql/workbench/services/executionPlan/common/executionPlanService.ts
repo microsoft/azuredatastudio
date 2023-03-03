@@ -40,7 +40,6 @@ export class ExecutionPlanService implements IExecutionPlanService {
 			return;
 		}
 
-
 		// Wait until the capabilities service has registered some providers.
 		await new Promise<void>(resolve => {
 			let retryCount = 0;
