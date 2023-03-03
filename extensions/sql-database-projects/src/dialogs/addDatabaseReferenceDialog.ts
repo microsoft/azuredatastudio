@@ -156,10 +156,10 @@ export class AddDatabaseReferenceDialog {
 				projectName: <string>this.projectDropdown?.value,
 				projectGuid: '',
 				projectRelativePath: undefined,
-				databaseName: <string>this.databaseNameTextbox?.value,
-				databaseVariable: <string>this.databaseVariableTextbox?.value,
-				serverName: <string>this.serverNameTextbox?.value,
-				serverVariable: <string>this.serverVariableTextbox?.value,
+				databaseName: this.validateUnsetStringSetting(this.databaseNameTextbox?.value),
+				databaseVariable: this.validateUnsetStringSetting(this.databaseVariableTextbox?.value),
+				serverName: this.validateUnsetStringSetting(this.serverNameTextbox?.value),
+				serverVariable: this.validateUnsetStringSetting(this.serverVariableTextbox?.value),
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
 		} else if (this.currentReferenceType === ReferenceType.systemDb) {
@@ -170,11 +170,11 @@ export class AddDatabaseReferenceDialog {
 			};
 		} else { // this.currentReferenceType === ReferenceType.dacpac
 			referenceSettings = {
-				databaseName: <string>this.databaseNameTextbox?.value,
+				databaseName: this.validateUnsetStringSetting(this.databaseNameTextbox?.value),
 				dacpacFileLocation: vscode.Uri.file(<string>this.dacpacTextbox?.value),
-				databaseVariable: utils.removeSqlCmdVariableFormatting(<string>this.databaseVariableTextbox?.value),
-				serverName: <string>this.serverNameTextbox?.value,
-				serverVariable: utils.removeSqlCmdVariableFormatting(<string>this.serverVariableTextbox?.value),
+				databaseVariable: this.validateUnsetStringSetting(utils.removeSqlCmdVariableFormatting(<string>this.databaseVariableTextbox?.value)),
+				serverName: this.validateUnsetStringSetting(this.serverNameTextbox?.value),
+				serverVariable: this.validateUnsetStringSetting(utils.removeSqlCmdVariableFormatting(<string>this.serverVariableTextbox?.value)),
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
 		}
@@ -186,6 +186,17 @@ export class AddDatabaseReferenceDialog {
 		await this.addReference!(this.project, referenceSettings);
 
 		this.dispose();
+	}
+
+	/**
+	 * Returns undefined for settings that are an empty string, meaning they are unset
+	 * @param settingValue
+	 */
+	private validateUnsetStringSetting(settingValue?: string): string | undefined {
+		if (!settingValue || settingValue.trim().length === 0) {
+			return undefined;
+		}
+		return settingValue;
 	}
 
 	private createRadioButtons(): azdataType.FormComponent {

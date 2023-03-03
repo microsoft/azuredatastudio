@@ -978,32 +978,24 @@ export class Project implements ISqlProject {
 			throw new Error(constants.databaseReferenceAlreadyExists);
 		}
 
-
-		const sqlProjectsService = await utils.getSqlProjectsService();
-
 		// create database variable
 		if (settings.databaseVariable && settings.databaseName) {
-			await sqlProjectsService.addSqlCmdVariable(this.projectFilePath, settings.databaseVariable, settings.databaseName);
-		}
+			await this.sqlProjService.addSqlCmdVariable(this.projectFilePath, settings.databaseVariable, settings.databaseName);
 
-		// create server variable
-		if (settings.serverVariable && settings.serverName) {
-			await sqlProjectsService.addSqlCmdVariable(this.projectFilePath, settings.serverVariable, settings.serverName);
+			// create server variable - only can be set when there's also a database variable (reference to different database on different server)
+			if (settings.serverVariable && settings.serverName) {
+				await this.sqlProjService.addSqlCmdVariable(this.projectFilePath, settings.serverVariable, settings.serverName);
+			}
 		}
-
-		// need to set these to undefined if they are empty strings
-		const databaseVariable = settings.databaseVariable ? settings.databaseVariable : undefined;
-		const databaseName = settings.databaseName ? settings.databaseName : undefined;
-		const serverVariable = settings.serverVariable ? settings.serverVariable : undefined;
 
 		let result;
 
 		// dacpac reference uses database sqlcmd variable and possibly server sqlcmd variable
-		if (databaseVariable) {
-			result = await sqlProjectsService.addDacpacReference(this.projectFilePath, settings.dacpacFileLocation.fsPath, settings.suppressMissingDependenciesErrors, databaseVariable, serverVariable);
+		if (settings.databaseVariable) {
+			result = await this.sqlProjService.addDacpacReference(this.projectFilePath, settings.dacpacFileLocation.fsPath, settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable);
 		} else {
 			// dacpac reference is to same db or uses database literal
-			result = await sqlProjectsService.addDacpacReference(this.projectFilePath, settings.dacpacFileLocation.fsPath, settings.suppressMissingDependenciesErrors, undefined, undefined, databaseName);
+			result = await this.sqlProjService.addDacpacReference(this.projectFilePath, settings.dacpacFileLocation.fsPath, settings.suppressMissingDependenciesErrors, undefined, undefined, settings.databaseName);
 		}
 
 		if (!result.success && result.errorMessage) {
