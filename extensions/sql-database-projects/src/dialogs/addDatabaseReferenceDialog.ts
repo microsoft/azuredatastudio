@@ -156,10 +156,10 @@ export class AddDatabaseReferenceDialog {
 				projectName: <string>this.projectDropdown?.value,
 				projectGuid: '',
 				projectRelativePath: undefined,
-				databaseName: <string>this.databaseNameTextbox?.value,
-				databaseVariable: <string>this.databaseVariableTextbox?.value,
-				serverName: <string>this.serverNameTextbox?.value,
-				serverVariable: <string>this.serverVariableTextbox?.value,
+				databaseName: this.ensureSetOrDefined(this.databaseNameTextbox?.value),
+				databaseVariable: this.ensureSetOrDefined(this.databaseVariableTextbox?.value),
+				serverName: this.ensureSetOrDefined(this.serverNameTextbox?.value),
+				serverVariable: this.ensureSetOrDefined(this.serverVariableTextbox?.value),
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
 		} else if (this.currentReferenceType === ReferenceType.systemDb) {
@@ -170,11 +170,11 @@ export class AddDatabaseReferenceDialog {
 			};
 		} else { // this.currentReferenceType === ReferenceType.dacpac
 			referenceSettings = {
-				databaseName: <string>this.databaseNameTextbox?.value,
+				databaseName: this.ensureSetOrDefined(this.databaseNameTextbox?.value),
 				dacpacFileLocation: vscode.Uri.file(<string>this.dacpacTextbox?.value),
-				databaseVariable: utils.removeSqlCmdVariableFormatting(<string>this.databaseVariableTextbox?.value),
-				serverName: <string>this.serverNameTextbox?.value,
-				serverVariable: utils.removeSqlCmdVariableFormatting(<string>this.serverVariableTextbox?.value),
+				databaseVariable: this.ensureSetOrDefined(utils.removeSqlCmdVariableFormatting(<string>this.databaseVariableTextbox?.value)),
+				serverName: this.ensureSetOrDefined(this.serverNameTextbox?.value),
+				serverVariable: this.ensureSetOrDefined(utils.removeSqlCmdVariableFormatting(<string>this.serverVariableTextbox?.value)),
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
 		}
@@ -186,6 +186,17 @@ export class AddDatabaseReferenceDialog {
 		await this.addReference!(this.project, referenceSettings);
 
 		this.dispose();
+	}
+
+	/**
+	 * Returns undefined for settings that are an empty string, meaning they are unset
+	 * @param setting
+	 */
+	private ensureSetOrDefined(setting?: string): string | undefined {
+		if (!setting || setting.trim().length === 0) {
+			return undefined;
+		}
+		return setting;
 	}
 
 	private createRadioButtons(): azdataType.FormComponent {
