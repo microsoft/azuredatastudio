@@ -763,8 +763,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		}
 
 		if (this.authenticationType === AuthenticationType.AzureMFAAndUser) {
-			// Populate username as 'email' of selected azure account in dropdown (Ask from MySQL)
-			this._userNameInputBox.value = selectedAccount.displayInfo.email! ?? this._azureAccountList[0]?.displayInfo?.email! ?? '';
+			// Populate username as 'email' of selected azure account in dropdown, as username is required,
+			// and email of Azure account selected applies as username in most cases.
+			this._userNameInputBox.value = selectedAccount?.displayInfo?.email! ?? '';
 		}
 
 		if (selectedAccount && selectedAccount.properties.tenants && selectedAccount.properties.tenants.length > 1) {
