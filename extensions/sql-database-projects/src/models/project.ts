@@ -1006,7 +1006,22 @@ export class Project implements ISqlProject {
 			throw new Error(constants.databaseReferenceAlreadyExists);
 		}
 
-		await this.addToProjFile(projectReferenceEntry);
+		// create database variable
+		if (settings.databaseVariable && settings.databaseName) {
+			await this.sqlProjService.addSqlCmdVariable(this.projectFilePath, settings.databaseVariable, settings.databaseName);
+
+			// create server variable - only can be set when there's also a database variable (reference to different database on different server)
+			if (settings.serverVariable && settings.serverName) {
+				await this.sqlProjService.addSqlCmdVariable(this.projectFilePath, settings.serverVariable, settings.serverName);
+			}
+		}
+
+		const databaseLiteral = settings.databaseVariable ? undefined : settings.databaseName;
+		const result = await this.sqlProjService.addSqlProjectReference(this.projectFilePath, settings.projectRelativePath!.fsPath, settings.projectGuid, settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
+
+		if (!result.success && result.errorMessage) {
+			throw new Error(constants.errorAddingDatabaseReference(settings.projectName, result.errorMessage));
+		}
 	}
 
 	/**
