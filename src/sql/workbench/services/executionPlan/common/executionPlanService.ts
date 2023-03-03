@@ -33,21 +33,23 @@ export class ExecutionPlanService implements IExecutionPlanService {
 	 * @param providerId Optional provider id to wait for.
 	 */
 	private async ensureCapabilitiesRegistered(providerId?: string): Promise<void> {
-		let providers: string[] = [];
+		let providers: string[] = Object.keys(this._capabilitiesService.providers);
+
+		// If the provider is already registered, return.
+		if (providerId && providers?.includes(providerId) || (!providerId && providers?.length > 0)) {
+			return;
+		}
+
+
 		// Wait until the capabilities service has registered some providers.
 		await new Promise<void>(resolve => {
 			let retryCount = 0;
 			const intervalId = setInterval(() => {
 				while (retryCount < 5) {
 					providers = Object.keys(this._capabilitiesService.providers);
-					if (providers) {
-						if (providerId && providers[providerId]) {
-							clearInterval(intervalId);
-							resolve();
-						} else if (providers) {
-							clearInterval(intervalId);
-							resolve();
-						}
+					if (providerId && providers?.includes(providerId) || (!providerId && providers?.length > 0)) {
+						clearInterval(intervalId);
+						resolve();
 					}
 					retryCount++;
 				}
