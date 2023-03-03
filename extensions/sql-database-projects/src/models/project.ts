@@ -38,7 +38,11 @@ enum Configuration {
  * Class representing a Project, and providing functions for operating on it
  */
 export class Project implements ISqlProject {
+
+	//#region Private Fields
+
 	private sqlProjService!: ISqlProjectsService;
+	private projFileXmlDoc: Document | undefined = undefined;
 
 	private _projectFilePath: string;
 	private _projectFileName: string;
@@ -59,6 +63,10 @@ export class Project implements ISqlProject {
 	private _publishProfiles: FileProjectEntry[] = [];
 	private _defaultCollation: string = '';
 	private _databaseSchemaProvider: string = '';
+
+	//#endregion
+
+	//#region Public Properties
 
 	public get dacpacOutputPath(): string {
 		return path.join(this.outputPath, `${this._projectFileName}.dacpac`);
@@ -132,7 +140,7 @@ export class Project implements ISqlProject {
 		return this._publishProfiles;
 	}
 
-	private projFileXmlDoc: Document | undefined = undefined;
+	//#endregion
 
 	constructor(projectFilePath: string) {
 		this._projectFilePath = projectFilePath;
@@ -191,6 +199,8 @@ export class Project implements ISqlProject {
 			console.error(utils.getErrorMessage(e));
 		}
 	}
+
+	//#region Reader helpers
 
 	private async readProjectProperties(): Promise<void> {
 		const props = await this.sqlProjService.getProjectProperties(this.projectFilePath);
@@ -426,6 +436,8 @@ export class Project implements ISqlProject {
 		return imports;
 	}
 
+	//#endregion
+
 	private resetProject(): void {
 		this._files = [];
 		this._importedTargets = [];
@@ -536,6 +548,10 @@ export class Project implements ISqlProject {
 		parentNode.appendChild(deleteFileNode);
 		await this.serializeToProjFile(this.projFileXmlDoc!);
 	}
+
+	//#region Add/Delete/Exclude functions
+
+	//#endregion
 
 	/**
 	 * Adds a folder to the project, and saves the project file
