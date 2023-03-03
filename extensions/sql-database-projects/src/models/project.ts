@@ -988,7 +988,7 @@ export class Project implements ISqlProject {
 		}
 
 		const databaseLiteral = settings.databaseVariable ? undefined : settings.databaseName;
-		const result = await this.sqlProjService.addDacpacReference(this.projectFilePath, settings.dacpacFileLocation.fsPath, settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
+		const result = await this.sqlProjService.addDacpacReference(this.projectFilePath, databaseReferenceEntry.pathForSqlProj(), settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
 
 		if (!result.success && result.errorMessage) {
 			throw new Error(constants.errorAddingDatabaseReference(settings.dacpacFileLocation.fsPath, result.errorMessage));
