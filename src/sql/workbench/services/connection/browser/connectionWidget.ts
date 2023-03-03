@@ -179,7 +179,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this.fillInConnectionForm(authTypeChanged);
 		this.registerListeners();
 		if (this._authTypeSelectBox) {
-			this.onAuthTypeSelected(this._authTypeSelectBox.value);
+			this.onAuthTypeSelected(this._authTypeSelectBox.value, false);
 		}
 	}
 
@@ -553,7 +553,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			// Theme styler
 			this._register(styler.attachSelectBoxStyler(this._authTypeSelectBox, this._themeService));
 			this._register(this._authTypeSelectBox.onDidSelect(selectedAuthType => {
-				this.onAuthTypeSelected(selectedAuthType.selected);
+				this.onAuthTypeSelected(selectedAuthType.selected, true);
 				this.setConnectButton();
 			}));
 		}
@@ -613,12 +613,10 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._callbacks.onSetConnectButton(shouldEnableConnectButton);
 	}
 
-	protected onAuthTypeSelected(selectedAuthType: string): void {
+	protected onAuthTypeSelected(selectedAuthType: string, clearCredentials: boolean): void {
 		let currentAuthType = this.getMatchingAuthType(selectedAuthType);
-		if (currentAuthType !== AuthenticationType.SqlLogin) {
-			if (currentAuthType !== AuthenticationType.AzureMFA && currentAuthType !== AuthenticationType.AzureMFAAndUser) {
-				this._userNameInputBox.value = '';
-			}
+		if (clearCredentials) {
+			this._userNameInputBox.value = '';
 			this._passwordInputBox.value = '';
 		}
 		this._userNameInputBox.hideMessage();
@@ -904,7 +902,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			}
 
 			if (this._authTypeSelectBox) {
-				this.onAuthTypeSelected(this._authTypeSelectBox.value);
+				this.onAuthTypeSelected(this._authTypeSelectBox.value, false);
 			} else {
 				this._tableContainer.classList.remove('hide-username');
 				this._tableContainer.classList.remove('hide-password');
