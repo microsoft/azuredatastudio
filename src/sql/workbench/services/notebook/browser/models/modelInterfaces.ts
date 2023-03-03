@@ -6,7 +6,7 @@
 // This code is based on @jupyterlab/packages/apputils/src/clientsession.tsx
 
 import { nb } from 'azdata';
-import { Event } from 'vs/base/common/event';
+import { Emitter, Event } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -456,7 +456,8 @@ export interface ICellModel {
 	readonly onCollapseStateChanged: Event<boolean>;
 	readonly onParameterStateChanged: Event<boolean>;
 	readonly onCellEditModeChanged: Event<boolean>;
-	readonly onCellSourceChanged: Event<boolean>;
+	readonly onCellPreviewUpdated: Event<boolean>;
+	readonly cellPreviewUpdated: Emitter<boolean>;
 	modelContentChangedEvent: IModelContentChangedEvent;
 	isEditMode: boolean;
 	showPreview: boolean;

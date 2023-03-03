@@ -84,7 +84,6 @@ export class CellModel extends Disposable implements ICellModel {
 	private _defaultTextEditMode: string;
 	private _isParameter: boolean;
 	private _onParameterStateChanged = new Emitter<boolean>();
-	private _onCellSourceChanged = new Emitter<boolean>();
 	private _isInjectedParameter: boolean;
 	private _previousChartState: IInsightOptions[] = [];
 	private _outputCounter = 0; // When re-executing the same cell, ensure that we apply chart options in the same order
@@ -93,6 +92,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _lastEditMode: string | undefined;
 	public richTextCursorPosition: ICaretPosition | undefined;
 	public markdownCursorPosition: IPosition | undefined;
+	public cellPreviewUpdated = new Emitter<boolean>();
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -341,7 +341,6 @@ export class CellModel extends Disposable implements ICellModel {
 			this._source = newSource;
 			this.sendChangeToNotebook(NotebookChangeType.CellSourceUpdated);
 			this.cellSourceChanged = true;
-			this._onCellSourceChanged.fire(this.cellSourceChanged);
 		}
 		this._modelContentChangedEvent = undefined;
 		this._preventNextChartCache = true;
@@ -511,12 +510,12 @@ export class CellModel extends Disposable implements ICellModel {
 		this._cellSourceChanged = val;
 	}
 
-	public get onParameterStateChanged(): Event<boolean> {
-		return this._onParameterStateChanged.event;
+	public get onCellPreviewUpdated(): Event<boolean> {
+		return this.cellPreviewUpdated.event;
 	}
 
-	public get onCellSourceChanged(): Event<boolean> {
-		return this._onCellSourceChanged.event;
+	public get onParameterStateChanged(): Event<boolean> {
+		return this._onParameterStateChanged.event;
 	}
 
 	public get isParameter() {

@@ -214,9 +214,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this.toggleEditMode(mode);
 			}
 		}));
-		this._register(this.cellModel.onCellSourceChanged(changed => {
-			this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
-		}));
 		this._register(this.cellModel.onCurrentEditModeChanged(editMode => {
 			let markdown: boolean = editMode !== CellEditModes.WYSIWYG;
 			if (!markdown) {
@@ -340,6 +337,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				if (this.isFindActive) {
 					this.addDecoration();
 				}
+				this.cellModel.cellPreviewUpdated.fire(true);
 			}
 		}
 	}
@@ -362,7 +360,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	private updateCellSource(): void {
-		this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 		let textOutputElement = <HTMLElement>this.output.nativeElement;
 		let newCellSource = this._htmlMarkdownConverter.convert(textOutputElement.innerHTML);
 		this.cellModel.source = newCellSource;
