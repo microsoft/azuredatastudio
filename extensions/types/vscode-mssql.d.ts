@@ -593,6 +593,13 @@ declare module 'vscode-mssql' {
 		setDatabaseSource(projectUri: string, databaseSource: string): Promise<ResultStatus>;
 
 		/**
+		 * Set the DatabaseSchemaProvider property of a SQL project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param databaseSchemaProvider New DatabaseSchemaProvider value, in the form "Microsoft.Data.Tools.Schema.Sql.SqlXYZDatabaseSchemaProvider"
+		 */
+		setDatabaseSchemaProvider(projectUri: string, databaseSchemaProvider: string): Promise<ResultStatus>;
+
+		/**
 		 * Get the cross-platform compatibility status for a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
