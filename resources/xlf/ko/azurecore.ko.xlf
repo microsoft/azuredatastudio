@@ -122,6 +122,16 @@
         <source xml:lang="en">A call was made to azdata.accounts.getSecurityToken, this method is deprecated and will be removed in future releases. Please use getAccountSecurityToken instead.</source>
         <target state="translated">azdata.accounts.getSecurityToken이 호출되었습니다. 이 메서드는 사용되지 않으며 향후 릴리스에서 제거됩니다. 대신 getAccountSecurityToken을 사용하세요.</target>
       </trans-unit>
+      <trans-unit id="genericTokenError">
+        <source xml:lang="en">Failed to get token</source>
+        <target state="new">Failed to get token</target>
+      </trans-unit>
+      <trans-unit id="msalTokenError">
+        <source xml:lang="en">{0} occurred when acquiring token. 
+{1}</source>
+        <target state="new">{0} occurred when acquiring token. 
+{1}</target>
+      </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/account-provider/azureAccountProviderService" source-language="en" datatype="plaintext" target-language="ko">

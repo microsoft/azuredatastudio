@@ -284,6 +284,11 @@
         <source xml:lang="en">Controls the memory available to Azure Data Studio after restart when trying to open large files. Same effect as specifying `--max-memory=NEWSIZE` on the command line.</source>
         <target state="translated">Controlla la memoria disponibile per Azure Data Studio dopo il riavvio durante il tentativo di aprire file di grandi dimensioni. Il risultato è uguale a quando si specifica `--max-memory=NEWSIZE` sulla riga di comando.</target>
       </trans-unit>
+      <trans-unit id="miNewDeployment">
+        <source xml:lang="en">New &amp;&amp;Deployment...</source>
+        <note>&amp;&amp; denotes a mnemonic</note>
+        <target state="new">New &amp;&amp;Deployment...</target>
+      </trans-unit>
       <trans-unit id="miNewNotebook">
         <source xml:lang="en">&amp;&amp;New Notebook</source>
         <note>&amp;&amp; denotes a mnemonic</note>
@@ -7407,15 +7412,19 @@ Errore: {1}</target>
         <source xml:lang="en">Close</source>
         <target state="translated">Chiudi</target>
       </trans-unit>
-      <trans-unit id="addAccountFailedGeneric">
+      <trans-unit id="addAccountFailedCodeMessage">
+        <source xml:lang="en">{0} 
+Error Message: {1}</source>
+        <target state="new">{0} 
+Error Message: {1}</target>
+      </trans-unit>
+      <trans-unit id="addAccountFailedGenericMessage">
         <source xml:lang="en">Adding account failed, check Azure Accounts log for more info.</source>
-        <target state="translated">L'aggiunta dell'account non è riuscita. Per altre informazioni, vedere il log degli account di Azure.</target>
+        <target state="new">Adding account failed, check Azure Accounts log for more info.</target>
       </trans-unit>
       <trans-unit id="addAccountFailedMessage">
-        <source xml:lang="en">0 
-Error Message: 1</source>
-        <target state="translated">0 
-Messaggio di errore: 1</target>
+        <source xml:lang="en">{0}</source>
+        <target state="new">{0}</target>
       </trans-unit>
       <trans-unit id="loggingIn">
         <source xml:lang="en">Adding account...</source>

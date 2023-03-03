@@ -594,7 +594,7 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None">
         <source xml:lang="en">None</source>
-        <target state="new">None</target>
+        <target state="translated">Keine</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.description">
         <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>

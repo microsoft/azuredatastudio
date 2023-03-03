@@ -161,7 +161,7 @@
 			"mssql.connectionOptions.databaseName.displayName": "데이터베이스",
 			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS": "Azure Attestation",
 			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS": "호스트 보호 서비스",
-			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None": "None",
+			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None": "없음",
 			"mssql.connectionOptions.enclaveAttestationProtocol.description": "보안 enclave를 사용한 Always Encrypted와 함께 사용되는 서버 쪽 enclave를 증명하기 위한 프로토콜 지정",
 			"mssql.connectionOptions.enclaveAttestationProtocol.displayName": "증명 프로토콜",
 			"mssql.connectionOptions.enclaveAttestationUrl.description": "보안 enclave를 사용한 Always Encrypted와 함께 사용되는 서버 쪽 enclave를 증명하기 위한 엔드포인트 지정",

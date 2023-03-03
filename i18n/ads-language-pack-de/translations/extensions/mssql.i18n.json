@@ -161,7 +161,7 @@
 			"mssql.connectionOptions.databaseName.displayName": "Datenbank",
 			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS": "Azure Attestation",
 			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS": "Host-Überwachungsdienst",
-			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None": "None",
+			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None": "Keine",
 			"mssql.connectionOptions.enclaveAttestationProtocol.description": "Gibt ein Protokoll zum Nachweis einer serverseitigen Enclave an, die mit Always Encrypted für Secure Enclaves verwendet wird.",
 			"mssql.connectionOptions.enclaveAttestationProtocol.displayName": "Nachweisprotokoll",
 			"mssql.connectionOptions.enclaveAttestationUrl.description": "Gibt einen Endpunkt zum Nachweis einer serverseitigen Enclave an, die mit Always Encrypted für Secure Enclaves verwendet wird.",

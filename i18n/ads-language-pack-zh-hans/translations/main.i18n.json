@@ -11344,6 +11344,7 @@
 			"incompatible": "无法安装扩展“{1}”的版本“{0}”，因为它与 Azure Data Studio“{2}”不兼容。请更新到 Azure Data Studio {3} 以安装扩展。",
 			"installExtensionCompletedAndReloadRequired": "安装扩展 {0} 已完成。请重新加载 Azure Data Studio 以启用它。",
 			"maxMemoryForLargeFilesMB": "在打开大型文件时，控制 Azure Data Studio 可在重启后使用的内存。在命令行中指定 `--max-memory=新的大小` 参数可达到相同效果。",
+			"miNewDeployment": "New &&Deployment...",
 			"miNewNotebook": "新建笔记本(&&N)",
 			"miNewQuery": "新建查询(&&Q)",
 			"miinstallVsix": "从 VSIX 包安装扩展",
@@ -13335,8 +13336,9 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "关闭",
-			"addAccountFailedGeneric": "添加帐户失败，有关详细信息，请查看 Azure 帐户日志。",
-			"addAccountFailedMessage": "0 \r\n错误消息: 1",
+			"addAccountFailedCodeMessage": "{0} \r\nError Message: {1}",
+			"addAccountFailedGenericMessage": "Adding account failed, check Azure Accounts log for more info.",
+			"addAccountFailedMessage": "{0}",
 			"loggingIn": "正在添加帐户...",
 			"refreshCanceled": "用户已取消刷新帐户",
 			"refreshFailed": "0 \r\n错误消息: 1"

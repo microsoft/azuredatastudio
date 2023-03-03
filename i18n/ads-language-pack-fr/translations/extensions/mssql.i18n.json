@@ -161,7 +161,7 @@
 			"mssql.connectionOptions.databaseName.displayName": "Base de données",
 			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS": "Azure Attestation",
 			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS": "Service Guardian hôte",
-			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None": "None",
+			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None": "Aucun(e)",
 			"mssql.connectionOptions.enclaveAttestationProtocol.description": "Spécifie un protocole pour attester une enclave côté serveur utilisée avec Always Encrypted avec des enclaves sécurisées",
 			"mssql.connectionOptions.enclaveAttestationProtocol.displayName": "Protocole d'attestation",
 			"mssql.connectionOptions.enclaveAttestationUrl.description": "Spécifie un point de terminaison pour attester une enclave côté serveur utilisée avec Always Encrypted avec des enclaves sécurisées",

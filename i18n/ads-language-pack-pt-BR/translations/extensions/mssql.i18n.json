@@ -161,7 +161,7 @@
 			"mssql.connectionOptions.databaseName.displayName": "Banco de dados",
 			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS": "Atestado do Azure",
 			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS": "Serviço Guardião de Host",
-			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None": "None",
+			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None": "Nenhum",
 			"mssql.connectionOptions.enclaveAttestationProtocol.description": "Especifica um protocolo para atestar um enclave do lado do servidor usado com o Always Encrypted com enclaves seguros",
 			"mssql.connectionOptions.enclaveAttestationProtocol.displayName": "Protocolo de Atestado",
 			"mssql.connectionOptions.enclaveAttestationUrl.description": "Especifica um ponto de extremidade para atestar um enclave do lado do servidor usado com o Always Encrypted com enclaves seguros",

@@ -11344,6 +11344,7 @@
 			"incompatible": "Impossible d’installer la version '{0}' de l’extension '{1}', car elle n’est pas compatible avec Azure Data Studio '{2}'. Mettez à jour vers Azure Data Studio {3} pour installer l’extension.",
 			"installExtensionCompletedAndReloadRequired": "L'installation de l'extension {0} a été effectuée. Rechargez Azure Data Studio pour l'activer.",
 			"maxMemoryForLargeFilesMB": "Contrôle la mémoire disponible pour Azure Data Studio après le redémarrage en cas de tentative d'ouverture de fichiers volumineux. Même effet que de spécifier '--max-memory=NEWSIZE' sur la ligne de commande.",
+			"miNewDeployment": "New &&Deployment...",
 			"miNewNotebook": "&&Nouveau notebook",
 			"miNewQuery": "Nouvelle &&requête",
 			"miinstallVsix": "Installer l’extension à partir du package VSIX",
@@ -13335,8 +13336,9 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "Fermer",
-			"addAccountFailedGeneric": "Échec de l’ajout du compte. Pour plus d’informations, consultez le journal des comptes Azure.",
-			"addAccountFailedMessage": "0 \r\nMessage d’erreur : 1",
+			"addAccountFailedCodeMessage": "{0} \r\nError Message: {1}",
+			"addAccountFailedGenericMessage": "Adding account failed, check Azure Accounts log for more info.",
+			"addAccountFailedMessage": "{0}",
 			"loggingIn": "Ajout du compte...",
 			"refreshCanceled": "L'actualisation du compte a été annulée par l'utilisateur",
 			"refreshFailed": "0 \r\nMessage d’erreur : 1"

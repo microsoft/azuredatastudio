@@ -11344,6 +11344,7 @@
 			"incompatible": "Не удается установить версию \"{0}\" расширения \"{1}\", так как она несовместима с Azure Data Studio \"{2}\". Обновите до Azure Data Studio {3}, чтобы установить расширение.",
 			"installExtensionCompletedAndReloadRequired": "Установка расширения {0} завершена. Перезагрузите Azure Data Studio, чтобы включить это расширение.",
 			"maxMemoryForLargeFilesMB": "Управляет объемом памяти, который доступен Azure Data Studio после перезапуска при попытке открытия больших файлов. Действие этого параметра аналогично указанию параметра \"--max-memory=НОВЫЙ_РАЗМЕР\" в командной строке.",
+			"miNewDeployment": "New &&Deployment...",
 			"miNewNotebook": "&&Новая записная книжка",
 			"miNewQuery": "Создать &&запрос",
 			"miinstallVsix": "Установить расширение из пакета VSIX",
@@ -13335,8 +13336,9 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "Закрыть",
-			"addAccountFailedGeneric": "Не удалось добавить учетную запись. Дополнительные сведения см. в журнале учетных записей Azure.",
-			"addAccountFailedMessage": "0 \r\nСообщение об ошибке: 1",
+			"addAccountFailedCodeMessage": "{0} \r\nError Message: {1}",
+			"addAccountFailedGenericMessage": "Adding account failed, check Azure Accounts log for more info.",
+			"addAccountFailedMessage": "{0}",
 			"loggingIn": "Добавление учетной записи…",
 			"refreshCanceled": "Обновление учетной записи было отменено пользователем",
 			"refreshFailed": "0 \r\nСообщение об ошибке: 1"

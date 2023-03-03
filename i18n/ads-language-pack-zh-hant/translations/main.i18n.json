@@ -11344,6 +11344,7 @@
 			"incompatible": "無法安裝延伸模組 '{1}' 的版本 '{0}'，因為它與 Azure Data Studio '{2}' 不相容。更新為 Azure Data Studio {3} 以安裝延伸模組。",
 			"installExtensionCompletedAndReloadRequired": "延伸模組 {0} 安裝完成。請重新載入 Azure Data Studio 以啟用此延伸模組。",
 			"maxMemoryForLargeFilesMB": "控制當嘗試開啟大型檔案時，Azure Data Studio 在重新啟動後可用的記憶體。效果與在命令列上指定 `--max-memory=NEWSIZE` 相同。",
+			"miNewDeployment": "New &&Deployment...",
 			"miNewNotebook": "新增筆記本(&&N)",
 			"miNewQuery": "新增查詢(&&Q)",
 			"miinstallVsix": "從 VSIX 套件安裝延伸模組",
@@ -13335,8 +13336,9 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "關閉",
-			"addAccountFailedGeneric": "新增帳戶失敗，如需詳細資訊，請查看 Azure 帳戶記錄。",
-			"addAccountFailedMessage": "0 \r\n錯誤訊息: 1",
+			"addAccountFailedCodeMessage": "{0} \r\nError Message: {1}",
+			"addAccountFailedGenericMessage": "Adding account failed, check Azure Accounts log for more info.",
+			"addAccountFailedMessage": "{0}",
 			"loggingIn": "正在新增帳戶...",
 			"refreshCanceled": "使用者已取消重新整理帳戶",
 			"refreshFailed": "0 \r\n錯誤訊息: 1"

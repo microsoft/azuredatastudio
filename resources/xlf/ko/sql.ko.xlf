@@ -284,6 +284,11 @@
         <source xml:lang="en">Controls the memory available to Azure Data Studio after restart when trying to open large files. Same effect as specifying `--max-memory=NEWSIZE` on the command line.</source>
         <target state="translated">큰 파일을 열려고 할 때 다시 시작한 후 Azure Data Studio에 사용 가능한 메모리를 제어합니다. 명령줄에 '--max-memory=NEWSIZE'를 지정하는 것과 결과가 같습니다.</target>
       </trans-unit>
+      <trans-unit id="miNewDeployment">
+        <source xml:lang="en">New &amp;&amp;Deployment...</source>
+        <note>&amp;&amp; denotes a mnemonic</note>
+        <target state="new">New &amp;&amp;Deployment...</target>
+      </trans-unit>
       <trans-unit id="miNewNotebook">
         <source xml:lang="en">&amp;&amp;New Notebook</source>
         <note>&amp;&amp; denotes a mnemonic</note>
@@ -7407,15 +7412,19 @@ Error: {1}</source>
         <source xml:lang="en">Close</source>
         <target state="translated">닫기</target>
       </trans-unit>
-      <trans-unit id="addAccountFailedGeneric">
+      <trans-unit id="addAccountFailedCodeMessage">
+        <source xml:lang="en">{0} 
+Error Message: {1}</source>
+        <target state="new">{0} 
+Error Message: {1}</target>
+      </trans-unit>
+      <trans-unit id="addAccountFailedGenericMessage">
         <source xml:lang="en">Adding account failed, check Azure Accounts log for more info.</source>
-        <target state="translated">계정을 추가하지 못했습니다. 자세한 내용은 Azure 계정 로그를 확인하세요.</target>
+        <target state="new">Adding account failed, check Azure Accounts log for more info.</target>
       </trans-unit>
       <trans-unit id="addAccountFailedMessage">
-        <source xml:lang="en">0 
-Error Message: 1</source>
-        <target state="translated">0 
-오류 메시지: 1</target>
+        <source xml:lang="en">{0}</source>
+        <target state="new">{0}</target>
       </trans-unit>
       <trans-unit id="loggingIn">
         <source xml:lang="en">Adding account...</source>

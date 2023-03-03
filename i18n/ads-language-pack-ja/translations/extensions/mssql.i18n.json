@@ -161,7 +161,7 @@
 			"mssql.connectionOptions.databaseName.displayName": "データベース",
 			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS": "Azure Attestation",
 			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS": "ホスト ガーディアン サービス",
-			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None": "None",
+			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None": "なし",
 			"mssql.connectionOptions.enclaveAttestationProtocol.description": "セキュリティで保護されたエンクレーブが設定された Always Encrypted で使用されるサーバー側エンクレーブを構成証明するためのプロトコルを指定します。",
 			"mssql.connectionOptions.enclaveAttestationProtocol.displayName": "構成証明プロトコル",
 			"mssql.connectionOptions.enclaveAttestationUrl.description": "セキュリティで保護されたエンクレーブが設定された Always Encrypted で使用されるサーバー側エンクレーブを構成証明するためのエンドポイントを指定します。",

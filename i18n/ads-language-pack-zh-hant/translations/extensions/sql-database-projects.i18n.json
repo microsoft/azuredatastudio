@@ -149,7 +149,7 @@
 			"errorFindingBuildFilesLocation": "尋找組建檔案位置時發生錯誤: {0}",
 			"errorMovingFile": "將檔案從 {0} 移到 {1} 時發生錯誤。錯誤: {2}",
 			"errorReadingProjectGuid": "嘗試讀取專案 '{1}' 的 {0} 時發生錯誤",
-			"errorRenamingFile": "Error when renaming file from {0} to {1}. Error: {2}",
+			"errorRenamingFile": "將檔案從 {0} 重新命名為 {1} 時發生錯誤。錯誤: {2}",
 			"errorRetrievingBuildFiles": "無法建置專案。擷取建置所需檔案時發生錯誤。",
 			"eulaAgreementTemplate": "我接受 {0}。",
 			"eulaAgreementText": "我接受 {0}。",

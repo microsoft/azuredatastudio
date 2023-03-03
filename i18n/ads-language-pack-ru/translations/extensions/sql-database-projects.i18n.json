@@ -149,7 +149,7 @@
 			"errorFindingBuildFilesLocation": "Ошибка при поиске расположения файлов сборки: {0}",
 			"errorMovingFile": "Ошибка при перемещении файла из {0} в {1}. Ошибка: {2}",
 			"errorReadingProjectGuid": "Ошибка при попытке чтения {0} проекта \"{1}\"",
-			"errorRenamingFile": "Error when renaming file from {0} to {1}. Error: {2}",
+			"errorRenamingFile": "Ошибка при переименовании файла с {0} на {1}. Ошибка: {2}",
 			"errorRetrievingBuildFiles": "Не удалось построить проект. Ошибка получения файлов, необходимых для сборки.",
 			"eulaAgreementTemplate": "Я принимаю {0}.",
 			"eulaAgreementText": "Я принимаю {0}.",

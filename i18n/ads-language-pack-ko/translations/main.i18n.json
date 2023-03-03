@@ -11344,6 +11344,7 @@
 			"incompatible": "Azure Data Studio '{2}'와(과) 호환되지 않으므로 '{1}' 확장의 '{0}' 버전을 설치할 수 없습니다. 확장을 설치하려면 Azure Data Studio {3}(으)로 업데이트하세요.",
 			"installExtensionCompletedAndReloadRequired": "{0} 확장 설치가 완료되었습니다. Azure Data Studio를 다시 로드하여 사용하도록 설정하세요.",
 			"maxMemoryForLargeFilesMB": "큰 파일을 열려고 할 때 다시 시작한 후 Azure Data Studio에 사용 가능한 메모리를 제어합니다. 명령줄에 '--max-memory=NEWSIZE'를 지정하는 것과 결과가 같습니다.",
+			"miNewDeployment": "New &&Deployment...",
 			"miNewNotebook": "새 Notebook(&&N)",
 			"miNewQuery": "새 쿼리(&&Q)",
 			"miinstallVsix": "VSIX 패키지에서 확장 설치",
@@ -13335,8 +13336,9 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "닫기",
-			"addAccountFailedGeneric": "계정을 추가하지 못했습니다. 자세한 내용은 Azure 계정 로그를 확인하세요.",
-			"addAccountFailedMessage": "0 \r\n오류 메시지: 1",
+			"addAccountFailedCodeMessage": "{0} \r\nError Message: {1}",
+			"addAccountFailedGenericMessage": "Adding account failed, check Azure Accounts log for more info.",
+			"addAccountFailedMessage": "{0}",
 			"loggingIn": "계정 추가...",
 			"refreshCanceled": "사용자가 계정 새로 고침을 취소했습니다.",
 			"refreshFailed": "0 \r\n오류 메시지: 1"

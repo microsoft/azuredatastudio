@@ -564,7 +564,7 @@
       </trans-unit>
       <trans-unit id="errorRenamingFile">
         <source xml:lang="en">Error when renaming file from {0} to {1}. Error: {2}</source>
-        <target state="new">Error when renaming file from {0} to {1}. Error: {2}</target>
+        <target state="translated">Errore durante la ridenominazione del file da {0} a {1}. Errore: {2}</target>
       </trans-unit>
       <trans-unit id="errorRetrievingBuildFiles">
         <source xml:lang="en">Could not build project. Error retrieving files needed to build.</source>

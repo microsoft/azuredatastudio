@@ -41,7 +41,9 @@
 		"dist/account-provider/azureAccountProvider": {
 			"azure.NoAuthMethod.Available": "사용 가능한 Azure 인증 방법이 없습니다. ADS 구성에서 인증 방법을 사용하도록 설정해야 합니다.",
 			"azure.NoAuthMethod.Selected": "Azure 인증 방법이 선택되지 않았습니다. 사용할 인증 방법을 선택해야 합니다.",
-			"azure.deprecatedGetSecurityToken": "azdata.accounts.getSecurityToken이 호출되었습니다. 이 메서드는 사용되지 않으며 향후 릴리스에서 제거됩니다. 대신 getAccountSecurityToken을 사용하세요."
+			"azure.deprecatedGetSecurityToken": "azdata.accounts.getSecurityToken이 호출되었습니다. 이 메서드는 사용되지 않으며 향후 릴리스에서 제거됩니다. 대신 getAccountSecurityToken을 사용하세요.",
+			"genericTokenError": "Failed to get token",
+			"msalTokenError": "{0} occurred when acquiring token. \r\n{1}"
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "토큰 캐시를 지우지 못했습니다.",

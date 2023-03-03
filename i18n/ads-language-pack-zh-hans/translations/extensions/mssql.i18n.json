@@ -161,7 +161,7 @@
 			"mssql.connectionOptions.databaseName.displayName": "数据库",
 			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS": "Azure 证明",
 			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS": "主机保护者服务",
-			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None": "None",
+			"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None": "无",
 			"mssql.connectionOptions.enclaveAttestationProtocol.description": "指定用于证明与具有安全 enclave 的 Always Encrypted 结合使用的服务器端 enclave 的协议",
 			"mssql.connectionOptions.enclaveAttestationProtocol.displayName": "证明协议",
 			"mssql.connectionOptions.enclaveAttestationUrl.description": "指定用于证明与具有安全 enclave 的 Always Encrypted 结合使用的服务器端 enclave 的终结点",
