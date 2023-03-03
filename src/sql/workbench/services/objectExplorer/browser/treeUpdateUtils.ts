@@ -95,6 +95,9 @@ export class TreeUpdateUtils {
 	 * Set input for the registered servers tree.
 	 */
 	public static async registeredServerUpdate(tree: ITree | AsyncServerTree, connectionManagementService: IConnectionManagementService, elementToSelect?: any): Promise<void> {
+		// TODO, add a check to iterate over the tree to find profiles then change their ids to show any different properties (need to get list before and after).
+		// This is called when a delete is done to one of the tree's connections. Need to refresh elements that are duplicates.
+
 		if (tree instanceof AsyncServerTree) {
 			const treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
 			if (treeInput) {
