@@ -473,6 +473,13 @@ declare module 'mssql' {
 		setDatabaseSource(projectUri: string, databaseSource: string): Promise<azdata.ResultStatus>;
 
 		/**
+		 * Set the DatabaseSchemaProvider property of a SQL project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param databaseSchemaProvider New DatabaseSchemaProvider value, in the form "Microsoft.Data.Tools.Schema.Sql.SqlXYZDatabaseSchemaProvider"
+		 */
+		setDatabaseSchemaProvider(projectUri: string, databaseSchemaProvider: string): Promise<azdata.ResultStatus>;
+
+		/**
 		 * Get the cross-platform compatibility status for a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
@@ -674,6 +681,14 @@ declare module 'mssql' {
 		 * Source of the database schema, used in telemetry
 		 */
 		databaseSource?: string;
+		/**
+		 * Style of the .sqlproj file - SdkStyle or LegacyStyle
+		 */
+		projectStyle: ProjectType;
+		/**
+		 * Database Schema Provider, in the format "Microsoft.Data.Tools.Schema.Sql.SqlXYZDatabaseSchemaProvider"
+		 */
+		databaseSchemaProvider: string
 	}
 
 	//#endregion
