@@ -43,13 +43,13 @@ export class OEShimService extends Disposable implements IOEShimService {
 		@IObjectExplorerService private oe: IObjectExplorerService,
 		@IConnectionManagementService private cm: IConnectionManagementService,
 		@ICapabilitiesService private capabilities: ICapabilitiesService,
-		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super();
 	}
 
 	private async createSession(viewId: string, providerId: string, node: ITreeItem): Promise<string> {
-		let connProfile = new ConnectionProfile(this.capabilities, node.payload);
+		let payload = await this.cm.fixProfile(node.payload);
+		let connProfile = new ConnectionProfile(this.capabilities, payload);
 		connProfile.saveProfile = false;
 		if (this.cm.providerRegistered(providerId)) {
 			connProfile = await this.connectOrPrompt(connProfile);
@@ -119,9 +119,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 	public async getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]> {
 		if (node.payload) {
-			if (node.payload.authenticationType !== undefined && node.payload.authenticationType === '') {
-				node.payload.authenticationType = this.getDefaultAuthenticationType(this.configurationService);  // we need to set auth type here, because it's value is part of the session key
-			}
+			node.payload = await this.cm.fixProfile(node.payload);
 
 			if (node.sessionId === undefined) {
 				node.sessionId = await this.createSession(viewId, node.childProvider!, node);

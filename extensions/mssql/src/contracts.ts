@@ -33,10 +33,10 @@ export class TelemetryParams {
 
 // ------------------------------- < Security Token Request > ------------------------------------------
 export interface RequestSecurityTokenParams {
-	authority: string;
 	provider: string;
+	authority: string;
 	resource: string;
-	scope: string;
+	scopes: string[];
 }
 
 export interface RequestSecurityTokenResponse {

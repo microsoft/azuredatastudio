@@ -2499,7 +2499,11 @@ declare module 'azdata' {
 		/**
 		 * Power BI
 		 */
-		PowerBi = 11
+		PowerBi = 11,
+		/**
+		 * Represents custom resource URIs as received from server endpoint.
+		 */
+		Custom = 12
 	}
 
 	export interface DidChangeAccountsParams {
