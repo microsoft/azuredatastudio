@@ -156,10 +156,10 @@ export class AddDatabaseReferenceDialog {
 				projectName: <string>this.projectDropdown?.value,
 				projectGuid: '',
 				projectRelativePath: undefined,
-				databaseName: this.validateUnsetStringSetting(this.databaseNameTextbox?.value),
-				databaseVariable: this.validateUnsetStringSetting(this.databaseVariableTextbox?.value),
-				serverName: this.validateUnsetStringSetting(this.serverNameTextbox?.value),
-				serverVariable: this.validateUnsetStringSetting(this.serverVariableTextbox?.value),
+				databaseName: this.ensureSetOrDefined(this.databaseNameTextbox?.value),
+				databaseVariable: this.ensureSetOrDefined(this.databaseVariableTextbox?.value),
+				serverName: this.ensureSetOrDefined(this.serverNameTextbox?.value),
+				serverVariable: this.ensureSetOrDefined(this.serverVariableTextbox?.value),
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
 		} else if (this.currentReferenceType === ReferenceType.systemDb) {
@@ -170,11 +170,11 @@ export class AddDatabaseReferenceDialog {
 			};
 		} else { // this.currentReferenceType === ReferenceType.dacpac
 			referenceSettings = {
-				databaseName: this.validateUnsetStringSetting(this.databaseNameTextbox?.value),
+				databaseName: this.ensureSetOrDefined(this.databaseNameTextbox?.value),
 				dacpacFileLocation: vscode.Uri.file(<string>this.dacpacTextbox?.value),
-				databaseVariable: this.validateUnsetStringSetting(utils.removeSqlCmdVariableFormatting(<string>this.databaseVariableTextbox?.value)),
-				serverName: this.validateUnsetStringSetting(this.serverNameTextbox?.value),
-				serverVariable: this.validateUnsetStringSetting(utils.removeSqlCmdVariableFormatting(<string>this.serverVariableTextbox?.value)),
+				databaseVariable: this.ensureSetOrDefined(utils.removeSqlCmdVariableFormatting(<string>this.databaseVariableTextbox?.value)),
+				serverName: this.ensureSetOrDefined(this.serverNameTextbox?.value),
+				serverVariable: this.ensureSetOrDefined(utils.removeSqlCmdVariableFormatting(<string>this.serverVariableTextbox?.value)),
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
 		}
@@ -190,13 +190,13 @@ export class AddDatabaseReferenceDialog {
 
 	/**
 	 * Returns undefined for settings that are an empty string, meaning they are unset
-	 * @param settingValue
+	 * @param setting
 	 */
-	private validateUnsetStringSetting(settingValue?: string): string | undefined {
-		if (!settingValue || settingValue.trim().length === 0) {
+	private ensureSetOrDefined(setting?: string): string | undefined {
+		if (!setting || setting.trim().length === 0) {
 			return undefined;
 		}
-		return settingValue;
+		return setting;
 	}
 
 	private createRadioButtons(): azdataType.FormComponent {

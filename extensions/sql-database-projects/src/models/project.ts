@@ -987,15 +987,8 @@ export class Project implements ISqlProject {
 			}
 		}
 
-		let result;
-
-		// dacpac reference uses database sqlcmd variable and possibly server sqlcmd variable
-		if (settings.databaseVariable) {
-			result = await this.sqlProjService.addDacpacReference(this.projectFilePath, settings.dacpacFileLocation.fsPath, settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable);
-		} else {
-			// dacpac reference is to same db or uses database literal
-			result = await this.sqlProjService.addDacpacReference(this.projectFilePath, settings.dacpacFileLocation.fsPath, settings.suppressMissingDependenciesErrors, undefined, undefined, settings.databaseName);
-		}
+		const databaseLiteral = settings.databaseVariable ? undefined : settings.databaseName;
+		const result = await this.sqlProjService.addDacpacReference(this.projectFilePath, settings.dacpacFileLocation.fsPath, settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
 
 		if (!result.success && result.errorMessage) {
 			throw new Error(constants.errorAddingDatabaseReference(settings.dacpacFileLocation.fsPath, result.errorMessage));
