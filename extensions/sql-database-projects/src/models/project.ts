@@ -19,6 +19,7 @@ import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase, SystemDatabaseReferenceProjectEntry } from './projectEntry';
+import { ResultStatus } from 'azdata';
 import { BaseProjectTreeItem } from './tree/baseTreeItem';
 import { PostDeployNode, PreDeployNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
 import { ISqlProjectsService } from 'mssql';
@@ -139,9 +140,7 @@ export class Project implements ISqlProject {
 		const proj = new Project(projectFilePath);
 
 		proj.sqlProjService = await utils.getSqlProjectsService();
-
 		await proj.readProjFile();
-		await proj.updateProjectForRoundTrip();
 
 		return proj;
 	}
@@ -157,7 +156,7 @@ export class Project implements ISqlProject {
 
 		await this.readProjectProperties();
 		// check if this is an sdk style project https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview
-		this._isSdkStyleProject = this.CheckForSdkStyleProject();
+		this._isSdkStyleProject = await this.getCrossPlatformCompatibility();
 
 		// get pre and post deploy scripts specified in the sqlproj
 		this._preDeployScripts = this.readPreDeployScripts();
@@ -610,35 +609,21 @@ export class Project implements ISqlProject {
 	}
 
 	/**
-	 *  Checks for the 3 possible ways a project can reference the sql project sdk
-	 *  https://docs.microsoft.com/en-us/visualstudio/msbuild/how-to-use-project-sdk?view=vs-2019
+	 *  Checks if a project is an SDK-style project
 	 *  @returns true if the project is an sdk style project, false if it isn't
 	 */
-	public CheckForSdkStyleProject(): boolean {
-		// type 1: Sdk node like <Sdk Name="Microsoft.Build.Sql" Version="1.0.0" />
-		const sdkNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Sdk);
-		if (sdkNodes.length > 0) {
-			return sdkNodes[0].getAttribute(constants.Name) === constants.sqlProjectSdk;
-		}
+	private async getCrossPlatformCompatibility(): Promise<boolean> {
+		const result = await this.sqlProjService.getCrossPlatformCompatibility(this.projectFilePath)
+		this.throwIfFailed(result);
 
-		// type 2: Project node has Sdk attribute like <Project Sdk="Microsoft.Build.Sql/1.0.0">
-		const sdkAttribute: string = this.projFileXmlDoc!.documentElement.getAttribute(constants.Sdk)!;
-		if (sdkAttribute) {
-			return sdkAttribute.includes(constants.sqlProjectSdk);
-		}
-
-		// type 3: Import node with Sdk attribute like <Import Project="Sdk.targets" Sdk="Microsoft.Build.Sql" Version="1.0.0" />
-		const importNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import);
-		for (let i = 0; i < importNodes.length; i++) {
-			if (importNodes[i].getAttribute(constants.Sdk) === constants.sqlProjectSdk) {
-				return true;
-			}
-		}
-
-		return false;
+		return result.isCrossPlatformCompatible;
 	}
 
 	public async updateProjectForRoundTrip(): Promise<void> {
+		if (this.isSdkStyleProject) {
+			return;
+		}
+
 		if (this._importedTargets.includes(constants.NetCoreTargets) && !this.containsSSDTOnlySystemDatabaseReferences() // old style project check
 			|| this.isSdkStyleProject) { // new style project check
 			return;
@@ -646,65 +631,11 @@ export class Project implements ISqlProject {
 
 		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectForRoundtrip);
 
-		if (!this._importedTargets.includes(constants.NetCoreTargets)) {
-			const result = await window.showWarningMessage(constants.updateProjectForRoundTrip(this.projectFileName), constants.yesString, constants.noString);
-			if (result === constants.yesString) {
-				await fs.copyFile(this._projectFilePath, this._projectFilePath + '_backup');
-				await this.updateImportToSupportRoundTrip();
-				await this.updatePackageReferenceInProjFile();
-				await this.updateBeforeBuildTargetInProjFile();
-				await this.updateSystemDatabaseReferencesInProjFile();
-			}
-		} else if (this.containsSSDTOnlySystemDatabaseReferences()) {
-			const result = await window.showWarningMessage(constants.updateProjectDatabaseReferencesForRoundTrip(this.projectFileName), constants.yesString, constants.noString);
-			if (result === constants.yesString) {
-				await fs.copyFile(this._projectFilePath, this._projectFilePath + '_backup');
-				await this.updateSystemDatabaseReferencesInProjFile();
-			}
-		}
-	}
+		const result = await this.sqlProjService.updateProjectForCrossPlatform(this.projectFilePath);
+		this.throwIfFailed(result);
 
-	private async updateImportToSupportRoundTrip(): Promise<void> {
-		// update an SSDT project to include Net core target information
-		for (let i = 0; i < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import).length; i++) {
-			const importTarget = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import)[i];
-
-			let condition = importTarget.getAttribute(constants.Condition);
-			let projectAttributeVal = importTarget.getAttribute(constants.Project);
-
-			if (condition === constants.SqlDbPresentCondition && projectAttributeVal === constants.SqlDbTargets) {
-				await this.updateImportedTargetsToProjFile(constants.RoundTripSqlDbPresentCondition, projectAttributeVal, importTarget);
-			}
-			if (condition === constants.SqlDbNotPresentCondition && projectAttributeVal === constants.MsBuildtargets) {
-				await this.updateImportedTargetsToProjFile(constants.RoundTripSqlDbNotPresentCondition, projectAttributeVal, importTarget);
-			}
-		}
-
-		await this.updateImportedTargetsToProjFile(constants.NetCoreCondition, constants.NetCoreTargets, undefined);
-	}
-
-	private async updateBeforeBuildTargetInProjFile(): Promise<void> {
-		// Search if clean target already present, update it
-		for (let i = 0; i < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Target).length; i++) {
-			const beforeBuildNode = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Target)[i];
-			const name = beforeBuildNode.getAttribute(constants.Name);
-			if (name === constants.BeforeBuildTarget) {
-				return await this.createCleanFileNode(beforeBuildNode);
-			}
-		}
-
-		// If clean target not found, create new
-		const beforeBuildNode = this.projFileXmlDoc!.createElement(constants.Target);
-		beforeBuildNode.setAttribute(constants.Name, constants.BeforeBuildTarget);
-		this.projFileXmlDoc!.documentElement.appendChild(beforeBuildNode);
-		await this.createCleanFileNode(beforeBuildNode);
-	}
-
-	private async createCleanFileNode(parentNode: Element): Promise<void> {
-		const deleteFileNode = this.projFileXmlDoc!.createElement(constants.Delete);
-		deleteFileNode.setAttribute(constants.Files, constants.ProjJsonToClean);
-		parentNode.appendChild(deleteFileNode);
-		await this.serializeToProjFile(this.projFileXmlDoc!);
+		// update cross-plat status
+		this._isSdkStyleProject = await this.getCrossPlatformCompatibility();
 	}
 
 	/**
@@ -1548,35 +1479,6 @@ export class Project implements ISqlProject {
 		return highestNumber + 1;
 	}
 
-	private async updateImportedTargetsToProjFile(condition: string, projectAttributeVal: string, oldImportNode?: Element): Promise<Element> {
-		const importNode = this.projFileXmlDoc!.createElement(constants.Import);
-		importNode.setAttribute(constants.Condition, condition);
-		importNode.setAttribute(constants.Project, projectAttributeVal);
-
-		if (oldImportNode) {
-			this.projFileXmlDoc!.documentElement.replaceChild(importNode, oldImportNode);
-		}
-		else {
-			this.projFileXmlDoc!.documentElement.appendChild(importNode);
-			this._importedTargets.push(projectAttributeVal);	// Add new import target to the list
-		}
-
-		await this.serializeToProjFile(this.projFileXmlDoc!);
-		return importNode;
-	}
-
-	private async updatePackageReferenceInProjFile(): Promise<void> {
-		const packageRefNode = this.projFileXmlDoc!.createElement(constants.PackageReference);
-		packageRefNode.setAttribute(constants.Condition, constants.NetCoreCondition);
-		packageRefNode.setAttribute(constants.Include, constants.NETFrameworkAssembly);
-		packageRefNode.setAttribute(constants.Version, constants.VersionNumber);
-		packageRefNode.setAttribute(constants.PrivateAssets, constants.All);
-
-		this.findOrCreateItemGroup(constants.PackageReference).appendChild(packageRefNode);
-
-		await this.serializeToProjFile(this.projFileXmlDoc!);
-	}
-
 	public containsSSDTOnlySystemDatabaseReferences(): boolean {
 		for (let r = 0; r < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
 			const currentNode = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference)[r];
@@ -1792,6 +1694,12 @@ export class Project implements ISqlProject {
 		}
 
 		return folderEntry;
+	}
+
+	private throwIfFailed(result: ResultStatus): void {
+		if (!result.success) {
+			throw new Error('Error: ' + result.errorMessage);
+		}
 	}
 
 	/**
