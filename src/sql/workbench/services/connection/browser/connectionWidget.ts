@@ -646,7 +646,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				// Populate tenants (select first by default for initialization of tenant dialog)
 				await this.onAzureAccountSelected(true);
 				this._azureTenantDropdown.enable();
-				// Populate username as 'email' of selected azure account in dropdown (Ask from MySQL)
+				// Populate username as 'email' of selected azure account in dropdown, as username is required,
+				// and email of Azure account selected applies as username in most cases.
 				this._userNameInputBox.value = this._azureAccountList.find(a => a.displayInfo.displayName === this._azureAccountDropdown.value)?.displayInfo.email!
 					?? this._azureAccountList[0]?.displayInfo?.email ?? '';
 			}).catch(err => this._logService.error(`Unexpected error populating Azure Account dropdown : ${err}`));
