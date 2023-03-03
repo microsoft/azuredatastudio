@@ -221,8 +221,7 @@ export class Project implements ISqlProject {
 	private async readFilesInProject(): Promise<FileProjectEntry[]> {
 		const filesSet: Set<string> = new Set();
 
-		const sqlProjectsService = await utils.getSqlProjectsService();
-		var result: GetScriptsResult = await sqlProjectsService.getSqlObjectScripts(this.projectFilePath);
+		var result: GetScriptsResult = await this.sqlProjService.getSqlObjectScripts(this.projectFilePath);
 
 		this.throwIfFailed(result);
 
@@ -247,9 +246,7 @@ export class Project implements ISqlProject {
 	}
 
 	private async readFolders(): Promise<FileProjectEntry[]> {
-		const sqlProjectsService = await utils.getSqlProjectsService();
-
-		var result: GetFoldersResult = await sqlProjectsService.getFolders(this.projectFilePath);
+		var result: GetFoldersResult = await this.sqlProjService.getFolders(this.projectFilePath);
 		this.throwIfFailed(result);
 
 		const folderEntries: FileProjectEntry[] = [];
@@ -263,39 +260,8 @@ export class Project implements ISqlProject {
 		return folderEntries;
 	}
 
-	/**
-	 * @returns Array of folders specified in the sqlproj
-	 */
-	private async foldersListedInSqlproj(): Promise<string[]> {
-		const folders: string[] = [];
-
-		// get any folders listed in the project file
-		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
-			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
-			try {
-				const folderElements = itemGroup.getElementsByTagName(constants.Folder);
-				for (let f = 0; f < folderElements.length; f++) {
-					let relativePath = folderElements[f].getAttribute(constants.Include)!;
-
-					// don't add Properties folder since it isn't supported for now and don't add if the folder was already added
-					if (utils.trimChars(relativePath, '\\') !== constants.Properties) {
-						// make sure folder relative path ends with \\ because sometimes SSDT adds folders without trailing \\
-						folders.push(utils.ensureTrailingSlash(relativePath));
-					}
-				}
-			} catch (e) {
-				void window.showErrorMessage(constants.errorReadingProject(constants.Folder, this.projectFilePath));
-				console.error(utils.getErrorMessage(e));
-			}
-		}
-
-		return folders;
-	}
-
 	private async readPreDeployScripts(): Promise<FileProjectEntry[]> {
-		const sqlProjectsService = await utils.getSqlProjectsService();
-
-		var result: GetScriptsResult = await sqlProjectsService.getPreDeploymentScripts(this.projectFilePath);
+		var result: GetScriptsResult = await this.sqlProjService.getPreDeploymentScripts(this.projectFilePath);
 		this.throwIfFailed(result);
 
 		const preDeploymentScriptEntries: FileProjectEntry[] = [];
@@ -314,9 +280,7 @@ export class Project implements ISqlProject {
 	}
 
 	private async readPostDeployScripts(): Promise<FileProjectEntry[]> {
-		const sqlProjectsService = await utils.getSqlProjectsService();
-
-		var result: GetScriptsResult = await sqlProjectsService.getPostDeploymentScripts(this.projectFilePath);
+		var result: GetScriptsResult = await this.sqlProjService.getPostDeploymentScripts(this.projectFilePath);
 		this.throwIfFailed(result);
 
 		const postDeploymentScriptEntries: FileProjectEntry[] = [];
@@ -335,18 +299,16 @@ export class Project implements ISqlProject {
 	}
 
 	private async readNoneScripts(): Promise<FileProjectEntry[]> {
-		//const sqlProjectsService = await utils.getSqlProjectsService();
-
-		//var result: GetScriptsResult = await sqlProjectsService.getNoneItems(this.projectFilePath);
-		// this.throwIfFailed(result);
+		var result: GetScriptsResult = await this.sqlProjService.getNoneItems(this.projectFilePath);
+		this.throwIfFailed(result);
 
 		const noneItemEntries: FileProjectEntry[] = [];
 
-		// if (result.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
-		// 	for (var path of result.scripts) {
-		// 		noneItemEntries.push(this.createFileProjectEntry(path, EntryType.File));
-		// 	}
-		// }
+		if (result.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
+			for (var path of result.scripts) {
+				noneItemEntries.push(this.createFileProjectEntry(path, EntryType.File));
+			}
+		}
 
 		return noneItemEntries.filter(f => !utils.isPublishProfile(f.relativePath));
 	}
@@ -356,18 +318,16 @@ export class Project implements ISqlProject {
 	 * @returns all the publish profiles (ending with *.publish.xml) specified as <None Include="file.publish.xml" /> in the sqlproj
 	 */
 	private async readPublishProfiles(): Promise<FileProjectEntry[]> {
-		//const sqlProjectsService = await utils.getSqlProjectsService();
-
-		//var result: GetScriptsResult = await sqlProjectsService.getNoneItems(this.projectFilePath);
-		// this.throwIfFailed(result);
+		var result: GetScriptsResult = await this.sqlProjService.getNoneItems(this.projectFilePath);
+		this.throwIfFailed(result);
 
 		const noneItemEntries: FileProjectEntry[] = [];
 
-		// if (result.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
-		// 	for (var path of result.scripts) {
-		// 		noneItemEntries.push(this.createFileProjectEntry(path, EntryType.File));
-		// 	}
-		// }
+		if (result.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
+			for (var path of result.scripts) {
+				noneItemEntries.push(this.createFileProjectEntry(path, EntryType.File));
+			}
+		}
 
 		return noneItemEntries.filter(f => utils.isPublishProfile(f.relativePath));
 	}
@@ -583,14 +543,8 @@ export class Project implements ISqlProject {
 	 * @param relativeFolderPath Relative path of the folder
 	 */
 	public async addFolder(relativeFolderPath: string): Promise<FileProjectEntry> {
-		const service = await utils.getSqlProjectsService();
-
-		const result = await service.addFolder(this.projectFilePath, relativeFolderPath);
-
-		if (!result.success) {
-			void window.showErrorMessage(result.errorMessage);
-			console.error('Error: ' + result.errorMessage);
-		}
+		const result = await this.sqlProjService.addFolder(this.projectFilePath, relativeFolderPath);
+		this.throwIfFailed(result);
 
 		return this.createFileProjectEntry(utils.ensureTrailingSlash(relativeFolderPath), EntryType.Folder);
 	}
@@ -637,31 +591,28 @@ export class Project implements ISqlProject {
 		}
 
 		// Add the new script
-		const service = await utils.getSqlProjectsService();
 		let result: ResultStatus;
 
 		switch (itemType) {
 			case ItemType.preDeployScript:
-				result = await service.addPreDeploymentScript(this.projectFilePath, relativeFilePath);
+				result = await this.sqlProjService.addPreDeploymentScript(this.projectFilePath, relativeFilePath);
 				this._preDeployScripts = await this.readPreDeployScripts();
 				this._noneDeployScripts = await this.readNoneScripts();
 				break;
 			case ItemType.postDeployScript:
-				result = await service.addPostDeploymentScript(this.projectFilePath, relativeFilePath);
+				result = await this.sqlProjService.addPostDeploymentScript(this.projectFilePath, relativeFilePath);
 				this._postDeployScripts = await this.readPostDeployScripts();
 				this._noneDeployScripts = await this.readNoneScripts();
 				break;
 			default:
-				result = await service.addSqlObjectScript(this.projectFilePath, relativeFilePath);
+				result = await this.sqlProjService.addSqlObjectScript(this.projectFilePath, relativeFilePath);
 				this._files = await this.readFilesInProject();
 				break;
 		}
 
 		this._folders = await this.readFolders();
 
-		if (!result.success) {
-			throw new Error(result.errorMessage);
-		}
+		this.throwIfFailed(result);
 
 		return this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
 	}
@@ -677,22 +628,18 @@ export class Project implements ISqlProject {
 			throw new Error(constants.noFileExist(filePath));
 		}
 
-		const service = await utils.getSqlProjectsService();
 		const normalizedRelativeFilePath = utils.convertSlashesForSqlProj(path.relative(this.projectFolderPath, filePath));
 		let result: ResultStatus;
 
 		if (path.extname(filePath) === constants.sqlFileExtension) {
-			result = await service.addSqlObjectScript(this.projectFilePath, filePath)
+			result = await this.sqlProjService.addSqlObjectScript(this.projectFilePath, filePath)
 			this._files = await this.readFilesInProject();
 		} else {
-			result = { success: false, errorMessage: 'NoneItems not yet implemented' };
-			// result = await service.addNoneItem(this.projectFilePath, filePath);
-			// this._noneDeployScripts = await this.readNoneScripts();
+			result = await this.sqlProjService.addNoneItem(this.projectFilePath, filePath);
+			this._noneDeployScripts = await this.readNoneScripts();
 		}
 
-		if (!result.success) {
-			throw new Error(result.errorMessage);
-		}
+		this.throwIfFailed(result);
 
 		return this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
 	}
@@ -952,12 +899,11 @@ export class Project implements ISqlProject {
 	public async addPublishProfileToProjFile(absolutePublishProfilePath: string): Promise<FileProjectEntry> {
 		const relativePublishProfilePath = (utils.trimUri(Uri.file(this.projectFilePath), Uri.file(absolutePublishProfilePath)));
 
-		// Update sqlproj XML
+		const result = await this.sqlProjService.addNoneItem(this.projectFilePath, relativePublishProfilePath);
+		this.throwIfFailed(result);
 
 		const fileEntry = this.createFileProjectEntry(relativePublishProfilePath, EntryType.File);
 		this._publishProfiles.push(fileEntry);
-
-		await this.addToProjFile(fileEntry, constants.None);
 
 		return fileEntry;
 	}
@@ -1021,63 +967,6 @@ export class Project implements ISqlProject {
 		}
 
 		return returnItemGroup;
-	}
-
-	private async addFileToProjFile(filePath: string, xmlTag: string, attributes?: Map<string, string>): Promise<void> {
-
-		// delete Remove node if a file has been previously excluded
-		await this.undoExcludeFileFromProjFile(xmlTag, filePath);
-
-		let itemGroup;
-
-		if (xmlTag === constants.PreDeploy || xmlTag === constants.PostDeploy) {
-			let prePostScriptExist = { scriptExist: true };
-			itemGroup = this.findOrCreateItemGroup(xmlTag, prePostScriptExist);
-
-			if (prePostScriptExist.scriptExist === true) {
-				void window.showInformationMessage(constants.deployScriptExists(xmlTag));
-				xmlTag = constants.None;	// Add only one pre-deploy and post-deploy script. All additional ones get added in the same item group with None tag
-			}
-		} else if (xmlTag === constants.None) {		// Add publish profiles with None tag
-			itemGroup = this.findOrCreateItemGroup(xmlTag);
-		}
-		else {
-			if (this.isSdkStyleProject) {
-				// if there's a folder entry for the folder containing this file, remove it from the sqlproj because the folder will now be
-				// included by the glob that includes this file (same as how csproj does it)
-				const folders = await this.foldersListedInSqlproj();
-				folders.forEach(folder => {
-					const trimmedUri = utils.trimUri(Uri.file(utils.getPlatformSafeFileEntryPath(folder)), Uri.file(utils.getPlatformSafeFileEntryPath(filePath)));
-					const basename = path.basename(utils.getPlatformSafeFileEntryPath(filePath));
-					if (trimmedUri === basename) {
-						// remove folder entry from sqlproj
-						this.removeFolderNode(folder);
-					}
-				});
-			}
-
-			const currentFiles = await this.readFilesInProject();
-
-			// don't need to add an entry if it's already included by a glob pattern
-			// unless it has an attribute that needs to be added, like external streaming job which needs it so it can be determined if validation can run on it
-			if ((!attributes || attributes.size === 0) && currentFiles.find(f => f.relativePath === utils.convertSlashesForSqlProj(filePath))) {
-				return;
-			}
-
-			itemGroup = this.findOrCreateItemGroup(xmlTag);
-		}
-
-		const newFileNode = this.projFileXmlDoc!.createElement(xmlTag);
-
-		newFileNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(filePath));
-
-		if (attributes) {
-			for (const key of attributes.keys()) {
-				newFileNode.setAttribute(key, attributes.get(key)!);
-			}
-		}
-
-		itemGroup.appendChild(newFileNode);
 	}
 
 	private async removeFileFromProjFile(path: string): Promise<void> {//TODO: publish profile
@@ -1163,39 +1052,6 @@ export class Project implements ISqlProject {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Delete a Remove node from the sqlproj, ex: <Build Remove="Table1.sql" />
-	 * @param xmlTag The XML tag of the node (Build, None, PreDeploy, PostDeploy)
-	 * @param relativePath The relative path of the previously excluded file
-	 */
-	private async undoExcludeFileFromProjFile(xmlTag: string, relativePath: string): Promise<void> {
-		const nodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(xmlTag);
-		if (this.removeNode(relativePath, nodes, true)) {
-			await this.serializeToProjFile(this.projFileXmlDoc!);
-		}
-	}
-
-	private async addFolderToProjFile(folderPath: string): Promise<void> {
-		if (this.isSdkStyleProject) {
-			// if there's a folder entry for the folder containing this folder, remove it from the sqlproj because the folder will now be
-			// included by the glob that includes this folder (same as how csproj does it)
-			const folders = await this.foldersListedInSqlproj();
-			folders.forEach(folder => {
-				const trimmedUri = utils.trimChars(utils.trimUri(Uri.file(utils.getPlatformSafeFileEntryPath(folder)), Uri.file(utils.getPlatformSafeFileEntryPath(folderPath))), '/');
-				const basename = path.basename(utils.getPlatformSafeFileEntryPath(folderPath));
-				if (trimmedUri === basename) {
-					// remove folder entry from sqlproj
-					this.removeFolderNode(folder);
-				}
-			});
-		}
-
-		const newFolderNode = this.projFileXmlDoc!.createElement(constants.Folder);
-		newFolderNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(folderPath));
-
-		this.findOrCreateItemGroup(constants.Folder).appendChild(newFolderNode);
 	}
 
 	private async removeFolderFromProjFile(folderPath: string): Promise<void> {
@@ -1503,20 +1359,16 @@ export class Project implements ISqlProject {
 			.send();
 	}
 
-	private async addToProjFile(entry: ProjectEntry, xmlTag?: string, attributes?: Map<string, string>): Promise<void> {
+	private async addToProjFile(entry: ProjectEntry): Promise<void> {
 		switch (entry.type) {
-			case EntryType.File:
-				await this.addFileToProjFile((<FileProjectEntry>entry).relativePath, xmlTag ? xmlTag : constants.Build, attributes);
-				break;
-			case EntryType.Folder:
-				await this.addFolderToProjFile((<FileProjectEntry>entry).relativePath);
-				break;
 			case EntryType.DatabaseReference:
 				await this.addDatabaseReferenceToProjFile(<IDatabaseReferenceProjectEntry>entry);
 				break;
 			case EntryType.SqlCmdVariable:
 				await this.addSqlCmdVariableToProjFile(<SqlCmdVariableProjectEntry>entry);
 				break; // not required but adding so that we dont miss when we add new items
+			default:
+				throw new Error(`Unhandled entry type: ${entry.type}`);
 		}
 
 		await this.serializeToProjFile(this.projFileXmlDoc!);
