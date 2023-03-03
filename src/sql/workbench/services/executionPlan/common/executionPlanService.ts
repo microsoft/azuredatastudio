@@ -10,7 +10,6 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { Event, Emitter } from 'vs/base/common/event';
-import { setInterval } from 'timers';
 
 interface ExecutionPlanProviderRegisteredEvent {
 	id: string,
@@ -35,31 +34,27 @@ export class ExecutionPlanService implements IExecutionPlanService {
 	private async ensureCapabilitiesRegistered(providerId?: string): Promise<void> {
 		let providers: string[] = Object.keys(this._capabilitiesService.providers);
 
-		// If the provider is already registered, return.
-		if (providerId && providers?.includes(providerId) || (!providerId && providers?.length > 0)) {
-			return;
-		}
-
 		// Wait until the capabilities service has registered some providers.
-		await new Promise<void>(resolve => {
+		await new Promise<void>((resolve) => {
 			let retryCount = 0;
-			const intervalId = setInterval(() => {
-				while (retryCount < 5) {
-					providers = Object.keys(this._capabilitiesService.providers);
-					if (providerId && providers?.includes(providerId) || (!providerId && providers?.length > 0)) {
-						clearInterval(intervalId);
-						resolve();
-					}
-					retryCount++;
+			const waitFunction = () => {
+				providers = Object.keys(this._capabilitiesService.providers);
+				if ((providerId && providers?.includes(providerId)) || (!providerId && providers?.length > 0)) {
+					resolve();
+					return;
 				}
-
-				clearInterval(intervalId);
-				if (providerId) {
-					throw new Error(localize('providerNotRegisteredError', "Provider {0} is not found to handle execution plans", providerId));
+				retryCount++;
+				if (retryCount < 5) {
+					setTimeout(waitFunction, 1000);
 				} else {
-					throw new Error(localize('providerNotRegisteredError', "No providers are found to handle execution plans"));
+					if (providerId) {
+						throw new Error(localize('providerNotRegisteredError', "Provider {0} is not registered to handle execution plans", providerId));
+					} else {
+						throw new Error(localize('noProvidersRegisteredError', "No providers to handle execution plans are registered"));
+					}
 				}
-			}, 1000);
+			}
+			waitFunction();
 		});
 	}
 
