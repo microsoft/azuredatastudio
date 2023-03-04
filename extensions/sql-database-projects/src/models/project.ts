@@ -161,7 +161,6 @@ export class Project implements ISqlProject {
 		proj.sqlProjService = await utils.getSqlProjectsService();
 
 		await proj.readProjFile();
-		await proj.updateProjectForRoundTrip();
 
 		return proj;
 	}

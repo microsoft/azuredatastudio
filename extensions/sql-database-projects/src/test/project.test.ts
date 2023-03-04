@@ -21,7 +21,7 @@ import { SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry, S
 
 let projFilePath: string;
 
-describe.only('Project: sqlproj content operations', function (): void {
+describe('Project: sqlproj content operations', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
 	});
@@ -1769,7 +1769,7 @@ describe('Project: properties', function (): void {
 	});
 });
 
-describe('Project: round trip updates', function (): void {
+describe.only('Project: round trip updates', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
 	});
@@ -1786,7 +1786,8 @@ describe('Project: round trip updates', function (): void {
 		await testUpdateInRoundTrip(baselines.SSDTProjectFileBaseline);
 	});
 
-	it('Should update SSDT project with new system database references', async function (): Promise<void> {
+	// skipped until https://mssqltools.visualstudio.com/SQL%20Tools%20Semester%20Work%20Tracking/_workitems/edit/15749 is fixed
+	it.skip('Should update SSDT project with new system database references', async function (): Promise<void> {
 		await testUpdateInRoundTrip(baselines.SSDTUpdatedProjectBaseline);
 	});
 
@@ -1794,7 +1795,8 @@ describe('Project: round trip updates', function (): void {
 		await testUpdateInRoundTrip(baselines.SSDTProjectBaselineWithBeforeBuildTarget);
 	});
 
-	it('Should not update project and no backup file should be created when update to project is rejected', async function (): Promise<void> {
+	// skipped until projectController does the prompting, test should be moved to projectController.tests.ts
+	it.skip('Should not update project and no backup file should be created when update to project is rejected', async function (): Promise<void> {
 		sinon.stub(window, 'showWarningMessage').returns(<any>Promise.resolve(constants.noString));
 		// setup test files
 		const folderPath = await testUtils.generateTestFolderPath();
@@ -1839,7 +1841,7 @@ describe('Project: round trip updates', function (): void {
 		const spy = sinon.spy(window, 'showWarningMessage');
 
 		const project = await Project.openProject(Uri.file(sqlProjPath).fsPath);
-		should(await project.isCrossPlatformCompatible).equals(true, 'Project should be detected as cross-plat compatible');
+		should(project.isCrossPlatformCompatible).be.true('Project should be detected as cross-plat compatible');
 		should(spy.notCalled).be.true('Prompt to update .sqlproj should not have been shown for cross-plat project.');
 	}
 });
@@ -1847,12 +1849,12 @@ describe('Project: round trip updates', function (): void {
 async function testUpdateInRoundTrip(fileBeforeupdate: string): Promise<void> {
 	projFilePath = await testUtils.createTestSqlProjFile(fileBeforeupdate);
 	const project = await Project.openProject(projFilePath); // project gets updated if needed in openProject()
-	should(project.isCrossPlatformCompatible).equals(false, 'Project should not be cross-plat compatible before conversion');
+	should(project.isCrossPlatformCompatible).be.false('Project should not be cross-plat compatible before conversion');
 
 	await project.updateProjectForRoundTrip();
 
-	should(project.isCrossPlatformCompatible).equal(true, 'Project should be cross-plat compatible after conversion');
-	should(await exists(projFilePath + '_backup')).equal(true, 'Backup file should have been generated before the project was updated');
+	should(project.isCrossPlatformCompatible).be.true('Project should be cross-plat compatible after conversion');
+	should(await exists(projFilePath + '_backup')).be.true('Backup file should have been generated before the project was updated');
 
 	sinon.restore();
 }
