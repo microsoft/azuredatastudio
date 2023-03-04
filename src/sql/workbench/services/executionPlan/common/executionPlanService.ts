@@ -31,7 +31,7 @@ export class ExecutionPlanService implements IExecutionPlanService {
 	 * This ensures that the capabilities service has registered the providers to handle execution plan requests for the given file format.
 	 * @param fileFormat Execution plan file format
 	 */
-	public async ensureFileFormatHandlerRegistered(fileFormat: string) {
+	public async ensureFileFormatHandlerRegistered(fileFormat: string): Promise<void> {
 		for (let provider in this._capabilitiesService.providers) {
 			if (this._capabilitiesService.providers[provider].connection.supportedExecutionPlanFileExtensions?.includes(fileFormat)) {
 				return;
