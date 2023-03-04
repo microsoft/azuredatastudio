@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/accountDialog';
-import 'vs/css!./media/accountActions';
 import * as DOM from 'vs/base/browser/dom';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -22,7 +21,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import * as azdata from 'azdata';
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { SqlIconId } from 'sql/base/common/codicons';
+import { Codicon } from 'vs/base/common/codicons';
 import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import { AccountViewModel } from 'sql/platform/accounts/common/accountViewModel';
 import { AddAccountAction } from 'sql/platform/accounts/common/accountActions';
@@ -467,7 +466,7 @@ export class AccountDialog extends Modal {
 					id: `workbench.actions.accountDialog.${viewId}.addAccount`,
 					title: { value: localize('accountDialog.addConnection', "Add an account"), original: 'Add an account' },
 					f1: true,
-					icon: { id: SqlIconId.addAccountAction },
+					icon: { id: Codicon.add.id },
 					menu: {
 						id: MenuId.ViewTitle,
 						group: 'navigation',
