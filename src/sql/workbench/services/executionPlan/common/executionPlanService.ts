@@ -29,7 +29,6 @@ export class ExecutionPlanService implements IExecutionPlanService {
 
 	/**
 	 * This ensures that the capabilities service has registered the providers to handle execution plan requests.
-	 * @param providerId Optional provider id to wait for.
 	 */
 	private async ensureCapabilitiesRegistered(): Promise<void> {
 
