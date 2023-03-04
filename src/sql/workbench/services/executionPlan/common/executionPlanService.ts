@@ -32,7 +32,7 @@ export class ExecutionPlanService implements IExecutionPlanService {
 	 * @param fileExtension Execution plan file format
 	 */
 	public async ensureFileExtensionHandlerRegistered(fileExtension: string) {
-		for (let provider in this._capabilitiesService.providers) {
+		for (let provider in Object.keys(this._capabilitiesService.providers)) {
 			if (this._capabilitiesService.providers[provider].connection.supportedExecutionPlanFileExtensions?.includes(fileExtension)) {
 				return;
 			}
