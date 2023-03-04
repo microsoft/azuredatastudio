@@ -44,7 +44,7 @@ export class ExecutionPlanService implements IExecutionPlanService {
 				}
 			});
 			setTimeout(() => {
-				throw new Error(localize('executionPlanService.ensureFileFormatHandlerRegistered', "Execution plan provider which supports file format {0} is not registered.", fileFormat));
+				throw new Error(localize('executionPlanService.ensureFileFormatHandlerRegistered', "Execution plan provider which supports file format '{0}' was not registered after 30 seconds.", fileFormat));
 			}, 30000);
 		});
 	}
