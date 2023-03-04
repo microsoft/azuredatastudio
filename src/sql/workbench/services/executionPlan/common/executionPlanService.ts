@@ -29,22 +29,22 @@ export class ExecutionPlanService implements IExecutionPlanService {
 
 	/**
 	 * This ensures that the capabilities service has registered the providers to handle execution plan requests for the given file format.
-	 * @param fileFormat Execution plan file format
+	 * @param fileExtension Execution plan file format
 	 */
-	public async ensureFileFormatHandlerRegistered(fileFormat: string): Promise<void> {
+	public async ensureFileExtensionHandlerRegistered(fileExtension: string) {
 		for (let provider in this._capabilitiesService.providers) {
-			if (this._capabilitiesService.providers[provider].connection.supportedExecutionPlanFileExtensions?.includes(fileFormat)) {
+			if (this._capabilitiesService.providers[provider].connection.supportedExecutionPlanFileExtensions?.includes(fileExtension)) {
 				return;
 			}
 		}
 		await new Promise<void>(resolve => {
 			this._capabilitiesService.onCapabilitiesRegistered(e => {
-				if (e.features.connection.supportedExecutionPlanFileExtensions.includes(fileFormat)) {
+				if (e.features.connection.supportedExecutionPlanFileExtensions?.includes(fileExtension)) {
 					resolve();
 				}
 			});
 			setTimeout(() => {
-				throw new Error(localize('executionPlanService.ensureFileFormatHandlerRegistered', "Execution plan provider which supports file format '{0}' was not registered after 30 seconds.", fileFormat));
+				throw new Error(localize('executionPlanService.ensureFileExtensionHandlerRegistered', "Execution plan provider which supports file format '{0}' was not registered after 30 seconds.", fileExtension));
 			}, 30000);
 		});
 	}
@@ -62,7 +62,7 @@ export class ExecutionPlanService implements IExecutionPlanService {
 					}
 				});
 				setTimeout(() => {
-					throw new Error(localize('executionPlanService.ensureCapabilitiesRegistered', "Provider with id {0} is not registered.", providerId));
+					throw new Error(localize('executionPlanService.ensureCapabilitiesRegistered', "Provider with id {0} was not registered after 30 seconds.", providerId));
 				}, 30000);
 			});
 		}
@@ -104,16 +104,16 @@ export class ExecutionPlanService implements IExecutionPlanService {
 
 	/**
 	 * Runs the actions using the provider that supports the fileFormat provided.
-	 * @param fileFormat fileformat of the underlying execution plan file. It is used to get the provider that support it.
+	 * @param fileExtension file extension of the underlying execution plan file. It is used to get the provider that support it.
 	 * @param action executionPlanService action to be performed.
 	 */
-	private async _runAction<T>(fileFormat: string, action: (handler: azdata.executionPlan.ExecutionPlanProvider) => Thenable<T>): Promise<T> {
-		await this.ensureFileFormatHandlerRegistered(fileFormat);
+	private async _runAction<T>(fileExtension: string, action: (handler: azdata.executionPlan.ExecutionPlanProvider) => Thenable<T>): Promise<T> {
+		await this.ensureFileExtensionHandlerRegistered(fileExtension);
 		let providers = Object.keys(this._capabilitiesService.providers);
 		let epProviders: string[] = [];
 		for (let i = 0; i < providers.length; i++) {
 			const providerCapabilities = this._capabilitiesService.getCapabilities(providers[i]);
-			if (providerCapabilities.connection.supportedExecutionPlanFileExtensions?.includes(fileFormat)) {
+			if (providerCapabilities.connection.supportedExecutionPlanFileExtensions?.includes(fileExtension)) {
 				epProviders.push(providers[i]);
 			}
 		}
