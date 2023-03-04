@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/accountDialog';
+import 'vs/css!./media/accountActions';
 import * as DOM from 'vs/base/browser/dom';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { Event, Emitter } from 'vs/base/common/event';
