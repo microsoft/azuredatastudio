@@ -1006,7 +1006,7 @@ export class Project implements ISqlProject {
 			result = await this.sqlProjService.addSqlProjectReference(this.projectFilePath, reference.pathForSqlProj(), reference.projectGuid, settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
 		} else { // dacpac
 			referenceName = (<IDacpacReferenceSettings>settings).dacpacFileLocation.fsPath;
-			result = await this.sqlProjService.addDacpacReference(this.projectFilePath, (<IDacpacReferenceSettings>settings).dacpacFileLocation.fsPath, settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
+			result = await this.sqlProjService.addDacpacReference(this.projectFilePath, reference.pathForSqlProj(), settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
 		}
 
 		if (!result.success && result.errorMessage) {

@@ -1422,8 +1422,8 @@
     }
   },
   "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^1.4.0",
-    "@microsoft/ads-service-downloader": "^1.2.0",
+    "@microsoft/ads-extension-telemetry": "^2.0.0",
+    "@microsoft/ads-service-downloader": "^1.2.1",
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.3.2",
     "find-remove": "1.2.1",
     "vscode-languageclient": "5.2.1",

@@ -258,6 +258,16 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	}
 
 	/**
+	 * Set the DatabaseSchemaProvider property of a SQL project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param databaseSchemaProvider New DatabaseSchemaProvider value, in the form "Microsoft.Data.Tools.Schema.Sql.SqlXYZDatabaseSchemaProvider"
+	 */
+	public async setDatabaseSchemaProvider(projectUri: string, databaseSchemaProvider: string): Promise<azdata.ResultStatus> {
+		const params: contracts.SetDatabaseSchemaProviderParams = { projectUri: projectUri, databaseSchemaProvider: databaseSchemaProvider };
+		return await this.runWithErrorHandling(contracts.SetDatabaseSchemaProviderRequest.type, params);
+	}
+
+	/**
 	 * Add a SQLCMD variable to a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
 	 * @param name Name of the SQLCMD variable
