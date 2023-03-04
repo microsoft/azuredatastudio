@@ -37,16 +37,16 @@ export class ExecutionPlanService implements IExecutionPlanService {
 				return;
 			}
 		}
-		await new Promise<void>(resolve => {
+		await (new Promise<void>((resolve, reject) => {
 			this._capabilitiesService.onCapabilitiesRegistered(e => {
 				if (e.features.connection.supportedExecutionPlanFileExtensions?.includes(fileExtension)) {
 					resolve();
 				}
 			});
 			setTimeout(() => {
-				throw new Error(localize('executionPlanService.ensureFileExtensionHandlerRegistered', "Execution plan provider which supports file format '{0}' was not registered after 30 seconds.", fileExtension));
+				reject(new Error(localize('executionPlanService.ensureFileExtensionHandlerRegistered', "Execution plan provider which supports file format '{0}' was not registered after 30 seconds.", fileExtension)));
 			}, 30000);
-		});
+		}).catch(e => { throw e; }));
 	}
 
 	/**
@@ -55,16 +55,16 @@ export class ExecutionPlanService implements IExecutionPlanService {
 	private async ensureCapabilitiesRegistered(providerId: string): Promise<void> {
 		// Wait until the provider with the given id is registered.
 		if (!this._capabilitiesService.providers[providerId]) {
-			await new Promise<void>(resolve => {
+			await (new Promise<void>((resolve, reject) => {
 				this._capabilitiesService.onCapabilitiesRegistered(e => {
 					if (e.id === providerId) {
 						resolve();
 					}
 				});
 				setTimeout(() => {
-					throw new Error(localize('executionPlanService.ensureCapabilitiesRegistered', "Provider with id {0} was not registered after 30 seconds.", providerId));
+					reject(new Error(localize('executionPlanService.ensureCapabilitiesRegistered', "Provider with id {0} was not registered after 30 seconds.", providerId)));
 				}, 30000);
-			});
+			}).catch(e => { throw e; }));
 		}
 	}
 
