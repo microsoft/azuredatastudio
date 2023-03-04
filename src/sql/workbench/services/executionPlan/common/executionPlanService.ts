@@ -28,40 +28,43 @@ export class ExecutionPlanService implements IExecutionPlanService {
 	}
 
 	/**
+	 * This ensures that the capabilities service has registered the providers to handle execution plan requests for the given file format.
+	 * @param fileFormat Execution plan file format
+	 */
+	public async ensureFileFormatHandlerRegistered(fileFormat: string) {
+		for (let provider in this._capabilitiesService.providers) {
+			if (this._capabilitiesService.providers[provider].connection.supportedExecutionPlanFileExtensions?.includes(fileFormat)) {
+				return;
+			}
+		}
+		await new Promise<void>(resolve => {
+			this._capabilitiesService.onCapabilitiesRegistered(e => {
+				if (e.features.connection.supportedExecutionPlanFileExtensions.includes(fileFormat)) {
+					resolve();
+				}
+			});
+			setTimeout(() => {
+				throw new Error(localize('executionPlanService.ensureFileFormatHandlerRegistered', "Execution plan provider which supports file format {0} is not registered.", fileFormat));
+			}, 30000);
+		});
+	}
+
+	/**
 	 * This ensures that the capabilities service has registered the providers to handle execution plan requests.
 	 */
-	private async ensureCapabilitiesRegistered(providerId?: string): Promise<void> {
-		if (!providerId) {
-			// Wait until the capabilities service has registered some providers.
-			let providers = Object.keys(this._capabilitiesService.providers);
-			if (providers.length === 0) {
-				await new Promise<void>(resolve => {
-					this._capabilitiesService.onCapabilitiesRegistered(e => {
+	private async ensureCapabilitiesRegistered(providerId: string): Promise<void> {
+		// Wait until the provider with the given id is registered.
+		if (!this._capabilitiesService.providers[providerId]) {
+			await new Promise<void>(resolve => {
+				this._capabilitiesService.onCapabilitiesRegistered(e => {
+					if (e.id === providerId) {
 						resolve();
-					});
+					}
 				});
-			}
-		} else {
-			// Wait until the provider with the given id is registered.
-			if (!this._capabilitiesService.providers[providerId]) {
-				await new Promise<void>(resolve => {
-					let isCorrectProviderRegistered = false;
-					this._capabilitiesService.onCapabilitiesRegistered(e => {
-						if (e.id === providerId) {
-							isCorrectProviderRegistered = true;
-						}
-					});
-					setTimeout(() => {
-						if (isCorrectProviderRegistered) {
-							isCorrectProviderRegistered = true;
-							resolve();
-						} else {
-							throw new Error(localize('executionPlanService.ensureCapabilitiesRegistered', "Provider with id {0} is not registered.", providerId));
-						}
-					}, 30000);
-				});
-
-			}
+				setTimeout(() => {
+					throw new Error(localize('executionPlanService.ensureCapabilitiesRegistered', "Provider with id {0} is not registered.", providerId));
+				}, 30000);
+			});
 		}
 	}
 
@@ -105,7 +108,7 @@ export class ExecutionPlanService implements IExecutionPlanService {
 	 * @param action executionPlanService action to be performed.
 	 */
 	private async _runAction<T>(fileFormat: string, action: (handler: azdata.executionPlan.ExecutionPlanProvider) => Thenable<T>): Promise<T> {
-		await this.ensureCapabilitiesRegistered();
+		await this.ensureFileFormatHandlerRegistered(fileFormat);
 		let providers = Object.keys(this._capabilitiesService.providers);
 		let epProviders: string[] = [];
 		for (let i = 0; i < providers.length; i++) {
