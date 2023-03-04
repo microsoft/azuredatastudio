@@ -1796,17 +1796,24 @@ describe.only('Project: round trip updates', function (): void {
 	});
 
 	// skipped until projectController does the prompting, test should be moved to projectController.tests.ts
-	it.skip('Should not update project and no backup file should be created when update to project is rejected', async function (): Promise<void> {
+	it.only('Should not update project and no backup file should be created when update to project is rejected', async function (): Promise<void> {
 		sinon.stub(window, 'showWarningMessage').returns(<any>Promise.resolve(constants.noString));
 		// setup test files
 		const folderPath = await testUtils.generateTestFolderPath();
 		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
-		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
+		//await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
 
-		const project = await Project.openProject(Uri.file(sqlProjPath).fsPath);
+		const originalSqlProjContents = (await fs.readFile(sqlProjPath)).toString();
 
-		should(await exists(sqlProjPath + '_backup')).equal(false);	// backup file should not be generated
-		should(project.importedTargets.length).equal(2); // additional target should not be added by updateProjectForRoundTrip method
+		let project = await Project.openProject(sqlProjPath, false);
+		(project.isCrossPlatformCompatible).should.be.false('SSDT project should not be cross-platform compatible when not prompted to update');
+
+		project = await Project.openProject(sqlProjPath, true);
+		(project.isCrossPlatformCompatible).should.be.false('SSDT project should not be cross-platform compatible when update prompt is rejected');
+		(await exists(sqlProjPath + '_backup')).should.be.false('backup file shoudl not be generated');
+
+		const newSqlProjContents = (await fs.readFile(sqlProjPath)).toString();
+		newSqlProjContents.should.equal(originalSqlProjContents, 'SSDT .sqlproj contents should not have changed when update prompt is rejected')
 
 		sinon.restore();
 	});

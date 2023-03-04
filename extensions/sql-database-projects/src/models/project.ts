@@ -141,11 +141,19 @@ export class Project implements ISqlProject {
 	/**
 	 * Open and load a .sqlproj file
 	 */
-	public static async openProject(projectFilePath: string): Promise<Project> {
+	public static async openProject(projectFilePath: string, promptIfNeedsUpdating: boolean = false): Promise<Project> {
 		const proj = new Project(projectFilePath);
 
 		proj.sqlProjService = await utils.getSqlProjectsService();
 		await proj.readProjFile();
+
+		if (!proj.isCrossPlatformCompatible && promptIfNeedsUpdating) {
+			const result = await window.showWarningMessage(constants.updateProjectForRoundTrip(proj.projectFileName), constants.yesString, constants.noString);
+
+			if (result === constants.yesString) {
+				await proj.updateProjectForRoundTrip();
+			}
+		}
 
 		return proj;
 	}
