@@ -1783,15 +1783,15 @@ describe('Project: round trip updates', function (): void {
 	});
 
 	it('Should update SSDT project to work in ADS', async function (): Promise<void> {
-		await testUpdateInRoundTrip(baselines.SSDTProjectFileBaseline, baselines.SSDTProjectAfterUpdateBaseline);
+		await testUpdateInRoundTrip(baselines.SSDTProjectFileBaseline);
 	});
 
 	it('Should update SSDT project with new system database references', async function (): Promise<void> {
-		await testUpdateInRoundTrip(baselines.SSDTUpdatedProjectBaseline, baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaseline);
+		await testUpdateInRoundTrip(baselines.SSDTUpdatedProjectBaseline);
 	});
 
 	it('Should update SSDT project to work in ADS handling pre-existing targets', async function (): Promise<void> {
-		await testUpdateInRoundTrip(baselines.SSDTProjectBaselineWithBeforeBuildTarget, baselines.SSDTProjectBaselineWithBeforeBuildTargetAfterUpdate);
+		await testUpdateInRoundTrip(baselines.SSDTProjectBaselineWithBeforeBuildTarget);
 	});
 
 	it('Should not update project and no backup file should be created when update to project is rejected', async function (): Promise<void> {
@@ -1839,23 +1839,20 @@ describe('Project: round trip updates', function (): void {
 		const spy = sinon.spy(window, 'showWarningMessage');
 
 		const project = await Project.openProject(Uri.file(sqlProjPath).fsPath);
-		should(spy.notCalled).be.true();
-		should(project.isSdkStyleProject).be.true();
+		should(await project.isCrossPlatformCompatible).equals(true, 'Project should be detected as cross-plat compatible');
+		should(spy.notCalled).be.true('Prompt to update .sqlproj should not have been shown for cross-plat project.');
 	}
 });
 
-async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate: string): Promise<void> {
-	const stub = sinon.stub(window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
-
+async function testUpdateInRoundTrip(fileBeforeupdate: string): Promise<void> {
 	projFilePath = await testUtils.createTestSqlProjFile(fileBeforeupdate);
 	const project = await Project.openProject(projFilePath); // project gets updated if needed in openProject()
+	should(project.isCrossPlatformCompatible).equals(false, 'Project should not be cross-plat compatible before conversion');
 
+	await project.updateProjectForRoundTrip();
+
+	should(project.isCrossPlatformCompatible).equal(true, 'Project should be cross-plat compatible after conversion');
 	should(await exists(projFilePath + '_backup')).equal(true, 'Backup file should have been generated before the project was updated');
-	should(project.importedTargets.length).equal(3);	// additional target added by updateProjectForRoundTrip method
 
-	let projFileText = (await fs.readFile(projFilePath)).toString();
-	should(projFileText).equal(fileAfterUpdate.trim());
-
-	should(stub.calledOnce).be.true('showWarningMessage should have been called exactly once');
 	sinon.restore();
 }

@@ -724,13 +724,8 @@ declare module 'mssql' {
 	}
 
 	export const enum SystemDatabase {
-		master = 0,
-		msdb = 1
-	}
-
-	export const enum ProjectType {
-		sdkStyle = 0,
-		legacyStyle = 1
+		Master = 0,
+		Msdb = 1
 	}
 
 	export interface SqlCmdVariable {
