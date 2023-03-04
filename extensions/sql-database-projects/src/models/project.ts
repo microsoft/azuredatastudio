@@ -22,7 +22,7 @@ import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVari
 import { ResultStatus } from 'azdata';
 import { BaseProjectTreeItem } from './tree/baseTreeItem';
 import { PostDeployNode, PreDeployNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
-import { ISqlProjectsService } from 'mssql';
+import { ISqlProjectsService, ProjectType } from 'mssql';
 
 /**
  * Represents the configuration based on the Configuration property in the sqlproj
@@ -50,7 +50,8 @@ export class Project implements ISqlProject {
 	private _preDeployScripts: FileProjectEntry[] = [];
 	private _postDeployScripts: FileProjectEntry[] = [];
 	private _noneDeployScripts: FileProjectEntry[] = [];
-	private _isSdkStyleProject: boolean = false; // https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview
+	private _sqlProjStyle: ProjectType = ProjectType.SdkStyle;
+	private _isCrossPlatformCompatible: boolean = false;
 	private _outputPath: string = '';
 	private _configuration: Configuration = Configuration.Debug;
 	private _databaseSource: string = '';
@@ -110,8 +111,12 @@ export class Project implements ISqlProject {
 		return this._noneDeployScripts;
 	}
 
-	public get isSdkStyleProject(): boolean {
-		return this._isSdkStyleProject;
+	public get sqlProjStyle(): ProjectType {
+		return this._sqlProjStyle;
+	}
+
+	public get isCrossPlatformCompatible(): boolean {
+		return this._isCrossPlatformCompatible;
 	}
 
 	public get outputPath(): string {
@@ -155,8 +160,6 @@ export class Project implements ISqlProject {
 		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
 
 		await this.readProjectProperties();
-		// check if this is an sdk style project https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview
-		this._isSdkStyleProject = await this.getCrossPlatformCompatibility();
 
 		// get pre and post deploy scripts specified in the sqlproj
 		this._preDeployScripts = this.readPreDeployScripts();
@@ -202,6 +205,16 @@ export class Project implements ISqlProject {
 		this._databaseSource = props.databaseSource ?? '';
 		this._defaultCollation = props.defaultCollation;
 		this._databaseSchemaProvider = 'Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider'; // TODO: replace this stub once latest Tools Service is brought over
+		this._sqlProjStyle = props.projectStyle;
+
+		await this.readCrossPlatformCompatibility();
+	}
+
+	private async readCrossPlatformCompatibility(): Promise<void> {
+		const result = await this.sqlProjService.getCrossPlatformCompatibility(this.projectFilePath)
+		this.throwIfFailed(result);
+
+		this._isCrossPlatformCompatible = result.isCrossPlatformCompatible;
 	}
 
 	/**
@@ -213,7 +226,7 @@ export class Project implements ISqlProject {
 		const entriesWithType: { relativePath: string, typeAttribute: string }[] = [];
 
 		// default glob include pattern for sdk style projects
-		if (this._isSdkStyleProject) {
+		if (this.sqlProjStyle === ProjectType.SdkStyle) {
 			try {
 				const globFiles = await utils.getSqlFilesInFolder(this.projectFolderPath, true);
 				globFiles.forEach(f => {
@@ -240,7 +253,7 @@ export class Project implements ISqlProject {
 						const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(includeRelativePath));
 
 						// sdk style projects can handle other globbing patterns like <Build Include="folder1\*.sql" /> and <Build Include="Production*.sql" />
-						if (this._isSdkStyleProject && !(await utils.exists(fullPath))) {
+						if (this.sqlProjStyle === ProjectType.SdkStyle && !(await utils.exists(fullPath))) {
 							// add files from the glob pattern
 							const globFiles = await utils.globWithPattern(fullPath);
 							globFiles.forEach(gf => {
@@ -260,7 +273,7 @@ export class Project implements ISqlProject {
 
 					// <Build Remove....>
 					// remove files specified in the sqlproj to remove if this is an sdk style project
-					if (this._isSdkStyleProject) {
+					if (this.sqlProjStyle === ProjectType.SdkStyle) {
 						const removeRelativePath = buildElements[b].getAttribute(constants.Remove)!;
 
 						if (removeRelativePath) {
@@ -280,7 +293,7 @@ export class Project implements ISqlProject {
 			}
 		}
 
-		if (this.isSdkStyleProject) {
+		if (this.sqlProjStyle === ProjectType.SdkStyle) {
 			// remove any pre/post/none deploy scripts that were specified in the sqlproj so they aren't counted twice
 			this.preDeployScripts.forEach(f => filesSet.delete(f.relativePath));
 			this.postDeployScripts.forEach(f => filesSet.delete(f.relativePath));
@@ -316,7 +329,7 @@ export class Project implements ISqlProject {
 		sqlprojFolders.forEach(f => foldersSet.add(f));
 
 		// glob style getting folders for sdk style projects
-		if (this._isSdkStyleProject) {
+		if (this.sqlProjStyle === ProjectType.SdkStyle) {
 			this.files.forEach(file => {
 				// if file is in the project's folder, add the folders from the project file to this file to the list of folders. This is so that only non-empty folders in the project folder will be added by default.
 				// Empty folders won't be shown unless specified in the sqlproj (same as how it's handled for csproj in VS)
@@ -608,34 +621,23 @@ export class Project implements ISqlProject {
 		this._configuration = Configuration.Debug;
 	}
 
-	/**
-	 *  Checks if a project is an SDK-style project
-	 *  @returns true if the project is an sdk style project, false if it isn't
-	 */
-	private async getCrossPlatformCompatibility(): Promise<boolean> {
-		const result = await this.sqlProjService.getCrossPlatformCompatibility(this.projectFilePath)
-		this.throwIfFailed(result);
-
-		return result.isCrossPlatformCompatible;
-	}
-
 	public async updateProjectForRoundTrip(): Promise<void> {
-		if (this.isSdkStyleProject) {
+		if (this.sqlProjStyle === ProjectType.SdkStyle) {
 			return;
 		}
 
-		if (this._importedTargets.includes(constants.NetCoreTargets) && !this.containsSSDTOnlySystemDatabaseReferences() // old style project check
-			|| this.isSdkStyleProject) { // new style project check
-			return;
-		}
+		// TODO: is this check below still relevant?
+		// if (this._importedTargets.includes(constants.NetCoreTargets) && !this.containsSSDTOnlySystemDatabaseReferences() // old style project check
+		// 	|| this.sqlProjStyle === ProjectType.SdkStyle) { // new style project check
+		// 	return;
+		// }
 
 		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectForRoundtrip);
 
 		const result = await this.sqlProjService.updateProjectForCrossPlatform(this.projectFilePath);
 		this.throwIfFailed(result);
 
-		// update cross-plat status
-		this._isSdkStyleProject = await this.getCrossPlatformCompatibility();
+		await this.readCrossPlatformCompatibility();
 	}
 
 	/**
@@ -851,7 +853,7 @@ export class Project implements ISqlProject {
 
 	public getSystemDacpacUri(dacpac: string): Uri {
 		const versionFolder = this.getSystemDacpacFolderName();
-		const systemDacpacLocation = this.isSdkStyleProject ? '$(SystemDacpacsLocation)' : '$(NETCoreTargetsPath)';
+		const systemDacpacLocation = this.sqlProjStyle === ProjectType.SdkStyle ? '$(SystemDacpacsLocation)' : '$(NETCoreTargetsPath)';
 		return Uri.parse(path.join(systemDacpacLocation, 'SystemDacpacs', versionFolder, dacpac));
 	}
 
@@ -1101,7 +1103,7 @@ export class Project implements ISqlProject {
 			itemGroup = this.findOrCreateItemGroup(xmlTag);
 		}
 		else {
-			if (this.isSdkStyleProject) {
+			if (this.sqlProjStyle === ProjectType.SdkStyle) {
 				// if there's a folder entry for the folder containing this file, remove it from the sqlproj because the folder will now be
 				// included by the glob that includes this file (same as how csproj does it)
 				const folders = await this.foldersListedInSqlproj();
@@ -1156,7 +1158,7 @@ export class Project implements ISqlProject {
 
 			if (deleted) {
 				// still might need to add a <Build Remove="..."> node if this is an sdk style project
-				if (this.isSdkStyleProject) {
+				if (this.sqlProjStyle === ProjectType.SdkStyle) {
 					break;
 				} else {
 					return;
@@ -1166,7 +1168,7 @@ export class Project implements ISqlProject {
 
 		// if it's an sdk style project, we'll need to add a <Build Remove="..."> entry to remove this file if it's
 		// still included by a glob
-		if (this.isSdkStyleProject) {
+		if (this.sqlProjStyle === ProjectType.SdkStyle) {
 			// write any changes from removing an include node and get the current files included in the project
 			if (deleted) {
 				await this.serializeToProjFile(this.projFileXmlDoc!);
@@ -1237,7 +1239,7 @@ export class Project implements ISqlProject {
 	}
 
 	private async addFolderToProjFile(folderPath: string): Promise<void> {
-		if (this.isSdkStyleProject) {
+		if (this.sqlProjStyle === ProjectType.SdkStyle) {
 			// if there's a folder entry for the folder containing this folder, remove it from the sqlproj because the folder will now be
 			// included by the glob that includes this folder (same as how csproj does it)
 			const folders = await this.foldersListedInSqlproj();
@@ -1263,7 +1265,7 @@ export class Project implements ISqlProject {
 		// TODO: consider removing this check when working on migration scenario. If a user converts to an SDK-style project and adding this
 		// exclude XML doesn't hurt for non-SDK-style projects, then it might be better to just it anyway so that they don't have to exclude the folder
 		// again when they convert to an SDK-style project
-		if (this.isSdkStyleProject) {
+		if (this.sqlProjStyle === ProjectType.SdkStyle) {
 			// update sqlproj if a node was deleted and load files and folders again
 			await this.writeToSqlProjAndUpdateFilesFolders();
 
@@ -1654,7 +1656,7 @@ export class Project implements ISqlProject {
 
 		// for SDK style projects, only add this folder to the sqlproj if needed
 		// intermediate folders don't need to be added in the sqlproj
-		if (this.isSdkStyleProject) {
+		if (this.sqlProjStyle === ProjectType.SdkStyle) {
 			let folderEntry = this.files.find(f => utils.ensureTrailingSlash(f.relativePath.toUpperCase()) === utils.ensureTrailingSlash((relativeFolderPath.toUpperCase())));
 
 			if (!folderEntry) {

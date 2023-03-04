@@ -1841,19 +1841,19 @@ describe.only('Project: round trip updates', function (): void {
 		const spy = sinon.spy(window, 'showWarningMessage');
 
 		const project = await Project.openProject(Uri.file(sqlProjPath).fsPath);
-		should(spy.notCalled).be.true();
-		should(project.isSdkStyleProject).be.true();
+		should(await project.isCrossPlatformCompatible).equals(true, 'Project should be detected as cross-plat compatible');
+		should(spy.notCalled).be.true('Prompt to update .sqlproj should not have been shown for cross-plat project.');
 	}
 });
 
 async function testUpdateInRoundTrip(fileBeforeupdate: string): Promise<void> {
 	projFilePath = await testUtils.createTestSqlProjFile(fileBeforeupdate);
 	const project = await Project.openProject(projFilePath); // project gets updated if needed in openProject()
-	should(project.isSdkStyleProject).equals(false, 'Project should not be SDK-style before conversion');
+	should(await project.isCrossPlatformCompatible).equals(false, 'Project should not be cross-plat compatible before conversion');
 
 	await project.updateProjectForRoundTrip();
 
-	should(project.isSdkStyleProject).equal(true, 'Project should be SDK-style after conversion');
+	should(await project.isCrossPlatformCompatible).equal(true, 'Project should be cross-plat compatible after conversion');
 	should(await exists(projFilePath + '_backup')).equal(true, 'Backup file should have been generated before the project was updated');
 
 	sinon.restore();
