@@ -30,21 +30,43 @@ export class ExecutionPlanService implements IExecutionPlanService {
 	/**
 	 * This ensures that the capabilities service has registered the providers to handle execution plan requests.
 	 */
-	private async ensureCapabilitiesRegistered(): Promise<void> {
-
-		// Wait until the capabilities service has registered some providers.
-		let providers = Object.keys(this._capabilitiesService.providers);
-		if (providers.length === 0) {
-			await new Promise<void>(resolve => {
-				this._capabilitiesService.onCapabilitiesRegistered(e => {
-					resolve();
+	private async ensureCapabilitiesRegistered(providerId?: string): Promise<void> {
+		if (!providerId) {
+			// Wait until the capabilities service has registered some providers.
+			let providers = Object.keys(this._capabilitiesService.providers);
+			if (providers.length === 0) {
+				await new Promise<void>(resolve => {
+					this._capabilitiesService.onCapabilitiesRegistered(e => {
+						resolve();
+					});
 				});
-			});
+			}
+		} else {
+			// Wait until the provider with the given id is registered.
+			if (!this._capabilitiesService.providers[providerId]) {
+				await new Promise<void>(resolve => {
+					let isCorrectProviderRegistered = false;
+					this._capabilitiesService.onCapabilitiesRegistered(e => {
+						if (e.id === providerId) {
+							isCorrectProviderRegistered = true;
+						}
+					});
+					setTimeout(() => {
+						if (isCorrectProviderRegistered) {
+							isCorrectProviderRegistered = true;
+							resolve();
+						} else {
+							throw new Error(localize('executionPlanService.ensureCapabilitiesRegistered', "Provider with id {0} is not registered.", providerId));
+						}
+					}, 30000);
+				});
+
+			}
 		}
 	}
 
 	private async getExecutionPlanProvider(providerId: string): Promise<azdata.executionPlan.ExecutionPlanProvider> {
-		await this.ensureCapabilitiesRegistered();
+		await this.ensureCapabilitiesRegistered(providerId);
 		const provider = this._capabilitiesService.providers[providerId];
 		// Return undefined if the provider is not registered or it is not a execution plan provider.
 		if (!provider || !provider.connection?.isExecutionPlanProvider) {
