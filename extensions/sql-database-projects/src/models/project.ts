@@ -622,7 +622,7 @@ export class Project implements ISqlProject {
 	}
 
 	public async updateProjectForRoundTrip(): Promise<void> {
-		if (this.sqlProjStyle === ProjectType.SdkStyle) {
+		if (this.isCrossPlatformCompatible) {
 			return;
 		}
 
