@@ -10,6 +10,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { Event, Emitter } from 'vs/base/common/event';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
 interface ExecutionPlanProviderRegisteredEvent {
 	id: string,
@@ -38,8 +39,10 @@ export class ExecutionPlanService implements IExecutionPlanService {
 				return;
 			}
 		}
+
+		let listener: IDisposable;
 		await new Promise<void>((resolve, reject) => {
-			this._capabilitiesService.onCapabilitiesRegistered(e => {
+			listener = this._capabilitiesService.onCapabilitiesRegistered(e => {
 				if (e.features.connection.supportedExecutionPlanFileExtensions?.includes(fileExtension)) {
 					resolve();
 				}
@@ -48,6 +51,7 @@ export class ExecutionPlanService implements IExecutionPlanService {
 				reject(new Error(localize('executionPlanService.ensureFileExtensionHandlerRegistered', "Execution plan provider which supports file format '{0}' was not registered after 30 seconds.", fileExtension)));
 			}, 30000);
 		});
+		listener.dispose();
 	}
 
 	/**
@@ -55,9 +59,10 @@ export class ExecutionPlanService implements IExecutionPlanService {
 	 */
 	private async ensureCapabilitiesRegistered(providerId: string): Promise<void> {
 		// Wait until the provider with the given id is registered.
+		let listener: IDisposable;
 		if (!this._capabilitiesService.providers[providerId]) {
 			await new Promise<void>((resolve, reject) => {
-				this._capabilitiesService.onCapabilitiesRegistered(e => {
+				listener = this._capabilitiesService.onCapabilitiesRegistered(e => {
 					if (e.id === providerId) {
 						resolve();
 					}
@@ -67,6 +72,7 @@ export class ExecutionPlanService implements IExecutionPlanService {
 				}, 30000);
 			});
 		}
+		listener.dispose();
 	}
 
 	private async getExecutionPlanProvider(providerId: string): Promise<azdata.executionPlan.ExecutionPlanProvider> {
