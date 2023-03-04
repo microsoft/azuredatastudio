@@ -70,12 +70,6 @@ export class ExecutionPlanService implements IExecutionPlanService {
 
 	private async getExecutionPlanProvider(providerId: string): Promise<azdata.executionPlan.ExecutionPlanProvider> {
 		await this.ensureCapabilitiesRegistered(providerId);
-		const provider = this._capabilitiesService.providers[providerId];
-		// Return undefined if the provider is not registered or it is not a execution plan provider.
-		if (!provider || !provider.connection?.isExecutionPlanProvider) {
-			return undefined;
-		}
-
 		let handler = this._providers[providerId];
 		if (handler) {
 			return handler;
