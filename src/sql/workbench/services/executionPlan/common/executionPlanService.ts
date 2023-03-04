@@ -34,6 +34,7 @@ export class ExecutionPlanService implements IExecutionPlanService {
 	public async ensureFileExtensionHandlerRegistered(fileExtension: string) {
 		for (let provider in Object.keys(this._capabilitiesService.providers)) {
 			if (this._capabilitiesService.providers[provider].connection.supportedExecutionPlanFileExtensions?.includes(fileExtension)) {
+				// We already have a provider registered that can handle this file extension so we're done
 				return;
 			}
 		}
