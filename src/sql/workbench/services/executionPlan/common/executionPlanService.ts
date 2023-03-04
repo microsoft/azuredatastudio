@@ -31,35 +31,21 @@ export class ExecutionPlanService implements IExecutionPlanService {
 	 * This ensures that the capabilities service has registered the providers to handle execution plan requests.
 	 * @param providerId Optional provider id to wait for.
 	 */
-	private async ensureCapabilitiesRegistered(providerId?: string): Promise<void> {
-		let providers: string[] = Object.keys(this._capabilitiesService.providers);
+	private async ensureCapabilitiesRegistered(): Promise<void> {
 
 		// Wait until the capabilities service has registered some providers.
-		await new Promise<void>((resolve) => {
-			let retryCount = 0;
-			const waitFunction = () => {
-				providers = Object.keys(this._capabilitiesService.providers);
-				if ((providerId && providers?.includes(providerId)) || (!providerId && providers?.length > 0)) {
+		let providers = Object.keys(this._capabilitiesService.providers);
+		if (providers.length === 0) {
+			await new Promise<void>(resolve => {
+				this._capabilitiesService.onCapabilitiesRegistered(e => {
 					resolve();
-					return;
-				}
-				retryCount++;
-				if (retryCount < 5) {
-					setTimeout(waitFunction, 1000);
-				} else {
-					if (providerId) {
-						throw new Error(localize('providerNotRegisteredError', "Provider {0} is not registered to handle execution plans", providerId));
-					} else {
-						throw new Error(localize('noProvidersRegisteredError', "No providers to handle execution plans are registered"));
-					}
-				}
-			}
-			waitFunction();
-		});
+				});
+			});
+		}
 	}
 
 	private async getExecutionPlanProvider(providerId: string): Promise<azdata.executionPlan.ExecutionPlanProvider> {
-		await this.ensureCapabilitiesRegistered(providerId);
+		await this.ensureCapabilitiesRegistered();
 		const provider = this._capabilitiesService.providers[providerId];
 		// Return undefined if the provider is not registered or it is not a execution plan provider.
 		if (!provider || !provider.connection?.isExecutionPlanProvider) {
