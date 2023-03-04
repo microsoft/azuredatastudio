@@ -1795,13 +1795,11 @@ describe.only('Project: round trip updates', function (): void {
 		await testUpdateInRoundTrip(baselines.SSDTProjectBaselineWithBeforeBuildTarget);
 	});
 
-	// skipped until projectController does the prompting, test should be moved to projectController.tests.ts
-	it.only('Should not update project and no backup file should be created when update to project is rejected', async function (): Promise<void> {
+	it('Should not update project and no backup file should be created when update to project is rejected', async function (): Promise<void> {
 		sinon.stub(window, 'showWarningMessage').returns(<any>Promise.resolve(constants.noString));
 		// setup test files
 		const folderPath = await testUtils.generateTestFolderPath();
 		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
-		//await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
 
 		const originalSqlProjContents = (await fs.readFile(sqlProjPath)).toString();
 
