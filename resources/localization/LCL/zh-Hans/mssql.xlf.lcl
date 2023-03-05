@@ -1989,6 +1989,9 @@
       <Item ItemId=";extensions/mssql/package.mssql.objectExplorer.disableGroupBySchemaTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server: Disable Group By Schema]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server: 禁用分组依据架构]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2004,6 +2007,9 @@
       <Item ItemId=";extensions/mssql/package.mssql.objectExplorer.enableGroupBySchemaTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server: Enable Group By Schema]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server: 按架构启用分组]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

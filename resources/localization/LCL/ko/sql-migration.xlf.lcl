@@ -1633,8 +1633,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.help.description.sqldb" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[SQL Server 인스턴스(온-프레미스 또는 Azure Virtual Machines)에서 Azure SQL Database(PREVIEW)로 데이터베이스를 마이그레이션하는 단계별 자습서입니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server 인스턴스(온-프레미스 또는 Azure Virtual Machines)에서 Azure SQL Database로 데이터베이스를 마이그레이션하는 단계별 자습서입니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).]]></Val>
@@ -1681,8 +1681,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.help.link.sqldb" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Tutorial:  Migrate to SQL Server on Azure SQL Database (offline)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[자습서: Azure SQL 데이터베이스에서 SQL Server로 마이그레이션(오프라인) - (미리 보기)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[자습서: Azure SQL Database의 SQL Server로 마이그레이션(오프라인)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)]]></Val>
@@ -7240,6 +7240,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.validate.error.gatewaytimeout" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A time-out was encountered while validating a resource connection. Learn more: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[리소스 연결을 확인하는 동안 시간 초과가 발생했습니다. 자세히 알아보기: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
