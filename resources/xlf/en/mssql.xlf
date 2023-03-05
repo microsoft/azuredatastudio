@@ -602,6 +602,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="mssql.disabled">
       <source xml:lang="en">Disabled</source>
     </trans-unit>
+    <trans-unit id="mssql.enableSqlAuthenticationProvider">
+      <source xml:lang="en">Enables use of the Sql Authentication Provider for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens. This option is only supported for 'MSAL' Azure Authentication Library. Azure Data Studio is required to be relaunched when the value is changed.</source>
+    </trans-unit>
     <trans-unit id="mssql.enabled">
       <source xml:lang="en">Enabled</source>
     </trans-unit>
@@ -696,7 +699,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <source xml:lang="en">When enabled, the database objects in Object Explorer will be categorized by schema.</source>
     </trans-unit>
     <trans-unit id="mssql.parallelMessageProcessing">
-      <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.</source>
+      <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</source>
+    </trans-unit>
+    <trans-unit id="mssql.piiLogging">
+      <source xml:lang="en">[Optional] Should Personally Identifiable Information (PII) be logged in the log file.</source>
     </trans-unit>
     <trans-unit id="mssql.provider.displayName">
       <source xml:lang="en">Microsoft SQL Server</source>

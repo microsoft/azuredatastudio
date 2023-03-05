@@ -2666,6 +2666,11 @@ Default Skipped Commands:
       <source xml:lang="en">Generating execution plans</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanInput" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="epCompare.executionPlanEditorName">
+      <source xml:lang="en">ExecutionPlan</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext"><body>
     <trans-unit id="executionPlanPropertiesEdgeOperationName">
       <source xml:lang="en">Edge</source>
@@ -2905,11 +2910,6 @@ Default Skipped Commands:
     </trans-unit>
     <trans-unit id="previousSearchItemAction">
       <source xml:lang="en">Previous Match</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/executionPlan/common/executionPlanInput" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="epCompare.executionPlanEditorName">
-      <source xml:lang="en">ExecutionPlan</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/extensions/browser/contributionRenders" source-language="en" datatype="plaintext"><body>
@@ -5751,6 +5751,12 @@ Error Message: 1</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/executionPlan/common/executionPlanService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlanService.ensureCapabilitiesRegistered">
+      <source xml:lang="en">Provider with id {0} was not registered after 30 seconds.</source>
+    </trans-unit>
+    <trans-unit id="executionPlanService.ensureFileExtensionHandlerRegistered">
+      <source xml:lang="en">Execution plan provider which supports file format '{0}' was not registered after 30 seconds.</source>
+    </trans-unit>
     <trans-unit id="noHandlerRegistered">
       <source xml:lang="en">No valid execution plan handler is registered</source>
     </trans-unit>
