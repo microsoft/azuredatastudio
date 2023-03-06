@@ -919,7 +919,7 @@ export class Project implements ISqlProject {
 		const systemDatabaseReferenceProjectEntry = new SystemDatabaseReferenceProjectEntry(uri, ssdtUri, <string>settings.databaseName, settings.suppressMissingDependenciesErrors);
 
 		// check if reference to this database already exists
-		if (this.databaseReferenceExists(systemDatabaseReferenceProjectEntry)) {
+		if (this.databaseReferences.find(r => r.databaseName === systemDatabaseReferenceProjectEntry.databaseName)) {
 			throw new Error(constants.databaseReferenceAlreadyExists);
 		}
 
