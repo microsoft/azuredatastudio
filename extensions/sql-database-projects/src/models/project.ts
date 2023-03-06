@@ -11,6 +11,7 @@ import * as xmlFormat from 'xml-formatter';
 import * as os from 'os';
 import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
+import * as mssql from 'mssql';
 
 import { Uri, window } from 'vscode';
 import { EntryType, IDatabaseReferenceProjectEntry, IProjectEntry, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
@@ -21,7 +22,6 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase, SystemDatabaseReferenceProjectEntry } from './projectEntry';
 import { BaseProjectTreeItem } from './tree/baseTreeItem';
 import { PostDeployNode, PreDeployNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
-import { ISqlProjectsService } from 'mssql';
 
 /**
  * Represents the configuration based on the Configuration property in the sqlproj
@@ -36,7 +36,7 @@ enum Configuration {
  * Class representing a Project, and providing functions for operating on it
  */
 export class Project implements ISqlProject {
-	private sqlProjService!: ISqlProjectsService;
+	private sqlProjService!: mssql.ISqlProjectsService;
 
 	private _projectFilePath: string;
 	private _projectFileName: string;
@@ -893,7 +893,7 @@ export class Project implements ISqlProject {
 					r.ssdtUri = this.getSystemDacpacSsdtUri(`${r.databaseName}.dacpac`);
 
 					// add updated system db reference to sqlproj
-					await this.addDatabaseReferenceToProjFile(r);
+					// await this.addDatabaseReferenceToProjFile(r); // commenting out since addDatabaseReferenceToProjFile() was removed and this will get swapped over soon and this'll be removed
 				}
 			}
 
@@ -923,7 +923,13 @@ export class Project implements ISqlProject {
 			throw new Error(constants.databaseReferenceAlreadyExists);
 		}
 
-		await this.addToProjFile(systemDatabaseReferenceProjectEntry);
+		const systemDb = <unknown>settings.systemDb as mssql.SystemDatabase;
+		const result = await this.sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, settings.databaseName);
+
+		if (!result.success && result.errorMessage) {
+			const systemDbName = settings.systemDb === SystemDatabase.master ? constants.master : constants.msdb;
+			throw new Error(constants.errorAddingDatabaseReference(systemDbName, result.errorMessage));
+		}
 	}
 
 	public getSystemDacpacUri(dacpac: string): Uri {
@@ -1415,118 +1421,9 @@ export class Project implements ISqlProject {
 		}
 	}
 
-	private async addSystemDatabaseReferenceToProjFile(entry: SystemDatabaseReferenceProjectEntry): Promise<void> {
-		const systemDbReferenceNode = this.projFileXmlDoc!.createElement(constants.ArtifactReference);
-
-		// if it's a system database reference, we'll add an additional node with the SSDT location of the dacpac later
-		systemDbReferenceNode.setAttribute(constants.Condition, constants.NetCoreCondition);
-		systemDbReferenceNode.setAttribute(constants.Include, entry.pathForSqlProj());
-		await this.addDatabaseReferenceChildren(systemDbReferenceNode, entry);
-		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(systemDbReferenceNode);
-
-		// add a reference to the system dacpac in SSDT if it's a system db
-		const ssdtReferenceNode = this.projFileXmlDoc!.createElement(constants.ArtifactReference);
-		ssdtReferenceNode.setAttribute(constants.Condition, constants.NotNetCoreCondition);
-		ssdtReferenceNode.setAttribute(constants.Include, entry.ssdtPathForSqlProj());
-		await this.addDatabaseReferenceChildren(ssdtReferenceNode, entry);
-		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(ssdtReferenceNode);
-	}
-
-	private async addDatabaseReferenceToProjFile(entry: IDatabaseReferenceProjectEntry): Promise<void> {
-		if (entry instanceof SystemDatabaseReferenceProjectEntry) {
-			await this.addSystemDatabaseReferenceToProjFile(<SystemDatabaseReferenceProjectEntry>entry);
-		}
-
-		if (!this.databaseReferenceExists(entry)) {
-			this._databaseReferences.push(entry);
-		}
-	}
-
 	private databaseReferenceExists(entry: IDatabaseReferenceProjectEntry): boolean {
 		const found = this._databaseReferences.find(reference => reference.pathForSqlProj() === entry.pathForSqlProj()) !== undefined;
 		return found;
-	}
-
-	private async addDatabaseReferenceChildren(referenceNode: Element, entry: IDatabaseReferenceProjectEntry): Promise<void> {
-		const suppressMissingDependenciesErrorNode = this.projFileXmlDoc!.createElement(constants.SuppressMissingDependenciesErrors);
-		const suppressMissingDependenciesErrorTextNode = this.projFileXmlDoc!.createTextNode(entry.suppressMissingDependenciesErrors ? constants.True : constants.False);
-		suppressMissingDependenciesErrorNode.appendChild(suppressMissingDependenciesErrorTextNode);
-		referenceNode.appendChild(suppressMissingDependenciesErrorNode);
-
-		if ((<DacpacReferenceProjectEntry>entry).databaseSqlCmdVariable) {
-			const databaseSqlCmdVariableElement = this.projFileXmlDoc!.createElement(constants.DatabaseSqlCmdVariable);
-			const databaseSqlCmdVariableTextNode = this.projFileXmlDoc!.createTextNode((<DacpacReferenceProjectEntry>entry).databaseSqlCmdVariable!);
-			databaseSqlCmdVariableElement.appendChild(databaseSqlCmdVariableTextNode);
-			referenceNode.appendChild(databaseSqlCmdVariableElement);
-
-			// add SQLCMD variable
-			await this.addSqlCmdVariable((<DacpacReferenceProjectEntry>entry).databaseSqlCmdVariable!, (<DacpacReferenceProjectEntry>entry).databaseVariableLiteralValue!);
-		} else if (entry.databaseVariableLiteralValue) {
-			const databaseVariableLiteralValueElement = this.projFileXmlDoc!.createElement(constants.DatabaseVariableLiteralValue);
-			const databaseTextNode = this.projFileXmlDoc!.createTextNode(entry.databaseVariableLiteralValue);
-			databaseVariableLiteralValueElement.appendChild(databaseTextNode);
-			referenceNode.appendChild(databaseVariableLiteralValueElement);
-		}
-
-		if ((<DacpacReferenceProjectEntry>entry).serverSqlCmdVariable) {
-			const serverSqlCmdVariableElement = this.projFileXmlDoc!.createElement(constants.ServerSqlCmdVariable);
-			const serverSqlCmdVariableTextNode = this.projFileXmlDoc!.createTextNode((<DacpacReferenceProjectEntry>entry).serverSqlCmdVariable!);
-			serverSqlCmdVariableElement.appendChild(serverSqlCmdVariableTextNode);
-			referenceNode.appendChild(serverSqlCmdVariableElement);
-
-			// add SQLCMD variable
-			await this.addSqlCmdVariable((<DacpacReferenceProjectEntry>entry).serverSqlCmdVariable!, (<DacpacReferenceProjectEntry>entry).serverName!);
-		}
-	}
-
-	public async addSqlCmdVariableToProjFile(entry: SqlCmdVariableProjectEntry): Promise<void> {
-		// Remove any entries with the same variable name. It'll be replaced with a new one
-		if (Object.keys(this._sqlCmdVariables).includes(entry.variableName)) {
-			await this.removeFromProjFile(entry);
-		}
-
-		const sqlCmdVariableNode = this.projFileXmlDoc!.createElement(constants.SqlCmdVariable);
-		sqlCmdVariableNode.setAttribute(constants.Include, entry.variableName);
-		this.addSqlCmdVariableChildren(sqlCmdVariableNode, entry);
-		this.findOrCreateItemGroup(constants.SqlCmdVariable).appendChild(sqlCmdVariableNode);
-
-		// add to the project's loaded sqlcmd variables
-		this._sqlCmdVariables[entry.variableName] = <string>entry.defaultValue;
-	}
-
-	private addSqlCmdVariableChildren(sqlCmdVariableNode: Element, entry: SqlCmdVariableProjectEntry): void {
-		// add default value
-		const defaultValueNode = this.projFileXmlDoc!.createElement(constants.DefaultValue);
-		const defaultValueText = this.projFileXmlDoc!.createTextNode(entry.defaultValue);
-		defaultValueNode.appendChild(defaultValueText);
-		sqlCmdVariableNode.appendChild(defaultValueNode);
-
-		// add value node which is in the format $(SqlCmdVar__x)
-		const valueNode = this.projFileXmlDoc!.createElement(constants.Value);
-		const valueText = this.projFileXmlDoc!.createTextNode(`$(SqlCmdVar__${this.getNextSqlCmdVariableCounter()})`);
-		valueNode.appendChild(valueText);
-		sqlCmdVariableNode.appendChild(valueNode);
-	}
-
-	/**
-	 * returns the next number that should be used for the new SqlCmd Variable. Old numbers don't get reused even if a SqlCmd Variable
-	 * gets removed from the project
-	 */
-	private getNextSqlCmdVariableCounter(): number {
-		const sqlCmdVariableNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.SqlCmdVariable);
-		let highestNumber = 0;
-
-		for (let i = 0; i < sqlCmdVariableNodes.length; i++) {
-			const value: string = sqlCmdVariableNodes[i].getElementsByTagName(constants.Value)[0].childNodes[0].nodeValue!;
-			const number = parseInt(value.substring(13).slice(0, -1)); // want the number x in $(SqlCmdVar__x)
-
-			// incremement the counter if there's already a variable with the same number or greater
-			if (number > highestNumber) {
-				highestNumber = number;
-			}
-		}
-
-		return highestNumber + 1;
 	}
 
 	private async updateImportedTargetsToProjFile(condition: string, projectAttributeVal: string, oldImportNode?: Element): Promise<Element> {
@@ -1620,12 +1517,6 @@ export class Project implements ISqlProject {
 			case EntryType.Folder:
 				await this.addFolderToProjFile((<FileProjectEntry>entry).relativePath);
 				break;
-			case EntryType.DatabaseReference:
-				await this.addDatabaseReferenceToProjFile(<IDatabaseReferenceProjectEntry>entry);
-				break;
-			case EntryType.SqlCmdVariable:
-				await this.addSqlCmdVariableToProjFile(<SqlCmdVariableProjectEntry>entry);
-				break; // not required but adding so that we dont miss when we add new items
 		}
 
 		await this.serializeToProjFile(this.projFileXmlDoc!);
