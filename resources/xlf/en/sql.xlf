@@ -198,6 +198,10 @@
     <trans-unit id="maxMemoryForLargeFilesMB">
       <source xml:lang="en">Controls the memory available to Azure Data Studio after restart when trying to open large files. Same effect as specifying `--max-memory=NEWSIZE` on the command line.</source>
     </trans-unit>
+    <trans-unit id="miNewDeployment">
+      <source xml:lang="en">New &amp;&amp;Deployment...</source>
+      <note>&amp;&amp; denotes a mnemonic</note>
+    </trans-unit>
     <trans-unit id="miNewNotebook">
       <source xml:lang="en">&amp;&amp;New Notebook</source>
       <note>&amp;&amp; denotes a mnemonic</note>
@@ -2662,6 +2666,11 @@ Default Skipped Commands:
       <source xml:lang="en">Generating execution plans</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanInput" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="epCompare.executionPlanEditorName">
+      <source xml:lang="en">ExecutionPlan</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext"><body>
     <trans-unit id="executionPlanPropertiesEdgeOperationName">
       <source xml:lang="en">Edge</source>
@@ -2901,11 +2910,6 @@ Default Skipped Commands:
     </trans-unit>
     <trans-unit id="previousSearchItemAction">
       <source xml:lang="en">Previous Match</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/executionPlan/common/executionPlanInput" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="epCompare.executionPlanEditorName">
-      <source xml:lang="en">ExecutionPlan</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/extensions/browser/contributionRenders" source-language="en" datatype="plaintext"><body>
@@ -5298,12 +5302,15 @@ Error: {1}</source>
     <trans-unit id="accountManagementService.close">
       <source xml:lang="en">Close</source>
     </trans-unit>
-    <trans-unit id="addAccountFailedGeneric">
+    <trans-unit id="addAccountFailedCodeMessage">
+      <source xml:lang="en">{0} 
+Error Message: {1}</source>
+    </trans-unit>
+    <trans-unit id="addAccountFailedGenericMessage">
       <source xml:lang="en">Adding account failed, check Azure Accounts log for more info.</source>
     </trans-unit>
     <trans-unit id="addAccountFailedMessage">
-      <source xml:lang="en">0 
-Error Message: 1</source>
+      <source xml:lang="en">{0}</source>
     </trans-unit>
     <trans-unit id="loggingIn">
       <source xml:lang="en">Adding account...</source>
@@ -5744,6 +5751,12 @@ Error Message: 1</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/executionPlan/common/executionPlanService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlanService.ensureCapabilitiesRegistered">
+      <source xml:lang="en">Provider with id {0} was not registered after 30 seconds.</source>
+    </trans-unit>
+    <trans-unit id="executionPlanService.ensureFileExtensionHandlerRegistered">
+      <source xml:lang="en">Execution plan provider which supports file format '{0}' was not registered after 30 seconds.</source>
+    </trans-unit>
     <trans-unit id="noHandlerRegistered">
       <source xml:lang="en">No valid execution plan handler is registered</source>
     </trans-unit>

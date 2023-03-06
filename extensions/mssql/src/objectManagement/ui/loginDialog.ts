@@ -84,7 +84,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		}
 	}
 
-	protected async onDispose(): Promise<void> {
+	protected async disposeView(): Promise<void> {
 		await this.objectManagementService.disposeLoginView(this.contextId);
 	}
 

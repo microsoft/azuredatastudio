@@ -51,7 +51,7 @@ import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { alert, status } from 'vs/base/browser/ui/aria/aria';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
-import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/common/executionPlanInput';
+import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/browser/executionPlanInput';
 import { CopyAction } from 'vs/editor/contrib/clipboard/browser/clipboard';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/browser/format';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';

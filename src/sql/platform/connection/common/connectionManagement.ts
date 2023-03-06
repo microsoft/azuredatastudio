@@ -136,6 +136,12 @@ export interface IConnectionManagementService {
 	findExistingConnection(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection'): ConnectionProfile;
 
 	/**
+	 * Fixes treeItem payload to consider defaultAuthenticationType and any other user settings.
+	 * @param profile Connection profile as received from treeItem.
+	 */
+	fixProfile(profile?: azdata.IConnectionProfile): Promise<azdata.IConnectionProfile>;
+
+	/**
 	 * If there's already a connection for given profile and purpose, returns the ownerUri for the connection
 	 * otherwise tries to make a connection and returns the owner uri when connection is complete
 	 * The purpose is connection by default

@@ -182,7 +182,8 @@ CommandsRegistry.registerCommand({
 				showConnectionDialogOnError: true,
 				showFirewallRuleOnError: true
 			};
-			return connectionService.connect(new ConnectionProfile(capabilitiesService, args.$treeItem.payload), owner.uri, options);
+			let payload = await connectionService.fixProfile(args.$treeItem.payload);
+			return connectionService.connect(new ConnectionProfile(capabilitiesService, payload), owner.uri, options);
 		}
 		return true;
 	}
