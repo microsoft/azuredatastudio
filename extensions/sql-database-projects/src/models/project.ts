@@ -156,6 +156,8 @@ export class Project implements ISqlProject {
 		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
 
 		await this.readProjectProperties();
+		await this.readSqlCmdVariables();
+
 		// check if this is an sdk style project https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview
 		this._isSdkStyleProject = this.CheckForSdkStyleProject();
 
@@ -173,14 +175,6 @@ export class Project implements ISqlProject {
 
 		// get publish profiles specified in the sqlproj
 		this._publishProfiles = this.readPublishProfiles();
-
-		// find all SQLCMD variables to include
-		try {
-			this._sqlCmdVariables = utils.readSqlCmdVariables(this.projFileXmlDoc, false);
-		} catch (e) {
-			void window.showErrorMessage(constants.errorReadingProject(constants.sqlCmdVariables, this.projectFilePath));
-			console.error(utils.getErrorMessage(e));
-		}
 	}
 
 	private async readProjectProperties(): Promise<void> {
@@ -203,6 +197,20 @@ export class Project implements ISqlProject {
 		this._databaseSource = props.databaseSource ?? '';
 		this._defaultCollation = props.defaultCollation;
 		this._databaseSchemaProvider = 'Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider'; // TODO: replace this stub once latest Tools Service is brought over
+	}
+
+	private async readSqlCmdVariables(): Promise<void> {
+		const sqlcmdVariablesResult = await this.sqlProjService.getSqlCmdVariables(this.projectFilePath);
+
+		if (!sqlcmdVariablesResult.success && sqlcmdVariablesResult.errorMessage) {
+			throw new Error(constants.errorReadingProject(constants.sqlCmdVariables, this.projectFilePath, sqlcmdVariablesResult.errorMessage));
+		}
+
+		this._sqlCmdVariables = {};
+
+		for (const variable of sqlcmdVariablesResult.sqlCmdVariables) {
+			this._sqlCmdVariables[variable.varName] = variable.defaultValue; // store the default value that's specified in the .sqlproj
+		}
 	}
 
 	/**
