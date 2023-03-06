@@ -194,10 +194,9 @@ export interface INotebookSection {
 }
 
 export interface ICellEditorProvider {
-	hasEditor(): boolean;
 	isCellOutput: boolean;
 	cellGuid(): string;
-	getEditor(): BaseTextEditor<ICodeEditorViewState>;
+	getEditor(): BaseTextEditor<ICodeEditorViewState> | undefined;
 	deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void;
 }
 
