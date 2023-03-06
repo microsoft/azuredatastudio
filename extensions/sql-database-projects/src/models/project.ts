@@ -11,6 +11,7 @@ import * as xmlFormat from 'xml-formatter';
 import * as os from 'os';
 import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
+import * as mssql from 'mssql';
 
 import { Uri, window } from 'vscode';
 import { EntryType, IDatabaseReferenceProjectEntry, IProjectEntry, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
@@ -21,7 +22,6 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase, SystemDatabaseReferenceProjectEntry } from './projectEntry';
 import { BaseProjectTreeItem } from './tree/baseTreeItem';
 import { PostDeployNode, PreDeployNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
-import { ISqlProjectsService } from 'mssql';
 
 /**
  * Represents the configuration based on the Configuration property in the sqlproj
@@ -36,7 +36,7 @@ enum Configuration {
  * Class representing a Project, and providing functions for operating on it
  */
 export class Project implements ISqlProject {
-	private sqlProjService!: ISqlProjectsService;
+	private sqlProjService!: mssql.ISqlProjectsService;
 
 	private _projectFilePath: string;
 	private _projectFileName: string;
@@ -534,7 +534,8 @@ export class Project implements ISqlProject {
 		for (const systemDbReference of databaseReferencesResult.systemDatabaseReferences) {
 			this._databaseReferences.push(new SystemDatabaseReferenceProjectEntry(
 				Uri.file(''),
-				Uri.file(''), // TODO: remove these - DacFx handles adding and removing system dacpacs, so we don't need to keep track of the paths here
+				Uri.file(''), // TODO: remove these after add and delete are swapped - DacFx handles adding and removing system dacpacs, so we don't need to keep track of the paths here
+				systemDbReference.systemDb === mssql.SystemDatabase.master ? constants.master : constants.msdb,
 				systemDbReference.databaseVariableLiteralName,
 				systemDbReference.suppressMissingDependencies));
 		}
