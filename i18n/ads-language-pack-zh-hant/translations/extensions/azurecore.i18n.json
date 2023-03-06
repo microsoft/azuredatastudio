@@ -42,8 +42,8 @@
 			"azure.NoAuthMethod.Available": "沒有任何可用的 Azure 驗證方法。您必須在 ADS 組態中啟用驗證方法。",
 			"azure.NoAuthMethod.Selected": "未選取任何 Azure 驗證方法。您必須選取要使用的驗證方法。",
 			"azure.deprecatedGetSecurityToken": "已對 azdata.accounts.getSecurityToken 發出呼叫，此方法已淘汰，並將於日後的版本中移除。請改用 getAccountSecurityToken。",
-			"genericTokenError": "Failed to get token",
-			"msalTokenError": "{0} occurred when acquiring token. \r\n{1}"
+			"genericTokenError": "無法取得權杖",
+			"msalTokenError": "取得權杖時發生{0}。\r\n{1}"
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "無法清除權杖快取",

@@ -812,6 +812,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Disabled</source>
         <target state="translated">Отключено</target>
       </trans-unit>
+      <trans-unit id="mssql.enableSqlAuthenticationProvider">
+        <source xml:lang="en">Enables use of the Sql Authentication Provider for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens. This option is only supported for 'MSAL' Azure Authentication Library. Azure Data Studio is required to be relaunched when the value is changed.</source>
+        <target state="translated">Разрешает использование поставщика проверки подлинности SQL для режима проверки подлинности "Active Directory Interactive", когда пользователь выбирает проверку подлинности "AzureMFA". Это разрешает интеграцию конечной точки ресурсов на стороне сервера при получении маркеров доступа. Этот параметр поддерживается только для библиотеки проверки подлинности Azure "MSAL". При изменении значения требуется перезапуск Azure Data Studio.</target>
+      </trans-unit>
       <trans-unit id="mssql.enabled">
         <source xml:lang="en">Enabled</source>
         <target state="translated">Включено</target>
@@ -918,7 +922,7 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.disableGroupBySchemaTitle">
         <source xml:lang="en">SQL Server: Disable Group By Schema</source>
-        <target state="new">SQL Server: Disable Group By Schema</target>
+        <target state="translated">SQL Server: отключить группирование по схеме</target>
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.enableGroupBySchema">
         <source xml:lang="en">Enable Group By Schema</source>
@@ -926,7 +930,7 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.enableGroupBySchemaTitle">
         <source xml:lang="en">SQL Server: Enable Group By Schema</source>
-        <target state="new">SQL Server: Enable Group By Schema</target>
+        <target state="translated">SQL Server: включить группирование по схеме</target>
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.expandTimeout">
         <source xml:lang="en">The timeout in seconds for expanding a node in Object Explorer. The default value is 45 seconds.</source>
@@ -937,8 +941,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">Если этот параметр включен, объекты базы данных в обозревателе объектов будут классифицированы по схеме.</target>
       </trans-unit>
       <trans-unit id="mssql.parallelMessageProcessing">
-        <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.</source>
-        <target state="translated">[Experimental] Следует ли обрабатывать запросы к службе SQL Tools Service одновременно. Этот параметр введен для обнаружения проблем, которые могут возникнуть при параллельной обработке всех запросов. Значение по умолчанию — false. При изменении значения требуется перезапуск ADS.</target>
+        <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</source>
+        <target state="translated">[Экспериментальное] Следует ли обрабатывать запросы к службе SQL Tools Service одновременно. Этот параметр введен для обнаружения проблем, которые могут возникнуть при параллельной обработке всех запросов. Значение по умолчанию — false. При изменении значения требуется перезапуск Azure Data Studio.</target>
+      </trans-unit>
+      <trans-unit id="mssql.piiLogging">
+        <source xml:lang="en">[Optional] Should Personally Identifiable Information (PII) be logged in the log file.</source>
+        <target state="translated">[Необязательно] Должны ли личные сведения регистрироваться в файле журнала.</target>
       </trans-unit>
       <trans-unit id="mssql.provider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>

@@ -11344,7 +11344,7 @@
 			"incompatible": "No se puede instalar la versión '{0}' de la extensión '{1}' porque no es compatible con Azure Data Studio '{2}'. Actualice a Azure Data Studio {3} para instalar la extensión.",
 			"installExtensionCompletedAndReloadRequired": "Se ha completado la instalación de la extensión {0}. Vuelva a cargar Azure Data Studio para habilitarlo.",
 			"maxMemoryForLargeFilesMB": "Controla la memoria disponible para Azure Data Studio después de reiniciar cuando se intentan abrir archivos grandes. Tiene el mismo efecto que si se especifica \"--max-memory=NEWSIZE\" en la línea de comandos.",
-			"miNewDeployment": "New &&Deployment...",
+			"miNewDeployment": "Nueva &&implementación...",
 			"miNewNotebook": "&&Nuevo cuaderno",
 			"miNewQuery": "Nueva &&consulta",
 			"miinstallVsix": "Instalar extensión desde el paquete VSIX",
@@ -12417,9 +12417,6 @@
 			"nextSearchItemAction": "Coincidencia siguiente",
 			"previousSearchItemAction": "Coincidencia anterior"
 		},
-		"sql/workbench/contrib/executionPlan/common/executionPlanInput": {
-			"epCompare.executionPlanEditorName": "ExecutionPlan"
-		},
 		"sql/workbench/contrib/extensions/browser/contributionRenders": {
 			"insight condition": "Cuándo",
 			"insightId": "Id.",
@@ -13336,8 +13333,8 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "Cerrar",
-			"addAccountFailedCodeMessage": "{0} \r\nError Message: {1}",
-			"addAccountFailedGenericMessage": "Adding account failed, check Azure Accounts log for more info.",
+			"addAccountFailedCodeMessage": "{0} \r\nMensaje de error: {1}",
+			"addAccountFailedGenericMessage": "Error al agregar la cuenta. Compruebe el registro de cuentas de Azure para obtener más información.",
 			"addAccountFailedMessage": "{0}",
 			"loggingIn": "Adición de cuenta en curso...",
 			"refreshCanceled": "El usuario canceló la actualización de la cuenta",
@@ -13515,6 +13512,8 @@
 			"warning": "Advertencia"
 		},
 		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"executionPlanService.ensureCapabilitiesRegistered": "El proveedor con id. {0} no se registró después de 30 segundos.",
+			"executionPlanService.ensureFileExtensionHandlerRegistered": "El proveedor del plan de ejecución que admite el formato de archivo \"{0}\" no se registró después de 30 segundos.",
 			"noHandlerRegistered": "No hay registrado ningún controlador de plan de ejecución válido",
 			"providerIdNotValidError": "Se requiere un proveedor válido para interactuar con ExecutionPlanService",
 			"selectExecutionPlanProvider": "Seleccionar un proveedor para abrir el plan de ejecución"
@@ -13951,6 +13950,9 @@
 		},
 		"sql/workbench/services/dialog/browser/wizardNavigation.component": {
 			"wizardNavigation.stepName": "Paso {0}: {1}"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanInput": {
+			"epCompare.executionPlanEditorName": "ExecutionPlan"
 		}
 	}
 }

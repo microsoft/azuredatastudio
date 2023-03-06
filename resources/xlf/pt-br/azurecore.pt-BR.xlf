@@ -124,12 +124,12 @@
       </trans-unit>
       <trans-unit id="genericTokenError">
         <source xml:lang="en">Failed to get token</source>
-        <target state="new">Failed to get token</target>
+        <target state="translated">Falha ao obter o token</target>
       </trans-unit>
       <trans-unit id="msalTokenError">
         <source xml:lang="en">{0} occurred when acquiring token. 
 {1}</source>
-        <target state="new">{0} occurred when acquiring token. 
+        <target state="translated">{0} ocorreu ao adquirir o token. 
 {1}</target>
       </trans-unit>
     </body>

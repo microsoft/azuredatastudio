@@ -287,7 +287,7 @@
       <trans-unit id="miNewDeployment">
         <source xml:lang="en">New &amp;&amp;Deployment...</source>
         <note>&amp;&amp; denotes a mnemonic</note>
-        <target state="new">New &amp;&amp;Deployment...</target>
+        <target state="translated">Nova &amp;&amp;Implantação...</target>
       </trans-unit>
       <trans-unit id="miNewNotebook">
         <source xml:lang="en">&amp;&amp;New Notebook</source>
@@ -3758,6 +3758,14 @@ Comandos Padrão Ignorados:
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanInput" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="epCompare.executionPlanEditorName">
+        <source xml:lang="en">ExecutionPlan</source>
+        <target state="translated">ExecutionPlan</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="executionPlanPropertiesEdgeOperationName">
@@ -4089,14 +4097,6 @@ Comandos Padrão Ignorados:
       <trans-unit id="previousSearchItemAction">
         <source xml:lang="en">Previous Match</source>
         <target state="translated">Correspondência Anterior</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/executionPlan/common/executionPlanInput" source-language="en" datatype="plaintext" target-language="pt-BR">
-    <body>
-      <trans-unit id="epCompare.executionPlanEditorName">
-        <source xml:lang="en">ExecutionPlan</source>
-        <target state="translated">ExecutionPlan</target>
       </trans-unit>
     </body>
   </file>
@@ -7416,16 +7416,16 @@ Erro: {1}</target>
       <trans-unit id="addAccountFailedCodeMessage">
         <source xml:lang="en">{0} 
 Error Message: {1}</source>
-        <target state="new">{0} 
-Error Message: {1}</target>
+        <target state="translated">{0} 
+Mensagem de Erro: {1}</target>
       </trans-unit>
       <trans-unit id="addAccountFailedGenericMessage">
         <source xml:lang="en">Adding account failed, check Azure Accounts log for more info.</source>
-        <target state="new">Adding account failed, check Azure Accounts log for more info.</target>
+        <target state="translated">Adicionando falha na conta, verifique o log do Azure Contas para obter mais informações.</target>
       </trans-unit>
       <trans-unit id="addAccountFailedMessage">
         <source xml:lang="en">{0}</source>
-        <target state="new">{0}</target>
+        <target state="translated">{0}</target>
       </trans-unit>
       <trans-unit id="loggingIn">
         <source xml:lang="en">Adding account...</source>
@@ -7438,8 +7438,8 @@ Error Message: {1}</target>
       <trans-unit id="refreshFailed">
         <source xml:lang="en">0 
 Error Message: 1</source>
-        <target state="new">0 
-Error Message: 1</target>
+        <target state="translated">0 
+Mensagem de erro: 1</target>
       </trans-unit>
     </body>
   </file>
@@ -8046,6 +8046,14 @@ Error Message: 1</target>
   </file>
   <file original="src/sql/workbench/services/executionPlan/common/executionPlanService" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
+      <trans-unit id="executionPlanService.ensureCapabilitiesRegistered">
+        <source xml:lang="en">Provider with id {0} was not registered after 30 seconds.</source>
+        <target state="translated">O provedor com id {0} não foi registrado após 30 segundos.</target>
+      </trans-unit>
+      <trans-unit id="executionPlanService.ensureFileExtensionHandlerRegistered">
+        <source xml:lang="en">Execution plan provider which supports file format '{0}' was not registered after 30 seconds.</source>
+        <target state="translated">O provedor do plano de execução que oferece suporte ao formato de arquivo '{0}' não foi registrado após 30 segundos.</target>
+      </trans-unit>
       <trans-unit id="noHandlerRegistered">
         <source xml:lang="en">No valid execution plan handler is registered</source>
         <target state="translated">Nenhum manipulador de plano de execução válido está registrado</target>
