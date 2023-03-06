@@ -188,7 +188,11 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 	}
 
 	private initializeOwnedSchemaSection(): void {
-		this.ownedSchemaTable = this.createTableList(localizedConstants.OwnedSchemaSectionHeader, this.viewInfo.schemas, this.objectInfo.ownedSchemas);
+		const ownedSchemaData = this.viewInfo.schemas.map(name => {
+			const isSelected = this.objectInfo.ownedSchemas.indexOf(name) !== -1;
+			return [{ enabled: !isSelected, checked: isSelected }, name];
+		});
+		this.ownedSchemaTable = this.createTableList(localizedConstants.OwnedSchemaSectionHeader, this.viewInfo.schemas, this.objectInfo.ownedSchemas, ownedSchemaData);
 		this.ownedSchemaSection = this.createGroup(localizedConstants.OwnedSchemaSectionHeader, [this.ownedSchemaTable]);
 	}
 
