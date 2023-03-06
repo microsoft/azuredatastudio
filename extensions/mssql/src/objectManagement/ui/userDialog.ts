@@ -112,7 +112,9 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 
 		this.typeDropdown = this.modelView.modelBuilder.dropDown().withProps({
 			ariaLabel: localizedConstants.UserTypeText,
-			values: [localizedConstants.UserWithLoginText, localizedConstants.UserWithWindowsGroupLoginText, localizedConstants.ContainedUserText, localizedConstants.UserWithNoConnectAccess],
+			// only supporting user with login for initial preview
+			//values: [localizedConstants.UserWithLoginText, localizedConstants.UserWithWindowsGroupLoginText, localizedConstants.ContainedUserText, localizedConstants.UserWithNoConnectAccess],
+			values: [localizedConstants.UserWithLoginText],
 			value: getUserTypeDisplayName(this.objectInfo.type),
 			width: DefaultInputWidth,
 			enabled: this.isNewObject
