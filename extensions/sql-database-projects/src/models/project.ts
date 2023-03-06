@@ -970,10 +970,20 @@ export class Project implements ISqlProject {
 	 */
 	public async addDatabaseReference(settings: IDacpacReferenceSettings): Promise<void> {
 		const databaseReferenceEntry = new DacpacReferenceProjectEntry(settings);
+		await this.addUserDatabaseReference(settings, databaseReferenceEntry);
+	}
 
+	/**
+	 * Adds reference to a another project in the workspace
+	 */
+	public async addProjectReference(settings: IProjectReferenceSettings): Promise<void> {
+		const projectReferenceEntry = new SqlProjectReferenceProjectEntry(settings);
+		await this.addUserDatabaseReference(settings, projectReferenceEntry);
+	}
+
+	private async addUserDatabaseReference(settings: IProjectReferenceSettings | IDacpacReferenceSettings, reference: SqlProjectReferenceProjectEntry | DacpacReferenceProjectEntry): Promise<void> {
 		// check if reference to this database already exists
-		// if it does, throw an error that will get displayed to the user
-		if (this.databaseReferenceExists(databaseReferenceEntry)) {
+		if (this.databaseReferenceExists(reference)) {
 			throw new Error(constants.databaseReferenceAlreadyExists);
 		}
 
@@ -988,27 +998,21 @@ export class Project implements ISqlProject {
 		}
 
 		const databaseLiteral = settings.databaseVariable ? undefined : settings.databaseName;
-		const result = await this.sqlProjService.addDacpacReference(this.projectFilePath, databaseReferenceEntry.pathForSqlProj(), settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
+
+		let result;
+		let referenceName;
+		if (reference instanceof SqlProjectReferenceProjectEntry) {
+			referenceName = (<IProjectReferenceSettings>settings).projectName;
+			result = await this.sqlProjService.addSqlProjectReference(this.projectFilePath, reference.pathForSqlProj(), reference.projectGuid, settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
+		} else { // dacpac
+			referenceName = (<IDacpacReferenceSettings>settings).dacpacFileLocation.fsPath;
+			result = await this.sqlProjService.addDacpacReference(this.projectFilePath, reference.pathForSqlProj(), settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
+		}
 
 		if (!result.success && result.errorMessage) {
-			throw new Error(constants.errorAddingDatabaseReference(settings.dacpacFileLocation.fsPath, result.errorMessage));
+			throw new Error(constants.errorAddingDatabaseReference(referenceName, result.errorMessage));
 		}
 	}
-
-	/**
-	 * Adds reference to a another project in the workspace
-	 */
-	public async addProjectReference(settings: IProjectReferenceSettings): Promise<void> {
-		const projectReferenceEntry = new SqlProjectReferenceProjectEntry(settings);
-
-		// check if reference to this database already exists
-		if (this.databaseReferenceExists(projectReferenceEntry)) {
-			throw new Error(constants.databaseReferenceAlreadyExists);
-		}
-
-		await this.addToProjFile(projectReferenceEntry);
-	}
-
 	/**
 	 * Adds a SQLCMD variable to the project
 	 * @param name name of the variable
@@ -1423,17 +1427,6 @@ export class Project implements ISqlProject {
 	private async addDatabaseReferenceToProjFile(entry: IDatabaseReferenceProjectEntry): Promise<void> {
 		if (entry instanceof SystemDatabaseReferenceProjectEntry) {
 			await this.addSystemDatabaseReferenceToProjFile(<SystemDatabaseReferenceProjectEntry>entry);
-		} else if (entry instanceof SqlProjectReferenceProjectEntry) {
-			const referenceNode = this.projFileXmlDoc!.createElement(constants.ProjectReference);
-			referenceNode.setAttribute(constants.Include, entry.pathForSqlProj());
-			this.addProjectReferenceChildren(referenceNode, <SqlProjectReferenceProjectEntry>entry);
-			await this.addDatabaseReferenceChildren(referenceNode, entry);
-			this.findOrCreateItemGroup(constants.ProjectReference).appendChild(referenceNode);
-		} else {
-			const referenceNode = this.projFileXmlDoc!.createElement(constants.ArtifactReference);
-			referenceNode.setAttribute(constants.Include, entry.pathForSqlProj());
-			await this.addDatabaseReferenceChildren(referenceNode, entry);
-			this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(referenceNode);
 		}
 
 		if (!this.databaseReferenceExists(entry)) {
@@ -1476,26 +1469,6 @@ export class Project implements ISqlProject {
 			// add SQLCMD variable
 			await this.addSqlCmdVariable((<DacpacReferenceProjectEntry>entry).serverSqlCmdVariable!, (<DacpacReferenceProjectEntry>entry).serverName!);
 		}
-	}
-
-	private addProjectReferenceChildren(referenceNode: Element, entry: SqlProjectReferenceProjectEntry): void {
-		// project name
-		const nameElement = this.projFileXmlDoc!.createElement(constants.Name);
-		const nameTextNode = this.projFileXmlDoc!.createTextNode(entry.projectName);
-		nameElement.appendChild(nameTextNode);
-		referenceNode.appendChild(nameElement);
-
-		// add project guid
-		const projectElement = this.projFileXmlDoc!.createElement(constants.Project);
-		const projectGuidTextNode = this.projFileXmlDoc!.createTextNode(entry.projectGuid);
-		projectElement.appendChild(projectGuidTextNode);
-		referenceNode.appendChild(projectElement);
-
-		// add Private (not sure what this is for)
-		const privateElement = this.projFileXmlDoc!.createElement(constants.Private);
-		const privateTextNode = this.projFileXmlDoc!.createTextNode(constants.True);
-		privateElement.appendChild(privateTextNode);
-		referenceNode.appendChild(privateElement);
 	}
 
 	public async addSqlCmdVariableToProjFile(entry: SqlCmdVariableProjectEntry): Promise<void> {
