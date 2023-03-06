@@ -877,27 +877,8 @@ export class Project implements ISqlProject {
 				})
 				.send();
 
-			const newDSP = `${constants.MicrosoftDatatoolsSchemaSqlSql}${compatLevel}${constants.databaseSchemaProvider}`;
-			(this.projFileXmlDoc!.getElementsByTagName(constants.DSP)[0].childNodes[0] as Text).data = newDSP;
-			this.projFileXmlDoc!.getElementsByTagName(constants.DSP)[0].childNodes[0].nodeValue = newDSP;
-
-			// update any system db references
-			const systemDbReferences = this._databaseReferences.filter(r => r instanceof SystemDatabaseReferenceProjectEntry) as SystemDatabaseReferenceProjectEntry[];
-			if (systemDbReferences.length > 0) {
-				for (let r of systemDbReferences) {
-					// remove old entry in sqlproj
-					this.removeDatabaseReferenceFromProjFile(r);
-
-					// update uris to point to the correct dacpacs for the target platform
-					r.fsUri = this.getSystemDacpacUri(`${r.databaseName}.dacpac`);
-					r.ssdtUri = this.getSystemDacpacSsdtUri(`${r.databaseName}.dacpac`);
-
-					// add updated system db reference to sqlproj
-					await this.addDatabaseReferenceToProjFile(r);
-				}
-			}
-
-			await this.serializeToProjFile(this.projFileXmlDoc!);
+			this._databaseSchemaProvider = `${constants.MicrosoftDatatoolsSchemaSqlSql}${compatLevel}${constants.databaseSchemaProvider}`;
+			await this.sqlProjService.setDatabaseSchemaProvider(this.projectFilePath, this._databaseSchemaProvider);
 		}
 	}
 
