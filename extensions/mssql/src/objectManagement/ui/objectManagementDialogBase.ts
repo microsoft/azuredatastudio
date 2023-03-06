@@ -60,7 +60,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		const dialogTitle = isNewObject ? NewObjectDialogTitle(objectTypeDisplayName) : ObjectPropertiesDialogTitle(objectTypeDisplayName, objectName);
 		this.dialogObject = azdata.window.createModelViewDialog(dialogTitle, getDialogName(objectType, isNewObject), dialogWidth);
 		this.dialogObject.okButton.label = OkText;
-		this.disposables.push(this.dialogObject.onClosed(async () => { await this.dispose(); }));
+		this.disposables.push(this.dialogObject.onClosed(async (reason: azdata.window.CloseReason) => { await this.dispose(reason); }));
 		this._helpButton = azdata.window.createButton(HelpText, 'left');
 		this.disposables.push(this._helpButton.onClick(async () => {
 			await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(docUrl));
@@ -81,8 +81,13 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	protected abstract initializeData(): Promise<ViewInfoType>;
 	protected abstract initializeUI(): Promise<void>;
 	protected abstract onComplete(): Promise<void>;
-	protected abstract onDispose(): Promise<void>;
+	protected async onDispose(): Promise<void> { }
 	protected abstract validateInput(): Promise<string[]>;
+
+	/**
+	 * Dispose the information related to this view in the backend service.
+	 */
+	protected abstract disposeView(): Promise<void>;
 
 	protected onObjectValueChange(): void {
 		this.dialogObject.okButton.enabled = JSON.stringify(this.objectInfo) !== JSON.stringify(this._originalObjectInfo);
@@ -114,22 +119,26 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 
 	public async open(): Promise<void> {
 		try {
-			await this.dialogObject.registerContent(async view => {
-				this._modelView = view;
-				this._formContainer = this.createFormContainer([]);
-				this._loadingComponent = view.modelBuilder.loadingComponent().withItem(this._formContainer).withProps({
-					loading: true,
-					loadingText: LoadingDialogText,
-					showText: true,
-					CSSStyles: {
-						width: "100%",
-						height: "100%"
-					}
-				}).component();
-				return view.initializeModel(this._loadingComponent);
-			});
+			const initializeViewPromise = new Promise<void>((async resolve => {
+				await this.dialogObject.registerContent(async view => {
+					this._modelView = view;
+					resolve();
+					this._formContainer = this.createFormContainer([]);
+					this._loadingComponent = view.modelBuilder.loadingComponent().withItem(this._formContainer).withProps({
+						loading: true,
+						loadingText: LoadingDialogText,
+						showText: true,
+						CSSStyles: {
+							width: "100%",
+							height: "100%"
+						}
+					}).component();
+					await view.initializeModel(this._loadingComponent);
+				});
+			}));
 			azdata.window.openDialog(this.dialogObject);
 			this._viewInfo = await this.initializeData();
+			await initializeViewPromise;
 			await this.initializeUI();
 			this._originalObjectInfo = deepClone(this.objectInfo);
 			const typeDisplayName = getNodeTypeDisplayName(this.objectType);
@@ -158,9 +167,11 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 					}
 					catch (err) {
 						operation.updateStatus(azdata.TaskStatus.Failed, getErrorMessage(err));
-						TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, actionName).withAdditionalProperties({
+						TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, actionName, err).withAdditionalProperties({
 							objectType: this.objectType
 						}).send();
+					} finally {
+						await this.disposeView();
 					}
 				}
 			});
@@ -169,16 +180,19 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			this._loadingComponent.loading = false;
 		} catch (err) {
 			const actionName = this.isNewObject ? TelemetryActions.OpenNewObjectDialog : TelemetryActions.OpenPropertiesDialog;
-			TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, actionName).withAdditionalProperties({
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, actionName, err).withAdditionalProperties({
 				objectType: this.objectType
 			}).send();
 			void vscode.window.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
-	private async dispose(): Promise<void> {
+	private async dispose(reason: azdata.window.CloseReason): Promise<void> {
 		await this.onDispose();
 		this.disposables.forEach(disposable => disposable.dispose());
+		if (reason !== 'ok') {
+			await this.disposeView();
+		}
 	}
 
 	protected async runValidation(showErrorMessage: boolean = true): Promise<boolean> {

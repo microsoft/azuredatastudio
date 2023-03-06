@@ -727,7 +727,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;
-	$connect(connectionProfile: azdata.IConnectionProfile, saveConnection: boolean, showDashboard: boolean, ownerUri?: string): Thenable<azdata.ConnectionResult>;
+	$connect(connectionProfile: azdata.IConnectionProfile, saveConnection: boolean, showDashboard: boolean): Thenable<azdata.ConnectionResult>;
 }
 
 export interface MainThreadCredentialManagementShape extends IDisposable {
@@ -1029,4 +1029,12 @@ export interface ExtHostExtensionManagementShape {
 export interface MainThreadExtensionManagementShape extends IDisposable {
 	$install(vsixPath: string): Thenable<string>;
 	$showObsoleteExtensionApiUsageNotification(message: string): void;
+}
+
+export interface ExtHostPerfShape {
+	$mark(name: string): void;
+}
+
+export interface MainThreadPerfShape {
+	$mark(name: string): void;
 }

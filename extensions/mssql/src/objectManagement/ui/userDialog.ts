@@ -69,7 +69,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		}
 	}
 
-	protected async onDispose(): Promise<void> {
+	protected async disposeView(): Promise<void> {
 		await this.objectManagementService.disposeUserView(this.contextId);
 	}
 
@@ -112,7 +112,9 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 
 		this.typeDropdown = this.modelView.modelBuilder.dropDown().withProps({
 			ariaLabel: localizedConstants.UserTypeText,
-			values: [localizedConstants.UserWithLoginText, localizedConstants.UserWithWindowsGroupLoginText, localizedConstants.ContainedUserText, localizedConstants.UserWithNoConnectAccess],
+			// only supporting user with login for initial preview
+			//values: [localizedConstants.UserWithLoginText, localizedConstants.UserWithWindowsGroupLoginText, localizedConstants.ContainedUserText, localizedConstants.UserWithNoConnectAccess],
+			values: [localizedConstants.UserWithLoginText],
 			value: getUserTypeDisplayName(this.objectInfo.type),
 			width: DefaultInputWidth,
 			enabled: this.isNewObject
@@ -188,7 +190,11 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 	}
 
 	private initializeOwnedSchemaSection(): void {
-		this.ownedSchemaTable = this.createTableList(localizedConstants.OwnedSchemaSectionHeader, this.viewInfo.schemas, this.objectInfo.ownedSchemas);
+		const ownedSchemaData = this.viewInfo.schemas.map(name => {
+			const isSelected = this.objectInfo.ownedSchemas.indexOf(name) !== -1;
+			return [{ enabled: !isSelected, checked: isSelected }, name];
+		});
+		this.ownedSchemaTable = this.createTableList(localizedConstants.OwnedSchemaSectionHeader, this.viewInfo.schemas, this.objectInfo.ownedSchemas, ownedSchemaData);
 		this.ownedSchemaSection = this.createGroup(localizedConstants.OwnedSchemaSectionHeader, [this.ownedSchemaTable]);
 	}
 
