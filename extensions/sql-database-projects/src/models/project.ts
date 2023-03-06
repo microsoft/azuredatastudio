@@ -855,9 +855,8 @@ export class Project implements ISqlProject {
 		await this.exclude(entry);
 	}
 
-	public async deleteDatabaseReference(entry: IDatabaseReferenceProjectEntry): Promise<void> {
-		await this.removeFromProjFile(entry);
-		this._databaseReferences = this._databaseReferences.filter(x => x !== entry);
+	public async deleteDatabaseReference(entry: IDatabaseReferenceProjectEntry): Promise<azdataType.ResultStatus> {
+		return this.sqlProjService.deleteDatabaseReference(this.projectFilePath, entry.databaseName);
 	}
 
 	public async deleteSqlCmdVariable(variableName: string): Promise<azdataType.ResultStatus> {
@@ -1390,14 +1389,6 @@ export class Project implements ISqlProject {
 		this.files.push(...(await this.readFolders()));
 	}
 
-	private removeSqlCmdVariableFromProjFile(variableName: string): void {
-		const sqlCmdVariableNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.SqlCmdVariable);
-		const deleted = this.removeNode(variableName, sqlCmdVariableNodes);
-
-		if (!deleted) {
-			throw new Error(constants.unableToFindSqlCmdVariable(variableName));
-		}
-	}
 
 	private removeDatabaseReferenceFromProjFile(databaseReferenceEntry: IDatabaseReferenceProjectEntry): void {
 		const elementTag = databaseReferenceEntry instanceof SqlProjectReferenceProjectEntry ? constants.ProjectReference : constants.ArtifactReference;
@@ -1653,9 +1644,6 @@ export class Project implements ISqlProject {
 				case EntryType.DatabaseReference:
 					this.removeDatabaseReferenceFromProjFile(<IDatabaseReferenceProjectEntry>entry);
 					break;
-				case EntryType.SqlCmdVariable:
-					this.removeSqlCmdVariableFromProjFile((<SqlCmdVariableProjectEntry>entry).variableName);
-					break; // not required but adding so that we dont miss when we add new items
 			}
 		}
 

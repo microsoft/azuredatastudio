@@ -803,8 +803,8 @@ export class ProjectsController {
 			const databaseReference = this.getDatabaseReference(project, node);
 
 			if (databaseReference) {
-				await project.deleteDatabaseReference(databaseReference);
-				success = true;
+				const result = await project.deleteDatabaseReference(databaseReference);
+				success = result.success;
 			}
 		} else if (node instanceof SqlCmdVariableTreeItem) {
 			const result = await project.deleteSqlCmdVariable(node.friendlyName);
