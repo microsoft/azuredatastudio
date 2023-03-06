@@ -1752,6 +1752,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.enableSqlAuthenticationProvider" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enables use of the Sql Authentication Provider for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens. This option is only supported for 'MSAL' Azure Authentication Library. Azure Data Studio is required to be relaunched when the value is changed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ermöglicht die Verwendung des Sql-Authentifizierungsanbieters für den Authentifizierungsmodus „Active Directory Interactive“, wenn der Benutzer die Authentifizierung „AzureMFA“ auswählt. Dies ermöglicht die serverseitige Ressourcenendpunktintegration beim Abrufen von Zugriffstokens. Diese Option wird nur für die „MSAL“ Azure Authentication Library unterstützt. Azure Data Studio muss neu gestartet werden, wenn der Wert geändert wird.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/mssql/package.mssql.enabled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enabled]]></Val>
@@ -1989,6 +1998,9 @@
       <Item ItemId=";extensions/mssql/package.mssql.objectExplorer.disableGroupBySchemaTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server: Disable Group By Schema]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server: „Nach Schema gruppieren“ deaktivieren]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2004,6 +2016,9 @@
       <Item ItemId=";extensions/mssql/package.mssql.objectExplorer.enableGroupBySchemaTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server: Enable Group By Schema]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server: „Nach Schema gruppieren“ aktivieren]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2027,9 +2042,21 @@
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.parallelMessageProcessing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[[Experimental]5D; Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.]]></Val>
+          <Val><![CDATA[[Experimental]5D; Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[[Experimentell]5D; Ob die Anforderungen an den SQL Tools-Dienst parallel verarbeitet werden sollen. Dies wird eingeführt, um die Probleme zu erkennen, die bei der parallelen Bearbeitung aller Anforderungen auftreten können. Der Standardwert ist falsch. Ein Neustart von ADS ist erforderlich, wenn der Wert geändert wird.]]></Val>
+            <Val><![CDATA[[Experimentell]5D; Ob die Anforderungen an den SQL Tools-Dienst parallel verarbeitet werden sollen. Dies wird eingeführt, um die Probleme zu erkennen, die bei der parallelen Bearbeitung aller Anforderungen auftreten können. Der Standardwert ist falsch. Azure Data Studio muss neu gestartet werden, wenn der Wert geändert wird.]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[[Experimental]5D; Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.piiLogging" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[[Optional]5D; Should Personally Identifiable Information (PII) be logged in the log file.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[[Optional]5D; Hiermit wird festgelegt, ob personenbezogene Informationen (PII) in der Protokolldatei protokolliert werden sollen.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
