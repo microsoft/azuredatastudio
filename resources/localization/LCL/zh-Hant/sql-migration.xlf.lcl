@@ -1632,10 +1632,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.help.description.sqldb" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).]]></Val>
+          <Val><![CDATA[A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[將資料庫從 SQL Server 執行個體 (內部部署或 Azure 虛擬機器) 移轉至 Azure SQL 資料庫 (預覽) 的逐步教學課程。]]></Val>
+            <Val><![CDATA[將資料庫從 SQL Server 執行個體 (內部部署或 Azure 虛擬機器) 移轉至 Azure SQL 資料庫的逐步教學課程。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1677,10 +1680,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.help.link.sqldb" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)]]></Val>
+          <Val><![CDATA[Tutorial:  Migrate to SQL Server on Azure SQL Database (offline)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[教學課程: 移轉至 Azure SQL Database 上的 SQL Server (離線) - (預覽)]]></Val>
+            <Val><![CDATA[教學課程: 移轉至 Azure SQL Database 上的 SQL Server (離線)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5412,12 +5418,12 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.recommendation.view.assessment.sqldb" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[To migrate to Azure SQL Database (PREVIEW), view assessment results and select one or more databases.]]></Val>
+          <Val><![CDATA[To migrate to Azure SQL Database, view assessment results and select one or more databases.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[若要移轉至 Azure SQL Database (預覽)，請檢視評定結果並選取一或多個資料庫。]]></Val>
+            <Val><![CDATA[若要移轉至 Azure SQL Database，請檢視評定結果並選取一或多個資料庫。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[To migrate to Azure SQL Database, view assessment results and select one or more databases.]]></Val>
+            <Val><![CDATA[To migrate to Azure SQL Database (PREVIEW), view assessment results and select one or more databases.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -5592,12 +5598,12 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.sqldb.card.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure SQL Database (PREVIEW)]]></Val>
+          <Val><![CDATA[Azure SQL Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL Database (預覽)]]></Val>
+            <Val><![CDATA[Azure SQL Database]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Azure SQL Database]]></Val>
+            <Val><![CDATA[Azure SQL Database (PREVIEW)]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -7227,6 +7233,15 @@
           <Val><![CDATA[Enter the target user name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[輸入目標使用者名稱]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.validate.error.gatewaytimeout" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[A time-out was encountered while validating a resource connection. Learn more: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[驗證資源連線時發生逾時。深入了解: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

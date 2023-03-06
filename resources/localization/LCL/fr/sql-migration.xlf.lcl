@@ -154,6 +154,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.login.migration.collecting.target.logins.failed" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Collecting target login failed with error code {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Échec de la collecte de la connexion cible avec le code d’erreur {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.login.migration.complete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Completed migrating logins]]></Val>
@@ -507,10 +516,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.login.migration.wizard.target.data.migration.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please note that login migration feature is in private preview mode.]]></Val>
+          <Val><![CDATA[Please note that login migration feature is in public preview mode.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Veuillez noter que la fonctionnalité de migration de connexions est en mode préversion privée.]]></Val>
+            <Val><![CDATA[Notez que la fonctionnalité de migration de connexion est en mode préversion publique.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please note that login migration feature is in private preview mode.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1620,10 +1632,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.help.description.sqldb" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).]]></Val>
+          <Val><![CDATA[A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Didacticiel pas à pas pour migrer des bases de données d’une instance de SQL Server (localement ou machines virtuelles Azure) vers Azure SQL Database (PRÉVERSION).]]></Val>
+            <Val><![CDATA[Un didacticiel pas à pas pour migrer des bases de données d'une instance SQL Server (sur site ou Azure Virtual Machines) vers Azure SQL Database.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1665,10 +1680,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.help.link.sqldb" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)]]></Val>
+          <Val><![CDATA[Tutorial:  Migrate to SQL Server on Azure SQL Database (offline)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Didacticiel : migrer vers SQL Server sur la base de données Azure SQL (hors connexion) - (PRÉVERSION)]]></Val>
+            <Val><![CDATA[Tutoriel : Migrer vers SQL Server sur Azure SQL Database (hors ligne)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5400,12 +5418,12 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.recommendation.view.assessment.sqldb" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[To migrate to Azure SQL Database (PREVIEW), view assessment results and select one or more databases.]]></Val>
+          <Val><![CDATA[To migrate to Azure SQL Database, view assessment results and select one or more databases.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Pour migrer vers Azure SQL Database (PRÉVERSION), affichez les résultats de l'évaluation et sélectionnez une ou plusieurs bases de données.]]></Val>
+            <Val><![CDATA[Pour migrer vers Azure SQL Database, affichez les résultats de l'évaluation et sélectionnez une ou plusieurs bases de données.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[To migrate to Azure SQL Database, view assessment results and select one or more databases.]]></Val>
+            <Val><![CDATA[To migrate to Azure SQL Database (PREVIEW), view assessment results and select one or more databases.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -5580,12 +5598,12 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.sqldb.card.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure SQL Database (PREVIEW)]]></Val>
+          <Val><![CDATA[Azure SQL Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL Database (PRÉVERSION)]]></Val>
+            <Val><![CDATA[Azure SQL Database]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Azure SQL Database]]></Val>
+            <Val><![CDATA[Azure SQL Database (PREVIEW)]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -7215,6 +7233,15 @@
           <Val><![CDATA[Enter the target user name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Entrez le nom d'utilisateur cible]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.validate.error.gatewaytimeout" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[A time-out was encountered while validating a resource connection. Learn more: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Un délai d'attente a été rencontré lors de la validation d'une connexion de ressource. En savoir plus : https://aka.ms/dms-migrations-troubleshooting.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

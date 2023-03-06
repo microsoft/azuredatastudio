@@ -11344,7 +11344,7 @@
 			"incompatible": "Não é possível instalar a versão '{0}' da extensão '{1}' pois não é compatível com o Azure Data Studio '{2}'. Atualize para o Azure Data Studio {3} para instalar a extensão.",
 			"installExtensionCompletedAndReloadRequired": "A instalação da extensão {0} foi concluída. Recarregue o Azure Data Studio para habilitá-la.",
 			"maxMemoryForLargeFilesMB": "Controla a memória disponível para o Azure Data Studio após a reinicialização ao tentar abrir arquivos grandes. O mesmo efeito que especificar `--max-memory=NEWSIZE` na linha de comando.",
-			"miNewDeployment": "New &&Deployment...",
+			"miNewDeployment": "Nova &&Implantação...",
 			"miNewNotebook": "&&Novo Bloco de anotações",
 			"miNewQuery": "Nova &&consulta",
 			"miinstallVsix": "Instalar extensão do pacote VSIX",
@@ -12417,9 +12417,6 @@
 			"nextSearchItemAction": "Próxima Correspondência",
 			"previousSearchItemAction": "Correspondência Anterior"
 		},
-		"sql/workbench/contrib/executionPlan/common/executionPlanInput": {
-			"epCompare.executionPlanEditorName": "ExecutionPlan"
-		},
 		"sql/workbench/contrib/extensions/browser/contributionRenders": {
 			"insight condition": "Quando",
 			"insightId": "ID",
@@ -13336,12 +13333,12 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "Fechar",
-			"addAccountFailedCodeMessage": "{0} \r\nError Message: {1}",
-			"addAccountFailedGenericMessage": "Adding account failed, check Azure Accounts log for more info.",
+			"addAccountFailedCodeMessage": "{0} \r\nMensagem de Erro: {1}",
+			"addAccountFailedGenericMessage": "Adicionando falha na conta, verifique o log do Azure Contas para obter mais informações.",
 			"addAccountFailedMessage": "{0}",
 			"loggingIn": "Adicionando conta...",
 			"refreshCanceled": "A conta de atualização foi cancelada pelo usuário",
-			"refreshFailed": "0 \r\nError Message: 1"
+			"refreshFailed": "0 \r\nMensagem de erro: 1"
 		},
 		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
 			"azureAccount": "Conta do Azure",
@@ -13515,6 +13512,8 @@
 			"warning": "Aviso"
 		},
 		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"executionPlanService.ensureCapabilitiesRegistered": "O provedor com id {0} não foi registrado após 30 segundos.",
+			"executionPlanService.ensureFileExtensionHandlerRegistered": "O provedor do plano de execução que oferece suporte ao formato de arquivo '{0}' não foi registrado após 30 segundos.",
 			"noHandlerRegistered": "Nenhum manipulador de plano de execução válido está registrado",
 			"providerIdNotValidError": "O provedor válido é necessário para interagir com ExecutionPlanService",
 			"selectExecutionPlanProvider": "Selecionar um provedor para abrir o plano de execução"
@@ -13951,6 +13950,9 @@
 		},
 		"sql/workbench/services/dialog/browser/wizardNavigation.component": {
 			"wizardNavigation.stepName": "Etapa {0}: {1}"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanInput": {
+			"epCompare.executionPlanEditorName": "ExecutionPlan"
 		}
 	}
 }

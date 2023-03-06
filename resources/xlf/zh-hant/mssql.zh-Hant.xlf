@@ -812,6 +812,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Disabled</source>
         <target state="translated">已停用</target>
       </trans-unit>
+      <trans-unit id="mssql.enableSqlAuthenticationProvider">
+        <source xml:lang="en">Enables use of the Sql Authentication Provider for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens. This option is only supported for 'MSAL' Azure Authentication Library. Azure Data Studio is required to be relaunched when the value is changed.</source>
+        <target state="new">Enables use of the Sql Authentication Provider for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens. This option is only supported for 'MSAL' Azure Authentication Library. Azure Data Studio is required to be relaunched when the value is changed.</target>
+      </trans-unit>
       <trans-unit id="mssql.enabled">
         <source xml:lang="en">Enabled</source>
         <target state="translated">已啟用</target>
@@ -918,7 +922,7 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.disableGroupBySchemaTitle">
         <source xml:lang="en">SQL Server: Disable Group By Schema</source>
-        <target state="new">SQL Server: Disable Group By Schema</target>
+        <target state="translated">SQL Server: 依結構描述停用群組</target>
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.enableGroupBySchema">
         <source xml:lang="en">Enable Group By Schema</source>
@@ -926,7 +930,7 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.enableGroupBySchemaTitle">
         <source xml:lang="en">SQL Server: Enable Group By Schema</source>
-        <target state="new">SQL Server: Enable Group By Schema</target>
+        <target state="translated">SQL Server: 依結構描述啟用群組</target>
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.expandTimeout">
         <source xml:lang="en">The timeout in seconds for expanding a node in Object Explorer. The default value is 45 seconds.</source>
@@ -937,8 +941,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">啟用時，物件總管中的資料庫物件會依架構分類。</target>
       </trans-unit>
       <trans-unit id="mssql.parallelMessageProcessing">
-        <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.</source>
-        <target state="translated">[實驗性] 是否應該平行處理對 SQL Tools Service 的要求。這是為了發現探索平行處理所有要求時可能的問題。預設值為 FALSE。當變更值時，需要重新啟動 ADS。</target>
+        <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</source>
+        <target state="new">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</target>
+      </trans-unit>
+      <trans-unit id="mssql.piiLogging">
+        <source xml:lang="en">[Optional] Should Personally Identifiable Information (PII) be logged in the log file.</source>
+        <target state="new">[Optional] Should Personally Identifiable Information (PII) be logged in the log file.</target>
       </trans-unit>
       <trans-unit id="mssql.provider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>

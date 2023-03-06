@@ -564,7 +564,7 @@
       </trans-unit>
       <trans-unit id="errorRenamingFile">
         <source xml:lang="en">Error when renaming file from {0} to {1}. Error: {2}</source>
-        <target state="new">Error when renaming file from {0} to {1}. Error: {2}</target>
+        <target state="translated">파일 이름을 {0}에서 {1}(으)로 변경하는 동안 오류가 발생했습니다. 오류: {2}</target>
       </trans-unit>
       <trans-unit id="errorRetrievingBuildFiles">
         <source xml:lang="en">Could not build project. Error retrieving files needed to build.</source>

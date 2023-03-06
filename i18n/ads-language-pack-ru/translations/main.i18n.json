@@ -11344,7 +11344,7 @@
 			"incompatible": "Не удается установить версию \"{0}\" расширения \"{1}\", так как она несовместима с Azure Data Studio \"{2}\". Обновите до Azure Data Studio {3}, чтобы установить расширение.",
 			"installExtensionCompletedAndReloadRequired": "Установка расширения {0} завершена. Перезагрузите Azure Data Studio, чтобы включить это расширение.",
 			"maxMemoryForLargeFilesMB": "Управляет объемом памяти, который доступен Azure Data Studio после перезапуска при попытке открытия больших файлов. Действие этого параметра аналогично указанию параметра \"--max-memory=НОВЫЙ_РАЗМЕР\" в командной строке.",
-			"miNewDeployment": "New &&Deployment...",
+			"miNewDeployment": "Новое &&развертывание...",
 			"miNewNotebook": "&&Новая записная книжка",
 			"miNewQuery": "Создать &&запрос",
 			"miinstallVsix": "Установить расширение из пакета VSIX",
@@ -12417,9 +12417,6 @@
 			"nextSearchItemAction": "Следующее совпадение",
 			"previousSearchItemAction": "Предыдущее совпадение"
 		},
-		"sql/workbench/contrib/executionPlan/common/executionPlanInput": {
-			"epCompare.executionPlanEditorName": "План_выполнения"
-		},
 		"sql/workbench/contrib/extensions/browser/contributionRenders": {
 			"insight condition": "Когда",
 			"insightId": "Идентификатор",
@@ -13336,8 +13333,8 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "Закрыть",
-			"addAccountFailedCodeMessage": "{0} \r\nError Message: {1}",
-			"addAccountFailedGenericMessage": "Adding account failed, check Azure Accounts log for more info.",
+			"addAccountFailedCodeMessage": "{0} \r\nСообщение об ошибке: {1}",
+			"addAccountFailedGenericMessage": "Не удалось добавить учетную запись. Дополнительные сведения см. в журнале учетных записей Azure.",
 			"addAccountFailedMessage": "{0}",
 			"loggingIn": "Добавление учетной записи…",
 			"refreshCanceled": "Обновление учетной записи было отменено пользователем",
@@ -13515,6 +13512,8 @@
 			"warning": "Предупреждение"
 		},
 		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"executionPlanService.ensureCapabilitiesRegistered": "Поставщик с идентификатором {0} не был зарегистрирован через 30 секунд.",
+			"executionPlanService.ensureFileExtensionHandlerRegistered": "Поставщик плана выполнения, который поддерживает формат файла \"{0}\", не был зарегистрирован через 30 секунд.",
 			"noHandlerRegistered": "Допустимый обработчик планов выполнения не зарегистрирован",
 			"providerIdNotValidError": "Для взаимодействия с ExecutionPlanService требуется допустимый поставщик",
 			"selectExecutionPlanProvider": "Выберите поставщика, чтобы открыть план выполнения"
@@ -13951,6 +13950,9 @@
 		},
 		"sql/workbench/services/dialog/browser/wizardNavigation.component": {
 			"wizardNavigation.stepName": "Шаг {0}: {1}"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanInput": {
+			"epCompare.executionPlanEditorName": "План_выполнения"
 		}
 	}
 }

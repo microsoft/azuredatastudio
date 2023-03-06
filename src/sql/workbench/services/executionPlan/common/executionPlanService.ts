@@ -10,6 +10,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { Event, Emitter } from 'vs/base/common/event';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
 interface ExecutionPlanProviderRegisteredEvent {
 	id: string,
@@ -27,25 +28,57 @@ export class ExecutionPlanService implements IExecutionPlanService {
 		this._providerRegisterEvent = this._onProviderRegister.event;
 	}
 
-	private async ensureCapabilitiesRegistered(): Promise<void> {
-		let providers = Object.keys(this._capabilitiesService.providers);
-		if (!providers) {
-			await new Promise<void>(resolve => {
-				this._capabilitiesService.onCapabilitiesRegistered(e => {
+	/**
+	 * This ensures that the capabilities service has registered the providers to handle execution plan requests for the given file format.
+	 * @param fileExtension Execution plan file format
+	 */
+	public async ensureFileExtensionHandlerRegistered(fileExtension: string): Promise<void> {
+		for (let providerId in Object.keys(this._capabilitiesService.providers)) {
+			if (this._capabilitiesService.providers[providerId].connection.supportedExecutionPlanFileExtensions?.includes(fileExtension)) {
+				// We already have a provider registered that can handle this file extension so we're done
+				return;
+			}
+		}
+
+		let listener: IDisposable;
+		await new Promise<void>((resolve, reject) => {
+			listener = this._capabilitiesService.onCapabilitiesRegistered(e => {
+				if (e.features.connection.supportedExecutionPlanFileExtensions?.includes(fileExtension)) {
+					listener.dispose();
 					resolve();
+				}
+			});
+			setTimeout(() => {
+				listener.dispose();
+				reject(new Error(localize('executionPlanService.ensureFileExtensionHandlerRegistered', "Execution plan provider which supports file format '{0}' was not registered after 30 seconds.", fileExtension)));
+			}, 30000);
+		});
+	}
+
+	/**
+	 * This ensures that the capabilities service has registered the providers to handle execution plan requests.
+	 */
+	private async ensureCapabilitiesRegistered(providerId: string): Promise<void> {
+		// Wait until the provider with the given id is registered.
+		let listener: IDisposable;
+		if (!this._capabilitiesService.providers[providerId]) {
+			await new Promise<void>((resolve, reject) => {
+				listener = this._capabilitiesService.onCapabilitiesRegistered(e => {
+					if (e.id === providerId) {
+						listener.dispose();
+						resolve();
+					}
 				});
+				setTimeout(() => {
+					listener.dispose();
+					reject(new Error(localize('executionPlanService.ensureCapabilitiesRegistered', "Provider with id {0} was not registered after 30 seconds.", providerId)));
+				}, 30000);
 			});
 		}
 	}
 
 	private async getExecutionPlanProvider(providerId: string): Promise<azdata.executionPlan.ExecutionPlanProvider> {
-		await this.ensureCapabilitiesRegistered();
-		const provider = this._capabilitiesService.providers[providerId];
-		// Return undefined if the provider is not registered or it is not a execution plan provider.
-		if (!provider || !provider.connection?.isExecutionPlanProvider) {
-			return undefined;
-		}
-
+		await this.ensureCapabilitiesRegistered(providerId);
 		let handler = this._providers[providerId];
 		if (handler) {
 			return handler;
@@ -74,16 +107,16 @@ export class ExecutionPlanService implements IExecutionPlanService {
 
 	/**
 	 * Runs the actions using the provider that supports the fileFormat provided.
-	 * @param fileFormat fileformat of the underlying execution plan file. It is used to get the provider that support it.
+	 * @param fileExtension file extension of the underlying execution plan file. It is used to get the provider that support it.
 	 * @param action executionPlanService action to be performed.
 	 */
-	private async _runAction<T>(fileFormat: string, action: (handler: azdata.executionPlan.ExecutionPlanProvider) => Thenable<T>): Promise<T> {
-		await this.ensureCapabilitiesRegistered();
+	private async _runAction<T>(fileExtension: string, action: (handler: azdata.executionPlan.ExecutionPlanProvider) => Thenable<T>): Promise<T> {
+		await this.ensureFileExtensionHandlerRegistered(fileExtension);
 		let providers = Object.keys(this._capabilitiesService.providers);
 		let epProviders: string[] = [];
 		for (let i = 0; i < providers.length; i++) {
 			const providerCapabilities = this._capabilitiesService.getCapabilities(providers[i]);
-			if (providerCapabilities.connection.supportedExecutionPlanFileExtensions?.includes(fileFormat)) {
+			if (providerCapabilities.connection.supportedExecutionPlanFileExtensions?.includes(fileExtension)) {
 				epProviders.push(providers[i]);
 			}
 		}
