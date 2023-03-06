@@ -11344,7 +11344,7 @@
 			"incompatible": "Version „{0}“ der Erweiterung „{1}“ kann nicht installiert werden, da sie nicht mit Azure Data Studio „{2}“ kompatibel ist. Aktualisieren Sie auf Azure Data Studio {3}, um die Erweiterung zu installieren.",
 			"installExtensionCompletedAndReloadRequired": "Die Installation der Erweiterung \"{0}\" wurde abgeschlossen. Laden Sie Azure Data Studio neu, um sie zu aktivieren.",
 			"maxMemoryForLargeFilesMB": "Steuert den für Azure Data Studio verfügbaren Arbeitsspeicher nach einem Neustart bei dem Versuch, große Dateien zu öffnen. Dies hat die gleiche Auswirkung wie das Festlegen von `--max-memory=NEWSIZE` über die Befehlszeile.",
-			"miNewDeployment": "New &&Deployment...",
+			"miNewDeployment": "Neue &&Bereitstellung…",
 			"miNewNotebook": "&&Neues Notizbuch",
 			"miNewQuery": "Neue &&Abfrage",
 			"miinstallVsix": "Erweiterung aus VSIX-Paket installieren",
@@ -12417,9 +12417,6 @@
 			"nextSearchItemAction": "Nächste Übereinstimmung",
 			"previousSearchItemAction": "Vorherige Übereinstimmung"
 		},
-		"sql/workbench/contrib/executionPlan/common/executionPlanInput": {
-			"epCompare.executionPlanEditorName": "ExecutionPlan"
-		},
 		"sql/workbench/contrib/extensions/browser/contributionRenders": {
 			"insight condition": "Zeitpunkt",
 			"insightId": "ID",
@@ -13336,8 +13333,8 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "Schließen",
-			"addAccountFailedCodeMessage": "{0} \r\nError Message: {1}",
-			"addAccountFailedGenericMessage": "Adding account failed, check Azure Accounts log for more info.",
+			"addAccountFailedCodeMessage": "{0} \r\nFehlermeldung: {1}",
+			"addAccountFailedGenericMessage": "Fehler beim Hinzufügen des Kontos. Weitere Informationen finden Sie im Azure-Kontoprotokoll.",
 			"addAccountFailedMessage": "{0}",
 			"loggingIn": "Konto wird hinzugefügt...",
 			"refreshCanceled": "Die Kontoaktualisierung wurde durch den Benutzer abgebrochen.",
@@ -13515,6 +13512,8 @@
 			"warning": "Warnung"
 		},
 		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"executionPlanService.ensureCapabilitiesRegistered": "Der Anbieter mit der ID \"{0}\" wurde nach 30 Sekunden nicht registriert.",
+			"executionPlanService.ensureFileExtensionHandlerRegistered": "Der Ausführungsplananbieter, der das Dateiformat \"{0}\" unterstützt, wurde nach 30 Sekunden nicht registriert.",
 			"noHandlerRegistered": "Es ist kein gültiger Handler für den Ausführungsplan registriert",
 			"providerIdNotValidError": "Für die Interaktion mit ExecutionPlanService ist ein gültiger Anbieter erforderlich",
 			"selectExecutionPlanProvider": "Anbieter auswählen, um den Ausführungsplan zu öffnen"
@@ -13951,6 +13950,9 @@
 		},
 		"sql/workbench/services/dialog/browser/wizardNavigation.component": {
 			"wizardNavigation.stepName": "Schritt {0}: {1}"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanInput": {
+			"epCompare.executionPlanEditorName": "ExecutionPlan"
 		}
 	}
 }

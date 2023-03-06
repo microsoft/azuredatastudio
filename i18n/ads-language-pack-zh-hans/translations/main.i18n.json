@@ -11344,7 +11344,7 @@
 			"incompatible": "无法安装扩展“{1}”的版本“{0}”，因为它与 Azure Data Studio“{2}”不兼容。请更新到 Azure Data Studio {3} 以安装扩展。",
 			"installExtensionCompletedAndReloadRequired": "安装扩展 {0} 已完成。请重新加载 Azure Data Studio 以启用它。",
 			"maxMemoryForLargeFilesMB": "在打开大型文件时，控制 Azure Data Studio 可在重启后使用的内存。在命令行中指定 `--max-memory=新的大小` 参数可达到相同效果。",
-			"miNewDeployment": "New &&Deployment...",
+			"miNewDeployment": "新建部署...(&&D)",
 			"miNewNotebook": "新建笔记本(&&N)",
 			"miNewQuery": "新建查询(&&Q)",
 			"miinstallVsix": "从 VSIX 包安装扩展",
@@ -12417,9 +12417,6 @@
 			"nextSearchItemAction": "下一个匹配项",
 			"previousSearchItemAction": "上一个匹配项"
 		},
-		"sql/workbench/contrib/executionPlan/common/executionPlanInput": {
-			"epCompare.executionPlanEditorName": "ExecutionPlan"
-		},
 		"sql/workbench/contrib/extensions/browser/contributionRenders": {
 			"insight condition": "时间",
 			"insightId": "ID",
@@ -13336,8 +13333,8 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "关闭",
-			"addAccountFailedCodeMessage": "{0} \r\nError Message: {1}",
-			"addAccountFailedGenericMessage": "Adding account failed, check Azure Accounts log for more info.",
+			"addAccountFailedCodeMessage": "{0} \r\n错误消息: {1}",
+			"addAccountFailedGenericMessage": "添加帐户失败，有关详细信息，请查看 Azure 帐户日志。",
 			"addAccountFailedMessage": "{0}",
 			"loggingIn": "正在添加帐户...",
 			"refreshCanceled": "用户已取消刷新帐户",
@@ -13515,6 +13512,8 @@
 			"warning": "警告"
 		},
 		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"executionPlanService.ensureCapabilitiesRegistered": "ID 为 {0} 的提供程序在 30 秒后未注册。",
+			"executionPlanService.ensureFileExtensionHandlerRegistered": "支持文件格式 \"{0}\" 的执行计划提供程序在 30 秒后未注册。",
 			"noHandlerRegistered": "未注册有效的执行计划处理程序",
 			"providerIdNotValidError": "如果要与 ExecutionPlanService 交互，需要有效的提供程序",
 			"selectExecutionPlanProvider": "选择提供程序以打开执行计划"
@@ -13951,6 +13950,9 @@
 		},
 		"sql/workbench/services/dialog/browser/wizardNavigation.component": {
 			"wizardNavigation.stepName": "第 {0} 步: {1}"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanInput": {
+			"epCompare.executionPlanEditorName": "ExecutionPlan"
 		}
 	}
 }

@@ -149,7 +149,7 @@
 			"errorFindingBuildFilesLocation": "Erro ao localizar o local dos arquivos de build: {0}",
 			"errorMovingFile": "Erro ao mover o arquivo de {0} para {1}. Erro: {2}",
 			"errorReadingProjectGuid": "Erro ao tentar ler {0} do projeto '{1}'",
-			"errorRenamingFile": "Error when renaming file from {0} to {1}. Error: {2}",
+			"errorRenamingFile": "Erro ao renomear arquivo de {0} para {1}. Erro: {2}",
 			"errorRetrievingBuildFiles": "Não foi possível criar o projeto. Ocorreu um erro ao recuperar arquivos necessários para compilar.",
 			"eulaAgreementTemplate": "Eu aceito os {0}.",
 			"eulaAgreementText": "Eu aceito os {0}.",
