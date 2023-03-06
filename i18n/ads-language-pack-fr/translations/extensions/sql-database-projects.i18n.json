@@ -149,7 +149,7 @@
 			"errorFindingBuildFilesLocation": "Erreur lors de la recherche de l’emplacement des fichiers de build : {0}",
 			"errorMovingFile": "Erreur lors du déplacement du fichier de {0} vers {1}. Erreur : {2}",
 			"errorReadingProjectGuid": "Erreur lors de la tentative de lecture {0} du projet '{1}'",
-			"errorRenamingFile": "Error when renaming file from {0} to {1}. Error: {2}",
+			"errorRenamingFile": "Erreur lors du changement de nom du fichier de {0} à {1}. Erreur : {2}",
 			"errorRetrievingBuildFiles": "Impossible de générer le projet. Erreur lors de la récupération des fichiers nécessaires à la génération.",
 			"eulaAgreementTemplate": "J'accepte les {0}.",
 			"eulaAgreementText": "J'accepte les {0}.",
