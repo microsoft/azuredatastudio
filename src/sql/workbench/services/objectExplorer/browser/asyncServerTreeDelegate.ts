@@ -12,13 +12,7 @@ import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser
 export class AsyncServerTreeDelegate implements IListVirtualDelegate<ServerTreeElement> {
 
 	getHeight(element: ServerTreeElement): number {
-		if (element instanceof ConnectionProfileGroup) {
-			return ServerTreeRenderer.CONNECTION_GROUP_HEIGHT;
-		} else if (element instanceof ConnectionProfile) {
-			return ServerTreeRenderer.CONNECTION_HEIGHT;
-		} else {
-			return ServerTreeRenderer.OBJECTEXPLORER_HEIGHT;
-		}
+		return 25;
 	}
 
 	getTemplateId(element: ServerTreeElement): string {
