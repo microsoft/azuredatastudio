@@ -338,6 +338,7 @@ export function updatingProjectFromDatabase(projectName: string, databaseName: s
 
 // Error messages
 
+export function errorPrefix(errorMessage: string): string { return localize('errorPrefix', "Error: {0}", errorMessage); }
 export function compareErrorMessage(errorMessage: string): string { return localize('schemaCompare.compareErrorMessage', "Schema Compare failed: {0}", errorMessage ? errorMessage : 'Unknown'); }
 export const multipleSqlProjFiles = localize('multipleSqlProjFilesSelected', "Multiple .sqlproj files selected; please select only one.");
 export const noSqlProjFiles = localize('noSqlProjFilesSelected', "No .sqlproj file selected; please select one.");

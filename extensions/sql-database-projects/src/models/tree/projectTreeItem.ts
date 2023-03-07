@@ -16,6 +16,7 @@ import { FileProjectEntry } from '../projectEntry';
 import { EntryType } from 'sqldbproj';
 import { DBProjectConfigurationKey } from '../../tools/netcoreTool';
 import { SqlCmdVariablesTreeItem } from './sqlcmdVariableTreeItem';
+import { ProjectType } from 'mssql';
 
 /**
  * TreeNode root that represents an entire project
@@ -51,7 +52,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	public get treeItem(): vscode.TreeItem {
 		const collapsibleState = vscode.workspace.getConfiguration(DBProjectConfigurationKey)[CollapseProjectNodesKey] ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.Expanded;
 		const projectItem = new vscode.TreeItem(this.fileSystemUri, collapsibleState);
-		projectItem.contextValue = this.project.isSdkStyleProject ? DatabaseProjectItemType.project : DatabaseProjectItemType.legacyProject;
+		projectItem.contextValue = this.project.sqlProjStyle === ProjectType.SdkStyle ? DatabaseProjectItemType.project : DatabaseProjectItemType.legacyProject;
 		projectItem.iconPath = IconPathHelper.databaseProject;
 		projectItem.label = this.projectNodeName;
 

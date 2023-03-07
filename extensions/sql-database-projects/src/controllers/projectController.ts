@@ -261,7 +261,7 @@ export class ProjectsController {
 		}
 
 		// get dlls and targets file needed for building for legacy style projects
-		if (!project.isSdkStyleProject) {
+		if (project.sqlProjStyle === mssql.ProjectType.LegacyStyle) {
 			const result = await this.buildHelper.createBuildDirFolder(this._outputChannel);
 
 			if (!result) {
@@ -273,7 +273,7 @@ export class ProjectsController {
 		const options: ShellCommandOptions = {
 			commandTitle: 'Build',
 			workingDirectory: project.projectFolderPath,
-			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath, project.isSdkStyleProject)
+			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath, project.sqlProjStyle)
 		};
 
 		try {

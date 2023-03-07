@@ -73,15 +73,8 @@ export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDa
 }
 
 export class SystemDatabaseReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
-	constructor(uri: Uri, public ssdtUri: Uri, public databaseVariableLiteralValue: string | undefined, public suppressMissingDependenciesErrors: boolean) {
+	constructor(uri: Uri, public ssdtUri: Uri, public databaseName: string, public databaseVariableLiteralValue: string | undefined, public suppressMissingDependenciesErrors: boolean) {
 		super(uri, '', EntryType.DatabaseReference);
-	}
-
-	/**
-	 * File name that gets displayed in the project tree
-	 */
-	public get databaseName(): string {
-		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;
 	}
 
 	public override pathForSqlProj(): string {
@@ -135,9 +128,4 @@ export enum DatabaseReferenceLocation {
 	sameDatabase,
 	differentDatabaseSameServer,
 	differentDatabaseDifferentServer
-}
-
-export enum SystemDatabase {
-	master,
-	msdb
 }
