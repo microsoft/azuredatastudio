@@ -45,7 +45,6 @@ export class Project implements ISqlProject {
 	private _projectGuid: string | undefined;
 	private _files: FileProjectEntry[] = [];
 	private _dataSources: DataSource[] = [];
-	private _importedTargets: string[] = [];
 	private _databaseReferences: IDatabaseReferenceProjectEntry[] = [];
 	private _sqlCmdVariables: Record<string, string> = {};
 	private _preDeployScripts: FileProjectEntry[] = [];
@@ -86,10 +85,6 @@ export class Project implements ISqlProject {
 
 	public get dataSources(): DataSource[] {
 		return this._dataSources;
-	}
-
-	public get importedTargets(): string[] {
-		return this._importedTargets;
 	}
 
 	public get databaseReferences(): IDatabaseReferenceProjectEntry[] {
@@ -180,8 +175,6 @@ export class Project implements ISqlProject {
 		// get files and folders
 		this._files = await this.readFilesInProject();
 		this.files.push(...await this.readFolders());
-
-		this._importedTargets = this.readImportedTargets();
 
 		// get publish profiles specified in the sqlproj
 		this._publishProfiles = this.readPublishProfiles();
@@ -561,27 +554,8 @@ export class Project implements ISqlProject {
 		}
 	}
 
-	private readImportedTargets(): string[] {
-		const imports: string[] = [];
-
-		// find all import statements to include
-		try {
-			const importElements = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import);
-			for (let i = 0; i < importElements.length; i++) {
-				const importTarget = importElements[i];
-				imports.push(importTarget.getAttribute(constants.Project)!);
-			}
-		} catch (e) {
-			void window.showErrorMessage(constants.errorReadingProject(constants.ImportElements, this.projectFilePath));
-			console.error(utils.getErrorMessage(e));
-		}
-
-		return imports;
-	}
-
 	private resetProject(): void {
 		this._files = [];
-		this._importedTargets = [];
 		this._databaseReferences = [];
 		this._sqlCmdVariables = {};
 		this._preDeployScripts = [];
