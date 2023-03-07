@@ -392,7 +392,7 @@ export function unableToFindSqlCmdVariable(variableName: string) { return locali
 export function unableToFindDatabaseReference(reference: string) { return localize('unableToFindReference', "Unable to find database reference {0}", reference); }
 export function invalidGuid(guid: string) { return localize('invalidGuid', "Specified GUID is invalid: {0}", guid); }
 export function invalidTargetPlatform(targetPlatform: string, supportedTargetPlatforms: string[]) { return localize('invalidTargetPlatform', "Invalid target platform: {0}. Supported target platforms: {1}", targetPlatform, supportedTargetPlatforms.toString()); }
-export function errorReadingProject(section: string, path: string) { return localize('errorReadingProjectGuid', "Error trying to read {0} of project '{1}'", section, path); }
+export function errorReadingProject(section: string, path: string, error?: string) { return localize('errorReadingProjectGuid', "Error trying to read {0} of project '{1}'. {2}", section, path, error); }
 export function errorAddingDatabaseReference(referenceName: string, error: string) { return localize('errorAddingDatabaseReference', "Error adding database reference to {0}. Error: {1}", referenceName, error); }
 
 // Action types
