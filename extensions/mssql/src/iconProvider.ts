@@ -7,18 +7,18 @@ import * as azdata from 'azdata';
 import * as constants from './constants';
 
 const cloudIcon = 'mssql:cloud';
-const clusterIcon = 'mssql:cluster';
-
+const managedInstanceIcon = 'mssql:managedInstance';
 export class MssqlIconProvider implements azdata.IconProvider {
 	public readonly providerId: string = constants.sqlProviderName;
 	public handle: number;
-	getConnectionIconId(connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> {
-		let iconName: string = undefined;
-		if (connection.providerName === 'MSSQL') {
+	getConnectionIconId(connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string | undefined> {
+		let iconName: string | undefined = undefined;
+		if (connection.providerName === constants.sqlProviderName) {
+			if (serverInfo.engineEditionId === azdata.DatabaseEngineEdition.SqlManagedInstance) {
+				iconName = managedInstanceIcon;
+			}
 			if (serverInfo.isCloud) {
 				iconName = cloudIcon;
-			} else if (serverInfo.options['isBigDataCluster']) {
-				iconName = clusterIcon;
 			}
 		}
 		return Promise.resolve(iconName);

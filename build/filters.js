@@ -47,6 +47,7 @@ module.exports.unicodeFilter = [
 	'!build/win32/**',
 	'!extensions/markdown-language-features/notebook-out/*.js',
 	'!extensions/markdown-math/notebook-out/**',
+	'!extensions/notebook-renderers/renderer-out/**',
 	'!extensions/php-language-features/src/features/phpGlobalFunctions.ts',
 	'!extensions/typescript-language-features/test-workspace/**',
 	'!extensions/vscode-api-tests/testWorkspace/**',
@@ -130,6 +131,7 @@ module.exports.indentationFilter = [
 	'!extensions/markdown-language-features/media/*.js',
 	'!extensions/markdown-language-features/notebook-out/*.js',
 	'!extensions/markdown-math/notebook-out/*.js',
+	'!extensions/notebook-renderers/renderer-out/*.js',
 	'!extensions/simple-browser/media/*.js',
 
 	// {{SQL CARBON EDIT}} Except for our stuff
@@ -152,8 +154,7 @@ module.exports.indentationFilter = [
 	'!extensions/sql-database-projects/src/test/baselines/*.json',
 	'!extensions/sql-database-projects/src/test/baselines/*.sqlproj',
 	'!extensions/sql-database-projects/BuildDirectory/SystemDacpacs/**',
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
+	'!extensions/datavirtualization/scaleoutdataservice/**',
 	'!resources/linux/snap/electron-launch',
 	'!extensions/markdown-language-features/media/*.js',
 	'!extensions/simple-browser/media/*.js',
@@ -202,7 +203,6 @@ module.exports.copyrightFilter = [
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/kusto/src/prompts/**',
 	'!extensions/mssql/sqltoolsservice/**',
-	'!extensions/mssql/src/hdfs/webhdfs.ts',
 	'!extensions/mssql/src/prompts/**',
 	'!extensions/notebook/resources/jupyter_config/**',
 	'!extensions/notebook/src/intellisense/text.ts',
@@ -257,8 +257,6 @@ module.exports.tsFormattingFilter = [
 	'!extensions/html-language-features/server/lib/jquery.d.ts',
 
 	// {{SQL CARBON EDIT}}
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts',
 	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts', // skip this because we have no plans on touching this and its not ours
 	'!src/vs/workbench/contrib/extensions/browser/extensionRecommendationsService.ts', // skip this because known issue
 	'!build/**/*'

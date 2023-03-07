@@ -7,12 +7,12 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import { SqlDatabaseTree } from './sqlDatabasesTree';
-import { SqlMigrationImpactedObjectInfo } from 'mssql';
 import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
 import * as constants from '../../constants/strings';
 import * as utils from '../../api/utils';
 import * as fs from 'fs';
 import path = require('path');
+import { SqlMigrationImpactedObjectInfo } from '../../service/contracts';
 
 export type Issues = {
 	description: string,
@@ -72,14 +72,16 @@ export class AssessmentResultsDialog {
 			this.dialog = azdata.window.createModelViewDialog(this.title, 'AssessmentResults', 'wide');
 
 			this.dialog.okButton.label = AssessmentResultsDialog.SelectButtonText;
+			this.dialog.okButton.position = 'left';
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 
 			this.dialog.cancelButton.label = AssessmentResultsDialog.CancelButtonText;
+			this.dialog.cancelButton.position = 'left';
 			this._disposables.push(this.dialog.cancelButton.onClick(async () => await this.cancel()));
 
 			this._saveButton = azdata.window.createButton(
 				constants.SAVE_ASSESSMENT_REPORT,
-				'left');
+				'right');
 			this._disposables.push(
 				this._saveButton.onClick(async () => {
 					const folder = await utils.promptUserForFolder();

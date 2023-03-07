@@ -70,14 +70,14 @@ export function hyperLinkFormatter(row: number | undefined, cell: any | undefine
 	if (DBCellValue.isDBCellValue(value)) {
 		valueToDisplay = 'NULL';
 		if (!value.isNull) {
-			cellClasses += ' xmlLink';
-			valueToDisplay = escape(value.displayValue);
+			valueToDisplay = getCellDisplayValue(value.displayValue);
 			return `<a class="${cellClasses}">${valueToDisplay}</a>`;
 		} else {
 			cellClasses += ' missing-value';
 		}
 	} else if (isHyperlinkCellValue(value)) {
-		return `<a class="${cellClasses}" title="${escape(value.displayText)}">${escape(value.displayText)}</a>`;
+		valueToDisplay = getCellDisplayValue(value.displayText);
+		return `<a class="${cellClasses}" title="${valueToDisplay}">${valueToDisplay}</a>`;
 	}
 	return `<span title="${valueToDisplay}" class="${cellClasses}">${valueToDisplay}</span>`;
 }
@@ -93,8 +93,7 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 	if (DBCellValue.isDBCellValue(value)) {
 		valueToDisplay = 'NULL';
 		if (!value.isNull) {
-			valueToDisplay = value.displayValue.replace(/(\r\n|\n|\r)/g, ' ');
-			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+			valueToDisplay = getCellDisplayValue(value.displayValue)
 			titleValue = valueToDisplay;
 		} else {
 			cellClasses += ' missing-value';
@@ -108,7 +107,7 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 		} else {
 			valueToDisplay = value;
 		}
-		valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+		valueToDisplay = getCellDisplayValue(valueToDisplay);
 		titleValue = valueToDisplay;
 	}
 	else if (value && value.title) {
@@ -119,11 +118,17 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 				cellStyle = value.style;
 			}
 		}
-		valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+		valueToDisplay = getCellDisplayValue(valueToDisplay);
 		titleValue = valueToDisplay;
 	}
 
 	return `<span title="${titleValue}" style="${cellStyle}" class="${cellClasses}">${valueToDisplay}</span>`;
+}
+
+function getCellDisplayValue(cellValue: string): string {
+	// allow-any-unicode-next-line
+	let valueToDisplay = cellValue.replace(/(\r\n|\n|\r)/g, '↵');
+	return escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
 }
 
 

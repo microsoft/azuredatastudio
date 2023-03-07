@@ -34,17 +34,16 @@ async function main() {
 	const productJsonPath = path.resolve(outAppPath, 'Contents', 'Resources', 'app', 'product.json');
 
 	// {{SQL CARBON EDIT}}
-	// Current STS arm64 builds doesn't work on osx-arm64, we need to use the x64 version of STS on osx-arm64 until the issue is fixed.
-	// Tracked by: https://github.com/microsoft/azuredatastudio/issues/20775
-	// makeUniversalApp function will complain if the x64 ADS and arm64 ADS have the same STS binaries, to workaround the issue, we need
-	// to delete STS from both of them and then copy it to the universal app.
+	// STS binaries for x64 and arm64 have different file count and cannot be combined
+	// Remove them from the package before the makeUniversalApp step and copy them to the universal package after it.
 	const stsPath = '/Contents/Resources/app/extensions/mssql/sqltoolsservice';
 	const tempSTSDir = path.join(buildDir, 'sqltoolsservice');
 	const x64STSDir = path.join(x64AppPath, stsPath);
 	const arm64STSDir = path.join(arm64AppPath, stsPath);
 	const targetSTSDirs = [x64STSDir, arm64STSDir];
-	// backup the x64 STS to a temporary directory, later it will be copied to the universal app directory.
+	// backup the STS folders to a temporary directory, later they will be copied to the universal app directory.
 	await fs.copy(x64STSDir, tempSTSDir);
+	await fs.copy(arm64STSDir, tempSTSDir);
 	// delete STS directories from both x64 ADS and arm64 ADS.
 	console.debug(`Removing SqlToolsService folders.`);
 	targetSTSDirs.forEach(async dir => {
@@ -88,7 +87,11 @@ async function main() {
 	await fs.writeJson(productJsonPath, productJson);
 
 	// Verify if native module architecture is correct
-	const findOutput = await spawn('find', [outAppPath, '-name', 'keytar.node']);
+	// {{SQL CARBON EDIT}} Some of our extensions have their own keytar so lookup
+	//   only in core modules since this code doesn't work with multiple found modules.
+	//   We're assuming here the intent is just to check a single file for validation and not
+	//   needing to check any others since this currently is ignoring all other native modules.
+	const findOutput = await spawn('find', [outAppPath, '-name', 'keytar.node', '-regex', '.*node_modules.asar.unpacked.*',]);
 	const lipoOutput = await spawn('lipo', ['-archs', findOutput.replace(/\n$/, '')]);
 	if (lipoOutput.replace(/\n$/, '') !== 'x86_64 arm64') {
 		throw new Error(`Invalid arch, got : ${lipoOutput}`);
@@ -96,7 +99,8 @@ async function main() {
 
 	// {{SQL CARBON EDIT}}
 	console.debug(`Copying SqlToolsService to the universal app folder.`);
-	await fs.copy(tempSTSDir, path.join(outAppPath, stsPath), { overwrite: true });
+	await fs.copy(path.join(tempSTSDir, 'OSX'), path.join(outAppPath, stsPath, 'OSX'), { overwrite: true });
+	await fs.copy(path.join(tempSTSDir, 'OSX_ARM64'), path.join(outAppPath, stsPath, 'OSX_ARM64'), { overwrite: true });
 }
 
 if (require.main === module) {

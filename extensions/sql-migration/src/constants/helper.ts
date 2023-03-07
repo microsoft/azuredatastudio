@@ -37,6 +37,18 @@ export const PipelineStatusCodes = {
 	Cancelled: 'Cancelled',
 };
 
+export const LoginMigrationStatusCodes = {
+	// status codes: 'InProgress' | 'Failed' | 'Succeeded'
+	InProgress: 'InProgress',
+	Succeeded: 'Succeeded',
+	Failed: 'Failed',
+};
+
+export const ValidationErrorCodes = {
+	// TODO: adding other error codes for troubleshooting
+	SqlInfoValidationFailed: '2056'
+};
+
 const _dateFormatter = new Intl.DateTimeFormat(
 	undefined, {
 	year: 'numeric',
@@ -155,6 +167,10 @@ export function hasMigrationOperationId(migration: DatabaseMigration | undefined
 		&& migationOperationId.length > 0;
 }
 
+export function hasRestoreBlockingReason(migration: DatabaseMigration | undefined): boolean {
+	return (migration?.properties.migrationStatusWarnings?.restoreBlockingReason ?? '').length > 0;
+}
+
 export function canCancelMigration(migration: DatabaseMigration | undefined): boolean {
 	const status = getMigrationStatus(migration);
 	return hasMigrationOperationId(migration)
@@ -187,8 +203,10 @@ export function canCutoverMigration(migration: DatabaseMigration | undefined): b
 	const status = getMigrationStatus(migration);
 	return hasMigrationOperationId(migration)
 		&& isOnlineMigration(migration)
-		&& (status === loc.MigrationState.ReadyForCutover || status === loc.MigrationState.InProgress)		// TODO: InProgress condition can be eventually deprecated
-		&& isFullBackupRestored(migration);
+		&& (status === loc.MigrationState.ReadyForCutover || status === loc.MigrationState.InProgress)
+		&& isFullBackupRestored(migration)
+		// if MI migration, must have no restore blocking reason
+		&& !(getMigrationTargetType(migration) === loc.SQL_MANAGED_INSTANCE && hasRestoreBlockingReason(migration));
 }
 
 export function isActiveMigration(migration: DatabaseMigration | undefined): boolean {

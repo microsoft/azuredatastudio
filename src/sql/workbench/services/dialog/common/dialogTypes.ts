@@ -53,6 +53,16 @@ export class Dialog extends ModelViewPane {
 	public customButtons: DialogButton[] = [];
 	private _onMessageChange = new Emitter<DialogMessage | undefined>();
 	public readonly onMessageChange = this._onMessageChange.event;
+	private _loading: boolean = false;
+	private _loadingText: string;
+	private _loadingCompletedText: string;
+	private _onLoadingChange = new Emitter<boolean | undefined>();
+	private _onLoadingTextChange = new Emitter<string | undefined>();
+	private _onLoadingCompletedTextChange = new Emitter<string | undefined>();
+	public readonly onLoadingChange = this._onLoadingChange.event;
+	public readonly onLoadingTextChange = this._onLoadingTextChange.event;
+	public readonly onLoadingCompletedTextChange = this._onLoadingCompletedTextChange.event;
+
 	private _message: DialogMessage | undefined;
 	private _closeValidator: CloseValidator | undefined;
 
@@ -85,6 +95,39 @@ export class Dialog extends ModelViewPane {
 	public set message(value: DialogMessage | undefined) {
 		this._message = value;
 		this._onMessageChange.fire(this._message);
+	}
+
+	public get loading(): boolean {
+		return this._loading;
+	}
+
+	public set loading(value: boolean) {
+		if (this.loading !== value) {
+			this._loading = value;
+			this._onLoadingChange.fire(this._loading);
+		}
+	}
+
+	public get loadingText(): string | undefined {
+		return this._loadingText;
+	}
+
+	public set loadingText(value: string | undefined) {
+		if (this.loadingText !== value) {
+			this._loadingText = value;
+			this._onLoadingTextChange.fire(this._loadingText);
+		}
+	}
+
+	public get loadingCompletedText(): string | undefined {
+		return this._loadingCompletedText;
+	}
+
+	public set loadingCompletedText(value: string | undefined) {
+		if (this._loadingCompletedText !== value) {
+			this._loadingCompletedText = value;
+			this._onLoadingCompletedTextChange.fire(this._loadingCompletedText);
+		}
 	}
 
 	public registerCloseValidator(validator: CloseValidator): void {
@@ -247,6 +290,15 @@ export class Wizard {
 	private _message: DialogMessage | undefined;
 	public displayPageTitles: boolean = false;
 	public width: DialogWidth | undefined;
+	private _loading: boolean = false;
+	private _loadingText: string;
+	private _loadingCompletedText: string;
+	private _onLoadingChange = new Emitter<boolean | undefined>();
+	private _onLoadingTextChange = new Emitter<string | undefined>();
+	private _onLoadingCompletedTextChange = new Emitter<string | undefined>();
+	public readonly onLoadingChange = this._onLoadingChange.event;
+	public readonly onLoadingTextChange = this._onLoadingTextChange.event;
+	public readonly onLoadingCompletedTextChange = this._onLoadingCompletedTextChange.event;
 
 	constructor(public title: string,
 		public readonly name: string,
@@ -329,4 +381,39 @@ export class Wizard {
 		this._message = value;
 		this._onMessageChange.fire(this._message);
 	}
+
+	public get loading(): boolean {
+		return this._loading;
+	}
+
+	public set loading(value: boolean) {
+		if (this.loading !== value) {
+			this._loading = value;
+			this._onLoadingChange.fire(this._loading);
+		}
+	}
+
+	public get loadingText(): string | undefined {
+		return this._loadingText;
+	}
+
+	public set loadingText(value: string | undefined) {
+		if (this.loadingText !== value) {
+			this._loadingText = value;
+			this._onLoadingTextChange.fire(this._loadingText);
+		}
+	}
+
+	public get loadingCompletedText(): string | undefined {
+		return this._loadingCompletedText;
+	}
+
+	public set loadingCompletedText(value: string | undefined) {
+		if (this._loadingCompletedText !== value) {
+			this._loadingCompletedText = value;
+			this._onLoadingCompletedTextChange.fire(this._loadingCompletedText);
+		}
+	}
+
+
 }

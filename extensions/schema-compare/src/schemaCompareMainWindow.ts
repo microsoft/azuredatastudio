@@ -131,7 +131,7 @@ export class SchemaCompareMainWindow {
 				projectFilePath: '',
 				targetScripts: [],
 				dataSchemaProvider: '',
-				folderStructure: ''
+				folderStructure: mssql.ExtractTarget.schemaObjectType
 			};
 		} else if (sourceDacpac) {
 			source = {
@@ -145,7 +145,7 @@ export class SchemaCompareMainWindow {
 				projectFilePath: '',
 				targetScripts: [],
 				dataSchemaProvider: '',
-				folderStructure: ''
+				folderStructure: mssql.ExtractTarget.schemaObjectType
 			};
 		} else if (sourceProject) {
 			source = {
@@ -159,7 +159,7 @@ export class SchemaCompareMainWindow {
 				projectFilePath: sourceProject,
 				targetScripts: [],
 				dataSchemaProvider: undefined,
-				folderStructure: ''
+				folderStructure: mssql.ExtractTarget.schemaObjectType
 			};
 		}
 
@@ -382,7 +382,7 @@ export class SchemaCompareMainWindow {
 			this.comparisonResult = await service.schemaCompare(this.operationId, this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions);
 
 			if (!this.comparisonResult || !this.comparisonResult.success) {
-				TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonFailed', undefined, getTelemetryErrorType(this.comparisonResult?.errorMessage))
+				TelemetryReporter.createErrorEvent2(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonFailed', undefined, undefined, getTelemetryErrorType(this.comparisonResult?.errorMessage))
 					.withAdditionalProperties({
 						operationId: this.comparisonResult.operationId
 					}).send();
@@ -783,7 +783,7 @@ export class SchemaCompareMainWindow {
 			const result = await service.schemaCompareCancel(this.operationId);
 
 			if (!result || !result.success) {
-				TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareCancelFailed', undefined, getTelemetryErrorType(result.errorMessage))
+				TelemetryReporter.createErrorEvent2(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareCancelFailed', undefined, undefined, getTelemetryErrorType(result.errorMessage))
 					.withAdditionalProperties({
 						'operationId': this.operationId
 					}).send();
@@ -820,7 +820,7 @@ export class SchemaCompareMainWindow {
 		const service = await this.getService();
 		const result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.script);
 		if (!result || !result.success) {
-			TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareGenerateScriptFailed', undefined, getTelemetryErrorType(result.errorMessage))
+			TelemetryReporter.createErrorEvent2(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareGenerateScriptFailed', undefined, undefined, getTelemetryErrorType(result.errorMessage))
 				.withAdditionalProperties({
 					'operationId': this.comparisonResult.operationId
 				}).send();
@@ -900,7 +900,7 @@ export class SchemaCompareMainWindow {
 				}
 
 				if (!result || !result.success || result.errorMessage) {
-					TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyFailed', undefined, getTelemetryErrorType(result?.errorMessage))
+					TelemetryReporter.createErrorEvent2(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyFailed', undefined, undefined, getTelemetryErrorType(result?.errorMessage))
 						.withAdditionalProperties({
 							'operationId': this.comparisonResult.operationId,
 							'targetType': getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)
@@ -1107,7 +1107,7 @@ export class SchemaCompareMainWindow {
 		let startTime = Date.now();
 		const result = await service.schemaCompareOpenScmp(fileUri.fsPath);
 		if (!result || !result.success) {
-			TelemetryReporter.sendErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOpenScmpFailed', undefined, getTelemetryErrorType(result.errorMessage));
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOpenScmpFailed', undefined, undefined, getTelemetryErrorType(result.errorMessage));
 			vscode.window.showErrorMessage(loc.openScmpErrorMessage(result.errorMessage));
 			return;
 		}
@@ -1152,7 +1152,7 @@ export class SchemaCompareMainWindow {
 				projectFilePath: endpoint.projectFilePath,
 				targetScripts: [],
 				dataSchemaProvider: '',
-				folderStructure: loc.schemaObjectType			// TODO: Pick this automatically from the scmp file, after issue #20332 is resolved (check dsp as well)
+				folderStructure: mssql.ExtractTarget.schemaObjectType			// TODO: Pick this automatically from the scmp file, after issue #20332 is resolved (check dsp as well)
 			};
 		} else {
 			// need to do this instead of just setting it to the endpoint because some fields are null which will cause an error when sending the compare request
@@ -1210,7 +1210,7 @@ export class SchemaCompareMainWindow {
 		const service = await this.getService();
 		const result = await service.schemaCompareSaveScmp(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions, filePath.fsPath, sourceExcludes, targetExcludes);
 		if (!result || !result.success) {
-			TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSaveScmpFailed', undefined, getTelemetryErrorType(result.errorMessage))
+			TelemetryReporter.createErrorEvent2(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSaveScmpFailed', undefined, undefined, getTelemetryErrorType(result.errorMessage))
 				.withAdditionalProperties({
 					operationId: this.comparisonResult.operationId
 				}).send();

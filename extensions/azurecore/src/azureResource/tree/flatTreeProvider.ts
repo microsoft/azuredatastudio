@@ -12,12 +12,12 @@ const localize = nls.loadMessageBundle();
 import { TreeNode } from '../treeNode';
 import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
-import { AzureResourceErrorMessageUtil } from '../utils';
+import { AzureResourceErrorMessageUtil, filterAccounts } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { IAzureResourceNodeWithProviderId, IAzureResourceSubscriptionService } from '../interfaces';
 import { AzureResourceServiceNames } from '../constants';
 import { AzureResourceService } from '../resourceService';
-
+import { Logger } from '../../utils/Logger';
 
 export class FlatAzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
 	public isSystemInitialized: boolean = false;
@@ -26,7 +26,8 @@ export class FlatAzureResourceTreeProvider implements vscode.TreeDataProvider<Tr
 
 	private resourceLoader: ResourceLoader | undefined;
 
-	public constructor(private readonly appContext: AppContext) {
+	public constructor(private readonly appContext: AppContext,
+		private readonly authLibrary: string) {
 	}
 
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
@@ -35,7 +36,7 @@ export class FlatAzureResourceTreeProvider implements vscode.TreeDataProvider<Tr
 		}
 
 		if (!this.resourceLoader) {
-			this.resourceLoader = new ResourceLoader(this.appContext);
+			this.resourceLoader = new ResourceLoader(this.appContext, this.authLibrary);
 			this.resourceLoader.onDidAddNewResource(e => this._onDidChangeTreeData.fire(e));
 		}
 
@@ -87,7 +88,8 @@ class ResourceLoader {
 	private readonly _onDidAddNewResource = new vscode.EventEmitter<TreeNode | undefined>();
 	public readonly onDidAddNewResource = this._onDidAddNewResource.event;
 
-	constructor(private readonly appContext: AppContext) {
+	constructor(private readonly appContext: AppContext,
+		private readonly authLibrary: string) {
 		this.subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
 		this.resourceService = appContext.getService<AzureResourceService>(AzureResourceServiceNames.resourceService);
 	}
@@ -118,13 +120,13 @@ class ResourceLoader {
 
 		this._state = LoaderState.Loading;
 
-		const accounts = await azdata.accounts.getAllAccounts();
+		const accounts = filterAccounts(await azdata.accounts.getAllAccounts(), this.authLibrary);
 
 		for (const account of accounts) {
 			for (const tenant of account.properties.tenants) {
 				for (const subscription of await this.subscriptionService.getSubscriptions(account, [tenant.id])) {
 					for (const providerId of await this.resourceService.listResourceProviderIds()) {
-						for (const group of await this.resourceService.getRootChildren(providerId, account, subscription, subscription.tenant!)) {
+						for (const group of await this.resourceService.getRootChildren(providerId, account, subscription)) {
 							const children = await this.resourceService.getChildren(providerId, group.resourceNode);
 							let groupNode: AzureResourceResourceTreeNode | undefined = this.resourceGroups.get(group.resourceProviderId);
 							if (groupNode) {
@@ -141,7 +143,7 @@ class ResourceLoader {
 			}
 		}
 
-		console.log('finished loading');
+		Logger.verbose('finished loading all accounts and subscriptions');
 
 		clearInterval(interval);
 
@@ -208,5 +210,4 @@ class AzureResourceResourceTreeNode extends TreeNode {
 	public get nodePathValue(): string {
 		return this.resourceNodeWithProviderId.resourceNode.treeItem.id || '';
 	}
-
 }

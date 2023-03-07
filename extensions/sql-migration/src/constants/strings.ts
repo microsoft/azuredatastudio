@@ -8,7 +8,22 @@ import * as nls from 'vscode-nls';
 import { EOL } from 'os';
 import { MigrationSourceAuthenticationType } from '../models/stateMachine';
 import { formatNumber, ParallelCopyTypeCodes, PipelineStatusCodes } from './helper';
+import { ValidationError } from '../api/azure';
 const localize = nls.loadMessageBundle();
+
+export const serviceName = 'Sql Migration Service';
+export const providerId = 'SqlMigration';
+export const extensionConfigSectionName = 'sqlMigration';
+export const sqlConfigSectionName = 'sql';
+export const configLogDebugInfo = 'logDebugInfo';
+export function serviceCrashMessage(error: string): string {
+	return localize('serviceCrashMessage', "Migration service component could not start. {0}", error);
+}
+export const serviceCrashed = localize('serviceCrashed', "Service component crashed.");
+export function waitingForService(serviceName: string): string {
+	return localize('waitingForService', "Waiting for {0} component to start.", serviceName);
+}
+export const serviceProviderInitializationError = localize('serviceProviderIntializationError', "Service provider could not be initialized.");
 
 // mirrors MigrationState as defined in RP
 export enum MigrationState {
@@ -55,6 +70,7 @@ export const RESUME_TITLE = localize('sql.migration.resume.title', "Run migratio
 export const START_NEW_SESSION = localize('sql.migration.start.session', "Start a new session");
 export const RESUME_SESSION = localize('sql.migration.resume.session', "Resume previously saved session");
 export const OPEN_SAVED_INFO_ERROR = localize("sql.migration.invalid.savedInfo", 'Cannot retrieve saved session. Try again by selecting new session.');
+export const RUN_VALIDATION = localize('sql.migration.run.validation', "Run validation");
 
 // Databases for assessment
 export const DATABASE_FOR_ASSESSMENT_PAGE_TITLE = localize('sql.migration.database.assessment.title', "Databases for assessment");
@@ -97,7 +113,7 @@ export const REFRESH_ASSESSMENT_BUTTON_LABEL = localize('sql.migration.refresh.a
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose your Azure SQL target");
 
 export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure SQL Managed Instance");
-export const SKU_RECOMMENDATION_SQLDB_CARD_TEXT = localize('sql.migration.sku.sqldb.card.title', "Azure SQL Database (PREVIEW)");
+export const SKU_RECOMMENDATION_SQLDB_CARD_TEXT = localize('sql.migration.sku.sqldb.card.title', "Azure SQL Database");
 export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "SQL Server on Azure Virtual Machine");
 export const SKU_RECOMMENDATION_MI_TARGET_TEXT = localize('sql.migration.sku.mi.target.title', "Azure SQL Managed Instance");
 export const SKU_RECOMMENDATION_SQLDB_TARGET_TEXT = localize('sql.migration.sku.sqldb.target.title', "Azure SQL Database");
@@ -106,7 +122,7 @@ export const SELECT_AZURE_MI = localize('sql.migration.select.azure.mi', "Select
 export const SELECT_AZURE_VM = localize('sql.migration.select.azure.vm', "Select your target Azure Subscription and your target SQL Server on Azure Virtual Machine for your target.");
 export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI = localize('sql.migration.sku.recommendation.view.assessment.mi', "To migrate to Azure SQL Managed Instance, view assessment results and select one or more databases.");
 export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM = localize('sql.migration.sku.recommendation.view.assessment.vm', "To migrate to SQL Server on Azure Virtual Machine, view assessment results and select one or more databases.");
-export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_SQLDB = localize('sql.migration.sku.recommendation.view.assessment.sqldb', "To migrate to Azure SQL Database (PREVIEW), view assessment results and select one or more databases.");
+export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_SQLDB = localize('sql.migration.sku.recommendation.view.assessment.sqldb', "To migrate to Azure SQL Database, view assessment results and select one or more databases.");
 export const VIEW_SELECT_BUTTON_LABEL = localize('sql.migration.view.select.button.label', "View/Select");
 export function TOTAL_DATABASES_SELECTED(selectedDbCount: number, totalDbCount: number): string {
 	return localize('total.databases.selected', "{0} of {1} databases selected", selectedDbCount, totalDbCount);
@@ -294,13 +310,96 @@ export function TIME_IN_MINUTES(val: number): number {
 	return val * 60000;
 }
 
+// Login Migrations
+export function LOGIN_WIZARD_TITLE(instanceName: string): string {
+	return localize('sql-migration.login.wizard.title', "Migrate logins from '{0}' to Azure SQL", instanceName);
+}
+export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DESCRIPTION = localize('sql.login.migration.wizard.target.description', "Select the target Azure SQL Managed Instance, Azure SQL VM, or Azure SQL database(s) where you want to migrate your logins.");
+export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PREVIEW_WARNING = localize('sql.login.migration.wizard.target.data.migration.warning', "Please note that login migration feature is in public preview mode.");
+export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DATA_MIGRATION_WARNING = localize('sql.login.migration.wizard.target.data.migration.warning', "We recommend migrating your databases(s) to the Azure SQL target before starting the login migration to avoid failures in the process. Nevertheless, you can run this migration process whenever want you want if your goal is to update the user mapping for recently migrated databases.\n\n If the source and database names are not the same, then it is possible that some permissions may not be applied properly.");
+export function LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PERMISSIONS_WARNING(userName: string, instanceName: string): string {
+	if (!userName || !userName.length) {
+		return localize('sql.login.migration.wizard.target.permission.warning', "Please ensure that the current user has sysadmin permissions to get all login information for the current instance ({0}).", instanceName);
+	}
+	return localize('sql.login.migration.wizard.target.permission.warning', "Please ensure that the current user ({0}) has sysadmin permissions to get all login information for the current instance ({1}).", userName, instanceName);
+}
+export const LOGIN_MIGRATIONS_TARGET_TYPE_SELECTION_TITLE = localize('sql.login.migration.wizard.target.type.title', "Azure SQL target type");
+export const LOGIN_MIGRATIONS_MI_TEXT = localize('sql.login.migration.mi.title', "Azure SQL Managed Instance");
+export const LOGIN_MIGRATIONS_DB_TEXT = localize('sql.login.migration.db.title', "Azure SQL Database");
+export const LOGIN_MIGRATIONS_VM_TEXT = localize('sql.login.migration.vm.title', "SQL Server on Azure Virtual Machine");
+export const LOGIN_MIGRATIONS_AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.login.migration.target.title', "Azure SQL target");
+export const LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE = localize('sql.login.migration.select.page.title', "Select login(s) to migrate");
+export const LOGIN_MIGRATIONS_SELECT_LOGINS_WINDOWS_AUTH_WARNING = localize('sql.login.migration.select.logins.windows.auth.warning', "Please note that this wizard does not display windows authentication login types because migrating that type is currently not supported. Capability for migrating windows authentication logins is coming soon.");
+export const LOGIN_MIGRATIONS_STATUS_PAGE_TITLE = localize('sql.login.migration.status.page.title', "Migration Status");
+export function LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
+	return localize('sql.login.migration.status.page.description', "Migrating {0} logins to target {1} '{2}'", numLogins, targetType, targetName);
+}
+export function LOGIN_MIGRATIONS_COMPLETED_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
+	return localize('sql.login.migration.status.page.description.completed', "Completed migrating {0} logins to {1} '{2}'", numLogins, targetType, targetName);
+}
+export function LOGIN_MIGRATIONS_FAILED_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
+	return localize('sql.login.migration.status.page.description.failed', "Failed migrating {0} logins to {1} '{2}'", numLogins, targetType, targetName);
+}
+export const LOGIN_MIGRATIONS_STATUS_PAGE_PREVIOUS_BUTTON_TITLE = localize('sql.login.migration.status.page.previous.button.title', "Previous (Disabled)");
+export const LOGIN_MIGRATIONS_STATUS_PAGE_PREVIOUS_BUTTON_ERROR = localize('sql.login.migration.status.page.previous.button.error', "Login migration has already been initiated and going back to prior page is disabled.");
+export const LOGIN_MIGRATIONS_GET_LOGINS_QUERY = localize('sql.login.migration.get.logins.query',
+	"SELECT sp.name as login, sp.type_desc as login_type, sp.default_database_name, case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status FROM sys.server_principals sp  LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN ('SQL_LOGIN', 'WINDOWS_LOGIN') ORDER BY sp.name;");
+export function LOGIN_MIGRATIONS_GET_LOGINS_ERROR_TITLE(targetType: string): string {
+	return localize('sql.migration.wizard.login.error.title', "An error occurred while trying to get {0} login information.", targetType);
+}
+export function LOGIN_MIGRATIONS_GET_LOGINS_ERROR(message: string): string {
+	return localize('sql.migration.wizard.target.login.error', "Error getting login information: {0}", message);
+}
+export const SELECT_LOGIN_TO_CONTINUE = localize('sql.migration.select.database.to.continue', "Please select 1 or more logins for migration");
+export const ENTER_AAD_DOMAIN_NAME = localize('sql.login.migration.enter.AAD.domain.name.to.continue', "Azure Active Directory (AAD) Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).");
+export const LOGIN_MIGRATE_BUTTON_TEXT = localize('sql.migration.start.login.migration.button', "Migrate");
+export function LOGIN_MIGRATIONS_GET_CONNECTION_STRING(dataSource: string, id: string, pass: string): string {
+	return localize('sql.login.migration.get.connection.string', "data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;", dataSource, id, pass);
+}
+export const LOGIN_MIGRATION_IN_PROGRESS = localize('sql.login.migration.in.progress', "Login migration in progress");
+export const LOGIN_MIGRATION_REFRESHING_LOGIN_DATA = localize('sql.login.migration.select.in.progress', "Refreshing login list from source and target");
+export function LOGIN_MIGRATION_REFRESH_LOGIN_DATA_SUCCESSFUL(numSourceLogins: number, numTargetLogins: number): string {
+	return localize('sql.login.migration.refresh.login.data.successful', "Refreshing login list was successful. Source logins found {0}, Target logins found {1}", numSourceLogins, numTargetLogins);
+}
+export const LOGIN_MIGRATION_REFRESH_SOURCE_LOGIN_DATA_FAILED = localize('sql.login.migration.refresh.source.login.data.failed', "Refreshing login list from source failed");
+export const LOGIN_MIGRATION_REFRESH_TARGET_LOGIN_DATA_FAILED = localize('sql.login.migration.refresh.target.login.data.failed', "Refreshing login list from target failed");
+export const STARTING_LOGIN_MIGRATION = localize('sql.migration.starting.login', "Validating and migrating logins are in progress");
+export const STARTING_LOGIN_MIGRATION_FAILED = localize('sql.migration.starting.login.failed', "Validating and migrating logins failed");
+export const ESTABLISHING_USER_MAPPINGS = localize('sql.login.migration.establish.user.mappings', "Validating and migrating logins completed.\n\nEstablishing user mappings.");
+export const ESTABLISHING_USER_MAPPINGS_FAILED = localize('sql.login.migration.establish.user.mappings.failed', "Establishing user mappings failed");
+export const MIGRATING_SERVER_ROLES_AND_SET_PERMISSIONS = localize('sql.login.migration.migrate.server.roles.and.set.permissions', "Establishing user mappings completed.\n\nCurrently, migrating server roles, establishing server mappings and setting permissions. This will take some time.");
+export const MIGRATING_SERVER_ROLES_AND_SET_PERMISSIONS_FAILED = localize('sql.login.migration.migrate.server.roles.and.set.permissions.failed', "Migrating server roles, establishing server mappings and setting permissions failed.");
+export const LOGIN_MIGRATIONS_COMPLETE = localize('sql.login.migration.complete', "Completed migrating logins");
+export const LOGIN_MIGRATIONS_FAILED = localize('sql.login.migration.failed', "Migrating logins failed");
+export function LOGIN_MIGRATIONS_ERROR(message: string): string {
+	return localize('sql.login.migration.error', "Login migration error: {0}", message);
+}
+export const LOGINS_FOUND = localize('sql.login.migration.logins.found', "Login found");
+export const LOGINS_NOT_FOUND = localize('sql.login.migration.logins.not.found', "Login not found");
+export const LOGIN_MIGRATION_STATUS_SUCCEEDED = localize('sql.login.migration.status.succeeded', "Succeeded");
+export const LOGIN_MIGRATION_STATUS_FAILED = localize('sql.login.migration.status.failed', "Failed");
+export const LOGIN_MIGRATION_STATUS_IN_PROGRESS = localize('sql.login.migration.status.in.progress', "In progress");
+export const LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_LABEL = localize('sql.login.migration.aad.domain.name.input.box.label', "Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)");
+export const LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_PLACEHOLDER = localize('sql.login.migration.aad.domain.name.input.box.placeholder', "Enter AAD Domain Name");
+export function LOGIN_MIGRATIONS_LOGIN_STATUS_DETAILS_TITLE(loginName: string): string {
+	return localize('sql.login.migration.login.status.details.title', "Migration status details for {0}", loginName);
+}
+export const NOT_STARTED = localize('sql.login.migration.steps.not.started', "Not started");
+export const MIGRATE_LOGINS = localize('sql.login.migration.steps.migrate.logins', "Migrate logins");
+export const ESTABLISH_USER_MAPPINGS = localize('sql.login.migration.steps.migrate.logins', "Establish user mappings");
+export const MIGRATE_SERVER_ROLES_AND_SET_PERMISSIONS = localize('sql.login.migration.steps.migrate.logins', "Migrate server roles, set login and server permissions");
+export const LOGIN_MIGRATION_COMPLETED = localize('sql.login.migration.steps.migrate.logins', "Login migration completed");
+export function COLLECTING_TARGET_LOGINS_FAILED(errorCode: number): string {
+	return localize('sql.login.migration.collecting.target.logins.failed', "Collecting target login failed with error code {0}", errorCode);
+}
+
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");
 export function AZURE_SQL_TARGET_PAGE_DESCRIPTION(targetInstance: string = 'instance'): string {
 	return localize('sql.migration.wizard.target.description', "Select an Azure account and your target {0}.", targetInstance);
 }
 
-export const AZURE_SQL_TARGET_CONNECTION_ERROR_TITLE = localize('sql.migration.wizard.connection.error.title', "An error occurred while conneting to the target server.");
+export const AZURE_SQL_TARGET_CONNECTION_ERROR_TITLE = localize('sql.migration.wizard.connection.error.title', "An error occurred while connecting to the target server.");
 export function SQL_TARGET_CONNECTION_ERROR(message: string): string {
 	return localize('sql.migration.wizard.target.connection.error', "Connection error: {0}", message);
 }
@@ -309,6 +408,11 @@ export function SQL_TARGET_CONNECTION_SUCCESS(databaseCount: string): string {
 }
 
 export const SQL_TARGET_MISSING_SOURCE_DATABASES = localize('sql.migration.wizard.source.missing', 'Connection was successful but did not find any target databases.');
+
+export function SQL_TARGET_CONNECTION_SUCCESS_LOGINS(databaseCount: string): string {
+	return localize('sql.login.migration.wizard.target.connection.success', "Connection was successful.", databaseCount);
+}
+
 export const SQL_TARGET_MAPPING_ERROR_MISSING_TARGET = localize(
 	'sql.migration.wizard.target.missing',
 	'Database mapping error. Missing target databases to migrate.  Please configure the target server connection and click connect to collect the list of available database migration targets.');
@@ -320,9 +424,10 @@ export function SQL_TARGET_CONNECTION_DUPLICATE_TARGET_MAPPING(
 ): string {
 	return localize(
 		'sql.migration.wizard.target.mapping.error.duplicate',
-		"Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.",
+		"Database mapping error. Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '{2}' is already selected as a migration target for database '{3}'.  Please select a different target database.",
 		targetDatabaseName,
 		sourceDatabaseName,
+		targetDatabaseName,
 		mappedSourceDatabaseName);
 }
 
@@ -330,9 +435,28 @@ export function SQL_TARGET_CONNECTION_DUPLICATE_TARGET_MAPPING(
 export function SQL_TARGET_CONNECTION_SOURCE_NOT_MAPPED(sourceDatabaseName: string): string {
 	return localize(
 		'sql.migration.wizard.target.source.mapping.error',
-		"Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.",
+		"Database mapping error. Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.",
 		sourceDatabaseName);
 }
+
+//`A mapping error (Error code: {0}) was found between '{1}' and '{2}' databases. The source database collation '{3}' does not match the target database collation '{4}'. Please select or re-create a target database with the same collation as the source database.`
+export function SQL_TARGET_SOURCE_COLLATION_NOT_SAME(
+	errorCode: string,
+	sourceDatabaseName: string,
+	targetDatabaseName: string,
+	sourceDatabaseCollation: string | undefined,
+	targetDatabaseCollation: string | undefined): string {
+	return localize(
+		'sql.migration.wizard.target.source.collation.error',
+		"Database mapping error (Error code: {0}) was found between '{1}' and '{2}' databases. The source database collation '{3}' does not match the target database collation '{4}'. Please select or re-create a target database with the same collation as the source database.",
+		errorCode,
+		sourceDatabaseName,
+		targetDatabaseName,
+		sourceDatabaseCollation,
+		targetDatabaseCollation);
+}
+
+export const SQL_MIGRATION_TROUBLESHOOTING_LINK = localize('sql.migration.wizard.troubleshooting', 'Learn more: https://aka.ms/dms-migrations-troubleshooting.');
 
 // Managed Instance
 export const AZURE_SQL_DATABASE_MANAGED_INSTANCE = localize('sql.migration.azure.sql.database.managed.instance', "Azure SQL Managed Instance");
@@ -395,11 +519,17 @@ export function ACCOUNT_ACCESS_ERROR(account: AzureAccount, error: Error) {
 export function MI_NOT_READY_ERROR(miName: string, state: string): string {
 	return localize('sql.migration.mi.not.ready', "The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.", miName, state);
 }
-
+export function VM_NOT_READY_IAAS_EXTENSION_ERROR(vmName: string, extensionState: string): string {
+	return localize('sql.migration.vm.not.ready.iaas.extension', "The virtual machine '{0}' is unavailable for migration because the SQL Server IaaS Agent extension is currently in '{1}' mode instead of Full mode. Learn more: https://aka.ms/sql-iaas-extension", vmName, extensionState);
+}
+export function VM_NOT_READY_POWER_STATE_ERROR(vmName: string): string {
+	return localize('sql.migration.vm.not.ready.power.state', "The virtual machine '{0}' is unavailable for migration because the underlying virtual machine is not running. Please make sure it is powered on before retrying.", vmName);
+}
 export function SQLDB_NOT_READY_ERROR(sqldbName: string, state: string): string {
 	return localize('sql.migration.sqldb.not.ready', "The SQL database server '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available SQL database server.", sqldbName, state);
 }
 
+export const SELECT_AN_TARGET_TYPE = localize('sql.migration.select.service.select.target.type.', "Select target Azure SQL Type");
 export const SELECT_AN_ACCOUNT = localize('sql.migration.select.service.select.a.', "Sign into Azure and select an account");
 export const SELECT_A_TENANT = localize('sql.migration.select.service.select.a.tenant', "Select a tenant");
 export const SELECT_A_SUBSCRIPTION = localize('sql.migration.select.service.select.a.subscription', "Select a subscription");
@@ -425,6 +555,8 @@ export const DATA_SOURCE_CONFIGURATION_PAGE_TITLE = localize('sql.migration.data
 export const DATABASE_BACKUP_PAGE_DESCRIPTION = localize('sql.migration.database.page.description', "Select the location of the database backups to use during migration.");
 export const DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL = localize('sql.migration.nc.network.share.radio.label', "My database backups are on a network share");
 export const DATABASE_BACKUP_NC_BLOB_STORAGE_RADIO_LABEL = localize('sql.migration.nc.blob.storage.radio.label', "My database backups are in an Azure Storage Blob Container");
+export const DATABASE_BACKUP_SQL_VM_PAGE_BLOB_INFO = localize('sql.migration.sql.vm.page.blob.info', "For target servers running SQL Server 2014 or below, you must store your database backups in an Azure Storage Blob Container instead of uploading them using the network share option. Additionally, you must store the backup files as page blobs, as block blobs are supported only for targets running SQL Server 2016 or later. Learn more: {0}");
+export const DATABASE_BACKUP_SQL_VM_PAGE_BLOB_URL_LABEL = localize('sql.migration.sql.vm.page.blob.url.label', "Known issues, limitations, and troubleshooting");
 export const DATABASE_BACKUP_NETWORK_SHARE_HEADER_TEXT = localize('sql.migration.network.share.header.text', "Network share details");
 export const DATABASE_BACKUP_NETWORK_SHARE_LOCATION_INFO = localize('sql.migration.network.share.location.info', "Network share path for your database backups. The migration process will automatically retrieve valid backup files from this network share.");
 export const DATABASE_BACKUP_NETWORK_SHARE_WINDOWS_USER_INFO = localize('sql.migration.network.share.windows.user.info', "Windows user account with read access to the network share location.");
@@ -441,6 +573,7 @@ export const DUPLICATE_NAME_ERROR = localize('sql.migration.unique.name', "Selec
 export function DATABASE_ALREADY_EXISTS_MI(dbName: string, targetName: string): string {
 	return localize('sql.migration.database.already.exists', "Database '{0}' already exists on the target managed instance '{1}'.", dbName, targetName);
 }
+export const DATABASE_ALREADY_EXISTS_VM_INFO = localize('sql.migration.database.already.exists.vm.info', "Ensure that the provided database name(s) do not already exist on the target SQL Server on Azure Virtual Machine.");
 export const DATABASE_BACKUP_BLOB_STORAGE_HEADER_TEXT = localize('sql.migration.blob.storage.header.text', "Azure Storage Blob Container details");
 export const DATABASE_BACKUP_BLOB_STORAGE_HELP_TEXT = localize('sql.migration.blob.storage.help.text', "Provide the Azure Storage Blob Container that contains the backups.");
 export const DATABASE_BACKUP_BLOB_STORAGE_TABLE_HELP_TEXT = localize('sql.migration.blob.storage.table.help', "Enter target database name and select resource group, storage account and container for the selected source databases.");
@@ -472,6 +605,7 @@ export const NO_STORAGE_ACCOUNT_FOUND = localize('sql.migration.no.storageAccoun
 export const NO_FILESHARES_FOUND = localize('sql.migration.no.fileShares.found', "No file shares found.");
 export const NO_BLOBCONTAINERS_FOUND = localize('sql.migration.no.blobContainers.found', "No blob containers found.");
 export const NO_BLOBFILES_FOUND = localize('sql.migration.no.blobFiles.found', "No blob files found.");
+export const NO_BLOBFOLDERS_FOUND = localize('sql.migration.no.blobFolders.found', "No blob folders found.");
 export const INVALID_SUBSCRIPTION_ERROR = localize('sql.migration.invalid.subscription.error', "To continue, select a valid subscription.");
 export const INVALID_LOCATION_ERROR = localize('sql.migration.invalid.location.error', "To continue, select a valid location.");
 export const INVALID_RESOURCE_GROUP_ERROR = localize('sql.migration.invalid.resourceGroup.error', "To continue, select a valid resource group.");
@@ -504,6 +638,12 @@ export function INVALID_BLOB_CONTAINER_ERROR(sourceDb: string): string {
 export function INVALID_BLOB_LAST_BACKUP_FILE_ERROR(sourceDb: string): string {
 	return localize('sql.migration.invalid.blob.lastBackupFile.error', "To continue, select a valid last backup file for source database '{0}'.", sourceDb);
 }
+export function INVALID_BLOB_LAST_BACKUP_FOLDER_ERROR(sourceDb: string): string {
+	return localize('sql.migration.invalid.blob.lastBackupFolder.error', "To continue, select a valid backup folder for source database '{0}'.", sourceDb);
+}
+export function INVALID_NON_PAGE_BLOB_BACKUP_FILE_ERROR(sourceDb: string): string {
+	return localize('sql.migration.invalid.non.page.blob.backupFile.error', "To continue, select a blob container where all the backup files are page blobs for source database '{0}', as block blobs are supported only for targets running SQL Server 2016 or later. Learn more: https://aka.ms/dms-migrations-troubleshooting", sourceDb);
+}
 export const INVALID_NETWORK_SHARE_LOCATION = localize('sql.migration.invalid.network.share.location', "Invalid network share location format. Example: {0}", NETWORK_SHARE_PATH_FORMAT);
 export const INVALID_USER_ACCOUNT = localize('sql.migration.invalid.user.account', "Invalid user account format. Example: {0}", WINDOWS_USER_ACCOUNT);
 export const INVALID_TARGET_NAME_ERROR = localize('sql.migration.invalid.target.name.error', "Enter a valid name for the target database.");
@@ -534,14 +674,24 @@ export function TABLE_SELECTED_COUNT(selectedCount: number, rowCount: number): s
 export function MISSING_TARGET_TABLES_COUNT(tables: number): string {
 	return localize('sql.migration.table.missing.count', "Missing target tables excluded from list: {0}", tables);
 }
-export const DATABASE_MISSING_TABLES = localize('sql.migratino.database.missing.tables', "0 tables found.");
-export const DATABASE_LOADING_TABLES = localize('sql.migratino.database.loading.tables', "Loading tables list...");
-export const TABLE_SELECTION_FILTER = localize('sql.migratino.table.selection.filter', "Filter tables");
-export const TABLE_SELECTION_UPDATE_BUTTON = localize('sql.migratino.table.selection.update.button', "Update");
-export const TABLE_SELECTION_CANCEL_BUTTON = localize('sql.migratino.table.selection.update.cancel', "Cancel");
+export const DATABASE_MISSING_TABLES = localize('sql.migration.database.missing.tables', "0 tables found.");
+export const DATABASE_LOADING_TABLES = localize('sql.migration.database.loading.tables', "Loading tables list...");
+export const TABLE_SELECTION_FILTER = localize('sql.migration.table.selection.filter', "Filter tables");
+export const TABLE_SELECTION_UPDATE_BUTTON = localize('sql.migration.table.selection.update.button', "Update");
+export const TABLE_SELECTION_CANCEL_BUTTON = localize('sql.migration.table.selection.update.cancel', "Cancel");
 
-export const TABLE_SELECTION_TABLENAME_COLUMN = localize('sql.migratino.table.selection.tablename.column', "Table name");
-export const TABLE_SELECTION_HASROWS_COLUMN = localize('sql.migratino.table.selection.status.column', "Has rows");
+export const TABLE_SELECTION_TABLENAME_COLUMN = localize('sql.migration.table.selection.tablename.column', "Table name");
+export const TABLE_SELECTION_HASROWS_COLUMN = localize('sql.migration.table.selection.status.column', "Has rows");
+
+export const VALIDATION_DIALOG_TITLE = localize('sql.migration.validation.dialog.title', "Running validation");
+export const VALIDATION_MESSAGE_SUCCESS = localize('sql.migration.validation.success', "Validation completed successfully.  Please click Next to proceed with the migration.");
+export function VALIDATION_MESSAGE_CANCELED_ERRORS(msg: string): string {
+	return localize(
+		'sql.migration.validation.canceled.errors',
+		"Validation was canceled with the following error(s):{0}{1}", EOL, msg);
+}
+export const VALIDATION_MESSAGE_CANCELED = localize('sql.migration.validation.canceled', "Validation was canceled. Please run and validate the migration settings to continue.");
+export const VALIDATION_MESSAGE_NOT_RUN = localize('sql.migration.validation.not.run', "Validation has not been run for the current configuration. Please run and validate the migration settings to continue.");
 
 // integration runtime page
 export const SELECT_RESOURCE_GROUP = localize('sql.migration.blob.resourceGroup.select', "Select a resource group.");
@@ -610,6 +760,123 @@ export const RESOURCE_GROUP_DESCRIPTION = localize('sql.migration.resource.group
 export const NAME_OF_NEW_RESOURCE_GROUP = localize('sql.migration.name.of.new.rg', "Name of new resource group");
 export const DATA_UPLOADED_INFO = localize('sql.migration.data.uploaded.info', "Comparison of the actual amount of data read from the source and the actual amount of data uploaded to the target.");
 export const COPY_THROUGHPUT_INFO = localize('sql.migration.copy.throughput.info', "Data movement throughput achieved during the migration of your database backups to Azure. This is the rate of data transfer, calculated by data read divided by duration of backups migration to Azure.");
+export const SERVICE_SELECTION_LOCATION_MESSAGE = localize('sql.migration.service.selection.location.msg', "Please select the location of your database backup files before continuing.");
+
+// Validate IR dialog
+export const VALIDATION_STATE_CANCELED = localize('sql.migration.validation.state.canceled', "Canceled");
+export const VALIDATION_STATE_PENDING = localize('sql.migration.validation.state.pending', "Pending");
+export const VALIDATION_STATE_RUNNING = localize('sql.migration.validation.state.running', "Running");
+export const VALIDATION_STATE_SUCCEEDED = localize('sql.migration.validation.state.succeeded', "Succeeded");
+export const VALIDATION_STATE_FAILED = localize('sql.migration.validation.state.failed', "Failed");
+
+export const VALIDATE_IR_DONE_BUTTON = localize('sql.migration.validate.ir.done.button', "Done");
+export const VALIDATE_IR_HEADING = localize('sql.migration.validate.ir.heading', "We are validating the following:");
+export const VALIDATE_IR_START_VALIDATION = localize('sql.migration.validate.ir.start.validation', "Start validation");
+export const VALIDATE_IR_STOP_VALIDATION = localize('sql.migration.validate.ir.stop.validation', "Stop validation");
+export const VALIDATE_IR_COPY_RESULTS = localize('sql.migration.validate.ir.copy.results', "Copy validation results");
+export const VALIDATE_IR_RESULTS_HEADING = localize('sql.migration.validate.ir.results.heading', "Validation step details");
+export const VALIDATE_IR_VALIDATION_COMPLETED = localize('sql.migration.validate.ir.validation.completed', "Validation completed successfully.");
+export const VALIDATE_IR_VALIDATION_CANCELED = localize('sql.migration.validate.ir.validation.camceled', "Validation check canceled");
+
+export function VALIDATE_IR_VALIDATION_COMPLETED_ERRORS(msg: string): string {
+	return localize(
+		'sql.migration.validate.ir.completed.errors',
+		"Validation completed with the following error(s):{0}{1}", EOL, msg);
+}
+export function VALIDATE_IR_VALIDATION_STATUS(state: string | undefined, errors?: string[]): string {
+	const status = state ?? '';
+	if (errors && errors.length > 0) {
+		return localize(
+			'sql.migration.validate.ir.status.errors',
+			"Validation status: {0}{1}{2}", status, EOL, errors.join(EOL));
+	} else {
+		return localize(
+			'sql.migration.validate.ir.status',
+			"Validation status: {0}", status);
+	}
+}
+
+export const VALIDATE_IR_ERROR_GATEWAY_TIMEOUT = localize('sql.migration.validate.error.gatewaytimeout', "A time-out was encountered while validating a resource connection. Learn more: https://aka.ms/dms-migrations-troubleshooting.");
+
+export function VALIDATE_IR_VALIDATION_STATUS_ERROR_COUNT(state: string | undefined, errorCount: number): string {
+	const status = state ?? '';
+	return errorCount > 1
+		? localize(
+			'sql.migration.validate.ir.status.error.count.many',
+			"{0} - {1} errors",
+			status,
+			errorCount)
+		: localize(
+			'sql.migration.validate.ir.status.error.count.one',
+			"{0} - 1 error",
+			status);
+}
+
+export function VALIDATE_IR_VALIDATION_STATUS_ERROR(state: string | undefined, errors: string[]): string {
+	const status = state ?? '';
+	return localize(
+		'sql.migration.validate.ir.status.error',
+		"{0}{1}{2}",
+		status,
+		EOL,
+		errors.join(EOL));
+}
+
+export const VALIDATE_IR_COLUMN_VALIDATION_STEPS = localize('sql.migration.validate.ir.column.validation.steps', "Validation steps");
+export const VALIDATE_IR_COLUMN_STATUS = localize('sql.migration.validate.ir.column.status', "Status");
+export const VALIDATE_IR_VALIDATION_RESULT_LABEL_SHIR = localize('sql.migration.validate.ir.validation.result.label.shir', "Integration runtime connectivity");
+export const VALIDATE_IR_VALIDATION_RESULT_LABEL_STORAGE = localize('sql.migration.validate.ir.validation.result.label.storage', "Azure storage connectivity");
+
+export function VALIDATE_IR_VALIDATION_RESULT_LABEL_SOURCE_DATABASE(databaseName: string): string {
+	return localize(
+		'sql.migration.validate.ir.validation.result.label.source.database',
+		"Source database connectivity: '{0}'", databaseName);
+}
+
+export function VALIDATE_IR_VALIDATION_RESULT_LABEL_NETWORK_SHARE(shareName: string): string {
+	return localize(
+		'sql.migration.validate.ir.validation.result.label.networkshare',
+		"Network share connectivity: '{0}' ", shareName);
+}
+
+export function VALIDATE_IR_VALIDATION_RESULT_LABEL_TARGET_DATABASE(databaseName: string): string {
+	return localize(
+		'sql.migration.validate.ir.validation.result.label.target.database',
+		"Target database connectivity: '{0}'", databaseName);
+}
+
+export function VALIDATE_IR_VALIDATION_RESULT_API_ERROR(databaseName: string, error: Error): string {
+	return localize(
+		'sql.migration.validate.ir.validation.result.api.error',
+		"Validation check error{0}Database:{1}{0}Error: {2} - {3}",
+		EOL,
+		databaseName,
+		error.name,
+		error.message);
+}
+
+export function VALIDATE_IR_VALIDATION_RESULT_ERROR(sourceDatabaseName: string, networkShareLocation: string, error: ValidationError): string {
+	return localize(
+		'sql.migration.validate.ir.validation.result.error',
+		"Validation check error{0}Source database: {1}{0}File share path: {2}{0}Error: {3} - {4}",
+		EOL,
+		sourceDatabaseName,
+		networkShareLocation,
+		error.code,
+		error.message);
+}
+
+export function VALIDATE_IR_SQLDB_VALIDATION_RESULT_ERROR(sourceDatabaseName: string, targetDatabaseName: string, error: ValidationError,): string {
+	return localize(
+		'sql.migration.validate.ir.sqldb.validation.result.error',
+		"Validation check error{0}Source database: {1}{0}Target database: {2}{0}Error: {3} - {4}",
+		EOL,
+		sourceDatabaseName,
+		targetDatabaseName,
+		error.code,
+		error.message);
+}
+
 // common strings
 export const WARNING = localize('sql.migration.warning', "Warning");
 export const ERROR = localize('sql.migration.error', "Error");
@@ -648,6 +915,7 @@ export const NETWORK_SHARE = localize('sql.migration.network.share', "Network sh
 export const NETWORK_SHARE_PATH = localize('sql.migration.network.share.path', "Network share path");
 export const BLOB_CONTAINER = localize('sql.migration.blob.container.title', "Blob container");
 export const BLOB_CONTAINER_LAST_BACKUP_FILE = localize('sql.migration.blob.container.last.backup.file.label', "Last backup file");
+export const BLOB_CONTAINER_FOLDER = localize('sql.migration.blob.container.folder.label', "Folder");
 export const BLOB_CONTAINER_RESOURCE_GROUP = localize('sql.migration.blob.container.label', "Blob container resource group");
 export const BLOB_CONTAINER_STORAGE_ACCOUNT = localize('sql.migration.blob.container.storage.account.label', "Blob container storage account");
 export const SOURCE_DATABASES = localize('sql.migration.source.databases', "Source databases");
@@ -677,6 +945,8 @@ export const DASHBOARD_TITLE = localize('sql.migration.dashboard.title', "Azure 
 export const DASHBOARD_DESCRIPTION = localize('sql.migration.dashboard.description', "Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database.");
 export const DASHBOARD_MIGRATE_TASK_BUTTON_TITLE = localize('sql.migration.dashboard.migrate.task.button', "Migrate to Azure SQL");
 export const DASHBOARD_MIGRATE_TASK_BUTTON_DESCRIPTION = localize('sql.migration.dashboard.migrate.task.button.description', "Migrate a SQL Server instance to Azure SQL.");
+export const DASHBOARD_LOGIN_MIGRATE_TASK_BUTTON_TITLE = localize('sql.migration.dashboard.login.migrate.task.button', "Migrate logins to Azure SQL");
+export const DASHBOARD_LOGIN_MIGRATE_TASK_BUTTON_DESCRIPTION = localize('sql.migration.dashboard.login.migrate.task.button.description', "Migrate SQL Server logins to Azure SQL.");
 export const DATABASE_MIGRATION_STATUS = localize('sql.migration.database.migration.status', "Database migration status");
 export const HELP_TITLE = localize('sql.migration.dashboard.help.title', "Help articles and video links");
 export const PRE_REQ_TITLE = localize('sql.migration.pre.req.title', "Things you need before starting your Azure SQL migration:");
@@ -797,6 +1067,12 @@ export const OFFLINE = localize('sql.migration.offline', "Offline");
 export const DATABASE = localize('sql.migration.database', "Database");
 export const SRC_DATABASE = localize('sql.migration.src.database', "Source database");
 export const SRC_SERVER = localize('sql.migration.src.server', "Source name");
+export const SOURCE_LOGIN = localize('sql.migration.source.login', "Source login");
+export const LOGIN_TYPE = localize('sql.login.migration.type', "Login type");
+export const DEFAULT_DATABASE = localize('sql.migration.default.database', "Default database");
+export const LOGIN_STATUS_COLUMN = localize('sql.login.migration.status.column', "Status");
+export const LOGIN_TARGET_STATUS_COLUMN = localize('sql.login.migration.target.status.column', "Target Status");
+export const LOGIN_MIGRATION_STATUS_COLUMN = localize('sql.login.migration.migration.status.column', "Migration Status");
 
 export const STATUS_COLUMN = localize('sql.migration.database.status.column', "Migration status");
 export const DATABASE_MIGRATION_SERVICE = localize('sql.migration.database.migration.service', "Database Migration Service");
@@ -985,6 +1261,12 @@ export function DATABASES(selectedCount: number, totalCount: number): string {
 export function DATABASES_SELECTED(selectedCount: number, totalCount: number): string {
 	return localize('sql.migration.databases.selected', "{0}/{1} databases selected", selectedCount, totalCount);
 }
+export function LOGINS_SELECTED(selectedCount: number, totalCount: number): string {
+	return localize('sql.login.migrations.selected', "{0}/{1} logins selected", selectedCount, totalCount);
+}
+export function NUMBER_LOGINS_MIGRATING(displayedMigratingCount: number, totalMigratingCount: number): string {
+	return localize('sql.migration.number.logins.migrating', "{0}/{1} migrating logins displayed", displayedMigratingCount, totalMigratingCount);
+}
 export function ISSUES_COUNT(totalCount: number): string {
 	return localize('sql.migration.issues.count', "Issues ({0})", totalCount);
 }
@@ -1026,6 +1308,8 @@ export const MIGRATION_SERVICE_DESCRIPTION = localize('sql.migration.select.serv
 // Desktop tabs
 export const DESKTOP_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.button.migration.label', 'New migration');
 export const DESKTOP_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.migration.description', 'Migrate to Azure SQL');
+export const DESKTOP_LOGIN_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.button.login.migration.label', 'New login migration (PREVIEW)');
+export const DESKTOP_LOGIN_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.login.migration.description', 'Migrate logins to Azure SQL');
 export const DESKTOP_SUPPORT_BUTTON_LABEL = localize('sql.migration.tab.button.support.label', 'New support request');
 export const DESKTOP_SUPPORT_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.support.description', 'New support request');
 export const DESKTOP_FEEDBACK_BUTTON_LABEL = localize('sql.migration.tab.button.feedback.label', 'Feedback');
@@ -1040,8 +1324,8 @@ export const DASHBOARD_HELP_LINK_MI_TUTORIAL = localize('sql.migration.dashboard
 export const DASHBOARD_HELP_DESCRIPTION_MI_TUTORIAL = localize('sql.migration.dashboard.help.description.mi', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Managed Instance with minimal downtime.');
 export const DASHBOARD_HELP_LINK_VM_TUTORIAL = localize('sql.migration.dashboard.help.link.vm', 'Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)');
 export const DASHBOARD_HELP_DESCRIPTION_VMTUTORIAL = localize('sql.migration.dashboard.help.description.vm', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.');
-export const DASHBOARD_HELP_LINK_SQLDB_TUTORIAL = localize('sql.migration.dashboard.help.link.sqldb', 'Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)');
-export const DASHBOARD_HELP_DESCRIPTION_SQLDBTUTORIAL = localize('sql.migration.dashboard.help.description.sqldb', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).');
+export const DASHBOARD_HELP_LINK_SQLDB_TUTORIAL = localize('sql.migration.dashboard.help.link.sqldb', 'Tutorial:  Migrate to SQL Server on Azure SQL Database (offline)');
+export const DASHBOARD_HELP_DESCRIPTION_SQLDBTUTORIAL = localize('sql.migration.dashboard.help.description.sqldb', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database.');
 export const DASHBOARD_HELP_LINK_DMS_GUIDE = localize('sql.migration.dashboard.help.link.dmsGuide', 'Azure Database Migration Guides');
 export const DASHBOARD_HELP_DESCRIPTION_DMS_GUIDE = localize('sql.migration.dashboard.help.description.dmsGuide', 'A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.');
 
@@ -1051,6 +1335,10 @@ export const TABLE_MIGRATION_STATUS_TITLE = localize('sql.migration.table.error.
 
 export function DATABASE_MIGRATION_STATUS_LABEL(status?: string): string {
 	return localize('sql.migration.database.migration.status.label', 'Database migration status: {0}', status ?? '');
+}
+
+export function LOGIN_MIGRATION_STATUS_LABEL(status?: string): string {
+	return localize('sql.migration.database.migration.status.label', 'Login migration status: {0}', status ?? '');
 }
 
 export function TABLE_MIGRATION_STATUS_LABEL(status?: string): string {
@@ -1067,3 +1355,126 @@ export const SQLDB_COL_COPY_DURATION = localize('sql.migration.sqldb.column.copy
 export const SQLDB_COL_PARRALEL_COPY_TYPE = localize('sql.migration.sqldb.column.parallelcopytype', 'Parallel copy type');
 export const SQLDB_COL_USED_PARALLEL_COPIES = localize('sql.migration.sqldb.column.usedparallelcopies', 'Used parallel copies');
 export const SQLDB_COL_COPY_START = localize('sql.migration.sqldb.column.copystart', 'Copy start');
+
+// Multi Step Status Dialog
+export const COPY_RESULTS = localize('sql.migration.multi.step.status.dialog.copy.results', "Copy results");
+export const MULTI_STEP_RESULTS_HEADING = localize('sql.migration.multi.step.status.dialog.heading', "Step details");
+export const STEPS_TITLE = localize('sql.migration.multi.step.status.steps.title', "Steps");
+export const RUNNING_MULTI_STEPS_HEADING = localize('sql.migration.running.multi.steps.heading', "We are running the following steps:");
+export const COMPLETED_MULTI_STEPS_HEADING = localize('sql.migration.completed.multi.steps.heading', "We ran the following steps:");
+export const SOME_STEPS_ARE_STILL_RUNNING = localize('sql.migration.multi.step.some.steps.are.still.running', "Some steps are still running.");
+export const ALL_STEPS_SUCCEEDED = localize('sql.migration.multi.step.all.steps.succeeded', "All steps succeeded.");
+export function ALL_STEPS_COMPLETED_ERRORS(msg: string): string {
+	return localize(
+		'sql.migration.multi.step.all.steps.completed.errors',
+		"All steps completed with the following error(s):{0}{1}", EOL, msg);
+}
+export function RESULTS_INFO_BOX_STATUS(state: string | undefined, errors?: string[]): string {
+	const status = state ?? '';
+	if (errors && errors.length > 0) {
+		return localize(
+			'sql.migration.multi.step.status.errors',
+			"Step status: {0}{1}{2}", status, EOL, errors.join(EOL));
+	} else {
+		return localize(
+			'sql.migration.multi.step.status',
+			"Step status: {0}", status);
+	}
+}
+
+
+//TDE Configuration Dialog
+export const TDE_WIZARD_TITLE = localize('sql.migration.tde.wizard.title', "Encrypted database selected.");
+export const TDE_WIZARD_DESCRIPTION = localize('sql.migration.tde.wizard.description', "To migrate an encrypted database successfully you need to provide access to the encryption certificates or migrate certificates manually before proceeding with the migration. {0}.");
+export const TDE_WIZARD_MIGRATION_CAPTION = localize('sql.migration.tde.wizard.optionscaption', "Certificate migration");
+export const TDE_WIZARD_MIGRATION_OPTION_ADS = localize('sql.migration.tde.wizard.optionads', "Export my certificates and private key to the target.");
+export const TDE_WIZARD_MIGRATION_OPTION_ADS_CONFIRM = localize('sql.migration.tde.wizard.optionadsconfirm', "I give consent to use my credentials for accessing the certificates.");
+export const TDE_WIZARD_MIGRATION_OPTION_MANUAL = localize('sql.migration.tde.wizard.optionmanual', "I don't want Azure Data Studio to export the certificates.");
+export const TDE_BUTTON_CAPTION = localize('sql.migration.tde.button.caption', "Edit");
+export const TDE_WIZARD_MSG_MANUAL = localize('sql.migration.tde.msg.manual', "You have chosen to manually migrate certificates.");
+export const TDE_WIZARD_MSG_TDE = localize('sql.migration.tde.msg.tde', "You have given access to Azure Data Studio to migrate the encryption certificates and database.");
+export const TDE_WIZARD_MSG_EMPTY = localize('sql.migration.tde.msg.empty', "No encrypted database selected.");
+
+export function TDE_MIGRATION_ERROR(message: string): string {
+	return localize('sql.migration.starting.migration.error', "An error occurred while starting the certificate migration: '{0}'", message);
+}
+
+export function TDE_MIGRATION_ERROR_DB(name: string, message: string): string {
+	return localize('sql.migration.starting.migration.dberror', "Error migrating certificate for database {0}. {1}", name, message);
+}
+
+export function TDE_MSG_DATABASES_SELECTED(selected: number, message: string): string {
+	return localize('sql.migration.tde.msg.databases.selected', "{0} Transparent Data Encryption enabled databases selected for migration. {1}", selected, message);
+}
+
+export function TDE_WIZARD_DATABASES_SELECTED(encryptedCount: number, totalCount: number): string {
+	return localize('sql.migration.tde.wizard.databases.selected', "{0} out of {1} selected database(s) is using transparent data encryption.", encryptedCount, totalCount);
+}
+
+
+export const TDE_WIZARD_MIGRATION_OPTION_MANUAL_WARNING = localize('sql.migration.tde.wizard.optionmanual.warning', "You must migrate the certificates before proceeding with the migration otherwise the migration will fail. {0}.");
+
+export const TDE_WIZARD_ADS_CERTS_INFO = localize('sql.migration.network.share.header.text', "Please enter a location where the SQL Server will export the certificates. Also verify that SQL Server service has write access to this path and the current user should have administrator privileges on the computer where this network path is.");
+
+export const TDE_WIZARD_CERTS_NETWORK_SHARE_LABEL = localize('sql.migration.tde.wizard.network.share.label', "Network path for certificate");
+export const TDE_WIZARD_CERTS_NETWORK_SHARE_PLACEHOLDER = localize('sql.migration.tde.wizard.network.share.placeholder', "Enter network path");
+export const TDE_WIZARD_CERTS_NETWORK_SHARE_INFO = localize('sql.migration.tde.wizard.network.share.info', "Network path where certificate will be placed.");
+
+export const TDE_MIGRATE_BUTTON = localize('sql.migration.tde.button.migrate', "Migrate certificates");
+
+
+export const STATE_CANCELED = localize('sql.migration.state.canceled', "Canceled");
+export const STATE_PENDING = localize('sql.migration.state.pending', "Pending");
+export const STATE_RUNNING = localize('sql.migration.state.running', "Running");
+export const STATE_SUCCEEDED = localize('sql.migration.state.succeeded', "Succeeded");
+export const STATE_FAILED = localize('sql.migration.state.failed', "Failed");
+
+export const TDE_MIGRATEDIALOG_TITLE = localize('sql.migration.validation.dialog.title', "Certificates Migration");
+export const TDE_MIGRATE_DONE_BUTTON = localize('sql.migration.tde.migrate.done.button', "Done");
+export const TDE_MIGRATE_HEADING = localize('sql.migration.tde.migrate.heading', "Migrating the certificates from the following databases:");
+
+
+export const TDE_MIGRATE_COLUMN_DATABASES = localize('sql.migration.tde.migrate.column.databases', "Databases");
+export const TDE_MIGRATE_COLUMN_STATUS = localize('sql.migration.tde.migrate.column.status', "Status");
+export const TDE_MIGRATE_RETRY_VALIDATION = localize('sql.migration.tde.migrate.start.validation', "Retry migration");
+export const TDE_MIGRATE_COPY_RESULTS = localize('sql.migration.tde.migrate.copy.results', "Copy migration results");
+export const TDE_MIGRATE_RESULTS_HEADING = localize('sql.migration.tde.migrate.results.heading', "Certificates migration progress details:");
+export const TDE_MIGRATE_RESULTS_HEADING_PREVIOUS = localize('sql.migration.tde.migrate.results.heading.previous', "Previous certificates migration results:");
+export const TDE_MIGRATE_RESULTS_HEADING_COMPLETED = localize('sql.migration.tde.migrate.results.heading.completed', "Certificates migration results:");
+export const TDE_MIGRATE_VALIDATION_COMPLETED = localize('sql.migration.tde.migrate.validation.completed', "Migration completed successfully.");
+export const TDE_MIGRATE_VALIDATION_CANCELED = localize('sql.migration.tde.migrate.validation.camceled', "Migration canceled");
+
+export function TDE_MIGRATE_VALIDATION_COMPLETED_ERRORS(msg: string): string {
+	return localize(
+		'sql.migration.tde.migrate.completed.errors',
+		"Migration completed with the following error(s):{0}{1}", EOL, msg);
+}
+export function TDE_MIGRATE_VALIDATION_STATUS(state: string | undefined, errors: string): string {
+	const status = state ?? '';
+	return localize(
+		'sql.migration.tde.migrate.status.details',
+		"Migration status: {0}{1}{2}", status, EOL, errors);
+}
+
+export const TDE_MIGRATE_MESSAGE_SUCCESS = localize('sql.migration.tde.migrate.success', "Certificates migration completed successfully.  Please click Next to proceed with the migration.");
+export function TDE_MIGRATE_MESSAGE_CANCELED_ERRORS(msg: string): string {
+	return localize(
+		'sql.migration.tde.migrate.canceled.errors',
+		"Validation was canceled with the following error(s):{0}{1}", EOL, msg);
+}
+export const TDE_MIGRATE_MESSAGE_CANCELED = localize('sql.migration.tde.migrate.canceled', "Certificates migration was canceled. Please run and complete the certificates migration to continue.");
+export const TDE_MIGRATE_MESSAGE_NOT_RUN = localize('sql.migration.tde.migrate.not.run', "Certificates migration has not been run for the current configuration. Please run and complete the certificates migration to continue.");
+
+export function TDE_MIGRATE_STATUS_ERROR(state: string, error: string): string {
+	const status = state ?? '';
+	return localize(
+		'sql.migration.tde.migrate.status.error',
+		"{0}{1}{2}",
+		status,
+		EOL,
+		error);
+}
+
+export function TDE_COMPLETED_STATUS(completed: number, total: number): string {
+	return localize('sql.migration.tde.progress.update', "{0} of {1} completed", completed, total);
+}

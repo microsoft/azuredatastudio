@@ -21,6 +21,7 @@ import { ExtensionContextHelper } from './common/extensionContextHelper';
 import { BookTreeItem } from './book/bookTreeItem';
 import Logger from './common/logger';
 import { sendNotebookActionEvent, NbTelemetryView, NbTelemetryAction } from './telemetry';
+import { TelemetryReporter } from './telemetry';
 
 const localize = nls.loadMessageBundle();
 
@@ -85,9 +86,6 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		return dialog.createDialog();
 	}));
 
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', async (options?: azdata.nb.NotebookShowOptions) => {
-		return appContext.notebookUtils.newNotebook(options);
-	}));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.open', async () => {
 		await appContext.notebookUtils.openNotebook();
 	}));
@@ -131,9 +129,6 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addtext', async () => {
 		await appContext.notebookUtils.addCell('markdown');
 	}));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.analyzeNotebook', async (explorerContext: azdata.ObjectExplorerContext) => {
-		await appContext.notebookUtils.analyzeNotebook(explorerContext);
-	}));
 	extensionContext.subscriptions.push(vscode.window.registerUriHandler(new NotebookUriHandler()));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('books.command.openLocalizedBooks', async () => {
@@ -167,22 +162,23 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	const pinnedBookTreeViewProvider = appContext.pinnedBookTreeViewProvider;
 	await pinnedBookTreeViewProvider.initialized;
 
-	azdata.nb.onDidChangeActiveNotebookEditor(e => {
+	extensionContext.subscriptions.push(azdata.nb.onDidChangeActiveNotebookEditor(e => {
 		if (e.document.uri.scheme === 'untitled') {
 			void providedBookTreeViewProvider.revealDocumentInTreeView(e.document.uri, false, false);
 		} else {
 			void bookTreeViewProvider.revealDocumentInTreeView(e.document.uri, false, false);
 		}
-	});
+	}));
 
-	azdata.nb.onDidOpenNotebookDocument(async e => {
+	extensionContext.subscriptions.push(azdata.nb.onDidOpenNotebookDocument(async e => {
 		if (e.uri.scheme === 'untitled') {
 			await vscode.commands.executeCommand(BuiltInCommands.SetContext, unsavedBooksContextKey, true);
 		} else {
 			await vscode.commands.executeCommand(BuiltInCommands.SetContext, unsavedBooksContextKey, false);
 		}
-	});
+	}));
 
+	extensionContext.subscriptions.push(TelemetryReporter);
 	return {
 		getJupyterController() {
 			return controller;

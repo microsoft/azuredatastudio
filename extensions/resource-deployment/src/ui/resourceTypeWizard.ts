@@ -5,12 +5,10 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { DeploymentProvider, InitialVariableValues, instanceOfAzureSQLDBDeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWizardDeploymentProvider, ResourceType, ResourceTypeOptionValue } from '../interfaces';
-import { DeployClusterWizardModel } from './deployClusterWizard/deployClusterWizardModel';
+import { DeploymentProvider, InitialVariableValues, instanceOfAzureSQLDBDeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, ResourceType, ResourceTypeOptionValue } from '../interfaces';
 import { DeployAzureSQLVMWizardModel } from './deployAzureSQLVMWizard/deployAzureSQLVMWizardModel';
 import { WizardPageInfo } from './wizardPageInfo';
 import { IKubeService } from '../services/kubeService';
-import { IAzdataService } from '../services/azdataService';
 import { INotebookService } from '../services/notebookService';
 import { IToolsService } from '../services/toolsService';
 import { IPlatformService } from '../services/platformService';
@@ -55,7 +53,6 @@ export class ResourceTypeWizard {
 	constructor(
 		public resourceType: ResourceType,
 		public _kubeService: IKubeService,
-		public azdataService: IAzdataService,
 		public notebookService: INotebookService,
 		public toolsService: IToolsService,
 		public platformService: IPlatformService,
@@ -124,9 +121,7 @@ export class ResourceTypeWizard {
 
 
 	private getResourceProviderModel(): ResourceTypeModel {
-		if (instanceOfWizardDeploymentProvider(this.provider)) {
-			return new DeployClusterWizardModel(this.provider, this);
-		} else if (instanceOfAzureSQLVMDeploymentProvider(this.provider)) {
+		if (instanceOfAzureSQLVMDeploymentProvider(this.provider)) {
 			return new DeployAzureSQLVMWizardModel(this.provider, this);
 		} else if (instanceOfNotebookWizardDeploymentProvider(this.provider)) {
 			return new NotebookWizardModel(this.provider, this);

@@ -181,9 +181,9 @@ array-uniq@^1.0.2:
   resolved "https://registry.yarnpkg.com/array-uniq/-/array-uniq-1.0.3.tgz#af6ac877a25cc7f74e058894753858dfdb24fdb6"
   integrity sha512-MNha4BWQ6JbwhFhj03YK552f7cb3AzoE8SzeljgChvL1dl3IcvggXVz1DilzySZkCja+CXuZbdW7yATchWn8/Q==
 
-"azdataGraph@github:Microsoft/azdataGraph#0.0.57":
-  version "0.0.57"
-  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/911884b2b347fcdc1d69a17207cec18940c6fb47"
+"azdataGraph@github:Microsoft/azdataGraph#0.0.58":
+  version "0.0.58"
+  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/45c88554e98ed3b41cd283a672bd497af08c7ac3"
 
 chalk@^2.3.0, chalk@^2.4.1:
   version "2.4.2"
@@ -329,11 +329,6 @@ jschardet@3.0.0:
   resolved "https://registry.yarnpkg.com/jschardet/-/jschardet-3.0.0.tgz#898d2332e45ebabbdb6bf2feece9feea9a99e882"
   integrity sha512-lJH6tJ77V8Nzd5QWRkFYCLc13a3vADkh3r/Fi8HupZGWk2OVVDfnZP8V/VgQgZ+lzW0kG2UGb5hFgt3V3ndotQ==
 
-kburtram-query-plan@2.6.1:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/kburtram-query-plan/-/kburtram-query-plan-2.6.1.tgz#6b86128ec30c53694b53c4ee0e32d64350eb0c2c"
-  integrity sha512-7Brjwp0YOCGug1cmfvcG8s1kN4MOwiLgOmKWS0+QSq5qCH9Bcv78vKAI7Pq1Ro6rTbpiTIRITsFKYrF4XTVlQw==
-
 lodash.clonedeep@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
@@ -442,9 +437,9 @@ semver-umd@^5.5.7:
   resolved "https://registry.yarnpkg.com/semver-umd/-/semver-umd-5.5.7.tgz#966beb5e96c7da6fbf09c3da14c2872d6836c528"
   integrity sha512-XgjPNlD0J6aIc8xoTN6GQGwWc2Xg0kq8NzrqMVuKG/4Arl6ab1F8+Am5Y/XKKCR+FceFr2yN/Uv5ZJBhRyRqKg==
 
-"slickgrid@github:Microsoft/SlickGrid.ADS#2.3.39":
-  version "2.3.39"
-  resolved "https://codeload.github.com/Microsoft/SlickGrid.ADS/tar.gz/4ead9291ec4aab107767940ab0a6eac1455e0627"
+"slickgrid@github:Microsoft/SlickGrid.ADS#2.3.42":
+  version "2.3.42"
+  resolved "https://codeload.github.com/Microsoft/SlickGrid.ADS/tar.gz/29021c4410512d0d644a3b8eb5115bc84ed277e9"
 
 source-map@^0.6.1:
   version "0.6.1"

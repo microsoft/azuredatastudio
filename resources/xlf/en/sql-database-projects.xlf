@@ -13,6 +13,9 @@
     <trans-unit id="InProgress">
       <source xml:lang="en">In progress</source>
     </trans-unit>
+    <trans-unit id="Move">
+      <source xml:lang="en">Move</source>
+    </trans-unit>
     <trans-unit id="PublishHistory">
       <source xml:lang="en">Publish History</source>
     </trans-unit>
@@ -185,7 +188,7 @@
       <source xml:lang="en">dacpac Files</source>
     </trans-unit>
     <trans-unit id="dacpacNotOnSameDrive">
-      <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
+      <source xml:lang="en">Dacpac references need to be located on the same drive as the project file.</source>
     </trans-unit>
     <trans-unit id="dacpacReferenceElement">
       <source xml:lang="en">Dacpac reference</source>
@@ -201,9 +204,6 @@
     </trans-unit>
     <trans-unit id="dataSourceRadioButtonLabel">
       <source xml:lang="en">Data sources</source>
-    </trans-unit>
-    <trans-unit id="dataSourcesNodeName">
-      <source xml:lang="en">Data Sources</source>
     </trans-unit>
     <trans-unit id="databaseLocation">
       <source xml:lang="en">Database location is required for adding a reference to a database</source>
@@ -267,6 +267,9 @@
     </trans-unit>
     <trans-unit id="deleteReferenceConfirmation">
       <source xml:lang="en">Are you sure you want to delete the reference to {0}?</source>
+    </trans-unit>
+    <trans-unit id="deleteSqlCmdVariableConfirmation">
+      <source xml:lang="en">Are you sure you want to delete the SQLCMD Variable '{0}'?</source>
     </trans-unit>
     <trans-unit id="deployAppSettingUpdateFailed">
       <source xml:lang="en">Failed to update app setting '{0}'</source>
@@ -376,6 +379,15 @@
     <trans-unit id="enterNewDatabaseName">
       <source xml:lang="en">Enter new database name</source>
     </trans-unit>
+    <trans-unit id="enterNewName">
+      <source xml:lang="en">Enter new name</source>
+    </trans-unit>
+    <trans-unit id="enterNewSqlCmdVariableDefaultValue">
+      <source xml:lang="en">Enter default value for SQLCMD variable '{0}'</source>
+    </trans-unit>
+    <trans-unit id="enterNewSqlCmdVariableName">
+      <source xml:lang="en">Enter new SQLCMD Variable name</source>
+    </trans-unit>
     <trans-unit id="enterNewValueForVar">
       <source xml:lang="en">Enter new value for variable '{0}'</source>
     </trans-unit>
@@ -403,8 +415,14 @@
     <trans-unit id="errorFindingBuildFilesLocation">
       <source xml:lang="en">Error finding build files location: {0}</source>
     </trans-unit>
+    <trans-unit id="errorMovingFile">
+      <source xml:lang="en">Error when moving file from {0} to {1}. Error: {2}</source>
+    </trans-unit>
     <trans-unit id="errorReadingProjectGuid">
       <source xml:lang="en">Error trying to read {0} of project '{1}'</source>
+    </trans-unit>
+    <trans-unit id="errorRenamingFile">
+      <source xml:lang="en">Error when renaming file from {0} to {1}. Error: {2}</source>
     </trans-unit>
     <trans-unit id="errorRetrievingBuildFiles">
       <source xml:lang="en">Could not build project. Error retrieving files needed to build.</source>
@@ -555,6 +573,12 @@
     <trans-unit id="missingVersion">
       <source xml:lang="en">Missing 'version' entry in {0}</source>
     </trans-unit>
+    <trans-unit id="moveConfirmationPrompt">
+      <source xml:lang="en">Are you sure you want to move {0} to {1}?</source>
+    </trans-unit>
+    <trans-unit id="movingFilesBetweenProjectsNotSupported">
+      <source xml:lang="en">Moving files between projects is not supported</source>
+    </trans-unit>
     <trans-unit id="msec">
       <source xml:lang="en">msec</source>
     </trans-unit>
@@ -620,6 +644,9 @@
     </trans-unit>
     <trans-unit id="okString">
       <source xml:lang="en">Ok</source>
+    </trans-unit>
+    <trans-unit id="onlyMoveSqlFilesSupported">
+      <source xml:lang="en">Only moving .sql files is supported</source>
     </trans-unit>
     <trans-unit id="openEulaString">
       <source xml:lang="en">Open License Agreement</source>
@@ -714,6 +741,9 @@
     <trans-unit id="publishOptions">
       <source xml:lang="en">Publish Options</source>
     </trans-unit>
+    <trans-unit id="publishProfileElements">
+      <source xml:lang="en">Publish profile elements</source>
+    </trans-unit>
     <trans-unit id="publishProjectSucceed">
       <source xml:lang="en">Database project published successfully</source>
     </trans-unit>
@@ -739,7 +769,7 @@
       <source xml:lang="en">Publish to an existing {0}</source>
     </trans-unit>
     <trans-unit id="publishToNewAzureServer">
-      <source xml:lang="en">Publish to new Azure SQL logical server</source>
+      <source xml:lang="en">Publish to new Azure SQL logical server (Preview)</source>
     </trans-unit>
     <trans-unit id="publishToNewAzureServerFailed">
       <source xml:lang="en">Failed to publish to new Azure SQL server. {0}</source>
@@ -898,13 +928,13 @@
       <source xml:lang="en">SQL connection string</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.DotnetInstallationConfirmation">
-      <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.</source>
+      <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK location in settings if already installed.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.Install">
       <source xml:lang="en">Install</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
-      <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.</source>
+      <source xml:lang="en">Currently installed .NET SDK version is {0}, which is not supported. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK supported version location in settings if already installed.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.UpdateDotnetLocation">
       <source xml:lang="en">Update Location</source>
@@ -914,6 +944,12 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.outputChannel">
       <source xml:lang="en">Database Projects</source>
+    </trans-unit>
+    <trans-unit id="sqlcmdVariableAlreadyExists">
+      <source xml:lang="en">A SQLCMD Variable with the same name already exists in this project</source>
+    </trans-unit>
+    <trans-unit id="sqlcmdVariablesNodeName">
+      <source xml:lang="en">SQLCMD Variables</source>
     </trans-unit>
     <trans-unit id="storedProcedureFriendlyName">
       <source xml:lang="en">Stored Procedure</source>
@@ -1038,6 +1074,9 @@
     <trans-unit id="sqlDatabaseProjects.addExistingItem">
       <source xml:lang="en">Add Existing Item...</source>
     </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.addSqlCmdVariable">
+      <source xml:lang="en">Add SQLCMD Variable</source>
+    </trans-unit>
     <trans-unit id="sqlDatabaseProjects.autorestSqlVersion">
       <source xml:lang="en">Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.</source>
     </trans-unit>
@@ -1071,20 +1110,26 @@
     <trans-unit id="sqlDatabaseProjects.dotnetInstallLocation">
       <source xml:lang="en">Full path to .NET SDK on the machine. For example, if dotnet.exe is located at C:\folder1\dotnet\dotnet.exe, set the path for this setting to C:\folder1\dotnet</source>
     </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.edit">
+      <source xml:lang="en">Edit</source>
+    </trans-unit>
     <trans-unit id="sqlDatabaseProjects.editProjectFile">
       <source xml:lang="en">Edit .sqlproj File</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.enablePreviewFeatures">
+      <source xml:lang="en">Enable preview SQL Database Projects features</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.exclude">
       <source xml:lang="en">Exclude from project</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.generateProjectFromOpenApiSpec">
-      <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec</source>
+      <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec (Preview)</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.microsoftBuildSqlVersion">
-      <source xml:lang="en">Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.3-preview</source>
+      <source xml:lang="en">Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.7-preview</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
-      <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
+      <source xml:lang="en">Whether to prompt the user to install .NET SDK when not detected.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.new">
       <source xml:lang="en">New Database Project</source>
@@ -1133,6 +1178,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.publish">
       <source xml:lang="en">Publish</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.rename">
+      <source xml:lang="en">Rename</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.schemaCompare">
       <source xml:lang="en">Schema Compare</source>

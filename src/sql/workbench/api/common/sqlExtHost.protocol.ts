@@ -18,7 +18,8 @@ import {
 	IModelViewWizardDetails, IModelViewWizardPageDetails, IExecuteManagerDetails, INotebookSessionDetails,
 	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, INotebookEditOperation,
 	NotebookChangeKind,
-	ISerializationManagerDetails
+	ISerializationManagerDetails,
+	IErrorDialogOptions
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
@@ -66,6 +67,11 @@ export abstract class ExtHostDataProtocolShape {
 	 * Disconnect from a data source using the provided connectionUri string.
 	 */
 	$disconnect(handle: number, connectionUri: string): Thenable<boolean> { throw ni(); }
+
+	/**
+	 * Changes password of the connection profile's user.
+	 */
+	$changePassword(handle: number, connectionUri: string, connection: azdata.ConnectionInfo, newPassword: string): Thenable<azdata.PasswordChangeResult> { throw ni(); }
 
 	/**
 	 * Cancel a connection to a data source using the provided connectionUri string.
@@ -599,7 +605,16 @@ export abstract class ExtHostResourceProviderShape {
 	 * Handle firewall rule
 	 */
 	$handleFirewallRule(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.HandleFirewallRuleResponse> { throw ni(); }
+}
 
+/**
+ * ResourceProvider extension host class.
+ */
+export abstract class ExtHostErrorDiagnosticsShape {
+	/**
+	 * Handle other connection error types
+	 */
+	$handleConnectionError(handle: number, errorInfo: azdata.diagnostics.IErrorInformation, connection: azdata.connection.ConnectionProfile): Thenable<azdata.diagnostics.ConnectionDiagnosticsResult> { throw ni(); }
 }
 
 /**
@@ -639,6 +654,11 @@ export interface MainThreadAzureBlobShape extends IDisposable {
 export interface MainThreadResourceProviderShape extends IDisposable {
 	$registerResourceProvider(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any>;
 	$unregisterResourceProvider(handle: number): Thenable<any>;
+}
+
+export interface MainThreadErrorDiagnosticsShape extends IDisposable {
+	$registerDiagnosticsProvider(providerMetadata: azdata.diagnostics.ErrorDiagnosticsProviderMetadata, handle: number): Thenable<any>;
+	$unregisterDiagnosticsProvider(handle: number): Thenable<any>;
 }
 
 export interface MainThreadDataProtocolShape extends IDisposable {
@@ -703,6 +723,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
 	$getServerInfo(connectedId: string): Thenable<azdata.ServerInfo>;
 	$openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection>;
+	$openChangePasswordDialog(profile: azdata.IConnectionProfile): Thenable<string | undefined>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;
@@ -858,6 +879,7 @@ export interface MainThreadModelViewDialogShape extends IDisposable {
 	$openEditor(handle: number, modelViewId: string, title: string, name?: string, options?: azdata.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void>;
 	$closeEditor(handle: number): Thenable<void>;
 	$openDialog(handle: number, dialogName?: string): Thenable<void>;
+	$openCustomErrorDialog(options: IErrorDialogOptions): Promise<string | undefined>;
 	$closeDialog(handle: number): Thenable<void>;
 	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;
 	$setTabDetails(handle: number, details: IModelViewTabDetails): Thenable<void>;
@@ -1007,4 +1029,12 @@ export interface ExtHostExtensionManagementShape {
 export interface MainThreadExtensionManagementShape extends IDisposable {
 	$install(vsixPath: string): Thenable<string>;
 	$showObsoleteExtensionApiUsageNotification(message: string): void;
+}
+
+export interface ExtHostPerfShape {
+	$mark(name: string): void;
+}
+
+export interface MainThreadPerfShape {
+	$mark(name: string): void;
 }

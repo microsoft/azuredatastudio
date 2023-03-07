@@ -337,7 +337,7 @@ declare module 'azurecore' {
 	export namespace azureResource {
 
 		/**
-		 * AzureCore core extension supports following resource types of Azure Resource Graph.
+		 * AzureCore extension supports following resource types of Azure Resource Graph.
 		 * To add more resources, please refer this guide: https://docs.microsoft.com/en-us/azure/governance/resource-graph/reference/supported-tables-resources
 		 */
 		export const enum AzureResourceType {
@@ -345,6 +345,9 @@ declare module 'azurecore' {
 			sqlServer = 'microsoft.sql/servers',
 			sqlDatabase = 'microsoft.sql/servers/databases',
 			sqlManagedInstance = 'microsoft.sql/managedinstances',
+			sqlSynapseWorkspace = 'microsoft.synapse/workspaces', // (Synapse Analytics workspace)
+			sqlSynapseSqlPool = 'microsoft.synapse/workspaces/sqlpools', // (Dedicated SQL pools)
+			sqlSynapseSqlDatabase = 'microsoft.synapse/workspaces/sqldatabases', // (Synapse SQL databases)
 			azureArcSqlManagedInstance = 'microsoft.azuredata/sqlmanagedinstances',
 			virtualMachines = 'microsoft.compute/virtualmachines',
 			kustoClusters = 'microsoft.kusto/clusters',
@@ -491,6 +494,7 @@ declare module 'azurecore' {
 			fullName: string;
 			defaultDatabaseName: string;
 		}
+
 		export interface BlobContainer extends AzureResource { }
 
 		export interface FileShare extends AzureResource { }

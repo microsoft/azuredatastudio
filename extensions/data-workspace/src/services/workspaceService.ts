@@ -25,25 +25,24 @@ export class WorkspaceService implements IWorkspaceService {
 
 	private openedProjects: vscode.Uri[] | undefined = undefined;
 	private excludedProjects: string[] | undefined;
+	private _isProjectProviderAvailable: boolean = false;
 
 	constructor() {
 		Logger.log(`Calling getProjectsInWorkspace() from WorkspaceService constructor`);
+		this.updateIfProjectProviderAvailable();
 		this.getProjectsInWorkspace(undefined, true).catch(err => Logger.error(`Error initializing projects in workspace ${err}`));
 	}
 
 	get isProjectProviderAvailable(): boolean {
+		return this._isProjectProviderAvailable;
+	}
+
+	public updateIfProjectProviderAvailable(): void {
 		Logger.log(`Checking ${vscode.extensions.all.length} extensions to see if there is a project provider is available`);
 		const startTime = new Date().getTime();
-		for (const extension of vscode.extensions.all) {
-			const projectTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.projects as string[];
-			if (projectTypes && projectTypes.length > 0) {
-				Logger.log(`Project provider found. Total time = ${new Date().getTime() - startTime}ms`);
-				return true;
-			}
-		}
 
-		Logger.log(`No project providers found. Total time = ${new Date().getTime() - startTime}ms`);
-		return false;
+		this._isProjectProviderAvailable = vscode.extensions.all.some(e => e.packageJSON.contributes?.projects?.length > 0);
+		Logger.log(`isProjectProviderAvailable is ${this._isProjectProviderAvailable}. Total time = ${new Date().getTime() - startTime}ms`);
 	}
 
 	/**
@@ -255,8 +254,9 @@ export class WorkspaceService implements IWorkspaceService {
 	/**
 	 * Ensure the project provider extension for the specified project is loaded
 	 * @param projectType The file extension of the project, if not specified, all project provider extensions will be loaded.
+	 * @param forceActivate forces project providing extensions to be activated if true
 	 */
-	private async ensureProviderExtensionLoaded(projectType: string | undefined = undefined): Promise<void> {
+	public async ensureProviderExtensionLoaded(projectType: string | undefined = undefined, forceActivate: boolean = false): Promise<void> {
 		const projType = projectType ? projectType.toUpperCase() : undefined;
 		let extension: vscode.Extension<any>;
 		for (extension of vscode.extensions.all) {
@@ -265,20 +265,41 @@ export class WorkspaceService implements IWorkspaceService {
 			if (projectTypes && projectTypes.length > 0) {
 				if (projType) {
 					if (projectTypes.findIndex((proj: string) => proj.toUpperCase() === projType) !== -1) {
-						await this.handleProjectProviderExtension(extension);
+						await this.handleProjectProviderExtension(extension, forceActivate);
 						break;
 					}
 				} else {
-					await this.handleProjectProviderExtension(extension);
+					await this.handleProjectProviderExtension(extension, forceActivate);
 				}
 			}
 		}
 	}
 
-	private async handleProjectProviderExtension(extension: vscode.Extension<any>): Promise<void> {
+	/**
+	 * Ensures project provider extension is activated and registered
+	 * @param extension Extension to activate and register
+	 * @param forceActivate Activates the extension if true. If false, only activates the extension if the workspace contains a file with the extension's project type
+	 */
+	private async handleProjectProviderExtension(extension: vscode.Extension<any>, forceActivate: boolean = false): Promise<void> {
 		try {
 			if (!extension.isActive) {
-				await extension.activate();
+				if (forceActivate) {
+					await extension.activate();
+				} else {
+					const projectTypes = extension.packageJSON.contributes?.projects as string[] | undefined;
+					if (!projectTypes) {
+						return;
+					}
+
+					for (const projType of projectTypes) {
+						const projFilesInWorkspace = await vscode.workspace.findFiles(`**/*.${projType}`);
+						if (projFilesInWorkspace.length > 0) {
+							// only try to activate the extension if the workspace has at least one project with that extension
+							await extension.activate();
+							break;
+						}
+					}
+				}
 			}
 		} catch (err) {
 			Logger.error(constants.ExtensionActivationError(extension.id, err));

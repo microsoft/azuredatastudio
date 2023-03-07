@@ -28,6 +28,7 @@ import { Tenant, TenantListDelegate, TenantPickerListRenderer } from 'sql/workbe
 
 export class AccountPicker extends Disposable {
 	public static ACCOUNTPICKERLIST_HEIGHT = 47;
+	public static ACCOUNTTENANTLIST_HEIGHT = 32;
 	public viewModel: AccountPickerViewModel;
 	private _accountList?: List<azdata.Account>;
 	private _rootContainer?: HTMLElement;
@@ -97,7 +98,7 @@ export class AccountPicker extends Disposable {
 	public createAccountPickerComponent() {
 		// Create an account list
 		const accountDelegate = new AccountListDelegate(AccountPicker.ACCOUNTPICKERLIST_HEIGHT);
-		const tenantDelegate = new TenantListDelegate(AccountPicker.ACCOUNTPICKERLIST_HEIGHT);
+		const tenantDelegate = new TenantListDelegate(AccountPicker.ACCOUNTTENANTLIST_HEIGHT);
 
 		const accountRenderer = new AccountPickerListRenderer();
 		const tenantRenderer = new TenantPickerListRenderer();
@@ -203,7 +204,7 @@ export class AccountPicker extends Disposable {
 	private createLabelElement(content: string, isHeader?: boolean) {
 		let className = 'dialog-label';
 		if (isHeader) {
-			className += ' header';
+			className += '.header';
 		}
 		const element = DOM.$(`.${className}`);
 		element.innerText = content;

@@ -97,7 +97,6 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 			widget: {
 				'tasks-widget': [
 					'newQuery',
-					'mssqlCluster.task.newNotebook',
 					{ name: 'backup', when: 'connectionProvider == \'MSSQL\' && !mssql:iscloud && mssql:engineedition != 11 || connectionProvider == \'PGSQL\'' },
 					{ name: 'restore', when: 'connectionProvider == \'MSSQL\' && !mssql:iscloud && mssql:engineedition != 11 || connectionProvider == \'PGSQL\'' }
 				]

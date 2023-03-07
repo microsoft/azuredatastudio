@@ -19,7 +19,10 @@ const externals = {
 	'universalify': 'commonjs universalify',
 	'@azure/arm-subscriptions': 'commonjs @azure/arm-subscriptions',
 	'@azure/arm-resourcegraph': 'commonjs @azure/arm-resourcegraph',
-	'@azure/storage-blob': 'commonjs @azure/storage-blob'
+	'@azure/storage-blob': 'commonjs @azure/storage-blob',
+	'@azure/msal-node': 'commonjs @azure/msal-node',
+	'@azure/msal-node-extensions': 'commonjs @azure/msal-node-extensions',
+	'msal': 'commonjs msal'
 };
 
 // conditionally add ws if we are going to be running in a node environment

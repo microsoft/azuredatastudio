@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { azureResource } from 'azurecore';
+import { sqlInstanceQuery } from '../queryStringConstants';
 import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
 
 interface SqlInstanceGraphData extends GraphData {
@@ -13,12 +14,10 @@ interface SqlInstanceGraphData extends GraphData {
 	};
 }
 
-const instanceQuery = `where type == "${azureResource.AzureResourceType.sqlManagedInstance}"`;
-
 export class SqlInstanceResourceService extends ResourceServiceBase<SqlInstanceGraphData, azureResource.AzureResourceDatabaseServer> {
 
 	protected get query(): string {
-		return instanceQuery;
+		return sqlInstanceQuery;
 	}
 
 	protected convertResource(resource: SqlInstanceGraphData): azureResource.AzureResourceDatabaseServer {

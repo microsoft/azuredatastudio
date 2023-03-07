@@ -18,6 +18,7 @@ import { EventVerifierSingle } from 'sql/base/test/common/event';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { AccountDialog } from 'sql/workbench/services/accountManagement/browser/accountDialog';
 import { Emitter } from 'vs/base/common/event';
+import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 
 // SUITE CONSTANTS /////////////////////////////////////////////////////////
 const hasAccountProvider: azdata.AccountProviderMetadata = {
@@ -32,7 +33,8 @@ const noAccountProvider: azdata.AccountProviderMetadata = {
 const account: azdata.Account = {
 	key: {
 		providerId: hasAccountProvider.id,
-		accountId: 'testAccount1'
+		accountId: 'testAccount1',
+		authLibrary: 'MSAL'
 	},
 	displayInfo: {
 		displayName: 'Test Account 1',
@@ -319,7 +321,12 @@ suite('Account Management Service Tests:', () => {
 		return ams.getAccountsForProvider(hasAccountProvider.id)
 			.then(result => {
 				// Then: I should get back the list of accounts
-				assert.strictEqual(result, accountList);
+				// Since account are filtered by AuthLibrary and list is prepared again, they are not strict equal.
+				// We compare strict equality of actual accounts here.
+				assert.strictEqual(accountList.length, result.length);
+				for (var i = 0; i < accountList.length; i++) {
+					assert.strictEqual(result[i], accountList[i]);
+				}
 			});
 	});
 
@@ -530,9 +537,11 @@ function getTestState(): AccountManagementState {
 		.returns(() => mockAccountStore.object);
 
 	const testNotificationService = new TestNotificationService();
+	const testConfigurationService = new TestConfigurationService();
 
 	// Create the account management service
-	let ams = new AccountManagementService(mockInstantiationService.object, new TestStorageService(), undefined!, undefined!, undefined!, testNotificationService);
+	let ams = new AccountManagementService(mockInstantiationService.object, new TestStorageService(),
+		undefined, undefined, undefined, testNotificationService, testConfigurationService);
 
 	// Wire up event handlers
 	let evUpdate = new EventVerifierSingle<UpdateAccountListEventParams>();

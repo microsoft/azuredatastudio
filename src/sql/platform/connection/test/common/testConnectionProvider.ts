@@ -17,6 +17,10 @@ export class TestConnectionProvider implements azdata.ConnectionProvider {
 		return Promise.resolve(true);
 	}
 
+	changePassword(connectionUri: string, connectionInfo: azdata.ConnectionInfo, newPassword: string): Thenable<azdata.PasswordChangeResult> {
+		return Promise.resolve({ result: false });
+	}
+
 	cancelConnect(connectionUri: string): Thenable<boolean> {
 		return Promise.resolve(true);
 	}

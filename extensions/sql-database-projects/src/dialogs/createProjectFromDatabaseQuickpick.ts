@@ -6,18 +6,19 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
-import { exists, getVscodeMssqlApi } from '../common/utils';
+import { exists, getVscodeMssqlApi, isValidBasename, isValidBasenameErrorMessage, sanitizeStringForFilename } from '../common/utils';
 import { IConnectionInfo } from 'vscode-mssql';
 import { defaultProjectNameFromDb, defaultProjectSaveLocation } from '../tools/newProjectTool';
 import { ImportDataModel } from '../models/api/import';
-import { mapExtractTargetEnum } from './createProjectFromDatabaseDialog';
+import { mapExtractTargetEnum } from './utils';
+
+import { getSDKStyleProjectInfo } from './quickpickHelper';
 
 /**
  * Create flow for a New Project using only VS Code-native APIs such as QuickPick
  * @param connectionInfo Optional connection info to use instead of prompting the user for a connection
  */
 export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?: IConnectionInfo): Promise<ImportDataModel | undefined> {
-
 	const vscodeMssqlApi = await getVscodeMssqlApi();
 
 	// 1. Select connection
@@ -69,9 +70,9 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 	const projectName = await vscode.window.showInputBox(
 		{
 			title: constants.projectNamePlaceholderText,
-			value: defaultProjectNameFromDb(selectedDatabase),
+			value: defaultProjectNameFromDb(sanitizeStringForFilename(selectedDatabase)),
 			validateInput: (value) => {
-				return value ? undefined : constants.nameMustNotBeEmpty;
+				return isValidBasename(value) ? undefined : isValidBasenameErrorMessage(value);
 			},
 			ignoreFocusOut: true
 		});
@@ -147,41 +148,7 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 	const includePermissions = includePermissionsResult === constants.yesString;
 
 	// 7. SDK-style project or not
-	let sdkStyle;
-	const sdkLearnMoreButton: vscode.QuickInputButton = {
-		iconPath: new vscode.ThemeIcon('link-external'),
-		tooltip: constants.learnMore
-	};
-	const quickPick = vscode.window.createQuickPick();
-	quickPick.items = [{ label: constants.YesRecommended }, { label: constants.noString }];
-	quickPick.title = constants.sdkStyleProject;
-	quickPick.ignoreFocusOut = true;
-	const disposables: vscode.Disposable[] = [];
-
-	try {
-		quickPick.buttons = [sdkLearnMoreButton];
-		quickPick.placeholder = constants.SdkLearnMorePlaceholder;
-
-		const sdkStylePromise = new Promise<boolean | undefined>((resolve) => {
-			disposables.push(
-				quickPick.onDidHide(() => {
-					resolve(undefined);
-				}),
-				quickPick.onDidChangeSelection((item) => {
-					resolve(item[0].label === constants.YesRecommended);
-				}));
-
-			disposables.push(quickPick.onDidTriggerButton(async () => {
-				await vscode.env.openExternal(vscode.Uri.parse(constants.sdkLearnMoreUrl!));
-			}));
-		});
-
-		quickPick.show();
-		sdkStyle = await sdkStylePromise;
-		quickPick.hide();
-	} finally {
-		disposables.forEach(d => d.dispose());
-	}
+	let sdkStyle = await getSDKStyleProjectInfo();
 
 	if (sdkStyle === undefined) {
 		// User cancelled

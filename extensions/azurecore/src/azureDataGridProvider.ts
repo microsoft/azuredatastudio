@@ -16,6 +16,8 @@ import * as utils from './utils';
 const typesClause = [
 	azureResource.AzureResourceType.sqlDatabase,
 	azureResource.AzureResourceType.sqlServer,
+	azureResource.AzureResourceType.sqlSynapseWorkspace,
+	azureResource.AzureResourceType.sqlSynapseSqlPool,
 	azureResource.AzureResourceType.sqlManagedInstance,
 	azureResource.AzureResourceType.postgresServer,
 	azureResource.AzureResourceType.azureArcService,
@@ -24,13 +26,15 @@ const typesClause = [
 ].map(type => `type == "${type}"`).join(' or ');
 
 export class AzureDataGridProvider implements azdata.DataGridProvider {
-	constructor(private _appContext: AppContext) { }
+	constructor(private _appContext: AppContext,
+		private readonly authLibrary: string) { }
 
 	public providerId = constants.dataGridProviderId;
 	public title = loc.azureResourcesGridTitle;
 
 	public async getDataGridItems() {
-		const accounts = await azdata.accounts.getAllAccounts();
+		let accounts: azdata.Account[];
+		accounts = azureResourceUtils.filterAccounts(await azdata.accounts.getAllAccounts(), this.authLibrary);
 		const items: any[] = [];
 		await Promise.all(accounts.map(async (account) => {
 			await Promise.all(account.properties.tenants.map(async (tenant: { id: string; }) => {

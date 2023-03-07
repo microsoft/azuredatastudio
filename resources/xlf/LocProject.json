@@ -46,12 +46,6 @@
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\big-data-cluster.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\big-data-cluster.xlf.lcl",
-          "CopyOption": "LangIDOnPath",
-          "OutputPath": "resources\\xlf"
-        },
-		{
           "SourceFile": "resources\\xlf\\en\\cms.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\cms.xlf.lcl",
           "CopyOption": "LangIDOnPath",

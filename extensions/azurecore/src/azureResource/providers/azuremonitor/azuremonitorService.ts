@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { azureResource } from 'azurecore';
+import { logAnalyticsQuery } from '../queryStringConstants';
 import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
 
 export interface AzureMonitorGraphData extends GraphData {
@@ -15,12 +16,10 @@ export interface AzureMonitorGraphData extends GraphData {
 	};
 }
 
-const instanceQuery = `where type == "${azureResource.AzureResourceType.logAnalytics}"`;
-
 export class AzureMonitorResourceService extends ResourceServiceBase<AzureMonitorGraphData, azureResource.AzureResourceDatabaseServer> {
 
 	protected get query(): string {
-		return instanceQuery;
+		return logAnalyticsQuery;
 	}
 
 	protected convertResource(resource: AzureMonitorGraphData): azureResource.AzureResourceDatabaseServer {

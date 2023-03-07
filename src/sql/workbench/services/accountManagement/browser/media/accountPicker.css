@@ -3,13 +3,20 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/* Selected account */
 .selected-account-container,
 .selected-tenant-container {
 	padding: 6px;
 	display: flex;
 	align-items: flex-start;
 	width: 100%;
+}
+
+.account-picker .monaco-dropdown,
+.tenant-picker .monaco-dropdown {
+	width: 100%;
+	display: flex;
+	align-items: flex-start;
+	cursor: pointer;
 }
 
 .selected-account-container .codicon {
@@ -57,10 +64,10 @@
 }
 
 .account-list-container .list-row .codicon {
-	flex: 0 0 35px;
-	height: 35px;
-	width: 35px;
-	background-size: 35px;
+	flex: 0 0 32px;
+	height: 32px;
+	width: 32px;
+	background-size: 32px;
 }
 
 .account-list-container .list-row .codicon .badge {

@@ -11337,7 +11337,6 @@
 			"dataExplorer.context": "Menú contextual del elemento dataexplorer",
 			"dataGrid.context": "Menú contextual del elemento de cuadrícula de datos",
 			"default": "Habilitar la comprobación automática de actualizaciones. Azure Data Studio comprobará las actualizaciones de manera automática y periódica.",
-			"docNotFoundForUriError": "No se pudo abrir un documento de bloc de notas para el URI especificado.",
 			"enable locally": "Vuelva a cargar Azure Data Studio para habilitar esta extensión localmente.",
 			"enable remote": "Vuelva a cargar Azure Data Studio para habilitar esta extensión en {0}.",
 			"enableWindowsBackgroundUpdates": "Habilitar para descargar e instalar nuevas versiones de Azure Data Studio en segundo plano en Windows",
@@ -11345,14 +11344,36 @@
 			"incompatible": "No se puede instalar la versión '{0}' de la extensión '{1}' porque no es compatible con Azure Data Studio '{2}'. Actualice a Azure Data Studio {3} para instalar la extensión.",
 			"installExtensionCompletedAndReloadRequired": "Se ha completado la instalación de la extensión {0}. Vuelva a cargar Azure Data Studio para habilitarlo.",
 			"maxMemoryForLargeFilesMB": "Controla la memoria disponible para Azure Data Studio después de reiniciar cuando se intentan abrir archivos grandes. Tiene el mismo efecto que si se especifica \"--max-memory=NEWSIZE\" en la línea de comandos.",
+			"miNewDeployment": "Nueva &&implementación...",
 			"miNewNotebook": "&&Nuevo cuaderno",
 			"miNewQuery": "Nueva &&consulta",
 			"miinstallVsix": "Instalar extensión desde el paquete VSIX",
 			"newQuery": "Nueva consulta",
 			"notebook.cellTitle": "El menú de título de la celda del cuaderno",
-			"notebook.cellToolbarLocation.compatibilityDescription": "Indica si la barra de herramientas de celdas debe mostrarse u ocultarse. Nota: esta configuración solo está habilitada con fines de compatibilidad de extensiones, por lo que no afecta a nada.",
+			"notebook.cellToolbarLocation.description": "Indica si la barra de herramientas de celdas debe mostrarse u ocultarse. (solo para Notebooks de VS Code)",
+			"notebook.cellToolbarVisibility.description": "Indica si la barra de herramientas de celdas debe aparecer al mantener el puntero sobre ella o al hacer clic. (solo para Notebooks de VS Code)",
+			"notebook.compactView.description": "Controlar si el editor del bloc de notas debe representarse en un formato compacto. Por ejemplo, cuando se activa, disminuirá el ancho del margen izquierdo.(solo para Notebooks de VS Code)",
+			"notebook.consolidatedOutputButton.description": "Controla si la acción de los resultados se debe representar en la barra de herramientas de salida. (solo para Notebooks de VS Code)",
+			"notebook.consolidatedRunButton.description": "Controla si se muestran acciones adicionales en una lista desplegable junto al botón ejecutar. (solo para Notebooks de VS Code)",
+			"notebook.diff.enablePreview.description": "Indica si se debe usar el editor de diferencias de texto mejorado para el bloc de notas. (solo para Notebooks de VS Code)",
+			"notebook.displayOrder.description": "Lista de prioridades para los tipos MIME de salida. (solo para blocs de notas de VS Code)",
+			"notebook.dragAndDrop.description": "Controla si el editor del bloc de notas debe permitir mover celdas mediante arrastrar y colocar. (solo para Notebooks de VS Code)",
+			"notebook.editorOptions.experimentalCustomization": "Configuración de los editores de código utilizados en los blocs de notas. Se puede usar para personalizar la mayoría de las opciones del editor*. (solo para Notebooks de VS Code)",
+			"notebook.focusIndicator.description": "Controla dónde se representa el indicador de foco, ya sea a lo largo de los bordes de la celda o en el medianil izquierdo. (solo para Notebooks de VS Code)",
+			"notebook.globalToolbar.description": "Controla si se debe representar una barra de herramientas global dentro del editor de bloc de notas. (solo para Notebooks de VS Code)",
+			"notebook.globalToolbarShowLabel": "Controla si las acciones de la barra de herramientas del Bloc de notas deben representar la etiqueta o no. (solo para Notebooks de VS Code)",
+			"notebook.insertToolbarPosition.description": "Controla dónde deben aparecer las acciones de inserción de celdas. (solo para Notebooks de VS Code)",
+			"notebook.interactiveWindow.collapseCodeCells": "Controla si las celdas de código de la ventana interactiva están contraídas de forma predeterminada. (solo para Notebooks de VS Code)",
+			"notebook.markup.fontSize": "Controla el tamaño de fuente en píxeles de la revisión representada en los blocs de notas. Cuando se establece en “0”, se usa el 120 % de “#editor.fontSize#”. (solo para Notebooks de VS Code)",
+			"notebook.outputFontFamily": "Familia de fuentes del texto de salida de las celdas del bloc de notas. Cuando se establece en vacío, se usa '#editor.fontFamily#'. (solo para Notebooks de VS Code)",
+			"notebook.outputFontSize": "Tamaño de fuente del texto de salida de las celdas del bloc de notas. Cuando se establece en 0, se usa '#editor.fontSize#'. (solo para Notebooks de VS Code)",
+			"notebook.outputLineHeight": "Alto de línea del texto de salida para las celdas del bloc de notas.\r\n - los valores entre 0 y 8 se usarán como multiplicador con el tamaño de fuente.\r\n - los valores mayores o iguales que 8 se usarán como valores efectivos. (solo para Notebooks de VS Code)",
+			"notebook.showCellStatusbar.description": "Indica si se debe mostrar la barra de estado de la celda. (solo para Notebooks de VS Code)",
+			"notebook.showFoldingControls.description": "Controla cuándo se muestra la flecha de plegado del encabezado de Markdown. (solo para Notebooks de VS Code)",
+			"notebook.textOutputLineLimit": "Controla el número de líneas de texto que se representan en una salida de texto. (solo para Notebooks de VS Code)",
 			"notebook.title": "El menú de título del cuaderno",
 			"notebook.toolbar": "Menú de la barra de herramientas del cuaderno",
+			"notebook.undoRedoPerCell.description": "Indica si se debe usar una pila de deshacer o rehacer independiente para cada celda. (solo para Notebooks de VS Code)",
 			"objectExplorer.context": "Menú contextual del elemento del explorador de objetos",
 			"openDefaultSettingsJson": "abrir el archivo JSON de configuración predeterminada",
 			"openDefaultSettingsJson.capitalized": "Abrir la configuración predeterminada (JSON)",
@@ -11377,9 +11398,7 @@
 			"terminal.integrated.inheritEnv": "Si los nuevos shells deben heredar su entorno de Azure Data Studio, lo que puede generar un shell de inicio de sesión para asegurarse de que se inicializan $PATH y otras variables de desarrollo. Esto no tiene ningún efecto en Windows.",
 			"uninstallExtensionComplete": "Vuelva a cargar Azure Data Studio para completar la desinstalación de la extensión {0}.",
 			"updateLocale": "¿Desea cambiar el idioma de la interfaz de usuario de Azure Data Studio a {0} y reiniciar?",
-			"vscodeDocCreationFailedError": "No se pudo crear el documento del bloc de notas.",
-			"vscodeFunctionalityNotSupportedError": "Esta funcionalidad de VS Code no se admite en Azure Data Studio.",
-			"vscodeInvalidArgumentsError": "Argumentos no válidos.",
+			"vscodeNotebooksNotSupportedError": "VS Code no se admiten extensiones de cuaderno en Azure Data Studio.",
 			"watermark.newNotebook": "Nuevo cuaderno",
 			"watermark.newSqlFile": "Nuevo archivo SQL",
 			"workspace.trust.description": "Controla si la confianza del área de trabajo está habilitada o no en Azure Data Studio.",
@@ -11531,9 +11550,6 @@
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
 			"navigationProviderRequired": "Se debe pasar un NavigationProvider con un id. de proveedor válido a este método"
 		},
-		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "No se puede iniciar una sesión, el administrador aún no está inicializado"
-		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "Borrar todas las cuentas guardadas",
 			"configureDashboardLearnMore": "Más información",
@@ -11545,7 +11561,9 @@
 			"enableObsoleteApiUsageNotificationTitle": "Notificación de API obsoleta",
 			"previewFeatures.configEnable": "Habilitar las características de la versión preliminar sin publicar",
 			"previewFeatures.configTitle": "Características en versión preliminar",
-			"showConnectDialogOnStartup": "Mostrar diálogo de conexión al inicio"
+			"showConnectDialogOnStartup": "Mostrar diálogo de conexión al inicio",
+			"useVSCodeNotebooks": "(Versión preliminar) Use los Notebooks de VS Code como la experiencia de bloc de notas predeterminada. Nota: Azure Data Studio deberá reiniciarse para habilitar esta configuración.",
+			"useVSCodeNotebooksTitle": "Usar Notebooks de VS Code"
 		},
 		"sql/workbench/browser/designer/designer": {
 			"designer.actions": "Más acciones",
@@ -11908,6 +11926,7 @@
 			"status.connection.status": "Estado de conexión"
 		},
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
+			"schema.azureResource": "Punto de conexión de recursos de Azure para el proveedor.",
 			"schema.connectionOptions": "Opciones para la conexión",
 			"schema.displayName": "Nombre para mostrar del proveedor",
 			"schema.enableConnectionStringOption": "Indica si el proveedor admite la cadena de conexión como opción de entrada. El valor predeterminado es false.",
@@ -12268,7 +12287,7 @@
 			"epCompare.zoomInAction": "Acercar",
 			"epCompare.zoomOutAction": "Alejar",
 			"epCompare.zoomReset": "Restablecer zoom",
-			"epCompare.zoomToFit": "Ajustar al tamaño",
+			"epCompare.zoomToFit": "Zoom para ajustar",
 			"executionPlanComparison.bottomPlanDiagram.name": "Plan de ejecución inferior {0}",
 			"executionPlanComparison.topPlanDiagram.name": "Plan de ejecución principal {0}",
 			"executionPlanDisableTooltip": "Información sobre herramientas deshabilitada",
@@ -12339,7 +12358,7 @@
 			"executionPlanCustomZoom": "Zoom personalizado",
 			"executionPlanDisableTooltip": "Información sobre herramientas deshabilitada",
 			"executionPlanEnableTooltip": "Información sobre herramientas habilitada",
-			"executionPlanFitGraphLabel": "Ajustar al tamaño",
+			"executionPlanFitGraphLabel": "Zoom para ajustar",
 			"executionPlanHighlightExpensiveOperationAction": "Resaltar operación costosa",
 			"executionPlanOpenGraphFile": "Mostrar plan de consulta XML",
 			"executionPlanPropertiesActionLabel": "Propiedades",
@@ -12397,9 +12416,6 @@
 			"executionPlanSelectSearchTypeTitle": "Seleccionar tipo de búsqueda",
 			"nextSearchItemAction": "Coincidencia siguiente",
 			"previousSearchItemAction": "Coincidencia anterior"
-		},
-		"sql/workbench/contrib/executionPlan/common/executionPlanInput": {
-			"epCompare.executionPlanEditorName": "ExecutionPlan"
 		},
 		"sql/workbench/contrib/extensions/browser/contributionRenders": {
 			"insight condition": "Cuándo",
@@ -12702,6 +12718,7 @@
 			"notebook.markdownModeDescription": "El texto se muestra como \"Markdown\".",
 			"notebook.markdownPreviewLineHeight": "Controla la altura de línea utilizada en la vista previa de Markdown del cuaderno. Este número es relativo al tamaño de la fuente.",
 			"notebook.maxRichTextUndoHistory": "Número máximo de cambios almacenados en el historial de deshacer del editor de texto enriquecido del cuaderno",
+			"notebook.renderTablesInHtml": "Muestre y guarde tablas en formato HTML en celdas de texto en lugar de convertirlas en tablas de Markdown.",
 			"notebook.richTextModeDescription": "El texto se muestra como texto enriquecido (también conocido como WYSIWYG).",
 			"notebook.saveConnectionName": "(Versión preliminar) Guarde el nombre de la conexión en los metadatos del cuaderno.",
 			"notebook.showAllKernels": "(Versión preliminar) Consulte todos los kernel del proveedor del cuaderno actual.",
@@ -12860,7 +12877,7 @@
 			"viewOptionsModal.title": "Configurar vista"
 		},
 		"sql/workbench/contrib/notebook/browser/outputs/gridOutput.component": {
-			"copyFailed": "Error de copia {0}",
+			"copyFailed": "Error de copia: {0}",
 			"notebook.showChart": "Mostrar gráfico",
 			"notebook.showTable": "Mostrar tabla"
 		},
@@ -12947,6 +12964,7 @@
 		},
 		"sql/workbench/contrib/query/browser/actions": {
 			"chart": "Gráfico",
+			"copyHeaders": "Encabezados de texto",
 			"copySelection": "Copiar",
 			"copyWithHeaders": "Copiar con encabezados",
 			"jsonEncoding": "La codificación de los resultados no se guardará al realizar la exportación en JSON. Recuerde guardarlos con la codificación deseada una vez que se cree el archivo.",
@@ -13022,6 +13040,7 @@
 			"queryEditor.results.saveAsMarkdown.lineSeparator": "Caracteres que se usarán para separar las líneas al exportar a Markdown, el valor predeterminado es finales de líneas del sistema",
 			"queryEditor.results.saveAsXml.encoding": "Codificación de archivo empleada al guardar los resultados como XML",
 			"queryEditor.results.saveAsXml.formatted": "Si es \"true\", se dará formato a la salida XML al guardar los resultados como XML.",
+			"queryEditor.results.showActionBar": "Indica si se debe mostrar la barra de acciones en la vista de resultados de la consulta.",
 			"queryEditor.results.streaming": "Permitir streaming de resultados; contiene algunos defectos visuales menores",
 			"queryEditor.showConnectionInfoInTitle": "Controla si se muestra la información de conexión para una pestaña en el título.",
 			"queryEditor.tabColorMode": "Controla cómo colorear las pestañas basadas en el grupo de servidores de la conexión activa",
@@ -13067,6 +13086,8 @@
 			"status.query.selection-summary": "Resumen de la selección",
 			"status.query.status": "Estado de ejecución",
 			"status.query.summaryText": "Promedio: {0}; recuento: {1}; suma: {2}",
+			"status.query.summaryTextNonNumeric": "Recuento: {0} Recuento distinto: {1} Recuento nulo: {2}",
+			"status.query.summaryTooltip": "Promedio: {0} Recuento: {1} Recuento distinto: {2} Máx.: {3} Mín.: {4} Recuento nulo: {5} Suma: {6}",
 			"status.query.timeElapsed": "Tiempo transcurrido"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13077,6 +13098,7 @@
 			"fontWeight": "Controla el grosor de la fuente.",
 			"letterSpacing": "Controla el espacio entre letras en píxeles.",
 			"maxColumnWidth": "El máximo ancho en píxeles de las columnas de tamaño automático",
+			"resultsGrid.showJsonAsLink": "Indica si se van a mostrar celdas con cadena con formato JSON como hipervínculo. Cuando se habilita, al hacer clic en el valor JSON se abrirá en otra pestaña. El valor predeterminado es true.",
 			"resultsGridConfigurationTitle": "Cuadrícula y mensajes de resultados",
 			"rowHeight": "Controla la altura de la fila en píxeles"
 		},
@@ -13311,8 +13333,12 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "Cerrar",
+			"addAccountFailedCodeMessage": "{0} \r\nMensaje de error: {1}",
+			"addAccountFailedGenericMessage": "Error al agregar la cuenta. Compruebe el registro de cuentas de Azure para obtener más información.",
+			"addAccountFailedMessage": "{0}",
 			"loggingIn": "Adición de cuenta en curso...",
-			"refreshFailed": "El usuario canceló la actualización de la cuenta"
+			"refreshCanceled": "El usuario canceló la actualización de la cuenta",
+			"refreshFailed": "0 \r\nMensaje de error: 1"
 		},
 		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
 			"azureAccount": "Cuenta de Azure",
@@ -13385,12 +13411,10 @@
 		},
 		"sql/workbench/services/connection/browser/connectionDialogService": {
 			"connectionError": "Error de conexión",
-			"enableTrustServerCertificate": "Habilitar certificado de servidor de confianza",
 			"kerberosErrorStart": "Error en la conexión debido a un error de Kerberos.",
 			"kerberosHelpLink": "La ayuda para configurar Kerberos está disponible en {0}",
 			"kerberosKinit": "Si se ha conectado anteriormente puede que necesite volver a ejecutar kinit.",
-			"runKinit": "Ejecutar Kinit",
-			"trustServerCertInstructionText": "Se habilitó el cifrado en esta conexión, revise la configuración de SSL y certificado para el SQL Server de destino o habilite \"Confiar en certificado de servidor\" en el cuadro de diálogo de conexión.\r\n\r\n\t\t\tNota: Un certificado autofirmado solo ofrece protección limitada y no es una práctica recomendada para entornos de producción. ¿Quiere habilitar \"Certificado de servidor de confianza\" en esta conexión y volver a intentarlo? "
+			"runKinit": "Ejecutar Kinit"
 		},
 		"sql/workbench/services/connection/browser/connectionDialogWidget": {
 			"connectType": "Tipo de conexión",
@@ -13444,6 +13468,20 @@
 			"onDidDisconnectMessage": "Desconectado",
 			"unsavedGroupLabel": "Conexiones sin guardar"
 		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.Message1": "Debe cambiarse la contraseña para \"{0}\" a fin de continuar iniciando sesión en \"{1}\".",
+			"passwordChangeDialog.Message2": "Escriba una nueva contraseña a continuación:",
+			"passwordChangeDialog.cancel": "Cancelar",
+			"passwordChangeDialog.confirmPassword": "Confirmar contraseña:",
+			"passwordChangeDialog.connecting": "Conexión en curso",
+			"passwordChangeDialog.errorHeader": "Error al intentar cambiar la contraseña",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "Las contraseñas introducidas no coinciden",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "Presione Aceptar y escriba exactamente la misma contraseña en ambos cuadros.",
+			"passwordChangeDialog.newPassword": "Nueva contraseña:",
+			"passwordChangeDialog.ok": "Aceptar",
+			"passwordChangeDialog.passwordChangeInProgress": "El cambio de contraseña ya está en curso",
+			"passwordChangeDialog.title": "Cambiar contraseña"
+		},
 		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
 			"newDashboardTab.cancel": "Cancelar",
 			"newDashboardTab.ok": "Aceptar",
@@ -13474,6 +13512,8 @@
 			"warning": "Advertencia"
 		},
 		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"executionPlanService.ensureCapabilitiesRegistered": "El proveedor con id. {0} no se registró después de 30 segundos.",
+			"executionPlanService.ensureFileExtensionHandlerRegistered": "El proveedor del plan de ejecución que admite el formato de archivo \"{0}\" no se registró después de 30 segundos.",
 			"noHandlerRegistered": "No hay registrado ningún controlador de plan de ejecución válido",
 			"providerIdNotValidError": "Se requiere un proveedor válido para interactuar con ExecutionPlanService",
 			"selectExecutionPlanProvider": "Seleccionar un proveedor para abrir el plan de ejecución"
@@ -13583,6 +13623,7 @@
 			"deleteCellFailed": "No se pudo eliminar la celda.",
 			"injectedParametersMsg": "N.º de parámetros insertados\r\n",
 			"kernelRequiresConnection": "Seleccione una conexión para ejecutar celdas para este kernel",
+			"savedKernelNotSupported": "No se admite el kernel \"{0}\" de este cuaderno. En su lugar, el valor predeterminado es kernel de SQL.",
 			"shutdownClientSessionError": "Se ha producido un error en la sesión del cliente al cerrar el cuaderno: {0}",
 			"startSessionFailed": "No se pudo iniciar sesión: {0}"
 		},
@@ -13619,14 +13660,13 @@
 			"unknownCellType": "Celda de tipo {0} desconocido"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "Objetivo de ejecución opcional indicado por este magic, por ejemplo Spark vs SQL",
+			"carbon.extension.contributes.notebook.executionTarget": "Objetivo de ejecución opcional indicado por este magic, por ejemplo Python vs SQL",
 			"carbon.extension.contributes.notebook.fileExtensions": "Extensiones de archivo que deben estar registradas en este proveedor de cuadernos",
-			"carbon.extension.contributes.notebook.kernels": "Conjunto opcional de kernels para los que esto es válido, por ejemplo python3, pyspark, sql",
+			"carbon.extension.contributes.notebook.kernels": "Conjunto opcional de kernels para los que esto es válido, por ejemplo, python3 y sql",
 			"carbon.extension.contributes.notebook.language": "El lenguaje de celda que se usará si este magic de celda se incluye en la celda",
 			"carbon.extension.contributes.notebook.magic": "Nombre del magic de celda, como \"%%sql\".",
 			"carbon.extension.contributes.notebook.provider": "Identificador del proveedor del cuaderno.",
 			"carbon.extension.contributes.notebook.standardKernels": "Núcleos que deben ser estándar con este proveedor de cuadernos",
-			"providerNotInRegistryError": "El proveedor especificado \"{0}\" no está presente en el registro del bloc de notas.",
 			"vscode.extension.contributes.notebook.languagemagics": "Aporta el lenguaje del cuaderno.",
 			"vscode.extension.contributes.notebook.providersDescriptions": "Aporta descripciones del proveedor de cuadernos."
 		},
@@ -13639,7 +13679,11 @@
 			"connectionTree.editServerGroup": "Editar grupo de servidores",
 			"connectionTree.refresh": "Actualizar",
 			"deleteConnection": "Eliminar conexión",
+			"deleteConnectionConfirmation": "¿Está seguro de que quiere eliminar la conexión \"{0}\"?",
+			"deleteConnectionConfirmationNo": "No",
+			"deleteConnectionConfirmationYes": "Sí",
 			"deleteConnectionGroup": "Eliminar grupo",
+			"deleteConnectionGroupConfirmation": "¿Está seguro de que quiere eliminar el grupo de conexiones '{0}'?",
 			"showAllConnections": "Mostrar todas las conexiones"
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
@@ -13665,6 +13709,7 @@
 		},
 		"sql/workbench/services/profiler/browser/profilerFilterDialog": {
 			"profilerFilterDialog.addClauseText": "Agregar una cláusula",
+			"profilerFilterDialog.allClausesCleared": "Se han borrado todas las cláusulas.",
 			"profilerFilterDialog.apply": "Aplicar",
 			"profilerFilterDialog.cancel": "Cancelar",
 			"profilerFilterDialog.clear": "Borrar todo",
@@ -13673,6 +13718,7 @@
 			"profilerFilterDialog.isNotNullOperator": "No es NULL",
 			"profilerFilterDialog.isNullOperator": "Es NULL",
 			"profilerFilterDialog.loadFilter": "Cargar filtro",
+			"profilerFilterDialog.newClauseAdded": "Se ha agregado una nueva cláusula.",
 			"profilerFilterDialog.notContainsOperator": "No contiene",
 			"profilerFilterDialog.notStartsWithOperator": "No comienza por",
 			"profilerFilterDialog.ok": "Aceptar",
@@ -13697,7 +13743,7 @@
 			"updateCellFailed": "Error en la actualización de la celda: "
 		},
 		"sql/workbench/services/query/common/queryRunner": {
-			"copyFailed": "Error de copia {0}",
+			"copyFailed": "Error de copia: {0}",
 			"elapsedBatchTime": "Tiempo de ejecución por lotes: {0}",
 			"query.ExecutionFailedError": "La ejecución no se completó debido a un error inesperado: {0} {1}",
 			"query.message.executionTime": "Tiempo total de ejecución: {0}",
@@ -13724,8 +13770,9 @@
 			"filewallRule": "Regla de firewall",
 			"firewall.cancel": "Cancelar",
 			"firewall.ok": "Aceptar",
-			"firewallRuleDialogDescription": "La dirección IP del cliente no tiene acceso al servidor. Inicie sesión en una cuenta de Azure y cree una regla de firewall para habilitar el acceso.",
-			"firewallRuleHelpDescription": "Más información sobre configuración de firewall",
+			"firewall.ruleName": "Nombre de la regla",
+			"firewallRuleDescription": "Se requiere una regla de firewall para acceder a la instancia de SQL Server. Haga clic en el vínculo siguiente para crear una nueva regla de firewall.",
+			"firewallRuleHelpLink": "Más información sobre las reglas del firewall",
 			"from": "De",
 			"to": "A"
 		},
@@ -13900,6 +13947,12 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "I&&ntroducción",
 			"showReleaseNotes": "Ver introducción"
+		},
+		"sql/workbench/services/dialog/browser/wizardNavigation.component": {
+			"wizardNavigation.stepName": "Paso {0}: {1}"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanInput": {
+			"epCompare.executionPlanEditorName": "ExecutionPlan"
 		}
 	}
 }

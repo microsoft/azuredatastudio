@@ -170,14 +170,22 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined!;
 	}
 
+	async fixProfile(profile?: IConnectionProfile): Promise<IConnectionProfile> {
+		return profile;
+	}
+
 	connect(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		return new Promise<IConnectionResult>((resolve, reject) => {
-			resolve({ connected: true, errorMessage: undefined!, errorCode: undefined!, callStack: undefined! });
+			resolve({ connected: true, errorMessage: undefined!, errorCode: undefined!, messageDetails: undefined! });
 		});
 	}
 
 	connectAndSaveProfile(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		return new Promise<IConnectionResult>(() => true);
+	}
+
+	changePassword(connection: IConnectionProfile, uri: string, newPassword: string): Promise<azdata.PasswordChangeResult> {
+		return Promise.resolve(undefined!);
 	}
 
 	disconnectEditor(owner: IConnectableInput): Promise<boolean> {
@@ -319,11 +327,19 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined!;
 	}
 
-	refreshAzureAccountTokenIfNecessary(uri: string): Promise<boolean> {
+	refreshAzureAccountTokenIfNecessary(uriOrConnectionProfile: string | ConnectionProfile): Promise<boolean> {
 		return undefined;
 	}
 
 	async handleUnsupportedProvider(providerName: string): Promise<boolean> {
 		return true;
+	}
+
+	openChangePasswordDialog(profile: IConnectionProfile): Promise<string | undefined> {
+		return undefined;
+	}
+
+	openCustomErrorDialog(options: azdata.window.IErrorDialogOptions): Promise<string | undefined> {
+		return undefined;
 	}
 }

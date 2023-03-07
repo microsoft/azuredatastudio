@@ -279,6 +279,7 @@ export function getDataWorkspaceExtensionApi(): dataworkspace.IExtension {
 
 export type IDacFxService = mssql.IDacFxService | vscodeMssql.IDacFxService;
 export type ISchemaCompareService = mssql.ISchemaCompareService | vscodeMssql.ISchemaCompareService;
+export type ISqlProjectsService = mssql.ISqlProjectsService | vscodeMssql.ISqlProjectsService;
 
 export async function getDacFxService(): Promise<IDacFxService> {
 	if (getAzdataApi()) {
@@ -299,6 +300,17 @@ export async function getSchemaCompareService(): Promise<ISchemaCompareService> 
 	} else {
 		const api = await getVscodeMssqlApi();
 		return api.schemaCompare;
+	}
+}
+
+export async function getSqlProjectsService(): Promise<ISqlProjectsService> {
+	if (getAzdataApi()) {
+		const ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
+		const api = await ext.activate();
+		return api.sqlProjects;
+	} else {
+		const api = await getVscodeMssqlApi();
+		return api.sqlProjects;
 	}
 }
 
@@ -730,4 +742,46 @@ export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.
 	}
 
 	return targetPlatform;
+}
+
+/**
+ * Determines if a given character is a valid filename character
+ * @param c Character to validate
+ */
+export function isValidFilenameCharacter(c: string): boolean {
+	return getDataWorkspaceExtensionApi().isValidFilenameCharacter(c);
+}
+
+/**
+ * Replaces invalid filename characters in a string with underscores
+ * @param s The string to be sanitized for a filename
+ */
+export function sanitizeStringForFilename(s: string): string {
+	return getDataWorkspaceExtensionApi().sanitizeStringForFilename(s);
+}
+
+/**
+ * Returns true if the string is a valid filename
+ * @param name filename to check
+ */
+export function isValidBasename(name?: string): boolean {
+	return getDataWorkspaceExtensionApi().isValidBasename(name);
+}
+
+/**
+ * Returns specific error message if file name is invalid
+ * @param name filename to check
+ */
+export function isValidBasenameErrorMessage(name?: string): string {
+	return getDataWorkspaceExtensionApi().isValidBasenameErrorMessage(name);
+}
+
+/**
+ * Checks if the provided file is a publish profile
+ * @param fileName filename to check
+ * @returns True if it is a publish profile, otherwise false
+ */
+export function isPublishProfile(fileName: string): boolean {
+	const hasPublishExtension = fileName.trim().toLowerCase().endsWith(constants.publishProfileExtension);
+	return hasPublishExtension;
 }

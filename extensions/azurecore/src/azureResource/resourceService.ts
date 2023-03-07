@@ -32,7 +32,7 @@ export class AzureResourceService {
 		this._areResourceProvidersLoaded = false;
 	}
 
-	public async getRootChildren(resourceProviderId: string, account: AzureAccount, subscription: azureResource.AzureResourceSubscription, tenantId: string): Promise<IAzureResourceNodeWithProviderId[]> {
+	public async getRootChildren(resourceProviderId: string, account: AzureAccount, subscription: azureResource.AzureResourceSubscription): Promise<IAzureResourceNodeWithProviderId[]> {
 		await this.ensureResourceProvidersRegistered();
 
 		if (!(resourceProviderId in this._resourceProviders)) {
@@ -48,7 +48,7 @@ export class AzureResourceService {
 				resourceNode: {
 					account,
 					subscription,
-					tenantId,
+					tenantId: subscription.tenant!,
 					treeItem: rootChild
 				}
 			};

@@ -2,7 +2,7 @@
   "name": "query-history",
   "displayName": "%queryHistory.displayName%",
   "description": "%queryHistory.description%",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "publisher": "Microsoft",
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
@@ -208,7 +208,7 @@
     }
   },
   "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^1.3.1",
+    "@microsoft/ads-extension-telemetry": "^2.0.0",
     "vscode-nls": "^4.1.2"
   },
   "devDependencies": {

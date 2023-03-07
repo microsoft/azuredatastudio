@@ -17,12 +17,13 @@ import { IconPathHelper } from '../common/iconHelper';
 import { UpdateProjectDataModel, UpdateProjectAction } from '../models/api/updateProject';
 import { exists, getAzdataApi, getDataWorkspaceExtensionApi } from '../common/utils';
 import * as path from 'path';
+import { mapExtractTargetEnum } from './utils';
 
 export class UpdateProjectFromDatabaseDialog {
 	public dialog: azdata.window.Dialog;
 	public serverDropdown: azdata.DropDownComponent | undefined;
 	public databaseDropdown: azdata.DropDownComponent | undefined;
-	public projectFileTextBox: azdata.InputBoxComponent | undefined;
+	public projectFileDropdown: azdata.DropDownComponent | undefined;
 	public compareActionRadioButton: azdata.RadioButtonComponent | undefined;
 	private updateProjectFromDatabaseTab: azdata.window.DialogTab;
 	private connectionButton: azdata.ButtonComponent | undefined;
@@ -38,7 +39,7 @@ export class UpdateProjectFromDatabaseDialog {
 
 	public updateProjectFromDatabaseCallback: ((model: UpdateProjectDataModel) => any) | undefined;
 
-	constructor(connection: azdata.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined, private project: Project | undefined) {
+	constructor(connection: azdata.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined, private project: Project | undefined, private workspaceProjects: vscode.Uri[]) {
 		if (connection && 'connectionName' in connection) {
 			this.profile = connection;
 		}
@@ -249,6 +250,11 @@ export class UpdateProjectFromDatabaseDialog {
 				values: values,
 				value: values[0],
 			});
+
+			// change the database dropdown value to the connection's database if there is one
+			if (connectionProfile.options.database && connectionProfile.options.database !== constants.master) {
+				this.databaseDropdown!.value = connectionProfile.options.database;
+			}
 		}
 
 		this.databaseDropdown!.loading = false;
@@ -364,17 +370,23 @@ export class UpdateProjectFromDatabaseDialog {
 	private createProjectLocationRow(view: azdata.ModelView): azdata.FlexContainer {
 		const browseFolderButton: azdata.Component = this.createBrowseFileButton(view);
 
-		const value = this.project ? this.project.projectFilePath : '';
+		let values: string[] = [];
+		this.workspaceProjects.forEach(projectUri => {
+			values.push(projectUri.fsPath);
+		});
 
-		this.projectFileTextBox = view.modelBuilder.inputBox().withProps({
+		const value = this.project ? this.project.projectFilePath : (values[0] ?? '');
+
+		this.projectFileDropdown = view.modelBuilder.dropDown().withProps({
+			editable: true,
+			fireOnTextChange: true,
 			value: value,
-			ariaLabel: constants.projectLocationLabel,
-			placeHolder: constants.projectToUpdatePlaceholderText,
+			values: values,
 			width: cssStyles.updateProjectFromDatabaseTextboxWidth
 		}).component();
 
-		this.projectFileTextBox.onTextChanged(async () => {
-			await this.projectFileTextBox!.updateProperty('title', this.projectFileTextBox!.value);
+		this.projectFileDropdown.onValueChanged(async () => {
+			await this.projectFileDropdown!.updateProperty('title', this.projectFileDropdown!.value);
 			this.tryEnableUpdateButton();
 		});
 
@@ -385,7 +397,7 @@ export class UpdateProjectFromDatabaseDialog {
 		}).component();
 
 		const projectLocationRow = view.modelBuilder.flexContainer().withItems([projectLocationLabel,], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-5px', 'margin-top': '-7px' } }).component();
-		projectLocationRow.addItem(this.projectFileTextBox, { CSSStyles: { 'margin-right': '10px' } });
+		projectLocationRow.addItem(this.projectFileDropdown, { CSSStyles: { 'margin-right': '10px' } });
 		projectLocationRow.addItem(browseFolderButton, { CSSStyles: { 'margin-top': '2px' } });
 
 		return projectLocationRow;
@@ -415,8 +427,8 @@ export class UpdateProjectFromDatabaseDialog {
 				return;
 			}
 
-			this.projectFileTextBox!.value = fileUris[0].fsPath;
-			await this.projectFileTextBox!.updateProperty('title', fileUris[0].fsPath);
+			this.projectFileDropdown!.value = fileUris[0].fsPath;
+			await this.projectFileDropdown!.updateProperty('title', fileUris[0].fsPath);
 		});
 
 		return browseFolderButton;
@@ -425,7 +437,7 @@ export class UpdateProjectFromDatabaseDialog {
 	private createFolderStructureRow(view: azdata.ModelView): azdata.FlexContainer {
 		this.folderStructureDropDown = view.modelBuilder.dropDown().withProps({
 			values: [constants.file, constants.flat, constants.objectType, constants.schema, constants.schemaObjectType],
-			value: constants.schemaObjectType,
+			value: constants.schemaObjectType,			//TODO: Read this value from project info after fixing https://github.com/microsoft/azuredatastudio/issues/20332
 			ariaLabel: constants.folderStructureLabel,
 			required: true,
 			width: cssStyles.updateProjectFromDatabaseTextboxWidth
@@ -492,7 +504,7 @@ export class UpdateProjectFromDatabaseDialog {
 	public tryEnableUpdateButton(): void {
 		if (this.serverDropdown?.value
 			&& this.databaseDropdown?.value
-			&& this.projectFileTextBox?.value
+			&& this.projectFileDropdown?.value
 			&& this.folderStructureDropDown?.value
 			&& this.action !== undefined) {
 			this.dialog.okButton.enabled = true;
@@ -537,7 +549,7 @@ export class UpdateProjectFromDatabaseDialog {
 			connectionDetails: connectionDetails,
 			ownerUri: ownerUri,
 			projectFilePath: '',
-			folderStructure: '',
+			folderStructure: mssql.ExtractTarget.schemaObjectType,
 			targetScripts: [],
 			dataSchemaProvider: '',
 			packageFilePath: '',
@@ -546,8 +558,8 @@ export class UpdateProjectFromDatabaseDialog {
 
 		const targetEndpointInfo: mssql.SchemaCompareEndpointInfo = {
 			endpointType: mssql.SchemaCompareEndpointType.Project,
-			projectFilePath: this.projectFileTextBox!.value!,
-			folderStructure: this.folderStructureDropDown!.value as string,
+			projectFilePath: this.projectFileDropdown!.value! as string,
+			folderStructure: mapExtractTargetEnum(<string>this.folderStructureDropDown!.value),
 			targetScripts: [],
 			dataSchemaProvider: '',
 			connectionDetails: connectionDetails,
@@ -574,14 +586,14 @@ export class UpdateProjectFromDatabaseDialog {
 				return false;
 			}
 			// the selected location should be an existing directory
-			const parentDirectoryExists = await exists(path.dirname(this.projectFileTextBox!.value!));
+			const parentDirectoryExists = await exists(path.dirname(this.projectFileDropdown!.value! as string));
 			if (!parentDirectoryExists) {
-				this.showErrorMessage(constants.ProjectParentDirectoryNotExistError(this.projectFileTextBox!.value!));
+				this.showErrorMessage(constants.ProjectParentDirectoryNotExistError(this.projectFileDropdown!.value! as string));
 				return false;
 			}
 
 			// the selected location must contain a .sqlproj file
-			const fileExists = await exists(this.projectFileTextBox!.value!);
+			const fileExists = await exists(this.projectFileDropdown!.value! as string);
 			if (!fileExists) {
 				this.showErrorMessage(constants.noSqlProjFile);
 				return false;

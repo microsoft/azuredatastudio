@@ -270,6 +270,8 @@ export class SkuEditParametersDialog {
 				'narrow');
 
 			this.dialog.okButton.label = SkuEditParametersDialog.UpdateButtonText;
+			this.dialog.okButton.position = 'left';
+			this.dialog.cancelButton.position = 'left';
 			this._disposables.push(
 				this.dialog.okButton.onClick(
 					async () => await this.execute()));

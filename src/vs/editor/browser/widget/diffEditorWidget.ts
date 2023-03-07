@@ -46,7 +46,6 @@ import { EditorExtensionsRegistry, IDiffEditorContributionDescription } from 'vs
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IEditorProgressService, IProgressRunner } from 'vs/platform/progress/common/progress';
 import { ElementSizeObserver } from 'vs/editor/browser/config/elementSizeObserver';
-import { reverseLineChanges } from 'sql/editor/browser/diffEditorHelper'; // {{SQL CARBON EDIT}}
 import { Codicon } from 'vs/base/common/codicons';
 import { MOUSE_CURSOR_TEXT_CSS_CLASS_NAME } from 'vs/base/browser/ui/mouseCursor/mouseCursor';
 import { IViewLineTokens } from 'vs/editor/common/tokens/lineTokens';
@@ -1397,19 +1396,17 @@ abstract class DiffEditorWidgetStyle extends Disposable {
 		});
 		const zones = this._getViewZones(lineChanges, originalWhitespaces, modifiedWhitespaces, renderIndicators);
 
-		// {{SQL CARBON EDIT}}
-		if (reverse) {
-			lineChanges = reverseLineChanges(lineChanges);
-			[originalEditor, modifiedEditor] = [modifiedEditor, originalEditor];
-		}
-
-		// {{SQL CARBON EDIT}}
 		// Get decorations & overview ruler zones
 		let originalDecorations = this._getOriginalEditorDecorations(zones, lineChanges, ignoreTrimWhitespace, renderIndicators);
 		let modifiedDecorations = this._getModifiedEditorDecorations(zones, lineChanges, ignoreTrimWhitespace, renderIndicators);
-		// {{SQL CARBON EDIT}}
+
+		// {{SQL CARBON EDIT}} - reverse decorations
 		if (reverse) {
-			[originalDecorations, modifiedDecorations] = [modifiedDecorations, originalDecorations];
+			reverseDecorations(originalDecorations.decorations);
+			reverseDecorations(modifiedDecorations.decorations);
+
+			originalDecorations.overviewZones = setOverviewZonesColor(originalDecorations.overviewZones, String(this._insertColor));
+			modifiedDecorations.overviewZones = setOverviewZonesColor(modifiedDecorations.overviewZones, String(this._removeColor));
 		}
 
 		return {
@@ -1798,6 +1795,68 @@ const DECORATIONS = {
 	})
 
 };
+
+// {{SQL CARBON EDIT}} - helper function for reversing colors for schema compare
+/**
+	 * Reverses the decorations of the given array of decorations, so that deletes and inserts are swapped
+	 * @param decorations
+	 */
+function reverseDecorations(decorations: IModelDeltaDecoration[]): void {
+	for (let dec of decorations) {
+		switch (dec.options.description) {
+			case 'diff-editor-char-delete': {
+				dec.options = DECORATIONS.charInsert;
+				break;
+			}
+			case 'diff-editor-char-delete-whole-line': {
+				dec.options = DECORATIONS.charInsertWholeLine;
+				break;
+			}
+			case 'diff-editor-char-insert': {
+				dec.options = DECORATIONS.charDelete;
+				break;
+			}
+			case 'diff-editor-char-insert-whole-line': {
+				dec.options = DECORATIONS.charDeleteWholeLine;
+				break;
+			}
+			case 'diff-editor-line-insert': {
+				dec.options = DECORATIONS.lineDelete;
+				break;
+			}
+			case 'diff-editor-line-insert-with-sign': {
+				dec.options = DECORATIONS.lineDeleteWithSign;
+				break;
+			}
+			case 'diff-editor-line-delete': {
+				dec.options = DECORATIONS.lineInsert;
+				break;
+			}
+			case 'diff-editor-line-delete-with-sign': {
+				dec.options = DECORATIONS.lineInsertWithSign;
+				break;
+			}
+		}
+	}
+}
+
+// {{SQL CARBON EDIT}} - helper function for reversing colors for schema compare
+/**
+ * Sets the overview zones to the provided color
+ * @param zones Array of zones to update
+ * @param color Color to set the overview zones to
+ * @returns
+ */
+function setOverviewZonesColor(zones: OverviewRulerZone[], color: string): OverviewRulerZone[] {
+	let reversedZones = [];
+
+	for (const zone of zones) {
+		// There color of an overview zone is readonly, so create a new one with the updated color
+		reversedZones.push(new OverviewRulerZone(zone.startLineNumber, zone.endLineNumber, zone.heightInLines, color));
+	}
+
+	return reversedZones;
+}
 
 class DiffEditorWidgetSideBySide extends DiffEditorWidgetStyle implements IVerticalSashLayoutProvider {
 

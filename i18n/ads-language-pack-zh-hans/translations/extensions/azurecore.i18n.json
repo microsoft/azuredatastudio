@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "将帐户添加到缓存时出错。",
 			"azure.cacheErrorGet": "从缓存获取帐户时出错",
 			"azure.cacheErrorParse": "在缓存中分析帐户时出错",
-			"azure.cacheErrrorRemove": "从缓存中删除帐户时出错。",
 			"azure.microsoftAccountDisplayName": "Microsoft 帐户",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "身份验证失败，或者你的令牌已从系统中删除。请尝试再次将帐户添加到 Azure Data Studio。",
@@ -21,8 +20,6 @@
 			"azure.owningTenantNotFound": "找不到帐户的拥有租户信息。",
 			"azure.responseError": "令牌检索失败，出现错误。[打开开发人员工具]({0})了解更多详细信息。",
 			"azure.tenantNotFound": "找不到带有 ID '{0}' 的指定租户。",
-			"azureAuth.unidentifiedError": "使用 Azure 身份验证时出现不明错误",
-			"azureWorkAccountDisplayName": "工作或学校帐户",
 			"azurecore.consentDialog.body": "你的租户“{0} ({1})”需要你重新进行身份验证才能访问 {2} 资源。请按“打开”启动身份验证过程。",
 			"azurecore.consentDialog.cancel": "取消",
 			"azurecore.consentDialog.ignore": "忽略租户",
@@ -44,7 +41,9 @@
 		"dist/account-provider/azureAccountProvider": {
 			"azure.NoAuthMethod.Available": "无可用的 Azure 身份验证方法。必须在 ADS 配置中启用身份验证方法。",
 			"azure.NoAuthMethod.Selected": "未选择任何 Azure 身份验证方法。必须选择你要使用的身份验证方法。",
-			"azure.deprecatedGetSecurityToken": "对 azdata.accounts.getSecurityToken 进行了调用，此方法已弃用，并会在未来的版本中删除。请改用 getAccountSecurityToken。"
+			"azure.deprecatedGetSecurityToken": "对 azdata.accounts.getSecurityToken 进行了调用，此方法已弃用，并会在未来的版本中删除。请改用 getAccountSecurityToken。",
+			"genericTokenError": "无法获取令牌",
+			"msalTokenError": "{0} 获取令牌时发生。 \r\n{1}"
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "未能清除令牌缓存",
@@ -52,10 +51,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure (中国)",
-			"germanyCloud": "Azure (德国)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (美国政府)",
-			"usNatCloudDisplayName": "Azure (美国国家)"
+			"usGovCloudDisplayName": "Azure (美国政府)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "必须选择一个 Azure 帐户才能使用此功能。",
@@ -99,6 +96,12 @@
 		},
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
 			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL 托管实例 - Azure Arc"
+		},
+		"dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider": {
+			"azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel": "专用 SQL 池"
+		},
+		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
+			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
 		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "未找到资源"
@@ -188,6 +191,8 @@
 			"azurecore.norwaywest": "挪威西部",
 			"azurecore.postgresServer": "Azure Database for PostgreSQL 服务器",
 			"azurecore.reload": "重载",
+			"azurecore.reloadChoice": "重新加载 Azure Data Studio",
+			"azurecore.reloadPrompt": "身份验证库已更改，请重新加载 Azure Data Studio。",
 			"azurecore.requiresReload": "修改此设置需要重新加载窗口，以使所有更改生效。",
 			"azurecore.resourceGroup": "资源组",
 			"azurecore.resourceType": "资源类型",
@@ -233,6 +238,7 @@
 			"azure.resource.view.title": "Azure (预览)",
 			"azure.tenant.config.filter.description": "查询 Azure 资源时要忽略的租户 ID 列表。每个元素都是一个租户 ID。",
 			"azure.title": "Azure",
+			"config.authenticationLibrary": "用于 AAD 身份验证流的库。请在更改此选项后重新启动 ADS。",
 			"config.azureAccountConfigurationSection": "Azure 帐户配置",
 			"config.azureAuthMethodConfigurationSection": "Azure 身份验证方法",
 			"config.azureCodeGrantMethod": "代码授予方法",

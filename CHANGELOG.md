@@ -1,9 +1,105 @@
 # Change Log
 
+## Version 1.41.2
+* Release date: February 10, 2023
+* Release status: General Availability
+
+### Bug fixes in 1.41.2
+
+| New Item | Details |
+| --- | --- |
+| Connection | Fixed a regression blocking connections to sovereign Azure clouds |
+| Query Editor | Fixed a regression causing the Output window to display on each query execution |
+
+## Version 1.41.1
+* Release date: January 30, 2023
+* Release status: General Availability
+
+### Bug fixes in 1.41.1
+
+| New Item | Details |
+| --- | --- |
+| Connection | Fixed a bug causing incorrect Azure account tenant selection when connecting to server through Azure view |
+| Object Explorer | Fixed a regression causing Object Explorer to not show database objects for Azure SQL DB Basic SLO |
+
+## Version 1.41.0
+* Release date: January 25, 2023
+* Release status: General Availability
+
+### What's new in 1.41.0
+
+| New Item | Details |
+| --- | --- |
+| Azure Subscriptions |  Introduced Azure Synapse Analytics and Dedicated SQL Pools nodes. |
+| Azure SQL Migration Extension | Premium series memory optimized SQL MI SKUs included in recommendations. |
+| Connection | Migrated Azure authentication library from ADAL to MSAL. MSAL is the library used by default starting with release 1.41.  However, if you encounter issues, you can change back to ADAL within **Settings > Azure: Authentication Library**.  |
+| Connection | Added ability to provide a description when creating a firewall rule from Azure Data Studio. |
+| Connection | Include ability to change password for new or expired login. |
+| Connection | Add support for SQL Server Alias use when connecting to a server. |
+| MongoDB Atlas Extension | Provides the ability to connect to and query data on MongoDB Atlas (Preview). |
+| Notebooks | Provide option for users to convert markdown to a table or not when HMTL table tag is present. |
+| Object Explorer | Databases are no longer brought online in serverless Azure SQL when Databases node is expanded. |
+| Object Explorer | Added support for Ledger views. |
+| Object Explorer | Fixed issue with key binding for objectExplorer.manage not working. |
+| Query Editor | Fixes and updates to SQL grammar (colorization and auto-complete). |
+| Query Plan Viewer | Changed default folder to be user’s home directory when saving a query plan. |
+| Query Results | Added ability to only copy Column Headers, and only for cells that are highlighted. |
+| Query Results | Added option to show or hide the action bar in the results window. |
+| Query Results | Increased height of horizontal scrollbar in results window. |
+| Query Results | Added new aggregate details in the results toolbar when selecting multiple cells. |
+| SQL Projects Extension | Provide the ability select an existing project via a new dropdown. |
+
+### Bug fixes in 1.41.0
+
+| New Item | Details |
+| --- | --- |
+| Accessibility | Accessibility improvements were made in the Query Plan Viewer, Query History Extension and Migration Extension. |
+| Big Data Cluster | Fix missing connect icon in BDC view header bar. |
+| Big Data Cluster | Fixed issue preventing HDFS nodes for BDC servers in Object Explorer from expanding. |
+| Connection | Added ability to delete a connection that has expired AAD credentials. |
+| Connection | Improved experience when Azure Active Directory token expiration occurs. |
+| Connection | Improved connection experience when using multiple Azure tenants. |
+| Connection | Addressed problem with adding a firewall exception for a non-default Azure subscription. |
+| Migration Extension | Added support for non-public clouds for migration scenarios. |
+| MySQL Extension | Updated resource endpoints to support AAD logins in the MySQL extension. |
+| Notebooks | Improve Intellisense refresh in Notebook cells. |
+| Notebooks | Address issue with "New Notebook Job" resulting in an empty form. |
+| Object Explorer | Fixed issue with database list not loading. |
+| Query Execution | Fixed error generated when executing a query with LEFT JOIN and NULL values. |
+| Query Plan Viewer | When saving query plans (.sqlplan file), the filename will numerically increment to prevent duplicate filenames. |
+| Query Results | Fixed issue where users were unable to open JSON data as a new file. |
+| Query Results | Provide proper cell selection and navigation in the query results grid. |
+| Query Results | Improved the handling of line breaks when copying cell contents. |
+| Query Results | Addressed issue where a column would re-size incorrectly when auto-sizing in the results output. |
+| Query Results | Improved JSON cell handling from query results. |
+| Query Results | Fixed behavior where focus was incorrectly set on a cell using keyboard navigation. |
+| Resource Deployment | Remove 'Preview' flag for SQL Server 2022 deployment types. |
+| Schema Compare Extension | Fixed problem where differences in schema compare were not being highlighted. |
+| Schema Compare Extension | Permissions are now included in schema compare when the "Include Permissions" option is selected. |
+| SQL Projects Extension | Changes to db_datawriter or db_datareader roles are now supported. |
+| SQL Projects Extension | Updated Database Projects Net Core SDK Location dialog to be more descriptive. |
+| Table Designer | Updated Table Designer to disable transaction support for Azure Synapse databases. |
+| Table Designer | Addressed problem of the table name not refreshing after being updated prior to publishing. |
+| Table Designer | Fixed issue where table designer could not be opened for existing Ledger tables. |
+
+## Version 1.40.2
+* Release date: December 27, 2022
+* Release status: General Availability
+
+### Bug fixes in 1.40.2
+  * Fix potential elevation of privilege issue using Bash shell on Windows.  VS Code issue [#160827](https://github.com/microsoft/vscode/issues/160827)
+
+## Version 1.40.1
+* Release date: November 22, 2022
+* Release status: General Availability
+
+### Bug fixes in 1.40.1
+  * Fixed bug that caused folders in the servers tree to display incorrect contents [#21245](https://github.com/microsoft/azuredatastudio/issues/21245)
+
 ## Version 1.40.0
 * Release date: November 16, 2022
 * Release status: General Availability
-## What's new in 1.40.0
+### What's new in 1.40.0
 | New Item | Details |
 |----------|---------|
 | Connections | Connections for SQL now default to Encrypt = 'True'. |
@@ -31,7 +127,7 @@
 | VS Code merge | VS Code merges to version 1.67. Read [their release notes](https://code.visualstudio.com/updates/v1_67) to learn more. |
 | SQL Database Projects | Adds SQL projects support for syntax introduced in SQL Server 2022.|
 
-## Bug fixes in 1.40.0
+### Bug fixes in 1.40.0
 | New Item | Details |
 |----------|---------|
 | Connections | Fixed bug that occurred when trying to connect to the Dedicated Admin Connection (DAC) on SQL Server. |
@@ -48,39 +144,17 @@
 | SQL Projects | Fixed bug in SQL Projects that led to extension not using output path when publishing a project. |
 | SQL Projects | Fixed bug that caused .NET install to not be found when using the SQL Projects extension on Linux platforms. |
 
-| Platform																|
-| ---------------------------------------	|
-| [Windows User Installer][win-user]	|
-| [Windows System Installer][win-system]	|
-| [Windows ZIP][win-zip]		|
-| [macOS Universal][osx-universal]	|
-| [macOS ZIP][osx-zip]	|
-| [macOS ZIP][osx-arm64]	|
-| [Linux TAR.GZ][linux-zip]	|
-| [Linux RPM][linux-rpm]		|
-| [Linux DEB][linux-deb]		|
-
-[win-user]: https://go.microsoft.com/fwlink/?linkid=2215273
-[win-system]: https://go.microsoft.com/fwlink/?linkid=2215525
-[win-zip]: https://go.microsoft.com/fwlink/?linkid=2215526
-[osx-universal]: https://go.microsoft.com/fwlink/?linkid=2215527
-[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2215420
-[osx-arm64]: https://go.microsoft.com/fwlink/?linkid=2215346
-[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2215421
-[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2215347
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2215528
-
 ## Version 1.39.1
 * Release date: August 30, 2022
 * Release status: General Availability
-## What's new in 1.39.1
-* Bug fixes in 1.39.1
-    * Fixed bug that caused Database Trees in server connections to not expand in the Object Explorer.
+
+### Bug fixes in 1.39.1
+  * Fixed bug that caused Database Trees in server connections to not expand in the Object Explorer.
 
 ## Version 1.39.0
 * Release date: August 24, 2022
 * Release status: General Availability
-## What's new in 1.39.0
+### What's new in 1.39.0
 * New Features:
     * Deployment Wizard - Azure Data Studio now supports SQL Server 2022 (Preview) in the Deployment Wizard for both local and container installation.
     * Object Explorer - Added Ledger icons and scripting support to Object Explorer for Ledger objects.
@@ -110,7 +184,7 @@
 ## Version 1.38.0
 * Release date: July 27, 2022
 * Release status: General Availability
-## What's new in 1.38.0
+### What's new in 1.38.0
 * New Features:
     * VS Code merges to 1.62 - This release includes updates to VS Code from the three previous VS Code releases. Read [their release notes](https://code.visualstudio.com/updates/v1_62) to learn more.
     * Table Designer - New column added to Table Designer for easier access to additional actions specific to individual rows.
@@ -138,7 +212,7 @@
 ## Version 1.37.0
 * Release date: June 15, 2022
 * Release status: General Availability
-## What's new in this version
+### What's new in this version
 * New Features:
     *  Backup & Restore - Backup & Restore to URL is now available in preview for Azure SQL Managed Instances.
     *  Table Designer - Added API to support computed column capabilities on Table Designer.
@@ -161,7 +235,7 @@
 ## Version 1.36.2
 * Release date: May 20, 2022
 * Release status: General Availability
-## What's new in this version
+### What's new in this version
 - Fix connectivity issue with PBI data source
 - Fix query plan zoom and icon issues
 - Issues fixed in this release https://github.com/microsoft/azuredatastudio/milestone/89?closed=1
@@ -169,14 +243,14 @@
 ## Version 1.36.1
 * Release date: April 22, 2022
 * Release status: General Availability
-## What's new in this version
+### What's new in this version
 * April Hotfix addressing these issues https://github.com/microsoft/azuredatastudio/milestone/88?closed=1.
 * Hotfix RCA - https://github.com/microsoft/azuredatastudio/wiki/ADS-April-2022-Hotfix-RCA
 
 ## Version 1.36.0
 * Release date: April 20, 2022
 * Release status: General Availability
-## What's new in this version
+### What's new in this version
 - General Availability of the Azure SQL Migration Extension for ADS
 - Support for .NET Interactive Notebooks Extension
 - New Table Designer Features including support for System Versioned, Graph and Memory Optomized Tables
@@ -186,14 +260,14 @@
 ## Version 1.35.1
 * Release date: March 17, 2022
 * Release status: General Availability
-## Hotfix release
+### Hotfix release
 - Fix for [Excel number format #18615](https://github.com/microsoft/azuredatastudio/issues/18615)
 - Fix for [Geometry Data Type Returned as Unknown Charset in Results Grid #18630](https://github.com/microsoft/azuredatastudio/issues/18630)
 
- ## Version 1.35.0
+## Version 1.35.0
 * Release date: February 24, 2022
 * Release status: General Availability
-## What's new in this version
+### What's new in this version
 * New Features:
     *  Table Designer - Added functionality for creation and management of tables for SQL Servers. Built using DacFx framework
     *  Query Plan Viewer - Added functionality for users to view a graphic view of estimated and actual query plans without need for an extension
@@ -206,7 +280,7 @@
  ## Version 1.34.0
 * Release date: December 15, 2021
 * Release status: General Availability
-## What's new in this version
+### What's new in this version
 * New Features:
     *  Added “Currently restoring backup file” in the migration progress details page of Azure SQL Migration extension when backup files location is Azure Storage blob container
     *  Enhancements to diagnostics in Azure SQL Migration extension
@@ -230,14 +304,14 @@
 * Release date: Nov 4, 2021
 * Release status: General Availability
 
-## Hotfix release
+### Hotfix release
 - Fix for [#16535 Unable to See Saved Connections in Restricted Mode](https://github.com/microsoft/azuredatastudio/issues/17535)
 - Fix for [#17579 Can't type in Notebook code cell after editing text cell](https://github.com/microsoft/azuredatastudio/issues/17579)
 
 ## Version 1.33.0
 * Release date: October 27, 2021
 * Release status: General Availability
-## What's new in this version
+### What's new in this version
 * New Notebook Features:
     *  Notebook Views
     *  Split cell support
@@ -276,7 +350,7 @@
 ## Version 1.31.1
 * Release date: July 29, 2021
 * Release status: General Availability
-## Hotfix Release
+### Hotfix Release
 - Fix for [#16436 Database Connection Toolbar Missing](https://github.com/microsoft/azuredatastudio/issues/16436)
 
 ## Version 1.31.0
@@ -567,7 +641,7 @@
 * GA status for Big Data Cluster/SQL 2019 features [#8269](https://github.com/microsoft/azuredatastudio/issues/8269)
 * Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/44?closed=1).
 
-## Contributions and "thank you"
+### Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
 ## Version 1.13.1
@@ -581,7 +655,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * General Availability release for Schema Compare and DACPAC extensions
 * Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/43?closed=1).
 
-## Contributions and "thank you"
+### Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 * aspnerd for `Use selected DB for import wizard schema list` [#7878](https://github.com/microsoft/azuredatastudio/pull/7878)
 
@@ -599,7 +673,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release date: October 2, 2019
 * Release status: General Availability
 
-## What's new in this version
+### What's new in this version
 * Announcing the Query History panel
 * Improved Query Results Grid copy selection support
 * TempDB page added to Server Reports extension
@@ -610,14 +684,14 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release date: September 10, 2019
 * Release status: General Availability
 
-## What's new in this version
+### What's new in this version
 * Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/41?closed=1).
 
 ## Version 1.10.0
 * Release date: August 14, 2019
 * Release status: General Availability
 
-## What's new in this version
+### What's new in this version
 * [SandDance](https://github.com/microsoft/SandDance) integration — A new way to interact with data. Download the extension [here](https://docs.microsoft.com/sql/azure-data-studio/sanddance-extension)
 * Notebook improvements
    * Better loading performance
@@ -633,7 +707,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release date: July 11, 2019
 * Release status: General Availability
 
-## What's new in this version
+### What's new in this version
 * Release of [SentryOne Plan Explorer Extension](https://www.sentryone.com/products/sentryone-plan-explorer-extension-azure-data-studio)
 * **Schema Compare**
     * Schema Compare File Support (.SCMP)
@@ -659,7 +733,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release date: June 6, 2019
 * Release status: General Availability
 
-## What's new in this version
+### What's new in this version
 * Initial release of the Database Admin Tool Extensions for Windows *Preview* extension
 * Initial release of the Central Management Servers extension
 * **Schema Compare**
@@ -680,24 +754,24 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release date: May 8, 2019
 * Release status: General Availability
 
-## What's new in this version
+### What's new in this version
 * Announcing Schema Compare *Preview* extension
 * Tasks Panel UX improvement
 * Announcing new Welcome page
 * Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/31?closed=1).
 
-## Contributions and "thank you"
+### Contributions and "thank you"
 We would like to thank all our users who raised issues.
 
 ## Version 1.6.0
 * Release date: April 18, 2019
 * Release status: General Availability
 
-## What's new in this version
+### What's new in this version
 * Align with latest VS Code editor platform (currently 1.33.1)
 * Resolved [bugs and issues](https://github.com/Microsoft/azuredatastudio/milestone/26?closed=1).
 
-## Contributions and "thank you"
+### Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
 * yamatoya for `fix the format (#4899)`
@@ -706,13 +780,13 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release date: March 18, 2019
 * Release status: General Availability
 
-## What's new in this version
+### What's new in this version
 * Announcing T-SQL Notebooks
 * Announcing PostgreSQL extension
 * Announcing SQL Server Dacpac extension
 * Resolved [bugs and issues](https://github.com/Microsoft/azuredatastudio/milestone/25?closed=1).
 
-## Contributions and "thank you"
+### Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
 * GeoffYoung for `Fix sqlDropColumn description #4422`
@@ -721,7 +795,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release date: February 13, 2019
 * Release status: General Availability
 
-## What's new in this version
+### What's new in this version
 * Added **Admin pack for SQL Server** extension pack to make it easier to install SQL Server admin-related extensions. This includes:
     * [SQL Server Agent](https://docs.microsoft.com/en-us/sql/azure-data-studio/sql-server-agent-extension?view=sql-server-2017)
     * [SQL Server Profiler](https://docs.microsoft.com/en-us/sql/azure-data-studio/sql-server-profiler-extension?view=sql-server-2017)
@@ -735,7 +809,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Results streaming enabled by default for long running queries
 * Resolved [bugs and issues](https://github.com/Microsoft/azuredatastudio/milestone/23?closed=1).
 
-## Contributions and "thank you"
+### Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
 * AlexFsmn for `Added context menu for DBs in explorer view to backup & restore db. #2277`
@@ -746,7 +820,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release date: January 9, 2019
 * Release status: General Availability
 
-## What's new in this version
+### What's new in this version
 * #13 Feature Request: Azure Active Directory Authentication
 * #1040 Stream initial query results as they become available
 * #3298 Сan't add an azure account.
@@ -756,7 +830,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Updates to [SQL Server 2019 extension](https://docs.microsoft.com/sql/azure-data-studio/sql-server-2019-extension?view=sql-server-ver15)
 * **sp_executesql to SQL** and **New Database** extensions
 
-## Contributions and "thank you"
+### Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
 * Tarig0  for `Add Routine_Type to CreateStoredProc fixes #3257 (#3286)`
@@ -768,7 +842,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release date: November 6, 2018
 * Release status: General Availability
 
-## What's new in this version
+### What's new in this version
 * Update to the SQL Server 2019 Preview extension
 * Introducing Paste the Plan extension
 * Introducing High Color queries extension, including SSMS editor theme
@@ -777,7 +851,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Upgrade SQL Tools Service to .Net Core 2.2 Preview 3 (for eventual AAD support)
 * Fix customer reported GitHub issues
 
-## Contributions and "thank you"
+### Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
 * rdaniels6813  for `Add query plan theme support #3031`
@@ -791,12 +865,12 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release date: October 18, 2018
 * Release status: General Availability
 
-## What's new in this version
+### What's new in this version
 * Introducing the Azure Resource Explorer to browse Azure SQL Databases
 * Improve Object Explorer and Query Editor connectivity robustness
 * SQL Server 2019 and SQL Agent extension improvements
 
-## Contributions and "thank you"
+### Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
 * philoushka  for `center the icon #2760`
@@ -808,7 +882,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release date: September 24, 2018
 * Release status: General Availability
 
-## What's new in this version
+### What's new in this version
 * Announcing the SQL Server 2019 Preview extension.
   * Support for SQL Server 2019 preview features including Big Data Cluster support.
   * Azure Data Studio Notebooks
@@ -819,7 +893,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Accessibility improvements for screen reader, keyboard navigation and high-contrast.
 * Added Connection name option to provide an alternative display name in the Servers viewlet.
 
-## Contributions and "thank you"
+### Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
 * AlexFsmn `Feature: Ability to add connection name #2332`
@@ -829,7 +903,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release date: August 30, 2018
 * Release status: Public Preview
 
-## What's new in this version
+### What's new in this version
 * Announcing the SQL Server Import Extension
 * SQL Server Profiler Session management
 * SQL Server Agent improvements
@@ -837,7 +911,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Quality of Life improvements: Connection strings
 * Fix many customer reported GitHub issues
 
-## Contributions and "thank you"
+### Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
 * SebastianPfliegel `Added more saveAsCsv options #2099`
@@ -855,7 +929,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release date: July 19, 2018
 * Release status: Public Preview
 
-## What's new in this version
+### What's new in this version
 * SQL Server Agent for Azure Data Studio extension improvements
   * Added view of Alerts, Operators, and Proxies and icons on left pane
   * Added dialogs for New Job, New Job Step, New Alert, and New Operator
@@ -876,7 +950,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release date: June 20, 2018
 * Release status: Public Preview
 
-## What's new in this version
+### What's new in this version
 * **SQL Server Profiler for Azure Data Studio  *Preview*** extension initial release
 * The new **SQL Data Warehouse** extension includes rich customizable dashboard widgets surfacing insights to your data warehouse. This unlocks key scenarios around managing and tuning your data warehouse to ensure it is optimized for consistent performance.
 * **Edit Data "Filtering and Sorting"** support
@@ -889,7 +963,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release date: May 7, 2018
 * Release status: Public Preview
 
-## What's new in this version
+### What's new in this version
 The May release is focused on stabilization and bug fixes leading up to the Build conference.  This build contains the following highlights.
 
 * Announcing **Redgate SQL Search** extension available in Extension Manager
@@ -904,7 +978,7 @@ The May release is focused on stabilization and bug fixes leading up to the Buil
 * Release date: April 25, 2018
 * Release status: Public Preview
 
-## What's new in this version
+### What's new in this version
 The April Public Preview release contains some of the following highlights.
 
 * Improvements to SQL Agent *Preview* extension
@@ -919,7 +993,7 @@ The April Public Preview release contains some of the following highlights.
 * Release date: March 28, 2017
 * Release status: Public Preview
 
-## What's new in this version
+### What's new in this version
 The March Public Preview release enables some key aspects of the Azure Data Studio
 extensibility story.  Here are some highlights in this release.
 
@@ -934,14 +1008,14 @@ extensibility story.  Here are some highlights in this release.
 * Release date: February 16, 2017
 * Release status: Public Preview Hotfix 1
 
-## What's new in this version
+### What's new in this version
 * Bug fix for `#717 Selecting partial query and hitting Cmd or Ctrl+C opens terminal with Error message`
 
 ## Version 0.26.6
 * Release date: February 15, 2017
 * Release status: Public Preview
 
-## What's new in this version
+### What's new in this version
 The February release fixes several important customer reported issues, as well as various feature improvements.  We've also introduced auto-update support in February which will simplify keeping updated with the lastest changes.
 
 Here's some of the highlights in the February release.
@@ -961,7 +1035,7 @@ Here's some of the highlights in the February release.
 * VS Code Editor 1.19 integration
 * Update JustinPealing/html-query-plan component to pick-up several Query Plan viewer improvements
 
-## Contributions and "thank you"
+### Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
 * SebastianPfliegel for `Add cursor snippet (#475)`
@@ -972,7 +1046,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release date: January 17, 2017
 * Release status: Public Preview
 
-## What's new in this version
+### What's new in this version
 The January release focuses on addressing a few of the top upvoted feature suggestions, as well as fixing high-priority bugs.  This release period coincides with holiday vacations, so the churn in this release is
 relatively scoped.
 
@@ -987,7 +1061,7 @@ Here's some of the highlights in the January release.
 * Fix missing Azure Account branding icon
 * Change "Server name" to "Server" in Connection Dialog
 
-## Contributions and "thank you"
+### Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
 * alextercete for `Fix "No extension gallery service configured" error (#427)`
@@ -997,7 +1071,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release date: December 19, 2017
 * Release status: Public Preview
 
-## What's new in this version
+### What's new in this version
 * Azure Integration with Create Firewall Rule
 * Windows Setup, Linux DEB and Linux RPM installation packages
 * Manage Dashboard visual layout editor
@@ -1021,7 +1095,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Allow expanding databases not in certain non-Online states
 * Connection Dialog selects most common default authentication method based on platform
 
-## Contributions and "thank you"
+### Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 * mwiedemeyer for `Fix #58: Default sort order for DB size widget (#111)`
 * AlexTroshkin for `Show disconnect in context menu only when connectionProfile connected (#150)`

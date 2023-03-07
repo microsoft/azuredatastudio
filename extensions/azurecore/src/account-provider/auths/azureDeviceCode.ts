@@ -13,7 +13,6 @@ import {
 	DeviceCodeCheckPostData,
 
 } from './azureAuth';
-
 import {
 	AzureAccountProviderMetadata,
 	AzureAuthType,
@@ -21,8 +20,10 @@ import {
 	Resource
 } from 'azurecore';
 import { Deferred } from '../interfaces';
+import { AuthenticationResult, DeviceCodeRequest, PublicClientApplication } from '@azure/msal-node';
 import { SimpleTokenCache } from '../simpleTokenCache';
 import { Logger } from '../../utils/Logger';
+
 const localize = nls.loadMessageBundle();
 
 interface DeviceCodeLogin { // https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code
@@ -50,12 +51,34 @@ export class AzureDeviceCode extends AzureAuth {
 		tokenCache: SimpleTokenCache,
 		context: vscode.ExtensionContext,
 		uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
+		clientApplication: PublicClientApplication,
+		authLibrary: string
 	) {
-		super(metadata, tokenCache, context, uriEventEmitter, AzureAuthType.DeviceCode, AzureDeviceCode.USER_FRIENDLY_NAME);
+		super(metadata, tokenCache, context, clientApplication, uriEventEmitter, AzureAuthType.DeviceCode, AzureDeviceCode.USER_FRIENDLY_NAME, authLibrary);
 		this.pageTitle = localize('addAccount', "Add {0} account", this.metadata.displayName);
-
 	}
-	protected async login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void, Error> }> {
+
+	protected async loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult | null, authComplete: Deferred<void, Error> }> {
+		let authCompleteDeferred: Deferred<void, Error>;
+		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
+
+		const deviceCodeRequest: DeviceCodeRequest = {
+			scopes: this.scopes,
+			authority: `${this.loginEndpointUrl}${tenant.id}`,
+			deviceCodeCallback: async (response) => {
+				await azdata.accounts.beginAutoOAuthDeviceCode(this.metadata.id, this.pageTitle, response.message, response.userCode, response.verificationUri);
+			}
+		};
+		const authResult = await this.clientApplication.acquireTokenByDeviceCode(deviceCodeRequest);
+		this.closeOnceComplete(authCompletePromise).catch(Logger.error);
+
+		return {
+			response: authResult,
+			authComplete: authCompleteDeferred!
+		};
+	}
+
+	protected async loginAdal(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void, Error> }> {
 		let authCompleteDeferred: Deferred<void, Error>;
 		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
 
@@ -79,7 +102,7 @@ export class AzureDeviceCode extends AzureAuth {
 		const currentTime = new Date().getTime() / 1000;
 		const expiresOn = `${currentTime + finalDeviceLogin.expires_in}`;
 
-		const result = await this.getTokenHelper(tenant, resource, accessTokenString, refreshTokenString, expiresOn);
+		const result = await this.getTokenHelperAdal(tenant, resource, accessTokenString, refreshTokenString, expiresOn);
 		this.closeOnceComplete(authCompletePromise).catch(Logger.error);
 
 		return {
@@ -92,7 +115,6 @@ export class AzureDeviceCode extends AzureAuth {
 		await promise;
 		azdata.accounts.endAutoOAuthDeviceCode();
 	}
-
 
 	private setupPolling(info: DeviceCodeLogin): Promise<DeviceCodeLoginResult> {
 		const timeoutMessage = localize('azure.timeoutDeviceCode', 'Timed out when waiting for device code login.');
@@ -130,17 +152,14 @@ export class AzureDeviceCode extends AzureAuth {
 			};
 
 			const postResult = await this.makePostRequest(uri, postData);
-
 			const result: DeviceCodeLoginResult = postResult.data;
 
 			return result;
 		} catch (ex) {
-			console.log(ex);
-			console.log('Unexpected error making Azure auth request', 'azureCore.checkForResult', JSON.stringify(ex?.response?.data, undefined, 2));
+			Logger.error('Unexpected error making Azure auth request', 'azureCore.checkForResult', JSON.stringify(ex?.response?.data, undefined, 2));
 			throw new Error(msg);
 		}
 	}
-
 
 	public override async autoOAuthCancelled(): Promise<void> {
 		return azdata.accounts.endAutoOAuthDeviceCode();

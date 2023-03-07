@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
+import * as perf from 'vs/base/common/performance';
 import {
 	ExtHostDataProtocolShape,
 	MainThreadDataProtocolShape
@@ -83,6 +84,9 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			disconnect(connectionUri: string): Thenable<boolean> {
 				return self._proxy.$disconnect(handle, connectionUri);
 			},
+			changePassword(connectionUri, connectionInfo, newPassword): Thenable<azdata.PasswordChangeResult> {
+				return self._proxy.$changePassword(handle, connectionUri, connectionInfo, newPassword);
+			},
 			changeDatabase(connectionUri: string, newDatabase: string): Thenable<boolean> {
 				return self._proxy.$changeDatabase(handle, connectionUri, newDatabase);
 			},
@@ -113,15 +117,19 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 				return Promise.resolve(self._proxy.$cancelQuery(handle, ownerUri));
 			},
 			runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void> {
+				perf.mark(`sql/query/${ownerUri}/main_$runQuery`);
 				return Promise.resolve(self._proxy.$runQuery(handle, ownerUri, selection, runOptions));
 			},
 			runQueryStatement(ownerUri: string, line: number, column: number): Promise<void> {
+				perf.mark(`sql/query/${ownerUri}/main_$runQueryStatement`);
 				return Promise.resolve(self._proxy.$runQueryStatement(handle, ownerUri, line, column));
 			},
 			runQueryString(ownerUri: string, queryString: string): Promise<void> {
+				perf.mark(`sql/query/${ownerUri}/main_$runQueryString`);
 				return Promise.resolve(self._proxy.$runQueryString(handle, ownerUri, queryString));
 			},
 			runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult> {
+				perf.mark(`sql/query/${ownerUri}/main_$runQueryAndReturn`);
 				return Promise.resolve(self._proxy.$runQueryAndReturn(handle, ownerUri, queryString));
 			},
 			parseSyntax(ownerUri: string, query: string): Promise<azdata.SyntaxParseResult> {
@@ -575,6 +583,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 
 	// Query Management handlers
 	public $onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void {
+		perf.mark(`sql/query/${result.ownerUri}/main_$onQueryComplete`);
 		this._queryManagementService.onQueryComplete(result);
 	}
 	public $onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {

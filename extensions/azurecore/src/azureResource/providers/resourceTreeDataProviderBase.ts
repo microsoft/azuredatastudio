@@ -28,7 +28,7 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 			return resources.map((resource) => <azureResource.IAzureResourceNode>{
 				account: element.account,
 				subscription: element.subscription,
-				tenantId: element.tenantId,
+				tenantId: element.subscription.tenant,
 				treeItem: this.getTreeItemForResource(resource, element.account)
 			}).sort((a, b) => (<any>a.treeItem.label).localeCompare(b.treeItem.label));
 		} catch (error) {
@@ -38,7 +38,7 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 	}
 
 	private async getResources(element: azureResource.IAzureResourceNode): Promise<T[]> {
-		const response = await azdata.accounts.getAccountSecurityToken(element.account, element.tenantId, azdata.AzureResource.ResourceManagement);
+		const response = await azdata.accounts.getAccountSecurityToken(element.account, element.subscription.tenant!, azdata.AzureResource.ResourceManagement);
 		if (!response) {
 			throw new Error(`Did not receive security token when getting resources for account ${element.account.displayInfo.displayName}`);
 		}

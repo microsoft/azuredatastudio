@@ -306,7 +306,10 @@ export function createViewContext(): ViewTestContext {
 		onClosed: new vscode.EventEmitter<azdata.window.CloseReason>().event,
 		registerContent: () => { },
 		modelView: undefined!,
-		valid: true
+		valid: true,
+		loading: false,
+		loadingText: '',
+		loadingCompletedText: ''
 	};
 	let wizard: azdata.window.Wizard = {
 		title: '',
@@ -327,7 +330,10 @@ export function createViewContext(): ViewTestContext {
 		close: () => { return Promise.resolve(); },
 		registerNavigationValidator: () => { },
 		message: dialogMessage,
-		registerOperation: () => { }
+		registerOperation: () => { },
+		loading: false,
+		loadingText: '',
+		loadingCompletedText: ''
 	};
 	let wizardPage: azdata.window.WizardPage = {
 		title: '',

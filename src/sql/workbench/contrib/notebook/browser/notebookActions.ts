@@ -17,7 +17,6 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { ICommandService } from 'vs/platform/commands/common/commands';
 import { CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
@@ -38,6 +37,8 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { KernelsLanguage } from 'sql/workbench/services/notebook/common/notebookConstants';
 import { INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { Schemas } from 'vs/base/common/network';
+import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES, CONFIG_WORKBENCH_USEVSCODENOTEBOOKS } from 'sql/workbench/common/constants';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -465,7 +466,7 @@ export class RunParametersAction extends TooltipFromLabelAction {
 			return;
 		}
 		const editor = this._notebookService.findNotebookEditor(context);
-		// Only run action for kernels that are supported (Python, PySpark, PowerShell)
+		// Only run action for kernels that are supported (Python, PowerShell)
 		let supportedKernels: string[] = [KernelsLanguage.Python, KernelsLanguage.PowerShell];
 		if (!supportedKernels.includes(editor.model.languageInfo.name)) {
 			// If the kernel is not supported indicate to user to use supported kernels
@@ -839,13 +840,14 @@ export class NewNotebookAction extends Action {
 	public static readonly ID = 'notebook.command.new';
 	public static readonly LABEL = localize('newNotebookAction', "New Notebook");
 
-	public static readonly INTERNAL_NEW_NOTEBOOK_CMD_ID = '_notebook.command.new';
 	constructor(
 		id: string,
 		label: string,
-		@ICommandService private commandService: ICommandService,
 		@IObjectExplorerService private objectExplorerService: IObjectExplorerService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
+		@INotebookService private _notebookService: INotebookService,
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@ICommandService private _commandService: ICommandService,
 	) {
 		super(id, label);
 		this.class = 'notebook-action new-notebook';
@@ -855,14 +857,21 @@ export class NewNotebookAction extends Action {
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.NewNotebookFromConnections)
 			.withConnectionInfo(context?.connectionProfile)
 			.send();
-		let connProfile: azdata.IConnectionProfile;
-		if (context && context.nodeInfo) {
-			let node = await this.objectExplorerService.getTreeNode(context.connectionProfile.id, context.nodeInfo.nodePath);
-			connProfile = TreeUpdateUtils.getConnectionProfile(node).toIConnectionProfile();
-		} else if (context && context.connectionProfile) {
-			connProfile = context.connectionProfile;
+
+		const usePreviewFeatures = this._configurationService.getValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES);
+		const useVSCodeNotebooks = this._configurationService.getValue(CONFIG_WORKBENCH_USEVSCODENOTEBOOKS);
+		if (usePreviewFeatures && useVSCodeNotebooks) {
+			await this._commandService.executeCommand('ipynb.newUntitledIpynb');
+		} else {
+			let connProfile: azdata.IConnectionProfile;
+			if (context && context.nodeInfo) {
+				let node = await this.objectExplorerService.getTreeNode(context.connectionProfile.id, context.nodeInfo.nodePath);
+				connProfile = TreeUpdateUtils.getConnectionProfile(node).toIConnectionProfile();
+			} else if (context && context.connectionProfile) {
+				connProfile = context.connectionProfile;
+			}
+			await this._notebookService.openNotebook(URI.from({ scheme: 'untitled' }), { connectionProfile: connProfile });
 		}
-		return this.commandService.executeCommand(NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID, { connectionProfile: connProfile });
 	}
 }
 

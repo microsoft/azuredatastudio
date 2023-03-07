@@ -68,7 +68,7 @@ export interface IConnectionResult {
 	connected: boolean;
 	errorMessage: string;
 	errorCode: number;
-	callStack: string;
+	messageDetails: string;
 	errorHandled?: boolean;
 	connectionProfile?: IConnectionProfile;
 }
@@ -120,6 +120,11 @@ export interface IConnectionManagementService {
 	connectAndSaveProfile(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult>;
 
 	/**
+	 * Changes password of the connection profile's user.
+	 */
+	changePassword(connection: IConnectionProfile, uri: string, newPassword: string): Promise<azdata.PasswordChangeResult>;
+
+	/**
 	 * Replaces a connectioninfo's associated uri with a new uri.
 	 */
 	changeConnectionUri(newUri: string, oldUri: string): void
@@ -129,6 +134,12 @@ export interface IConnectionManagementService {
 	 * The purpose is connection by default
 	 */
 	findExistingConnection(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection'): ConnectionProfile;
+
+	/**
+	 * Fixes treeItem payload to consider defaultAuthenticationType and any other user settings.
+	 * @param profile Connection profile as received from treeItem.
+	 */
+	fixProfile(profile?: azdata.IConnectionProfile): Promise<azdata.IConnectionProfile>;
 
 	/**
 	 * If there's already a connection for given profile and purpose, returns the ownerUri for the connection
@@ -176,7 +187,7 @@ export interface IConnectionManagementService {
 
 	isConnected(fileUri: string): boolean;
 
-	refreshAzureAccountTokenIfNecessary(uri: string): Promise<boolean>;
+	refreshAzureAccountTokenIfNecessary(uriOrConnectionProfile: string | ConnectionProfile): Promise<boolean>;
 	/**
 	 * Returns true if the connection profile is connected
 	 */
@@ -197,7 +208,7 @@ export interface IConnectionManagementService {
 
 	disconnect(ownerUri: string): Promise<void>;
 
-	addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile>;
+	addSavedPassword(connectionProfile: IConnectionProfile, skipAccessToken?: boolean): Promise<IConnectionProfile>;
 
 	listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult | undefined>;
 
@@ -328,6 +339,13 @@ export interface IConnectionManagementService {
 	 * @returns Promise with a boolean value indicating whether the user has accepted the suggestion.
 	 */
 	handleUnsupportedProvider(providerId: string): Promise<boolean>;
+
+	/**
+	 * Launches the password change dialog.
+	 * @param profile The connection profile to change the password.
+	 * @returns the new valid password that is entered, or undefined if cancelled or errored.
+	 */
+	openChangePasswordDialog(profile: IConnectionProfile): Promise<string | undefined>;
 }
 
 export enum RunQueryOnConnectionMode {

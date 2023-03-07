@@ -7,8 +7,8 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
+import * as contracts from '../../service/contracts';
 import * as styles from '../../constants/styles';
-import * as mssql from 'mssql';
 import * as utils from '../../api/utils';
 import * as fs from 'fs';
 import path = require('path');
@@ -29,8 +29,8 @@ export class SkuRecommendationResultsDialog {
 	public targetName?: string;
 	private _saveButton!: azdata.window.Button;
 
-	public targetRecommendations?: mssql.SkuRecommendationResultItem[];
-	public instanceRequirements?: mssql.SqlInstanceRequirements;
+	public targetRecommendations?: contracts.SkuRecommendationResultItem[];
+	public instanceRequirements?: contracts.SqlInstanceRequirements;
 
 	constructor(public model: MigrationStateModel, public _targetType: MigrationTargetType) {
 		switch (this._targetType) {
@@ -90,9 +90,9 @@ export class SkuRecommendationResultsDialog {
 		return container;
 	}
 
-	private createRecommendation(_view: azdata.ModelView, recommendationItem: mssql.SkuRecommendationResultItem): azdata.FlexContainer {
+	private createRecommendation(_view: azdata.ModelView, recommendationItem: contracts.SkuRecommendationResultItem): azdata.FlexContainer {
 
-		let recommendation: mssql.IaaSSkuRecommendationResultItem | mssql.PaaSSkuRecommendationResultItem;
+		let recommendation: contracts.IaaSSkuRecommendationResultItem | contracts.PaaSSkuRecommendationResultItem;
 
 		let configuration = constants.NA;
 		let storageSection = _view.modelBuilder.flexContainer().withLayout({
@@ -100,7 +100,7 @@ export class SkuRecommendationResultsDialog {
 		}).component();
 		switch (this._targetType) {
 			case MigrationTargetType.SQLVM:
-				recommendation = <mssql.IaaSSkuRecommendationResultItem>recommendationItem;
+				recommendation = <contracts.IaaSSkuRecommendationResultItem>recommendationItem;
 
 				if (recommendation.targetSku) {
 					configuration = constants.VM_CONFIGURATION(
@@ -113,18 +113,18 @@ export class SkuRecommendationResultsDialog {
 
 			case MigrationTargetType.SQLMI:
 			case MigrationTargetType.SQLDB:
-				recommendation = <mssql.PaaSSkuRecommendationResultItem>recommendationItem;
+				recommendation = <contracts.PaaSSkuRecommendationResultItem>recommendationItem;
 
 				if (recommendation.targetSku) {
-					const serviceTier = recommendation.targetSku.category?.sqlServiceTier === mssql.AzureSqlPaaSServiceTier.GeneralPurpose
+					const serviceTier = recommendation.targetSku.category?.sqlServiceTier === contracts.AzureSqlPaaSServiceTier.GeneralPurpose
 						? constants.GENERAL_PURPOSE
-						: recommendation.targetSku.category?.sqlServiceTier === mssql.AzureSqlPaaSServiceTier.HyperScale
+						: recommendation.targetSku.category?.sqlServiceTier === contracts.AzureSqlPaaSServiceTier.HyperScale
 							? constants.HYPERSCALE
 							: constants.BUSINESS_CRITICAL;
 
-					const hardwareType = recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.Gen5
+					const hardwareType = recommendation.targetSku.category?.hardwareType === contracts.AzureSqlPaaSHardwareType.Gen5
 						? constants.GEN5
-						: recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.PremiumSeries
+						: recommendation.targetSku.category?.hardwareType === contracts.AzureSqlPaaSHardwareType.PremiumSeries
 							? constants.PREMIUM_SERIES
 							: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
 
@@ -240,7 +240,7 @@ export class SkuRecommendationResultsDialog {
 		return recommendationContainer;
 	}
 
-	private createSqlVmTargetStorageSection(_view: azdata.ModelView, recommendation: mssql.IaaSSkuRecommendationResultItem): azdata.FlexContainer {
+	private createSqlVmTargetStorageSection(_view: azdata.ModelView, recommendation: contracts.IaaSSkuRecommendationResultItem): azdata.FlexContainer {
 		const recommendedTargetStorageSection = _view.modelBuilder.text()
 			.withProps({
 				value: constants.RECOMMENDED_TARGET_STORAGE_CONFIGURATION,
@@ -348,18 +348,18 @@ export class SkuRecommendationResultsDialog {
 		return container;
 	}
 
-	private getCachingText(caching: mssql.AzureManagedDiskCaching): string {
+	private getCachingText(caching: contracts.AzureManagedDiskCaching): string {
 		switch (caching) {
-			case mssql.AzureManagedDiskCaching.NotApplicable:
+			case contracts.AzureManagedDiskCaching.NotApplicable:
 				return constants.CACHING_NA;
 
-			case mssql.AzureManagedDiskCaching.None:
+			case contracts.AzureManagedDiskCaching.None:
 				return constants.CACHING_NONE;
 
-			case mssql.AzureManagedDiskCaching.ReadOnly:
+			case contracts.AzureManagedDiskCaching.ReadOnly:
 				return constants.CACHING_READ_ONLY;
 
-			case mssql.AzureManagedDiskCaching.ReadWrite:
+			case contracts.AzureManagedDiskCaching.ReadWrite:
 				return constants.CACHING_READ_WRITE;
 		}
 	}
@@ -460,7 +460,7 @@ export class SkuRecommendationResultsDialog {
 		return container;
 	}
 
-	public async openDialog(dialogName?: string, recommendations?: mssql.SkuRecommendationResult) {
+	public async openDialog(dialogName?: string, recommendations?: contracts.SkuRecommendationResult) {
 		if (!this._isOpen) {
 			this._isOpen = true;
 			this.instanceRequirements = recommendations?.instanceRequirements;
@@ -492,6 +492,7 @@ export class SkuRecommendationResultsDialog {
 			this.dialog = azdata.window.createModelViewDialog(this.title!, 'SkuRecommendationResultsDialog', 'medium');
 
 			this.dialog.okButton.label = SkuRecommendationResultsDialog.OpenButtonText;
+			this.dialog.okButton.position = 'left';
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 
 			this.dialog.cancelButton.hidden = true;
@@ -501,7 +502,7 @@ export class SkuRecommendationResultsDialog {
 
 			this._saveButton = azdata.window.createButton(
 				constants.SAVE_RECOMMENDATION_REPORT,
-				'left');
+				'right');
 			this._disposables.push(
 				this._saveButton.onClick(async () => {
 					const folder = await utils.promptUserForFolder();

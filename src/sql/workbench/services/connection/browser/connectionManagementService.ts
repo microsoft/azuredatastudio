@@ -27,7 +27,6 @@ import { AzureResource, ConnectionOptionSpecialType } from 'sql/workbench/api/co
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
 import * as azdata from 'azdata';
-
 import * as nls from 'vs/nls';
 import * as errors from 'vs/base/common/errors';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -56,6 +55,8 @@ import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/b
 import { ViewContainerLocation } from 'vs/workbench/common/views';
 import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
+import { PasswordChangeDialog } from 'sql/workbench/services/connection/browser/passwordChangeDialog';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -95,6 +96,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IQuickInputService private _quickInputService: IQuickInputService,
 		@INotificationService private _notificationService: INotificationService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
+		@IErrorDiagnosticsService private _errorDiagnosticsService: IErrorDiagnosticsService,
 		@IAngularEventingService private _angularEventing: IAngularEventingService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@ILogService private _logService: ILogService,
@@ -256,8 +258,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Load the password for the profile
 	 * @param connectionProfile Connection Profile
 	 */
-	public async addSavedPassword(connectionProfile: interfaces.IConnectionProfile): Promise<interfaces.IConnectionProfile> {
-		await this.fillInOrClearToken(connectionProfile);
+	public async addSavedPassword(connectionProfile: interfaces.IConnectionProfile, skipAccessToken: boolean = false): Promise<interfaces.IConnectionProfile> {
+		if (!skipAccessToken) {
+			await this.fillInOrClearToken(connectionProfile);
+		}
 		return this._connectionStore.addSavedPassword(connectionProfile).then(result => result.profile);
 	}
 
@@ -325,7 +329,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 			// If the password is required and still not loaded show the dialog
 			if ((!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
-				return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options);
+				return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, messageDetails: undefined, errorCode: undefined }, options);
 			} else {
 				// Try to connect
 				return this.connectWithOptions(newConnection, owner.uri, options, owner).then(connectionResult => {
@@ -399,6 +403,24 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this.tryConnect(connection, input, options);
 	}
 
+	public async fixProfile(profile?: interfaces.IConnectionProfile): Promise<interfaces.IConnectionProfile> {
+		if (profile) {
+			if (profile.authenticationType !== undefined && profile.authenticationType === '') {
+				// we need to set auth type here, because it's value is part of the session key
+				profile.authenticationType = this.getDefaultAuthenticationTypeId(profile.providerName);
+			}
+
+			// If this is Azure MFA Authentication, fix username to azure Account user. Falls back to current user name.
+			// This is required, as by default, server login / administrator is the username.
+			if (profile.authenticationType === 'AzureMFA') {
+				let accounts = await this._accountManagementService?.getAccounts();
+				profile.userName = accounts?.find(a => a.key.accountId === profile.azureAccount)?.displayInfo.displayName
+					?? profile.userName;
+			}
+		}
+		return profile;
+	}
+
 	/**
 	 * If there's already a connection for given profile and purpose, returns the ownerUri for the connection
 	 * otherwise tries to make a connection and returns the owner uri when connection is complete
@@ -424,6 +446,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				}
 			});
 		}
+	}
+
+	/**
+	 * Changes password of the connection profile's user.
+	 */
+	public async changePassword(connection: interfaces.IConnectionProfile, uri: string, newPassword: string):
+		Promise<azdata.PasswordChangeResult> {
+		return this.sendChangePasswordRequest(connection, uri, newPassword);
 	}
 
 	/**
@@ -543,20 +573,40 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private handleConnectionError(connection: interfaces.IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
+	private async handleConnectionError(connection: interfaces.IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
 		let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', "Connection Not Accepted");
 		if (options.showFirewallRuleOnError && connectionResult.errorCode) {
-			return this.handleFirewallRuleError(connection, connectionResult).then(success => {
-				if (success) {
-					options.showFirewallRuleOnError = false;
-					return this.connectWithOptions(connection, uri, options, callbacks);
-				} else {
+			let firewallRuleErrorHandled = await this.handleFirewallRuleError(connection, connectionResult);
+			if (firewallRuleErrorHandled) {
+				options.showFirewallRuleOnError = false;
+				return this.connectWithOptions(connection, uri, options, callbacks);
+			}
+			else {
+				let connectionErrorHandleResult = await this._errorDiagnosticsService.tryHandleConnectionError(connectionResult, connection.providerName, connection);
+				if (connectionErrorHandleResult.handled) {
+					connectionResult.errorHandled = true;
+					if (connectionErrorHandleResult.options) {
+						//copy over altered connection options from the result if provided.
+						connection.options = connectionErrorHandleResult.options;
+					}
+					if (connectionErrorHandleResult.reconnect) {
+						// Attempt reconnect if requested by provider
+						return this.connectWithOptions(connection, uri, options, callbacks);
+					} else {
+						if (callbacks.onConnectCanceled) {
+							callbacks.onConnectCanceled();
+						}
+						return connectionResult;
+					}
+				}
+				else {
+					// Error not handled by any registered providers so fail the connection
 					if (callbacks.onConnectReject) {
 						callbacks.onConnectReject(connectionNotAcceptedError);
 					}
 					return connectionResult;
 				}
-			});
+			}
 		} else {
 			if (callbacks.onConnectReject) {
 				callbacks.onConnectReject(connectionNotAcceptedError);
@@ -574,6 +624,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				return false;
 			}
 		});
+	}
+
+	public async openChangePasswordDialog(profile: interfaces.IConnectionProfile): Promise<string | undefined> {
+		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
+		let result = await dialog.open(profile);
+		return result;
 	}
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {
@@ -824,7 +880,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		// default to SQL if there are no provides or registered resources
 		let provider = this._providers.get(connection.providerName);
 		if (!provider || !provider.properties || !provider.properties.azureResource) {
-			this._logService.warn('Connection providers incorrectly registered. Defaulting to SQL Azure resource,');
+			this._logService.warn(`Connection provider '${connection.providerName}' is incorrectly registered, defaulting to 'SQL' Azure resource. Provider must specify applicable 'azureResource' in 'connectionProvider' configuration.`);
 			return AzureResource.Sql;
 		}
 
@@ -849,7 +905,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			'pbidedicated.windows.net',
 			'pbidedicated.cloudapi.de',
 			'pbidedicated.usgovcloudapi.net',
-			'pbidedicated.chinacloudapi.cn'
+			'pbidedicated.chinacloudapi.cn',
+			'pbidedicated.windows-int.net'
 		];
 		let serverName = connection.serverName.toLowerCase();
 		return !!powerBiDomains.find(d => serverName.indexOf(d) >= 0);
@@ -865,6 +922,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			&& connection.authenticationType !== Constants.AuthenticationType.AzureMFAAndUser
 			&& connection.authenticationType !== Constants.AuthenticationType.DSTSAuth) {
 			connection.options['azureAccountToken'] = undefined;
+			connection.options['expiresOn'] = undefined;
 			return true;
 		}
 
@@ -875,6 +933,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			let dstsAccounts = accounts.filter(a => a.key.providerId.startsWith('dstsAuth'));
 			if (dstsAccounts.length <= 0) {
 				connection.options['azureAccountToken'] = undefined;
+				connection.options['expiresOn'] = undefined;
 				return false;
 			}
 
@@ -891,7 +950,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		const azureAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 		if (azureAccounts && azureAccounts.length > 0) {
 			let accountId = (connection.authenticationType === Constants.AuthenticationType.AzureMFA || connection.authenticationType === Constants.AuthenticationType.AzureMFAAndUser) ? connection.azureAccount : connection.userName;
-			let account = azureAccounts.find(account => account.key.accountId === accountId);
+			// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
+			// The OR case can be removed once we no longer support ADAL
+			let account = azureAccounts.find(account => account.key.accountId === accountId || account.key.accountId.split('.')[0] === accountId);
 			if (account) {
 				this._logService.debug(`Getting security token for Azure account ${account.key.accountId}`);
 				if (account.isStale) {
@@ -906,14 +967,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				}
 				const tenantId = connection.azureTenantId;
 				const token = await this._accountManagementService.getAccountSecurityToken(account, tenantId, azureResource);
-				this._logService.debug(`Got token for tenant ${token}`);
 				if (!token) {
-					this._logService.info(`No security tokens found for account`);
+					this._logService.warn(`No security tokens found for account`);
+				} else {
+					this._logService.debug(`Got access token for tenant ${tenantId} that expires in ${(token.expiresOn - new Date().getTime()) / 1000} seconds`);
+					connection.options['azureAccountToken'] = token.token;
+					connection.options['expiresOn'] = token.expiresOn;
+					connection.options['password'] = '';
+					return true;
 				}
-				connection.options['azureAccountToken'] = token.token;
-				connection.options['expiresOn'] = token.expiresOn;
-				connection.options['password'] = '';
-				return true;
 			} else {
 				this._logService.info(`Could not find Azure account with name ${accountId}`);
 			}
@@ -925,58 +987,82 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	/**
 	 * Refresh Azure access token if it's expired.
-	 * @param uri connection uri
-	 * @returns true if no need to refresh or successfully refreshed token
+	 * @param uriOrConnectionProfile connection uri or connection profile
+	 * @returns true if no need to refresh or successfully refreshed token, false if refresh fails or auth mode is not AzureMFA
 	 */
-	public async refreshAzureAccountTokenIfNecessary(uri: string): Promise<boolean> {
-		const profile = this._connectionStatusManager.getConnectionProfile(uri);
-		if (!profile) {
-			this._logService.warn(`Connection not found for uri ${uri}`);
+	public async refreshAzureAccountTokenIfNecessary(uriOrConnectionProfile: string | ConnectionProfile): Promise<boolean> {
+		if (!uriOrConnectionProfile) {
+			this._logService.warn(`refreshAzureAccountTokenIfNecessary: Neither Connection uri nor connection profile received.`);
 			return false;
 		}
 
-		//wait for the pending reconnction promise if any
+		let uri: string;
+		let connectionProfile: ConnectionProfile;
+
+		if (typeof uriOrConnectionProfile === 'string') {
+			uri = uriOrConnectionProfile;
+			connectionProfile = this._connectionStatusManager.getConnectionProfile(uri);
+			if (!connectionProfile) {
+				this._logService.warn(`Connection not found for uri ${uri} when refreshing token`);
+				return false;
+			}
+		} else {
+			connectionProfile = uriOrConnectionProfile;
+			uri = this.getConnectionUri(connectionProfile);
+		}
+
+		// Wait for the pending reconnction promise if any
+		// We expect uri to be defined
 		const previousReconnectPromise = this._uriToReconnectPromiseMap[uri];
 		if (previousReconnectPromise) {
-			this._logService.info(`Found pending reconnect promise for uri ${uri}, waiting.`);
+			this._logService.debug(`Found pending reconnect promise for uri ${uri}, waiting.`);
 			try {
 				const previousConnectionResult = await previousReconnectPromise;
 				if (previousConnectionResult && previousConnectionResult.connected) {
-					this._logService.info(`Previous pending reconnection for uri ${uri} succeeded.`);
+					this._logService.debug(`Previous pending reconnection for uri ${uri} succeeded.`);
 					return true;
 				}
-				this._logService.info(`Previous pending reconnection for uri ${uri} failed.`);
+				this._logService.debug(`Previous pending reconnection for uri ${uri} failed.`);
 			} catch (err) {
-				this._logService.info(`Previous pending reconnect promise for uri ${uri} is rejected with error ${err}, will attempt to reconnect if necessary.`);
+				this._logService.debug(`Previous pending reconnect promise for uri ${uri} is rejected with error ${err}, will attempt to reconnect if necessary.`);
 			}
 		}
 
-		const expiry = profile.options.expiresOn;
-		if (typeof expiry === 'number' && !Number.isNaN(expiry)) {
-			const currentTime = new Date().getTime() / 1000;
-			const maxTolerance = 2 * 60; // two minutes
-			if (expiry - currentTime < maxTolerance) {
-				this._logService.info(`Access token expired for connection ${profile.id} with uri ${uri}`);
-				try {
-					const connectionResultPromise = this.connect(profile, uri);
-					this._uriToReconnectPromiseMap[uri] = connectionResultPromise;
-					const connectionResult = await connectionResultPromise;
-					if (!connectionResult) {
-						this._logService.error(`Failed to refresh connection ${profile.id} with uri ${uri}, invalid connection result.`);
-						throw new Error(nls.localize('connection.invalidConnectionResult', "Connection result is invalid"));
-					} else if (!connectionResult.connected) {
-						this._logService.error(`Failed to refresh connection ${profile.id} with uri ${uri}, error code: ${connectionResult.errorCode}, error message: ${connectionResult.errorMessage}`);
-						throw new Error(nls.localize('connection.refreshAzureTokenFailure', "Failed to refresh Azure account token for connection"));
+		// We expect connectionProfile to be defined
+		if (connectionProfile && connectionProfile.authenticationType === Constants.AuthenticationType.AzureMFA) {
+			const expiry = connectionProfile.options.expiresOn;
+			if (typeof expiry === 'number' && !Number.isNaN(expiry)) {
+				const currentTime = new Date().getTime() / 1000;
+				const maxTolerance = 2 * 60; // two minutes
+				if (expiry - currentTime < maxTolerance) {
+					this._logService.debug(`Access token expired for connection ${connectionProfile.id} with uri ${uri}`);
+					try {
+						const connectionResultPromise = this.connect(connectionProfile, uri);
+						this._uriToReconnectPromiseMap[uri] = connectionResultPromise;
+						const connectionResult = await connectionResultPromise;
+						if (!connectionResult) {
+							this._logService.error(`Failed to refresh connection ${connectionProfile.id} with uri ${uri}, invalid connection result.`);
+							throw new Error(nls.localize('connection.invalidConnectionResult', "Connection result is invalid"));
+						} else if (!connectionResult.connected) {
+							this._logService.error(`Failed to refresh connection ${connectionProfile.id} with uri ${uri}, error code: ${connectionResult.errorCode}, error message: ${connectionResult.errorMessage}`);
+							throw new Error(nls.localize('connection.refreshAzureTokenFailure', "Failed to refresh Azure account token for connection"));
+						}
+						this._logService.debug(`Successfully refreshed token for connection ${connectionProfile.id} with uri ${uri}, result: ${connectionResult.connected} ${connectionResult.connectionProfile}, ${this._connectionStatusManager.getConnectionProfile(uri)}`);
+						return true;
+					} finally {
+						delete this._uriToReconnectPromiseMap[uri];
 					}
-					this._logService.info(`Successfully refreshed token for connection ${profile.id} with uri ${uri}, result: ${connectionResult.connected} ${connectionResult.connectionProfile}, isConnected: ${this.isConnected(uri)}, ${this._connectionStatusManager.getConnectionProfile(uri)}`);
-					return true;
-				} finally {
-					delete this._uriToReconnectPromiseMap[uri];
 				}
+				else {
+					this._logService.debug(`No need to refresh Azure acccount token for connection ${connectionProfile.id} with uri ${uri}`);
+				}
+			} else {
+				this._logService.warn(`Invalid expiry time ${expiry} for connection ${connectionProfile.id} with uri ${uri}`);
 			}
-			this._logService.info(`No need to refresh Azure acccount token for connection ${profile.id} with uri ${uri}`);
+			return true;
 		}
-		return true;
+		else
+			return false;
 	}
 
 	// Request Senders
@@ -1012,6 +1098,18 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
+	private async sendChangePasswordRequest(connection: interfaces.IConnectionProfile, uri: string, newPassword: string): Promise<azdata.PasswordChangeResult> {
+		let connectionInfo = Object.assign({}, {
+			options: connection.options
+		});
+
+		return this._providers.get(connection.providerName).onReady.then((provider) => {
+			return provider.changePassword(uri, connectionInfo, newPassword).then(result => {
+				return result;
+			})
+		});
+	}
+
 	private sendCancelRequest(uri: string): Promise<boolean> {
 		let providerId: string = this.getProviderIdFromUri(uri);
 		if (!providerId) {
@@ -1031,12 +1129,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 
 		return this._providers.get(providerId).onReady.then(provider => {
-			return provider.listDatabases(uri).then(result => {
-				if (result && result.databaseNames) {
-					result.databaseNames.sort();
-				}
-				return result;
-			});
+			return provider.listDatabases(uri);
 		});
 	}
 
@@ -1104,7 +1197,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			}
 		} else {
 			connection.connectHandler(false, info.errorMessage, info.errorNumber, info.messages);
-			this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.DatabaseConnectionError, info.errorNumber.toString())
+			this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.DatabaseConnectionError, info.errorNumber?.toString())
 				.withConnectionInfo(connection.connectionProfile)
 				.withAdditionalMeasurements({
 					extensionConnectionTimeMs: connection.extensionTimer.elapsed() - connection.serviceTimer.elapsed(),
@@ -1227,18 +1320,18 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				if (connectionMngInfo && connectionMngInfo.deleted) {
 					this._logService.info(`Found deleted connection management info for ${uri} - removing`);
 					this._connectionStatusManager.deleteConnection(uri);
-					resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, callStack: undefined, errorHandled: true, connectionProfile: connection });
+					resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, messageDetails: undefined, errorHandled: true, connectionProfile: connection });
 				} else {
 					if (errorMessage) {
 						// Connection to the server failed
 						this._logService.info(`Error occurred while connecting, removing connection management info for ${uri}`);
 						this._connectionStatusManager.deleteConnection(uri);
-						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, messageDetails: callStack, connectionProfile: connection });
 					} else {
 						if (connectionMngInfo.serverInfo) {
 							connection.options.isCloud = connectionMngInfo.serverInfo.isCloud;
 						}
-						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, messageDetails: callStack, connectionProfile: connection });
 					}
 				}
 			});

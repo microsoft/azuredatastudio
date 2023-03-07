@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/import/out/common/constants" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/import/dist/common/constants" source-language="en" datatype="plaintext"><body>
     <trans-unit id="flatFile.InvalidFileLocation">
       <source xml:lang="en">Invalid file location. Please try a different input file</source>
     </trans-unit>
@@ -149,7 +149,7 @@
       <source xml:lang="en">service component could not start</source>
     </trans-unit>
 </body></file>
-  <file original="extensions/import/out/services/serviceClient" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/import/dist/services/serviceClient" source-language="en" datatype="plaintext"><body>
     <trans-unit id="downloadingService">
       <source xml:lang="en">Downloading {0}</source>
     </trans-unit>

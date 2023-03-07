@@ -1,9 +1,0 @@
-{
-	"parserOptions": {
-		"project": "./extensions/big-data-cluster/tsconfig.json"
-	},
-	"rules": {
-		// Disabled until the issues can be fixed
-		"@typescript-eslint/explicit-function-return-type": ["off"]
-	}
-}

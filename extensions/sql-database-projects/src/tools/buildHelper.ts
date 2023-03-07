@@ -15,7 +15,7 @@ import { DBProjectConfigurationKey } from './netcoreTool';
 
 const buildDirectory = 'BuildDirectory';
 const sdkName = 'Microsoft.Build.Sql';
-const microsoftBuildSqlDefaultVersion = '0.1.3-preview';
+const microsoftBuildSqlDefaultVersion = '0.1.9-preview'; // default version of Microsoft.Build.Sql nuget to use for building legacy style projects
 
 const buildFiles: string[] = [
 	'Microsoft.Data.SqlClient.dll',
@@ -28,7 +28,8 @@ const buildFiles: string[] = [
 	'Microsoft.SqlServer.Types.dll',
 	'System.ComponentModel.Composition.dll',
 	'System.IO.Packaging.dll',
-	'Microsoft.Data.Tools.Schema.SqlTasks.targets'
+	'Microsoft.Data.Tools.Schema.SqlTasks.targets',
+	'Microsoft.SqlServer.Server.dll'
 ];
 
 export class BuildHelper {

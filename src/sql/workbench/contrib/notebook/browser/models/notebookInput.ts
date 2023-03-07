@@ -41,6 +41,7 @@ import { NotebookLanguage } from 'sql/workbench/common/constants';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { IEditorResolverService } from 'vs/workbench/services/editor/common/editorResolverService';
 import { isEqual } from 'vs/base/common/resources';
+import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
@@ -257,7 +258,12 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		this._notebookEditorOpenedTimestamp = Date.now();
 		if (this._textInput) {
 			this.hookDirtyListener(this._textInput.onDidChangeDirty, () => this._onDidChangeDirty.fire());
+			this._register(this._textInput);
 		}
+	}
+
+	public override get editorId(): string {
+		return NotebookEditor.ID;
 	}
 
 	public get languageMode(): string {

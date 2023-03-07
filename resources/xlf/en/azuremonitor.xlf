@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/azuremonitor/dist/azuremonitorServer" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="downloadServiceDoneChannelMsg">
+      <source xml:lang="en">Downloaded {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceChannelMsg">
+      <source xml:lang="en">Downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceSizeChannelMsg">
+      <source xml:lang="en">({0} KB)</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceStatusMsg">
+      <source xml:lang="en">Downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="failedToStartServiceErrorMsg">
+      <source xml:lang="en">Failed to start {0}</source>
+    </trans-unit>
+    <trans-unit id="installedServiceChannelMsg">
+      <source xml:lang="en">Installed {0}</source>
+    </trans-unit>
+    <trans-unit id="installingServiceChannelMsg">
+      <source xml:lang="en">Installing {0} to {1}</source>
+    </trans-unit>
+    <trans-unit id="installingServiceStatusMsg">
+      <source xml:lang="en">Installing {0}</source>
+    </trans-unit>
+    <trans-unit id="serviceStartedStatusMsg">
+      <source xml:lang="en">{0} Started</source>
+    </trans-unit>
+    <trans-unit id="startingServiceStatusMsg">
+      <source xml:lang="en">Starting {0}</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/azuremonitor/dist/features/accountFeature" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="kusto.accountDoesNotExist">
+      <source xml:lang="en">Account does not exist.</source>
+    </trans-unit>
+    <trans-unit id="kusto.insufficientlyPrivelagedAzureAccount">
+      <source xml:lang="en">The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.</source>
+    </trans-unit>
+    <trans-unit id="kusto.missingLinkedAzureAccount">
+      <source xml:lang="en">Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query.</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/azuremonitor/dist/main" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azuremonitor.unsupportedPlatform">
+      <source xml:lang="en">Unsupported platform</source>
+    </trans-unit>
+    <trans-unit id="notebookFileType">
+      <source xml:lang="en">Notebooks</source>
+    </trans-unit>
+    <trans-unit id="unsupportedFileType">
+      <source xml:lang="en">Only .ipynb Notebooks are supported</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/azuremonitor/dist/objectExplorerNodeProvider/command" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azureMonitor.searchServers">
+      <source xml:lang="en">Search Server Names</source>
+    </trans-unit>
+    <trans-unit id="cancel">
+      <source xml:lang="en">Cancel operation?</source>
+    </trans-unit>
+    <trans-unit id="cancelTooltip">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="progress">
+      <source xml:lang="en">$(sync~spin) {0}...</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/azuremonitor/dist/objectExplorerNodeProvider/objectExplorerNodeProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="notifyError">
+      <source xml:lang="en">Error notifying of node change: {0}</source>
+    </trans-unit>
+    <trans-unit id="rootLabel">
+      <source xml:lang="en">Root</source>
+    </trans-unit>
+    <trans-unit id="sessionNotFound">
+      <source xml:lang="en">Session for node {0} does not exist</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/azuremonitor/dist/telemetry" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="serviceCrashMessage">
+      <source xml:lang="en">{0} component exited unexpectedly. Please restart Azure Data Studio.</source>
+    </trans-unit>
+    <trans-unit id="viewKnownIssuesText">
+      <source xml:lang="en">View Known Issues</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/azuremonitor/package" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azuremonitor.cloud.workspaceProperties.id">
+      <source xml:lang="en">Workspace ID</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.cloud.workspaceProperties.name">
+      <source xml:lang="en">Workspace Name</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionOptions.databaseName.description">
+      <source xml:lang="en">The name of the initial catalog or database in the data source</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionOptions.databaseName.displayName">
+      <source xml:lang="en">Database</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.authType.categoryValues.azureMFA">
+      <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.authType.description">
+      <source xml:lang="en">Specifies the method of authenticating with Azure Monitor</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.authType.displayName">
+      <source xml:lang="en">Authentication type</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.connectionName.description">
+      <source xml:lang="en">Custom name of the connection</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.connectionName.displayName">
+      <source xml:lang="en">Name (optional)</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.dbaPrivilege.description">
+      <source xml:lang="en">Administrative privileges: SYSDBA or SYSOPER</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.dbaPrivilege.label">
+      <source xml:lang="en">Administrative privileges</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.groupName.security">
+      <source xml:lang="en">Security</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.groupName.source">
+      <source xml:lang="en">Source</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.metadataPooling.description">
+      <source xml:lang="en">This attribute indicates whether the metadata information for executed queries is cached for improved performance.</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.metadataPooling.label">
+      <source xml:lang="en">Metadata Pooling</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.password.description">
+      <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.password.displayName">
+      <source xml:lang="en">Password</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.proxyUserId.description">
+      <source xml:lang="en">User name of the proxy user.</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.proxyUserId.label">
+      <source xml:lang="en">Proxy User Id</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.proxyUserPassword.description">
+      <source xml:lang="en">Password of the proxy user.</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.proxyUserPassword.label">
+      <source xml:lang="en">Proxy Password</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.serverName.description">
+      <source xml:lang="en">Log Analytics Workspace ID</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.serverName.displayName">
+      <source xml:lang="en">Workspace ID</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.userName.description">
+      <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.userName.displayName">
+      <source xml:lang="en">User name</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.databasesListProperties.name">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.databasesListProperties.size">
+      <source xml:lang="en">Size (MB)</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.description">
+      <source xml:lang="en">Azure Monitor access for Azure Data Studio</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.displayName">
+      <source xml:lang="en">Azure Monitor Logs</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.objectsListProperties.metadataTypeName">
+      <source xml:lang="en">Type</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.objectsListProperties.name">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+</body></file>
+</xliff>

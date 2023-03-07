@@ -14,6 +14,7 @@ import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode'
 import { Disposable, isDisposable } from 'vs/base/common/lifecycle';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
 
 export interface IExpandableTree extends ITree {
 	/**
@@ -136,7 +137,7 @@ export class TreeUpdateUtils {
 							await tree.expandAll(targetsToExpand);
 						}
 						if (selectedElement) {
-							tree.select(selectedElement);
+							tree.setFocus(selectedElement);
 						}
 						tree.getFocus();
 					}, onUnexpectedError);
@@ -222,7 +223,7 @@ export class TreeUpdateUtils {
 	 * @param objectExplorerService Object explorer service instance
 	 */
 	public static async connectAndCreateOeSession(connection: ConnectionProfile, options: IConnectionCompletionOptions,
-		connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, tree: AsyncServerTree | ITree | undefined): Promise<boolean> {
+		connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, tree: AsyncServerTree | ITree | undefined, requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<boolean> {
 		const connectedConnection = await TreeUpdateUtils.connectIfNotConnected(connection, options, connectionManagementService, tree);
 		if (connectedConnection) {
 			// append group ID and original display name to build unique OE session ID
@@ -231,7 +232,7 @@ export class TreeUpdateUtils {
 
 			let rootNode: TreeNode | undefined = objectExplorerService.getObjectExplorerNode(connectedConnection);
 			if (!rootNode) {
-				await objectExplorerService.updateObjectExplorerNodes(connectedConnection);
+				await objectExplorerService.updateObjectExplorerNodes(connectedConnection, requestStatus);
 				return true;
 				// The oe request is sent. an event will be raised when the session is created
 			} else {

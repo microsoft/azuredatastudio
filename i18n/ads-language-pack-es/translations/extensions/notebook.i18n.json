@@ -75,7 +75,6 @@
 			"newMarkdown": "Nuevo Markdown (versión preliminar)",
 			"newNotebook": "Nuevo bloc de notas (versión preliminar)",
 			"newSection": "Nueva sección (versión preliminar)",
-			"noBDCConnectionError": "Los kernels de Spark requieren una conexión a una instancia maestra del clúster de macrodatos de SQL Server.",
 			"noBooksSelected": "Actualmente no hay ningún libro de Jupyter seleccionado en viewlet.",
 			"onGitHub": "GitHub",
 			"onsharedFile": "Archivo compartido",
@@ -87,7 +86,6 @@
 			"openNotebookCommand": "Abrir cuaderno",
 			"openNotebookError": "Error al abrir el cuaderno {0}: {1}",
 			"openUntitledNotebookError": "Error al abrir el cuaderno sin título {0} como sin título: {1}",
-			"providerNotValidError": "No se admiten proveedores que no sean MSSQL para los kernels de Spark.",
 			"readBookError": "No se pudo leer el libro de {0}: {1}",
 			"releases": "Versiones",
 			"repoUrl": "Dirección URL del repositorio",
@@ -101,7 +99,6 @@
 			"version": "Versión"
 		},
 		"dist/common/notebookUtils": {
-			"msgSampleCodeDataFrame": "Este código de ejemplo carga el archivo en un marco de datos y muestra los primeros 10 resultados.",
 			"noNotebookVisible": "Ningún editor de cuadernos está activo",
 			"notebookFiles": "Cuadernos"
 		},
@@ -219,12 +216,7 @@
 			"shutdownError": "Error en el apagado del servidor de Notebook: {0}"
 		},
 		"dist/jupyter/jupyterSessionManager": {
-			"bdcConnectError": "Error: {0}.",
-			"clusterControllerConnectionRequired": "Se necesita una conexión al controlador del clúster para ejecutar trabajos de Spark.",
-			"errorStartBeforeReady": "No se puede iniciar una sesión, el administrador aún no está inicializado",
-			"notebook.couldNotFindKnoxGateway": "No se encuentra el punto de conexión de la puerta de enlace de Knox.",
-			"promptBDCPassword": "Proporcione la contraseña para conectarse al controlador de BDC.",
-			"promptBDCUsername": "{0}Especifique el nombre de usuario para conectarse al controlador de BDC:"
+			"errorStartBeforeReady": "No se puede iniciar una sesión, el administrador aún no está inicializado"
 		},
 		"dist/jupyter/pypiClient": {
 			"managePackages.packageRequestError": "Error en la solicitud de información del paquete: {0} {1}"

@@ -24,6 +24,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		const ssmsMinVer = JSON.parse(rawConfig.toString()).version;
 		exePath = path.join(context.extensionPath, 'ssmsmin', 'Windows', ssmsMinVer, 'ssmsmin.exe');
 		registerCommands(context);
+		context.subscriptions.push(TelemetryReporter);
 	}
 }
 
@@ -51,7 +52,7 @@ function registerCommands(context: vscode.ExtensionContext): void {
  */
 async function handleLaunchSsmsMinPropertiesDialogCommand(connectionContext?: azdata.ObjectExplorerContext): Promise<void> {
 	if (!connectionContext) {
-		TelemetryReporter.sendErrorEvent(TelemetryViews.SsmsMinProperties, 'NoConnectionContext');
+		TelemetryReporter.sendErrorEvent2(TelemetryViews.SsmsMinProperties, 'NoConnectionContext');
 		void vscode.window.showErrorMessage(localize('adminToolExtWin.noConnectionContextForProp', "No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand"));
 		return;
 	}
@@ -63,7 +64,7 @@ async function handleLaunchSsmsMinPropertiesDialogCommand(connectionContext?: az
 	else if (connectionContext.nodeInfo) {
 		nodeType = connectionContext.nodeInfo.nodeType;
 	} else {
-		TelemetryReporter.sendErrorEvent(TelemetryViews.SsmsMinProperties, 'NoOENode');
+		TelemetryReporter.sendErrorEvent2(TelemetryViews.SsmsMinProperties, 'NoOENode');
 		void vscode.window.showErrorMessage(localize('adminToolExtWin.noOENode', "Could not determine Object Explorer node from connectionContext : {0}", JSON.stringify(connectionContext)));
 		return;
 	}
@@ -80,7 +81,7 @@ async function handleLaunchSsmsMinPropertiesDialogCommand(connectionContext?: az
 async function handleLaunchSsmsMinGswDialogCommand(connectionContext?: azdata.ObjectExplorerContext): Promise<void> {
 	const action = 'GenerateScripts';
 	if (!connectionContext) {
-		TelemetryReporter.sendErrorEvent(TelemetryViews.SsmsMinGsw, 'NoConnectionContext');
+		TelemetryReporter.sendErrorEvent2(TelemetryViews.SsmsMinGsw, 'NoConnectionContext');
 		void vscode.window.showErrorMessage(localize('adminToolExtWin.noConnectionContextForGsw', "No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand"));
 		return;
 	}
@@ -97,7 +98,7 @@ async function handleLaunchSsmsMinGswDialogCommand(connectionContext?: azdata.Ob
  */
 async function launchSsmsDialog(action: string, connectionContext: azdata.ObjectExplorerContext): Promise<void> {
 	if (!connectionContext.connectionProfile) {
-		TelemetryReporter.sendErrorEvent(TelemetryViews.SsmsMinDialog, 'NoConnectionProfile');
+		TelemetryReporter.sendErrorEvent2(TelemetryViews.SsmsMinDialog, 'NoConnectionProfile');
 		void vscode.window.showErrorMessage(localize('adminToolExtWin.noConnectionProfile', "No connectionProfile provided from connectionContext : {0}", JSON.stringify(connectionContext)));
 		return;
 	}
@@ -111,7 +112,7 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 		oeNode = await azdata.objectexplorer.getNode(connectionContext.connectionProfile.id, connectionContext.nodeInfo.nodePath);
 	}
 	else {
-		TelemetryReporter.sendErrorEvent(TelemetryViews.SsmsMinDialog, 'NoOENode');
+		TelemetryReporter.sendErrorEvent2(TelemetryViews.SsmsMinDialog, 'NoOENode');
 		void vscode.window.showErrorMessage(localize('adminToolExtWin.noOENode', "Could not determine Object Explorer node from connectionContext : {0}", JSON.stringify(connectionContext)));
 		return;
 	}
@@ -155,9 +156,10 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 			runningProcesses.delete(proc.pid);
 			const err = stderr.toString();
 			if ((execException?.code !== 0) || err !== '') {
-				TelemetryReporter.sendErrorEvent(
+				TelemetryReporter.sendErrorEvent2(
 					TelemetryViews.SsmsMinDialog,
 					'LaunchSsmsDialogError',
+					execException,
 					execException ? execException?.code?.toString() : '',
 					getTelemetryErrorType(err));
 			}

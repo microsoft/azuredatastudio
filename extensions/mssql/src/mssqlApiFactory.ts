@@ -4,10 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AppContext } from './appContext';
-import { IExtension, ICmsService, IDacFxService, ISchemaCompareService, MssqlObjectExplorerBrowser, ILanguageExtensionService, ISqlAssessmentService, ISqlMigrationService, IAzureBlobService } from 'mssql';
+import { IExtension, ICmsService, IDacFxService, ISqlProjectsService, ISchemaCompareService, ILanguageExtensionService, ISqlAssessmentService, IAzureBlobService } from 'mssql';
 import * as constants from './constants';
-import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
-import * as azdata from 'azdata';
 import { SqlToolsServer } from './sqlToolsServer';
 
 export function createMssqlApi(context: AppContext, sqlToolsServer: SqlToolsServer): IExtension {
@@ -21,25 +19,17 @@ export function createMssqlApi(context: AppContext, sqlToolsServer: SqlToolsServ
 		get dacFx() {
 			return context.getService<IDacFxService>(constants.DacFxService);
 		},
+		get sqlProjects() {
+			return context.getService<ISqlProjectsService>(constants.SqlProjectsService);
+		},
 		get schemaCompare() {
 			return context.getService<ISchemaCompareService>(constants.SchemaCompareService);
 		},
 		get languageExtension() {
 			return context.getService<ILanguageExtensionService>(constants.LanguageExtensionService);
 		},
-		getMssqlObjectExplorerBrowser(): MssqlObjectExplorerBrowser {
-			return {
-				getNode: (explorerContext: azdata.ObjectExplorerContext) => {
-					let oeProvider = context.getService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService);
-					return <any>oeProvider.findSqlClusterNodeByContext(explorerContext);
-				}
-			};
-		},
 		get sqlAssessment() {
 			return context.getService<ISqlAssessmentService>(constants.SqlAssessmentService);
-		},
-		get sqlMigration() {
-			return context.getService<ISqlMigrationService>(constants.SqlMigrationService);
 		},
 		get azureBlob() {
 			return context.getService<IAzureBlobService>(constants.AzureBlobService);

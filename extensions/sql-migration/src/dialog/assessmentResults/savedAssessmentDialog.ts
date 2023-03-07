@@ -74,7 +74,10 @@ export class SavedAssessmentDialog {
 			this._isOpen = true;
 			this.dialog = azdata.window.createModelViewDialog(constants.SAVED_ASSESSMENT_RESULT, constants.SAVED_ASSESSMENT_RESULT, '60%');
 			this.dialog.okButton.label = SavedAssessmentDialog.OkButtonText;
+			this.dialog.okButton.position = 'left';
 			this.dialog.cancelButton.label = SavedAssessmentDialog.CancelButtonText;
+			this.dialog.cancelButton.position = 'left';
+
 			const dialogSetupPromises: Thenable<void>[] = [];
 			dialogSetupPromises.push(this.initializeDialog(this.dialog));
 			azdata.window.openDialog(this.dialog);
@@ -88,7 +91,7 @@ export class SavedAssessmentDialog {
 			this.stateModel,
 			this._serviceContextChangedEvent);
 
-		await wizardController.openWizard(this.stateModel.sourceConnectionId);
+		await wizardController.openWizard();
 		this._isOpen = false;
 	}
 

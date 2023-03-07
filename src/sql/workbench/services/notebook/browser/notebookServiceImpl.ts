@@ -339,12 +339,42 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	public async openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined> {
+		// Append a numbered suffix if an untitled notebook is already open with the same path
+		if (resource.scheme === Schemas.untitled) {
+			if (!resource.path || this.untitledEditorTitleExists(resource.path)) {
+				resource.path = this.createPrefixedNotebookFilePath(resource.path);
+			}
+		}
+
 		const editorOptions: ITextEditorOptions = {
 			preserveFocus: options.preserveFocus,
 			pinned: !options.preview
 		};
 		let input = await this.createNotebookInput(options, resource);
-		return await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
+		return this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
+	}
+
+	private untitledEditorTitleExists(filePath: string): boolean {
+		return !!this._untitledEditorService.get(URI.from({ scheme: Schemas.untitled, path: filePath }));
+	}
+
+	private createPrefixedNotebookFilePath(prefix?: string): string {
+		if (!prefix) {
+			prefix = 'Notebook';
+		}
+		let prefixFileName = (counter: number): string => {
+			return `${prefix}-${counter}`;
+		};
+
+		let counter = 1;
+		// Get document name and check if it exists
+		let filePath = prefixFileName(counter);
+		while (this.untitledEditorTitleExists(filePath)) {
+			counter++;
+			filePath = prefixFileName(counter);
+		}
+
+		return filePath;
 	}
 
 	/**

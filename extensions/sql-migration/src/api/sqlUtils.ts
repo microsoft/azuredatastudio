@@ -8,7 +8,8 @@ import { azureResource } from 'azurecore';
 import { AzureSqlDatabase, AzureSqlDatabaseServer } from './azure';
 import { generateGuid } from './utils';
 import * as utils from '../api/utils';
-import { TelemetryAction, TelemetryViews, logError } from '../telemtery';
+import { TelemetryAction, TelemetryViews, logError } from '../telemetry';
+import * as constants from '../constants/strings';
 
 const query_database_tables_sql = `
 	SELECT
@@ -44,19 +45,50 @@ const query_target_databases_sql = `
 		AND is_distributor <> 1
 	ORDER BY db.name;`;
 
+// NOTES: Converting the size to BIGINT is need to handle the large database scenarios.
+// Size column in sys.master_files represents the number of pages and each page is 8 KB
+// The end result is size in MB, 8/1024 = 1/128.
 const query_databases_with_size = `
 	WITH
 		db_size
 		AS
 		(
-			SELECT database_id, CAST(SUM(size) * 8.0 / 1024 AS INTEGER) size
+			SELECT database_id, CAST(SUM(CAST(size as BIGINT)) / 128 AS BIGINT) size
 			FROM sys.master_files with (nolock)
 			GROUP BY database_id
 		)
-	SELECT name, state_desc AS state, db_size.size
+	SELECT name, state_desc AS state, db_size.size, collation_name
 	FROM sys.databases with (nolock) LEFT JOIN db_size ON sys.databases.database_id = db_size.database_id
 	WHERE sys.databases.state = 0
 	`;
+
+const query_login_tables_sql = `
+	SELECT
+		sp.name as login,
+		sp.type_desc as login_type,
+		sp.default_database_name,
+		case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status
+	FROM sys.server_principals sp
+	LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id
+	WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN (
+		'SQL_LOGIN'
+	) AND sp.name NOT LIKE '##%##'
+	ORDER BY sp.name;`;
+
+const query_login_tables_include_windows_auth_sql = `
+	SELECT
+		sp.name as login,
+		sp.type_desc as login_type,
+		sp.default_database_name,
+		case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status
+	FROM sys.server_principals sp
+	LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id
+	WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN (
+		'SQL_LOGIN', 'WINDOWS_LOGIN'
+	) AND sp.name NOT LIKE '##%##'
+	ORDER BY sp.name;`;
+
+const query_is_sys_admin_sql = `SELECT IS_SRVROLEMEMBER('sysadmin');`;
 
 export const excludeDatabases: string[] = [
 	'master',
@@ -72,6 +104,13 @@ export interface TableInfo {
 	selectedForMigration: boolean;
 }
 
+export interface SourceDatabaseInfo {
+	databaseName: string;
+	databaseCollation: string;
+	databaseState: number;
+	databaseSizeInMB: string;
+}
+
 export interface TargetDatabaseInfo {
 	serverName: string;
 	serverCollation: string;
@@ -83,6 +122,47 @@ export interface TargetDatabaseInfo {
 	isReadOnly: boolean;
 	sourceTables: Map<string, TableInfo>;
 	targetTables: Map<string, TableInfo>;
+}
+
+export interface LoginTableInfo {
+	loginName: string;
+	loginType: string;
+	defaultDatabaseName: string;
+	status: string;
+}
+
+export async function getSourceConnectionProfile(): Promise<azdata.connection.ConnectionProfile> {
+	return await azdata.connection.getCurrentConnection();
+}
+
+export async function getSourceConnectionId(): Promise<string> {
+	return (await getSourceConnectionProfile()).connectionId;
+}
+
+export async function getSourceConnectionServerInfo(): Promise<azdata.ServerInfo> {
+	return await azdata.connection.getServerInfo(await getSourceConnectionId());
+}
+
+export async function getSourceConnectionUri(): Promise<string> {
+	return await azdata.connection.getUriForConnection(await getSourceConnectionId());
+}
+
+export async function getSourceConnectionCredentials(): Promise<{ [name: string]: string }> {
+	return await azdata.connection.getCredentials(await getSourceConnectionId());
+}
+
+export async function getSourceConnectionQueryProvider(): Promise<azdata.QueryProvider> {
+	return azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+		(await getSourceConnectionProfile()).providerId,
+		azdata.DataProviderType.QueryProvider);
+}
+
+export function getEncryptConnectionValue(connection: azdata.connection.ConnectionProfile): boolean {
+	return connection?.options?.encrypt === true || connection?.options?.encrypt === 'true';
+}
+
+export function getTrustServerCertificateValue(connection: azdata.connection.ConnectionProfile): boolean {
+	return connection?.options?.trustServerCertificate === true || connection?.options?.trustServerCertificate === 'true';
 }
 
 function getSqlDbConnectionProfile(
@@ -99,18 +179,19 @@ function getSqlDbConnectionProfile(
 		databaseName: databaseName,
 		userName: userName,
 		password: password,
-		authenticationType: 'SqlLogin',
+		authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 		savePassword: false,
 		saveProfile: false,
 		options: {
 			conectionName: '',
 			server: serverName,
 			database: databaseName,
-			authenticationType: 'SqlLogin',
+			authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 			user: userName,
 			password: password,
 			connectionTimeout: 60,
 			columnEncryptionSetting: 'Enabled',
+			// when connecting to a target Azure SQL DB, use true/false
 			encrypt: true,
 			trustServerCertificate: false,
 			connectRetryCount: '1',
@@ -123,11 +204,13 @@ function getSqlDbConnectionProfile(
 	};
 }
 
-function getConnectionProfile(
+export function getTargetConnectionProfile(
 	serverName: string,
 	azureResourceId: string,
 	userName: string,
-	password: string): azdata.IConnectionProfile {
+	password: string,
+	encryptConnection: boolean,
+	trustServerCert: boolean): azdata.IConnectionProfile {
 
 	const connectId = generateGuid();
 	return {
@@ -137,7 +220,7 @@ function getConnectionProfile(
 		azureResourceId: azureResourceId,
 		userName: userName,
 		password: password,
-		authenticationType: 'SqlLogin', // TODO: use azdata.connection.AuthenticationType.SqlLogin after next ADS release
+		authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 		savePassword: false,
 		groupFullName: connectId,
 		groupId: connectId,
@@ -146,13 +229,13 @@ function getConnectionProfile(
 		options: {
 			conectionName: connectId,
 			server: serverName,
-			authenticationType: 'SqlLogin',
+			authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 			user: userName,
 			password: password,
 			connectionTimeout: 60,
 			columnEncryptionSetting: 'Enabled',
-			encrypt: true,
-			trustServerCertificate: false,
+			encrypt: encryptConnection,
+			trustServerCertificate: trustServerCert,
 			connectRetryCount: '1',
 			connectRetryInterval: '10',
 			applicationName: 'azdata',
@@ -160,8 +243,36 @@ function getConnectionProfile(
 	};
 }
 
-export async function collectSourceDatabaseTableInfo(sourceConnectionId: string, sourceDatabase: string): Promise<TableInfo[]> {
-	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
+export async function getSourceConnectionString(): Promise<string> {
+	return await azdata.connection.getConnectionString((await getSourceConnectionProfile()).connectionId, true);
+}
+
+export async function getTargetConnectionString(
+	serverName: string,
+	azureResourceId: string,
+	username: string,
+	password: string,
+	encryptConnection: boolean,
+	trustServerCertificate: boolean): Promise<string> {
+
+	const connectionProfile = getTargetConnectionProfile(
+		serverName,
+		azureResourceId,
+		username,
+		password,
+		encryptConnection,
+		trustServerCertificate);
+
+	const result = await azdata.connection.connect(connectionProfile, false, false);
+	if (result.connected && result.connectionId) {
+		return azdata.connection.getConnectionString(result.connectionId, true);
+	}
+
+	return '';
+}
+
+export async function collectSourceDatabaseTableInfo(sourceDatabase: string): Promise<TableInfo[]> {
+	const ownerUri = await azdata.connection.getUriForConnection((await getSourceConnectionProfile()).connectionId);
 	const connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(
 		'MSSQL',
 		azdata.DataProviderType.ConnectionProvider);
@@ -226,11 +337,14 @@ export async function collectTargetDatabaseInfo(
 	userName: string,
 	password: string): Promise<TargetDatabaseInfo[]> {
 
-	const connectionProfile = getConnectionProfile(
+	const connectionProfile = getTargetConnectionProfile(
 		targetServer.properties.fullyQualifiedDomainName,
 		targetServer.id,
 		userName,
-		password);
+		password,
+		// when connecting to a target Azure SQL DB, use true/false
+		true /* encryptConnection */,
+		false /* trustServerCertificate */);
 
 	const result = await azdata.connection.connect(connectionProfile, false, false);
 	if (result.connected && result.connectionId) {
@@ -308,6 +422,7 @@ export async function getDatabasesList(connectionProfile: azdata.connection.Conn
 					name: getSqlString(row[0]),
 					state: getSqlString(row[1]),
 					sizeInMB: getSqlString(row[2]),
+					collation: getSqlString(row[3])
 				}
 			};
 		}) ?? [];
@@ -318,4 +433,79 @@ export async function getDatabasesList(connectionProfile: azdata.connection.Conn
 
 		return [];
 	}
+}
+
+export async function collectSourceLogins(
+	sourceConnectionId: string,
+	includeWindowsAuth: boolean = true): Promise<LoginTableInfo[]> {
+	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
+	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+		'MSSQL',
+		azdata.DataProviderType.QueryProvider);
+
+	const query = includeWindowsAuth ? query_login_tables_include_windows_auth_sql : query_login_tables_sql;
+	const results = await queryProvider.runQueryAndReturn(
+		ownerUri,
+		query);
+
+	return results.rows.map(row => {
+		return {
+			loginName: getSqlString(row[0]),
+			loginType: getSqlString(row[1]),
+			defaultDatabaseName: getSqlString(row[2]),
+			status: getSqlString(row[3]),
+		};
+	}) ?? [];
+}
+
+export async function collectTargetLogins(
+	serverName: string,
+	azureResourceId: string,
+	userName: string,
+	password: string,
+	includeWindowsAuth: boolean = true): Promise<string[]> {
+
+	const connectionProfile = getTargetConnectionProfile(
+		serverName,
+		azureResourceId,
+		userName,
+		password,
+		// for login migration, connect to target Azure SQL with true/true
+		// to-do: take as input from the user, should be true/false for DB/MI but true/true for VM
+		true /* encryptConnection */,
+		true /* trustServerCertificate */);
+
+	const result = await azdata.connection.connect(connectionProfile, false, false);
+	if (result.connected && result.connectionId) {
+		const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+			'MSSQL',
+			azdata.DataProviderType.QueryProvider);
+
+		const query = includeWindowsAuth ? query_login_tables_include_windows_auth_sql : query_login_tables_sql;
+		const ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
+		const results = await queryProvider.runQueryAndReturn(
+			ownerUri,
+			query);
+
+		return results.rows.map(row => getSqlString(row[0])) ?? [];
+	}
+
+	const errorMessage = constants.COLLECTING_TARGET_LOGINS_FAILED(result.errorCode ?? 0);
+	const error = new Error(result.errorMessage);
+	logError(TelemetryViews.LoginMigrationWizard, errorMessage, error);
+	throw error;
+}
+
+export async function isSourceConnectionSysAdmin(): Promise<boolean> {
+	const sourceConnectionId = await getSourceConnectionId();
+	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
+	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+		'MSSQL',
+		azdata.DataProviderType.QueryProvider);
+
+	const results = await queryProvider.runQueryAndReturn(
+		ownerUri,
+		query_is_sys_admin_sql);
+
+	return getSqlBoolean(results.rows[0][0]);
 }

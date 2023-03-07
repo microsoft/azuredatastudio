@@ -62,6 +62,9 @@ export const location = localize('azurecore.location', "Location");
 export const subscription = localize('azurecore.subscription', "Subscription");
 export const typeIcon = localize('azurecore.typeIcon', "Type Icon");
 
+export const reloadPrompt = localize('azurecore.reloadPrompt', "Authentication Library has changed, please reload Azure Data Studio.");
+export const reloadChoice = localize('azurecore.reloadChoice', "Reload Azure Data Studio");
+
 // Azure Resource Types
 export const sqlServer = localize('azurecore.sqlServer', "SQL server");
 export const sqlDatabase = localize('azurecore.sqlDatabase', "SQL database");

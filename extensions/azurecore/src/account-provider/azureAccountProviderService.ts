@@ -12,7 +12,12 @@ import providerSettings from './providerSettings';
 import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider';
 import { AzureAccountProviderMetadata } from 'azurecore';
 import { ProviderSettings } from './interfaces';
+import { MsalCachePluginProvider } from './utils/msalCachePlugin';
 import * as loc from '../localizedConstants';
+import { Configuration, PublicClientApplication } from '@azure/msal-node';
+import * as Constants from '../constants';
+import { Logger } from '../utils/Logger';
+import { ILoggerCallback, LogLevel as MsalLogLevel } from "@azure/msal-common";
 
 let localize = nls.loadMessageBundle();
 
@@ -23,22 +28,21 @@ class UriEventHandler extends vscode.EventEmitter<vscode.Uri> implements vscode.
 }
 
 export class AzureAccountProviderService implements vscode.Disposable {
-	// CONSTANTS ///////////////////////////////////////////////////////////////
-	private static CommandClearTokenCache = 'accounts.clearTokenCache';
-	private static ConfigurationSection = 'accounts.azure.cloud';
-	private static CredentialNamespace = 'azureAccountProviderCredentials';
-
 	// MEMBER VARIABLES ////////////////////////////////////////////////////////
 	private _disposables: vscode.Disposable[] = [];
 	private _accountDisposals: { [accountProviderId: string]: vscode.Disposable } = {};
 	private _accountProviders: { [accountProviderId: string]: azdata.AccountProvider } = {};
 	private _credentialProvider: azdata.CredentialProvider | undefined = undefined;
+	private _cachePluginProvider: MsalCachePluginProvider | undefined = undefined;
 	private _configChangePromiseChain: Thenable<void> = Promise.resolve();
 	private _currentConfig: vscode.WorkspaceConfiguration | undefined = undefined;
 	private _event: events.EventEmitter = new events.EventEmitter();
 	private readonly _uriEventHandler: UriEventHandler = new UriEventHandler();
+	public clientApplication!: PublicClientApplication;
 
-	constructor(private _context: vscode.ExtensionContext, private _userStoragePath: string) {
+	constructor(private _context: vscode.ExtensionContext,
+		private _userStoragePath: string,
+		private _authLibrary: string) {
 		this._disposables.push(vscode.window.registerUriHandler(this._uriEventHandler));
 	}
 
@@ -47,17 +51,16 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		let self = this;
 
 		// Register commands
-		this._context.subscriptions.push(vscode.commands.registerCommand(
-			AzureAccountProviderService.CommandClearTokenCache,
-			() => { self._event.emit(AzureAccountProviderService.CommandClearTokenCache); }
+		this._context.subscriptions.push(vscode.commands.registerCommand(Constants.AccountsClearTokenCacheCommand,
+			() => { self._event.emit(Constants.AccountsClearTokenCacheCommand); }
 		));
-		this._event.on(AzureAccountProviderService.CommandClearTokenCache, () => { void self.onClearTokenCache(); });
+		this._event.on(Constants.AccountsClearTokenCacheCommand, () => { void self.onClearTokenCache(); });
 
 		// 1) Get a credential provider
 		// 2a) Store the credential provider for use later
 		// 2b) Register the configuration change handler
 		// 2c) Perform an initial config change handling
-		return azdata.credentials.getProvider(AzureAccountProviderService.CredentialNamespace)
+		return azdata.credentials.getProvider(Constants.AzureAccountProviderCredentials)
 			.then(credProvider => {
 				this._credentialProvider = credProvider;
 
@@ -103,7 +106,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		// Add a new change processing onto the existing promise change
 		await this._configChangePromiseChain;
 		// Grab the stored config and the latest config
-		let newConfig = vscode.workspace.getConfiguration(AzureAccountProviderService.ConfigurationSection);
+		let newConfig = vscode.workspace.getConfiguration(Constants.AccountsAzureCloudSection);
 		let oldConfig = this._currentConfig;
 		this._currentConfig = newConfig;
 
@@ -138,22 +141,68 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	}
 
 	private async registerAccountProvider(provider: ProviderSettings): Promise<void> {
+		const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf(Constants.Saw) > 0;
+		const noSystemKeychain = vscode.workspace.getConfiguration(Constants.AzureSection).get<boolean>(Constants.NoSystemKeyChainSection);
+		const tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
+		// Hardcode the MSAL Cache Key so there is only one cache location
+		const tokenCacheKeyMsal = `azureTokenCacheMsal-azure_publicCloud`;
 		try {
-			const noSystemKeychain = vscode.workspace.getConfiguration('azure').get<boolean>('noSystemKeychain');
-			let tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
 			if (!this._credentialProvider) {
 				throw new Error('Credential provider not registered');
 			}
+
+			// ADAL Token Cache
 			let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, noSystemKeychain, this._credentialProvider);
 			await simpleTokenCache.init();
 
-			const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
-			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, simpleTokenCache, this._context, this._uriEventHandler, isSaw);
+			// MSAL Cache Plugin
+			this._cachePluginProvider = new MsalCachePluginProvider(tokenCacheKeyMsal, this._userStoragePath);
 
+			const msalConfiguration: Configuration = {
+				auth: {
+					clientId: provider.metadata.settings.clientId,
+					authority: 'https://login.windows.net/common'
+				},
+				system: {
+					loggerOptions: {
+						loggerCallback: this.getLoggerCallback(),
+						logLevel: MsalLogLevel.Trace,
+						piiLoggingEnabled: true,
+					},
+				},
+				cache: {
+					cachePlugin: this._cachePluginProvider?.getCachePlugin()
+				}
+			}
+
+			this.clientApplication = new PublicClientApplication(msalConfiguration);
+			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata,
+				simpleTokenCache, this._context, this.clientApplication, this._uriEventHandler, this._authLibrary, isSaw);
 			this._accountProviders[provider.metadata.id] = accountProvider;
 			this._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
 		} catch (e) {
-			console.error(`Failed to register account provider: ${e}`);
+			console.error(`Failed to register account provider, isSaw: ${isSaw}: ${e}`);
+		}
+	}
+
+	private getLoggerCallback(): ILoggerCallback {
+		return (level: number, message: string, containsPii: boolean) => {
+			if (!containsPii) {
+				switch (level) {
+					case MsalLogLevel.Error:
+						Logger.error(message);
+						break;
+					case MsalLogLevel.Info:
+						Logger.info(message);
+						break;
+					case MsalLogLevel.Verbose:
+					default:
+						Logger.verbose(message);
+						break;
+				}
+			} else {
+				Logger.pii(message);
+			}
 		}
 	}
 

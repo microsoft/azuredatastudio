@@ -88,7 +88,7 @@ export class SchemaCompareDialog {
 		// connection to use if schema compare wasn't launched from a database or no previous source/target
 		let connection = await azdata.connection.getCurrentConnection();
 		if (connection) {
-			this.connectionId = connection.connectionId;
+			this.connectionId = connection.connectionId;	// current active connection
 		}
 
 		this.dialog = azdata.window.createModelViewDialog(loc.SchemaCompareLabel);
@@ -118,7 +118,7 @@ export class SchemaCompareDialog {
 				ownerUri: ownerUri,
 				projectFilePath: '',
 				targetScripts: [],
-				folderStructure: '',
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				packageFilePath: '',
 				dataSchemaProvider: '',
 				connectionDetails: undefined,
@@ -133,7 +133,7 @@ export class SchemaCompareDialog {
 				ownerUri: '',
 				projectFilePath: '',
 				targetScripts: [],
-				folderStructure: '',
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				dataSchemaProvider: '',
 				packageFilePath: this.sourceTextBox.value,
 				connectionDetails: undefined
@@ -144,7 +144,7 @@ export class SchemaCompareDialog {
 				projectFilePath: this.sourceTextBox.value,
 				targetScripts: await this.getProjectScriptFiles(this.sourceTextBox.value),
 				dataSchemaProvider: await this.getDatabaseSchemaProvider(this.sourceTextBox.value),
-				folderStructure: '',
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				serverDisplayName: '',
 				serverName: '',
 				databaseName: '',
@@ -165,7 +165,7 @@ export class SchemaCompareDialog {
 				databaseName: this.targetDatabaseDropdown.value.toString(),
 				ownerUri: ownerUri,
 				projectFilePath: '',
-				folderStructure: '',
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				targetScripts: [],
 				packageFilePath: '',
 				dataSchemaProvider: '',
@@ -180,7 +180,7 @@ export class SchemaCompareDialog {
 				databaseName: '',
 				ownerUri: '',
 				projectFilePath: '',
-				folderStructure: '',
+				folderStructure: mssql.ExtractTarget.schemaObjectType,
 				targetScripts: [],
 				dataSchemaProvider: '',
 				packageFilePath: this.targetTextBox.value,
@@ -190,7 +190,7 @@ export class SchemaCompareDialog {
 			this.schemaCompareMainWindow.targetEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Project,
 				projectFilePath: this.targetTextBox.value,
-				folderStructure: this.targetStructureDropdown!.value as string,
+				folderStructure: mapExtractTargetEnum(<string>this.targetStructureDropdown!.value),
 				targetScripts: await this.getProjectScriptFiles(this.targetTextBox.value),
 				dataSchemaProvider: await this.getDatabaseSchemaProvider(this.targetTextBox.value),
 				serverDisplayName: '',
@@ -874,13 +874,12 @@ export class SchemaCompareDialog {
 				finalName = c.options.connectionName;
 			}
 
-			// use previously selected server or current connection if there is one
-			if (endpointInfo && !isNullOrUndefined(endpointInfo.serverName) && !isNullOrUndefined(endpointInfo.serverDisplayName)
-				&& c.options.server.toLowerCase() === endpointInfo.serverName.toLowerCase()
-				&& finalName.toLowerCase() === endpointInfo.serverDisplayName.toLowerCase()) {
-				idx = count;
-			}
-			else if (c.connectionId === this.connectionId) {
+			// use current connection else use previously selected server if there is one
+			if ((c.connectionId === this.connectionId) ||
+				(endpointInfo && !isNullOrUndefined(endpointInfo.serverName) && !isNullOrUndefined(endpointInfo.serverDisplayName)
+					&& c.options.server.toLowerCase() === endpointInfo.serverName.toLowerCase()
+					&& finalName.toLowerCase() === endpointInfo.serverDisplayName.toLowerCase()
+					&& idx === -1)) { // select previous server only if current connection hasn't been set already
 				idx = count;
 			}
 
@@ -1015,3 +1014,18 @@ function isNullOrUndefined(val: any): boolean {
 	return val === null || val === undefined;
 }
 
+/**
+ * Function to map folder structure string to enum
+ * @param inputTarget folder structure in string
+ * @returns folder structure in enum format
+ */
+export function mapExtractTargetEnum(inputTarget: string): mssql.ExtractTarget {
+	switch (inputTarget) {
+		case loc.file: return mssql.ExtractTarget.file;
+		case loc.flat: return mssql.ExtractTarget.flat;
+		case loc.objectType: return mssql.ExtractTarget.objectType;
+		case loc.schema: return mssql.ExtractTarget.schema;
+		case loc.schemaObjectType:
+		default: return mssql.ExtractTarget.schemaObjectType;
+	}
+}

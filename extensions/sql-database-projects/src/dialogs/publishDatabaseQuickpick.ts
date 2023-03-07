@@ -12,6 +12,7 @@ import { getDefaultPublishDeploymentOptions, getVscodeMssqlApi } from '../common
 import { IConnectionInfo, IFireWallRuleError } from 'vscode-mssql';
 import { getPublishServerName } from './utils';
 import { ISqlProjectPublishSettings, ISqlProject, SqlTargetPlatform } from 'sqldbproj';
+import { DBProjectConfigurationKey } from '../tools/netcoreTool';
 
 /**
  * Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
@@ -225,9 +226,19 @@ export async function launchPublishTargetOption(project: Project): Promise<const
 	const logicalServerName = target === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure) ? constants.AzureSqlLogicalServerName : constants.SqlServerName;
 
 	// Options list based on target
-	const options = target === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure) ?
-		[constants.publishToAzureEmulator, constants.publishToNewAzureServer, constants.publishToExistingServer(logicalServerName)] :
-		[constants.publishToDockerContainer(name), constants.publishToExistingServer(logicalServerName)];
+	let options;
+
+	if (target === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure)) {
+		options = [constants.publishToAzureEmulator, constants.publishToExistingServer(logicalServerName)]
+
+		// only show "Publish to New Azure Server" option if preview features are enabled
+		const enablePreviewFeatures = vscode.workspace.getConfiguration(DBProjectConfigurationKey).get(constants.enablePreviewFeaturesKey);
+		if (enablePreviewFeatures) {
+			options.push(constants.publishToNewAzureServer);
+		}
+	} else {
+		options = [constants.publishToDockerContainer(name), constants.publishToExistingServer(logicalServerName)];
+	}
 
 	// Show the options to the user
 	const publishOption = await vscode.window.showQuickPick(

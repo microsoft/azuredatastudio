@@ -14,6 +14,8 @@
 	"sqlDatabaseProjects.schemaCompare": "Schema Compare",
 	"sqlDatabaseProjects.delete": "Delete",
 	"sqlDatabaseProjects.exclude": "Exclude from project",
+	"sqlDatabaseProjects.edit": "Edit",
+	"sqlDatabaseProjects.rename": "Rename",
 	"sqlDatabaseProjects.validateExternalStreamingJob": "Validate External Streaming Job",
 
 	"sqlDatabaseProjects.newScript": "Add Script",
@@ -28,19 +30,21 @@
 	"sqlDatabaseProjects.newFolder": "Add Folder",
 
 	"sqlDatabaseProjects.addDatabaseReference": "Add Database Reference",
+	"sqlDatabaseProjects.addSqlCmdVariable": "Add SQLCMD Variable",
 	"sqlDatabaseProjects.openContainingFolder": "Open Containing Folder",
 	"sqlDatabaseProjects.editProjectFile": "Edit .sqlproj File",
 	"sqlDatabaseProjects.changeTargetPlatform": "Change Target Platform",
-	"sqlDatabaseProjects.generateProjectFromOpenApiSpec": "Generate SQL Project from OpenAPI/Swagger spec",
+	"sqlDatabaseProjects.generateProjectFromOpenApiSpec": "Generate SQL Project from OpenAPI/Swagger spec (Preview)",
 	"sqlDatabaseProjects.convertToSdkStyleProject": "Convert to SDK-style project",
 	"sqlDatabaseProjects.openInDesigner": "Open in Designer",
 
 	"sqlDatabaseProjects.Settings": "Database Projects",
 	"sqlDatabaseProjects.dotnetInstallLocation": "Full path to .NET SDK on the machine. For example, if dotnet.exe is located at C:\\folder1\\dotnet\\dotnet.exe, set the path for this setting to C:\\folder1\\dotnet",
-	"sqlDatabaseProjects.netCoreDoNotAsk": "Whether to prompt the user to install .NET Core when not detected.",
+	"sqlDatabaseProjects.netCoreDoNotAsk": "Whether to prompt the user to install .NET SDK when not detected.",
 	"sqlDatabaseProjects.nodejsDoNotAsk": "Whether to prompt the user to install Node.js when not detected.",
 	"sqlDatabaseProjects.autorestSqlVersion": "Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.",
 	"sqlDatabaseProjects.collapseProjectNodes": "Whether project nodes start collapsed",
-	"sqlDatabaseProjects.microsoftBuildSqlVersion": "Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.3-preview",
+	"sqlDatabaseProjects.microsoftBuildSqlVersion": "Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.7-preview",
+	"sqlDatabaseProjects.enablePreviewFeatures": "Enable preview SQL Database Projects features",
 	"sqlDatabaseProjects.welcome": "No database projects currently open.\n[New Project](command:sqlDatabaseProjects.new)\n[Open Project](command:sqlDatabaseProjects.open)\n[Create Project From Database](command:sqlDatabaseProjects.importDatabase)"
 }

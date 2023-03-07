@@ -35,11 +35,17 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import Severity from 'vs/base/common/severity';
 import { ConnectionStringOptions } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isFalsyOrWhitespace } from 'vs/base/common/strings';
-import { AuthenticationType } from 'sql/platform/connection/common/constants';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { filterAccounts } from 'sql/workbench/services/accountManagement/browser/accountDialog';
+import { AuthenticationType, Actions } from 'sql/platform/connection/common/constants';
+import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
+import { createCSSRule } from 'vs/base/browser/dom';
+import { AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManagement/utils';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
 export class ConnectionWidget extends lifecycle.Disposable {
+	private _initialConnectionInfo: IConnectionProfile;
 	private _defaultInputOptionRadioButton: RadioButton;
 	private _connectionStringRadioButton: RadioButton;
 	private _previousGroupOption: string;
@@ -76,7 +82,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected _providerName: string;
 	protected _connectionNameInputBox: InputBox;
 	protected _databaseNameInputBox: Dropdown;
-	protected _customOptionWidgets: (InputBox | SelectBox)[];
+	protected _customOptionWidgets: AdsWidget[];
 	protected _advancedButton: Button;
 	private static readonly _authTypes: AuthenticationType[] =
 		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin, AuthenticationType.DSTSAuth, AuthenticationType.None];
@@ -115,7 +121,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@ILogService protected _logService: ILogService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService
+		@IErrorMessageService private _errorMessageService: IErrorMessageService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super();
 		this._callbacks = callbacks;
@@ -171,7 +178,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this.fillInConnectionForm(authTypeChanged);
 		this.registerListeners();
 		if (this._authTypeSelectBox) {
-			this.onAuthTypeSelected(this._authTypeSelectBox.value);
+			this.onAuthTypeSelected(this._authTypeSelectBox.value, false);
 		}
 	}
 
@@ -187,6 +194,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this.addConnectionNameOptions();
 		this.addAdvancedOptions();
 		this.updateRequiredStateForOptions();
+		this.registerOnSelectionChangeEvents();
 		if (this._connectionStringOptions.isEnabled) {
 			// update the UI based on connection string setting after initialization
 			this.handleConnectionStringOptionChange();
@@ -250,7 +258,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 	protected addAuthenticationTypeOption(authTypeChanged: boolean = false): void {
 		if (this._optionsMaps[ConnectionOptionSpecialType.authType]) {
-			let authType = DialogHelper.appendRow(this._tableContainer, this._optionsMaps[ConnectionOptionSpecialType.authType].displayName, 'connection-label', 'connection-input', 'auth-type-row');
+			let authType = DialogHelper.appendRow(this._tableContainer, this._optionsMaps[ConnectionOptionSpecialType.authType].displayName,
+				'connection-label', 'connection-input', 'auth-type-row');
 			DialogHelper.appendInputSelectBox(authType, this._authTypeSelectBox);
 		}
 	}
@@ -259,17 +268,27 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (this._customOptions.length > 0) {
 			this._customOptionWidgets = [];
 			this._customOptions.forEach((option, i) => {
-				let customOptionsContainer = DialogHelper.appendRow(this._tableContainer, option.displayName, 'connection-label', 'connection-input', 'custom-connection-options', false, option.description, 100);
+				let customOptionsContainer = DialogHelper.appendRow(this._tableContainer, option.displayName, 'connection-label', 'connection-input',
+					['custom-connection-options', `option-${option.name}`], false, option.description, 100);
 				switch (option.valueType) {
 					case ServiceOptionType.boolean:
-						// Convert 'defaultValue' to string for comparison as it can be boolean here.
-						let optionValue = (option.defaultValue.toString() === true.toString()) ? this._trueInputValue : this._falseInputValue;
-						this._customOptionWidgets[i] = new SelectBox([this._trueInputValue, this._falseInputValue], optionValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
-						DialogHelper.appendInputSelectBox(customOptionsContainer, this._customOptionWidgets[i] as SelectBox);
-						this._register(styler.attachSelectBoxStyler(this._customOptionWidgets[i] as SelectBox, this._themeService));
-						break;
 					case ServiceOptionType.category:
-						this._customOptionWidgets[i] = new SelectBox(option.categoryValues.map(c => c.displayName), option.defaultValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
+
+						let selectedValue = option.defaultValue;
+
+						let options = option.valueType === ServiceOptionType.category
+							? option.categoryValues.map<SelectOptionItemSQL>(v => {
+								return { text: v.displayName, value: v.name } as SelectOptionItemSQL;
+							})
+							:
+							[ // Handle boolean options so we can map displaynames to values.
+								{ displayName: this._trueInputValue, value: 'true' },
+								{ displayName: this._falseInputValue, value: 'false' }
+							].map<SelectOptionItemSQL>(v => {
+								return { text: v.displayName, value: v.value } as SelectOptionItemSQL;
+							});
+
+						this._customOptionWidgets[i] = new SelectBox(options, selectedValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName }, option.name);
 						DialogHelper.appendInputSelectBox(customOptionsContainer, this._customOptionWidgets[i] as SelectBox);
 						this._register(styler.attachSelectBoxStyler(this._customOptionWidgets[i] as SelectBox, this._themeService));
 						break;
@@ -280,6 +299,70 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				}
 				this._register(this._customOptionWidgets[i]);
 			});
+		}
+	}
+
+	/**
+	 * Registers on selection change event for connection options configured with 'onSelectionChange' property.
+	 * TODO extend this to include collection of other main and advanced option widgets here.
+	 */
+	protected registerOnSelectionChangeEvents(): void {
+		//Register on selection change event for custom options
+		this._customOptionWidgets?.forEach((widget, i) => {
+			if (widget instanceof SelectBox) {
+				this._registerSelectionChangeEvents([this._customOptionWidgets], this._customOptions[i], widget);
+			}
+		});
+	}
+
+	private _registerSelectionChangeEvents(collections: AdsWidget[][], option: azdata.ConnectionOption, widget: SelectBox) {
+		if (option.onSelectionChange) {
+			option.onSelectionChange.forEach((event) => {
+				this._register(widget.onDidSelect(value => {
+					let selectedValue = value.selected;
+					event?.dependentOptionActions?.forEach((optionAction) => {
+						let defaultValue: string | undefined = this._customOptions.find(o => o.name === optionAction.optionName)?.defaultValue;
+						let widget: AdsWidget | undefined = this._findWidget(collections, optionAction.optionName);
+						if (widget) {
+							createCSSRule(`.hide-${widget.id} .option-${widget.id}`, `display: none;`);
+							this._onValueChangeEvent(selectedValue, event.values, widget, defaultValue, optionAction.action);
+						}
+					});
+				}));
+			});
+		}
+	}
+
+	/**
+	 * Finds Widget from provided collection of widgets using option name.
+	 * @param collections collections of widgets to search for the widget with the widget Id
+	 * @param id Widget Id
+	 * @returns Widget if found, undefined otherwise
+	 */
+	private _findWidget(collections: AdsWidget[][], id: string): AdsWidget | undefined {
+		let foundWidget: AdsWidget | undefined;
+		collections.forEach((collection) => {
+			if (!foundWidget) {
+				foundWidget = collection.find(widget => widget.id === id);
+			}
+		});
+		return foundWidget;
+	}
+
+	private _onValueChangeEvent(selectedValue: string, acceptedValues: string[],
+		widget: AdsWidget, defaultValue: string, action: string): void {
+		if ((acceptedValues.includes(selectedValue.toLocaleLowerCase()) && action === Actions.Show)
+			|| (!acceptedValues.includes(selectedValue.toLocaleLowerCase()) && action === Actions.Hide)) {
+			this._tableContainer.classList.remove(`hide-${widget.id}`);
+		} else {
+			// Support more Widget classes here as needed.
+			if (widget instanceof SelectBox) {
+				widget.select(widget.values.indexOf(defaultValue));
+			} else if (widget instanceof InputBox) {
+				widget.value = defaultValue;
+			}
+			this._tableContainer.classList.add(`hide-${widget.id}`);
+			widget.hideMessage();
 		}
 	}
 
@@ -469,7 +552,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			// Theme styler
 			this._register(styler.attachSelectBoxStyler(this._authTypeSelectBox, this._themeService));
 			this._register(this._authTypeSelectBox.onDidSelect(selectedAuthType => {
-				this.onAuthTypeSelected(selectedAuthType.selected);
+				this.onAuthTypeSelected(selectedAuthType.selected, true);
 				this.setConnectButton();
 			}));
 		}
@@ -477,7 +560,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (this._azureAccountDropdown) {
 			this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 			this._register(this._azureAccountDropdown.onDidSelect(() => {
-				this.onAzureAccountSelected().catch(err => this._logService.error(`Unexpeted error handling Azure Account dropdown click : ${err}`));
+				this.onAzureAccountSelected().catch(err => this._logService.error(`Unexpected error handling Azure Account dropdown click : ${err}`));
 			}));
 		}
 
@@ -529,12 +612,10 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._callbacks.onSetConnectButton(shouldEnableConnectButton);
 	}
 
-	protected onAuthTypeSelected(selectedAuthType: string) {
+	protected onAuthTypeSelected(selectedAuthType: string, clearCredentials: boolean): void {
 		let currentAuthType = this.getMatchingAuthType(selectedAuthType);
-		if (currentAuthType !== AuthenticationType.SqlLogin) {
-			if (currentAuthType !== AuthenticationType.AzureMFA && currentAuthType !== AuthenticationType.AzureMFAAndUser) {
-				this._userNameInputBox.value = '';
-			}
+		if (clearCredentials) {
+			this._userNameInputBox.value = '';
 			this._passwordInputBox.value = '';
 		}
 		this._userNameInputBox.hideMessage();
@@ -549,8 +630,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this.fillInAzureAccountOptions().then(async () => {
 				// Don't enable the control until we've populated it
 				this._azureAccountDropdown.enable();
-				// Populate tenants
-				await this.onAzureAccountSelected();
+				// Populate tenants (select first by default for initialization of tenant dialog)
+				await this.onAzureAccountSelected(true);
 				this._azureTenantDropdown.enable();
 			}).catch(err => this._logService.error(`Unexpected error populating Azure Account dropdown : ${err}`));
 			// Immediately show/hide appropriate elements though so user gets immediate feedback while we load accounts
@@ -559,9 +640,13 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this.fillInAzureAccountOptions().then(async () => {
 				// Don't enable the control until we've populated it
 				this._azureAccountDropdown.enable();
-				// Populate tenants
-				await this.onAzureAccountSelected();
+				// Populate tenants (select first by default for initialization of tenant dialog)
+				await this.onAzureAccountSelected(true);
 				this._azureTenantDropdown.enable();
+				// Populate username as 'email' of selected azure account in dropdown, as username is required,
+				// and email of Azure account selected applies as username in most cases.
+				this._userNameInputBox.value = this._azureAccountList.find(a => a.displayInfo.displayName === this._azureAccountDropdown.value)?.displayInfo.email!
+					?? this._azureAccountList[0]?.displayInfo?.email ?? '';
 			}).catch(err => this._logService.error(`Unexpected error populating Azure Account dropdown : ${err}`));
 			// Immediately show/hide appropriate elements though so user gets immediate feedback while we load accounts
 			this._tableContainer.classList.remove('hide-username');
@@ -585,13 +670,31 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._userNameInputBox.enable();
 			this._passwordInputBox.enable();
 			this._rememberPasswordCheckBox.enabled = true;
+
+			if (this._initialConnectionInfo) {
+				this._initialConnectionInfo.authenticationType = AuthenticationType.SqlLogin;
+
+				if (this._initialConnectionInfo.userName) {
+					const setPasswordInputBox = (profile: IConnectionProfile) => {
+						this._passwordInputBox.value = profile.password;
+					};
+
+					this._rememberPasswordCheckBox.checked = this._initialConnectionInfo.savePassword;
+					this._connectionManagementService.addSavedPassword(this._initialConnectionInfo, true).then(setPasswordInputBox)
+				}
+			}
 		}
 	}
 
 	private async fillInAzureAccountOptions(): Promise<void> {
 		let oldSelection = this._azureAccountDropdown.value;
 		const accounts = await this._accountManagementService.getAccounts();
-		this._azureAccountList = accounts.filter(a => a.key.providerId.startsWith('azure'));
+		const updatedAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
+		const authLibrary: AuthLibrary = getAuthLibrary(this._configurationService);
+		if (authLibrary) {
+			this._azureAccountList = filterAccounts(updatedAccounts, authLibrary);
+		}
+
 		let accountDropdownOptions: SelectOptionItemSQL[] = this._azureAccountList.map(account => {
 			return {
 				text: account.displayInfo.displayName,
@@ -605,11 +708,14 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		}
 		accountDropdownOptions.push({ text: this._addAzureAccountMessage, value: this._addAzureAccountMessage });
 		this._azureAccountDropdown.setOptions(accountDropdownOptions);
-		this._azureAccountDropdown.selectWithOptionName(oldSelection);
+		this._azureAccountDropdown.selectWithOptionName(oldSelection, false);
 	}
 
 	private updateRefreshCredentialsLink(): void {
-		let chosenAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
+		// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
+		// The OR case can be removed once we no longer support ADAL
+		let chosenAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value
+			|| account.key.accountId.split('.')[0] === this._azureAccountDropdown.value);
 		if (chosenAccount && chosenAccount.isStale) {
 			this._tableContainer.classList.remove('hide-refresh-link');
 		} else {
@@ -617,7 +723,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		}
 	}
 
-	private async onAzureAccountSelected(): Promise<void> {
+	private async onAzureAccountSelected(selectFirstByDefault: boolean = false): Promise<void> {
 		// Reset the dropdown's validation message if the old selection was not valid but the new one is
 		this.validateAzureAccountSelection(false);
 
@@ -630,7 +736,10 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			await this.fillInAzureAccountOptions();
 
 			// If a new account was added find it and select it, otherwise select the first account
-			let newAccount = this._azureAccountList.find(option => !oldAccountIds.some(oldId => oldId === option.key.accountId));
+			// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
+			// The OR case can be removed once we no longer support ADAL
+			let newAccount = this._azureAccountList.find(option => !oldAccountIds.some(oldId => oldId === option.key.accountId
+				|| oldId.split('.')[0] === option.key.accountId));
 			if (newAccount) {
 				this._azureAccountDropdown.selectWithOptionName(newAccount.key.accountId);
 			} else {
@@ -642,7 +751,20 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 		// Display the tenant select box if needed
 		const hideTenantsClassName = 'hide-azure-tenants';
-		let selectedAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
+		// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
+		// The OR case can be removed once we no longer support ADAL
+		let selectedAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value
+			|| account.key.accountId.split('.')[0] === this._azureAccountDropdown.value);
+		if (!selectedAccount && selectFirstByDefault && this._azureAccountList.length > 0) {
+			selectedAccount = this._azureAccountList[0];
+		}
+
+		if (this.authenticationType === AuthenticationType.AzureMFAAndUser) {
+			// Populate username as 'email' of selected azure account in dropdown, as username is required,
+			// and email of Azure account selected applies as username in most cases.
+			this._userNameInputBox.value = selectedAccount?.displayInfo?.email! ?? '';
+		}
+
 		if (selectedAccount && selectedAccount.properties.tenants && selectedAccount.properties.tenants.length > 1) {
 			// There are multiple tenants available so let the user select one
 			let options = selectedAccount.properties.tenants.map(tenant => tenant.displayName);
@@ -668,25 +790,21 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		} else {
 			if (selectedAccount && selectedAccount.properties.tenants && selectedAccount.properties.tenants.length === 1) {
 				this._azureTenantId = selectedAccount.properties.tenants[0].id;
-			} else {
-				this._azureTenantId = undefined;
 			}
 			this._tableContainer.classList.add(hideTenantsClassName);
 		}
 	}
 
 	private onAzureTenantSelected(tenantIndex: number): void {
-		this._azureTenantId = undefined;
 		let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 		if (account && account.properties.tenants) {
 			let tenant = account.properties.tenants[tenantIndex];
 			if (tenant) {
-				this._azureTenantId = tenant.id;
 				this._callbacks.onAzureTenantSelection(tenant.id);
 			}
 			else {
 				// This should ideally never ever happen!
-				this._logService.error(`onAzureTenantSelected : Could not find tenant with ID ${this._azureTenantId} for account ${account.displayInfo.displayName}`);
+				this._logService.error(`onAzureTenantSelected : Tenant list not found as expected, missing tenant on index ${tenantIndex}`);
 			}
 		}
 	}
@@ -726,6 +844,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	public initDialog(connectionInfo: IConnectionProfile): void {
+		this._initialConnectionInfo = connectionInfo;
 		this.fillInConnectionInputs(connectionInfo);
 	}
 
@@ -793,7 +912,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			}
 
 			if (this._authTypeSelectBox) {
-				this.onAuthTypeSelected(this._authTypeSelectBox.value);
+				this.onAuthTypeSelected(this._authTypeSelectBox.value, false);
 			} else {
 				this._tableContainer.classList.remove('hide-username');
 				this._tableContainer.classList.remove('hide-password');
@@ -806,7 +925,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					if (value !== '') {
 						if (widget instanceof SelectBox) {
 							widget.selectWithOptionName(value);
-						} else {
+						} else if (widget instanceof InputBox) {
 							widget.value = value;
 						}
 					}
@@ -815,12 +934,28 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 			if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
 				this.fillInAzureAccountOptions().then(async () => {
-					let tenantId = connectionInfo.azureTenantId;
 					let accountName = (this.authType === AuthenticationType.AzureMFA)
 						? connectionInfo.azureAccount : connectionInfo.userName;
-					this._azureAccountDropdown.selectWithOptionName(this.getModelValue(accountName));
+					let account: azdata.Account;
+					if (accountName) {
+						// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
+						// The OR case can be removed once we no longer support ADAL
+						account = this._azureAccountList.find(account => account.key.accountId === this.getModelValue(accountName)
+							|| account.key.accountId.split('.')[0] === this.getModelValue(accountName));
+						this._azureAccountDropdown.selectWithOptionName(account.key.accountId);
+					} else {
+						// If account was not filled in from received configuration, select the first account.
+						this._azureAccountDropdown.select(0);
+						account = this._azureAccountList[0];
+						if (this._azureAccountList.length > 0) {
+							accountName = account.key.accountId;
+						} else {
+							this._logService.debug('fillInConnectionInputs: No accounts available');
+						}
+					}
 					await this.onAzureAccountSelected();
-					let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
+
+					let tenantId = connectionInfo.azureTenantId;
 					if (account && account.properties.tenants && account.properties.tenants.length > 1) {
 						let tenant = account.properties.tenants.find(tenant => tenant.id === tenantId);
 						if (tenant) {
@@ -831,6 +966,13 @@ export class ConnectionWidget extends lifecycle.Disposable {
 							this._logService.error(`fillInConnectionInputs : Could not find tenant with ID ${this._azureTenantId} for account ${accountName}`);
 						}
 						this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
+					}
+					else if (account && account.properties.tenants && account.properties.tenants.length === 1) {
+						this._azureTenantId = account.properties.tenants[0].id;
+						this.onAzureTenantSelected(0);
+					}
+					else if (accountName) {
+						this._logService.error(`fillInConnectionInputs : Could not find any tenants for account ${accountName}`);
 					}
 				}).catch(err => this._logService.error(`Unexpected error populating initial Azure Account options : ${err}`));
 			}
@@ -885,6 +1027,13 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (this._authTypeSelectBox) {
 			this._authTypeSelectBox.disable();
 		}
+		if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
+			this._azureAccountDropdown.disable();
+			this._azureTenantDropdown?.disable();
+			if (!this._azureAccountDropdown.value) {
+				this._azureAccountDropdown.select(0);
+			}
+		}
 		if (this._customOptionWidgets) {
 			this._customOptionWidgets.forEach(widget => {
 				widget.disable();
@@ -927,6 +1076,12 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (this._databaseNameInputBox) {
 			this._databaseNameInputBox.enabled = true;
 		}
+
+		if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
+			this._azureAccountDropdown.enable();
+			this._azureTenantDropdown?.enable();
+		}
+
 		if (this._customOptionWidgets) {
 			this._customOptionWidgets.forEach(widget => {
 				widget.enable();
@@ -1074,9 +1229,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						model.saveProfile = true;
 						model.groupId = this.findGroupId(model.groupFullName);
 					}
-				}
-				if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
-					model.azureTenantId = this._azureTenantId;
 				}
 			}
 		}

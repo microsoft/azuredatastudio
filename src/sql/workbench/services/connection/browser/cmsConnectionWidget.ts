@@ -26,6 +26,7 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ConnectionWidget } from 'sql/workbench/services/connection/browser/connectionWidget';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 /**
  * Connection Widget clas for CMS Connections
@@ -47,8 +48,9 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		@IAccountManagementService _accountManagementService: IAccountManagementService,
 		@ILogService _logService: ILogService,
 		@IErrorMessageService _errorMessageService: IErrorMessageService,
+		@IConfigurationService configurationService: IConfigurationService
 	) {
-		super(options, callbacks, providerName, _themeService, _contextViewService, _connectionManagementService, _accountManagementService, _logService, _errorMessageService);
+		super(options, callbacks, providerName, _themeService, _contextViewService, _connectionManagementService, _accountManagementService, _logService, _errorMessageService, configurationService);
 		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		if (authTypeOption) {
 			let authTypeDefault = this.getAuthTypeDefault(authTypeOption, OS);
@@ -128,7 +130,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		this.fillInConnectionForm(authTypeChanged);
 		this.registerListeners();
 		if (this._authTypeSelectBox) {
-			this.onAuthTypeSelected(this._authTypeSelectBox.value);
+			this.onAuthTypeSelected(this._authTypeSelectBox.value, false);
 		}
 	}
 

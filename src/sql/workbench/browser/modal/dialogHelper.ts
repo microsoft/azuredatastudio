@@ -23,7 +23,6 @@ export function appendRow(container: HTMLElement, label: string, labelClass: str
 	labelContainer.style.display = 'flex';
 
 	if (title) {
-		labelContainer.classList.add("codicon");
 		labelContainer.classList.add("info-icon");
 		labelContainer.title = titleMaxWidth ? wrapStringWithNewLine(title, titleMaxWidth) : title;
 	}

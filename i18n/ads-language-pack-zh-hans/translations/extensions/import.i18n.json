@@ -8,11 +8,11 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"out/common/constants": {
+		"dist/common/constants": {
 			"flatFile.InvalidFileLocation": "文件位置无效。请尝试其他输入文件",
 			"flatFileImport.allowNulls": "允许 Null",
 			"flatFileImport.browseFiles": "浏览",
-			"flatFileImport.columnName": "列名",
+			"flatFileImport.columnName": "列名称",
 			"flatFileImport.columnTableTitle": "列",
 			"flatFileImport.createDerivedColumn": "创建派生列",
 			"flatFileImport.dataType": "数据类型",
@@ -46,7 +46,7 @@
 			"flatFileImport.selectColumn": "选择列 {0}",
 			"flatFileImport.serverDropdownTitle": "数据库所在的服务器",
 			"flatFileImport.serverName": "服务器名称",
-			"flatFileImport.specifyDerivedColNameTitle": "列名称",
+			"flatFileImport.specifyDerivedColNameTitle": "列名",
 			"flatFileImport.specifyTransformation": "指定转换",
 			"flatFileImport.specifyTransformationForRow": "指定行 {0} 的转换",
 			"flatFileImport.success.norows": "✔ 已成功将数据插入表中。",
@@ -59,7 +59,7 @@
 			"import.serviceCrashButton": "提供反馈",
 			"serviceCrashMessage": "服务组件无法启动"
 		},
-		"out/services/serviceClient": {
+		"dist/services/serviceClient": {
 			"downloadingService": "正在下载 {0}",
 			"downloadingServiceComplete": "{0} 下载完毕",
 			"downloadingServiceSize": "({0} KB)",

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { nb, ServerInfo } from 'azdata';
+import { nb } from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
@@ -14,14 +14,13 @@ import { CellTypes, CellType, NotebookChangeType, TextCellEditModes } from 'sql/
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes, ICaretPosition, ICellEdit, CellEditType } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { generateUuid } from 'vs/base/common/uuid';
 import { HideInputTag, ParametersTag, InjectedParametersTag } from 'sql/platform/notebooks/common/outputRegistry';
-import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
+import { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -61,7 +60,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _isEditMode: boolean;
 	private _onOutputsChanged = new Emitter<IOutputChangedEvent>();
 	private _onTableUpdated = new Emitter<ITableUpdatedEvent>();
-	private _onCellModeChanged = new Emitter<boolean>();
+	private _onCellEditModeChanged = new Emitter<boolean>();
 	private _onExecutionStateChanged = new Emitter<CellExecutionState>();
 	private _onCurrentEditModeChanged = new Emitter<CellEditModes>();
 	private _isTrusted: boolean;
@@ -69,7 +68,6 @@ export class CellModel extends Disposable implements ICellModel {
 	private _hover: boolean;
 	private _executionCount: number | undefined;
 	private _cellUri: URI;
-	private _connectionManagementService: IConnectionManagementService;
 	private _stdInHandler: nb.MessageHandler<nb.IStdinMessage>;
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
@@ -151,8 +149,8 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._onTableUpdated.event;
 	}
 
-	public get onCellModeChanged(): Event<boolean> {
-		return this._onCellModeChanged.event;
+	public get onCellEditModeChanged(): Event<boolean> {
+		return this._onCellEditModeChanged.event;
 	}
 
 	public set metadata(data: any) {
@@ -243,19 +241,21 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public set isEditMode(isEditMode: boolean) {
-		this._isEditMode = isEditMode;
-		if (this._isEditMode) {
-			const newEditMode = this._lastEditMode ?? this._defaultTextEditMode;
-			this.showPreview = newEditMode !== TextCellEditModes.Markdown;
-			this.showMarkdown = newEditMode !== TextCellEditModes.RichText;
-		} else {
-			// when not in edit mode, default the values since they are only valid when editing.
-			// And to return the correct currentMode value.
-			this._showMarkdown = false;
-			this._showPreview = true;
+		if (this._isEditMode !== isEditMode) {
+			this._isEditMode = isEditMode;
+			if (this._isEditMode) {
+				const newEditMode = this._lastEditMode ?? this._defaultTextEditMode;
+				this.showPreview = newEditMode !== TextCellEditModes.Markdown;
+				this.showMarkdown = newEditMode !== TextCellEditModes.RichText;
+			} else {
+				// when not in edit mode, default the values since they are only valid when editing.
+				// And to return the correct currentMode value.
+				this._showMarkdown = false;
+				this._showPreview = true;
+			}
+			this._onCellEditModeChanged.fire(this._isEditMode);
+			// Note: this does not require a notebook update as it does not change overall state
 		}
-		this._onCellModeChanged.fire(this._isEditMode);
-		// Note: this does not require a notebook update as it does not change overall state
 	}
 
 	public get trustedMode(): boolean {
@@ -615,9 +615,6 @@ export class CellModel extends Disposable implements ICellModel {
 				this.active = true;
 			}
 
-			if (connectionManagementService) {
-				this._connectionManagementService = connectionManagementService;
-			}
 			if (this.cellType !== CellTypes.Code) {
 				// TODO should change hidden state to false if we add support
 				// for this property
@@ -890,7 +887,7 @@ export class CellModel extends Disposable implements ICellModel {
 							// "Optional transient data introduced in 5.1. Information not to be persisted to a notebook or other documents."
 							// (https://jupyter-client.readthedocs.io/en/stable/messaging.html)
 							delete output['transient'];
-							this._outputs.splice(i, 0, this.rewriteOutputUrls(output));
+							this._outputs.splice(i, 0, output);
 							this.fireOutputsChanged();
 							added = true;
 							break;
@@ -931,43 +928,11 @@ export class CellModel extends Disposable implements ICellModel {
 		if (output && !added) {
 			// deletes transient node in the serialized JSON
 			delete output['transient'];
-			this._outputs.push(this.rewriteOutputUrls(output));
+			this._outputs.push(output);
 			// Only scroll on 1st output being added
 			let shouldScroll = this._outputs.length === 1;
 			this.fireOutputsChanged(shouldScroll);
 		}
-	}
-
-	private rewriteOutputUrls(output: nb.ICellOutput): nb.ICellOutput {
-		const driverLog = '/gateway/default/yarn/container';
-		const yarnUi = '/gateway/default/yarn/proxy';
-		const defaultPort = ':30433';
-		// Only rewrite if this is coming back during execution, not when loading from disk.
-		// A good approximation is that the model has a future (needed for execution)
-		if (this.future) {
-			try {
-				let result = output as nb.IDisplayResult;
-				if (result && result.data && result.data['text/html']) {
-					let model = this._options.notebook as NotebookModel;
-					if (model.context) {
-						let gatewayEndpointInfo = this.getGatewayEndpoint(model.context);
-						if (gatewayEndpointInfo) {
-							let hostAndIp = notebookUtils.getHostAndPortFromEndpoint(gatewayEndpointInfo.endpoint);
-							let host = hostAndIp.host ? hostAndIp.host : model.context.serverName;
-							let port = hostAndIp.port ? ':' + hostAndIp.port : defaultPort;
-							let html = result.data['text/html'];
-							// BDC Spark UI Link
-							html = notebookUtils.rewriteUrlUsingRegex(/(https?:\/\/sparkhead.*\/proxy)(.*)/g, html, host, port, yarnUi);
-							// Driver link
-							html = notebookUtils.rewriteUrlUsingRegex(/(https?:\/\/storage.*\/containerlogs)(.*)/g, html, host, port, driverLog);
-							(<nb.IDisplayResult>output).data['text/html'] = html;
-						}
-					}
-				}
-			}
-			catch (e) { }
-		}
-		return output;
 	}
 
 	public setStdInHandler(handler: nb.MessageHandler<nb.IStdinMessage>): void {
@@ -1128,23 +1093,6 @@ export class CellModel extends Disposable implements ICellModel {
 		// Use this to set the internal (immutable) and public (shared with extension) uri properties
 		this.cellUri = uri;
 	}
-
-	// Get Knox endpoint from IConnectionProfile
-	// TODO: this will be refactored out into the notebooks extension as a contribution point
-	private getGatewayEndpoint(activeConnection: IConnectionProfile): notebookUtils.IEndpoint {
-		let endpoint;
-		if (this._connectionManagementService && activeConnection && activeConnection.providerName.toLowerCase() === notebookConstants.SQL_CONNECTION_PROVIDER.toLowerCase()) {
-			let serverInfo: ServerInfo = this._connectionManagementService.getServerInfo(activeConnection.id);
-			if (serverInfo) {
-				let endpoints: notebookUtils.IEndpoint[] = notebookUtils.getClusterEndpoints(serverInfo);
-				if (endpoints && endpoints.length > 0) {
-					endpoint = endpoints.find(ep => ep.serviceName.toLowerCase() === notebookUtils.hadoopEndpointNameGateway);
-				}
-			}
-		}
-		return endpoint;
-	}
-
 
 	private getMultilineSource(source: string | string[]): string | string[] {
 		if (source === undefined) {

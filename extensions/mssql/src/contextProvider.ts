@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
 import * as types from './types';
-import * as Constants from './constants';
 
 enum BuiltInCommands {
 	SetContext = 'setContext',
@@ -16,7 +15,6 @@ enum BuiltInCommands {
 enum ContextKeys {
 	ISCLOUD = 'mssql:iscloud',
 	EDITIONID = 'mssql:engineedition',
-	ISCLUSTER = 'mssql:iscluster',
 	SERVERMAJORVERSION = 'mssql:servermajorversion'
 }
 
@@ -41,7 +39,6 @@ export default class ContextProvider {
 	public onDashboardOpen(e: azdata.DashboardDocument): void {
 		let iscloud: boolean;
 		let edition: number;
-		let isCluster: boolean = false;
 		let serverMajorVersion: number;
 		if (e.profile.providerName.toLowerCase() === 'mssql' && !types.isUndefinedOrNull(e.serverInfo) && !types.isUndefinedOrNull(e.serverInfo.engineEditionId)) {
 			if (isCloudEditions.some(i => i === e.serverInfo.engineEditionId)) {
@@ -51,13 +48,6 @@ export default class ContextProvider {
 			}
 
 			edition = e.serverInfo.engineEditionId;
-
-			if (!types.isUndefinedOrNull(e.serverInfo.options)) {
-				let isBigDataCluster = e.serverInfo.options[Constants.isBigDataClusterProperty];
-				if (isBigDataCluster) {
-					isCluster = isBigDataCluster;
-				}
-			}
 			serverMajorVersion = e.serverInfo.serverMajorVersion;
 		}
 
@@ -67,10 +57,6 @@ export default class ContextProvider {
 
 		if (!types.isUndefinedOrNull(edition)) {
 			void setCommandContext(ContextKeys.EDITIONID, edition);
-		}
-
-		if (!types.isUndefinedOrNull(isCluster)) {
-			void setCommandContext(ContextKeys.ISCLUSTER, isCluster);
 		}
 
 		if (!types.isUndefinedOrNull(serverMajorVersion)) {

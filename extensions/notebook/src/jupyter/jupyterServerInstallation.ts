@@ -88,22 +88,6 @@ export const requiredPowershellPkg: PythonPkgDetails = {
 	version: '0.1.4'
 };
 
-export const requiredSparkPackages: PythonPkgDetails[] = [
-	requiredJupyterPkg,
-	{
-		name: 'cryptography',
-		version: '3.2.1',
-		installExactVersion: true
-	},
-	{
-		name: 'sparkmagic',
-		version: '0.12.9'
-	}, {
-		name: 'pandas',
-		version: '0.24.2'
-	}
-];
-
 export class JupyterServerInstallation implements IJupyterServerInstallation {
 	public extensionPath: string;
 	public pythonBinPath: string;
@@ -162,11 +146,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this._requiredKernelPackages.set(constants.ipykernelDisplayName, [requiredJupyterPkg]);
 		this._requiredKernelPackages.set(constants.python3DisplayName, [requiredJupyterPkg]);
 		this._requiredKernelPackages.set(constants.powershellDisplayName, [requiredJupyterPkg, requiredPowershellPkg]);
-		this._requiredKernelPackages.set(constants.pysparkDisplayName, requiredSparkPackages);
-		this._requiredKernelPackages.set(constants.sparkScalaDisplayName, requiredSparkPackages);
-		this._requiredKernelPackages.set(constants.sparkRDisplayName, requiredSparkPackages);
 
-		let allPackages = requiredSparkPackages.concat(requiredPowershellPkg);
+		let allPackages = [requiredJupyterPkg, requiredPowershellPkg];
 		this._requiredKernelPackages.set(constants.allKernelsName, allPackages);
 
 		this._requiredPackagesSet = new Set<string>();
@@ -906,7 +887,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			nbformat_minor: constants.NBFORMAT_MINOR
 		};
 
-		await vscode.commands.executeCommand('_notebook.command.new', {
+		await vscode.commands.executeCommand('notebook.command.new', {
 			initialContent: JSON.stringify(initialContent),
 			defaultKernel: 'Python 3'
 		});

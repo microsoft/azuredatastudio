@@ -47,8 +47,5 @@ Needs Logs - Azure:
 
 # actions for Out of Scope label
 Out of Scope:
-  comment: "Thank you for opening this suggestion!  This enhancement is not planned in our
-medium-term roadmap.  The issue is being closed to reduce active issues to focus on
-enhancements that are being considered for an upcoming release.  We will review closed issues
-with the 'Out of Scope' label when doing long-term planning."
+  comment: "Thank you for your feedback! This feature is currently out of scope and we do not plan to work on it in a currently planned release. We will close this issue to keep our backlog focused on requests that we are planning to work on. Please note that users can continue to vote and comment on closed issues, which we encourage as it helps us understand user interest and can provide more details about why a feature is requested."
   close: true

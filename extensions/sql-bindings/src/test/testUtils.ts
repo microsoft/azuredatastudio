@@ -24,11 +24,13 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 	sqlToolsServicePath: string = '';
 	dacFx: vscodeMssql.IDacFxService;
 	schemaCompare: vscodeMssql.ISchemaCompareService;
+	sqlProjects: vscodeMssql.ISqlProjectsService;
 	azureAccountService: vscodeMssql.IAzureAccountService;
 	azureResourceService: vscodeMssql.IAzureResourceService;
 
 	constructor() {
 		this.dacFx = TypeMoq.Mock.ofType<vscodeMssql.IDacFxService>().object;
+		this.sqlProjects = TypeMoq.Mock.ofType<vscodeMssql.ISqlProjectsService>().object;
 		this.schemaCompare = TypeMoq.Mock.ofType<vscodeMssql.ISchemaCompareService>().object;
 		this.azureAccountService = TypeMoq.Mock.ofType<vscodeMssql.IAzureAccountService>().object;
 		this.azureResourceService = TypeMoq.Mock.ofType<vscodeMssql.IAzureResourceService>().object;
@@ -93,6 +95,7 @@ export function createTestCredentials(): vscodeMssql.IConnectionInfo {
 		expiresOn: 0,
 		encrypt: false,
 		trustServerCertificate: false,
+		hostNameInCertificate: '',
 		persistSecurityInfo: false,
 		connectTimeout: 15,
 		connectRetryCount: 0,

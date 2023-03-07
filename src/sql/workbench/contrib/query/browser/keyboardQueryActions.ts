@@ -23,6 +23,7 @@ import { INotificationService, Severity } from 'vs/platform/notification/common/
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 
 const singleQuote = '\'';
 
@@ -300,6 +301,8 @@ export class RefreshIntellisenseKeyboardAction extends Action {
 		const editor = this.editorService.activeEditor;
 		if (editor instanceof QueryEditorInput) {
 			this.connectionManagementService.rebuildIntelliSenseCache(editor.uri);
+		} else if (editor instanceof NotebookInput && editor.notebookModel?.activeCell) {
+			this.connectionManagementService.rebuildIntelliSenseCache(editor.notebookModel.activeCell.cellUri.toString(true));
 		}
 		return Promise.resolve(null);
 	}

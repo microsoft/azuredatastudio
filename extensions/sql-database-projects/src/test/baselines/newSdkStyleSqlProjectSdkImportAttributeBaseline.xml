@@ -9,6 +9,6 @@
   <Target Name="BeforeBuild">
     <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json" />
   </Target>
-  <Import Project="Sdk.props" Sdk="Microsoft.Build.Sql" Version="0.1.3-preview" />
-  <Import Project="Sdk.targets" Sdk="Microsoft.Build.Sql" Version="0.1.3-preview" />
+  <Import Project="Sdk.props" Sdk="Microsoft.Build.Sql" Version="0.1.7-preview" />
+  <Import Project="Sdk.targets" Sdk="Microsoft.Build.Sql" Version="0.1.7-preview" />
 </Project>

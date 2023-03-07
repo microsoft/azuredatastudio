@@ -127,3 +127,9 @@ export const mockConnectionProfile: azdata.IConnectionProfile = {
 		connectionName: 'My Connection Name'
 	}
 };
+
+export const mockURIList: vscode.Uri[] = [
+	vscode.Uri.file('/test/folder/abc.sqlproj'),
+	vscode.Uri.file('/test/folder/folder1/abc1.sqlproj'),
+	vscode.Uri.file('/test/folder/folder2/abc2.sqlproj')
+];

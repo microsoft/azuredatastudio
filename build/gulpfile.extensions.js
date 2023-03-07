@@ -24,11 +24,6 @@ const product = require('../product.json');
 
 const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
 
-// {{SQL CARBON EDIT}} - TODO: Import needs to be updated to work with langpacks.
-const sqlLocalizedExtensions = [
-	'import',
-];
-
 // {{SQL CARBON EDIT}} Not doing this for us right now
 // To save 250ms for each gulp startup, we are caching the result here
 const compilations = glob.sync('**/tsconfig.json', {
@@ -74,7 +69,6 @@ const compilations = [
 	'vscode-api-tests/tsconfig.json',
 	'vscode-colorize-tests/tsconfig.json',
 	'vscode-custom-editor-tests/tsconfig.json',
-	'vscode-notebook-tests/tsconfig.json',
 	'vscode-test-resolver/tsconfig.json'
 ];
 */
@@ -161,7 +155,7 @@ const tasks = compilations.map(function (tsconfigFile) {
 	const cleanTask = task.define(`clean-extension-${name}`, util.rimraf(out));
 
 	const compileTask = task.define(`compile-extension:${name}`, task.series(cleanTask, () => {
-		const pipeline = createPipeline(sqlLocalizedExtensions.includes(name), true); // {{SQL CARBON EDIT}}
+		const pipeline = createPipeline(false, true);
 		const nonts = gulp.src(src, srcOpts).pipe(filter(['**', '!**/*.ts']));
 		const input = es.merge(nonts, pipeline.tsProjectSrc());
 

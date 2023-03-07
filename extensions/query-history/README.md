@@ -6,13 +6,13 @@ Adds a Query History view for viewing and running past executed queries.
 
 Query History is initially as a tab in the tab panel, which is toggled by the **View: Toggle Panel** or **Query History: Focus on Query History View** commands.
 
-![Query History tab](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/query-history/images/QueryHistoryTab.PNG)
+![Query History tab](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/query-history/images/QueryHistoryTab.png)
 
 This view can be moved similar to other views into other view containers by dragging and dropping into the desired view container.
 
 Initially this view will be empty but once you execute a query editor that will be captured in the window - with a separate row displayed for every query executed.
 
-![Query History tab with queries](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/query-history/images/QueryHistoryTabWithQueries.PNG)
+![Query History tab with queries](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/query-history/images/QueryHistoryTabWithQueries.png)
 
 Each row consists of 4 parts :
 - Status icon : This will be a ✔️ if the query executed successfully. If any errors occurred a ❌ is shown.
@@ -30,7 +30,7 @@ Query History capture can be enabled/disabled in one of two ways :
 
 Right clicking on a history row will bring up a menu with a number of actions available.
 
-![Query History action menu](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/query-history/images/QueryHistoryActionMenu.PNG)
+![Query History action menu](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/query-history/images/QueryHistoryActionMenu.png)
 
 #### Open Query
 
@@ -63,9 +63,13 @@ If persistence is not enabled then all information is stored in-memory and not p
 ## Code of Conduct
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
+## Telemetry
+
+This extension collects telemetry data, which is used to help understand how to improve the product. For example, this usage data helps to debug issues, such as slow start-up times, and to prioritize new features. While we appreciate the insights this data provides, we also know that not everyone wants to send usage data and you can disable telemetry as described in the Azure Data Studio [disable telemetry reporting](https://github.com/Microsoft/azuredatastudio/wiki/How-to-Disable-Telemetry-Reporting#how-to-disable-telemetry-reporting) documentation.
+
 ## Privacy Statement
 
-The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.microsoft.com/privacystatement) describes the privacy statement of this software.
+To learn more about our Privacy Statement visit [this link](https://go.microsoft.com/fwlink/?LinkID=824704).
 
 ## License
 

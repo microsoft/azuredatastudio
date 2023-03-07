@@ -1,0 +1,14 @@
+{
+	"linterOptions": {
+		"exclude": [
+			"typings/*.d.ts"
+		]
+	},
+	"rules": {
+		"no-unused-expression": false,
+		"curly": true,
+		"class-name": true,
+		"semicolon": true,
+		"triple-equals": true
+	}
+}

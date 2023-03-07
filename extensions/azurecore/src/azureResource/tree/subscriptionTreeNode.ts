@@ -42,7 +42,7 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 			const children: IAzureResourceNodeWithProviderId[] = [];
 
 			for (const resourceProviderId of await resourceService.listResourceProviderIds()) {
-				children.push(...await resourceService.getRootChildren(resourceProviderId, this.account, this.subscription, this.tenantId));
+				children.push(...await resourceService.getRootChildren(resourceProviderId, this.account, this.subscription));
 			}
 
 			if (children.length === 0) {

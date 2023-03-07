@@ -4,13 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'vs/base/common/path';
-import { nb, ServerInfo } from 'azdata';
+import { nb } from 'azdata';
 import { DEFAULT_NOTEBOOK_PROVIDER, INotebookService, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
-import { URI } from 'vs/base/common/uri';
 import { DEFAULT_NOTEBOOK_FILETYPE, NotebookLanguage } from 'sql/workbench/common/constants';
 
-export const clusterEndpointsProperty = 'clusterEndpoints';
-export const hadoopEndpointNameGateway = 'gateway';
 /**
  * Test whether an output is from a stream.
  */
@@ -68,81 +65,10 @@ export interface IStandardKernelWithProvider {
 	readonly supportedFileExtensions?: string[];
 }
 
-export interface IEndpoint {
-	serviceName: string;
-	description: string;
-	endpoint: string;
-	protocol: string;
-}
-
 export async function asyncForEach(array: any[], callback: Function): Promise<any> {
 	if (array && callback) {
 		for (let index = 0; index < array.length; index++) {
 			await callback(array[index], index, array);
 		}
 	}
-}
-
-export function getClusterEndpoints(serverInfo: ServerInfo): IEndpoint[] | undefined {
-	let endpoints: RawEndpoint[] = serverInfo.options[clusterEndpointsProperty];
-	if (!endpoints || endpoints.length === 0) { return []; }
-
-	return endpoints.map(e => {
-		// If endpoint is missing, we're on CTP bits. All endpoints from the CTP serverInfo should be treated as HTTPS
-		let endpoint = e.endpoint ? e.endpoint : `https://${e.ipAddress}:${e.port}`;
-		let updatedEndpoint: IEndpoint = {
-			serviceName: e.serviceName,
-			description: e.description,
-			endpoint: endpoint,
-			protocol: e.protocol
-		};
-		return updatedEndpoint;
-	});
-}
-
-export type HostAndIp = { host: string, port: string };
-
-export function getHostAndPortFromEndpoint(endpoint: string): HostAndIp {
-	let authority = URI.parse(endpoint).authority;
-	let hostAndPortRegex = /^(.*)([,:](\d+))/g;
-	let match = hostAndPortRegex.exec(authority);
-	if (match) {
-		return {
-			host: match[1],
-			port: match[3]
-		};
-	}
-	return {
-		host: authority,
-		port: undefined
-	};
-}
-
-export function rewriteUrlUsingRegex(regex: RegExp, html: string, host: string, port: string, target: string): string {
-	return html.replace(regex, function (a, b, c) {
-		let ret = '';
-		if (b !== '') {
-			ret = 'https://' + host + port + target;
-		}
-		if (c !== '') {
-			ret = ret + c;
-		}
-		return ret;
-	});
-}
-
-export interface RawEndpoint {
-	serviceName: string;
-	description?: string;
-	endpoint?: string;
-	protocol?: string;
-	ipAddress?: string;
-	port?: number;
-}
-
-export interface IEndpoint {
-	serviceName: string;
-	description: string;
-	endpoint: string;
-	protocol: string;
 }

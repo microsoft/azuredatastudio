@@ -8,7 +8,7 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"out/common/constants": {
+		"dist/common/constants": {
 			"flatFile.InvalidFileLocation": "잘못된 파일 위치입니다. 다른 입력 파일을 사용해 보세요.",
 			"flatFileImport.allowNulls": "Null 허용",
 			"flatFileImport.browseFiles": "찾아보기",
@@ -59,7 +59,7 @@
 			"import.serviceCrashButton": "사용자 의견 제공",
 			"serviceCrashMessage": "서비스 구성 요소를 시작할 수 없습니다."
 		},
-		"out/services/serviceClient": {
+		"dist/services/serviceClient": {
 			"downloadingService": "{0} 다운로드 중",
 			"downloadingServiceComplete": "{0} 다운로드 완료",
 			"downloadingServiceSize": "({0}KB)",

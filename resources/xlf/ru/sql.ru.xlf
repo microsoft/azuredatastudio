@@ -256,10 +256,6 @@
         <source xml:lang="en">Enable automatic update checks. Azure Data Studio will check for updates automatically and periodically.</source>
         <target state="translated">Включение автоматических проверок обновлений. Azure Data Studio будет периодически проверять наличие обновлений в автоматическом режиме.</target>
       </trans-unit>
-      <trans-unit id="docNotFoundForUriError">
-        <source xml:lang="en">Could not open a notebook document for the specified URI.</source>
-        <target state="translated">Не удалось открыть документ записной книжки для указанного универсального кода ресурса (URI).</target>
-      </trans-unit>
       <trans-unit id="enable locally">
         <source xml:lang="en">Please reload Azure Data Studio to enable this extension locally.</source>
         <target state="translated">Перезапустите Azure Data Studio, чтобы включить это расширение локально.</target>
@@ -288,6 +284,11 @@
         <source xml:lang="en">Controls the memory available to Azure Data Studio after restart when trying to open large files. Same effect as specifying `--max-memory=NEWSIZE` on the command line.</source>
         <target state="translated">Управляет объемом памяти, который доступен Azure Data Studio после перезапуска при попытке открытия больших файлов. Действие этого параметра аналогично указанию параметра "--max-memory=НОВЫЙ_РАЗМЕР" в командной строке.</target>
       </trans-unit>
+      <trans-unit id="miNewDeployment">
+        <source xml:lang="en">New &amp;&amp;Deployment...</source>
+        <note>&amp;&amp; denotes a mnemonic</note>
+        <target state="translated">Новое &amp;&amp;развертывание...</target>
+      </trans-unit>
       <trans-unit id="miNewNotebook">
         <source xml:lang="en">&amp;&amp;New Notebook</source>
         <note>&amp;&amp; denotes a mnemonic</note>
@@ -311,9 +312,93 @@
         <source xml:lang="en">The notebook cell title menu</source>
         <target state="translated">Меню заголовка ячейки записной книжки</target>
       </trans-unit>
-      <trans-unit id="notebook.cellToolbarLocation.compatibilityDescription">
-        <source xml:lang="en">Where the cell toolbar should be shown, or whether it should be hidden. Note: This setting is only enabled for extension compatibility purposes, and so does not affect anything.</source>
-        <target state="translated">Где следует отображать панель инструментов ячейки (или следует ли ее скрыть). Примечание. Этот параметр включен только в целях совместимости расширений, он ни на что не влияет.</target>
+      <trans-unit id="notebook.cellToolbarLocation.description">
+        <source xml:lang="en">Where the cell toolbar should be shown, or whether it should be hidden. (for VS Code Notebooks only)</source>
+        <target state="translated">Следует ли отображать панель инструментов ячейки или скрыть ее. (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.cellToolbarVisibility.description">
+        <source xml:lang="en">Whether the cell toolbar should appear on hover or click. (for VS Code Notebooks only)</source>
+        <target state="translated">Следует ли отображать панель инструментов ячейки при наведении указателя мыши или щелчке. (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.compactView.description">
+        <source xml:lang="en">Control whether the notebook editor should be rendered in a compact form. For example, when turned on, it will decrease the left margin width. (for VS Code Notebooks only)</source>
+        <target state="translated">Укажите, должен ли редактор записных книжек отображаться в компактном виде. Например, если этот параметр включен, это приведет к уменьшению ширины левого поля. (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.consolidatedOutputButton.description">
+        <source xml:lang="en">Control whether outputs action should be rendered in the output toolbar. (for VS Code Notebooks only)</source>
+        <target state="translated">Определяет, следует ли отображать действие выходных данных на панели инструментов выходных данных. (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.consolidatedRunButton.description">
+        <source xml:lang="en">Control whether extra actions are shown in a dropdown next to the run button. (for VS Code Notebooks only)</source>
+        <target state="translated">Определяет, будут ли отображаться дополнительные действия в раскрывающемся меню рядом с кнопкой "Выполнить". (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.diff.enablePreview.description">
+        <source xml:lang="en">Whether to use the enhanced text diff editor for notebook. (for VS Code Notebooks only)</source>
+        <target state="translated">Следует ли использовать расширенный редактор несовпадений в тексте для записной книжки. (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.displayOrder.description">
+        <source xml:lang="en">Priority list for output mime types. (for VS Code Notebooks only)</source>
+        <target state="translated">Список приоритетов для типов MIME выходных данных. (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.dragAndDrop.description">
+        <source xml:lang="en">Control whether the notebook editor should allow moving cells through drag and drop. (for VS Code Notebooks only)</source>
+        <target state="translated">Определяет, должен ли редактор записной книжки разрешать перемещение ячеек путем перетаскивания. (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.editorOptions.experimentalCustomization">
+        <source xml:lang="en">Settings for code editors used in notebooks. This can be used to customize most editor.* settings. (for VS Code Notebooks only)</source>
+        <target state="translated">Параметры для редакторов кода, используемых в записных книжках. Их можно использовать для настройки большинства параметров редактора. (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.focusIndicator.description">
+        <source xml:lang="en">Controls where the focus indicator is rendered, either along the cell borders or on the left gutter. (for VS Code Notebooks only)</source>
+        <target state="translated">Определяет, где выводится указатель фокуса: на границах ячеек или по левому краю. (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.globalToolbar.description">
+        <source xml:lang="en">Control whether to render a global toolbar inside the notebook editor. (for VS Code Notebooks only)</source>
+        <target state="translated">Определяет, следует ли отображать глобальную панель инструментов в редакторе записной книжки. (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.globalToolbarShowLabel">
+        <source xml:lang="en">Control whether the actions on the notebook toolbar should render label or not. (for VS Code Notebooks only)</source>
+        <target state="translated">Указать, следует ли отображать метку в действиях на панели инструментов записной книжки. (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.insertToolbarPosition.description">
+        <source xml:lang="en">Control where the insert cell actions should appear. (for VS Code Notebooks only)</source>
+        <target state="translated">Управление расположением действий вставки ячеек. (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.interactiveWindow.collapseCodeCells">
+        <source xml:lang="en">Controls whether code cells in the interactive window are collapsed by default. (for VS Code Notebooks only)</source>
+        <target state="translated">Определяет, свернуты ли по умолчанию ячейки кода в интерактивном окне. (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.markup.fontSize">
+        <source xml:lang="en">Controls the font size in pixels of rendered markup in notebooks. When set to `0`, 120% of `#editor.fontSize#` is used. (for VS Code Notebooks only)</source>
+        <target state="translated">Управляет размером шрифта (в пикселях) отрисовки разметки в записных книжках. Если задано значение "0", используется 120 % размера "#editor.fontSize#". (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.outputFontFamily">
+        <source xml:lang="en">The font family for the output text for notebook cells. When set to empty, the `#editor.fontFamily#` is used. (for VS Code Notebooks only)</source>
+        <target state="translated">Семейство шрифтов выходного текста ячеек записной книжки. Если задано `нет значения`, используется `#editor.fontFamily#`. (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.outputFontSize">
+        <source xml:lang="en">Font size for the output text for notebook cells. When set to 0 `#editor.fontSize#` is used. (for VS Code Notebooks only)</source>
+        <target state="translated">Размер шрифта для выходного текста ячеек записной книжки. Если задано значение `0`, используется `#editor.fontSize#`. (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.outputLineHeight">
+        <source xml:lang="en">Line height of the output text for notebook cells.
+ - Values between 0 and 8 will be used as a multiplier with the font size.
+ - Values greater than or equal to 8 will be used as effective values. (for VS Code Notebooks only)</source>
+        <target state="translated">Высота строки выходного текста ячеек записной книжки.
+ - значения от 0 до 8 будут использоваться в качестве множителя размера шрифта.
+ - значения больше или равные 8 будут использоваться в качестве эффективных значений. (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.showCellStatusbar.description">
+        <source xml:lang="en">Whether the cell status bar should be shown. (for VS Code Notebooks only)</source>
+        <target state="translated">Должна ли отображаться строка состояния ячейки. (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.showFoldingControls.description">
+        <source xml:lang="en">Controls when the Markdown header folding arrow is shown. (for VS Code Notebooks only)</source>
+        <target state="translated">Определяет, отображается ли стрелка папки заголовка Markdown. (Только для Записных книжек VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.textOutputLineLimit">
+        <source xml:lang="en">Control how many lines of text in a text output is rendered. (for VS Code Notebooks only)</source>
+        <target state="translated">Управление количеством отображаемых строк в выходном тексте. (Только для Записных книжек VS Code)</target>
       </trans-unit>
       <trans-unit id="notebook.title">
         <source xml:lang="en">The notebook title menu</source>
@@ -322,6 +407,10 @@
       <trans-unit id="notebook.toolbar">
         <source xml:lang="en">The notebook toolbar menu</source>
         <target state="translated">Меню панели инструментов записной книжки</target>
+      </trans-unit>
+      <trans-unit id="notebook.undoRedoPerCell.description">
+        <source xml:lang="en">Whether to use separate undo/redo stack for each cell. (for VS Code Notebooks only)</source>
+        <target state="translated">Следует ли использовать отдельный стек отмены или повтора для каждой ячейки. (Только для Записных книжек VS Code)</target>
       </trans-unit>
       <trans-unit id="objectExplorer.context">
         <source xml:lang="en">The object explorer item context menu</source>
@@ -465,17 +554,9 @@ Default Skipped Commands:
         <source xml:lang="en">Would you like to change Azure Data Studio's UI language to {0} and restart?</source>
         <target state="translated">Хотите изменить язык пользовательского интерфейса Azure Data Studio на {0} и выполнить перезапуск?</target>
       </trans-unit>
-      <trans-unit id="vscodeDocCreationFailedError">
-        <source xml:lang="en">Failed to create notebook document.</source>
-        <target state="translated">Не удалось создать документ записной книжки.</target>
-      </trans-unit>
-      <trans-unit id="vscodeFunctionalityNotSupportedError">
-        <source xml:lang="en">This VS Code functionality is not supported in Azure Data Studio.</source>
-        <target state="translated">Этот VS Code не поддерживается в Azure Data Studio.</target>
-      </trans-unit>
-      <trans-unit id="vscodeInvalidArgumentsError">
-        <source xml:lang="en">Invalid arguments.</source>
-        <target state="translated">Недопустимые аргументы.</target>
+      <trans-unit id="vscodeNotebooksNotSupportedError">
+        <source xml:lang="en">VS Code notebook extensions are not supported in Azure Data Studio.</source>
+        <target state="translated">Расширения записной книжки VS Code не поддерживаются в Azure Data Studio.</target>
       </trans-unit>
       <trans-unit id="watermark.newNotebook">
         <source xml:lang="en">New Notebook</source>
@@ -1007,14 +1088,6 @@ Default Skipped Commands:
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/api/common/notebooks/vscodeExecuteProvider" source-language="en" datatype="plaintext" target-language="ru">
-    <body>
-      <trans-unit id="errorStartBeforeReady">
-        <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
-        <target state="translated">Не удается запустить сеанс, диспетчер еще не инициализирован</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="src/sql/workbench/browser/actions" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="clearSavedAccounts">
@@ -1056,6 +1129,14 @@ Default Skipped Commands:
       <trans-unit id="showConnectDialogOnStartup">
         <source xml:lang="en">Show connect dialog on startup</source>
         <target state="translated">Показывать диалоговое окно подключения при запуске</target>
+      </trans-unit>
+      <trans-unit id="useVSCodeNotebooks">
+        <source xml:lang="en">(Preview) Use VS Code notebooks as the default notebook experience. Note: Azure Data Studio will need to be restarted to enable this setting.</source>
+        <target state="translated">(Предварительная версия) Используйте записные книжки VS Code в качестве записной книжки по умолчанию. Примечание. Чтобы включить этот параметр, необходимо перезапустить Azure Data Studio.</target>
+      </trans-unit>
+      <trans-unit id="useVSCodeNotebooksTitle">
+        <source xml:lang="en">Use VS Code notebooks</source>
+        <target state="translated">Использовать записные книжки VS Code</target>
       </trans-unit>
     </body>
   </file>
@@ -2310,6 +2391,10 @@ Default Skipped Commands:
   </file>
   <file original="src/sql/workbench/contrib/connection/common/connectionProviderExtension" source-language="en" datatype="plaintext" target-language="ru">
     <body>
+      <trans-unit id="schema.azureResource">
+        <source xml:lang="en">Azure resource endpoint for the provider.</source>
+        <target state="translated">Конечная точка ресурса Azure для поставщика.</target>
+      </trans-unit>
       <trans-unit id="schema.connectionOptions">
         <source xml:lang="en">Options for connection</source>
         <target state="translated">Параметры подключения</target>
@@ -3543,8 +3628,8 @@ Default Skipped Commands:
         <target state="translated">Сбросить масштаб</target>
       </trans-unit>
       <trans-unit id="epCompare.zoomToFit">
-        <source xml:lang="en">Zoom to fit</source>
-        <target state="translated">Масштаб по размеру экрана</target>
+        <source xml:lang="en">Zoom to Fit</source>
+        <target state="translated">Масштабировать по размеру</target>
       </trans-unit>
       <trans-unit id="executionPlanComparison.bottomPlanDiagram.name">
         <source xml:lang="en">Bottom execution Plan {0}</source>
@@ -3635,12 +3720,12 @@ Default Skipped Commands:
         <target state="translated">Если значение равно true, при наведении указателя на план выполнения включает всплывающие подсказки. Если значение равно false, подсказки отображаются при щелчке по узлу или при нажатии клавиши F3.</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareCommandOriginalValue">
-        <source xml:lang="en">Compare execution plans</source>
-        <target state="translated">Сравнение планов выполнения</target>
+        <source xml:lang="en">Compare Execution Plans</source>
+        <target state="translated">Сравнить планы выполнения</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareCommandValue">
-        <source xml:lang="en">Compare execution plans</source>
-        <target state="translated">Сравнение планов выполнения</target>
+        <source xml:lang="en">Compare Execution Plans</source>
+        <target state="translated">Сравнить планы выполнения</target>
       </trans-unit>
       <trans-unit id="executionPlanConfigurationTitle">
         <source xml:lang="en">Execution Plan</source>
@@ -3669,6 +3754,14 @@ Default Skipped Commands:
       <trans-unit id="loadingExecutionPlanFile">
         <source xml:lang="en">Generating execution plans</source>
         <target state="translated">Создание планов выполнения</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanInput" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="epCompare.executionPlanEditorName">
+        <source xml:lang="en">ExecutionPlan</source>
+        <target state="translated">План_выполнения</target>
       </trans-unit>
     </body>
   </file>
@@ -3767,8 +3860,8 @@ Default Skipped Commands:
         <target state="translated">План выполнения {0}</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareExecutionPlanAction">
-        <source xml:lang="en">Compare execution plan</source>
-        <target state="translated">Сравнение плана выполнения</target>
+        <source xml:lang="en">Compare Execution Plan</source>
+        <target state="translated">Сравнение планов выполнения</target>
       </trans-unit>
       <trans-unit id="executionPlanContextMenuDisableTooltip">
         <source xml:lang="en">Disable Tooltips</source>
@@ -3791,8 +3884,8 @@ Default Skipped Commands:
         <target state="translated">Подсказки включены</target>
       </trans-unit>
       <trans-unit id="executionPlanFitGraphLabel">
-        <source xml:lang="en">Zoom to fit</source>
-        <target state="translated">Масштаб по размеру экрана</target>
+        <source xml:lang="en">Zoom to Fit</source>
+        <target state="translated">Масштабировать по размеру</target>
       </trans-unit>
       <trans-unit id="executionPlanHighlightExpensiveOperationAction">
         <source xml:lang="en">Highlight Expensive Operation</source>
@@ -4003,14 +4096,6 @@ Default Skipped Commands:
       <trans-unit id="previousSearchItemAction">
         <source xml:lang="en">Previous Match</source>
         <target state="translated">Предыдущее совпадение</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/executionPlan/common/executionPlanInput" source-language="en" datatype="plaintext" target-language="ru">
-    <body>
-      <trans-unit id="epCompare.executionPlanEditorName">
-        <source xml:lang="en">ExecutionPlan</source>
-        <target state="translated">План_выполнения</target>
       </trans-unit>
     </body>
   </file>
@@ -5114,6 +5199,10 @@ Error: {1}</source>
         <source xml:lang="en">The maximum number of changes stored in the undo history for the notebook Rich Text editor.</source>
         <target state="translated">Максимальное количество изменений, сохраняемых в журнале отмены для редактора форматированного текста записной книжки.</target>
       </trans-unit>
+      <trans-unit id="notebook.renderTablesInHtml">
+        <source xml:lang="en">Display and save tables in HTML format in text cells instead of converting to markdown tables.</source>
+        <target state="translated">Отображение и сохранение таблиц в формате HTML в текстовых ячейках вместо преобразования в таблицы Markdown.</target>
+      </trans-unit>
       <trans-unit id="notebook.richTextModeDescription">
         <source xml:lang="en">Text is displayed as Rich Text (also known as WYSIWYG).</source>
         <target state="translated">Текст отображается как форматированный текст (другое название — WYSIWYG).</target>
@@ -5695,8 +5784,8 @@ Error: {1}</source>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error {0}</source>
-        <target state="translated">Не удалось выполнить копирование. Ошибка: {0}</target>
+        <source xml:lang="en">Copy failed with error: {0}</source>
+        <target state="translated">Не удалось копировать. Ошибка: {0}</target>
       </trans-unit>
       <trans-unit id="notebook.showChart">
         <source xml:lang="en">Show chart</source>
@@ -5994,6 +6083,10 @@ Error: {1}</source>
         <source xml:lang="en">Chart</source>
         <target state="translated">Диаграмма</target>
       </trans-unit>
+      <trans-unit id="copyHeaders">
+        <source xml:lang="en">Copy Headers</source>
+        <target state="translated">Копировать заголовки</target>
+      </trans-unit>
       <trans-unit id="copySelection">
         <source xml:lang="en">Copy</source>
         <target state="translated">Копировать</target>
@@ -6274,6 +6367,10 @@ Error: {1}</source>
         <source xml:lang="en">When true, XML output will be formatted when saving results as XML</source>
         <target state="translated">Если этот параметр имеет значение true, выходные данные XML будут отформатированы при сохранении результатов в формате XML</target>
       </trans-unit>
+      <trans-unit id="queryEditor.results.showActionBar">
+        <source xml:lang="en">Whether to show the action bar in the query results view</source>
+        <target state="translated">Отображать ли панель действий в представлении результатов запроса</target>
+      </trans-unit>
       <trans-unit id="queryEditor.results.streaming">
         <source xml:lang="en">Enable results streaming; contains few minor visual issues</source>
         <target state="translated">Включить потоковую передачу результатов; имеется несколько небольших проблем с отображением</target>
@@ -6438,6 +6535,14 @@ Error: {1}</source>
         <source xml:lang="en">Average: {0}  Count: {1}  Sum: {2}</source>
         <target state="translated">Среднее значение: {0}  Количество: {1}  Сумма: {2}</target>
       </trans-unit>
+      <trans-unit id="status.query.summaryTextNonNumeric">
+        <source xml:lang="en">Count: {0}  Distinct Count: {1}  Null Count: {2}</source>
+        <target state="translated">Количество: {0}, число уникальных значений: {1}, число значений NULL: {2}</target>
+      </trans-unit>
+      <trans-unit id="status.query.summaryTooltip">
+        <source xml:lang="en">Average: {0}  Count: {1}  Distinct Count: {2}  Max: {3}  Min: {4}  Null Count: {5}  Sum: {6}</source>
+        <target state="translated">Среднее: {0}, количество: {1}, число уникальных значений: {2}, максимум: {3}, минимум: {4}, число значений NULL: {5}, сумма: {6}</target>
+      </trans-unit>
       <trans-unit id="status.query.timeElapsed">
         <source xml:lang="en">Time Elapsed</source>
         <target state="translated">Прошедшее время</target>
@@ -6473,6 +6578,10 @@ Error: {1}</source>
       <trans-unit id="maxColumnWidth">
         <source xml:lang="en">The maximum width in pixels for auto-sized columns</source>
         <target state="translated">Максимальная ширина в пикселях для столбцов, размер которых определяется автоматически</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.showJsonAsLink">
+        <source xml:lang="en">Whether to show cells with JSON formatted string as hyperlink. When enabled, upon click the JSON value will be opened in another tab. The default value is true.</source>
+        <target state="translated">Следует ли отображать ячейки со строкой в формате JSON в виде гиперссылки. Если этот параметр включен, значение JSON при щелчке будет открываться на другой вкладке. Значение по умолчанию — "true".</target>
       </trans-unit>
       <trans-unit id="resultsGridConfigurationTitle">
         <source xml:lang="en">Results Grid and Messages</source>
@@ -7303,13 +7412,33 @@ Error: {1}</source>
         <source xml:lang="en">Close</source>
         <target state="translated">Закрыть</target>
       </trans-unit>
+      <trans-unit id="addAccountFailedCodeMessage">
+        <source xml:lang="en">{0} 
+Error Message: {1}</source>
+        <target state="translated">{0} 
+Сообщение об ошибке: {1}</target>
+      </trans-unit>
+      <trans-unit id="addAccountFailedGenericMessage">
+        <source xml:lang="en">Adding account failed, check Azure Accounts log for more info.</source>
+        <target state="translated">Не удалось добавить учетную запись. Дополнительные сведения см. в журнале учетных записей Azure.</target>
+      </trans-unit>
+      <trans-unit id="addAccountFailedMessage">
+        <source xml:lang="en">{0}</source>
+        <target state="translated">{0}</target>
+      </trans-unit>
       <trans-unit id="loggingIn">
         <source xml:lang="en">Adding account...</source>
         <target state="translated">Добавление учетной записи…</target>
       </trans-unit>
-      <trans-unit id="refreshFailed">
+      <trans-unit id="refreshCanceled">
         <source xml:lang="en">Refresh account was canceled by the user</source>
         <target state="translated">Обновление учетной записи было отменено пользователем</target>
+      </trans-unit>
+      <trans-unit id="refreshFailed">
+        <source xml:lang="en">0 
+Error Message: 1</source>
+        <target state="translated">0 
+Сообщение об ошибке: 1</target>
       </trans-unit>
     </body>
   </file>
@@ -7551,10 +7680,6 @@ Error: {1}</source>
         <source xml:lang="en">Connection error</source>
         <target state="translated">Ошибка подключения</target>
       </trans-unit>
-      <trans-unit id="enableTrustServerCertificate">
-        <source xml:lang="en">Enable Trust server certificate</source>
-        <target state="translated">Доверять сертификату сервера</target>
-      </trans-unit>
       <trans-unit id="kerberosErrorStart">
         <source xml:lang="en">Connection failed due to Kerberos error.</source>
         <target state="translated">Сбой подключения из-за ошибки Kerberos.</target>
@@ -7570,14 +7695,6 @@ Error: {1}</source>
       <trans-unit id="runKinit">
         <source xml:lang="en">Run Kinit</source>
         <target state="translated">Запуск Kinit</target>
-      </trans-unit>
-      <trans-unit id="trustServerCertInstructionText">
-        <source xml:lang="en">Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable 'Trust server certificate' in the connection dialog.
-
-			Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? </source>
-        <target state="translated">Для этого подключения включено шифрование. Проверьте конфигурацию SSL и сертификата для целевого SQL Server или включите "Доверять сертификату сервера" в диалоговом окне подключения.
-
-			Примечание. Самозаверяющий сертификат обеспечивает только ограниченную защиту и не рекомендуется для рабочих сред. Вы хотите включить "Доверять сертификату сервера" для этого подключения и повторить попытку? </target>
       </trans-unit>
     </body>
   </file>
@@ -7773,6 +7890,58 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/connection/browser/passwordChangeDialog" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="passwordChangeDialog.Message1">
+        <source xml:lang="en">Password must be changed for '{0}' to continue logging into '{1}'.</source>
+        <target state="translated">Чтобы продолжить вход в "{1}", необходимо изменить пароль для "{0}''.</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.Message2">
+        <source xml:lang="en">Please enter a new password below:</source>
+        <target state="translated">Введите новый пароль ниже:</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Отмена</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.confirmPassword">
+        <source xml:lang="en">Confirm password:</source>
+        <target state="translated">Подтверждение пароля:</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.connecting">
+        <source xml:lang="en">Connecting</source>
+        <target state="translated">Идет подключение</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.errorHeader">
+        <source xml:lang="en">Failure when attempting to change password</source>
+        <target state="translated">Сбой при попытке изменить пароль</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.errorPasswordMismatchErrorMessage">
+        <source xml:lang="en">Passwords entered do not match</source>
+        <target state="translated">Введенные пароли не совпадают</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.errorPasswordMismatchRecoveryInstructions">
+        <source xml:lang="en">Press OK and enter the exact same password in both boxes.</source>
+        <target state="translated">Нажмите "ОК" и введите в обоих полях одинаковый пароль.</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.newPassword">
+        <source xml:lang="en">New password:</source>
+        <target state="translated">Новый пароль:</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">OK</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.passwordChangeInProgress">
+        <source xml:lang="en">Password change already in progress</source>
+        <target state="translated">Смена пароля уже выполняется.</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.title">
+        <source xml:lang="en">Change Password</source>
+        <target state="translated">Смена пароля</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="newDashboardTab.cancel">
@@ -7798,6 +7967,15 @@ Error: {1}</source>
       <trans-unit id="wizardPageNumberDisplayText">
         <source xml:lang="en">Step {0}</source>
         <target state="translated">Шаг {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/dialog/browser/wizardNavigation.component" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="wizardNavigation.stepName">
+        <source xml:lang="en">Step {0}: {1}</source>
+        <note>Name of a step in wizard. {0}: step number, {1}: step name.</note>
+        <target state="translated">Шаг {0}: {1}</target>
       </trans-unit>
     </body>
   </file>
@@ -7867,6 +8045,14 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/services/executionPlan/common/executionPlanService" source-language="en" datatype="plaintext" target-language="ru">
     <body>
+      <trans-unit id="executionPlanService.ensureCapabilitiesRegistered">
+        <source xml:lang="en">Provider with id {0} was not registered after 30 seconds.</source>
+        <target state="translated">Поставщик с идентификатором {0} не был зарегистрирован через 30 секунд.</target>
+      </trans-unit>
+      <trans-unit id="executionPlanService.ensureFileExtensionHandlerRegistered">
+        <source xml:lang="en">Execution plan provider which supports file format '{0}' was not registered after 30 seconds.</source>
+        <target state="translated">Поставщик плана выполнения, который поддерживает формат файла "{0}", не был зарегистрирован через 30 секунд.</target>
+      </trans-unit>
       <trans-unit id="noHandlerRegistered">
         <source xml:lang="en">No valid execution plan handler is registered</source>
         <target state="translated">Допустимый обработчик планов выполнения не зарегистрирован</target>
@@ -8240,6 +8426,10 @@ Error: {1}</source>
         <source xml:lang="en">Please select a connection to run cells for this kernel</source>
         <target state="translated">Выберите подключение, на котором будут выполняться ячейки для этого ядра</target>
       </trans-unit>
+      <trans-unit id="savedKernelNotSupported">
+        <source xml:lang="en">This notebook's '{0}' kernel is not supported. Defaulting to SQL kernel instead.</source>
+        <target state="translated">Ядро "{0} этой записной книжки не поддерживается. По умолчанию для ядра SQL.</target>
+      </trans-unit>
       <trans-unit id="shutdownClientSessionError">
         <source xml:lang="en">A client session error occurred when closing the notebook: {0}</source>
         <target state="translated">При закрытии записной книжки произошла ошибка сеанса клиента: {0}</target>
@@ -8357,16 +8547,16 @@ Error: {1}</source>
   <file original="src/sql/workbench/services/notebook/common/notebookRegistry" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="carbon.extension.contributes.notebook.executionTarget">
-        <source xml:lang="en">Optional execution target this magic indicates, for example Spark vs SQL</source>
-        <target state="translated">Необязательная цель выполнения, указанная в этой магической команде, например, Spark vs SQL</target>
+        <source xml:lang="en">Optional execution target this magic indicates, for example Python vs SQL</source>
+        <target state="translated">Необязательная цель выполнения, указанная в этой магической команде, например Python vs SQL</target>
       </trans-unit>
       <trans-unit id="carbon.extension.contributes.notebook.fileExtensions">
         <source xml:lang="en">What file extensions should be registered to this notebook provider</source>
         <target state="translated">Расширения файлов, которые должны быть зарегистрированы для этого поставщика записных книжек</target>
       </trans-unit>
       <trans-unit id="carbon.extension.contributes.notebook.kernels">
-        <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, pyspark, sql</source>
-        <target state="translated">Необязательный набор ядер, для которых это действительно, например, python3, pyspark, sql</target>
+        <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, sql</source>
+        <target state="translated">Необязательный набор ядер, для которых это действительно, например python3, sql</target>
       </trans-unit>
       <trans-unit id="carbon.extension.contributes.notebook.language">
         <source xml:lang="en">The cell language to be used if this cell magic is included in the cell</source>
@@ -8383,10 +8573,6 @@ Error: {1}</source>
       <trans-unit id="carbon.extension.contributes.notebook.standardKernels">
         <source xml:lang="en">What kernels should be standard with this notebook provider</source>
         <target state="translated">Какие ядра следует использовать в качестве стандартных для этого поставщика записных книжек</target>
-      </trans-unit>
-      <trans-unit id="providerNotInRegistryError">
-        <source xml:lang="en">The specified provider '{0}' is not present in the notebook registry.</source>
-        <target state="translated">Указанный поставщик, "{0}", отсутствует в реестре записных книжек.</target>
       </trans-unit>
       <trans-unit id="vscode.extension.contributes.notebook.languagemagics">
         <source xml:lang="en">Contributes notebook language.</source>
@@ -8432,9 +8618,25 @@ Error: {1}</source>
         <source xml:lang="en">Delete Connection</source>
         <target state="translated">Удалить подключение</target>
       </trans-unit>
+      <trans-unit id="deleteConnectionConfirmation">
+        <source xml:lang="en">Are you sure you want to delete connection '{0}'?</source>
+        <target state="translated">Вы действительно хотите удалить подключение: "{0}"?</target>
+      </trans-unit>
+      <trans-unit id="deleteConnectionConfirmationNo">
+        <source xml:lang="en">No</source>
+        <target state="translated">Нет</target>
+      </trans-unit>
+      <trans-unit id="deleteConnectionConfirmationYes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Да</target>
+      </trans-unit>
       <trans-unit id="deleteConnectionGroup">
         <source xml:lang="en">Delete Group</source>
         <target state="translated">Удалить группу</target>
+      </trans-unit>
+      <trans-unit id="deleteConnectionGroupConfirmation">
+        <source xml:lang="en">Are you sure you want to delete connection group '{0}'?</source>
+        <target state="translated">Вы действительно хотите удалить группу подключений: "{0}"?</target>
       </trans-unit>
       <trans-unit id="showAllConnections">
         <source xml:lang="en">Show All Connections</source>
@@ -8516,6 +8718,10 @@ Error: {1}</source>
         <source xml:lang="en">Add a clause</source>
         <target state="translated">Добавить предложение</target>
       </trans-unit>
+      <trans-unit id="profilerFilterDialog.allClausesCleared">
+        <source xml:lang="en">All clauses have been cleared.</source>
+        <target state="translated">Все предложения очищены.</target>
+      </trans-unit>
       <trans-unit id="profilerFilterDialog.apply">
         <source xml:lang="en">Apply</source>
         <target state="translated">Применить</target>
@@ -8547,6 +8753,10 @@ Error: {1}</source>
       <trans-unit id="profilerFilterDialog.loadFilter">
         <source xml:lang="en">Load Filter</source>
         <target state="translated">Загрузить фильтр</target>
+      </trans-unit>
+      <trans-unit id="profilerFilterDialog.newClauseAdded">
+        <source xml:lang="en">A new clause has been added.</source>
+        <target state="translated">Добавлено новое предложение.</target>
       </trans-unit>
       <trans-unit id="profilerFilterDialog.notContainsOperator">
         <source xml:lang="en">Not Contains</source>
@@ -8633,8 +8843,8 @@ Error: {1}</source>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error {0}</source>
-        <target state="translated">Не удалось выполнить копирование. Ошибка: {0}</target>
+        <source xml:lang="en">Copy failed with error: {0}</source>
+        <target state="translated">Не удалось копировать. Ошибка: {0}</target>
       </trans-unit>
       <trans-unit id="elapsedBatchTime">
         <source xml:lang="en">Batch execution time: {0}</source>
@@ -8732,13 +8942,17 @@ Error: {1}</source>
         <source xml:lang="en">OK</source>
         <target state="translated">OK</target>
       </trans-unit>
-      <trans-unit id="firewallRuleDialogDescription">
-        <source xml:lang="en">Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.</source>
-        <target state="translated">Ваш клиентский IP-адрес не имеет доступа к серверу. Войдите в учетную запись Azure и создайте правило брандмауэра, чтобы разрешить доступ.</target>
+      <trans-unit id="firewall.ruleName">
+        <source xml:lang="en">Rule name</source>
+        <target state="translated">Имя правила</target>
       </trans-unit>
-      <trans-unit id="firewallRuleHelpDescription">
-        <source xml:lang="en">Learn more about firewall settings</source>
-        <target state="translated">Дополнительные сведения о параметрах брандмауэра</target>
+      <trans-unit id="firewallRuleDescription">
+        <source xml:lang="en">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</source>
+        <target state="translated">Для доступа к экземпляру SQL Server требуется правило брандмауэра. Щелкните ссылку ниже, чтобы создать правило брандмауэра.</target>
+      </trans-unit>
+      <trans-unit id="firewallRuleHelpLink">
+        <source xml:lang="en">Learn more about firewall rules</source>
+        <target state="translated">Дополнительные сведения о правилах брандмауэра</target>
       </trans-unit>
       <trans-unit id="from">
         <source xml:lang="en">From</source>

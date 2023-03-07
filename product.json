@@ -52,8 +52,8 @@
 		"Microsoft.agent",
 		"Microsoft.arc",
 		"Microsoft.azcli",
+		"Microsoft.azuredatastudio-mysql",
 		"Microsoft.azuredatastudio-postgresql",
-		"Microsoft.azurehybridtoolkit",
 		"Microsoft.cms",
 		"Microsoft.dacpac",
 		"Microsoft.import",
@@ -67,7 +67,6 @@
 		"Microsoft.sql-database-projects",
 		"Microsoft.sql-migration",
 		"Microsoft.machine-learning",
-		"ms-dotnettools.dotnet-interactive-vscode",
 		"Redgate.sql-prompt",
 		"Redgate.sql-search",
 		"SentryOne.plan-explorer"

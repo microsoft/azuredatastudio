@@ -160,7 +160,26 @@ steps:
     inputs:
       ConnectedServiceName: 'Code Signing'
       FolderPath: '$(agent.builddirectory)/azuredatastudio-win32-$(VSCODE_ARCH)'
-      Pattern: '*.exe,*.node,resources/app/node_modules.asar.unpacked/*.dll,swiftshader/*.dll,d3dcompiler_47.dll,vulkan-1.dll,libGLESv2.dll,ffmpeg.dll,libEGL.dll,Microsoft.SqlTools.Hosting.dll,Microsoft.SqlTools.ResourceProvider.Core.dll,Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll,MicrosoftSqlToolsCredentials.dll,MicrosoftSqlToolsServiceLayer.dll,Newtonsoft.Json.dll,SqlSerializationService.dll,SqlToolsResourceProviderService.dll,Microsoft.SqlServer.*.dll,Microsoft.Data.Tools.Sql.BatchParser.dll'
+      Pattern: |
+        *.exe
+        *.node
+        !**/node_modules/**/*
+        resources/app/node_modules.asar.unpacked/*.dll
+        d3dcompiler_47.dll
+        vulkan-1.dll
+        libGLESv2.dll
+        ffmpeg.dll
+        libEGL.dll
+        Microsoft.SqlTools.Hosting.dll
+        Microsoft.SqlTools.ResourceProvider.Core.dll
+        Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll
+        MicrosoftSqlToolsCredentials.dll
+        MicrosoftSqlToolsServiceLayer.dll
+        Newtonsoft.Json.dll,SqlSerializationService.dll
+        SqlToolsResourceProviderService.dll
+        Microsoft.SqlServer.*.dll
+        Microsoft.Data.Tools.Sql.BatchParser.dll
+      useMinimatch: true
       signConfigType: inlineSignParams
       inlineOperation: |
         [

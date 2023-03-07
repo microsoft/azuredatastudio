@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "Erreur pendant l'ajout de votre compte au cache.",
 			"azure.cacheErrorGet": "Erreur pendant l'obtention de votre compte à partir du cache",
 			"azure.cacheErrorParse": "Erreur pendant l'analyse de votre compte à partir du cache",
-			"azure.cacheErrrorRemove": "Erreur pendant la suppression de votre compte du cache.",
 			"azure.microsoftAccountDisplayName": "Compte Microsoft",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Une erreur s'est produite pendant l'authentification ou vos jetons ont été supprimés du système. Essayez de rajouter votre compte à Azure Data Studio.",
@@ -21,8 +20,6 @@
 			"azure.owningTenantNotFound": "Informations sur le locataire propriétaire introuvables pour le compte.",
 			"azure.responseError": "La récupération du jeton a échoué avec une erreur. [Ouvrir les outils de développement]({0}) pour plus de détails.",
 			"azure.tenantNotFound": "Le locataire spécifié avec l'ID « {0} » est introuvable.",
-			"azureAuth.unidentifiedError": "Erreur non identifiée avec l'authentification Azure",
-			"azureWorkAccountDisplayName": "Compte professionnel ou scolaire",
 			"azurecore.consentDialog.body": "Votre locataire « {0} ({1}) » exige une nouvelle authentification pour accéder aux ressources {2}. Appuyez sur Ouvrir pour démarrer le processus d'authentification.",
 			"azurecore.consentDialog.cancel": "Annuler",
 			"azurecore.consentDialog.ignore": "Ignorer le locataire",
@@ -44,7 +41,9 @@
 		"dist/account-provider/azureAccountProvider": {
 			"azure.NoAuthMethod.Available": "Aucune méthode d'authentification Azure disponible. Vous devez activer les méthodes d'authentification dans la configuration ADS.",
 			"azure.NoAuthMethod.Selected": "Aucune méthode d'authentification Azure sélectionnée. Vous devez sélectionner la méthode d'authentification à utiliser.",
-			"azure.deprecatedGetSecurityToken": "Un appel a été effectué à azdata.accounts.getSecurityToken, cette méthode est dépréciée et sera supprimée dans les mises en production futures. Utilisez getAccountSecurityToken à la place."
+			"azure.deprecatedGetSecurityToken": "Un appel a été effectué à azdata.accounts.getSecurityToken, cette méthode est dépréciée et sera supprimée dans les mises en production futures. Utilisez getAccountSecurityToken à la place.",
+			"genericTokenError": "Impossible d'obtenir le jeton",
+			"msalTokenError": "{0} s'est produit lors de l'acquisition du jeton. \r\n{1}"
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "L'effacement du cache de jetons a échoué",
@@ -52,10 +51,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure (Chine)",
-			"germanyCloud": "Azure (Allemagne)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (US Government)",
-			"usNatCloudDisplayName": "Azure (US National)"
+			"usGovCloudDisplayName": "Azure (US Government)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "Vous devez sélectionner un compte Azure pour que cette fonctionnalité fonctionne.",
@@ -99,6 +96,12 @@
 		},
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
 			"azure.resource.providers.sqlInstanceArcContainerLabel": "Instance managée SQL - Azure Arc"
+		},
+		"dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider": {
+			"azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel": "Pools SQL dédiés"
+		},
+		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
+			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
 		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "Aucune ressource"
@@ -188,6 +191,8 @@
 			"azurecore.norwaywest": "Norvège Ouest",
 			"azurecore.postgresServer": "Serveur Azure Database pour PostgreSQL",
 			"azurecore.reload": "Recharger",
+			"azurecore.reloadChoice": "Recharger Azure Data Studio",
+			"azurecore.reloadPrompt": "La bibliothèque d'authentification a changé, veuillez recharger Azure Data Studio.",
 			"azurecore.requiresReload": "La modification de ce paramètre nécessite le rechargement de la fenêtre pour appliquer tous les changements.",
 			"azurecore.resourceGroup": "Groupe de ressources",
 			"azurecore.resourceType": "Type de ressource",
@@ -233,6 +238,7 @@
 			"azure.resource.view.title": "Azure (préversion)",
 			"azure.tenant.config.filter.description": "Liste des ID de locataire à ignorer pendant l'interrogation des ressources Azure. Chaque élément est un ID de locataire.",
 			"azure.title": "Azure",
+			"config.authenticationLibrary": "La bibliothèque utilisée pour le flux d'authentification AAD. Veuillez redémarrer ADS après avoir modifié cette option.",
 			"config.azureAccountConfigurationSection": "Configuration du compte Azure",
 			"config.azureAuthMethodConfigurationSection": "Méthode d'authentification Azure",
 			"config.azureCodeGrantMethod": "Méthode d'octroi de code",

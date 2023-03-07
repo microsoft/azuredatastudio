@@ -63,6 +63,7 @@ class FireWallFeature extends SqlOpsFeature<any> {
 function asCreateFirewallRuleParams(account: azdata.Account, params: azdata.FirewallRuleInfo): CreateFirewallRuleParams {
 	return {
 		account: account,
+		firewallRuleName: params.firewallRuleName,
 		serverName: params.serverName,
 		startIpAddress: params.startIpAddress,
 		endIpAddress: params.endIpAddress,

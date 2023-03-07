@@ -6,6 +6,7 @@
 import { SqlTargetPlatform } from 'sqldbproj';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
+import * as mssql from 'mssql';
 import { HttpClient } from '../common/httpClient';
 import { AgreementInfo, DockerImageInfo } from '../models/deploy/deployProfile';
 
@@ -192,4 +193,24 @@ export function getDefaultDockerImageWithTag(projectTargetVersion: string, docke
 	}
 
 	return dockerImage;
+}
+
+/**
+ * Function to map folder structure string to enum
+ * @param inputTarget folder structure in string
+ * @returns folder structure in enum format
+ */
+export function mapExtractTargetEnum(inputTarget: string): mssql.ExtractTarget {
+	if (inputTarget) {
+		switch (inputTarget) {
+			case constants.file: return mssql.ExtractTarget.file;
+			case constants.flat: return mssql.ExtractTarget.flat;
+			case constants.objectType: return mssql.ExtractTarget.objectType;
+			case constants.schema: return mssql.ExtractTarget.schema;
+			case constants.schemaObjectType: return mssql.ExtractTarget.schemaObjectType;
+			default: throw new Error(constants.invalidInput(inputTarget));
+		}
+	} else {
+		throw new Error(constants.extractTargetRequired);
+	}
 }

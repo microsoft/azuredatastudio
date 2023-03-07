@@ -3,27 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as bdc from 'bdc';
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as crypto from 'crypto';
-import { notebookConfigKey, pinnedBooksConfigKey, AUTHTYPE, INTEGRATED_AUTH, KNOX_ENDPOINT_PORT, KNOX_ENDPOINT_SERVER } from './constants';
+import { notebookConfigKey, pinnedBooksConfigKey } from './constants';
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import { BookTreeItemFormat } from '../book/bookTreeItem';
 import * as loc from './localizedConstants';
 
 const localize = nls.loadMessageBundle();
-
-export function getKnoxUrl(host: string, port: string): string {
-	return `https://${host}:${port}/gateway`;
-}
-
-export function getLivyUrl(serverName: string, port: string): string {
-	return this.getKnoxUrl(serverName, port) + '/default/livy/v1/';
-}
 
 export async function ensureDir(dirPath: string, outputChannel?: vscode.OutputChannel): Promise<void> {
 	outputChannel?.appendLine(localize('ensureDirOutputMsg', "... Ensuring {0} exists", dirPath));
@@ -107,15 +98,6 @@ export enum Platform {
 	Linux,
 	Windows,
 	Others
-}
-
-interface RawEndpoint {
-	serviceName: string;
-	description?: string;
-	endpoint?: string;
-	protocol?: string;
-	ipAddress?: string;
-	port?: number;
 }
 
 export function getOSPlatformId(): string {
@@ -268,61 +250,6 @@ export function isPackageSupported(pythonVersion: string, packageVersionConstrai
 	return supportedVersionFound;
 }
 
-export function getClusterEndpoints(serverInfo: azdata.ServerInfo): bdc.IEndpointModel[] {
-	let endpoints: RawEndpoint[] = serverInfo.options['clusterEndpoints'];
-	if (!endpoints || endpoints.length === 0) { return []; }
-
-	return endpoints.map(e => {
-		// If endpoint is missing, we're on CTP bits. All endpoints from the CTP serverInfo should be treated as HTTPS
-		let endpoint = e.endpoint ? e.endpoint : `https://${e.ipAddress}:${e.port}`;
-		let updatedEndpoint: bdc.IEndpointModel = {
-			name: e.serviceName,
-			description: e.description,
-			endpoint: endpoint,
-			protocol: e.protocol
-		};
-		return updatedEndpoint;
-	});
-}
-
-export type HostAndIp = { host: string, port: string };
-
-export function getHostAndPortFromEndpoint(endpoint: string): HostAndIp {
-	let authority = vscode.Uri.parse(endpoint).authority;
-	let hostAndPortRegex = /^(.*)([,:](\d+))/g;
-	let match = hostAndPortRegex.exec(authority);
-	if (match) {
-		return {
-			host: match[1],
-			port: match[3]
-		};
-	}
-	return {
-		host: authority,
-		port: undefined
-	};
-}
-
-export function isIntegratedAuth(connection: azdata.IConnectionProfile): boolean {
-	return connection.options[AUTHTYPE] && connection.options[AUTHTYPE].toLowerCase() === INTEGRATED_AUTH.toLowerCase();
-}
-
-export function isSparkKernel(kernelName: string): boolean {
-	return kernelName && kernelName.toLowerCase().indexOf('spark') > -1;
-}
-
-export function setHostAndPort(delimeter: string, connection: azdata.IConnectionProfile): void {
-	let originalHost = connection.options[KNOX_ENDPOINT_SERVER];
-	if (!originalHost) {
-		return;
-	}
-	let index = originalHost.indexOf(delimeter);
-	if (index > -1) {
-		connection.options[KNOX_ENDPOINT_SERVER] = originalHost.slice(0, index);
-		connection.options[KNOX_ENDPOINT_PORT] = originalHost.slice(index + 1);
-	}
-}
-
 export async function exists(path: string): Promise<boolean> {
 	try {
 		await fs.access(path);
@@ -330,22 +257,6 @@ export async function exists(path: string): Promise<boolean> {
 	} catch (e) {
 		return false;
 	}
-}
-
-const bdcConfigSectionName = 'bigDataCluster';
-const ignoreSslConfigName = 'ignoreSslVerification';
-
-/**
- * Retrieves the current setting for whether to ignore SSL verification errors
- */
-export function getIgnoreSslVerificationConfigSetting(): boolean {
-	try {
-		const config = vscode.workspace.getConfiguration(bdcConfigSectionName);
-		return config.get<boolean>(ignoreSslConfigName, true);
-	} catch (error) {
-		console.error('Unexpected error retrieving ${bdcConfigSectionName}.${ignoreSslConfigName} setting : ', error);
-	}
-	return true;
 }
 
 export function debounce(delay: number): Function {

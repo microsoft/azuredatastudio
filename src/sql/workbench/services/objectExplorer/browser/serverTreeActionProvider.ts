@@ -70,7 +70,8 @@ export class ServerTreeActionProvider {
 	 */
 	private getConnectionActions(tree: AsyncServerTree | ITree, profile: ConnectionProfile): IAction[] {
 		let node = new TreeNode(NodeType.Server, NodeType.Server, '', false, '', '', '', undefined, undefined, undefined, undefined);
-		this._connectionManagementService.addSavedPassword(profile);
+		// Only update password and not access tokens to avoid login prompts when opening context menu.
+		this._connectionManagementService.addSavedPassword(profile, true);
 		node.connection = profile;
 		return this.getAllActions({
 			tree: tree,
@@ -125,14 +126,15 @@ export class ServerTreeActionProvider {
 	private getBuiltinConnectionActions(context: ObjectExplorerContext): IAction[] {
 		let actions: IAction[] = [];
 
-		if (this._connectionManagementService.isProfileConnected(context.profile)) {
+		const isProfileConnected = this._connectionManagementService.isProfileConnected(context.profile);
+		if (isProfileConnected) {
 			actions.push(this._instantiationService.createInstance(DisconnectConnectionAction, DisconnectConnectionAction.ID, DisconnectConnectionAction.LABEL, context.profile));
 		}
 		actions.push(this._instantiationService.createInstance(EditConnectionAction, EditConnectionAction.ID, EditConnectionAction.LABEL, context.profile));
 		actions.push(this._instantiationService.createInstance(DeleteConnectionAction, DeleteConnectionAction.ID, DeleteConnectionAction.DELETE_CONNECTION_LABEL, context.profile));
 
 		// Contribute refresh action for scriptable objects via contribution
-		if (!this.isScriptableObject(context)) {
+		if (isProfileConnected && !this.isScriptableObject(context)) {
 			actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.profile));
 		}
 		return actions;

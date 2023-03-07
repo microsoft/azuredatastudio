@@ -169,8 +169,6 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		} : undefined;
 
 		if (connectionCompletionOptions && connectionCompletionOptions.saveConnection) {
-			// Somehow, connectionProfile.saveProfile is false even if initialConnectionProfile.saveProfile is true, reset the flag here.
-			connectionProfile.saveProfile = initialConnectionProfile.saveProfile;
 			await this._connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
 				saveTheConnection: isUndefinedOrNull(connectionCompletionOptions.saveConnection) ? true : connectionCompletionOptions.saveConnection,
 				showDashboard: isUndefinedOrNull(connectionCompletionOptions.showDashboard) ? false : connectionCompletionOptions.showDashboard,
@@ -180,6 +178,12 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			});
 		}
 		return connection;
+	}
+
+	public $openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined> {
+		// Need to have access to getOptionsKey, so recreate profile from details.
+		let convertedProfile = new ConnectionProfile(this._capabilitiesService, profile);
+		return this._connectionManagementService.openChangePasswordDialog(convertedProfile);
 	}
 
 	public async $listDatabases(connectionId: string): Promise<string[]> {

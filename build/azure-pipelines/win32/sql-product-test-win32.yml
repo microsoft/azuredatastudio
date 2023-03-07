@@ -41,7 +41,7 @@ steps:
   inputs:
     azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
     KeyVaultName: SqlToolsSecretStore
-    SecretsFilter: 'ads-integration-test-azure-server,ads-integration-test-azure-server-password,ads-integration-test-azure-server-username,ads-integration-test-bdc-server,ads-integration-test-bdc-server-password,ads-integration-test-bdc-server-username,ads-integration-test-standalone-server,ads-integration-test-standalone-server-password,ads-integration-test-standalone-server-username,ads-integration-test-standalone-server-2019,ads-integration-test-standalone-server-password-2019,ads-integration-test-standalone-server-username-2019'
+    SecretsFilter: 'ads-integration-test-azure-server,ads-integration-test-azure-server-password,ads-integration-test-azure-server-username,ads-integration-test-standalone-server,ads-integration-test-standalone-server-password,ads-integration-test-standalone-server-username,ads-integration-test-standalone-server-2019,ads-integration-test-standalone-server-password-2019,ads-integration-test-standalone-server-username-2019'
 
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
@@ -54,9 +54,6 @@ steps:
   condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['RUN_INTEGRATION_TESTS'], 'false')))
   displayName: Run stable tests
   env:
-    BDC_BACKEND_USERNAME: $(ads-integration-test-bdc-server-username)
-    BDC_BACKEND_PWD: $(ads-integration-test-bdc-server-password)
-    BDC_BACKEND_HOSTNAME: $(ads-integration-test-bdc-server)
     STANDALONE_SQL_USERNAME: $(ads-integration-test-standalone-server-username)
     STANDALONE_SQL_PWD: $(ads-integration-test-standalone-server-password)
     STANDALONE_SQL: $(ads-integration-test-standalone-server)

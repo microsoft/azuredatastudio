@@ -6,7 +6,7 @@ import * as keytarType from 'keytar';
 import { join, parse } from 'path';
 import { FileDatabase } from './utils/fileDatabase';
 import * as azdata from 'azdata';
-import * as crypto from 'crypto';
+import { FileEncryptionHelper } from './utils/fileEncryptionHelper';
 
 function getSystemKeytar(): Keytar | undefined {
 	try {
@@ -25,42 +25,8 @@ const separator = '§';
 
 async function getFileKeytar(filePath: string, credentialService: azdata.CredentialProvider): Promise<Keytar | undefined> {
 	const fileName = parse(filePath).base;
-	const iv = await credentialService.readCredential(`${fileName}-iv`);
-	const key = await credentialService.readCredential(`${fileName}-key`);
-	let ivBuffer: Buffer;
-	let keyBuffer: Buffer;
-	if (!iv?.password || !key?.password) {
-		ivBuffer = crypto.randomBytes(16);
-		keyBuffer = crypto.randomBytes(32);
-		try {
-			await credentialService.saveCredential(`${fileName}-iv`, ivBuffer.toString('hex'));
-			await credentialService.saveCredential(`${fileName}-key`, keyBuffer.toString('hex'));
-		} catch (ex) {
-			console.log(ex);
-		}
-	} else {
-		ivBuffer = Buffer.from(iv.password, 'hex');
-		keyBuffer = Buffer.from(key.password, 'hex');
-	}
-
-	const fileSaver = async (content: string): Promise<string> => {
-		const cipherIv = crypto.createCipheriv('aes-256-gcm', keyBuffer, ivBuffer);
-		return `${cipherIv.update(content, 'utf8', 'hex')}${cipherIv.final('hex')}%${cipherIv.getAuthTag().toString('hex')}`;
-	};
-
-	const fileOpener = async (content: string): Promise<string> => {
-		const decipherIv = crypto.createDecipheriv('aes-256-gcm', keyBuffer, ivBuffer);
-
-		const split = content.split('%');
-		if (split.length !== 2) {
-			throw new Error('File didn\'t contain the auth tag.');
-		}
-		decipherIv.setAuthTag(Buffer.from(split[1], 'hex'));
-
-		return `${decipherIv.update(split[0], 'hex', 'utf8')}${decipherIv.final('utf8')}`;
-	};
-
-	const db = new FileDatabase(filePath, fileOpener, fileSaver);
+	const fileEncryptionHelper: FileEncryptionHelper = new FileEncryptionHelper(credentialService, fileName);
+	const db = new FileDatabase(filePath, fileEncryptionHelper.fileOpener, fileEncryptionHelper.fileSaver);
 	await db.initialize();
 
 	const fileKeytar: Keytar = {
@@ -94,6 +60,7 @@ async function getFileKeytar(filePath: string, credentialService: azdata.Credent
 	return fileKeytar;
 }
 
+
 export type Keytar = {
 	getPassword: typeof keytarType['getPassword'];
 	setPassword: typeof keytarType['setPassword'];
@@ -110,9 +77,7 @@ export class SimpleTokenCache {
 		private readonly userStoragePath: string,
 		private readonly forceFileStorage: boolean = false,
 		private readonly credentialService: azdata.CredentialProvider,
-	) {
-
-	}
+	) { }
 
 	async init(): Promise<void> {
 		this.serviceName = this.serviceName.replace(/-/g, '_');

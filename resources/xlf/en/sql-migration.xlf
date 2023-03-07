@@ -7,35 +7,174 @@
     <trans-unit id="azure.accounts.accountStaleError">
       <source xml:lang="en">The access token for selected account '{0}' and tenant '{1}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.</source>
     </trans-unit>
+    <trans-unit id="serviceCrashMessage">
+      <source xml:lang="en">Migration service component could not start. {0}</source>
+    </trans-unit>
+    <trans-unit id="serviceCrashed">
+      <source xml:lang="en">Service component crashed.</source>
+    </trans-unit>
+    <trans-unit id="serviceProviderIntializationError">
+      <source xml:lang="en">Service provider could not be initialized.</source>
+    </trans-unit>
+    <trans-unit id="sql-migration.login.wizard.title">
+      <source xml:lang="en">Migrate logins from '{0}' to Azure SQL</source>
+    </trans-unit>
     <trans-unit id="sql-migration.wizard.title">
       <source xml:lang="en">Migrate '{0}' to Azure SQL</source>
     </trans-unit>
     <trans-unit id="sql.cancel.migration.confirmation">
       <source xml:lang="en">Are you sure you want to cancel this migration?</source>
     </trans-unit>
+    <trans-unit id="sql.login.migration.aad.domain.name.input.box.label">
+      <source xml:lang="en">Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.aad.domain.name.input.box.placeholder">
+      <source xml:lang="en">Enter AAD Domain Name</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.collecting.target.logins.failed">
+      <source xml:lang="en">Collecting target login failed with error code {0}</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.complete">
+      <source xml:lang="en">Completed migrating logins</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.db.title">
+      <source xml:lang="en">Azure SQL Database</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.enter.AAD.domain.name.to.continue">
+      <source xml:lang="en">Azure Active Directory (AAD) Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.error">
+      <source xml:lang="en">Login migration error: {0}</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.establish.user.mappings">
+      <source xml:lang="en">Validating and migrating logins completed.
+
+Establishing user mappings.</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.establish.user.mappings.failed">
+      <source xml:lang="en">Establishing user mappings failed</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.failed">
+      <source xml:lang="en">Migrating logins failed</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.get.connection.string">
+      <source xml:lang="en">data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.get.logins.query">
+      <source xml:lang="en">SELECT sp.name as login, sp.type_desc as login_type, sp.default_database_name, case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status FROM sys.server_principals sp  LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN ('SQL_LOGIN', 'WINDOWS_LOGIN') ORDER BY sp.name;</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.in.progress">
+      <source xml:lang="en">Login migration in progress</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.login.status.details.title">
+      <source xml:lang="en">Migration status details for {0}</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.logins.found">
+      <source xml:lang="en">Login found</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.logins.not.found">
+      <source xml:lang="en">Login not found</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.mi.title">
+      <source xml:lang="en">Azure SQL Managed Instance</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.migrate.server.roles.and.set.permissions">
+      <source xml:lang="en">Establishing user mappings completed.
+
+Currently, migrating server roles, establishing server mappings and setting permissions. This will take some time.</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.migrate.server.roles.and.set.permissions.failed">
+      <source xml:lang="en">Migrating server roles, establishing server mappings and setting permissions failed.</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.migration.status.column">
+      <source xml:lang="en">Migration Status</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.refresh.login.data.successful">
+      <source xml:lang="en">Refreshing login list was successful. Source logins found {0}, Target logins found {1}</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.refresh.source.login.data.failed">
+      <source xml:lang="en">Refreshing login list from source failed</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.refresh.target.login.data.failed">
+      <source xml:lang="en">Refreshing login list from target failed</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.select.in.progress">
+      <source xml:lang="en">Refreshing login list from source and target</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.select.logins.windows.auth.warning">
+      <source xml:lang="en">Please note that this wizard does not display windows authentication login types because migrating that type is currently not supported. Capability for migrating windows authentication logins is coming soon.</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.select.page.title">
+      <source xml:lang="en">Select login(s) to migrate</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.status.column">
+      <source xml:lang="en">Status</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.status.failed">
+      <source xml:lang="en">Failed</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.status.in.progress">
+      <source xml:lang="en">In progress</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.status.page.description">
+      <source xml:lang="en">Migrating {0} logins to target {1} '{2}'</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.status.page.description.completed">
+      <source xml:lang="en">Completed migrating {0} logins to {1} '{2}'</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.status.page.description.failed">
+      <source xml:lang="en">Failed migrating {0} logins to {1} '{2}'</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.status.page.previous.button.error">
+      <source xml:lang="en">Login migration has already been initiated and going back to prior page is disabled.</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.status.page.previous.button.title">
+      <source xml:lang="en">Previous (Disabled)</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.status.page.title">
+      <source xml:lang="en">Migration Status</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.status.succeeded">
+      <source xml:lang="en">Succeeded</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.steps.migrate.logins">
+      <source xml:lang="en">Migrate logins</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.steps.not.started">
+      <source xml:lang="en">Not started</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.target.status.column">
+      <source xml:lang="en">Target Status</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.target.title">
+      <source xml:lang="en">Azure SQL target</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.type">
+      <source xml:lang="en">Login type</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.vm.title">
+      <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.wizard.target.connection.success">
+      <source xml:lang="en">Connection was successful.</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.wizard.target.data.migration.warning">
+      <source xml:lang="en">Please note that login migration feature is in public preview mode.</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.wizard.target.description">
+      <source xml:lang="en">Select the target Azure SQL Managed Instance, Azure SQL VM, or Azure SQL database(s) where you want to migrate your logins.</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.wizard.target.permission.warning">
+      <source xml:lang="en">Please ensure that the current user has sysadmin permissions to get all login information for the current instance ({0}).</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.wizard.target.type.title">
+      <source xml:lang="en">Azure SQL target type</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migrations.selected">
+      <source xml:lang="en">{0}/{1} logins selected</source>
+    </trans-unit>
     <trans-unit id="sql.migrate.text">
       <source xml:lang="en">Select the databases that you want to migrate to Azure SQL.</source>
-    </trans-unit>
-    <trans-unit id="sql.migratino.database.loading.tables">
-      <source xml:lang="en">Loading tables list...</source>
-    </trans-unit>
-    <trans-unit id="sql.migratino.database.missing.tables">
-      <source xml:lang="en">0 tables found.</source>
-    </trans-unit>
-    <trans-unit id="sql.migratino.table.selection.filter">
-      <source xml:lang="en">Filter tables</source>
-    </trans-unit>
-    <trans-unit id="sql.migratino.table.selection.status.column">
-      <source xml:lang="en">Has rows</source>
-    </trans-unit>
-    <trans-unit id="sql.migratino.table.selection.tablename.column">
-      <source xml:lang="en">Table name</source>
-    </trans-unit>
-    <trans-unit id="sql.migratino.table.selection.update.button">
-      <source xml:lang="en">Update</source>
-    </trans-unit>
-    <trans-unit id="sql.migratino.table.selection.update.cancel">
-      <source xml:lang="en">Cancel</source>
     </trans-unit>
     <trans-unit id="sql.migration.account.credentials.refresh.required">
       <source xml:lang="en">{0} (requires credentials refresh)</source>
@@ -147,6 +286,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.bc.info">
       <source xml:lang="en">A SQL Managed Instance migration cutover to the Business Critical service tier can take significantly longer than General Purpose because three secondary replicas have to be seeded for Always On High Availability group. The duration of the operation depends on the size of the data. Seeding speed in 90% of cases is 220 GB/hour or higher.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.blob.container.folder.label">
+      <source xml:lang="en">Folder</source>
+    </trans-unit>
     <trans-unit id="sql.migration.blob.container.label">
       <source xml:lang="en">Blob container resource group</source>
     </trans-unit>
@@ -212,6 +354,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.complete.cutover">
       <source xml:lang="en">Complete cutover</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.completed.multi.steps.heading">
+      <source xml:lang="en">We ran the following steps:</source>
     </trans-unit>
     <trans-unit id="sql.migration.completing.cutover.warning">
       <source xml:lang="en">Completing cutover without restoring all the backups may result in a data loss.</source>
@@ -349,7 +494,7 @@ This may take some time.</source>
       <source xml:lang="en">The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.description.sqldb">
-      <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).</source>
+      <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database.</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.description.vm">
       <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.</source>
@@ -364,13 +509,19 @@ This may take some time.</source>
       <source xml:lang="en">Migrate databases using Azure Data Studio</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.link.sqldb">
-      <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)</source>
+      <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure SQL Database (offline)</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.link.vm">
       <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.title">
       <source xml:lang="en">Help articles and video links</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.dashboard.login.migrate.task.button">
+      <source xml:lang="en">Migrate logins to Azure SQL</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.dashboard.login.migrate.task.button.description">
+      <source xml:lang="en">Migrate SQL Server logins to Azure SQL.</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.migrate.task.button">
       <source xml:lang="en">Migrate to Azure SQL</source>
@@ -396,6 +547,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.database.already.exists">
       <source xml:lang="en">Database '{0}' already exists on the target managed instance '{1}'.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.database.already.exists.vm.info">
+      <source xml:lang="en">Ensure that the provided database name(s) do not already exist on the target SQL Server on Azure Virtual Machine.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.database.assessment.description">
       <source xml:lang="en">Select the databases that you want to assess for migration to Azure SQL.</source>
     </trans-unit>
@@ -413,6 +567,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.loading">
       <source xml:lang="en">Loading database table list..</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.loading.tables">
+      <source xml:lang="en">Loading tables list...</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.migration.mode.description">
       <source xml:lang="en">To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.</source>
@@ -446,6 +603,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.migration.status.label">
       <source xml:lang="en">Database migration status: {0}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.missing.tables">
+      <source xml:lang="en">0 tables found.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.page.description">
       <source xml:lang="en">Select the location of the database backups to use during migration.</source>
@@ -491,6 +651,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.days">
       <source xml:lang="en">{0} days</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.default.database">
+      <source xml:lang="en">Default database</source>
     </trans-unit>
     <trans-unit id="sql.migration.description">
       <source xml:lang="en">Description</source>
@@ -636,6 +799,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.invalid.blob.lastBackupFile.error">
       <source xml:lang="en">To continue, select a valid last backup file for source database '{0}'.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.invalid.blob.lastBackupFolder.error">
+      <source xml:lang="en">To continue, select a valid backup folder for source database '{0}'.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.invalid.blob.resourceGroup.error">
       <source xml:lang="en">To continue, select a valid resource group for source database '{0}'.</source>
     </trans-unit>
@@ -656,6 +822,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.invalid.network.share.location">
       <source xml:lang="en">Invalid network share location format. Example: {0}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.invalid.non.page.blob.backupFile.error">
+      <source xml:lang="en">To continue, select a blob container where all the backup files are page blobs for source database '{0}', as block blobs are supported only for targets running SQL Server 2016 or later. Learn more: https://aka.ms/dms-migrations-troubleshooting</source>
     </trans-unit>
     <trans-unit id="sql.migration.invalid.owner.uri.error">
       <source xml:lang="en">Cannot connect to the database due to invalid OwnerUri (Parameter 'OwnerUri')</source>
@@ -810,6 +979,30 @@ This may take some time.</source>
     <trans-unit id="sql.migration.more.info">
       <source xml:lang="en">More info</source>
     </trans-unit>
+    <trans-unit id="sql.migration.multi.step.all.steps.completed.errors">
+      <source xml:lang="en">All steps completed with the following error(s):{0}{1}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.multi.step.all.steps.succeeded">
+      <source xml:lang="en">All steps succeeded.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.multi.step.some.steps.are.still.running">
+      <source xml:lang="en">Some steps are still running.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.multi.step.status">
+      <source xml:lang="en">Step status: {0}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.multi.step.status.dialog.copy.results">
+      <source xml:lang="en">Copy results</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.multi.step.status.dialog.heading">
+      <source xml:lang="en">Step details</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.multi.step.status.errors">
+      <source xml:lang="en">Step status: {0}{1}{2}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.multi.step.status.steps.title">
+      <source xml:lang="en">Steps</source>
+    </trans-unit>
     <trans-unit id="sql.migration.na">
       <source xml:lang="en">N/A</source>
     </trans-unit>
@@ -885,6 +1078,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.no.blobFiles.found">
       <source xml:lang="en">No blob files found.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.no.blobFolders.found">
+      <source xml:lang="en">No blob folders found.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.no.fileShares.found">
       <source xml:lang="en">No file shares found.</source>
     </trans-unit>
@@ -926,6 +1122,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.notebook.open.error">
       <source xml:lang="en">Failed to open the migration notebook.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.number.logins.migrating">
+      <source xml:lang="en">{0}/{1} migrating logins displayed</source>
     </trans-unit>
     <trans-unit id="sql.migration.object.details">
       <source xml:lang="en">Object details</source>
@@ -1038,6 +1237,12 @@ This may take some time.</source>
     <trans-unit id="sql.migration.rg.created">
       <source xml:lang="en">Resource group created</source>
     </trans-unit>
+    <trans-unit id="sql.migration.run.validation">
+      <source xml:lang="en">Run validation</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.running.multi.steps.heading">
+      <source xml:lang="en">We are running the following steps:</source>
+    </trans-unit>
     <trans-unit id="sql.migration.save.assessment.report">
       <source xml:lang="en">Save assessment report</source>
     </trans-unit>
@@ -1081,7 +1286,7 @@ This may take some time.</source>
       <source xml:lang="en">Select your target Azure Subscription and your target SQL Server on Azure Virtual Machine for your target.</source>
     </trans-unit>
     <trans-unit id="sql.migration.select.database.to.continue">
-      <source xml:lang="en">Please select 1 or more databases to assess for migration</source>
+      <source xml:lang="en">Please select 1 or more logins for migration</source>
     </trans-unit>
     <trans-unit id="sql.migration.select.database.to.migrate">
       <source xml:lang="en">Select the databases to migrate.</source>
@@ -1139,6 +1344,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.select.service.select.subscription.error">
       <source xml:lang="en">An error occurred while loading account subscriptions. Please check your Azure connection and try again.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.select.target.type.">
+      <source xml:lang="en">Select target Azure SQL Type</source>
     </trans-unit>
     <trans-unit id="sql.migration.select.service.select.tenant.error">
       <source xml:lang="en">An error occurred while loading available Azure account tenants.</source>
@@ -1202,6 +1410,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.service.ready">
       <source xml:lang="en">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on the node - {1}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.service.selection.location.msg">
+      <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
     </trans-unit>
     <trans-unit id="sql.migration.service.status.refresh.error">
       <source xml:lang="en">An error occurred while refreshing the migration service creation status.</source>
@@ -1459,7 +1670,7 @@ This may take some time.</source>
       <source xml:lang="en">To migrate to Azure SQL Managed Instance, view assessment results and select one or more databases.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.recommendation.view.assessment.sqldb">
-      <source xml:lang="en">To migrate to Azure SQL Database (PREVIEW), view assessment results and select one or more databases.</source>
+      <source xml:lang="en">To migrate to Azure SQL Database, view assessment results and select one or more databases.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.recommendation.view.assessment.vm">
       <source xml:lang="en">To migrate to SQL Server on Azure Virtual Machine, view assessment results and select one or more databases.</source>
@@ -1516,7 +1727,7 @@ This may take some time.</source>
       <source xml:lang="en">SQL tempdb</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.sqldb.card.title">
-      <source xml:lang="en">Azure SQL Database (PREVIEW)</source>
+      <source xml:lang="en">Azure SQL Database</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.sqldb.target.title">
       <source xml:lang="en">Azure SQL Database</source>
@@ -1596,6 +1807,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.source.details.windowAuth">
       <source xml:lang="en">Enter the Windows Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup files.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.source.login">
+      <source xml:lang="en">Source login</source>
+    </trans-unit>
     <trans-unit id="sql.migration.source.server">
       <source xml:lang="en">Source server</source>
     </trans-unit>
@@ -1616,6 +1830,12 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sql.virtual.machine">
       <source xml:lang="en">SQL Virtual Machine</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.sql.vm.page.blob.info">
+      <source xml:lang="en">For target servers running SQL Server 2014 or below, you must store your database backups in an Azure Storage Blob Container instead of uploading them using the network share option. Additionally, you must store the backup files as page blobs, as block blobs are supported only for targets running SQL Server 2016 or later. Learn more: {0}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.sql.vm.page.blob.url.label">
+      <source xml:lang="en">Known issues, limitations, and troubleshooting</source>
     </trans-unit>
     <trans-unit id="sql.migration.sqldb.column.copyduration">
       <source xml:lang="en">Copy duration</source>
@@ -1656,6 +1876,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.src.server">
       <source xml:lang="en">Source name</source>
     </trans-unit>
+    <trans-unit id="sql.migration.start.login.migration.button">
+      <source xml:lang="en">Migrate</source>
+    </trans-unit>
     <trans-unit id="sql.migration.start.migration.button">
       <source xml:lang="en">Start migration</source>
     </trans-unit>
@@ -1664,6 +1887,33 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.start.time">
       <source xml:lang="en">Start time</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.starting.login">
+      <source xml:lang="en">Validating and migrating logins are in progress</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.starting.login.failed">
+      <source xml:lang="en">Validating and migrating logins failed</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.starting.migration.dberror">
+      <source xml:lang="en">Error migrating certificate for database {0}. {1}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.starting.migration.error">
+      <source xml:lang="en">An error occurred while starting the certificate migration: '{0}'</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.state.canceled">
+      <source xml:lang="en">Canceled</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.state.failed">
+      <source xml:lang="en">Failed</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.state.pending">
+      <source xml:lang="en">Pending</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.state.running">
+      <source xml:lang="en">Running</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.state.succeeded">
+      <source xml:lang="en">Succeeded</source>
     </trans-unit>
     <trans-unit id="sql.migration.status">
       <source xml:lang="en">Status</source>
@@ -1782,6 +2032,12 @@ This may take some time.</source>
     <trans-unit id="sql.migration.tab.button.feedback.label">
       <source xml:lang="en">Feedback</source>
     </trans-unit>
+    <trans-unit id="sql.migration.tab.button.login.migration.description">
+      <source xml:lang="en">Migrate logins to Azure SQL</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tab.button.login.migration.label">
+      <source xml:lang="en">New login migration (PREVIEW)</source>
+    </trans-unit>
     <trans-unit id="sql.migration.tab.button.migration.description">
       <source xml:lang="en">Migrate to Azure SQL</source>
     </trans-unit>
@@ -1821,6 +2077,21 @@ This may take some time.</source>
     <trans-unit id="sql.migration.table.selection.edit">
       <source xml:lang="en">Edit</source>
     </trans-unit>
+    <trans-unit id="sql.migration.table.selection.filter">
+      <source xml:lang="en">Filter tables</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.table.selection.status.column">
+      <source xml:lang="en">Has rows</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.table.selection.tablename.column">
+      <source xml:lang="en">Table name</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.table.selection.update.button">
+      <source xml:lang="en">Update</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.table.selection.update.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
     <trans-unit id="sql.migration.target">
       <source xml:lang="en">Target</source>
     </trans-unit>
@@ -1854,6 +2125,114 @@ This may take some time.</source>
     <trans-unit id="sql.migration.target.version">
       <source xml:lang="en">Target version</source>
     </trans-unit>
+    <trans-unit id="sql.migration.tde.button.caption">
+      <source xml:lang="en">Edit</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.button.migrate">
+      <source xml:lang="en">Migrate certificates</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.canceled">
+      <source xml:lang="en">Certificates migration was canceled. Please run and complete the certificates migration to continue.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.canceled.errors">
+      <source xml:lang="en">Validation was canceled with the following error(s):{0}{1}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.column.databases">
+      <source xml:lang="en">Databases</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.column.status">
+      <source xml:lang="en">Status</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.completed.errors">
+      <source xml:lang="en">Migration completed with the following error(s):{0}{1}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.copy.results">
+      <source xml:lang="en">Copy migration results</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.done.button">
+      <source xml:lang="en">Done</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.heading">
+      <source xml:lang="en">Migrating the certificates from the following databases:</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.not.run">
+      <source xml:lang="en">Certificates migration has not been run for the current configuration. Please run and complete the certificates migration to continue.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.results.heading">
+      <source xml:lang="en">Certificates migration progress details:</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.results.heading.completed">
+      <source xml:lang="en">Certificates migration results:</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.results.heading.previous">
+      <source xml:lang="en">Previous certificates migration results:</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.start.validation">
+      <source xml:lang="en">Retry migration</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.status.details">
+      <source xml:lang="en">Migration status: {0}{1}{2}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.status.error">
+      <source xml:lang="en">{0}{1}{2}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.success">
+      <source xml:lang="en">Certificates migration completed successfully.  Please click Next to proceed with the migration.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.validation.camceled">
+      <source xml:lang="en">Migration canceled</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.migrate.validation.completed">
+      <source xml:lang="en">Migration completed successfully.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.msg.databases.selected">
+      <source xml:lang="en">{0} Transparent Data Encryption enabled databases selected for migration. {1}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.msg.empty">
+      <source xml:lang="en">No encrypted database selected.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.msg.manual">
+      <source xml:lang="en">You have chosen to manually migrate certificates.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.msg.tde">
+      <source xml:lang="en">You have given access to Azure Data Studio to migrate the encryption certificates and database.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.progress.update">
+      <source xml:lang="en">{0} of {1} completed</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.databases.selected">
+      <source xml:lang="en">{0} out of {1} selected database(s) is using transparent data encryption.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.description">
+      <source xml:lang="en">To migrate an encrypted database successfully you need to provide access to the encryption certificates or migrate certificates manually before proceeding with the migration. {0}.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.network.share.info">
+      <source xml:lang="en">Network path where certificate will be placed.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.network.share.label">
+      <source xml:lang="en">Network path for certificate</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.network.share.placeholder">
+      <source xml:lang="en">Enter network path</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.optionads">
+      <source xml:lang="en">Export my certificates and private key to the target.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.optionadsconfirm">
+      <source xml:lang="en">I give consent to use my credentials for accessing the certificates.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.optionmanual">
+      <source xml:lang="en">I don't want Azure Data Studio to export the certificates.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.optionmanual.warning">
+      <source xml:lang="en">You must migrate the certificates before proceeding with the migration otherwise the migration will fail. {0}.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.optionscaption">
+      <source xml:lang="en">Certificate migration</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.wizard.title">
+      <source xml:lang="en">Encrypted database selected.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.test.connection">
       <source xml:lang="en">Test connection</source>
     </trans-unit>
@@ -1878,11 +2257,122 @@ This may take some time.</source>
     <trans-unit id="sql.migration.username.placeholder">
       <source xml:lang="en">Enter the target user name</source>
     </trans-unit>
+    <trans-unit id="sql.migration.validate.error.gatewaytimeout">
+      <source xml:lang="en">A time-out was encountered while validating a resource connection. Learn more: https://aka.ms/dms-migrations-troubleshooting.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.column.status">
+      <source xml:lang="en">Status</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.column.validation.steps">
+      <source xml:lang="en">Validation steps</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.completed.errors">
+      <source xml:lang="en">Validation completed with the following error(s):{0}{1}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.copy.results">
+      <source xml:lang="en">Copy validation results</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.done.button">
+      <source xml:lang="en">Done</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.heading">
+      <source xml:lang="en">We are validating the following:</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.results.heading">
+      <source xml:lang="en">Validation step details</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.sqldb.validation.result.error">
+      <source xml:lang="en">Validation check error{0}Source database: {1}{0}Target database: {2}{0}Error: {3} - {4}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.start.validation">
+      <source xml:lang="en">Start validation</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.status">
+      <source xml:lang="en">Validation status: {0}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.status.error">
+      <source xml:lang="en">{0}{1}{2}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.status.error.count.many">
+      <source xml:lang="en">{0} - {1} errors</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.status.error.count.one">
+      <source xml:lang="en">{0} - 1 error</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.status.errors">
+      <source xml:lang="en">Validation status: {0}{1}{2}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.stop.validation">
+      <source xml:lang="en">Stop validation</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.validation.camceled">
+      <source xml:lang="en">Validation check canceled</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.validation.completed">
+      <source xml:lang="en">Validation completed successfully.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.validation.result.api.error">
+      <source xml:lang="en">Validation check error{0}Database:{1}{0}Error: {2} - {3}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.validation.result.error">
+      <source xml:lang="en">Validation check error{0}Source database: {1}{0}File share path: {2}{0}Error: {3} - {4}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.validation.result.label.networkshare">
+      <source xml:lang="en">Network share connectivity: '{0}' </source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.validation.result.label.shir">
+      <source xml:lang="en">Integration runtime connectivity</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.validation.result.label.source.database">
+      <source xml:lang="en">Source database connectivity: '{0}'</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.validation.result.label.storage">
+      <source xml:lang="en">Azure storage connectivity</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.validation.result.label.target.database">
+      <source xml:lang="en">Target database connectivity: '{0}'</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.canceled">
+      <source xml:lang="en">Validation was canceled. Please run and validate the migration settings to continue.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.canceled.errors">
+      <source xml:lang="en">Validation was canceled with the following error(s):{0}{1}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.dialog.title">
+      <source xml:lang="en">Running validation</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.not.run">
+      <source xml:lang="en">Validation has not been run for the current configuration. Please run and validate the migration settings to continue.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.state.canceled">
+      <source xml:lang="en">Canceled</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.state.failed">
+      <source xml:lang="en">Failed</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.state.pending">
+      <source xml:lang="en">Pending</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.state.running">
+      <source xml:lang="en">Running</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.state.succeeded">
+      <source xml:lang="en">Succeeded</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.validation.success">
+      <source xml:lang="en">Validation completed successfully.  Please click Next to proceed with the migration.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.view.all">
       <source xml:lang="en">All database migrations</source>
     </trans-unit>
     <trans-unit id="sql.migration.view.select.button.label">
       <source xml:lang="en">View/Select</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.vm.not.ready.iaas.extension">
+      <source xml:lang="en">The virtual machine '{0}' is unavailable for migration because the SQL Server IaaS Agent extension is currently in '{1}' mode instead of Full mode. Learn more: https://aka.ms/sql-iaas-extension</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.vm.not.ready.power.state">
+      <source xml:lang="en">The virtual machine '{0}' is unavailable for migration because the underlying virtual machine is not running. Please make sure it is powered on before retrying.</source>
     </trans-unit>
     <trans-unit id="sql.migration.warning">
       <source xml:lang="en">Warning</source>
@@ -1918,7 +2408,10 @@ This may take some time.</source>
       <source xml:lang="en">Azure account</source>
     </trans-unit>
     <trans-unit id="sql.migration.wizard.connection.error.title">
-      <source xml:lang="en">An error occurred while conneting to the target server.</source>
+      <source xml:lang="en">An error occurred while connecting to the target server.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.wizard.login.error.title">
+      <source xml:lang="en">An error occurred while trying to get {0} login information.</source>
     </trans-unit>
     <trans-unit id="sql.migration.wizard.perfCollection.error">
       <source xml:lang="en">Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:
@@ -1964,17 +2457,26 @@ This may take some time.</source>
     <trans-unit id="sql.migration.wizard.target.description">
       <source xml:lang="en">Select an Azure account and your target {0}.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.wizard.target.login.error">
+      <source xml:lang="en">Error getting login information: {0}</source>
+    </trans-unit>
     <trans-unit id="sql.migration.wizard.target.mapping.error.duplicate">
-      <source xml:lang="en">Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.</source>
+      <source xml:lang="en">Database mapping error. Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '{2}' is already selected as a migration target for database '{3}'.  Please select a different target database.</source>
     </trans-unit>
     <trans-unit id="sql.migration.wizard.target.missing">
       <source xml:lang="en">Database mapping error. Missing target databases to migrate.  Please configure the target server connection and click connect to collect the list of available database migration targets.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.wizard.target.source.collation.error">
+      <source xml:lang="en">Database mapping error (Error code: {0}) was found between '{1}' and '{2}' databases. The source database collation '{3}' does not match the target database collation '{4}'. Please select or re-create a target database with the same collation as the source database.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.wizard.target.source.mapping.error">
-      <source xml:lang="en">Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.</source>
+      <source xml:lang="en">Database mapping error. Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.</source>
     </trans-unit>
     <trans-unit id="sql.migration.wizard.target.title">
       <source xml:lang="en">Azure SQL target</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.wizard.troubleshooting">
+      <source xml:lang="en">Learn more: https://aka.ms/dms-migrations-troubleshooting.</source>
     </trans-unit>
     <trans-unit id="sql.migration.yes">
       <source xml:lang="en">Yes</source>
@@ -1985,6 +2487,9 @@ This may take some time.</source>
     <trans-unit id="total.tables.selected.of.total">
       <source xml:lang="en">{0} of {1}</source>
     </trans-unit>
+    <trans-unit id="waitingForService">
+      <source xml:lang="en">Waiting for {0} component to start.</source>
+    </trans-unit>
 </body></file>
   <file original="extensions/sql-migration/dist/models/stateMachine" source-language="en" datatype="plaintext"><body>
     <trans-unit id="sql.migration.starting.migration.error">
@@ -1992,6 +2497,41 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.starting.migration.message">
       <source xml:lang="en">Starting migration for database {0} to {1} - {2}</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/sql-migration/dist/service/serviceClient" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="downloadingService">
+      <source xml:lang="en">Downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceComplete">
+      <source xml:lang="en">Done downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceSize">
+      <source xml:lang="en">({0} KB)</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceStatus">
+      <source xml:lang="en">Downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="entryExtractedChannelMsg">
+      <source xml:lang="en">Extracted {0} ({1}/{2})</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.serviceStartFailed">
+      <source xml:lang="en">Failed to start {0}: {1}</source>
+    </trans-unit>
+    <trans-unit id="installingService">
+      <source xml:lang="en">Installing {0} Service</source>
+    </trans-unit>
+    <trans-unit id="installingServiceDetailed">
+      <source xml:lang="en">Installing {0} to {1}</source>
+    </trans-unit>
+    <trans-unit id="serviceInstalled">
+      <source xml:lang="en">Installed {0}</source>
+    </trans-unit>
+    <trans-unit id="serviceStarted">
+      <source xml:lang="en">{0} Started</source>
+    </trans-unit>
+    <trans-unit id="serviceStarting">
+      <source xml:lang="en">Starting {0}</source>
     </trans-unit>
 </body></file>
   <file original="extensions/sql-migration/package" source-language="en" datatype="plaintext"><body>

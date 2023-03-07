@@ -2,19 +2,17 @@
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
   "description": "Enables users to develop and publish database schemas for MSSQL Databases",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
     "vscode": "^1.30.1",
-    "azdata": ">=1.40.0"
+    "azdata": ">=1.42.0"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/sqlDatabaseProjects.png",
   "aiKey": "29a207bb14f84905966a8f22524cb730-25407f35-11b6-4d4e-8114-ab9e843cb52f-7380",
   "activationEvents": [
-    "onCommand:sqlDatabaseProjects.new",
-    "onCommand:sqlDatabaseProjects.open",
     "onCommand:sqlDatabaseProjects.createProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.updateProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.generateProjectFromOpenApiSpec",
@@ -28,7 +26,8 @@
   },
   "extensionDependencies": [
     "Microsoft.mssql",
-    "Microsoft.schema-compare"
+    "Microsoft.schema-compare",
+    "Microsoft.data-workspace"
   ],
   "capabilities": {
     "virtualWorkspaces": false,
@@ -95,11 +94,6 @@
       {
         "command": "sqlDatabaseProjects.newView",
         "title": "%sqlDatabaseProjects.newView%",
-        "category": "%sqlDatabaseProjects.displayName%"
-      },
-      {
-        "command": "sqlDatabaseProjects.newExternalStreamingJob",
-        "title": "%sqlDatabaseProjects.newExternalStreamingJob%",
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
@@ -203,6 +197,21 @@
         "command": "sqlDatabaseProjects.openInDesigner",
         "title": "%sqlDatabaseProjects.openInDesigner%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.editSqlCmdVariable",
+        "title": "%sqlDatabaseProjects.edit%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.addSqlCmdVariable",
+        "title": "%sqlDatabaseProjects.addSqlCmdVariable%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.rename",
+        "title": "%sqlDatabaseProjects.rename%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -219,7 +228,7 @@
         },
         {
           "command": "sqlDatabaseProjects.generateProjectFromOpenApiSpec",
-          "when": "view == dataworkspace.views.main && config.workbench.enablePreviewFeatures",
+          "when": "view == dataworkspace.views.main && config.workbench.enablePreviewFeatures || config.sqlDatabaseProjects.enablePreviewFeatures",
           "group": "1_currentWorkspace@3"
         }
       ],
@@ -242,10 +251,6 @@
         },
         {
           "command": "sqlDatabaseProjects.newView",
-          "when": "false"
-        },
-        {
-          "command": "sqlDatabaseProjects.newExternalStreamingJob",
           "when": "false"
         },
         {
@@ -325,7 +330,19 @@
         },
         {
           "command": "sqlDatabaseProjects.generateProjectFromOpenApiSpec",
-          "when": "config.workbench.enablePreviewFeatures"
+          "when": "config.workbench.enablePreviewFeatures || config.sqlDatabaseProjects.enablePreviewFeatures"
+        },
+        {
+          "command": "sqlDatabaseProjects.editSqlCmdVariable",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.addSqlCmdVariable",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.rename",
+          "when": "false"
         }
       ],
       "view/item/context": [
@@ -380,11 +397,6 @@
           "group": "3_dbProjects_newItem@3"
         },
         {
-          "command": "sqlDatabaseProjects.newExternalStreamingJob",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
-          "group": "3_dbProjects_newItem@4"
-        },
-        {
           "command": "sqlDatabaseProjects.newScript",
           "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@7"
@@ -421,8 +433,13 @@
         },
         {
           "command": "sqlDatabaseProjects.delete",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/ || viewItem == databaseProject.itemType.reference",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/ || viewItem == databaseProject.itemType.reference || viewItem == databaseProject.itemType.sqlcmdVariable",
           "group": "9_dbProjectsLast@2"
+        },
+        {
+          "command": "sqlDatabaseProjects.rename",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^databaseProject.itemType.file/",
+          "group": "9_dbProjectsLast@3"
         },
         {
           "command": "sqlDatabaseProjects.changeTargetPlatform",
@@ -443,6 +460,15 @@
           "command": "sqlDatabaseProjects.createProjectFromDatabase",
           "when": "!azdataAvailable && view == objectExplorer && viewItem =~ /^(disconnectedServer|Server|Database)$/",
           "group": "sqldbproj@1"
+        },
+        {
+          "command": "sqlDatabaseProjects.editSqlCmdVariable",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.sqlcmdVariable",
+          "group": "9_dbProjectsLast@1"
+        },
+        {
+          "command": "sqlDatabaseProjects.addSqlCmdVariable",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.sqlcmdVariablesRoot"
         }
       ],
       "objectExplorer/item/context": [
@@ -482,7 +508,7 @@
     }
   },
   "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^1.3.1",
+    "@microsoft/ads-extension-telemetry": "^2.0.0",
     "@xmldom/xmldom": "0.8.4",
     "axios": "^0.27.2",
     "extract-zip": "^2.0.1",

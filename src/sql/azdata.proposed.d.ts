@@ -134,6 +134,24 @@ declare module 'azdata' {
 		}
 	}
 
+	export interface LoadingComponentBase {
+		/**
+		* When true, the component will display a loading spinner.
+		*/
+		loading?: boolean;
+
+		/**
+		 * This sets the alert text which gets announced when the loading spinner is shown.
+		 */
+		loadingText?: string;
+
+		/**
+		 * The text to display while loading is set to false. Will also be announced through screen readers
+		 * once loading is completed.
+		 */
+		loadingCompletedText?: string;
+	}
+
 	/**
 	 * The column information of a data set.
 	 */
@@ -385,6 +403,25 @@ declare module 'azdata' {
 		title: string;
 	}
 
+	export interface ConnectionProvider extends DataProvider {
+		/**
+		 * Changes a user's password for the scenario of password expiration during SQL Authentication. (for Azure Data Studio use only)
+		 */
+		changePassword?(connectionUri: string, connectionInfo: ConnectionInfo, newPassword: string): Thenable<PasswordChangeResult>;
+	}
+
+	// Password Change Request ----------------------------------------------------------------------
+	export interface PasswordChangeResult {
+		/**
+		 * Whether the password change was successful
+		 */
+		result: boolean;
+		/**
+		 * Error message if the password change was unsuccessful
+		 */
+		errorMessage?: string;
+	}
+
 	export interface IConnectionProfile extends ConnectionInfo {
 		/**
 		 * The type of authentication to use when connecting
@@ -393,6 +430,94 @@ declare module 'azdata' {
 		azureAccount?: string;
 		azureResourceId?: string;
 		azurePortalEndpoint?: string;
+	}
+
+	export interface PromptFailedResult extends ProviderError { }
+
+	export interface ProviderError {
+		/**
+		 * Error name
+		 */
+		name?: string;
+
+		/**
+		 * Error code
+		 */
+		errorCode?: string;
+
+		/**
+		 * Error message
+		 */
+		errorMessage?: string;
+	}
+
+
+	export namespace diagnostics {
+		/**
+		 * Represents a diagnostics provider of accounts.
+		 */
+		export interface ErrorDiagnosticsProviderMetadata {
+			/**
+			 * The id of the provider (ex. a connection provider) that a diagnostics provider will handle errors for.
+			 * Note: only ONE diagnostic provider per id/name at a time.
+			 */
+			targetProviderId: string;
+		}
+
+		export interface ConnectionDiagnosticsResult {
+			/**
+			 * Whether the error was handled or not.
+			 */
+			handled: boolean,
+			/**
+			 * Whether reconnect should be attempted.
+			 */
+			reconnect?: boolean,
+			/**
+			 * If given, the new set of connection options to assign to the original connection profile, overwriting any previous options.
+			 */
+			options?: { [name: string]: any };
+		}
+
+		/**
+		 * Provides error information
+		 */
+		export interface IErrorInformation {
+			/**
+			 * Error code
+			 */
+			errorCode: number,
+			/**
+			 * Error Message
+			 */
+			errorMessage: string,
+			/**
+			 * Stack trace of error
+			 */
+			messageDetails: string
+		}
+
+		/**
+		 * Diagnostics object for handling errors for a provider.
+		 */
+		export interface ErrorDiagnosticsProvider {
+			/**
+			 * Called when a connection error occurs, allowing the provider to optionally handle the error and fix any issues before continuing with completing the connection.
+			 * @param errorInfo The error information of the connection error.
+			 * @param connection The connection profile that caused the error.
+			 * @returns ConnectionDiagnosticsResult: The result from the provider for whether the error was handled.
+			 */
+			handleConnectionError(errorInfo: IErrorInformation, connection: connection.ConnectionProfile): Thenable<ConnectionDiagnosticsResult>;
+		}
+
+		/**
+		 * Registers provider with instance of Diagnostic Provider implementation.
+		 * Note: only ONE diagnostic provider object can be assigned to a specific provider at a time.
+		 * @param providerMetadata Additional data used to register the provider
+		 * @param errorDiagnostics The provider's diagnostic object that handles errors.
+		 * @returns  A disposable that when disposed will unregister the provider
+		 */
+		export function registerDiagnosticsProvider(providerMetadata: ErrorDiagnosticsProviderMetadata, errorDiagnostics: ErrorDiagnosticsProvider): vscode.Disposable;
 	}
 
 	export namespace connection {
@@ -425,6 +550,13 @@ declare module 'azdata' {
 			 */
 			None = 'None'
 		}
+
+		/**
+		 * Opens the change password dialog.
+		 * @param profile The connection profile to change the password for.
+		 * @returns The new password that is returned from the operation or undefined if unsuccessful.
+		 */
+		export function openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined>;
 	}
 
 	/*
@@ -444,7 +576,61 @@ declare module 'azdata' {
 		 * and not the Advanced Options window.
 		 */
 		showOnConnectionDialog?: boolean;
+
+		/**
+		 * Used to define list of values based on which another option is rendered visible/hidden.
+		 */
+		onSelectionChange?: SelectionChangeEvent[];
 	}
+
+	export interface ServiceOption {
+		/**
+		 * Used to define list of values based on which another option is rendered visible/hidden.
+		 */
+		onSelectionChange?: SelectionChangeEvent[];
+	}
+	/**
+	 * This change event defines actions
+	 */
+	export interface SelectionChangeEvent {
+		/**
+		 * Values that affect actions defined in this event.
+		 */
+		values: string[];
+
+		/**
+		 * Action to be taken on another option when selected value matches to the list of values provided.
+		 */
+		dependentOptionActions: DependentOptionAction[];
+	}
+
+	export interface DependentOptionAction {
+		/**
+		 * Name of option affected by defined action.
+		 */
+		optionName: string,
+
+		/**
+		 * Action to be taken, Supported values: 'show', 'hide'.
+		 */
+		action: string;
+	}
+
+	// Object Explorer interfaces  --------------------------------
+	export interface ObjectExplorerSession {
+		/**
+		 * Authentication token for the current session.
+		 */
+		securityToken?: accounts.AccountSecurityToken | undefined;
+	}
+
+	export interface ExpandNodeInfo {
+		/**
+		 * Authentication token for the current session.
+		 */
+		securityToken?: accounts.AccountSecurityToken | undefined;
+	}
+	// End Object Explorer interfaces  ----------------------------
 
 	export interface TaskInfo {
 		targetLocation?: string;
@@ -500,6 +686,13 @@ declare module 'azdata' {
 		payload?: IConnectionProfile;
 		childProvider?: string;
 		type?: ExtensionNodeType;
+	}
+
+	export interface AccountKey {
+		/**
+		 * Auth Library used to add the account
+		 */
+		authLibrary?: string;
 	}
 
 	export namespace workspace {
@@ -582,6 +775,10 @@ declare module 'azdata' {
 		 * The url to open.
 		 */
 		url?: string;
+		/**
+		 * The role of the hyperlink. By default, the role is 'link' and the url will be opened in a new tab.
+		 */
+		role?: 'button' | 'link';
 	}
 
 	export interface ContextMenuColumnCellValue {
@@ -1678,5 +1875,77 @@ declare module 'azdata' {
 		 * under the database, the nodeType is Folder, the objectType is be Tables.
 		 */
 		objectType?: string;
+	}
+
+	export namespace window {
+		export interface Wizard extends LoadingComponentBase {
+		}
+
+		export interface Dialog extends LoadingComponentBase {
+		}
+
+		/**
+		 * Opens the error dialog with customization options provided.
+		 * @param options Dialog options to customize error dialog.
+		 * @returns Id of action button clicked by user, e.g. ok, cancel
+		 */
+		export function openCustomErrorDialog(options: IErrorDialogOptions): Thenable<string | undefined>;
+
+		/**
+		 * Provides dialog options to customize modal dialog content and layout
+		 */
+		export interface IErrorDialogOptions {
+			/**
+			 * Severity Level to identify icon of modal dialog.
+			 */
+			severity: MessageLevel;
+			/**
+			 * Title of modal dialog header.
+			 */
+			headerTitle: string;
+			/**
+			 * Message text to show on dialog.
+			 */
+			message: string;
+			/**
+			 * (Optional) Detailed message, e.g stack trace of error.
+			 */
+			messageDetails?: string;
+			/**
+			 * Telemetry View to be used for emitting telemetry events.
+			 */
+			telemetryView?: string,
+			/**
+			 * (Optional) List of custom actions to include in modal dialog alongwith a 'Cancel' button.
+			 * If custom 'actions' are not provided, 'OK' button will be shown by default.
+			 */
+			actions?: IDialogAction[];
+			/**
+			 * (Optional) If provided, instruction text is shown in bold below message.
+			 */
+			instructionText?: string;
+			/**
+			 * (Optional) If provided, appends read more link after instruction text.
+			 */
+			readMoreLink?: string;
+		}
+
+		/**
+		 * An action that will be rendered as a button on the dialog.
+		 */
+		export interface IDialogAction {
+			/**
+			 * Identifier of action.
+			 */
+			id: string;
+			/**
+			 * Label of Action button.
+			 */
+			label: string;
+			/**
+			 * Defines if button styling and focus should be based on primary action.
+			 */
+			isPrimary: boolean;
+		}
 	}
 }

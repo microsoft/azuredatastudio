@@ -8,7 +8,8 @@
 }
 
 .modal .firewall-rule-dialog .dialog-label.header {
-	font-size: 15px;
+	font-size: 12px;
+	padding-top: 10px;
 }
 
 .modal .firewall-rule-dialog .new-section {
@@ -29,8 +30,14 @@
 	padding-bottom: 10px;
 }
 
+.modal .firewall-rule-dialog .firewall-rulename .dialog-input-section{
+	display: block;
+	padding-top: 0px;
+}
+
 .modal .firewall-rule-dialog .dialog-input-section .dialog-label {
-	flex: 0 0 15px;
+	flex: 0 0;
+	padding-top: 3px;
 	align-self: center;
 }
 
@@ -40,6 +47,10 @@
 	padding-right: 10px;
 	padding-top: 0px;
 	padding-bottom: 0px;
+}
+
+.modal .firewall-rule-dialog .firewall-rulename .dialog-input-section .dialog-input {
+	padding-left: 0px;
 }
 
 /* Firewall rule description section */

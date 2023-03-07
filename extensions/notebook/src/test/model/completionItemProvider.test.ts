@@ -63,7 +63,8 @@ describe('Completion Item Provider', function () {
 	});
 
 	it('should not provide items when session does not exist in notebook provider', async () => {
-		let notebook = await notebookUtils.newNotebook();
+		await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
+		const notebook = azdata.nb.activeNotebookEditor;
 		await notebookUtils.addCell('code');
 		let document = await tryFindTextDocument(notebook);
 		should(document).not.equal(undefined, 'Could not find text document that matched cell uri path');
@@ -75,7 +76,8 @@ describe('Completion Item Provider', function () {
 	it('should not provide items when session list throws exception', async () => {
 		mockSessionManager.setup(m => m.listRunning()).throws(new Error('Test Error'));
 
-		let notebook = await notebookUtils.newNotebook();
+		await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
+		const notebook = azdata.nb.activeNotebookEditor;
 		await notebookUtils.addCell('code');
 		let document = await tryFindTextDocument(notebook);
 
@@ -86,7 +88,8 @@ describe('Completion Item Provider', function () {
 	it('should not provide items when kernel does not exist in notebook provider', async () => {
 		mockSessionManager.setup(m => m.listRunning()).returns(() => [mockJupyterSession.object]);
 
-		let notebook = await notebookUtils.newNotebook();
+		await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
+		const notebook = azdata.nb.activeNotebookEditor;
 		await notebookUtils.addCell('code');
 		let document = await tryFindTextDocument(notebook);
 
@@ -102,7 +105,8 @@ describe('Completion Item Provider', function () {
 		mockSessionManager.setup(m => m.listRunning()).returns(() => [mockJupyterSession.object]);
 		mockJupyterSession.setup(s => s.path).returns(() => notebook.document.uri.path);
 
-		let notebook = await notebookUtils.newNotebook();
+		await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
+		const notebook = azdata.nb.activeNotebookEditor;
 		await notebookUtils.addCell('code');
 		let document = await tryFindTextDocument(notebook);
 
@@ -145,7 +149,8 @@ describe('Completion Item Provider', function () {
 		mockJupyterSession.setup(s => s.kernel).returns(() => kernel);
 		mockSessionManager.setup(m => m.listRunning()).returns(() => [mockJupyterSession.object]);
 
-		let notebook = await notebookUtils.newNotebook();
+		await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
+		const notebook = azdata.nb.activeNotebookEditor;
 		await notebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
 			editBuilder.insertCell({
 				cell_type: 'code',
@@ -182,7 +187,8 @@ describe('Completion Item Provider', function () {
 		mockJupyterSession.setup(s => s.kernel).returns(() => kernel);
 		mockSessionManager.setup(m => m.listRunning()).returns(() => [mockJupyterSession.object]);
 
-		let notebook = await notebookUtils.newNotebook();
+		await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
+		const notebook = azdata.nb.activeNotebookEditor;
 		if (source) {
 			await notebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
 				editBuilder.insertCell({

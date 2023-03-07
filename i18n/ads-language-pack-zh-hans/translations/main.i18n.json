@@ -11337,7 +11337,6 @@
 			"dataExplorer.context": "dataexplorer 项上下文菜单",
 			"dataGrid.context": "数据网格项上下文菜单",
 			"default": "启用自动更新检查。Azure Data Studio 将定期自动检查更新。",
-			"docNotFoundForUriError": "无法打开指定的 URI 的笔记本文档。",
 			"enable locally": "请重新加载 Azure Data Studio 以在本地启用此扩展。",
 			"enable remote": "请重新加载 Azure Data Studio 以在 {0} 中启用此扩展。",
 			"enableWindowsBackgroundUpdates": "启用在 Windows 上后台下载和安装新的 Azure Data Studio 版本",
@@ -11345,14 +11344,36 @@
 			"incompatible": "无法安装扩展“{1}”的版本“{0}”，因为它与 Azure Data Studio“{2}”不兼容。请更新到 Azure Data Studio {3} 以安装扩展。",
 			"installExtensionCompletedAndReloadRequired": "安装扩展 {0} 已完成。请重新加载 Azure Data Studio 以启用它。",
 			"maxMemoryForLargeFilesMB": "在打开大型文件时，控制 Azure Data Studio 可在重启后使用的内存。在命令行中指定 `--max-memory=新的大小` 参数可达到相同效果。",
+			"miNewDeployment": "新建部署...(&&D)",
 			"miNewNotebook": "新建笔记本(&&N)",
 			"miNewQuery": "新建查询(&&Q)",
 			"miinstallVsix": "从 VSIX 包安装扩展",
 			"newQuery": "新建查询",
 			"notebook.cellTitle": "笔记本单元格标题菜单",
-			"notebook.cellToolbarLocation.compatibilityDescription": "应在何处显示单元格工具栏，或者是否应隐藏该工具栏。注意：此设置仅出于扩展兼容性目的而启用，因此不会产生任何影响。",
+			"notebook.cellToolbarLocation.description": "单元格工具栏应显示在何处，或者是否应将其隐藏。(仅适用于 VS Code 笔记本)",
+			"notebook.cellToolbarVisibility.description": "单元格工具栏应在悬停还是单击时显示。(仅适用于 VS Code 笔记本)",
+			"notebook.compactView.description": "控制是否应以紧凑形式呈现笔记本编辑器。例如在打开时，它将减小左边距宽度。(仅适用于 VS Code 笔记本)",
+			"notebook.consolidatedOutputButton.description": "控制是否应在输出工具栏中呈现输出操作。(仅适用于 VS Code 笔记本)",
+			"notebook.consolidatedRunButton.description": "控制是否在“运行”按钮旁边的下拉列表中显示额外的操作。(仅适用于 VS Code 笔记本)",
+			"notebook.diff.enablePreview.description": "是否对笔记本使用增强型文本差异编辑器。(仅适用于 VS Code 笔记本)",
+			"notebook.displayOrder.description": "输出 mime 类型的优先级列表。(仅适用于 VS Code 笔记本)",
+			"notebook.dragAndDrop.description": "控制笔记本编辑器是否应允许通过拖放移动单元格。(仅适用于 VS Code 笔记本)",
+			"notebook.editorOptions.experimentalCustomization": "笔记本中使用的代码编辑器的设置。这可用于自定义大多数编辑器.* 设置。(仅适用于 VS Code 笔记本)",
+			"notebook.focusIndicator.description": "控制焦点指示器是沿单元格边框，还是在左侧装订线上呈现。(仅适用于 VS Code 笔记本)",
+			"notebook.globalToolbar.description": "控制是否在笔记本编辑器中呈现全局工具栏。(仅适用于 VS Code 笔记本)",
+			"notebook.globalToolbarShowLabel": "控制笔记本工具栏上的操作是否应呈现标签。(仅适用于 VS Code 笔记本)",
+			"notebook.insertToolbarPosition.description": "控制插入单元格操作应显示的位置。(仅适用于 VS Code 笔记本)",
+			"notebook.interactiveWindow.collapseCodeCells": "控制是否默认折叠交互窗口中的代码单元格。(仅适用于 VS Code 笔记本)",
+			"notebook.markup.fontSize": "控制笔记本中所呈现标记的字号(以像素为单位)。设置为 `0` 时，将使用 120% 的 `#editor.fontSize#`。(仅适用于 VS Code 笔记本)",
+			"notebook.outputFontFamily": "笔记本单元格输出文本的字体系列。设置为空时，将使用 `#editor.fontFamily#`。(仅适用于 VS Code 笔记本)",
+			"notebook.outputFontSize": "笔记本单元格输出文本的字号。如果设置为 0，则使用 `#editor.fontSize#`。(仅适用于 VS Code 笔记本)",
+			"notebook.outputLineHeight": "笔记本单元格输出文本的行高。\r\n - 将使用介于 0 和 8 之间的值作为字号的乘数。\r\n - 将使用大于或等于 8 的值作为有效值。(仅适用于 VS Code 笔记本)",
+			"notebook.showCellStatusbar.description": "是否应显示单元格状态栏。(仅适用于 VS Code 笔记本)",
+			"notebook.showFoldingControls.description": "控制何时显示 Markdown 标头折叠箭头。(仅适用于 VS Code 笔记本)",
+			"notebook.textOutputLineLimit": "控制文本输出中呈现的文本行数。(仅适用于 VS Code 笔记本)",
 			"notebook.title": "笔记本标题菜单",
 			"notebook.toolbar": "笔记本工具栏菜单",
+			"notebook.undoRedoPerCell.description": "是否对每个单元格使用单独的撤消/重做堆栈。(仅适用于 VS Code 笔记本)",
 			"objectExplorer.context": "对象资源管理器项上下文菜单",
 			"openDefaultSettingsJson": "打开默认设置 JSON",
 			"openDefaultSettingsJson.capitalized": "打开默认设置(JSON)",
@@ -11377,9 +11398,7 @@
 			"terminal.integrated.inheritEnv": "新 shell 是否应从 Azure Data Studio 继承其环境，这可能会生成登录 shell，以确保初始化 $PATH 和其他开发变量。这不会对 Windows 造成影响。",
 			"uninstallExtensionComplete": "请重新加载 Azure Data Studio 以完成扩展 {0} 的卸载。",
 			"updateLocale": "是否要将 Azure Data Studio 的 UI 语言更改为 {0} 并重启?",
-			"vscodeDocCreationFailedError": "未能创建笔记本文档。",
-			"vscodeFunctionalityNotSupportedError": "Azure Data Studio 中不支持此 VS Code 功能。",
-			"vscodeInvalidArgumentsError": "参数无效。",
+			"vscodeNotebooksNotSupportedError": "Azure Data Studio 不支持 VS Code 笔记本扩展。",
 			"watermark.newNotebook": "新建笔记本",
 			"watermark.newSqlFile": "新建 SQL 文件",
 			"workspace.trust.description": "控制是否在 Azure Data Studio 内启用工作区信任。",
@@ -11531,9 +11550,6 @@
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
 			"navigationProviderRequired": "必须向此方法传递具有有效 providerId 的 NavigationProvider"
 		},
-		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "无法启动会话，管理器尚未初始化"
-		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "清除所有保存的帐户",
 			"configureDashboardLearnMore": "了解更多",
@@ -11545,7 +11561,9 @@
 			"enableObsoleteApiUsageNotificationTitle": "过时的 API 通知",
 			"previewFeatures.configEnable": "启用未发布的预览功能",
 			"previewFeatures.configTitle": "预览功能",
-			"showConnectDialogOnStartup": "在启动时显示连接对话框"
+			"showConnectDialogOnStartup": "在启动时显示连接对话框",
+			"useVSCodeNotebooks": "(预览)将 VS Code 笔记本用作默认笔记本体验。注意: 需要重启 Azure Data Studio 才能启用此设置。",
+			"useVSCodeNotebooksTitle": "使用 VS Code 笔记本"
 		},
 		"sql/workbench/browser/designer/designer": {
 			"designer.actions": "更多操作",
@@ -11908,6 +11926,7 @@
 			"status.connection.status": "连接状态"
 		},
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
+			"schema.azureResource": "提供程序的 Azure 资源终结点。",
 			"schema.connectionOptions": "连接选项",
 			"schema.displayName": "提供程序的显示名称",
 			"schema.enableConnectionStringOption": "提供程序是否支持连接字符串作为输入选项。默认值为 false。",
@@ -12398,9 +12417,6 @@
 			"nextSearchItemAction": "下一个匹配项",
 			"previousSearchItemAction": "上一个匹配项"
 		},
-		"sql/workbench/contrib/executionPlan/common/executionPlanInput": {
-			"epCompare.executionPlanEditorName": "ExecutionPlan"
-		},
 		"sql/workbench/contrib/extensions/browser/contributionRenders": {
 			"insight condition": "时间",
 			"insightId": "ID",
@@ -12702,6 +12718,7 @@
 			"notebook.markdownModeDescription": "文本显示为 Markdown。",
 			"notebook.markdownPreviewLineHeight": "控制笔记本 Markdown 预览中使用的行高。此数字与字号相关。",
 			"notebook.maxRichTextUndoHistory": "笔记本格式文本编辑器的撤消历史记录中存储的最大更改数。",
+			"notebook.renderTablesInHtml": "在文本单元格中以 HTML 格式显示和保存表，而不是转换为 Markdown 表。",
 			"notebook.richTextModeDescription": "文本显示为格式文本(也称为 \"WSIWYG\")。",
 			"notebook.saveConnectionName": "(预览)在笔记本元数据中保存连接名称。",
 			"notebook.showAllKernels": "(预览)显示当前笔记本提供程序的所有内核。",
@@ -12860,7 +12877,7 @@
 			"viewOptionsModal.title": "配置视图"
 		},
 		"sql/workbench/contrib/notebook/browser/outputs/gridOutput.component": {
-			"copyFailed": "复制失败，出现错误 {0}",
+			"copyFailed": "复制失败，出现错误: {0}",
 			"notebook.showChart": "显示图表",
 			"notebook.showTable": "显示表"
 		},
@@ -12947,6 +12964,7 @@
 		},
 		"sql/workbench/contrib/query/browser/actions": {
 			"chart": "图表",
+			"copyHeaders": "复制标头",
 			"copySelection": "复制",
 			"copyWithHeaders": "带标头复制",
 			"jsonEncoding": "导出到 JSON 时，将不会保存结果编码，请记得在创建文件后使用所需编码进行保存。",
@@ -13022,6 +13040,7 @@
 			"queryEditor.results.saveAsMarkdown.lineSeparator": "导出到 Markdown 时用于分隔行的字符，默认为系统行尾",
 			"queryEditor.results.saveAsXml.encoding": "将结果保存为 XML 时使用的文件编码",
 			"queryEditor.results.saveAsXml.formatted": "为 true 时，将在将结果保存为 XML 时设置 XML 输出的格式",
+			"queryEditor.results.showActionBar": "是否在查询结果视图中显示操作栏",
 			"queryEditor.results.streaming": "启用结果流式处理；包含极少轻微的可视化问题",
 			"queryEditor.showConnectionInfoInTitle": "控制是否显示标题中选项卡的连接信息。",
 			"queryEditor.tabColorMode": "控制如何根据活动连接的服务器组为选项卡着色",
@@ -13067,6 +13086,8 @@
 			"status.query.selection-summary": "选择摘要",
 			"status.query.status": "执行状态",
 			"status.query.summaryText": "平均值: {0} 计数: {1} 总和: {2}",
+			"status.query.summaryTextNonNumeric": "计数: {0}  非重复计数: {1}  Null 计数: {2}",
+			"status.query.summaryTooltip": "平均值: {0}  计数: {1}  非重复计数: {2} 最大值: {3}  最小值: {4}  Null 计数: {5}  总和: {6}",
 			"status.query.timeElapsed": "已用时间"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13077,6 +13098,7 @@
 			"fontWeight": "控制字体粗细。",
 			"letterSpacing": "控制字母间距(像素)。",
 			"maxColumnWidth": "自动调整大小的列的最大宽度(像素)",
+			"resultsGrid.showJsonAsLink": "是否将含有 JSON 格式字符串的单元格显示为超链接。启用后，单击 JSON 值时将在另一个标签页中打开。默认值为 true。",
 			"resultsGridConfigurationTitle": "结果网格和消息",
 			"rowHeight": "控制行高(像素)"
 		},
@@ -13311,8 +13333,12 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "关闭",
+			"addAccountFailedCodeMessage": "{0} \r\n错误消息: {1}",
+			"addAccountFailedGenericMessage": "添加帐户失败，有关详细信息，请查看 Azure 帐户日志。",
+			"addAccountFailedMessage": "{0}",
 			"loggingIn": "正在添加帐户...",
-			"refreshFailed": "用户已取消刷新帐户"
+			"refreshCanceled": "用户已取消刷新帐户",
+			"refreshFailed": "0 \r\n错误消息: 1"
 		},
 		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
 			"azureAccount": "Azure 帐户",
@@ -13385,12 +13411,10 @@
 		},
 		"sql/workbench/services/connection/browser/connectionDialogService": {
 			"connectionError": "连接错误",
-			"enableTrustServerCertificate": "启用信任服务器证书",
 			"kerberosErrorStart": "由于 Kerberos 错误，连接失败。",
 			"kerberosHelpLink": "可在 {0} 处获取有关配置 Kerberos 的帮助",
 			"kerberosKinit": "如果之前已连接，可能需要重新运行 kinit。",
-			"runKinit": "运行 Kinit",
-			"trustServerCertInstructionText": "已在此连接上启用加密、查看目标 SQL Server 的 SSL 和证书配置，或在连接对话框中启用“信任服务器证书”。\r\n\r\n\t\t\t注意: 自签名证书仅提供有限的保护，不建议用于生产环境。是否要在此连接上启用“信任服务器证书”，然后重试?"
+			"runKinit": "运行 Kinit"
 		},
 		"sql/workbench/services/connection/browser/connectionDialogWidget": {
 			"connectType": "连接类型",
@@ -13444,6 +13468,20 @@
 			"onDidDisconnectMessage": "已断开连接",
 			"unsavedGroupLabel": "未保存的连接"
 		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.Message1": "必须更改“{0}”的密码才能继续登录到“{1}”。",
+			"passwordChangeDialog.Message2": "请在下面输入新密码:",
+			"passwordChangeDialog.cancel": "取消",
+			"passwordChangeDialog.confirmPassword": "确认密码:",
+			"passwordChangeDialog.connecting": "正在连接",
+			"passwordChangeDialog.errorHeader": "尝试更改密码时失败",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "输入的密码不匹配",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "请按“确定”并在两个框中输入完全相同的密码。",
+			"passwordChangeDialog.newPassword": "新密码:",
+			"passwordChangeDialog.ok": "确定",
+			"passwordChangeDialog.passwordChangeInProgress": "密码更改已在进行中",
+			"passwordChangeDialog.title": "更改密码"
+		},
 		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
 			"newDashboardTab.cancel": "取消",
 			"newDashboardTab.ok": "确定",
@@ -13474,6 +13512,8 @@
 			"warning": "警告"
 		},
 		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"executionPlanService.ensureCapabilitiesRegistered": "ID 为 {0} 的提供程序在 30 秒后未注册。",
+			"executionPlanService.ensureFileExtensionHandlerRegistered": "支持文件格式 \"{0}\" 的执行计划提供程序在 30 秒后未注册。",
 			"noHandlerRegistered": "未注册有效的执行计划处理程序",
 			"providerIdNotValidError": "如果要与 ExecutionPlanService 交互，需要有效的提供程序",
 			"selectExecutionPlanProvider": "选择提供程序以打开执行计划"
@@ -13583,6 +13623,7 @@
 			"deleteCellFailed": "未能删除单元格。",
 			"injectedParametersMsg": "# 个注入参数\r\n",
 			"kernelRequiresConnection": "请选择一个连接来运行此内核的单元格",
+			"savedKernelNotSupported": "不支持此笔记本的 \"{0}\" 内核。正在改为默认的 SQL 内核。",
 			"shutdownClientSessionError": "关闭笔记本时发生客户端会话错误: {0}",
 			"startSessionFailed": "无法启动会话: {0}"
 		},
@@ -13619,14 +13660,13 @@
 			"unknownCellType": "单元格类型 {0} 未知"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "此魔术方法指示的可选执行目标，例如 Spark 和 SQL",
+			"carbon.extension.contributes.notebook.executionTarget": "此魔术方法指示的可选执行目标，例如 Python 和 SQL",
 			"carbon.extension.contributes.notebook.fileExtensions": "应向此笔记本提供程序注册哪些文件扩展名",
-			"carbon.extension.contributes.notebook.kernels": "可选内核集，对于 python3、pyspark 和 sql 等有效",
+			"carbon.extension.contributes.notebook.kernels": "可选内核集，对于 python3 和 sql 等有效",
 			"carbon.extension.contributes.notebook.language": "单元格中包含此单元格魔术方法时要使用的单元格语言",
 			"carbon.extension.contributes.notebook.magic": "单元格魔术方法的名称，如 \"%%sql\"。",
 			"carbon.extension.contributes.notebook.provider": "笔记本提供程序的标识符。",
 			"carbon.extension.contributes.notebook.standardKernels": "此笔记本提供程序应标配哪些内核",
-			"providerNotInRegistryError": "笔记本注册表中不存在指定的提供程序 \"{0}\"。",
 			"vscode.extension.contributes.notebook.languagemagics": "提供笔记本语言。",
 			"vscode.extension.contributes.notebook.providersDescriptions": "提供笔记本提供程序说明。"
 		},
@@ -13639,7 +13679,11 @@
 			"connectionTree.editServerGroup": "编辑服务器组",
 			"connectionTree.refresh": "刷新",
 			"deleteConnection": "删除连接",
+			"deleteConnectionConfirmation": "是否确定要删除连接“{0}”?",
+			"deleteConnectionConfirmationNo": "否",
+			"deleteConnectionConfirmationYes": "是",
 			"deleteConnectionGroup": "删除组",
+			"deleteConnectionGroupConfirmation": "是否确定要删除连接“{0}”?",
 			"showAllConnections": "显示所有连接"
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
@@ -13665,6 +13709,7 @@
 		},
 		"sql/workbench/services/profiler/browser/profilerFilterDialog": {
 			"profilerFilterDialog.addClauseText": "添加子句",
+			"profilerFilterDialog.allClausesCleared": "已清除所有子句。",
 			"profilerFilterDialog.apply": "应用",
 			"profilerFilterDialog.cancel": "取消",
 			"profilerFilterDialog.clear": "全部清除",
@@ -13673,6 +13718,7 @@
 			"profilerFilterDialog.isNotNullOperator": "不为 Null",
 			"profilerFilterDialog.isNullOperator": "为 Null",
 			"profilerFilterDialog.loadFilter": "加载筛选器",
+			"profilerFilterDialog.newClauseAdded": "已添加新子句。",
 			"profilerFilterDialog.notContainsOperator": "不包含",
 			"profilerFilterDialog.notStartsWithOperator": "开头不为",
 			"profilerFilterDialog.ok": "确定",
@@ -13697,7 +13743,7 @@
 			"updateCellFailed": "更新单元格失败:"
 		},
 		"sql/workbench/services/query/common/queryRunner": {
-			"copyFailed": "复制失败，出现错误 {0}",
+			"copyFailed": "复制失败，出现错误: {0}",
 			"elapsedBatchTime": "批处理执行时间: {0}",
 			"query.ExecutionFailedError": "由于意外错误，执行失败: {0}\t{1}",
 			"query.message.executionTime": "执行时间总计: {0}",
@@ -13724,8 +13770,9 @@
 			"filewallRule": "防火墙规则",
 			"firewall.cancel": "取消",
 			"firewall.ok": "确定",
-			"firewallRuleDialogDescription": "你的客户端 IP 地址无权访问此服务器。请登录到 Azure 帐户，然后新建一个防火墙规则以启用访问。",
-			"firewallRuleHelpDescription": "详细了解防火墙设置",
+			"firewall.ruleName": "规则名",
+			"firewallRuleDescription": "访问 SQL Server 实例需要防火墙规则。单击下面的链接创建新的防火墙规则。",
+			"firewallRuleHelpLink": "了解有关防火墙规则的详细信息",
 			"from": "从",
 			"to": "到"
 		},
@@ -13900,6 +13947,12 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "入门(&&S)",
 			"showReleaseNotes": "显示入门指南"
+		},
+		"sql/workbench/services/dialog/browser/wizardNavigation.component": {
+			"wizardNavigation.stepName": "第 {0} 步: {1}"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanInput": {
+			"epCompare.executionPlanEditorName": "ExecutionPlan"
 		}
 	}
 }

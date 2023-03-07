@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/accountDialog';
-import 'vs/css!./media/accountActions';
 import * as DOM from 'vs/base/browser/dom';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -22,7 +21,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import * as azdata from 'azdata';
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { SqlIconId } from 'sql/base/common/codicons';
+import { Codicon } from 'vs/base/common/codicons';
 import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import { AccountViewModel } from 'sql/platform/accounts/common/accountViewModel';
 import { AddAccountAction } from 'sql/platform/accounts/common/accountActions';
@@ -48,12 +47,11 @@ import { Iterable } from 'vs/base/common/iterator';
 import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 import { Tenant, TenantListDelegate, TenantListRenderer } from 'sql/workbench/services/accountManagement/browser/tenantListRenderer';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
+import { ADAL_AUTH_LIBRARY, AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManagement/utils';
 
 export const VIEWLET_ID = 'workbench.view.accountpanel';
 
-export class AccountPaneContainer extends ViewPaneContainer {
-
-}
+export class AccountPaneContainer extends ViewPaneContainer { }
 
 export const ACCOUNT_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
@@ -225,7 +223,6 @@ export class AccountDialog extends Modal {
 		noAccountTitle.innerText = noAccountLabel;
 
 		// Show the add account button for the first provider
-		// Todo: If we have more than 1 provider, need to show all add account buttons for all providers
 		const buttonSection = DOM.append(this._noaccountViewContainer, DOM.$('div.button-section'));
 		this._addAccountButton = new Button(buttonSection);
 		this._addAccountButton.label = localize('accountDialog.addConnection', "Add an account");
@@ -267,6 +264,9 @@ export class AccountDialog extends Modal {
 		else if (accountMetadata.length === 0) {
 			this.showLoadingSpinner();
 		}
+		else if (accountMetadata.length > 1) {
+			this.showSplitView();
+		}
 		else {
 			this.showNoAccountContainer();
 		}
@@ -294,7 +294,10 @@ export class AccountDialog extends Modal {
 		if (Iterable.consume(this._providerViewsMap.values()).length > 0) {
 			const firstView = this._providerViewsMap.values().next().value;
 			if (firstView && firstView.view instanceof AccountPanel) {
-				firstView.view.setSelection([0]);
+				// Handle index error with length 0
+				if (firstView.view.length > 0) {
+					firstView.view.setSelection([0]);
+				}
 				firstView.view.focus();
 			}
 		}
@@ -356,13 +359,16 @@ export class AccountDialog extends Modal {
 			this.vstelemetryService
 		);
 
-		Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{
-			id: newProvider.addedProvider.id,
-			name: newProvider.addedProvider.displayName,
-			ctorDescriptor: new SyncDescriptor(AccountPanel),
-		}], ACCOUNT_VIEW_CONTAINER);
+		// Check if view is registered, if it isn't, register the view
+		if (!Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(newProvider.addedProvider.id)) {
+			Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{
+				id: newProvider.addedProvider.id,
+				name: newProvider.addedProvider.displayName,
+				ctorDescriptor: new SyncDescriptor(AccountPanel),
+			}], ACCOUNT_VIEW_CONTAINER);
+			this.registerActions(newProvider.addedProvider.id);
+		}
 
-		this.registerActions(newProvider.addedProvider.id);
 
 		attachPanelStyler(providerView, this._themeService);
 
@@ -371,14 +377,26 @@ export class AccountDialog extends Modal {
 
 		// Append the list view to the split view
 		this._splitView!.addView(providerView, Sizing.Distribute, insertIndex);
+		// Increment index for each provider
+		this._providerViewsMap.forEach((provider) => {
+			if (provider.view.index > providerView.index) {
+				provider.view.index++;
+			}
+		})
+
 		providerView.index = insertIndex;
 
 		this._splitView!.layout(DOM.getContentHeight(this._container!));
 
 		// Set the initial items of the list
-		providerView.updateAccounts(newProvider.initialAccounts);
+		const authLibrary: AuthLibrary = getAuthLibrary(this._configurationService);
+		let updatedAccounts: azdata.Account[];
+		if (authLibrary) {
+			updatedAccounts = filterAccounts(newProvider.initialAccounts, authLibrary);
+		}
+		providerView.updateAccounts(updatedAccounts);
 
-		if (newProvider.initialAccounts.length > 0 && this._splitViewContainer!.hidden) {
+		if ((updatedAccounts.length > 0 && this._splitViewContainer!.hidden) || this._providerViewsMap.size > 1) {
 			this.showSplitView();
 		}
 
@@ -400,11 +418,20 @@ export class AccountDialog extends Modal {
 
 		// Remove the list view from the split view
 		this._splitView!.removeView(providerView.view.index!);
+		// Decrement index for each provider
+		this._providerViewsMap.forEach((provider) => {
+			if (provider.view.index > providerView.view.index) {
+				provider.view.index--;
+			}
+		})
 		this._splitView!.layout(DOM.getContentHeight(this._container!));
-
 		// Remove the list view from our internal map
 		this._providerViewsMap.delete(removedProvider.id);
 		this.logService.debug(`Provider ${removedProvider.id} removed`);
+		// Update view after removing provider
+		if (this._splitViewContainer!.hidden) {
+			this.showSplitView();
+		}
 		this.layout();
 	}
 
@@ -413,13 +440,18 @@ export class AccountDialog extends Modal {
 		if (!providerMapping || !providerMapping.view) {
 			return;
 		}
-		providerMapping.view.updateAccounts(args.accountList);
+		const authLibrary: AuthLibrary = getAuthLibrary(this._configurationService);
+		let updatedAccounts: azdata.Account[];
+		if (authLibrary) {
+			updatedAccounts = filterAccounts(args.accountList, authLibrary);
+		}
+		providerMapping.view.updateAccounts(updatedAccounts);
 
-		if (args.accountList.length > 0 && this._splitViewContainer!.hidden) {
+		if ((args.accountList.length > 0 && this._splitViewContainer!.hidden) || this._providerViewsMap.size > 1) {
 			this.showSplitView();
 		}
 
-		if (this.isEmptyLinkedAccount() && this._noaccountViewContainer!.hidden) {
+		if (this.isEmptyLinkedAccount() && this._noaccountViewContainer!.hidden && this._providerViewsMap.size === 1) {
 			this.showNoAccountContainer();
 		}
 
@@ -434,7 +466,7 @@ export class AccountDialog extends Modal {
 					id: `workbench.actions.accountDialog.${viewId}.addAccount`,
 					title: { value: localize('accountDialog.addConnection', "Add an account"), original: 'Add an account' },
 					f1: true,
-					icon: { id: SqlIconId.addAccountAction },
+					icon: { id: Codicon.add.id },
 					menu: {
 						id: MenuId.ViewTitle,
 						group: 'navigation',
@@ -479,4 +511,19 @@ export class AccountDialog extends Modal {
 
 		v.addAccountAction.run();
 	}
+}
+
+// Filter accounts based on currently selected Auth Library:
+// if the account key is present, filter based on current auth library
+// if there is no account key (pre-MSAL account), then it is an ADAL account and
+// should be displayed as long as ADAL is the currently selected auth library
+export function filterAccounts(accounts: azdata.Account[], authLibrary: AuthLibrary): azdata.Account[] {
+	let filteredAccounts = accounts.filter(account => {
+		if (account.key.authLibrary) {
+			return account.key.authLibrary === authLibrary;
+		} else {
+			return authLibrary === ADAL_AUTH_LIBRARY;
+		}
+	});
+	return filteredAccounts;
 }

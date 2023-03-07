@@ -8,7 +8,7 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"out/common/constants": {
+		"dist/common/constants": {
 			"flatFile.InvalidFileLocation": "Ungültiger Dateispeicherort. Versuchen Sie es mit einer anderen Eingabedatei.",
 			"flatFileImport.allowNulls": "NULL-Werte zulassen",
 			"flatFileImport.browseFiles": "Durchsuchen",
@@ -59,7 +59,7 @@
 			"import.serviceCrashButton": "Feedback senden",
 			"serviceCrashMessage": "Die Dienstkomponente konnte nicht gestartet werden."
 		},
-		"out/services/serviceClient": {
+		"dist/services/serviceClient": {
 			"downloadingService": "\"{0}\" wird heruntergeladen.",
 			"downloadingServiceComplete": "Das Herunterladen von {0} wurde abgeschlossen",
 			"downloadingServiceSize": "({0} KB)",

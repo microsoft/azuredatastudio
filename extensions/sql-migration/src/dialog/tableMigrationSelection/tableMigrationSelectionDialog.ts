@@ -45,21 +45,7 @@ export class TableMigrationSelectionDialog {
 			const targetDatabaseInfo = this._model._sourceTargetMapping.get(this._sourceDatabaseName);
 			if (targetDatabaseInfo) {
 				const sourceTableList: TableInfo[] = await collectSourceDatabaseTableInfo(
-					this._model.sourceConnectionId,
 					this._sourceDatabaseName);
-
-				this._tableSelectionMap = new Map();
-				sourceTableList.forEach(table => {
-					const sourceTable = targetDatabaseInfo.sourceTables.get(table.tableName);
-					const isSelected = sourceTable?.selectedForMigration === true;
-					const tableInfo: TableInfo = {
-						databaseName: table.databaseName,
-						rowCount: table.rowCount,
-						selectedForMigration: isSelected,
-						tableName: table.tableName,
-					};
-					this._tableSelectionMap.set(table.tableName, tableInfo);
-				});
 
 				const targetTableList: TableInfo[] = await collectTargetDatabaseTableInfo(
 					this._model._targetServerInstance as AzureSqlDatabaseServer,
@@ -77,6 +63,28 @@ export class TableMigrationSelectionDialog {
 						selectedForMigration: false,
 						tableName: table.tableName,
 					}));
+
+				this._tableSelectionMap = new Map();
+				sourceTableList.forEach(table => {
+					// If the source table doesn't exist in the target, set isSelected to false.
+					// Otherwise, set it to true as default.
+					var isSelected = false;
+					var sourceTable = targetDatabaseInfo.sourceTables.get(table.tableName);
+					if (sourceTable === null || sourceTable === undefined) {
+						sourceTable = this._targetTableMap.get(table.tableName);
+						isSelected = sourceTable === null || sourceTable === undefined ? false : true;
+					} else {
+						isSelected = sourceTable.selectedForMigration;
+					}
+
+					const tableInfo: TableInfo = {
+						databaseName: table.databaseName,
+						rowCount: table.rowCount,
+						selectedForMigration: isSelected,
+						tableName: table.tableName,
+					};
+					this._tableSelectionMap.set(table.tableName, tableInfo);
+				});
 			}
 		} catch (error) {
 			this._dialog!.message = {
@@ -97,7 +105,9 @@ export class TableMigrationSelectionDialog {
 		let tableRow = 0;
 		this._missingTableCount = 0;
 		this._tableSelectionMap.forEach(sourceTable => {
-			if (filterText?.length === 0 || sourceTable.tableName.indexOf(filterText) > -1) {
+			const tableName = sourceTable.tableName.toLocaleLowerCase();
+			const searchText = filterText.toLocaleLowerCase();
+			if (filterText?.length === 0 || tableName.indexOf(searchText) > -1) {
 				const targetTable = this._targetTableMap.get(sourceTable.tableName);
 				if (targetTable) {
 					const targetTableRowCount = targetTable?.rowCount ?? 0;
@@ -113,9 +123,11 @@ export class TableMigrationSelectionDialog {
 					if (sourceTable.selectedForMigration) {
 						selectedItems.push(tableRow);
 					}
+
+					tableRow++;
 				}
+
 				this._missingTableCount += targetTable ? 0 : 1;
-				tableRow++;
 			}
 		});
 		await this._tableSelectionTable.updateProperty('data', data);
@@ -185,11 +197,13 @@ export class TableMigrationSelectionDialog {
 				600);
 
 			this._dialog.okButton.label = constants.TABLE_SELECTION_UPDATE_BUTTON;
+			this._dialog.okButton.position = 'left';
 			this._disposables.push(
 				this._dialog.okButton.onClick(
 					async () => this._save()));
 
 			this._dialog.cancelButton.label = constants.TABLE_SELECTION_CANCEL_BUTTON;
+			this._dialog.cancelButton.position = 'left';
 			this._disposables.push(
 				this._dialog.cancelButton.onClick(
 					async () => this._isOpen = false));

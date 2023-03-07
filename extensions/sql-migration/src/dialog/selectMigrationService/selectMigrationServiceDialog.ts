@@ -11,7 +11,7 @@ import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import * as utils from '../../api/utils';
 import { SqlMigrationService } from '../../api/azure';
-import { logError, TelemetryViews } from '../../telemtery';
+import { logError, TelemetryViews } from '../../telemetry';
 import { ServiceContextChangeEvent } from '../../dashboard/tabBase';
 
 const CONTROL_MARGIN = '20px';
@@ -78,12 +78,12 @@ export class SelectMigrationServiceDialog {
 		});
 
 		this._dialog.okButton.label = constants.MIGRATION_SERVICE_SELECT_APPLY_LABEL;
-		this._dialog.okButton.position = 'right';
-		this._dialog.cancelButton.position = 'right';
+		this._dialog.okButton.position = 'left';
+		this._dialog.cancelButton.position = 'left';
 
 		this._deleteButton = azdata.window.createButton(
 			constants.MIGRATION_SERVICE_CLEAR,
-			'left');
+			'right');
 		this._disposables.push(
 			this._deleteButton.onClick(async (value) => {
 				await MigrationLocalStorage.saveMigrationServiceContext({}, this.onServiceContextChanged);
@@ -372,7 +372,7 @@ export class SelectMigrationServiceDialog {
 		try {
 			this._accountTenantDropdown.loading = true;
 			this._accountTenants = utils.getAzureTenants(this._serviceContext.azureAccount);
-			this._accountTenantDropdown.values = await utils.getAzureTenantsDropdownValues(this._accountTenants);
+			this._accountTenantDropdown.values = utils.getAzureTenantsDropdownValues(this._accountTenants);
 			await this._accountTenantFlexContainer.updateCssStyles(
 				this._accountTenants.length > 1
 					? STYLE_ShOW
@@ -426,7 +426,7 @@ export class SelectMigrationServiceDialog {
 				this._serviceContext.subscription,
 				this._sqlMigrationServices);
 
-			this._azureLocationDropdown.values = await utils.getAzureLocationsDropdownValues(this._locations);
+			this._azureLocationDropdown.values = utils.getAzureLocationsDropdownValues(this._locations);
 			if (this._azureLocationDropdown.values.length > 0) {
 				utils.selectDefaultDropdownValue(
 					this._azureLocationDropdown,

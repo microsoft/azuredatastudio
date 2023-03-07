@@ -6,12 +6,10 @@
 import * as path from 'path';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as os from 'os';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import * as constants from '../common/constants';
-import * as localizedConstants from '../common/localizedConstants';
 import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as utils from '../common/utils';
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
@@ -66,9 +64,6 @@ export class JupyterController {
 		vscode.commands.registerCommand(constants.jupyterNewNotebookCommand, (explorerContext: azdata.ObjectExplorerContext) => {
 			return this.saveProfileAndCreateNotebook(explorerContext ? explorerContext.connectionProfile : undefined);
 		});
-		vscode.commands.registerCommand(constants.jupyterAnalyzeCommand, (explorerContext: azdata.ObjectExplorerContext) => {
-			return this.saveProfileAndAnalyzeNotebook(explorerContext);
-		});
 
 		vscode.commands.registerCommand(constants.jupyterReinstallDependenciesCommand, () => { return this.handleDependenciesReinstallation(); });
 		vscode.commands.registerCommand(constants.jupyterManagePackages, async (args) => { return this.doManagePackages(args); });
@@ -93,11 +88,7 @@ export class JupyterController {
 	}
 
 	private saveProfileAndCreateNotebook(profile: azdata.IConnectionProfile): Promise<void> {
-		return this.handleNewNotebookTask(undefined, profile);
-	}
-
-	private saveProfileAndAnalyzeNotebook(oeContext: azdata.ObjectExplorerContext): Promise<void> {
-		return this.handleNewNotebookTask(oeContext, oeContext.connectionProfile);
+		return this.handleNewNotebookTask(profile);
 	}
 
 	// EVENT HANDLERS //////////////////////////////////////////////////////
@@ -130,34 +121,17 @@ export class JupyterController {
 		}
 	}
 
-	private async handleNewNotebookTask(oeContext?: azdata.ObjectExplorerContext, profile?: azdata.IConnectionProfile): Promise<void> {
-		let editor = await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }), {
+	private async handleNewNotebookTask(profile?: azdata.IConnectionProfile): Promise<void> {
+		await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }), {
 			connectionProfile: profile,
 			providerId: constants.jupyterNotebookProviderId,
 			preview: false,
 			defaultKernel: {
-				name: 'pysparkkernel',
-				display_name: 'PySpark',
+				name: 'python3',
+				display_name: 'Python 3',
 				language: 'python'
 			}
 		});
-		if (oeContext && oeContext.nodeInfo && oeContext.nodeInfo.nodePath) {
-			// Get the file path after '/HDFS'
-			let hdfsPath: string = oeContext.nodeInfo.nodePath.substring(oeContext.nodeInfo.nodePath.indexOf('/HDFS') + '/HDFS'.length);
-			if (hdfsPath.length > 0) {
-				let analyzeCommand = '#' + localizedConstants.msgSampleCodeDataFrame + os.EOL + 'df = (spark.read.option(\"inferSchema\", \"true\")'
-					+ os.EOL + '.option(\"header\", \"true\")' + os.EOL + '.csv(\'{0}\'))' + os.EOL + 'df.show(10)';
-				// TODO re-enable insert into document once APIs are finalized.
-				// editor.document.cells[0].source = [analyzeCommand.replace('{0}', hdfsPath)];
-				await editor.edit(editBuilder => {
-					editBuilder.replace(0, {
-						cell_type: 'code',
-						source: analyzeCommand.replace('{0}', hdfsPath)
-					});
-				});
-
-			}
-		}
 	}
 
 	private async handleDependenciesReinstallation(): Promise<void> {

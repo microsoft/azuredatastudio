@@ -11,10 +11,11 @@ import * as loc from '../constants/strings';
 import { filterMigrations, getMigrationDuration, getMigrationStatusImage, getMigrationStatusWithErrors, getMigrationTime, MenuCommands } from '../api/utils';
 import { getMigrationTargetType, getMigrationMode, canCancelMigration, canCutoverMigration } from '../constants/helper';
 import { DatabaseMigration, getResourceName } from '../api/azure';
-import { logError, TelemetryViews } from '../telemtery';
+import { logError, TelemetryViews } from '../telemetry';
 import { SelectMigrationServiceDialog } from '../dialog/selectMigrationService/selectMigrationServiceDialog';
 import { AdsMigrationStatus, EmptySettingValue, ServiceContextChangeEvent, TabBase } from './tabBase';
 import { DashboardStatusBar } from './DashboardStatusBar';
+import { getSourceConnectionId } from '../api/sqlUtils';
 
 export const MigrationsListTabId = 'MigrationsListTab';
 
@@ -144,6 +145,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 
 		toolbar.addToolbarItems([
 			<azdata.ToolbarComponent>{ component: this.createNewMigrationButton(), toolbarSeparatorAfter: true },
+			<azdata.ToolbarComponent>{ component: this.createNewLoginMigrationButton(), toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.createNewSupportRequestButton() },
 			<azdata.ToolbarComponent>{ component: this.createFeedbackButton(), toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this._refreshLoader },
@@ -173,11 +175,10 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 					await dialog.initialize();
 				}));
 
-		const connectionProfile = await azdata.connection.getCurrentConnection();
 		this.disposables.push(
 			this.serviceContextChangedEvent.event(
 				async (e) => {
-					if (e.connectionId === connectionProfile.connectionId) {
+					if (e.connectionId === await getSourceConnectionId()) {
 						await this.updateServiceContext(this._serviceContextButton);
 						await this.refresh();
 					}
@@ -407,17 +408,19 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 				(<azdata.CategoryValue>this._columnSortDropdown.value).name,
 				this._columnSortCheckbox.checked === true);
 
-			const connectionProfile = await azdata.connection.getCurrentConnection();
+			const connectionProfileId = await getSourceConnectionId();
 			const data: any[] = this._filteredMigrations.map((migration, index) => {
 				return [
 					<azdata.HyperlinkColumnCellValue>{
 						icon: IconPathHelper.sqlDatabaseLogo,
 						title: migration.properties.sourceDatabaseName ?? EmptySettingValue,
+						role: 'button'
 					},															// sourceDatabase
 					migration.properties.sourceServerName ?? EmptySettingValue, // sourceServer
 					<azdata.HyperlinkColumnCellValue>{
 						icon: getMigrationStatusImage(migration),
 						title: getMigrationStatusWithErrors(migration),
+						role: 'button'
 					},															// statue
 					getMigrationMode(migration),								// mode
 					getMigrationTargetType(migration),							// targetType
@@ -431,7 +434,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 					<azdata.ContextMenuColumnCellValue>{
 						title: '',
 						context: {
-							connectionId: connectionProfile.connectionId,
+							connectionId: connectionProfileId,
 							migrationId: migration.id,
 							migrationOperationId: migration.properties.migrationOperationId,
 						},

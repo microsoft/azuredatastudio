@@ -342,6 +342,7 @@ export class QueryEditor extends EditorPane {
 		}
 
 		this.taskbar.setContent(content);
+		this.layout(this.dimension);
 	}
 
 	public override async setInput(newInput: QueryEditorInput, options: IEditorOptions, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
@@ -507,10 +508,12 @@ export class QueryEditor extends EditorPane {
 	 * To be called when the container of this editor changes size.
 	 */
 	public layout(dimension: DOM.Dimension): void {
-		this.dimension = dimension;
-		const queryEditorHeight = dimension.height - DOM.getTotalHeight(this.taskbar.getContainer());
-		this.splitviewContainer.style.height = queryEditorHeight + 'px';
-		this.splitview.layout(queryEditorHeight);
+		if (dimension?.height && dimension?.width && this.splitview) {
+			this.dimension = dimension;
+			const queryEditorHeight = dimension.height - DOM.getTotalHeight(this.taskbar.getContainer());
+			this.splitviewContainer.style.height = queryEditorHeight + 'px';
+			this.splitview.layout(queryEditorHeight);
+		}
 	}
 
 	/**
