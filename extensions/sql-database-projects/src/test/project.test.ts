@@ -334,9 +334,9 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql('<DefaultValue>otherServerName</DefaultValue>');
 	});
 
-	it.skip('Should add a project reference to the same database correctly', async function (): Promise<void> {
+	it('Should add a project reference to the same database correctly', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project = await Project.openProject(projFilePath);
+		let project = await Project.openProject(projFilePath);
 
 		// add database reference to a different database on a different server
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
@@ -347,6 +347,9 @@ describe('Project: sqlproj content operations', function (): void {
 			projectRelativePath: Uri.file(path.join('..', 'project1', 'project1.sqlproj')),
 			suppressMissingDependenciesErrors: false
 		});
+
+		// reload project
+		project = await Project.openProject(projFilePath);
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to project1');
 		should(project.databaseReferences[0].databaseName).equal('project1', 'The database reference should be project1');
 		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
@@ -357,9 +360,9 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql('project1');
 	});
 
-	it.skip('Should add a project reference to a different database in the same server correctly', async function (): Promise<void> {
+	it('Should add a project reference to a different database in the same server correctly', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project = await Project.openProject(projFilePath);
+		let project = await Project.openProject(projFilePath);
 
 		// add database reference to a different database on a different server
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
@@ -372,6 +375,9 @@ describe('Project: sqlproj content operations', function (): void {
 			databaseVariable: 'testdb',
 			suppressMissingDependenciesErrors: false
 		});
+
+		// reload project
+		project = await Project.openProject(projFilePath);
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to project1');
 		should(project.databaseReferences[0].databaseName).equal('project1', 'The database reference should be project1');
 		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
@@ -385,9 +391,9 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql('<DefaultValue>testdbName</DefaultValue>');
 	});
 
-	it.skip('Should add a project reference to a different database in a different server correctly', async function (): Promise<void> {
+	it('Should add a project reference to a different database in a different server correctly', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project = await Project.openProject(projFilePath);
+		let project = await Project.openProject(projFilePath);
 
 		// add database reference to a different database on a different server
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
@@ -402,6 +408,9 @@ describe('Project: sqlproj content operations', function (): void {
 			serverVariable: 'otherServer',
 			suppressMissingDependenciesErrors: false
 		});
+
+		// reload project
+		project = await Project.openProject(projFilePath);
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to project1');
 		should(project.databaseReferences[0].databaseName).equal('project1', 'The database reference should be project1');
 		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
@@ -459,7 +468,7 @@ describe('Project: sqlproj content operations', function (): void {
 
 	it('Should not allow adding duplicate project references', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project = await Project.openProject(projFilePath);
+		let project = await Project.openProject(projFilePath);
 
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 
@@ -470,6 +479,9 @@ describe('Project: sqlproj content operations', function (): void {
 			suppressMissingDependenciesErrors: false
 		};
 		await project.addProjectReference(projectReference);
+
+		// reload project
+		project = await Project.openProject(projFilePath);
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to testProject.sqlproj');
 		should(project.databaseReferences[0].databaseName).equal('testProject', 'project.databaseReferences[0].databaseName should be testProject');
 
@@ -480,7 +492,7 @@ describe('Project: sqlproj content operations', function (): void {
 
 	it('Should handle trying to add duplicate database references when slashes are different direction', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project = await Project.openProject(projFilePath);
+		let project = await Project.openProject(projFilePath);
 
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 
@@ -491,6 +503,9 @@ describe('Project: sqlproj content operations', function (): void {
 			suppressMissingDependenciesErrors: false
 		};
 		await project.addProjectReference(projectReference);
+
+		// reload project
+		project = await Project.openProject(projFilePath);
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to testProject.sqlproj');
 		should(project.databaseReferences[0].databaseName).equal('testProject', 'project.databaseReferences[0].databaseName should be testProject');
 
@@ -1801,12 +1816,18 @@ describe.only('Project: round trip updates', function (): void {
 		// setup test files
 		const folderPath = await testUtils.generateTestFolderPath();
 		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
-		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
 
-		const project = await Project.openProject(Uri.file(sqlProjPath).fsPath);
+		const originalSqlProjContents = (await fs.readFile(sqlProjPath)).toString();
 
-		should(await exists(sqlProjPath + '_backup')).equal(false);	// backup file should not be generated
-		should(project.importedTargets.length).equal(2); // additional target should not be added by updateProjectForRoundTrip method
+		let project = await Project.openProject(sqlProjPath, false);
+		(project.isCrossPlatformCompatible).should.be.false('SSDT project should not be cross-platform compatible when not prompted to update');
+
+		project = await Project.openProject(sqlProjPath, true);
+		(project.isCrossPlatformCompatible).should.be.false('SSDT project should not be cross-platform compatible when update prompt is rejected');
+		(await exists(sqlProjPath + '_backup')).should.be.false('backup file shoudl not be generated');
+
+		const newSqlProjContents = (await fs.readFile(sqlProjPath)).toString();
+		newSqlProjContents.should.equal(originalSqlProjContents, 'SSDT .sqlproj contents should not have changed when update prompt is rejected')
 
 		sinon.restore();
 	});
@@ -1841,8 +1862,8 @@ describe.only('Project: round trip updates', function (): void {
 		const spy = sinon.spy(window, 'showWarningMessage');
 
 		const project = await Project.openProject(Uri.file(sqlProjPath).fsPath);
-		should(project.isCrossPlatformCompatible).be.true('Project should be detected as cross-plat compatible');
-		should(spy.notCalled).be.true('Prompt to update .sqlproj should not have been shown for cross-plat project.');
+		(project.isCrossPlatformCompatible).should.be.true('Project should be detected as cross-plat compatible');
+		(spy.notCalled).should.be.true('Prompt to update .sqlproj should not have been shown for cross-plat project.');
 	}
 });
 
@@ -1851,10 +1872,12 @@ async function testUpdateInRoundTrip(fileBeforeupdate: string): Promise<void> {
 	const project = await Project.openProject(projFilePath); // project gets updated if needed in openProject()
 	should(project.isCrossPlatformCompatible).be.false('Project should not be cross-plat compatible before conversion');
 
+	project.isCrossPlatformCompatible.should.be.false('Project should not be cross-plat compatible before conversion');
+
 	await project.updateProjectForRoundTrip();
 
-	should(project.isCrossPlatformCompatible).be.true('Project should be cross-plat compatible after conversion');
-	should(await exists(projFilePath + '_backup')).be.true('Backup file should have been generated before the project was updated');
+	(project.isCrossPlatformCompatible).should.be.true('Project should be cross-plat compatible after conversion');
+	(await exists(projFilePath + '_backup')).should.be.true('Backup file should have been generated before the project was updated');
 
 	sinon.restore();
 }

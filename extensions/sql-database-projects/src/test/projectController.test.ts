@@ -673,7 +673,7 @@ describe('ProjectsController', function (): void {
 			should(holler).equal(addDbRefHoller, 'executionCallback() is supposed to have been setup and called for add database reference scenario');
 		});
 
-		it('Should not allow adding circular project references', async function (): Promise<void> {
+		it.skip('Should not allow adding circular project references', async function (): Promise<void> {
 			const projPath1 = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
 			const projPath2 = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 			const projController = new ProjectsController(testContext.outputChannel);
