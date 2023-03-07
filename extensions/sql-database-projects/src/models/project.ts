@@ -545,7 +545,7 @@ export class Project implements ISqlProject {
 		for (const projectReference of databaseReferencesResult.sqlProjectReferences) {
 			this._databaseReferences.push(new SqlProjectReferenceProjectEntry({
 				projectRelativePath: Uri.file(utils.getPlatformSafeFileEntryPath(projectReference.projectPath)),
-				projectName: path.basename(utils.getPlatformSafeFileEntryPath(projectReference.projectPath)),
+				projectName: path.basename(utils.getPlatformSafeFileEntryPath(projectReference.projectPath), constants.sqlprojExtension),
 				projectGuid: projectReference.projectGuid ?? '',
 				suppressMissingDependenciesErrors: projectReference.suppressMissingDependencies
 			}));
