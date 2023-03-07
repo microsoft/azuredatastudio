@@ -14,12 +14,12 @@ import * as vscode from 'vscode';
 import * as mssql from 'mssql';
 
 import { Uri, window } from 'vscode';
-import { EntryType, IDatabaseReferenceProjectEntry, IProjectEntry, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
+import { EntryType, IDatabaseReferenceProjectEntry, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabaseReferenceProjectEntry } from './projectEntry';
+import { DacpacReferenceProjectEntry, FileProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabaseReferenceProjectEntry } from './projectEntry';
 import { GetFoldersResult, GetScriptsResult, SystemDatabase } from 'mssql';
 import { ResultStatus } from 'azdata';
 import { BaseProjectTreeItem } from './tree/baseTreeItem';
@@ -432,7 +432,6 @@ export class Project implements ISqlProject {
 			return;
 		}
 
-
 		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectForRoundtrip);
 
 		const result = await this.sqlProjService.updateProjectForCrossPlatform(this.projectFilePath);
@@ -531,6 +530,32 @@ export class Project implements ISqlProject {
 
 	public async excludePostDeploymentScript(relativePath: string): Promise<void> {
 		const result = await this.sqlProjService.excludePostDeploymentScript(this.projectFileName, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readPostDeployScripts();
+	}
+
+	//#endregion
+
+	//#region None items
+
+	public async addNoneItem(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.addNoneItem(this.projectFileName, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readPostDeployScripts();
+		await this.readNoneScripts();
+	}
+
+	public async deleteNoneItem(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.deleteNoneItem(this.projectFileName, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readPostDeployScripts();
+	}
+
+	public async excludeNoneItem(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.excludeNoneItem(this.projectFileName, relativePath);
 		this.throwIfFailed(result);
 
 		await this.readPostDeployScripts();

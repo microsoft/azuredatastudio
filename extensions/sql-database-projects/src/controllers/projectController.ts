@@ -218,17 +218,17 @@ export class ProjectsController {
 		if (projectTypeId === constants.edgeSqlDatabaseProjectTypeId) {
 			const project = await Project.openProject(newProjFilePath);
 
-			await this.createFileFromTemplate(project, templates.get(ItemType.table), 'DataTable.sql', { 'OBJECT_NAME': 'DataTable' });
-			await this.createFileFromTemplate(project, templates.get(ItemType.dataSource), 'EdgeHubInputDataSource.sql', { 'OBJECT_NAME': 'EdgeHubInputDataSource', 'LOCATION': 'edgehub://' });
-			await this.createFileFromTemplate(project, templates.get(ItemType.dataSource), 'SqlOutputDataSource.sql', { 'OBJECT_NAME': 'SqlOutputDataSource', 'LOCATION': 'sqlserver://tcp:.,1433' });
-			await this.createFileFromTemplate(project, templates.get(ItemType.fileFormat), 'StreamFileFormat.sql', { 'OBJECT_NAME': 'StreamFileFormat' });
-			await this.createFileFromTemplate(project, templates.get(ItemType.externalStream), 'EdgeHubInputStream.sql', { 'OBJECT_NAME': 'EdgeHubInputStream', 'DATA_SOURCE_NAME': 'EdgeHubInputDataSource', 'LOCATION': 'input', 'OPTIONS': ',\n\tFILE_FORMAT = StreamFileFormat' });
-			await this.createFileFromTemplate(project, templates.get(ItemType.externalStream), 'SqlOutputStream.sql', { 'OBJECT_NAME': 'SqlOutputStream', 'DATA_SOURCE_NAME': 'SqlOutputDataSource', 'LOCATION': 'TSQLStreaming.dbo.DataTable', 'OPTIONS': '' });
-			await this.createFileFromTemplate(project, templates.get(ItemType.externalStreamingJob), 'EdgeStreamingJob.sql', { 'OBJECT_NAME': 'EdgeStreamingJob' });
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.table), 'DataTable.sql', { 'OBJECT_NAME': 'DataTable' });
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.dataSource), 'EdgeHubInputDataSource.sql', { 'OBJECT_NAME': 'EdgeHubInputDataSource', 'LOCATION': 'edgehub://' });
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.dataSource), 'SqlOutputDataSource.sql', { 'OBJECT_NAME': 'SqlOutputDataSource', 'LOCATION': 'sqlserver://tcp:.,1433' });
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.fileFormat), 'StreamFileFormat.sql', { 'OBJECT_NAME': 'StreamFileFormat' });
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStream), 'EdgeHubInputStream.sql', { 'OBJECT_NAME': 'EdgeHubInputStream', 'DATA_SOURCE_NAME': 'EdgeHubInputDataSource', 'LOCATION': 'input', 'OPTIONS': ',\n\tFILE_FORMAT = StreamFileFormat' });
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStream), 'SqlOutputStream.sql', { 'OBJECT_NAME': 'SqlOutputStream', 'DATA_SOURCE_NAME': 'SqlOutputDataSource', 'LOCATION': 'TSQLStreaming.dbo.DataTable', 'OPTIONS': '' });
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStreamingJob), 'EdgeStreamingJob.sql', { 'OBJECT_NAME': 'EdgeStreamingJob' });
 		}
 	}
 
-	private async createFileFromTemplate(project: ISqlProject, itemType: templates.ProjectScriptType, relativePath: string, expansionMacros: Record<string, string>): Promise<string> {
+	private async addFileToProjectFromTemplate(project: ISqlProject, itemType: templates.ProjectScriptType, relativePath: string, expansionMacros: Record<string, string>): Promise<string> {
 		const newFileText = templates.macroExpansion(itemType.templateScript, expansionMacros);
 		const absolutePath = path.join(project.projectFolderPath, relativePath)
 		await utils.ensureFileExists(absolutePath, newFileText);
@@ -717,7 +717,6 @@ export class ProjectsController {
 			return; // user cancelled
 		}
 
-		const newFileText = templates.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName });
 		const relativeFilePath = path.join(relativePath, itemObjectName + constants.sqlFileExtension);
 
 		const telemetryProps: Record<string, string> = { itemType: itemType.type };
@@ -730,16 +729,14 @@ export class ProjectsController {
 		}
 
 		try {
-			const absolutePath = await this.createFileFromTemplate(project, itemType, relativeFilePath, { 'OBJECT_NAME': itemObjectName });
-
-			const newEntry = await project.addScriptItem(relativeFilePath, newFileText, itemType.type);
+			const absolutePath = await this.addFileToProjectFromTemplate(project, itemType, relativeFilePath, { 'OBJECT_NAME': itemObjectName });
 
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addItemFromTree)
 				.withAdditionalProperties(telemetryProps)
 				.withAdditionalMeasurements(telemetryMeasurements)
 				.send();
 
-			await vscode.commands.executeCommand(constants.vscodeOpenCommand, newEntry.fsUri);
+			await vscode.commands.executeCommand(constants.vscodeOpenCommand, absolutePath);
 			treeDataProvider?.notifyTreeDataChanged();
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
@@ -784,7 +781,28 @@ export class ProjectsController {
 
 		if (fileEntry) {
 			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.excludeFromProject);
-			await project.exclude(fileEntry);
+
+			switch (node.type) {
+				case constants.DatabaseProjectItemType.sqlObjectScript:
+					await project.excludeSqlObjectScript(fileEntry.relativePath);
+					break;
+				case constants.DatabaseProjectItemType.folder:
+					// TODO: not yet supported in DacFx
+					//await project.excludeFolder(fileEntry.relativePath);
+					void vscode.window.showErrorMessage('Excluding folders is not yet supported');
+					break;
+				case constants.DatabaseProjectItemType.preDeploymentScript:
+					await project.excludePreDeploymentScript(fileEntry.relativePath);
+					break;
+				case constants.DatabaseProjectItemType.postDeploymentScript:
+					await project.excludePostDeploymentScript(fileEntry.relativePath);
+					break;
+				case constants.DatabaseProjectItemType.noneFile:
+					await project.excludeNoneItem(fileEntry.relativePath);
+					break;
+				default:
+					throw new Error(`Unhandled item type during exclude: '${node.type}'`);
+			}
 		} else {
 			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.excludeFromProject);
 			void vscode.window.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, node.relativeProjectUri.path));
@@ -814,34 +832,42 @@ export class ProjectsController {
 			return;
 		}
 
-		let success = false;
+		try {
+			if (node instanceof DatabaseReferenceTreeItem) {
+				const databaseReference = this.getDatabaseReference(project, node);
 
-		if (node instanceof DatabaseReferenceTreeItem) {
-			const databaseReference = this.getDatabaseReference(project, node);
-
-			if (databaseReference) {
-				await project.deleteDatabaseReference(databaseReference);
-				success = true;
+				if (databaseReference) {
+					await project.deleteDatabaseReference(databaseReference);
+				}
+			} else if (node instanceof SqlCmdVariableTreeItem) {
+				await project.deleteSqlCmdVariable(node.friendlyName);
+			} else if (node instanceof FileNode || node instanceof FolderNode) {
+				switch (node.type) {
+					case constants.DatabaseProjectItemType.sqlObjectScript:
+						await project.deleteSqlObjectScript(node.relativeProjectUri.fsPath);
+						break;
+					case constants.DatabaseProjectItemType.folder:
+						await project.deleteFolder(node.relativeProjectUri.fsPath);
+						break;
+					case constants.DatabaseProjectItemType.preDeploymentScript:
+						await project.deletePreDeploymentScript(node.relativeProjectUri.fsPath);
+						break;
+					case constants.DatabaseProjectItemType.postDeploymentScript:
+						await project.deletePostDeploymentScript(node.relativeProjectUri.fsPath);
+						break;
+					case constants.DatabaseProjectItemType.noneFile:
+						await project.deleteNoneItem(node.relativeProjectUri.fsPath);
+						break;
+					default:
+						throw new Error(`Unhandled item type during exclude: '${node.type}'`);
+				}
 			}
-		} else if (node instanceof SqlCmdVariableTreeItem) {
-			const result = await project.deleteSqlCmdVariable(node.friendlyName);
-			success = result.success;
-		} else if (node instanceof FileNode || FolderNode) {
-			const fileEntry = this.getFileProjectEntry(project, node);
-
-			if (fileEntry) {
-				await project.deleteFileFolder(fileEntry);
-				success = true;
-			}
-		}
-
-		if (success) {
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.deleteObjectFromProject)
 				.withAdditionalProperties({ objectType: node.constructor.name })
 				.send();
 
 			this.refreshProjectsTree(context);
-		} else {
+		} catch {
 			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.deleteObjectFromProject)
 				.withAdditionalProperties({ objectType: node.constructor.name })
 				.send();
