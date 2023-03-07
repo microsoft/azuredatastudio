@@ -1237,6 +1237,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			if (id && targetGroupId) {
 				source.groupId = targetGroupId;
 			}
+			this.changeConnectionUri(Utils.generateUri(source), id);
 		});
 	}
 
