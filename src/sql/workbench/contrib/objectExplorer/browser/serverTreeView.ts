@@ -225,9 +225,10 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			const expandGroups = this._configurationService.getValue<{ autoExpand: boolean }>(SERVER_GROUP_CONFIG).autoExpand;
 			if (expandGroups) {
 				if (this._tree instanceof AsyncServerTree) {
-					await Promise.all(ConnectionProfileGroup.getSubgroups(root).map(subgroup => {
-						return this._tree!.expand(subgroup);
-					}));
+					const groups = ConnectionProfileGroup.getSubgroups(root);
+					for (const group of groups) {
+						await this._tree.expand(group);
+					}
 				} else {
 					await this._tree!.expandAll(ConnectionProfileGroup.getSubgroups(root));
 				}
@@ -380,7 +381,9 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 
 	public async refreshElement(element: ServerTreeElement): Promise<void> {
 		if (this._tree instanceof AsyncServerTree) {
-			return this._tree.updateChildren(element);
+			if (this._tree.hasNode(element)) {
+				return this._tree.updateChildren(element);
+			}
 		} else {
 			return this._tree!.refresh(element);
 		}
