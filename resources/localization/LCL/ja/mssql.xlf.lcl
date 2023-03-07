@@ -1752,6 +1752,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.enableSqlAuthenticationProvider" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enables use of the Sql Authentication Provider for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens. This option is only supported for 'MSAL' Azure Authentication Library. Azure Data Studio is required to be relaunched when the value is changed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ユーザーが 'AzureMFA' 認証を選択したときに、'Active Directory Interactive' 認証モードで Sql 認証プロバイダーを使用できるようにします。これにより、アクセス トークンをフェッチするときにサーバー側のリソース エンドポイントの統合が有効になります。このオプションは、'MSAL' Azure 認証ライブラリでのみサポートされています。Azure Data Studio は、値が変更されたときに再起動する必要があります。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/mssql/package.mssql.enabled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enabled]]></Val>
@@ -2033,9 +2042,21 @@
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.parallelMessageProcessing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[[Experimental]5D; Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.]]></Val>
+          <Val><![CDATA[[Experimental]5D; Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[[試験段階]5D; SQL Tools Service への要求を並列で処理する必要があるかどうか。これは、すべての要求を並行して処理するときに発生する可能性がある問題を検出するために導入されています。既定値は false です。値が変更された場合は、ADS の再起動が必要です。]]></Val>
+            <Val><![CDATA[[試験段階]5D; SQL Tools Service への要求を並列で処理する必要があるかどうか。これは、すべての要求を並行して処理するときに発生する可能性がある問題を検出するために導入されています。既定値は false です。Azure Data Studio は、値が変更されたときに再起動する必要があります。]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[[Experimental]5D; Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.piiLogging" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[[Optional]5D; Should Personally Identifiable Information (PII) be logged in the log file.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[[オプション]5D;個人を特定できる情報 (PII) をログ ファイルに記録する必要があります。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
