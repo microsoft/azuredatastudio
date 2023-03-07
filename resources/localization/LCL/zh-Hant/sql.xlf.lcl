@@ -1652,6 +1652,9 @@
         <Item ItemId=";(...) tered" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Provider with id {0} was not registered after 30 seconds.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[識別碼為 {0} 的提供者未在 30 秒後登錄。]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1661,6 +1664,9 @@
         <Item ItemId=";(...) lerRegistered" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Execution plan provider which supports file format '{0}' was not registered after 30 seconds.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[支援檔案格式 '{0}' 的執行計畫提供者未在 30 秒後登錄。]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
