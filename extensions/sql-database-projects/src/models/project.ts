@@ -22,7 +22,7 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabaseReferenceProjectEntry } from './projectEntry';
 import { ResultStatus } from 'azdata';
 import { BaseProjectTreeItem } from './tree/baseTreeItem';
-import { PostDeployNode, PreDeployNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
+import { NoneNode, PostDeployNode, PreDeployNode, PublishProfileNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
 import { ProjectType, SystemDatabase } from 'mssql';
 
 /**
@@ -1502,10 +1502,9 @@ export class Project implements ISqlProject {
 			result = await this.sqlProjService.movePreDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
 		} else if (node instanceof PostDeployNode) {
 			result = await this.sqlProjService.movePostDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
-		}
-		// TODO add support for renaming none scripts after those are added in STS
-		// TODO add support for renaming publish profiles when support is added in DacFx
-		else {
+		} else if (node instanceof NoneNode || node instanceof PublishProfileNode) {
+			result = await this.sqlProjService.moveNoneItem(this.projectFilePath, destinationRelativePath, originalRelativePath);
+		} else {
 			result = { success: false, errorMessage: constants.unhandledMoveNode }
 		}
 
