@@ -17,11 +17,10 @@ import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { DacpacReferenceProjectEntry, FileProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabaseReferenceProjectEntry } from './projectEntry';
-import { GetFoldersResult, GetScriptsResult, SystemDatabase } from 'mssql';
+import { ProjectType, GetFoldersResult, GetScriptsResult, SystemDatabase } from 'mssql';
 import { ResultStatus } from 'azdata';
 import { BaseProjectTreeItem } from './tree/baseTreeItem';
-import { PostDeployNode, PreDeployNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
-import { ProjectType } from 'mssql';
+import { NoneNode, PostDeployNode, PreDeployNode, PublishProfileNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
 
 /**
  * Represents the configuration based on the Configuration property in the sqlproj
@@ -373,7 +372,7 @@ export class Project implements ISqlProject {
 			this._databaseReferences.push(new SystemDatabaseReferenceProjectEntry(
 				Uri.file(''),
 				Uri.file(''), // TODO: remove these after add and delete are swapped - DacFx handles adding and removing system dacpacs, so we don't need to keep track of the paths here
-				systemDbReference.systemDb === mssql.SystemDatabase.Master ? constants.master : constants.msdb,
+				systemDbReference.systemDb === SystemDatabase.Master ? constants.master : constants.msdb,
 				systemDbReference.databaseVariableLiteralName,
 				systemDbReference.suppressMissingDependencies));
 		}
@@ -679,7 +678,7 @@ export class Project implements ISqlProject {
 			throw new Error(constants.databaseReferenceAlreadyExists);
 		}
 
-		const systemDb = <unknown>settings.systemDb as mssql.SystemDatabase;
+		const systemDb = <unknown>settings.systemDb as SystemDatabase;
 		const result = await this.sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, settings.databaseName);
 
 		if (!result.success && result.errorMessage) {
@@ -938,10 +937,9 @@ export class Project implements ISqlProject {
 			result = await this.sqlProjService.movePreDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
 		} else if (node instanceof PostDeployNode) {
 			result = await this.sqlProjService.movePostDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
-		}
-		// TODO add support for renaming none scripts after those are added in STS
-		// TODO add support for renaming publish profiles when support is added in DacFx
-		else {
+		} else if (node instanceof NoneNode || node instanceof PublishProfileNode) {
+			result = await this.sqlProjService.moveNoneItem(this.projectFilePath, destinationRelativePath, originalRelativePath);
+		} else {
 			result = { success: false, errorMessage: constants.unhandledMoveNode }
 		}
 
