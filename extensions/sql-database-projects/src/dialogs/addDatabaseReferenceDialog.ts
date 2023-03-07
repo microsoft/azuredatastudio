@@ -15,7 +15,7 @@ import { IconPathHelper } from '../common/iconHelper';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { Deferred } from '../common/promise';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { SystemDatabase } from '../models/projectEntry';
+import { SystemDatabase } from 'mssql';
 
 export enum ReferenceType {
 	project,
@@ -636,7 +636,7 @@ export function getSystemDbOptions(project: Project): string[] {
 }
 
 export function getSystemDatabase(name: string): SystemDatabase {
-	return name === constants.master ? SystemDatabase.master : SystemDatabase.msdb;
+	return name === constants.master ? SystemDatabase.Master : SystemDatabase.Msdb;
 }
 
 export async function promptDacpacLocation(): Promise<vscode.Uri[] | undefined> {
