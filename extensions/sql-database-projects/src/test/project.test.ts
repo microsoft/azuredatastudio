@@ -1781,7 +1781,7 @@ describe('Project: properties', function (): void {
 	});
 });
 
-describe.only('Project: round trip updates', function (): void {
+describe('Project: round trip updates', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
 	});
