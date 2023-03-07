@@ -634,12 +634,6 @@ export class Project implements ISqlProject {
 			return;
 		}
 
-		// TODO: is this check below still relevant?
-		// if (this._importedTargets.includes(constants.NetCoreTargets) && !this.containsSSDTOnlySystemDatabaseReferences() // old style project check
-		// 	|| this.sqlProjStyle === ProjectType.SdkStyle) { // new style project check
-		// 	return;
-		// }
-
 		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectForRoundtrip);
 
 		const result = await this.sqlProjService.updateProjectForCrossPlatform(this.projectFilePath);
@@ -1708,7 +1702,7 @@ export class Project implements ISqlProject {
 
 	private throwIfFailed(result: ResultStatus): void {
 		if (!result.success) {
-			throw new Error('Error: ' + result.errorMessage);
+			throw new Error(constants.errorPrefix(result.errorMessage));
 		}
 	}
 
