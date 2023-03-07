@@ -759,36 +759,20 @@ export class Project implements ISqlProject {
 	 * @param compatLevel compat level of project
 	 */
 	public async changeTargetPlatform(compatLevel: string): Promise<void> {
-		if (this.getProjectTargetVersion() !== compatLevel) {
-			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.changePlatformType)
-				.withAdditionalProperties({
-					from: this.getProjectTargetVersion(),
-					to: compatLevel
-				})
-				.send();
-
-			const newDSP = `${constants.MicrosoftDatatoolsSchemaSqlSql}${compatLevel}${constants.databaseSchemaProvider}`;
-			(this.projFileXmlDoc!.getElementsByTagName(constants.DSP)[0].childNodes[0] as Text).data = newDSP;
-			this.projFileXmlDoc!.getElementsByTagName(constants.DSP)[0].childNodes[0].nodeValue = newDSP;
-
-			// update any system db references
-			const systemDbReferences = this._databaseReferences.filter(r => r instanceof SystemDatabaseReferenceProjectEntry) as SystemDatabaseReferenceProjectEntry[];
-			if (systemDbReferences.length > 0) {
-				for (let r of systemDbReferences) {
-					// remove old entry in sqlproj
-					this.removeDatabaseReferenceFromProjFile(r);
-
-					// update uris to point to the correct dacpacs for the target platform
-					r.fsUri = this.getSystemDacpacUri(`${r.databaseName}.dacpac`);
-					r.ssdtUri = this.getSystemDacpacSsdtUri(`${r.databaseName}.dacpac`);
-
-					// add updated system db reference to sqlproj
-					// await this.addDatabaseReferenceToProjFile(r); // commenting out since addDatabaseReferenceToProjFile() was removed and this will get swapped over soon and this'll be removed
-				}
-			}
-
-			await this.serializeToProjFile(this.projFileXmlDoc!);
+		if (this.getProjectTargetVersion() === compatLevel) {
+			return;
 		}
+
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.changePlatformType)
+			.withAdditionalProperties({
+				from: this.getProjectTargetVersion(),
+				to: compatLevel
+			})
+			.send();
+
+		this._databaseSchemaProvider = `${constants.MicrosoftDatatoolsSchemaSqlSql}${compatLevel}${constants.databaseSchemaProvider}`;
+		const result = await this.sqlProjService.setDatabaseSchemaProvider(this.projectFilePath, this._databaseSchemaProvider);
+		this.throwIfFailed(result);
 	}
 
 	/**
