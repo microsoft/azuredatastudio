@@ -555,7 +555,7 @@ export class Project implements ISqlProject {
 			this._databaseReferences.push(new SystemDatabaseReferenceProjectEntry(
 				Uri.file(''),
 				Uri.file(''), // TODO: remove these after add and delete are swapped - DacFx handles adding and removing system dacpacs, so we don't need to keep track of the paths here
-				systemDbReference.systemDb === mssql.SystemDatabase.Master ? constants.master : constants.msdb,
+				systemDbReference.systemDb === SystemDatabase.Master ? constants.master : constants.msdb,
 				systemDbReference.databaseVariableLiteralName,
 				systemDbReference.suppressMissingDependencies));
 		}
@@ -784,11 +784,11 @@ export class Project implements ISqlProject {
 			throw new Error(constants.databaseReferenceAlreadyExists);
 		}
 
-		const systemDb = <unknown>settings.systemDb as mssql.SystemDatabase;
+		const systemDb = <unknown>settings.systemDb as SystemDatabase;
 		const result = await this.sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, settings.databaseName);
 
 		if (!result.success && result.errorMessage) {
-			const systemDbName = settings.systemDb === mssql.SystemDatabase.Master ? constants.master : constants.msdb;
+			const systemDbName = settings.systemDb === SystemDatabase.Master ? constants.master : constants.msdb;
 			throw new Error(constants.errorAddingDatabaseReference(systemDbName, result.errorMessage));
 		}
 	}
