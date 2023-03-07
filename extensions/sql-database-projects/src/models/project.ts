@@ -20,8 +20,10 @@ import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase, SystemDatabaseReferenceProjectEntry } from './projectEntry';
+import { ResultStatus } from 'azdata';
 import { BaseProjectTreeItem } from './tree/baseTreeItem';
 import { PostDeployNode, PreDeployNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
+import { ProjectType } from 'mssql';
 
 /**
  * Represents the configuration based on the Configuration property in the sqlproj
@@ -49,7 +51,8 @@ export class Project implements ISqlProject {
 	private _preDeployScripts: FileProjectEntry[] = [];
 	private _postDeployScripts: FileProjectEntry[] = [];
 	private _noneDeployScripts: FileProjectEntry[] = [];
-	private _isSdkStyleProject: boolean = false; // https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview
+	private _sqlProjStyle: ProjectType = ProjectType.SdkStyle;
+	private _isCrossPlatformCompatible: boolean = false;
 	private _outputPath: string = '';
 	private _configuration: Configuration = Configuration.Debug;
 	private _databaseSource: string = '';
@@ -109,8 +112,12 @@ export class Project implements ISqlProject {
 		return this._noneDeployScripts;
 	}
 
-	public get isSdkStyleProject(): boolean {
-		return this._isSdkStyleProject;
+	public get sqlProjStyle(): ProjectType {
+		return this._sqlProjStyle;
+	}
+
+	public get isCrossPlatformCompatible(): boolean {
+		return this._isCrossPlatformCompatible;
 	}
 
 	public get outputPath(): string {
@@ -135,13 +142,19 @@ export class Project implements ISqlProject {
 	/**
 	 * Open and load a .sqlproj file
 	 */
-	public static async openProject(projectFilePath: string): Promise<Project> {
+	public static async openProject(projectFilePath: string, promptIfNeedsUpdating: boolean = false): Promise<Project> {
 		const proj = new Project(projectFilePath);
 
 		proj.sqlProjService = await utils.getSqlProjectsService();
-
 		await proj.readProjFile();
-		await proj.updateProjectForRoundTrip();
+
+		if (!proj.isCrossPlatformCompatible && promptIfNeedsUpdating) {
+			const result = await window.showWarningMessage(constants.updateProjectForRoundTrip(proj.projectFileName), constants.yesString, constants.noString);
+
+			if (result === constants.yesString) {
+				await proj.updateProjectForRoundTrip();
+			}
+		}
 
 		return proj;
 	}
@@ -158,9 +171,6 @@ export class Project implements ISqlProject {
 		await this.readProjectProperties();
 		await this.readSqlCmdVariables();
 		await this.readDatabaseReferences();
-
-		// check if this is an sdk style project https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview
-		this._isSdkStyleProject = this.CheckForSdkStyleProject();
 
 		// get pre and post deploy scripts specified in the sqlproj
 		this._preDeployScripts = this.readPreDeployScripts();
@@ -197,6 +207,16 @@ export class Project implements ISqlProject {
 		this._databaseSource = props.databaseSource ?? '';
 		this._defaultCollation = props.defaultCollation;
 		this._databaseSchemaProvider = 'Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider'; // TODO: replace this stub once latest Tools Service is brought over
+		this._sqlProjStyle = props.projectStyle;
+
+		await this.readCrossPlatformCompatibility();
+	}
+
+	private async readCrossPlatformCompatibility(): Promise<void> {
+		const result = await this.sqlProjService.getCrossPlatformCompatibility(this.projectFilePath)
+		this.throwIfFailed(result);
+
+		this._isCrossPlatformCompatible = result.isCrossPlatformCompatible;
 	}
 
 	private async readSqlCmdVariables(): Promise<void> {
@@ -222,7 +242,7 @@ export class Project implements ISqlProject {
 		const entriesWithType: { relativePath: string, typeAttribute: string }[] = [];
 
 		// default glob include pattern for sdk style projects
-		if (this._isSdkStyleProject) {
+		if (this.sqlProjStyle === ProjectType.SdkStyle) {
 			try {
 				const globFiles = await utils.getSqlFilesInFolder(this.projectFolderPath, true);
 				globFiles.forEach(f => {
@@ -249,7 +269,7 @@ export class Project implements ISqlProject {
 						const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(includeRelativePath));
 
 						// sdk style projects can handle other globbing patterns like <Build Include="folder1\*.sql" /> and <Build Include="Production*.sql" />
-						if (this._isSdkStyleProject && !(await utils.exists(fullPath))) {
+						if (this.sqlProjStyle === ProjectType.SdkStyle && !(await utils.exists(fullPath))) {
 							// add files from the glob pattern
 							const globFiles = await utils.globWithPattern(fullPath);
 							globFiles.forEach(gf => {
@@ -269,7 +289,7 @@ export class Project implements ISqlProject {
 
 					// <Build Remove....>
 					// remove files specified in the sqlproj to remove if this is an sdk style project
-					if (this._isSdkStyleProject) {
+					if (this.sqlProjStyle === ProjectType.SdkStyle) {
 						const removeRelativePath = buildElements[b].getAttribute(constants.Remove)!;
 
 						if (removeRelativePath) {
@@ -289,7 +309,7 @@ export class Project implements ISqlProject {
 			}
 		}
 
-		if (this.isSdkStyleProject) {
+		if (this.sqlProjStyle === ProjectType.SdkStyle) {
 			// remove any pre/post/none deploy scripts that were specified in the sqlproj so they aren't counted twice
 			this.preDeployScripts.forEach(f => filesSet.delete(f.relativePath));
 			this.postDeployScripts.forEach(f => filesSet.delete(f.relativePath));
@@ -325,7 +345,7 @@ export class Project implements ISqlProject {
 		sqlprojFolders.forEach(f => foldersSet.add(f));
 
 		// glob style getting folders for sdk style projects
-		if (this._isSdkStyleProject) {
+		if (this.sqlProjStyle === ProjectType.SdkStyle) {
 			this.files.forEach(file => {
 				// if file is in the project's folder, add the folders from the project file to this file to the list of folders. This is so that only non-empty folders in the project folder will be added by default.
 				// Empty folders won't be shown unless specified in the sqlproj (same as how it's handled for csproj in VS)
@@ -572,102 +592,17 @@ export class Project implements ISqlProject {
 		this._configuration = Configuration.Debug;
 	}
 
-	/**
-	 *  Checks for the 3 possible ways a project can reference the sql project sdk
-	 *  https://docs.microsoft.com/en-us/visualstudio/msbuild/how-to-use-project-sdk?view=vs-2019
-	 *  @returns true if the project is an sdk style project, false if it isn't
-	 */
-	public CheckForSdkStyleProject(): boolean {
-		// type 1: Sdk node like <Sdk Name="Microsoft.Build.Sql" Version="1.0.0" />
-		const sdkNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Sdk);
-		if (sdkNodes.length > 0) {
-			return sdkNodes[0].getAttribute(constants.Name) === constants.sqlProjectSdk;
-		}
-
-		// type 2: Project node has Sdk attribute like <Project Sdk="Microsoft.Build.Sql/1.0.0">
-		const sdkAttribute: string = this.projFileXmlDoc!.documentElement.getAttribute(constants.Sdk)!;
-		if (sdkAttribute) {
-			return sdkAttribute.includes(constants.sqlProjectSdk);
-		}
-
-		// type 3: Import node with Sdk attribute like <Import Project="Sdk.targets" Sdk="Microsoft.Build.Sql" Version="1.0.0" />
-		const importNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import);
-		for (let i = 0; i < importNodes.length; i++) {
-			if (importNodes[i].getAttribute(constants.Sdk) === constants.sqlProjectSdk) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
 	public async updateProjectForRoundTrip(): Promise<void> {
-		if (this._importedTargets.includes(constants.NetCoreTargets) && !this.containsSSDTOnlySystemDatabaseReferences() // old style project check
-			|| this.isSdkStyleProject) { // new style project check
+		if (this.isCrossPlatformCompatible) {
 			return;
 		}
 
 		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectForRoundtrip);
 
-		if (!this._importedTargets.includes(constants.NetCoreTargets)) {
-			const result = await window.showWarningMessage(constants.updateProjectForRoundTrip(this.projectFileName), constants.yesString, constants.noString);
-			if (result === constants.yesString) {
-				await fs.copyFile(this._projectFilePath, this._projectFilePath + '_backup');
-				await this.updateImportToSupportRoundTrip();
-				await this.updatePackageReferenceInProjFile();
-				await this.updateBeforeBuildTargetInProjFile();
-				await this.updateSystemDatabaseReferencesInProjFile();
-			}
-		} else if (this.containsSSDTOnlySystemDatabaseReferences()) {
-			const result = await window.showWarningMessage(constants.updateProjectDatabaseReferencesForRoundTrip(this.projectFileName), constants.yesString, constants.noString);
-			if (result === constants.yesString) {
-				await fs.copyFile(this._projectFilePath, this._projectFilePath + '_backup');
-				await this.updateSystemDatabaseReferencesInProjFile();
-			}
-		}
-	}
+		const result = await this.sqlProjService.updateProjectForCrossPlatform(this.projectFilePath);
+		this.throwIfFailed(result);
 
-	private async updateImportToSupportRoundTrip(): Promise<void> {
-		// update an SSDT project to include Net core target information
-		for (let i = 0; i < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import).length; i++) {
-			const importTarget = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import)[i];
-
-			let condition = importTarget.getAttribute(constants.Condition);
-			let projectAttributeVal = importTarget.getAttribute(constants.Project);
-
-			if (condition === constants.SqlDbPresentCondition && projectAttributeVal === constants.SqlDbTargets) {
-				await this.updateImportedTargetsToProjFile(constants.RoundTripSqlDbPresentCondition, projectAttributeVal, importTarget);
-			}
-			if (condition === constants.SqlDbNotPresentCondition && projectAttributeVal === constants.MsBuildtargets) {
-				await this.updateImportedTargetsToProjFile(constants.RoundTripSqlDbNotPresentCondition, projectAttributeVal, importTarget);
-			}
-		}
-
-		await this.updateImportedTargetsToProjFile(constants.NetCoreCondition, constants.NetCoreTargets, undefined);
-	}
-
-	private async updateBeforeBuildTargetInProjFile(): Promise<void> {
-		// Search if clean target already present, update it
-		for (let i = 0; i < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Target).length; i++) {
-			const beforeBuildNode = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Target)[i];
-			const name = beforeBuildNode.getAttribute(constants.Name);
-			if (name === constants.BeforeBuildTarget) {
-				return await this.createCleanFileNode(beforeBuildNode);
-			}
-		}
-
-		// If clean target not found, create new
-		const beforeBuildNode = this.projFileXmlDoc!.createElement(constants.Target);
-		beforeBuildNode.setAttribute(constants.Name, constants.BeforeBuildTarget);
-		this.projFileXmlDoc!.documentElement.appendChild(beforeBuildNode);
-		await this.createCleanFileNode(beforeBuildNode);
-	}
-
-	private async createCleanFileNode(parentNode: Element): Promise<void> {
-		const deleteFileNode = this.projFileXmlDoc!.createElement(constants.Delete);
-		deleteFileNode.setAttribute(constants.Files, constants.ProjJsonToClean);
-		parentNode.appendChild(deleteFileNode);
-		await this.serializeToProjFile(this.projFileXmlDoc!);
+		await this.readCrossPlatformCompatibility();
 	}
 
 	/**
@@ -848,7 +783,7 @@ export class Project implements ISqlProject {
 					r.ssdtUri = this.getSystemDacpacSsdtUri(`${r.databaseName}.dacpac`);
 
 					// add updated system db reference to sqlproj
-					await this.addDatabaseReferenceToProjFile(r);
+					// await this.addDatabaseReferenceToProjFile(r); // commenting out since addDatabaseReferenceToProjFile() was removed and this will get swapped over soon and this'll be removed
 				}
 			}
 
@@ -860,30 +795,23 @@ export class Project implements ISqlProject {
 	 * Adds reference to the appropriate system database dacpac to the project
 	 */
 	public async addSystemDatabaseReference(settings: ISystemDatabaseReferenceSettings): Promise<void> {
-		let uri: Uri;
-		let ssdtUri: Uri;
-
-		if (settings.systemDb === SystemDatabase.master) {
-			uri = this.getSystemDacpacUri(constants.masterDacpac);
-			ssdtUri = this.getSystemDacpacSsdtUri(constants.masterDacpac);
-		} else {
-			uri = this.getSystemDacpacUri(constants.msdbDacpac);
-			ssdtUri = this.getSystemDacpacSsdtUri(constants.msdbDacpac);
-		}
-
-		const systemDatabaseReferenceProjectEntry = new SystemDatabaseReferenceProjectEntry(uri, ssdtUri, <string>settings.databaseName, settings.suppressMissingDependenciesErrors);
-
 		// check if reference to this database already exists
-		if (this.databaseReferenceExists(systemDatabaseReferenceProjectEntry)) {
+		if (this.databaseReferences.find(r => r.databaseName === settings.databaseName)) {
 			throw new Error(constants.databaseReferenceAlreadyExists);
 		}
 
-		await this.addToProjFile(systemDatabaseReferenceProjectEntry);
+		const systemDb = <unknown>settings.systemDb as mssql.SystemDatabase;
+		const result = await this.sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, settings.databaseName);
+
+		if (!result.success && result.errorMessage) {
+			const systemDbName = settings.systemDb === SystemDatabase.master ? constants.master : constants.msdb;
+			throw new Error(constants.errorAddingDatabaseReference(systemDbName, result.errorMessage));
+		}
 	}
 
 	public getSystemDacpacUri(dacpac: string): Uri {
 		const versionFolder = this.getSystemDacpacFolderName();
-		const systemDacpacLocation = this.isSdkStyleProject ? '$(SystemDacpacsLocation)' : '$(NETCoreTargetsPath)';
+		const systemDacpacLocation = this.sqlProjStyle === ProjectType.SdkStyle ? '$(SystemDacpacsLocation)' : '$(NETCoreTargetsPath)';
 		return Uri.parse(path.join(systemDacpacLocation, 'SystemDacpacs', versionFolder, dacpac));
 	}
 
@@ -1137,7 +1065,7 @@ export class Project implements ISqlProject {
 			itemGroup = this.findOrCreateItemGroup(xmlTag);
 		}
 		else {
-			if (this.isSdkStyleProject) {
+			if (this.sqlProjStyle === ProjectType.SdkStyle) {
 				// if there's a folder entry for the folder containing this file, remove it from the sqlproj because the folder will now be
 				// included by the glob that includes this file (same as how csproj does it)
 				const folders = await this.foldersListedInSqlproj();
@@ -1192,7 +1120,7 @@ export class Project implements ISqlProject {
 
 			if (deleted) {
 				// still might need to add a <Build Remove="..."> node if this is an sdk style project
-				if (this.isSdkStyleProject) {
+				if (this.sqlProjStyle === ProjectType.SdkStyle) {
 					break;
 				} else {
 					return;
@@ -1202,7 +1130,7 @@ export class Project implements ISqlProject {
 
 		// if it's an sdk style project, we'll need to add a <Build Remove="..."> entry to remove this file if it's
 		// still included by a glob
-		if (this.isSdkStyleProject) {
+		if (this.sqlProjStyle === ProjectType.SdkStyle) {
 			// write any changes from removing an include node and get the current files included in the project
 			if (deleted) {
 				await this.serializeToProjFile(this.projFileXmlDoc!);
@@ -1273,7 +1201,7 @@ export class Project implements ISqlProject {
 	}
 
 	private async addFolderToProjFile(folderPath: string): Promise<void> {
-		if (this.isSdkStyleProject) {
+		if (this.sqlProjStyle === ProjectType.SdkStyle) {
 			// if there's a folder entry for the folder containing this folder, remove it from the sqlproj because the folder will now be
 			// included by the glob that includes this folder (same as how csproj does it)
 			const folders = await this.foldersListedInSqlproj();
@@ -1299,7 +1227,7 @@ export class Project implements ISqlProject {
 		// TODO: consider removing this check when working on migration scenario. If a user converts to an SDK-style project and adding this
 		// exclude XML doesn't hurt for non-SDK-style projects, then it might be better to just it anyway so that they don't have to exclude the folder
 		// again when they convert to an SDK-style project
-		if (this.isSdkStyleProject) {
+		if (this.sqlProjStyle === ProjectType.SdkStyle) {
 			// update sqlproj if a node was deleted and load files and folders again
 			await this.writeToSqlProjAndUpdateFilesFolders();
 
@@ -1370,147 +1298,9 @@ export class Project implements ISqlProject {
 		}
 	}
 
-	private async addSystemDatabaseReferenceToProjFile(entry: SystemDatabaseReferenceProjectEntry): Promise<void> {
-		const systemDbReferenceNode = this.projFileXmlDoc!.createElement(constants.ArtifactReference);
-
-		// if it's a system database reference, we'll add an additional node with the SSDT location of the dacpac later
-		systemDbReferenceNode.setAttribute(constants.Condition, constants.NetCoreCondition);
-		systemDbReferenceNode.setAttribute(constants.Include, entry.pathForSqlProj());
-		await this.addDatabaseReferenceChildren(systemDbReferenceNode, entry);
-		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(systemDbReferenceNode);
-
-		// add a reference to the system dacpac in SSDT if it's a system db
-		const ssdtReferenceNode = this.projFileXmlDoc!.createElement(constants.ArtifactReference);
-		ssdtReferenceNode.setAttribute(constants.Condition, constants.NotNetCoreCondition);
-		ssdtReferenceNode.setAttribute(constants.Include, entry.ssdtPathForSqlProj());
-		await this.addDatabaseReferenceChildren(ssdtReferenceNode, entry);
-		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(ssdtReferenceNode);
-	}
-
-	private async addDatabaseReferenceToProjFile(entry: IDatabaseReferenceProjectEntry): Promise<void> {
-		if (entry instanceof SystemDatabaseReferenceProjectEntry) {
-			await this.addSystemDatabaseReferenceToProjFile(<SystemDatabaseReferenceProjectEntry>entry);
-		}
-
-		if (!this.databaseReferenceExists(entry)) {
-			this._databaseReferences.push(entry);
-		}
-	}
-
 	private databaseReferenceExists(entry: IDatabaseReferenceProjectEntry): boolean {
 		const found = this._databaseReferences.find(reference => reference.pathForSqlProj() === entry.pathForSqlProj()) !== undefined;
 		return found;
-	}
-
-	private async addDatabaseReferenceChildren(referenceNode: Element, entry: IDatabaseReferenceProjectEntry): Promise<void> {
-		const suppressMissingDependenciesErrorNode = this.projFileXmlDoc!.createElement(constants.SuppressMissingDependenciesErrors);
-		const suppressMissingDependenciesErrorTextNode = this.projFileXmlDoc!.createTextNode(entry.suppressMissingDependenciesErrors ? constants.True : constants.False);
-		suppressMissingDependenciesErrorNode.appendChild(suppressMissingDependenciesErrorTextNode);
-		referenceNode.appendChild(suppressMissingDependenciesErrorNode);
-
-		if ((<DacpacReferenceProjectEntry>entry).databaseSqlCmdVariable) {
-			const databaseSqlCmdVariableElement = this.projFileXmlDoc!.createElement(constants.DatabaseSqlCmdVariable);
-			const databaseSqlCmdVariableTextNode = this.projFileXmlDoc!.createTextNode((<DacpacReferenceProjectEntry>entry).databaseSqlCmdVariable!);
-			databaseSqlCmdVariableElement.appendChild(databaseSqlCmdVariableTextNode);
-			referenceNode.appendChild(databaseSqlCmdVariableElement);
-
-			// add SQLCMD variable
-			await this.addSqlCmdVariable((<DacpacReferenceProjectEntry>entry).databaseSqlCmdVariable!, (<DacpacReferenceProjectEntry>entry).databaseVariableLiteralValue!);
-		} else if (entry.databaseVariableLiteralValue) {
-			const databaseVariableLiteralValueElement = this.projFileXmlDoc!.createElement(constants.DatabaseVariableLiteralValue);
-			const databaseTextNode = this.projFileXmlDoc!.createTextNode(entry.databaseVariableLiteralValue);
-			databaseVariableLiteralValueElement.appendChild(databaseTextNode);
-			referenceNode.appendChild(databaseVariableLiteralValueElement);
-		}
-
-		if ((<DacpacReferenceProjectEntry>entry).serverSqlCmdVariable) {
-			const serverSqlCmdVariableElement = this.projFileXmlDoc!.createElement(constants.ServerSqlCmdVariable);
-			const serverSqlCmdVariableTextNode = this.projFileXmlDoc!.createTextNode((<DacpacReferenceProjectEntry>entry).serverSqlCmdVariable!);
-			serverSqlCmdVariableElement.appendChild(serverSqlCmdVariableTextNode);
-			referenceNode.appendChild(serverSqlCmdVariableElement);
-
-			// add SQLCMD variable
-			await this.addSqlCmdVariable((<DacpacReferenceProjectEntry>entry).serverSqlCmdVariable!, (<DacpacReferenceProjectEntry>entry).serverName!);
-		}
-	}
-
-	public async addSqlCmdVariableToProjFile(entry: SqlCmdVariableProjectEntry): Promise<void> {
-		// Remove any entries with the same variable name. It'll be replaced with a new one
-		if (Object.keys(this._sqlCmdVariables).includes(entry.variableName)) {
-			await this.removeFromProjFile(entry);
-		}
-
-		const sqlCmdVariableNode = this.projFileXmlDoc!.createElement(constants.SqlCmdVariable);
-		sqlCmdVariableNode.setAttribute(constants.Include, entry.variableName);
-		this.addSqlCmdVariableChildren(sqlCmdVariableNode, entry);
-		this.findOrCreateItemGroup(constants.SqlCmdVariable).appendChild(sqlCmdVariableNode);
-
-		// add to the project's loaded sqlcmd variables
-		this._sqlCmdVariables[entry.variableName] = <string>entry.defaultValue;
-	}
-
-	private addSqlCmdVariableChildren(sqlCmdVariableNode: Element, entry: SqlCmdVariableProjectEntry): void {
-		// add default value
-		const defaultValueNode = this.projFileXmlDoc!.createElement(constants.DefaultValue);
-		const defaultValueText = this.projFileXmlDoc!.createTextNode(entry.defaultValue);
-		defaultValueNode.appendChild(defaultValueText);
-		sqlCmdVariableNode.appendChild(defaultValueNode);
-
-		// add value node which is in the format $(SqlCmdVar__x)
-		const valueNode = this.projFileXmlDoc!.createElement(constants.Value);
-		const valueText = this.projFileXmlDoc!.createTextNode(`$(SqlCmdVar__${this.getNextSqlCmdVariableCounter()})`);
-		valueNode.appendChild(valueText);
-		sqlCmdVariableNode.appendChild(valueNode);
-	}
-
-	/**
-	 * returns the next number that should be used for the new SqlCmd Variable. Old numbers don't get reused even if a SqlCmd Variable
-	 * gets removed from the project
-	 */
-	private getNextSqlCmdVariableCounter(): number {
-		const sqlCmdVariableNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.SqlCmdVariable);
-		let highestNumber = 0;
-
-		for (let i = 0; i < sqlCmdVariableNodes.length; i++) {
-			const value: string = sqlCmdVariableNodes[i].getElementsByTagName(constants.Value)[0].childNodes[0].nodeValue!;
-			const number = parseInt(value.substring(13).slice(0, -1)); // want the number x in $(SqlCmdVar__x)
-
-			// incremement the counter if there's already a variable with the same number or greater
-			if (number > highestNumber) {
-				highestNumber = number;
-			}
-		}
-
-		return highestNumber + 1;
-	}
-
-	private async updateImportedTargetsToProjFile(condition: string, projectAttributeVal: string, oldImportNode?: Element): Promise<Element> {
-		const importNode = this.projFileXmlDoc!.createElement(constants.Import);
-		importNode.setAttribute(constants.Condition, condition);
-		importNode.setAttribute(constants.Project, projectAttributeVal);
-
-		if (oldImportNode) {
-			this.projFileXmlDoc!.documentElement.replaceChild(importNode, oldImportNode);
-		}
-		else {
-			this.projFileXmlDoc!.documentElement.appendChild(importNode);
-			this._importedTargets.push(projectAttributeVal);	// Add new import target to the list
-		}
-
-		await this.serializeToProjFile(this.projFileXmlDoc!);
-		return importNode;
-	}
-
-	private async updatePackageReferenceInProjFile(): Promise<void> {
-		const packageRefNode = this.projFileXmlDoc!.createElement(constants.PackageReference);
-		packageRefNode.setAttribute(constants.Condition, constants.NetCoreCondition);
-		packageRefNode.setAttribute(constants.Include, constants.NETFrameworkAssembly);
-		packageRefNode.setAttribute(constants.Version, constants.VersionNumber);
-		packageRefNode.setAttribute(constants.PrivateAssets, constants.All);
-
-		this.findOrCreateItemGroup(constants.PackageReference).appendChild(packageRefNode);
-
-		await this.serializeToProjFile(this.projFileXmlDoc!);
 	}
 
 	public containsSSDTOnlySystemDatabaseReferences(): boolean {
@@ -1575,12 +1365,6 @@ export class Project implements ISqlProject {
 			case EntryType.Folder:
 				await this.addFolderToProjFile((<FileProjectEntry>entry).relativePath);
 				break;
-			case EntryType.DatabaseReference:
-				await this.addDatabaseReferenceToProjFile(<IDatabaseReferenceProjectEntry>entry);
-				break;
-			case EntryType.SqlCmdVariable:
-				await this.addSqlCmdVariableToProjFile(<SqlCmdVariableProjectEntry>entry);
-				break; // not required but adding so that we dont miss when we add new items
 		}
 
 		await this.serializeToProjFile(this.projFileXmlDoc!);
@@ -1688,7 +1472,7 @@ export class Project implements ISqlProject {
 
 		// for SDK style projects, only add this folder to the sqlproj if needed
 		// intermediate folders don't need to be added in the sqlproj
-		if (this.isSdkStyleProject) {
+		if (this.sqlProjStyle === ProjectType.SdkStyle) {
 			let folderEntry = this.files.find(f => utils.ensureTrailingSlash(f.relativePath.toUpperCase()) === utils.ensureTrailingSlash((relativeFolderPath.toUpperCase())));
 
 			if (!folderEntry) {
@@ -1728,6 +1512,12 @@ export class Project implements ISqlProject {
 		}
 
 		return folderEntry;
+	}
+
+	private throwIfFailed(result: ResultStatus): void {
+		if (!result.success) {
+			throw new Error(constants.errorPrefix(result.errorMessage));
+		}
 	}
 
 	/**
