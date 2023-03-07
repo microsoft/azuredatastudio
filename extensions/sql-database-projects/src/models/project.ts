@@ -759,17 +759,20 @@ export class Project implements ISqlProject {
 	 * @param compatLevel compat level of project
 	 */
 	public async changeTargetPlatform(compatLevel: string): Promise<void> {
-		if (this.getProjectTargetVersion() !== compatLevel) {
-			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.changePlatformType)
-				.withAdditionalProperties({
-					from: this.getProjectTargetVersion(),
-					to: compatLevel
-				})
-				.send();
-
-			this._databaseSchemaProvider = `${constants.MicrosoftDatatoolsSchemaSqlSql}${compatLevel}${constants.databaseSchemaProvider}`;
-			await this.sqlProjService.setDatabaseSchemaProvider(this.projectFilePath, this._databaseSchemaProvider);
+		if (this.getProjectTargetVersion() === compatLevel) {
+			return;
 		}
+
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.changePlatformType)
+			.withAdditionalProperties({
+				from: this.getProjectTargetVersion(),
+				to: compatLevel
+			})
+			.send();
+
+		this._databaseSchemaProvider = `${constants.MicrosoftDatatoolsSchemaSqlSql}${compatLevel}${constants.databaseSchemaProvider}`;
+		const result = await this.sqlProjService.setDatabaseSchemaProvider(this.projectFilePath, this._databaseSchemaProvider);
+		this.throwIfFailed(result);
 	}
 
 	/**
