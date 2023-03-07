@@ -19,7 +19,7 @@ import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabaseReferenceProjectEntry } from './projectEntry';
+import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabaseReferenceProjectEntry } from './projectEntry';
 import { ResultStatus } from 'azdata';
 import { BaseProjectTreeItem } from './tree/baseTreeItem';
 import { PostDeployNode, PreDeployNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
@@ -546,8 +546,6 @@ export class Project implements ISqlProject {
 
 		for (const systemDbReference of databaseReferencesResult.systemDatabaseReferences) {
 			this._databaseReferences.push(new SystemDatabaseReferenceProjectEntry(
-				Uri.file(''),
-				Uri.file(''), // TODO: remove these after add and delete are swapped - DacFx handles adding and removing system dacpacs, so we don't need to keep track of the paths here
 				systemDbReference.systemDb === SystemDatabase.Master ? constants.master : constants.msdb,
 				systemDbReference.databaseVariableLiteralName,
 				systemDbReference.suppressMissingDependencies));
@@ -720,7 +718,10 @@ export class Project implements ISqlProject {
 	}
 
 	public async deleteDatabaseReference(entry: IDatabaseReferenceProjectEntry): Promise<azdataType.ResultStatus> {
-		return this.sqlProjService.deleteDatabaseReference(this.projectFilePath, entry.databaseName);
+		const name = entry.pathForSqlProj();
+		const result = await this.sqlProjService.deleteDatabaseReference(this.projectFilePath, name);
+		this.throwIfFailed(result);
+		return result;
 	}
 
 	public async deleteSqlCmdVariable(variableName: string): Promise<azdataType.ResultStatus> {
@@ -1230,23 +1231,6 @@ export class Project implements ISqlProject {
 		this.files.push(...(await this.readFolders()));
 	}
 
-
-	private removeDatabaseReferenceFromProjFile(databaseReferenceEntry: IDatabaseReferenceProjectEntry): void {
-		const elementTag = databaseReferenceEntry instanceof SqlProjectReferenceProjectEntry ? constants.ProjectReference : constants.ArtifactReference;
-		const artifactReferenceNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(elementTag);
-		const deleted = this.removeNode(databaseReferenceEntry.pathForSqlProj(), artifactReferenceNodes);
-
-		// also delete SSDT reference if it's a system db reference
-		if (databaseReferenceEntry instanceof SystemDatabaseReferenceProjectEntry) {
-			const ssdtPath = databaseReferenceEntry.ssdtPathForSqlProj();
-			this.removeNode(ssdtPath, artifactReferenceNodes);
-		}
-
-		if (!deleted) {
-			throw new Error(constants.unableToFindDatabaseReference(databaseReferenceEntry.databaseName));
-		}
-	}
-
 	private databaseReferenceExists(entry: IDatabaseReferenceProjectEntry): boolean {
 		const found = this._databaseReferences.find(reference => reference.pathForSqlProj() === entry.pathForSqlProj()) !== undefined;
 		return found;
@@ -1337,9 +1321,6 @@ export class Project implements ISqlProject {
 			switch (entry.type) {
 				case EntryType.File:
 					await this.removeFileFromProjFile((<FileProjectEntry>entry).relativePath);
-					break;
-				case EntryType.DatabaseReference:
-					this.removeDatabaseReferenceFromProjFile(<IDatabaseReferenceProjectEntry>entry);
 					break;
 			}
 		}
