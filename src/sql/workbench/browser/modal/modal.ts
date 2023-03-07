@@ -754,6 +754,8 @@ export abstract class Modal extends Disposable implements IThemable {
 					box-shadow: 0px 3.2px 7.2px rgba(${shadowRgb.rgba.r}, ${shadowRgb.rgba.g}, ${shadowRgb.rgba.b}, 0.132),
 								0px 0.6px 1.8px rgba(${shadowRgb.rgba.r}, ${shadowRgb.rgba.g}, ${shadowRgb.rgba.b}, 0.108);
 				}
+
+				.hc-light .modal.callout-dialog .modal-dialog,
 				.hc-black .modal.callout-dialog .modal-dialog {
 					border-color: rgba(${exteriorBorderRgb.rgba.r}, ${exteriorBorderRgb.rgba.g}, ${exteriorBorderRgb.rgba.b}, 1);
 				}
@@ -764,6 +766,8 @@ export abstract class Modal extends Disposable implements IThemable {
 					background-color: ${this._dialogBodyBackground};
 					border-color: transparent transparent rgba(${exteriorBorderRgb.rgba.r}, ${exteriorBorderRgb.rgba.g}, ${exteriorBorderRgb.rgba.b}, 0.5) rgba(${exteriorBorderRgb.rgba.r}, ${exteriorBorderRgb.rgba.g}, ${exteriorBorderRgb.rgba.b}, 0.5);
 				}
+
+				.hc-light .callout-arrow:before,
 				.hc-black .callout-arrow:before {
 					border-color: transparent transparent rgba(${exteriorBorderRgb.rgba.r}, ${exteriorBorderRgb.rgba.g}, ${exteriorBorderRgb.rgba.b}, 1) rgba(${exteriorBorderRgb.rgba.r}, ${exteriorBorderRgb.rgba.g}, ${exteriorBorderRgb.rgba.b}, 1);
 				}

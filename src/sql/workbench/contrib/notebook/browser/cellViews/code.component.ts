@@ -147,10 +147,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		return this._editor;
 	}
 
-	public override hasEditor(): boolean {
-		return true;
-	}
-
 	public cellGuid(): string {
 		return this.cellModel.cellGuid;
 	}

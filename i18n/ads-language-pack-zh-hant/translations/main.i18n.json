@@ -11344,7 +11344,7 @@
 			"incompatible": "無法安裝延伸模組 '{1}' 的版本 '{0}'，因為它與 Azure Data Studio '{2}' 不相容。更新為 Azure Data Studio {3} 以安裝延伸模組。",
 			"installExtensionCompletedAndReloadRequired": "延伸模組 {0} 安裝完成。請重新載入 Azure Data Studio 以啟用此延伸模組。",
 			"maxMemoryForLargeFilesMB": "控制當嘗試開啟大型檔案時，Azure Data Studio 在重新啟動後可用的記憶體。效果與在命令列上指定 `--max-memory=NEWSIZE` 相同。",
-			"miNewDeployment": "New &&Deployment...",
+			"miNewDeployment": "新部署(&&D)…",
 			"miNewNotebook": "新增筆記本(&&N)",
 			"miNewQuery": "新增查詢(&&Q)",
 			"miinstallVsix": "從 VSIX 套件安裝延伸模組",
@@ -12417,9 +12417,6 @@
 			"nextSearchItemAction": "下一個相符項目",
 			"previousSearchItemAction": "上一個相符項目"
 		},
-		"sql/workbench/contrib/executionPlan/common/executionPlanInput": {
-			"epCompare.executionPlanEditorName": "ExecutionPlan"
-		},
 		"sql/workbench/contrib/extensions/browser/contributionRenders": {
 			"insight condition": "時間",
 			"insightId": "識別碼",
@@ -13336,8 +13333,8 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "關閉",
-			"addAccountFailedCodeMessage": "{0} \r\nError Message: {1}",
-			"addAccountFailedGenericMessage": "Adding account failed, check Azure Accounts log for more info.",
+			"addAccountFailedCodeMessage": "{0} \r\n錯誤訊息: {1}",
+			"addAccountFailedGenericMessage": "新增帳戶失敗，如需詳細資訊，請查看 Azure 帳戶記錄。",
 			"addAccountFailedMessage": "{0}",
 			"loggingIn": "正在新增帳戶...",
 			"refreshCanceled": "使用者已取消重新整理帳戶",
@@ -13515,6 +13512,8 @@
 			"warning": "警告"
 		},
 		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"executionPlanService.ensureCapabilitiesRegistered": "Provider with id {0} was not registered after 30 seconds.",
+			"executionPlanService.ensureFileExtensionHandlerRegistered": "Execution plan provider which supports file format '{0}' was not registered after 30 seconds.",
 			"noHandlerRegistered": "未登錄有效的執行計畫處理常式",
 			"providerIdNotValidError": "需要有效的提供者才能與 ExecutionPlanService 互動",
 			"selectExecutionPlanProvider": "選取要開啟執行計畫的提供者"
@@ -13951,6 +13950,9 @@
 		},
 		"sql/workbench/services/dialog/browser/wizardNavigation.component": {
 			"wizardNavigation.stepName": "步驟 {0}: {1}"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanInput": {
+			"epCompare.executionPlanEditorName": "ExecutionPlan"
 		}
 	}
 }

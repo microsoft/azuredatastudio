@@ -13,11 +13,18 @@
 	},
 	"contributes": {
 		"themes": [
-			{
-				"label": "High Contrast",
-				"uiTheme": "hc-black",
-				"path": "./themes/hc_black.json"
-			}
+      {
+        "id": "Default High Contrast",
+        "label": "%hcColorThemeLabel%",
+        "uiTheme": "hc-black",
+        "path": "./themes/hc_black.json"
+      },
+      {
+        "id": "Default High Contrast Light",
+        "label": "%lightHcColorThemeLabel%",
+        "uiTheme": "hc-light",
+        "path": "./themes/hc_light.json"
+      }
 		]
 	},
 	"iconThemes": [

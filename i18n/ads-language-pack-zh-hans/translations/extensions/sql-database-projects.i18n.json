@@ -149,7 +149,7 @@
 			"errorFindingBuildFilesLocation": "查找生成文件位置时出错: {0}",
 			"errorMovingFile": "从 {0} 到 {1} 移动文件时出错。错误: {2}",
 			"errorReadingProjectGuid": "尝试读取项目“{1}”的 {0} 时出错",
-			"errorRenamingFile": "Error when renaming file from {0} to {1}. Error: {2}",
+			"errorRenamingFile": "从 {0} 到 {1} 重命名文件时出错。错误: {2}",
 			"errorRetrievingBuildFiles": "无法生成项目。检索生成所需的文件时出错。",
 			"eulaAgreementTemplate": "我接受 {0}。",
 			"eulaAgreementText": "我接受 {0}。",
