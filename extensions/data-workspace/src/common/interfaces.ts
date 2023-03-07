@@ -85,8 +85,6 @@ export interface IWorkspaceService {
 	 */
 	gitCloneProject(url: string, localClonePath: string): Promise<void>;
 
-	readonly isProjectProviderAvailable: boolean;
-
 	/**
 	 * Event fires when projects in workspace changes
 	 */

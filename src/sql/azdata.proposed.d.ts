@@ -432,6 +432,26 @@ declare module 'azdata' {
 		azurePortalEndpoint?: string;
 	}
 
+	export interface PromptFailedResult extends ProviderError { }
+
+	export interface ProviderError {
+		/**
+		 * Error name
+		 */
+		name?: string;
+
+		/**
+		 * Error code
+		 */
+		errorCode?: string;
+
+		/**
+		 * Error message
+		 */
+		errorMessage?: string;
+	}
+
+
 	export namespace diagnostics {
 		/**
 		 * Represents a diagnostics provider of accounts.
@@ -563,6 +583,12 @@ declare module 'azdata' {
 		onSelectionChange?: SelectionChangeEvent[];
 	}
 
+	export interface ServiceOption {
+		/**
+		 * Used to define list of values based on which another option is rendered visible/hidden.
+		 */
+		onSelectionChange?: SelectionChangeEvent[];
+	}
 	/**
 	 * This change event defines actions
 	 */
@@ -749,6 +775,10 @@ declare module 'azdata' {
 		 * The url to open.
 		 */
 		url?: string;
+		/**
+		 * The role of the hyperlink. By default, the role is 'link' and the url will be opened in a new tab.
+		 */
+		role?: 'button' | 'link';
 	}
 
 	export interface ContextMenuColumnCellValue {

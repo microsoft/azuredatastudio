@@ -3,7 +3,7 @@
 	"useDefaultLinuxRuntime": true,
 	"version": "0.0.10",
 	"downloadFileNames": {
-		"Windows_64": "win-x64.zip",
+		"Windows": "win-x64.zip",
 		"Windows_86": "win-x86.zip",
 		"OSX": "osx-x64.tar.gz",
 		"Linux": "linux-x64.tar.gz"

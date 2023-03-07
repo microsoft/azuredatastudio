@@ -36,10 +36,11 @@ import Severity from 'vs/base/common/severity';
 import { ConnectionStringOptions } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isFalsyOrWhitespace } from 'vs/base/common/strings';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { AuthLibrary, filterAccounts } from 'sql/workbench/services/accountManagement/browser/accountDialog';
+import { filterAccounts } from 'sql/workbench/services/accountManagement/browser/accountDialog';
 import { AuthenticationType, Actions } from 'sql/platform/connection/common/constants';
 import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
 import { createCSSRule } from 'vs/base/browser/dom';
+import { AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManagement/utils';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
@@ -112,7 +113,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		color: undefined,
 		description: undefined,
 	};
-	private readonly configurationService: IConfigurationService;
 	constructor(options: azdata.ConnectionOption[],
 		callbacks: IConnectionComponentCallbacks,
 		providerName: string,
@@ -122,7 +122,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@ILogService protected _logService: ILogService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super();
 		this._callbacks = callbacks;
@@ -142,7 +142,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		}
 		this._providerName = providerName;
 		this._connectionStringOptions = this._connectionManagementService.getProviderProperties(this._providerName).connectionStringOptions;
-		this.configurationService = configurationService;
 	}
 
 	protected getAuthTypeDefault(option: azdata.ConnectionOption, os: OperatingSystem): string {
@@ -179,7 +178,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this.fillInConnectionForm(authTypeChanged);
 		this.registerListeners();
 		if (this._authTypeSelectBox) {
-			this.onAuthTypeSelected(this._authTypeSelectBox.value);
+			this.onAuthTypeSelected(this._authTypeSelectBox.value, false);
 		}
 	}
 
@@ -553,7 +552,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			// Theme styler
 			this._register(styler.attachSelectBoxStyler(this._authTypeSelectBox, this._themeService));
 			this._register(this._authTypeSelectBox.onDidSelect(selectedAuthType => {
-				this.onAuthTypeSelected(selectedAuthType.selected);
+				this.onAuthTypeSelected(selectedAuthType.selected, true);
 				this.setConnectButton();
 			}));
 		}
@@ -561,7 +560,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (this._azureAccountDropdown) {
 			this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 			this._register(this._azureAccountDropdown.onDidSelect(() => {
-				this.onAzureAccountSelected().catch(err => this._logService.error(`Unexpeted error handling Azure Account dropdown click : ${err}`));
+				this.onAzureAccountSelected().catch(err => this._logService.error(`Unexpected error handling Azure Account dropdown click : ${err}`));
 			}));
 		}
 
@@ -613,12 +612,10 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._callbacks.onSetConnectButton(shouldEnableConnectButton);
 	}
 
-	protected onAuthTypeSelected(selectedAuthType: string): void {
+	protected onAuthTypeSelected(selectedAuthType: string, clearCredentials: boolean): void {
 		let currentAuthType = this.getMatchingAuthType(selectedAuthType);
-		if (currentAuthType !== AuthenticationType.SqlLogin) {
-			if (currentAuthType !== AuthenticationType.AzureMFA && currentAuthType !== AuthenticationType.AzureMFAAndUser) {
-				this._userNameInputBox.value = '';
-			}
+		if (clearCredentials) {
+			this._userNameInputBox.value = '';
 			this._passwordInputBox.value = '';
 		}
 		this._userNameInputBox.hideMessage();
@@ -646,6 +643,10 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				// Populate tenants (select first by default for initialization of tenant dialog)
 				await this.onAzureAccountSelected(true);
 				this._azureTenantDropdown.enable();
+				// Populate username as 'email' of selected azure account in dropdown, as username is required,
+				// and email of Azure account selected applies as username in most cases.
+				this._userNameInputBox.value = this._azureAccountList.find(a => a.displayInfo.displayName === this._azureAccountDropdown.value)?.displayInfo.email!
+					?? this._azureAccountList[0]?.displayInfo?.email ?? '';
 			}).catch(err => this._logService.error(`Unexpected error populating Azure Account dropdown : ${err}`));
 			// Immediately show/hide appropriate elements though so user gets immediate feedback while we load accounts
 			this._tableContainer.classList.remove('hide-username');
@@ -670,14 +671,17 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._passwordInputBox.enable();
 			this._rememberPasswordCheckBox.enabled = true;
 
-			this._initialConnectionInfo.authenticationType = AuthenticationType.SqlLogin;
-			if (this._initialConnectionInfo && this._initialConnectionInfo.userName) {
-				const setPasswordInputBox = (profile: IConnectionProfile) => {
-					this._passwordInputBox.value = profile.password;
-				};
+			if (this._initialConnectionInfo) {
+				this._initialConnectionInfo.authenticationType = AuthenticationType.SqlLogin;
 
-				this._rememberPasswordCheckBox.checked = this._initialConnectionInfo.savePassword;
-				this._connectionManagementService.addSavedPassword(this._initialConnectionInfo, true).then(setPasswordInputBox)
+				if (this._initialConnectionInfo.userName) {
+					const setPasswordInputBox = (profile: IConnectionProfile) => {
+						this._passwordInputBox.value = profile.password;
+					};
+
+					this._rememberPasswordCheckBox.checked = this._initialConnectionInfo.savePassword;
+					this._connectionManagementService.addSavedPassword(this._initialConnectionInfo, true).then(setPasswordInputBox)
+				}
 			}
 		}
 	}
@@ -686,7 +690,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let oldSelection = this._azureAccountDropdown.value;
 		const accounts = await this._accountManagementService.getAccounts();
 		const updatedAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
-		const authLibrary: AuthLibrary = this.configurationService.getValue('azure.authenticationLibrary');
+		const authLibrary: AuthLibrary = getAuthLibrary(this._configurationService);
 		if (authLibrary) {
 			this._azureAccountList = filterAccounts(updatedAccounts, authLibrary);
 		}
@@ -754,6 +758,13 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (!selectedAccount && selectFirstByDefault && this._azureAccountList.length > 0) {
 			selectedAccount = this._azureAccountList[0];
 		}
+
+		if (this.authenticationType === AuthenticationType.AzureMFAAndUser) {
+			// Populate username as 'email' of selected azure account in dropdown, as username is required,
+			// and email of Azure account selected applies as username in most cases.
+			this._userNameInputBox.value = selectedAccount?.displayInfo?.email! ?? '';
+		}
+
 		if (selectedAccount && selectedAccount.properties.tenants && selectedAccount.properties.tenants.length > 1) {
 			// There are multiple tenants available so let the user select one
 			let options = selectedAccount.properties.tenants.map(tenant => tenant.displayName);
@@ -901,7 +912,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			}
 
 			if (this._authTypeSelectBox) {
-				this.onAuthTypeSelected(this._authTypeSelectBox.value);
+				this.onAuthTypeSelected(this._authTypeSelectBox.value, false);
 			} else {
 				this._tableContainer.classList.remove('hide-username');
 				this._tableContainer.classList.remove('hide-password');
@@ -936,7 +947,11 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						// If account was not filled in from received configuration, select the first account.
 						this._azureAccountDropdown.select(0);
 						account = this._azureAccountList[0];
-						accountName = account.key.accountId;
+						if (this._azureAccountList.length > 0) {
+							accountName = account.key.accountId;
+						} else {
+							this._logService.debug('fillInConnectionInputs: No accounts available');
+						}
 					}
 					await this.onAzureAccountSelected();
 
@@ -956,7 +971,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						this._azureTenantId = account.properties.tenants[0].id;
 						this.onAzureTenantSelected(0);
 					}
-					else {
+					else if (accountName) {
 						this._logService.error(`fillInConnectionInputs : Could not find any tenants for account ${accountName}`);
 					}
 				}).catch(err => this._logService.error(`Unexpected error populating initial Azure Account options : ${err}`));

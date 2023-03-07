@@ -13,19 +13,19 @@ import * as templates from '../templates/templates';
 import * as vscode from 'vscode';
 import type * as azdataType from 'azdata';
 import * as dataworkspace from 'dataworkspace';
-import type * as mssqlVscode from 'vscode-mssql';
+import * as mssqlVscode from 'vscode-mssql';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, reservedProjectFolders } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
+import { FolderNode, FileNode, SqlObjectFileNode, PreDeployNode, PostDeployNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
 import { ShellCommandOptions } from '../tools/shellExecutionHelper';
 import { BuildHelper } from '../tools/buildHelper';
-import { readPublishProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
+import { readPublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
@@ -184,14 +184,6 @@ export class ProjectsController {
 
 		const targetPlatform = creationParams.targetPlatform ? constants.targetPlatformToVersion.get(creationParams.targetPlatform)! : constants.defaultDSP;
 
-		const macroDict: Record<string, string> = {
-			'PROJECT_NAME': creationParams.newProjName,
-			'PROJECT_GUID': creationParams.projectGuid ?? UUID.generateUuid().toUpperCase(),
-			'PROJECT_DSP': targetPlatform
-		};
-
-		let newProjFileContents = creationParams.sdkStyle ? templates.macroExpansion(templates.newSdkSqlProjectTemplate, macroDict) : templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
-
 		let newProjFileName = creationParams.newProjName;
 
 		if (!newProjFileName.toLowerCase().endsWith(constants.sqlprojExtension)) {
@@ -204,9 +196,14 @@ export class ProjectsController {
 			throw new Error(constants.projectAlreadyExists(newProjFileName, path.parse(newProjFilePath).dir));
 		}
 
-		const projectFolderPath = path.dirname(newProjFilePath);
-		await fs.mkdir(projectFolderPath, { recursive: true });
-		await fs.writeFile(newProjFilePath, newProjFileContents);
+		const sqlProjectsService = await utils.getSqlProjectsService();
+		if (utils.getAzdataApi()) {
+			const projectStyle = creationParams.sdkStyle ? mssql.ProjectType.SdkStyle : mssql.ProjectType.LegacyStyle;
+			await (sqlProjectsService as mssql.ISqlProjectsService).createProject(newProjFilePath, projectStyle, targetPlatform);
+		} else {
+			const projectStyle = creationParams.sdkStyle ? mssqlVscode.ProjectType.SdkStyle : mssqlVscode.ProjectType.LegacyStyle;
+			await (sqlProjectsService as mssqlVscode.ISqlProjectsService).createProject(newProjFilePath, projectStyle, targetPlatform);
+		}
 
 		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);
 
@@ -305,7 +302,7 @@ export class ProjectsController {
 			this.buildInfo[currentBuildIndex].status = Status.failed;
 			this.buildInfo[currentBuildIndex].timeToCompleteAction = utils.timeConversion(timeToFailureBuild);
 
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.build)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectController, TelemetryActions.build, err)
 				.withAdditionalMeasurements({ duration: timeToFailureBuild })
 				.withAdditionalProperties({ databaseSource: utils.getWellKnownDatabaseSources(project.getDatabaseSourceValues()).join(';') })
 				.send();
@@ -354,7 +351,7 @@ export class ProjectsController {
 			}
 		} catch (error) {
 			void utils.showErrorMessageWithOutputChannel(constants.publishToNewAzureServerFailed, error, this._outputChannel);
-			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishToNewAzureServer);
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectController, TelemetryActions.publishToNewAzureServer, error);
 		}
 	}
 
@@ -392,7 +389,7 @@ export class ProjectsController {
 			}
 		} catch (error) {
 			void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, error, this._outputChannel);
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectController, TelemetryActions.publishToContainer, error)
 				.withAdditionalProperties({ dockerBaseImage: dockerImageNameForTelemetry })
 				.send();
 		}
@@ -418,7 +415,6 @@ export class ProjectsController {
 			publishDatabaseDialog.publishToContainer = async (proj, prof) => this.publishToDockerContainer(proj, prof);
 			publishDatabaseDialog.generateScript = async (proj, prof) => this.publishOrScriptProject(proj, prof, false);
 			publishDatabaseDialog.readPublishProfile = async (profileUri) => readPublishProfile(profileUri);
-			publishDatabaseDialog.savePublishProfile = async (profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions) => savePublishProfile(profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions);
 
 			publishDatabaseDialog.openDialog();
 
@@ -494,7 +490,7 @@ export class ProjectsController {
 		telemetryProps.databaseSource = utils.getWellKnownDatabaseSources(project.getDatabaseSourceValues()).join(';');
 
 		if (!dacpacPath) {
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectController, TelemetryActions.publishProject)
 				.withAdditionalProperties(telemetryProps)
 				.withAdditionalMeasurements(telemetryMeasures)
 				.send();
@@ -547,7 +543,7 @@ export class ProjectsController {
 			telemetryProps.actionDuration = timeToFailurePublish.toString();
 			telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
 
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectController, TelemetryActions.publishProject, err)
 				.withAdditionalProperties(telemetryProps)
 				.send();
 
@@ -611,7 +607,7 @@ export class ProjectsController {
 				props.errorMessage = message;
 			}
 
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked, err)
 				.withAdditionalProperties(props)
 				.send();
 
@@ -736,7 +732,7 @@ export class ProjectsController {
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.addItemFromTree)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.addItemFromTree, err)
 				.withAdditionalProperties(telemetryProps)
 				.withAdditionalMeasurements(telemetryMeasurements)
 				.send();
@@ -764,7 +760,7 @@ export class ProjectsController {
 			this.refreshProjectsTree(treeNode);
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
-			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.addExistingItem);
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.addExistingItem, err);
 		}
 	}
 
@@ -778,7 +774,7 @@ export class ProjectsController {
 			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.excludeFromProject);
 			await project.exclude(fileEntry);
 		} else {
-			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.excludeFromProject);
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.excludeFromProject);
 			void vscode.window.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, node.relativeProjectUri.path));
 		}
 
@@ -816,7 +812,9 @@ export class ProjectsController {
 				success = true;
 			}
 		} else if (node instanceof SqlCmdVariableTreeItem) {
-			// TODO: handle deleting sqlcmd var from project after swap
+			const sqlProjectsService = await utils.getSqlProjectsService();
+			const result = await sqlProjectsService.deleteSqlCmdVariable(project.projectFilePath, node.friendlyName);
+			success = result.success;
 		} else if (node instanceof FileNode || FolderNode) {
 			const fileEntry = this.getFileProjectEntry(project, node);
 
@@ -833,7 +831,7 @@ export class ProjectsController {
 
 			this.refreshProjectsTree(context);
 		} else {
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.deleteObjectFromProject)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.deleteObjectFromProject)
 				.withAdditionalProperties({ objectType: node.constructor.name })
 				.send();
 
@@ -862,12 +860,16 @@ export class ProjectsController {
 			return;
 		}
 
-		// TODO: swap this out and hookup to "Move" file/folder api
-		// rename the file
-		const newFilePath = path.join(path.dirname(file?.fsUri.fsPath!), `${newFileName}.sql`);
-		await fs.rename(file?.fsUri.fsPath!, newFilePath);
-		await project.exclude(file!);
-		await project.addExistingItem(newFilePath);
+		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(file?.relativePath!)), `${newFileName}.sql`);
+
+		const renameResult = await this.move(node, node.projectFileUri.fsPath, newFilePath);
+
+		if (renameResult?.success) {
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.rename);
+		} else {
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.rename);
+			void vscode.window.showErrorMessage(constants.errorRenamingFile(file?.relativePath!, newFilePath, utils.getErrorMessage(renameResult?.errorMessage)));
+		}
 
 		this.refreshProjectsTree(context);
 	}
@@ -1400,7 +1402,7 @@ export class ProjectsController {
 			return project;
 		} catch (err) {
 			void vscode.window.showErrorMessage(constants.generatingProjectFailed(utils.getErrorMessage(err)));
-			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.generateProjectFromOpenApiSpec);
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectController, TelemetryActions.generateProjectFromOpenApiSpec, err);
 			this._outputChannel.show();
 			return;
 		}
@@ -1449,7 +1451,7 @@ export class ProjectsController {
 
 		if (fileOrFolder) {
 			// use relative path and not tree paths for files and folder
-			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts);
+			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts).concat(project.publishProfiles);
 
 			// trim trailing slash since folders with and without a trailing slash are allowed in a sqlproj
 			const trimmedUri = utils.trimChars(utils.getPlatformSafeFileEntryPath(utils.trimUri(fileOrFolder.projectFileUri, fileOrFolder.fileSystemUri)), '/');
@@ -1586,7 +1588,7 @@ export class ProjectsController {
 			await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
-			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.createProjectFromDatabase);
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectController, TelemetryActions.createProjectFromDatabase, err);
 		}
 	}
 
@@ -1697,7 +1699,7 @@ export class ProjectsController {
 				.send();
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
-			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectFromDatabase);
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectController, TelemetryActions.updateProjectFromDatabase, err);
 		}
 	}
 
@@ -1753,7 +1755,7 @@ export class ProjectsController {
 		);
 
 		if (!comparisonResult || !comparisonResult.success) {
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, 'SchemaComparisonFailed')
+			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectController, 'SchemaComparisonFailed')
 				.withAdditionalProperties({
 					operationId: comparisonResult.operationId
 				}).send();
@@ -1832,6 +1834,98 @@ export class ProjectsController {
 	}
 
 	//#endregion
+
+	/**
+	 * Move a file in the project tree
+	 * @param projectUri URI of the project
+	 * @param source
+	 * @param target
+	 */
+	public async moveFile(projectUri: vscode.Uri, source: any, target: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const sourceFileNode = source as FileNode;
+
+		// only moving files is supported
+		if (!sourceFileNode || !(sourceFileNode instanceof FileNode)) {
+			void vscode.window.showErrorMessage(constants.onlyMoveSqlFilesSupported);
+			return;
+		}
+
+		// Moving files to the SQLCMD variables and Database references folders isn't allowed
+		// TODO: should there be an error displayed if a file attempting to move a file to sqlcmd variables or database references? Or just silently fail and do nothing?
+		if (!target.element.fileSystemUri) {
+			return;
+		}
+
+		// TODO: handle moving between different projects
+		if (projectUri.fsPath !== target.element.projectFileUri.fsPath) {
+			void vscode.window.showErrorMessage(constants.movingFilesBetweenProjectsNotSupported);
+			return;
+		}
+
+		// Calculate the new file path
+		let folderPath;
+		// target is the root of project, which is the .sqlproj
+		if (target.element.projectFileUri.fsPath === target.element.fileSystemUri.fsPath) {
+			folderPath = path.basename(path.dirname(target.element.projectFileUri.fsPath!));
+		} else {
+			// target is another file or folder
+			folderPath = target.element.relativeProjectUri.fsPath.endsWith(constants.sqlFileExtension) ? path.dirname(target.element.relativeProjectUri.fsPath) : target.element.relativeProjectUri.fsPath;
+		}
+
+		const newPath = path.join(folderPath!, sourceFileNode.friendlyName);
+
+		// don't do anything if the path is the same
+		if (newPath === sourceFileNode.relativeProjectUri.fsPath) {
+			return;
+		}
+
+		const result = await vscode.window.showWarningMessage(constants.moveConfirmationPrompt(path.basename(sourceFileNode.fileSystemUri.fsPath), path.basename(folderPath)), { modal: true }, constants.move)
+		if (result !== constants.move) {
+			return;
+		}
+
+		// Move the file
+		const moveResult = await this.move(sourceFileNode, projectUri.fsPath, newPath);
+
+		if (moveResult?.success) {
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.move);
+		} else {
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.move);
+			void vscode.window.showErrorMessage(constants.errorMovingFile(sourceFileNode.fileSystemUri.fsPath, newPath, utils.getErrorMessage(moveResult?.errorMessage)));
+		}
+	}
+
+	/**
+	 * Moves a file to a different location
+	 * @param node Node being moved
+	 * @param projectFilePath Full file path to .sqlproj
+	 * @param destinationRelativePath path of the destination, relative to .sqlproj
+	 */
+	private async move(node: BaseProjectTreeItem, projectFilePath: string, destinationRelativePath: string): Promise<azdataType.ResultStatus | undefined> {
+		// trim off the project folder at the beginning of the relative path stored in the tree
+		const projectRelativeUri = vscode.Uri.file(path.basename(projectFilePath, constants.sqlprojExtension));
+		const originalRelativePath = utils.trimUri(projectRelativeUri, node.relativeProjectUri);
+		destinationRelativePath = utils.trimUri(projectRelativeUri, vscode.Uri.file(destinationRelativePath));
+
+		if (originalRelativePath === destinationRelativePath) {
+			return;
+		}
+
+		const sqlProjectsService = await utils.getSqlProjectsService();
+
+		let result;
+		if (node instanceof SqlObjectFileNode) {
+			result = await sqlProjectsService.moveSqlObjectScript(projectFilePath, destinationRelativePath, originalRelativePath)
+		} else if (node instanceof PreDeployNode) {
+			result = await sqlProjectsService.movePreDeploymentScript(projectFilePath, destinationRelativePath, originalRelativePath)
+		} else if (node instanceof PostDeployNode) {
+			result = await sqlProjectsService.movePostDeploymentScript(projectFilePath, destinationRelativePath, originalRelativePath)
+		}
+		// TODO add support for renaming none scripts after those are added in STS
+		// TODO add support for renaming publish profiles when support is added in DacFx
+
+		return result;
+	}
 }
 
 export interface NewProjectParams {

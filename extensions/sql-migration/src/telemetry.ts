@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import AdsTelemetryReporter, { TelemetryEventMeasures, TelemetryEventProperties } from '@microsoft/ads-extension-telemetry';
+import { MigrationStateModel } from './models/stateMachine';
 const packageJson = require('../package.json');
 let packageInfo = {
 	name: packageJson.name,
@@ -39,7 +40,11 @@ export enum TelemetryViews {
 	Utils = 'Utils',
 	LoginMigrationWizardController = 'LoginMigrationWizardController',
 	LoginMigrationWizard = 'LoginMigrationWizard',
+	LoginMigrationTargetSelectionPage = 'LoginMigrationTargetSelectionPage',
+	LoginMigrationSelectorPage = 'LoginMigrationSelectorPage',
+	LoginMigrationStatusPage = 'LoginMigrationStatusPage',
 	TdeConfigurationDialog = 'TdeConfigurationDialog',
+	ValidIrDialog = 'validIrDialog',
 }
 
 export enum TelemetryAction {
@@ -65,7 +70,11 @@ export enum TelemetryAction {
 	GetInstanceRequirements = 'GetInstanceRequirements',
 	StartDataCollection = 'StartDataCollection',
 	StopDataCollection = 'StopDataCollection',
-	GetDatabasesListFailed = 'GetDatabasesListFailed'
+	GetDatabasesListFailed = 'GetDatabasesListFailed',
+	ConnectToTarget = 'ConnectToTarget',
+	OpenLoginMigrationWizard = 'OpenLoginMigrationWizard',
+	LoginMigrationStarted = 'LoginMigrationStarted',
+	LoginMigrationCompleted = 'LoginMigrationCompleted',
 }
 
 export enum TelemetryErrorName {
@@ -82,4 +91,27 @@ export function sendSqlMigrationActionEvent(telemetryView: TelemetryViews, telem
 		.withAdditionalProperties(additionalProps)
 		.withAdditionalMeasurements(additionalMeasurements)
 		.send();
+}
+
+export function getTelemetryProps(migrationStateModel: MigrationStateModel): TelemetryEventProperties {
+	return {
+		'sessionId': migrationStateModel._sessionId,
+		'subscriptionId': migrationStateModel._targetSubscription?.id,
+		'resourceGroup': migrationStateModel._resourceGroup?.name,
+		'targetType': migrationStateModel._targetType,
+		'tenantId': migrationStateModel._azureAccount?.properties?.tenants[0]?.id,
+	};
+}
+
+export function sendButtonClickEvent(migrationStateModel: MigrationStateModel, telemetryView: TelemetryViews, buttonPressed: TelemetryAction, pageTitle: string, newPageTitle: string): void {
+	sendSqlMigrationActionEvent(
+		telemetryView,
+		TelemetryAction.PageButtonClick,
+		{
+			...getTelemetryProps(migrationStateModel),
+			'buttonPressed': buttonPressed,
+			'pageTitle': pageTitle,
+			'newPageTitle': newPageTitle
+		},
+		{});
 }

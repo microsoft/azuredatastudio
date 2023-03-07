@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
-  "version": "1.42.0",
-  "distro": "a58380f8678270cb60e90ca5edd8c407908f8108",
+  "version": "1.43.0",
+  "distro": "2cd50bd144845cd70df1cb0ed301c64d3e585ded",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -90,7 +90,6 @@
     "https-proxy-agent": "^2.2.3",
     "jquery": "3.5.0",
     "jschardet": "3.0.0",
-    "kburtram-query-plan": "2.6.1",
     "keytar": "7.9.0",
     "mark.js": "^8.11.1",
     "minimist": "^1.2.6",

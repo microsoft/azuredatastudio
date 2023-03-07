@@ -11,6 +11,7 @@ import { EditorModel } from 'vs/workbench/common/editor/editorModel';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import * as azdata from 'azdata';
+import { ExecutionPlanEditor } from 'sql/workbench/contrib/executionPlan/browser/executionPlanEditor';
 
 export class ExecutionPlanInput extends EditorInput {
 
@@ -60,6 +61,10 @@ export class ExecutionPlanInput extends EditorInput {
 		}
 
 		return path.basename(this._uri.fsPath);
+	}
+
+	public override get editorId(): string {
+		return ExecutionPlanEditor.ID;
 	}
 
 	public async content(): Promise<string> {

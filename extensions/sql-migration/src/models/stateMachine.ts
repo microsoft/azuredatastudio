@@ -13,7 +13,7 @@ import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
-import { hashString, deepClone } from '../api/utils';
+import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBackupFileNameWithoutFolder } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getSourceConnectionUri, getSourceDatabaseLevelCollations, getSourceServerLevelCollation, getTrustServerCertificateValue, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel } from './loginMigrationModel';
@@ -126,14 +126,6 @@ export interface NetworkShare {
 	storageKey: string;
 }
 
-export interface Blob {
-	resourceGroup: azurecore.azureResource.AzureResourceResourceGroup;
-	storageAccount: StorageAccount;
-	blobContainer: azurecore.azureResource.BlobContainer;
-	storageKey: string;
-	lastBackupFile?: string; // _todo: does it make sense to store the last backup file here?
-}
-
 export interface Model {
 	readonly currentState: State;
 	gatheringInformationError: string | undefined;
@@ -206,6 +198,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _fileShares!: azurecore.azureResource.FileShare[];
 	public _blobContainers!: azurecore.azureResource.BlobContainer[];
 	public _lastFileNames!: azurecore.azureResource.Blob[];
+	public _blobContainerFolders!: string[];
 	public _sourceDatabaseNames!: string[];
 	public _targetDatabaseNames!: string[];
 
@@ -1136,7 +1129,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 									azureBlob: {
 										storageAccountResourceId: this._databaseBackup.blobs[i].storageAccount.id,
 										accountKey: this._databaseBackup.blobs[i].storageKey,
-										blobContainerName: this._databaseBackup.blobs[i].blobContainer.name
+										blobContainerName: getBlobContainerNameWithFolder(this._databaseBackup.blobs[i], isOfflineMigration)
 									}
 								}
 							};
@@ -1144,7 +1137,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							if (isOfflineMigration) {
 								requestBody.properties.offlineConfiguration = {
 									offline: isOfflineMigration,
-									lastBackupName: this._databaseBackup.blobs[i]?.lastBackupFile
+									lastBackupName: getLastBackupFileNameWithoutFolder(this._databaseBackup.blobs[i])
 								};
 							}
 							break;

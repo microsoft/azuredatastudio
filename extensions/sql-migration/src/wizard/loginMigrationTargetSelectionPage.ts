@@ -16,6 +16,7 @@ import { azureResource } from 'azurecore';
 import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/azure';
 import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionProfile, isSourceConnectionSysAdmin, LoginTableInfo } from '../api/sqlUtils';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
+import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
 
 export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -606,6 +607,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				const userName = this.migrationStateModel._targetUserName;
 				const password = this.migrationStateModel._targetPassword;
 				const loginsOnTarget: string[] = [];
+				let connectionSuccessful = false;
 				if (targetDatabaseServer && userName && password) {
 					try {
 						connectionButtonLoadingContainer.loading = true;
@@ -622,6 +624,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._loginMigrationModel.loginsOnTarget = loginsOnTarget;
 
 						await this._showConnectionResults(loginsOnTarget);
+						connectionSuccessful = true;
 					} catch (error) {
 						this.wizard.message = {
 							level: azdata.window.MessageLevel.Error,
@@ -631,9 +634,20 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 						await this._showConnectionResults(
 							loginsOnTarget,
 							constants.AZURE_SQL_TARGET_CONNECTION_ERROR_TITLE);
+
+						logError(TelemetryViews.LoginMigrationTargetSelectionPage, 'ConnectingToTargetFailed', error);
+						connectionSuccessful = false;
 					}
 					finally {
 						connectionButtonLoadingContainer.loading = false;
+						sendSqlMigrationActionEvent(
+							TelemetryViews.LoginMigrationTargetSelectionPage,
+							TelemetryAction.ConnectToTarget,
+							{
+								...getTelemetryProps(this.migrationStateModel),
+								'connectionSuccessful': JSON.stringify(connectionSuccessful)
+							},
+							{});
 					}
 				}
 			}));
@@ -865,7 +879,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			this._accountTenantDropdown.loading = true;
 			if (this.migrationStateModel._azureAccount && this.migrationStateModel._azureAccount.isStale === false && this.migrationStateModel._azureAccount.properties.tenants.length > 0) {
 				this.migrationStateModel._accountTenants = utils.getAzureTenants(this.migrationStateModel._azureAccount);
-				this._accountTenantDropdown.values = await utils.getAzureTenantsDropdownValues(this.migrationStateModel._accountTenants);
+				this._accountTenantDropdown.values = utils.getAzureTenantsDropdownValues(this.migrationStateModel._accountTenants);
 			}
 			utils.selectDefaultDropdownValue(
 				this._accountTenantDropdown,
@@ -929,7 +943,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._targetSqlDatabaseServers);
 					break;
 			}
-			this._azureLocationDropdown.values = await utils.getAzureLocationsDropdownValues(this.migrationStateModel._locations);
+			this._azureLocationDropdown.values = utils.getAzureLocationsDropdownValues(this.migrationStateModel._locations);
 		} catch (e) {
 			console.log(e);
 		} finally {

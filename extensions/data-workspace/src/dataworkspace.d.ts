@@ -121,6 +121,19 @@ declare module 'dataworkspace' {
 		 * Gets the project image to be used as background in dashboard container
 		 */
 		readonly image?: azdata.ThemedIconPath;
+
+		/**
+		 * Whether or not the tree data provider supports drag and drop
+		 */
+		readonly supportsDragAndDrop?: boolean;
+
+		/**
+		 * Moves a file from the source to target location. Must be implemented if supportsDragAndDrop is true
+		 * @param projectUri
+		 * @param source
+		 * @param target
+		 */
+		moveFile?(projectUri: vscode.Uri, source: any, target: WorkspaceTreeItem): Promise<void>;
 	}
 
 	/**

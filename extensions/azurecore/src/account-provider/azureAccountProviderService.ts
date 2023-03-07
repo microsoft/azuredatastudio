@@ -201,7 +201,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 						break;
 				}
 			} else {
-				Logger.verbose(message);
+				Logger.pii(message);
 			}
 		}
 	}

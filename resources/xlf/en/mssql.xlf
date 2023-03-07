@@ -52,6 +52,186 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <source xml:lang="en">Search Server Names</source>
     </trans-unit>
 </body></file>
+  <file original="extensions/mssql/dist/objectManagement/localizedConstants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="objectManagement.LoginTypeDisplayName">
+      <source xml:lang="en">login</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.LoginTypeDisplayNameInTitle">
+      <source xml:lang="en">Login</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.OkText">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.UserDisplayName">
+      <source xml:lang="en">user</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.UserTypeDisplayNameInTitle">
+      <source xml:lang="en">User</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.advancedSectionHeader">
+      <source xml:lang="en">Advanced</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.blankPasswordConfirmation">
+      <source xml:lang="en">Creating a login with a blank password is a security risk.  Are you sure you want to continue?</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.confirmPasswordLabel">
+      <source xml:lang="en">Confirm password</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.createObjectOperationName">
+      <source xml:lang="en">Create {0}</source>
+      <note>{0} object type</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.deleteLoginConfirmation">
+      <source xml:lang="en">Deleting server logins does not delete the database users associated with the logins. To complete the process, delete the users in each database. It may be necessary to first transfer the ownership of schemas to new users.</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.deleteObjectConfirmation">
+      <source xml:lang="en">Are you sure you want to delete the {0}: {1}?</source>
+      <note>{0} object type, {1}: object name.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.deleteObjectError">
+      <source xml:lang="en">An error occurred while deleting the {0}: {1}. {2}</source>
+      <note>{0} object type, {1}: object name, {2}: error message.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.deleteObjectOperationName">
+      <source xml:lang="en">Delete {0} '{1}'</source>
+      <note>{0} object type, {1}: object name.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.enabledLabel">
+      <source xml:lang="en">Enabled</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.generalSectionHeader">
+      <source xml:lang="en">General</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.helpText">
+      <source xml:lang="en">Help</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.invalidPasswordError">
+      <source xml:lang="en">Password doesn't meet the complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.loadingDialog">
+      <source xml:lang="en">Loading dialog...</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.login.aadAuthenticationType">
+      <source xml:lang="en">Azure Active Directory Authentication</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.login.authenticateType">
+      <source xml:lang="en">Authentication</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.login.defaultDatabaseLabel">
+      <source xml:lang="en">Default database</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.login.defaultLanguageLabel">
+      <source xml:lang="en">Default language</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.login.enforcePasswordExpirationLabel">
+      <source xml:lang="en">Enforce password expiration</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.login.enforcePasswordPolicyLabel">
+      <source xml:lang="en">Enforce password policy</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.login.lockedOutLabel">
+      <source xml:lang="en">Login is locked out</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.login.mustChangePasswordLabel">
+      <source xml:lang="en">User must change password at next login</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.login.oldPasswordCannotBeEmptyError">
+      <source xml:lang="en">Old password cannot be empty.</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.login.oldPasswordLabel">
+      <source xml:lang="en">Old password</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.login.permissionToConnectLabel">
+      <source xml:lang="en">Permission to connect to database engine</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.login.serverRoleSectionHeader">
+      <source xml:lang="en">Server Roles</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.login.specifyOldPasswordLabel">
+      <source xml:lang="en">Specify old password</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.login.sqlAuthSectionHeader">
+      <source xml:lang="en">SQL Authentication</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.login.sqlAuthenticationType">
+      <source xml:lang="en">SQL Authentication</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.login.windowsAuthenticationType">
+      <source xml:lang="en">Windows Authentication</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.nameCannotBeEmptyError">
+      <source xml:lang="en">Name cannot be empty.</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.nameLabel">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.newObjectDialogTitle">
+      <source xml:lang="en">{0} - New (Preview)</source>
+      <note>{0} object type.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.objectPropertiesDialogTitle">
+      <source xml:lang="en">{0} - {1} (Preview)</source>
+      <note>{0} object type, {1}: object name.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.openNewObjectDialogError">
+      <source xml:lang="en">An error occurred while opening the new {0} dialog. {1}</source>
+      <note>{0} object type, {1}: error message.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.openObjectPropertiesDialogError">
+      <source xml:lang="en">An error occurred while opening the properties dialog for {0}: {1}. {2}</source>
+      <note>{0} object type, {1}: object name, {2}: error message.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.passwordCannotBeEmptyError">
+      <source xml:lang="en">Password cannot be empty.</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.passwordLabel">
+      <source xml:lang="en">Password</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.passwordsNotMatchError">
+      <source xml:lang="en">Password must match the confirm password.</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.refreshOEError">
+      <source xml:lang="en">An error occurred while while refreshing the object explorer. {0}</source>
+      <note>{0}: error message.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.selectedLabel">
+      <source xml:lang="en">Selected</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.updateObjectOperationName">
+      <source xml:lang="en">Update {0} '{1}'</source>
+      <note>{0} object type, {1}: object name.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.user.containedUser">
+      <source xml:lang="en">Contained user</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.user.defaultSchemaLabel">
+      <source xml:lang="en">Default schema</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.user.loginLabel">
+      <source xml:lang="en">Login</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.user.membershipLabel">
+      <source xml:lang="en">Membership</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.user.ownedSchemasLabel">
+      <source xml:lang="en">Owned Schemas</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.user.type">
+      <source xml:lang="en">Type</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.user.userWithGroupLogin">
+      <source xml:lang="en">User with Windows group login</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.user.userWithLogin">
+      <source xml:lang="en">User with login</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.user.userWithNoConnectAccess">
+      <source xml:lang="en">User with no connect access</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.yesText">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
+</body></file>
   <file original="extensions/mssql/dist/sqlToolsServer" source-language="en" datatype="plaintext"><body>
     <trans-unit id="downloadServiceDoneChannelMsg">
       <source xml:lang="en">Downloaded {0}</source>
@@ -257,6 +437,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS">
       <source xml:lang="en">Host Guardian Service</source>
     </trans-unit>
+    <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None">
+      <source xml:lang="en">None</source>
+    </trans-unit>
     <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.description">
       <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
     </trans-unit>
@@ -380,6 +563,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="mssql.connectionOptions.replication.displayName">
       <source xml:lang="en">Replication</source>
     </trans-unit>
+    <trans-unit id="mssql.connectionOptions.secureEnclaves.description">
+      <source xml:lang="en">Enables or disables Secure Enclaves for the connection</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.secureEnclaves.displayName">
+      <source xml:lang="en">Secure Enclaves</source>
+    </trans-unit>
     <trans-unit id="mssql.connectionOptions.serverName.description">
       <source xml:lang="en">Name of the SQL Server instance</source>
     </trans-unit>
@@ -412,6 +601,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     </trans-unit>
     <trans-unit id="mssql.disabled">
       <source xml:lang="en">Disabled</source>
+    </trans-unit>
+    <trans-unit id="mssql.enableSqlAuthenticationProvider">
+      <source xml:lang="en">Enables use of the Sql Authentication Provider for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens. This option is only supported for 'MSAL' Azure Authentication Library. Azure Data Studio is required to be relaunched when the value is changed.</source>
     </trans-unit>
     <trans-unit id="mssql.enabled">
       <source xml:lang="en">Enabled</source>
@@ -491,14 +683,26 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="mssql.objectExplorer.disableGroupBySchema">
       <source xml:lang="en">Disable Group By Schema</source>
     </trans-unit>
+    <trans-unit id="mssql.objectExplorer.disableGroupBySchemaTitle">
+      <source xml:lang="en">SQL Server: Disable Group By Schema</source>
+    </trans-unit>
     <trans-unit id="mssql.objectExplorer.enableGroupBySchema">
       <source xml:lang="en">Enable Group By Schema</source>
+    </trans-unit>
+    <trans-unit id="mssql.objectExplorer.enableGroupBySchemaTitle">
+      <source xml:lang="en">SQL Server: Enable Group By Schema</source>
+    </trans-unit>
+    <trans-unit id="mssql.objectExplorer.expandTimeout">
+      <source xml:lang="en">The timeout in seconds for expanding a node in Object Explorer. The default value is 45 seconds.</source>
     </trans-unit>
     <trans-unit id="mssql.objectExplorer.groupBySchema">
       <source xml:lang="en">When enabled, the database objects in Object Explorer will be categorized by schema.</source>
     </trans-unit>
     <trans-unit id="mssql.parallelMessageProcessing">
-      <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.</source>
+      <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</source>
+    </trans-unit>
+    <trans-unit id="mssql.piiLogging">
+      <source xml:lang="en">[Optional] Should Personally Identifiable Information (PII) be logged in the log file.</source>
     </trans-unit>
     <trans-unit id="mssql.provider.displayName">
       <source xml:lang="en">Microsoft SQL Server</source>
@@ -620,14 +824,38 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="onprem.serverProperties.serverVersion">
       <source xml:lang="en">Version</source>
     </trans-unit>
+    <trans-unit id="title.changeNotebookConnection">
+      <source xml:lang="en">Change SQL Notebook Connection</source>
+    </trans-unit>
     <trans-unit id="title.clearSearchServerResult">
       <source xml:lang="en">Search: Clear Search Server Results</source>
+    </trans-unit>
+    <trans-unit id="title.deleteObject">
+      <source xml:lang="en">Delete</source>
     </trans-unit>
     <trans-unit id="title.designTable">
       <source xml:lang="en">Design</source>
     </trans-unit>
+    <trans-unit id="title.newApplicationRole">
+      <source xml:lang="en">New Application Role</source>
+    </trans-unit>
+    <trans-unit id="title.newDatabaseRole">
+      <source xml:lang="en">New Database Role</source>
+    </trans-unit>
+    <trans-unit id="title.newLogin">
+      <source xml:lang="en">New Login</source>
+    </trans-unit>
+    <trans-unit id="title.newServerRole">
+      <source xml:lang="en">New Server Role</source>
+    </trans-unit>
     <trans-unit id="title.newTable">
       <source xml:lang="en">New Table</source>
+    </trans-unit>
+    <trans-unit id="title.newUser">
+      <source xml:lang="en">New User</source>
+    </trans-unit>
+    <trans-unit id="title.objectProperties">
+      <source xml:lang="en">Properties</source>
     </trans-unit>
     <trans-unit id="title.searchServers">
       <source xml:lang="en">Search: Servers</source>

@@ -10,6 +10,7 @@ import { generateGuid } from './utils';
 import * as utils from '../api/utils';
 import { TelemetryAction, TelemetryViews, logError } from '../telemetry';
 import { DatabaseCollationMapping } from '../service/contracts';
+import * as constants from '../constants/strings';
 
 const query_database_tables_sql = `
 	SELECT
@@ -500,7 +501,10 @@ export async function collectTargetLogins(
 		return results.rows.map(row => getSqlString(row[0])) ?? [];
 	}
 
-	throw new Error(result.errorMessage);
+	const errorMessage = constants.COLLECTING_TARGET_LOGINS_FAILED(result.errorCode ?? 0);
+	const error = new Error(result.errorMessage);
+	logError(TelemetryViews.LoginMigrationWizard, errorMessage, error);
+	throw error;
 }
 
 export async function isSourceConnectionSysAdmin(): Promise<boolean> {

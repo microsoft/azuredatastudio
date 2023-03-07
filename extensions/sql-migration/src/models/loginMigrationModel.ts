@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as mssql from 'mssql';
 import { MultiStepResult, MultiStepState } from '../dialog/generic/multiStepStatusDialog';
 import * as constants from '../constants/strings';
 import { getSourceConnectionString, getTargetConnectionString, LoginTableInfo } from '../api/sqlUtils';
@@ -16,6 +15,7 @@ type ExceptionMap = { [login: string]: any }
 export enum LoginType {
 	Windows_Login = 'windows_login',
 	SQL_Login = 'sql_login',
+	Mixed_Mode = 'mixed_mode',
 }
 
 export enum LoginMigrationStep {
@@ -57,7 +57,7 @@ export interface Login {
 }
 
 export class LoginMigrationModel {
-	public resultsPerStep: Map<mssql.LoginMigrationStep, mssql.StartLoginMigrationResult>;
+	public resultsPerStep: Map<contracts.LoginMigrationStep, contracts.StartLoginMigrationResult>;
 	public collectedSourceLogins: boolean = false;
 	public collectedTargetLogins: boolean = false;;
 	public loginsOnSource: LoginTableInfo[] = [];
@@ -65,12 +65,14 @@ export class LoginMigrationModel {
 	public loginMigrationsResult!: contracts.StartLoginMigrationResult;
 	public loginMigrationsError: any;
 	public loginsForMigration!: LoginTableInfo[];
+	public errorCountMap: Map<string, any> = new Map<string, any>();
+	public durationPerStep: Map<string, string> = new Map<string, string>();
 	private _currentStepIdx: number = 0;
 	private _logins: Map<string, Login>;
 	private _loginMigrationSteps: LoginMigrationStep[] = [];
 
 	constructor() {
-		this.resultsPerStep = new Map<mssql.LoginMigrationStep, mssql.StartLoginMigrationResult>();
+		this.resultsPerStep = new Map<contracts.LoginMigrationStep, contracts.StartLoginMigrationResult>();
 		this._logins = new Map<string, Login>();
 		this.setLoginMigrationSteps();
 	}
@@ -81,6 +83,32 @@ export class LoginMigrationModel {
 
 	public get isMigrationComplete(): boolean {
 		return this._currentStepIdx === this._loginMigrationSteps.length;
+	}
+
+	public get selectedWindowsLogins(): boolean {
+		return this.loginsForMigration.some(logins => logins.loginType.toLocaleLowerCase() === LoginType.Windows_Login);
+	}
+
+	public get selectedAllWindowsLogins(): boolean {
+		return this.loginsForMigration.every(logins => logins.loginType.toLocaleLowerCase() === LoginType.Windows_Login);
+	}
+
+	public get selectedAllSQLLogins(): boolean {
+		return this.loginsForMigration.every(logins => logins.loginType.toLocaleLowerCase() === LoginType.SQL_Login);
+	}
+
+	public get loginsAuthType(): LoginType {
+		if (this.selectedAllWindowsLogins) {
+			return LoginType.Windows_Login;
+		} else if (this.selectedAllSQLLogins) {
+			return LoginType.SQL_Login;
+		}
+
+		return LoginType.Mixed_Mode;
+	}
+
+	public get hasSystemError(): boolean {
+		return this.loginMigrationsError ? true : false;
 	}
 
 	public async MigrateLogins(stateMachine: MigrationStateModel): Promise<boolean> {
@@ -103,7 +131,7 @@ export class LoginMigrationModel {
 	}
 
 
-	public GetLoginMigrationResults(loginName: string): MultiStepResult[] {
+	public GetDisplayResults(loginName: string): MultiStepResult[] {
 		let loginResults: MultiStepResult[] = [];
 		let login = this.getLogin(loginName);
 
@@ -130,6 +158,15 @@ export class LoginMigrationModel {
 		return loginResults;
 	}
 
+	private setErrorCountMapPerStep(step: LoginMigrationStep, result: contracts.StartLoginMigrationResult) {
+		const errorCount = result.exceptionMap ? Object.keys(result.exceptionMap).length : 0;
+		this.errorCountMap.set(LoginMigrationStep[step], errorCount);
+	}
+
+	private setDurationPerStep(step: LoginMigrationStep, result: contracts.StartLoginMigrationResult) {
+		this.durationPerStep.set(LoginMigrationStep[step], result.elapsedTime);
+	}
+
 	private setLoginMigrationSteps(steps: LoginMigrationStep[] = []) {
 		this._loginMigrationSteps = [];
 
@@ -146,7 +183,7 @@ export class LoginMigrationModel {
 		logins.forEach(login => this.addNewLogin(login));
 	}
 
-	public addLoginMigrationResults(step: LoginMigrationStep, newResult: mssql.StartLoginMigrationResult): void {
+	public addLoginMigrationResults(step: LoginMigrationStep, newResult: contracts.StartLoginMigrationResult): void {
 		const exceptionMap = this.getExceptionMapWithNormalizedKeys(newResult.exceptionMap);
 		this._currentStepIdx = this._loginMigrationSteps.findIndex(s => s === step) + 1;
 
@@ -160,6 +197,10 @@ export class LoginMigrationModel {
 				this.markLoginStatus(loginName, loginStatus);
 			}
 		}
+
+		this.updateLoginMigrationResults(newResult);
+		this.setErrorCountMapPerStep(step, newResult);
+		this.setDurationPerStep(step, newResult);
 	}
 
 	private updateLoginMigrationResults(newResult: contracts.StartLoginMigrationResult): void {
@@ -195,7 +236,6 @@ export class LoginMigrationModel {
 				stateMachine._aadDomainName
 			))!;
 
-			this.updateLoginMigrationResults(response);
 			this.addLoginMigrationResults(LoginMigrationStep.MigrateLogins, response);
 			return true;
 
@@ -216,9 +256,8 @@ export class LoginMigrationModel {
 				stateMachine._aadDomainName
 			))!;
 
-			this.updateLoginMigrationResults(response);
 			this.addLoginMigrationResults(LoginMigrationStep.EstablishUserMapping, response);
-			return false;
+			return true;
 
 		} catch (error) {
 			logError(TelemetryViews.LoginMigrationWizard, 'EstablishingUserMappingFailed', error);
@@ -237,16 +276,14 @@ export class LoginMigrationModel {
 				stateMachine._aadDomainName
 			))!;
 
-			this.updateLoginMigrationResults(response);
 			this.addLoginMigrationResults(LoginMigrationStep.MigrateServerRolesAndSetPermissions, response);
-			return false;
+			return true;
 
 		} catch (error) {
 			logError(TelemetryViews.LoginMigrationWizard, 'MigratingServerRolesAndSettingPermissionsFailed', error);
 			this.reportException(LoginMigrationStep.MigrateServerRolesAndSetPermissions, error);
 			this.loginMigrationsError = error;
-			return true;
-
+			return false;
 		}
 	}
 

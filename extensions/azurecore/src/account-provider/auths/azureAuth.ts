@@ -145,14 +145,21 @@ export abstract class AzureAuth implements vscode.Disposable {
 					Logger.error(ex.originalMessageAndException);
 				}
 			} else {
+				const message = ex.errorMessage || ex.message;
+				if (message) {
+					loginComplete?.reject(new AzureAuthError(message, message, undefined));
+					return {
+						canceled: false,
+						errorCode: ex.errorCode,
+						errorMessage: message
+					};
+				}
 				Logger.error(ex);
 
 			}
 			return {
 				canceled: false
 			};
-		} finally {
-			loginComplete?.reject(new AzureAuthError(localize('azureAuth.unidentifiedError', "Unidentified error with azure authentication"), 'Unidentified error with azure auth', undefined));
 		}
 	}
 
@@ -205,8 +212,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
+
 		if (!resource) {
-			Logger.error(`Unable to find Azure resource ${azureResource} for account ${account.displayInfo.userId} and tenant ${tenantId}`);
+			Logger.error(`Unable to find Azure resource ${azureResource}`);
 			return undefined;
 		}
 
@@ -293,7 +301,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * re-authentication process for their tenant.
 	 */
 	public async refreshTokenAdal(tenant: Tenant, resource: Resource, refreshToken: RefreshToken | undefined): Promise<OAuthTokenResponse | undefined> {
-		Logger.pii('Refreshing token', [{ name: 'token', objOrArray: refreshToken }], []);
+		Logger.piiSanitized('Refreshing token', [{ name: 'token', objOrArray: refreshToken }], []);
 		if (refreshToken) {
 			const postData: RefreshTokenPostData = {
 				grant_type: 'refresh_token',
@@ -315,12 +323,14 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * @param azureResource
 	 * @returns The authentication result, including the access token
 	 */
-	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource, tenantId: string): Promise<AuthenticationResult | null> {
+	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource, tenantId: string): Promise<AuthenticationResult | azdata.PromptFailedResult | null> {
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
+
 		if (!resource) {
-			Logger.error(`Error: Could not fetch the azure resource ${azureResource} `);
+			Logger.error(`Unable to find Azure resource ${azureResource}`);
 			return null;
 		}
+
 		// Resource endpoint must end with '/' to form a valid scope for MSAL token request.
 		const endpoint = resource.endpoint.endsWith('/') ? resource.endpoint : resource.endpoint + '/';
 
@@ -356,11 +366,17 @@ export abstract class AzureAuth implements vscode.Disposable {
 					displayName: ''
 				};
 				return this.handleInteractionRequiredMsal(tenant, resource);
-			} else if (e.name === 'ClientAuthError') {
-				Logger.error(e.message);
+			} else {
+				if (e.name === 'ClientAuthError') {
+					Logger.verbose('[ClientAuthError] Failed to silently acquire token');
+				}
+				return {
+					canceled: false,
+					name: e.name,
+					errorCode: e.errorCode,
+					errorMessage: e.errorMessage || e.message
+				}
 			}
-			Logger.error('Failed to silently acquire token, not InteractionRequiredAuthError');
-			return null;
 		}
 	}
 
@@ -386,7 +402,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
 		const response = await this.makePostRequest(tokenUrl, postData);
 
-		Logger.pii('Token: ', [{ name: 'access token', objOrArray: response.data }, { name: 'refresh token', objOrArray: response.data }], []);
+		Logger.piiSanitized('Token: ', [{ name: 'access token', objOrArray: response.data }, { name: 'refresh token', objOrArray: response.data }], []);
 		if (response.data.error === 'interaction_required') {
 			return this.handleInteractionRequiredAdal(tenant, resource);
 		}
@@ -537,13 +553,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 	private async saveTokenAdal(tenant: Tenant, resource: Resource, accountKey: azdata.AccountKey, { accessToken, refreshToken, expiresOn }: OAuthTokenResponse) {
 		const msg = localize('azure.cacheErrorAdd', "Error when adding your account to the cache.");
 		if (!tenant.id || !resource.id) {
-			Logger.pii('Tenant ID or resource ID was undefined', [], [], tenant, resource);
+			Logger.piiSanitized('Tenant ID or resource ID was undefined', [], [], tenant, resource);
 			throw new AzureAuthError(msg, 'Adding account to cache failed', undefined);
 		}
 		try {
-			Logger.pii(`Saving access token`, [{ name: 'access_token', objOrArray: accessToken }], []);
+			Logger.piiSanitized(`Saving access token`, [{ name: 'access_token', objOrArray: accessToken }], []);
 			await this.tokenCache.saveCredential(`${accountKey.accountId}_access_${resource.id}_${tenant.id}`, JSON.stringify(accessToken));
-			Logger.pii(`Saving refresh token`, [{ name: 'refresh_token', objOrArray: refreshToken }], []);
+			Logger.piiSanitized(`Saving refresh token`, [{ name: 'refresh_token', objOrArray: refreshToken }], []);
 			await this.tokenCache.saveCredential(`${accountKey.accountId}_refresh_${resource.id}_${tenant.id}`, JSON.stringify(refreshToken));
 			this.memdb.set(`${accountKey.accountId}_${tenant.id}_${resource.id}`, expiresOn);
 		} catch (ex) {
@@ -557,7 +573,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const parseMsg = localize('azure.cacheErrorParse', "Error when parsing your account from the cache");
 
 		if (!tenant.id || !resource.id) {
-			Logger.pii('Tenant ID or resource ID was undefined', [], [], tenant, resource);
+			Logger.piiSanitized('Tenant ID or resource ID was undefined', [], [], tenant, resource);
 			throw new AzureAuthError(getMsg, 'Getting account from cache failed', undefined);
 		}
 
@@ -584,7 +600,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			if (refreshTokenString) {
 				refreshToken = JSON.parse(refreshTokenString);
 			}
-			Logger.pii('GetSavedToken ', [{ name: 'access', objOrArray: accessToken }, { name: 'refresh', objOrArray: refreshToken }], [], `expiresOn=${expiresOn}`);
+			Logger.piiSanitized('GetSavedToken ', [{ name: 'access', objOrArray: accessToken }, { name: 'refresh', objOrArray: refreshToken }], [], `expiresOn=${expiresOn}`);
 			return {
 				accessToken, refreshToken, expiresOn
 			};
@@ -670,7 +686,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			}
 
 		};
-		const messageBody = localize('azurecore.consentDialog.body', "Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.", tenant.displayName, tenant.id, resource.id);
+		const messageBody = localize('azurecore.consentDialog.body', "Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.", tenant.displayName, tenant.id, resource.endpoint);
 		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem, dontAskAgainItem);
 
 		if (result?.action) {
@@ -775,7 +791,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		// Intercept response and print out the response for future debugging
 		const response = await axios.post(url, qs.stringify(postData), config);
-		Logger.pii('POST request ', [{ name: 'data', objOrArray: postData }, { name: 'response', objOrArray: response.data }], [], url);
+		Logger.piiSanitized('POST request ', [{ name: 'data', objOrArray: postData }, { name: 'response', objOrArray: response.data }], [], url);
 		return response;
 	}
 
@@ -789,7 +805,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		};
 
 		const response = await axios.get(url, config);
-		Logger.pii('GET request ', [{ name: 'response', objOrArray: response.data.value ?? response.data }], [], url,);
+		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data.value ?? response.data }], [], url,);
 		return response;
 	}
 

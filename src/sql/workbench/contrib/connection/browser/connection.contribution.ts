@@ -74,7 +74,7 @@ actionRegistry.registerWorkbenchAction(
 
 MenuRegistry.appendMenuItem(MenuId.ViewTitle, {
 	group: 'navigation',
-	order: 10,
+	order: 1,
 	command: {
 		id: AddServerAction.ID,
 		title: AddServerAction.LABEL,
@@ -85,7 +85,7 @@ MenuRegistry.appendMenuItem(MenuId.ViewTitle, {
 
 MenuRegistry.appendMenuItem(MenuId.ViewTitle, {
 	group: 'navigation',
-	order: 20,
+	order: 2,
 	command: {
 		id: AddServerGroupAction.ID,
 		title: AddServerGroupAction.LABEL,
@@ -96,7 +96,7 @@ MenuRegistry.appendMenuItem(MenuId.ViewTitle, {
 
 MenuRegistry.appendMenuItem(MenuId.ViewTitle, {
 	group: 'navigation',
-	order: 30,
+	order: 3,
 	command: {
 		id: ActiveConnectionsFilterAction.ID,
 		title: ActiveConnectionsFilterAction.SHOW_ACTIVE_CONNECTIONS_LABEL,

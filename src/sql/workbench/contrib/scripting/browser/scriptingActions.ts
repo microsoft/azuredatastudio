@@ -49,7 +49,9 @@ CommandsRegistry.registerCommand({
 			const scriptingService = accessor.get(IScriptingService);
 			const errorMessageService = accessor.get(IErrorMessageService);
 			const progressService = accessor.get(IProgressService);
-			const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
+			const connectionService = accessor.get(IConnectionManagementService);
+			let payload = await connectionService.fixProfile(args.$treeItem.payload);
+			const profile = new ConnectionProfile(capabilitiesService, payload);
 			const baseContext: BaseActionContext = {
 				profile: profile,
 				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
@@ -73,7 +75,9 @@ CommandsRegistry.registerCommand({
 			const scriptingService = accessor.get(IScriptingService);
 			const errorMessageService = accessor.get(IErrorMessageService);
 			const progressService = accessor.get(IProgressService);
-			const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
+			const connectionService = accessor.get(IConnectionManagementService);
+			let payload = await connectionService.fixProfile(args.$treeItem.payload);
+			const profile = new ConnectionProfile(capabilitiesService, payload);
 			const baseContext: BaseActionContext = {
 				profile: profile,
 				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
@@ -97,7 +101,9 @@ CommandsRegistry.registerCommand({
 			const scriptingService = accessor.get(IScriptingService);
 			const progressService = accessor.get(IProgressService);
 			const errorMessageService = accessor.get(IErrorMessageService);
-			const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
+			const connectionService = accessor.get(IConnectionManagementService);
+			let payload = await connectionService.fixProfile(args.$treeItem.payload);
+			const profile = new ConnectionProfile(capabilitiesService, payload);
 			const baseContext: BaseActionContext = {
 				profile: profile,
 				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
@@ -121,7 +127,9 @@ CommandsRegistry.registerCommand({
 			const scriptingService = accessor.get(IScriptingService);
 			const progressService = accessor.get(IProgressService);
 			const errorMessageService = accessor.get(IErrorMessageService);
-			const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
+			const connectionService = accessor.get(IConnectionManagementService);
+			let payload = await connectionService.fixProfile(args.$treeItem.payload);
+			const profile = new ConnectionProfile(capabilitiesService, payload);
 			const baseContext: BaseActionContext = {
 				profile: profile,
 				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
@@ -145,7 +153,9 @@ CommandsRegistry.registerCommand({
 			const scriptingService = accessor.get(IScriptingService);
 			const progressService = accessor.get(IProgressService);
 			const errorMessageService = accessor.get(IErrorMessageService);
-			const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
+			const connectionService = accessor.get(IConnectionManagementService);
+			let payload = await connectionService.fixProfile(args.$treeItem.payload);
+			const profile = new ConnectionProfile(capabilitiesService, payload);
 			const baseContext: BaseActionContext = {
 				profile: profile,
 				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
@@ -169,7 +179,9 @@ CommandsRegistry.registerCommand({
 			const scriptingService = accessor.get(IScriptingService);
 			const progressService = accessor.get(IProgressService);
 			const errorMessageService = accessor.get(IErrorMessageService);
-			const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
+			const connectionService = accessor.get(IConnectionManagementService);
+			let payload = await connectionService.fixProfile(args.$treeItem.payload);
+			const profile = new ConnectionProfile(capabilitiesService, payload);
 			const baseContext: BaseActionContext = {
 				profile: profile,
 				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
