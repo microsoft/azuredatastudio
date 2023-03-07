@@ -799,8 +799,7 @@ export async function ensureFileExists(absoluteFilePath: string, contents?: stri
 		}
 	} else {
 		// If no contents were provided, then check that file already exists
-		let exists = await exists(absoluteFilePath);
-		if (!exists) {
+		if (!await exists(absoluteFilePath)) {
 			throw new Error(constants.noFileExist(absoluteFilePath));
 		}
 	}

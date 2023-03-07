@@ -30,7 +30,8 @@ import { IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 import { ImportDataModel } from '../models/api/import';
 import { EntryType, ItemType, SqlTargetPlatform } from 'sqldbproj';
-import { SystemDatabaseReferenceProjectEntry, SystemDatabase, FileProjectEntry } from '../models/projectEntry';
+import { SystemDatabaseReferenceProjectEntry, FileProjectEntry } from '../models/projectEntry';
+import { SystemDatabase } from 'mssql';
 
 let testContext: TestContext;
 
@@ -654,7 +655,7 @@ describe('ProjectsController', function (): void {
 			addDbReferenceDialog.callBase = true;
 			addDbReferenceDialog.setup(x => x.addReferenceClick()).returns(() => {
 				return projController.object.addDatabaseReferenceCallback(proj,
-					{ systemDb: SystemDatabase.master, databaseName: 'master', suppressMissingDependenciesErrors: false },
+					{ systemDb: SystemDatabase.Master, databaseName: 'master', suppressMissingDependenciesErrors: false },
 					{ treeDataProvider: new SqlDatabaseProjectTreeViewProvider(), element: undefined });
 			});
 			addDbReferenceDialog.setup(x => x.openDialog()).returns(() => Promise.resolve());
