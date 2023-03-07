@@ -129,8 +129,3 @@ export enum DatabaseReferenceLocation {
 	differentDatabaseSameServer,
 	differentDatabaseDifferentServer
 }
-
-export enum SystemDatabase {
-	master,
-	msdb
-}

@@ -17,7 +17,8 @@ import { exists, convertSlashesForSqlProj, getWellKnownDatabaseSources, getPlatf
 import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { EntryType, ItemType, SqlTargetPlatform } from 'sqldbproj';
-import { SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase } from '../models/projectEntry';
+import { SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
+import { SystemDatabase } from 'mssql';
 
 let projFilePath: string;
 
@@ -192,7 +193,7 @@ describe('Project: sqlproj content operations', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 		await project.addSystemDatabaseReference({
-			systemDb: SystemDatabase.master,
+			systemDb: SystemDatabase.Master,
 			suppressMissingDependenciesErrors: false
 		});
 
@@ -240,7 +241,7 @@ describe('Project: sqlproj content operations', function (): void {
 		let project = await Project.openProject(projFilePath);
 
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
-		await project.addSystemDatabaseReference({ databaseName: 'master', systemDb: SystemDatabase.master, suppressMissingDependenciesErrors: false });
+		await project.addSystemDatabaseReference({ databaseName: 'master', systemDb: SystemDatabase.Master, suppressMissingDependenciesErrors: false });
 		project = await Project.openProject(projFilePath);
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to master');
 		should(project.databaseReferences[0].databaseName).equal(constants.master, 'The database reference should be master');
@@ -250,7 +251,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql('$(SystemDacpacsLocation)\\SystemDacpacs\\160\\master.dacpac');
 		should(projFileText).containEql('$(DacPacRootPath)\\Extensions\\Microsoft\\SQLDB\\Extensions\\SqlServer\\160\\SqlSchemas\\master.dacpac');
 
-		await project.addSystemDatabaseReference({ databaseName: 'msdb', systemDb: SystemDatabase.msdb, suppressMissingDependenciesErrors: false });
+		await project.addSystemDatabaseReference({ databaseName: 'msdb', systemDb: SystemDatabase.Msdb, suppressMissingDependenciesErrors: false });
 		project = await Project.openProject(projFilePath);
 		should(project.databaseReferences.length).equal(2, 'There should be two database references after adding a reference to msdb');
 		should(project.databaseReferences[1].databaseName).equal(constants.msdb, 'The database reference should be msdb');
@@ -453,7 +454,7 @@ describe('Project: sqlproj content operations', function (): void {
 
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 
-		const systemDbReference: ISystemDatabaseReferenceSettings = { databaseName: 'master', systemDb: SystemDatabase.master, suppressMissingDependenciesErrors: false };
+		const systemDbReference: ISystemDatabaseReferenceSettings = { databaseName: 'master', systemDb: SystemDatabase.Master, suppressMissingDependenciesErrors: false };
 		await project.addSystemDatabaseReference(systemDbReference);
 		project = await Project.openProject(projFilePath);
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to master');

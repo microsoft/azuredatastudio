@@ -19,11 +19,11 @@ import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase, SystemDatabaseReferenceProjectEntry } from './projectEntry';
+import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabaseReferenceProjectEntry } from './projectEntry';
 import { ResultStatus } from 'azdata';
 import { BaseProjectTreeItem } from './tree/baseTreeItem';
 import { PostDeployNode, PreDeployNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
-import { ProjectType } from 'mssql';
+import { ProjectType, SystemDatabase } from 'mssql';
 
 /**
  * Represents the configuration based on the Configuration property in the sqlproj
@@ -548,7 +548,7 @@ export class Project implements ISqlProject {
 			this._databaseReferences.push(new SystemDatabaseReferenceProjectEntry(
 				Uri.file(''),
 				Uri.file(''), // TODO: remove these after add and delete are swapped - DacFx handles adding and removing system dacpacs, so we don't need to keep track of the paths here
-				systemDbReference.systemDb === mssql.SystemDatabase.Master ? constants.master : constants.msdb,
+				systemDbReference.systemDb === SystemDatabase.Master ? constants.master : constants.msdb,
 				systemDbReference.databaseVariableLiteralName,
 				systemDbReference.suppressMissingDependencies));
 		}
@@ -758,11 +758,11 @@ export class Project implements ISqlProject {
 			throw new Error(constants.databaseReferenceAlreadyExists);
 		}
 
-		const systemDb = <unknown>settings.systemDb as mssql.SystemDatabase;
+		const systemDb = <unknown>settings.systemDb as SystemDatabase;
 		const result = await this.sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, settings.databaseName);
 
 		if (!result.success && result.errorMessage) {
-			const systemDbName = settings.systemDb === SystemDatabase.master ? constants.master : constants.msdb;
+			const systemDbName = settings.systemDb === SystemDatabase.Master ? constants.master : constants.msdb;
 			throw new Error(constants.errorAddingDatabaseReference(systemDbName, result.errorMessage));
 		}
 	}
@@ -1282,7 +1282,7 @@ export class Project implements ISqlProject {
 			const currentNode = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference)[r];
 			if (!currentNode.getAttribute(constants.Condition) && currentNode.getAttribute(constants.Include)?.includes(constants.DacpacRootPath)) {
 				// get name of system database
-				const systemDb = currentNode.getAttribute(constants.Include)?.includes(constants.master) ? SystemDatabase.master : SystemDatabase.msdb;
+				const systemDb = currentNode.getAttribute(constants.Include)?.includes(constants.master) ? SystemDatabase.Master : SystemDatabase.Msdb;
 
 				// get name
 				const nameNodes = currentNode.getElementsByTagName(constants.DatabaseVariableLiteralValue);
@@ -1304,7 +1304,7 @@ export class Project implements ISqlProject {
 				}
 
 				// remove from database references because it'll get added again later
-				this._databaseReferences.splice(this._databaseReferences.findIndex(n => n.databaseName === (systemDb === SystemDatabase.master ? constants.master : constants.msdb)), 1);
+				this._databaseReferences.splice(this._databaseReferences.findIndex(n => n.databaseName === (systemDb === SystemDatabase.Master ? constants.master : constants.msdb)), 1);
 
 				await this.addSystemDatabaseReference({ databaseName: databaseVariableName, systemDb: systemDb, suppressMissingDependenciesErrors: suppressMissingDependences });
 			}
