@@ -190,7 +190,7 @@ export class GenerateProvisioningScriptDialog {
 
 		const textContainer = _view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
-			height: 400,
+			height: 500,
 		}).withProps({
 			CSSStyles: {
 				'overflow': 'auto',

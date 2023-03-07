@@ -311,7 +311,7 @@ export function TIME_IN_MINUTES(val: number): number {
 }
 
 // Target provisioning
-export const TARGET_PROVISIONING_LINK = localize('sql.migration.targetprovisioning.link', "Generate deployment script");
+export const TARGET_PROVISIONING_LINK = localize('sql.migration.targetprovisioning.link', "Deploy to Azure");
 export const TARGET_PROVISIONING_TITLE = localize('sql.migration.targetprovisioning.title', "Deployment script");
 export const TARGET_PROVISIONING_HEADER = localize('sql.migration.targetprovisioning.header', "Quickstart ARM template");
 export const TARGET_PROVISIONING_DESCRIPTION = localize('sql.migration.targetprovisioning.description', "If you don't already have an existing Azure SQL target, you can use this quickstart ARM template to help you provision one. An ARM (Azure Resource Manager) template defines Azure resources to deploy as well as their properties.");
