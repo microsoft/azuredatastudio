@@ -27,7 +27,8 @@
 	cursor: pointer;
 }
 
-.vs .modelview-group-header-collapsible.expanded {
+.vs .modelview-group-header-collapsible.expanded,
+.hc-light .modelview-group-header-collapsible.expanded {
 	background-image: url("expanded.svg");
 }
 
@@ -36,7 +37,8 @@
 	background-image: url("expanded_inverse.svg");
 }
 
-.vs .modelview-group-header-collapsible.collapsed {
+.vs .modelview-group-header-collapsible.collapsed,
+.hc-light .modelview-group-header-collapsible.collapsed {
 	background-image: url("collapsed.svg");
 }
 
