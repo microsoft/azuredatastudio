@@ -1834,7 +1834,7 @@ describe('Project: round trip updates', function (): void {
 		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline, folderPath);
 		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
 
-		await Project.openProject(Uri.file(sqlProjPath).fsPath);	// no error thrown
+		await Project.openProject(Uri.file(sqlProjPath).fsPath); // no error thrown
 	});
 
 	it('Should not show update project warning message when opening sdk style project using Sdk node', async function (): Promise<void> {
