@@ -160,7 +160,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 							TelemetryReporter.sendTelemetryEvent(actionName, {
 								objectType: this.objectType
 							}, {
-								ellapsedTime: Date.now() - startTime
+								elapsedTimeMs: Date.now() - startTime
 							});
 							operation.updateStatus(azdata.TaskStatus.Succeeded);
 						}
