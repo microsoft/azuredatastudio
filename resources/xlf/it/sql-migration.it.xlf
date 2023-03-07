@@ -664,7 +664,7 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.description.sqldb">
         <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database.</source>
-        <target state="new">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database.</target>
+        <target state="translated">Esercitazione dettagliata per eseguire la migrazione di database da un'istanza di SQL Server (locale o macchine virtuali di Azure) a database SQL di Azure.</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.description.vm">
         <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.</source>
@@ -684,7 +684,7 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.link.sqldb">
         <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure SQL Database (offline)</source>
-        <target state="new">Tutorial:  Migrate to SQL Server on Azure SQL Database (offline)</target>
+        <target state="translated">Esercitazione: Eseguire la migrazione a SQL Server nel database SQL di Azure (offline).</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.link.vm">
         <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)</source>
@@ -2232,7 +2232,7 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommendation.view.assessment.sqldb">
         <source xml:lang="en">To migrate to Azure SQL Database, view assessment results and select one or more databases.</source>
-        <target state="new">To migrate to Azure SQL Database, view assessment results and select one or more databases.</target>
+        <target state="translated">Per eseguire la migrazione a database SQL di Azure, visualizzare i risultati della valutazione e selezionare uno o più database.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommendation.view.assessment.vm">
         <source xml:lang="en">To migrate to SQL Server on Azure Virtual Machine, view assessment results and select one or more databases.</source>
@@ -2308,7 +2308,7 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.sqldb.card.title">
         <source xml:lang="en">Azure SQL Database</source>
-        <target state="new">Azure SQL Database</target>
+        <target state="translated">Database SQL di Azure</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.sqldb.target.title">
         <source xml:lang="en">Azure SQL Database</source>
@@ -3016,7 +3016,7 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.error.gatewaytimeout">
         <source xml:lang="en">A time-out was encountered while validating a resource connection. Learn more: https://aka.ms/dms-migrations-troubleshooting.</source>
-        <target state="new">A time-out was encountered while validating a resource connection. Learn more: https://aka.ms/dms-migrations-troubleshooting.</target>
+        <target state="translated">Si è verificato un timeout durante la convalida di una connessione a una risorsa. Altre informazioni: https://aka.ms/dms-migrations-troubleshooting.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.column.status">
         <source xml:lang="en">Status</source>

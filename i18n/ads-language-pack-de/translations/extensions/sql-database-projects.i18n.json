@@ -149,7 +149,7 @@
 			"errorFindingBuildFilesLocation": "Fehler beim Suchen des Speicherorts der Builddateien: {0}",
 			"errorMovingFile": "Fehler beim Verschieben der Datei von {0} nach {1}. Fehler: {2}",
 			"errorReadingProjectGuid": "Fehler beim Lesen von {0} des Projekts „{1}“",
-			"errorRenamingFile": "Error when renaming file from {0} to {1}. Error: {2}",
+			"errorRenamingFile": "Fehler beim Umbenennen der Datei aus {0} in {1}. Fehler: {2}",
 			"errorRetrievingBuildFiles": "Das Projekt konnte nicht erstellt werden. Fehler beim Abrufen der zum Erstellen erforderlichen Dateien.",
 			"eulaAgreementTemplate": "Ich akzeptiere die {0}.",
 			"eulaAgreementText": "Ich akzeptiere die {0}.",

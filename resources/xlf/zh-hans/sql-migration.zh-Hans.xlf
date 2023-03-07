@@ -44,7 +44,7 @@
       </trans-unit>
       <trans-unit id="sql.login.migration.collecting.target.logins.failed">
         <source xml:lang="en">Collecting target login failed with error code {0}</source>
-        <target state="new">Collecting target login failed with error code {0}</target>
+        <target state="translated">收集目标登录失败，错误代码为 {0}</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.complete">
         <source xml:lang="en">Completed migrating logins</source>
@@ -216,7 +216,7 @@ Currently, migrating server roles, establishing server mappings and setting perm
       </trans-unit>
       <trans-unit id="sql.login.migration.wizard.target.data.migration.warning">
         <source xml:lang="en">Please note that login migration feature is in public preview mode.</source>
-        <target state="new">Please note that login migration feature is in public preview mode.</target>
+        <target state="translated">请注意，登录迁移功能处于公共预览模式。</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.wizard.target.description">
         <source xml:lang="en">Select the target Azure SQL Managed Instance, Azure SQL VM, or Azure SQL database(s) where you want to migrate your logins.</source>
@@ -664,7 +664,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.description.sqldb">
         <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database.</source>
-        <target state="new">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database.</target>
+        <target state="translated">将数据库从 SQL Server 实例(本地或 Azure 虚拟机中)迁移到 Azure SQL 数据库的分步教程。</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.description.vm">
         <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.</source>
@@ -684,7 +684,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.link.sqldb">
         <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure SQL Database (offline)</source>
-        <target state="new">Tutorial:  Migrate to SQL Server on Azure SQL Database (offline)</target>
+        <target state="translated">教程: 迁移到 Azure SQL 数据库上的 SQL Server (脱机)</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.link.vm">
         <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)</source>
@@ -2232,7 +2232,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommendation.view.assessment.sqldb">
         <source xml:lang="en">To migrate to Azure SQL Database, view assessment results and select one or more databases.</source>
-        <target state="new">To migrate to Azure SQL Database, view assessment results and select one or more databases.</target>
+        <target state="translated">要迁移到 Azure SQL 数据库，请查看评估结果并选择一个或多个数据库。</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommendation.view.assessment.vm">
         <source xml:lang="en">To migrate to SQL Server on Azure Virtual Machine, view assessment results and select one or more databases.</source>
@@ -2308,7 +2308,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.sku.sqldb.card.title">
         <source xml:lang="en">Azure SQL Database</source>
-        <target state="new">Azure SQL Database</target>
+        <target state="translated">Azure SQL 数据库</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.sqldb.target.title">
         <source xml:lang="en">Azure SQL Database</source>
@@ -3016,7 +3016,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.validate.error.gatewaytimeout">
         <source xml:lang="en">A time-out was encountered while validating a resource connection. Learn more: https://aka.ms/dms-migrations-troubleshooting.</source>
-        <target state="new">A time-out was encountered while validating a resource connection. Learn more: https://aka.ms/dms-migrations-troubleshooting.</target>
+        <target state="translated">验证资源连接时遇到超时。了解详细信息: https://aka.ms/dms-migrations-troubleshooting。</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.column.status">
         <source xml:lang="en">Status</source>

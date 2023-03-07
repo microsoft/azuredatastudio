@@ -762,11 +762,11 @@ Observação: um certificado autoassinado oferece apenas proteção limitada e n
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.secureEnclaves.description">
         <source xml:lang="en">Enables or disables Secure Enclaves for the connection</source>
-        <target state="new">Enables or disables Secure Enclaves for the connection</target>
+        <target state="translated">Habilita ou desabilita Enclaves Seguros para a conexão</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.secureEnclaves.displayName">
         <source xml:lang="en">Secure Enclaves</source>
-        <target state="new">Secure Enclaves</target>
+        <target state="translated">Enclaves Seguros</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.description">
         <source xml:lang="en">Name of the SQL Server instance</source>
@@ -811,6 +811,10 @@ Observação: um certificado autoassinado oferece apenas proteção limitada e n
       <trans-unit id="mssql.disabled">
         <source xml:lang="en">Disabled</source>
         <target state="translated">Desabilitado</target>
+      </trans-unit>
+      <trans-unit id="mssql.enableSqlAuthenticationProvider">
+        <source xml:lang="en">Enables use of the Sql Authentication Provider for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens. This option is only supported for 'MSAL' Azure Authentication Library. Azure Data Studio is required to be relaunched when the value is changed.</source>
+        <target state="translated">Habilita o uso do Provedor de Autenticação Sql para o modo de autenticação 'Active Directory Interactive' quando o usuário seleciona a autenticação 'AzureMFA'. Isso permite a integração de ponto de extremidade de recurso do lado do servidor ao buscar tokens de acesso. Esta opção só tem suporte para a Biblioteca de Autenticação do Azure 'MSAL'. O Azure Data Studio precisa ser reiniciado quando o valor é alterado.</target>
       </trans-unit>
       <trans-unit id="mssql.enabled">
         <source xml:lang="en">Enabled</source>
@@ -918,7 +922,7 @@ Observação: um certificado autoassinado oferece apenas proteção limitada e n
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.disableGroupBySchemaTitle">
         <source xml:lang="en">SQL Server: Disable Group By Schema</source>
-        <target state="new">SQL Server: Disable Group By Schema</target>
+        <target state="translated">SQL Server: Desabilitar Agrupar por Esquema</target>
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.enableGroupBySchema">
         <source xml:lang="en">Enable Group By Schema</source>
@@ -926,7 +930,7 @@ Observação: um certificado autoassinado oferece apenas proteção limitada e n
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.enableGroupBySchemaTitle">
         <source xml:lang="en">SQL Server: Enable Group By Schema</source>
-        <target state="new">SQL Server: Enable Group By Schema</target>
+        <target state="translated">SQL Server: Habilitar Agrupar por Esquema</target>
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.expandTimeout">
         <source xml:lang="en">The timeout in seconds for expanding a node in Object Explorer. The default value is 45 seconds.</source>
@@ -937,8 +941,12 @@ Observação: um certificado autoassinado oferece apenas proteção limitada e n
         <target state="translated">Quando habilitados, os objetos de banco de dados no Pesquisador de Objetos serão categorizados por esquema.</target>
       </trans-unit>
       <trans-unit id="mssql.parallelMessageProcessing">
-        <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.</source>
-        <target state="translated">[Experimental] Se as solicitações ao SQL Tools Service devem ser tratadas em paralelo. Isso é introduzido para descobrir os problemas que podem ocorrer ao lidar com todas as solicitações em paralelo. O valor padrão é falso. O relançamento do ADS é necessário quando o valor é alterado.</target>
+        <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</source>
+        <target state="translated">[Experimental] Se as solicitações para o SQL Tools Service devem ser tratadas em paralelo. Isso é introduzido para descobrir os problemas que podem ocorrer ao lidar com todas as solicitações em paralelo. O valor padrão é falso. O Azure Data Studio precisa ser reiniciado quando o valor é alterado.</target>
+      </trans-unit>
+      <trans-unit id="mssql.piiLogging">
+        <source xml:lang="en">[Optional] Should Personally Identifiable Information (PII) be logged in the log file.</source>
+        <target state="translated">[Opcional] As informações de identificação pessoal (PII) devem ser registradas no arquivo de log.</target>
       </trans-unit>
       <trans-unit id="mssql.provider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>
