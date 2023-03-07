@@ -15,7 +15,9 @@
   "activationEvents": [
     "onView:dataworkspace.views.main",
     "onCommand:projects.openExisting",
-    "onCommand:projects.new"
+    "onCommand:projects.new",
+    "onCommand:sqlDatabaseProjects.createProjectFromDatabase",
+    "onCommand:sqlDatabaseProjects.updateProjectFromDatabase"
   ],
   "main": "./out/main",
   "repository": {
