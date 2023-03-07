@@ -4,11 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import * as xmldom from '@xmldom/xmldom';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
-import * as xmlFormat from 'xml-formatter';
-import * as os from 'os';
 import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
@@ -139,8 +136,6 @@ export class Project implements ISqlProject {
 
 	//#endregion
 
-	private projFileXmlDoc: Document | undefined = undefined;
-
 	constructor(projectFilePath: string) {
 		this._projectFilePath = projectFilePath;
 		this._projectFileName = path.basename(projectFilePath, '.sqlproj');
@@ -171,9 +166,6 @@ export class Project implements ISqlProject {
 	 */
 	public async readProjFile(): Promise<void> {
 		this.resetProject();
-
-		const projFileText = await fs.readFile(this._projectFilePath);
-		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
 
 		await this.readProjectProperties();
 		await this.readSqlCmdVariables();
@@ -396,7 +388,6 @@ export class Project implements ISqlProject {
 		this._preDeployScripts = [];
 		this._postDeployScripts = [];
 		this._noneDeployScripts = [];
-		this.projFileXmlDoc = undefined;
 		this._outputPath = '';
 		this._configuration = Configuration.Debug;
 	}
@@ -882,128 +873,9 @@ export class Project implements ISqlProject {
 			containsCreateTableStatement);
 	}
 
-	/**
-	 * Deletes a node from the project file similar to <Compile Include="{includeString}" />
-	 * @param includeString Path of the file that matches the Include portion of the node
-	 * @param nodes The collection of XML nodes to search from
-	 * @param undoRemove When true, will remove a node similar to <Compile Remove="{includeString}" />
-	 * @returns True when a node has been removed, false otherwise.
-	 */
-	private removeNode(includeString: string, nodes: HTMLCollectionOf<Element>, undoRemove: boolean = false): boolean {
-		// Default function behavior removes nodes like <Compile Include="..." />
-		// However when undoRemove is true, this function removes <Compile Remove="..." />
-		const xmlAttribute = undoRemove ? constants.Remove : constants.Include;
-		for (let i = 0; i < nodes.length; i++) {
-			const parent = nodes[i].parentNode;
-
-			if (parent) {
-				if (nodes[i].getAttribute(xmlAttribute) === utils.convertSlashesForSqlProj(includeString)) {
-					parent.removeChild(nodes[i]);
-
-					// delete ItemGroup if this was the only entry
-					// only want element nodes, not text nodes
-					const otherChildren = Array.from(parent.childNodes).filter((c: ChildNode) => c.childNodes);
-
-					if (otherChildren.length === 0) {
-						parent.parentNode?.removeChild(parent);
-					}
-
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	private removeDatabaseReferenceFromProjFile(databaseReferenceEntry: IDatabaseReferenceProjectEntry): void {
-		const elementTag = databaseReferenceEntry instanceof SqlProjectReferenceProjectEntry ? constants.ProjectReference : constants.ArtifactReference;
-		const artifactReferenceNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(elementTag);
-		const deleted = this.removeNode(databaseReferenceEntry.pathForSqlProj(), artifactReferenceNodes);
-
-		// also delete SSDT reference if it's a system db reference
-		if (databaseReferenceEntry instanceof SystemDatabaseReferenceProjectEntry) {
-			const ssdtPath = databaseReferenceEntry.ssdtPathForSqlProj();
-			this.removeNode(ssdtPath, artifactReferenceNodes);
-		}
-
-		if (!deleted) {
-			throw new Error(constants.unableToFindDatabaseReference(databaseReferenceEntry.databaseName));
-		}
-	}
-
 	private databaseReferenceExists(entry: IDatabaseReferenceProjectEntry): boolean {
 		const found = this._databaseReferences.find(reference => reference.pathForSqlProj() === entry.pathForSqlProj()) !== undefined;
 		return found;
-	}
-
-	public containsSSDTOnlySystemDatabaseReferences(): boolean {
-		for (let r = 0; r < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
-			const currentNode = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference)[r];
-			if (currentNode.getAttribute(constants.Condition) !== constants.NetCoreCondition && currentNode.getAttribute(constants.Condition) !== constants.NotNetCoreCondition
-				&& currentNode.getAttribute(constants.Include)?.includes(constants.DacpacRootPath)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Update system db references to have the ADS and SSDT paths to the system dacpacs
-	 */
-	public async updateSystemDatabaseReferencesInProjFile(): Promise<void> {
-		// find all system database references
-		for (let r = 0; r < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
-			const currentNode = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference)[r];
-			if (!currentNode.getAttribute(constants.Condition) && currentNode.getAttribute(constants.Include)?.includes(constants.DacpacRootPath)) {
-				// get name of system database
-				const systemDb = currentNode.getAttribute(constants.Include)?.includes(constants.master) ? SystemDatabase.Master : SystemDatabase.Msdb;
-
-				// get name
-				const nameNodes = currentNode.getElementsByTagName(constants.DatabaseVariableLiteralValue);
-				const databaseVariableName = nameNodes[0].childNodes[0]?.nodeValue!;
-
-				// get suppressMissingDependenciesErrors
-				const suppressMissingDependenciesErrorNode = currentNode.getElementsByTagName(constants.SuppressMissingDependenciesErrors);
-				const suppressMissingDependences = suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === constants.True;
-
-				// TODO Two issues here :
-				// 1. If there are multiple ItemGroups with ArtifactReference items then we won't clean up until all items are removed
-				// 2. If the ItemGroup has other non-ArtifactReference items in it then those will be deleted
-				// Right now we assume that this ItemGroup is not manually edited so it's safe to ignore these
-				if (this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference).length === 1) {
-					// delete entire ItemGroup if there aren't any other children
-					this.projFileXmlDoc!.documentElement.removeChild(currentNode.parentNode!);
-				} else {
-					this.projFileXmlDoc!.documentElement.removeChild(currentNode);
-				}
-
-				// remove from database references because it'll get added again later
-				this._databaseReferences.splice(this._databaseReferences.findIndex(n => n.databaseName === (systemDb === SystemDatabase.Master ? constants.master : constants.msdb)), 1);
-
-				await this.addSystemDatabaseReference({ databaseName: databaseVariableName, systemDb: systemDb, suppressMissingDependenciesErrors: suppressMissingDependences });
-			}
-		}
-
-		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateSystemDatabaseReferencesInProjFile)
-			.withAdditionalMeasurements({ referencesCount: this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference).length })
-			.send();
-	}
-
-	private async serializeToProjFile(projFileContents: Document): Promise<void> {
-		let xml = new xmldom.XMLSerializer().serializeToString(projFileContents);
-		xml = xmlFormat(xml, <xmlFormat.Options>{
-			collapseContent: true,
-			indentation: '  ',
-			lineSeparator: os.EOL,
-			whiteSpaceAtEndOfSelfclosingTag: true
-		});
-
-		await fs.writeFile(this._projectFilePath, xml);
-
-		// update projFileXmlDoc since the file was updated
-		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(xml);
 	}
 
 	/**
