@@ -170,6 +170,7 @@ export class Project implements ISqlProject {
 
 		await this.readProjectProperties();
 		await this.readSqlCmdVariables();
+		await this.readDatabaseReferences();
 
 		// get pre and post deploy scripts specified in the sqlproj
 		this._preDeployScripts = this.readPreDeployScripts();
@@ -180,7 +181,6 @@ export class Project implements ISqlProject {
 		this._files = await this.readFilesInProject();
 		this.files.push(...await this.readFolders());
 
-		this._databaseReferences = this.readDatabaseReferences();
 		this._importedTargets = this.readImportedTargets();
 
 		// get publish profiles specified in the sqlproj
@@ -530,80 +530,35 @@ export class Project implements ISqlProject {
 		return publishProfiles;
 	}
 
-	private readDatabaseReferences(): IDatabaseReferenceProjectEntry[] {
-		const databaseReferenceEntries: IDatabaseReferenceProjectEntry[] = [];
+	private async readDatabaseReferences(): Promise<void> {
+		this._databaseReferences = [];
+		const databaseReferencesResult = await this.sqlProjService.getDatabaseReferences(this.projectFilePath);
 
-		// database(system db and dacpac) references
-		const references = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference);
-		for (let r = 0; r < references.length; r++) {
-			try {
-				if (references[r].getAttribute(constants.Condition) !== constants.NotNetCoreCondition) {
-					const filepath = references[r].getAttribute(constants.Include);
-					if (!filepath) {
-						throw new Error(constants.invalidDatabaseReference);
-					}
-
-					const nameNodes = references[r].getElementsByTagName(constants.DatabaseVariableLiteralValue);
-					const name = nameNodes.length === 1 ? nameNodes[0].childNodes[0].nodeValue! : undefined;
-
-					const suppressMissingDependenciesErrorNode = references[r].getElementsByTagName(constants.SuppressMissingDependenciesErrors);
-					const suppressMissingDependencies = suppressMissingDependenciesErrorNode.length === 1 ? (suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === constants.True) : false;
-
-					const path = utils.convertSlashesForSqlProj(this.getSystemDacpacUri(`${name}.dacpac`).fsPath);
-					if (path.includes(filepath)) {
-						databaseReferenceEntries.push(new SystemDatabaseReferenceProjectEntry(
-							Uri.file(filepath),
-							this.getSystemDacpacSsdtUri(`${name}.dacpac`),
-							name,
-							suppressMissingDependencies));
-					} else {
-						databaseReferenceEntries.push(new DacpacReferenceProjectEntry({
-							dacpacFileLocation: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
-							databaseName: name,
-							suppressMissingDependenciesErrors: suppressMissingDependencies
-						}));
-					}
-				}
-			} catch (e) {
-				void window.showErrorMessage(constants.errorReadingProject(constants.DacpacReferenceElement, this.projectFilePath));
-				console.error(utils.getErrorMessage(e));
-			}
+		for (const dacpacReference of databaseReferencesResult.dacpacReferences) {
+			this._databaseReferences.push(new DacpacReferenceProjectEntry({
+				dacpacFileLocation: Uri.file(dacpacReference.dacpacPath),
+				databaseName: dacpacReference.dacpacPath,
+				suppressMissingDependenciesErrors: dacpacReference.suppressMissingDependencies
+			}));
 		}
 
-		// project references
-		const projectReferences = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ProjectReference);
-		for (let r = 0; r < projectReferences.length; r++) {
-			try {
-				const filepath = projectReferences[r].getAttribute(constants.Include);
-				if (!filepath) {
-					throw new Error(constants.invalidDatabaseReference);
-				}
-
-				const nameNodes = projectReferences[r].getElementsByTagName(constants.Name);
-				let name = '';
-				try {
-					name = nameNodes[0].childNodes[0].nodeValue!;
-				} catch (e) {
-					void window.showErrorMessage(constants.errorReadingProject(constants.ProjectReferenceNameElement, this.projectFilePath));
-					console.error(utils.getErrorMessage(e));
-				}
-
-				const suppressMissingDependenciesErrorNode = projectReferences[r].getElementsByTagName(constants.SuppressMissingDependenciesErrors);
-				const suppressMissingDependencies = suppressMissingDependenciesErrorNode.length === 1 ? (suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === constants.True) : false;
-
-				databaseReferenceEntries.push(new SqlProjectReferenceProjectEntry({
-					projectRelativePath: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
-					projectName: name,
-					projectGuid: '', // don't care when just reading project as a reference
-					suppressMissingDependenciesErrors: suppressMissingDependencies
-				}));
-			} catch (e) {
-				void window.showErrorMessage(constants.errorReadingProject(constants.ProjectReferenceElement, this.projectFilePath));
-				console.error(utils.getErrorMessage(e));
-			}
+		for (const projectReference of databaseReferencesResult.sqlProjectReferences) {
+			this._databaseReferences.push(new SqlProjectReferenceProjectEntry({
+				projectRelativePath: Uri.file(utils.getPlatformSafeFileEntryPath(projectReference.projectPath)),
+				projectName: path.basename(utils.getPlatformSafeFileEntryPath(projectReference.projectPath), constants.sqlprojExtension),
+				projectGuid: projectReference.projectGuid ?? '',
+				suppressMissingDependenciesErrors: projectReference.suppressMissingDependencies
+			}));
 		}
 
-		return databaseReferenceEntries;
+		for (const systemDbReference of databaseReferencesResult.systemDatabaseReferences) {
+			this._databaseReferences.push(new SystemDatabaseReferenceProjectEntry(
+				Uri.file(''),
+				Uri.file(''), // TODO: remove these after add and delete are swapped - DacFx handles adding and removing system dacpacs, so we don't need to keep track of the paths here
+				systemDbReference.systemDb === mssql.SystemDatabase.master ? constants.master : constants.msdb,
+				systemDbReference.databaseVariableLiteralName,
+				systemDbReference.suppressMissingDependencies));
+		}
 	}
 
 	private readImportedTargets(): string[] {
@@ -840,21 +795,8 @@ export class Project implements ISqlProject {
 	 * Adds reference to the appropriate system database dacpac to the project
 	 */
 	public async addSystemDatabaseReference(settings: ISystemDatabaseReferenceSettings): Promise<void> {
-		let uri: Uri;
-		let ssdtUri: Uri;
-
-		if (settings.systemDb === SystemDatabase.master) {
-			uri = this.getSystemDacpacUri(constants.masterDacpac);
-			ssdtUri = this.getSystemDacpacSsdtUri(constants.masterDacpac);
-		} else {
-			uri = this.getSystemDacpacUri(constants.msdbDacpac);
-			ssdtUri = this.getSystemDacpacSsdtUri(constants.msdbDacpac);
-		}
-
-		const systemDatabaseReferenceProjectEntry = new SystemDatabaseReferenceProjectEntry(uri, ssdtUri, <string>settings.databaseName, settings.suppressMissingDependenciesErrors);
-
 		// check if reference to this database already exists
-		if (this.databaseReferences.find(r => r.databaseName === systemDatabaseReferenceProjectEntry.databaseName)) {
+		if (this.databaseReferences.find(r => r.databaseName === settings.databaseName)) {
 			throw new Error(constants.databaseReferenceAlreadyExists);
 		}
 
