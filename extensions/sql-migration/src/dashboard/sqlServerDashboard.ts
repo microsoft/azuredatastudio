@@ -12,7 +12,7 @@ import { canCancelMigration, canCutoverMigration, canRetryMigration } from '../c
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationNotebookInfo, NotebookPathHelper } from '../constants/notebookPathHelper';
 import * as loc from '../constants/strings';
-import { SavedAssessmentDialog } from '../dialog/assessmentResults/savedAssessmentDialog';
+import { SavedAssessmentDialog } from '../dialog/assessment/savedAssessmentDialog';
 import { ConfirmCutoverDialog } from '../dialog/migrationCutover/confirmCutoverDialog';
 import { MigrationCutoverDialogModel } from '../dialog/migrationCutover/migrationCutoverDialogModel';
 import { RetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDialog';
