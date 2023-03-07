@@ -228,9 +228,24 @@ export class ProjectsController {
 		}
 	}
 
-	private async createFileFromTemplate(project: Project, itemType: templates.ProjectScriptType, relativePath: string, expansionMacros: Record<string, string>): Promise<void> {
+	private async createFileFromTemplate(project: ISqlProject, itemType: templates.ProjectScriptType, relativePath: string, expansionMacros: Record<string, string>): Promise<string> {
 		const newFileText = templates.macroExpansion(itemType.templateScript, expansionMacros);
-		await project.addScriptItem(relativePath, newFileText, itemType.type);
+		const absolutePath = path.join(project.projectFolderPath, relativePath)
+		await utils.ensureFileExists(absolutePath, newFileText);
+
+		switch (itemType.type) {
+			case ItemType.preDeployScript:
+				await project.addPreDeploymentScript(relativePath);
+				break
+			case ItemType.postDeployScript:
+				await project.addPostDeploymentScript(relativePath);
+				break;
+			default: // a normal SQL object script
+				await project.addSqlObjectScript(relativePath);
+				break;
+		}
+
+		return absolutePath;
 	}
 
 	//#endregion
@@ -715,6 +730,8 @@ export class ProjectsController {
 		}
 
 		try {
+			const absolutePath = await this.createFileFromTemplate(project, itemType, relativeFilePath, { 'OBJECT_NAME': itemObjectName });
+
 			const newEntry = await project.addScriptItem(relativeFilePath, newFileText, itemType.type);
 
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addItemFromTree)

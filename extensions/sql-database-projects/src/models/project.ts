@@ -161,6 +161,14 @@ export class Project implements ISqlProject {
 		proj.sqlProjService = await utils.getSqlProjectsService();
 		await proj.readProjFile();
 
+		if (!proj.isCrossPlatformCompatible && promptIfNeedsUpdating) {
+			const result = await window.showWarningMessage(constants.updateProjectForRoundTrip(proj.projectFileName), constants.yesString, constants.noString);
+
+			if (result === constants.yesString) {
+				await proj.updateProjectForRoundTrip();
+			}
+		}
+
 		return proj;
 	}
 
@@ -182,7 +190,7 @@ export class Project implements ISqlProject {
 		await this.readNoneScripts();
 
 		await this.readFilesInProject(); // get SQL object scripts
-		this._folders = await this.readFolders(); // get folders
+		await this.readFolders(); // get folders
 
 		this._databaseReferences = this.readDatabaseReferences();
 		this._importedTargets = this.readImportedTargets();
@@ -269,7 +277,7 @@ export class Project implements ISqlProject {
 		this._files = fileEntries;
 	}
 
-	private async readFolders(): Promise<FileProjectEntry[]> {
+	private async readFolders(): Promise<void> {
 		var result: GetFoldersResult = await this.sqlProjService.getFolders(this.projectFilePath);
 		this.throwIfFailed(result);
 
@@ -281,7 +289,7 @@ export class Project implements ISqlProject {
 			}
 		}
 
-		return folderEntries;
+		this._folders = folderEntries;
 	}
 
 	private async readPreDeployScripts(): Promise<void> {
@@ -470,11 +478,6 @@ export class Project implements ISqlProject {
 			return;
 		}
 
-		// TODO: is this check below still relevant?
-		// if (this._importedTargets.includes(constants.NetCoreTargets) && !this.containsSSDTOnlySystemDatabaseReferences() // old style project check
-		// 	|| this.sqlProjStyle === ProjectType.SdkStyle) { // new style project check
-		// 	return;
-		// }
 
 		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectForRoundtrip);
 
@@ -486,11 +489,106 @@ export class Project implements ISqlProject {
 
 	//#region Add/Delete/Exclude functions
 
+	//#region Folders
+
+	public async addFolder2(relativeFolderPath: string): Promise<void> {
+		const result = await this.sqlProjService.addFolder(this.projectFileName, relativeFolderPath);
+		this.throwIfFailed(result);
+
+		await this.readFolders();
+	}
+
+	public async deleteFolder(relativeFolderPath: string): Promise<void> {
+		const result = await this.sqlProjService.deleteFolder(this.projectFileName, relativeFolderPath);
+		this.throwIfFailed(result);
+
+		await this.readFolders();
+	}
+
+	//#endregion
+
+	//#region SQL object scripts
+
+	public async addSqlObjectScript(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.addSqlObjectScript(this.projectFileName, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readFilesInProject();
+	}
+
+	public async deleteSqlObjectScript(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.deleteSqlObjectScript(this.projectFileName, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readFilesInProject();
+	}
+
+	public async excludeSqlObjectScript(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.excludeSqlObjectScript(this.projectFileName, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readFilesInProject();
+	}
+
+	//#endregion
+
+	//#region Pre-deployment scripts
+
+	public async addPreDeploymentScript(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.addPreDeploymentScript(this.projectFileName, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readPreDeployScripts();
+		await this.readNoneScripts();
+	}
+
+	public async deletePreDeploymentScript(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.deletePreDeploymentScript(this.projectFileName, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readPreDeployScripts();
+	}
+
+	public async excludePreDeploymentScript(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.excludePreDeploymentScript(this.projectFileName, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readPreDeployScripts();
+	}
+
+	//#endregion
+
+	//#region Post-deployment scripts
+
+	public async addPostDeploymentScript(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.addPreDeploymentScript(this.projectFileName, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readPostDeployScripts();
+		await this.readNoneScripts();
+	}
+
+	public async deletePostDeploymentScript(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.deletePostDeploymentScript(this.projectFileName, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readPostDeployScripts();
+	}
+
+	public async excludePostDeploymentScript(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.excludePostDeploymentScript(this.projectFileName, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readPostDeployScripts();
+	}
+
+	//#endregion
+
 	//#endregion
 
 	/**
 	 * Adds a folder to the project, and saves the project file
-	 *
+	 * TODO: delete once replaced with addFolder2
 	 * @param relativeFolderPath Relative path of the folder
 	 */
 	public async addFolder(relativeFolderPath: string): Promise<FileProjectEntry> {
@@ -518,28 +616,7 @@ export class Project implements ISqlProject {
 
 		// Ensure the file exists // TODO: can be pushed down to DacFx
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
-
-		if (contents) {
-			// Create the file if contents were passed in and file does not exist yet
-			await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
-
-			try {
-				await fs.writeFile(absoluteFilePath, contents, { flag: 'wx' });
-			} catch (error) {
-				if (error.code === 'EEXIST') {
-					// Throw specialized error, if file already exists
-					throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
-				}
-
-				throw error;
-			}
-		} else {
-			// If no contents were provided, then check that file already exists
-			let exists = await utils.exists(absoluteFilePath);
-			if (!exists) {
-				throw new Error(constants.noFileExist(absoluteFilePath));
-			}
-		}
+		await utils.ensureFileExists(absoluteFilePath, contents);
 
 		// Add the new script
 		let result: ResultStatus;
@@ -561,7 +638,7 @@ export class Project implements ISqlProject {
 				break;
 		}
 
-		this._folders = await this.readFolders();
+		await this.readFolders();
 
 		this.throwIfFailed(result);
 
@@ -596,8 +673,10 @@ export class Project implements ISqlProject {
 	}
 
 	public async exclude(entry: FileProjectEntry): Promise<void> {
-		const toExclude: FileProjectEntry[] = this._files.concat(this._preDeployScripts).concat(this._postDeployScripts).concat(this._noneDeployScripts).concat(this._publishProfiles).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
-		await this.removeFromProjFile(toExclude);
+		entry.type
+		entry.type
+		//const toExclude: FileProjectEntry[] = this._files.concat(this._preDeployScripts).concat(this._postDeployScripts).concat(this._noneDeployScripts).concat(this._publishProfiles).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
+		//await this.removeFromProjFile(toExclude);
 
 		this._files = this._files.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
 		this._preDeployScripts = this._preDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
@@ -618,7 +697,7 @@ export class Project implements ISqlProject {
 	}
 
 	public async deleteDatabaseReference(entry: IDatabaseReferenceProjectEntry): Promise<void> {
-		await this.removeFromProjFile(entry);
+		//await this.removeFromProjFile(entry);
 		this._databaseReferences = this._databaseReferences.filter(x => x !== entry);
 	}
 
@@ -685,7 +764,7 @@ export class Project implements ISqlProject {
 			throw new Error(constants.databaseReferenceAlreadyExists);
 		}
 
-		await this.addToProjFile(systemDatabaseReferenceProjectEntry);
+		//await this.addToProjFile(systemDatabaseReferenceProjectEntry);
 	}
 
 	public getSystemDacpacUri(dacpac: string): Uri {
@@ -1020,10 +1099,10 @@ export class Project implements ISqlProject {
 			await this.writeToSqlProjAndUpdateFilesFolders();
 
 			// get latest folders to see if it still exists
-			const currentFolders = await this.readFolders();
+			await this.readFolders();
 
 			// add exclude entry if it's still in the current folders
-			if (currentFolders.find(f => f.relativePath === utils.convertSlashesForSqlProj(folderPath))) {
+			if (this._folders.find(f => f.relativePath === utils.convertSlashesForSqlProj(folderPath))) {
 				const removeFileNode = this.projFileXmlDoc!.createElement(constants.Build);
 				removeFileNode.setAttribute(constants.Remove, utils.convertSlashesForSqlProj(folderPath + '**'));
 				this.findOrCreateItemGroup(constants.Build).appendChild(removeFileNode);
@@ -1058,7 +1137,6 @@ export class Project implements ISqlProject {
 		const projFileText = await fs.readFile(this._projectFilePath);
 		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
 		await this.readFilesInProject();
-		this.files.push(...(await this.readFolders()));
 	}
 
 	private removeSqlCmdVariableFromProjFile(variableName: string): void {
@@ -1150,56 +1228,6 @@ export class Project implements ISqlProject {
 		}
 	}
 
-	public async addSqlCmdVariableToProjFile(entry: SqlCmdVariableProjectEntry): Promise<void> {
-		// Remove any entries with the same variable name. It'll be replaced with a new one
-		if (Object.keys(this._sqlCmdVariables).includes(entry.variableName)) {
-			await this.removeFromProjFile(entry);
-		}
-
-		const sqlCmdVariableNode = this.projFileXmlDoc!.createElement(constants.SqlCmdVariable);
-		sqlCmdVariableNode.setAttribute(constants.Include, entry.variableName);
-		this.addSqlCmdVariableChildren(sqlCmdVariableNode, entry);
-		this.findOrCreateItemGroup(constants.SqlCmdVariable).appendChild(sqlCmdVariableNode);
-
-		// add to the project's loaded sqlcmd variables
-		this._sqlCmdVariables[entry.variableName] = <string>entry.defaultValue;
-	}
-
-	private addSqlCmdVariableChildren(sqlCmdVariableNode: Element, entry: SqlCmdVariableProjectEntry): void {
-		// add default value
-		const defaultValueNode = this.projFileXmlDoc!.createElement(constants.DefaultValue);
-		const defaultValueText = this.projFileXmlDoc!.createTextNode(entry.defaultValue);
-		defaultValueNode.appendChild(defaultValueText);
-		sqlCmdVariableNode.appendChild(defaultValueNode);
-
-		// add value node which is in the format $(SqlCmdVar__x)
-		const valueNode = this.projFileXmlDoc!.createElement(constants.Value);
-		const valueText = this.projFileXmlDoc!.createTextNode(`$(SqlCmdVar__${this.getNextSqlCmdVariableCounter()})`);
-		valueNode.appendChild(valueText);
-		sqlCmdVariableNode.appendChild(valueNode);
-	}
-
-	/**
-	 * returns the next number that should be used for the new SqlCmd Variable. Old numbers don't get reused even if a SqlCmd Variable
-	 * gets removed from the project
-	 */
-	private getNextSqlCmdVariableCounter(): number {
-		const sqlCmdVariableNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.SqlCmdVariable);
-		let highestNumber = 0;
-
-		for (let i = 0; i < sqlCmdVariableNodes.length; i++) {
-			const value: string = sqlCmdVariableNodes[i].getElementsByTagName(constants.Value)[0].childNodes[0].nodeValue!;
-			const number = parseInt(value.substring(13).slice(0, -1)); // want the number x in $(SqlCmdVar__x)
-
-			// incremement the counter if there's already a variable with the same number or greater
-			if (number > highestNumber) {
-				highestNumber = number;
-			}
-		}
-
-		return highestNumber + 1;
-	}
-
 	public containsSSDTOnlySystemDatabaseReferences(): boolean {
 		for (let r = 0; r < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
 			const currentNode = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference)[r];
@@ -1254,52 +1282,6 @@ export class Project implements ISqlProject {
 			.send();
 	}
 
-	private async addToProjFile(entry: ProjectEntry): Promise<void> {
-		switch (entry.type) {
-			case EntryType.DatabaseReference:
-				await this.addDatabaseReferenceToProjFile(<IDatabaseReferenceProjectEntry>entry);
-				break;
-			case EntryType.SqlCmdVariable:
-				await this.addSqlCmdVariableToProjFile(<SqlCmdVariableProjectEntry>entry);
-				break; // not required but adding so that we dont miss when we add new items
-			default:
-				throw new Error(`Unhandled entry type: ${entry.type}`);
-		}
-
-		await this.serializeToProjFile(this.projFileXmlDoc!);
-	}
-
-	private async removeFromProjFile(entries: IProjectEntry | IProjectEntry[]): Promise<void> {
-		if (!Array.isArray(entries)) {
-			entries = [entries];
-		}
-
-		// remove any folders first, otherwise unnecessary Build remove entries might get added for sdk style
-		// projects to exclude both the folder and the files in the folder
-		const folderEntries = entries.filter(e => e.type === EntryType.Folder);
-		for (const folder of folderEntries) {
-			await this.removeFolderFromProjFile((<FileProjectEntry>folder).relativePath);
-		}
-
-		entries = entries.filter(e => e.type !== EntryType.Folder);
-
-		for (const entry of entries) {
-			switch (entry.type) {
-				case EntryType.File:
-					await this.removeFileFromProjFile((<FileProjectEntry>entry).relativePath);
-					break;
-				case EntryType.DatabaseReference:
-					this.removeDatabaseReferenceFromProjFile(<IDatabaseReferenceProjectEntry>entry);
-					break;
-				case EntryType.SqlCmdVariable:
-					this.removeSqlCmdVariableFromProjFile((<SqlCmdVariableProjectEntry>entry).variableName);
-					break; // not required but adding so that we dont miss when we add new items
-			}
-		}
-
-		await this.serializeToProjFile(this.projFileXmlDoc!);
-	}
-
 	private async serializeToProjFile(projFileContents: Document): Promise<void> {
 		let xml = new xmldom.XMLSerializer().serializeToString(projFileContents);
 		xml = xmlFormat(xml, <xmlFormat.Options>{
@@ -1337,9 +1319,9 @@ export class Project implements ISqlProject {
 				const fileStat = await fs.stat(file.fsPath);
 
 				if (fileStat.isFile() && file.fsPath.toLowerCase().endsWith(constants.sqlFileExtension)) {
-					await this.addScriptItem(relativePath);
+					await this.addSqlObjectScript(relativePath);
 				} else if (fileStat.isDirectory()) {
-					await this.addFolder(relativePath);
+					await this.addFolder2(relativePath);
 				}
 			}
 		}

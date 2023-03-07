@@ -155,6 +155,9 @@ declare module 'sqldbproj' {
 		 */
 		addToProject(list: vscode.Uri[]): Promise<void>;
 
+		addPreDeploymentScript(relativePath: string): Promise<void>;
+		addPostDeploymentScript(relativePath: string): Promise<void>;
+		addSqlObjectScript(relativePath: string): Promise<void>;
 		/**
 		 * Adds a folder to the project, and saves the project file
 		 *

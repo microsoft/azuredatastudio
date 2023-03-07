@@ -44,9 +44,13 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 		return this.references;
 	}
 
+	public get type(): constants.DatabaseProjectItemType {
+		return constants.DatabaseProjectItemType.referencesRoot;
+	}
+
 	public get treeItem(): vscode.TreeItem {
 		const refFolderItem = new vscode.TreeItem(this.relativeProjectUri, vscode.TreeItemCollapsibleState.Collapsed);
-		refFolderItem.contextValue = constants.DatabaseProjectItemType.referencesRoot;
+		refFolderItem.contextValue = this.type;
 		refFolderItem.iconPath = IconPathHelper.referenceGroup;
 
 		return refFolderItem;
@@ -62,10 +66,14 @@ export class DatabaseReferenceTreeItem extends BaseProjectTreeItem {
 		return [];
 	}
 
+	public get type(): constants.DatabaseProjectItemType {
+		return constants.DatabaseProjectItemType.reference;
+	}
+
 	public get treeItem(): vscode.TreeItem {
 		const refItem = new vscode.TreeItem(this.relativeProjectUri, vscode.TreeItemCollapsibleState.None);
 		refItem.label = this.reference.databaseName;
-		refItem.contextValue = constants.DatabaseProjectItemType.reference;
+		refItem.contextValue = this.type;
 		refItem.iconPath = IconPathHelper.referenceDatabase;
 
 		return refItem;

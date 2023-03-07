@@ -781,3 +781,27 @@ export function isPublishProfile(fileName: string): boolean {
 	const hasPublishExtension = fileName.trim().toLowerCase().endsWith(constants.publishProfileExtension);
 	return hasPublishExtension;
 }
+
+export async function ensureFileExists(absoluteFilePath: string, contents?: string): Promise<void> {
+	if (contents) {
+		// Create the file if contents were passed in and file does not exist yet
+		await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
+
+		try {
+			await fs.writeFile(absoluteFilePath, contents, { flag: 'wx' });
+		} catch (error) {
+			if (error.code === 'EEXIST') {
+				// Throw specialized error, if file already exists
+				throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
+			}
+
+			throw error;
+		}
+	} else {
+		// If no contents were provided, then check that file already exists
+		let exists = await exists(absoluteFilePath);
+		if (!exists) {
+			throw new Error(constants.noFileExist(absoluteFilePath));
+		}
+	}
+}
