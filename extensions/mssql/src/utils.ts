@@ -185,6 +185,8 @@ export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileNa
 	let launchArgs = [];
 	// Application Name determines app storage location or user data path.
 	launchArgs.push('--application-name', 'azuredatastudio');
+	launchArgs.push('--application-path', getAppDataPath());
+
 	launchArgs.push(`--locale`, vscode.env.language);
 
 	launchArgs.push('--log-file');
