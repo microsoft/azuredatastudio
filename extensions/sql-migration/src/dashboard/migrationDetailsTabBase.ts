@@ -9,13 +9,16 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationServiceContext } from '../models/migrationLocalStorage';
 import * as loc from '../constants/strings';
 import * as styles from '../constants/styles';
-import { DatabaseMigration } from '../api/azure';
+import { DatabaseMigration, deleteMigration } from '../api/azure';
 import { TabBase } from './tabBase';
 import { MigrationCutoverDialogModel } from '../dialog/migrationCutover/migrationCutoverDialogModel';
 import { ConfirmCutoverDialog } from '../dialog/migrationCutover/confirmCutoverDialog';
 import { RetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDialog';
 import { MigrationTargetType } from '../models/stateMachine';
 import { DashboardStatusBar } from './DashboardStatusBar';
+import { canDeleteMigration } from '../constants/helper';
+import { logError, TelemetryViews } from '../telemetry';
+import { MenuCommands } from '../api/utils';
 
 export const infoFieldLgWidth: string = '330px';
 export const infoFieldWidth: string = '250px';
@@ -38,10 +41,11 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 	protected model!: MigrationCutoverDialogModel;
 	protected databaseLabel!: azdata.TextComponent;
 	protected serviceContext!: MigrationServiceContext;
-	protected openMigrationsListFcn!: () => Promise<void>;
+	protected openMigrationsListFcn!: (refresh?: boolean) => Promise<void>;
 	protected cutoverButton!: azdata.ButtonComponent;
 	protected refreshButton!: azdata.ButtonComponent;
 	protected cancelButton!: azdata.ButtonComponent;
+	protected deleteButton!: azdata.ButtonComponent;
 	protected refreshLoader!: azdata.LoadingComponent;
 	protected copyDatabaseMigrationDetails!: azdata.ButtonComponent;
 	protected newSupportRequest!: azdata.ButtonComponent;
@@ -51,7 +55,7 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 	public abstract create(
 		context: vscode.ExtensionContext,
 		view: azdata.ModelView,
-		openMigrationsListFcn: () => Promise<void>,
+		openMigrationsListFcn: (refresh?: boolean) => Promise<void>,
 		statusBar: DashboardStatusBar): Promise<T>;
 
 	protected abstract migrationInfoGrid(): Promise<azdata.FlexContainer>;
@@ -186,6 +190,45 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 				});
 			}));
 
+		this.deleteButton = this.view.modelBuilder.button()
+			.withProps({
+				iconPath: IconPathHelper.discard,
+				iconHeight: '16px',
+				iconWidth: '16px',
+				label: loc.DELETE_MIGRATION,
+				height: buttonHeight,
+				enabled: false,
+			}).component();
+
+		this.disposables.push(
+			this.deleteButton.onDidClick(
+				async (e) => {
+					await this.statusBar.clearError();
+					try {
+						if (canDeleteMigration(this.model.migration)) {
+							const response = await vscode.window.showInformationMessage(
+								loc.DELETE_MIGRATION_CONFIRMATION,
+								{ modal: true },
+								loc.YES,
+								loc.NO);
+							if (response === loc.YES) {
+								await deleteMigration(
+									this.serviceContext.azureAccount!,
+									this.serviceContext.subscription!,
+									this.model.migration.id);
+								await this.openMigrationsListFcn(true);
+							}
+						} else {
+							await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_DELETE);
+						}
+					} catch (e) {
+						await this.statusBar.showError(
+							loc.MIGRATION_DELETE_ERROR,
+							loc.MIGRATION_DELETE_ERROR,
+							e.message);
+						logError(TelemetryViews.MigrationDetailsTab, MenuCommands.DeleteMigration, e);
+					}
+				}));
 
 		this.retryButton = this.view.modelBuilder.button()
 			.withProps({
@@ -266,6 +309,7 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 		toolbarContainer.addToolbarItems([
 			<azdata.ToolbarComponent>{ component: this.cutoverButton },
 			<azdata.ToolbarComponent>{ component: this.cancelButton },
+			<azdata.ToolbarComponent>{ component: this.deleteButton },
 			<azdata.ToolbarComponent>{ component: this.retryButton },
 			<azdata.ToolbarComponent>{ component: this.copyDatabaseMigrationDetails, toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.newSupportRequest, toolbarSeparatorAfter: true },

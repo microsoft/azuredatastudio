@@ -6,9 +6,9 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { promises as fs } from 'fs';
-import { DatabaseMigration, getMigrationDetails } from '../api/azure';
+import { DatabaseMigration, deleteMigration, getMigrationDetails } from '../api/azure';
 import { MenuCommands, SqlMigrationExtensionId } from '../api/utils';
-import { canCancelMigration, canCutoverMigration, canRetryMigration } from '../constants/helper';
+import { canCancelMigration, canCutoverMigration, canDeleteMigration, canRetryMigration } from '../constants/helper';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationNotebookInfo, NotebookPathHelper } from '../constants/notebookPathHelper';
 import * as loc from '../constants/strings';
@@ -41,6 +41,7 @@ export class DashboardWidget {
 	private readonly _onServiceContextChanged: vscode.EventEmitter<ServiceContextChangeEvent>;
 	private readonly _migrationDetailsEvent: vscode.EventEmitter<MigrationDetailsEvent>;
 	private readonly _errorEvent: vscode.EventEmitter<ErrorEvent>;
+	private _migrationsTab!: MigrationsTab;
 
 	constructor(context: vscode.ExtensionContext) {
 		this._context = context;
@@ -94,11 +95,11 @@ export class DashboardWidget {
 				if (!migrationsTabInitialized) {
 					migrationsTabInitialized = true;
 					tabs.selectTab(MigrationsTabId);
-					await migrationsTab.setMigrationFilter(AdsMigrationStatus.ALL);
-					await migrationsTab.refresh();
-					await migrationsTab.setMigrationFilter(filter);
+					await this._migrationsTab.setMigrationFilter(AdsMigrationStatus.ALL);
+					await this._migrationsTab.refresh();
+					await this._migrationsTab.setMigrationFilter(filter);
 				} else {
-					const promise = migrationsTab.setMigrationFilter(filter);
+					const promise = this._migrationsTab.setMigrationFilter(filter);
 					tabs.selectTab(MigrationsTabId);
 					await promise;
 				}
@@ -111,16 +112,16 @@ export class DashboardWidget {
 				statusBar);
 			disposables.push(dashboardTab);
 
-			const migrationsTab = await new MigrationsTab().create(
+			this._migrationsTab = await new MigrationsTab().create(
 				this._context,
 				view,
 				this._onServiceContextChanged,
 				this._migrationDetailsEvent,
 				statusBar);
-			disposables.push(migrationsTab);
+			disposables.push(this._migrationsTab);
 
 			const tabs = view.modelBuilder.tabbedPanel()
-				.withTabs([dashboardTab, migrationsTab])
+				.withTabs([dashboardTab, this._migrationsTab])
 				.withLayout({ alwaysShowTabs: true, orientation: azdata.TabOrientation.Horizontal })
 				.withProps({
 					CSSStyles: {
@@ -137,7 +138,7 @@ export class DashboardWidget {
 					await this.clearError(await getSourceConnectionId());
 					if (tabId === MigrationsTabId && !migrationsTabInitialized) {
 						migrationsTabInitialized = true;
-						await migrationsTab.refresh();
+						await this._migrationsTab.refresh();
 					}
 				}));
 
@@ -210,8 +211,10 @@ export class DashboardWidget {
 				async (args: MenuCommandArgs) => {
 					try {
 						const migration = await this._getMigrationById(args.migrationId, args.migrationOperationId);
-						const url = 'https://portal.azure.com/#resource/' + migration!.properties.scope;
-						await vscode.env.openExternal(vscode.Uri.parse(url));
+						if (migration) {
+							const url = 'https://portal.azure.com/#resource/' + migration.properties.scope;
+							await vscode.env.openExternal(vscode.Uri.parse(url));
+						}
 					} catch (e) {
 						await this.showError(
 							args.connectionId,
@@ -229,10 +232,13 @@ export class DashboardWidget {
 					try {
 						await this.clearError(args.connectionId);
 						const migration = await this._getMigrationById(args.migrationId, args.migrationOperationId);
-						const dialog = new SqlMigrationServiceDetailsDialog(
-							await MigrationLocalStorage.getMigrationServiceContext(),
-							migration!);
-						await dialog.initialize();
+						const serviceContext = await MigrationLocalStorage.getMigrationServiceContext();
+						if (migration && serviceContext) {
+							const dialog = new SqlMigrationServiceDetailsDialog(
+								serviceContext,
+								migration);
+							await dialog.initialize();
+						}
 					} catch (e) {
 						await this.showError(
 							args.connectionId,
@@ -269,40 +275,78 @@ export class DashboardWidget {
 					}
 				}));
 
-		this._context.subscriptions.push(vscode.commands.registerCommand(
-			MenuCommands.CancelMigration,
-			async (args: MenuCommandArgs) => {
-				try {
-					await this.clearError(args.connectionId);
-					const migration = await this._getMigrationById(args.migrationId, args.migrationOperationId);
-					if (canCancelMigration(migration)) {
-						void vscode.window.showInformationMessage(loc.CANCEL_MIGRATION_CONFIRMATION, loc.YES, loc.NO)
-							.then(async (v) => {
-								if (v === loc.YES) {
-									const cutoverDialogModel = new MigrationCutoverDialogModel(
-										await MigrationLocalStorage.getMigrationServiceContext(),
-										migration!);
-									await cutoverDialogModel.fetchStatus();
-									await cutoverDialogModel.cancelMigration();
+		this._context.subscriptions.push(
+			vscode.commands.registerCommand(
+				MenuCommands.CancelMigration,
+				async (args: MenuCommandArgs) => {
+					try {
+						await this.clearError(args.connectionId);
+						const migration = await this._getMigrationById(args.migrationId, args.migrationOperationId);
+						if (migration && canCancelMigration(migration)) {
+							void vscode.window
+								.showInformationMessage(loc.CANCEL_MIGRATION_CONFIRMATION, loc.YES, loc.NO)
+								.then(async (v) => {
+									if (v === loc.YES) {
+										const cutoverDialogModel = new MigrationCutoverDialogModel(
+											await MigrationLocalStorage.getMigrationServiceContext(),
+											migration!);
+										await cutoverDialogModel.fetchStatus();
+										await cutoverDialogModel.cancelMigration();
 
-									if (cutoverDialogModel.CancelMigrationError) {
-										void vscode.window.showErrorMessage(loc.MIGRATION_CANNOT_CANCEL);
-										logError(TelemetryViews.MigrationsTab, MenuCommands.CancelMigration, cutoverDialogModel.CancelMigrationError);
+										if (cutoverDialogModel.CancelMigrationError) {
+											void vscode.window.showErrorMessage(loc.MIGRATION_CANNOT_CANCEL);
+											logError(TelemetryViews.MigrationsTab, MenuCommands.CancelMigration, cutoverDialogModel.CancelMigrationError);
+										}
 									}
-								}
-							});
-					} else {
-						await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_CANCEL);
+								});
+						} else {
+							await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_CANCEL);
+						}
+					} catch (e) {
+						await this.showError(
+							args.connectionId,
+							loc.MIGRATION_CANCELLATION_ERROR,
+							loc.MIGRATION_CANCELLATION_ERROR,
+							e.message);
+						logError(TelemetryViews.MigrationsTab, MenuCommands.CancelMigration, e);
 					}
-				} catch (e) {
-					await this.showError(
-						args.connectionId,
-						loc.MIGRATION_CANCELLATION_ERROR,
-						loc.MIGRATION_CANCELLATION_ERROR,
-						e.message);
-					logError(TelemetryViews.MigrationsTab, MenuCommands.CancelMigration, e);
-				}
-			}));
+				}));
+
+		this._context.subscriptions.push(
+			vscode.commands.registerCommand(
+				MenuCommands.DeleteMigration,
+				async (args: MenuCommandArgs) => {
+					await this.clearError(args.connectionId);
+					try {
+						const service = await MigrationLocalStorage.getMigrationServiceContext();
+						const migration = await this._getMigrationById(args.migrationId, args.migrationOperationId);
+						if (service && (
+							(migration && canDeleteMigration(migration)) ||
+							(migration === undefined && args.migrationId?.length > 0))) {
+							const response = await vscode.window.showInformationMessage(
+								loc.DELETE_MIGRATION_CONFIRMATION,
+								{ modal: true },
+								loc.YES,
+								loc.NO);
+							if (response === loc.YES) {
+								await deleteMigration(
+									service.azureAccount!,
+									service.subscription!,
+									args.migrationId);
+								await this._migrationsTab.refresh();
+							}
+						} else {
+							await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_DELETE);
+						}
+					} catch (e) {
+						await this.showError(
+							args.connectionId,
+							loc.MIGRATION_DELETE_ERROR,
+							loc.MIGRATION_DELETE_ERROR,
+							e.message);
+						logError(TelemetryViews.MigrationsTab, MenuCommands.DeleteMigration, e);
+					}
+				}));
 
 		this._context.subscriptions.push(
 			vscode.commands.registerCommand(
@@ -311,11 +355,11 @@ export class DashboardWidget {
 					try {
 						await this.clearError(args.connectionId);
 						const migration = await this._getMigrationById(args.migrationId, args.migrationOperationId);
-						if (canRetryMigration(migration)) {
+						if (migration && canRetryMigration(migration)) {
 							const retryMigrationDialog = new RetryMigrationDialog(
 								this._context,
 								await MigrationLocalStorage.getMigrationServiceContext(),
-								migration!,
+								migration,
 								this._onServiceContextChanged);
 							await retryMigrationDialog.openDialog();
 						}
@@ -418,11 +462,16 @@ export class DashboardWidget {
 	private async _getMigrationById(migrationId: string, migrationOperationId: string): Promise<DatabaseMigration | undefined> {
 		const context = await MigrationLocalStorage.getMigrationServiceContext();
 		if (context.azureAccount && context.subscription) {
-			return getMigrationDetails(
-				context.azureAccount,
-				context.subscription,
-				migrationId,
-				migrationOperationId);
+			try {
+				const migration = getMigrationDetails(
+					context.azureAccount,
+					context.subscription,
+					migrationId,
+					migrationOperationId);
+				return migration;
+			} catch (error) {
+				logError(TelemetryViews.MigrationsTab, "_getMigrationById", error);
+			}
 		}
 		return undefined;
 	}
