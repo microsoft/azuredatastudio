@@ -220,7 +220,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				label: constants.XEVENTS_ASSESSMENT_TITLE,
 				ariaLabel: '',
 				url: '',
-				CSSStyles: { ...styles.BODY_CSS, /*'margin-top': '8px'*/ }
+				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 		const xEventsAssessmentDialog = new XEventsAssessmentDialog(this.wizard, this.migrationStateModel);
 		this._disposables.push(this._xeventsAssessmentLink.onDidClick(
