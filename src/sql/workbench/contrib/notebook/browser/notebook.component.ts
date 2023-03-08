@@ -233,7 +233,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				cells.forEach(cell => {
 					let cellOldDecorations = oldDecorationsRange.filter(r => r.cell === cell);
 					// In split mode we have code and text cells with the same Guid,
-					// we need to find the text component editor => c.hasEditor() filters that.
+					// we need to find the text component editor to apply the decorations
+					// text component doesn't have an editor => !c.getEditor() filters that.
 					let cellEditor = this.cellEditors.find(c => c.cellGuid() === cell.cellGuid && !c.getEditor());
 					cellEditor.deltaDecorations(undefined, cellOldDecorations);
 				});
@@ -257,7 +258,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				cells.forEach(cell => {
 					let cellNewDecorations = newDecorationsRange.filter(r => r.cell === cell);
 					// In split mode we have code and text cells with the same Guid,
-					// we need to find the text component editor => c.hasEditor() filters that.
+					// we need to find the text component editor to apply the decorations
+					// text component doesn't have an editor => !c.getEditor() filters that.
 					let cellEditor = this.cellEditors.find(c => c.cellGuid() === cell.cellGuid && !c.getEditor());
 					cellEditor.deltaDecorations(cellNewDecorations, undefined);
 				});
