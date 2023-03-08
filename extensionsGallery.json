@@ -3098,12 +3098,12 @@
 									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/qpi/qpi-0.1.6.vsix"
 								},
 								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/jocapc/AzureDataStudio-QPI/master/README.md"
-								},
-								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
 									"source": "https://raw.githubusercontent.com/jocapc/AzureDataStudio-QPI/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/jocapc/AzureDataStudio-QPI/master/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
@@ -3177,12 +3177,12 @@
 									"value": ""
 								},
 								{
-									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.25.0"
-								},
-								{
 									"key": "Microsoft.AzDataEngine",
 									"value": ">=1.33.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=1.25.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -4212,7 +4212,7 @@
 					"versions": [
 						{
 							"version": "1.8.0",
-							"lastUpdated": "1/25/2022",
+							"lastUpdated": "1/25/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -4756,7 +4756,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/richardtallent/column-aligner"
+									"value": "https://github.com/richardtallent/column-aligner-ads"
 								}
 							]
 						}
