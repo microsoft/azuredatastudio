@@ -29,10 +29,8 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 	 * Returns a boolean value indicating whether the element has children.
 	 */
 	public hasChildren(element: ServerTreeElement): boolean {
-		if (element instanceof ConnectionProfile) {
+		if (element instanceof ConnectionProfile || element instanceof ConnectionProfileGroup) {
 			return true;
-		} else if (element instanceof ConnectionProfileGroup) {
-			return element.hasChildren();
 		} else if (element instanceof TreeNode) {
 			return !element.isAlwaysLeaf;
 		}
