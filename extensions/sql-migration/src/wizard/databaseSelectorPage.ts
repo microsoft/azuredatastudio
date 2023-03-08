@@ -160,6 +160,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				data: [],
 				width: 650,
 				height: '100%',
+				CSSStyles: { 'margin-bottom': '5px' },
 				forceFitColumns: azdata.ColumnSizingMode.ForceFit,
 				columns: [
 					<azdata.CheckboxColumn>{
@@ -216,10 +217,10 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 
 		this._xeventsAssessmentLink = this._view.modelBuilder.hyperlink()
 			.withProps({
-				label: 'Assess extended events traces',
+				label: constants.XEVENTS_ASSESSMENT_TITLE,
 				ariaLabel: '',
 				url: '',
-				CSSStyles: { ...styles.BODY_CSS, 'margin-top': '8px' }
+				CSSStyles: { ...styles.BODY_CSS, /*'margin-top': '8px'*/ }
 			}).component();
 		const xEventsAssessmentDialog = new XEventsAssessmentDialog(this.wizard, this.migrationStateModel);
 		this._disposables.push(this._xeventsAssessmentLink.onDidClick(
@@ -227,7 +228,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
-			height: '95%',
+			height: '90%',
 		}).withProps({
 			CSSStyles: {
 				'margin': '0px 28px 0px 28px'

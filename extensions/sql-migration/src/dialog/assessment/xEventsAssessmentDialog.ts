@@ -55,17 +55,36 @@ export class XEventsAssessmentDialog {
 				...styles.BODY_CSS,
 			}
 		}).component();
+
 		const description2 = _view.modelBuilder.text().withProps({
 			value: constants.XEVENTS_ASSESSMENT_DESCRIPTION2,
+			links: [
+				{
+					text: '',
+					// to-do: new docs
+					url: 'https://learn.microsoft.com/sql/dma/dma-assesssqlonprem?view=sql-server-ver16#add-databases-and-extended-events-trace-to-assess'
+				}
+			],
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'margin': '8px 0px 8px 0px',
 			}
 		}).component();
+
+		const moreInfo = _view.modelBuilder.hyperlink().withProps({
+			label: constants.XEVENTS_ASSESSMENT_HELPLINK,
+			url: 'https://learn.microsoft.com/sql/dma/dma-assesssqlonprem?view=sql-server-ver16#add-databases-and-extended-events-trace-to-assess',
+			CSSStyles: { ...styles.BODY_CSS },
+			ariaLabel: constants.MORE_INFO,
+			showLinkIcon: true
+		}).component();
+
+
 		this._folderPickerContainer = this.createFolderPickerContainer(_view);
 		container.addItems([
 			description1,
 			description2,
+			moreInfo,
 			this._folderPickerContainer,
 		]);
 		return container;
@@ -80,7 +99,7 @@ export class XEventsAssessmentDialog {
 		const instructions = _view.modelBuilder.text()
 			.withProps({
 				value: constants.XEVENTS_ASSESSMENT_OPEN_FOLDER,
-				CSSStyles: { ...styles.LABEL_CSS, 'margin-bottom': '8px' }
+				CSSStyles: { ...styles.LABEL_CSS, 'margin': '16px 0 8px 0' }
 			}).component();
 
 		const selectFolderContainer = _view.modelBuilder.flexContainer()
@@ -126,18 +145,18 @@ export class XEventsAssessmentDialog {
 		if (!this._isOpen) {
 			this._isOpen = true;
 			this.dialog = azdata.window.createModelViewDialog(
-				'Assess extended event traces',
+				constants.XEVENTS_ASSESSMENT_TITLE,
 				'XEventsAssessmentDialog',
 				'narrow');
 
 			this.dialog.okButton.label = constants.SELECT;
 			this.dialog.okButton.position = 'left';
+			this.dialog.cancelButton.position = 'left';
 
 			this._disposables.push(
 				this.dialog.okButton.onClick(
 					async () => await this.execute()));
 
-			this.dialog.cancelButton.position = 'left';
 			this._disposables.push(
 				this.dialog.cancelButton.onClick(
 					() => this._isOpen = false));

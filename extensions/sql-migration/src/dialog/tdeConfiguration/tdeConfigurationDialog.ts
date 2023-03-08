@@ -79,7 +79,7 @@ export class TdeConfigurationDialog {
 				accessibilityInformation: {
 					label: constants.LEARN_MORE
 				}
-			}]
+			}],
 		}).component();
 		const selectDataSourceRadioButtons = this.createMethodsContainer(_view);
 		container.addItems([
