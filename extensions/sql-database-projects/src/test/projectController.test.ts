@@ -290,13 +290,13 @@ describe('ProjectsController', function (): void {
 					suppressMissingDependenciesErrors: false
 				});
 
-				const projTreeRoot = new ProjectRootTreeItem(proj);
 				// reload project
 				proj = await Project.openProject(proj.projectFilePath);
+				const projTreeRoot = new ProjectRootTreeItem(proj);
 				should(proj.databaseReferences.length).equal(3, 'Should start with 3 database references');
 
 				const databaseReferenceNodeChildren = projTreeRoot.children.find(x => x.friendlyName === constants.databaseReferencesNodeName)?.children;
-				await projController.delete(createWorkspaceTreeItem(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'master')!));   // system db reference
+				await projController.delete(createWorkspaceTreeItem(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'Master')!));   // system db reference
 				await projController.delete(createWorkspaceTreeItem(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'test2')!));    // dacpac reference
 				await projController.delete(createWorkspaceTreeItem(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'project1')!)); // project reference
 
