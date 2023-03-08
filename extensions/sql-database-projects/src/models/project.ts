@@ -717,10 +717,9 @@ export class Project implements ISqlProject {
 		await this.exclude(entry);
 	}
 
-	public async deleteDatabaseReference(entry: IDatabaseReferenceProjectEntry): Promise<azdataType.ResultStatus> {
+	public async deleteDatabaseReference(entry: IDatabaseReferenceProjectEntry): Promise<void> {
 		const result = await this.sqlProjService.deleteDatabaseReference(this.projectFilePath, entry.pathForSqlProj());
 		this.throwIfFailed(result);
-		return result;
 	}
 
 	public async deleteSqlCmdVariable(variableName: string): Promise<azdataType.ResultStatus> {
