@@ -77,9 +77,11 @@ export class SystemDatabaseReferenceProjectEntry extends FileProjectEntry implem
 		super(Uri.file(databaseName), databaseName, EntryType.DatabaseReference);
 	}
 
+	/**
+	 * Returns the name of the system database - this is used for deleting the system database reference
+	 */
 	public override pathForSqlProj(): string {
-		// need to remove the leading slash from path for build to work on Windows
-		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
+		return this.databaseName;
 	}
 }
 
