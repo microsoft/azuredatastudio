@@ -19,7 +19,7 @@ import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabaseReferenceProjectEntry } from './projectEntry';
+import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabaseReferenceProjectEntry } from './projectEntry';
 import { ResultStatus } from 'azdata';
 import { BaseProjectTreeItem } from './tree/baseTreeItem';
 import { NoneNode, PostDeployNode, PreDeployNode, PublishProfileNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
@@ -546,8 +546,6 @@ export class Project implements ISqlProject {
 
 		for (const systemDbReference of databaseReferencesResult.systemDatabaseReferences) {
 			this._databaseReferences.push(new SystemDatabaseReferenceProjectEntry(
-				Uri.file(''),
-				Uri.file(''), // TODO: remove these after add and delete are swapped - DacFx handles adding and removing system dacpacs, so we don't need to keep track of the paths here
 				systemDbReference.systemDb === SystemDatabase.Master ? constants.master : constants.msdb,
 				systemDbReference.databaseVariableLiteralName,
 				systemDbReference.suppressMissingDependencies));
@@ -720,8 +718,8 @@ export class Project implements ISqlProject {
 	}
 
 	public async deleteDatabaseReference(entry: IDatabaseReferenceProjectEntry): Promise<void> {
-		await this.removeFromProjFile(entry);
-		this._databaseReferences = this._databaseReferences.filter(x => x !== entry);
+		const result = await this.sqlProjService.deleteDatabaseReference(this.projectFilePath, entry.pathForSqlProj());
+		this.throwIfFailed(result);
 	}
 
 	public async deleteSqlCmdVariable(variableName: string): Promise<azdataType.ResultStatus> {
@@ -1212,31 +1210,6 @@ export class Project implements ISqlProject {
 		this.files.push(...(await this.readFolders()));
 	}
 
-	private removeSqlCmdVariableFromProjFile(variableName: string): void {
-		const sqlCmdVariableNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.SqlCmdVariable);
-		const deleted = this.removeNode(variableName, sqlCmdVariableNodes);
-
-		if (!deleted) {
-			throw new Error(constants.unableToFindSqlCmdVariable(variableName));
-		}
-	}
-
-	private removeDatabaseReferenceFromProjFile(databaseReferenceEntry: IDatabaseReferenceProjectEntry): void {
-		const elementTag = databaseReferenceEntry instanceof SqlProjectReferenceProjectEntry ? constants.ProjectReference : constants.ArtifactReference;
-		const artifactReferenceNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(elementTag);
-		const deleted = this.removeNode(databaseReferenceEntry.pathForSqlProj(), artifactReferenceNodes);
-
-		// also delete SSDT reference if it's a system db reference
-		if (databaseReferenceEntry instanceof SystemDatabaseReferenceProjectEntry) {
-			const ssdtPath = databaseReferenceEntry.ssdtPathForSqlProj();
-			this.removeNode(ssdtPath, artifactReferenceNodes);
-		}
-
-		if (!deleted) {
-			throw new Error(constants.unableToFindDatabaseReference(databaseReferenceEntry.databaseName));
-		}
-	}
-
 	private databaseReferenceExists(entry: IDatabaseReferenceProjectEntry): boolean {
 		const found = this._databaseReferences.find(reference => reference.pathForSqlProj() === entry.pathForSqlProj()) !== undefined;
 		return found;
@@ -1316,12 +1289,6 @@ export class Project implements ISqlProject {
 				case EntryType.File:
 					await this.removeFileFromProjFile((<FileProjectEntry>entry).relativePath);
 					break;
-				case EntryType.DatabaseReference:
-					this.removeDatabaseReferenceFromProjFile(<IDatabaseReferenceProjectEntry>entry);
-					break;
-				case EntryType.SqlCmdVariable:
-					this.removeSqlCmdVariableFromProjFile((<SqlCmdVariableProjectEntry>entry).variableName);
-					break; // not required but adding so that we dont miss when we add new items
 			}
 		}
 
