@@ -20,7 +20,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _dbNames!: string[];
 	private _dbCount!: azdata.TextComponent;
 	private _databaseTableValues!: any[];
-	private _xeventsAssessmentButton!: azdata.ButtonComponent;
+	private _xeventsAssessmentLink!: azdata.HyperlinkComponent;
 	private _disposables: vscode.Disposable[] = [];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
@@ -214,21 +214,20 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		// load unfiltered table list and pre-select list of databases saved in state
 		await this._filterTableList('', this.migrationStateModel._databasesForAssessment);
 
-		this._xeventsAssessmentButton = this._view.modelBuilder.button().withProps({
-			label: 'Assess extended events traces',
-			width: 180,
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'margin': '10px',
-			}
-		}).component();
+		this._xeventsAssessmentLink = this._view.modelBuilder.hyperlink()
+			.withProps({
+				label: 'Assess extended events traces',
+				ariaLabel: '',
+				url: '',
+				CSSStyles: { ...styles.BODY_CSS, 'margin-top': '8px' }
+			}).component();
 		const xEventsAssessmentDialog = new XEventsAssessmentDialog(this.wizard, this.migrationStateModel);
-		this._disposables.push(this._xeventsAssessmentButton.onDidClick(
+		this._disposables.push(this._xeventsAssessmentLink.onDidClick(
 			async () => await xEventsAssessmentDialog.openDialog()));
 
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
-			height: '90%',
+			height: '95%',
 		}).withProps({
 			CSSStyles: {
 				'margin': '0px 28px 0px 28px'
@@ -238,7 +237,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._dbCount, { flex: '0 0 auto' });
 		flex.addItem(this._databaseSelectorTable);
-		flex.addItem(this._xeventsAssessmentButton, { flex: '0 0 auto' });
+		flex.addItem(this._xeventsAssessmentLink, { flex: '0 0 auto' });
 
 		return flex;
 	}

@@ -213,6 +213,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _nodeNames!: string[];
 
 	public _databasesForAssessment!: string[];
+	public _xEventsFilesFolderPath!: string;
 	public _assessmentResults!: ServerAssessment;
 	public _assessedDatabaseList!: string[];
 	public _runAssessments: boolean = true;
@@ -390,8 +391,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async getDatabaseAssessments(targetType: MigrationTargetType[]): Promise<ServerAssessment> {
 		const connectionString = await getSourceConnectionString();
 		try {
-			const xEventsFilesFolderPath = '';		// to-do: collect by prompting the user in the UI - for now, blank = disabled
-			const response = (await this.migrationService.getAssessments(connectionString, this._databasesForAssessment, xEventsFilesFolderPath))!;
+			const response = (await this.migrationService.getAssessments(connectionString, this._databasesForAssessment, this._xEventsFilesFolderPath ?? ''))!;
 			this._assessmentApiResponse = response;
 			this._assessedDatabaseList = this._databasesForAssessment.slice();
 
