@@ -807,8 +807,8 @@ export class ProjectsController {
 				success = true;
 			}
 		} else if (node instanceof SqlCmdVariableTreeItem) {
-			const result = await project.deleteSqlCmdVariable(node.friendlyName);
-			success = result.success;
+			await project.deleteSqlCmdVariable(node.friendlyName);
+			success = true;
 		} else if (node instanceof FileNode || FolderNode) {
 			const fileEntry = this.getFileProjectEntry(project, node);
 
