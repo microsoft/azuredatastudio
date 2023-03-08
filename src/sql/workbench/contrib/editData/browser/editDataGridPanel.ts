@@ -476,7 +476,8 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (newlineMatches && newlineMatches.length > 0) {
 			this.newlinePattern = newlineMatches[0];
 		}
-		return inputStr.replace(/(\r\n|\n|\r)/g, '\u0000');
+		// allow-any-unicode-next-line
+		return inputStr.replace(/(\r\n|\n|\r)/g, '↵');
 	}
 
 	/**
@@ -643,7 +644,8 @@ export class EditDataGridPanel extends GridParentComponent {
 					? self.rowIdMappings[self.currentCell.row]
 					: self.currentCell.row;
 
-				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, this.newlinePattern ? self.currentEditCellValue.replace('\u0000', this.newlinePattern) : self.currentEditCellValue);
+				// allow-any-unicode-next-line
+				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, this.newlinePattern ? self.currentEditCellValue.replace('↵', this.newlinePattern) : self.currentEditCellValue);
 			}).then(
 				result => {
 					// last entered input is no longer needed as we have entered a valid input to commit.
