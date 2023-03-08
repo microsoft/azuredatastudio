@@ -41,14 +41,8 @@ class ConnectionProfileGroupTemplate extends Disposable {
 		super();
 		container.parentElement!.classList.add('async-server-group');
 		container.classList.add('async-server-group');
-		this._root = dom.append(container, dom.$('.async-server-group'));
+		this._root = dom.append(container, dom.$('.async-server-group-container'));
 		this._nameContainer = dom.append(this._root, dom.$('span.name'));
-		container.style.display = 'flex';
-		container.style.alignItems = 'center';
-		this._root.style.flex = '1';
-		this._root.style.marginRight = '5px';
-		this._root.style.borderRadius = '5px';
-		this._root.style.paddingLeft = '8px';
 	}
 
 	set(element: ConnectionProfileGroup) {
@@ -56,10 +50,10 @@ class ConnectionProfileGroupTemplate extends Disposable {
 		if (this._option.showColor && rowElement) {
 			rowElement.style.color = element.textColor;
 			if (element.color) {
-				this._root.style.background = element.color;
+				this._nameContainer.style.background = element.color;
 			} else {
 				// If the group doesn't contain specific color, assign the default color
-				this._root.style.background = DefaultServerGroupColor;
+				this._nameContainer.style.background = DefaultServerGroupColor;
 			}
 		}
 		if (element.description && (element.description !== '')) {
@@ -110,29 +104,16 @@ class ConnectionProfileTemplate extends Disposable {
 		this._icon = dom.append(this._root, dom.$('div.icon'));
 		this._connectionStatusBadge = dom.append(this._icon, dom.$('div.connection-status-badge'));
 		this._label = dom.append(this._root, dom.$('div.label'));
-		this._root.style.display = 'flex';
-		this._icon.style.flex = '0 30px';
-		this._label.style.flex = '1';
-		this._label.style.overflow = 'hidden';
-		this._label.style.textOverflow = 'ellipsis';
-		this._icon.style.backgroundSize = '16px';
-		this._icon.style.position = 'relative';
-		this._connectionStatusBadge.style.position = 'absolute';
-		this._connectionStatusBadge.style.bottom = '0';
-		this._connectionStatusBadge.style.right = '3px';
-		this._connectionStatusBadge.style.width = '4px';
-		this._connectionStatusBadge.style.height = '4px';
-		this._connectionStatusBadge.style.borderRadius = '50%';
 	}
 
 	set(element: ConnectionProfile) {
 		if (!this._isCompact) {
 			if (this._connectionManagementService.isConnected(undefined, element)) {
-				this._connectionStatusBadge.style.border = '2.4px solid rgba(59, 180, 74, 100%)';
-				this._connectionStatusBadge.style.background = 'rgba(59, 180, 74, 100%)';
+				this._connectionStatusBadge.classList.add('connected');
+				this._connectionStatusBadge.classList.remove('disconnected');
 			} else {
-				this._connectionStatusBadge.style.border = '2.4px solid rgba(208, 46, 0, 100%)';
-				this._connectionStatusBadge.style.background = 'rgba(255, 255, 255, 80%)';
+				this._connectionStatusBadge.classList.remove('connected');
+				this._connectionStatusBadge.classList.add('disconnected');
 			}
 		}
 
@@ -175,12 +156,6 @@ class TreeNodeTemplate extends Disposable {
 		this._root = dom.append(container, dom.$('.object-element-container'));
 		this._icon = dom.append(this._root, dom.$('div.object-icon'));
 		this._label = dom.append(this._root, dom.$('div.label'));
-		this._root.style.display = 'flex';
-		this._icon.style.flex = '0 30px';
-		this._label.style.flex = '1';
-		this._label.style.overflow = 'hidden';
-		this._label.style.textOverflow = 'ellipsis';
-		this._icon.style.backgroundSize = '16px';
 	}
 
 	set(element: TreeNode) {
