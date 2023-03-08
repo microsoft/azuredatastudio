@@ -779,7 +779,7 @@ export namespace AddSystemDatabaseReferenceRequest {
 }
 
 export namespace DeleteDatabaseReferenceRequest {
-	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlprojects/deleteDatabaseReference');
+	export const type = new RequestType<DeleteDatabaseReferenceParams, azdata.ResultStatus, void, void>('sqlprojects/deleteDatabaseReference');
 }
 
 export namespace GetDatabaseReferencesRequest {
