@@ -170,10 +170,10 @@ export function getEnableSqlAuthenticationProviderConfig(): boolean {
 	if (config) {
 		return config.has(enableSqlAuthenticationProviderConfig)
 			? config.get<boolean>(enableSqlAuthenticationProviderConfig)
-			: false; // disabled by default
+			: true; // enabled by default
 	}
 	else {
-		return false;
+		return true;
 	}
 }
 

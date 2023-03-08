@@ -421,7 +421,7 @@
         "mssql.enableSqlAuthenticationProvider": {
           "type": "boolean",
           "description": "%mssql.enableSqlAuthenticationProvider%",
-          "default": false
+          "default": true
         },
         "mssql.tableDesigner.preloadDatabaseModel": {
           "type": "boolean",
