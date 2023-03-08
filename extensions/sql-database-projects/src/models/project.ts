@@ -14,7 +14,7 @@ import * as vscode from 'vscode';
 import * as mssql from 'mssql';
 
 import { Uri, window } from 'vscode';
-import { EntryType, IDatabaseReferenceProjectEntry, IProjectEntry, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
+import { EntryType, IDatabaseReferenceProjectEntry, IProjectEntry, ISqlProject, ItemType } from 'sqldbproj';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
@@ -767,25 +767,6 @@ export class Project implements ISqlProject {
 		}
 	}
 
-	public getSystemDacpacUri(dacpac: string): Uri {
-		const versionFolder = this.getSystemDacpacFolderName();
-		const systemDacpacLocation = this.sqlProjStyle === ProjectType.SdkStyle ? '$(SystemDacpacsLocation)' : '$(NETCoreTargetsPath)';
-		return Uri.parse(path.join(systemDacpacLocation, 'SystemDacpacs', versionFolder, dacpac));
-	}
-
-	public getSystemDacpacSsdtUri(dacpac: string): Uri {
-		const versionFolder = this.getSystemDacpacFolderName();
-		return Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', versionFolder, 'SqlSchemas', dacpac));
-	}
-
-	public getSystemDacpacFolderName(): string {
-		const version = this.getProjectTargetVersion();
-
-		// DW is special because the target version is DW, but the folder name for system dacpacs is AzureDW in SSDT
-		// the other target versions have the same version name and folder name
-		return version === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlDW) ? constants.AzureDwFolder : version;
-	}
-
 	/**
 	 * Gets the project target version specified in the DSP property in the sqlproj
 	 */
@@ -1259,18 +1240,6 @@ export class Project implements ISqlProject {
 	private databaseReferenceExists(entry: IDatabaseReferenceProjectEntry): boolean {
 		const found = this._databaseReferences.find(reference => reference.pathForSqlProj() === entry.pathForSqlProj()) !== undefined;
 		return found;
-	}
-
-	public containsSSDTOnlySystemDatabaseReferences(): boolean {
-		for (let r = 0; r < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
-			const currentNode = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference)[r];
-			if (currentNode.getAttribute(constants.Condition) !== constants.NetCoreCondition && currentNode.getAttribute(constants.Condition) !== constants.NotNetCoreCondition
-				&& currentNode.getAttribute(constants.Include)?.includes(constants.DacpacRootPath)) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	/**
