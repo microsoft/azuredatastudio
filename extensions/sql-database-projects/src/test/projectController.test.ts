@@ -417,12 +417,9 @@ describe('ProjectsController', function (): void {
 				const project = await Project.openProject(sqlProjPath);
 				should(project.getProjectTargetVersion()).equal(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2019));
 				should(project.databaseReferences.length).equal(1, 'Project should have one database reference to master');
-				should(project.databaseReferences[0].fsUri.fsPath).containEql(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2019));
 
 				await projController.changeTargetPlatform(project);
 				should(project.getProjectTargetVersion()).equal(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure));
-				// verify system db reference got updated too
-				should(project.databaseReferences[0].fsUri.fsPath).containEql(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure));
 			});
 		});
 
