@@ -76,6 +76,11 @@ export class SystemDatabaseReferenceProjectEntry extends FileProjectEntry implem
 	constructor(public databaseName: string, public databaseVariableLiteralValue: string | undefined, public suppressMissingDependenciesErrors: boolean) {
 		super(Uri.file(databaseName), databaseName, EntryType.DatabaseReference);
 	}
+
+	public override pathForSqlProj(): string {
+		// need to remove the leading slash from path for build to work on Windows
+		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
+	}
 }
 
 export class SqlProjectReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
