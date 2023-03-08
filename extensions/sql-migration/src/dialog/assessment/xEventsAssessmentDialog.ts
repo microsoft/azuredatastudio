@@ -15,6 +15,7 @@ export class XEventsAssessmentDialog {
 	private _isOpen: boolean = false;
 	private _disposables: vscode.Disposable[] = [];
 
+	private _clearButton!: azdata.window.Button;
 	private _folderPickerContainer!: azdata.FlexContainer;
 	private _folderPickerInput!: azdata.InputBoxComponent;
 
@@ -153,6 +154,18 @@ export class XEventsAssessmentDialog {
 			this._disposables.push(
 				this.dialog.cancelButton.onClick(
 					() => this._isOpen = false));
+
+			this._clearButton = azdata.window.createButton(
+				constants.ERROR_DIALOG_CLEAR_BUTTON_LABEL,
+				'right');
+			this._clearButton.enabled = this._xEventsFilesFolderPath ? true : false;
+			this._disposables.push(
+				this._clearButton.onClick(async () => {
+					this._xEventsFilesFolderPath = '';
+					await this.execute();
+					azdata.window.closeDialog(this.dialog!);
+				}));
+			this.dialog.customButtons = [this._clearButton];
 
 			const promise = this.initializeDialog(this.dialog);
 			azdata.window.openDialog(this.dialog);
