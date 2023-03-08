@@ -61,7 +61,7 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 					iconClass = ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!;
 				} else {
 					iconClass = ids.nextId();
-					createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.light || item.icon.dark)} !important`);
+					createCSSRule(`.codicon.${iconClass}, .hc-light .codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.light || item.icon.dark)} !important`);
 					createCSSRule(`.vs-dark .codicon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.dark)} !important`);
 					ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
 				}

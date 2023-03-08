@@ -45,7 +45,8 @@
 	background-position: center;
 }
 
-.vs .footer-button .validating {
+.vs .footer-button .validating,
+.hc-light .footer-button .validating {
 	background-image: url("loading.svg");
 }
 

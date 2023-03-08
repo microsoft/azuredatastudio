@@ -33,10 +33,10 @@ export class TelemetryParams {
 
 // ------------------------------- < Security Token Request > ------------------------------------------
 export interface RequestSecurityTokenParams {
-	authority: string;
 	provider: string;
+	authority: string;
 	resource: string;
-	scope: string;
+	scopes: string[];
 }
 
 export interface RequestSecurityTokenResponse {
@@ -624,6 +624,10 @@ export namespace SetDatabaseSourceRequest {
 	export const type = new RequestType<SetDatabaseSourceParams, azdata.ResultStatus, void, void>('sqlProjects/setDatabaseSource');
 }
 
+export namespace SetDatabaseSchemaProviderRequest {
+	export const type = new RequestType<SetDatabaseSchemaProviderParams, azdata.ResultStatus, void, void>('sqlProjects/setDatabaseSchemaProvider');
+}
+
 //#endregion
 
 //#region File/folder functions
@@ -717,23 +721,23 @@ export namespace GetPreDeploymentScriptsRequest {
 //#region None functions
 
 export namespace AddNoneItemRequest {
-	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/addNoneScript');
+	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/addNoneItem');
 }
 
 export namespace DeleteNoneItemRequest {
-	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/deleteNoneScript');
+	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/deleteNoneItem');
 }
 
 export namespace ExcludeNoneItemRequest {
-	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/excludeNoneScript');
+	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/excludeNoneItem');
 }
 
 export namespace GetNoneItemsRequest {
-	export const type = new RequestType<SqlProjectParams, mssql.GetScriptsResult, void, void>('sqlProjects/getNoneScripts');
+	export const type = new RequestType<SqlProjectParams, mssql.GetScriptsResult, void, void>('sqlProjects/getNoneItems');
 }
 
 export namespace MoveNoneItemRequest {
-	export const type = new RequestType<MoveItemParams, azdata.ResultStatus, void, void>('sqlProjects/moveNoneScript');
+	export const type = new RequestType<MoveItemParams, azdata.ResultStatus, void, void>('sqlProjects/moveNoneItem');
 }
 
 //#endregion
@@ -807,6 +811,13 @@ export interface SetDatabaseSourceParams extends SqlProjectParams {
 	 * Source of the database schema, used in telemetry
 	 */
 	databaseSource: string;
+}
+
+export interface SetDatabaseSchemaProviderParams extends SqlProjectParams {
+	/**
+	 * New DatabaseSchemaProvider value, in the form "Microsoft.Data.Tools.Schema.Sql.SqlXYZDatabaseSchemaProvider"
+	 */
+	databaseSchemaProvider: string;
 }
 
 export interface AddDacpacReferenceParams extends AddUserDatabaseReferenceParams {

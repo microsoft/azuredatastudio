@@ -197,6 +197,11 @@
           "default": false,
           "description": "%mssql.logDebugInfo%"
         },
+        "mssql.piiLogging": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.piiLogging%"
+        },
         "mssql.tracingLevel": {
           "type": "string",
           "description": "%mssql.tracingLevel%",
@@ -413,6 +418,11 @@
           "description": "%mssql.parallelMessageProcessing%",
           "default": false
         },
+        "mssql.enableSqlAuthenticationProvider": {
+          "type": "boolean",
+          "description": "%mssql.enableSqlAuthenticationProvider%",
+          "default": false
+        },
         "mssql.tableDesigner.preloadDatabaseModel": {
           "type": "boolean",
           "default": false,
@@ -454,23 +464,11 @@
           "when": "false"
         },
         {
-          "command": "mssql.newServerRole",
-          "when": "false"
-        },
-        {
           "command": "mssql.newLogin",
           "when": "false"
         },
         {
-          "command": "mssql.newDatabaseRole",
-          "when": "false"
-        },
-        {
           "command": "mssql.newUser",
-          "when": "false"
-        },
-        {
-          "command": "mssql.newApplicationRole",
           "when": "false"
         },
         {
@@ -1422,8 +1420,8 @@
     }
   },
   "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^1.4.0",
-    "@microsoft/ads-service-downloader": "^1.2.0",
+    "@microsoft/ads-extension-telemetry": "^2.0.0",
+    "@microsoft/ads-service-downloader": "^1.2.1",
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.3.2",
     "find-remove": "1.2.1",
     "vscode-languageclient": "5.2.1",

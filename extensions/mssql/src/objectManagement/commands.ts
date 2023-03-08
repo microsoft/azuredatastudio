@@ -136,7 +136,7 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 				TelemetryReporter.sendTelemetryEvent(TelemetryActions.DeleteObject, {
 					objectType: context.nodeInfo.nodeType
 				}, {
-					ellapsedTime: Date.now() - startTime
+					elapsedTimeMs: Date.now() - startTime
 				});
 			}
 			catch (err) {

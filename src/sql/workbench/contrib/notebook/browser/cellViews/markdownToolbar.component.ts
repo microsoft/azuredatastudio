@@ -375,10 +375,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		if (!this._cellEditor?.getEditor()?.getControl()) {
 			this._cellEditor = this._notebookEditor?.cellEditors?.find(e => e.cellGuid() === this.cellModel?.cellGuid);
 		}
-		if (this._cellEditor?.hasEditor) {
-			return this._cellEditor.getEditor()?.getControl();
-		}
-		return undefined;
+		return this._cellEditor.getEditor()?.getControl();
 	}
 
 	public async getFileContentBase64(fileUri: URI): Promise<string> {

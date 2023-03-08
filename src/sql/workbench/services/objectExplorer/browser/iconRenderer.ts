@@ -16,7 +16,7 @@ class IconRenderer {
 		const iconPath: ThemedIconUri = this.toThemedIconUri(path);
 		const iconUid: string | undefined = this.getIconUid(iconPath);
 		if (iconUid && !this.iconRegistered.has(iconUid)) {
-			createCSSRule(`.icon#${iconUid}`, `background: ${asCSSUrl(iconPath.light || iconPath.dark)} center center no-repeat`);
+			createCSSRule(`.icon#${iconUid}, .hc-light .icon#${iconUid}`, `background: ${asCSSUrl(iconPath.light || iconPath.dark)} center center no-repeat`);
 			createCSSRule(`.vs-dark .icon#${iconUid}, .hc-black .icon#${iconUid}`, `background: ${asCSSUrl(iconPath.dark)} center center no-repeat`);
 			this.iconRegistered.add(iconUid);
 		}

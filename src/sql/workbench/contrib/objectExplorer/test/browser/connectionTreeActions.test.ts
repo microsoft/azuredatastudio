@@ -43,6 +43,7 @@ import { TestEditorService } from 'vs/workbench/test/browser/workbenchTestServic
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -61,7 +62,7 @@ suite('SQL Connection Tree Action tests', () => {
 		errorMessageService.setup(x => x.showDialog(Severity.Error, TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => nothing);
 	});
 
-	function createConnectionManagementService(isConnectedReturnValue: boolean, profileToReturn: ConnectionProfile): TypeMoq.Mock<TestConnectionManagementService> {
+	function createConnectionManagementService(isConnectedReturnValue: boolean, profileToReturn: IConnectionProfile): TypeMoq.Mock<TestConnectionManagementService> {
 		let connectionManagementService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 		connectionManagementService.callBase = true;
 		connectionManagementService.setup(x => x.isConnected(undefined, TypeMoq.It.isAny())).returns(() => isConnectedReturnValue);
@@ -77,6 +78,7 @@ suite('SQL Connection Tree Action tests', () => {
 		connectionManagementService.setup(x => x.deleteConnectionGroup(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 		connectionManagementService.setup(x => x.deleteConnection(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => profileToReturn);
+		connectionManagementService.setup(x => x.fixProfile(TypeMoq.It.isAny())).returns(() => new Promise<IConnectionProfile>((resolve, reject) => resolve(profileToReturn)));
 		connectionManagementService.setup(x => x.showEditConnectionDialog(TypeMoq.It.isAny())).returns(() => new Promise<void>((resolve, reject) => resolve()));
 		return connectionManagementService;
 	}
@@ -117,7 +119,7 @@ suite('SQL Connection Tree Action tests', () => {
 
 	test('ManageConnectionAction - test if connect is called for manage action if not already connected', () => {
 		let isConnectedReturnValue: boolean = false;
-		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
+		let connection: IConnectionProfile = new ConnectionProfile(capabilitiesService, {
 			connectionName: 'Test',
 			savePassword: false,
 			groupFullName: 'testGroup',
@@ -197,7 +199,7 @@ suite('SQL Connection Tree Action tests', () => {
 			viewsService);
 
 		let actionContext = new ObjectExplorerActionsContext();
-		actionContext.connectionProfile = connection.toIConnectionProfile();
+		actionContext.connectionProfile = connection;
 		actionContext.isConnectionNode = true;
 		return manageConnectionAction.run(actionContext).then(() => {
 			connectionManagementService.verify(x => x.connect(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny(), undefined), TypeMoq.Times.once());
