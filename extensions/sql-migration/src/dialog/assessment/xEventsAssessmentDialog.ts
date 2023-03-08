@@ -58,13 +58,6 @@ export class XEventsAssessmentDialog {
 
 		const description2 = _view.modelBuilder.text().withProps({
 			value: constants.XEVENTS_ASSESSMENT_DESCRIPTION2,
-			links: [
-				{
-					text: '',
-					// to-do: new docs
-					url: 'https://learn.microsoft.com/sql/dma/dma-assesssqlonprem?view=sql-server-ver16#add-databases-and-extended-events-trace-to-assess'
-				}
-			],
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'margin': '8px 0px 8px 0px',
