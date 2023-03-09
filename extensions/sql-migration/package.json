@@ -89,6 +89,11 @@
         "category": "%migration-context-menu-category%"
       },
       {
+        "command": "sqlmigration.delete.migration",
+        "title": "%delete-migration-menu%",
+        "category": "%migration-context-menu-category%"
+      },
+      {
         "command": "sqlmigration.retry.migration",
         "title": "%retry-migration-menu%",
         "category": "%migration-context-menu-category%"
@@ -126,6 +131,10 @@
         },
         {
           "command": "sqlmigration.cancel.migration",
+          "when": "false"
+        },
+        {
+          "command": "sqlmigration.delete.migration",
           "when": "false"
         },
         {
