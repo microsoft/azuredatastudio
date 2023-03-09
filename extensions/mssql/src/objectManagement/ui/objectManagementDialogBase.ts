@@ -282,6 +282,21 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		return table;
 	}
 
+	protected createDropdown(ariaLabel: string, values: string[], value: string, enabled: boolean = true, width: number = DefaultInputWidth): azdata.DropDownComponent {
+		// Automatically add an empty item to the beginning of the list if the current value is not specified.
+		// This is needed when no meaningful default value can be provided.
+		if (!value) {
+			values.unshift('');
+		}
+		return this.modelView.modelBuilder.dropDown().withProps({
+			ariaLabel: ariaLabel,
+			values: values,
+			value: value,
+			width: DefaultInputWidth,
+			enabled: enabled
+		}).component();
+	}
+
 	protected removeItem(container: azdata.DivContainer | azdata.FlexContainer, item: azdata.Component): void {
 		if (container.items.indexOf(item) !== -1) {
 			container.removeItem(item);
