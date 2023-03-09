@@ -100,9 +100,11 @@ export default class AccountStore implements IAccountStore {
 	}
 
 	// PRIVATE METHODS /////////////////////////////////////////////////////
-	private static findAccountByKey(key1: azdata.AccountKey, key2: azdata.AccountKey): boolean {
+	private static findAccountByKey(key1: azdata.AccountKey | undefined, key2: azdata.AccountKey | undefined): boolean {
 		// Provider ID and Account ID must match
-		return key1.providerId === key2.providerId && key1.accountId === key2.accountId;
+		return key1 && key2
+			? key1.providerId === key2.providerId && key1.accountId === key2.accountId
+			: false;
 	}
 
 	private static mergeAccounts(source: azdata.Account, target: azdata.Account): void {
