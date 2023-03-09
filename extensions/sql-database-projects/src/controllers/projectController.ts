@@ -312,7 +312,7 @@ export class ProjectsController {
 				// DotNetErrors already get shown by the netCoreTool so just show this one in the console
 				console.error(message);
 			} else {
-				void vscode.window.showErrorMessage(constants.projBuildFailed(message));
+				void vscode.window.showErrorMessage(constants.projBuildFailed(message), { modal: true });
 			}
 			return '';
 		}
