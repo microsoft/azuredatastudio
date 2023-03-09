@@ -717,16 +717,6 @@ export class Project implements ISqlProject {
 		await this.exclude(entry);
 	}
 
-	public async deleteDatabaseReference(entry: IDatabaseReferenceProjectEntry): Promise<void> {
-		const result = await this.sqlProjService.deleteDatabaseReference(this.projectFilePath, entry.pathForSqlProj());
-		this.throwIfFailed(result);
-	}
-
-	public async deleteSqlCmdVariable(variableName: string): Promise<void> {
-		const result = await this.sqlProjService.deleteSqlCmdVariable(this.projectFilePath, variableName);
-		this.throwIfFailed(result);
-	}
-
 	/**
 	 * Set the target platform of the project
 	 * @param compatLevel compat level of project
@@ -746,24 +736,6 @@ export class Project implements ISqlProject {
 		this._databaseSchemaProvider = `${constants.MicrosoftDatatoolsSchemaSqlSql}${compatLevel}${constants.databaseSchemaProvider}`;
 		const result = await this.sqlProjService.setDatabaseSchemaProvider(this.projectFilePath, this._databaseSchemaProvider);
 		this.throwIfFailed(result);
-	}
-
-	/**
-	 * Adds reference to the appropriate system database dacpac to the project
-	 */
-	public async addSystemDatabaseReference(settings: ISystemDatabaseReferenceSettings): Promise<void> {
-		// check if reference to this database already exists
-		if (this.databaseReferences.find(r => r.databaseName === settings.databaseName)) {
-			throw new Error(constants.databaseReferenceAlreadyExists);
-		}
-
-		const systemDb = <unknown>settings.systemDb as SystemDatabase;
-		const result = await this.sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, settings.databaseName);
-
-		if (!result.success && result.errorMessage) {
-			const systemDbName = settings.systemDb === SystemDatabase.Master ? constants.master : constants.msdb;
-			throw new Error(constants.errorAddingDatabaseReference(systemDbName, result.errorMessage));
-		}
 	}
 
 	/**
@@ -792,6 +764,28 @@ export class Project implements ISqlProject {
 	 */
 	public getDatabaseDefaultCollation(): string {
 		return this._defaultCollation;
+	}
+
+	//#region Database References
+
+	/**
+	  * Adds reference to the appropriate system database dacpac to the project
+	  */
+	public async addSystemDatabaseReference(settings: ISystemDatabaseReferenceSettings): Promise<void> {
+		// check if reference to this database already exists
+		if (this.databaseReferences.find(r => r.databaseName === settings.databaseName)) {
+			throw new Error(constants.databaseReferenceAlreadyExists);
+		}
+
+		const systemDb = <unknown>settings.systemDb as SystemDatabase;
+		const result = await this.sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, settings.databaseName);
+
+		if (!result.success && result.errorMessage) {
+			const systemDbName = settings.systemDb === SystemDatabase.Master ? constants.master : constants.msdb;
+			throw new Error(constants.errorAddingDatabaseReference(systemDbName, result.errorMessage));
+		}
+
+		await this.readDatabaseReferences();
 	}
 
 	/**
@@ -824,6 +818,8 @@ export class Project implements ISqlProject {
 			if (settings.serverVariable && settings.serverName) {
 				await this.sqlProjService.addSqlCmdVariable(this.projectFilePath, settings.serverVariable, settings.serverName);
 			}
+
+			await this.readSqlCmdVariables();
 		}
 
 		const databaseLiteral = settings.databaseVariable ? undefined : settings.databaseName;
@@ -841,7 +837,24 @@ export class Project implements ISqlProject {
 		if (!result.success && result.errorMessage) {
 			throw new Error(constants.errorAddingDatabaseReference(referenceName, result.errorMessage));
 		}
+
+		await this.readDatabaseReferences();
 	}
+
+	private databaseReferenceExists(entry: IDatabaseReferenceProjectEntry): boolean {
+		const found = this._databaseReferences.find(reference => reference.pathForSqlProj() === entry.pathForSqlProj()) !== undefined;
+		return found;
+	}
+
+	public async deleteDatabaseReference(entry: IDatabaseReferenceProjectEntry): Promise<void> {
+		const result = await this.sqlProjService.deleteDatabaseReference(this.projectFilePath, entry.pathForSqlProj());
+		this.throwIfFailed(result);
+		await this.readDatabaseReferences();
+	}
+
+	//#endregion
+
+	//#region SQLCMD Variables
 
 	/**
 	 * Adds a SQLCMD variable to the project
@@ -850,6 +863,7 @@ export class Project implements ISqlProject {
 	 */
 	public async addSqlCmdVariable(name: string, defaultValue: string): Promise<void> {
 		await this.sqlProjService.addSqlCmdVariable(this.projectFilePath, name, defaultValue);
+		await this.readSqlCmdVariables();
 	}
 
 	/**
@@ -859,7 +873,16 @@ export class Project implements ISqlProject {
 	 */
 	public async updateSqlCmdVariable(name: string, defaultValue: string): Promise<void> {
 		await this.sqlProjService.updateSqlCmdVariable(this.projectFilePath, name, defaultValue);
+		await this.readSqlCmdVariables();
 	}
+
+	public async deleteSqlCmdVariable(variableName: string): Promise<void> {
+		const result = await this.sqlProjService.deleteSqlCmdVariable(this.projectFilePath, variableName);
+		this.throwIfFailed(result);
+		await this.readSqlCmdVariables();
+	}
+
+	//#endregion
 
 	/**
 	 * Appends given database source to the DatabaseSource property element.
@@ -1210,11 +1233,6 @@ export class Project implements ISqlProject {
 		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
 		this._files = await this.readFilesInProject();
 		this.files.push(...(await this.readFolders()));
-	}
-
-	private databaseReferenceExists(entry: IDatabaseReferenceProjectEntry): boolean {
-		const found = this._databaseReferences.find(reference => reference.pathForSqlProj() === entry.pathForSqlProj()) !== undefined;
-		return found;
 	}
 
 	private async addToProjFile(entry: ProjectEntry, xmlTag?: string, attributes?: Map<string, string>): Promise<void> {
