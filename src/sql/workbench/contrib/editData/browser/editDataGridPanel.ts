@@ -1144,7 +1144,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			if (itemToEdit.text) {
 				result = !this.hasNullAndLinebreak(itemToEdit.text);
 			} else {
-				result = !this.hasNullAndLinebreak(itemToEdit.text);
+				result = !this.hasNullAndLinebreak(itemToEdit);
 			}
 		}
 
