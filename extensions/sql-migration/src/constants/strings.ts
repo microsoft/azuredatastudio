@@ -80,7 +80,7 @@ export const DATABASE_FOR_ASSESSMENT_DESCRIPTION = localize('sql.migration.datab
 export const SELECT = localize('sql.migration.select', "Select");
 export const XEVENTS_ASSESSMENT_TITLE = localize('sql.migration.database.assessment.xevents.title', "Assess extended event sessions");
 export const XEVENTS_ASSESSMENT_DESCRIPTION = localize('sql.migration.database.assessment.xevents.description', "For the selected databases, you can additionally assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer by providing extended event session files.");
-export const XEVENTS_ASSESSMENT_DESCRIPTION2 = localize('sql.migration.database.assessment.xevents.description2', "If the extended events include features which are unsupported in Azure SQL, the detected issues will appear in the assessments results on the next step of the wizard as impacted objects.");
+export const XEVENTS_ASSESSMENT_DESCRIPTION2 = localize('sql.migration.database.assessment.xevents.description2', "If the extended events include features which are unsupported in Azure SQL, the detected issues will appear in the assessment results on the next step of the wizard as impacted objects.");
 export const XEVENTS_ASSESSMENT_HELPLINK = localize('sql.migration.database.assessment.xevents.link', "Learn more about how to create an extended event session on your source SQL Server to capture the application data layer workload");
 export const XEVENTS_ASSESSMENT_OPEN_FOLDER = localize('sql.migration.database.assessment.xevents.instructions', "Select a folder where extended events session files (.xel and .xem) are stored");
 

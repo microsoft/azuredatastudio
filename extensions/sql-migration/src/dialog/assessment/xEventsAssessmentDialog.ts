@@ -67,7 +67,7 @@ export class XEventsAssessmentDialog {
 
 		const moreInfo = _view.modelBuilder.hyperlink().withProps({
 			label: constants.XEVENTS_ASSESSMENT_HELPLINK,
-			url: 'https://learn.microsoft.com/sql/dma/dma-assesssqlonprem?view=sql-server-ver16#add-databases-and-extended-events-trace-to-assess',
+			url: 'aka.ms/sql-migration-xe-assess',
 			CSSStyles: { ...styles.BODY_CSS },
 			ariaLabel: constants.MORE_INFO,
 			showLinkIcon: true
