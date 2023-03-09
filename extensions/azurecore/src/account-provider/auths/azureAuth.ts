@@ -475,7 +475,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		try {
 			Logger.verbose('Fetching tenants with uri {0}', tenantUri);
 			let tenantList: string[] = [];
-			const tenantResponse = await this.makeGetRequest(tenantUri, token);
+			const tenantResponse = await this.makeGetRequest<TenantResponse[]>(tenantUri, token);
 			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
 				if (tenantInfo.displayName) {
 					tenantList.push(tenantInfo.displayName);
@@ -488,7 +488,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 					displayName: tenantInfo.displayName ? tenantInfo.displayName : tenantInfo.tenantId,
 					userId: token,
 					tenantCategory: tenantInfo.tenantCategory
-				} as Tenant;
+				};
 			});
 			Logger.verbose(`Tenants: ${tenantList}`);
 			const homeTenantIndex = tenants.findIndex(tenant => tenant.tenantCategory === Constants.HomeCategory);
@@ -512,7 +512,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		try {
 			Logger.verbose('Fetching tenants with URI: {0}', tenantUri);
 			let tenantList: string[] = [];
-			const tenantResponse = await this.makeGetRequest(tenantUri, token.token);
+			const tenantResponse = await this.makeGetRequest<TenantResponse[]>(tenantUri, token.token);
 			if (tenantResponse.status !== 200) {
 				Logger.error(`Error with tenant response, status: ${tenantResponse.status} | status text: ${tenantResponse.statusText}`);
 				Logger.error(`Headers: ${JSON.stringify(tenantResponse.headers)}`);
@@ -530,7 +530,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 					displayName: tenantInfo.displayName ? tenantInfo.displayName : tenantInfo.tenantId,
 					userId: token.key,
 					tenantCategory: tenantInfo.tenantCategory
-				} as Tenant;
+				};
 			});
 			Logger.verbose(`Tenants: ${tenantList}`);
 			const homeTenantIndex = tenants.findIndex(tenant => tenant.tenantCategory === Constants.HomeCategory);
@@ -795,7 +795,14 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return response;
 	}
 
-	private async makeGetRequest(url: string, token: string): Promise<AxiosResponse<any>> {
+	/**
+	 * Makes a GET request to the specified endpoint and returns the response. This currently assumes that the
+	 * response data will contain a `value` property of type R.
+	 * @param url The URL to send the request to
+	 * @param token The authentication token
+	 * @returns The request response
+	 */
+	private async makeGetRequest<R>(url: string, token: string): Promise<AxiosResponse<ResponseData<R>>> {
 		const config: AxiosRequestConfig = {
 			headers: {
 				'Content-Type': 'application/json',
@@ -804,7 +811,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			validateStatus: () => true // Never throw
 		};
 
-		const response = await axios.get(url, config);
+		const response = await axios.get<any, AxiosResponse<ResponseData<R>>>(url, config);
 		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data.value ?? response.data }], [], url,);
 		return response;
 	}
@@ -1103,5 +1110,9 @@ export interface DeviceCodeCheckPostData extends Omit<TokenPostData, 'resource'>
 	grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
 	tenant: string,
 	code: string
+}
+
+export interface ResponseData<T> {
+	value: T;
 }
 //#endregion
