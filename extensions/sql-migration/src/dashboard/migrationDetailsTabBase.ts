@@ -220,6 +220,7 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 							}
 						} else {
 							await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_DELETE);
+							logError(TelemetryViews.MigrationDetailsTab, MenuCommands.DeleteMigration, "cannot delete migration");
 						}
 					} catch (e) {
 						await this.statusBar.showError(

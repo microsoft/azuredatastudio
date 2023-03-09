@@ -286,7 +286,11 @@ export async function getVMInstanceView(sqlVm: SqlVMServer, account: azdata.Acco
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
 
 	if (response.errors.length > 0) {
-		throw new Error(response.errors.toString());
+		const message = response.errors
+			.map(err => err.message)
+			.join(', ');
+		throw new Error(message);
+
 	}
 
 	return response.response.data;
@@ -299,7 +303,11 @@ export async function getAzureResourceGivenId(account: azdata.Account, subscript
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
 
 	if (response.errors.length > 0) {
-		throw new Error(response.errors.toString());
+		const message = response.errors
+			.map(err => err.message)
+			.join(', ');
+		throw new Error(message);
+
 	}
 
 	return response.response.data;

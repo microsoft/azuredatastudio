@@ -320,6 +320,8 @@ export class DashboardWidget {
 					try {
 						const service = await MigrationLocalStorage.getMigrationServiceContext();
 						const migration = await this._getMigrationById(args.migrationId, args.migrationOperationId);
+						// get migration details can return undefined when the migration has been auto-cleaned
+						// however, since the migration is still returned in getlist,  we make a best effort to delete by id.
 						if (service && (
 							(migration && canDeleteMigration(migration)) ||
 							(migration === undefined && args.migrationId?.length > 0))) {
@@ -337,6 +339,7 @@ export class DashboardWidget {
 							}
 						} else {
 							await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_DELETE);
+							logError(TelemetryViews.MigrationsTab, MenuCommands.DeleteMigration, "cannot delete migration");
 						}
 					} catch (e) {
 						await this.showError(
