@@ -137,7 +137,7 @@ export class NewProjectDialog extends DialogBase {
 			ariaLabel: constants.TypeTitle,
 			width: '500px',
 			iconPosition: 'top',
-			selectedCardId: allProjectTypes.length > 0 ? allProjectTypes[0].id : undefined
+			selectedCardId: allProjectTypes.length > 0 ? allProjectTypes[0].id : undefined,
 		}).component();
 
 		this.register(projectTypeRadioCardGroup.onSelectionChanged(async (e) => {
@@ -284,7 +284,6 @@ export class NewProjectDialog extends DialogBase {
 		this.formBuilder = view.modelBuilder.formContainer().withFormItems([
 			{
 				title: constants.TypeTitle,
-				required: true,
 				component: projectTypeRadioCardGroup
 			},
 			{

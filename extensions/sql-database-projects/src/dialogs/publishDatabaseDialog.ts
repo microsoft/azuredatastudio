@@ -569,7 +569,8 @@ export class PublishDatabaseDialog {
 			width: cssStyles.publishDialogTextboxWidth,
 			enabled: true,
 			inputType: 'number',
-			validationErrorMessage: constants.portMustBeNumber
+			validationErrorMessage: constants.portMustBeNumber,
+			required: true
 		}).withValidation(component => utils.validateSqlServerPortNumber(component.value)).component();
 
 		this.serverPortTextBox.onTextChanged(() => {
@@ -583,7 +584,8 @@ export class PublishDatabaseDialog {
 			width: cssStyles.publishDialogTextboxWidth,
 			enabled: true,
 			inputType: 'password',
-			validationErrorMessage: constants.invalidSQLPasswordMessage(name)
+			validationErrorMessage: constants.invalidSQLPasswordMessage(name),
+			required: true
 		}).withValidation(component => !utils.isEmptyString(component.value) && utils.isValidSQLPassword(component.value || '')).component();
 
 		const serverPasswordRow = this.createFormRow(view, constants.serverPassword(name), this.serverAdminPasswordTextBox);
@@ -594,7 +596,8 @@ export class PublishDatabaseDialog {
 			width: cssStyles.publishDialogTextboxWidth,
 			enabled: true,
 			inputType: 'password',
-			validationErrorMessage: constants.passwordNotMatch(name)
+			validationErrorMessage: constants.passwordNotMatch(name),
+			required: true
 		}).withValidation(component => component.value === this.serverAdminPasswordTextBox?.value).component();
 		this.serverAdminPasswordTextBox.onTextChanged(() => {
 			this.tryEnableGenerateScriptAndOkButtons();
@@ -614,7 +617,8 @@ export class PublishDatabaseDialog {
 			values: baseImagesValues,
 			ariaLabel: constants.baseDockerImage(name),
 			width: cssStyles.publishDialogTextboxWidth,
-			enabled: true
+			enabled: true,
+			required: true
 		}).component();
 
 		const imageInfo = baseImages.find(x => x.displayName === (<azdataType.CategoryValue>this.baseDockerImageDropDown?.value)?.displayName);
