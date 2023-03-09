@@ -16,7 +16,8 @@ export const UserTypeDisplayNameInTitle: string = localize('objectManagement.Use
 export const HelpText: string = localize('objectManagement.helpText', "Help");
 export const YesText: string = localize('objectManagement.yesText', "Yes");
 export const OkText: string = localize('objectManagement.OkText', "OK");
-export const LoadingDialogText: string = localize('objectManagement.loadingDialog', "Loading dialog...")
+export const LoadingDialogText: string = localize('objectManagement.loadingDialog', "Loading dialog...");
+export const FailedToRetrieveConnectionInfoErrorMessage: string = localize('objectManagement.noConnectionUriError', "Failed to retrieve the connection information, please reconnect and try again.")
 
 export function RefreshObjectExplorerError(error: string): string {
 	return localize({
