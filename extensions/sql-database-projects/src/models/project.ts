@@ -722,8 +722,9 @@ export class Project implements ISqlProject {
 		this.throwIfFailed(result);
 	}
 
-	public async deleteSqlCmdVariable(variableName: string): Promise<azdataType.ResultStatus> {
-		return this.sqlProjService.deleteSqlCmdVariable(this.projectFilePath, variableName);
+	public async deleteSqlCmdVariable(variableName: string): Promise<void> {
+		const result = await this.sqlProjService.deleteSqlCmdVariable(this.projectFilePath, variableName);
+		this.throwIfFailed(result);
 	}
 
 	/**
@@ -841,6 +842,7 @@ export class Project implements ISqlProject {
 			throw new Error(constants.errorAddingDatabaseReference(referenceName, result.errorMessage));
 		}
 	}
+
 	/**
 	 * Adds a SQLCMD variable to the project
 	 * @param name name of the variable
@@ -1213,48 +1215,6 @@ export class Project implements ISqlProject {
 	private databaseReferenceExists(entry: IDatabaseReferenceProjectEntry): boolean {
 		const found = this._databaseReferences.find(reference => reference.pathForSqlProj() === entry.pathForSqlProj()) !== undefined;
 		return found;
-	}
-
-	/**
-	 * Update system db references to have the ADS and SSDT paths to the system dacpacs
-	 */
-	public async updateSystemDatabaseReferencesInProjFile(): Promise<void> {
-		// find all system database references
-		for (let r = 0; r < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
-			const currentNode = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference)[r];
-			if (!currentNode.getAttribute(constants.Condition) && currentNode.getAttribute(constants.Include)?.includes(constants.DacpacRootPath)) {
-				// get name of system database
-				const systemDb = currentNode.getAttribute(constants.Include)?.includes(constants.master) ? SystemDatabase.Master : SystemDatabase.Msdb;
-
-				// get name
-				const nameNodes = currentNode.getElementsByTagName(constants.DatabaseVariableLiteralValue);
-				const databaseVariableName = nameNodes[0].childNodes[0]?.nodeValue!;
-
-				// get suppressMissingDependenciesErrors
-				const suppressMissingDependenciesErrorNode = currentNode.getElementsByTagName(constants.SuppressMissingDependenciesErrors);
-				const suppressMissingDependences = suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === constants.True;
-
-				// TODO Two issues here :
-				// 1. If there are multiple ItemGroups with ArtifactReference items then we won't clean up until all items are removed
-				// 2. If the ItemGroup has other non-ArtifactReference items in it then those will be deleted
-				// Right now we assume that this ItemGroup is not manually edited so it's safe to ignore these
-				if (this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference).length === 1) {
-					// delete entire ItemGroup if there aren't any other children
-					this.projFileXmlDoc!.documentElement.removeChild(currentNode.parentNode!);
-				} else {
-					this.projFileXmlDoc!.documentElement.removeChild(currentNode);
-				}
-
-				// remove from database references because it'll get added again later
-				this._databaseReferences.splice(this._databaseReferences.findIndex(n => n.databaseName === (systemDb === SystemDatabase.Master ? constants.master : constants.msdb)), 1);
-
-				await this.addSystemDatabaseReference({ databaseName: databaseVariableName, systemDb: systemDb, suppressMissingDependenciesErrors: suppressMissingDependences });
-			}
-		}
-
-		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateSystemDatabaseReferencesInProjFile)
-			.withAdditionalMeasurements({ referencesCount: this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference).length })
-			.send();
 	}
 
 	private async addToProjFile(entry: ProjectEntry, xmlTag?: string, attributes?: Map<string, string>): Promise<void> {
