@@ -1135,7 +1135,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.logService.debug('onBeforeEditCell called with grid: ' + event.grid + ' row: ' + event.row
 			+ ' cell: ' + event.cell + ' item: ' + event.item + ' column: ' + event.column);
 
-		let itemToEdit = event.item[event.cell].displayValue;
+		let itemToEdit = event.item[event.cell];
 
 		if (Services.DBCellValue.isDBCellValue(itemToEdit)) {
 			result = !this.hasNullAndLinebreak(itemToEdit.displayValue)
@@ -1156,8 +1156,11 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	private hasNullAndLinebreak(inputString: string): boolean {
-		let linebreakMatch = inputString.match(/(\r\n|\n|\r)/g);
-		return linebreakMatch?.length > 0 && inputString.indexOf('\u0000') !== -1;
+		if (inputString) {
+			let linebreakMatch = inputString.match(/(\r\n|\n|\r)/);
+			return linebreakMatch?.length > 0 && inputString.indexOf('\u0000') !== -1;
+		}
+		return false;
 	}
 
 	handleInitializeTable(): void {
