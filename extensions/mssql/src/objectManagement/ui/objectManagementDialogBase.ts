@@ -184,6 +184,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				objectType: this.objectType
 			}).send();
 			void vscode.window.showErrorMessage(getErrorMessage(err));
+			azdata.window.closeDialog(this.dialogObject);
 		}
 	}
 
