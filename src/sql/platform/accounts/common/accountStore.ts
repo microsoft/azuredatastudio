@@ -28,7 +28,7 @@ export default class AccountStore implements IAccountStore {
 			return this.readFromMemento()
 				.then(accounts => {
 					// Determine if account exists and proceed accordingly
-					const match = accounts.findIndex(account => AccountStore.findAccountByKey(account.key, newAccount.key));
+					const match = accounts.findIndex(account => AccountStore.isSameAccountKey(account.key, newAccount.key));
 					return match < 0
 						? this.addToAccountList(accounts, newAccount)
 						: this.updateAccountList(accounts, newAccount.key, matchAccount => AccountStore.mergeAccounts(newAccount, matchAccount));
@@ -100,7 +100,7 @@ export default class AccountStore implements IAccountStore {
 	}
 
 	// PRIVATE METHODS /////////////////////////////////////////////////////
-	private static findAccountByKey(key1: azdata.AccountKey | undefined, key2: azdata.AccountKey | undefined): boolean {
+	private static isSameAccountKey(key1: azdata.AccountKey | undefined, key2: azdata.AccountKey | undefined): boolean {
 		// Provider ID and Account ID must match
 		return key1 && key2
 			? key1.providerId === key2.providerId && key1.accountId === key2.accountId
@@ -137,7 +137,7 @@ export default class AccountStore implements IAccountStore {
 
 	private addToAccountList(accounts: azdata.Account[], accountToAdd: azdata.Account): AccountListOperationResult {
 		// Check if the entry already exists
-		const match = accounts.findIndex(account => AccountStore.findAccountByKey(account.key, accountToAdd.key));
+		const match = accounts.findIndex(account => AccountStore.isSameAccountKey(account.key, accountToAdd.key));
 		if (match >= 0) {
 			// Account already exists, we won't do anything
 			return {
@@ -162,7 +162,7 @@ export default class AccountStore implements IAccountStore {
 
 	private removeFromAccountList(accounts: azdata.Account[], accountToRemove: azdata.AccountKey): AccountListOperationResult {
 		// Check if the entry exists
-		const match = accounts.findIndex(account => AccountStore.findAccountByKey(account.key, accountToRemove));
+		const match = accounts.findIndex(account => AccountStore.isSameAccountKey(account.key, accountToRemove));
 		if (match >= 0) {
 			// Account exists, remove it from the account list
 			accounts.splice(match, 1);
@@ -179,7 +179,7 @@ export default class AccountStore implements IAccountStore {
 
 	private updateAccountList(accounts: azdata.Account[], accountToUpdate: azdata.AccountKey, updateOperation: (account: azdata.Account) => void): AccountListOperationResult {
 		// Check if the entry exists
-		const match = accounts.findIndex(account => AccountStore.findAccountByKey(account.key, accountToUpdate));
+		const match = accounts.findIndex(account => AccountStore.isSameAccountKey(account.key, accountToUpdate));
 		if (match < 0) {
 			// Account doesn't exist, we won't do anything
 			return {
