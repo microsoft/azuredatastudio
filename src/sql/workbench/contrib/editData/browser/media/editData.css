@@ -97,6 +97,11 @@
 	font-style: italic
 }
 
+.editDataGrid .slick-cell .grid-cell-value-container.contains-null-char-cell {
+	background-color: var(--color-cell-invalid-cell, rgb(215, 230, 16));
+	color: black
+}
+
 .editDataGrid .slick-cell .grid-cell-value-container.loading-cell {
 	font-style: italic
 }
