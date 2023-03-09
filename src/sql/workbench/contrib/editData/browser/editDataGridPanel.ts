@@ -1137,13 +1137,27 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		let itemToEdit = event.item[event.cell].displayValue;
 
-		// allow-any-unicode-next-line
-		if (Services.DBCellValue.isDBCellValue(itemToEdit) && itemToEdit.displayValue.indexOf('\u0000') !== -1) {
-			result = false;
+		if (Services.DBCellValue.isDBCellValue(itemToEdit)) {
+			result = !this.hasNullAndLinebreak(itemToEdit.displayValue)
+		}
+		else if (typeof itemToEdit === 'string' || (itemToEdit && itemToEdit.text)) {
+			if (itemToEdit.text) {
+				result = !this.hasNullAndLinebreak(itemToEdit.text);
+			} else {
+				result = !this.hasNullAndLinebreak(itemToEdit.text);
+			}
+		}
+
+		if (!result) {
 			this.notificationService.warn(cellWithNullCharMessage);
 		}
 
 		return result;
+	}
+
+	private hasNullAndLinebreak(inputString: string): boolean {
+		let linebreakMatch = inputString.match(/(\r\n|\n|\r)/g);
+		return linebreakMatch?.length > 0 && inputString.indexOf('\u0000') !== -1;
 	}
 
 	handleInitializeTable(): void {
