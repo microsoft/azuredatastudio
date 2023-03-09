@@ -39,7 +39,7 @@ import { IAccessibilityService } from 'vs/platform/accessibility/common/accessib
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { localize } from 'vs/nls';
 
-const cellWithNullMessage = localize('editData.cellWithNullMessage', "This cell contains the Unicode null character which is currently not supported for editing.");
+const cellWithInvalidCharMessage = localize('editData.cellWithInvalidCharMessage', "This cell contains the Unicode null or enter character(s) which are currently not supported for editing.");
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -73,7 +73,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private rowIdMappings: { [gridRowId: number]: number } = {};
 	private dirtyCells: number[] = [];
 	protected plugins = new Array<Slick.Plugin<any>>();
-	private newlinePattern: string;
+	private hasNewline: boolean;
 	// User inputted string saved in case of an invalid edit
 	private lastEnteredString: string;
 	// List of column names with their indexes stored.
@@ -477,10 +477,10 @@ export class EditDataGridPanel extends GridParentComponent {
 	private replaceLinebreaks(inputStr: string): string {
 		let newlineMatches = inputStr.match(/(\r\n|\n|\r)/g);
 		if (newlineMatches && newlineMatches.length > 0) {
-			this.newlinePattern = newlineMatches[0];
+			this.hasNewline = true
 		}
 		// allow-any-unicode-next-line
-		return inputStr.replace(/(\r\n|\n|\r)/g, '\u0000');
+		return inputStr.replace(/\r\n/g, '\u0000').replace(/\n/g, '↵').replace(/\r/g, '⏎');
 	}
 
 	/**
@@ -647,8 +647,12 @@ export class EditDataGridPanel extends GridParentComponent {
 					? self.rowIdMappings[self.currentCell.row]
 					: self.currentCell.row;
 
-				// allow-any-unicode-next-line
-				let restoredValue = this.newlinePattern ? self.currentEditCellValue.replace(/\u0000/g, this.newlinePattern) : self.currentEditCellValue;
+				let restoredValue = self.currentEditCellValue;
+
+				if (this.hasNewline) {
+					// allow-any-unicode-next-line
+					restoredValue = self.currentEditCellValue.replace(/\u0000/g, '\r\n').replace(/↵/g, '\n').replace(/⏎/g, '\r');
+				}
 				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, restoredValue);
 			}).then(
 				result => {
@@ -1132,6 +1136,11 @@ export class EditDataGridPanel extends GridParentComponent {
 		});
 	}
 
+	private static hasForbiddenNewlineCharacter(inputString: string): boolean {
+		// allow-any-unicode-next-line
+		return (inputString.indexOf('\u0000') !== -1 || inputString.indexOf('↵') !== -1 || inputString.indexOf('⏎') !== -1);
+	}
+
 	onBeforeEditCell(event: Slick.OnBeforeEditCellEventArgs<any>): boolean {
 		let result = true;
 		this.logService.debug('onBeforeEditCell called with grid: ' + event.grid + ' row: ' + event.row
@@ -1139,9 +1148,9 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		let itemToEdit = event.item[event.cell].displayValue;
 
-		if (Services.DBCellValue.isDBCellValue(itemToEdit) && itemToEdit.displayValue.indexOf('\u0000') !== -1) {
+		if (Services.DBCellValue.isDBCellValue(itemToEdit) && EditDataGridPanel.hasForbiddenNewlineCharacter(itemToEdit.displayValue)) {
 			result = false;
-			this.notificationService.warn(cellWithNullMessage);
+			this.notificationService.warn(cellWithInvalidCharMessage);
 		}
 
 		return result;
@@ -1177,10 +1186,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 		else if (Services.DBCellValue.isDBCellValue(value)) {
 			valueToDisplay = (value.displayValue + '');
-			if (valueToDisplay.indexOf('\u0000') !== -1) {
-				cellClasses += " contains-null-char-cell";
-			}
-
 			valueToDisplay = valueToDisplay.replace(/(\r\n|\n|\r)/g, '\u0000');
 			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
 		}
