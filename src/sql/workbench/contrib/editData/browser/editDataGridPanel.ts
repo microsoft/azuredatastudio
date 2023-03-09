@@ -1136,11 +1136,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		});
 	}
 
-	private static hasForbiddenNewlineCharacter(inputString: string): boolean {
-		// allow-any-unicode-next-line
-		return (inputString.indexOf('\u0000') !== -1 || inputString.indexOf('↵') !== -1 || inputString.indexOf('⏎') !== -1);
-	}
-
 	onBeforeEditCell(event: Slick.OnBeforeEditCellEventArgs<any>): boolean {
 		let result = true;
 		this.logService.debug('onBeforeEditCell called with grid: ' + event.grid + ' row: ' + event.row
@@ -1148,7 +1143,8 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		let itemToEdit = event.item[event.cell].displayValue;
 
-		if (Services.DBCellValue.isDBCellValue(itemToEdit) && EditDataGridPanel.hasForbiddenNewlineCharacter(itemToEdit.displayValue)) {
+		// allow-any-unicode-next-line
+		if (Services.DBCellValue.isDBCellValue(itemToEdit) && (itemToEdit.displayValue.indexOf('\u0000') !== -1 || itemToEdit.displayValue.indexOf('↵') !== -1 || itemToEdit.displayValue.indexOf('⏎') !== -1)) {
 			result = false;
 			this.notificationService.warn(cellWithInvalidCharMessage);
 		}
