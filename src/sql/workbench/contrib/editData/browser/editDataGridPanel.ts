@@ -209,9 +209,12 @@ export class EditDataGridPanel extends GridParentComponent {
 				returnVal = '\'NULL\'';
 			}
 			else if (Services.DBCellValue.isDBCellValue(value)) {
+				// If a cell is not edited and retrieved direct from the SQL server, it would be in the form of a DBCellValue.
+				// We use the DBCellValue's displayValue as the text value.
 				returnVal = this.replaceLinebreaks(value.displayValue);
 			}
 			else if (typeof value === 'string') {
+				// Once a cell has been edited, the cell value will no longer be a DBCellValue until refresh.
 				returnVal = this.replaceLinebreaks(value);
 			}
 			return returnVal;
@@ -1138,9 +1141,13 @@ export class EditDataGridPanel extends GridParentComponent {
 		let itemToEdit = event.item[event.cell];
 
 		if (Services.DBCellValue.isDBCellValue(itemToEdit)) {
+			// If a cell is not edited and retrieved direct from the SQL server, it would be in the form of a DBCellValue.
+			// We use it's displayValue to check if the cell contains unicode NULL and linebreaks.
 			result = !this.hasNullAndLinebreak(itemToEdit.displayValue)
 		}
 		else if (typeof itemToEdit === 'string' || (itemToEdit && itemToEdit.text)) {
+			// Once a cell has been edited, the cell value will no longer be a DBCellValue until refresh.
+			// In this case, just check directly if it's a string or if it's an item with .text, use the text.
 			if (itemToEdit.text) {
 				result = !this.hasNullAndLinebreak(itemToEdit.text);
 			} else {
@@ -1192,11 +1199,15 @@ export class EditDataGridPanel extends GridParentComponent {
 			valueToDisplay = '\'NULL\'';
 		}
 		else if (Services.DBCellValue.isDBCellValue(value)) {
+			// If a cell is not edited and retrieved direct from the SQL server, it would be in the form of a DBCellValue.
+			// We use it's displayValue and remove newlines for display purposes only.
 			valueToDisplay = (value.displayValue + '');
 			valueToDisplay = valueToDisplay.replace(/(\r\n|\n|\r)/g, '\u0000');
 			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
 		}
 		else if (typeof value === 'string' || (value && value.text)) {
+			// Once a cell has been edited, the cell value will no longer be a DBCellValue until refresh.
+			// In this case, use directly if it's a string or if it's an item with .text, use the text.
 			if (value.text) {
 				valueToDisplay = value.text;
 			} else {
