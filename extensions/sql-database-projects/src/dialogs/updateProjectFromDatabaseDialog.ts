@@ -468,14 +468,12 @@ export class UpdateProjectFromDatabaseDialog {
 		this.compareActionRadioButton = view.modelBuilder.radioButton().withProps({
 			name: 'action',
 			label: constants.compareActionRadioButtonLabel,
-			ariaLabel: constants.compareActionRadioButtonLabel,
 			checked: true
 		}).component();
 
 		this.updateActionRadioButton = view.modelBuilder.radioButton().withProps({
 			name: 'action',
-			label: constants.updateActionRadioButtonLabel,
-			ariaLabel: constants.updateActionRadioButtonLabel
+			label: constants.updateActionRadioButtonLabel
 		}).component();
 
 		await this.compareActionRadioButton.updateProperties({ checked: true });
