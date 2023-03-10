@@ -803,8 +803,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				this._callbacks.onAzureTenantSelection(tenant.id);
 			}
 			else {
-				// This should ideally never ever happen!
-				this._logService.error(`onAzureTenantSelected : Tenant list not found as expected, missing tenant on index ${tenantIndex}`);
+				// This can happen when connection dialog is opened with Azure MFA selected, but not with profile data.
+				// This is not an error since tenant is not available in this case, tenants will be populated for the account selected in account dropdown.
+				this._logService.debug(`onAzureTenantSelected : Tenant list not found as expected, missing tenant on index ${tenantIndex}`);
 			}
 		}
 	}
@@ -962,8 +963,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 							this._azureTenantDropdown.selectWithOptionName(tenant.displayName);
 						}
 						else {
-							// This should ideally never ever happen!
-							this._logService.error(`fillInConnectionInputs : Could not find tenant with ID ${this._azureTenantId} for account ${accountName}`);
+							// This can happen when connection dialog is opened with Azure MFA selected, but not with profile data which means 'tenantId' is not available.
+							// This is not an error since tenant is not available in this case, tenants will be populated for the account selected in account dropdown.
+							this._logService.debug(`fillInConnectionInputs : Could not find tenant with ID ${this._azureTenantId} for account ${accountName}`);
 						}
 						this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
 					}
