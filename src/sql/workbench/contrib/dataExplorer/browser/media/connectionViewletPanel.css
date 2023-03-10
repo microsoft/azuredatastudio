@@ -25,6 +25,7 @@
 }
 
 /* High Contrast Theming */
+.monaco-workbench.hc-light .server-explorer-viewlet .server-group,
 .monaco-workbench.hc-black .server-explorer-viewlet .server-group {
 	line-height: 20px;
 }
@@ -134,9 +135,13 @@
 }
 
 .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page,
+.hc-light .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page,
 .monaco-list .monaco-list-rows > .monaco-list-row .connection-tile > .icon.server-page,
+.hc-light .monaco-list .monaco-list-rows > .monaco-list-row .connection-tile > .icon.server-page,
 .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connectionProfileContainer > .icon.server-page,
-.monaco-list .monaco-list-rows > .monaco-list-row .connectionProfileContainer > .icon.server-page {
+.hc-light .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connectionProfileContainer > .icon.server-page,
+.monaco-list .monaco-list-rows > .monaco-list-row .connectionProfileContainer > .icon.server-page,
+.hc-light .monaco-list .monaco-list-rows > .monaco-list-row .connectionProfileContainer > .icon.server-page {
 	background: url('default_server.svg') center center no-repeat;
 }
 

@@ -1,20 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-	<defs>
-	  <style>.canvas{fill: none; opacity: 0;}.light-defaultgrey{fill: #212121; opacity: 1;}.light-defaultgrey-10{fill: #212121; opacity: 0.1;}.cls-1952ad0b7-668d-55f4-b661-43e649f93ef9{opacity:0.75;}</style>
-	</defs>
-	<title>IconLightHierarchy</title>
-	<g id="canvas" class="canvas">
-	  <path class="canvas" d="M16,16H0V0H16Z" />
+	<g id="canvas" opacity="0" fill="none">
+		<path d="M16,16H0V0H16Z" opacity="0" fill="none" />
 	</g>
 	<g id="level-1">
-	  <g class="cls-1952ad0b7-668d-55f4-b661-43e649f93ef9">
-		<path class="light-defaultgrey" d="M13,7.5V10H12V8H3v2H2V7.5L2.5,7H7V5H8V7h4.5Z" />
-	  </g>
-	  <path class="light-defaultgrey-10" d="M9.5.5v4h-4V.5Z" />
-	  <path class="light-defaultgrey" d="M9.5,0h-4L5,.5v4l.5.5h4l.5-.5V.5ZM9,4H6V1H9Z" />
-	  <path class="light-defaultgrey-10" d="M4.5,10.5v4H.5v-4Z" />
-	  <path class="light-defaultgrey" d="M4.5,10H.5l-.5.5v4l.5.5h4l.5-.5v-4ZM4,14H1V11H4Z" />
-	  <path class="light-defaultgrey-10" d="M14.5,10.5v4h-4v-4Z" />
-	  <path class="light-defaultgrey" d="M14.5,10h-4l-.5.5v4l.5.5h4l.5-.5v-4ZM14,14H11V11h3Z" />
+		<g opacity="0.75">
+			<path d="M13,8.5V11H12V9H5v2H4V8.5L4.5,8H8V6H9V8h3.5Z" fill="#212121" />
+		</g>
+		<path d="
+	  M6.5,11 h-4 l-.5.5 v3 l.5.5 h4 l.5-.5 v-3 Z
+	  M6,14 H3 V12 H6 Z
+	  m8.5-3 h-4 l-.5.5 v3 l.5.5 h4 l.5-.5 v-3 Z
+	  M14,14 H11 V12 h3 Z
+	  M10.5,2 h-4 l-.5.5 v3 l.5.5 h4 l.5-.5 v-3 Z
+	  M10,5 H7 V3 h3 Z" fill="#212121" />
+		<path d="
+		M2.5,11.5 h4 v3 h-4 Z
+		m8,0 v3 h4 v-3 Z
+		m0-6 v-3 h-4 V5.5 Z" fill="#212121" opacity="0.1" />
 	</g>
-  </svg>
+</svg>

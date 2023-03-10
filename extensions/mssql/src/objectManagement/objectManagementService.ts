@@ -111,7 +111,7 @@ export class ObjectManagementService implements IObjectManagementService {
 		return this.client.sendRequest(contracts.UpdateUserRequest.type, params).then(
 			r => { },
 			e => {
-				this.client.logFailedRequest(contracts.UpdateLoginRequest.type, e);
+				this.client.logFailedRequest(contracts.UpdateUserRequest.type, e);
 				return Promise.reject(new Error(e.message));
 			}
 		);
