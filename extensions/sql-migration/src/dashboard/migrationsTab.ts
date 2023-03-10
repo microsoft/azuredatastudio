@@ -85,9 +85,12 @@ export class MigrationsTab extends TabBase<MigrationsTab> {
 			this.statusBar);
 		this.disposables.push(this._migrationsListTab);
 
-		const openMigrationsListTab = async (): Promise<void> => {
+		const openMigrationsListTab = async (refresh?: boolean): Promise<void> => {
 			await this.statusBar.clearError();
 			await this._openTab(this._migrationsListTab);
+			if (refresh) {
+				await this._migrationsListTab.refresh();
+			}
 		};
 
 		this._migrationDetailsBlobTab = await new MigrationDetailsBlobContainerTab().create(

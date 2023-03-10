@@ -886,7 +886,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	private async populateTenantsDropdown(): Promise<void> {
 		try {
 			this._accountTenantDropdown.loading = true;
-			if (this.migrationStateModel._azureAccount?.isStale === false &&
+			if (!utils.isAccountTokenStale(this.migrationStateModel._azureAccount) &&
 				this.migrationStateModel._azureAccount?.properties?.tenants?.length > 0) {
 				this.migrationStateModel._accountTenants = utils.getAzureTenants(this.migrationStateModel._azureAccount);
 

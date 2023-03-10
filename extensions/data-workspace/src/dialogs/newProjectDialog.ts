@@ -284,7 +284,6 @@ export class NewProjectDialog extends DialogBase {
 		this.formBuilder = view.modelBuilder.formContainer().withFormItems([
 			{
 				title: constants.TypeTitle,
-				required: true,
 				component: projectTypeRadioCardGroup
 			},
 			{

@@ -139,11 +139,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 			if (ex instanceof AzureAuthError) {
 				if (loginComplete) {
 					loginComplete.reject(ex);
-					Logger.error(ex);
-				} else {
-					void vscode.window.showErrorMessage(ex.message);
-					Logger.error(ex.originalMessageAndException);
 				}
+				Logger.error(ex.originalMessageAndException);
 			} else {
 				const message = ex.errorMessage || ex.message;
 				if (message) {
@@ -155,10 +152,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 					};
 				}
 				Logger.error(ex);
-
 			}
 			return {
-				canceled: false
+				canceled: false,
+				errorCode: ex.errorCode,
+				errorMessage: ex.errorMessage || ex.message
 			};
 		}
 	}
@@ -476,6 +474,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 			Logger.verbose('Fetching tenants with uri {0}', tenantUri);
 			let tenantList: string[] = [];
 			const tenantResponse = await this.makeGetRequest<TenantResponse[]>(tenantUri, token);
+			const data = tenantResponse.data;
+			if (data.error) {
+				Logger.error(`Error fetching tenants :${data.error.code} - ${data.error.message}`);
+				throw new Error(`${data.error.code} - ${data.error.message}`);
+			}
 			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
 				if (tenantInfo.displayName) {
 					tenantList.push(tenantInfo.displayName);
@@ -501,7 +504,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return tenants;
 		} catch (ex) {
 			Logger.error(`Error fetching tenants :${ex}`);
-			throw new Error('Error retrieving tenant information');
+			throw ex;
 		}
 	}
 
@@ -1113,6 +1116,10 @@ export interface DeviceCodeCheckPostData extends Omit<TokenPostData, 'resource'>
 }
 
 export interface ResponseData<T> {
+	error?: {
+		code: string;
+		message: string;
+	}
 	value: T;
 }
 //#endregion

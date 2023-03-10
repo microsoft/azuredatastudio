@@ -26,6 +26,7 @@ export const MenuCommands = {
 	ViewService: 'sqlmigration.view.service',
 	CopyMigration: 'sqlmigration.copy.migration',
 	CancelMigration: 'sqlmigration.cancel.migration',
+	DeleteMigration: 'sqlmigration.delete.migration',
 	RetryMigration: 'sqlmigration.retry.migration',
 	StartMigration: 'sqlmigration.start',
 	StartLoginMigration: 'sqlmigration.login.start',
@@ -423,7 +424,7 @@ export async function getAzureAccountsDropdownValues(accounts: Account[]): Promi
 	accounts.forEach((account) => {
 		accountsValues.push({
 			name: account.displayInfo.userId,
-			displayName: account.isStale
+			displayName: isAccountTokenStale(account)
 				? constants.ACCOUNT_CREDENTIALS_REFRESH(account.displayInfo.displayName)
 				: account.displayInfo.displayName
 		});
@@ -439,6 +440,10 @@ export async function getAzureAccountsDropdownValues(accounts: Account[]): Promi
 	return accountsValues;
 }
 
+export function isAccountTokenStale(account: Account | undefined): boolean {
+	return account === undefined || account?.isStale === true;
+}
+
 export function getAzureTenants(account?: Account): Tenant[] {
 	return account?.properties.tenants || [];
 }
@@ -446,9 +451,9 @@ export function getAzureTenants(account?: Account): Tenant[] {
 export async function getAzureSubscriptions(account?: Account): Promise<azureResource.AzureResourceSubscription[]> {
 	let subscriptions: azureResource.AzureResourceSubscription[] = [];
 	try {
-		if (account) {
-			subscriptions = !account.isStale ? await azure.getSubscriptions(account) : [];
-		}
+		subscriptions = account && !isAccountTokenStale(account)
+			? await azure.getSubscriptions(account)
+			: [];
 	} catch (e) {
 		logError(TelemetryViews.Utils, 'utils.getAzureSubscriptions', e);
 	}

@@ -337,6 +337,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				if (this.isFindActive) {
 					this.addDecoration();
 				}
+				this.cellModel.cellPreviewUpdated.fire();
 			}
 		}
 	}

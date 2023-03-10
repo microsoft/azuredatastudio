@@ -232,7 +232,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				let cells = [...new Set(oldDecorationsRange.map(item => item.cell))].filter(c => c.cellType === 'markdown');
 				cells.forEach(cell => {
 					let cellOldDecorations = oldDecorationsRange.filter(r => r.cell === cell);
-					let cellEditor = this.cellEditors.find(c => c.cellGuid() === cell.cellGuid);
+					// In split mode we have code and text cells with the same Guid,
+					// we need to find the text component editor to apply the decorations
+					// text component doesn't have an editor => !c.getEditor() filters that.
+					let cellEditor = this.cellEditors.find(c => c.cellGuid() === cell.cellGuid && !c.getEditor());
 					cellEditor.deltaDecorations(undefined, cellOldDecorations);
 				});
 				// code cell outputs
@@ -244,7 +247,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				});
 			} else {
 				if (oldDecorationsRange.cell.cellType === 'markdown' || oldDecorationsRange.outputComponentIndex >= 0) {
-					let cell = oldDecorationsRange.outputComponentIndex >= 0 ? this.cellEditors.filter(c => c.cellGuid() === oldDecorationsRange.cell.cellGuid && c.isCellOutput)[oldDecorationsRange.outputComponentIndex] : this.cellEditors.find(c => c.cellGuid() === oldDecorationsRange.cell.cellGuid);
+					let cell = oldDecorationsRange.outputComponentIndex >= 0 ? this.cellEditors.filter(c => c.cellGuid() === oldDecorationsRange.cell.cellGuid && c.isCellOutput)[oldDecorationsRange.outputComponentIndex] : this.cellEditors.find(c => c.cellGuid() === oldDecorationsRange.cell.cellGuid && !c.getEditor());
 					cell.deltaDecorations(undefined, oldDecorationsRange);
 				}
 			}
@@ -254,7 +257,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				let cells = [...new Set(newDecorationsRange.map(item => item.cell))].filter(c => c.cellType === 'markdown');
 				cells.forEach(cell => {
 					let cellNewDecorations = newDecorationsRange.filter(r => r.cell === cell);
-					let cellEditor = this.cellEditors.find(c => c.cellGuid() === cell.cellGuid);
+					// In split mode we have code and text cells with the same Guid,
+					// we need to find the text component editor to apply the decorations
+					// text component doesn't have an editor => !c.getEditor() filters that.
+					let cellEditor = this.cellEditors.find(c => c.cellGuid() === cell.cellGuid && !c.getEditor());
 					cellEditor.deltaDecorations(cellNewDecorations, undefined);
 				});
 				// code cell outputs
@@ -266,7 +272,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				});
 			} else {
 				if (newDecorationsRange.cell.cellType === 'markdown' || newDecorationsRange.outputComponentIndex >= 0) {
-					let cell = newDecorationsRange.outputComponentIndex >= 0 ? this.cellEditors.filter(c => c.cellGuid() === newDecorationsRange.cell.cellGuid && c.isCellOutput)[newDecorationsRange.outputComponentIndex] : this.cellEditors.find(c => c.cellGuid() === newDecorationsRange.cell.cellGuid);
+					let cell = newDecorationsRange.outputComponentIndex >= 0 ? this.cellEditors.filter(c => c.cellGuid() === newDecorationsRange.cell.cellGuid && c.isCellOutput)[newDecorationsRange.outputComponentIndex] : this.cellEditors.find(c => c.cellGuid() === newDecorationsRange.cell.cellGuid && !c.getEditor());
 					cell.deltaDecorations(newDecorationsRange, undefined);
 				}
 			}
