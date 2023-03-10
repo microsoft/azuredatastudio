@@ -661,6 +661,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.files.length).equal(3, 'No new entries should be added to the project when adding same file for a second time');
 	});
 
+	// skipped; should be tested/implemented in DacFx
 	it.skip('Should ignore duplicate file entries in existing sqlproj', async function (): Promise<void> {
 		// Create new sqlproj
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
@@ -803,6 +804,7 @@ describe('Project: sqlproj content operations', function (): void {
 				{ type: EntryType.Folder, relativePath: 'foo\\bar\\' }]);
 	});
 
+	// skipped until verified/removed in DacFx
 	it.skip('Should not add duplicate intermediate folders to project', async function (): Promise<void> {
 		// Create new sqlproj
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);

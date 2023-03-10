@@ -173,7 +173,7 @@ export class Project implements ISqlProject {
 		// get pre and post deploy scripts specified in the sqlproj
 		await this.readPreDeployScripts();
 		await this.readPostDeployScripts();
-		await this.readNoneScripts();
+		await this.readNoneItems();
 
 		await this.readFilesInProject(); // get SQL object scripts
 		await this.readFolders(); // get folders
@@ -313,7 +313,7 @@ export class Project implements ISqlProject {
 		this._postDeployScripts = postDeploymentScriptEntries;
 	}
 
-	private async readNoneScripts(): Promise<void> {
+	private async readNoneItems(): Promise<void> {
 		var result: GetScriptsResult = await this.sqlProjService.getNoneItems(this.projectFilePath);
 		this.throwIfFailed(result);
 
@@ -458,7 +458,7 @@ export class Project implements ISqlProject {
 		this.throwIfFailed(result);
 
 		await this.readPreDeployScripts();
-		await this.readNoneScripts();
+		await this.readNoneItems();
 	}
 
 	public async deletePreDeploymentScript(relativePath: string): Promise<void> {
@@ -484,7 +484,7 @@ export class Project implements ISqlProject {
 		this.throwIfFailed(result);
 
 		await this.readPostDeployScripts();
-		await this.readNoneScripts();
+		await this.readNoneItems();
 	}
 
 	public async deletePostDeploymentScript(relativePath: string): Promise<void> {
@@ -510,7 +510,7 @@ export class Project implements ISqlProject {
 		this.throwIfFailed(result);
 
 		await this.readPostDeployScripts();
-		await this.readNoneScripts();
+		await this.readNoneItems();
 	}
 
 	public async deleteNoneItem(relativePath: string): Promise<void> {
@@ -558,12 +558,12 @@ export class Project implements ISqlProject {
 			case ItemType.preDeployScript:
 				result = await this.sqlProjService.addPreDeploymentScript(this.projectFilePath, relativeFilePath);
 				await this.readPreDeployScripts();
-				await this.readNoneScripts();
+				await this.readNoneItems();
 				break;
 			case ItemType.postDeployScript:
 				result = await this.sqlProjService.addPostDeploymentScript(this.projectFilePath, relativeFilePath);
 				await this.readPostDeployScripts();
-				await this.readNoneScripts();
+				await this.readNoneItems();
 				break;
 			default:
 				result = await this.sqlProjService.addSqlObjectScript(this.projectFilePath, relativeFilePath);
@@ -597,7 +597,7 @@ export class Project implements ISqlProject {
 			await this.readFilesInProject();
 		} else {
 			result = await this.sqlProjService.addNoneItem(this.projectFilePath, filePath);
-			await this.readNoneScripts();
+			await this.readNoneItems();
 		}
 
 		this.throwIfFailed(result);
