@@ -163,7 +163,7 @@ declare module 'sqldbproj' {
 		 *
 		 * @param relativeFolderPath Relative path of the folder
 		 */
-		addFolder(relativeFolderPath: string): Promise<IFileProjectEntry>;
+		addFolder(relativeFolderPath: string): Promise<void>;
 
 		/**
 		 * Writes a file to disk if contents are provided, adds that file to the project, and writes it to disk
@@ -196,18 +196,6 @@ declare module 'sqldbproj' {
 		 * @param databaseSource Source of the database to remove
 		 */
 		removeDatabaseSource(databaseSource: string): Promise<void>;
-
-		/**
-		 * Excludes entry from project by removing it from the project file
-		 * @param entry
-		 */
-		exclude(entry: IFileProjectEntry): Promise<void>;
-
-		/**
-		 * Deletes file or folder and removes it from the project file
-		 * @param entry
-		 */
-		deleteFileFolder(entry: IFileProjectEntry): Promise<void>;
 
 		/**
 		 * returns the sql version the project is targeting

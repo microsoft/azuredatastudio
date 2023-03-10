@@ -782,6 +782,13 @@ export function isPublishProfile(fileName: string): boolean {
 	return hasPublishExtension;
 }
 
+/**
+ * Checks to see if a file exists at absoluteFilePath, and writes contents if it doesn't.
+ * If either the file already exists and contents is specified or the file doesn't exist and contents is blank,
+ * then an exception is thrown.
+ * @param absoluteFilePath
+ * @param contents
+ */
 export async function ensureFileExists(absoluteFilePath: string, contents?: string): Promise<void> {
 	if (contents) {
 		// Create the file if contents were passed in and file does not exist yet

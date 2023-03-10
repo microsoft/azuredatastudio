@@ -236,7 +236,7 @@ export class ProjectsController {
 		switch (itemType.type) {
 			case ItemType.preDeployScript:
 				await project.addPreDeploymentScript(relativePath);
-				break
+				break;
 			case ItemType.postDeployScript:
 				await project.addPostDeploymentScript(relativePath);
 				break;
@@ -789,7 +789,7 @@ export class ProjectsController {
 				case constants.DatabaseProjectItemType.folder:
 					// TODO: not yet supported in DacFx
 					//await project.excludeFolder(fileEntry.relativePath);
-					void vscode.window.showErrorMessage('Excluding folders is not yet supported');
+					void vscode.window.showErrorMessage(constants.excludeFolderNotSupported);
 					break;
 				case constants.DatabaseProjectItemType.preDeploymentScript:
 					await project.excludePreDeploymentScript(fileEntry.relativePath);
@@ -859,7 +859,7 @@ export class ProjectsController {
 						await project.deleteNoneItem(node.relativeProjectUri.fsPath);
 						break;
 					default:
-						throw new Error(`Unhandled item type during exclude: '${node.type}'`);
+						throw new Error(constants.unhandledDeleteType(node.type));
 				}
 			}
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.deleteObjectFromProject)
@@ -1833,7 +1833,7 @@ export class ProjectsController {
 			let toRemoveEntries: FileProjectEntry[] = [];
 			toRemove.forEach(f => toRemoveEntries.push(new FileProjectEntry(f, f.path.replace(projectPath + '\\', ''), EntryType.File)));
 
-			toRemoveEntries.forEach(async f => await project.exclude(f));
+			toRemoveEntries.forEach(async f => await project.excludeSqlObjectScript(f.fsUri.fsPath));
 
 			await this.buildProject(project);
 		}

@@ -406,7 +406,11 @@ export class Project implements ISqlProject {
 
 	//#region Folders
 
-	public async addFolder2(relativeFolderPath: string): Promise<void> {
+	/**
+	 * Adds a folder to the project, and saves the project file
+	 * @param relativeFolderPath Relative path of the folder
+	 */
+	public async addFolder(relativeFolderPath: string): Promise<void> {
 		const result = await this.sqlProjService.addFolder(this.projectFileName, relativeFolderPath);
 		this.throwIfFailed(result);
 
@@ -528,18 +532,6 @@ export class Project implements ISqlProject {
 	//#endregion
 
 	/**
-	 * Adds a folder to the project, and saves the project file
-	 * TODO: delete once replaced with addFolder2
-	 * @param relativeFolderPath Relative path of the folder
-	 */
-	public async addFolder(relativeFolderPath: string): Promise<FileProjectEntry> {
-		const result = await this.sqlProjService.addFolder(this.projectFilePath, relativeFolderPath);
-		this.throwIfFailed(result);
-
-		return this.createFileProjectEntry(utils.ensureTrailingSlash(relativeFolderPath), EntryType.Folder);
-	}
-
-	/**
 	 * Writes a file to disk if contents are provided, adds that file to the project, and writes it to disk
 	 *
 	 * @param relativeFilePath Relative path of the file
@@ -611,30 +603,6 @@ export class Project implements ISqlProject {
 		this.throwIfFailed(result);
 
 		return this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
-	}
-
-	public async exclude(entry: FileProjectEntry): Promise<void> {
-		entry.type
-		entry.type
-		//const toExclude: FileProjectEntry[] = this._files.concat(this._preDeployScripts).concat(this._postDeployScripts).concat(this._noneDeployScripts).concat(this._publishProfiles).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
-		//await this.removeFromProjFile(toExclude);
-
-		this._files = this._files.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
-		this._preDeployScripts = this._preDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
-		this._postDeployScripts = this._postDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
-		this._noneDeployScripts = this._noneDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
-		this._publishProfiles = this._publishProfiles.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
-	}
-
-	public async deleteFileFolder(entry: FileProjectEntry): Promise<void> {
-		// compile a list of folder contents to delete; if entry is a file, contents will contain only itself
-		const toDeleteFiles: FileProjectEntry[] = this._files.concat(this._preDeployScripts).concat(this._postDeployScripts).concat(this._noneDeployScripts).concat(this._publishProfiles).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.File);
-		const toDeleteFolders: FileProjectEntry[] = this._files.filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.Folder);
-
-		await Promise.all(toDeleteFiles.map(x => fs.unlink(x.fsUri.fsPath)));
-		await Promise.all(toDeleteFolders.map(x => fs.rm(x.fsUri.fsPath, { recursive: true, force: true })));
-
-		await this.exclude(entry);
 	}
 
 	public async deleteDatabaseReference(entry: IDatabaseReferenceProjectEntry): Promise<void> {
@@ -882,7 +850,7 @@ export class Project implements ISqlProject {
 				if (fileStat.isFile() && file.fsPath.toLowerCase().endsWith(constants.sqlFileExtension)) {
 					await this.addSqlObjectScript(relativePath);
 				} else if (fileStat.isDirectory()) {
-					await this.addFolder2(relativePath);
+					await this.addFolder(relativePath);
 				}
 			}
 		}
