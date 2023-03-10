@@ -103,6 +103,7 @@
 
 .slick-cell .grid-cell-value-container.missing-value {
 	font-style: italic;
+	background: darkgrey;
 }
 
 .slick-cell, .slick-headerrow-column{
