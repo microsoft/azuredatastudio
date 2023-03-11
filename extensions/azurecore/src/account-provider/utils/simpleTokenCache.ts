@@ -4,9 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 import * as keytarType from 'keytar';
 import { join, parse } from 'path';
-import { FileDatabase } from './utils/fileDatabase';
+import { FileDatabase } from './fileDatabase';
 import * as azdata from 'azdata';
-import { FileEncryptionHelper } from './utils/fileEncryptionHelper';
+import { FileEncryptionHelper } from './fileEncryptionHelper';
+import { ADALFileEncryptionHelper } from './adalFileEncryptionHelper';
 
 function getSystemKeytar(): Keytar | undefined {
 	try {
@@ -25,7 +26,7 @@ const separator = '§';
 
 async function getFileKeytar(filePath: string, credentialService: azdata.CredentialProvider): Promise<Keytar | undefined> {
 	const fileName = parse(filePath).base;
-	const fileEncryptionHelper: FileEncryptionHelper = new FileEncryptionHelper(credentialService, fileName);
+	const fileEncryptionHelper: FileEncryptionHelper = new ADALFileEncryptionHelper(credentialService, fileName);
 	const db = new FileDatabase(filePath, fileEncryptionHelper.fileOpener, fileEncryptionHelper.fileSaver);
 	await db.initialize();
 

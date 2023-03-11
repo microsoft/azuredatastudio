@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as events from 'events';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
-import { SimpleTokenCache } from './simpleTokenCache';
+import { SimpleTokenCache } from './utils/simpleTokenCache';
 import providerSettings from './providerSettings';
 import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider';
 import { AzureAccountProviderMetadata } from 'azurecore';
@@ -145,7 +145,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		const noSystemKeychain = vscode.workspace.getConfiguration(Constants.AzureSection).get<boolean>(Constants.NoSystemKeyChainSection);
 		const tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
 		// Hardcode the MSAL Cache Key so there is only one cache location
-		const tokenCacheKeyMsal = `azureTokenCacheMsal-azure_publicCloud`;
+		const tokenCacheKeyMsal = `azureTokenCacheMsal_azure_publicCloud`;
 		try {
 			if (!this._credentialProvider) {
 				throw new Error('Credential provider not registered');
@@ -156,7 +156,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			await simpleTokenCache.init();
 
 			// MSAL Cache Plugin
-			this._cachePluginProvider = new MsalCachePluginProvider(tokenCacheKeyMsal, this._userStoragePath);
+			this._cachePluginProvider = new MsalCachePluginProvider(tokenCacheKeyMsal, this._userStoragePath, this._credentialProvider);
 
 			const msalConfiguration: Configuration = {
 				auth: {

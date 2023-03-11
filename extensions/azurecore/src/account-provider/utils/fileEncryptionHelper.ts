@@ -3,54 +3,41 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import * as crypto from 'crypto';
+import * as os from 'os';
+import { AuthLibrary } from '../../constants';
+import { Logger } from '../../utils/Logger';
 
-export class FileEncryptionHelper {
+export abstract class FileEncryptionHelper {
 	constructor(
 		private _credentialService: azdata.CredentialProvider,
-		private _fileName: string,
+		protected _fileName: string,
 	) { }
 
-	private _ivBuffer: Buffer | undefined;
-	private _keyBuffer: Buffer | undefined;
+	protected _authLibrary!: AuthLibrary;
 
-	async init(): Promise<void> {
-		const iv = await this._credentialService.readCredential(`${this._fileName}-iv`);
-		const key = await this._credentialService.readCredential(`${this._fileName}-key`);
-		if (!iv?.password || !key?.password) {
-			this._ivBuffer = crypto.randomBytes(16);
-			this._keyBuffer = crypto.randomBytes(32);
-			try {
-				await this._credentialService.saveCredential(`${this._fileName}-iv`, this._ivBuffer.toString('hex'));
-				await this._credentialService.saveCredential(`${this._fileName}-key`, this._keyBuffer.toString('hex'));
-			} catch (ex) {
-				console.log(ex);
-			}
-		} else {
-			this._ivBuffer = Buffer.from(iv.password, 'hex');
-			this._keyBuffer = Buffer.from(key.password, 'hex');
-		}
+	public abstract fileOpener(content: string): Promise<string>;
+
+	public abstract fileSaver(content: string): Promise<string>;
+
+	public abstract init(): Promise<void>;
+
+	protected async readEncryptionKey(credentialId: string): Promise<string | undefined> {
+		return (await this._credentialService.readCredential(credentialId))?.password;
 	}
 
-	fileSaver = async (content: string): Promise<string> => {
-		if (!this._keyBuffer || !this._ivBuffer) {
-			await this.init();
+	protected async saveEncryptionKey(credentialId: string, password: string): Promise<void> {
+		try {
+			await this._credentialService.saveCredential(credentialId, password)
+				.then(() => { }, (e => {
+					throw Error(`FileEncryptionHelper: Could not save encryption key: ${credentialId}: ${e}`);
+				}));
+			Logger.info(`FileEncryptionHelper: Successfully saved encryption key ${credentialId} for ${this._authLibrary} persistent cache encryption in system credential store.`);
+		} catch (ex) {
+			if (os.platform() === 'win32') {
+				Logger.error(`FileEncryptionHelper: Please try cleaning saved credentials from Windows Credential Manager created by Azure Data Studio to allow creating new credentials.`);
+			}
+			Logger.error(ex);
+			throw ex;
 		}
-		const cipherIv = crypto.createCipheriv('aes-256-gcm', this._keyBuffer!, this._ivBuffer!);
-		return `${cipherIv.update(content, 'utf8', 'hex')}${cipherIv.final('hex')}%${cipherIv.getAuthTag().toString('hex')}`;
-	};
-
-	fileOpener = async (content: string): Promise<string> => {
-		if (!this._keyBuffer || !this._ivBuffer) {
-			await this.init();
-		}
-		const decipherIv = crypto.createDecipheriv('aes-256-gcm', this._keyBuffer!, this._ivBuffer!);
-		const split = content.split('%');
-		if (split.length !== 2) {
-			throw new Error('File didn\'t contain the auth tag.');
-		}
-		decipherIv.setAuthTag(Buffer.from(split[1], 'hex'));
-		return `${decipherIv.update(split[0], 'hex', 'utf8')}${decipherIv.final('utf8')}`;
-	};
-
+	}
 }
