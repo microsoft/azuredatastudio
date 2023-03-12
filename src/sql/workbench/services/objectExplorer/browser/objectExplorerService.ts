@@ -407,67 +407,89 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				}
 				let provider = this._providers[providerId];
 				if (provider) {
-					let resultMap: Map<string, azdata.ObjectExplorerExpandInfo> = new Map<string, azdata.ObjectExplorerExpandInfo>();
-					let allProviders: azdata.ObjectExplorerProviderBase[] = [provider];
+					try {
+						let resultMap: Map<string, azdata.ObjectExplorerExpandInfo> = new Map<string, azdata.ObjectExplorerExpandInfo>();
+						let allProviders: azdata.ObjectExplorerProviderBase[] = [provider];
 
-					let nodeProviders = this._nodeProviders[providerId];
-					if (nodeProviders) {
-						nodeProviders = nodeProviders.sort((a, b) => a.group!.toLowerCase().localeCompare(b.group!.toLowerCase()));
-						allProviders.push(...nodeProviders);
-					}
-
-					self._sessions[session.sessionId!].nodes[node.nodePath].expandEmitter.event((expandResult: NodeExpandInfoWithProviderId) => {
-						if (expandResult && expandResult.providerId) {
-							resultMap.set(expandResult.providerId, expandResult);
-							// If we got an error result back then send error our error event
-							// We only do this for the MSSQL provider
-							if (expandResult.errorMessage && expandResult.providerId === mssqlProviderName) {
-								const errorType = expandResult.errorMessage.indexOf('Object Explorer task didn\'t complete') !== -1 ? 'Timeout' : 'Other';
-								// For folders send the actual name of the folder (since the nodeTypeId isn't useful in this case and the names are controlled by us)
-								const nodeType = node.nodeTypeId === NodeType.Folder ? node.label : node.nodeTypeId;
-								this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.ObjectExplorerExpandError, undefined, errorType)
-									.withAdditionalProperties({
-										nodeType,
-										providerId: expandResult.providerId
-									}).send();
-							}
-
-						} else {
-							this.logService.error('OE provider returns empty result or providerId');
+						let nodeProviders = this._nodeProviders[providerId];
+						if (nodeProviders) {
+							nodeProviders = nodeProviders.sort((a, b) => a.group!.toLowerCase().localeCompare(b.group!.toLowerCase()));
+							allProviders.push(...nodeProviders);
 						}
 
-						// When get all responses from all providers, merge results
-						if (resultMap.size === allProviders.length) {
-							resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
 
-							// Have to delete it after get all responses otherwise couldn't find session for not the first response
-							if (newRequest) {
-								delete self._sessions[session.sessionId!].nodes[node.nodePath];
-								this.logService.trace(`Deleted node ${node.nodePath} from session ${session.sessionId}`);
-							}
-						}
-					});
-					if (newRequest) {
-						allProviders.forEach(provider => {
-							self.callExpandOrRefreshFromProvider(provider, {
-								sessionId: session.sessionId!,
-								nodePath: node.nodePath,
-								securityToken: session.securityToken
-							}, refresh).then(isExpanding => {
-								if (!isExpanding) {
-									// The provider stated it's not going to expand the node, therefore do not need to track when merging results
-									let emptyResult: azdata.ObjectExplorerExpandInfo = {
-										errorMessage: undefined,
-										nodePath: node.nodePath,
-										nodes: [],
-										sessionId: session.sessionId
-									};
-									resultMap.set(provider.providerId, emptyResult);
+
+						let retryCount = 0;
+						const timeout = setTimeout(() => {
+							// If we don't get a response back from the provider in 45 seconds then we assume it's not going to respond
+							// and resolve the promise with the results we have so far
+							if (resultMap.size === allProviders.length || retryCount > 45) {
+								resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
+								if (newRequest) {
+									delete self._sessions[session.sessionId!].nodes[node.nodePath];
+									this.logService.trace(`Deleted node ${node.nodePath} from session ${session.sessionId}`);
 								}
-							}, error => {
-								reject(error);
-							});
+								clearTimeout(timeout);
+							}
+							retryCount++;
+						}, 1000);
+
+						self._sessions[session.sessionId!].nodes[node.nodePath].expandEmitter.event((expandResult: NodeExpandInfoWithProviderId) => {
+							if (expandResult && expandResult.providerId) {
+								resultMap.set(expandResult.providerId, expandResult);
+								// If we got an error result back then send error our error event
+								// We only do this for the MSSQL provider
+								if (expandResult.errorMessage && expandResult.providerId === mssqlProviderName) {
+									const errorType = expandResult.errorMessage.indexOf('Object Explorer task didn\'t complete') !== -1 ? 'Timeout' : 'Other';
+									// For folders send the actual name of the folder (since the nodeTypeId isn't useful in this case and the names are controlled by us)
+									const nodeType = node.nodeTypeId === NodeType.Folder ? node.label : node.nodeTypeId;
+									this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.ObjectExplorerExpandError, undefined, errorType)
+										.withAdditionalProperties({
+											nodeType,
+											providerId: expandResult.providerId
+										}).send();
+								}
+
+							} else {
+								this.logService.error('OE provider returns empty result or providerId');
+							}
+
+							// When get all responses from all providers, merge results
+							if (resultMap.size === allProviders.length) {
+								resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
+								clearTimeout(timeout);
+
+								// Have to delete it after get all responses otherwise couldn't find session for not the first response
+								if (newRequest) {
+									delete self._sessions[session.sessionId!].nodes[node.nodePath];
+									this.logService.trace(`Deleted node ${node.nodePath} from session ${session.sessionId}`);
+								}
+							}
 						});
+						if (newRequest) {
+							allProviders.forEach(provider => {
+								self.callExpandOrRefreshFromProvider(provider, {
+									sessionId: session.sessionId!,
+									nodePath: node.nodePath,
+									securityToken: session.securityToken
+								}, refresh).then(isExpanding => {
+									if (!isExpanding) {
+										// The provider stated it's not going to expand the node, therefore do not need to track when merging results
+										let emptyResult: azdata.ObjectExplorerExpandInfo = {
+											errorMessage: undefined,
+											nodePath: node.nodePath,
+											nodes: [],
+											sessionId: session.sessionId
+										};
+										resultMap.set(provider.providerId, emptyResult);
+									}
+								}, error => {
+									reject(error);
+								});
+							});
+						}
+					} catch (error) {
+						reject(error);
 					}
 				}
 			} else {

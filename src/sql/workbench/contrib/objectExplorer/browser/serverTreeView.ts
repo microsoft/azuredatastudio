@@ -276,6 +276,22 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			}
 
 		} else {
+
+			// Check if the new profile is already part of the tree
+			let isProfileAlreadyPartOfTree = false;
+			const groupStack = [<ConnectionProfileGroup>(this._tree.getInput())];
+			while (groupStack.length > 0 && !isProfileAlreadyPartOfTree) {
+				const group = groupStack.pop();
+				if (group) {
+					group.connections.forEach(connection => {
+						if (connection.id === newProfile.id) {
+							isProfileAlreadyPartOfTree = true;
+						}
+					});
+					group.children.forEach(child => groupStack.push(child));
+				}
+			}
+
 			if (newProfile) {
 				const groups = this._connectionManagementService.getConnectionGroups();
 				const profile = ConnectionUtils.findProfileInGroup(newProfile, groups);
@@ -294,7 +310,13 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			await this.refreshTree();
 			if (newProfile && !newProfileIsSelected) {
 				await this._tree!.reveal(newProfile);
-				await this._tree.select(newProfile);
+				// If profile was already part of the tree then we don't want to select it again as it will create a new object explorer session for it. Instead we just want to focus it.
+				if (isProfileAlreadyPartOfTree) {
+					this._tree.setFocus(newProfile);
+				} else {
+					await this._tree.select(newProfile);
+					await this._tree.expand(newProfile);
+				}
 			}
 		}
 
