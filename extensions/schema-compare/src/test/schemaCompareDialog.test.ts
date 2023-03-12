@@ -77,7 +77,7 @@ describe('SchemaCompareDialog.openDialog @DacFx@', function (): void {
 	});
 
 	it('Verify server dropdown gets populated appropriately', async function (): Promise<void> {
-		const connectionProfile = azdataTest.stubs.connectionProfile.createConnectionProfile();
+		const connectionProfile = azdataTest.stubs.azdata.createConnectionProfile();
 		const getConnectionsResults: azdata.connection.ConnectionProfile[] = [{ ...connectionProfile }];
 		sinon.stub(azdata.connection, 'getCurrentConnection').resolves(undefined);
 		sinon.stub(azdata.connection, 'openConnectionDialog').resolves(<any>Promise.resolve(connectionProfile));
@@ -106,8 +106,8 @@ describe('SchemaCompareDialog.openDialog @DacFx@', function (): void {
 	});
 
 	it('Verify source server dropdown does not get updated when target server is updated', async function (): Promise<void> {
-		const connectionProfile1 = azdataTest.stubs.connectionProfile.createConnectionProfile({ connectionName: 'connection1', connectionId: 'testId1', databaseName: 'db1'});
-		const connectionProfile2 = azdataTest.stubs.connectionProfile.createConnectionProfile({ connectionName: 'connection2', connectionId: 'testId2', databaseName: 'db2'});
+		const connectionProfile1 = azdataTest.stubs.azdata.createConnectionProfile({ connectionName: 'connection1', connectionId: 'testId1', databaseName: 'db1' });
+		const connectionProfile2 = azdataTest.stubs.azdata.createConnectionProfile({ connectionName: 'connection2', connectionId: 'testId2', databaseName: 'db2' });
 
 		sinon.stub(azdata.connection, 'getCurrentConnection').resolves({ ...connectionProfile1 });
 		sinon.stub(azdata.connection, 'openConnectionDialog').resolves(<any>Promise.resolve(connectionProfile2));
