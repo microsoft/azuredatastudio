@@ -3,6 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+// {{SQL CARBON EDIT}} Imports from updated 'http-proxy-agent' and 'https-proxy-agent' packages
+import { HttpProxyAgent } from 'http-proxy-agent';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import { parse as parseUrl, Url } from 'url';
 import { isBoolean } from 'vs/base/common/types';
 
@@ -44,7 +47,8 @@ export async function getProxyAgent(rawRequestURL: string, env: typeof process.e
 		rejectUnauthorized: isBoolean(options.strictSSL) ? options.strictSSL : true,
 	};
 
+	// {{SQL CARBON EDIT}} Using updated 'http-proxy-agent' and 'https-proxy-agent' packages.
 	return requestURL.protocol === 'http:'
-		? new (await import('http-proxy-agent'))(opts as any as Url)
-		: new (await import('https-proxy-agent'))(opts);
+		? new HttpProxyAgent(opts)
+		: new HttpsProxyAgent(opts);
 }
