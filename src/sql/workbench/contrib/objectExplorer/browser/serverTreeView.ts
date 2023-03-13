@@ -294,7 +294,8 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			await this.refreshTree();
 			if (newProfile && !newProfileIsSelected) {
 				await this._tree.reveal(newProfile);
-				this._tree.select(newProfile);
+				await this._tree.select(newProfile);
+				await this._tree.expand(newProfile);
 			}
 		}
 
