@@ -736,7 +736,7 @@ export class ProjectsController {
 				.withAdditionalMeasurements(telemetryMeasurements)
 				.send();
 
-			await vscode.commands.executeCommand(constants.vscodeOpenCommand, absolutePath);
+			await vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(absolutePath));
 			treeDataProvider?.notifyTreeDataChanged();
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
