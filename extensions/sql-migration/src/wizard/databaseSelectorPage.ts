@@ -258,7 +258,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 
 		const xeventsFolderPickerClearButton = this._view.modelBuilder.button()
 			.withProps({
-				label: 'Clear',
+				label: constants.CLEAR,
 				width: 80,
 			}).component();
 		this._disposables.push(
