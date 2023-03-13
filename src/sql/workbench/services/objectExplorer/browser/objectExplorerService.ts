@@ -172,6 +172,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private _serverTreeView?: IServerTreeView;
 
 	private _onSelectionOrFocusChange: Emitter<void>;
+	private _onNodeExpandedError: Emitter<NodeExpandInfoWithProviderId> = new Emitter<NodeExpandInfoWithProviderId>();
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -252,9 +253,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				}
 			} else {
 				this.logService.warn(`Cannot find node status for session: ${expandResponse.sessionId} and node path: ${expandResponse.nodePath}`);
+				this._onNodeExpandedError.fire(expandResponse);
 			}
 		} else {
 			this.logService.warn(`Cannot find session ${expandResponse.sessionId} for node path: ${expandResponse.nodePath}`);
+			this._onNodeExpandedError.fire(expandResponse);
 		}
 	}
 
@@ -421,6 +424,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							allProviders.push(...nodeProviders);
 						}
 						this.logService.trace(`${session.sessionId}: got providers for node expansion: ${allProviders.map(p => p.providerId).join(', ')}`);
+
+
+						// Incase node status not found.
+						this._onNodeExpandedError.event(e => {
+							resultMap.set(e.providerId, e);
+						});
 
 						const expansionTimeout = this._configurationService.getValue<number>('serverTree.nodeExpansionTimeout');
 						const timeout = setTimeout(() => {
