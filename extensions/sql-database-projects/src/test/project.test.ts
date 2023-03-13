@@ -16,7 +16,7 @@ import { Project } from '../models/project';
 import { exists, convertSlashesForSqlProj, getWellKnownDatabaseSources, getPlatformSafeFileEntryPath } from '../common/utils';
 import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
-import { EntryType, ItemType, SqlTargetPlatform } from 'sqldbproj';
+import { EntryType, ItemType } from 'sqldbproj';
 import { SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
 import { SystemDatabase } from 'mssql';
 
