@@ -784,6 +784,8 @@ export class ProjectsController {
 
 			switch (node.type) {
 				case constants.DatabaseProjectItemType.sqlObjectScript:
+				case constants.DatabaseProjectItemType.table:
+				case constants.DatabaseProjectItemType.externalStreamingJob:
 					await project.excludeSqlObjectScript(fileEntry.relativePath);
 					break;
 				case constants.DatabaseProjectItemType.folder:
