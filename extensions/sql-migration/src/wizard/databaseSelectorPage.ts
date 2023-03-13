@@ -8,20 +8,20 @@ import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
-import { debounce } from '../api/utils';
+import { debounce, promptUserForFolder } from '../api/utils';
 import * as styles from '../constants/styles';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { getDatabasesList, excludeDatabases, SourceDatabaseInfo, getSourceConnectionProfile } from '../api/sqlUtils';
-import { XEventsAssessmentDialog } from '../dialog/assessment/xEventsAssessmentDialog';
 
 export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 	private _databaseSelectorTable!: azdata.TableComponent;
+	private _xEventsGroup!: azdata.GroupContainer;
 	private _dbNames!: string[];
 	private _dbCount!: azdata.TextComponent;
 	private _databaseTableValues!: any[];
-	private _xeventsAssessmentLink!: azdata.HyperlinkComponent;
 	private _disposables: vscode.Disposable[] = [];
+
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.DATABASE_FOR_ASSESSMENT_PAGE_TITLE), migrationStateModel);
@@ -160,7 +160,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				data: [],
 				width: 650,
 				height: '100%',
-				CSSStyles: { 'margin-bottom': '5px' },
+				CSSStyles: { 'margin-bottom': '12px' },
 				forceFitColumns: azdata.ColumnSizingMode.ForceFit,
 				columns: [
 					<azdata.CheckboxColumn>{
@@ -215,20 +215,73 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		// load unfiltered table list and pre-select list of databases saved in state
 		await this._filterTableList('', this.migrationStateModel._databasesForAssessment);
 
-		this._xeventsAssessmentLink = this._view.modelBuilder.hyperlink()
+		//////////
+		const xeventsDescription = this._view.modelBuilder.text()
 			.withProps({
-				label: constants.XEVENTS_ASSESSMENT_TITLE,
-				ariaLabel: '',
-				url: '',
-				CSSStyles: { ...styles.BODY_CSS }
+				value: constants.XEVENTS_ASSESSMENT_DESCRIPTION,
+				width: 650,
+				CSSStyles: {
+					...styles.BODY_CSS, 'width': '650px'
+				},
+				links: [{ text: 'Learn more', url: 'aka.ms/sql-migration-xe-assess' }]
 			}).component();
-		const xEventsAssessmentDialog = new XEventsAssessmentDialog(this.wizard, this.migrationStateModel);
-		this._disposables.push(this._xeventsAssessmentLink.onDidClick(
-			async () => await xEventsAssessmentDialog.openDialog()));
+
+		const xeventsInstructions = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.XEVENTS_ASSESSMENT_OPEN_FOLDER,
+				width: 650,
+				CSSStyles: { ...styles.LABEL_CSS, 'width': '650px' },
+			}).component();
+
+		const xeventsFolderPickerInput = this._view.modelBuilder.inputBox()
+			.withProps({
+				placeHolder: constants.FOLDER_NAME,
+				readOnly: true,
+				width: 460,
+				ariaLabel: constants.XEVENTS_ASSESSMENT_OPEN_FOLDER
+			}).component();
+		this._disposables.push(
+			xeventsFolderPickerInput.onTextChanged(async (value) => {
+				if (value) {
+					this.migrationStateModel._xEventsFilesFolderPath = value.trim();
+				}
+			}));
+
+		const xeventsFolderPickerButton = this._view.modelBuilder.button()
+			.withProps({
+				label: constants.OPEN,
+				width: 80,
+			}).component();
+		this._disposables.push(
+			xeventsFolderPickerButton.onDidClick(
+				async () => xeventsFolderPickerInput.value = await promptUserForFolder()));
+
+		const xeventsFolderPickerClearButton = this._view.modelBuilder.button()
+			.withProps({
+				label: 'Clear',
+				width: 80,
+			}).component();
+		this._disposables.push(
+			xeventsFolderPickerClearButton.onDidClick(
+				async () => xeventsFolderPickerInput.value = ''));
+
+		const xeventsFolderPickerContainer = this._view.modelBuilder.flexContainer()
+			.withProps(
+				{ CSSStyles: { 'flex-direction': 'row', 'align-items': 'left' } })
+			.withItems([
+				xeventsFolderPickerInput,
+				xeventsFolderPickerButton,
+				xeventsFolderPickerClearButton])
+			.component();
+
+		this._xEventsGroup = this._view.modelBuilder.groupContainer().withLayout({
+			header: constants.XEVENTS_ASSESSMENT_TITLE,
+			collapsible: true
+		}).withProps({ collapsed: false, width: 650, }).withItems([xeventsDescription, xeventsInstructions, xeventsFolderPickerContainer]).component();
 
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
-			height: '90%',
+			height: '65%',
 		}).withProps({
 			CSSStyles: {
 				'margin': '0px 28px 0px 28px'
@@ -238,7 +291,8 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._dbCount, { flex: '0 0 auto' });
 		flex.addItem(this._databaseSelectorTable);
-		flex.addItem(this._xeventsAssessmentLink, { flex: '0 0 auto' });
+		flex.addItem(this._xEventsGroup, { flex: '0 0 auto' });
+
 
 		return flex;
 	}

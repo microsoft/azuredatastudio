@@ -57,14 +57,6 @@ export class XEventsAssessmentDialog {
 			}
 		}).component();
 
-		const description2 = _view.modelBuilder.text().withProps({
-			value: constants.XEVENTS_ASSESSMENT_DESCRIPTION2,
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'margin': '8px 0px 8px 0px',
-			}
-		}).component();
-
 		const moreInfo = _view.modelBuilder.hyperlink().withProps({
 			label: constants.XEVENTS_ASSESSMENT_HELPLINK,
 			url: 'aka.ms/sql-migration-xe-assess',
@@ -77,7 +69,7 @@ export class XEventsAssessmentDialog {
 		this._folderPickerContainer = this.createFolderPickerContainer(_view);
 		container.addItems([
 			description1,
-			description2,
+			// description2,
 			moreInfo,
 			this._folderPickerContainer,
 		]);
