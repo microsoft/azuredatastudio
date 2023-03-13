@@ -22,7 +22,6 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/browser/serverTreeActionProvider';
 import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
@@ -444,7 +443,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 								resultMap.set(expandResult.providerId, expandResult);
 								// If we got an error result back then send error our error event
 								// We only do this for the MSSQL provider
-								if (expandResult.errorMessage && expandResult.providerId === mssqlProviderName) {
+								if (expandResult.errorMessage) {
 									const errorType = expandResult.errorMessage.indexOf('Object Explorer task didn\'t complete') !== -1 ? 'Timeout' : 'Other';
 									// For folders send the actual name of the folder (since the nodeTypeId isn't useful in this case and the names are controlled by us)
 									const nodeType = node.nodeTypeId === NodeType.Folder ? node.label : node.nodeTypeId;
