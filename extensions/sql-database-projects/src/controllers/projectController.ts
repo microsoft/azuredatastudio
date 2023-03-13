@@ -801,7 +801,7 @@ export class ProjectsController {
 					await project.excludeNoneItem(fileEntry.relativePath);
 					break;
 				default:
-					throw new Error(`Unhandled item type during exclude: '${node.type}'`);
+					throw new Error(constants.unhandledExcludeType(node.type));
 			}
 		} else {
 			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.excludeFromProject);

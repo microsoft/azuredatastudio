@@ -292,7 +292,8 @@ export const dacpacMustBeOnSameDrive = localize('dacpacNotOnSameDrive', "Dacpac 
 export const dacpacNotOnSameDrive = (projectLocation: string): string => { return localize('dacpacNotOnSameDrive', "Dacpac references need to be located on the same drive as the project file. The project file is located at {0}", projectLocation); };
 export const referenceType = localize('referenceType', "Reference type");
 export const excludeFolderNotSupported = localize('excludeFolderNotSupported', "Excluding folders is not yet supported");
-export const unhandledDeleteType = (itemType: string): string => { return localize('unhandledDeleteType', "Unhandled item type during exclude: '{0}", itemType); }
+export const unhandledDeleteType = (itemType: string): string => { return localize('unhandledDeleteType', "Unhandled item type during delete: '{0}", itemType); }
+export const unhandledExcludeType = (itemType: string): string => { return localize('unhandledDeleteType', "Unhandled item type during exclude: '{0}", itemType); }
 
 // Create Project From Database dialog strings
 export const createProjectFromDatabaseDialogName = localize('createProjectFromDatabaseDialogName', "Create project from database");

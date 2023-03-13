@@ -411,14 +411,14 @@ export class Project implements ISqlProject {
 	 * @param relativeFolderPath Relative path of the folder
 	 */
 	public async addFolder(relativeFolderPath: string): Promise<void> {
-		const result = await this.sqlProjService.addFolder(this.projectFileName, relativeFolderPath);
+		const result = await this.sqlProjService.addFolder(this.projectFilePath, relativeFolderPath);
 		this.throwIfFailed(result);
 
 		await this.readFolders();
 	}
 
 	public async deleteFolder(relativeFolderPath: string): Promise<void> {
-		const result = await this.sqlProjService.deleteFolder(this.projectFileName, relativeFolderPath);
+		const result = await this.sqlProjService.deleteFolder(this.projectFilePath, relativeFolderPath);
 		this.throwIfFailed(result);
 
 		await this.readFolders();
@@ -429,21 +429,21 @@ export class Project implements ISqlProject {
 	//#region SQL object scripts
 
 	public async addSqlObjectScript(relativePath: string): Promise<void> {
-		const result = await this.sqlProjService.addSqlObjectScript(this.projectFileName, relativePath);
+		const result = await this.sqlProjService.addSqlObjectScript(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
 		await this.readFilesInProject();
 	}
 
 	public async deleteSqlObjectScript(relativePath: string): Promise<void> {
-		const result = await this.sqlProjService.deleteSqlObjectScript(this.projectFileName, relativePath);
+		const result = await this.sqlProjService.deleteSqlObjectScript(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
 		await this.readFilesInProject();
 	}
 
 	public async excludeSqlObjectScript(relativePath: string): Promise<void> {
-		const result = await this.sqlProjService.excludeSqlObjectScript(this.projectFileName, relativePath);
+		const result = await this.sqlProjService.excludeSqlObjectScript(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
 		await this.readFilesInProject();
@@ -454,7 +454,7 @@ export class Project implements ISqlProject {
 	//#region Pre-deployment scripts
 
 	public async addPreDeploymentScript(relativePath: string): Promise<void> {
-		const result = await this.sqlProjService.addPreDeploymentScript(this.projectFileName, relativePath);
+		const result = await this.sqlProjService.addPreDeploymentScript(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
 		await this.readPreDeployScripts();
@@ -462,14 +462,14 @@ export class Project implements ISqlProject {
 	}
 
 	public async deletePreDeploymentScript(relativePath: string): Promise<void> {
-		const result = await this.sqlProjService.deletePreDeploymentScript(this.projectFileName, relativePath);
+		const result = await this.sqlProjService.deletePreDeploymentScript(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
 		await this.readPreDeployScripts();
 	}
 
 	public async excludePreDeploymentScript(relativePath: string): Promise<void> {
-		const result = await this.sqlProjService.excludePreDeploymentScript(this.projectFileName, relativePath);
+		const result = await this.sqlProjService.excludePreDeploymentScript(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
 		await this.readPreDeployScripts();
@@ -480,7 +480,7 @@ export class Project implements ISqlProject {
 	//#region Post-deployment scripts
 
 	public async addPostDeploymentScript(relativePath: string): Promise<void> {
-		const result = await this.sqlProjService.addPreDeploymentScript(this.projectFileName, relativePath);
+		const result = await this.sqlProjService.addPreDeploymentScript(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
 		await this.readPostDeployScripts();
@@ -488,14 +488,14 @@ export class Project implements ISqlProject {
 	}
 
 	public async deletePostDeploymentScript(relativePath: string): Promise<void> {
-		const result = await this.sqlProjService.deletePostDeploymentScript(this.projectFileName, relativePath);
+		const result = await this.sqlProjService.deletePostDeploymentScript(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
 		await this.readPostDeployScripts();
 	}
 
 	public async excludePostDeploymentScript(relativePath: string): Promise<void> {
-		const result = await this.sqlProjService.excludePostDeploymentScript(this.projectFileName, relativePath);
+		const result = await this.sqlProjService.excludePostDeploymentScript(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
 		await this.readPostDeployScripts();
@@ -506,7 +506,7 @@ export class Project implements ISqlProject {
 	//#region None items
 
 	public async addNoneItem(relativePath: string): Promise<void> {
-		const result = await this.sqlProjService.addNoneItem(this.projectFileName, relativePath);
+		const result = await this.sqlProjService.addNoneItem(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
 		await this.readPostDeployScripts();
@@ -514,14 +514,14 @@ export class Project implements ISqlProject {
 	}
 
 	public async deleteNoneItem(relativePath: string): Promise<void> {
-		const result = await this.sqlProjService.deleteNoneItem(this.projectFileName, relativePath);
+		const result = await this.sqlProjService.deleteNoneItem(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
 		await this.readPostDeployScripts();
 	}
 
 	public async excludeNoneItem(relativePath: string): Promise<void> {
-		const result = await this.sqlProjService.excludeNoneItem(this.projectFileName, relativePath);
+		const result = await this.sqlProjService.excludeNoneItem(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
 		await this.readPostDeployScripts();
