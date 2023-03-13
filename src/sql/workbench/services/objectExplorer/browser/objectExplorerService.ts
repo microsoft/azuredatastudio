@@ -24,6 +24,7 @@ import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -175,7 +176,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@ILogService private logService: ILogService
+		@ILogService private logService: ILogService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		this._onUpdateObjectExplorerNodes = new Emitter<ObjectExplorerNodeEventArgs>();
 		this._activeObjectExplorerNodes = {};
@@ -420,10 +422,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 
 						let retryCount = 0;
+						const expansionTimeout = this._configurationService.getValue<number>('serverTree.nodeExpansionTimeout');
 						const timeout = setTimeout(() => {
-							// If we don't get a response back from the provider in 45 seconds then we assume it's not going to respond
-							// and resolve the promise with the results we have so far
-							if (resultMap.size === allProviders.length || retryCount > 45) {
+							/**
+							 * If we don't get a response back from the provider in specified expansion timeout seconds then we assume
+							 * it's not going to respond and resolve the promise with the results we have so far
+							 */
+							if (resultMap.size === allProviders.length || retryCount === expansionTimeout) {
 								resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
 								if (newRequest) {
 									delete self._sessions[session.sessionId!].nodes[node.nodePath];

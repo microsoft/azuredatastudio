@@ -20,10 +20,12 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
+import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 
 suite('SQL Object Explorer Service tests', () => {
 	let sqlOEProvider: TypeMoq.Mock<TestObjectExplorerProvider>;
 	let connectionManagementService: TypeMoq.Mock<TestConnectionManagementService>;
+	let configurationService: TypeMoq.Mock<TestConfigurationService>;
 	let connection: ConnectionProfile;
 	let connectionToFail: ConnectionProfile;
 	let conProfGroup: ConnectionProfileGroup;
@@ -267,10 +269,13 @@ suite('SQL Object Explorer Service tests', () => {
 			resolve(connection);
 		}));
 
+		configurationService = TypeMoq.Mock.ofType(TestConfigurationService, TypeMoq.MockBehavior.Strict);
+		configurationService.setup(x => x.getValue('serverTree.nodeExpansionTimeout')).returns(() => 45);
+
 		connectionManagementService.setup(x => x.getCapabilities(mssqlProviderName)).returns(() => undefined);
 
 		const logService = new NullLogService();
-		objectExplorerService = new ObjectExplorerService(connectionManagementService.object, new NullAdsTelemetryService(), capabilitiesService, logService);
+		objectExplorerService = new ObjectExplorerService(connectionManagementService.object, new NullAdsTelemetryService(), capabilitiesService, logService, configurationService.object);
 		objectExplorerService.registerProvider(mssqlProviderName, sqlOEProvider.object);
 		sqlOEProvider.setup(x => x.createNewSession(TypeMoq.It.is<azdata.ConnectionInfo>(x => x.options['serverName'] === connection.serverName))).returns(() => new Promise<any>((resolve) => {
 			resolve(response);
