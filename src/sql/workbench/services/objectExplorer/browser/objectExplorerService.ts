@@ -422,30 +422,26 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						}
 						this.logService.trace(`${session.sessionId}: got providers for node expansion: ${allProviders.map(p => p.providerId).join(', ')}`);
 
-						let retryCount = 0;
 						const expansionTimeout = this._configurationService.getValue<number>('serverTree.nodeExpansionTimeout');
 						const timeout = setTimeout(() => {
 							/**
 							 * If we don't get a response back from the provider in specified expansion timeout seconds then we assume
 							 * it's not going to respond and resolve the promise with the results we have so far
 							 */
-
-							if (resultMap.size === allProviders.length || retryCount === expansionTimeout) {
-								if (resultMap.size !== allProviders.length) {
-									const missingProviders = allProviders.filter(p => !resultMap.has(p.providerId));
-									this.logService.warn(`${session.sessionId}: Node expansion timed out for node ${node.nodePath} for providers ${missingProviders.map(p => p.providerId).join(', ')}`);
-									this._notificationService.error(nls.localize('nodeExpansionTimeout', "Node expansion timed out for node {0} for providers {1}", node.nodePath, missingProviders.map(p => p.providerId).join(', ')));
-								}
-
-								resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
-								if (newRequest) {
-									delete self._sessions[session.sessionId!].nodes[node.nodePath];
-									this.logService.trace(`Deleted node ${node.nodePath} from session ${session.sessionId}`);
-								}
-								clearTimeout(timeout);
+							if (resultMap.size !== allProviders.length) {
+								const missingProviders = allProviders.filter(p => !resultMap.has(p.providerId));
+								this.logService.warn(`${session.sessionId}: Node expansion timed out for node ${node.nodePath} for providers ${missingProviders.map(p => p.providerId).join(', ')}`);
+								this._notificationService.error(nls.localize('nodeExpansionTimeout', "Node expansion timed out for node {0} for providers {1}", node.nodePath, missingProviders.map(p => p.providerId).join(', ')));
 							}
-							retryCount++;
-						}, 1000);
+
+							resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
+							if (newRequest) {
+								delete self._sessions[session.sessionId!].nodes[node.nodePath];
+								this.logService.trace(`Deleted node ${node.nodePath} from session ${session.sessionId}`);
+							}
+							clearTimeout(timeout);
+
+						}, expansionTimeout * 1000);
 
 						self._sessions[session.sessionId!].nodes[node.nodePath].expandEmitter.event((expandResult: NodeExpandInfoWithProviderId) => {
 							if (expandResult && expandResult.providerId) {
