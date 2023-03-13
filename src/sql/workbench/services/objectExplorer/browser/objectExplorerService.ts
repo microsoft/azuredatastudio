@@ -427,6 +427,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							 * it's not going to respond and resolve the promise with the results we have so far
 							 */
 							if (resultMap.size === allProviders.length || retryCount === expansionTimeout) {
+								if (resultMap.size !== allProviders.length) {
+									const missingProviders = allProviders.filter(p => !resultMap.has(p.providerId));
+									this.logService.warn(`${session.sessionId}: Node expansion timed out for node ${node.nodePath} for providers ${missingProviders.map(p => p.providerId).join(', ')}`);
+								}
 								resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
 								if (newRequest) {
 									delete self._sessions[session.sessionId!].nodes[node.nodePath];
