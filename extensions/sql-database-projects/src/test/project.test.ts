@@ -158,66 +158,6 @@ describe('Project: sqlproj content operations', function (): void {
 		await testUtils.shouldThrowSpecificError(async () => await project.addToProject(list), constants.fileOrFolderDoesNotExist(Uri.file(nonexistentFile).fsPath));
 	});
 
-	// TODO - make similar test in DacFx
-	// it.skip('Should choose correct master dacpac', async function (): Promise<void> {
-	// 	projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-	// 	const project = await Project.openProject(projFilePath);
-
-	// 	let uri = project.getSystemDacpacUri(constants.masterDacpac);
-	// 	let ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
-	// 	should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '160', constants.masterDacpac)).fsPath);
-	// 	should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '160', 'SqlSchemas', constants.masterDacpac)).fsPath);
-
-	// 	await project.changeTargetPlatform(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2016)!);
-	// 	uri = project.getSystemDacpacUri(constants.masterDacpac);
-	// 	ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
-	// 	should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.masterDacpac)).fsPath);
-	// 	should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '130', 'SqlSchemas', constants.masterDacpac)).fsPath);
-
-	// 	await project.changeTargetPlatform(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure)!);
-	// 	uri = project.getSystemDacpacUri(constants.masterDacpac);
-	// 	ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
-	// 	should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureV12', constants.masterDacpac)).fsPath);
-	// 	should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', 'AzureV12', 'SqlSchemas', constants.masterDacpac)).fsPath);
-
-	// 	await project.changeTargetPlatform(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlDW)!);
-	// 	uri = project.getSystemDacpacUri(constants.masterDacpac);
-	// 	ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
-	// 	should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureDw', constants.masterDacpac)).fsPath);
-	// 	should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', 'AzureDw', 'SqlSchemas', constants.masterDacpac)).fsPath);
-	// });
-
-	// unskip after changeTargetPlatform is swapped
-	it.skip('Should update system dacpac paths in sqlproj when target platform is changed', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project = await Project.openProject(projFilePath);
-		await project.addSystemDatabaseReference({
-			systemDb: SystemDatabase.Master,
-			suppressMissingDependenciesErrors: false
-		});
-
-		let projFileText = await fs.readFile(projFilePath);
-
-		should.equal(project.databaseReferences.length, 1, 'System db reference should have been added');
-		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '160', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db reference path should be 160');
-		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '160', 'SqlSchemas', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db SSDT reference path should be 160');
-
-		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2016)!);
-		projFileText = await fs.readFile(projFilePath);
-		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db reference path should have been updated to 130');
-		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '130', 'SqlSchemas', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db SSDT reference path should be 130');
-
-		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure)!);
-		projFileText = await fs.readFile(projFilePath);
-		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureV12', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db reference path should have been updated to AzureV12');
-		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', 'AzureV12', 'SqlSchemas', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db SSDT reference path should be AzureV12');
-
-		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlDW)!);
-		projFileText = await fs.readFile(projFilePath);
-		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureDw', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db reference path should have been updated to AzureDw');
-		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', 'AzureDw', 'SqlSchemas', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db SSDT reference path should be AzureDw');
-	});
-
 
 	it('Should add pre and post deployment scripts as entries to sqlproj', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
@@ -1570,23 +1510,6 @@ describe.only('Project: database references', function (): void {
 		should(projFileText).containEql('<SqlCmdVariable Include="otherServer">');
 		should(projFileText).containEql('<DefaultValue>newServerName</DefaultValue>');
 	});
-
-	// TODO - make similar test in DacFx
-	// it.skip('Should choose correct msdb dacpac', async function (): Promise<void> {
-	// 	projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-	// 	const project = await Project.openProject(projFilePath);
-
-	// 	let uri = project.getSystemDacpacUri(constants.msdbDacpac);
-	// 	let ssdtUri = project.getSystemDacpacSsdtUri(constants.msdbDacpac);
-	// 	should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '160', constants.msdbDacpac)).fsPath);
-	// 	should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '160', 'SqlSchemas', constants.msdbDacpac)).fsPath);
-
-	// 	await project.changeTargetPlatform(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2016)!);
-	// 	uri = project.getSystemDacpacUri(constants.msdbDacpac);
-	// 	ssdtUri = project.getSystemDacpacSsdtUri(constants.msdbDacpac);
-	// 	should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.msdbDacpac)).fsPath);
-	// 	should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '130', 'SqlSchemas', constants.msdbDacpac)).fsPath);
-	// });
 });
 
 describe('Project: add SQLCMD Variables', function (): void {
