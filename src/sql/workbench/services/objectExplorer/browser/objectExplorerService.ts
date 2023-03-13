@@ -24,6 +24,7 @@ import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -176,7 +177,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@ILogService private logService: ILogService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@INotificationService private _notificationService: INotificationService
 	) {
 		this._onUpdateObjectExplorerNodes = new Emitter<ObjectExplorerNodeEventArgs>();
 		this._activeObjectExplorerNodes = {};
@@ -426,11 +428,14 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							 * If we don't get a response back from the provider in specified expansion timeout seconds then we assume
 							 * it's not going to respond and resolve the promise with the results we have so far
 							 */
+
 							if (resultMap.size === allProviders.length || retryCount === expansionTimeout) {
 								if (resultMap.size !== allProviders.length) {
 									const missingProviders = allProviders.filter(p => !resultMap.has(p.providerId));
 									this.logService.warn(`${session.sessionId}: Node expansion timed out for node ${node.nodePath} for providers ${missingProviders.map(p => p.providerId).join(', ')}`);
+									this._notificationService.error(nls.localize('nodeExpansionTimeout', "Node expansion timed out for node {0} for providers {1}", node.nodePath, missingProviders.map(p => p.providerId).join(', ')));
 								}
+
 								resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
 								if (newRequest) {
 									delete self._sessions[session.sessionId!].nodes[node.nodePath];
