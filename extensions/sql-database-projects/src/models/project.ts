@@ -142,11 +142,21 @@ export class Project implements ISqlProject {
 
 	/**
 	 * Open and load a .sqlproj file
+	 * @param projectFilePath
+	 * @param promptIfNeedsUpdating whether or not to prompt the user if the project needs to be updated
+	 * @param reload whether to reload the project from the project file
+	 * @returns
 	 */
-	public static async openProject(projectFilePath: string, promptIfNeedsUpdating: boolean = false): Promise<Project> {
+	public static async openProject(projectFilePath: string, promptIfNeedsUpdating: boolean = false, reload: boolean = false): Promise<Project> {
 		const proj = new Project(projectFilePath);
 
 		proj.sqlProjService = await utils.getSqlProjectsService();
+
+		if (reload) {
+			// close the project in STS so that it will reload the project from the .sqlproj, rather than using the cached Project in STS
+			await proj.sqlProjService.closeProject(projectFilePath);
+		}
+
 		await proj.readProjFile();
 
 		if (!proj.isCrossPlatformCompatible && promptIfNeedsUpdating) {
