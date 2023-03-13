@@ -74,6 +74,9 @@ export class TreeUpdateUtils {
 		}
 		const previousTreeInput = tree.getInput();
 		if (treeInput) {
+			let connections = treeInput.connections;
+			TreeUpdateUtils.alterConnectionTitles(connections, " called from " + viewKey);
+			treeInput.connections = connections;
 			await tree.setInput(treeInput);
 		}
 		if (previousTreeInput instanceof Disposable) {
@@ -129,6 +132,9 @@ export class TreeUpdateUtils {
 
 			let treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
 			if (treeInput) {
+				let connections = treeInput.connections;
+				TreeUpdateUtils.alterConnectionTitles(connections, " called from mainConnectionTree");
+				treeInput.connections = connections;
 				const originalInput = tree.getInput();
 				if (treeInput !== originalInput) {
 					return tree.setInput(treeInput).then(async () => {
@@ -350,5 +356,32 @@ export class TreeUpdateUtils {
 			connectionProfile = connectionProfile?.cloneWithDatabase(databaseName);
 		}
 		return connectionProfile;
+	}
+
+	private static alterConnectionTitles(inputList: ConnectionProfile[], stringToAdd: string): void {
+		let profileListMap = new Map<string, number[]>();
+		for (let i = 0; i < inputList.length; i++) {
+			let titleKey = inputList[i].title;
+			if (profileListMap.has(titleKey)) {
+				let profilesForKey = profileListMap.get(titleKey);
+				profilesForKey.push(i);
+				profileListMap.set(titleKey, profilesForKey);
+			}
+			else {
+				profileListMap.set(titleKey, [i]);
+			}
+		}
+
+		profileListMap.forEach(function (value, key) {
+			if (profileListMap.get(key)?.length > 1) {
+				// TODO, need to check every connection profile sharing the same title and id, then
+				// remove common options until we find differences to append to the title.
+
+				// For now, mark that there are duplicates for profile name with numbers.
+				value.forEach((value, index) => {
+					inputList[value].title = inputList[value].title + ' (' + index + ')';
+				});
+			}
+		})
 	}
 }

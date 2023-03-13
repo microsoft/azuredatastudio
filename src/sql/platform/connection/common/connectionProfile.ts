@@ -38,6 +38,9 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public isDisconnecting: boolean = false;
 
+	// title from ProviderConnectionInfo cannot be changed, in order to show different dynamic options, we must override it with our own.
+	private _title?: string;
+
 	public constructor(
 		capabilitiesService: ICapabilitiesService,
 		model: string | azdata.IConnectionProfile | azdata.connection.ConnectionProfile | undefined) {
@@ -189,6 +192,18 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	public get isAddedToRootGroup(): boolean {
 		return (this._groupName === ConnectionProfile.RootGroupName);
 	}
+
+	public override get title(): string {
+		if (!this._title) {
+			this._title = super.title;
+		}
+		return this._title
+	}
+
+	public override set title(value: string) {
+		this._title = value;
+	}
+
 
 	public override clone(): ConnectionProfile {
 		let instance = new ConnectionProfile(this.capabilitiesService, this);

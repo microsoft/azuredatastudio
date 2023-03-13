@@ -169,9 +169,6 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 			} else {
 				label = this.getServerInfo();
 			}
-			if (this.serverCapabilities.useFullOptions) {
-				label += this.getNonDefaultOptionsString(!this.connectionName);
-			}
 		}
 		// The provider capabilities are registered at the same time at load time, we can assume all providers are registered as long as the collection is not empty.
 		else if (Object.keys(this.capabilitiesService.providers).length > 0) {
@@ -183,11 +180,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public get serverInfo(): string {
-		let value = this.getServerInfo();
-		if (this.serverCapabilities?.useFullOptions) {
-			value += this.getNonDefaultOptionsString(true);
-		}
-		return value;
+		return this.getServerInfo();
 	}
 
 	public isPasswordRequired(): boolean {
@@ -318,34 +311,40 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		return ':';
 	}
 
+
+	// TODO - Get all non default, non special connection properties for profile.
+	// Back in tree update, iterate over all non special tree properties, for all profiles, check if value for prop is non default, and if it's a common value
+	// among all of the profiles, if different, then add it for the title, otherwise, skip it.
+
 	// Append non default options to connection title or tooltip info if useFullOptions is enabled.
 	// Includes all non password options (and other non server info options if appended to serverInfo).
-	private getNonDefaultOptionsString(isServerInfo?: boolean): string {
-		let parts: string = "";
 
-		if (this.serverCapabilities) {
-			this.serverCapabilities.connectionOptions.forEach(element => {
-				if (((isServerInfo && element.specialValueType !== ConnectionOptionSpecialType.serverName &&
-					element.specialValueType !== ConnectionOptionSpecialType.databaseName &&
-					element.specialValueType !== ConnectionOptionSpecialType.authType &&
-					element.specialValueType !== ConnectionOptionSpecialType.userName) || !isServerInfo) &&
-					element.specialValueType !== ConnectionOptionSpecialType.connectionName &&
-					element.specialValueType !== ConnectionOptionSpecialType.password) {
-					let value = this.getOptionValue(element.name);
-					if (value && value !== element.defaultValue) {
-						if (parts.length === 0) {
-							parts = " (";
-						}
-						let addValue = element.name + ProviderConnectionInfo.nameValueSeparator + `${value}`;
-						parts += parts === " (" ? addValue : (ProviderConnectionInfo.idSeparator + addValue);
-					}
-				}
-			});
-			if (parts.length > 0) {
-				parts += ")";
-			}
-		}
+	// private getNonDefaultOptionsString(isServerInfo?: boolean): string {
+	// 	let parts: string = "";
 
-		return parts;
-	}
+	// 	if (this.serverCapabilities) {
+	// 		this.serverCapabilities.connectionOptions.forEach(element => {
+	// 			if (((isServerInfo && element.specialValueType !== ConnectionOptionSpecialType.serverName &&
+	// 				element.specialValueType !== ConnectionOptionSpecialType.databaseName &&
+	// 				element.specialValueType !== ConnectionOptionSpecialType.authType &&
+	// 				element.specialValueType !== ConnectionOptionSpecialType.userName) || !isServerInfo) &&
+	// 				element.specialValueType !== ConnectionOptionSpecialType.connectionName &&
+	// 				element.specialValueType !== ConnectionOptionSpecialType.password) {
+	// 				let value = this.getOptionValue(element.name);
+	// 				if (value && value !== element.defaultValue) {
+	// 					if (parts.length === 0) {
+	// 						parts = " (";
+	// 					}
+	// 					let addValue = element.name + ProviderConnectionInfo.nameValueSeparator + `${value}`;
+	// 					parts += parts === " (" ? addValue : (ProviderConnectionInfo.idSeparator + addValue);
+	// 				}
+	// 			}
+	// 		});
+	// 		if (parts.length > 0) {
+	// 			parts += ")";
+	// 		}
+	// 	}
+
+	// 	return parts;
+	// }
 }
