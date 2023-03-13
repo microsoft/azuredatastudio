@@ -425,20 +425,22 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						}
 						this.logService.trace(`${session.sessionId}: got providers for node expansion: ${allProviders.map(p => p.providerId).join(', ')}`);
 
+						const resolveExpansionResult = () => {
+							resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
+							// Have to delete it after get all responses otherwise couldn't find session for not the first response
+							clearTimeout(timeout);
+							if (newRequest) {
+								delete self._sessions[session.sessionId!].nodes[node.nodePath];
+								this.logService.trace(`Deleted node ${node.nodePath} from session ${session.sessionId}`);
+							}
+						}
 
 						// Incase node status not found.
 						this._onNodeExpandedError.event(e => {
 							resultMap.set(e.providerId, e);
 							// When get all responses from all providers, merge results
 							if (resultMap.size === allProviders.length) {
-								resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
-								clearTimeout(timeout);
-
-								// Have to delete it after get all responses otherwise couldn't find session for not the first response
-								if (newRequest) {
-									delete self._sessions[session.sessionId!].nodes[node.nodePath];
-									this.logService.trace(`Deleted node ${node.nodePath} from session ${session.sessionId}`);
-								}
+								resolveExpansionResult();
 							}
 						});
 
@@ -453,14 +455,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 								this.logService.warn(`${session.sessionId}: Node expansion timed out for node ${node.nodePath} for providers ${missingProviders.map(p => p.providerId).join(', ')}`);
 								this._notificationService.error(nls.localize('nodeExpansionTimeout', "Node expansion timed out for node {0} for providers {1}", node.nodePath, missingProviders.map(p => p.providerId).join(', ')));
 							}
-
-							resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
-							if (newRequest) {
-								delete self._sessions[session.sessionId!].nodes[node.nodePath];
-								this.logService.trace(`Deleted node ${node.nodePath} from session ${session.sessionId}`);
-							}
-							clearTimeout(timeout);
-
+							resolveExpansionResult();
 						}, expansionTimeout * 1000);
 
 						self._sessions[session.sessionId!].nodes[node.nodePath].expandEmitter.event((expandResult: NodeExpandInfoWithProviderId) => {
@@ -486,14 +481,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 							// When get all responses from all providers, merge results
 							if (resultMap.size === allProviders.length) {
-								resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
-								clearTimeout(timeout);
-
-								// Have to delete it after get all responses otherwise couldn't find session for not the first response
-								if (newRequest) {
-									delete self._sessions[session.sessionId!].nodes[node.nodePath];
-									this.logService.trace(`Deleted node ${node.nodePath} from session ${session.sessionId}`);
-								}
+								resolveExpansionResult();
 							}
 						});
 						if (newRequest) {
