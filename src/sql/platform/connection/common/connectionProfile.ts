@@ -194,10 +194,14 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	}
 
 	public override get title(): string {
-		if (!this._title) {
-			this._title = super.title;
+		if (this._title) {
+			return this._title;
 		}
-		return this._title
+		return this.getOriginalTitle();
+	}
+
+	public getOriginalTitle(): string {
+		return super.title;
 	}
 
 	public override set title(value: string) {

@@ -31,7 +31,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 			this.providerName = isString(model) ? model : 'providerName' in model ? model.providerName : model.providerId;
 
 			if (!isString(model)) {
-				if (model.options && this.serverCapabilities) {
+				if (model.options && this.hasServerCapabilities) {
 					this.serverCapabilities.connectionOptions.forEach(option => {
 						let value = model.options[option.name];
 						this.options[option.name] = value;
@@ -146,7 +146,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 	private getServerInfo() {
 		let title = '';
-		if (this.serverCapabilities) {
+		if (this.hasServerCapabilities) {
 			title = this.serverName;
 			// Only show database name if the provider supports it.
 			if (this.serverCapabilities.connectionOptions?.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
@@ -163,7 +163,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	public get title(): string {
 		let label = '';
 
-		if (this.serverCapabilities) {
+		if (this.hasServerCapabilities) {
 			if (this.connectionName) {
 				label = this.connectionName;
 			} else {
@@ -179,13 +179,17 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		return label;
 	}
 
+	public hasServerCapabilities(): boolean {
+		return !!this.serverCapabilities;
+	}
+
 	public get serverInfo(): string {
 		return this.getServerInfo();
 	}
 
 	public isPasswordRequired(): boolean {
 		// if there is no provider capabilities metadata assume a password is not required
-		if (!this.serverCapabilities) {
+		if (!this.hasServerCapabilities) {
 			return false;
 		}
 
@@ -216,7 +220,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	public getOptionsKey(getOriginalOptions?: boolean): string {
 		let useFullOptions = false;
 		let idNames = [];
-		if (this.serverCapabilities) {
+		if (this.hasServerCapabilities) {
 			useFullOptions = this.serverCapabilities.useFullOptions
 			idNames = this.serverCapabilities.connectionOptions.map(o => {
 				// All options enabled, use every property besides password.
@@ -269,7 +273,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public getSpecialTypeOptionName(type: string): string | undefined {
-		if (this.serverCapabilities) {
+		if (this.hasServerCapabilities) {
 			let optionMetadata = this.serverCapabilities.connectionOptions.find(o => o.specialValueType === type);
 			return !!optionMetadata ? optionMetadata.name : undefined;
 		} else {
@@ -285,7 +289,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public get authenticationTypeDisplayName(): string {
-		let optionMetadata = this.serverCapabilities ? this.serverCapabilities.connectionOptions.find(o => o.specialValueType === ConnectionOptionSpecialType.authType) : undefined;
+		let optionMetadata = this.hasServerCapabilities ? this.serverCapabilities.connectionOptions.find(o => o.specialValueType === ConnectionOptionSpecialType.authType) : undefined;
 		let authType = this.authenticationType;
 		let displayName: string = authType;
 
@@ -316,35 +320,32 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	// Back in tree update, iterate over all non special tree properties, for all profiles, check if value for prop is non default, and if it's a common value
 	// among all of the profiles, if different, then add it for the title, otherwise, skip it.
 
-	// Append non default options to connection title or tooltip info if useFullOptions is enabled.
-	// Includes all non password options (and other non server info options if appended to serverInfo).
+	// Get all non specialValueType or just the non default options for this profile.
 
-	// private getNonDefaultOptionsString(isServerInfo?: boolean): string {
-	// 	let parts: string = "";
+	private getConnectionOptionsList(getNonDefault: boolean): azdata.ConnectionOption[] {
+		let connectionOptions: azdata.ConnectionOption[] = [];
 
-	// 	if (this.serverCapabilities) {
-	// 		this.serverCapabilities.connectionOptions.forEach(element => {
-	// 			if (((isServerInfo && element.specialValueType !== ConnectionOptionSpecialType.serverName &&
-	// 				element.specialValueType !== ConnectionOptionSpecialType.databaseName &&
-	// 				element.specialValueType !== ConnectionOptionSpecialType.authType &&
-	// 				element.specialValueType !== ConnectionOptionSpecialType.userName) || !isServerInfo) &&
-	// 				element.specialValueType !== ConnectionOptionSpecialType.connectionName &&
-	// 				element.specialValueType !== ConnectionOptionSpecialType.password) {
-	// 				let value = this.getOptionValue(element.name);
-	// 				if (value && value !== element.defaultValue) {
-	// 					if (parts.length === 0) {
-	// 						parts = " (";
-	// 					}
-	// 					let addValue = element.name + ProviderConnectionInfo.nameValueSeparator + `${value}`;
-	// 					parts += parts === " (" ? addValue : (ProviderConnectionInfo.idSeparator + addValue);
-	// 				}
-	// 			}
-	// 		});
-	// 		if (parts.length > 0) {
-	// 			parts += ")";
-	// 		}
-	// 	}
+		if (this.hasServerCapabilities) {
+			this.serverCapabilities.connectionOptions.forEach(element => {
+				if (element.specialValueType !== ConnectionOptionSpecialType.serverName &&
+					element.specialValueType !== ConnectionOptionSpecialType.databaseName &&
+					element.specialValueType !== ConnectionOptionSpecialType.authType &&
+					element.specialValueType !== ConnectionOptionSpecialType.userName &&
+					element.specialValueType !== ConnectionOptionSpecialType.connectionName &&
+					element.specialValueType !== ConnectionOptionSpecialType.password) {
+					if (getNonDefault) {
+						let value = this.getOptionValue(element.name);
+						if (value && value !== element.defaultValue) {
+							connectionOptions.push(element);
+						}
+					}
+					else {
+						connectionOptions.push(element);
+					}
+				}
+			});
+		}
 
-	// 	return parts;
-	// }
+		return connectionOptions;
+	}
 }

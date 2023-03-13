@@ -361,14 +361,16 @@ export class TreeUpdateUtils {
 	private static alterConnectionTitles(inputList: ConnectionProfile[], stringToAdd: string): void {
 		let profileListMap = new Map<string, number[]>();
 		for (let i = 0; i < inputList.length; i++) {
-			let titleKey = inputList[i].title;
-			if (profileListMap.has(titleKey)) {
-				let profilesForKey = profileListMap.get(titleKey);
-				profilesForKey.push(i);
-				profileListMap.set(titleKey, profilesForKey);
-			}
-			else {
-				profileListMap.set(titleKey, [i]);
+			if (inputList[i].hasServerCapabilities) {
+				let titleKey = inputList[i].getOriginalTitle();
+				if (profileListMap.has(titleKey)) {
+					let profilesForKey = profileListMap.get(titleKey);
+					profilesForKey.push(i);
+					profileListMap.set(titleKey, profilesForKey);
+				}
+				else {
+					profileListMap.set(titleKey, [i]);
+				}
 			}
 		}
 
@@ -377,9 +379,12 @@ export class TreeUpdateUtils {
 				// TODO, need to check every connection profile sharing the same title and id, then
 				// remove common options until we find differences to append to the title.
 
+				// Need to check if connection name is not the same as serverInfo so that if we need
+				// to append the serverName value, we can.
+
 				// For now, mark that there are duplicates for profile name with numbers.
 				value.forEach((value, index) => {
-					inputList[value].title = inputList[value].title + ' (' + index + ')';
+					inputList[value].title = inputList[value].getOriginalTitle() + ' (' + index + ')';
 				});
 			}
 		})
