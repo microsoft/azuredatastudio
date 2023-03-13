@@ -418,8 +418,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							nodeProviders = nodeProviders.sort((a, b) => a.group!.toLowerCase().localeCompare(b.group!.toLowerCase()));
 							allProviders.push(...nodeProviders);
 						}
-
-
+						this.logService.trace(`${session.sessionId}: got providers for node expansion: ${allProviders.map(p => p.providerId).join(', ')}`);
 
 						let retryCount = 0;
 						const expansionTimeout = this._configurationService.getValue<number>('serverTree.nodeExpansionTimeout');
@@ -441,6 +440,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 						self._sessions[session.sessionId!].nodes[node.nodePath].expandEmitter.event((expandResult: NodeExpandInfoWithProviderId) => {
 							if (expandResult && expandResult.providerId) {
+								this.logService.trace(`${session.sessionId}: Received expand result for node ${node.nodePath} from provider ${expandResult.providerId}`);
 								resultMap.set(expandResult.providerId, expandResult);
 								// If we got an error result back then send error our error event
 								// We only do this for the MSSQL provider
