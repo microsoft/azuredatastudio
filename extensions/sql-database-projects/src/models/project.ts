@@ -4,26 +4,23 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import * as xmldom from '@xmldom/xmldom';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
-import * as xmlFormat from 'xml-formatter';
-import * as os from 'os';
 import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
 
 import { Uri, window } from 'vscode';
-import { EntryType, IDatabaseReferenceProjectEntry, IProjectEntry, ISqlProject, ItemType } from 'sqldbproj';
+import { EntryType, IDatabaseReferenceProjectEntry, ISqlProject, ItemType } from 'sqldbproj';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabaseReferenceProjectEntry } from './projectEntry';
+import { DacpacReferenceProjectEntry, FileProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabaseReferenceProjectEntry } from './projectEntry';
 import { ResultStatus } from 'azdata';
 import { BaseProjectTreeItem } from './tree/baseTreeItem';
 import { NoneNode, PostDeployNode, PreDeployNode, PublishProfileNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
-import { ProjectType, SystemDatabase } from 'mssql';
+import { GetFoldersResult, GetScriptsResult, ProjectType, SystemDatabase } from 'mssql';
 
 /**
  * Represents the configuration based on the Configuration property in the sqlproj
@@ -44,6 +41,7 @@ export class Project implements ISqlProject {
 	private _projectFileName: string;
 	private _projectGuid: string | undefined;
 	private _files: FileProjectEntry[] = [];
+	private _folders: FileProjectEntry[] = [];
 	private _dataSources: DataSource[] = [];
 	private _databaseReferences: IDatabaseReferenceProjectEntry[] = [];
 	private _sqlCmdVariables: Record<string, string> = {};
@@ -58,6 +56,10 @@ export class Project implements ISqlProject {
 	private _publishProfiles: FileProjectEntry[] = [];
 	private _defaultCollation: string = '';
 	private _databaseSchemaProvider: string = '';
+
+	//#endregion
+
+	//#region Public Properties
 
 	public get dacpacOutputPath(): string {
 		return path.join(this.outputPath, `${this._projectFileName}.dacpac`);
@@ -81,6 +83,10 @@ export class Project implements ISqlProject {
 
 	public get files(): FileProjectEntry[] {
 		return this._files;
+	}
+
+	public get folders(): FileProjectEntry[] {
+		return this._folders;
 	}
 
 	public get dataSources(): DataSource[] {
@@ -127,7 +133,7 @@ export class Project implements ISqlProject {
 		return this._publishProfiles;
 	}
 
-	private projFileXmlDoc: Document | undefined = undefined;
+	//#endregion
 
 	constructor(projectFilePath: string) {
 		this._projectFilePath = projectFilePath;
@@ -160,25 +166,22 @@ export class Project implements ISqlProject {
 	public async readProjFile(): Promise<void> {
 		this.resetProject();
 
-		const projFileText = await fs.readFile(this._projectFilePath);
-		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
-
 		await this.readProjectProperties();
 		await this.readSqlCmdVariables();
 		await this.readDatabaseReferences();
 
 		// get pre and post deploy scripts specified in the sqlproj
-		this._preDeployScripts = this.readPreDeployScripts();
-		this._postDeployScripts = this.readPostDeployScripts();
-		this._noneDeployScripts = this.readNoneDeployScripts();
+		await this.readPreDeployScripts();
+		await this.readPostDeployScripts();
+		await this.readNoneItems();
 
-		// get files and folders
-		this._files = await this.readFilesInProject();
-		this.files.push(...await this.readFolders());
+		await this.readFilesInProject(); // get SQL object scripts
+		await this.readFolders(); // get folders
 
-		// get publish profiles specified in the sqlproj
-		this._publishProfiles = this.readPublishProfiles();
+		await this.readPublishProfiles(); // get publish profiles specified in the sqlproj
 	}
+
+	//#region Reader helpers
 
 	private async readProjectProperties(): Promise<void> {
 		const props = await this.sqlProjService.getProjectProperties(this.projectFilePath);
@@ -230,297 +233,118 @@ export class Project implements ISqlProject {
 	 * Gets all the files specified by <Build Inlude="..."> and removes all the files specified by <Build Remove="...">
 	 * and all files included by the default glob of the folder of the sqlproj if it's an sdk style project
 	 */
-	private async readFilesInProject(): Promise<FileProjectEntry[]> {
+	private async readFilesInProject(): Promise<void> {
 		const filesSet: Set<string> = new Set();
-		const entriesWithType: { relativePath: string, typeAttribute: string }[] = [];
 
-		// default glob include pattern for sdk style projects
-		if (this.sqlProjStyle === ProjectType.SdkStyle) {
-			try {
-				const globFiles = await utils.getSqlFilesInFolder(this.projectFolderPath, true);
-				globFiles.forEach(f => {
-					filesSet.add(utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f))));
-				});
-			} catch (e) {
-				console.error(utils.getErrorMessage(e));
+		var result: GetScriptsResult = await this.sqlProjService.getSqlObjectScripts(this.projectFilePath);
+
+		this.throwIfFailed(result);
+
+		if (result.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
+			for (var script of result.scripts) {
+				filesSet.add(script);
 			}
-		}
-
-		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
-			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
-
-			// find all files to include that are specified to be included and removed (for sdk style projects) in the project file
-			// the build elements are evaluated in the order they are in the sqlproj (same way sdk style csproj handles this)
-			try {
-				const buildElements = itemGroup.getElementsByTagName(constants.Build);
-
-				for (let b = 0; b < buildElements.length; b++) {
-					// <Build Include....>
-					const includeRelativePath = buildElements[b].getAttribute(constants.Include)!;
-
-					if (includeRelativePath) {
-						const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(includeRelativePath));
-
-						// sdk style projects can handle other globbing patterns like <Build Include="folder1\*.sql" /> and <Build Include="Production*.sql" />
-						if (this.sqlProjStyle === ProjectType.SdkStyle && !(await utils.exists(fullPath))) {
-							// add files from the glob pattern
-							const globFiles = await utils.globWithPattern(fullPath);
-							globFiles.forEach(gf => {
-								const newFileRelativePath = utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(gf)));
-								filesSet.add(newFileRelativePath);
-							});
-						} else {
-							filesSet.add(includeRelativePath);
-
-							// Right now only used for external streaming jobs
-							const typeAttribute = buildElements[b].getAttribute(constants.Type)!;
-							if (typeAttribute) {
-								entriesWithType.push({ relativePath: includeRelativePath, typeAttribute: typeAttribute });
-							}
-						}
-					}
-
-					// <Build Remove....>
-					// remove files specified in the sqlproj to remove if this is an sdk style project
-					if (this.sqlProjStyle === ProjectType.SdkStyle) {
-						const removeRelativePath = buildElements[b].getAttribute(constants.Remove)!;
-
-						if (removeRelativePath) {
-							const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(removeRelativePath));
-
-							const globRemoveFiles = await utils.globWithPattern(fullPath);
-							globRemoveFiles.forEach(gf => {
-								const removeFileRelativePath = utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(gf)));
-								filesSet.delete(removeFileRelativePath);
-							});
-						}
-					}
-				}
-			} catch (e) {
-				void window.showErrorMessage(constants.errorReadingProject(constants.BuildElements, this.projectFilePath));
-				console.error(utils.getErrorMessage(e));
-			}
-		}
-
-		if (this.sqlProjStyle === ProjectType.SdkStyle) {
-			// remove any pre/post/none deploy scripts that were specified in the sqlproj so they aren't counted twice
-			this.preDeployScripts.forEach(f => filesSet.delete(f.relativePath));
-			this.postDeployScripts.forEach(f => filesSet.delete(f.relativePath));
-			this.noneDeployScripts.forEach(f => filesSet.delete(f.relativePath));
-
-			// remove any none remove scripts (these would be pre/post/none deploy scripts that were excluded)
-			const noneRemoveScripts = this.readNoneRemoveScripts();
-			noneRemoveScripts.forEach(f => filesSet.delete(f.relativePath));
 		}
 
 		// create a FileProjectEntry for each file
 		const fileEntries: FileProjectEntry[] = [];
 		for (let f of Array.from(filesSet.values())) {
-			const typeEntry = entriesWithType.find(e => e.relativePath === f);
 
 			// read file to check if it has a "Create Table" statement
 			const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(f));
-			const containsCreateTableStatement = await utils.fileContainsCreateTableStatement(fullPath, this.getProjectTargetVersion());
+			const containsCreateTableStatement: boolean = await utils.fileContainsCreateTableStatement(fullPath, this.getProjectTargetVersion());
 
-			fileEntries.push(this.createFileProjectEntry(f, EntryType.File, typeEntry ? typeEntry.typeAttribute : undefined, containsCreateTableStatement));
+			fileEntries.push(this.createFileProjectEntry(f, EntryType.File, undefined, containsCreateTableStatement));
 		}
 
-		return fileEntries;
+		this._files = fileEntries;
 	}
 
-	private async readFolders(): Promise<FileProjectEntry[]> {
+	private async readFolders(): Promise<void> {
+		var result: GetFoldersResult = await this.sqlProjService.getFolders(this.projectFilePath);
+		this.throwIfFailed(result);
+
 		const folderEntries: FileProjectEntry[] = [];
 
-		const foldersSet = new Set<string>();
-
-		// get any folders listed in the project file
-		const sqlprojFolders = await this.foldersListedInSqlproj();
-		sqlprojFolders.forEach(f => foldersSet.add(f));
-
-		// glob style getting folders for sdk style projects
-		if (this.sqlProjStyle === ProjectType.SdkStyle) {
-			this.files.forEach(file => {
-				// if file is in the project's folder, add the folders from the project file to this file to the list of folders. This is so that only non-empty folders in the project folder will be added by default.
-				// Empty folders won't be shown unless specified in the sqlproj (same as how it's handled for csproj in VS)
-				if (!file.relativePath.startsWith('..') && path.dirname(file.fsUri.fsPath) !== this.projectFolderPath) {
-					const foldersToFile = utils.getFoldersToFile(this.projectFolderPath, file.fsUri.fsPath);
-					foldersToFile.forEach(f => foldersSet.add(utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)))));
-				}
-			});
-
-			// add any intermediate folders of the folders that are listed in the sqlproj
-			// If there are nested empty folders, there will only be a Folder entry for the inner most folder, so we need to add entries for the intermediate folders
-			sqlprojFolders.forEach(folder => {
-				const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(folder));
-				const intermediateFolders = utils.getFoldersAlongPath(this.projectFolderPath, utils.getPlatformSafeFileEntryPath(fullPath));
-				intermediateFolders.forEach(f => foldersSet.add(utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)))));
-			});
-		}
-
-		foldersSet.forEach(f => {
-			folderEntries.push(this.createFileProjectEntry(f, EntryType.Folder));
-		});
-
-		return folderEntries;
-	}
-
-	/**
-	 * @returns Array of folders specified in the sqlproj
-	 */
-	private async foldersListedInSqlproj(): Promise<string[]> {
-		const folders: string[] = [];
-
-		// get any folders listed in the project file
-		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
-			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
-			try {
-				const folderElements = itemGroup.getElementsByTagName(constants.Folder);
-				for (let f = 0; f < folderElements.length; f++) {
-					let relativePath = folderElements[f].getAttribute(constants.Include)!;
-
-					// don't add Properties folder since it isn't supported for now and don't add if the folder was already added
-					if (utils.trimChars(relativePath, '\\') !== constants.Properties) {
-						// make sure folder relative path ends with \\ because sometimes SSDT adds folders without trailing \\
-						folders.push(utils.ensureTrailingSlash(relativePath));
-					}
-				}
-			} catch (e) {
-				void window.showErrorMessage(constants.errorReadingProject(constants.Folder, this.projectFilePath));
-				console.error(utils.getErrorMessage(e));
+		if (result.folders?.length > 0) { // empty array from SqlToolsService is deserialized as null
+			for (var folderPath of result.folders) {
+				folderEntries.push(this.createFileProjectEntry(folderPath, EntryType.Folder));
 			}
 		}
 
-		return folders;
+		this._folders = folderEntries;
 	}
 
-	private readPreDeployScripts(): FileProjectEntry[] {
-		const preDeployScripts: FileProjectEntry[] = [];
-		// find all pre-deployment scripts to include
-		let preDeployScriptCount: number = 0;
+	private async readPreDeployScripts(): Promise<void> {
+		var result: GetScriptsResult = await this.sqlProjService.getPreDeploymentScripts(this.projectFilePath);
+		this.throwIfFailed(result);
 
-		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
-			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
+		const preDeploymentScriptEntries: FileProjectEntry[] = [];
 
-			try {
-				const preDeploy = itemGroup.getElementsByTagName(constants.PreDeploy);
-				for (let pre = 0; pre < preDeploy.length; pre++) {
-					preDeployScripts.push(this.createFileProjectEntry(preDeploy[pre].getAttribute(constants.Include)!, EntryType.File));
-					preDeployScriptCount++;
-				}
-			} catch (e) {
-				void window.showErrorMessage(constants.errorReadingProject(constants.PreDeployElements, this.projectFilePath));
-				console.error(utils.getErrorMessage(e));
+		if (result.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
+			for (var scriptPath of result.scripts) {
+				preDeploymentScriptEntries.push(this.createFileProjectEntry(scriptPath, EntryType.File));
 			}
 		}
 
-		if (preDeployScriptCount > 1) {
+		if (preDeploymentScriptEntries.length > 1) {
 			void window.showWarningMessage(constants.prePostDeployCount, constants.okString);
 		}
 
-		return preDeployScripts;
+		this._preDeployScripts = preDeploymentScriptEntries;
 	}
 
-	private readPostDeployScripts(): FileProjectEntry[] {
-		const postDeployScripts: FileProjectEntry[] = [];
-		// find all post-deployment scripts to include
-		let postDeployScriptCount: number = 0;
+	private async readPostDeployScripts(): Promise<void> {
+		var result: GetScriptsResult = await this.sqlProjService.getPostDeploymentScripts(this.projectFilePath);
+		this.throwIfFailed(result);
 
-		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
-			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
+		const postDeploymentScriptEntries: FileProjectEntry[] = [];
 
-			try {
-				const postDeploy = itemGroup.getElementsByTagName(constants.PostDeploy);
-				for (let post = 0; post < postDeploy.length; post++) {
-					postDeployScripts.push(this.createFileProjectEntry(postDeploy[post].getAttribute(constants.Include)!, EntryType.File));
-					postDeployScriptCount++;
-				}
-			} catch (e) {
-				void window.showErrorMessage(constants.errorReadingProject(constants.PostDeployElements, this.projectFilePath));
-				console.error(utils.getErrorMessage(e));
+		if (result.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
+			for (var scriptPath of result.scripts) {
+				postDeploymentScriptEntries.push(this.createFileProjectEntry(scriptPath, EntryType.File));
 			}
 		}
 
-		if (postDeployScriptCount > 1) {
+		if (postDeploymentScriptEntries.length > 1) {
 			void window.showWarningMessage(constants.prePostDeployCount, constants.okString);
 		}
 
-		return postDeployScripts;
+		this._postDeployScripts = postDeploymentScriptEntries;
 	}
 
-	private readNoneDeployScripts(): FileProjectEntry[] {
-		const noneDeployScripts: FileProjectEntry[] = [];
+	private async readNoneItems(): Promise<void> {
+		var result: GetScriptsResult = await this.sqlProjService.getNoneItems(this.projectFilePath);
+		this.throwIfFailed(result);
 
-		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
-			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
+		const noneItemEntries: FileProjectEntry[] = [];
 
-			// find all none-deployment scripts to include
-			try {
-				const noneItems = itemGroup.getElementsByTagName(constants.None);
-				for (let n = 0; n < noneItems.length; n++) {
-					const includeAttribute = noneItems[n].getAttribute(constants.Include);
-					if (includeAttribute && !utils.isPublishProfile(includeAttribute)) {
-						noneDeployScripts.push(this.createFileProjectEntry(includeAttribute, EntryType.File));
-					}
-				}
-			} catch (e) {
-				void window.showErrorMessage(constants.errorReadingProject(constants.NoneElements, this.projectFilePath));
-				console.error(utils.getErrorMessage(e));
+		if (result.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
+			for (var path of result.scripts) {
+				noneItemEntries.push(this.createFileProjectEntry(path, EntryType.File));
 			}
 		}
 
-		return noneDeployScripts;
-	}
-
-	/**
-	 * @returns all the files specified as  <None Remove="file.sql" /> in the sqlproj
-	 */
-	private readNoneRemoveScripts(): FileProjectEntry[] {
-		const noneRemoveScripts: FileProjectEntry[] = [];
-
-		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
-			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
-
-			// find all none remove scripts to specified in the sqlproj
-			try {
-				const noneItems = itemGroup.getElementsByTagName(constants.None);
-				for (let n = 0; n < noneItems.length; n++) {
-					noneRemoveScripts.push(this.createFileProjectEntry(noneItems[n].getAttribute(constants.Remove)!, EntryType.File));
-				}
-			} catch (e) {
-				void window.showErrorMessage(constants.errorReadingProject(constants.NoneElements, this.projectFilePath));
-				console.error(utils.getErrorMessage(e));
-			}
-		}
-
-		return noneRemoveScripts;
+		this._noneDeployScripts = noneItemEntries.filter(f => !utils.isPublishProfile(f.relativePath));
 	}
 
 	/**
 	 *
 	 * @returns all the publish profiles (ending with *.publish.xml) specified as <None Include="file.publish.xml" /> in the sqlproj
 	 */
-	private readPublishProfiles(): FileProjectEntry[] {
-		const publishProfiles: FileProjectEntry[] = [];
+	private async readPublishProfiles(): Promise<void> {
+		var result: GetScriptsResult = await this.sqlProjService.getNoneItems(this.projectFilePath);
+		this.throwIfFailed(result);
 
-		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
-			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
+		const noneItemEntries: FileProjectEntry[] = [];
 
-			// find all publish profile scripts to include
-			try {
-				const noneItems = itemGroup.getElementsByTagName(constants.None);
-				for (let n = 0; n < noneItems.length; n++) {
-					const includeAttribute = noneItems[n].getAttribute(constants.Include);
-					if (includeAttribute && utils.isPublishProfile(includeAttribute)) {
-						publishProfiles.push(this.createFileProjectEntry(includeAttribute, EntryType.File));
-					}
-				}
-			} catch (e) {
-				void window.showErrorMessage(constants.errorReadingProject(constants.PublishProfileElements, this.projectFilePath));
-				console.error(utils.getErrorMessage(e));
+		if (result.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
+			for (var path of result.scripts) {
+				noneItemEntries.push(this.createFileProjectEntry(path, EntryType.File));
 			}
 		}
 
-		return publishProfiles;
+		this._publishProfiles = noneItemEntries.filter(f => utils.isPublishProfile(f.relativePath));
 	}
 
 	private async readDatabaseReferences(): Promise<void> {
@@ -552,6 +376,8 @@ export class Project implements ISqlProject {
 		}
 	}
 
+	//#endregion
+
 	private resetProject(): void {
 		this._files = [];
 		this._databaseReferences = [];
@@ -559,7 +385,6 @@ export class Project implements ISqlProject {
 		this._preDeployScripts = [];
 		this._postDeployScripts = [];
 		this._noneDeployScripts = [];
-		this.projFileXmlDoc = undefined;
 		this._outputPath = '';
 		this._configuration = Configuration.Debug;
 	}
@@ -577,20 +402,134 @@ export class Project implements ISqlProject {
 		await this.readCrossPlatformCompatibility();
 	}
 
+	//#region Add/Delete/Exclude functions
+
+	//#region Folders
+
 	/**
 	 * Adds a folder to the project, and saves the project file
-	 *
 	 * @param relativeFolderPath Relative path of the folder
 	 */
-	public async addFolderItem(relativeFolderPath: string): Promise<FileProjectEntry> {
-		const folderEntry = await this.ensureFolderItems(relativeFolderPath);
+	public async addFolder(relativeFolderPath: string): Promise<void> {
+		const result = await this.sqlProjService.addFolder(this.projectFilePath, relativeFolderPath);
+		this.throwIfFailed(result);
 
-		if (folderEntry) {
-			return folderEntry;
-		} else {
-			throw new Error(constants.outsideFolderPath);
-		}
+		await this.readFolders();
 	}
+
+	public async deleteFolder(relativeFolderPath: string): Promise<void> {
+		const result = await this.sqlProjService.deleteFolder(this.projectFilePath, relativeFolderPath);
+		this.throwIfFailed(result);
+
+		await this.readFolders();
+	}
+
+	//#endregion
+
+	//#region SQL object scripts
+
+	public async addSqlObjectScript(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.addSqlObjectScript(this.projectFilePath, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readFilesInProject();
+	}
+
+	public async deleteSqlObjectScript(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.deleteSqlObjectScript(this.projectFilePath, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readFilesInProject();
+	}
+
+	public async excludeSqlObjectScript(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.excludeSqlObjectScript(this.projectFilePath, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readFilesInProject();
+	}
+
+	//#endregion
+
+	//#region Pre-deployment scripts
+
+	public async addPreDeploymentScript(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.addPreDeploymentScript(this.projectFilePath, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readPreDeployScripts();
+		await this.readNoneItems();
+	}
+
+	public async deletePreDeploymentScript(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.deletePreDeploymentScript(this.projectFilePath, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readPreDeployScripts();
+	}
+
+	public async excludePreDeploymentScript(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.excludePreDeploymentScript(this.projectFilePath, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readPreDeployScripts();
+	}
+
+	//#endregion
+
+	//#region Post-deployment scripts
+
+	public async addPostDeploymentScript(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.addPreDeploymentScript(this.projectFilePath, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readPostDeployScripts();
+		await this.readNoneItems();
+	}
+
+	public async deletePostDeploymentScript(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.deletePostDeploymentScript(this.projectFilePath, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readPostDeployScripts();
+	}
+
+	public async excludePostDeploymentScript(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.excludePostDeploymentScript(this.projectFilePath, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readPostDeployScripts();
+	}
+
+	//#endregion
+
+	//#region None items
+
+	public async addNoneItem(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.addNoneItem(this.projectFilePath, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readPostDeployScripts();
+		await this.readNoneItems();
+	}
+
+	public async deleteNoneItem(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.deleteNoneItem(this.projectFilePath, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readPostDeployScripts();
+	}
+
+	public async excludeNoneItem(relativePath: string): Promise<void> {
+		const result = await this.sqlProjService.excludeNoneItem(this.projectFilePath, relativePath);
+		this.throwIfFailed(result);
+
+		await this.readPostDeployScripts();
+	}
+
+	//#endregion
+
+	//#endregion
 
 	/**
 	 * Writes a file to disk if contents are provided, adds that file to the project, and writes it to disk
@@ -600,33 +539,6 @@ export class Project implements ISqlProject {
 	 * @param itemType Type of the project entry to add. This maps to the build action for the item.
 	 */
 	public async addScriptItem(relativeFilePath: string, contents?: string, itemType?: string): Promise<FileProjectEntry> {
-		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
-
-		if (contents) {
-			// Create the file if contents were passed in and file does not exist yet
-			await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
-
-			try {
-				await fs.writeFile(absoluteFilePath, contents, { flag: 'wx' });
-			} catch (error) {
-				if (error.code === 'EEXIST') {
-					// Throw specialized error, if file already exists
-					throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
-				}
-
-				throw error;
-			}
-		} else {
-			// If no contents were provided, then check that file already exists
-			let exists = await utils.exists(absoluteFilePath);
-			if (!exists) {
-				throw new Error(constants.noFileExist(absoluteFilePath));
-			}
-		}
-
-		// Ensure that parent folder item exist in the project for the corresponding file path
-		await this.ensureFolderItems(path.relative(this.projectFolderPath, path.dirname(absoluteFilePath)));
-
 		// Check if file already has been added to sqlproj
 		const normalizedRelativeFilePath = utils.convertSlashesForSqlProj(relativeFilePath);
 
@@ -635,34 +547,35 @@ export class Project implements ISqlProject {
 			return existingEntry;
 		}
 
-		// Update sqlproj XML
-		const fileEntry = this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
+		// Ensure the file exists // TODO: can be pushed down to DacFx
+		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
+		await utils.ensureFileExists(absoluteFilePath, contents);
 
-		let xmlTag;
+		// Add the new script
+		let result: ResultStatus;
+
 		switch (itemType) {
 			case ItemType.preDeployScript:
-				xmlTag = constants.PreDeploy;
-				this._preDeployScripts.length === 0 ? this._preDeployScripts.push(fileEntry) : this._noneDeployScripts.push(fileEntry);
+				result = await this.sqlProjService.addPreDeploymentScript(this.projectFilePath, relativeFilePath);
+				await this.readPreDeployScripts();
+				await this.readNoneItems();
 				break;
 			case ItemType.postDeployScript:
-				xmlTag = constants.PostDeploy;
-				this._postDeployScripts.length === 0 ? this._postDeployScripts.push(fileEntry) : this._noneDeployScripts.push(fileEntry);
+				result = await this.sqlProjService.addPostDeploymentScript(this.projectFilePath, relativeFilePath);
+				await this.readPostDeployScripts();
+				await this.readNoneItems();
 				break;
 			default:
-				xmlTag = constants.Build;
-				this._files.push(fileEntry);
+				result = await this.sqlProjService.addSqlObjectScript(this.projectFilePath, relativeFilePath);
+				await this.readFilesInProject();
+				break;
 		}
 
-		const attributes = new Map<string, string>();
+		await this.readFolders();
 
-		if (itemType === ItemType.externalStreamingJob) {
-			fileEntry.sqlObjectType = constants.ExternalStreamingJob;
-			attributes.set(constants.Type, constants.ExternalStreamingJob);
-		}
+		this.throwIfFailed(result);
 
-		await this.addToProjFile(fileEntry, xmlTag, attributes);
-
-		return fileEntry;
+		return this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
 	}
 
 	/**
@@ -676,45 +589,20 @@ export class Project implements ISqlProject {
 			throw new Error(constants.noFileExist(filePath));
 		}
 
-		// Check if file already has been added to sqlproj
 		const normalizedRelativeFilePath = utils.convertSlashesForSqlProj(path.relative(this.projectFolderPath, filePath));
-		const existingEntry = this.files.find(f => f.relativePath.toUpperCase() === normalizedRelativeFilePath.toUpperCase());
-		if (existingEntry) {
-			return existingEntry;
+		let result: ResultStatus;
+
+		if (path.extname(filePath) === constants.sqlFileExtension) {
+			result = await this.sqlProjService.addSqlObjectScript(this.projectFilePath, filePath)
+			await this.readFilesInProject();
+		} else {
+			result = await this.sqlProjService.addNoneItem(this.projectFilePath, filePath);
+			await this.readNoneItems();
 		}
 
-		// Ensure that parent folder item exist in the project for the corresponding file path
-		await this.ensureFolderItems(path.relative(this.projectFolderPath, path.dirname(filePath)));
+		this.throwIfFailed(result);
 
-		// Update sqlproj XML
-		const fileEntry = this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
-		const xmlTag = path.extname(filePath) === constants.sqlFileExtension ? constants.Build : constants.None;
-		await this.addToProjFile(fileEntry, xmlTag);
-		this._files.push(fileEntry);
-
-		return fileEntry;
-	}
-
-	public async exclude(entry: FileProjectEntry): Promise<void> {
-		const toExclude: FileProjectEntry[] = this._files.concat(this._preDeployScripts).concat(this._postDeployScripts).concat(this._noneDeployScripts).concat(this._publishProfiles).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
-		await this.removeFromProjFile(toExclude);
-
-		this._files = this._files.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
-		this._preDeployScripts = this._preDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
-		this._postDeployScripts = this._postDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
-		this._noneDeployScripts = this._noneDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
-		this._publishProfiles = this._publishProfiles.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
-	}
-
-	public async deleteFileFolder(entry: FileProjectEntry): Promise<void> {
-		// compile a list of folder contents to delete; if entry is a file, contents will contain only itself
-		const toDeleteFiles: FileProjectEntry[] = this._files.concat(this._preDeployScripts).concat(this._postDeployScripts).concat(this._noneDeployScripts).concat(this._publishProfiles).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.File);
-		const toDeleteFolders: FileProjectEntry[] = this._files.filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.Folder);
-
-		await Promise.all(toDeleteFiles.map(x => fs.unlink(x.fsUri.fsPath)));
-		await Promise.all(toDeleteFolders.map(x => fs.rm(x.fsUri.fsPath, { recursive: true, force: true })));
-
-		await this.exclude(entry);
+		return this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
 	}
 
 	/**
@@ -769,8 +657,8 @@ export class Project implements ISqlProject {
 	//#region Database References
 
 	/**
-	  * Adds reference to the appropriate system database dacpac to the project
-	  */
+	 * Adds reference to the appropriate system database dacpac to the project
+	 */
 	public async addSystemDatabaseReference(settings: ISystemDatabaseReferenceSettings): Promise<void> {
 		// check if reference to this database already exists
 		if (this.databaseReferences.find(r => r.databaseName === settings.databaseName)) {
@@ -937,12 +825,11 @@ export class Project implements ISqlProject {
 	public async addPublishProfileToProjFile(absolutePublishProfilePath: string): Promise<FileProjectEntry> {
 		const relativePublishProfilePath = (utils.trimUri(Uri.file(this.projectFilePath), Uri.file(absolutePublishProfilePath)));
 
-		// Update sqlproj XML
+		const result = await this.sqlProjService.addNoneItem(this.projectFilePath, relativePublishProfilePath);
+		this.throwIfFailed(result);
 
 		const fileEntry = this.createFileProjectEntry(relativePublishProfilePath, EntryType.File);
 		this._publishProfiles.push(fileEntry);
-
-		await this.addToProjFile(fileEntry, constants.None);
 
 		return fileEntry;
 	}
@@ -955,337 +842,6 @@ export class Project implements ISqlProject {
 			entryType,
 			sqlObjectType,
 			containsCreateTableStatement);
-	}
-
-	private findOrCreateItemGroup(containedTag?: string, prePostScriptExist?: { scriptExist: boolean; }): Element {
-		let outputItemGroup: Element[] = [];	// "None" can have more than one ItemGroup, for "None Include" (for pre/post deploy scripts and publish profiles), "None Remove"
-		let returnItemGroup;
-
-		// search for a particular item goup if a child type is provided
-		if (containedTag) {
-			// find any ItemGroup node that contains files; that's where we'll add
-			for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
-				const currentItemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
-
-				if (currentItemGroup.getElementsByTagName(containedTag).length > 0) {
-					outputItemGroup.push(currentItemGroup);
-				}
-			}
-		}
-
-		// if none already exist, make a new ItemGroup for it
-		if (outputItemGroup.length === 0) {
-			returnItemGroup = this.projFileXmlDoc!.createElement(constants.ItemGroup);
-			this.projFileXmlDoc!.documentElement.appendChild(returnItemGroup);
-
-			if (prePostScriptExist) {
-				prePostScriptExist.scriptExist = false;
-			}
-		} else {	// if item group exists and containedTag = None, read the content to find None Include with publish profile
-			if (containedTag === constants.None) {
-				for (let ig = 0; ig < outputItemGroup.length; ig++) {
-					const itemGroup = outputItemGroup[ig];
-
-					// find all none include scripts specified in the sqlproj
-					const noneItems = itemGroup.getElementsByTagName(constants.None);
-					for (let n = 0; n < noneItems.length; n++) {
-						let noneIncludeItem = noneItems[n].getAttribute(constants.Include);
-						if (noneIncludeItem && utils.isPublishProfile(noneIncludeItem)) {
-							returnItemGroup = itemGroup;
-							break;
-						}
-					}
-				}
-				if (!returnItemGroup) {
-					returnItemGroup = this.projFileXmlDoc!.createElement(constants.ItemGroup);
-					this.projFileXmlDoc!.documentElement.appendChild(returnItemGroup);
-				}
-			} else {
-				returnItemGroup = outputItemGroup[0]; 	// Return the first item group that was found, to match prior implementation
-			}
-		}
-
-		return returnItemGroup;
-	}
-
-	private async addFileToProjFile(filePath: string, xmlTag: string, attributes?: Map<string, string>): Promise<void> {
-
-		// delete Remove node if a file has been previously excluded
-		await this.undoExcludeFileFromProjFile(xmlTag, filePath);
-
-		let itemGroup;
-
-		if (xmlTag === constants.PreDeploy || xmlTag === constants.PostDeploy) {
-			let prePostScriptExist = { scriptExist: true };
-			itemGroup = this.findOrCreateItemGroup(xmlTag, prePostScriptExist);
-
-			if (prePostScriptExist.scriptExist === true) {
-				void window.showInformationMessage(constants.deployScriptExists(xmlTag));
-				xmlTag = constants.None;	// Add only one pre-deploy and post-deploy script. All additional ones get added in the same item group with None tag
-			}
-		} else if (xmlTag === constants.None) {		// Add publish profiles with None tag
-			itemGroup = this.findOrCreateItemGroup(xmlTag);
-		}
-		else {
-			if (this.sqlProjStyle === ProjectType.SdkStyle) {
-				// if there's a folder entry for the folder containing this file, remove it from the sqlproj because the folder will now be
-				// included by the glob that includes this file (same as how csproj does it)
-				const folders = await this.foldersListedInSqlproj();
-				folders.forEach(folder => {
-					const trimmedUri = utils.trimUri(Uri.file(utils.getPlatformSafeFileEntryPath(folder)), Uri.file(utils.getPlatformSafeFileEntryPath(filePath)));
-					const basename = path.basename(utils.getPlatformSafeFileEntryPath(filePath));
-					if (trimmedUri === basename) {
-						// remove folder entry from sqlproj
-						this.removeFolderNode(folder);
-					}
-				});
-			}
-
-			const currentFiles = await this.readFilesInProject();
-
-			// don't need to add an entry if it's already included by a glob pattern
-			// unless it has an attribute that needs to be added, like external streaming job which needs it so it can be determined if validation can run on it
-			if ((!attributes || attributes.size === 0) && currentFiles.find(f => f.relativePath === utils.convertSlashesForSqlProj(filePath))) {
-				return;
-			}
-
-			itemGroup = this.findOrCreateItemGroup(xmlTag);
-		}
-
-		const newFileNode = this.projFileXmlDoc!.createElement(xmlTag);
-
-		newFileNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(filePath));
-
-		if (attributes) {
-			for (const key of attributes.keys()) {
-				newFileNode.setAttribute(key, attributes.get(key)!);
-			}
-		}
-
-		itemGroup.appendChild(newFileNode);
-	}
-
-	private async removeFileFromProjFile(path: string): Promise<void> {//TODO: publish profile
-		const fileNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Build);
-		const preDeployNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.PreDeploy);
-		const postDeployNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.PostDeploy);
-		const noneNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.None);
-		const nodes = [fileNodes, preDeployNodes, postDeployNodes, noneNodes];
-
-		const isBuildElement = this.files.find(f => f.relativePath === path);
-
-		let deleted = false;
-
-		// remove the <Build Include="..."> entry if there is one
-		for (let i = 0; i < nodes.length; i++) {
-			deleted = this.removeNode(path, nodes[i]);
-
-			if (deleted) {
-				// still might need to add a <Build Remove="..."> node if this is an sdk style project
-				if (this.sqlProjStyle === ProjectType.SdkStyle) {
-					break;
-				} else {
-					return;
-				}
-			}
-		}
-
-		// if it's an sdk style project, we'll need to add a <Build Remove="..."> entry to remove this file if it's
-		// still included by a glob
-		if (this.sqlProjStyle === ProjectType.SdkStyle) {
-			// write any changes from removing an include node and get the current files included in the project
-			if (deleted) {
-				await this.serializeToProjFile(this.projFileXmlDoc!);
-			}
-			this._preDeployScripts = this.readPreDeployScripts();
-			this._postDeployScripts = this.readPostDeployScripts();
-			this._noneDeployScripts = this.readNoneDeployScripts();
-			const currentFiles = await this.readFilesInProject();
-
-			// only add a Remove node to exclude the file if it's still included by a glob
-			if (currentFiles.find(f => f.relativePath === utils.convertSlashesForSqlProj(path))) {
-				const removeFileNode = isBuildElement ? this.projFileXmlDoc!.createElement(constants.Build) : this.projFileXmlDoc!.createElement(constants.None);
-				removeFileNode.setAttribute(constants.Remove, utils.convertSlashesForSqlProj(path));
-				this.findOrCreateItemGroup(constants.Build).appendChild(removeFileNode);
-				return;
-			}
-
-			return;
-		}
-
-		throw new Error(constants.unableToFindObject(path, constants.fileObject));
-	}
-
-	/**
-	 * Deletes a node from the project file similar to <Compile Include="{includeString}" />
-	 * @param includeString Path of the file that matches the Include portion of the node
-	 * @param nodes The collection of XML nodes to search from
-	 * @param undoRemove When true, will remove a node similar to <Compile Remove="{includeString}" />
-	 * @returns True when a node has been removed, false otherwise.
-	 */
-	private removeNode(includeString: string, nodes: HTMLCollectionOf<Element>, undoRemove: boolean = false): boolean {
-		// Default function behavior removes nodes like <Compile Include="..." />
-		// However when undoRemove is true, this function removes <Compile Remove="..." />
-		const xmlAttribute = undoRemove ? constants.Remove : constants.Include;
-		for (let i = 0; i < nodes.length; i++) {
-			const parent = nodes[i].parentNode;
-
-			if (parent) {
-				if (nodes[i].getAttribute(xmlAttribute) === utils.convertSlashesForSqlProj(includeString)) {
-					parent.removeChild(nodes[i]);
-
-					// delete ItemGroup if this was the only entry
-					// only want element nodes, not text nodes
-					const otherChildren = Array.from(parent.childNodes).filter((c: ChildNode) => c.childNodes);
-
-					if (otherChildren.length === 0) {
-						parent.parentNode?.removeChild(parent);
-					}
-
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Delete a Remove node from the sqlproj, ex: <Build Remove="Table1.sql" />
-	 * @param xmlTag The XML tag of the node (Build, None, PreDeploy, PostDeploy)
-	 * @param relativePath The relative path of the previously excluded file
-	 */
-	private async undoExcludeFileFromProjFile(xmlTag: string, relativePath: string): Promise<void> {
-		const nodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(xmlTag);
-		if (this.removeNode(relativePath, nodes, true)) {
-			await this.serializeToProjFile(this.projFileXmlDoc!);
-		}
-	}
-
-	private async addFolderToProjFile(folderPath: string): Promise<void> {
-		if (this.sqlProjStyle === ProjectType.SdkStyle) {
-			// if there's a folder entry for the folder containing this folder, remove it from the sqlproj because the folder will now be
-			// included by the glob that includes this folder (same as how csproj does it)
-			const folders = await this.foldersListedInSqlproj();
-			folders.forEach(folder => {
-				const trimmedUri = utils.trimChars(utils.trimUri(Uri.file(utils.getPlatformSafeFileEntryPath(folder)), Uri.file(utils.getPlatformSafeFileEntryPath(folderPath))), '/');
-				const basename = path.basename(utils.getPlatformSafeFileEntryPath(folderPath));
-				if (trimmedUri === basename) {
-					// remove folder entry from sqlproj
-					this.removeFolderNode(folder);
-				}
-			});
-		}
-
-		const newFolderNode = this.projFileXmlDoc!.createElement(constants.Folder);
-		newFolderNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(folderPath));
-
-		this.findOrCreateItemGroup(constants.Folder).appendChild(newFolderNode);
-	}
-
-	private async removeFolderFromProjFile(folderPath: string): Promise<void> {
-		let deleted = this.removeFolderNode(folderPath);
-
-		// TODO: consider removing this check when working on migration scenario. If a user converts to an SDK-style project and adding this
-		// exclude XML doesn't hurt for non-SDK-style projects, then it might be better to just it anyway so that they don't have to exclude the folder
-		// again when they convert to an SDK-style project
-		if (this.sqlProjStyle === ProjectType.SdkStyle) {
-			// update sqlproj if a node was deleted and load files and folders again
-			await this.writeToSqlProjAndUpdateFilesFolders();
-
-			// get latest folders to see if it still exists
-			const currentFolders = await this.readFolders();
-
-			// add exclude entry if it's still in the current folders
-			if (currentFolders.find(f => f.relativePath === utils.convertSlashesForSqlProj(folderPath))) {
-				const removeFileNode = this.projFileXmlDoc!.createElement(constants.Build);
-				removeFileNode.setAttribute(constants.Remove, utils.convertSlashesForSqlProj(folderPath + '**'));
-				this.findOrCreateItemGroup(constants.Build).appendChild(removeFileNode);
-
-				// write changes and update files so everything is up to date for the next removal
-				await this.writeToSqlProjAndUpdateFilesFolders();
-			}
-
-			deleted = true;
-		}
-
-		if (!deleted) {
-			throw new Error(constants.unableToFindObject(folderPath, constants.folderObject));
-		}
-	}
-
-	private removeFolderNode(folderPath: string): boolean {
-		const folderNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Folder);
-		let deleted = this.removeNode(folderPath, folderNodes);
-
-		// if it wasn't deleted, try deleting the folder path without trailing backslash
-		// since sometimes SSDT adds folders without a trailing \
-		if (!deleted) {
-			deleted = this.removeNode(utils.trimChars(folderPath, '\\'), folderNodes);
-		}
-
-		return deleted;
-	}
-
-	private async writeToSqlProjAndUpdateFilesFolders(): Promise<void> {
-		await this.serializeToProjFile(this.projFileXmlDoc!);
-		const projFileText = await fs.readFile(this._projectFilePath);
-		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
-		this._files = await this.readFilesInProject();
-		this.files.push(...(await this.readFolders()));
-	}
-
-	private async addToProjFile(entry: ProjectEntry, xmlTag?: string, attributes?: Map<string, string>): Promise<void> {
-		switch (entry.type) {
-			case EntryType.File:
-				await this.addFileToProjFile((<FileProjectEntry>entry).relativePath, xmlTag ? xmlTag : constants.Build, attributes);
-				break;
-			case EntryType.Folder:
-				await this.addFolderToProjFile((<FileProjectEntry>entry).relativePath);
-				break;
-		}
-
-		await this.serializeToProjFile(this.projFileXmlDoc!);
-	}
-
-	private async removeFromProjFile(entries: IProjectEntry | IProjectEntry[]): Promise<void> {
-		if (!Array.isArray(entries)) {
-			entries = [entries];
-		}
-
-		// remove any folders first, otherwise unnecessary Build remove entries might get added for sdk style
-		// projects to exclude both the folder and the files in the folder
-		const folderEntries = entries.filter(e => e.type === EntryType.Folder);
-		for (const folder of folderEntries) {
-			await this.removeFolderFromProjFile((<FileProjectEntry>folder).relativePath);
-		}
-
-		entries = entries.filter(e => e.type !== EntryType.Folder);
-
-		for (const entry of entries) {
-			switch (entry.type) {
-				case EntryType.File:
-					await this.removeFileFromProjFile((<FileProjectEntry>entry).relativePath);
-					break;
-			}
-		}
-
-		await this.serializeToProjFile(this.projFileXmlDoc!);
-	}
-
-	private async serializeToProjFile(projFileContents: Document): Promise<void> {
-		let xml = new xmldom.XMLSerializer().serializeToString(projFileContents);
-		xml = xmlFormat(xml, <xmlFormat.Options>{
-			collapseContent: true,
-			indentation: '  ',
-			lineSeparator: os.EOL,
-			whiteSpaceAtEndOfSelfclosingTag: true
-		});
-
-		await fs.writeFile(this._projectFilePath, xml);
-
-		// update projFileXmlDoc since the file was updated
-		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(xml);
 	}
 
 	/**
@@ -1310,80 +866,12 @@ export class Project implements ISqlProject {
 				const fileStat = await fs.stat(file.fsPath);
 
 				if (fileStat.isFile() && file.fsPath.toLowerCase().endsWith(constants.sqlFileExtension)) {
-					await this.addScriptItem(relativePath);
+					await this.addSqlObjectScript(relativePath);
 				} else if (fileStat.isDirectory()) {
-					await this.addFolderItem(relativePath);
+					await this.addFolder(relativePath);
 				}
 			}
 		}
-	}
-
-	/**
-	 * Adds all folders in the path to the project and saves the project file, if provided path is under the project folder.
-	 * If path is outside the project folder, then no action is taken.
-	 *
-	 * @param relativeFolderPath Relative folder path to add folders from.
-	 * @returns Project entry for the last folder in the path, if path is under the project folder; otherwise `undefined`.
-	 */
-	private async ensureFolderItems(relativeFolderPath: string): Promise<FileProjectEntry | undefined> {
-		if (!relativeFolderPath) {
-			return;
-		}
-
-		const absoluteFolderPath = path.join(this.projectFolderPath, relativeFolderPath);
-		const normalizedProjectFolderPath = path.normalize(this.projectFolderPath);
-
-		// Only add folders within the project folder. When adding files outside the project folder,
-		// they should be copied to the project root and there will be no additional folders to add.
-		if (!absoluteFolderPath.toUpperCase().startsWith(normalizedProjectFolderPath.toUpperCase())) {
-			return;
-		}
-
-		// If folder doesn't exist, create it
-		await fs.mkdir(absoluteFolderPath, { recursive: true });
-
-		// for SDK style projects, only add this folder to the sqlproj if needed
-		// intermediate folders don't need to be added in the sqlproj
-		if (this.sqlProjStyle === ProjectType.SdkStyle) {
-			let folderEntry = this.files.find(f => utils.ensureTrailingSlash(f.relativePath.toUpperCase()) === utils.ensureTrailingSlash((relativeFolderPath.toUpperCase())));
-
-			if (!folderEntry) {
-				folderEntry = this.createFileProjectEntry(utils.ensureTrailingSlash(relativeFolderPath), EntryType.Folder);
-				this.files.push(folderEntry);
-				await this.addToProjFile(folderEntry);
-			}
-
-			return folderEntry;
-		}
-
-		// Add project file entries for all folders in the path.
-		// SSDT expects all folders to be explicitly listed in the project file, so we construct
-		// folder paths for all intermediate folders and ensure they are present in the project as well.
-		// We do not use `path.relative` here, because it may return '.' if paths are the same,
-		// but in our case we actually want an empty string, that will result in an empty segments
-		// array and nothing will be added.
-		const relativePath = utils.convertSlashesForSqlProj(absoluteFolderPath.substring(normalizedProjectFolderPath.length));
-		const pathSegments = utils.trimChars(relativePath, ' \\').split(constants.SqlProjPathSeparator);
-		let folderEntryPath = '';
-		let folderEntry: FileProjectEntry | undefined;
-
-		// Add folder items for all segments, including the requested folder itself
-		for (let segment of pathSegments) {
-			if (segment) {
-				folderEntryPath += segment + constants.SqlProjPathSeparator;
-				folderEntry =
-					this.files.find(f => utils.ensureTrailingSlash(f.relativePath.toUpperCase()) === folderEntryPath.toUpperCase());
-
-				if (!folderEntry) {
-					// If there is no <Folder/> item for the folder - add it
-					folderEntry = this.createFileProjectEntry(folderEntryPath, EntryType.Folder);
-					this.files.push(folderEntry);
-					await this.addToProjFile(folderEntry);
-				}
-			}
-		}
-
-		return folderEntry;
 	}
 
 	private throwIfFailed(result: ResultStatus): void {
