@@ -359,8 +359,7 @@ export class TreeUpdateUtils {
 	}
 
 	/**
-	 * Change the connection title to display only the unique properties (non server info related and non default)
-	 * if it matches another profile title. Server Info can be checked in tooltip.
+	 * Change the connection title to display only the unique properties among profiles.
 	 */
 	private static alterConnectionTitles(inputList: ConnectionProfile[]): void {
 		let profileListMap = new Map<string, number[]>();
