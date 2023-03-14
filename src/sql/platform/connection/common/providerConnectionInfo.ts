@@ -184,7 +184,11 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public get serverInfo(): string {
-		return this.getServerInfo();
+		let value = this.getServerInfo();
+		if (this.serverCapabilities?.useFullOptions) {
+			value += this.getNonDefaultOptionsString();
+		}
+		return value;
 	}
 
 	public isPasswordRequired(): boolean {
@@ -344,5 +348,27 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		}
 
 		return connectionOptions;
+	}
+
+	/**
+	 * Append all non default options to tooltip string if useFullOptions is enabled.
+	 */
+	private getNonDefaultOptionsString(): string {
+		let parts: string = "";
+
+		let nonDefaultOptions = this.getConnectionOptionsList(true);
+		nonDefaultOptions.forEach(element => {
+			let value = this.getOptionValue(element.name);
+			if (parts.length === 0) {
+				parts = " (";
+			}
+			let addValue = element.name + ProviderConnectionInfo.nameValueSeparator + `${value}`;
+			parts += parts === " (" ? addValue : (ProviderConnectionInfo.idSeparator + addValue);
+		});
+		if (parts.length > 0) {
+			parts += ")";
+		}
+
+		return parts;
 	}
 }
