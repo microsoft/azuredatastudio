@@ -17,11 +17,12 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 	private _databaseSelectorTable!: azdata.TableComponent;
 	private _xEventsGroup!: azdata.GroupContainer;
+	private _xEventsFolderPickerInput!: azdata.InputBoxComponent;
+	private _xEventsFilesFolderPath!: string;
 	private _dbNames!: string[];
 	private _dbCount!: azdata.TextComponent;
 	private _databaseTableValues!: any[];
 	private _disposables: vscode.Disposable[] = [];
-
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.DATABASE_FOR_ASSESSMENT_PAGE_TITLE), migrationStateModel);
@@ -63,6 +64,8 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			}
 			return true;
 		});
+
+		this._xEventsFilesFolderPath = this.migrationStateModel._xEventsFilesFolderPath;
 	}
 
 	public async onPageLeave(): Promise<void> {
@@ -75,11 +78,15 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		// * no prior assessment
 		// * the prior assessment had an error or
 		// * the assessed databases list is different from the selected databases list
+		// * the XEvents path has changed
 		this.migrationStateModel._runAssessments = !this.migrationStateModel._assessmentResults
 			|| !!this.migrationStateModel._assessmentResults?.assessmentError
 			|| assessedDatabases.length === 0
 			|| assessedDatabases.length !== selectedDatabases.length
-			|| assessedDatabases.some(db => selectedDatabases.indexOf(db) < 0);
+			|| assessedDatabases.some(db => selectedDatabases.indexOf(db) < 0)
+			|| this.migrationStateModel._xEventsFilesFolderPath.toLowerCase() !== this._xEventsFilesFolderPath.toLowerCase();
+
+		this.migrationStateModel._xEventsFilesFolderPath = this._xEventsFilesFolderPath;
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
@@ -215,25 +222,24 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		// load unfiltered table list and pre-select list of databases saved in state
 		await this._filterTableList('', this.migrationStateModel._databasesForAssessment);
 
-		//////////
-		const xeventsDescription = this._view.modelBuilder.text()
+		const xEventsDescription = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.XEVENTS_ASSESSMENT_DESCRIPTION,
 				width: 650,
 				CSSStyles: {
 					...styles.BODY_CSS, 'width': '650px'
 				},
-				links: [{ text: 'Learn more', url: 'aka.ms/sql-migration-xe-assess' }]
+				links: [{ text: constants.XEVENTS_ASSESSMENT_HELPLINK, url: 'aka.ms/sql-migration-xe-assess' }]
 			}).component();
 
-		const xeventsInstructions = this._view.modelBuilder.text()
+		const xEventsInstructions = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.XEVENTS_ASSESSMENT_OPEN_FOLDER,
 				width: 650,
 				CSSStyles: { ...styles.LABEL_CSS, 'width': '650px' },
 			}).component();
 
-		const xeventsFolderPickerInput = this._view.modelBuilder.inputBox()
+		this._xEventsFolderPickerInput = this._view.modelBuilder.inputBox()
 			.withProps({
 				placeHolder: constants.FOLDER_NAME,
 				readOnly: true,
@@ -241,43 +247,46 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				ariaLabel: constants.XEVENTS_ASSESSMENT_OPEN_FOLDER
 			}).component();
 		this._disposables.push(
-			xeventsFolderPickerInput.onTextChanged(async (value) => {
+			this._xEventsFolderPickerInput.onTextChanged(async (value) => {
 				if (value) {
-					this.migrationStateModel._xEventsFilesFolderPath = value.trim();
+					this._xEventsFilesFolderPath = value.trim();
 				}
 			}));
 
-		const xeventsFolderPickerButton = this._view.modelBuilder.button()
+		const xEventsFolderPickerButton = this._view.modelBuilder.button()
 			.withProps({
 				label: constants.OPEN,
 				width: 80,
 			}).component();
 		this._disposables.push(
-			xeventsFolderPickerButton.onDidClick(
-				async () => xeventsFolderPickerInput.value = await promptUserForFolder()));
+			xEventsFolderPickerButton.onDidClick(
+				async () => this._xEventsFolderPickerInput.value = await promptUserForFolder()));
 
-		const xeventsFolderPickerClearButton = this._view.modelBuilder.button()
+		const xEventsFolderPickerClearButton = this._view.modelBuilder.button()
 			.withProps({
 				label: constants.CLEAR,
 				width: 80,
 			}).component();
 		this._disposables.push(
-			xeventsFolderPickerClearButton.onDidClick(
-				async () => xeventsFolderPickerInput.value = ''));
+			xEventsFolderPickerClearButton.onDidClick(
+				async () => {
+					this._xEventsFolderPickerInput.value = '';
+					this._xEventsFilesFolderPath = '';
+				}));
 
-		const xeventsFolderPickerContainer = this._view.modelBuilder.flexContainer()
+		const xEventsFolderPickerContainer = this._view.modelBuilder.flexContainer()
 			.withProps(
 				{ CSSStyles: { 'flex-direction': 'row', 'align-items': 'left' } })
 			.withItems([
-				xeventsFolderPickerInput,
-				xeventsFolderPickerButton,
-				xeventsFolderPickerClearButton])
+				this._xEventsFolderPickerInput,
+				xEventsFolderPickerButton,
+				xEventsFolderPickerClearButton])
 			.component();
 
 		this._xEventsGroup = this._view.modelBuilder.groupContainer().withLayout({
 			header: constants.XEVENTS_ASSESSMENT_TITLE,
 			collapsible: true
-		}).withProps({ collapsed: false, width: 650, }).withItems([xeventsDescription, xeventsInstructions, xeventsFolderPickerContainer]).component();
+		}).withProps({ collapsed: false, width: 650, }).withItems([xEventsDescription, xEventsInstructions, xEventsFolderPickerContainer]).component();
 
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
@@ -292,7 +301,6 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		flex.addItem(this._dbCount, { flex: '0 0 auto' });
 		flex.addItem(this._databaseSelectorTable);
 		flex.addItem(this._xEventsGroup, { flex: '0 0 auto' });
-
 
 		return flex;
 	}

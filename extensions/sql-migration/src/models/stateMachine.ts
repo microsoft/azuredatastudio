@@ -213,7 +213,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _nodeNames!: string[];
 
 	public _databasesForAssessment!: string[];
-	public _xEventsFilesFolderPath!: string;
+	public _xEventsFilesFolderPath: string = '';
 	public _assessmentResults!: ServerAssessment;
 	public _assessedDatabaseList!: string[];
 	public _runAssessments: boolean = true;
