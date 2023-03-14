@@ -250,8 +250,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	}
 
 	private async handleAddConnectionProfile(newProfile?: IConnectionProfile): Promise<void> {
-		// TODO, add a check to iterate over the tree to find profiles then change their ids to show any different properties (need to get list before and after).
-
 		if (this._buttonSection) {
 			hide(this._buttonSection);
 		}
@@ -375,7 +373,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	}
 
 	public async refreshTree(): Promise<void> {
-		// NOTE, this is where the handling for the delete of a connection profile is done.
 		hide(this.messages!);
 		this._viewKey.set(ServerTreeViewView.all);
 		this._hasConnectionsKey.set(this._connectionManagementService.hasRegisteredServers());

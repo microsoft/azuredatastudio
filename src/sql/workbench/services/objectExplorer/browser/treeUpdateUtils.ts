@@ -98,9 +98,6 @@ export class TreeUpdateUtils {
 	 * Set input for the registered servers tree.
 	 */
 	public static async registeredServerUpdate(tree: ITree | AsyncServerTree, connectionManagementService: IConnectionManagementService, elementToSelect?: any): Promise<void> {
-		// TODO, add a check to iterate over the tree to find profiles then change their ids to show any different properties (need to get list before and after).
-		// This is called when a delete is done to one of the tree's connections. Need to refresh elements that are duplicates.
-
 		if (tree instanceof AsyncServerTree) {
 			const treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
 			if (treeInput) {
@@ -358,9 +355,16 @@ export class TreeUpdateUtils {
 		return connectionProfile;
 	}
 
+	/**
+	 * Change the connection title to display only the unique properties (non server info related and non default)
+	 * if it matches another profile title. Server Info can be checked in tooltip.
+	 */
 	private static alterConnectionTitles(inputList: ConnectionProfile[], stringToAdd: string): void {
 		let profileListMap = new Map<string, number[]>();
+
+		// Map the indices of profiles that share the same connection name.
 		for (let i = 0; i < inputList.length; i++) {
+			// do not add if the profile is still loading as that will result in erroneous entries.
 			if (inputList[i].hasServerCapabilities) {
 				let titleKey = inputList[i].getOriginalTitle();
 				if (profileListMap.has(titleKey)) {
@@ -376,16 +380,48 @@ export class TreeUpdateUtils {
 
 		profileListMap.forEach(function (value, key) {
 			if (profileListMap.get(key)?.length > 1) {
-				// TODO, need to check every connection profile sharing the same title and id, then
-				// remove common options until we find differences to append to the title.
-
-				// Need to check if connection name is not the same as serverInfo so that if we need
-				// to append the serverName value, we can.
-
-				// For now, mark that there are duplicates for profile name with numbers.
-				value.forEach((value, index) => {
-					inputList[value].title = inputList[value].getOriginalTitle() + ' (' + index + ')';
+				let combinedOptions = [];
+				value.forEach((value) => {
+					// Add all possible non special options across all profiles with the same title to an option list.
+					let valueOptions = inputList[value].getConnectionOptionsList();
+					combinedOptions = combinedOptions.concat(valueOptions.filter(item => combinedOptions.indexOf(item) < 0));
 				});
+
+				for (let p = 0; p < value.length; p++) {
+					let firstOption = true;
+					for (let i = 0; i < combinedOptions.length; i++) {
+						// See if the option is not default for the inputList profile or is.
+						if (inputList[value[p]].getConnectionOptionsList(true).indexOf(combinedOptions[i]) > -1) {
+							let isUnique = true;
+							let optionValue = inputList[value[p]].getOptionValue(combinedOptions[i].name);
+							for (let t = 0; t < value.length; t++) {
+								// Check to make sure that the option value for this profile is unique among the other values with the same title.
+								if (p !== t) {
+									if (inputList[value[t]].getOptionValue(combinedOptions[i].name) === optionValue) {
+										isUnique = false;
+										break;
+									}
+								}
+							}
+
+							if (isUnique) {
+								// Add the option to the title and the brace in front if this is the first option.
+								if (firstOption) {
+									firstOption = false;
+									inputList[value[p]].title += ' (';
+								}
+								inputList[value[p]].title += (combinedOptions[i].name + ':' + optionValue + '|');
+							}
+						}
+					}
+
+					//Add the final brace.
+					let finalIndex = inputList[value[p]].title.lastIndexOf('|');
+					if (finalIndex > -1) {
+						let finalString = inputList[value[p]].title.substring(0, finalIndex) + ')';
+						inputList[value[p]].title = finalString;
+					}
+				}
 			}
 		})
 	}

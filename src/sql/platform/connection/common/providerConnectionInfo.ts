@@ -31,7 +31,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 			this.providerName = isString(model) ? model : 'providerName' in model ? model.providerName : model.providerId;
 
 			if (!isString(model)) {
-				if (model.options && this.hasServerCapabilities) {
+				if (model.options && this.hasServerCapabilities()) {
 					this.serverCapabilities.connectionOptions.forEach(option => {
 						let value = model.options[option.name];
 						this.options[option.name] = value;
@@ -146,7 +146,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 	private getServerInfo() {
 		let title = '';
-		if (this.hasServerCapabilities) {
+		if (this.hasServerCapabilities()) {
 			title = this.serverName;
 			// Only show database name if the provider supports it.
 			if (this.serverCapabilities.connectionOptions?.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
@@ -163,7 +163,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	public get title(): string {
 		let label = '';
 
-		if (this.hasServerCapabilities) {
+		if (this.hasServerCapabilities()) {
 			if (this.connectionName) {
 				label = this.connectionName;
 			} else {
@@ -180,7 +180,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public hasServerCapabilities(): boolean {
-		return !!this.serverCapabilities;
+		return (this.serverCapabilities !== undefined);
 	}
 
 	public get serverInfo(): string {
@@ -189,7 +189,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 	public isPasswordRequired(): boolean {
 		// if there is no provider capabilities metadata assume a password is not required
-		if (!this.hasServerCapabilities) {
+		if (!this.hasServerCapabilities()) {
 			return false;
 		}
 
@@ -220,7 +220,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	public getOptionsKey(getOriginalOptions?: boolean): string {
 		let useFullOptions = false;
 		let idNames = [];
-		if (this.hasServerCapabilities) {
+		if (this.hasServerCapabilities()) {
 			useFullOptions = this.serverCapabilities.useFullOptions
 			idNames = this.serverCapabilities.connectionOptions.map(o => {
 				// All options enabled, use every property besides password.
@@ -273,7 +273,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public getSpecialTypeOptionName(type: string): string | undefined {
-		if (this.hasServerCapabilities) {
+		if (this.hasServerCapabilities()) {
 			let optionMetadata = this.serverCapabilities.connectionOptions.find(o => o.specialValueType === type);
 			return !!optionMetadata ? optionMetadata.name : undefined;
 		} else {
@@ -289,7 +289,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public get authenticationTypeDisplayName(): string {
-		let optionMetadata = this.hasServerCapabilities ? this.serverCapabilities.connectionOptions.find(o => o.specialValueType === ConnectionOptionSpecialType.authType) : undefined;
+		let optionMetadata = this.hasServerCapabilities() ? this.serverCapabilities.connectionOptions.find(o => o.specialValueType === ConnectionOptionSpecialType.authType) : undefined;
 		let authType = this.authenticationType;
 		let displayName: string = authType;
 
@@ -316,16 +316,13 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 
-	// TODO - Get all non default, non special connection properties for profile.
-	// Back in tree update, iterate over all non special tree properties, for all profiles, check if value for prop is non default, and if it's a common value
-	// among all of the profiles, if different, then add it for the title, otherwise, skip it.
-
-	// Get all non specialValueType or just the non default options for this profile.
-
-	private getConnectionOptionsList(getNonDefault: boolean): azdata.ConnectionOption[] {
+	/**
+	 * Get all non specialValueType or just the non default options for this profile (used for changing the title).
+	 */
+	public getConnectionOptionsList(getNonDefault?: boolean): azdata.ConnectionOption[] {
 		let connectionOptions: azdata.ConnectionOption[] = [];
 
-		if (this.hasServerCapabilities) {
+		if (this.hasServerCapabilities()) {
 			this.serverCapabilities.connectionOptions.forEach(element => {
 				if (element.specialValueType !== ConnectionOptionSpecialType.serverName &&
 					element.specialValueType !== ConnectionOptionSpecialType.databaseName &&

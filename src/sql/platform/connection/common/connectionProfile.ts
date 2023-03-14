@@ -38,7 +38,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public isDisconnecting: boolean = false;
 
-	// title from ProviderConnectionInfo cannot be changed, in order to show different dynamic options, we must override it with our own.
+	// title from ProviderConnectionInfo cannot be changed, in order to show different dynamic options appended, we must override the title with our own.
 	private _title?: string;
 
 	public constructor(

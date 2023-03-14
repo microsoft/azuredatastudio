@@ -264,8 +264,6 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 	}
 
 	private updateSavedConnectionsNode(): void {
-		// TODO, add a check to iterate over the tree to find profiles then change their ids to show any different properties (need to get list before and after).
-
 		if (this.model.savedConnectionNode) {
 			this.tree.updateChildren(this.model.savedConnectionNode);
 		}
