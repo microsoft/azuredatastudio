@@ -190,6 +190,6 @@
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
     "@microsoft/vscodetestcover": "^1.2.1",
-    "@microsoft/azdata-test": "^2.0.3"
+    "@microsoft/azdata-test": "^3.0.1"
   }
 }

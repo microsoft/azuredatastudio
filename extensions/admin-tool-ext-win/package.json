@@ -117,7 +117,7 @@
     "mocha": "^7.1.1",
     "should": "^13.2.3",
     "@microsoft/vscodetestcover": "^1.2.1",
-    "@microsoft/azdata-test": "^2.0.3"
+    "@microsoft/azdata-test": "^3.0.1"
   },
   "__metadata": {
     "id": "41",

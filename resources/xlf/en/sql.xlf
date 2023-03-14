@@ -2478,6 +2478,11 @@ Default Skipped Commands:
       <source xml:lang="en">Revert Current Row</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/editData/browser/editDataGridPanel" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="editData.cellWithNullCharMessage">
+      <source xml:lang="en">This cell contains the Unicode null character which is currently not supported for editing.</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/editData/browser/gridActions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="copySelection">
       <source xml:lang="en">Copy</source>
@@ -4130,7 +4135,7 @@ Error: {1}</source>
 </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="copyFailed">
-      <source xml:lang="en">Copy failed with error: {0}</source>
+      <source xml:lang="en">Copy failed with error {0}</source>
     </trans-unit>
     <trans-unit id="notebook.showChart">
       <source xml:lang="en">Show chart</source>
@@ -6316,7 +6321,7 @@ Error Message: 1</source>
 </body></file>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext"><body>
     <trans-unit id="copyFailed">
-      <source xml:lang="en">Copy failed with error: {0}</source>
+      <source xml:lang="en">Copy failed with error {0}</source>
     </trans-unit>
     <trans-unit id="elapsedBatchTime">
       <source xml:lang="en">Batch execution time: {0}</source>
