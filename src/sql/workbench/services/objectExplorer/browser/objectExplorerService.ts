@@ -436,10 +436,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 					// Incase node status not found.
 					this._onNodeExpandedError.event(e => {
-						resultMap.set(e.providerId, e);
-						// When get all responses from all providers, merge results
-						if (resultMap.size === allProviders.length) {
-							resolveExpansion();
+						//Ignore errors from other sessions and nodepaths.
+						if (e.sessionId === session.sessionId && e.nodePath === node.nodePath) {
+							resultMap.set(e.providerId, e);
+							// When get all responses from all providers, merge results
+							if (resultMap.size === allProviders.length) {
+								resolveExpansion();
+							}
 						}
 					});
 
