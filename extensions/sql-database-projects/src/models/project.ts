@@ -490,7 +490,7 @@ export class Project implements ISqlProject {
 	//#region Post-deployment scripts
 
 	public async addPostDeploymentScript(relativePath: string): Promise<void> {
-		const result = await this.sqlProjService.addPreDeploymentScript(this.projectFilePath, relativePath);
+		const result = await this.sqlProjService.addPostDeploymentScript(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
 		await this.readPostDeployScripts();
@@ -603,10 +603,10 @@ export class Project implements ISqlProject {
 		let result: ResultStatus;
 
 		if (path.extname(filePath) === constants.sqlFileExtension) {
-			result = await this.sqlProjService.addSqlObjectScript(this.projectFilePath, filePath)
+			result = await this.sqlProjService.addSqlObjectScript(this.projectFilePath, normalizedRelativeFilePath)
 			await this.readFilesInProject();
 		} else {
-			result = await this.sqlProjService.addNoneItem(this.projectFilePath, filePath);
+			result = await this.sqlProjService.addNoneItem(this.projectFilePath, normalizedRelativeFilePath);
 			await this.readNoneItems();
 		}
 
