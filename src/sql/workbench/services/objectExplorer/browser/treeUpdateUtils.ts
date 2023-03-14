@@ -384,9 +384,18 @@ export class TreeUpdateUtils {
 		profileListMap.forEach(function (value, key) {
 			if (profileListMap.get(key)?.length > 1) {
 				let combinedOptions = [];
+				let needSpecial = false;
+				if (key === inputList[value[0]].connectionName) {
+					// check for potential connections with the same name but technically different connections.
+					let listOfDuplicates = value.filter(item => inputList[item].getOptionsKey() !== inputList[value[0]].getOptionsKey());
+					if (listOfDuplicates.length > 0) {
+						// if we do find duplicates, we will need to include the special properties.
+						needSpecial = true;
+					}
+				}
 				value.forEach((value) => {
-					// Add all possible non special options across all profiles with the same title to an option list.
-					let valueOptions = inputList[value].getConnectionOptionsList();
+					// Add all possible options across all profiles with the same title to an option list.
+					let valueOptions = inputList[value].getConnectionOptionsList(needSpecial, false);
 					combinedOptions = combinedOptions.concat(valueOptions.filter(item => combinedOptions.indexOf(item) < 0));
 				});
 
@@ -394,7 +403,7 @@ export class TreeUpdateUtils {
 					let firstOption = true;
 					for (let i = 0; i < combinedOptions.length; i++) {
 						// See if the option is not default for the inputList profile or is.
-						if (inputList[value[p]].getConnectionOptionsList(true).indexOf(combinedOptions[i]) > -1) {
+						if (inputList[value[p]].getConnectionOptionsList(needSpecial, true).indexOf(combinedOptions[i]) > -1) {
 							let isUnique = true;
 							let optionValue = inputList[value[p]].getOptionValue(combinedOptions[i].name);
 							for (let t = 0; t < value.length; t++) {

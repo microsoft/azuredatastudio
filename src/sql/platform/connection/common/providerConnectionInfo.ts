@@ -321,17 +321,18 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 
 	/**
-	 * Get all non specialValueType or just the non default options for this profile (used for changing the title).
+	 * Get all non specialValueType (or if distinct connections share same connection name, everything but connectionName and password).
+	 * Also allows for getting the non default options for this profile. (this function is used for changing the title).
 	 */
-	public getConnectionOptionsList(getNonDefault?: boolean): azdata.ConnectionOption[] {
+	public getConnectionOptionsList(needSpecial: boolean, getNonDefault: boolean): azdata.ConnectionOption[] {
 		let connectionOptions: azdata.ConnectionOption[] = [];
 
 		if (this.hasServerCapabilities()) {
 			this.serverCapabilities.connectionOptions.forEach(element => {
-				if (element.specialValueType !== ConnectionOptionSpecialType.serverName &&
+				if (((!needSpecial && element.specialValueType !== ConnectionOptionSpecialType.serverName &&
 					element.specialValueType !== ConnectionOptionSpecialType.databaseName &&
 					element.specialValueType !== ConnectionOptionSpecialType.authType &&
-					element.specialValueType !== ConnectionOptionSpecialType.userName &&
+					element.specialValueType !== ConnectionOptionSpecialType.userName) || needSpecial) &&
 					element.specialValueType !== ConnectionOptionSpecialType.connectionName &&
 					element.specialValueType !== ConnectionOptionSpecialType.password) {
 					if (getNonDefault) {
@@ -356,7 +357,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	private getNonDefaultOptionsString(): string {
 		let parts: string = "";
 
-		let nonDefaultOptions = this.getConnectionOptionsList(true);
+		let nonDefaultOptions = this.getConnectionOptionsList(false, true);
 		nonDefaultOptions.forEach(element => {
 			let value = this.getOptionValue(element.name);
 			if (parts.length === 0) {
