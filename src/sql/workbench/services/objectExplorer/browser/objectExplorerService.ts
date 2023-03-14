@@ -498,6 +498,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 										sessionId: session.sessionId
 									};
 									resultMap.set(provider.providerId, emptyResult);
+									if (resultMap.size === allProviders.length) {
+										resolveExpansion();
+									}
 								}
 							}, error => {
 								reject(error);
