@@ -13,7 +13,8 @@ import should = require('should');
 import { AssertionError } from 'assert';
 import { Project } from '../models/project';
 import { Uri } from 'vscode';
-import { exists } from '../common/utils';
+import { exists, getSqlProjectsService } from '../common/utils';
+import { ProjectType } from 'mssql';
 
 export async function shouldThrowSpecificError(block: Function, expectedMessage: string, details?: string) {
 	let succeeded = false;
@@ -28,6 +29,16 @@ export async function shouldThrowSpecificError(block: Function, expectedMessage:
 	if (succeeded) {
 		throw new AssertionError({ message: `Operation succeeded, but expected failure with exception: "${expectedMessage}".${details ? '  ' + details : ''}` });
 	}
+}
+
+export async function createTestSqlProject(): Promise<Project> {
+	const projPath = await getTestProjectPath();
+	await (await getSqlProjectsService()).createProject(projPath, ProjectType.SdkStyle);
+	return await Project.openProject(projPath);
+}
+
+export async function getTestProjectPath(): Promise<string> {
+	return path.join(await generateTestFolderPath(), 'TestProject', 'TestProject.sqlproj');
 }
 
 export async function createTestSqlProjFile(contents: string, folderPath?: string): Promise<string> {
@@ -201,14 +212,14 @@ export async function createListOfFiles(filePath?: string): Promise<Uri[]> {
  * TestFolder directory structure
  * 		- file1.sql
  * 		- folder1
- * 			-file1.sql
- * 			-file2.sql
- * 			-test1.sql
- * 			-test2.sql
- * 			-testLongerName.sql
+ * 			- file1.sql
+ * 			- file2.sql
+ * 			- test1.sql
+ * 			- test2.sql
+ * 			- testLongerName.sql
  *	 	- folder2
- * 			-file1.sql
- * 			-file2.sql
+ * 			- file1.sql
+ * 			- file2.sql
  * 			- Script.PreDeployment1.sql
  * 			- Script.PostDeployment1.sql
  * 			- Script.PostDeployment2.sql
