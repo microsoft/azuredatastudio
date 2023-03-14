@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { MigrationTargetType } from './stateMachine';
+import { MigrationTargetType } from '../api/utils';
 
 export interface Base {
 	uuid: string;

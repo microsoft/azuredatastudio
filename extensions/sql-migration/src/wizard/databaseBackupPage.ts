@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { getStorageAccountAccessKeys, SqlVMServer } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, NetworkShare, StateChangeEvent, ValidateIrState, ValidationResult } from '../models/stateMachine';
+import { MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, NetworkContainerType, NetworkShare, StateChangeEvent, ValidateIrState, ValidationResult } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
@@ -17,7 +17,8 @@ import { logError, TelemetryViews } from '../telemetry';
 import * as styles from '../constants/styles';
 import { TableMigrationSelectionDialog } from '../dialog/tableMigrationSelection/tableMigrationSelectionDialog';
 import { ValidateIrDialog } from '../dialog/validationResults/validateIrDialog';
-import { getSourceConnectionCredentials, getSourceConnectionProfile, getSourceConnectionQueryProvider, getSourceConnectionUri } from '../api/sqlUtils';
+import { canTargetConnectToStorageAccount, getSourceConnectionCredentials, getSourceConnectionProfile, getSourceConnectionQueryProvider, getSourceConnectionUri } from '../api/sqlUtils';
+import { MigrationTargetType } from '../api/utils';
 
 const WIZARD_TABLE_COLUMN_WIDTH = '200px';
 const WIZARD_TABLE_COLUMN_WIDTH_SMALL = '170px';
@@ -70,6 +71,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	private _existingDatabases: string[] = [];
 	private _nonPageBlobErrors: string[] = [];
+	private _inaccessibleStorageErrors: string[] = [];
 	private _disposables: vscode.Disposable[] = [];
 
 	// SQL DB table  selection
@@ -742,6 +744,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							errors.push(...this._nonPageBlobErrors);
 						}
 
+						if (this._inaccessibleStorageErrors.length > 0) {
+							errors.push(...this._inaccessibleStorageErrors)
+						}
+
 						if (errors.length > 0) {
 							const duplicates: Map<string, number[]> = new Map();
 							for (let i = 0; i < this.migrationStateModel._targetDatabaseNames.length; i++) {
@@ -1073,6 +1079,16 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 								const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === value);
 								if (selectedStorageAccount && !blobStorageAccountErrorStrings.includes(value)) {
 									this.migrationStateModel._databaseBackup.blobs[index].storageAccount = selectedStorageAccount;
+
+									// check for storage account connectivity
+									if ((this.migrationStateModel.isSqlMiTarget || this.migrationStateModel.isSqlVmTarget)) {
+										if (!canTargetConnectToStorageAccount(this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance, selectedStorageAccount)) {
+											const errorMessage = "Error: storage account connectivity for storage account " + selectedStorageAccount.name;
+											this._inaccessibleStorageErrors = this._inaccessibleStorageErrors.filter(err => err !== errorMessage);
+											this._inaccessibleStorageErrors.push(errorMessage);
+										}
+									}
+
 									await this.loadBlobContainerDropdown(index);
 									await blobContainerDropdown.updateProperties({ enabled: true });
 								} else {
@@ -1089,6 +1105,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 								if (selectedBlobContainer && !blobContainerErrorStrings.includes(value)) {
 									this.migrationStateModel._databaseBackup.blobs[index].blobContainer = selectedBlobContainer;
 
+									// check for block blobs for SQL VM <= 2014
 									if (this.migrationStateModel.isSqlVmTarget && utils.isTargetSqlVm2014OrBelow(this.migrationStateModel._targetServerInstance as SqlVMServer)) {
 										const backups = await utils.getBlobLastBackupFileNames(
 											this.migrationStateModel._azureAccount,

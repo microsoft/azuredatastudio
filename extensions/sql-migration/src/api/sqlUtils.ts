@@ -5,8 +5,8 @@
 
 import * as azdata from 'azdata';
 import { azureResource } from 'azurecore';
-import { AzureSqlDatabase, AzureSqlDatabaseServer } from './azure';
-import { generateGuid } from './utils';
+import { AzureSqlDatabase, AzureSqlDatabaseServer, SqlManagedInstance, SqlVMServer, StorageAccount } from './azure';
+import { generateGuid, MigrationTargetType } from './utils';
 import * as utils from '../api/utils';
 import { TelemetryAction, TelemetryViews, logError } from '../telemetry';
 import * as constants from '../constants/strings';
@@ -508,4 +508,66 @@ export async function isSourceConnectionSysAdmin(): Promise<boolean> {
 		query_is_sys_admin_sql);
 
 	return getSqlBoolean(results.rows[0][0]);
+}
+
+export function canTargetConnectToStorageAccount(targetType: MigrationTargetType, targetServer: SqlManagedInstance | SqlVMServer | AzureSqlDatabaseServer, storageAccount: StorageAccount): boolean {
+	// additional ARM properties which are not defined in azurecore
+	interface VirtualNetworkRule {
+		id: string,
+		state: string,
+		action: string
+	}
+	interface NetworkRuleSet {
+		virtualNetworkRules: VirtualNetworkRule[]
+	}
+
+	const storageAccountPublicAccessEnabled: boolean = (storageAccount as any)['properties']['allowBlobPublicAccess'];
+	const networkRules: NetworkRuleSet = (storageAccount as any)['properties']['networkAcls'];
+	const virtualNetworkRules: VirtualNetworkRule[] = networkRules.virtualNetworkRules;
+
+	var isVNetWhitelisted: boolean;
+	switch (targetType) {
+		case MigrationTargetType.SQLMI:
+			const targetManagedInstanceVNet: string = (targetServer.properties as any)['subnetId'];
+			isVNetWhitelisted = virtualNetworkRules.some(virtualNetworkRule => virtualNetworkRule.id.toLowerCase() === targetManagedInstanceVNet.toLowerCase() && virtualNetworkRule.action === 'Allow');
+
+			console.log('subnetId: ' + targetManagedInstanceVNet);
+			console.log('allowBlobPublicAccess: ' + storageAccountPublicAccessEnabled);
+			console.log('virtualNetworkRules: ' + virtualNetworkRules);
+			console.log('isVNetWhitelisted: ' + isVNetWhitelisted);
+
+			break;
+
+		case MigrationTargetType.SQLVM:
+			break;
+
+		default:
+			return true;
+	}
+
+
+	if (targetServer) {
+		// SQL MI
+		const targetManagedInstanceVNet: string = (targetServer.properties as any)['subnetId'];
+		const isVNetWhitelisted: boolean = virtualNetworkRules.some(virtualNetworkRule => virtualNetworkRule.id.toLowerCase() === targetManagedInstanceVNet.toLowerCase() && virtualNetworkRule.action === 'Allow');
+
+
+
+		console.log('subnetId: ' + targetManagedInstanceVNet);
+		console.log('allowBlobPublicAccess: ' + storageAccountPublicAccessEnabled);
+		console.log('virtualNetworkRules: ' + virtualNetworkRules);
+		console.log('isVNetWhitelisted: ' + isVNetWhitelisted);
+
+
+		return storageAccountPublicAccessEnabled || isVNetWhitelisted;
+
+	} else if (true) {
+		// SQL VM
+		return true;
+
+	} else {
+		// SQL DB
+		return true;
+
+	}
 }

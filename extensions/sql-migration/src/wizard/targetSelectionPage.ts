@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, MigrationTargetType, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
@@ -18,6 +18,7 @@ import { collectTargetDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
 import { TdeMigrationDialog } from '../dialog/tdeConfiguration/tdeMigrationDialog';
 import { ValidationErrorCodes } from '../constants/helper';
+import { MigrationTargetType } from '../api/utils';
 
 const TDE_MIGRATION_BUTTON_INDEX = 1;
 

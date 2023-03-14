@@ -5,8 +5,8 @@
 
 import * as azdata from 'azdata';
 import { DatabaseMigration } from '../api/azure';
-import { DefaultSettingValue } from '../api/utils';
-import { FileStorageType, MigrationMode, MigrationTargetType } from '../models/stateMachine';
+import { DefaultSettingValue, MigrationTargetType } from '../api/utils';
+import { FileStorageType, MigrationMode } from '../models/stateMachine';
 import * as loc from './strings';
 
 export enum SQLTargetAssetType {
