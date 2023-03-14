@@ -91,3 +91,6 @@ export const calloutDialogShadowColor = registerColor('calloutDialog.shadow', { 
 
 // Designer
 export const DesignerPaneSeparator = registerColor('designer.paneSeparator', { light: '#DDDDDD', dark: '#8A8886', hcDark: contrastBorder, hcLight: contrastBorder }, nls.localize('designer.paneSeparator', 'The pane separator color.'));
+
+// Query Editor
+export const queryEditorNullBackground = registerColor('queryEditor.nullBackground', { light: '#FFFF00', dark: '#B30000', hcDark: '#B30000', hcLight: '#FFFF00' }, nls.localize('queryEditorNullBackground', 'The background color for null values in the query editor.'));
