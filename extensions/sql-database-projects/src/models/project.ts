@@ -212,7 +212,7 @@ export class Project implements ISqlProject {
 		this._outputPath = props.outputPath;
 		this._databaseSource = props.databaseSource ?? '';
 		this._defaultCollation = props.defaultCollation;
-		this._databaseSchemaProvider = 'Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider'; // TODO: replace this stub once latest Tools Service is brought over
+		this._databaseSchemaProvider = props.databaseSchemaProvider;
 		this._sqlProjStyle = props.projectStyle;
 
 		await this.readCrossPlatformCompatibility();
