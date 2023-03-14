@@ -75,7 +75,7 @@ export class TreeUpdateUtils {
 		const previousTreeInput = tree.getInput();
 		if (treeInput) {
 			let connections = treeInput.connections;
-			TreeUpdateUtils.alterConnectionTitles(connections, " called from " + viewKey);
+			TreeUpdateUtils.alterConnectionTitles(connections);
 			treeInput.connections = connections;
 			await tree.setInput(treeInput);
 		}
@@ -130,7 +130,7 @@ export class TreeUpdateUtils {
 			let treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
 			if (treeInput) {
 				let connections = treeInput.connections;
-				TreeUpdateUtils.alterConnectionTitles(connections, " called from mainConnectionTree");
+				TreeUpdateUtils.alterConnectionTitles(connections);
 				treeInput.connections = connections;
 				const originalInput = tree.getInput();
 				if (treeInput !== originalInput) {
@@ -359,7 +359,7 @@ export class TreeUpdateUtils {
 	 * Change the connection title to display only the unique properties (non server info related and non default)
 	 * if it matches another profile title. Server Info can be checked in tooltip.
 	 */
-	private static alterConnectionTitles(inputList: ConnectionProfile[], stringToAdd: string): void {
+	private static alterConnectionTitles(inputList: ConnectionProfile[]): void {
 		let profileListMap = new Map<string, number[]>();
 
 		// Map the indices of profiles that share the same connection name.
