@@ -101,6 +101,9 @@ export class TreeUpdateUtils {
 		if (tree instanceof AsyncServerTree) {
 			const treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
 			if (treeInput) {
+				let connections = treeInput.connections;
+				TreeUpdateUtils.alterConnectionTitles(connections);
+				treeInput.connections = connections;
 				await tree.setInput(treeInput);
 			}
 			tree.rerender();
