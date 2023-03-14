@@ -439,7 +439,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						resultMap.set(e.providerId, e);
 						// When get all responses from all providers, merge results
 						if (resultMap.size === allProviders.length) {
-							//resolveExpansion();
+							resolveExpansion();
 						}
 					});
 
@@ -479,7 +479,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 						// When get all responses from all providers, merge results
 						if (resultMap.size === allProviders.length) {
-							//resolveExpansion();
+							resolveExpansion();
 						}
 					});
 					if (newRequest) {
