@@ -427,7 +427,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					const resolveExpansion = () => {
 						resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
 						// Have to delete it after get all responses otherwise couldn't find session for not the first response
-						clearTimeout(timeout);
+						clearTimeout(expansionTimeout);
 						if (newRequest) {
 							delete self._sessions[session.sessionId!].nodes[node.nodePath];
 							this.logService.trace(`Deleted node ${node.nodePath} from session ${session.sessionId}`);
@@ -443,10 +443,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						}
 					});
 
-					const expansionTimeout = this._configurationService.getValue<number>('serverTree.nodeExpansionTimeout');
-					const timeout = setTimeout(() => {
+					const expansionTimeoutValueSec = this._configurationService.getValue<number>('serverTree.nodeExpansionTimeout');
+					const expansionTimeout = setTimeout(() => {
 						/**
-						 * If we don't get a response back from the provider in specified expansion timeout seconds then we assume
+						 * If we don't get a response back from all the providers in specified expansion timeout seconds then we assume
 						 * it's not going to respond and resolve the promise with the results we have so far
 						 */
 						if (resultMap.size !== allProviders.length) {
@@ -455,17 +455,16 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							this._notificationService.error(nls.localize('nodeExpansionTimeout', "Node expansion timed out for node {0} for providers {1}", node.nodePath, missingProviders.map(p => p.providerId).join(', ')));
 						}
 						resolveExpansion();
-					}, expansionTimeout * 1000);
+					}, expansionTimeoutValueSec * 1000);
 
 					self._sessions[session.sessionId!].nodes[node.nodePath].expandEmitter.event((expandResult: NodeExpandInfoWithProviderId) => {
 						if (expandResult && expandResult.providerId) {
 							this.logService.trace(`${session.sessionId}: Received expand result for node ${node.nodePath} from provider ${expandResult.providerId}`);
 							resultMap.set(expandResult.providerId, expandResult);
 							// If we got an error result back then send error our error event
-							// We only do this for the MSSQL provider
 							if (expandResult.errorMessage) {
 								const errorType = expandResult.errorMessage.indexOf('Object Explorer task didn\'t complete') !== -1 ? 'Timeout' : 'Other';
-								// For folders send the actual name of the folder (since the nodeTypeId isn't useful in this case and the names are controlled by us)
+								// For folders send the actual name of the folder for the MSSQL provider (since the nodeTypeId isn't useful in this case and the names are controlled by us)
 								const nodeType = expandResult.providerId === mssqlProviderName && node.nodeTypeId === NodeType.Folder ? node.label : node.nodeTypeId;
 								this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.ObjectExplorerExpandError, undefined, errorType)
 									.withAdditionalProperties({
