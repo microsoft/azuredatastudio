@@ -91,7 +91,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 			this.addNode(newNode, publishProfile);
 		}
 
-		// sql object scripts and folders
+		// sql object scripts
 		for (const entry of this.project.files) {
 			let newNode: fileTree.FolderNode | fileTree.FileNode;
 
@@ -105,15 +105,17 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 					else {
 						newNode = new fileTree.SqlObjectFileNode(entry.fsUri, this.projectFileUri);
 					}
-
-					break;
-				case EntryType.Folder:
-					newNode = new fileTree.FolderNode(entry.fsUri, this.projectFileUri);
 					break;
 				default:
 					throw new Error(`Unknown EntryType: '${entry.type}'`);
 			}
 
+			this.addNode(newNode, entry);
+		}
+
+		// folders
+		for (const entry of this.project.folders) {
+			const newNode = new fileTree.FolderNode(entry.fsUri, this.projectFileUri);
 			this.addNode(newNode, entry);
 		}
 	}
