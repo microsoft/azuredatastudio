@@ -17,7 +17,7 @@ import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAc
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
-import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
+import { DBCellValue, hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -470,11 +470,15 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			(offset, count) => this.loadData(offset, count)
 		);
 		collection.setCollectionChangedCallback((startIndex, count) => {
+			this.cellCssParams = {};
 			this.renderGridDataRowsRange(startIndex, count);
+			this.table.grid.setCellCssStyles(CELL_CSS_PARAMS_KEY, this.cellCssParams);
 		});
 		this.dataProvider.dataRows = collection;
 		this.setFilterState();
+		this.cellCssParams = {};
 		this.table.updateRowCount();
+		this.table.grid.setCellCssStyles(CELL_CSS_PARAMS_KEY, this.cellCssParams);
 		await this.setupState();
 	}
 
@@ -583,7 +587,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this._register(attachTableFilterStyler(this.filterPlugin, this.themeService));
 		this._register(registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 			const nullBackground = theme.getColor(queryEditorNullBackground);
-			collector.addRule(`.${NULL_CELL_CSS_CLASS} { background: ${nullBackground};}`);
+			if (nullBackground) {
+				collector.addRule(`.${NULL_CELL_CSS_CLASS} { background: ${nullBackground};}`);
+			}
 			this.table.grid.setCellCssStyles(CELL_CSS_PARAMS_KEY, this.cellCssParams);
 		}));
 
@@ -668,11 +674,10 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 
 	private populateCellCssParams(i: number, row: number | undefined, value: ICellValue) {
-		if (!this.cellCssParams[row]) {
-			this.cellCssParams[row] = {};
-		}
-
-		if (value.isNull) {
+		if (DBCellValue.isDBCellValue(value) && value.isNull) {
+			if (!this.cellCssParams[row]) {
+				this.cellCssParams[row] = {};
+			}
 			this.cellCssParams[row][i.toString()] = NULL_CELL_CSS_CLASS;
 		}
 	}

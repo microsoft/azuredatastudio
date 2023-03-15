@@ -49,6 +49,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	private _classChangeTimeout: any;
 
+	public cellCssParams = {};
+
 	private _onContextMenu = new Emitter<ITableMouseEvent>();
 	public readonly onContextMenu: Event<ITableMouseEvent> = this._onContextMenu.event;
 
