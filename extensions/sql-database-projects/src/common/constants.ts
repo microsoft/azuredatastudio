@@ -10,23 +10,26 @@ import * as utils from '../common/utils';
 
 const localize = nls.loadMessageBundle();
 
-// Placeholder values
+//#region file extensions
 export const dataSourcesFileName = 'datasources.json';
 export const sqlprojExtension = '.sqlproj';
 export const sqlFileExtension = '.sql';
 export const publishProfileExtension = '.publish.xml';
 export const openApiSpecFileExtensions = ['yaml', 'yml', 'json'];
+
+//#endregion
+
+//#region Placeholder values
 export const schemaCompareExtensionId = 'microsoft.schema-compare';
 export const master = 'Master';
-export const masterDacpac = 'master.dacpac';
 export const msdb = 'MSDB';
-export const msdbDacpac = 'msdb.dacpac';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 export const sqlProjectSdk = 'Microsoft.Build.Sql';
-export const sqlProjectSdkVersion = '0.1.7-preview';
 
-// Project Provider
+//#endregion
+
+//#region Project Provider
 export const emptySqlDatabaseProjectTypeId = 'EmptySqlDbProj';
 export const emptyProjectTypeDisplayName = localize('emptyProjectTypeDisplayName', "SQL Server Database");
 export const emptyProjectTypeDescription = localize('emptyProjectTypeDescription', "Develop and publish schemas for SQL Server databases starting from an empty project");
@@ -43,7 +46,9 @@ export const emptyAzureDbSqlDatabaseProjectTypeId = 'EmptyAzureSqlDbProj';
 export const emptyAzureDbProjectTypeDisplayName = localize('emptyAzureDbProjectTypeDisplayName', "Azure SQL Database");
 export const emptyAzureDbProjectTypeDescription = localize('emptyAzureDbProjectTypeDescription', "Develop and publish schemas for Azure SQL Database starting from an empty project");
 
-// Dashboard
+//#endregion
+
+//#region Dashboard
 export const addItemAction = localize('addItemAction', "Add Item");
 export const schemaCompareAction = localize('schemaCompareAction', "Schema Compare");
 export const buildAction = localize('buildAction', "Build");
@@ -70,14 +75,18 @@ export const msec = localize('msec', "msec");
 
 export const at = localize('at', "at");
 
-// commands
+//#endregion
+
+//#region commands
 export const revealFileInOsCommand = 'revealFileInOS';
 export const schemaCompareStartCommand = 'schemaCompare.start';
 export const schemaCompareRunComparisonCommand = 'schemaCompare.runComparison';
 export const vscodeOpenCommand = 'vscode.open';
 export const refreshDataWorkspaceCommand = 'dataworkspace.refresh';
 
-// UI Strings
+//#endregion
+
+//#region UI Strings
 export const databaseReferencesNodeName = localize('databaseReferencesNodeName', "Database References");
 export const sqlcmdVariablesNodeName = localize('sqlcmdVariablesNodeName', "SQLCMD Variables");
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
@@ -112,8 +121,9 @@ export function projectUpdatedToSdkStyle(projectName: string) { return localize(
 export function convertToSdkStyleConfirmation(projectName: string) { return localize('convertToSdkStyleConfirmation', "The project '{0}' will not be fully compatible with SSDT after conversion. A backup copy of the project file will be created in the project folder prior to conversion. More information is available at https://aka.ms/sqlprojsdk. Continue with converting to SDK-style project?", projectName); }
 export function updatedToSdkStyleError(projectName: string) { return localize('updatedToSdkStyleError', "Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.", projectName); }
 export const enterNewName = localize('enterNewName', "Enter new name");
+//#endregion
 
-// Publish dialog strings
+//#region Publish dialog strings
 export const publishDialogName = localize('publishDialogName', "Publish project");
 export const publish = localize('publish', "Publish");
 export const cancelButtonText = localize('cancelButtonText', "Cancel");
@@ -152,7 +162,9 @@ export const selectDatabase = localize('selectDatabase', "Select database");
 export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
 
-// Publish Dialog options
+//#endregion
+
+//#region Publish Dialog options
 export const AdvancedOptionsButton = localize('advancedOptionsButton', 'Advanced...');
 export const AdvancedPublishOptions = localize('advancedPublishOptions', 'Advanced Publish Options');
 export const PublishOptions = localize('publishOptions', 'Publish Options');
@@ -163,7 +175,9 @@ export const OptionName: string = localize('optionName', "Option Name");
 export const OptionInclude: string = localize('include', "Include");
 export function OptionNotFoundWarningMessage(label: string) { return localize('optionNotFoundWarningMessage', "label: {0} does not exist in the options value name lookup", label); }
 
-// Deploy
+//#endregion
+
+//#region Deploy
 export const SqlServerName = 'SQL server';
 export const AzureSqlServerName = 'Azure SQL server';
 export const SqlServerDockerImageName = 'Microsoft SQL Server';
@@ -206,7 +220,9 @@ export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
 export const dockerImageDefaultTag = 'latest';
 
-// Publish to Container
+//#endregion
+
+//#region Publish to Container
 export const eulaAgreementTemplate = localize({ key: 'eulaAgreementTemplate', comment: ['The placeholders are contents of the line and should not be translated.'] }, "I accept the {0}.");
 export function eulaAgreementText(name: string) { return localize({ key: 'eulaAgreementText', comment: ['The placeholders are contents of the line and should not be translated.'] }, "I accept the {0}.", name); }
 export const eulaAgreementTitle = localize('eulaAgreementTitle', "Microsoft SQL Server License Agreement");
@@ -262,8 +278,9 @@ export function retrySucceedMessage(name: string, result: string) { return local
 export function retryFailedMessage(name: string, result: string, error: string) { return localize('retryFailedMessage', "Operation '{0}' failed. Re-trying... Current Result: {1}. Error: '{2}'", name, result, error); }
 export function retryMessage(name: string, error: string) { return localize('retryMessage', "Operation '{0}' failed. Re-trying... Error: '{1}' ", name, error); }
 
-// Add Database Reference dialog strings
+//#endregion
 
+//#region Add Database Reference dialog strings
 export const addDatabaseReferenceDialogName = localize('addDatabaseReferencedialogName', "Add database reference");
 export const addDatabaseReferenceOkButtonText = localize('addDatabaseReferenceOkButtonText', "Add reference");
 export const referenceRadioButtonsGroupTitle = localize('referenceRadioButtonsGroupTitle', "Type");
@@ -295,7 +312,9 @@ export const excludeFolderNotSupported = localize('excludeFolderNotSupported', "
 export const unhandledDeleteType = (itemType: string): string => { return localize('unhandledDeleteType', "Unhandled item type during delete: '{0}", itemType); }
 export const unhandledExcludeType = (itemType: string): string => { return localize('unhandledDeleteType', "Unhandled item type during exclude: '{0}", itemType); }
 
-// Create Project From Database dialog strings
+//#endregion
+
+//#region Create Project From Database dialog strings
 export const createProjectFromDatabaseDialogName = localize('createProjectFromDatabaseDialogName', "Create project from database");
 export const createProjectDialogOkButtonText = localize('createProjectDialogOkButtonText', "Create");
 export const sourceDatabase = localize('sourceDatabase', "Source database");
@@ -310,7 +329,6 @@ export const selectFolderStructure = localize('selectFolderStructure', "Select f
 export const folderStructureLabel = localize('folderStructureLabel', "Folder structure");
 export const includePermissionsLabel = localize('includePermissionsLabel', "Include permissions");
 export const includePermissionsInProject = localize('includePermissionsInProject', "Include permissions in project");
-export const WorkspaceFileExtension = '.code-workspace';
 export const browseEllipsisWithIcon = `$(folder) ${localize('browseEllipsis', "Browse...")}`;
 export const selectProjectLocation = localize('selectProjectLocation', "Select project location");
 export const sdkStyleProject = localize('sdkStyleProject', 'SDK-style project (Preview)');
@@ -319,8 +337,9 @@ export const SdkLearnMorePlaceholder = localize('sdkLearnMorePlaceholder', "Clic
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
 
-// Update Project From Database dialog strings
+//#endregion
 
+//#region Update Project From Database dialog strings
 export const updateProjectFromDatabaseDialogName = localize('updateProjectFromDatabaseDialogName', "Update project from database");
 export const updateText = localize('updateText', "Update");
 export const noSqlProjFile = localize('noSqlProjFile', "The selected project file does not exist");
@@ -332,15 +351,17 @@ export const updateActionRadioButtonLabel = localize('updateActionRadiButtonLabe
 export const actionLabel = localize('actionLabel', "Action");
 export const applyConfirmation: string = localize('applyConfirmation', "Are you sure you want to update the target project?");
 
-// Update project from database
+//#endregion
 
+//#region Update project from database
 export const applySuccess = localize('applySuccess', "Project was successfully updated.");
 export const equalComparison = localize('equalComparison', "The project is already up to date with the database.");
 export function applyError(errorMessage: string): string { return localize('applyError', "There was an error updating the project: {0}", errorMessage); }
 export function updatingProjectFromDatabase(projectName: string, databaseName: string): string { return localize('updatingProjectFromDatabase', "Updating {0} from {1}...", projectName, databaseName); }
 
-// Error messages
+//#endregion
 
+//#region Error messages
 export function errorPrefix(errorMessage: string): string { return localize('errorPrefix', "Error: {0}", errorMessage); }
 export function compareErrorMessage(errorMessage: string): string { return localize('schemaCompare.compareErrorMessage', "Schema Compare failed: {0}", errorMessage ? errorMessage : 'Unknown'); }
 export const multipleSqlProjFiles = localize('multipleSqlProjFilesSelected', "Multiple .sqlproj files selected; please select only one.");
@@ -398,6 +419,8 @@ export function invalidTargetPlatform(targetPlatform: string, supportedTargetPla
 export function errorReadingProject(section: string, path: string, error?: string) { return localize('errorReadingProjectGuid', "Error trying to read {0} of project '{1}'. {2}", section, path, error); }
 export function errorAddingDatabaseReference(referenceName: string, error: string) { return localize('errorAddingDatabaseReference', "Error adding database reference to {0}. Error: {1}", referenceName, error); }
 
+//#endregion
+
 // Action types
 export const deleteAction = localize('deleteAction', 'Delete');
 export const excludeAction = localize('excludeAction', 'Exclude');
@@ -406,8 +429,7 @@ export const excludeAction = localize('excludeAction', 'Exclude');
 export const fileObject = localize('fileObject', "file");
 export const folderObject = localize('folderObject', "folder");
 
-// Project script types
-
+//#region Project script types
 export const folderFriendlyName = localize('folderFriendlyName', "Folder");
 export const scriptFriendlyName = localize('scriptFriendlyName', "Script");
 export const tableFriendlyName = localize('tableFriendlyName', "Table");
@@ -420,18 +442,21 @@ export const externalStreamingJobFriendlyName = localize('externalStreamingJobFr
 export const preDeployScriptFriendlyName = localize('preDeployScriptFriendlyName', "Script.PreDeployment");
 export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyName', "Script.PostDeployment");
 
-// Build
+//#endregion
 
+//#region Build
 export const DotnetInstallationConfirmation: string = localize('sqlDatabaseProjects.DotnetInstallationConfirmation', "The .NET SDK cannot be located. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK location in settings if already installed.");
 export function NetCoreSupportedVersionInstallationConfirmation(installedVersion: string) { return localize('sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation', "Currently installed .NET SDK version is {0}, which is not supported. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK supported version location in settings if already installed.", installedVersion); }
 export const UpdateDotnetLocation: string = localize('sqlDatabaseProjects.UpdateDotnetLocation', "Update Location");
 export const projectsOutputChannel = localize('sqlDatabaseProjects.outputChannel', "Database Projects");
 
+//#endregion
+
 // Prompt buttons
 export const Install: string = localize('sqlDatabaseProjects.Install', "Install");
 export const DoNotAskAgain: string = localize('sqlDatabaseProjects.doNotAskAgain', "Don't Ask Again");
 
-// SqlProj file XML names
+//#region SqlProj file XML names
 export const ItemGroup = 'ItemGroup';
 export const Build = 'Build';
 export const Folder = 'Folder';
@@ -491,11 +516,9 @@ export const ProjectReferenceElement = localize('projectReferenceElement', "Proj
 export const DacpacReferenceElement = localize('dacpacReferenceElement', "Dacpac reference");
 export const PublishProfileElements = localize('publishProfileElements', "Publish profile elements");
 
-/** Name of the property item in the project file that defines default database collation. */
-export const DefaultCollationProperty = 'DefaultCollation';
+//#endregion
 
-/** Default database collation to use when none is specified in the project */
-export const DefaultCollation = 'SQL_Latin1_General_CP1_CI_AS';
+
 
 /**
  * Well-known database source values that are allowed to be sent in telemetry.
@@ -505,33 +528,7 @@ export const DefaultCollation = 'SQL_Latin1_General_CP1_CI_AS';
  */
 export const WellKnownDatabaseSources = ['dsct-oracle-to-ms-sql'];
 
-// SqlProj File targets
-export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
-export const SqlDbTargets = '$(SQLDBExtensionsRefPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
-export const MsBuildtargets = '$(MSBuildExtensionsPath)\\Microsoft\\VisualStudio\\v$(VisualStudioVersion)\\SSDT\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
-export const NetCoreCondition = '\'$(NetCoreBuild)\' == \'true\'';
-export const NotNetCoreCondition = '\'$(NetCoreBuild)\' != \'true\'';
-export const SqlDbPresentCondition = '\'$(SQLDBExtensionsRefPath)\' != \'\'';
-export const SqlDbNotPresentCondition = '\'$(SQLDBExtensionsRefPath)\' == \'\'';
-export const RoundTripSqlDbPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' != \'\'';
-export const RoundTripSqlDbNotPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' == \'\'';
-export const DacpacRootPath = '$(DacPacRootPath)';
-export const ProjJsonToClean = '$(BaseIntermediateOutputPath)\\project.assets.json';
-export const EmptyConfigurationCondition = '\'$(Configuration)\' == \'\'';
-export const EmptyPlatformCondition = '\'$(Platform)\' == \'\'';
-export function ConfigurationPlatformCondition(configuration: string, platform: string) { return `'$(Configuration)|$(Platform)' == '${configuration}|${platform}'`; }
-
 export function defaultOutputPath(configuration: string) { return path.join('.', 'bin', configuration); }
-
-// Sqlproj VS property conditions
-export const VSVersionCondition = '\'$(VisualStudioVersion)\' == \'\'';
-export const SsdtExistsCondition = '\'$(SSDTExists)\' == \'\'';
-export const targetsExistsCondition = 'Exists(\'$(MSBuildExtensionsPath)\\Microsoft\\VisualStudio\\v$(VisualStudioVersion)\\SSDT\\Microsoft.Data.Tools.Schema.SqlTasks.targets\')';
-
-// SqlProj Reference Assembly Information
-export const NETFrameworkAssembly = 'Microsoft.NETFramework.ReferenceAssemblies';
-export const VersionNumber = '1.0.0';
-export const All = 'All';
 
 /**
  * Path separator to use within SqlProj file for `Include`, `Exclude`, etc. attributes.
@@ -543,7 +540,7 @@ export const SqlProjPathSeparator = '\\';
 export const targetDatabaseName = 'TargetDatabaseName';
 export const targetConnectionString = 'TargetConnectionString';
 
-// SQL connection string components
+//#region SQL connection string components
 export const initialCatalogSetting = 'Initial Catalog';
 export const dataSourceSetting = 'Data Source';
 export const integratedSecuritySetting = 'Integrated Security';
@@ -556,8 +553,9 @@ export const trustServerCertificateSetting = 'Trust Server Certificate';
 export const hostnameInCertificateSetting = 'Host Name in Certificate';
 
 export const azureAddAccount = localize('azureAddAccount', "Add an Account...");
+//#endregion
 
-// Tree item types
+//#region Tree item types
 export enum DatabaseProjectItemType {
 	project = 'databaseProject.itemType.project',
 	legacyProject = 'databaseProject.itemType.legacyProject',
@@ -577,7 +575,9 @@ export enum DatabaseProjectItemType {
 	publishProfile = 'databaseProject.itemType.file.publishProfile'
 }
 
-// AutoRest
+//#endregion
+
+//#region AutoRest
 export const autorestPostDeploymentScriptName = 'PostDeploymentScript.sql';
 export const nodeButNotAutorestFound = localize('nodeButNotAutorestFound', "Autorest tool not found in system path, but found Node.js.  Prompting user for how to proceed.  Execute 'npm install autorest -g' to install permanently and avoid this message.");
 export const nodeNotFound = localize('nodeNotFound', "Neither Autorest nor Node.js (npx) found in system path.  Please install Node.js for Autorest generation to work.");
@@ -595,6 +595,7 @@ export function multipleMostDeploymentScripts(count: number) { return localize('
 export const specSelectionText = localize('specSelectionText', "OpenAPI/Swagger spec");
 export const autorestProjectName = localize('autorestProjectName', "New SQL project name");
 export function generatingProjectFromAutorest(specName: string) { return localize('generatingProjectFromAutorest', "Generating new SQL project from {0}...  Check output window for details.", specName); }
+//#endregion
 
 // System dbs
 export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
@@ -603,8 +604,9 @@ export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
 export const sameDatabaseExampleUsage = 'SELECT * FROM [Schema1].[Table1]';
 export function differentDbSameServerExampleUsage(db: string) { return `SELECT * FROM [${db}].[Schema1].[Table1]`; }
 export function differentDbDifferentServerExampleUsage(server: string, db: string) { return `SELECT * FROM [${server}].[${db}].[Schema1].[Table1]`; }
+//#endregion
 
-// Target platforms
+//#region Target platforms
 export const targetPlatformToVersion: Map<string, string> = new Map<string, string>([
 	[SqlTargetPlatform.sqlServer2012, '110'],
 	[SqlTargetPlatform.sqlServer2014, '120'],
@@ -640,30 +642,38 @@ export function getTargetPlatformFromVersion(version: string): string {
 	return Array.from(targetPlatformToVersion.keys()).filter(k => targetPlatformToVersion.get(k) === version)[0];
 }
 
+//#endregion
+
 export enum PublishTargetType {
 	existingServer = 'existingServer',
 	docker = 'docker',
 	newAzureServer = 'newAzureServer'
 }
 
-// Configuration keys
+//#region Configuration keys
 export const CollapseProjectNodesKey = 'collapseProjectNodes';
 export const microsoftBuildSqlVersionKey = 'microsoftBuildSqlVersion';
 export const enablePreviewFeaturesKey = 'enablePreviewFeatures';
 
-// httpClient
+//#endregion
+
+//#region httpClient
 export const downloadError = localize('downloadError', "Download error");
 export const downloadProgress = localize('downloadProgress', "Download progress");
 export const downloading = localize('downloading', "Downloading");
 
-// buildHelper
+//#endregion
+
+//#region buildHelper
 export const downloadingDacFxDlls = localize('downloadingDacFxDlls', "Downloading Microsoft.Build.Sql nuget to get build DLLs");
 export function downloadingFromTo(from: string, to: string) { return localize('downloadingFromTo', "Downloading from {0} to {1}", from, to); }
 export function extractingDacFxDlls(location: string) { return localize('extractingDacFxDlls', "Extracting DacFx build DLLs to {0}", location); }
 export function errorDownloading(url: string, error: string) { return localize('errorDownloading', "Error downloading {0}. Error: {1}", url, error); }
 export function errorExtracting(path: string, error: string) { return localize('errorExtracting', "Error extracting files from {0}. Error: {1}", path, error); }
 
-// move
+//#endregion
+
+//#region move
 export const onlyMoveSqlFilesSupported = localize('onlyMoveSqlFilesSupported', "Only moving .sql files is supported");
 export const movingFilesBetweenProjectsNotSupported = localize('movingFilesBetweenProjectsNotSupported', "Moving files between projects is not supported");
 export function errorMovingFile(source: string, destination: string, error: string) { return localize('errorMovingFile', "Error when moving file from {0} to {1}. Error: {2}", source, destination, error); }
@@ -671,3 +681,5 @@ export function moveConfirmationPrompt(source: string, destination: string) { re
 export const move = localize('Move', "Move");
 export function errorRenamingFile(source: string, destination: string, error: string) { return localize('errorRenamingFile', "Error when renaming file from {0} to {1}. Error: {2}", source, destination, error); }
 export const unhandledMoveNode = localize('unhandledMoveNode', "Unhandled node type for move");
+
+//#endregion
