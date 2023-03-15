@@ -82,6 +82,9 @@ export class EditDataGridPanel extends GridParentComponent {
 	// Prevent the cell submission function from being called multiple times.
 	private cellSubmitInProgress: boolean;
 
+	// Manually submit the cell after edit end if it's the null row.
+	private isLastRowEnter: boolean;
+
 	// Edit Data functions
 	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
 	public onCellEditEnd: (event: Slick.OnCellChangeEventArgs<any>) => void;
@@ -193,6 +196,19 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 			// Store the value that was set
 			self.currentEditCellValue = event.item[event.cell];
+
+			// In case the last row is entered in, we need to wait to get the cell value after edit end
+			// so that we can add a row, submit the value and move down. (SlickGrid tries to go down immediately
+			// which fails, as we haven't added the new row yet).
+			if (self.isLastRowEnter) {
+				self.isLastRowEnter = false;
+				self.submitCurrentCellChange((result: EditUpdateCellResult) => {
+					self.table.grid.navigateDown();
+				},
+					(error: any) => {
+						this.notificationService.error(error);
+					}).catch(onUnexpectedError);
+			}
 		};
 
 		this.overrideCellFn = (columnId, value?, data?): string => {
@@ -564,6 +580,10 @@ export class EditDataGridPanel extends GridParentComponent {
 			document.execCommand('delete');
 			document.execCommand('insertText', false, 'NULL');
 			handled = true;
+		}
+
+		if (e.keyCode === KeyCode.Enter && this.isNullRow(this.currentCell.row)) {
+			this.isLastRowEnter = true;
 		}
 
 		return handled;
@@ -1130,6 +1150,11 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.table.grid.onBeforeAppendCell.subscribe((e, args) => {
 			// Since we need to return a string here, we are using calling a function instead of event emitter like other events handlers
 			return this.onBeforeAppendCell ? this.onBeforeAppendCell(args.row, args.cell) : undefined;
+		});
+		this.table.grid.onKeyDown.subscribe((e, args) => {
+			const evt = (e as JQuery.TriggeredEvent).originalEvent as KeyboardEvent;
+			const stdEvt = new StandardKeyboardEvent(evt);
+			this.tryHandleKeyEvent(stdEvt);
 		});
 	}
 
