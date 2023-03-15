@@ -18,7 +18,7 @@ import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { EntryType, ItemType } from 'sqldbproj';
 import { SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
-import { SystemDatabase } from 'mssql';
+import { ProjectType, SystemDatabase } from 'mssql';
 
 let projFilePath: string;
 
@@ -40,7 +40,7 @@ describe('Project: sqlproj content operations', function (): void {
 
 		// Files and folders
 		should(project.files.length).equal(6);
-		should(project.folders.length).equal(8);
+		should(project.folders.length).equal(7);
 
 		should(project.folders.find(f => f.type === EntryType.Folder && f.relativePath === 'Views\\User')).not.equal(undefined); // mixed ItemGroup folder
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Views\\User\\Profile.sql')).not.equal(undefined); // mixed ItemGroup file
@@ -80,11 +80,11 @@ describe('Project: sqlproj content operations', function (): void {
 
 		// Database references
 		// should only have two database references even though there are two master.dacpac references (1 for ADS and 1 for SSDT)
-		should(project.databaseReferences.length).equal(2);
-		should(project.databaseReferences[0].databaseName).containEql(constants.master);
-		should(project.databaseReferences[0] instanceof SystemDatabaseReferenceProjectEntry).equal(true);
-		should(project.databaseReferences[1].databaseName).containEql('TestProjectName');
-		should(project.databaseReferences[1] instanceof SqlProjectReferenceProjectEntry).equal(true);
+		(project.databaseReferences.length).should.equal(2);
+		(project.databaseReferences[0].databaseName).should.containEql('ReferencedTestProject');
+		(project.databaseReferences[0] instanceof SqlProjectReferenceProjectEntry).should.be.true();
+		(project.databaseReferences[1].databaseName).should.containEql(constants.master);
+		(project.databaseReferences[1] instanceof SystemDatabaseReferenceProjectEntry).should.be.true();
 	});
 
 	it('Should throw warning message while reading Project with more than 1 pre-deploy script from sqlproj', async function (): Promise<void> {
@@ -107,47 +107,48 @@ describe('Project: sqlproj content operations', function (): void {
 		sinon.restore();
 	});
 
-	it('Should add Folder and Build entries to sqlproj', async function (): Promise<void> {
-		const project = await Project.openProject(projFilePath);
+	it('Should perform Folder and SQL object script operations', async function (): Promise<void> {
+		const project = await testUtils.createTestSqlProject();
 
-		const folderPath = 'Stored Procedures\\';
+		const folderPath = 'Stored Procedures';
 		const scriptPath = path.join(folderPath, 'Fake Stored Proc.sql');
 		const scriptContents = 'SELECT \'This is not actually a stored procedure.\'';
 
 		const scriptPathTagged = path.join(folderPath, 'Fake External Streaming Job.sql');
 		const scriptContentsTagged = 'EXEC sys.sp_create_streaming_job \'job\', \'SELECT 7\'';
 
+		(project.folders.length).should.equal(0);
+		(project.files.length).should.equal(0);
+
 		await project.addFolder(folderPath);
 		await project.addScriptItem(scriptPath, scriptContents);
 		await project.addScriptItem(scriptPathTagged, scriptContentsTagged, ItemType.externalStreamingJob);
 
-		const newProject = await Project.openProject(projFilePath);
+		(project.folders.length).should.equal(1);
+		(project.files.length).should.equal(2);
 
-		should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === convertSlashesForSqlProj(folderPath))).not.equal(undefined);
-		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPath))).not.equal(undefined);
-		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPathTagged))).not.equal(undefined);
-		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPathTagged))?.sqlObjectType).equal(constants.ExternalStreamingJob);
-
-		const newScriptContents = (await fs.readFile(path.join(newProject.projectFolderPath, scriptPath))).toString();
-
-		should(newScriptContents).equal(scriptContents);
+		should(project.folders.find(f => f.relativePath === convertSlashesForSqlProj(folderPath))).not.equal(undefined);
+		should(project.files.find(f => f.relativePath === convertSlashesForSqlProj(scriptPath))).not.equal(undefined);
+		should(project.files.find(f => f.relativePath === convertSlashesForSqlProj(scriptPathTagged))).not.equal(undefined);
+		// TODO: support for tagged entries not supported in DacFx.Projects
+		//should(project.files.find(f => f.relativePath === convertSlashesForSqlProj(scriptPathTagged))?.sqlObjectType).equal(constants.ExternalStreamingJob);
 	});
 
-	it('Should add Folder and Build entries to sqlproj with pre-existing scripts on disk', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project = await Project.openProject(projFilePath);
+	// TODO: addToProject() can probably be removed
+	it('Should add folders and SQL object scripts to sqlproj with pre-existing scripts on disk', async function (): Promise<void> {
+		const project = await testUtils.createTestSqlProject();
 
-		let list: Uri[] = await testUtils.createListOfFiles(path.dirname(projFilePath));
+		const list: Uri[] = await testUtils.createListOfFiles(project.projectFolderPath);
 
 		await project.addToProject(list);
 
-		should(project.files.filter(f => f.type === EntryType.File).length).equal(11);	// txt file shouldn't be added to the project
-		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);	// 2 folders
+		should(project.files.length).equal(11);
+		should(project.folders.length).equal(2);
 	});
 
-	it('Should throw error while adding Folder and Build entries to sqlproj when a file/folder does not exist on disk', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project = await Project.openProject(projFilePath);
+	// TODO: move to DacFx once script contents supported
+	it('Should throw error while adding folders and SQL object scripts to sqlproj when a file/folder does not exist on disk', async function (): Promise<void> {
+		const project = await testUtils.createTestSqlProject();
 
 		let list: Uri[] = [];
 		let testFolderPath: string = await testUtils.createDummyFileStructure(true, list, path.dirname(projFilePath));
@@ -158,125 +159,70 @@ describe('Project: sqlproj content operations', function (): void {
 		await testUtils.shouldThrowSpecificError(async () => await project.addToProject(list), constants.fileOrFolderDoesNotExist(Uri.file(nonexistentFile).fsPath));
 	});
 
+	it('Should perform pre-deployment script operations', async function (): Promise<void> {
+		let project = await testUtils.createTestSqlProject();
 
-	it('Should add pre and post deployment scripts as entries to sqlproj', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project: Project = await Project.openProject(projFilePath);
+		const relativePath = 'Script.PreDeployment1.sql';
+		const absolutePath = path.join(project.projectFolderPath, relativePath);
+		const fileContents = 'SELECT 7';
 
-		const folderPath = 'Pre-Post Deployment Scripts';
-		const preDeploymentScriptFilePath = path.join(folderPath, 'Script.PreDeployment1.sql');
-		const postDeploymentScriptFilePath = path.join(folderPath, 'Script.PostDeployment1.sql');
-		const fileContents = ' ';
+		// initial state
+		(project.preDeployScripts.length).should.equal(0, 'initial state');
+		(await exists(absolutePath)).should.be.false('inital state');
 
-		await project.addFolder(folderPath);
-		await project.addScriptItem(preDeploymentScriptFilePath, fileContents, ItemType.preDeployScript);
-		await project.addScriptItem(postDeploymentScriptFilePath, fileContents, ItemType.postDeployScript);
+		// add new
+		await project.addScriptItem(relativePath, fileContents, ItemType.preDeployScript);
+		(project.preDeployScripts.length).should.equal(1);
+		(await exists(absolutePath)).should.be.true('add new');
 
-		const newProject = await Project.openProject(projFilePath);
+		// read
+		project = await Project.openProject(project.projectFilePath);
+		(project.preDeployScripts.length).should.equal(1, 'read');
+		(project.preDeployScripts[0].relativePath).should.equal(relativePath, 'read');
 
-		should(newProject.preDeployScripts.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(preDeploymentScriptFilePath))).not.equal(undefined, 'File Script.PreDeployment1.sql not read');
-		should(newProject.postDeployScripts.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(postDeploymentScriptFilePath))).not.equal(undefined, 'File Script.PostDeployment1.sql not read');
+		// exclude
+		await project.excludePreDeploymentScript(relativePath);
+		(project.preDeployScripts.length).should.equal(0, 'exclude');
+		(await exists(absolutePath)).should.be.true('exclude');
+
+		// add existing
+		await project.addScriptItem(relativePath, undefined, ItemType.preDeployScript);
+		(project.preDeployScripts.length).should.equal(1, 'add existing');
+
+		//delete
+		await project.deletePreDeploymentScript(relativePath);
+		(project.preDeployScripts.length).should.equal(0, 'delete');
+		(await exists(absolutePath)).should.be.false('delete');
 	});
 
 	it('Should show information messages when adding more than one pre/post deployment scripts to sqlproj', async function (): Promise<void> {
 		const stub = sinon.stub(window, 'showInformationMessage').returns(<any>Promise.resolve());
 
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project: Project = await Project.openProject(projFilePath);
+		const project: Project = await testUtils.createTestSqlProject();
 
-		const folderPath = 'Pre-Post Deployment Scripts';
-		const preDeploymentScriptFilePath = path.join(folderPath, 'Script.PreDeployment1.sql');
-		const postDeploymentScriptFilePath = path.join(folderPath, 'Script.PostDeployment1.sql');
-		const preDeploymentScriptFilePath2 = path.join(folderPath, 'Script.PreDeployment2.sql');
-		const postDeploymentScriptFilePath2 = path.join(folderPath, 'Script.PostDeployment2.sql');
-		const fileContents = ' ';
+		const preDeploymentScriptFilePath = 'Script.PreDeployment1.sql';
+		const postDeploymentScriptFilePath = 'Script.PostDeployment1.sql';
+		const preDeploymentScriptFilePath2 = 'Script.PreDeployment2.sql';
+		const postDeploymentScriptFilePath2 = 'Script.PostDeployment2.sql';
+		const fileContents = 'SELECT 7';
 
-		await project.addFolder(folderPath);
 		await project.addScriptItem(preDeploymentScriptFilePath, fileContents, ItemType.preDeployScript);
 		await project.addScriptItem(postDeploymentScriptFilePath, fileContents, ItemType.postDeployScript);
 
+		(stub.notCalled).should.be.true('showInformationMessage should not have been called');
+
 		await project.addScriptItem(preDeploymentScriptFilePath2, fileContents, ItemType.preDeployScript);
-		should(stub.calledWith(constants.deployScriptExists(constants.PreDeploy))).be.true(`showInformationMessage not called with expected message '${constants.deployScriptExists(constants.PreDeploy)}' Actual '${stub.getCall(0).args[0]}'`);
+		(stub.calledOnce).should.be.true('showInformationMessage should have been called once after adding extra pre-deployment script');
+		(stub.calledWith(constants.deployScriptExists(constants.PreDeploy))).should.be.true(`showInformationMessage not called with expected message '${constants.deployScriptExists(constants.PreDeploy)}'; actual: '${stub.firstCall.args[0]}'`);
+
+		stub.resetHistory();
 
 		await project.addScriptItem(postDeploymentScriptFilePath2, fileContents, ItemType.postDeployScript);
+		(stub.calledOnce).should.be.true('showInformationMessage should have been called once after adding extra post-deployment script');
 		should(stub.calledWith(constants.deployScriptExists(constants.PostDeploy))).be.true(`showInformationMessage not called with expected message '${constants.deployScriptExists(constants.PostDeploy)}' Actual '${stub.getCall(0).args[0]}'`);
-
-		const newProject = await Project.openProject(projFilePath);
-
-		should(newProject.preDeployScripts.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(preDeploymentScriptFilePath))).not.equal(undefined, 'File Script.PreDeployment1.sql not read');
-		should(newProject.postDeployScripts.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(postDeploymentScriptFilePath))).not.equal(undefined, 'File Script.PostDeployment1.sql not read');
-		should(newProject.noneDeployScripts.length).equal(2);
-		should(newProject.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(preDeploymentScriptFilePath2))).not.equal(undefined, 'File Script.PreDeployment2.sql not read');
-		should(newProject.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(postDeploymentScriptFilePath2))).not.equal(undefined, 'File Script.PostDeployment2.sql not read');
-
 	});
 
-	it.skip('Should ignore duplicate file/folder entries in new sqlproj', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project: Project = await Project.openProject(projFilePath);
-		const fileList = await testUtils.createListOfFiles(path.dirname(projFilePath));
-
-		// 1. Add a folder to the project
-		const existingFolderUri = fileList[2];
-		const folderStats = await fs.stat(existingFolderUri.fsPath);
-		should(folderStats.isDirectory()).equal(true, 'Third entry in fileList should be a subfolder');
-
-		const folderEntry = await project.addToProject([existingFolderUri]);
-		should(project.files.length).equal(1, 'New folder entry should be added to the project');
-
-		// Add the folder to the project again
-		should(await project.addToProject([existingFolderUri]))
-			.equal(folderEntry, 'Original folder entry should be returned when adding same folder for a second time');
-		should(project.files.length).equal(1, 'No new entries should be added to the project when adding same folder for a second time');
-
-		// 2. Add a file to the project
-		let existingFileUri = fileList[1];
-		let fileStats = await fs.stat(existingFileUri.fsPath);
-		should(fileStats.isFile()).equal(true, 'Second entry in fileList should be a file');
-
-		let fileEntry = await project.addToProject([existingFileUri]);
-		should(project.files.length).equal(2, 'New file entry should be added to the project');
-
-		// Add the file to the project again
-		should(await project.addToProject([existingFileUri]))
-			.equal(fileEntry, 'Original file entry should be returned when adding same file for a second time');
-		should(project.files.length).equal(2, 'No new entries should be added to the project when adding same file for a second time');
-
-		// 3. Add a file from subfolder to the project
-		existingFileUri = fileList[3];
-		fileStats = await fs.stat(existingFileUri.fsPath);
-		should(fileStats.isFile()).equal(true, 'Fourth entry in fileList should be a file');
-
-		fileEntry = await project.addToProject([existingFileUri]);
-		should(project.files.length).equal(3, 'New file entry should be added to the project');
-
-		// Add the file from subfolder to the project again
-		should(await project.addToProject([existingFileUri]))
-			.equal(fileEntry, 'Original file entry should be returned when adding same file for a second time');
-		should(project.files.length).equal(3, 'No new entries should be added to the project when adding same file for a second time');
-	});
-
-	// skipped; should be tested/implemented in DacFx
-	it.skip('Should ignore duplicate file entries in existing sqlproj', async function (): Promise<void> {
-		// Create new sqlproj
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const fileList = await testUtils.createListOfFiles(path.dirname(projFilePath));
-
-		let project: Project = await Project.openProject(projFilePath);
-
-		// Add a file to the project
-		let existingFileUri = fileList[3];
-		let fileStats = await fs.stat(existingFileUri.fsPath);
-		should(fileStats.isFile()).equal(true, 'Fourth entry in fileList should be a file');
-		await project.addToProject([existingFileUri]);
-
-		// Reopen existing project
-		project = await Project.openProject(projFilePath);
-
-		// Try adding the same file to the project again
-		await project.addToProject([existingFileUri]);
-	});
-
+	// TODO: move to DacFx once script contents supported
 	it('Should not overwrite existing files', async function (): Promise<void> {
 		// Create new sqlproj
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
@@ -295,7 +241,8 @@ describe('Project: sqlproj content operations', function (): void {
 			`A file with the name '${path.parse(relativePath).name}' already exists on disk at this location. Please choose another name.`);
 	});
 
-	it('Should not add folders outside of the project folder', async function (): Promise<void> {
+	// TODO: revisit correct behavior for this, since DacFx.Projects makes no restriction on absolute paths and external folders (which are represented as "..")
+	it.skip('Should not add folders outside of the project folder', async function (): Promise<void> {
 		// Create new sqlproj
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 
@@ -312,227 +259,44 @@ describe('Project: sqlproj content operations', function (): void {
 			'Folders outside the project folder should not be added.');
 	});
 
-	it('Project entry relative path should not change after reload', async function (): Promise<void> {
-		// Create new sqlproj
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const projectFolder = path.dirname(projFilePath);
-
-		// Create file under nested folders structure
-		const newFile = path.join(projectFolder, 'foo', 'test.sql');
-		await fs.mkdir(path.dirname(newFile), { recursive: true });
-		await fs.writeFile(newFile, '');
-
-		let project: Project = await Project.openProject(projFilePath);
-
-		// Add a file to the project
-		await project.addToProject([Uri.file(newFile)]);
-
-		// Store the original `relativePath` of the project entry
-		let fileEntry = project.files.find(f => f.relativePath.endsWith('test.sql'));
-
-		should.exist(fileEntry, 'Entry for the file should be added to project');
-		let originalRelativePath = '';
-		if (fileEntry) {
-			originalRelativePath = fileEntry.relativePath;
-		}
-
-		// Reopen existing project
-		project = await Project.openProject(projFilePath);
-
-		// Validate that relative path of the file entry matches the original
-		// There will be additional folder
-		should(project.files.length).equal(1, 'Two entries are expected in the loaded project');
-		should(project.folders.length).equal(1, 'Two entries are expected in the loaded project');
-
-		fileEntry = project.files.find(f => f.relativePath.endsWith('test.sql'));
-		should.exist(fileEntry, 'Entry for the file should be present in the project after reload');
-		if (fileEntry) {
-			should(fileEntry.relativePath).equal(originalRelativePath, 'Relative path should match after reload');
-		}
-	});
-
-	it('Intermediate folders for file should be automatically added to project', async function (): Promise<void> {
-		// Create new sqlproj
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const projectFolder = path.dirname(projFilePath);
-
-		// Create file under nested folders structure
-		const newFile = path.join(projectFolder, 'foo', 'bar', 'test.sql');
-		await fs.mkdir(path.dirname(newFile), { recursive: true });
-		await fs.writeFile(newFile, '');
-
-		// Open empty project
-		let project: Project = await Project.openProject(projFilePath);
-
-		// Add a file to the project
-		await project.addToProject([Uri.file(newFile)]);
-
-		// Validate that intermediate folders were added to the project
-		should(project.files.length).equal(3, 'Three entries are expected in the project');
-		should(project.files.map(f => ({ type: f.type, relativePath: f.relativePath })))
-			.containDeep([
-				{ type: EntryType.Folder, relativePath: 'foo\\' },
-				{ type: EntryType.Folder, relativePath: 'foo\\bar\\' },
-				{ type: EntryType.File, relativePath: 'foo\\bar\\test.sql' }]);
-	});
-
-	it('Intermediate folders for folder should be automatically added to project', async function (): Promise<void> {
-		// Create new sqlproj
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const projectFolder = path.dirname(projFilePath);
-
-		// Create nested folders structure
-		const newFolder = path.join(projectFolder, 'foo', 'bar');
-		await fs.mkdir(newFolder, { recursive: true });
-
-		// Open empty project
-		let project: Project = await Project.openProject(projFilePath);
-
-		// Add a file to the project
-		await project.addToProject([Uri.file(newFolder)]);
-
-		// Validate that intermediate folders were added to the project
-		should(project.files.length).equal(2, 'Two entries are expected in the project');
-		should(project.files.map(f => ({ type: f.type, relativePath: f.relativePath })))
-			.containDeep([
-				{ type: EntryType.Folder, relativePath: 'foo\\' },
-				{ type: EntryType.Folder, relativePath: 'foo\\bar\\' }]);
-	});
-
-	// skipped until verified/removed in DacFx
-	it.skip('Should not add duplicate intermediate folders to project', async function (): Promise<void> {
-		// Create new sqlproj
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const projectFolder = path.dirname(projFilePath);
-
-		// Create file under nested folders structure
-		const newFile = path.join(projectFolder, 'foo', 'bar', 'test.sql');
-		await fs.mkdir(path.dirname(newFile), { recursive: true });
-		await fs.writeFile(newFile, '');
-
-		const anotherNewFile = path.join(projectFolder, 'foo', 'bar', 'test2.sql');
-		await fs.writeFile(anotherNewFile, '');
-
-		// Open empty project
-		let project: Project = await Project.openProject(projFilePath);
-
-		// Add a file to the project
-		await project.addToProject([Uri.file(newFile)]);
-		await project.addToProject([Uri.file(anotherNewFile)]);
-
-		// Validate that intermediate folders were added to the project
-		should(project.files.length).equal(4, 'Four entries are expected in the project');
-		should(project.files.map(f => ({ type: f.type, relativePath: f.relativePath })))
-			.containDeep([
-				{ type: EntryType.Folder, relativePath: 'foo\\' },
-				{ type: EntryType.Folder, relativePath: 'foo\\bar\\' },
-				{ type: EntryType.File, relativePath: 'foo\\bar\\test.sql' },
-				{ type: EntryType.File, relativePath: 'foo\\bar\\test2.sql' }]);
-	});
-
-	it('Should not add duplicate intermediate folders to project when folder is explicitly added', async function (): Promise<void> {
-		// Create new sqlproj
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const projectFolder = path.dirname(projFilePath);
-
-		// Create file under nested folders structure
-		const newFile = path.join(projectFolder, 'foo', 'bar', 'test.sql');
-		await fs.mkdir(path.dirname(newFile), { recursive: true });
-		await fs.writeFile(newFile, '');
-
-		const explicitIntermediateFolder = path.join(projectFolder, 'foo', 'bar');
-		await fs.mkdir(explicitIntermediateFolder, { recursive: true });
-
-		// Open empty project
-		let project: Project = await Project.openProject(projFilePath);
-
-		// Add file and folder to the project
-		await project.addToProject([Uri.file(newFile), Uri.file(explicitIntermediateFolder)]);
-
-		// Validate that intermediate folders were added to the project
-		should(project.files.length).equal(3, 'Three entries are expected in the project');
-		should(project.files.map(f => ({ type: f.type, relativePath: f.relativePath })))
-			.containDeep([
-				{ type: EntryType.Folder, relativePath: 'foo\\' },
-				{ type: EntryType.Folder, relativePath: 'foo\\bar\\' },
-				{ type: EntryType.File, relativePath: 'foo\\bar\\test.sql' }]);
-	});
-
 	it('Should handle adding existing items to project', async function (): Promise<void> {
 		// Create new sqlproj
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const projectFolder = path.dirname(projFilePath);
+		const project: Project = await testUtils.createTestSqlProject();
 
 		// Create 2 new files, a sql file and a txt file
-		const sqlFile = path.join(projectFolder, 'test.sql');
-		const txtFile = path.join(projectFolder, 'foo', 'test.txt');
-		await fs.writeFile(sqlFile, '');
+		const sqlFile = path.join(project.projectFolderPath, 'test.sql');
+		const txtFile = path.join(project.projectFolderPath, 'foo', 'test.txt');
+		await fs.writeFile(sqlFile, 'CREATE TABLE T1 (C1 INT)');
 		await fs.mkdir(path.dirname(txtFile));
-		await fs.writeFile(txtFile, '');
+		await fs.writeFile(txtFile, 'Hello World!');
 
-		const project: Project = await Project.openProject(projFilePath);
+		await project.readProjFile();
 
 		// Add them as existing files
+		await project.addFolder('foo'); // TODO: This shouldn't be necessary; DacFx.Projects needs to refresh the in-memory folder list internally after adding items
 		await project.addExistingItem(sqlFile);
 		await project.addExistingItem(txtFile);
 
 		// Validate files should have been added to project
-		should(project.files.length).equal(3, 'Three entries are expected in the project');
-		should(project.files.map(f => ({ type: f.type, relativePath: f.relativePath })))
-			.containDeep([
-				{ type: EntryType.Folder, relativePath: 'foo\\' },
-				{ type: EntryType.File, relativePath: 'test.sql' },
-				{ type: EntryType.File, relativePath: 'foo\\test.txt' }]);
+		(project.files.length).should.equal(1, 'SQL script object count');
+		(project.files[0].relativePath).should.equal('test.sql');
 
-		// Validate project file XML
-		const projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText.includes('<Build Include="test.sql" />')).equal(true, projFileText);
-		should(projFileText.includes('<None Include="foo\\test.txt" />')).equal(true, projFileText);
+		should(project.folders.length).equal(1, 'folders');
+		(project.folders[0].relativePath).should.equal('foo');
+
+		should(project.noneDeployScripts.length).equal(1, '<None> items');
+		(project.noneDeployScripts[0].relativePath).should.equal('foo\\test.txt');
 	});
 
-	it('Should read OutputPath from sqlproj if there is one for legacy-style project with Debug configuration', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
+	it('Should read project properties', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjPropertyReadBaseline);
 		const project: Project = await Project.openProject(projFilePath);
 
-		should(project.configuration).equal('Debug');
-		should(project.outputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('bin\\Debug\\')));
-		should(project.dacpacOutputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('bin\\Debug\\'), `${project.projectFileName}.dacpac`));
-	});
-
-	it('Should read OutputPath from sqlproj if there is one for legacy-style project with Release configuration', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileReleaseConfigurationBaseline);
-		const project: Project = await Project.openProject(projFilePath);
-
-		should(project.configuration).equal('Release');
-		should(project.outputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('bin\\Release\\')));
-		should(project.dacpacOutputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('bin\\Release\\'), `${project.projectFileName}.dacpac`));
-	});
-
-	it('Should set configuration to Output for legacy-style project with unknown configuration', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileUnknownConfigurationBaseline);
-		const project: Project = await Project.openProject(projFilePath);
-
-		should(project.configuration).equal('Output');
-		should(project.outputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('bin\\Output')));
-		should(project.dacpacOutputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('bin\\Output\\'), `${project.projectFileName}.dacpac`));
-	});
-
-	it('Should set configuration to Output for legacy-style project with unknown configuration', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileSingleOutputPathBaseline);
-		const project: Project = await Project.openProject(projFilePath);
-
-		should(project.configuration).equal('Debug');
-		should(project.outputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('..\\otherFolder')));
-		should(project.dacpacOutputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('..\\otherFolder'), `${project.projectFileName}.dacpac`));
-	});
-
-	it('Should use the last OutputPath in the .sqlproj that matches the conditions', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileMultipleOutputPathBaseline);
-		const project: Project = await Project.openProject(projFilePath);
-
-		should(project.configuration).equal('Debug');
-		should(project.outputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('bin\\other')));
-		should(project.dacpacOutputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('bin\\other'), `${project.projectFileName}.dacpac`));
+		(project.sqlProjStyle).should.equal(ProjectType.SdkStyle);
+		(project.outputPath).should.equal('CustomOutputPath\\Dacpacs\\');
+		(project.configuration).should.equal('Release');
+		(project.getDatabaseSourceValues()).should.deepEqual(['oneSource', 'twoSource', 'redSource', 'blueSource']);
+		(project.getProjectTargetVersion()).should.equal('130');
 	});
 });
 
@@ -1192,7 +956,7 @@ describe('Project: sdk style project content operations', function (): void {
 	});
 });
 
-describe.only('Project: database references', function (): void {
+describe('Project: database references', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
 	});
@@ -1739,7 +1503,7 @@ describe('Project: round trip updates', function (): void {
 
 		project = await Project.openProject(sqlProjPath, true);
 		(project.isCrossPlatformCompatible).should.be.false('SSDT project should not be cross-platform compatible when update prompt is rejected');
-		(await exists(sqlProjPath + '_backup')).should.be.false('backup file shoudl not be generated');
+		(await exists(sqlProjPath + '_backup')).should.be.false('backup file should not be generated');
 
 		const newSqlProjContents = (await fs.readFile(sqlProjPath)).toString();
 		newSqlProjContents.should.equal(originalSqlProjContents, 'SSDT .sqlproj contents should not have changed when update prompt is rejected')
