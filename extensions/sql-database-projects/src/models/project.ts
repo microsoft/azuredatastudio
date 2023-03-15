@@ -181,8 +181,8 @@ export class Project implements ISqlProject {
 		await this.readDatabaseReferences();
 
 		// get pre and post deploy scripts specified in the sqlproj
-		await this.readPreDeployScripts();
-		await this.readPostDeployScripts();
+		await this.readPreDeployScripts(true);
+		await this.readPostDeployScripts(true);
 		await this.readNoneItems();
 
 		await this.readFilesInProject(); // get SQL object scripts
@@ -212,7 +212,7 @@ export class Project implements ISqlProject {
 		this._outputPath = props.outputPath;
 		this._databaseSource = props.databaseSource ?? '';
 		this._defaultCollation = props.defaultCollation;
-		this._databaseSchemaProvider = 'Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider'; // TODO: replace this stub once latest Tools Service is brought over
+		this._databaseSchemaProvider = props.databaseSchemaProvider;
 		this._sqlProjStyle = props.projectStyle;
 
 		await this.readCrossPlatformCompatibility();
@@ -278,6 +278,12 @@ export class Project implements ISqlProject {
 
 		if (result.folders?.length > 0) { // empty array from SqlToolsService is deserialized as null
 			for (var folderPath of result.folders) {
+				// don't add Properties folder since it isn't supported in ADS. In SSDT it isn't a physical folder, but it's specified in legacy sql projects
+				// to display the Properties node in the project tree
+				if (folderPath === constants.Properties) {
+					continue;
+				}
+
 				folderEntries.push(this.createFileProjectEntry(folderPath, EntryType.Folder));
 			}
 		}
@@ -285,7 +291,7 @@ export class Project implements ISqlProject {
 		this._folders = folderEntries;
 	}
 
-	private async readPreDeployScripts(): Promise<void> {
+	private async readPreDeployScripts(warnIfMultiple: boolean = false): Promise<void> {
 		var result: GetScriptsResult = await this.sqlProjService.getPreDeploymentScripts(this.projectFilePath);
 		this.throwIfFailed(result);
 
@@ -297,14 +303,14 @@ export class Project implements ISqlProject {
 			}
 		}
 
-		if (preDeploymentScriptEntries.length > 1) {
+		if (preDeploymentScriptEntries.length > 1 && warnIfMultiple) {
 			void window.showWarningMessage(constants.prePostDeployCount, constants.okString);
 		}
 
 		this._preDeployScripts = preDeploymentScriptEntries;
 	}
 
-	private async readPostDeployScripts(): Promise<void> {
+	private async readPostDeployScripts(warnIfMultiple: boolean = false): Promise<void> {
 		var result: GetScriptsResult = await this.sqlProjService.getPostDeploymentScripts(this.projectFilePath);
 		this.throwIfFailed(result);
 
@@ -316,7 +322,7 @@ export class Project implements ISqlProject {
 			}
 		}
 
-		if (postDeploymentScriptEntries.length > 1) {
+		if (postDeploymentScriptEntries.length > 1 && warnIfMultiple) {
 			void window.showWarningMessage(constants.prePostDeployCount, constants.okString);
 		}
 
@@ -443,6 +449,7 @@ export class Project implements ISqlProject {
 		this.throwIfFailed(result);
 
 		await this.readFilesInProject();
+		await this.readFolders();
 	}
 
 	public async deleteSqlObjectScript(relativePath: string): Promise<void> {
@@ -450,6 +457,7 @@ export class Project implements ISqlProject {
 		this.throwIfFailed(result);
 
 		await this.readFilesInProject();
+		await this.readFolders();
 	}
 
 	public async excludeSqlObjectScript(relativePath: string): Promise<void> {
@@ -457,6 +465,7 @@ export class Project implements ISqlProject {
 		this.throwIfFailed(result);
 
 		await this.readFilesInProject();
+		await this.readFolders();
 	}
 
 	//#endregion
@@ -464,11 +473,16 @@ export class Project implements ISqlProject {
 	//#region Pre-deployment scripts
 
 	public async addPreDeploymentScript(relativePath: string): Promise<void> {
+		if (this.preDeployScripts.length > 0) {
+			void vscode.window.showInformationMessage(constants.deployScriptExists(constants.PreDeploy));
+		}
+
 		const result = await this.sqlProjService.addPreDeploymentScript(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
 		await this.readPreDeployScripts();
 		await this.readNoneItems();
+		await this.readFolders();
 	}
 
 	public async deletePreDeploymentScript(relativePath: string): Promise<void> {
@@ -476,6 +490,7 @@ export class Project implements ISqlProject {
 		this.throwIfFailed(result);
 
 		await this.readPreDeployScripts();
+		await this.readFolders();
 	}
 
 	public async excludePreDeploymentScript(relativePath: string): Promise<void> {
@@ -483,6 +498,7 @@ export class Project implements ISqlProject {
 		this.throwIfFailed(result);
 
 		await this.readPreDeployScripts();
+		await this.readFolders();
 	}
 
 	//#endregion
@@ -490,11 +506,16 @@ export class Project implements ISqlProject {
 	//#region Post-deployment scripts
 
 	public async addPostDeploymentScript(relativePath: string): Promise<void> {
-		const result = await this.sqlProjService.addPreDeploymentScript(this.projectFilePath, relativePath);
+		if (this.postDeployScripts.length > 0) {
+			void vscode.window.showInformationMessage(constants.deployScriptExists(constants.PostDeploy));
+		}
+
+		const result = await this.sqlProjService.addPostDeploymentScript(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
 		await this.readPostDeployScripts();
 		await this.readNoneItems();
+		await this.readFolders();
 	}
 
 	public async deletePostDeploymentScript(relativePath: string): Promise<void> {
@@ -502,6 +523,7 @@ export class Project implements ISqlProject {
 		this.throwIfFailed(result);
 
 		await this.readPostDeployScripts();
+		await this.readFolders();
 	}
 
 	public async excludePostDeploymentScript(relativePath: string): Promise<void> {
@@ -509,6 +531,7 @@ export class Project implements ISqlProject {
 		this.throwIfFailed(result);
 
 		await this.readPostDeployScripts();
+		await this.readFolders();
 	}
 
 	//#endregion
@@ -521,6 +544,7 @@ export class Project implements ISqlProject {
 
 		await this.readPostDeployScripts();
 		await this.readNoneItems();
+		await this.readFolders();
 	}
 
 	public async deleteNoneItem(relativePath: string): Promise<void> {
@@ -528,6 +552,7 @@ export class Project implements ISqlProject {
 		this.throwIfFailed(result);
 
 		await this.readPostDeployScripts();
+		await this.readFolders();
 	}
 
 	public async excludeNoneItem(relativePath: string): Promise<void> {
@@ -535,6 +560,7 @@ export class Project implements ISqlProject {
 		this.throwIfFailed(result);
 
 		await this.readPostDeployScripts();
+		await this.readFolders();
 	}
 
 	//#endregion
@@ -561,29 +587,17 @@ export class Project implements ISqlProject {
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
 		await utils.ensureFileExists(absoluteFilePath, contents);
 
-		// Add the new script
-		let result: ResultStatus;
-
 		switch (itemType) {
 			case ItemType.preDeployScript:
-				result = await this.sqlProjService.addPreDeploymentScript(this.projectFilePath, relativeFilePath);
-				await this.readPreDeployScripts();
-				await this.readNoneItems();
+				await this.addPreDeploymentScript(relativeFilePath);
 				break;
 			case ItemType.postDeployScript:
-				result = await this.sqlProjService.addPostDeploymentScript(this.projectFilePath, relativeFilePath);
-				await this.readPostDeployScripts();
-				await this.readNoneItems();
+				await this.addPostDeploymentScript(relativeFilePath);
 				break;
 			default:
-				result = await this.sqlProjService.addSqlObjectScript(this.projectFilePath, relativeFilePath);
-				await this.readFilesInProject();
+				await this.addSqlObjectScript(relativeFilePath);
 				break;
 		}
-
-		await this.readFolders();
-
-		this.throwIfFailed(result);
 
 		return this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
 	}
@@ -603,14 +617,15 @@ export class Project implements ISqlProject {
 		let result: ResultStatus;
 
 		if (path.extname(filePath) === constants.sqlFileExtension) {
-			result = await this.sqlProjService.addSqlObjectScript(this.projectFilePath, filePath)
+			result = await this.sqlProjService.addSqlObjectScript(this.projectFilePath, normalizedRelativeFilePath)
 			await this.readFilesInProject();
 		} else {
-			result = await this.sqlProjService.addNoneItem(this.projectFilePath, filePath);
+			result = await this.sqlProjService.addNoneItem(this.projectFilePath, normalizedRelativeFilePath);
 			await this.readNoneItems();
 		}
 
 		this.throwIfFailed(result);
+		await this.readFolders();
 
 		return this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
 	}
