@@ -428,23 +428,11 @@
           "when": "false"
         },
         {
-          "command": "mssql.newServerRole",
-          "when": "false"
-        },
-        {
           "command": "mssql.newLogin",
           "when": "false"
         },
         {
-          "command": "mssql.newDatabaseRole",
-          "when": "false"
-        },
-        {
           "command": "mssql.newUser",
-          "when": "false"
-        },
-        {
-          "command": "mssql.newApplicationRole",
           "when": "false"
         },
         {
