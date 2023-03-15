@@ -736,7 +736,7 @@ export class ProjectsController {
 				.withAdditionalMeasurements(telemetryMeasurements)
 				.send();
 
-			await vscode.commands.executeCommand(constants.vscodeOpenCommand, absolutePath);
+			await vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(absolutePath));
 			treeDataProvider?.notifyTreeDataChanged();
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
@@ -784,6 +784,8 @@ export class ProjectsController {
 
 			switch (node.type) {
 				case constants.DatabaseProjectItemType.sqlObjectScript:
+				case constants.DatabaseProjectItemType.table:
+				case constants.DatabaseProjectItemType.externalStreamingJob:
 					await project.excludeSqlObjectScript(fileEntry.relativePath);
 					break;
 				case constants.DatabaseProjectItemType.folder:
