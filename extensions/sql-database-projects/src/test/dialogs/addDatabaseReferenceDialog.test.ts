@@ -66,7 +66,7 @@ describe('Add Database Reference Dialog', () => {
 		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should be disabled after clearing the database name textbox');
 
 		// fill in db name and ok button should be enabled
-		dialog.databaseNameTextbox!.value = 'master';
+		dialog.databaseNameTextbox!.value = 'Master';
 		dialog.tryEnableAddReferenceButton();
 		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled after the database name textbox is filled');
 
@@ -102,7 +102,7 @@ describe('Add Database Reference Dialog', () => {
 		// change reference type back to system db
 		dialog.systemDbRadioButtonClick();
 		should(dialog.locationDropdown?.value).equal(constants.differentDbSameServer);
-		should(dialog.databaseNameTextbox?.value).equal('master', `Database name textbox should be set to master. Actual:${dialog.databaseNameTextbox?.value}`);
+		should(dialog.databaseNameTextbox?.value).equal('Master', `Database name textbox should be set to Master. Actual:${dialog.databaseNameTextbox?.value}`);
 		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled because database name is filled');
 	});
 
