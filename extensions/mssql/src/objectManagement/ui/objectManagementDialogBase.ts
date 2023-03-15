@@ -234,9 +234,9 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	protected createGroup(header: string, items: azdata.Component[], collapsible: boolean = true, collapsed: boolean = false): azdata.GroupContainer {
 		return this.modelView.modelBuilder.groupContainer().withLayout({
 			header: header,
-			collapsed: false,
-			collapsible: collapsible
-		}).withProps({ collapsed: collapsed }).withItems(items).component();
+			collapsible: collapsible,
+			collapsed: collapsed
+		}).withItems(items).component();
 	}
 
 	protected createFormContainer(items: azdata.Component[]): azdata.DivContainer {

@@ -120,3 +120,25 @@ export function isValidSQLPassword(password: string, userName: string = 'sa'): b
 	const hasNonAlphas = /\W/.test(password) ? 1 : 0;
 	return !containsUserName && password.length >= 8 && password.length <= 128 && (hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas >= 3);
 }
+
+/**
+ * Gets the name of the object.
+ */
+export function getObjectName(context: azdata.ObjectExplorerContext): string {
+	return context.nodeInfo.label;
+}
+
+export function getObjectUrn(context: azdata.ObjectExplorerContext): string {
+	switch (context.nodeInfo.nodeType) {
+		case NodeType.Login:
+			return `Server/Login[@Name='${escapeUrn(context.nodeInfo.label)}']`;
+		case NodeType.User:
+			return `Server/Database[@Name='${escapeUrn(context.connectionProfile.databaseName)}']/User[@Name='${escapeUrn(context.nodeInfo.label)}']`;
+		default:
+			throw new Error(`Unkown node type: ${context.nodeInfo.nodeType}`);
+	}
+}
+
+function escapeUrn(value: string): string {
+	return value.replace(/\'/g, '\'\'');
+}

@@ -18,6 +18,7 @@ export const YesText: string = localize('objectManagement.yesText', "Yes");
 export const OkText: string = localize('objectManagement.OkText', "OK");
 export const LoadingDialogText: string = localize('objectManagement.loadingDialog', "Loading dialog...");
 export const FailedToRetrieveConnectionInfoErrorMessage: string = localize('objectManagement.noConnectionUriError', "Failed to retrieve the connection information, please reconnect and try again.")
+export const RenameObjectDialogTitle: string = localize('objectManagement.renameObjectDialogTitle', "Enter new name");
 
 export function RefreshObjectExplorerError(error: string): string {
 	return localize({
@@ -87,6 +88,20 @@ export function ObjectPropertiesDialogTitle(objectType: string, objectName: stri
 		key: 'objectManagement.objectPropertiesDialogTitle',
 		comment: ['{0} object type, {1}: object name.']
 	}, '{0} - {1} (Preview)', objectType, objectName);
+}
+
+export function RenameObjectOperationDisplayName(objectType: string, originalName: string, newName: string): string {
+	return localize({
+		key: 'objectManagement.renameObjectOperationName',
+		comment: ['{0} object type, {1}: original name, {2}: new name']
+	}, "Rename {0} '{1}' to '{2}'", objectType, originalName, newName);
+}
+
+export function RenameObjectError(objectType: string, originalName: string, newName: string, error: string): string {
+	return localize({
+		key: 'objectManagement.renameObjectError',
+		comment: ['{0} object type, {1}: original name, {2}: new name, {3}: error message.']
+	}, "An error occurred while renaming {0} '{1}' to '{2}'. {3}", objectType, originalName, newName, error);
 }
 
 export const NameText = localize('objectManagement.nameLabel', "Name");

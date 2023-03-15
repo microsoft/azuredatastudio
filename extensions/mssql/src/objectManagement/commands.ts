@@ -14,7 +14,7 @@ import * as localizedConstants from './localizedConstants';
 import { UserDialog } from './ui/userDialog';
 import { IObjectManagementService } from 'mssql';
 import * as constants from '../constants';
-import { getNodeTypeDisplayName, refreshParentNode } from './utils';
+import { getNodeTypeDisplayName, getObjectName, getObjectUrn, refreshParentNode } from './utils';
 import { TelemetryReporter } from '../telemetry';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
@@ -31,6 +31,9 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	}));
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.deleteObject', async (context: azdata.ObjectExplorerContext) => {
 		await handleDeleteObjectCommand(context, service);
+	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.renameObject', async (context: azdata.ObjectExplorerContext) => {
+		await handleRenameObjectCommand(context, service);
 	}));
 }
 
@@ -155,6 +158,56 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 			catch (err) {
 				operation.updateStatus(azdata.TaskStatus.Failed, localizedConstants.DeleteObjectError(nodeTypeDisplayName, context.nodeInfo.label, getErrorMessage(err)));
 				TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, TelemetryActions.DeleteObject, err).withAdditionalProperties({
+					objectType: context.nodeInfo.nodeType
+				}).send();
+				return;
+			}
+			await refreshParentNode(context);
+			operation.updateStatus(azdata.TaskStatus.Succeeded);
+		}
+	});
+}
+
+async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+	const connectionUri = await getConnectionUri(context);
+	if (!connectionUri) {
+		return;
+	}
+	const nodeTypeDisplayName = getNodeTypeDisplayName(context.nodeInfo.nodeType);
+	const originalName = getObjectName(context);
+	const newName = await vscode.window.showInputBox({
+		title: localizedConstants.RenameObjectDialogTitle,
+		value: originalName,
+		validateInput: (value: string): string | undefined => {
+			if (!value) {
+				return localizedConstants.NameCannotBeEmptyError;
+			} else {
+				// valid
+				return undefined;
+			}
+		}
+	});
+	if (newName === context.nodeInfo.label || !newName) {
+		return;
+	}
+
+	azdata.tasks.startBackgroundOperation({
+		displayName: localizedConstants.RenameObjectOperationDisplayName(nodeTypeDisplayName, originalName, newName),
+		description: '',
+		isCancelable: false,
+		operation: async (operation) => {
+			try {
+				const startTime = Date.now();
+				await service.rename(connectionUri, getObjectUrn(context), newName);
+				TelemetryReporter.sendTelemetryEvent(TelemetryActions.RenameObject, {
+					objectType: context.nodeInfo.nodeType
+				}, {
+					elapsedTimeMs: Date.now() - startTime
+				});
+			}
+			catch (err) {
+				operation.updateStatus(azdata.TaskStatus.Failed, localizedConstants.RenameObjectError(nodeTypeDisplayName, originalName, newName, getErrorMessage(err)));
+				TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, TelemetryActions.RenameObject, err).withAdditionalProperties({
 					objectType: context.nodeInfo.nodeType
 				}).send();
 				return;

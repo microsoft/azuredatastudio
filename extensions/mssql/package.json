@@ -93,6 +93,11 @@
         "title": "%title.deleteObject%"
       },
       {
+        "command": "mssql.renameObject",
+        "category": "MSSQL",
+        "title": "%title.renameObject%"
+      },
+      {
         "command": "mssql.enableGroupBySchema",
         "category": "MSSQL",
         "title": "%mssql.objectExplorer.enableGroupBySchema%",
@@ -478,6 +483,10 @@
         {
           "command": "mssql.deleteObject",
           "when": "false"
+        },
+        {
+          "command": "mssql.renameObject",
+          "when": "false"
         }
       ],
       "objectExplorer/item/context": [
@@ -510,6 +519,11 @@
           "command": "mssql.deleteObject",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
           "group": "0_query@2"
+        },
+        {
+          "command": "mssql.renameObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
+          "group": "0_query@3"
         },
         {
           "command": "mssql.enableGroupBySchema",
