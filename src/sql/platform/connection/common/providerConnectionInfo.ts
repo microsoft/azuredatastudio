@@ -323,6 +323,10 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	/**
 	 * Get all non specialValueType (or if distinct connections share same connection name, everything but connectionName and password).
 	 * Also allows for getting the non default options for this profile. (this function is used for changing the title).
+	 * @param needSpecial include all the special options key besides connection name or password in case we have multiple
+	 * distinct connections sharing the same connection name.
+	 * @param getNonDefault get only the non default options (for individual connections) to be used for identfying different properties
+	 * among connections sharing the same title.
 	 */
 	public getConnectionOptionsList(needSpecial: boolean, getNonDefault: boolean): azdata.ConnectionOption[] {
 		let connectionOptions: azdata.ConnectionOption[] = [];
