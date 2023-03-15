@@ -193,7 +193,8 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 				canDragOver = source.id !== targetElement.id && !source.isAncestorOf(targetElement);
 			}
 		} else {
-			canDragOver = true;
+			// if target element is a not a group or connection profile we can reject
+			return DRAG_OVER_REJECT;
 		}
 
 		if (canDragOver) {
