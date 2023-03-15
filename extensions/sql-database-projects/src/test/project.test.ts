@@ -22,7 +22,7 @@ import { ProjectType, SystemDatabase } from 'mssql';
 
 let projFilePath: string;
 
-describe.only('Project: sqlproj content operations', function (): void {
+describe('Project: sqlproj content operations', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
 	});
