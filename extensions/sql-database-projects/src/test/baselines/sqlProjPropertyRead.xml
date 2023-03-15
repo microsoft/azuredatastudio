@@ -5,7 +5,7 @@
     <Name>SdkStyle</Name>
     <ProjectGuid>{BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
-    <ModelCollation>1033, CI</ModelCollation>
+    <ModelCollation>1041, CI</ModelCollation>
     <Configuration>Release</Configuration>
     <Platform>x64</Platform>
     <OutputPath>CustomOutputPath\Dacpacs\</OutputPath>
