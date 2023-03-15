@@ -26,6 +26,9 @@ import { IAccessibilityProvider } from 'sql/base/browser/ui/accessibility/access
 import { IQuickInputProvider } from 'sql/base/browser/ui/quickInput/quickInputProvider';
 import { localize } from 'vs/nls';
 
+// The string key for cell css params
+const CELL_CSS_PARAMS_KEY = 'null-highlighter';
+
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
 		syncColumnCellResize: true,
@@ -130,7 +133,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 			this._grid.onSort.subscribe((e, args) => {
 				this._sorter!(args);
 				this._grid.invalidate();
+				this.cellCssParams = {};
 				this._grid.render();
+				this.setCellCssStyles();
 			});
 		}
 
@@ -199,7 +204,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._grid.updateRowCount();
 		this._grid.setColumns(this._grid.getColumns());
 		this._grid.invalidateAllRows();
+		this.cellCssParams = {};
 		this._grid.render();
+		this.setCellCssStyles();
 	}
 
 	private mapMouseEvent(slickEvent: Slick.Event<any>, emitter: Emitter<ITableMouseEvent>) {
@@ -211,6 +218,13 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		});
 	}
 
+	private setCellCssStyles() {
+		if (Object.keys(this.cellCssParams).length !== 0) {
+			this._grid.setCellCssStyles(CELL_CSS_PARAMS_KEY, this.cellCssParams);
+		}
+	}
+
+
 	public override dispose() {
 		this._container.remove();
 		super.dispose();
@@ -218,12 +232,16 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	public invalidateRows(rows: number[], keepEditor: boolean) {
 		this._grid.invalidateRows(rows, keepEditor);
+		this.cellCssParams = {};
 		this._grid.render();
+		this.setCellCssStyles();
 	}
 
 	public updateRowCount() {
 		this._grid.updateRowCount();
+		this.cellCssParams = {};
 		this._grid.render();
+		this.setCellCssStyles();
 		if (this._autoscroll) {
 			this._grid.scrollRowIntoView(this._data.getLength() - 1, false);
 		}

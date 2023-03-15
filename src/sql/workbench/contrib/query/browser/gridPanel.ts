@@ -81,9 +81,6 @@ const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ES
 // or '{', and there must be a '}' or ']' to close it.
 const IsJsonRegex = /^\s*[\{|\[][\S\s]*[\}\]]\s*$/g;
 
-// The string key for cell css params
-const CELL_CSS_PARAMS_KEY = 'null-highlighter';
-
 // The css class for null cell
 const NULL_CELL_CSS_CLASS = 'cell-null';
 
@@ -388,8 +385,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	private rowHeight: number;
 
-	private cellCssParams = {};
-
 	public isOnlyTable: boolean = true;
 
 	public providerId: string;
@@ -470,15 +465,11 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			(offset, count) => this.loadData(offset, count)
 		);
 		collection.setCollectionChangedCallback((startIndex, count) => {
-			this.cellCssParams = {};
 			this.renderGridDataRowsRange(startIndex, count);
-			this.table.grid.setCellCssStyles(CELL_CSS_PARAMS_KEY, this.cellCssParams);
 		});
 		this.dataProvider.dataRows = collection;
 		this.setFilterState();
-		this.cellCssParams = {};
 		this.table.updateRowCount();
-		this.table.grid.setCellCssStyles(CELL_CSS_PARAMS_KEY, this.cellCssParams);
 		await this.setupState();
 	}
 
@@ -567,18 +558,14 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					field: column.field
 				};
 			});
-			this.cellCssParams = {};
 			this.table.rerenderGrid();
-			this.table.grid.setCellCssStyles(CELL_CSS_PARAMS_KEY, this.cellCssParams);
 		}));
 		this._register(this.dataProvider.onSortComplete((args: Slick.OnSortEventArgs<T>) => {
 			this.state.sortState = {
 				field: args.sortCol.field,
 				sortAsc: args.sortAsc
 			};
-			this.cellCssParams = {};
 			this.table.rerenderGrid();
-			this.table.grid.setCellCssStyles(CELL_CSS_PARAMS_KEY, this.cellCssParams);
 		}));
 		this.filterPlugin = new HeaderFilter(this.contextViewService, this.notificationService, {
 			disabledFilterMessage: localize('resultsGrid.maxRowCountExceeded', "Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'"),
@@ -590,7 +577,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			if (nullBackground) {
 				collector.addRule(`.${NULL_CELL_CSS_CLASS} { background: ${nullBackground};}`);
 			}
-			this.table.grid.setCellCssStyles(CELL_CSS_PARAMS_KEY, this.cellCssParams);
 		}));
 
 		this.table.registerPlugin(this.filterPlugin);
@@ -674,11 +660,12 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 
 	private populateCellCssParams(i: number, row: number | undefined, value: ICellValue) {
+		if (!this.table.cellCssParams[row]) {
+			this.table.cellCssParams[row] = {};
+		}
+
 		if (DBCellValue.isDBCellValue(value) && value.isNull) {
-			if (!this.cellCssParams[row]) {
-				this.cellCssParams[row] = {};
-			}
-			this.cellCssParams[row][i.toString()] = NULL_CELL_CSS_CLASS;
+			this.table.cellCssParams[row][i.toString()] = NULL_CELL_CSS_CLASS;
 		}
 	}
 
