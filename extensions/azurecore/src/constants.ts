@@ -61,6 +61,8 @@ export const dataGridProviderId = 'azure-resources';
 
 export const AzureTokenFolderName = 'Azure Accounts';
 
+export const MSALCacheName = 'accessTokenCache';
+
 export const DefaultAuthLibrary = 'ADAL';
 
 export enum BuiltInCommands {
