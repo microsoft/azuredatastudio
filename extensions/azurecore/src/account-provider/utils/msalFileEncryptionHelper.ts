@@ -34,7 +34,7 @@ export class MSALFileEncryptionHelper extends FileEncryptionHelper {
 		}
 	}
 
-	public async fileSaver(content: string): Promise<string> {
+	fileSaver = async (content: string): Promise<string> => {
 		if (!this._keyBuffer || !this._ivBuffer) {
 			await this.init();
 		}
@@ -42,7 +42,7 @@ export class MSALFileEncryptionHelper extends FileEncryptionHelper {
 		return `${cipherIv.update(content, 'utf8', 'base64')}${cipherIv.final('base64')}`;
 	}
 
-	public async fileOpener(content: string): Promise<string> {
+	fileOpener = async (content: string): Promise<string> => {
 		if (!this._keyBuffer || !this._ivBuffer) {
 			await this.init();
 		}
