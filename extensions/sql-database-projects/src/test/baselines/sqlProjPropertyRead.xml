@@ -10,7 +10,6 @@
     <Platform>x64</Platform>
     <OutputPath>CustomOutputPath\Dacpacs\</OutputPath>
     <DefaultCollation>Japanese_CI_AS</DefaultCollation>
-    <ModelCollation>1041,CI</ModelCollation>
     <DatabaseSource>oneSource;twoSource;redSource;blueSource</DatabaseSource>
   </PropertyGroup>
   <Target Name="BeforeBuild">

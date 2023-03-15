@@ -196,7 +196,6 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 
 	it('Should show information messages when adding more than one pre/post deployment scripts to sqlproj', async function (): Promise<void> {
-		this.timeout(1_000_000);
 		const stub = sinon.stub(window, 'showInformationMessage').returns(<any>Promise.resolve());
 
 		const project: Project = await testUtils.createTestSqlProject();
@@ -290,7 +289,6 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 
 	it('Should read project properties', async function (): Promise<void> {
-		this.timeout(1_000_000);
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjPropertyReadBaseline);
 		const project: Project = await Project.openProject(projFilePath);
 
