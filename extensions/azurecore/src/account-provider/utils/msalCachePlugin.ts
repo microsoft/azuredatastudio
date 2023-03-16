@@ -24,7 +24,7 @@ export class MsalCachePluginProvider {
 	private _lockTaken: boolean = false;
 
 	private getLockfilePath(): string {
-		return this._msalFilePath + '.lock';
+		return this._msalFilePath + '.lockfile';
 	}
 
 	public getCachePlugin(): ICachePlugin {

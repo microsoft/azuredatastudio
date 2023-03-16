@@ -206,6 +206,7 @@ const VSCODEExtensions = [
 	"markdown-math",
 	"merge-conflict",
 	"microsoft-authentication",
+	"notebook-renderers",
 	"powershell",
 	"python",
 	"r",

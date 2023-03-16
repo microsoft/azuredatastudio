@@ -922,6 +922,98 @@ describe('ProjectsController', function (): void {
 			should(proj1.files.find(f => f.relativePath === 'script1.sql') !== undefined).be.true(`The file path should not have been updated when trying to move script1.sql to proj2`);
 		});
 	});
+
+	describe('Rename file', function (): void {
+		it('Should not do anything if no new name is provided', async function (): Promise<void> {
+			sinon.stub(vscode.window, 'showInputBox').resolves('');
+			let proj = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			const projTreeRoot = await setupMoveTest(proj);
+			const projController = new ProjectsController(testContext.outputChannel);
+
+			// try to rename a file from the root folder
+			const sqlFileNode = projTreeRoot.children.find(x => x.friendlyName === 'script1.sql');
+			await projController.rename(createWorkspaceTreeItem(sqlFileNode!));
+
+			// reload project and verify file was not renamed
+			proj = await Project.openProject(proj.projectFilePath);
+			should(proj.files.find(f => f.relativePath === 'script1.sql') !== undefined).be.true('The file path should not have been updated');
+			should(await utils.exists(path.join(proj.projectFolderPath, 'script1.sql'))).be.true('The moved file should exist');
+		});
+
+		it('Should rename a sql object file', async function (): Promise<void> {
+			sinon.stub(vscode.window, 'showInputBox').resolves('newName');
+			let proj = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			const projTreeRoot = await setupMoveTest(proj);
+			const projController = new ProjectsController(testContext.outputChannel);
+
+			// try to rename a file from the root folder
+			const sqlFileNode = projTreeRoot.children.find(x => x.friendlyName === 'script1.sql');
+			await projController.rename(createWorkspaceTreeItem(sqlFileNode!));
+
+			// reload project and verify file was renamed
+			proj = await Project.openProject(proj.projectFilePath);
+			should(proj.files.find(f => f.relativePath === 'newName.sql') !== undefined).be.true('The file path should have been updated');
+			should(await utils.exists(path.join(proj.projectFolderPath, 'newName.sql'))).be.true('The moved file should exist');
+		});
+
+		it('Should rename a pre and post deploy script', async function (): Promise<void> {
+			let proj = await testUtils.createTestProject(baselines.newSdkStyleProjectSdkNodeBaseline);
+			await proj.addScriptItem('Script.PreDeployment1.sql', 'pre-deployment stuff', ItemType.preDeployScript);
+			await proj.addScriptItem('Script.PostDeployment1.sql', 'post-deployment stuff', ItemType.postDeployScript);
+
+			const projController = new ProjectsController(testContext.outputChannel);
+			const projTreeRoot = new ProjectRootTreeItem(proj);
+
+			// try to rename a file from the root folder
+			sinon.stub(vscode.window, 'showInputBox').resolves('predeployNewName');
+			const preDeployScriptNode = projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment1.sql');
+			await projController.rename(createWorkspaceTreeItem(preDeployScriptNode!));
+
+			sinon.restore();
+			sinon.stub(vscode.window, 'showInputBox').resolves('postdeployNewName');
+			const postDeployScriptNode = projTreeRoot.children.find(x => x.friendlyName === 'Script.PostDeployment1.sql');
+			await projController.rename(createWorkspaceTreeItem(postDeployScriptNode!));
+
+			// reload project and verify files were renamed
+			proj = await Project.openProject(proj.projectFilePath);
+			should(proj.preDeployScripts.find(f => f.relativePath === 'predeployNewName.sql') !== undefined).be.true('The pre deploy script file path should have been updated');
+			should(await utils.exists(path.join(proj.projectFolderPath, 'predeployNewName.sql'))).be.true('The moved pre deploy script file should exist');
+
+			should(proj.postDeployScripts.find(f => f.relativePath === 'postdeployNewName.sql') !== undefined).be.true('The post deploy script file path should have been updated');
+			should(await utils.exists(path.join(proj.projectFolderPath, 'postdeployNewName.sql'))).be.true('The moved post deploy script file should exist');
+		});
+
+
+		// TODO: add test for renaming a file in a folder after fix from DacFx for slashes is brought over
+	});
+
+	describe('SqlCmd Variables', function (): void {
+		it('Should delete sqlcmd variable', async function (): Promise<void> {
+			let project = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			const sqlProjectsService = await utils.getSqlProjectsService();
+			await sqlProjectsService.openProject(project.projectFilePath);
+
+			const projController = new ProjectsController(testContext.outputChannel);
+			const projRoot = new ProjectRootTreeItem(project);
+
+			should(Object.keys(project.sqlCmdVariables).length).equal(2, 'The project should start with 2 sqlcmd variables');
+
+			sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Cancel'));
+			await projController.delete(createWorkspaceTreeItem(projRoot.children.find(x => x.friendlyName === constants.sqlcmdVariablesNodeName)!.children[0]));
+
+			// reload project
+			project = await Project.openProject(project.projectFilePath);
+			should(Object.keys(project.sqlCmdVariables).length).equal(2, 'The project should still have 2 sqlcmd variables if no was selected');
+
+			sinon.restore();
+			sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Yes'));
+			await projController.delete(createWorkspaceTreeItem(projRoot.children.find(x => x.friendlyName === constants.sqlcmdVariablesNodeName)!.children[0]));
+
+			// reload project
+			project = await Project.openProject(project.projectFilePath);
+			should(Object.keys(project.sqlCmdVariables).length).equal(1, 'The project should only have 1 sqlcmd variable after deletion');
+		});
+	});
 });
 
 async function setupDeleteExcludeTest(proj: Project): Promise<[FileProjectEntry, ProjectRootTreeItem, FileProjectEntry, FileProjectEntry, FileProjectEntry]> {

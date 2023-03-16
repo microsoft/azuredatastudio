@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/accountListRenderer';
-import 'vs/css!./media/accountActions';
 
 import * as DOM from 'vs/base/browser/dom';
 import { IListRenderer, IListVirtualDelegate } from 'vs/base/browser/ui/list/list';

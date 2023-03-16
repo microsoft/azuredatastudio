@@ -103,7 +103,7 @@ export class Workbench {
 		this.addRemoteBookDialog = new AddRemoteBookDialog(code);
 		this.taskPanel = new TaskPanel(code, this.quickaccess);
 		// {{END}}
-		this.notebook = new Notebook(this.quickaccess, code);
+		this.notebook = new Notebook(this.quickaccess, this.quickinput, code);
 		this.localization = new Localization(code);
 	}
 }

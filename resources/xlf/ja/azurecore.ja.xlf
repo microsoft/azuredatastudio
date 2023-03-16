@@ -46,10 +46,6 @@
         <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
         <target state="translated">ID '{0}' の指定されたテナントが見つかりません。</target>
       </trans-unit>
-      <trans-unit id="azureAuth.unidentifiedError">
-        <source xml:lang="en">Unidentified error with azure authentication</source>
-        <target state="translated">Azure 認証で不明なエラーが発生しました</target>
-      </trans-unit>
       <trans-unit id="azurecore.consentDialog.body">
         <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
         <target state="translated">テナント '{0} ({1})' では、{2} リソースにアクセスするために、もう一度再認証する必要があります。[開く] をクリックして、認証プロセスを開始してください。</target>
@@ -126,6 +122,16 @@
         <source xml:lang="en">A call was made to azdata.accounts.getSecurityToken, this method is deprecated and will be removed in future releases. Please use getAccountSecurityToken instead.</source>
         <target state="translated">azdata.accounts.getSecurityToken の呼び出しが行われました。このメソッドは非推奨であり、今後のリリースで削除されます。代わりに getAccountSecurityToken を使用してください。</target>
       </trans-unit>
+      <trans-unit id="genericTokenError">
+        <source xml:lang="en">Failed to get token</source>
+        <target state="translated">トークンを取得できませんでした</target>
+      </trans-unit>
+      <trans-unit id="msalTokenError">
+        <source xml:lang="en">{0} occurred when acquiring token. 
+{1}</source>
+        <target state="translated">トークンの取得中に {0} が発生しました。
+{1}</target>
+      </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/account-provider/azureAccountProviderService" source-language="en" datatype="plaintext" target-language="ja">
@@ -146,10 +152,6 @@
         <source xml:lang="en">Azure (China)</source>
         <target state="translated">Azure (China)</target>
       </trans-unit>
-      <trans-unit id="germanyCloud">
-        <source xml:lang="en">Azure (Germany)</source>
-        <target state="translated">Azure (Germany)</target>
-      </trans-unit>
       <trans-unit id="publicCloudDisplayName">
         <source xml:lang="en">Azure</source>
         <target state="translated">Azure</target>
@@ -157,10 +159,6 @@
       <trans-unit id="usGovCloudDisplayName">
         <source xml:lang="en">Azure (US Government)</source>
         <target state="translated">Azure (US Government)</target>
-      </trans-unit>
-      <trans-unit id="usNatCloudDisplayName">
-        <source xml:lang="en">Azure (US National)</source>
-        <target state="translated">Azure (US National)</target>
       </trans-unit>
     </body>
   </file>

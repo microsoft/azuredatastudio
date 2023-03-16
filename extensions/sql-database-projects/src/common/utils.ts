@@ -279,6 +279,7 @@ export function getDataWorkspaceExtensionApi(): dataworkspace.IExtension {
 
 export type IDacFxService = mssql.IDacFxService | vscodeMssql.IDacFxService;
 export type ISchemaCompareService = mssql.ISchemaCompareService | vscodeMssql.ISchemaCompareService;
+export type ISqlProjectsService = mssql.ISqlProjectsService | vscodeMssql.ISqlProjectsService;
 
 export async function getDacFxService(): Promise<IDacFxService> {
 	if (getAzdataApi()) {
@@ -302,12 +303,15 @@ export async function getSchemaCompareService(): Promise<ISchemaCompareService> 
 	}
 }
 
-export async function getSqlProjectsService(): Promise<mssql.ISqlProjectsService> {
-	const ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
-	const api = await ext.activate();
-	return api.sqlProjects;
-
-	// TODO: add vscode-mssql support
+export async function getSqlProjectsService(): Promise<ISqlProjectsService> {
+	if (getAzdataApi()) {
+		const ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
+		const api = await ext.activate();
+		return api.sqlProjects;
+	} else {
+		const api = await getVscodeMssqlApi();
+		return api.sqlProjects;
+	}
 }
 
 export async function getVscodeMssqlApi(): Promise<vscodeMssql.IExtension> {
@@ -770,4 +774,14 @@ export function isValidBasename(name?: string): boolean {
  */
 export function isValidBasenameErrorMessage(name?: string): string {
 	return getDataWorkspaceExtensionApi().isValidBasenameErrorMessage(name);
+}
+
+/**
+ * Checks if the provided file is a publish profile
+ * @param fileName filename to check
+ * @returns True if it is a publish profile, otherwise false
+ */
+export function isPublishProfile(fileName: string): boolean {
+	const hasPublishExtension = fileName.trim().toLowerCase().endsWith(constants.publishProfileExtension);
+	return hasPublishExtension;
 }

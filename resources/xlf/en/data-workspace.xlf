@@ -172,6 +172,9 @@
     <trans-unit id="noPreviousData">
       <source xml:lang="en">Prior {0} for the current project will appear here, please run to see the results.</source>
     </trans-unit>
+    <trans-unit id="noProjectProvidingExtensionsInstalled">
+      <source xml:lang="en">No database project extensions are installed. Please install a database project extension to use this feature.</source>
+    </trans-unit>
     <trans-unit id="onlyMovingOneFileIsSupported">
       <source xml:lang="en">Only moving one file at a time is supported.</source>
     </trans-unit>

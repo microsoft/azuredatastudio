@@ -62,22 +62,32 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	 * Processes the list of files in a project file to constructs the tree
 	 */
 	private construct() {
-		let treeItemList = this.project.files
-			.concat(this.project.preDeployScripts)
-			.concat(this.project.postDeployScripts)
-			.concat(this.project.noneDeployScripts);
+		// pre deploy scripts
+		for (const preDeployEntry of this.project.preDeployScripts) {
+			const newNode = new fileTree.PreDeployNode(preDeployEntry.fsUri, this.projectFileUri);
+			this.addNode(newNode, preDeployEntry);
+		}
 
-		for (const entry of treeItemList) {
-			if (entry.type !== EntryType.File && entry.relativePath.startsWith(RelativeOuterPath)) {
-				continue;
-			}
+		// post deploy scripts
+		for (const postDeployEntry of this.project.postDeployScripts) {
+			const newNode = new fileTree.PostDeployNode(postDeployEntry.fsUri, this.projectFileUri);
+			this.addNode(newNode, postDeployEntry);
+		}
 
-			const parentNode = this.getEntryParentNode(entry);
+		// none scripts
+		for (const noneEntry of this.project.noneDeployScripts) {
+			const newNode = new fileTree.NoneNode(noneEntry.fsUri, this.projectFileUri);
+			this.addNode(newNode, noneEntry);
+		}
 
-			if (Object.keys(parentNode.fileChildren).includes(path.basename(entry.fsUri.path))) {
-				continue; // ignore duplicate entries
-			}
+		// publish profiles
+		for (const publishProfile of this.project.publishProfiles) {
+			const newNode = new fileTree.PublishProfileNode(publishProfile.fsUri, this.projectFileUri);
+			this.addNode(newNode, publishProfile);
+		}
 
+		// sql object scripts and folders
+		for (const entry of this.project.files) {
 			let newNode: fileTree.FolderNode | fileTree.FileNode;
 
 			switch (entry.type) {
@@ -88,7 +98,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 						newNode = new fileTree.TableFileNode(entry.fsUri, this.projectFileUri);
 					}
 					else {
-						newNode = new fileTree.FileNode(entry.fsUri, this.projectFileUri);
+						newNode = new fileTree.SqlObjectFileNode(entry.fsUri, this.projectFileUri);
 					}
 
 					break;
@@ -99,8 +109,23 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 					throw new Error(`Unknown EntryType: '${entry.type}'`);
 			}
 
-			parentNode.fileChildren[path.basename(entry.fsUri.path)] = newNode;
+			this.addNode(newNode, entry);
 		}
+	}
+
+	private addNode(newNode: fileTree.FileNode | fileTree.FolderNode, entry: FileProjectEntry): void {
+		// Don't add external folders
+		if (entry.type !== EntryType.File && entry.relativePath.startsWith(RelativeOuterPath)) {
+			return;
+		}
+
+		const parentNode = this.getEntryParentNode(entry);
+
+		if (Object.keys(parentNode.fileChildren).includes(path.basename(entry.fsUri.path))) {
+			return; // ignore duplicate entries
+		}
+
+		parentNode.fileChildren[path.basename(entry.fsUri.path)] = newNode;
 	}
 
 	/**

@@ -431,7 +431,6 @@ declare module 'vscode-mssql' {
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 		getOptionsFromProfile(profilePath: string): Thenable<DacFxOptionsResult>;
 		validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<ValidateStreamingJobResult>;
-		savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<ResultStatus>;
 	}
 
 	/**
@@ -572,7 +571,7 @@ declare module 'vscode-mssql' {
 		 * Get the cross-platform compatibility status for a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
-		getCrossPlatformCompatibility(projectUri: string): Promise<GetCrossPlatformCompatiblityResult>;
+		getCrossPlatformCompatibility(projectUri: string): Promise<GetCrossPlatformCompatibilityResult>;
 
 		/**
 		 * Open an existing SQL project
@@ -585,6 +584,26 @@ declare module 'vscode-mssql' {
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
 		updateProjectForCrossPlatform(projectUri: string): Promise<ResultStatus>;
+
+		/**
+		 * Set the DatabaseSource property of a .sqlproj file
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param databaseSource Source of the database schema, used in telemetry
+		 */
+		setDatabaseSource(projectUri: string, databaseSource: string): Promise<ResultStatus>;
+
+		/**
+		 * Set the DatabaseSchemaProvider property of a SQL project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param databaseSchemaProvider New DatabaseSchemaProvider value, in the form "Microsoft.Data.Tools.Schema.Sql.SqlXYZDatabaseSchemaProvider"
+		 */
+		setDatabaseSchemaProvider(projectUri: string, databaseSchemaProvider: string): Promise<ResultStatus>;
+
+		/**
+		 * Get the cross-platform compatibility status for a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getProjectProperties(projectUri: string): Promise<GetProjectPropertiesResult>;
 
 		/**
 		 * Add a SQLCMD variable to a project
@@ -639,10 +658,148 @@ declare module 'vscode-mssql' {
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
 		 */
 		moveSqlObjectScript(projectUri: string, destinationPath: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Get all the database references in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getDatabaseReferences(projectUri: string): Promise<GetDatabaseReferencesResult>;
+
+		/**
+		 * Get all the folders in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getFolders(projectUri: string): Promise<GetFoldersResult>;
+
+		/**
+		 * Get all the post-deployment scripts in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getPostDeploymentScripts(projectUri: string): Promise<GetScriptsResult>;
+
+		/**
+		 * Get all the pre-deployment scripts in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getPreDeploymentScripts(projectUri: string): Promise<GetScriptsResult>;
+
+		/**
+		 * Get all the SQLCMD variables in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getSqlCmdVariables(projectUri: string): Promise<GetSqlCmdVariablesResult>;
+
+		/**
+		 * getSqlObjectScripts
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getSqlObjectScripts(projectUri: string): Promise<GetScriptsResult>;
+
+		/**
+		 * Add a None item to a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the item, including extension, relative to the .sqlproj
+		 */
+		addNoneItem(projectUri: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Delete a None item from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the item, including extension, relative to the .sqlproj
+		 */
+		deleteNoneItem(projectUri: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Exclude a None item from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the item, including extension, relative to the .sqlproj
+		 */
+		excludeNoneItem(projectUri: string, path: string): Promise<ResultStatus>;
+
+		/**
+		 * Get all the None items in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getNoneItems(projectUri: string): Promise<GetScriptsResult>;
+
+		/**
+		 * Move a None item in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
+		 * @param path Path of the item, including extension, relative to the .sqlproj
+		 */
+		moveNoneItem(projectUri: string, destinationPath: string, path: string): Promise<ResultStatus>;
 	}
 
-	export interface GetCrossPlatformCompatiblityResult extends ResultStatus {
+	export interface GetCrossPlatformCompatibilityResult extends ResultStatus {
+		/**
+		 * Whether the project is cross-platform compatible
+		 */
 		isCrossPlatformCompatible: boolean;
+	}
+
+	export interface GetProjectPropertiesResult extends ResultStatus {
+		/**
+		 * GUID for the SQL project
+		 */
+		projectGuid: string;
+		/**
+		 * Build configuration, defaulted to Debug if not specified
+		 */
+		configuration: string;
+		/**
+		 * Build platform, defaulted to AnyCPU if not specified
+		 */
+		platform: string;
+		/**
+		 * Output path for build, defaulted to "bin/Debug" if not specified.
+			 May be absolute or relative.
+		 */
+		outputPath: string;
+		/**
+		 * Default collation for the project, defaulted to SQL_Latin1_General_CP1_CI_AS if not specified
+		 */
+		defaultCollation: string;
+		/**
+		 * Source of the database schema, used in telemetry
+		 */
+		databaseSource?: string;
+	}
+
+	export interface GetDatabaseReferencesResult extends ResultStatus {
+		/**
+		 * Array of system database references contained in the project
+		 */
+		systemDatabaseReferences: SystemDatabaseReference[];
+		/**
+		 * Array of dacpac references contained in the project
+		 */
+		dacpacReferences: DacpacReference[];
+		/**
+		 * Array of SQL project references contained in the project
+		 */
+		sqlProjectReferences: SqlProjectReference[];
+	}
+
+	export interface GetFoldersResult extends ResultStatus {
+		/**
+		 * Array of folders contained in the project
+		 */
+		folders: string[];
+	}
+
+	export interface GetSqlCmdVariablesResult extends ResultStatus {
+		/**
+		 * Array of SQLCMD variables contained in the project
+		 */
+		sqlCmdVariables: SqlCmdVariable[];
+	}
+
+	export interface GetScriptsResult extends ResultStatus {
+		/**
+		 * Array of scripts contained in the project
+		 */
+		scripts: string[];
 	}
 
 	export const enum ProjectType {
@@ -941,14 +1098,6 @@ declare module 'vscode-mssql' {
 
 	export interface SchemaCompareOptionsResult extends ResultStatus {
 		defaultDeploymentOptions: DeploymentOptions;
-	}
-
-	export interface SavePublishProfileParams {
-		profilePath: string;
-		databaseName: string;
-		connectionString: string;
-		sqlCommandVariableValues?: Record<string, string>;
-		deploymentOptions?: DeploymentOptions;
 	}
 
 	//#region ISqlProjectsService

@@ -421,6 +421,9 @@
     <trans-unit id="errorReadingProjectGuid">
       <source xml:lang="en">Error trying to read {0} of project '{1}'</source>
     </trans-unit>
+    <trans-unit id="errorRenamingFile">
+      <source xml:lang="en">Error when renaming file from {0} to {1}. Error: {2}</source>
+    </trans-unit>
     <trans-unit id="errorRetrievingBuildFiles">
       <source xml:lang="en">Could not build project. Error retrieving files needed to build.</source>
     </trans-unit>
@@ -738,6 +741,9 @@
     <trans-unit id="publishOptions">
       <source xml:lang="en">Publish Options</source>
     </trans-unit>
+    <trans-unit id="publishProfileElements">
+      <source xml:lang="en">Publish profile elements</source>
+    </trans-unit>
     <trans-unit id="publishProjectSucceed">
       <source xml:lang="en">Database project published successfully</source>
     </trans-unit>
@@ -815,12 +821,6 @@
     </trans-unit>
     <trans-unit id="sameDatabase">
       <source xml:lang="en">Same database</source>
-    </trans-unit>
-    <trans-unit id="save">
-      <source xml:lang="en">Save</source>
-    </trans-unit>
-    <trans-unit id="saveProfileAsButtonText">
-      <source xml:lang="en">Save Profile As...</source>
     </trans-unit>
     <trans-unit id="schema">
       <source xml:lang="en">Schema</source>

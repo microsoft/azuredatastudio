@@ -202,9 +202,17 @@
         <source xml:lang="en">Yes (Recommended)</source>
         <target state="translated">Да (рекомендуется)</target>
       </trans-unit>
+      <trans-unit id="dragAndDropNotSupported">
+        <source xml:lang="en">This project type does not support drag and drop.</source>
+        <target state="translated">Этот тип проекта не поддерживает перетаскивание.</target>
+      </trans-unit>
       <trans-unit id="fileDoesNotExist">
         <source xml:lang="en">File '{0}' doesn't exist</source>
         <target state="translated">Файл "{0}" не существует</target>
+      </trans-unit>
+      <trans-unit id="filenameEndingInPeriodErrorMessage">
+        <source xml:lang="en">File name cannot end with a period</source>
+        <target state="translated">Имя не может заканчиваться точкой</target>
       </trans-unit>
       <trans-unit id="gitCloneError">
         <source xml:lang="en">Error during git clone. View git output for more details</source>
@@ -214,9 +222,21 @@
         <source xml:lang="en">Cloning git repository '{0}'...</source>
         <target state="translated">Клонирование репозитория Git "{0}"...</target>
       </trans-unit>
+      <trans-unit id="invalidFileCharsErrorMessage">
+        <source xml:lang="en">Invalid file characters</source>
+        <target state="translated">Недопустимые символы файла</target>
+      </trans-unit>
       <trans-unit id="noPreviousData">
         <source xml:lang="en">Prior {0} for the current project will appear here, please run to see the results.</source>
         <target state="translated">Предыдущие {0} для текущего проекта будут отображаться здесь. Чтобы увидеть результаты, используйте запуск.</target>
+      </trans-unit>
+      <trans-unit id="noProjectProvidingExtensionsInstalled">
+        <source xml:lang="en">No database project extensions are installed. Please install a database project extension to use this feature.</source>
+        <target state="translated">Расширения проекта базы данных не установлены. Установите расширение проекта базы данных, чтобы использовать эту функцию.</target>
+      </trans-unit>
+      <trans-unit id="onlyMovingOneFileIsSupported">
+        <source xml:lang="en">Only moving one file at a time is supported.</source>
+        <target state="translated">Поддерживается перемещение только одного файла за раз.</target>
       </trans-unit>
       <trans-unit id="openedProjectsUndefinedAfterRefresh">
         <source xml:lang="en">List of opened projects should not be undefined after refresh from disk.</source>
@@ -225,6 +245,30 @@
       <trans-unit id="projectNameNull">
         <source xml:lang="en">Project name is null</source>
         <target state="translated">Имя проекта имеет значение NULL</target>
+      </trans-unit>
+      <trans-unit id="reservedValueErrorMessage">
+        <source xml:lang="en">Reserved file name. Choose another name and try again</source>
+        <target state="translated">Имя файла уже используется. Выберите другое имя и повторите попытку</target>
+      </trans-unit>
+      <trans-unit id="reservedWindowsFilenameErrorMessage">
+        <source xml:lang="en">This file name is reserved for use by Windows. Choose another name and try again</source>
+        <target state="translated">Это имя файла зарезервировано для использования операционной системой. Выберите другое имя и повторите попытку</target>
+      </trans-unit>
+      <trans-unit id="tooLongFilenameErrorMessage">
+        <source xml:lang="en">File name cannot be over 255 characters</source>
+        <target state="translated">Имя файла не может превышать 255 символов</target>
+      </trans-unit>
+      <trans-unit id="trailingWhitespaceErrorMessage">
+        <source xml:lang="en">File name cannot end with a whitespace</source>
+        <target state="translated">Имя не может заканчиваться пробелом</target>
+      </trans-unit>
+      <trans-unit id="undefinedFilenameErrorMessage">
+        <source xml:lang="en">Undefined name</source>
+        <target state="translated">Неопределенное имя</target>
+      </trans-unit>
+      <trans-unit id="whitespaceFilenameErrorMessage">
+        <source xml:lang="en">File name cannot be whitespace</source>
+        <target state="translated">Имя файла не может быть пробелом</target>
       </trans-unit>
     </body>
   </file>

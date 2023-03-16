@@ -22,6 +22,7 @@ import { IconPathHelper } from './iconHelper';
 import * as nls from 'vscode-nls';
 import { INotebookConvertService } from './notebookConvert/notebookConvertService';
 import { registerTableDesignerCommands } from './tableDesigner/tableDesigner';
+// import { SqlNotebookController } from './sqlNotebook/sqlNotebookController';
 import { registerObjectManagementCommands } from './objectManagement/commands';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from './telemetry';
 
@@ -89,10 +90,22 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand(Constants.cmdObjectExplorerEnableGroupBySchemaCommand, async () => {
+		TelemetryReporter.sendActionEvent(TelemetryViews.MssqlObjectExplorer, TelemetryActions.EnableGroupBySchemaContextMenu)
 		await vscode.workspace.getConfiguration().update(Constants.configObjectExplorerGroupBySchemaFlagName, true, true);
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand(Constants.cmdObjectExplorerDisableGroupBySchemaCommand, async () => {
+		TelemetryReporter.sendActionEvent(TelemetryViews.MssqlObjectExplorer, TelemetryActions.DisableGroupBySchemaContextMenu)
+		await vscode.workspace.getConfiguration().update(Constants.configObjectExplorerGroupBySchemaFlagName, false, true);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand(Constants.cmdObjectExplorerEnabbleGroupBySchemaTitleCommand, async () => {
+		TelemetryReporter.sendActionEvent(TelemetryViews.MssqlObjectExplorer, TelemetryActions.EnableGroupByServerViewTitleAction)
+		await vscode.workspace.getConfiguration().update(Constants.configObjectExplorerGroupBySchemaFlagName, true, true);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand(Constants.cmdObjectExplorerDisableGroupBySchemaTitleCommand, async () => {
+		TelemetryReporter.sendActionEvent(TelemetryViews.MssqlObjectExplorer, TelemetryActions.DisableGroupByServerViewTitleAction)
 		await vscode.workspace.getConfiguration().update(Constants.configObjectExplorerGroupBySchemaFlagName, false, true);
 	}));
 
@@ -114,7 +127,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	registerTableDesignerCommands(appContext);
 	registerObjectManagementCommands(appContext);
 
+	// context.subscriptions.push(new SqlNotebookController()); Temporarily disabled due to breaking query editor
+
 	context.subscriptions.push(TelemetryReporter);
+
 	return createMssqlApi(appContext, server);
 }
 

@@ -114,7 +114,6 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		});
 	}
 
-
 	public get onDidChangeAccounts(): Event<azdata.DidChangeAccountsParams> {
 		return this._onDidChangeAccounts.event;
 	}

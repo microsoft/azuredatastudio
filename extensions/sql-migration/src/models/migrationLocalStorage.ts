@@ -6,7 +6,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as azurecore from 'azurecore';
 import { DatabaseMigration, SqlMigrationService, getSubscriptions, getServiceMigrations } from '../api/azure';
-import { deepClone } from '../api/utils';
+import { deepClone, isAccountTokenStale } from '../api/utils';
 import * as loc from '../constants/strings';
 import { ServiceContextChangeEvent } from '../dashboard/tabBase';
 import { getSourceConnectionProfile } from '../api/sqlUtils';
@@ -38,9 +38,9 @@ export class MigrationLocalStorage {
 	}
 
 	public static async refreshMigrationAzureAccount(serviceContext: MigrationServiceContext, migration: DatabaseMigration, serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>): Promise<void> {
-		if (serviceContext.azureAccount?.isStale) {
+		if (isAccountTokenStale(serviceContext.azureAccount)) {
 			const accounts = await azdata.accounts.getAllAccounts();
-			const account = accounts.find(a => !a.isStale && a.key.accountId === serviceContext.azureAccount?.key.accountId);
+			const account = accounts.find(a => !isAccountTokenStale(a) && a.key.accountId === serviceContext.azureAccount?.key.accountId);
 			if (account) {
 				const subscriptions = await getSubscriptions(account);
 				const subscription = subscriptions.find(s => s.id === serviceContext.subscription?.id);
@@ -55,7 +55,7 @@ export class MigrationLocalStorage {
 
 export function isServiceContextValid(serviceContext: MigrationServiceContext): boolean {
 	return (
-		serviceContext.azureAccount?.isStale === false &&
+		!isAccountTokenStale(serviceContext.azureAccount) &&
 		serviceContext.location?.id !== undefined &&
 		serviceContext.migrationService?.id !== undefined &&
 		serviceContext.resourceGroup?.id !== undefined &&
