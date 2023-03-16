@@ -522,7 +522,7 @@
         },
         {
           "command": "mssql.renameObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|Table|View)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(Database|ServerLevelLogin|User|Table|View)$/ && config.workbench.enablePreviewFeatures",
           "group": "0_query@3"
         },
         {
@@ -572,7 +572,7 @@
         },
         {
           "command": "mssql.renameObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|Table|View)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(Database|ServerLevelLogin|User|Table|View)$/ && config.workbench.enablePreviewFeatures",
           "group": "connection@3"
         },
         {

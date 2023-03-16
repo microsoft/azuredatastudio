@@ -8,6 +8,7 @@
  */
 export enum NodeType {
 	Column = 'Column',
+	Database = 'Database',
 	Login = 'ServerLevelLogin',
 	Table = 'Table',
 	User = 'User',

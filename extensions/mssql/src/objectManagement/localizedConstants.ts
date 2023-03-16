@@ -14,6 +14,7 @@ export const UserTypeDisplayNameInTitle: string = localize('objectManagement.Use
 export const TableTypeDisplayName: string = localize('objectManagement.TableDisplayName', "table");
 export const ViewTypeDisplayName: string = localize('objectManagement.ViewDisplayName', "view");
 export const ColumnTypeDisplayName: string = localize('objectManagement.ColumnDisplayName', "column");
+export const DatabaseTypeDisplayName: string = localize('objectManagement.DatabaseDisplayName', "database");
 
 // Shared Strings
 export const HelpText: string = localize('objectManagement.helpText', "Help");
