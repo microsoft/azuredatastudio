@@ -12,6 +12,7 @@ import * as azureResourceUtils from './azureResource/utils';
 import * as constants from './constants';
 import * as loc from './localizedConstants';
 import * as utils from './utils';
+import { Logger } from './utils/Logger';
 
 const typesClause = [
 	azureResource.AzureResourceType.sqlDatabase,
@@ -60,10 +61,10 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 							});
 						items.push(...newItems);
 					} catch (err) {
-						console.log(err);
+						Logger.error(err);
 					}
 				} catch (err) {
-					console.log(err);
+					Logger.error(err);
 				}
 			}));
 		}));
