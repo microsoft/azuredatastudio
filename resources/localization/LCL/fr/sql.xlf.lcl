@@ -7959,6 +7959,9 @@
       <Item ItemId=";src/sql/workbench/contrib/editData/browser/editDataGridPanel.editData.cellWithNullCharMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This cell contains the Unicode null character which is currently not supported for editing.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cette cellule contient le caractère Unicode Nul qui n’est actuellement pas pris en charge pour la modification.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
