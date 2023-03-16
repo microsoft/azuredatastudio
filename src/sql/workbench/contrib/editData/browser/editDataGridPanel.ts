@@ -1214,7 +1214,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		let valueToDisplay = '';
 		let cellClasses = 'grid-cell-value-container';
 		/* tslint:disable:no-null-keyword */
-		let valueMissing = value === undefined || value === null || (Services.DBCellValue.isDBCellValue(value) && value.isNull) || value === 'NULL';
+		let valueMissing = value === undefined || value === null || (Services.DBCellValue.isDBCellValue(value) && (value.isNull || value.displayValue.length === 0)) || value === 'NULL';
 		let isStringNull = (Services.DBCellValue.isDBCellValue(value) && !value.isNull && value.displayValue === 'NULL');
 		if (valueMissing) {
 			valueToDisplay = 'NULL';
