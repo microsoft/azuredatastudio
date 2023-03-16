@@ -67,7 +67,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _iconProviders = new Map<string, azdata.IconProvider>();
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
 	private _onAddConnectionProfile = new Emitter<interfaces.IConnectionProfile>();
-	private _onDeleteConnectionProfile = new Emitter<void>();
+	private _onDeleteConnectionProfile = new Emitter<ConnectionProfile | ConnectionProfileGroup>();
 	private _onConnect = new Emitter<IConnectionParams>();
 	private _onDisconnect = new Emitter<IConnectionParams>();
 	private _onConnectRequestSent = new Emitter<void>();
@@ -167,7 +167,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._onAddConnectionProfile.event;
 	}
 
-	public get onDeleteConnectionProfile(): Event<void> {
+	public get onDeleteConnectionProfile(): Event<ConnectionProfile | ConnectionProfileGroup> {
 		return this._onDeleteConnectionProfile.event;
 	}
 
@@ -1526,7 +1526,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				if (result) {
 					// Remove profile from configuration
 					return this._connectionStore.deleteConnectionFromConfiguration(connection).then(() => {
-						this._onDeleteConnectionProfile.fire();
+						this._onDeleteConnectionProfile.fire(connection);
 						return true;
 					});
 
@@ -1537,7 +1537,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		} else {
 			// Remove disconnected profile from settings
 			return this._connectionStore.deleteConnectionFromConfiguration(connection).then(() => {
-				this._onDeleteConnectionProfile.fire();
+				this._onDeleteConnectionProfile.fire(connection);
 				return true;
 			});
 		}
@@ -1565,7 +1565,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return Promise.all(disconnected).then(() => {
 			// Remove profiles and groups from config
 			return this._connectionStore.deleteGroupFromConfiguration(group).then(() => {
-				this._onDeleteConnectionProfile.fire();
+				this._onDeleteConnectionProfile.fire(group);
 				return true;
 			});
 		}).catch(() => false);

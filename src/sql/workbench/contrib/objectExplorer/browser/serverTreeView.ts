@@ -193,12 +193,29 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		this._register(this._connectionManagementService.onAddConnectionProfile((newProfile: IConnectionProfile) => {
 			this.handleAddConnectionProfile(newProfile).catch(errors.onUnexpectedError);
 		}));
-		this._register(this._connectionManagementService.onDeleteConnectionProfile(() => {
-			this.refreshTree().catch(errors.onUnexpectedError);
+		this._register(this._connectionManagementService.onDeleteConnectionProfile((e) => {
+			if (this.tree instanceof AsyncServerTree) {
+				if (e instanceof ConnectionProfile) {
+					e.parent = this.getConnectionGroupInTree(e.parent);
+				}
+				this.tree.deleteElement(e);
+			} else {
+				this.refreshTree().catch(errors.onUnexpectedError);
+			}
 		}));
-		this._register(this._connectionManagementService.onDisconnect((connectionParams) => {
-			if (this.isObjectExplorerConnectionUri(connectionParams.connectionUri)) {
-				this.deleteObjectExplorerNodeAndRefreshTree(connectionParams.connectionProfile).catch(errors.onUnexpectedError);
+		this._register(this._connectionManagementService.onDisconnect(async (connectionParams) => {
+			if (this.tree instanceof AsyncServerTree) {
+				const connectionProfile = this.getConnectionInTreeInput(connectionParams.connectionProfile.id);
+				const parent = this.getConnectionGroupInTree(connectionProfile.parent);
+				parent.connections[parent.connections.findIndex(c => c.id === connectionProfile.id)] = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, connectionParams.connectionProfile);
+				await this._objectExplorerService.deleteObjectExplorerNode(connectionProfile);
+				await this.tree.collapse(connectionProfile);
+				await this.tree.rerender(connectionProfile);
+				await this.tree.updateChildren(parent);
+			} else {
+				if (this.isObjectExplorerConnectionUri(connectionParams.connectionUri)) {
+					this.deleteObjectExplorerNodeAndRefreshTree(connectionParams.connectionProfile).catch(errors.onUnexpectedError);
+				}
 			}
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
@@ -331,6 +348,15 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			}
 			return undefined;
 		}
+	}
+
+	private getConnectionGroupInTree(element: ConnectionProfileGroup): ConnectionProfileGroup | undefined {
+		const root = this.tree.getInput();
+		if (root.id === element.id) {
+			return root;
+		}
+		const subGroups = ConnectionProfileGroup.getSubgroups(root);
+		return subGroups.find(group => group.id === element.id);
 	}
 
 	private async onObjectExplorerSessionCreated(connection: IConnectionProfile): Promise<void> {

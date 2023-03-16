@@ -90,7 +90,7 @@ export interface IConnectionManagementService {
 
 	// Event Emitters
 	onAddConnectionProfile: Event<IConnectionProfile>;
-	onDeleteConnectionProfile: Event<void>;
+	onDeleteConnectionProfile: Event<ConnectionProfile | ConnectionProfileGroup>;
 	onConnect: Event<IConnectionParams>;
 	onDisconnect: Event<IConnectionParams>;
 	onConnectionChanged: Event<IConnectionParams>;
