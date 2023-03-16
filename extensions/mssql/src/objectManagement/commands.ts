@@ -162,8 +162,8 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 				}).send();
 				return;
 			}
-			await refreshParentNode(context);
 			operation.updateStatus(azdata.TaskStatus.Succeeded);
+			await refreshParentNode(context);
 		}
 	});
 }
@@ -214,8 +214,8 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 				}).send();
 				return;
 			}
-			await refreshParentNode(context);
 			operation.updateStatus(azdata.TaskStatus.Succeeded);
+			await refreshParentNode(context);
 		}
 	});
 }
