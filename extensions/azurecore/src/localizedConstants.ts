@@ -87,4 +87,4 @@ export function unableToFetchTokenError(tenant: string): string {
 }
 
 // Error Messages
-export const azureCredStoreSaveFailedError = localize('azure.credStoreSaveFailedError', `Keys for token cache could not be saved in credential store, this may cause Azure access token persistence issues and connection instabilities. It's likely that Azure Data Studio has reached credential storage limit on Windows, please clear atleast 2 credentials created by Azure Data Studio in Windows Credential Manager and reload.`);
+export const azureCredStoreSaveFailedError = localize('azure.credStoreSaveFailedError', `Keys for token cache could not be saved in credential store, this may cause Azure access token persistence issues and connection instabilities. It's likely that SqlTools has reached credential storage limit on Windows, please clear at least 2 credentials that start with "Microsoft.SqlTools|" in Windows Credential Manager and reload.`);

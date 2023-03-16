@@ -9,10 +9,9 @@ import { promises as fsPromises } from 'fs';
 import * as lockFile from 'lockfile';
 import * as path from 'path';
 import * as azdata from 'azdata';
-import { AccountsClearTokenCacheCommand } from '../../constants';
+import { AccountsClearTokenCacheCommand, AuthLibrary } from '../../constants';
 import { Logger } from '../../utils/Logger';
 import { FileEncryptionHelper } from './fileEncryptionHelper';
-import { MSALFileEncryptionHelper } from './msalFileEncryptionHelper';
 
 export class MsalCachePluginProvider {
 	constructor(
@@ -21,7 +20,7 @@ export class MsalCachePluginProvider {
 		private readonly _credentialService: azdata.CredentialProvider
 	) {
 		this._msalFilePath = path.join(this._msalFilePath, this._serviceName);
-		this._fileEncryptionHelper = new MSALFileEncryptionHelper(this._credentialService, this._serviceName);
+		this._fileEncryptionHelper = new FileEncryptionHelper(AuthLibrary.MSAL, this._credentialService, this._serviceName);
 	}
 
 	private _lockTaken: boolean = false;
