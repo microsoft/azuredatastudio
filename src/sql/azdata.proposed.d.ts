@@ -1802,7 +1802,7 @@ declare module 'azdata' {
 
 	export interface TextComponentProperties {
 		/**
-		 * Corresponds to the aria-live accessibility attribute for this component. The accepted values are polite, assertive, and off
+		 * Corresponds to the aria-live accessibility attribute for this component.
 		 */
 		ariaLive?: 'polite' | 'assertive' | 'off';
 	}
@@ -1817,7 +1817,7 @@ declare module 'azdata' {
 
 	export interface ContainerProperties extends ComponentProperties {
 		/**
-		 * Corresponds to the aria-live accessibility attribute for this component. The accepted values are polite, assertive, and off
+		 * Corresponds to the aria-live accessibility attribute for this component.
 		 */
 		ariaLive?: 'polite' | 'assertive' | 'off';
 	}
