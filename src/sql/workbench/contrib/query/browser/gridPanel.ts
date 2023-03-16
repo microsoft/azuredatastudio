@@ -66,7 +66,7 @@ const NO_ACTIONBAR_ADDITIONAL_PADDING = 75;
 const ACTIONBAR_WIDTH = 36;
 
 // minimum height needed to show the full actionbar
-const ACTIONBAR_HEIGHT = 120;
+const ACTIONBAR_HEIGHT = 140;
 
 // this handles min size if rows is greater than the min grid visible rows
 const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;

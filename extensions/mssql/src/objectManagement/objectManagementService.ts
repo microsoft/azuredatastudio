@@ -136,6 +136,16 @@ export class ObjectManagementService implements IObjectManagementService {
 			}
 		);
 	}
+	rename(connectionUri: string, objectUrn: string, newName: string): Thenable<void> {
+		const params: contracts.RenameObjectRequestParams = { connectionUri, objectUrn, newName };
+		return this.client.sendRequest(contracts.RenameObjectRequest.type, params).then(
+			r => { },
+			e => {
+				this.client.logFailedRequest(contracts.RenameObjectRequest.type, e);
+				return Promise.reject(new Error(e.message));
+			}
+		);
+	}
 }
 
 export class TestObjectManagementService implements IObjectManagementService {
@@ -291,6 +301,9 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve();
 	}
 	async disposeUserView(contextId: string): Promise<void> {
+	}
+	async rename(connectionUri: string, objectUrn: string, newName: string): Promise<void> {
+		return this.delayAndResolve();
 	}
 
 	private delayAndResolve(): Promise<void> {
