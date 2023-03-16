@@ -24,6 +24,8 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _databaseTableValues!: any[];
 	private _disposables: vscode.Disposable[] = [];
 
+	private readonly TABLE_WIDTH = 650;
+
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.DATABASE_FOR_ASSESSMENT_PAGE_TITLE), migrationStateModel);
 	}
@@ -165,7 +167,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		this._databaseSelectorTable = this._view.modelBuilder.table()
 			.withProps({
 				data: [],
-				width: 650,
+				width: this.TABLE_WIDTH,
 				height: '100%',
 				CSSStyles: { 'margin-bottom': '12px' },
 				forceFitColumns: azdata.ColumnSizingMode.ForceFit,
@@ -225,18 +227,16 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		const xEventsDescription = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.XEVENTS_ASSESSMENT_DESCRIPTION,
-				width: 650,
-				CSSStyles: {
-					...styles.BODY_CSS, 'width': '650px'
-				},
+				width: this.TABLE_WIDTH,
+				CSSStyles: { ...styles.BODY_CSS },
 				links: [{ text: constants.XEVENTS_ASSESSMENT_HELPLINK, url: 'aka.ms/sql-migration-xe-assess' }]
 			}).component();
 
 		const xEventsInstructions = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.XEVENTS_ASSESSMENT_OPEN_FOLDER,
-				width: 650,
-				CSSStyles: { ...styles.LABEL_CSS, 'width': '650px' },
+				width: this.TABLE_WIDTH,
+				CSSStyles: { ...styles.LABEL_CSS },
 			}).component();
 
 		this._xEventsFolderPickerInput = this._view.modelBuilder.inputBox()
