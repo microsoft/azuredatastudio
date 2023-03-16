@@ -69,7 +69,8 @@ export class SqlDatabaseTree {
 	private _objectDetailsType!: azdata.TextComponent;
 	private _objectDetailsName!: azdata.TextComponent;
 	private _objectDetailsSample!: azdata.TextComponent;
-	private _moreInfo!: azdata.HyperlinkComponent;
+	private _moreInfoTitle!: azdata.TextComponent;
+	private _moreInfoText!: azdata.HyperlinkComponent;
 	private _assessmentTitle!: azdata.TextComponent;
 	private _databaseTableValues!: azdata.DeclarativeTableCellValue[][];
 
@@ -626,12 +627,13 @@ export class SqlDatabaseTree {
 			.withProps({
 				CSSStyles: textStyle
 			}).component();
-		const moreInfo = this._view.modelBuilder.text()
+
+		this._moreInfoTitle = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.MORE_INFO,
 				CSSStyles: LABEL_CSS
 			}).component();
-		this._moreInfo = this._view.modelBuilder.hyperlink()
+		this._moreInfoText = this._view.modelBuilder.hyperlink()
 			.withProps({
 				label: '',
 				url: '',
@@ -645,8 +647,8 @@ export class SqlDatabaseTree {
 				this._descriptionText,
 				recommendationTitle,
 				this._recommendationText,
-				moreInfo,
-				this._moreInfo])
+				this._moreInfoTitle,
+				this._moreInfoText])
 			.withLayout({ flexFlow: 'column' })
 			.component();
 
@@ -811,14 +813,31 @@ export class SqlDatabaseTree {
 	}
 
 	public async refreshAssessmentDetails(selectedIssue?: SqlMigrationAssessmentResultItem): Promise<void> {
-		this._assessmentTitle.value = selectedIssue?.checkId || '';
-		this._descriptionText.value = selectedIssue?.description || '';
-		this._moreInfo.url = selectedIssue?.helpLink || '';
-		this._moreInfo.label = selectedIssue?.displayName || '';
-		this._moreInfo.ariaLabel = selectedIssue?.displayName || '';
-		this._impactedObjects = selectedIssue?.impactedObjects || [];
-		this._recommendationText.value = selectedIssue?.message || constants.NA;
+		await this._assessmentTitle.updateProperty('value', selectedIssue?.checkId || '');
+		await this._descriptionText.updateProperty('value', selectedIssue?.description || '');
+		await this._recommendationText.updateProperty('value', selectedIssue?.message || constants.NA);
 
+		if (selectedIssue?.helpLink) {
+			await this._moreInfoTitle.updateProperty('display', 'flex');
+			await this._moreInfoText.updateProperties({
+				'display': 'flex',
+				'url': selectedIssue?.helpLink || '',
+				'label': selectedIssue?.displayName || '',
+				'ariaLabel': selectedIssue?.displayName || '',
+				'showLinkIcon': true
+			});
+		} else {
+			await this._moreInfoTitle.updateProperty('display', 'none');
+			await this._moreInfoText.updateProperties({
+				'display': 'none',
+				'url': '',
+				'label': '',
+				'ariaLabel': '',
+				'showLinkIcon': false
+			});
+		}
+
+		this._impactedObjects = selectedIssue?.impactedObjects || [];
 		await this._impactedObjectsTable.setDataValues(
 			this._impactedObjects.map(
 				(object) => [{ value: object.objectType }, { value: object.name }]));
