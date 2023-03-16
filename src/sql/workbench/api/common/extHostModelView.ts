@@ -1004,10 +1004,10 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		this.setProperty('value', v);
 	}
 
-	public get ariaLive(): azdata.AriaLiveValue {
+	public get ariaLive(): azdata.AriaLiveValue | undefined {
 		return this.properties['ariaLive'];
 	}
-	public set ariaLive(v: azdata.AriaLiveValue) {
+	public set ariaLive(v: azdata.AriaLiveValue | undefined) {
 		this.setProperty('ariaLive', v);
 	}
 
