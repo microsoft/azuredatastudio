@@ -222,10 +222,10 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@microsoft/ads-extension-telemetry@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@microsoft/ads-extension-telemetry/-/ads-extension-telemetry-2.0.0.tgz#18ce267c7ed05c3b9dd99604a743e59f684c4e7c"
-  integrity sha512-hExe/akhgq15v/h19LAFqiKNV6N9VxD19lOwGxEmO55yoWUm3E2cYealxvoYCwGDmSJfCbjR9fz/KM8Yz4XWAA==
+"@microsoft/ads-extension-telemetry@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-extension-telemetry/-/ads-extension-telemetry-3.0.0.tgz#ca67d4b0adae3adb318b33f3312501b483a8df03"
+  integrity sha512-kDoGORLozfuspTeY2Zlrj2MKTCVWghs0pBxXBTSWYD0Sbre/+DHSPvKegCFWWgqep5xaxsyiHaGCXzRzZUb46Q==
   dependencies:
     "@vscode/extension-telemetry" "0.6.1"
 
