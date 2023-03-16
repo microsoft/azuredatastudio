@@ -196,5 +196,6 @@
 	"title.newApplicationRole": "New Application Role",
 	"title.newUser": "New User",
 	"title.objectProperties": "Properties (Preview)",
-	"title.deleteObject": "Delete"
+	"title.deleteObject": "Delete",
+	"title.renameObject": "Rename"
 }
