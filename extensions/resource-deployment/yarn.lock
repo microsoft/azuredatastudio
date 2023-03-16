@@ -196,10 +196,10 @@
   dependencies:
     "@vscode/extension-telemetry" "0.6.1"
 
-"@microsoft/azdata-test@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@microsoft/azdata-test/-/azdata-test-3.0.1.tgz#a8b89a12de42f277d33aae71c277d0c8efcfbee0"
-  integrity sha512-Zrctm/zKufwIRF9jfw8TOBzr5woLdKXAGNTlbAQl0IGLzVoIGULj9Gqdc1Ikhrov3rM0NkbAF/PY6j6BHiW8Tw==
+"@microsoft/azdata-test@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@microsoft/azdata-test/-/azdata-test-3.0.2.tgz#71cfbbc2ee9c1805311f3a5828b50679a5e6d73c"
+  integrity sha512-NMoSKp/Zgs+1ZIe07w+FeKhqMaxgViLGmLTQHPfYN7RRTFErJBd8JgskxYoLZbgcctfVsV+Yw+zQEn1+g2mPKg==
   dependencies:
     http-proxy-agent "^5.0.0"
     https-proxy-agent "^5.0.0"

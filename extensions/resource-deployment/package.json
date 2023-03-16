@@ -538,7 +538,7 @@
     "@types/semver": "^7.3.1",
     "@types/sinon": "^9.0.8",
     "@types/yamljs": "0.2.30",
-    "@microsoft/azdata-test": "^3.0.1",
+    "@microsoft/azdata-test": "^3.0.2",
     "mocha": "^7.1.1",
     "should": "^13.2.3",
     "sinon": "^9.2.0",
