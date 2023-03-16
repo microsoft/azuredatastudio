@@ -117,6 +117,26 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 		return undefined;
 	}
 
+	async generateProvisioningScript(
+		skuRecommendations: contracts.SkuRecommendationResultItem[],
+		serverLevelCollation: string,
+		databaseLevelCollations: contracts.DatabaseCollationMapping[]): Promise<contracts.ProvisioningScriptResult | undefined> {
+		let params: contracts.SqlMigrationGenerateProvisioningScriptParams = {
+			skuRecommendations,
+			serverLevelCollation,
+			databaseLevelCollations
+		};
+
+		try {
+			return this._client.sendRequest(contracts.SqlMigrationGenerateProvisioningScriptRequest.type, params);
+		}
+		catch (e) {
+			this._client.logFailedRequest(contracts.SqlMigrationGenerateProvisioningScriptRequest.type, e);
+		}
+
+		return undefined;
+	}
+
 	async startPerfDataCollection(
 		connectionString: string,
 		dataFolder: string,

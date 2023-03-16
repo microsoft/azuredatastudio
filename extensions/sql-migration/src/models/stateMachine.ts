@@ -15,7 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
 import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBackupFileNameWithoutFolder } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
-import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getSourceConnectionUri, getTrustServerCertificateValue, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
+import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getSourceConnectionUri, getSourceDatabaseLevelCollations, getSourceServerLevelCollation, getTrustServerCertificateValue, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel } from './loginMigrationModel';
 import { TdeMigrationDbResult, TdeMigrationModel } from './tdeModels';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
@@ -238,7 +238,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _skuRecommendationApiResponse!: contracts.SkuRecommendationResult;
 	public _skuRecommendationReportFilePaths: string[];
 	public _skuRecommendationPerformanceLocation!: string;
-
+	public _provisioningScriptApiResponse!: contracts.ProvisioningScriptResult;
+	public _provisioningScriptResult!: ProvisioningScript;
 	public _perfDataCollectionStartDate!: Date | undefined;
 	public _perfDataCollectionStopDate!: Date | undefined;
 	public _perfDataCollectionLastRefreshedDate!: Date;
@@ -625,6 +626,55 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		} catch (e) {
 			logError(TelemetryViews.SkuRecommendationWizard, 'GetSkuRecommendationTelemetryFailed', e);
 		}
+	}
+
+	public async generateProvisioningScript(targetType: MigrationTargetType): Promise<ProvisioningScript> {
+		try {
+			const serverLevelCollation = await getSourceServerLevelCollation();
+
+			const recommendedDatabases: string[] = this._skuRecommendationResults.recommendations!.sqlDbRecommendationResults.map(result => result.databaseName);
+			const databaseLevelCollations = (await getSourceDatabaseLevelCollations()).filter(db => recommendedDatabases.includes(db.databaseName));
+
+			let recommendations: contracts.SkuRecommendationResultItem[];
+			switch (targetType) {
+				case MigrationTargetType.SQLVM: {
+					// to-do: SQL VM collation
+					recommendations = this._skuRecommendationResults.recommendations!.sqlVmRecommendationResults;
+					break;
+				}
+				case MigrationTargetType.SQLDB: {
+					recommendations = this._skuRecommendationResults.recommendations!.sqlDbRecommendationResults;
+					break;
+				}
+				case MigrationTargetType.SQLMI: {
+					recommendations = this._skuRecommendationResults.recommendations!.sqlMiRecommendationResults;
+					break;
+				}
+			}
+
+			const response = (await this.migrationService.generateProvisioningScript(
+				recommendations,
+				serverLevelCollation,
+				databaseLevelCollations
+			))!;
+			this._provisioningScriptApiResponse = response;
+
+			this._provisioningScriptResult = {
+				result: this._provisioningScriptApiResponse,
+			};
+
+			return this._provisioningScriptResult;
+
+		} catch (error) {
+			logError(TelemetryViews.ProvisioningScriptWizard, 'GenerateProvisioningScriptFailed', error);
+			this._provisioningScriptResult = {
+				result: {
+					provisioningScriptFilePath: '',
+				},
+				error: error,
+			};
+		}
+		return this._provisioningScriptResult;
 	}
 
 	public async startPerfDataCollection(
@@ -1369,6 +1419,11 @@ export interface ServerAssessment {
 export interface SkuRecommendation {
 	recommendations?: contracts.SkuRecommendationResult;
 	recommendationError?: Error;
+}
+
+export interface ProvisioningScript {
+	result: contracts.ProvisioningScriptResult;
+	error?: Error;
 }
 
 export interface OperationResult<T> {

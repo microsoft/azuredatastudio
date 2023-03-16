@@ -18,6 +18,7 @@ import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as styles from '../constants/styles';
 import { SkuEditParametersDialog } from '../dialog/skuRecommendationResults/skuEditParametersDialog';
+import { GenerateProvisioningScriptDialog } from '../dialog/skuRecommendationResults/generateProvisioningScriptDialog';
 import { logError, TelemetryViews } from '../telemetry';
 import { TdeConfigurationDialog } from '../dialog/tdeConfiguration/tdeConfigurationDialog';
 import { TdeMigrationModel } from '../models/tdeModels';
@@ -251,7 +252,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			iconHeight: '35px',
 			iconWidth: '35px',
 			cardWidth: '250px',
-			cardHeight: '340px',
+			cardHeight: '380px',
 			iconPosition: 'left',
 			ariaLabel: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
 			CSSStyles: {
@@ -325,6 +326,15 @@ export class SKURecommendationPage extends MigrationWizardPage {
 							'text-decoration': 'none',
 						}
 					},
+					{
+						// 8 - CardDescriptionIndex.VIEW_TEMPLATE
+						textValue: '',
+						linkDisplayValue: '',
+						linkStyles: {
+							...styles.BODY_CSS,
+							'text-decoration': 'none',
+						}
+					},
 				]
 			});
 
@@ -333,9 +343,17 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					if (this.hasRecommendations()) {
 						if (e.cardId === product.type) {
 							const skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, product.type);
-							await skuRecommendationResultsDialog.openDialog(
-								e.cardId,
-								this.migrationStateModel._skuRecommendationResults.recommendations);
+							const generateArmTemplateDialog = new GenerateProvisioningScriptDialog(this.migrationStateModel, product.type);
+							if (e.description.linkDisplayValue === e.card.descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue) {
+								if (e.cardId === skuRecommendationResultsDialog._targetType) {
+									await skuRecommendationResultsDialog.openDialog(e.cardId, this.migrationStateModel._skuRecommendationResults.recommendations);
+								}
+							}
+							else if (e.description.linkDisplayValue === e.card.descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue) {
+								if (e.cardId === skuRecommendationResultsDialog._targetType) {
+									await generateArmTemplateDialog.openDialog(e.cardId, this.migrationStateModel._skuRecommendationResults.recommendations);
+								}
+							}
 						}
 					}
 				}));
@@ -669,14 +687,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (!this.migrationStateModel._assessmentResults) {
 				this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue = '';
 			} else {
-				if (this.hasRecommendations()) {
-					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = constants.VIEW_DETAILS;
-					this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
-						...styles.BODY_CSS,
-						'font-weight': '500',
-					};
-				} else {
+				if (!this.hasRecommendations()) {
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = '';
+					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = '';
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
 						...styles.BODY_CSS,
 					};
@@ -696,7 +709,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue =
 							constants.CAN_BE_MIGRATED(dbWithoutIssuesForMiCount, dbCount);
 
-						if (this.hasRecommendations()) {
+						if (this.hasRecommendations()) {			//////
 							if (this.migrationStateModel._skuEnableElastic) {
 								recommendation = this.migrationStateModel._skuRecommendationResults.recommendations?.elasticSqlMiRecommendationResults[0];
 							} else {
@@ -707,8 +720,20 @@ export class SKURecommendationPage extends MigrationWizardPage {
 							if (!recommendation?.targetSku) {
 								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue =
 									constants.SKU_RECOMMENDATION_NO_RECOMMENDATION;
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = '';
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = '';
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
+									...styles.BODY_CSS,
+								};
 							}
 							else {
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = constants.VIEW_DETAILS;
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = constants.TARGET_PROVISIONING_LINK;
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
+									...styles.BODY_CSS,
+									'font-weight': '500',
+								};
+
 								const serviceTier = recommendation.targetSku.category?.sqlServiceTier === contracts.AzureSqlPaaSServiceTier.GeneralPurpose
 									? constants.GENERAL_PURPOSE
 									: constants.BUSINESS_CRITICAL;
@@ -740,8 +765,20 @@ export class SKURecommendationPage extends MigrationWizardPage {
 								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue =
 									constants.SKU_RECOMMENDATION_NO_RECOMMENDATION;
 								this._rbg.cards[index].descriptions[CardDescriptionIndex.VM_CONFIGURATIONS].textValue = '';
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = '';
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = '';
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
+									...styles.BODY_CSS,
+								};
 							}
 							else {
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = constants.VIEW_DETAILS;
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = constants.TARGET_PROVISIONING_LINK;
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
+									...styles.BODY_CSS,
+									'font-weight': '500',
+								};
+
 								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue =
 									constants.VM_CONFIGURATION(
 										recommendation.targetSku.virtualMachineSize!.sizeName,
@@ -775,6 +812,21 @@ export class SKURecommendationPage extends MigrationWizardPage {
 							const successfulRecommendationsCount = recommendations.filter(r => r.targetSku !== null).length;
 							this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue =
 								constants.RECOMMENDATIONS_AVAILABLE(successfulRecommendationsCount);
+
+							if (successfulRecommendationsCount < 1) {
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = '';
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = '';
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
+									...styles.BODY_CSS,
+								};
+							} else {
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = constants.VIEW_DETAILS;
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = constants.TARGET_PROVISIONING_LINK;
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
+									...styles.BODY_CSS,
+									'font-weight': '500',
+								};
+							}
 						}
 						break;
 				}
@@ -1351,4 +1403,5 @@ export enum CardDescriptionIndex {
 	SKU_RECOMMENDATION = 5,
 	VM_CONFIGURATIONS = 6,
 	VIEW_SKU_DETAILS = 7,
+	VIEW_TEMPLATE = 8,
 }

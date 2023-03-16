@@ -180,6 +180,7 @@ export interface SkuRecommendationResultItem {
 	ranking: number;
 	positiveJustifications: string[];
 	negativeJustifications: string[];
+	recommendationReasonings: any[];
 }
 
 export interface SqlInstanceRequirements {
@@ -392,12 +393,31 @@ export namespace GetSqlMigrationSkuRecommendationsRequest {
 	export const type = new RequestType<SqlMigrationSkuRecommendationsParams, SkuRecommendationResult, void, void>('migration/getskurecommendations');
 }
 
+export interface DatabaseCollationMapping {
+	databaseName: string;
+	databaseCollation: string;
+}
+
+export interface SqlMigrationGenerateProvisioningScriptParams {
+	skuRecommendations: SkuRecommendationResultItem[];
+	serverLevelCollation: string;
+	databaseLevelCollations: DatabaseCollationMapping[];
+}
+
+export namespace SqlMigrationGenerateProvisioningScriptRequest {
+	export const type = new RequestType<SqlMigrationGenerateProvisioningScriptParams, ProvisioningScriptResult, void, void>('migration/generateprovisioningscript');
+}
+
 export interface SqlMigrationStartPerfDataCollectionParams {
 	connectionString: string,
 	dataFolder: string,
 	perfQueryIntervalInSec: number,
 	staticQueryIntervalInSec: number,
 	numberOfIterations: number
+}
+
+export interface ProvisioningScriptResult {
+	provisioningScriptFilePath: string;
 }
 
 export interface StartPerfDataCollectionResult {
@@ -484,6 +504,7 @@ export interface ISqlMigrationService {
 	providerId: string;
 	getAssessments(ownerUri: string, databases: string[], xEventsFilesFolderPath: string): Thenable<AssessmentResult | undefined>;
 	getSkuRecommendations(dataFolder: string, perfQueryIntervalInSec: number, targetPlatforms: string[], targetSqlInstance: string, targetPercentile: number, scalingFactor: number, startTime: string, endTime: string, includePreviewSkus: boolean, databaseAllowList: string[]): Promise<SkuRecommendationResult | undefined>;
+	generateProvisioningScript(skuRecommendations: SkuRecommendationResultItem[], serverLevelCollation: string, databaseLevelCollations: DatabaseCollationMapping[]): Promise<ProvisioningScriptResult | undefined>;
 	startPerfDataCollection(ownerUri: string, dataFolder: string, perfQueryIntervalInSec: number, staticQueryIntervalInSec: number, numberOfIterations: number): Promise<StartPerfDataCollectionResult | undefined>;
 	stopPerfDataCollection(): Promise<StopPerfDataCollectionResult | undefined>;
 	refreshPerfDataCollection(lastRefreshedTime: Date): Promise<RefreshPerfDataCollectionResult | undefined>;

@@ -32,6 +32,8 @@ For example:
 
 ## Debugging the extension service:
 
+To debug NuGet calls, once the migration service has been launched, navigate to VSCode > Run and Debug > select ".NET Core Attach" > attach to "MicrosoftSqlToolsMigration.exe". Breakpoints should then work as intended.
+
 ### The logs for the extension and service during runtime can be accessed by:
 
 1. Opening the command palette (Ctrl+P) and searching for "Developer: Open Extensions Logs Folder"
