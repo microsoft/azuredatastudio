@@ -999,12 +999,15 @@ export const ALL_BACKUPS_RESTORED = localize('sql.migration.all.backups.restored
 export const ACTIVE_BACKUP_FILES = localize('sql.migration.active.backup.files', "Active backup files");
 export const MIGRATION_STATUS_REFRESH_ERROR = localize('sql.migration.cutover.status.refresh.error', 'An error occurred while refreshing the migration status.');
 export const MIGRATION_CANCELLATION_ERROR = localize('sql.migration.cancel.error', 'An error occurred while canceling the migration.');
+export const MIGRATION_DELETE_ERROR = localize('sql.migration.delete.error', 'An error occurred while deleting the migration.');
+
 export const STATUS = localize('sql.migration.status', "Status");
 export const BACKUP_START_TIME = localize('sql.migration.backup.start.time', "Backup start time");
 export const FIRST_LSN = localize('sql.migration.first.lsn', "First LSN");
 export const LAST_LSN = localize('sql.migration.last.LSN', "Last LSN");
 export const CANNOT_START_CUTOVER_ERROR = localize('sql.migration.cannot.start.cutover.error', "The cutover process cannot start until all the migrations are done. To return the latest file status, refresh your browser window.");
 export const CANCEL_MIGRATION = localize('sql.migration.cancel.migration', "Cancel migration");
+export const DELETE_MIGRATION = localize('sql.migration.delete.migration', "Delete migration");
 export function ACTIVE_BACKUP_FILES_ITEMS(fileCount: number) {
 	if (fileCount === 1) {
 		return localize('sql.migration.active.backup.files.items', "Active backup files (1 item)");
@@ -1015,6 +1018,8 @@ export function ACTIVE_BACKUP_FILES_ITEMS(fileCount: number) {
 export const COPY_MIGRATION_DETAILS = localize('sql.migration.copy.migration.details', "Copy migration details");
 export const DETAILS_COPIED = localize('sql.migration.details.copied', "Details copied");
 export const CANCEL_MIGRATION_CONFIRMATION = localize('sql.cancel.migration.confirmation', "Are you sure you want to cancel this migration?");
+export const DELETE_MIGRATION_CONFIRMATION = localize('sql.delete.migration.confirmation', "Are you sure you want to delete this migration?");
+
 export const YES = localize('sql.migration.yes', "Yes");
 export const NO = localize('sql.migration.no', "No");
 export const NA = localize('sql.migration.na', "N/A");
@@ -1055,6 +1060,7 @@ export function CUTOVER_IN_PROGRESS(dbName: string): string {
 	return localize('sql.migration.cutover.in.progress', "Cutover in progress for database '{0}'", dbName);
 }
 export const MIGRATION_CANNOT_CANCEL = localize('sql.migration.cannot.cancel', 'Migration is not in progress and cannot be canceled.');
+export const MIGRATION_CANNOT_DELETE = localize('sql.migration.cannot.delete', 'Migration is currently in progress and cannot be deleted.');
 export const MIGRATION_CANNOT_CUTOVER = localize('sql.migration.cannot.cutover', 'Migration is not in progress and cannot be cutover.');
 export const FILE_NAME = localize('sql.migration.file.name', "File name");
 export const SIZE_COLUMN_HEADER = localize('sql.migration.size.column.header', "Size");

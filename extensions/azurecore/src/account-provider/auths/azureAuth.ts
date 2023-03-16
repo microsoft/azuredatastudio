@@ -139,11 +139,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 			if (ex instanceof AzureAuthError) {
 				if (loginComplete) {
 					loginComplete.reject(ex);
-					Logger.error(ex);
-				} else {
-					void vscode.window.showErrorMessage(ex.message);
-					Logger.error(ex.originalMessageAndException);
 				}
+				Logger.error(ex.originalMessageAndException);
 			} else {
 				const message = ex.errorMessage || ex.message;
 				if (message) {
@@ -155,10 +152,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 					};
 				}
 				Logger.error(ex);
-
 			}
 			return {
-				canceled: false
+				canceled: false,
+				errorCode: ex.errorCode,
+				errorMessage: ex.errorMessage || ex.message
 			};
 		}
 	}
@@ -476,7 +474,12 @@ export abstract class AzureAuth implements vscode.Disposable {
 			Logger.verbose('Fetching tenants with uri {0}', tenantUri);
 			let tenantList: string[] = [];
 			const tenantResponse = await this.makeGetRequest(tenantUri, token);
-			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
+			const data = tenantResponse.data;
+			if (data.error) {
+				Logger.error(`Error fetching tenants :${data.error.code} - ${data.error.message}`);
+				throw new Error(`${data.error.code} - ${data.error.message}`);
+			}
+			const tenants: Tenant[] = data.value.map((tenantInfo: TenantResponse) => {
 				if (tenantInfo.displayName) {
 					tenantList.push(tenantInfo.displayName);
 				} else {
@@ -501,7 +504,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return tenants;
 		} catch (ex) {
 			Logger.error(`Error fetching tenants :${ex}`);
-			throw new Error('Error retrieving tenant information');
+			throw ex;
 		}
 	}
 
@@ -716,8 +719,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 			accountIssuer = Constants.AccountIssuer.Msft;
 		}
 
-		const name = tokenClaims.name ?? tokenClaims.email ?? tokenClaims.unique_name ?? tokenClaims.preferred_username;
-		const email = tokenClaims.email ?? tokenClaims.unique_name ?? tokenClaims.preferred_username;
+		const name = tokenClaims.name ?? tokenClaims.preferred_username ?? tokenClaims.email ?? tokenClaims.unique_name;
+		const email = tokenClaims.preferred_username ?? tokenClaims.email ?? tokenClaims.unique_name;
 
 		let owningTenant: Tenant = this.commonTenant; // default to common tenant
 
