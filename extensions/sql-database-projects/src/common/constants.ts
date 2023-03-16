@@ -123,6 +123,8 @@ export function updatedToSdkStyleError(projectName: string) { return localize('u
 export const enterNewName = localize('enterNewName', "Enter new name");
 //#endregion
 
+export const reservedProjectFolders = ['Properties', 'SQLCMD Variables', 'Database References'];
+
 //#region Publish dialog strings
 export const publishDialogName = localize('publishDialogName', "Publish project");
 export const publish = localize('publish', "Publish");

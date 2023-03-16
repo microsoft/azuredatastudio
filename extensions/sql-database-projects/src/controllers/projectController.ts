@@ -17,7 +17,7 @@ import type * as mssqlVscode from 'vscode-mssql';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
-import { Project, reservedProjectFolders } from '../models/project';
+import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
@@ -679,7 +679,7 @@ export class ProjectsController {
 	}
 
 	public isReservedFolder(absoluteFolderPath: string, projectFolderPath: string): boolean {
-		const sameName = reservedProjectFolders.find(f => f === path.parse(absoluteFolderPath).name) !== undefined;
+		const sameName = constants.reservedProjectFolders.find(f => f === path.parse(absoluteFolderPath).name) !== undefined;
 		const sameLocation = path.parse(absoluteFolderPath).dir === projectFolderPath;
 		return sameName && sameLocation;
 	}

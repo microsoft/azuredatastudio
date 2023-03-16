@@ -938,5 +938,3 @@ export class Project implements ISqlProject {
 		return result;
 	}
 }
-
-export const reservedProjectFolders = ['Properties', 'Data Sources', 'Database References'];
