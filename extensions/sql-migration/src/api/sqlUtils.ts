@@ -243,6 +243,24 @@ export function getTargetConnectionProfile(
 	};
 }
 
+export async function getSqlDbConnectionString(serverName: string,
+	tenantId: string,
+	databaseName: string,
+	userName: string,
+	password: string): Promise<string> {
+	const connectionProfile = await getSqlDbConnectionProfile(serverName,
+		tenantId,
+		databaseName,
+		userName,
+		password);
+	const result = await azdata.connection.connect(connectionProfile, false, false);
+	if (result.connected && result.connectionId) {
+		return azdata.connection.getConnectionString(result.connectionId, true);
+	}
+
+	return '';
+}
+
 export async function getSourceConnectionString(): Promise<string> {
 	return await azdata.connection.getConnectionString((await getSourceConnectionProfile()).connectionId, true);
 }

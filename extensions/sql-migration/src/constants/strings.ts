@@ -586,6 +586,7 @@ export const DATABASE_TABLE_REFRESH_LABEL = localize('sql.migration.database.tab
 export const DATABASE_TABLE_SOURCE_DATABASE_COLUMN_LABEL = localize('sql.migration.database.table.source.column.label', "Source database");
 export const DATABASE_TABLE_TARGET_DATABASE_COLUMN_LABEL = localize('sql.migration.database.table.target.column.label', "Target database");
 export const DATABASE_TABLE_SELECTED_TABLES_COLUMN_LABEL = localize('sql.migration.database.table.tables.column.label', "Select tables");
+export const DATABASE_TABLE_MIGRATE_SCHEMA_COLUMN_LABEL = localize('sql.migration.database.table.tables.column.label', "Migrate Schema");
 export const DATABASE_TABLE_CONNECTION_ERROR = localize('sql.migration.database.connection.error', "An error occurred while connecting to target migration database.");
 export function DATABASE_TABLE_CONNECTION_ERROR_MESSAGE(message: string): string {
 	return localize('sql.migration.database.connection.error.message', "Connection error:{0} {1}", EOL, message);
@@ -664,6 +665,7 @@ export function SELECT_DATABASE_TABLES_TITLE(targetDatabaseName: string): string
 	return localize('sql.migration.table.select.label', "Select tables for {0}", targetDatabaseName);
 }
 export const TABLE_SELECTION_EDIT = localize('sql.migration.table.selection.edit', "Edit");
+export const MIGRATE_SCHEMA_BUTTON = localize('sql.migration.table.selection.edit', "Migrate");
 
 export function TABLE_SELECTION_COUNT(selectedCount: number, rowCount: number): string {
 	return localize('sql.migration.table.selection.count', "{0} of {1}", selectedCount, rowCount);

@@ -19,6 +19,8 @@ import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, get
 import { LoginMigrationModel } from './loginMigrationModel';
 import { TdeMigrationDbResult, TdeMigrationModel } from './tdeModels';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
+import { SqlSchemaMigrationModel } from './sqlSchemaMigrationModel';
+
 const localize = nls.loadMessageBundle();
 
 export enum ValidateIrState {
@@ -274,6 +276,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public serverName!: string;
 
 	public tdeMigrationConfig: TdeMigrationModel = new TdeMigrationModel();
+
+	public sqlSchemaMigrationModel: SqlSchemaMigrationModel = new SqlSchemaMigrationModel();
 
 	private _stateChangeEventEmitter = new vscode.EventEmitter<StateChangeEvent>();
 	private _currentState: State;

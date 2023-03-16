@@ -28,6 +28,8 @@ export abstract class MigrationExtensionService extends SqlOpsFeature<undefined>
 export class SqlMigrationService extends MigrationExtensionService implements contracts.ISqlMigrationService {
 	private _reportUpdate: ((dbName: string, succeeded: boolean, error: string) => void) | undefined = undefined;
 
+	private _reportSchemaMigrationComplete: ((sourceDbName: string, succeeded: boolean) => void) | undefined = undefined;
+
 	override providerId = ApiType.SqlMigrationProvider;
 
 	private static readonly messagesTypes: RPCMessageType[] = [
@@ -41,7 +43,8 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 		contracts.MigrateLoginsRequest.type,
 		contracts.EstablishUserMappingRequest.type,
 		contracts.MigrateServerRolesAndSetPermissionsRequest.type,
-		contracts.TdeMigrateRequest.type
+		contracts.TdeMigrateRequest.type,
+		contracts.SchemaMigrationRequest.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
@@ -59,6 +62,13 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 				return;
 			}
 			this._reportUpdate(e.name, e.success, e.message);
+		});
+
+		this._client.onNotification(contracts.SchemaMigrationCompleteEvent.type, e => {
+			if (this._reportSchemaMigrationComplete === undefined) {
+				return;
+			}
+			this._reportSchemaMigrationComplete(e.sourceDbName, e.succeeded);
 		});
 	}
 
@@ -312,6 +322,28 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 		}
 		catch (e) {
 			this._client.logFailedRequest(contracts.TdeMigrateRequest.type, e);
+		}
+
+		return undefined;
+	}
+
+	async migrateSqlSchema(
+		sourceConnectionString: string,
+		targetConnectionString: string,
+		reportSchemaMigrationComplete: (sourceDbName: string, succeeded: boolean) => void): Promise<contracts.SchemaMigrationResult | undefined> {
+
+		this._reportSchemaMigrationComplete = reportSchemaMigrationComplete;
+		let params: contracts.SchemaMigrationParams = {
+			sourceSqlConnectionString: sourceConnectionString,
+			targetSqlConnectionString: targetConnectionString
+		};
+
+		try {
+			const result = await this._client.sendRequest(contracts.SchemaMigrationRequest.type, params);
+			return result;
+		}
+		catch (e) {
+			this._client.logFailedRequest(contracts.MigrateServerRolesAndSetPermissionsRequest.type, e);
 		}
 
 		return undefined;
