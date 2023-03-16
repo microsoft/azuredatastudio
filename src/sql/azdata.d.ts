@@ -3574,7 +3574,7 @@ declare module 'azdata' {
 
 	export interface InputBoxProperties extends ComponentProperties {
 		value?: string | undefined;
-		ariaLive?: string | undefined;
+		ariaLive?: AriaLiveValue | undefined;
 		placeHolder?: string | undefined;
 		inputType?: InputBoxInputType | undefined;
 		required?: boolean | undefined;

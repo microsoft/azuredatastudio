@@ -1004,10 +1004,10 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		this.setProperty('value', v);
 	}
 
-	public get ariaLive(): string {
+	public get ariaLive(): azdata.AriaLiveValue {
 		return this.properties['ariaLive'];
 	}
-	public set ariaLive(v: string) {
+	public set ariaLive(v: azdata.AriaLiveValue) {
 		this.setProperty('ariaLive', v);
 	}
 
@@ -1392,11 +1392,11 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 		this.setProperty('textType', type);
 	}
 
-	public get ariaLive(): string | undefined {
+	public get ariaLive(): azdata.AriaLiveValue | undefined {
 		return this.properties['ariaLive'];
 	}
 
-	public set ariaLive(ariaLive: string | undefined) {
+	public set ariaLive(ariaLive: azdata.AriaLiveValue | undefined) {
 		this.setProperty('ariaLive', ariaLive);
 	}
 }
