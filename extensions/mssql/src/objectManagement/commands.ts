@@ -189,7 +189,7 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 	});
 
 	// return if no change was made or the dialog was canceled.
-	if (newName === context.nodeInfo.label || !newName) {
+	if (newName === originalName || !newName) {
 		return;
 	}
 
