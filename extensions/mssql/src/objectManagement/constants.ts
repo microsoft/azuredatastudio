@@ -7,8 +7,11 @@
  * The object types in object explorer's node context.
  */
 export enum NodeType {
+	Column = 'Column',
 	Login = 'ServerLevelLogin',
-	User = 'User'
+	Table = 'Table',
+	User = 'User',
+	View = 'View'
 }
 
 export const PublicServerRoleName = 'public';

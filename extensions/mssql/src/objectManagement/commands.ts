@@ -14,7 +14,7 @@ import * as localizedConstants from './localizedConstants';
 import { UserDialog } from './ui/userDialog';
 import { IObjectManagementService } from 'mssql';
 import * as constants from '../constants';
-import { getNodeTypeDisplayName, getObjectName, getObjectUrn, refreshParentNode } from './utils';
+import { getNodeTypeDisplayName, refreshParentNode } from './utils';
 import { TelemetryReporter } from '../telemetry';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
@@ -174,7 +174,7 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 		return;
 	}
 	const nodeTypeDisplayName = getNodeTypeDisplayName(context.nodeInfo.nodeType);
-	const originalName = getObjectName(context);
+	const originalName = context.nodeInfo.metadata.name;
 	const newName = await vscode.window.showInputBox({
 		title: localizedConstants.RenameObjectDialogTitle,
 		value: originalName,
@@ -200,7 +200,7 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 		operation: async (operation) => {
 			try {
 				const startTime = Date.now();
-				await service.rename(connectionUri, getObjectUrn(context), newName);
+				await service.rename(connectionUri, context.nodeInfo.metadata.urn, newName);
 				TelemetryReporter.sendTelemetryEvent(TelemetryActions.RenameObject, {
 					objectType: context.nodeInfo.nodeType
 				}, {

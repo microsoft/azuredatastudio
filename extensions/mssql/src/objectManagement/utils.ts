@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { getErrorMessage } from '../utils';
 import { AuthenticationType, NodeType, UserType } from './constants';
-import { AADAuthenticationTypeDisplayText, ContainedUserText, LoginTypeDisplayName, LoginTypeDisplayNameInTitle, RefreshObjectExplorerError, SQLAuthenticationTypeDisplayText, UserTypeDisplayName, UserTypeDisplayNameInTitle, UserWithLoginText, UserWithNoConnectAccess, UserWithWindowsGroupLoginText, WindowsAuthenticationTypeDisplayText } from './localizedConstants';
+import { AADAuthenticationTypeDisplayText, ColumnTypeDisplayName, ContainedUserText, LoginTypeDisplayName, LoginTypeDisplayNameInTitle, RefreshObjectExplorerError, SQLAuthenticationTypeDisplayText, TableTypeDisplayName, UserTypeDisplayName, UserTypeDisplayNameInTitle, UserWithLoginText, UserWithNoConnectAccess, UserWithWindowsGroupLoginText, ViewTypeDisplayName, WindowsAuthenticationTypeDisplayText } from './localizedConstants';
 
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
@@ -59,6 +59,12 @@ export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): 
 			return inTitle ? LoginTypeDisplayNameInTitle : LoginTypeDisplayName;
 		case NodeType.User:
 			return inTitle ? UserTypeDisplayNameInTitle : UserTypeDisplayName;
+		case NodeType.Table:
+			return TableTypeDisplayName;
+		case NodeType.View:
+			return ViewTypeDisplayName;
+		case NodeType.Column:
+			return ColumnTypeDisplayName;
 		default:
 			throw new Error(`Unkown node type: ${type}`);
 	}
@@ -119,26 +125,4 @@ export function isValidSQLPassword(password: string, userName: string = 'sa'): b
 	const hasNumbers = /\d/.test(password) ? 1 : 0;
 	const hasNonAlphas = /\W/.test(password) ? 1 : 0;
 	return !containsUserName && password.length >= 8 && password.length <= 128 && (hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas >= 3);
-}
-
-/**
- * Gets the name of the object.
- */
-export function getObjectName(context: azdata.ObjectExplorerContext): string {
-	return context.nodeInfo.label;
-}
-
-export function getObjectUrn(context: azdata.ObjectExplorerContext): string {
-	switch (context.nodeInfo.nodeType) {
-		case NodeType.Login:
-			return `Server/Login[@Name='${escapeUrn(context.nodeInfo.label)}']`;
-		case NodeType.User:
-			return `Server/Database[@Name='${escapeUrn(context.connectionProfile.databaseName)}']/User[@Name='${escapeUrn(context.nodeInfo.label)}']`;
-		default:
-			throw new Error(`Unkown node type: ${context.nodeInfo.nodeType}`);
-	}
-}
-
-function escapeUrn(value: string): string {
-	return value.replace(/\'/g, '\'\'');
 }

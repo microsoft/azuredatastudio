@@ -522,7 +522,12 @@
         },
         {
           "command": "mssql.renameObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|Table|View)$/ && config.workbench.enablePreviewFeatures",
+          "group": "0_query@3"
+        },
+        {
+          "command": "mssql.renameObject",
+          "when": "connectionProvider == MSSQL && nodeType == Column && config.workbench.enablePreviewFeatures && nodePath =~ /^.*\/Tables\/.*\/Columns\/.*$",
           "group": "0_query@3"
         },
         {
@@ -564,6 +569,16 @@
           "command": "mssql.deleteObject",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
           "group": "connection@2"
+        },
+        {
+          "command": "mssql.renameObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|Table|View)$/ && config.workbench.enablePreviewFeatures",
+          "group": "connection@3"
+        },
+        {
+          "command": "mssql.renameObject",
+          "when": "connectionProvider == MSSQL && nodeType == Column && config.workbench.enablePreviewFeatures && nodePath =~ /^.*\/Tables\/.*\/Columns\/.*$",
+          "group": "connection@3"
         },
         {
           "command": "mssql.enableGroupBySchema",
