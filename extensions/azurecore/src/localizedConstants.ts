@@ -10,6 +10,7 @@ export const extensionName = localize('azurecore.extensionName', "Azure Accounts
 
 export const requiresReload = localize('azurecore.requiresReload', "Modifying this setting requires reloading the window for all changes to take effect.");
 export const reload = localize('azurecore.reload', "Reload");
+export const cancel = localize('azurecore.reload', "Cancel");
 
 export const australiaCentral = localize('azurecore.australiacentral', "Australia Central");
 export const australiaCentral2 = localize('azurecore.australiacentral2', "Australia Central 2");
@@ -84,3 +85,6 @@ export const invalidTenant = localize('azurecore.invalidTenant', "Invalid tenant
 export function unableToFetchTokenError(tenant: string): string {
 	return localize('azurecore.unableToFetchToken', "Unable to get token for tenant {0}", tenant);
 }
+
+// Error Messages
+export const azureCredStoreSaveFailedError = localize('azure.credStoreSaveFailedError', `Keys for token cache could not be saved in credential store, this may cause Azure access token persistence issues and connection instabilities. It's likely that Azure Data Studio has reached credential storage limit on Windows, please clear atleast 2 credentials created by Azure Data Studio in Windows Credential Manager and reload.`);

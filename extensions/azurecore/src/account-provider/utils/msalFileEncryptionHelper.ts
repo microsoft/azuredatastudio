@@ -2,9 +2,11 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import * as azdata from 'azdata';
 import * as crypto from 'crypto';
 import { AuthLibrary } from '../../constants';
+import { Logger } from '../../utils/Logger';
 import { FileEncryptionHelper } from './fileEncryptionHelper';
 
 /**
@@ -21,13 +23,21 @@ export class MSALFileEncryptionHelper extends FileEncryptionHelper {
 	private _keyBuffer: Buffer | undefined;
 
 	async init(): Promise<void> {
-		const iv = await this.readEncryptionKey(`${this._fileName}-iv`);
-		const key = await this.readEncryptionKey(`${this._fileName}-key`);
+		const ivCredId = `${this._fileName}-iv`;
+		const keyCredId = `${this._fileName}-key`;
+
+		const iv = await this.readEncryptionKey(ivCredId);
+		const key = await this.readEncryptionKey(keyCredId);
+
 		if (!iv || !key) {
 			this._ivBuffer = crypto.randomBytes(16);
 			this._keyBuffer = crypto.randomBytes(32);
-			await this.saveEncryptionKey(`${this._fileName}-iv`, this._ivBuffer.toString('utf16le'));
-			await this.saveEncryptionKey(`${this._fileName}-key`, this._keyBuffer.toString('utf16le'));
+
+			if (!await this.saveEncryptionKey(ivCredId, this._ivBuffer.toString('utf16le'))
+				|| !await this.saveEncryptionKey(keyCredId, this._keyBuffer.toString('utf16le'))) {
+				Logger.error(`Encryption keys could not be saved in credential store, this will cause access token persistence issues.`);
+				await this.showCredSaveErrorOnWindows();
+			}
 		} else {
 			this._ivBuffer = Buffer.from(iv, 'utf16le');
 			this._keyBuffer = Buffer.from(key, 'utf16le');
