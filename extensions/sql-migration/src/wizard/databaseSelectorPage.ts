@@ -275,18 +275,24 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				}));
 
 		const xEventsFolderPickerContainer = this._view.modelBuilder.flexContainer()
-			.withProps(
-				{ CSSStyles: { 'flex-direction': 'row', 'align-items': 'left' } })
-			.withItems([
+			.withProps({
+				CSSStyles: { 'flex-direction': 'row', 'align-items': 'left' }
+			}).withItems([
 				this._xEventsFolderPickerInput,
 				xEventsFolderPickerButton,
-				xEventsFolderPickerClearButton])
-			.component();
+				xEventsFolderPickerClearButton
+			]).component();
 
-		this._xEventsGroup = this._view.modelBuilder.groupContainer().withLayout({
-			header: constants.XEVENTS_ASSESSMENT_TITLE,
-			collapsible: true
-		}).withProps({ collapsed: false, width: 650, }).withItems([xEventsDescription, xEventsInstructions, xEventsFolderPickerContainer]).component();
+		this._xEventsGroup = this._view.modelBuilder.groupContainer()
+			.withLayout({
+				header: constants.XEVENTS_ASSESSMENT_TITLE,
+				collapsible: true,
+				collapsed: true
+			}).withItems([
+				xEventsDescription,
+				xEventsInstructions,
+				xEventsFolderPickerContainer
+			]).component();
 
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
@@ -296,6 +302,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				'margin': '0px 28px 0px 28px'
 			}
 		}).component();
+
 		flex.addItem(text, { flex: '0 0 auto' });
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._dbCount, { flex: '0 0 auto' });
