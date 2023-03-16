@@ -3,10 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as path from 'path';
 import * as azdata from 'azdata';
 import * as events from 'events';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
+import { promises as fsPromises } from 'fs';
 import { SimpleTokenCache } from './utils/simpleTokenCache';
 import providerSettings from './providerSettings';
 import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider';
@@ -145,6 +147,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		const noSystemKeychain = vscode.workspace.getConfiguration(Constants.AzureSection).get<boolean>(Constants.NoSystemKeyChainSection);
 		const tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
 		const tokenCacheKeyMsal = Constants.MSALCacheName;
+		await this.clearOldCacheIfExists();
 		try {
 			if (!this._credentialProvider) {
 				throw new Error('Credential provider not registered');
@@ -181,6 +184,22 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			this._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
 		} catch (e) {
 			console.error(`Failed to register account provider, isSaw: ${isSaw}: ${e}`);
+		}
+	}
+
+	/**
+	 * Clears old cache file that is no longer needed on system.
+	 */
+	private async clearOldCacheIfExists(): Promise<void> {
+		let filePath = path.join(this._userStoragePath, Constants.oldMsalCacheFileName);
+		try {
+			await fsPromises.access(filePath);
+			await fsPromises.unlink('file:' + filePath);
+			Logger.verbose(`Old cache file removed successfully.`);
+		} catch (e) {
+			if (e.code !== 'ENOENT') {
+				Logger.verbose(`Error occurred while removing old cache file: ${e}`);
+			} // else file doesn't exist.
 		}
 	}
 

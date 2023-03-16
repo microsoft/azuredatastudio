@@ -39,6 +39,8 @@ export const AzureTenantConfigSection = AzureSection + '.' + TenantSection + '.'
 
 export const NoSystemKeyChainSection = 'noSystemKeychain';
 
+export const oldMsalCacheFileName = 'azureTokenCacheMsal-azure_publicCloud';
+
 /** MSAL Account version */
 export const AccountVersion = '2.0';
 
