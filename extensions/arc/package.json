@@ -1599,7 +1599,7 @@
     "@types/sinon": "^9.0.4",
     "@types/uuid": "^8.3.0",
     "@types/yamljs": "^0.2.31",
-    "@microsoft/azdata-test": "^2.0.3",
+    "@microsoft/azdata-test": "^3.0.1",
     "mocha": "^7.1.1",
     "should": "^13.2.3",
     "sinon": "^9.0.2",
