@@ -36,10 +36,11 @@ import Severity from 'vs/base/common/severity';
 import { ConnectionStringOptions } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isFalsyOrWhitespace } from 'vs/base/common/strings';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { AuthLibrary, filterAccounts } from 'sql/workbench/services/accountManagement/browser/accountDialog';
+import { filterAccounts } from 'sql/workbench/services/accountManagement/browser/accountDialog';
 import { AuthenticationType, Actions } from 'sql/platform/connection/common/constants';
 import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
 import { createCSSRule } from 'vs/base/browser/dom';
+import { AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManagement/utils';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
@@ -112,7 +113,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		color: undefined,
 		description: undefined,
 	};
-	private readonly configurationService: IConfigurationService;
 	constructor(options: azdata.ConnectionOption[],
 		callbacks: IConnectionComponentCallbacks,
 		providerName: string,
@@ -122,7 +122,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@ILogService protected _logService: ILogService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super();
 		this._callbacks = callbacks;
@@ -142,7 +142,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		}
 		this._providerName = providerName;
 		this._connectionStringOptions = this._connectionManagementService.getProviderProperties(this._providerName).connectionStringOptions;
-		this.configurationService = configurationService;
 	}
 
 	protected getAuthTypeDefault(option: azdata.ConnectionOption, os: OperatingSystem): string {
@@ -691,7 +690,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let oldSelection = this._azureAccountDropdown.value;
 		const accounts = await this._accountManagementService.getAccounts();
 		const updatedAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
-		const authLibrary: AuthLibrary = this.configurationService.getValue('azure.authenticationLibrary');
+		const authLibrary: AuthLibrary = getAuthLibrary(this._configurationService);
 		if (authLibrary) {
 			this._azureAccountList = filterAccounts(updatedAccounts, authLibrary);
 		}
