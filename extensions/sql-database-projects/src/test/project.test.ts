@@ -980,7 +980,7 @@ describe('Project: database references', function (): void {
 		should(projFileText).containEql('$(SystemDacpacsLocation)\\SystemDacpacs\\160\\master.dacpac');
 		should(projFileText).containEql('$(DacPacRootPath)\\Extensions\\Microsoft\\SQLDB\\Extensions\\SqlServer\\160\\SqlSchemas\\master.dacpac');
 
-		await project.addSystemDatabaseReference({ databaseName: 'msdb', systemDb: SystemDatabase.Msdb, suppressMissingDependenciesErrors: false });
+		await project.addSystemDatabaseReference({ databaseName: 'msdb', systemDb: SystemDatabase.MSDB, suppressMissingDependenciesErrors: false });
 		project = await Project.openProject(projFilePath);
 		should(project.databaseReferences.length).equal(2, 'There should be two database references after adding a reference to msdb');
 		should(project.databaseReferences[1].databaseName).equal(constants.msdb, 'The database reference should be msdb');
