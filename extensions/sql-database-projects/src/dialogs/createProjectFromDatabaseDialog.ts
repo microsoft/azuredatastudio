@@ -330,7 +330,8 @@ export class CreateProjectFromDatabaseDialog {
 			value: '',
 			ariaLabel: constants.location,
 			placeHolder: constants.projectLocationPlaceholderText,
-			width: cssStyles.createProjectFromDatabaseTextboxWidth
+			width: cssStyles.createProjectFromDatabaseTextboxWidth,
+			required: true
 		}).component();
 
 		this.projectLocationTextBox.onTextChanged(() => {
