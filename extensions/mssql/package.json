@@ -916,15 +916,66 @@
           "categoryValues": [
             {
               "displayName": "%mssql.disabled%",
-              "name": "Disabled"
+              "name": "disabled"
             },
             {
               "displayName": "%mssql.enabled%",
-              "name": "Enabled"
+              "name": "enabled"
             }
           ],
           "isRequired": false,
-          "isArray": false
+          "isArray": false,
+          "onSelectionChange": [
+            {
+              "values": [
+                "disabled",
+                ""
+              ],
+              "dependentOptionActions": [
+                {
+                  "optionName": "secureEnclaves",
+                  "action": "hide"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
+          "name": "secureEnclaves",
+          "displayName": "%mssql.connectionOptions.secureEnclaves.displayName%",
+          "description": "%mssql.connectionOptions.secureEnclaves.description%",
+          "groupName": "%mssql.connectionOptions.groupName.security%",
+          "valueType": "category",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": [
+            {
+              "displayName": "%mssql.disabled%",
+              "name": "disabled"
+            },
+            {
+              "displayName": "%mssql.enabled%",
+              "name": "enabled"
+            }
+          ],
+          "isRequired": false,
+          "isArray": false,
+          "onSelectionChange": [
+            {
+              "values": [
+                "disabled",
+                ""
+              ],
+              "dependentOptionActions": [
+                {
+                  "optionName": "attestationProtocol",
+                  "action": "hide"
+                }
+              ]
+            }
+          ]
         },
         {
           "specialValueType": null,
@@ -939,15 +990,33 @@
           "categoryValues": [
             {
               "displayName": "%mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS%",
-              "name": "HGS"
+              "name": "hgs"
             },
             {
               "displayName": "%mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS%",
-              "name": "AAS"
+              "name": "aas"
+            },
+            {
+              "displayName": "%mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None%",
+              "name": "none"
             }
           ],
           "isRequired": false,
-          "isArray": false
+          "isArray": false,
+          "onSelectionChange": [
+            {
+              "values": [
+                "none",
+                ""
+              ],
+              "dependentOptionActions": [
+                {
+                  "optionName": "enclaveAttestationUrl",
+                  "action": "hide"
+                }
+              ]
+            }
+          ]
         },
         {
           "specialValueType": null,
