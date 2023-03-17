@@ -67,6 +67,7 @@ import { IViewDescriptorService, ViewContainerLocation } from 'vs/workbench/comm
 import { ToggleTabFocusModeAction } from 'vs/editor/contrib/toggleTabFocusMode/browser/toggleTabFocusMode';
 import { ActiveEditorContext } from 'vs/workbench/common/contextkeys';
 import { ILanguageService } from 'vs/editor/common/languages/language';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 
 Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory)
 	.registerEditorSerializer(FileNotebookInput.ID, FileNoteBookEditorSerializer);
@@ -101,9 +102,11 @@ const DE_NEW_NOTEBOOK_COMMAND_ID = 'dataExplorer.newNotebook';
 // New Notebook
 CommandsRegistry.registerCommand({
 	id: DE_NEW_NOTEBOOK_COMMAND_ID,
-	handler: (accessor, args: TreeViewItemHandleArg) => {
+	handler: async (accessor, args: TreeViewItemHandleArg) => {
 		const instantiationService = accessor.get(IInstantiationService);
-		const connectedContext: ConnectedContext = { connectionProfile: args.$treeItem.payload };
+		const connectionService = accessor.get(IConnectionManagementService);
+		let payload = await connectionService.fixProfile(args.$treeItem.payload);
+		const connectedContext: ConnectedContext = { connectionProfile: payload };
 		return instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run({ connectionProfile: connectedContext.connectionProfile, isConnectionNode: false, nodeInfo: undefined });
 	}
 });

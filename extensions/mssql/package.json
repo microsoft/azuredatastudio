@@ -197,6 +197,11 @@
           "default": false,
           "description": "%mssql.logDebugInfo%"
         },
+        "mssql.piiLogging": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.piiLogging%"
+        },
         "mssql.tracingLevel": {
           "type": "string",
           "description": "%mssql.tracingLevel%",
@@ -411,6 +416,11 @@
         "mssql.parallelMessageProcessing": {
           "type": "boolean",
           "description": "%mssql.parallelMessageProcessing%",
+          "default": false
+        },
+        "mssql.enableSqlAuthenticationProvider": {
+          "type": "boolean",
+          "description": "%mssql.enableSqlAuthenticationProvider%",
           "default": false
         },
         "mssql.tableDesigner.preloadDatabaseModel": {

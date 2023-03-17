@@ -403,6 +403,24 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this.tryConnect(connection, input, options);
 	}
 
+	public async fixProfile(profile?: interfaces.IConnectionProfile): Promise<interfaces.IConnectionProfile> {
+		if (profile) {
+			if (profile.authenticationType !== undefined && profile.authenticationType === '') {
+				// we need to set auth type here, because it's value is part of the session key
+				profile.authenticationType = this.getDefaultAuthenticationTypeId(profile.providerName);
+			}
+
+			// If this is Azure MFA Authentication, fix username to azure Account user. Falls back to current user name.
+			// This is required, as by default, server login / administrator is the username.
+			if (profile.authenticationType === 'AzureMFA') {
+				let accounts = await this._accountManagementService?.getAccounts();
+				profile.userName = accounts?.find(a => a.key.accountId === profile.azureAccount)?.displayInfo.displayName
+					?? profile.userName;
+			}
+		}
+		return profile;
+	}
+
 	/**
 	 * If there's already a connection for given profile and purpose, returns the ownerUri for the connection
 	 * otherwise tries to make a connection and returns the owner uri when connection is complete
