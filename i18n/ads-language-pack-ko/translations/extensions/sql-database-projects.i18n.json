@@ -149,7 +149,7 @@
 			"errorFindingBuildFilesLocation": "빌드 파일 위치를 찾는 동안 오류 발생: {0}",
 			"errorMovingFile": "{0}에서 {1}(으)로 파일을 이동하는 동안 오류가 발생했습니다. 오류: {2}",
 			"errorReadingProjectGuid": "'{1}' 프로젝트의 {0}을(를) 읽는 동안 오류가 발생했습니다.",
-			"errorRenamingFile": "Error when renaming file from {0} to {1}. Error: {2}",
+			"errorRenamingFile": "파일 이름을 {0}에서 {1}(으)로 변경하는 동안 오류가 발생했습니다. 오류: {2}",
 			"errorRetrievingBuildFiles": "프로젝트를 빌드할 수 없습니다. 빌드에 필요한 파일을 검색하는 동안 오류가 발생했습니다.",
 			"eulaAgreementTemplate": "{0}을(를) 수락합니다.",
 			"eulaAgreementText": "{0}을(를) 수락합니다.",

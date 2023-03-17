@@ -149,7 +149,7 @@
 			"errorFindingBuildFilesLocation": "ビルド ファイルの場所の検索中にエラーが発生しました: {0}",
 			"errorMovingFile": "ファイルを {0} から {1} に移動するときにエラーが発生しました。エラー: {2}",
 			"errorReadingProjectGuid": "プロジェクト '{0}' の {1} を読み込もうとしてエラーが発生しました",
-			"errorRenamingFile": "Error when renaming file from {0} to {1}. Error: {2}",
+			"errorRenamingFile": "ファイルの名前を {0} から {1} に変更するときにエラーが発生しました。エラー： {2}",
 			"errorRetrievingBuildFiles": "プロジェクトをビルドできませんでした。ビルドに必要なファイルの取得中にエラーが発生しました。",
 			"eulaAgreementTemplate": "{0} に同意します。",
 			"eulaAgreementText": "{0} に同意します。",

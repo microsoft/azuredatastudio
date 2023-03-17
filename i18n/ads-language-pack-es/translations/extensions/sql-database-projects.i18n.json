@@ -149,7 +149,7 @@
 			"errorFindingBuildFilesLocation": "Error al buscar la ubicación de los archivos de compilación: {0}",
 			"errorMovingFile": "Error al mover el archivo de {0} a {1}. Error: {2}",
 			"errorReadingProjectGuid": "Error al intentar leer {0} del proyecto “{1}”",
-			"errorRenamingFile": "Error when renaming file from {0} to {1}. Error: {2}",
+			"errorRenamingFile": "Error al cambiar el nombre del archivo de {0} a {1}. Error: {2}",
 			"errorRetrievingBuildFiles": "No se pudo compilar el proyecto. Error al recuperar los archivos necesarios para compilar.",
 			"eulaAgreementTemplate": "Acepto el {0}.",
 			"eulaAgreementText": "Acepto el {0}.",

@@ -11344,7 +11344,7 @@
 			"incompatible": "Azure Data Studio '{2}' と互換性がないため、拡張機能 '{1}' のバージョン '{0}' をインストールできません。拡張機能をインストールするには、Azure Data Studio {3} に更新してください。",
 			"installExtensionCompletedAndReloadRequired": "拡張機能 {0} のインストールが完了しました。これを有効にするには、Azure Data Studio を再度読み込んでください。",
 			"maxMemoryForLargeFilesMB": "大きなファイルを開こうとすると再起動後に Azure Data Studio に対して使用できるメモリを制御します。コマンド ラインで '--max-memory=NEWSIZE' を指定する場合と同じ効果があります。",
-			"miNewDeployment": "New &&Deployment...",
+			"miNewDeployment": "新しい展開(&&D)",
 			"miNewNotebook": "新しいノートブック(&N)",
 			"miNewQuery": "新しいクエリ(&Q)",
 			"miinstallVsix": "VSIX パッケージから拡張機能をインストールする",
@@ -12417,9 +12417,6 @@
 			"nextSearchItemAction": "次の一致",
 			"previousSearchItemAction": "前の一致"
 		},
-		"sql/workbench/contrib/executionPlan/common/executionPlanInput": {
-			"epCompare.executionPlanEditorName": "ExecutionPlan"
-		},
 		"sql/workbench/contrib/extensions/browser/contributionRenders": {
 			"insight condition": "タイミング",
 			"insightId": "ID",
@@ -13336,8 +13333,8 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "閉じる",
-			"addAccountFailedCodeMessage": "{0} \r\nError Message: {1}",
-			"addAccountFailedGenericMessage": "Adding account failed, check Azure Accounts log for more info.",
+			"addAccountFailedCodeMessage": "{0} \r\nエラー メッセージ: {1}",
+			"addAccountFailedGenericMessage": "アカウントの追加に失敗しました。詳細については、Azure アカウント ログを確認してください。",
 			"addAccountFailedMessage": "{0}",
 			"loggingIn": "アカウントを追加しています...",
 			"refreshCanceled": "ユーザーがアカウントの更新をキャンセルしました",
@@ -13515,6 +13512,8 @@
 			"warning": "警告"
 		},
 		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"executionPlanService.ensureCapabilitiesRegistered": "Provider with id {0} was not registered after 30 seconds.",
+			"executionPlanService.ensureFileExtensionHandlerRegistered": "Execution plan provider which supports file format '{0}' was not registered after 30 seconds.",
 			"noHandlerRegistered": "有効な実行プラン ハンドラーが登録されていません",
 			"providerIdNotValidError": "ExecutionPlanService と対話するには、有効なプロバイダーが必要です",
 			"selectExecutionPlanProvider": "実行プランを開くプロバイダーを選択する"
@@ -13951,6 +13950,9 @@
 		},
 		"sql/workbench/services/dialog/browser/wizardNavigation.component": {
 			"wizardNavigation.stepName": "ステップ {0}: {1}"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanInput": {
+			"epCompare.executionPlanEditorName": "ExecutionPlan"
 		}
 	}
 }
