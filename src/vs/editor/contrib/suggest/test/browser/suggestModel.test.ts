@@ -877,6 +877,7 @@ suite('SuggestModel - TriggerAndCancelOracle', function () {
 	test('registerCompletionItemProvider with letters as trigger characters block other completion items to show up #127815', async function () {
 
 		disposables.add(registry.register({ scheme: 'test' }, {
+			triggerCharacters: ['a'], // {{SQL CARBON TODO}} 3/17 Needed to specify 'a' as a trigger character
 			provideCompletionItems(doc, pos) {
 				return {
 					suggestions: [{
