@@ -39,6 +39,8 @@ export const AzureTenantConfigSection = AzureSection + '.' + TenantSection + '.'
 
 export const NoSystemKeyChainSection = 'noSystemKeychain';
 
+export const oldMsalCacheFileName = 'azureTokenCacheMsal-azure_publicCloud';
+
 /** MSAL Account version */
 export const AccountVersion = '2.0';
 
@@ -60,6 +62,8 @@ export const HomeCategory = 'Home';
 export const dataGridProviderId = 'azure-resources';
 
 export const AzureTokenFolderName = 'Azure Accounts';
+
+export const MSALCacheName = 'accessTokenCache';
 
 export const DefaultAuthLibrary = 'ADAL';
 
