@@ -1652,7 +1652,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
-	 * Get the connection string for the provided connection ID, editorUri is provided in case we want to get a specific connection among several connections with the same name.
+	 * Gets the connection string for the first profile matching with the provided connection ID, editorUri is provided in case we want to get a specific connection among several connections with the same name.
 	 */
 	public getConnectionString(connectionId: string, includePassword: boolean = false, editorUri?: string): Thenable<string> {
 		let ownerUri = this.getConnectionUriFromId(connectionId, editorUri);
