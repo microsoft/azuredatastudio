@@ -49,6 +49,7 @@ cell-toolbar-component .carbon-taskbar.monaco-toolbar .monaco-action-bar ul.acti
 cell-toolbar-component .codicon.masked-icon,
 .vs cell-toolbar-component .codicon.masked-icon,
 .vs-dark cell-toolbar-component .codicon.masked-icon,
-.hc-black cell-toolbar-component .codicon.masked-icon {
+.hc-black cell-toolbar-component .codicon.masked-icon,
+.hc-light cell-toolbar-component .codicon.masked-icon {
 	background-image: none;
 }
