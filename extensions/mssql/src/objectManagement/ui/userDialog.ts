@@ -69,7 +69,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		}
 	}
 
-	protected async onDispose(): Promise<void> {
+	protected async disposeView(): Promise<void> {
 		await this.objectManagementService.disposeUserView(this.contextId);
 	}
 
