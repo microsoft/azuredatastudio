@@ -24,6 +24,8 @@ export abstract class BaseProjectTreeItem {
 
 	abstract get type(): DatabaseProjectItemType;
 
+	public entryKey?: string;
+
 	public get friendlyName(): string {
 		return path.parse(this.relativeProjectUri.path).base;
 	}
