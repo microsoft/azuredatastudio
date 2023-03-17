@@ -377,7 +377,8 @@ class DropOverlay extends Themable {
 			// {{SQL CARBON EDIT}}
 			const editor = this.editorService.activeTextEditorControl as ICodeEditor;
 			if (supportsNodeNameDrop(untitledOrFileResources[0].resource.scheme) || untitledOrFileResources[0].resource.scheme === 'Folder') {
-				SnippetController2.get(editor).insert(untitledOrFileResources[0].resource.query);
+				// Snippet support variable and $ is the reserved character, need to escape it so that it will treated as a normal character.
+				SnippetController2.get(editor).insert(untitledOrFileResources[0].resource.query?.replace(/\$/g, '\\$'));
 				editor.focus();
 				return;
 			}
