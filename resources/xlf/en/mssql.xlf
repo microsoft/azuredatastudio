@@ -680,8 +680,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="mssql.objectExplorer.disableGroupBySchema">
       <source xml:lang="en">Disable Group By Schema</source>
     </trans-unit>
+    <trans-unit id="mssql.objectExplorer.disableGroupBySchemaTitle">
+      <source xml:lang="en">SQL Server: Disable Group By Schema</source>
+    </trans-unit>
     <trans-unit id="mssql.objectExplorer.enableGroupBySchema">
       <source xml:lang="en">Enable Group By Schema</source>
+    </trans-unit>
+    <trans-unit id="mssql.objectExplorer.enableGroupBySchemaTitle">
+      <source xml:lang="en">SQL Server: Enable Group By Schema</source>
     </trans-unit>
     <trans-unit id="mssql.objectExplorer.expandTimeout">
       <source xml:lang="en">The timeout in seconds for expanding a node in Object Explorer. The default value is 45 seconds.</source>
