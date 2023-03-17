@@ -1235,6 +1235,13 @@ declare module 'mssql' {
 		 * @param contextId The id of the view.
 		 */
 		disposeUserView(contextId: string): Thenable<void>;
+		/**
+		 * Rename an object.
+		 * @param connectionUri The URI of the server connection.
+		 * @param objectUrn Urn of the object to be renamed. More information: https://learn.microsoft.com/en-us/sql/relational-databases/server-management-objects-smo/overview-smo.
+		 * @param newName The new name of the object.
+		 */
+		rename(connectionUri: string, objectUrn: string, newName: string): Thenable<void>;
 	}
 	// Object Management - End.
 }
