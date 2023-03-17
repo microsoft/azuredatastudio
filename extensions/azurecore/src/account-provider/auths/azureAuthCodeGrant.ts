@@ -8,7 +8,7 @@ import { AzureAccountProviderMetadata, AzureAuthType, Resource, Tenant } from 'a
 import { Deferred } from '../interfaces';
 import * as vscode from 'vscode';
 import * as crypto from 'crypto';
-import { SimpleTokenCache } from '../simpleTokenCache';
+import { SimpleTokenCache } from '../utils/simpleTokenCache';
 import { SimpleWebServer } from '../utils/simpleWebServer';
 import { AzureAuthError } from './azureAuthError';
 import { Logger } from '../../utils/Logger';
