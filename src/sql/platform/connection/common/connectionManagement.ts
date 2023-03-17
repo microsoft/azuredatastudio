@@ -183,7 +183,7 @@ export interface IConnectionManagementService {
 
 	getFormattedUri(uri: string, connectionProfile: IConnectionProfile): string;
 
-	getConnectionUriFromId(connectionId: string): string | undefined;
+	getConnectionUriFromId(connectionId: string, editorUri?: string): string | undefined;
 
 	isConnected(fileUri: string): boolean;
 
@@ -307,9 +307,9 @@ export interface IConnectionManagementService {
 	getServerInfo(profileId: string, uri?: string): azdata.ServerInfo;
 
 	/**
-	 * Get the connection string for the provided connection ID
+	 * Get the connection string for the provided connection ID, and editor uri if specified (due to several connections sharing the same id)
 	 */
-	getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
+	getConnectionString(connectionId: string, includePassword: boolean, editorUri?: string): Thenable<string>;
 
 	/**
 	 * Serialize connection string with optional provider

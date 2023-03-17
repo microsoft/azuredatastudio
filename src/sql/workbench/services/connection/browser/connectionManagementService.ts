@@ -736,8 +736,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStatusManager.getActiveConnectionProfiles(providers);
 	}
 
-	public getConnectionUriFromId(connectionId: string): string | undefined {
-		let connectionInfo = this._connectionStatusManager.findConnectionByProfileId(connectionId);
+	public getConnectionUriFromId(connectionId: string, editorUri?: string): string | undefined {
+		// If editorUri is passed in, we must confirm that a connection with the URI and general connection exists in CSM.
+		let connectionInfo = this._connectionStatusManager.findConnectionByProfileId(connectionId, editorUri);
 		if (connectionInfo) {
 			return connectionInfo.ownerUri;
 		} else {
@@ -1651,10 +1652,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
-	 * Get the connection string for the provided connection ID
+	 * Get the connection string for the provided connection ID, editorUri is provided in case we want to get a specific connection among several connections with the same name.
 	 */
-	public getConnectionString(connectionId: string, includePassword: boolean = false): Thenable<string> {
-		let ownerUri = this.getConnectionUriFromId(connectionId);
+	public getConnectionString(connectionId: string, includePassword: boolean = false, editorUri?: string): Thenable<string> {
+		let ownerUri = this.getConnectionUriFromId(connectionId, editorUri);
 
 		if (!ownerUri) {
 			return Promise.resolve(undefined);
