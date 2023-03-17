@@ -74,7 +74,7 @@ class FormItem {
 							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
 							</model-component-wrapper>
 						</div>
-						<div *ngIf="itemHasActions(item)" class="form-item-row form-actions-table form-item-last-row">
+						<div *ngIf="itemHasActions(item)" class="form-item-row form-actions-table form-item-last-row" role="presentation">
 								<div *ngFor="let actionItem of getActionComponents(item)" class="form-actions-cell" >
 									<model-component-wrapper  [descriptor]="actionItem.descriptor" [modelStore]="modelStore">
 									</model-component-wrapper>
