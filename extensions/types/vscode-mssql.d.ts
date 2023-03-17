@@ -431,7 +431,6 @@ declare module 'vscode-mssql' {
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 		getOptionsFromProfile(profilePath: string): Thenable<DacFxOptionsResult>;
 		validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<ValidateStreamingJobResult>;
-		savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<ResultStatus>;
 	}
 
 	/**
@@ -1016,14 +1015,6 @@ declare module 'vscode-mssql' {
 
 	export interface SchemaCompareOptionsResult extends ResultStatus {
 		defaultDeploymentOptions: DeploymentOptions;
-	}
-
-	export interface SavePublishProfileParams {
-		profilePath: string;
-		databaseName: string;
-		connectionString: string;
-		sqlCommandVariableValues?: Record<string, string>;
-		deploymentOptions?: DeploymentOptions;
 	}
 
 	//#region ISqlProjectsService
