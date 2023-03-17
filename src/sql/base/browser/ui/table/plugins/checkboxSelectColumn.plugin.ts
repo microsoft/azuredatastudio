@@ -91,8 +91,9 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 	private checkboxSelectionFormatter(row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string {
 		const state = this.getCheckboxPropertyValue(row);
 		const checked = state.checked ? 'checked' : '';
+		const ariaLabelStatus = state.checked ? 'checked' : 'unchecked';
 		const enable = state.enabled ? '' : 'disabled';
-		return `<input type="checkbox" style="pointer-events: none;" tabIndex="-1" ${checked} ${enable}/>`;
+		return `<input type="checkbox" style="pointer-events: none;" tabIndex="-1" aria-label="checkbox ${ariaLabelStatus}" ${checked} ${enable}/>`;
 	}
 
 
