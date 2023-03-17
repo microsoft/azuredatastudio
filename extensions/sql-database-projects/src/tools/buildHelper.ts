@@ -139,7 +139,7 @@ export class BuildHelper {
 		if (sqlProjStyle === ProjectType.SdkStyle) {
 			return ` build ${projectPath} /p:NetCoreBuild=true /p:SystemDacpacsLocation=${buildDirPath}`;
 		} else {
-			return ` build ${projectPath} /p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath}`;
+			return ` build ${projectPath} /p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath} /p:SystemDacpacsLocation=${buildDirPath}`;
 		}
 	}
 }

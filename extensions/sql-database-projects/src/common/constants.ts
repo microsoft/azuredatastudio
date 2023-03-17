@@ -420,6 +420,7 @@ export function invalidGuid(guid: string) { return localize('invalidGuid', "Spec
 export function invalidTargetPlatform(targetPlatform: string, supportedTargetPlatforms: string[]) { return localize('invalidTargetPlatform', "Invalid target platform: {0}. Supported target platforms: {1}", targetPlatform, supportedTargetPlatforms.toString()); }
 export function errorReadingProject(section: string, path: string, error?: string) { return localize('errorReadingProjectGuid', "Error trying to read {0} of project '{1}'. {2}", section, path, error); }
 export function errorAddingDatabaseReference(referenceName: string, error: string) { return localize('errorAddingDatabaseReference', "Error adding database reference to {0}. Error: {1}", referenceName, error); }
+export function errorNotSupportedInVsCode(actionDescription: string) { return localize('errorNotSupportedInVsCode', "Error: {0} is not currently supported in SQL Database Projects for VS Code.", actionDescription); }
 
 //#endregion
 

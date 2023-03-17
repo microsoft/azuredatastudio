@@ -762,6 +762,14 @@ declare module 'vscode-mssql' {
 		 * Source of the database schema, used in telemetry
 		 */
 		databaseSource?: string;
+		/**
+		 * Style of the .sqlproj file - SdkStyle or LegacyStyle
+		 */
+		projectStyle: ProjectType;
+		/**
+		 * Database Schema Provider, in the format "Microsoft.Data.Tools.Schema.Sql.SqlXYZDatabaseSchemaProvider"
+		 */
+		databaseSchemaProvider: string
 	}
 
 	export interface GetDatabaseReferencesResult extends ResultStatus {

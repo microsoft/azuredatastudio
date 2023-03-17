@@ -303,14 +303,15 @@ export async function getSchemaCompareService(): Promise<ISchemaCompareService> 
 	}
 }
 
-export async function getSqlProjectsService(): Promise<ISqlProjectsService> {
+export async function getSqlProjectsService(): Promise<mssql.ISqlProjectsService> {
 	if (getAzdataApi()) {
 		const ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
 		const api = await ext.activate();
 		return api.sqlProjects;
 	} else {
-		const api = await getVscodeMssqlApi();
-		return api.sqlProjects;
+		throw new Error(constants.errorNotSupportedInVsCode('SqlProjectService'));
+		// const api = await getVscodeMssqlApi();
+		// return api.sqlProjects;
 	}
 }
 

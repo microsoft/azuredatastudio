@@ -725,7 +725,7 @@ declare module 'mssql' {
 
 	export const enum SystemDatabase {
 		Master = 0,
-		Msdb = 1
+		MSDB = 1
 	}
 
 	export interface SqlCmdVariable {

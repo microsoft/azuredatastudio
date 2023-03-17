@@ -636,7 +636,7 @@ export function getSystemDbOptions(project: Project): string[] {
 }
 
 export function getSystemDatabase(name: string): SystemDatabase {
-	return name === constants.master ? SystemDatabase.Master : SystemDatabase.Msdb;
+	return name === constants.master ? SystemDatabase.Master : SystemDatabase.MSDB;
 }
 
 export async function promptDacpacLocation(): Promise<vscode.Uri[] | undefined> {
