@@ -1875,6 +1875,10 @@ declare module 'azdata' {
 		 * under the database, the nodeType is Folder, the objectType is be Tables.
 		 */
 		objectType?: string;
+		/*
+		 * The path of the parent node.
+		 */
+		parentNodePath: string;
 	}
 
 	export namespace window {
