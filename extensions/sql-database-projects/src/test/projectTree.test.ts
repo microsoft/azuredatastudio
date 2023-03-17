@@ -86,13 +86,13 @@ describe('Project Tree tests', function (): void {
 			DatabaseProjectItemType.sqlcmdVariablesRoot,
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.folder,
-			DatabaseProjectItemType.sqlObjectFile]);
+			DatabaseProjectItemType.sqlObjectScript]);
 
 		should(tree.children.find(x => x.relativeProjectUri.path === '/TestProj/someFolder')?.children.map(y => y.treeItem.contextValue)).deepEqual([
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.folder,
-			DatabaseProjectItemType.sqlObjectFile,
-			DatabaseProjectItemType.sqlObjectFile]);
+			DatabaseProjectItemType.sqlObjectScript,
+			DatabaseProjectItemType.sqlObjectScript]);
 	});
 
 	it('Should be able to parse windows relative path as platform safe path', function (): void {

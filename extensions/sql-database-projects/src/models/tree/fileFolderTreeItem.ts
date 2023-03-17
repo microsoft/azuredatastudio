@@ -68,7 +68,7 @@ export abstract class FileNode extends BaseProjectTreeItem {
 export class SqlObjectFileNode extends FileNode {
 	public override get treeItem(): vscode.TreeItem {
 		const treeItem = super.treeItem;
-		treeItem.contextValue = DatabaseProjectItemType.sqlObjectFile;
+		treeItem.contextValue = DatabaseProjectItemType.sqlObjectScript;
 
 		return treeItem;
 	}
@@ -95,7 +95,7 @@ export class TableFileNode extends SqlObjectFileNode {
 export class PreDeployNode extends FileNode {
 	public override get treeItem(): vscode.TreeItem {
 		const treeItem = super.treeItem;
-		treeItem.contextValue = DatabaseProjectItemType.preDeploy;
+		treeItem.contextValue = DatabaseProjectItemType.preDeploymentScript;
 
 		return treeItem;
 	}
@@ -104,7 +104,7 @@ export class PreDeployNode extends FileNode {
 export class PostDeployNode extends FileNode {
 	public override get treeItem(): vscode.TreeItem {
 		const treeItem = super.treeItem;
-		treeItem.contextValue = DatabaseProjectItemType.postDeploy;
+		treeItem.contextValue = DatabaseProjectItemType.postDeploymentScript;
 
 		return treeItem;
 	}
@@ -113,7 +113,7 @@ export class PostDeployNode extends FileNode {
 export class NoneNode extends FileNode {
 	public override get treeItem(): vscode.TreeItem {
 		const treeItem = super.treeItem;
-		treeItem.contextValue = DatabaseProjectItemType.none;
+		treeItem.contextValue = DatabaseProjectItemType.noneFile;
 
 		return treeItem;
 	}
