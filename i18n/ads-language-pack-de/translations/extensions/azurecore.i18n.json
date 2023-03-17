@@ -20,7 +20,6 @@
 			"azure.owningTenantNotFound": "Informationen zum Besitzer des Mandanten wurden für das Konto nicht gefunden.",
 			"azure.responseError": "Fehler beim Abrufen des Tokens. [Entwicklertools öffnen] ({0}) für weitere Details.",
 			"azure.tenantNotFound": "Der angegebene Mandant mit der ID \"{0}\" wurde nicht gefunden.",
-			"azureAuth.unidentifiedError": "Unbekannter Fehler bei der Azure-Authentifizierung.",
 			"azurecore.consentDialog.body": "Für Ihren Mandanten \"{0} ({1})\" müssen Sie sich erneut authentifizieren, um auf {2}-Ressourcen zuzugreifen. Klicken Sie auf \"Öffnen\", um den Authentifizierungsvorgang zu starten.",
 			"azurecore.consentDialog.cancel": "Abbrechen",
 			"azurecore.consentDialog.ignore": "Mandanten ignorieren",
@@ -42,7 +41,9 @@
 		"dist/account-provider/azureAccountProvider": {
 			"azure.NoAuthMethod.Available": "Es ist keine Azure-Authentifizierungsmethode verfügbar. Sie müssen die Authentifizierungsmethoden in der ADS-Konfiguration aktivieren.",
 			"azure.NoAuthMethod.Selected": "Es wurde keine Azure-Authentifizierungsmethode ausgewählt. Sie müssen die Art der Authentifizierung auswählen, die Sie verwenden möchten.",
-			"azure.deprecatedGetSecurityToken": "\"azdata.accounts.getSecurityToken\" wurde aufgerufen. Diese Methode ist veraltet und wird in zukünftigen Releases entfernt. Verwenden Sie stattdessen \"getAccountSecurityToken\"."
+			"azure.deprecatedGetSecurityToken": "\"azdata.accounts.getSecurityToken\" wurde aufgerufen. Diese Methode ist veraltet und wird in zukünftigen Releases entfernt. Verwenden Sie stattdessen \"getAccountSecurityToken\".",
+			"genericTokenError": "Failed to get token",
+			"msalTokenError": "{0} occurred when acquiring token. \r\n{1}"
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "Fehler beim Löschen des Tokencaches.",
@@ -50,10 +51,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure (China)",
-			"germanyCloud": "Azure (Deutschland)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (US-Regierungsbehörden)",
-			"usNatCloudDisplayName": "Azure (USA, national)"
+			"usGovCloudDisplayName": "Azure (US-Regierungsbehörden)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "Sie müssen ein Azure-Konto auswählen, damit dieses Feature funktioniert.",
