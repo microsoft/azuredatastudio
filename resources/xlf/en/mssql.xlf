@@ -159,6 +159,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.login.windowsAuthenticationType">
       <source xml:lang="en">Windows Authentication</source>
     </trans-unit>
+    <trans-unit id="objectManagement.loginNotSelectedError">
+      <source xml:lang="en">Login is not selected.</source>
+    </trans-unit>
     <trans-unit id="objectManagement.nameCannotBeEmptyError">
       <source xml:lang="en">Name cannot be empty.</source>
     </trans-unit>
@@ -168,6 +171,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.newObjectDialogTitle">
       <source xml:lang="en">{0} - New (Preview)</source>
       <note>{0} object type.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.noConnectionUriError">
+      <source xml:lang="en">Failed to retrieve the connection information, please reconnect and try again.</source>
     </trans-unit>
     <trans-unit id="objectManagement.objectPropertiesDialogTitle">
       <source xml:lang="en">{0} - {1} (Preview)</source>
