@@ -70,7 +70,8 @@
 	content: url("step_inverse.svg");
 }
 
-.steps-header > .steps-icon {
+.steps-header > .steps-icon,
+.hc-light .steps-header > .steps-icon {
 	content: url("step.svg");
 }
 
@@ -98,6 +99,13 @@ jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row {
 .hc-black jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused,
 .hc-black jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused.selected {
 	background: none !important;
+}
+
+.hc-light jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row,
+.hc-light jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused,
+.hc-light jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.selected,
+.hc-light jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused.selected {
+	background: #ffffff !important;
 }
 
 jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row,

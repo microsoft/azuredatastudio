@@ -9,7 +9,7 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { getCurrentMigrations, getSelectedServiceStatus } from '../models/migrationLocalStorage';
 import * as loc from '../constants/strings';
 import { filterMigrations, getMigrationDuration, getMigrationStatusImage, getMigrationStatusWithErrors, getMigrationTime, MenuCommands } from '../api/utils';
-import { getMigrationTargetType, getMigrationMode, canCancelMigration, canCutoverMigration } from '../constants/helper';
+import { getMigrationTargetType, getMigrationMode, canCancelMigration, canCutoverMigration, canDeleteMigration } from '../constants/helper';
 import { DatabaseMigration, getResourceName } from '../api/azure';
 import { logError, TelemetryViews } from '../telemetry';
 import { SelectMigrationServiceDialog } from '../dialog/selectMigrationService/selectMigrationServiceDialog';
@@ -596,6 +596,10 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 
 		if (canCancelMigration(migration)) {
 			menuCommands.push(MenuCommands.CancelMigration);
+		}
+
+		if (canDeleteMigration(migration)) {
+			menuCommands.push(MenuCommands.DeleteMigration);
 		}
 
 		return menuCommands;

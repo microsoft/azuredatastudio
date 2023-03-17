@@ -33,10 +33,10 @@ export class TelemetryParams {
 
 // ------------------------------- < Security Token Request > ------------------------------------------
 export interface RequestSecurityTokenParams {
-	authority: string;
 	provider: string;
+	authority: string;
 	resource: string;
-	scope: string;
+	scopes: string[];
 }
 
 export interface RequestSecurityTokenResponse {
@@ -551,14 +551,6 @@ export interface ParseTSqlScriptParams {
 	databaseSchemaProvider: string;
 }
 
-export interface SavePublishProfileParams {
-	profilePath: string;
-	databaseName: string;
-	connectionString: string;
-	sqlCommandVariableValues?: Record<string, string>;
-	deploymentOptions?: mssql.DeploymentOptions;
-}
-
 export namespace ExportRequest {
 	export const type = new RequestType<ExportParams, mssql.DacFxResult, void, void>('dacfx/export');
 }
@@ -595,10 +587,6 @@ export namespace ParseTSqlScriptRequest {
 	export const type = new RequestType<ParseTSqlScriptParams, mssql.ParseTSqlScriptResult, void, void>('dacfx/parseTSqlScript');
 }
 
-export namespace SavePublishProfileRequest {
-	export const type = new RequestType<SavePublishProfileParams, azdata.ResultStatus, void, void>('dacfx/savePublishProfile');
-}
-
 // ------------------------------- </ DacFx > ------------------------------------
 
 // ------------------------------- < Sql Projects > ------------------------------------
@@ -609,7 +597,7 @@ export namespace SavePublishProfileRequest {
 //#region Project-level functions
 
 export namespace CreateSqlProjectRequest {
-	export const type = new RequestType<CreateSqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/newProject'); // TODO: switch to "createProject" with next Tools Service update
+	export const type = new RequestType<CreateSqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/createProject');
 }
 
 export namespace OpenSqlProjectRequest {
@@ -620,12 +608,24 @@ export namespace CloseSqlProjectRequest {
 	export const type = new RequestType<SqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/closeProject');
 }
 
-export namespace GetCrossPlatformCompatiblityRequest {
-	export const type = new RequestType<SqlProjectParams, mssql.GetCrossPlatformCompatiblityResult, void, void>('sqlProjects/getCrossPlatformCompatibility');
+export namespace GetCrossPlatformCompatibilityRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetCrossPlatformCompatibilityResult, void, void>('sqlProjects/getCrossPlatformCompatibility');
 }
 
 export namespace UpdateProjectForCrossPlatformRequest {
 	export const type = new RequestType<SqlProjectParams, azdata.ResultStatus, void, void>('sqlProjects/updateProjectForCrossPlatform');
+}
+
+export namespace GetProjectPropertiesRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetProjectPropertiesResult, void, void>('sqlProjects/getProjectProperties');
+}
+
+export namespace SetDatabaseSourceRequest {
+	export const type = new RequestType<SetDatabaseSourceParams, azdata.ResultStatus, void, void>('sqlProjects/setDatabaseSource');
+}
+
+export namespace SetDatabaseSchemaProviderRequest {
+	export const type = new RequestType<SetDatabaseSchemaProviderParams, azdata.ResultStatus, void, void>('sqlProjects/setDatabaseSchemaProvider');
 }
 
 //#endregion
@@ -650,6 +650,12 @@ export namespace MoveSqlObjectScriptRequest {
 	export const type = new RequestType<MoveItemParams, azdata.ResultStatus, void, void>('sqlProjects/moveSqlObjectScript');
 }
 
+export namespace GetSqlObjectScriptsRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetScriptsResult, void, void>('sqlProjects/getSqlObjectScripts');
+}
+
+//#endregion
+
 //#endregion
 
 //#region Folder functions
@@ -660,6 +666,10 @@ export namespace AddFolderRequest {
 
 export namespace DeleteFolderRequest {
 	export const type = new RequestType<FolderParams, azdata.ResultStatus, void, void>('sqlProjects/deleteFolder');
+}
+
+export namespace GetFoldersRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetFoldersResult, void, void>('sqlProjects/getFolders');
 }
 
 //#endregion
@@ -686,6 +696,10 @@ export namespace ExcludePostDeploymentScriptRequest {
 	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/excludePostDeploymentScript');
 }
 
+export namespace GetPostDeploymentScriptsRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetScriptsResult, void, void>('sqlProjects/getPostDeploymentScripts');
+}
+
 export namespace ExcludePreDeploymentScriptRequest {
 	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/excludePreDeploymentScript');
 }
@@ -696,6 +710,34 @@ export namespace MovePostDeploymentScriptRequest {
 
 export namespace MovePreDeploymentScriptRequest {
 	export const type = new RequestType<MoveItemParams, azdata.ResultStatus, void, void>('sqlProjects/movePreDeploymentScript');
+}
+
+export namespace GetPreDeploymentScriptsRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetScriptsResult, void, void>('sqlProjects/getPreDeploymentScripts');
+}
+
+//#endregion
+
+//#region None functions
+
+export namespace AddNoneItemRequest {
+	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/addNoneItem');
+}
+
+export namespace DeleteNoneItemRequest {
+	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/deleteNoneItem');
+}
+
+export namespace ExcludeNoneItemRequest {
+	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlProjects/excludeNoneItem');
+}
+
+export namespace GetNoneItemsRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetScriptsResult, void, void>('sqlProjects/getNoneItems');
+}
+
+export namespace MoveNoneItemRequest {
+	export const type = new RequestType<MoveItemParams, azdata.ResultStatus, void, void>('sqlProjects/moveNoneItem');
 }
 
 //#endregion
@@ -716,14 +758,15 @@ export namespace UpdateSqlCmdVariableRequest {
 	export const type = new RequestType<AddSqlCmdVariableParams, azdata.ResultStatus, void, void>('sqlProjects/updateSqlCmdVariable');
 }
 
+export namespace GetSqlCmdVariablesRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetSqlCmdVariablesResult, void, void>('sqlProjects/getSqlCmdVariables');
+}
+
 //#endregion
 
 //#region Database reference functions
 
 export namespace AddDacpacReferenceRequest {
-	/**
-	 *
-	 */
 	export const type = new RequestType<AddDacpacReferenceParams, azdata.ResultStatus, void, void>('sqlprojects/addDacpacReference');
 }
 
@@ -736,7 +779,11 @@ export namespace AddSystemDatabaseReferenceRequest {
 }
 
 export namespace DeleteDatabaseReferenceRequest {
-	export const type = new RequestType<SqlProjectScriptParams, azdata.ResultStatus, void, void>('sqlprojects/deleteDatabaseReference');
+	export const type = new RequestType<DeleteDatabaseReferenceParams, azdata.ResultStatus, void, void>('sqlprojects/deleteDatabaseReference');
+}
+
+export namespace GetDatabaseReferencesRequest {
+	export const type = new RequestType<SqlProjectParams, mssql.GetDatabaseReferencesResult, void, void>('sqlProjects/getDatabaseReferences');
 }
 
 //#endregion
@@ -757,6 +804,20 @@ export interface SqlProjectScriptParams extends SqlProjectParams {
 	 * Path of the script, including .sql, relative to the .sqlproj
 	 */
 	path: string;
+}
+
+export interface SetDatabaseSourceParams extends SqlProjectParams {
+	/**
+	 * Source of the database schema, used in telemetry
+	 */
+	databaseSource: string;
+}
+
+export interface SetDatabaseSchemaProviderParams extends SqlProjectParams {
+	/**
+	 * New DatabaseSchemaProvider value, in the form "Microsoft.Data.Tools.Schema.Sql.SqlXYZDatabaseSchemaProvider"
+	 */
+	databaseSchemaProvider: string;
 }
 
 export interface AddDacpacReferenceParams extends AddUserDatabaseReferenceParams {
@@ -1541,6 +1602,16 @@ export interface DisposeUserViewRequestParams {
 
 export namespace DisposeUserViewRequest {
 	export const type = new RequestType<DisposeUserViewRequestParams, void, void, void>('objectManagement/disposeUserView');
+}
+
+export interface RenameObjectRequestParams {
+	connectionUri: string;
+	newName: string;
+	objectUrn: string;
+}
+
+export namespace RenameObjectRequest {
+	export const type = new RequestType<RenameObjectRequestParams, void, void, void>('objectManagement/rename');
 }
 
 // ------------------------------- < Object Management > ------------------------------------

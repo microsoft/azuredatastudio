@@ -32,6 +32,9 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.deleteObject', async (context: azdata.ObjectExplorerContext) => {
 		await handleDeleteObjectCommand(context, service);
 	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.renameObject', async (context: azdata.ObjectExplorerContext) => {
+		await handleRenameObjectCommand(context, service);
+	}));
 }
 
 function getObjectManagementService(appContext: AppContext, useTestService: boolean): IObjectManagementService {
@@ -43,13 +46,17 @@ function getObjectManagementService(appContext: AppContext, useTestService: bool
 }
 
 async function handleNewLoginDialogCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+	const connectionUri = await getConnectionUri(context);
+	if (!connectionUri) {
+		return;
+	}
+
 	try {
-		const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
 		const dialog = new LoginDialog(service, connectionUri, true, undefined, context);
 		await dialog.open();
 	}
 	catch (err) {
-		TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, TelemetryActions.OpenNewObjectDialog).withAdditionalProperties({
+		TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, TelemetryActions.OpenNewObjectDialog, err).withAdditionalProperties({
 			objectType: NodeType.Login
 		}).send();
 		await vscode.window.showErrorMessage(localizedConstants.OpenNewObjectDialogError(localizedConstants.LoginTypeDisplayName, getErrorMessage(err)));
@@ -57,13 +64,16 @@ async function handleNewLoginDialogCommand(context: azdata.ObjectExplorerContext
 }
 
 async function handleNewUserDialogCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+	const connectionUri = await getConnectionUri(context);
+	if (!connectionUri) {
+		return;
+	}
 	try {
-		const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
 		const dialog = new UserDialog(service, connectionUri, context.connectionProfile.databaseName, true, undefined, context);
 		await dialog.open();
 	}
 	catch (err) {
-		TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, TelemetryActions.OpenNewObjectDialog).withAdditionalProperties({
+		TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, TelemetryActions.OpenNewObjectDialog, err).withAdditionalProperties({
 			objectType: NodeType.User
 		}).send();
 		await vscode.window.showErrorMessage(localizedConstants.OpenNewObjectDialogError(localizedConstants.UserTypeDisplayName, getErrorMessage(err)));
@@ -71,9 +81,12 @@ async function handleNewUserDialogCommand(context: azdata.ObjectExplorerContext,
 }
 
 async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+	const connectionUri = await getConnectionUri(context);
+	if (!connectionUri) {
+		return;
+	}
 	const nodeTypeDisplayName = getNodeTypeDisplayName(context.nodeInfo.nodeType);
 	try {
-		const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
 		let dialog;
 		switch (context.nodeInfo.nodeType) {
 			case NodeType.Login:
@@ -90,7 +103,7 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		}
 	}
 	catch (err) {
-		TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, TelemetryActions.OpenPropertiesDialog).withAdditionalProperties({
+		TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, TelemetryActions.OpenPropertiesDialog, err).withAdditionalProperties({
 			objectType: context.nodeInfo.nodeType
 		}).send();
 		await vscode.window.showErrorMessage(localizedConstants.OpenObjectPropertiesDialogError(nodeTypeDisplayName, context.nodeInfo.label, getErrorMessage(err)));
@@ -98,6 +111,10 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 }
 
 async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+	const connectionUri = await getConnectionUri(context);
+	if (!connectionUri) {
+		return;
+	}
 	let additionalConfirmationMessage: string;
 	switch (context.nodeInfo.nodeType) {
 		case NodeType.Login:
@@ -122,7 +139,6 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 		operation: async (operation) => {
 			try {
 				const startTime = Date.now();
-				const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
 				switch (context.nodeInfo.nodeType) {
 					case NodeType.Login:
 						await service.deleteLogin(connectionUri, context.nodeInfo.label);
@@ -136,18 +152,78 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 				TelemetryReporter.sendTelemetryEvent(TelemetryActions.DeleteObject, {
 					objectType: context.nodeInfo.nodeType
 				}, {
-					ellapsedTime: Date.now() - startTime
+					elapsedTimeMs: Date.now() - startTime
 				});
 			}
 			catch (err) {
 				operation.updateStatus(azdata.TaskStatus.Failed, localizedConstants.DeleteObjectError(nodeTypeDisplayName, context.nodeInfo.label, getErrorMessage(err)));
-				TelemetryReporter.createErrorEvent(TelemetryViews.ObjectManagement, TelemetryActions.DeleteObject).withAdditionalProperties({
+				TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, TelemetryActions.DeleteObject, err).withAdditionalProperties({
 					objectType: context.nodeInfo.nodeType
 				}).send();
 				return;
 			}
-			await refreshParentNode(context);
 			operation.updateStatus(azdata.TaskStatus.Succeeded);
+			await refreshParentNode(context);
 		}
 	});
+}
+
+async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+	const connectionUri = await getConnectionUri(context);
+	if (!connectionUri) {
+		return;
+	}
+	const nodeTypeDisplayName = getNodeTypeDisplayName(context.nodeInfo.nodeType);
+	const originalName = context.nodeInfo.metadata.name;
+	const newName = await vscode.window.showInputBox({
+		title: localizedConstants.RenameObjectDialogTitle,
+		value: originalName,
+		validateInput: (value: string): string | undefined => {
+			if (!value) {
+				return localizedConstants.NameCannotBeEmptyError;
+			} else {
+				// valid
+				return undefined;
+			}
+		}
+	});
+
+	// return if no change was made or the dialog was canceled.
+	if (newName === originalName || !newName) {
+		return;
+	}
+
+	azdata.tasks.startBackgroundOperation({
+		displayName: localizedConstants.RenameObjectOperationDisplayName(nodeTypeDisplayName, originalName, newName),
+		description: '',
+		isCancelable: false,
+		operation: async (operation) => {
+			try {
+				const startTime = Date.now();
+				await service.rename(connectionUri, context.nodeInfo.metadata.urn, newName);
+				TelemetryReporter.sendTelemetryEvent(TelemetryActions.RenameObject, {
+					objectType: context.nodeInfo.nodeType
+				}, {
+					elapsedTimeMs: Date.now() - startTime
+				});
+			}
+			catch (err) {
+				operation.updateStatus(azdata.TaskStatus.Failed, localizedConstants.RenameObjectError(nodeTypeDisplayName, originalName, newName, getErrorMessage(err)));
+				TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, TelemetryActions.RenameObject, err).withAdditionalProperties({
+					objectType: context.nodeInfo.nodeType
+				}).send();
+				return;
+			}
+			operation.updateStatus(azdata.TaskStatus.Succeeded);
+			await refreshParentNode(context);
+		}
+	});
+}
+
+async function getConnectionUri(context: azdata.ObjectExplorerContext): Promise<string> {
+	const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
+	if (!connectionUri) {
+		await vscode.window.showErrorMessage(localizedConstants.FailedToRetrieveConnectionInfoErrorMessage, { modal: true });
+	}
+	return connectionUri;
 }

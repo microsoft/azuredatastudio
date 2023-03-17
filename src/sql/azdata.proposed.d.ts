@@ -432,17 +432,25 @@ declare module 'azdata' {
 		azurePortalEndpoint?: string;
 	}
 
-	export interface PromptFailedResult {
+	export interface PromptFailedResult extends ProviderError { }
+
+	export interface ProviderError {
 		/**
-		 * Error code used for non-user cancelled sign in errors
+		 * Error name
+		 */
+		name?: string;
+
+		/**
+		 * Error code
 		 */
 		errorCode?: string;
 
 		/**
-		 * Error message used for non-user cancelled sign in errors
+		 * Error message
 		 */
 		errorMessage?: string;
 	}
+
 
 	export namespace diagnostics {
 		/**
@@ -575,6 +583,12 @@ declare module 'azdata' {
 		onSelectionChange?: SelectionChangeEvent[];
 	}
 
+	export interface ServiceOption {
+		/**
+		 * Used to define list of values based on which another option is rendered visible/hidden.
+		 */
+		onSelectionChange?: SelectionChangeEvent[];
+	}
 	/**
 	 * This change event defines actions
 	 */
@@ -1790,8 +1804,13 @@ declare module 'azdata' {
 		/**
 		 * Corresponds to the aria-live accessibility attribute for this component
 		 */
-		ariaLive?: string;
+		ariaLive?: AriaLiveValue
 	}
+
+	/**
+	 * Supported values for aria-live accessibility attribute
+	 */
+	export type AriaLiveValue = 'polite' | 'assertive' | 'off';
 
 	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ContainerProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
 		/**
@@ -1805,7 +1824,7 @@ declare module 'azdata' {
 		/**
 		 * Corresponds to the aria-live accessibility attribute for this component
 		 */
-		ariaLive?: string;
+		ariaLive?: AriaLiveValue
 	}
 	export namespace queryeditor {
 

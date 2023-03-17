@@ -395,13 +395,23 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
+	private get useVSCodeNotebooks(): boolean {
+		let workbench = vscode.workspace.getConfiguration('workbench');
+		return workbench?.get<boolean>('useVSCodeNotebooks') && workbench?.get<boolean>('enablePreviewFeatures');
+	}
+
 	async openNotebook(resource: string): Promise<void> {
 		try {
 			await vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, constants.unsavedBooksContextKey, false);
 			if (this._openAsUntitled) {
 				await this.openNotebookAsUntitled(resource);
 			} else {
-				await azdata.nb.showNotebookDocument(vscode.Uri.file(resource));
+				if (this.useVSCodeNotebooks) {
+					let doc = await vscode.workspace.openNotebookDocument(vscode.Uri.file(resource));
+					await vscode.window.showNotebookDocument(doc);
+				} else {
+					await azdata.nb.showNotebookDocument(vscode.Uri.file(resource));
+				}
 				// let us keep a list of already visited notebooks so that we do not trust them again, potentially
 				// overriding user changes
 				let normalizedResource = path.normalize(resource);
@@ -532,13 +542,19 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async openNotebookAsUntitled(resource: string): Promise<void> {
 		try {
 			await vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, constants.unsavedBooksContextKey, true);
-			let untitledFileName: vscode.Uri = this.getUntitledNotebookUri(resource);
-			let document: vscode.TextDocument = await vscode.workspace.openTextDocument(resource);
-			await azdata.nb.showNotebookDocument(untitledFileName, {
-				connectionProfile: null,
-				initialContent: document.getText(),
-				initialDirtyState: false
-			});
+			let untitledFileUri: vscode.Uri = this.getUntitledNotebookUri(resource);
+
+			if (this.useVSCodeNotebooks) {
+				let doc = await vscode.workspace.openNotebookDocument(untitledFileUri);
+				await vscode.window.showNotebookDocument(doc);
+			} else {
+				let document: vscode.TextDocument = await vscode.workspace.openTextDocument(resource);
+				await azdata.nb.showNotebookDocument(untitledFileUri, {
+					connectionProfile: null,
+					initialContent: document.getText(),
+					initialDirtyState: false
+				});
+			}
 		} catch (e) {
 			void vscode.window.showErrorMessage(loc.openUntitledNotebookError(resource, e instanceof Error ? e.message : e));
 		}

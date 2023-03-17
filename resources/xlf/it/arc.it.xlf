@@ -46,6 +46,14 @@
         <source xml:lang="en">{0} backups</source>
         <target state="translated">{0} backup</target>
       </trans-unit>
+      <trans-unit id="arc.booleanfalse">
+        <source xml:lang="en">False</source>
+        <target state="translated">False</target>
+      </trans-unit>
+      <trans-unit id="arc.booleantrue">
+        <source xml:lang="en">True</source>
+        <target state="translated">True</target>
+      </trans-unit>
       <trans-unit id="arc.businessCriticalLabel">
         <source xml:lang="en">BusinessCritical</source>
         <target state="translated">BusinessCritical</target>
@@ -345,6 +353,18 @@
         <source xml:lang="en">Emergency</source>
         <target state="translated">Emergenza</target>
       </trans-unit>
+      <trans-unit id="arc.enableTrustServerCert">
+        <source xml:lang="en">Enable Trust Server Certificate</source>
+        <target state="translated">Abilitare Certificato del server attendibile</target>
+      </trans-unit>
+      <trans-unit id="arc.encrypt">
+        <source xml:lang="en">Encrypt</source>
+        <target state="translated">Crittografa</target>
+      </trans-unit>
+      <trans-unit id="arc.encryptDescription">
+        <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed.</source>
+        <target state="translated">Se il valore è true, SQL Server usa la crittografia SSL per tutti i dati scambiati tra il client e il server, se nel server è installato un certificato.</target>
+      </trans-unit>
       <trans-unit id="arc.endpoint">
         <source xml:lang="en">Endpoint</source>
         <target state="translated">Endpoint</target>
@@ -629,6 +649,10 @@
         <source xml:lang="en">You can check the status of the upgrade by running the following command:</source>
         <target state="translated">È possibile controllare lo stato dell'aggiornamento eseguendo il comando seguente:</target>
       </trans-unit>
+      <trans-unit id="arc.msgPromptSSLCertificateValidationFailed">
+        <source xml:lang="en">Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or set 'Trust server certificate' to 'true' in the settings file. Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry?</source>
+        <target state="translated">La crittografia è stata abilitata in questa connessione, rivedere la configurazione SSL e del certificato per SQL Server di destinazione o impostare 'Certificato del server attendibile' su 'true' nel file delle impostazioni. Nota: un certificato autofirmato offre solo una protezione limitata e non è una procedura consigliata per gli ambienti di produzione. Abilitare 'Certificato del server attendibile' in questa connessione e riprovare?</target>
+      </trans-unit>
       <trans-unit id="arc.name">
         <source xml:lang="en">Name</source>
         <target state="translated">Nome</target>
@@ -889,6 +913,10 @@
         <source xml:lang="en">Value is expected to be in the range {0} - {1}</source>
         <target state="translated">Il valore dovrebbe essere compreso nell'intervallo {0} - {1}</target>
       </trans-unit>
+      <trans-unit id="arc.readMore">
+        <source xml:lang="en">Read more</source>
+        <target state="translated">Altre informazioni</target>
+      </trans-unit>
       <trans-unit id="arc.ready">
         <source xml:lang="en">Ready</source>
         <target state="translated">Pronto</target>
@@ -1116,6 +1144,14 @@
       <trans-unit id="arc.troubleshoot">
         <source xml:lang="en">Troubleshoot</source>
         <target state="translated">Risoluzione dei problemi</target>
+      </trans-unit>
+      <trans-unit id="arc.trustServerCertDescription">
+        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate.</source>
+        <target state="translated">Se il valore è true (e encrypt=true), SQL Server usa la crittografia SSL per tutti i dati inviati tra il client e il server senza convalidare il certificato del server.</target>
+      </trans-unit>
+      <trans-unit id="arc.trustServerCertificate">
+        <source xml:lang="en">Trust Server Certificate</source>
+        <target state="translated">Considera attendibile il certificato del server</target>
       </trans-unit>
       <trans-unit id="arc.type">
         <source xml:lang="en">Type</source>

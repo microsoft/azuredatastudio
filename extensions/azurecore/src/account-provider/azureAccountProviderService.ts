@@ -3,11 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as path from 'path';
 import * as azdata from 'azdata';
 import * as events from 'events';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
-import { SimpleTokenCache } from './simpleTokenCache';
+import { promises as fsPromises } from 'fs';
+import { SimpleTokenCache } from './utils/simpleTokenCache';
 import providerSettings from './providerSettings';
 import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider';
 import { AzureAccountProviderMetadata } from 'azurecore';
@@ -144,8 +146,8 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf(Constants.Saw) > 0;
 		const noSystemKeychain = vscode.workspace.getConfiguration(Constants.AzureSection).get<boolean>(Constants.NoSystemKeyChainSection);
 		const tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
-		// Hardcode the MSAL Cache Key so there is only one cache location
-		const tokenCacheKeyMsal = `azureTokenCacheMsal-azure_publicCloud`;
+		const tokenCacheKeyMsal = Constants.MSALCacheName;
+		await this.clearOldCacheIfExists();
 		try {
 			if (!this._credentialProvider) {
 				throw new Error('Credential provider not registered');
@@ -156,7 +158,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			await simpleTokenCache.init();
 
 			// MSAL Cache Plugin
-			this._cachePluginProvider = new MsalCachePluginProvider(tokenCacheKeyMsal, this._userStoragePath);
+			this._cachePluginProvider = new MsalCachePluginProvider(tokenCacheKeyMsal, this._userStoragePath, this._credentialProvider);
 
 			const msalConfiguration: Configuration = {
 				auth: {
@@ -185,6 +187,22 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		}
 	}
 
+	/**
+	 * Clears old cache file that is no longer needed on system.
+	 */
+	private async clearOldCacheIfExists(): Promise<void> {
+		let filePath = path.join(this._userStoragePath, Constants.oldMsalCacheFileName);
+		try {
+			await fsPromises.access(filePath);
+			await fsPromises.unlink('file:' + filePath);
+			Logger.verbose(`Old cache file removed successfully.`);
+		} catch (e) {
+			if (e.code !== 'ENOENT') {
+				Logger.verbose(`Error occurred while removing old cache file: ${e}`);
+			} // else file doesn't exist.
+		}
+	}
+
 	private getLoggerCallback(): ILoggerCallback {
 		return (level: number, message: string, containsPii: boolean) => {
 			if (!containsPii) {
@@ -201,7 +219,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 						break;
 				}
 			} else {
-				Logger.verbose(message);
+				Logger.pii(message);
 			}
 		}
 	}

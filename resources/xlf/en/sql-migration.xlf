@@ -25,11 +25,17 @@
     <trans-unit id="sql.cancel.migration.confirmation">
       <source xml:lang="en">Are you sure you want to cancel this migration?</source>
     </trans-unit>
+    <trans-unit id="sql.delete.migration.confirmation">
+      <source xml:lang="en">Are you sure you want to delete this migration?</source>
+    </trans-unit>
     <trans-unit id="sql.login.migration.aad.domain.name.input.box.label">
       <source xml:lang="en">Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)</source>
     </trans-unit>
     <trans-unit id="sql.login.migration.aad.domain.name.input.box.placeholder">
       <source xml:lang="en">Enter AAD Domain Name</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.collecting.target.logins.failed">
+      <source xml:lang="en">Collecting target login failed with error code {0}</source>
     </trans-unit>
     <trans-unit id="sql.login.migration.complete">
       <source xml:lang="en">Completed migrating logins</source>
@@ -156,7 +162,7 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <source xml:lang="en">Connection was successful.</source>
     </trans-unit>
     <trans-unit id="sql.login.migration.wizard.target.data.migration.warning">
-      <source xml:lang="en">Please note that login migration feature is in private preview mode.</source>
+      <source xml:lang="en">Please note that login migration feature is in public preview mode.</source>
     </trans-unit>
     <trans-unit id="sql.login.migration.wizard.target.description">
       <source xml:lang="en">Select the target Azure SQL Managed Instance, Azure SQL VM, or Azure SQL database(s) where you want to migrate your logins.</source>
@@ -340,6 +346,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.cannot.cutover">
       <source xml:lang="en">Migration is not in progress and cannot be cutover.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.cannot.delete">
+      <source xml:lang="en">Migration is currently in progress and cannot be deleted.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.cannot.retry">
       <source xml:lang="en">Migration cannot be retried.</source>
     </trans-unit>
@@ -491,7 +500,7 @@ This may take some time.</source>
       <source xml:lang="en">The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.description.sqldb">
-      <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).</source>
+      <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database.</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.description.vm">
       <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.</source>
@@ -506,7 +515,7 @@ This may take some time.</source>
       <source xml:lang="en">Migrate databases using Azure Data Studio</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.link.sqldb">
-      <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)</source>
+      <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure SQL Database (offline)</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.link.vm">
       <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)</source>
@@ -651,6 +660,12 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.default.database">
       <source xml:lang="en">Default database</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.delete.error">
+      <source xml:lang="en">An error occurred while deleting the migration.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.delete.migration">
+      <source xml:lang="en">Delete migration</source>
     </trans-unit>
     <trans-unit id="sql.migration.description">
       <source xml:lang="en">Description</source>
@@ -1667,7 +1682,7 @@ This may take some time.</source>
       <source xml:lang="en">To migrate to Azure SQL Managed Instance, view assessment results and select one or more databases.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.recommendation.view.assessment.sqldb">
-      <source xml:lang="en">To migrate to Azure SQL Database (PREVIEW), view assessment results and select one or more databases.</source>
+      <source xml:lang="en">To migrate to Azure SQL Database, view assessment results and select one or more databases.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.recommendation.view.assessment.vm">
       <source xml:lang="en">To migrate to SQL Server on Azure Virtual Machine, view assessment results and select one or more databases.</source>
@@ -1724,7 +1739,7 @@ This may take some time.</source>
       <source xml:lang="en">SQL tempdb</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.sqldb.card.title">
-      <source xml:lang="en">Azure SQL Database (PREVIEW)</source>
+      <source xml:lang="en">Azure SQL Database</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.sqldb.target.title">
       <source xml:lang="en">Azure SQL Database</source>
@@ -2254,6 +2269,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.username.placeholder">
       <source xml:lang="en">Enter the target user name</source>
     </trans-unit>
+    <trans-unit id="sql.migration.validate.error.gatewaytimeout">
+      <source xml:lang="en">A time-out was encountered while validating a resource connection. Learn more: https://aka.ms/dms-migrations-troubleshooting.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.validate.ir.column.status">
       <source xml:lang="en">Status</source>
     </trans-unit>
@@ -2540,6 +2558,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="database-details-menu">
       <source xml:lang="en">Database details</source>
+    </trans-unit>
+    <trans-unit id="delete-migration-menu">
+      <source xml:lang="en">Delete migration</source>
     </trans-unit>
     <trans-unit id="description">
       <source xml:lang="en">Azure SQL migration description</source>

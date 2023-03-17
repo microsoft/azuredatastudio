@@ -93,14 +93,45 @@
         "title": "%title.deleteObject%"
       },
       {
+        "command": "mssql.renameObject",
+        "category": "MSSQL",
+        "title": "%title.renameObject%"
+      },
+      {
         "command": "mssql.enableGroupBySchema",
         "category": "MSSQL",
-        "title": "%mssql.objectExplorer.enableGroupBySchema%"
+        "title": "%mssql.objectExplorer.enableGroupBySchema%",
+        "icon": {
+          "dark": "resources/dark/groupBySchemaEnabled_inverse.svg",
+          "light": "resources/light/groupBySchemaEnabled.svg"
+        }
       },
       {
         "command": "mssql.disableGroupBySchema",
         "category": "MSSQL",
-        "title": "%mssql.objectExplorer.disableGroupBySchema%"
+        "title": "%mssql.objectExplorer.disableGroupBySchema%",
+        "icon": {
+          "dark": "resources/dark/groupBySchemaDisabled_inverse.svg",
+          "light": "resources/light/groupBySchemaDisabled.svg"
+        }
+      },
+      {
+        "command": "mssql.enableGroupBySchemaTitle",
+        "category": "MSSQL",
+        "title": "%mssql.objectExplorer.enableGroupBySchemaTitle%",
+        "icon": {
+          "dark": "resources/dark/groupBySchemaEnabled_inverse.svg",
+          "light": "resources/light/groupBySchemaEnabled.svg"
+        }
+      },
+      {
+        "command": "mssql.disableGroupBySchemaTitle",
+        "category": "MSSQL",
+        "title": "%mssql.objectExplorer.disableGroupBySchemaTitle%",
+        "icon": {
+          "dark": "resources/dark/groupBySchemaDisabled_inverse.svg",
+          "light": "resources/light/groupBySchemaDisabled.svg"
+        }
       }
     ],
     "outputChannels": [
@@ -170,6 +201,11 @@
           "type": "boolean",
           "default": false,
           "description": "%mssql.logDebugInfo%"
+        },
+        "mssql.piiLogging": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.piiLogging%"
         },
         "mssql.tracingLevel": {
           "type": "string",
@@ -387,6 +423,11 @@
           "description": "%mssql.parallelMessageProcessing%",
           "default": false
         },
+        "mssql.enableSqlAuthenticationProvider": {
+          "type": "boolean",
+          "description": "%mssql.enableSqlAuthenticationProvider%",
+          "default": false
+        },
         "mssql.tableDesigner.preloadDatabaseModel": {
           "type": "boolean",
           "default": false,
@@ -442,6 +483,10 @@
         {
           "command": "mssql.deleteObject",
           "when": "false"
+        },
+        {
+          "command": "mssql.renameObject",
+          "when": "false"
         }
       ],
       "objectExplorer/item/context": [
@@ -474,6 +519,16 @@
           "command": "mssql.deleteObject",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
           "group": "0_query@2"
+        },
+        {
+          "command": "mssql.renameObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(Database|ServerLevelLogin|User|Table|View)$/ && config.workbench.enablePreviewFeatures",
+          "group": "0_query@3"
+        },
+        {
+          "command": "mssql.renameObject",
+          "when": "connectionProvider == MSSQL && nodeType == Column && config.workbench.enablePreviewFeatures && nodePath =~ /^.*\/Tables\/.*\/Columns\/.*$",
+          "group": "0_query@3"
         },
         {
           "command": "mssql.enableGroupBySchema",
@@ -516,6 +571,16 @@
           "group": "connection@2"
         },
         {
+          "command": "mssql.renameObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(Database|ServerLevelLogin|User|Table|View)$/ && config.workbench.enablePreviewFeatures",
+          "group": "connection@3"
+        },
+        {
+          "command": "mssql.renameObject",
+          "when": "connectionProvider == MSSQL && nodeType == Column && config.workbench.enablePreviewFeatures && nodePath =~ /^.*\/Tables\/.*\/Columns\/.*$",
+          "group": "connection@3"
+        },
+        {
           "command": "mssql.enableGroupBySchema",
           "when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && !config.mssql.objectExplorer.groupBySchema"
         },
@@ -528,6 +593,18 @@
         {
           "command": "mssql.exportNotebookToSql",
           "when": "config.workbench.enablePreviewFeatures && providerId == sql"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "mssql.enableGroupBySchemaTitle",
+          "when": "view == dataExplorer.servers && !config.mssql.objectExplorer.groupBySchema",
+          "group": "navigation@4"
+        },
+        {
+          "command": "mssql.disableGroupBySchemaTitle",
+          "when": "view == dataExplorer.servers && config.mssql.objectExplorer.groupBySchema",
+          "group": "navigation@5"
         }
       ]
     },
@@ -916,15 +993,66 @@
           "categoryValues": [
             {
               "displayName": "%mssql.disabled%",
-              "name": "Disabled"
+              "name": "disabled"
             },
             {
               "displayName": "%mssql.enabled%",
-              "name": "Enabled"
+              "name": "enabled"
             }
           ],
           "isRequired": false,
-          "isArray": false
+          "isArray": false,
+          "onSelectionChange": [
+            {
+              "values": [
+                "disabled",
+                ""
+              ],
+              "dependentOptionActions": [
+                {
+                  "optionName": "secureEnclaves",
+                  "action": "hide"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
+          "name": "secureEnclaves",
+          "displayName": "%mssql.connectionOptions.secureEnclaves.displayName%",
+          "description": "%mssql.connectionOptions.secureEnclaves.description%",
+          "groupName": "%mssql.connectionOptions.groupName.security%",
+          "valueType": "category",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": [
+            {
+              "displayName": "%mssql.disabled%",
+              "name": "disabled"
+            },
+            {
+              "displayName": "%mssql.enabled%",
+              "name": "enabled"
+            }
+          ],
+          "isRequired": false,
+          "isArray": false,
+          "onSelectionChange": [
+            {
+              "values": [
+                "disabled",
+                ""
+              ],
+              "dependentOptionActions": [
+                {
+                  "optionName": "attestationProtocol",
+                  "action": "hide"
+                }
+              ]
+            }
+          ]
         },
         {
           "specialValueType": null,
@@ -939,15 +1067,33 @@
           "categoryValues": [
             {
               "displayName": "%mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS%",
-              "name": "HGS"
+              "name": "hgs"
             },
             {
               "displayName": "%mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS%",
-              "name": "AAS"
+              "name": "aas"
+            },
+            {
+              "displayName": "%mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None%",
+              "name": "none"
             }
           ],
           "isRequired": false,
-          "isArray": false
+          "isArray": false,
+          "onSelectionChange": [
+            {
+              "values": [
+                "none",
+                ""
+              ],
+              "dependentOptionActions": [
+                {
+                  "optionName": "enclaveAttestationUrl",
+                  "action": "hide"
+                }
+              ]
+            }
+          ]
         },
         {
           "specialValueType": null,
@@ -1303,8 +1449,8 @@
     }
   },
   "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^1.3.4",
-    "@microsoft/ads-service-downloader": "^1.1.0",
+    "@microsoft/ads-extension-telemetry": "^3.0.0",
+    "@microsoft/ads-service-downloader": "^1.2.1",
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.3.2",
     "find-remove": "1.2.1",
     "vscode-languageclient": "5.2.1",
@@ -1313,7 +1459,7 @@
   "devDependencies": {
     "@types/mocha": "^7.0.2",
     "@microsoft/vscodetestcover": "^1.2.1",
-    "@microsoft/azdata-test": "^2.0.3",
+    "@microsoft/azdata-test": "^3.0.1",
     "mocha": "^7.1.1",
     "should": "^13.2.3",
     "typemoq": "^2.1.0"

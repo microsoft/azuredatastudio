@@ -242,7 +242,6 @@ declare module 'mssql' {
 		getOptionsFromProfile(profilePath: string): Thenable<DacFxOptionsResult>;
 		validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<ValidateStreamingJobResult>;
 		parseTSqlScript(filePath: string, databaseSchemaProvider: string): Thenable<ParseTSqlScriptResult>;
-		savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<azdata.ResultStatus>;
 	}
 
 	export interface DacFxResult extends azdata.ResultStatus {
@@ -355,9 +354,9 @@ declare module 'mssql' {
 		/**
 		 * Delete a database reference from a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 * @param name Name of the reference to be deleted. Name of the System DB, path of the sqlproj, or path of the dacpac
 		 */
-		deleteDatabaseReference(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+		deleteDatabaseReference(projectUri: string, name: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Add a folder to a project
@@ -452,7 +451,7 @@ declare module 'mssql' {
 		 * Get the cross-platform compatibility status for a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
-		getCrossPlatformCompatibility(projectUri: string): Promise<GetCrossPlatformCompatiblityResult>;
+		getCrossPlatformCompatibility(projectUri: string): Promise<GetCrossPlatformCompatibilityResult>;
 
 		/**
 		 * Open an existing SQL project
@@ -465,6 +464,26 @@ declare module 'mssql' {
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
 		updateProjectForCrossPlatform(projectUri: string): Promise<azdata.ResultStatus>;
+
+		/**
+		 * Set the DatabaseSource property of a .sqlproj file
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param databaseSource Source of the database schema, used in telemetry
+		 */
+		setDatabaseSource(projectUri: string, databaseSource: string): Promise<azdata.ResultStatus>;
+
+		/**
+		 * Set the DatabaseSchemaProvider property of a SQL project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param databaseSchemaProvider New DatabaseSchemaProvider value, in the form "Microsoft.Data.Tools.Schema.Sql.SqlXYZDatabaseSchemaProvider"
+		 */
+		setDatabaseSchemaProvider(projectUri: string, databaseSchemaProvider: string): Promise<azdata.ResultStatus>;
+
+		/**
+		 * Get the cross-platform compatibility status for a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getProjectProperties(projectUri: string): Promise<GetProjectPropertiesResult>;
 
 		/**
 		 * Add a SQLCMD variable to a project
@@ -519,13 +538,159 @@ declare module 'mssql' {
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
 		 */
 		moveSqlObjectScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
+
+		/**
+		 * Get all the database references in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getDatabaseReferences(projectUri: string): Promise<GetDatabaseReferencesResult>;
+
+		/**
+		 * Get all the folders in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getFolders(projectUri: string): Promise<GetFoldersResult>;
+
+		/**
+		 * Get all the post-deployment scripts in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getPostDeploymentScripts(projectUri: string): Promise<GetScriptsResult>;
+
+		/**
+		 * Get all the pre-deployment scripts in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getPreDeploymentScripts(projectUri: string): Promise<GetScriptsResult>;
+
+		/**
+		 * Get all the SQLCMD variables in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getSqlCmdVariables(projectUri: string): Promise<GetSqlCmdVariablesResult>;
+
+		/**
+		 * getSqlObjectScripts
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getSqlObjectScripts(projectUri: string): Promise<GetScriptsResult>;
+
+		/**
+		 * Add a None item to a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the item, including extension, relative to the .sqlproj
+		 */
+		addNoneItem(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+
+		/**
+		 * Delete a None item from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the item, including extension, relative to the .sqlproj
+		 */
+		deleteNoneItem(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+
+		/**
+		 * Exclude a None item from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the item, including extension, relative to the .sqlproj
+		 */
+		excludeNoneItem(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+
+		/**
+		 * Get all the None items in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 */
+		getNoneItems(projectUri: string): Promise<GetScriptsResult>;
+
+		/**
+		 * Move a None item in a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
+		 * @param path Path of the item, including extension, relative to the .sqlproj
+		 */
+		moveNoneItem(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
 	}
 
 
 	//#region Results
 
-	export interface GetCrossPlatformCompatiblityResult extends azdata.ResultStatus {
+	export interface GetDatabaseReferencesResult extends azdata.ResultStatus {
+		/**
+		 * Array of system database references contained in the project
+		 */
+		systemDatabaseReferences: SystemDatabaseReference[];
+		/**
+		 * Array of dacpac references contained in the project
+		 */
+		dacpacReferences: DacpacReference[];
+		/**
+		 * Array of SQL project references contained in the project
+		 */
+		sqlProjectReferences: SqlProjectReference[];
+	}
+
+	export interface GetFoldersResult extends azdata.ResultStatus {
+		/**
+		 * Array of folders contained in the project
+		 */
+		folders: string[];
+	}
+
+	export interface GetCrossPlatformCompatibilityResult extends azdata.ResultStatus {
+		/**
+		 * Whether the project is cross-platform compatible
+		 */
 		isCrossPlatformCompatible: boolean;
+	}
+
+	export interface GetSqlCmdVariablesResult extends azdata.ResultStatus {
+		/**
+		 * Array of SQLCMD variables contained in the project
+		 */
+		sqlCmdVariables: SqlCmdVariable[];
+	}
+
+	export interface GetScriptsResult extends azdata.ResultStatus {
+		/**
+		 * Array of scripts contained in the project
+		 */
+		scripts: string[];
+	}
+
+	export interface GetProjectPropertiesResult extends azdata.ResultStatus {
+		/**
+		 * GUID for the SQL project
+		 */
+		projectGuid: string;
+		/**
+		 * Build configuration, defaulted to Debug if not specified
+		 */
+		configuration: string;
+		/**
+		 * Build platform, defaulted to AnyCPU if not specified
+		 */
+		platform: string;
+		/**
+		 * Output path for build, defaulted to "bin/Debug" if not specified.
+			 May be absolute or relative.
+		 */
+		outputPath: string;
+		/**
+		 * Default collation for the project, defaulted to SQL_Latin1_General_CP1_CI_AS if not specified
+		 */
+		defaultCollation: string;
+		/**
+		 * Source of the database schema, used in telemetry
+		 */
+		databaseSource?: string;
+		/**
+		 * Style of the .sqlproj file - SdkStyle or LegacyStyle
+		 */
+		projectStyle: ProjectType;
+		/**
+		 * Database Schema Provider, in the format "Microsoft.Data.Tools.Schema.Sql.SqlXYZDatabaseSchemaProvider"
+		 */
+		databaseSchemaProvider: string
 	}
 
 	//#endregion
@@ -1070,6 +1235,13 @@ declare module 'mssql' {
 		 * @param contextId The id of the view.
 		 */
 		disposeUserView(contextId: string): Thenable<void>;
+		/**
+		 * Rename an object.
+		 * @param connectionUri The URI of the server connection.
+		 * @param objectUrn Urn of the object to be renamed. More information: https://learn.microsoft.com/en-us/sql/relational-databases/server-management-objects-smo/overview-smo.
+		 * @param newName The new name of the object.
+		 */
+		rename(connectionUri: string, objectUrn: string, newName: string): Thenable<void>;
 	}
 	// Object Management - End.
 }

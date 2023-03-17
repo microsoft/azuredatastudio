@@ -159,6 +159,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.login.windowsAuthenticationType">
       <source xml:lang="en">Windows Authentication</source>
     </trans-unit>
+    <trans-unit id="objectManagement.loginNotSelectedError">
+      <source xml:lang="en">Login is not selected.</source>
+    </trans-unit>
     <trans-unit id="objectManagement.nameCannotBeEmptyError">
       <source xml:lang="en">Name cannot be empty.</source>
     </trans-unit>
@@ -168,6 +171,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.newObjectDialogTitle">
       <source xml:lang="en">{0} - New (Preview)</source>
       <note>{0} object type.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.noConnectionUriError">
+      <source xml:lang="en">Failed to retrieve the connection information, please reconnect and try again.</source>
     </trans-unit>
     <trans-unit id="objectManagement.objectPropertiesDialogTitle">
       <source xml:lang="en">{0} - {1} (Preview)</source>
@@ -230,26 +236,6 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     </trans-unit>
     <trans-unit id="objectManagement.yesText">
       <source xml:lang="en">Yes</source>
-    </trans-unit>
-</body></file>
-  <file original="extensions/mssql/dist/sqlNotebook/sqlNotebookController" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="cellExecutionCancelled">
-      <source xml:lang="en">Cell execution cancelled.</source>
-    </trans-unit>
-    <trans-unit id="changeNotebookConnection">
-      <source xml:lang="en">Change SQL Notebook Connection</source>
-    </trans-unit>
-    <trans-unit id="noConnectionError">
-      <source xml:lang="en">No connection provided.</source>
-    </trans-unit>
-    <trans-unit id="notebookConnection">
-      <source xml:lang="en">Connected to: {0}</source>
-    </trans-unit>
-    <trans-unit id="notebookDisconnected">
-      <source xml:lang="en">Disconnected</source>
-    </trans-unit>
-    <trans-unit id="queryInProgressError">
-      <source xml:lang="en">Another query is currently in progress. Please wait for that query to complete before running these cells.</source>
     </trans-unit>
 </body></file>
   <file original="extensions/mssql/dist/sqlToolsServer" source-language="en" datatype="plaintext"><body>
@@ -457,6 +443,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS">
       <source xml:lang="en">Host Guardian Service</source>
     </trans-unit>
+    <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None">
+      <source xml:lang="en">None</source>
+    </trans-unit>
     <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.description">
       <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
     </trans-unit>
@@ -580,6 +569,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="mssql.connectionOptions.replication.displayName">
       <source xml:lang="en">Replication</source>
     </trans-unit>
+    <trans-unit id="mssql.connectionOptions.secureEnclaves.description">
+      <source xml:lang="en">Enables or disables Secure Enclaves for the connection</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.secureEnclaves.displayName">
+      <source xml:lang="en">Secure Enclaves</source>
+    </trans-unit>
     <trans-unit id="mssql.connectionOptions.serverName.description">
       <source xml:lang="en">Name of the SQL Server instance</source>
     </trans-unit>
@@ -612,6 +607,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     </trans-unit>
     <trans-unit id="mssql.disabled">
       <source xml:lang="en">Disabled</source>
+    </trans-unit>
+    <trans-unit id="mssql.enableSqlAuthenticationProvider">
+      <source xml:lang="en">Enables use of the Sql Authentication Provider for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens. This option is only supported for 'MSAL' Azure Authentication Library. Azure Data Studio is required to be relaunched when the value is changed.</source>
     </trans-unit>
     <trans-unit id="mssql.enabled">
       <source xml:lang="en">Enabled</source>
@@ -691,8 +689,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="mssql.objectExplorer.disableGroupBySchema">
       <source xml:lang="en">Disable Group By Schema</source>
     </trans-unit>
+    <trans-unit id="mssql.objectExplorer.disableGroupBySchemaTitle">
+      <source xml:lang="en">SQL Server: Disable Group By Schema</source>
+    </trans-unit>
     <trans-unit id="mssql.objectExplorer.enableGroupBySchema">
       <source xml:lang="en">Enable Group By Schema</source>
+    </trans-unit>
+    <trans-unit id="mssql.objectExplorer.enableGroupBySchemaTitle">
+      <source xml:lang="en">SQL Server: Enable Group By Schema</source>
     </trans-unit>
     <trans-unit id="mssql.objectExplorer.expandTimeout">
       <source xml:lang="en">The timeout in seconds for expanding a node in Object Explorer. The default value is 45 seconds.</source>
@@ -701,7 +705,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <source xml:lang="en">When enabled, the database objects in Object Explorer will be categorized by schema.</source>
     </trans-unit>
     <trans-unit id="mssql.parallelMessageProcessing">
-      <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.</source>
+      <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</source>
+    </trans-unit>
+    <trans-unit id="mssql.piiLogging">
+      <source xml:lang="en">[Optional] Should Personally Identifiable Information (PII) be logged in the log file.</source>
     </trans-unit>
     <trans-unit id="mssql.provider.displayName">
       <source xml:lang="en">Microsoft SQL Server</source>

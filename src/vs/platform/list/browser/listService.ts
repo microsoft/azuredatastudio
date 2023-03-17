@@ -1075,7 +1075,7 @@ function getDefaultTreeFindMode(configurationService: IConfigurationService) {
 	return undefined;
 }
 
-function workbenchTreeDataPreamble<T, TFilterData, TOptions extends IAbstractTreeOptions<T, TFilterData> | IAsyncDataTreeOptions<T, TFilterData>>(
+export function workbenchTreeDataPreamble<T, TFilterData, TOptions extends IAbstractTreeOptions<T, TFilterData> | IAsyncDataTreeOptions<T, TFilterData>>( // {{SQL CARBON EDIT}} Export for tests
 	accessor: ServicesAccessor,
 	options: TOptions,
 ): { options: TOptions; getTypeNavigationMode: () => TypeNavigationMode | undefined; disposable: IDisposable } {

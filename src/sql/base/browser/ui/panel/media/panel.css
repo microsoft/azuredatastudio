@@ -83,6 +83,10 @@ panel {
 	outline: 1px dashed #f38518;
 	outline-offset: -3px;
 }
+.hc-light .tabbedPanel .tabList .tab-header:hover:not(.selected) {
+	background-color: #dcdcdc;
+	outline: none;
+}
 
 .tabbedPanel.horizontal > .title .tabList .tab .tabLabel,
 .tabbedPanel.vertical > .title .tabList .tab .tabLabel {
@@ -216,7 +220,8 @@ panel {
 	cursor: pointer;
 }
 
-.vs .tabbedPanel .tab-action.collapse {
+.vs .tabbedPanel .tab-action.collapse,
+.hc-light .tabbedPanel .tab-action.collapse {
 	background-image: url("collapse.svg");
 }
 
@@ -225,7 +230,8 @@ panel {
 	background-image: url("collapse_inverse.svg");
 }
 
-.vs .tabbedPanel .tab-action.expand {
+.vs .tabbedPanel .tab-action.expand,
+.hc-light .tabbedPanel .tab-action.expand {
 	background-image: url("expand.svg");
 }
 

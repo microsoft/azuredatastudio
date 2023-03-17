@@ -11344,13 +11344,36 @@
 			"incompatible": "無法安裝延伸模組 '{1}' 的版本 '{0}'，因為它與 Azure Data Studio '{2}' 不相容。更新為 Azure Data Studio {3} 以安裝延伸模組。",
 			"installExtensionCompletedAndReloadRequired": "延伸模組 {0} 安裝完成。請重新載入 Azure Data Studio 以啟用此延伸模組。",
 			"maxMemoryForLargeFilesMB": "控制當嘗試開啟大型檔案時，Azure Data Studio 在重新啟動後可用的記憶體。效果與在命令列上指定 `--max-memory=NEWSIZE` 相同。",
+			"miNewDeployment": "新部署(&&D)…",
 			"miNewNotebook": "新增筆記本(&&N)",
 			"miNewQuery": "新增查詢(&&Q)",
 			"miinstallVsix": "從 VSIX 套件安裝延伸模組",
 			"newQuery": "新增查詢",
 			"notebook.cellTitle": "筆記本儲存格標題功能表",
+			"notebook.cellToolbarLocation.description": "應顯示儲存格工具列的位置，或是否應隱藏。(僅適用於 VS Code Notebooks)",
+			"notebook.cellToolbarVisibility.description": "當游標停留或按一下時，是否要顯示儲存格工具列。(僅適用於 VS Code Notebooks)",
+			"notebook.compactView.description": "控制筆記本編輯器是否應以精簡格式轉譯。例如，開啟時減少左邊界寬度。(僅適用於 VS Code Notebooks)",
+			"notebook.consolidatedOutputButton.description": "控制輸出動作是否應該在輸出工具列中轉譯。(僅適用於 VS Code Notebooks)",
+			"notebook.consolidatedRunButton.description": "控制執行按鈕旁的下拉式清單是否顯示額外的動作。(僅適用於 VS Code Notebooks)",
+			"notebook.diff.enablePreview.description": "是否要為筆記本使用增強的文字 Diff 編輯器。(僅適用於 VS Code Notebooks)",
+			"notebook.displayOrder.description": "輸出 MIME 類型的優先順序清單。(僅適用於 VS Code Notebooks)",
+			"notebook.dragAndDrop.description": "控制筆記本編輯器是否應該允許透過拖放移動儲存格。(僅適用於 VS Code Notebooks)",
+			"notebook.editorOptions.experimentalCustomization": "筆記本中使用的程式碼編輯器設定。這可用來自訂大部分的編輯器。* 設定。(僅適用於 VS Code Notebooks)",
+			"notebook.focusIndicator.description": "控制焦點指標的轉譯位置是沿著儲存格框線，或左裝訂邊。(僅適用於 VS Code Notebooks)",
+			"notebook.globalToolbar.description": "控制是否要在筆記本編輯器內轉譯全域工具列。(僅適用於 VS Code Notebooks)",
+			"notebook.globalToolbarShowLabel": "控制筆記本工具列上的動作是否應轉譯標籤。(僅適用於 VS Code Notebooks)",
+			"notebook.insertToolbarPosition.description": "控制插入儲存格動作應出現的位置。(僅適用於 VS Code Notebooks)",
+			"notebook.interactiveWindow.collapseCodeCells": "控制互動視窗中的程式碼儲存格是否預設為已摺疊。(僅適用於 VS Code Notebooks)",
+			"notebook.markup.fontSize": "控制筆記本中轉譯標記的字型大小 (像素)。設定為 `0` 時，會使用 120% 的 '#editor.fontSize#'。(僅適用於 VS Code Notebooks)",
+			"notebook.outputFontFamily": "筆記本儲存格輸出文字的字型系列。設定為空白時，會使用 '#editor.fontFamily#'。(僅適用於 VS Code Notebooks)",
+			"notebook.outputFontSize": "筆記本儲存格輸出文字的字型大小。當設為 0 時，會使用 '#editor.fontSize#'。(僅適用於 VS Code Notebooks)",
+			"notebook.outputLineHeight": "筆記本儲存格輸出文字的行高。\r\n - 介於 0 到 8 之間的值會用來做為字型大小的乘數。\r\n - 大於或等於 8 的值將做為有效值。(僅適用於 VS Code Notebooks)",
+			"notebook.showCellStatusbar.description": "是否應顯示儲存格狀態列。(僅適用於 VS Code Notebooks)",
+			"notebook.showFoldingControls.description": "控制何時顯示 Markdown 標題摺疊箭頭。(僅適用於 VS Code Notebooks)",
+			"notebook.textOutputLineLimit": "控制文字輸出中要轉譯多少行文字。(僅適用於 VS Code Notebooks)",
 			"notebook.title": "筆記本標題功能表",
 			"notebook.toolbar": "筆記本工具列功能表",
+			"notebook.undoRedoPerCell.description": "是否要針對每個儲存格使用個別的復原/取消復原堆疊。(僅適用於 VS Code Notebooks)",
 			"objectExplorer.context": "物件總管項目操作功能表",
 			"openDefaultSettingsJson": "開啟預設設定 JSON",
 			"openDefaultSettingsJson.capitalized": "開啟預設設定 (JSON)",
@@ -11538,7 +11561,9 @@
 			"enableObsoleteApiUsageNotificationTitle": "淘汰 API 通知",
 			"previewFeatures.configEnable": "啟用未發佈的預覽功能",
 			"previewFeatures.configTitle": "預覽功能",
-			"showConnectDialogOnStartup": "啟動時顯示連線對話方塊"
+			"showConnectDialogOnStartup": "啟動時顯示連線對話方塊",
+			"useVSCodeNotebooks": "(預覽) 使用 VS Code Notebooks 做為預設筆記本體驗。注意: 必須重新啟動 Azure Data Studio 才能啟用此設定。",
+			"useVSCodeNotebooksTitle": "使用 VS Code Notebooks"
 		},
 		"sql/workbench/browser/designer/designer": {
 			"designer.actions": "更多動作",
@@ -11901,6 +11926,7 @@
 			"status.connection.status": "連線狀態"
 		},
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
+			"schema.azureResource": "提供者的 Azure 資源端點。",
 			"schema.connectionOptions": "連線選項",
 			"schema.displayName": "提供者的顯示名稱",
 			"schema.enableConnectionStringOption": "提供者是否支援連接字串作為輸入選項。預設值為 false。",
@@ -12391,9 +12417,6 @@
 			"nextSearchItemAction": "下一個相符項目",
 			"previousSearchItemAction": "上一個相符項目"
 		},
-		"sql/workbench/contrib/executionPlan/common/executionPlanInput": {
-			"epCompare.executionPlanEditorName": "ExecutionPlan"
-		},
 		"sql/workbench/contrib/extensions/browser/contributionRenders": {
 			"insight condition": "時間",
 			"insightId": "識別碼",
@@ -12854,7 +12877,7 @@
 			"viewOptionsModal.title": "設定檢視"
 		},
 		"sql/workbench/contrib/notebook/browser/outputs/gridOutput.component": {
-			"copyFailed": "複製失敗。錯誤: {0}",
+			"copyFailed": "複製失敗，發生錯誤: {0}",
 			"notebook.showChart": "顯示圖表",
 			"notebook.showTable": "顯示資料表"
 		},
@@ -13075,6 +13098,7 @@
 			"fontWeight": "控制字型粗細。",
 			"letterSpacing": "控制字母間距 (像素)。",
 			"maxColumnWidth": "自動調整大小之欄位的寬度上限 (像素)",
+			"resultsGrid.showJsonAsLink": "是否將具有 JSON 格式化字串的儲存格顯示為超連結。當啟用時，按一下則 JSON 值會隨即在另一個索引標籤中開啟。預設值為 true。",
 			"resultsGridConfigurationTitle": "結果方格與訊息",
 			"rowHeight": "控制列高 (像素)"
 		},
@@ -13309,8 +13333,12 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "關閉",
+			"addAccountFailedCodeMessage": "{0} \r\n錯誤訊息: {1}",
+			"addAccountFailedGenericMessage": "新增帳戶失敗，如需詳細資訊，請查看 Azure 帳戶記錄。",
+			"addAccountFailedMessage": "{0}",
 			"loggingIn": "正在新增帳戶...",
-			"refreshFailed": "使用者已取消重新整理帳戶"
+			"refreshCanceled": "使用者已取消重新整理帳戶",
+			"refreshFailed": "0 \r\n錯誤訊息: 1"
 		},
 		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
 			"azureAccount": "Azure 帳戶",
@@ -13383,12 +13411,10 @@
 		},
 		"sql/workbench/services/connection/browser/connectionDialogService": {
 			"connectionError": "連線錯誤",
-			"enableTrustServerCertificate": "啟用信任伺服器憑證",
 			"kerberosErrorStart": "因為 Kerberos 錯誤導致連線失敗。",
 			"kerberosHelpLink": "您可於 {0} 取得設定 Kerberos 的說明",
 			"kerberosKinit": "如果您之前曾連線，則可能需要重新執行 kinit。",
-			"runKinit": "執行 Kinit",
-			"trustServerCertInstructionText": "已在此連線上啟用加密、檢閱目標 SQL Server 的 SSL 與憑證設定，或在連線對話方塊中啟用 [信任伺服器憑證]。\t\t\t\r\n\r\n注意: 自我簽署憑證只提供有限的保護，且不是實際執行環境的建議做法。您要在此連線上啟用 [信任伺服器憑證] 並重試嗎? "
+			"runKinit": "執行 Kinit"
 		},
 		"sql/workbench/services/connection/browser/connectionDialogWidget": {
 			"connectType": "連線類型",
@@ -13443,6 +13469,8 @@
 			"unsavedGroupLabel": "未儲存的連線"
 		},
 		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.Message1": "必須變更 '{0}' 的密碼，才能繼續登入 '{1}'。",
+			"passwordChangeDialog.Message2": "請在下方輸入新密碼:",
 			"passwordChangeDialog.cancel": "取消",
 			"passwordChangeDialog.confirmPassword": "確認密碼:",
 			"passwordChangeDialog.connecting": "正在連線",
@@ -13451,6 +13479,7 @@
 			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "請按 [確定]，然後在兩個方塊中輸入完全相同的密碼。",
 			"passwordChangeDialog.newPassword": "新密碼:",
 			"passwordChangeDialog.ok": "確定",
+			"passwordChangeDialog.passwordChangeInProgress": "密碼變更已在進行中",
 			"passwordChangeDialog.title": "變更密碼"
 		},
 		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
@@ -13483,6 +13512,8 @@
 			"warning": "警告"
 		},
 		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"executionPlanService.ensureCapabilitiesRegistered": "Provider with id {0} was not registered after 30 seconds.",
+			"executionPlanService.ensureFileExtensionHandlerRegistered": "Execution plan provider which supports file format '{0}' was not registered after 30 seconds.",
 			"noHandlerRegistered": "未登錄有效的執行計畫處理常式",
 			"providerIdNotValidError": "需要有效的提供者才能與 ExecutionPlanService 互動",
 			"selectExecutionPlanProvider": "選取要開啟執行計畫的提供者"
@@ -13648,7 +13679,11 @@
 			"connectionTree.editServerGroup": "編輯伺服器群組",
 			"connectionTree.refresh": "重新整理",
 			"deleteConnection": "刪除連線",
+			"deleteConnectionConfirmation": "是否確定要刪除連線 '{0}'?",
+			"deleteConnectionConfirmationNo": "否",
+			"deleteConnectionConfirmationYes": "是",
 			"deleteConnectionGroup": "刪除群組",
+			"deleteConnectionGroupConfirmation": "是否確定要刪除連線群組 '{0}'?",
 			"showAllConnections": "顯示所有連線"
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
@@ -13674,6 +13709,7 @@
 		},
 		"sql/workbench/services/profiler/browser/profilerFilterDialog": {
 			"profilerFilterDialog.addClauseText": "新增子句",
+			"profilerFilterDialog.allClausesCleared": "已清除所有子句。",
 			"profilerFilterDialog.apply": "套用",
 			"profilerFilterDialog.cancel": "取消",
 			"profilerFilterDialog.clear": "全部清除",
@@ -13682,6 +13718,7 @@
 			"profilerFilterDialog.isNotNullOperator": "非 Null",
 			"profilerFilterDialog.isNullOperator": "為 Null",
 			"profilerFilterDialog.loadFilter": "載入篩選",
+			"profilerFilterDialog.newClauseAdded": "已加入新的子句。",
 			"profilerFilterDialog.notContainsOperator": "不包含",
 			"profilerFilterDialog.notStartsWithOperator": "開頭不是",
 			"profilerFilterDialog.ok": "確定",
@@ -13706,7 +13743,7 @@
 			"updateCellFailed": "更新資料格失敗: "
 		},
 		"sql/workbench/services/query/common/queryRunner": {
-			"copyFailed": "複製失敗。錯誤: {0}",
+			"copyFailed": "複製失敗，發生錯誤: {0}",
 			"elapsedBatchTime": "批次執行時間: {0}",
 			"query.ExecutionFailedError": "由於意外錯誤導致執行失敗: {0} {1}",
 			"query.message.executionTime": "總執行時間: {0}",
@@ -13910,6 +13947,12 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "開始使用(&&S)",
 			"showReleaseNotes": "顯示入門指南"
+		},
+		"sql/workbench/services/dialog/browser/wizardNavigation.component": {
+			"wizardNavigation.stepName": "步驟 {0}: {1}"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanInput": {
+			"epCompare.executionPlanEditorName": "ExecutionPlan"
 		}
 	}
 }

@@ -13,8 +13,8 @@ import {
 	AzureAccount
 } from 'azurecore';
 import { Deferred } from './interfaces';
-import { PublicClientApplication } from '@azure/msal-node';
-import { SimpleTokenCache } from './simpleTokenCache';
+import { AuthenticationResult, PublicClientApplication } from '@azure/msal-node';
+import { SimpleTokenCache } from './utils/simpleTokenCache';
 import { Logger } from '../utils/Logger';
 import { MultiTenantTokenResponse, Token, AzureAuth } from './auths/azureAuth';
 import { AzureAuthCodeGrant } from './auths/azureAuthCodeGrant';
@@ -105,7 +105,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 	private async _initialize(storedAccounts: AzureAccount[]): Promise<AzureAccount[]> {
 		const accounts: AzureAccount[] = [];
-		console.log(`Initializing stored accounts ${JSON.stringify(accounts)}`);
+		Logger.verbose(`Initializing stored accounts ${JSON.stringify(accounts)}`);
 		const updatedAccounts = filterAccounts(storedAccounts, this.authLibrary);
 		for (let account of updatedAccounts) {
 			const azureAuth = this.getAuthMethod(account);
@@ -144,14 +144,11 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		await this.initCompletePromise;
 		const azureAuth = this.getAuthMethod(account);
 		if (azureAuth) {
-			Logger.pii(`Getting account security token for ${JSON.stringify(account.key)} (tenant ${tenantId}). Auth Method = ${azureAuth.userFriendlyName}`, [], []);
+			Logger.piiSanitized(`Getting account security token for ${JSON.stringify(account.key)} (tenant ${tenantId}). Auth Method = ${azureAuth.userFriendlyName}`, [], []);
 			if (this.authLibrary === Constants.AuthLibrary.MSAL) {
 				tenantId = tenantId || account.properties.owningTenant.id;
 				let authResult = await azureAuth.getTokenMsal(account.key.accountId, resource, tenantId);
-				if (!authResult || !authResult.account || !authResult.account.idTokenClaims) {
-					Logger.error(`MSAL: getToken call failed`);
-					throw Error('Failed to get token');
-				} else {
+				if (this.isAuthenticationResult(authResult) && authResult.account && authResult.account.idTokenClaims) {
 					const token: Token = {
 						key: authResult.account.homeAccountId,
 						token: authResult.accessToken,
@@ -159,6 +156,14 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 						expiresOn: authResult.account.idTokenClaims.exp
 					};
 					return token;
+				} else {
+					Logger.error(`MSAL: getToken call failed`);
+					// Throw error with MSAL-specific code/message, else throw generic error message
+					if (this.isProviderError(authResult)) {
+						throw new Error(localize('msalTokenError', `{0} occurred when acquiring token. \n{1}`, authResult.errorCode, authResult.errorMessage));
+					} else {
+						throw new Error(localize('genericTokenError', 'Failed to get token'));
+					}
 				}
 			} else { // fallback to ADAL as default
 				return azureAuth.getAccountSecurityTokenAdal(account, tenantId, resource);
@@ -170,6 +175,23 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 		}
 	}
+
+	private isAuthenticationResult(result: AuthenticationResult | azdata.ProviderError | null): result is AuthenticationResult {
+		if (result) {
+			return typeof (<AuthenticationResult>result).accessToken === 'string';
+		} else {
+			return false;
+		}
+	}
+
+	private isProviderError(result: AuthenticationResult | azdata.ProviderError | null): result is azdata.ProviderError {
+		if (result) {
+			return typeof (<azdata.ProviderError>result).errorMessage === 'string';
+		} else {
+			return false;
+		}
+	}
+
 
 	private async _getSecurityToken(account: AzureAccount, resource: azdata.AzureResource): Promise<MultiTenantTokenResponse | undefined> {
 		void vscode.window.showInformationMessage(localize('azure.deprecatedGetSecurityToken', "A call was made to azdata.accounts.getSecurityToken, this method is deprecated and will be removed in future releases. Please use getAccountSecurityToken instead."));

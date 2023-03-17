@@ -20,7 +20,6 @@
 			"azure.owningTenantNotFound": "Informations sur le locataire propriétaire introuvables pour le compte.",
 			"azure.responseError": "La récupération du jeton a échoué avec une erreur. [Ouvrir les outils de développement]({0}) pour plus de détails.",
 			"azure.tenantNotFound": "Le locataire spécifié avec l'ID « {0} » est introuvable.",
-			"azureAuth.unidentifiedError": "Erreur non identifiée avec l'authentification Azure",
 			"azurecore.consentDialog.body": "Votre locataire « {0} ({1}) » exige une nouvelle authentification pour accéder aux ressources {2}. Appuyez sur Ouvrir pour démarrer le processus d'authentification.",
 			"azurecore.consentDialog.cancel": "Annuler",
 			"azurecore.consentDialog.ignore": "Ignorer le locataire",
@@ -42,7 +41,9 @@
 		"dist/account-provider/azureAccountProvider": {
 			"azure.NoAuthMethod.Available": "Aucune méthode d'authentification Azure disponible. Vous devez activer les méthodes d'authentification dans la configuration ADS.",
 			"azure.NoAuthMethod.Selected": "Aucune méthode d'authentification Azure sélectionnée. Vous devez sélectionner la méthode d'authentification à utiliser.",
-			"azure.deprecatedGetSecurityToken": "Un appel a été effectué à azdata.accounts.getSecurityToken, cette méthode est dépréciée et sera supprimée dans les mises en production futures. Utilisez getAccountSecurityToken à la place."
+			"azure.deprecatedGetSecurityToken": "Un appel a été effectué à azdata.accounts.getSecurityToken, cette méthode est dépréciée et sera supprimée dans les mises en production futures. Utilisez getAccountSecurityToken à la place.",
+			"genericTokenError": "Impossible d'obtenir le jeton",
+			"msalTokenError": "{0} s'est produit lors de l'acquisition du jeton. \r\n{1}"
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "L'effacement du cache de jetons a échoué",
@@ -50,10 +51,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure (Chine)",
-			"germanyCloud": "Azure (Allemagne)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (US Government)",
-			"usNatCloudDisplayName": "Azure (US National)"
+			"usGovCloudDisplayName": "Azure (US Government)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "Vous devez sélectionner un compte Azure pour que cette fonctionnalité fonctionne.",

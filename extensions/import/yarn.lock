@@ -182,17 +182,17 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
   integrity sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
 
-"@microsoft/ads-extension-telemetry@^1.3.4":
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/@microsoft/ads-extension-telemetry/-/ads-extension-telemetry-1.3.4.tgz#25d34cff39171a79663816faa6ba889e07dfb5ab"
-  integrity sha512-XTkMUA4BsTVNETjrKE4M3xaXlmk7m93Xy/eQHxHhzf8POjtPTvlw+8i96W8lTiRPnN81yAVE7YOB3GExsur6RA==
+"@microsoft/ads-extension-telemetry@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-extension-telemetry/-/ads-extension-telemetry-3.0.0.tgz#ca67d4b0adae3adb318b33f3312501b483a8df03"
+  integrity sha512-kDoGORLozfuspTeY2Zlrj2MKTCVWghs0pBxXBTSWYD0Sbre/+DHSPvKegCFWWgqep5xaxsyiHaGCXzRzZUb46Q==
   dependencies:
     "@vscode/extension-telemetry" "0.6.1"
 
-"@microsoft/ads-service-downloader@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-1.1.0.tgz#c51ba28bc17a137e92f99a2b050821965588d7d6"
-  integrity sha512-WSJ4NZvpuebg/CjlTUpqXPUYV5y5mSNJQE/dd+kuOt0nkMYzCmp5IYyFFpMFUR1CiZy/19V7DH2wGdy60+9SRg==
+"@microsoft/ads-service-downloader@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-1.2.1.tgz#b0216cb0486db6697ccf9e166ec81a9764bdb3aa"
+  integrity sha512-xB3VUaEYauXtm3zFko5clHnhF7l7QbX0AnnULGDrd2JANu1zThBR6toUQ9+zAMO+0KCHs71XLSuoP2A24G3WCw==
   dependencies:
     async-retry "^1.2.3"
     eventemitter2 "^5.0.1"
@@ -203,13 +203,13 @@
     tmp "^0.0.33"
     yauzl "^2.10.0"
 
-"@microsoft/azdata-test@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@microsoft/azdata-test/-/azdata-test-2.0.3.tgz#652984efa2f5adc56cdae9029a4d5f33446b54d3"
-  integrity sha512-BgB6gGjQVXxnZHq7o5TlajZR/mJd/6AqbclrGzoyATvCEt92jRXhPzaY6XA/jMahdUGFSQwXpm45qRhZetwDig==
+"@microsoft/azdata-test@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@microsoft/azdata-test/-/azdata-test-3.0.1.tgz#a8b89a12de42f277d33aae71c277d0c8efcfbee0"
+  integrity sha512-Zrctm/zKufwIRF9jfw8TOBzr5woLdKXAGNTlbAQl0IGLzVoIGULj9Gqdc1Ikhrov3rM0NkbAF/PY6j6BHiW8Tw==
   dependencies:
-    http-proxy-agent "^2.1.0"
-    https-proxy-agent "^2.2.4"
+    http-proxy-agent "^5.0.0"
+    https-proxy-agent "^5.0.0"
     mocha-junit-reporter "^1.17.0"
     mocha-multi-reporters "^1.1.7"
     rimraf "^2.6.3"
@@ -298,26 +298,12 @@
   resolved "https://registry.yarnpkg.com/@vscode/extension-telemetry/-/extension-telemetry-0.6.1.tgz#f8d1f7145baf932b75077c48107edff48501fc14"
   integrity sha512-Y4Oc8yGURGVF4WhCZcu+EVy+MAIeQDLDVeDlLn59H0C1w+7xr8dL2ZtDBioy+Hog1Edrd6zOwr3Na7xe1iC/UA==
 
-agent-base@4:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-4.2.1.tgz#d89e5999f797875674c07d87f260fc41e83e8ca9"
-  integrity sha512-JVwXMr9nHYTUXsBFKUqhJwvlcYU/blreOEUkhNR2eXZIvwd+c+o5V4MgDPKWnMS/56awN3TRzIP+KoPn+roQtg==
-  dependencies:
-    es6-promisify "^5.0.0"
-
 agent-base@6:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-6.0.2.tgz#49fff58577cfee3f37176feab4c22e00f86d7f77"
   integrity sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==
   dependencies:
     debug "4"
-
-agent-base@^4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-4.3.0.tgz#8165f01c436009bccad0b1d122f05ed770efc6ee"
-  integrity sha512-salcGninV0nPrwpGNn4VTXBb1SOuXQBiqbrNXoeizJsHrsL6ERFM2Ne3JUSBWRE6aeNJI2ROP/WEEIDUiDe3cg==
-  dependencies:
-    es6-promisify "^5.0.0"
 
 ansi-colors@3.2.3:
   version "3.2.3"
@@ -506,13 +492,6 @@ crypt@~0.0.1:
   dependencies:
     vscode-languageclient "5.2.1"
 
-debug@3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
-  integrity sha512-OX8XqP7/1a9cqkxYw2yXss15f26NKWBpDXQd0/uK/KPqdQhxbPa994hnzjcE2VqQpDslf55723cKPUOGSmMY3g==
-  dependencies:
-    ms "2.0.0"
-
 debug@3.2.6, debug@^3.1.0:
   version "3.2.6"
   resolved "https://registry.yarnpkg.com/debug/-/debug-3.2.6.tgz#e83d17de16d8a7efb7717edbe5fb10135eee629b"
@@ -653,18 +632,6 @@ es-to-primitive@^1.2.1:
     is-callable "^1.1.4"
     is-date-object "^1.0.1"
     is-symbol "^1.0.2"
-
-es6-promise@^4.0.3:
-  version "4.2.5"
-  resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-4.2.5.tgz#da6d0d5692efb461e082c14817fe2427d8f5d054"
-  integrity sha512-n6wvpdE43VFtJq+lUDYDBFUwV8TZbuGXLV4D6wKafg13ldznKsyEvatubnmUe31zcvelSzOHF+XbaT+Bl9ObDg==
-
-es6-promisify@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/es6-promisify/-/es6-promisify-5.0.0.tgz#5109d62f3e56ea967c4b63505aef08291c8a5203"
-  integrity sha1-UQnWLz5W6pZ8S2NQWu8IKRyKUgM=
-  dependencies:
-    es6-promise "^4.0.3"
 
 escape-string-regexp@1.0.5, escape-string-regexp@^1.0.5:
   version "1.0.5"
@@ -877,14 +844,6 @@ htmlparser2@^3.10.1:
     inherits "^2.0.1"
     readable-stream "^3.1.1"
 
-http-proxy-agent@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/http-proxy-agent/-/http-proxy-agent-2.1.0.tgz#e4821beef5b2142a2026bd73926fe537631c5405"
-  integrity sha512-qwHbBLV7WviBl0rQsOzH6o5lwyOIvwp/BdFnvVxXORldu5TmjFfjzBcWUWS5kWAZhmv+JtiDhSuQCp4sBfbIgg==
-  dependencies:
-    agent-base "4"
-    debug "3.1.0"
-
 http-proxy-agent@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/http-proxy-agent/-/http-proxy-agent-5.0.0.tgz#5129800203520d434f142bc78ff3c170800f2b43"
@@ -894,15 +853,7 @@ http-proxy-agent@^5.0.0:
     agent-base "6"
     debug "4"
 
-https-proxy-agent@^2.2.4:
-  version "2.2.4"
-  resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-2.2.4.tgz#4ee7a737abd92678a293d9b34a1af4d0d08c787b"
-  integrity sha512-OmvfoQ53WLjtA9HeYP9RNrWMJzzAz1JGaSFr1nijg0PVR1JaD/xbJq1mdEIIlxGpXp9eSe/O2LgU9DJmTPd0Eg==
-  dependencies:
-    agent-base "^4.3.0"
-    debug "^3.1.0"
-
-https-proxy-agent@^5.0.1:
+https-proxy-agent@^5.0.0, https-proxy-agent@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-5.0.1.tgz#c59ef224a04fe8b754f3db0063a25ea30d0005d6"
   integrity sha512-dFcAjpTQFgoLMzC2VwU+C/CbS7uRL0lWmxDITmqm7C+7F0Odmj6s9l6alZc6AELXhrnggM2CeWSXHGOdX2YtwA==

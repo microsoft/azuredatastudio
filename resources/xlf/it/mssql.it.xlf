@@ -1,5 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/mssql/dist/errorDiagnostics/errorDiagnosticsConstants" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="connectionError">
+        <source xml:lang="en">Connection error</source>
+        <target state="translated">Errore di connessione</target>
+      </trans-unit>
+      <trans-unit id="enableTrustServerCertificate">
+        <source xml:lang="en">Enable Trust server certificate</source>
+        <target state="translated">Abilitare Certificato del server attendibile</target>
+      </trans-unit>
+      <trans-unit id="trustServerCertInstructionText">
+        <source xml:lang="en">Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable 'Trust server certificate' in the connection dialog.
+
+Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? </source>
+        <target state="translated">La crittografia è stata abilitata in questa connessione, rivedere la configurazione SSL e del certificato per SQL Server di destinazione o abilitare 'Considerare attendibile il certificato del server' nella finestra di dialogo di connessione.
+
+Nota: un certificato autofirmato offre solo una protezione limitata e non è una procedura consigliata per gli ambienti di produzione. Abilitare 'Considerare attendibile il certificato del server' in questa connessione e riprovare? </target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/mssql/dist/features" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="mssql.canceledLinkedAzureAccountSelection">
@@ -53,6 +73,244 @@
       <trans-unit id="mssql.searchServers">
         <source xml:lang="en">Search Server Names</source>
         <target state="translated">Nomi dei server di ricerca</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/objectManagement/localizedConstants" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="objectManagement.LoginTypeDisplayName">
+        <source xml:lang="en">login</source>
+        <target state="translated">accesso</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.LoginTypeDisplayNameInTitle">
+        <source xml:lang="en">Login</source>
+        <target state="translated">Accesso</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.OkText">
+        <source xml:lang="en">OK</source>
+        <target state="translated">OK</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.UserDisplayName">
+        <source xml:lang="en">user</source>
+        <target state="translated">utente</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.UserTypeDisplayNameInTitle">
+        <source xml:lang="en">User</source>
+        <target state="translated">Utente</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.advancedSectionHeader">
+        <source xml:lang="en">Advanced</source>
+        <target state="translated">Avanzata</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.blankPasswordConfirmation">
+        <source xml:lang="en">Creating a login with a blank password is a security risk.  Are you sure you want to continue?</source>
+        <target state="translated">La creazione di un account di accesso con password vuota rappresenta un rischio per la sicurezza. Continuare?</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.confirmPasswordLabel">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">Conferma password</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.createObjectOperationName">
+        <source xml:lang="en">Create {0}</source>
+        <note>{0} object type</note>
+        <target state="translated">Crea {0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.deleteLoginConfirmation">
+        <source xml:lang="en">Deleting server logins does not delete the database users associated with the logins. To complete the process, delete the users in each database. It may be necessary to first transfer the ownership of schemas to new users.</source>
+        <target state="translated">L'eliminazione degli account di accesso al server non comporta l'eliminazione degli utenti di database associati agli account di accesso. Per completare l'operazione è necessario eliminare gli utenti in ogni database. Potrebbe essere prima necessario trasferire la proprietà degli schemi a nuovi utenti.</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.deleteObjectConfirmation">
+        <source xml:lang="en">Are you sure you want to delete the {0}: {1}?</source>
+        <note>{0} object type, {1}: object name.</note>
+        <target state="translated">Eliminare il {0}: {1}?</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.deleteObjectError">
+        <source xml:lang="en">An error occurred while deleting the {0}: {1}. {2}</source>
+        <note>{0} object type, {1}: object name, {2}: error message.</note>
+        <target state="translated">Errore durante l'eliminazione del {0}: {1}. {2}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.deleteObjectOperationName">
+        <source xml:lang="en">Delete {0} '{1}'</source>
+        <note>{0} object type, {1}: object name.</note>
+        <target state="translated">Elimina {0} '{1}'</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.enabledLabel">
+        <source xml:lang="en">Enabled</source>
+        <target state="translated">Abilitato</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.generalSectionHeader">
+        <source xml:lang="en">General</source>
+        <target state="translated">Generale</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.helpText">
+        <source xml:lang="en">Help</source>
+        <target state="translated">Guida</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.invalidPasswordError">
+        <source xml:lang="en">Password doesn't meet the complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
+        <target state="translated">La password non è conforme al requisito di complessità. Per altre informazioni, vedere: https://docs.microsoft.com/sql/relational-databases/security/password-policy</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.loadingDialog">
+        <source xml:lang="en">Loading dialog...</source>
+        <target state="translated">Caricamento della finestra di dialogo in corso...</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.aadAuthenticationType">
+        <source xml:lang="en">Azure Active Directory Authentication</source>
+        <target state="translated">Autenticazione di Azure Active Directory</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.authenticateType">
+        <source xml:lang="en">Authentication</source>
+        <target state="translated">Autenticazione</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.defaultDatabaseLabel">
+        <source xml:lang="en">Default database</source>
+        <target state="translated">Database predefinito</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.defaultLanguageLabel">
+        <source xml:lang="en">Default language</source>
+        <target state="translated">Lingua predefinita</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.enforcePasswordExpirationLabel">
+        <source xml:lang="en">Enforce password expiration</source>
+        <target state="translated">Imponi scadenza password</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.enforcePasswordPolicyLabel">
+        <source xml:lang="en">Enforce password policy</source>
+        <target state="translated">Applica criteri password</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.lockedOutLabel">
+        <source xml:lang="en">Login is locked out</source>
+        <target state="translated">Account di accesso bloccato</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.mustChangePasswordLabel">
+        <source xml:lang="en">User must change password at next login</source>
+        <target state="translated">Richiedi modifica della password all'accesso successivo</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.oldPasswordCannotBeEmptyError">
+        <source xml:lang="en">Old password cannot be empty.</source>
+        <target state="translated">La vecchia password non può essere vuota.</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.oldPasswordLabel">
+        <source xml:lang="en">Old password</source>
+        <target state="translated">Vecchia password</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.permissionToConnectLabel">
+        <source xml:lang="en">Permission to connect to database engine</source>
+        <target state="translated">Autorizzazione per la connessione al motore di database</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.serverRoleSectionHeader">
+        <source xml:lang="en">Server Roles</source>
+        <target state="translated">Ruoli del server</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.specifyOldPasswordLabel">
+        <source xml:lang="en">Specify old password</source>
+        <target state="translated">Specifica vecchia password</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.sqlAuthSectionHeader">
+        <source xml:lang="en">SQL Authentication</source>
+        <target state="translated">Autenticazione SQL</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.sqlAuthenticationType">
+        <source xml:lang="en">SQL Authentication</source>
+        <target state="translated">Autenticazione SQL</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.login.windowsAuthenticationType">
+        <source xml:lang="en">Windows Authentication</source>
+        <target state="translated">Autenticazione di Windows</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.nameCannotBeEmptyError">
+        <source xml:lang="en">Name cannot be empty.</source>
+        <target state="translated">Il nome non può essere vuoto.</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.nameLabel">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Nome</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.newObjectDialogTitle">
+        <source xml:lang="en">{0} - New (Preview)</source>
+        <note>{0} object type.</note>
+        <target state="translated">{0} - Nuovo (anteprima)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.objectPropertiesDialogTitle">
+        <source xml:lang="en">{0} - {1} (Preview)</source>
+        <note>{0} object type, {1}: object name.</note>
+        <target state="translated">{0} - {1} (Anteprima)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.openNewObjectDialogError">
+        <source xml:lang="en">An error occurred while opening the new {0} dialog. {1}</source>
+        <note>{0} object type, {1}: error message.</note>
+        <target state="translated">Errore durante l'apertura della nuova finestra di dialogo {0}. {1}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.openObjectPropertiesDialogError">
+        <source xml:lang="en">An error occurred while opening the properties dialog for {0}: {1}. {2}</source>
+        <note>{0} object type, {1}: object name, {2}: error message.</note>
+        <target state="translated">Errore durante l'apertura della finestra di dialogo delle proprietà per {0}: {1}. {2}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.passwordCannotBeEmptyError">
+        <source xml:lang="en">Password cannot be empty.</source>
+        <target state="translated">La password non può essere vuota.</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.passwordLabel">
+        <source xml:lang="en">Password</source>
+        <target state="translated">Password</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.passwordsNotMatchError">
+        <source xml:lang="en">Password must match the confirm password.</source>
+        <target state="translated">La password deve corrispondere alla password di conferma.</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.refreshOEError">
+        <source xml:lang="en">An error occurred while while refreshing the object explorer. {0}</source>
+        <note>{0}: error message.</note>
+        <target state="translated">Errore durante l'aggiornamento di Esplora oggetti. {0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.selectedLabel">
+        <source xml:lang="en">Selected</source>
+        <target state="translated">Selezionato</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.updateObjectOperationName">
+        <source xml:lang="en">Update {0} '{1}'</source>
+        <note>{0} object type, {1}: object name.</note>
+        <target state="translated">Aggiornamento {0} '{1}'</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.containedUser">
+        <source xml:lang="en">Contained user</source>
+        <target state="translated">Utente contenuto</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.defaultSchemaLabel">
+        <source xml:lang="en">Default schema</source>
+        <target state="translated">Schema predefinito</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.loginLabel">
+        <source xml:lang="en">Login</source>
+        <target state="translated">Accesso</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.membershipLabel">
+        <source xml:lang="en">Membership</source>
+        <target state="translated">Appartenenza</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.ownedSchemasLabel">
+        <source xml:lang="en">Owned Schemas</source>
+        <target state="translated">Schemi di proprietà</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.type">
+        <source xml:lang="en">Type</source>
+        <target state="translated">Tipo</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.userWithGroupLogin">
+        <source xml:lang="en">User with Windows group login</source>
+        <target state="translated">Utente con accesso al gruppo di Windows</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.userWithLogin">
+        <source xml:lang="en">User with login</source>
+        <target state="translated">Utente con accesso</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.userWithNoConnectAccess">
+        <source xml:lang="en">User with no connect access</source>
+        <target state="translated">Utente senza accesso alla connessione</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.yesText">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Sì</target>
       </trans-unit>
     </body>
   </file>
@@ -262,6 +520,14 @@
         <source xml:lang="en">Always Encrypted</source>
         <target state="translated">Always Encrypted</target>
       </trans-unit>
+      <trans-unit id="mssql.connectionOptions.commandTimeout.description">
+        <source xml:lang="en">The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error</source>
+        <target state="translated">Intervallo di tempo (in secondi) in cui attendere l'esecuzione di un comando prima di interrompere il tentativo e generare un errore</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.commandTimeout.displayName">
+        <source xml:lang="en">Command timeout</source>
+        <target state="translated">Timeout del comando</target>
+      </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectRetryCount.description">
         <source xml:lang="en">Number of attempts to restore connection</source>
         <target state="translated">Numero di tentativi di ripristino della connessione</target>
@@ -326,6 +592,10 @@
         <source xml:lang="en">Host Guardian Service</source>
         <target state="translated">Servizio Sorveglianza host</target>
       </trans-unit>
+      <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None">
+        <source xml:lang="en">None</source>
+        <target state="translated">Nessuno</target>
+      </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.description">
         <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
         <target state="translated">Specifica un protocollo per l'attestazione di un enclave lato server usato con Always Encrypted con enclave sicuri</target>
@@ -342,9 +612,21 @@
         <source xml:lang="en">Enclave Attestation URL</source>
         <target state="translated">URL di attestazione enclave</target>
       </trans-unit>
+      <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.false">
+        <source xml:lang="en">Optional (False)</source>
+        <target state="translated">Facoltativo (Falso)</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.strict">
+        <source xml:lang="en">Strict</source>
+        <target state="translated">Restrittivo</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.true">
+        <source xml:lang="en">Mandatory (True)</source>
+        <target state="translated">Obbligatorio (Vero)</target>
+      </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.description">
-        <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
-        <target state="translated">Se è true, SQL Server usa la crittografia SSL per tutti i dati scambiati tra il client e il server, se nel server è installato un certificato</target>
+        <source xml:lang="en">When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' is supported on SQL Server 2022 onwards.</source>
+        <target state="translated">Quando è 'Obbligatorio' o 'Restrittivo', SQL Server utilizza la crittografia SSL per tutti i dati inviati tra il client e il server se nel server è installato un certificato. Se impostato su 'Restrittivo', SQL Server utilizza TDS 8.0 per tutti i trasferimenti di dati tra il client e il server. 'Restrittivo' è supportato a partire da SQL Server 2022.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.displayName">
         <source xml:lang="en">Encrypt</source>
@@ -389,6 +671,14 @@
       <trans-unit id="mssql.connectionOptions.groupName.source">
         <source xml:lang="en">Source</source>
         <target state="translated">Origine</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.hostNameInCertificate.description">
+        <source xml:lang="en">Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.</source>
+        <target state="translated">Indica il nome host specificato nel certificato TLS che verrà utilizzato da SQL Server per convalidare il certificato del server. Se non specificato, il nome del server viene utilizzato per impostazione predefinita per la convalida del certificato.</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.hostNameInCertificate.displayName">
+        <source xml:lang="en">Host name in certificate</source>
+        <target state="translated">Nome host nel certificato</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.loadBalanceTimeout.description">
         <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
@@ -470,6 +760,14 @@
         <source xml:lang="en">Replication</source>
         <target state="translated">Replica</target>
       </trans-unit>
+      <trans-unit id="mssql.connectionOptions.secureEnclaves.description">
+        <source xml:lang="en">Enables or disables Secure Enclaves for the connection</source>
+        <target state="translated">Abilita o disabilita gli enclave sicuri per la connessione</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.secureEnclaves.displayName">
+        <source xml:lang="en">Secure Enclaves</source>
+        <target state="translated">Enclave sicuri</target>
+      </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.description">
         <source xml:lang="en">Name of the SQL Server instance</source>
         <target state="translated">Nome dell'istanza di SQL Server</target>
@@ -479,8 +777,8 @@
         <target state="translated">Server</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.trustServerCertificate.description">
-        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
-        <target state="translated">Se è true (ed encrypt=true), SQL Server usa la crittografia SSL per tutti i dati inviati tra il client e il server senza convalidare il certificato del server</target>
+        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.</source>
+        <target state="translated">Se il valore è true (e encrypt=true), SQL Server usa la crittografia SSL per tutti i dati inviati tra il client e il server senza convalidare il certificato del server. Questa proprietà non è supportata con Encrypt=Strict.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.trustServerCertificate.displayName">
         <source xml:lang="en">Trust server certificate</source>
@@ -513,6 +811,10 @@
       <trans-unit id="mssql.disabled">
         <source xml:lang="en">Disabled</source>
         <target state="translated">Disabilitato</target>
+      </trans-unit>
+      <trans-unit id="mssql.enableSqlAuthenticationProvider">
+        <source xml:lang="en">Enables use of the Sql Authentication Provider for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens. This option is only supported for 'MSAL' Azure Authentication Library. Azure Data Studio is required to be relaunched when the value is changed.</source>
+        <target state="new">Enables use of the Sql Authentication Provider for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens. This option is only supported for 'MSAL' Azure Authentication Library. Azure Data Studio is required to be relaunched when the value is changed.</target>
       </trans-unit>
       <trans-unit id="mssql.enabled">
         <source xml:lang="en">Enabled</source>
@@ -614,9 +916,37 @@
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
         <target state="translated">Numero di minuti per la conservazione dei file di log per i servizi di back-end. L'impostazione predefinita è 1 settimana.</target>
       </trans-unit>
+      <trans-unit id="mssql.objectExplorer.disableGroupBySchema">
+        <source xml:lang="en">Disable Group By Schema</source>
+        <target state="translated">Disabilita raggruppa per schema</target>
+      </trans-unit>
+      <trans-unit id="mssql.objectExplorer.disableGroupBySchemaTitle">
+        <source xml:lang="en">SQL Server: Disable Group By Schema</source>
+        <target state="translated">SQL Server: disabilitare raggruppamento per schema</target>
+      </trans-unit>
+      <trans-unit id="mssql.objectExplorer.enableGroupBySchema">
+        <source xml:lang="en">Enable Group By Schema</source>
+        <target state="translated">Abilita raggruppa per schema</target>
+      </trans-unit>
+      <trans-unit id="mssql.objectExplorer.enableGroupBySchemaTitle">
+        <source xml:lang="en">SQL Server: Enable Group By Schema</source>
+        <target state="translated">SQL Server: abilitare raggruppamento per schema</target>
+      </trans-unit>
+      <trans-unit id="mssql.objectExplorer.expandTimeout">
+        <source xml:lang="en">The timeout in seconds for expanding a node in Object Explorer. The default value is 45 seconds.</source>
+        <target state="translated">Timeout in secondi per l'espansione di un nodo in Esplora oggetti. Il valore predefinito è 45 secondi.</target>
+      </trans-unit>
+      <trans-unit id="mssql.objectExplorer.groupBySchema">
+        <source xml:lang="en">When enabled, the database objects in Object Explorer will be categorized by schema.</source>
+        <target state="translated">Se questa opzione è abilitata, gli oggetti di database in Esplora oggetti verranno categorizzati in base allo schema.</target>
+      </trans-unit>
       <trans-unit id="mssql.parallelMessageProcessing">
-        <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.</source>
-        <target state="translated">[Experimental] Indica se le richieste al servizio strumenti di SQL devono essere gestite in parallelo. Questa funzionalità è stata introdotta per individuare i problemi che potrebbero verificarsi durante la gestione di tutte le richieste in parallelo. Il valore predefinito è false. Il riavvio di ADS è obbligatorio quando il valore viene modificato.</target>
+        <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</source>
+        <target state="new">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</target>
+      </trans-unit>
+      <trans-unit id="mssql.piiLogging">
+        <source xml:lang="en">[Optional] Should Personally Identifiable Information (PII) be logged in the log file.</source>
+        <target state="new">[Optional] Should Personally Identifiable Information (PII) be logged in the log file.</target>
       </trans-unit>
       <trans-unit id="mssql.provider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>
@@ -730,6 +1060,10 @@
         <source xml:lang="en">Whether to preload the database model when the database node in the object explorer is expanded. When enabled, the loading time of table designer can be reduced. Note: You might see higher than normal memory usage if you need to expand a lot of database nodes.</source>
         <target state="translated">Indica se precaricare il modello di database quando si espande il nodo del database in Esplora oggetti. Se l’opzione è abilitata, è possibile ridurre il tempo di caricamento di Progettazione tabelle. Nota: l'utilizzo della memoria potrebbe essere superiore al normale quando si espandono molti nodi del database.</target>
       </trans-unit>
+      <trans-unit id="mssql.tracing.desc">
+        <source xml:lang="en">Traces the communication between Azure Data Studio and SQL Tools Service to the SQL Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.</source>
+        <target state="translated">Monitora la comunicazione tra Azure Data Studio e SQL Tools Service nel canale di output di SQL Tools Service. AVVISO: potrebbero essere incluse informazioni riservate quando è abilitata la registrazione dettagliata.</target>
+      </trans-unit>
       <trans-unit id="mssql.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
         <target state="translated">[Facoltativa] Livello di registrazione per i servizi back-end. Azure Data Studio genera un nome file a ogni avvio e, se il file esiste già, le voci del log vengono accodate a tale file. Per la pulizia dei file di log meno recenti, vedere le impostazioni logRetentionMinutes e logFilesRemovalLimit. Con l'impostazione predefinita di tracingLevel, la quantità di dati registrata non è eccessiva. Se si cambia il livello di dettaglio, la registrazione potrebbe diventare eccessiva e richiedere un notevole spazio su disco per i log. Il livello Error include quello Critical, il livello Warning include quello Error, il livello Information include quello Warning e il livello Verbose include quello Information</target>
@@ -774,17 +1108,49 @@
         <source xml:lang="en">Version</source>
         <target state="translated">Versione</target>
       </trans-unit>
+      <trans-unit id="title.changeNotebookConnection">
+        <source xml:lang="en">Change SQL Notebook Connection</source>
+        <target state="translated">Modifica connessione notebook SQL</target>
+      </trans-unit>
       <trans-unit id="title.clearSearchServerResult">
         <source xml:lang="en">Search: Clear Search Server Results</source>
         <target state="translated">Ricerca: Cancella risultati del server di ricerca</target>
+      </trans-unit>
+      <trans-unit id="title.deleteObject">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">Elimina</target>
       </trans-unit>
       <trans-unit id="title.designTable">
         <source xml:lang="en">Design</source>
         <target state="translated">Progettazione</target>
       </trans-unit>
+      <trans-unit id="title.newApplicationRole">
+        <source xml:lang="en">New Application Role</source>
+        <target state="translated">Nuovo ruolo applicazione</target>
+      </trans-unit>
+      <trans-unit id="title.newDatabaseRole">
+        <source xml:lang="en">New Database Role</source>
+        <target state="translated">Nuovo ruolo del database</target>
+      </trans-unit>
+      <trans-unit id="title.newLogin">
+        <source xml:lang="en">New Login</source>
+        <target state="translated">Nuovo account accesso</target>
+      </trans-unit>
+      <trans-unit id="title.newServerRole">
+        <source xml:lang="en">New Server Role</source>
+        <target state="translated">Nuovo ruolo server</target>
+      </trans-unit>
       <trans-unit id="title.newTable">
         <source xml:lang="en">New Table</source>
         <target state="translated">Nuova tabella</target>
+      </trans-unit>
+      <trans-unit id="title.newUser">
+        <source xml:lang="en">New User</source>
+        <target state="translated">Nuovo utente</target>
+      </trans-unit>
+      <trans-unit id="title.objectProperties">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">Proprietà</target>
       </trans-unit>
       <trans-unit id="title.searchServers">
         <source xml:lang="en">Search: Servers</source>

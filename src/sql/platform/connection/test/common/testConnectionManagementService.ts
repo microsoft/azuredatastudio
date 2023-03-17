@@ -170,6 +170,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined!;
 	}
 
+	async fixProfile(profile?: IConnectionProfile): Promise<IConnectionProfile> {
+		return profile;
+	}
+
 	connect(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		return new Promise<IConnectionResult>((resolve, reject) => {
 			resolve({ connected: true, errorMessage: undefined!, errorCode: undefined!, messageDetails: undefined! });
