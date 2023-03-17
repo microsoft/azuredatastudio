@@ -1030,3 +1030,11 @@ export interface MainThreadExtensionManagementShape extends IDisposable {
 	$install(vsixPath: string): Thenable<string>;
 	$showObsoleteExtensionApiUsageNotification(message: string): void;
 }
+
+export interface ExtHostPerfShape {
+	$mark(name: string): void;
+}
+
+export interface MainThreadPerfShape {
+	$mark(name: string): void;
+}
