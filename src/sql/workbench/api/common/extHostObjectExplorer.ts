@@ -96,7 +96,7 @@ export class ExtHostObjectExplorerNode implements azdata.objectexplorer.ObjectEx
 		return this._proxy.$getChildren(this.connectionId, this.nodePath).then(children => children.map(nodeInfo => new ExtHostObjectExplorerNode(nodeInfo, this.connectionId, this._proxy)));
 	}
 
-	getParent(): Thenable<azdata.objectexplorer.ObjectExplorerNode> {
+	getParent(): Thenable<azdata.objectexplorer.ObjectExplorerNode | undefined> {
 		let parentPath;
 		// parentNodePath property is introduced after we discovered the flaw of the following code.
 		// To maintain backward compatibility with other providers, we need to keep the following code.

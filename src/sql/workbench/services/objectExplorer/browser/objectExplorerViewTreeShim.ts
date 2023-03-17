@@ -125,7 +125,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 				node.sessionId = await this.createSession(viewId, node.childProvider!, node);
 			}
 			const requestHandle = this.nodeHandleMap.get(generateNodeMapKey(viewId, node)) || node.handle;
-			const treeNode = new TreeNode(undefined!, undefined!, undefined!, undefined!, undefined!, requestHandle, undefined!); // hack since this entire system is a hack anyways
+			const treeNode = new TreeNode(undefined!, undefined!, undefined!, undefined!, requestHandle, undefined!, undefined!); // hack since this entire system is a hack anyways
 			treeNode.connection = new ConnectionProfile(this.capabilities, node.payload);
 			const childrenNodes = await this.oe.refreshTreeNode({
 				success: true,

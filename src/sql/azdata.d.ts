@@ -308,7 +308,7 @@ declare module 'azdata' {
 			/**
 			 * Get the parent node. Returns undefined if there is none.
 			 */
-			getParent(): Thenable<ObjectExplorerNode>;
+			getParent(): Thenable<ObjectExplorerNode | undefined>;
 
 			/**
 			 * Refresh the node, expanding it if it has children
