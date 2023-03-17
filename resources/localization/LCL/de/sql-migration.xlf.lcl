@@ -1633,8 +1633,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.help.description.sqldb" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Ein Tutorial mit einer Schrittanleitung zum Migrieren von Datenbanken aus einer SQL Server-Instanz (lokal oder Azure Virtual Machines) zu Azure SQL-Datenbank (VORSCHAU) zu migrieren.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ein Tutorial, das Schritt für Schritt erklärt, wie Sie Datenbanken von einer SQL Server-Instanz (vor Ort oder Azure Virtual Machines) zu Azure SQL Database migrieren.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).]]></Val>
@@ -1681,8 +1681,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.help.link.sqldb" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Tutorial:  Migrate to SQL Server on Azure SQL Database (offline)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Tutorial: Migrieren zu SQL Server auf Azure SQL-Datenbank (offline) – (VORSCHAU)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Tutorial: Migrieren zu SQL Server auf Azure SQL Database (offline)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)]]></Val>
@@ -7240,6 +7240,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.validate.error.gatewaytimeout" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A time-out was encountered while validating a resource connection. Learn more: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Bei der Validierung einer Ressourcenverbindung ist eine Zeitüberschreitung aufgetreten. Weitere Informationen finden Sie unter: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
