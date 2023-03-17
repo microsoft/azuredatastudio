@@ -1804,8 +1804,13 @@ declare module 'azdata' {
 		/**
 		 * Corresponds to the aria-live accessibility attribute for this component
 		 */
-		ariaLive?: string;
+		ariaLive?: AriaLiveValue
 	}
+
+	/**
+	 * Supported values for aria-live accessibility attribute
+	 */
+	export type AriaLiveValue = 'polite' | 'assertive' | 'off';
 
 	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ContainerProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
 		/**
@@ -1819,7 +1824,7 @@ declare module 'azdata' {
 		/**
 		 * Corresponds to the aria-live accessibility attribute for this component
 		 */
-		ariaLive?: string;
+		ariaLive?: AriaLiveValue
 	}
 	export namespace queryeditor {
 

@@ -92,6 +92,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _lastEditMode: string | undefined;
 	public richTextCursorPosition: ICaretPosition | undefined;
 	public markdownCursorPosition: IPosition | undefined;
+	public cellPreviewUpdated = new Emitter<void>();
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -507,6 +508,10 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 	public set cellSourceChanged(val: boolean) {
 		this._cellSourceChanged = val;
+	}
+
+	public get onCellPreviewUpdated(): Event<void> {
+		return this.cellPreviewUpdated.event;
 	}
 
 	public get onParameterStateChanged(): Event<boolean> {

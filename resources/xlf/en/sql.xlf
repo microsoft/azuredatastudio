@@ -2478,6 +2478,11 @@ Default Skipped Commands:
       <source xml:lang="en">Revert Current Row</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/editData/browser/editDataGridPanel" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="editData.cellWithNullCharMessage">
+      <source xml:lang="en">This cell contains the Unicode null character which is currently not supported for editing.</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/editData/browser/gridActions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="copySelection">
       <source xml:lang="en">Copy</source>
@@ -2664,6 +2669,11 @@ Default Skipped Commands:
     </trans-unit>
     <trans-unit id="loadingExecutionPlanFile">
       <source xml:lang="en">Generating execution plans</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanInput" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="epCompare.executionPlanEditorName">
+      <source xml:lang="en">ExecutionPlan</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext"><body>
@@ -2905,11 +2915,6 @@ Default Skipped Commands:
     </trans-unit>
     <trans-unit id="previousSearchItemAction">
       <source xml:lang="en">Previous Match</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/executionPlan/common/executionPlanInput" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="epCompare.executionPlanEditorName">
-      <source xml:lang="en">ExecutionPlan</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/extensions/browser/contributionRenders" source-language="en" datatype="plaintext"><body>
@@ -4130,7 +4135,7 @@ Error: {1}</source>
 </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="copyFailed">
-      <source xml:lang="en">Copy failed with error: {0}</source>
+      <source xml:lang="en">Copy failed with error {0}</source>
     </trans-unit>
     <trans-unit id="notebook.showChart">
       <source xml:lang="en">Show chart</source>
@@ -4166,6 +4171,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="serverGroup.colors">
       <source xml:lang="en">Server Group color palette used in the Object Explorer viewlet.</source>
+    </trans-unit>
+    <trans-unit id="serverTree.nodeExpansionTimeout">
+      <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
     </trans-unit>
     <trans-unit id="serverTree.useAsyncServerTree">
       <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
@@ -5751,6 +5759,12 @@ Error Message: 1</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/executionPlan/common/executionPlanService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlanService.ensureCapabilitiesRegistered">
+      <source xml:lang="en">Provider with id {0} was not registered after 30 seconds.</source>
+    </trans-unit>
+    <trans-unit id="executionPlanService.ensureFileExtensionHandlerRegistered">
+      <source xml:lang="en">Execution plan provider which supports file format '{0}' was not registered after 30 seconds.</source>
+    </trans-unit>
     <trans-unit id="noHandlerRegistered">
       <source xml:lang="en">No valid execution plan handler is registered</source>
     </trans-unit>
@@ -6175,6 +6189,9 @@ Error Message: 1</source>
     <trans-unit id="nodeExpansionError">
       <source xml:lang="en">Multiple errors:</source>
     </trans-unit>
+    <trans-unit id="nodeExpansionTimeout">
+      <source xml:lang="en">Node expansion timed out for node {0} for providers {1}</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim" source-language="en" datatype="plaintext"><body>
     <trans-unit id="firewallCanceled">
@@ -6310,7 +6327,7 @@ Error Message: 1</source>
 </body></file>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext"><body>
     <trans-unit id="copyFailed">
-      <source xml:lang="en">Copy failed with error: {0}</source>
+      <source xml:lang="en">Copy failed with error {0}</source>
     </trans-unit>
     <trans-unit id="elapsedBatchTime">
       <source xml:lang="en">Batch execution time: {0}</source>

@@ -89,6 +89,18 @@
 	border-left: none;
 }
 
+.hc-light .notebook-preview .showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(111, 195, 223, 0.4);
+}
+
+.hc-light .notebook-preview .showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(111, 195, 223, 0.60);
+}
+
+.hc-light .notebook-preview .showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
 .notebook-preview img {
 	max-width: 100%;
 	max-height: 100%;
@@ -207,6 +219,14 @@
 
 .hc-black .notebook-preview h1 {
 	border-color: rgb(0, 0, 0);
+}
+
+.hc-light .notebook-preview pre {
+	background-color: rgb(255, 255, 255);
+}
+
+.hc-light .notebook-preview h1 {
+	border-color: rgb(255, 255, 255);
 }
 
 .notebook-preview table > thead > tr > th {

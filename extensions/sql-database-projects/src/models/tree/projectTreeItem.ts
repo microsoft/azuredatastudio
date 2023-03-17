@@ -111,6 +111,12 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 			this.addNode(newNode, entry);
 		}
+
+		// folders
+		for (const entry of this.project.folders) {
+			const newNode = new fileTree.FolderNode(entry.fsUri, this.projectFileUri, entry.relativePath);
+			this.addNode(newNode, entry);
+		}
 	}
 
 	private addNode(newNode: fileTree.FileNode | fileTree.FolderNode, entry: FileProjectEntry): void {

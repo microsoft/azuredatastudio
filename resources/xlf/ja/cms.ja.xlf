@@ -174,6 +174,14 @@
         <source xml:lang="en">Column encryption</source>
         <target state="translated">列暗号化</target>
       </trans-unit>
+      <trans-unit id="cms.connectionOptions.commandTimeout.description">
+        <source xml:lang="en">The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error</source>
+        <target state="translated">試行を終了してエラーを生成する前にコマンドの実行を待機するまでの時間 (秒単位)</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.commandTimeout.displayName">
+        <source xml:lang="en">Command timeout</source>
+        <target state="translated">コマンドのタイムアウト</target>
+      </trans-unit>
       <trans-unit id="cms.connectionOptions.connectRetryCount.description">
         <source xml:lang="en">Number of attempts to restore connection</source>
         <target state="translated">接続を復元するための試行回数</target>
@@ -222,9 +230,21 @@
         <source xml:lang="en">Current language</source>
         <target state="translated">現在の言語</target>
       </trans-unit>
+      <trans-unit id="cms.connectionOptions.encrypt.categoryValues.false">
+        <source xml:lang="en">Optional (False)</source>
+        <target state="translated">オプション (False)</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.encrypt.categoryValues.strict">
+        <source xml:lang="en">Strict</source>
+        <target state="translated">厳密</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.encrypt.categoryValues.true">
+        <source xml:lang="en">Mandatory (True)</source>
+        <target state="translated">必須 (True)</target>
+      </trans-unit>
       <trans-unit id="cms.connectionOptions.encrypt.description">
-        <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
-        <target state="translated">True の場合、SQL Server は、サーバーに証明書がインストールされている場合は、クライアントとサーバー間で送信されるすべてのデータに SSL 暗号化を使用します</target>
+        <source xml:lang="en">When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' is supported on SQL Server 2022 onwards.</source>
+        <target state="translated">'必須' または '厳密' の場合、SQL Server は、サーバーに証明書がインストールされていれば、クライアントとサーバー間のすべてのデータ送信に SSL 暗号化を使用します。'厳密' に設定すると、SQL Server はクライアントとサーバー間のすべてのデータ転送に TDS 8.0 を使用します。'厳密' は、SQL Server 2022 以降でサポートされています。</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.encrypt.displayName">
         <source xml:lang="en">Encrypt</source>
@@ -269,6 +289,14 @@
       <trans-unit id="cms.connectionOptions.groupName.source">
         <source xml:lang="en">Source</source>
         <target state="translated">ソース</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.hostNameInCertificate.description">
+        <source xml:lang="en">Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.</source>
+        <target state="translated">SQL Server で使用されるサーバー証明書検証用の TLS 証明書内に指定されたホスト名を示します。指定されていない場合、既定ではサーバー名が証明書の検証に使用されます。</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.hostNameInCertificate.displayName">
+        <source xml:lang="en">Host name in certificate</source>
+        <target state="translated">証明書内のホスト名</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.loadBalanceTimeout.description">
         <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
@@ -367,8 +395,8 @@
         <target state="translated">サーバー</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.trustServerCertificate.description">
-        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
-        <target state="translated">True (および encrypt=true) の場合、SQL Server は、サーバー証明書を検証せずに、クライアントとサーバーの間で送信されるすべてのデータに対して SSL 暗号化を使用します</target>
+        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.</source>
+        <target state="translated">true (および encrypt=true) の場合、SQL Server はサーバー証明書を検証せずに、クライアントとサーバーの間で送信されるすべてのデータに SSL 暗号化を使用します。このプロパティは Encrypt=Strict ではサポートされていません。</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.trustServerCertificate.displayName">
         <source xml:lang="en">Trust server certificate</source>

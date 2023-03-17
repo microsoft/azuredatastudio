@@ -94,7 +94,7 @@
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
     "@microsoft/vscodetestcover": "^1.2.1",
-    "@microsoft/azdata-test": "^2.0.3"
+    "@microsoft/azdata-test": "^3.0.1"
   },
   "__metadata": {
     "id": "10",

@@ -93,6 +93,11 @@
         "title": "%title.deleteObject%"
       },
       {
+        "command": "mssql.renameObject",
+        "category": "MSSQL",
+        "title": "%title.renameObject%"
+      },
+      {
         "command": "mssql.enableGroupBySchema",
         "category": "MSSQL",
         "title": "%mssql.objectExplorer.enableGroupBySchema%",
@@ -196,6 +201,11 @@
           "type": "boolean",
           "default": false,
           "description": "%mssql.logDebugInfo%"
+        },
+        "mssql.piiLogging": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.piiLogging%"
         },
         "mssql.tracingLevel": {
           "type": "string",
@@ -413,6 +423,11 @@
           "description": "%mssql.parallelMessageProcessing%",
           "default": false
         },
+        "mssql.enableSqlAuthenticationProvider": {
+          "type": "boolean",
+          "description": "%mssql.enableSqlAuthenticationProvider%",
+          "default": false
+        },
         "mssql.tableDesigner.preloadDatabaseModel": {
           "type": "boolean",
           "default": false,
@@ -454,23 +469,11 @@
           "when": "false"
         },
         {
-          "command": "mssql.newServerRole",
-          "when": "false"
-        },
-        {
           "command": "mssql.newLogin",
           "when": "false"
         },
         {
-          "command": "mssql.newDatabaseRole",
-          "when": "false"
-        },
-        {
           "command": "mssql.newUser",
-          "when": "false"
-        },
-        {
-          "command": "mssql.newApplicationRole",
           "when": "false"
         },
         {
@@ -479,6 +482,10 @@
         },
         {
           "command": "mssql.deleteObject",
+          "when": "false"
+        },
+        {
+          "command": "mssql.renameObject",
           "when": "false"
         }
       ],
@@ -512,6 +519,16 @@
           "command": "mssql.deleteObject",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
           "group": "0_query@2"
+        },
+        {
+          "command": "mssql.renameObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(Database|ServerLevelLogin|User|Table|View)$/ && config.workbench.enablePreviewFeatures",
+          "group": "0_query@3"
+        },
+        {
+          "command": "mssql.renameObject",
+          "when": "connectionProvider == MSSQL && nodeType == Column && config.workbench.enablePreviewFeatures && nodePath =~ /^.*\/Tables\/.*\/Columns\/.*$",
+          "group": "0_query@3"
         },
         {
           "command": "mssql.enableGroupBySchema",
@@ -552,6 +569,16 @@
           "command": "mssql.deleteObject",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
           "group": "connection@2"
+        },
+        {
+          "command": "mssql.renameObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(Database|ServerLevelLogin|User|Table|View)$/ && config.workbench.enablePreviewFeatures",
+          "group": "connection@3"
+        },
+        {
+          "command": "mssql.renameObject",
+          "when": "connectionProvider == MSSQL && nodeType == Column && config.workbench.enablePreviewFeatures && nodePath =~ /^.*\/Tables\/.*\/Columns\/.*$",
+          "group": "connection@3"
         },
         {
           "command": "mssql.enableGroupBySchema",
@@ -1422,7 +1449,7 @@
     }
   },
   "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^2.0.0",
+    "@microsoft/ads-extension-telemetry": "^3.0.0",
     "@microsoft/ads-service-downloader": "^1.2.1",
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.3.2",
     "find-remove": "1.2.1",
@@ -1432,7 +1459,7 @@
   "devDependencies": {
     "@types/mocha": "^7.0.2",
     "@microsoft/vscodetestcover": "^1.2.1",
-    "@microsoft/azdata-test": "^2.0.3",
+    "@microsoft/azdata-test": "^3.0.1",
     "mocha": "^7.1.1",
     "should": "^13.2.3",
     "typemoq": "^2.1.0"

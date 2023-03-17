@@ -80,6 +80,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _disposables: vscode.Disposable[] = [];
 	private _tdeConfigurationDialog!: TdeConfigurationDialog;
 	private _previousMiTdeMigrationConfig: TdeMigrationModel = new TdeMigrationModel(); // avoid null checks
+	private _tdeEditButton!: azdata.ButtonComponent;
 
 	private _serverName: string = '';
 	private _supportedProducts: Product[] = [
@@ -365,7 +366,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 
-		const editButton = this._view.modelBuilder.button().withProps({
+		this._tdeEditButton = this._view.modelBuilder.button().withProps({
 			label: constants.TDE_BUTTON_CAPTION,
 			width: 180,
 			CSSStyles: {
@@ -374,7 +375,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 		this._tdeConfigurationDialog = new TdeConfigurationDialog(this, this.wizard, this.migrationStateModel, () => this._onTdeConfigClosed());
-		this._disposables.push(editButton.onDidClick(
+		this._disposables.push(this._tdeEditButton.onDidClick(
 			async (e) => await this._tdeConfigurationDialog.openDialog()));
 
 		this._tdedatabaseSelectedHelperText = this._view.modelBuilder.text()
@@ -384,7 +385,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}).component();
 
 		container.addItems([
-			editButton,
+			this._tdeEditButton,
 			this._tdedatabaseSelectedHelperText]);
 
 		await utils.updateControlDisplay(container, false);
@@ -838,9 +839,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		await utils.updateControlDisplay(this._tdeInfoContainer, this.migrationStateModel.tdeMigrationConfig.hasTdeEnabledDatabases());
 	}
 
-	private _onTdeConfigClosed() {
+	private _onTdeConfigClosed(): Thenable<void> {
 		const tdeMsg = (this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAdsConfirmed()) ? constants.TDE_WIZARD_MSG_TDE : constants.TDE_WIZARD_MSG_MANUAL;
 		this._tdedatabaseSelectedHelperText.value = constants.TDE_MSG_DATABASES_SELECTED(this.migrationStateModel.tdeMigrationConfig.getTdeEnabledDatabasesCount(), tdeMsg);
+
+		return this._tdeEditButton.focus();
 	}
 
 	private _matchWithEncryptedDatabases(encryptedDbList: string[]): boolean {

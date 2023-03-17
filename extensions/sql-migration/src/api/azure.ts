@@ -286,7 +286,11 @@ export async function getVMInstanceView(sqlVm: SqlVMServer, account: azdata.Acco
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
 
 	if (response.errors.length > 0) {
-		throw new Error(response.errors.toString());
+		const message = response.errors
+			.map(err => err.message)
+			.join(', ');
+		throw new Error(message);
+
 	}
 
 	return response.response.data;
@@ -299,7 +303,11 @@ export async function getAzureResourceGivenId(account: azdata.Account, subscript
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
 
 	if (response.errors.length > 0) {
-		throw new Error(response.errors.toString());
+		const message = response.errors
+			.map(err => err.message)
+			.join(', ');
+		throw new Error(message);
+
 	}
 
 	return response.response.data;
@@ -612,6 +620,19 @@ export async function stopMigration(account: azdata.Account, subscription: Subsc
 	const requestBody = { migrationOperationId: migration.properties.migrationOperationId };
 	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, requestBody, true, host);
+	if (response.errors.length > 0) {
+		const message = response.errors
+			.map(err => err.message)
+			.join(', ');
+		throw new Error(message);
+	}
+}
+
+export async function deleteMigration(account: azdata.Account, subscription: Subscription, migrationId: string): Promise<void> {
+	const api = await getAzureCoreAPI();
+	const path = encodeURI(`${migrationId}?api-version=${DMSV2_API_VERSION}`);
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.DELETE, undefined, true, host);
 	if (response.errors.length > 0) {
 		const message = response.errors
 			.map(err => err.message)

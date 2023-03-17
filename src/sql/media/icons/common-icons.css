@@ -3,7 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.vs .codicon.settings {
+.vs .codicon.settings,
+.hc-light .codicon.settings {
 	background-image: url("settings.svg");
 }
 
@@ -13,18 +14,21 @@
 }
 
 .vs .codicon.backup,
+.hc-light .codicon.backup,
 .vs-dark .codicon.backup,
 .hc-black .codicon.backup {
 	background: url("backup.svg") center center no-repeat;
 }
 
 .vs .codicon.restore,
+.hc-light .codicon.restore,
 .vs-dark .codicon.restore,
 .hc-black .codicon.restore {
 	background: url("restore.svg") center center no-repeat;
 }
 
-.vs .codicon.database {
+.vs .codicon.database,
+.hc-light .codicon.database {
 	background: url("database.svg") center center no-repeat;
 }
 
@@ -34,6 +38,7 @@
 }
 
 .vs-dark .codicon.icon-dashboard-view::before,
+.hc-light .codicon.icon-dashboard-view::before,
 .hc-black .codicon.icon-dashboard-view::before,
 .vs .codicon.icon-dashboard-view::before {
 	-webkit-mask-image: url("dashboard_view.svg");
@@ -41,12 +46,14 @@
 }
 
 .vs .codicon.error,
+.hc-light .codicon.error,
 .vs-dark .codicon.error,
 .hc-black .codicon.error {
 	background: url("globalerror_red.svg") center center no-repeat;
 }
 
-.vs .codicon.file {
+.vs .codicon.file,
+.hc-light .codicon.file {
 	background: url("file.svg") center center no-repeat;
 }
 
@@ -55,7 +62,8 @@
 	background: url("file_inverse.svg") center center no-repeat;
 }
 
-.vs .codicon.new-database {
+.vs .codicon.new-database,
+.hc-light .codicon.new-database {
 	background: url("new_database.svg") center center no-repeat;
 }
 
@@ -64,7 +72,8 @@
 	background: url("new_database_inverse.svg") center center no-repeat;
 }
 
-.vs .codicon.server-page {
+.vs .codicon.server-page,
+.hc-light .codicon.server-page {
 	background: url("server_page.svg") center center no-repeat;
 }
 
@@ -74,30 +83,35 @@
 }
 
 .vs .codicon.globalError,
+.hc-light .codicon.globalError,
 .vs-dark .codicon.globalError,
 .hc-black .codicon.globalError {
 	background: url("globalerror.svg") center center no-repeat;
 }
 
 .vs .sql.codicon.error,
+.hc-light .sql.codicon.error,
 .vs-dark .sql.codicon.error,
 .hc-black .sql.codicon.error {
 	content: url("status_error.svg");
 }
 
 .vs .sql.codicon.warning,
+.hc-light .sql.codicon.warning,
 .vs-dark .sql.codicon.warning,
 .hc-black .sql.codicon.warning {
 	content: url("status_warning.svg");
 }
 
 .vs .sql.codicon.info,
+.hc-light .sql.codicon.info,
 .vs-dark .sql.codicon.info,
 .hc-black .sql.codicon.info {
 	content: url("status_info.svg");
 }
 
-.vs .codicon.help {
+.vs .codicon.help,
+.hc-light .codicon.help {
 	content: url("help.svg");
 }
 
@@ -107,7 +121,8 @@
 }
 
 .codicon.info-icon,
-.vs .codicon.info-icon {
+.vs .codicon.info-icon,
+.hc-light .codicon.info-icon {
 	background-image: url("info.svg");
 }
 
@@ -117,18 +132,21 @@
 }
 
 .vs .codicon.success,
+.hc-light .codicon.success,
 .vs-dark .codicon.success,
 .hc-black .codicon.success {
 	content: url("status_success.svg");
 }
 
 .vs .codicon.canceled,
+.hc-light .codicon.canceled,
 .vs-dark .codicon.canceled,
 .hc-black .codicon.canceled {
 	content: url("status_cancelled.svg");
 }
 
-.vs .codicon.in-progress {
+.vs .codicon.in-progress,
+.hc-light .codicon.in-progress {
 	content: url("loading.svg");
 }
 
@@ -138,6 +156,7 @@
 }
 
 .vs .codicon.scriptToClipboard,
+.hc-light .codicon.scriptToClipboard,
 .vs-dark .codicon.scriptToClipboard,
 .hc-black .codicon.scriptToClipboard {
 	background-image: url("script_to_clipboard.svg");
@@ -146,7 +165,9 @@
 }
 
 .vs .codicon:not(.masked-icon).close,
-.vs .codicon:not(.masked-icon).remove {
+.vs .codicon:not(.masked-icon).remove,
+.hc-light .codicon:not(.masked-icon).close,
+.hc-light .codicon:not(.masked-icon).remove {
 	background: url('close.svg') center center no-repeat !important;
 }
 
@@ -157,7 +178,8 @@
 	background: url("close_inverse.svg") center center no-repeat !important;
 }
 
-.vs .codicon.filter {
+.vs .codicon.filter,
+.hc-light .codicon.filter {
 	background: url("filter.svg") center center no-repeat !important;
 }
 
@@ -166,7 +188,8 @@
 	background: url("filter_inverse.svg") center center no-repeat !important;
 }
 
-.vs .codicon.filterLabel {
+.vs .codicon.filterLabel,
+.hc-light .codicon.filterLabel {
 	background-image: url("filter.svg");
 }
 
@@ -175,7 +198,8 @@
 	background-image: url("filter_inverse.svg");
 }
 
-.vs .codicon.clear-filter {
+.vs .codicon.clear-filter,
+.hc-light .codicon.clear-filter {
 	background-image: url("clearfilter.svg");
 }
 
@@ -185,12 +209,14 @@
 }
 
 .vs .codicon.warning-badge,
+.hc-light .codicon.warning-badge,
 .vs-dark .codicon.warning-badge,
 .hc-black .codicon.warning-badge {
 	background: url("status_warning.svg") center center no-repeat;
 }
 
 .vs .codicon.refresh,
+.hc-light .codicon.refresh,
 .vs-dark .codicon.refresh,
 .hc-black .codicon.refresh {
 	background: url("refresh.svg") no-repeat;
@@ -201,7 +227,8 @@
 	background: url("ellipsis-inverse.svg") center center no-repeat;
 }
 
-.vs .codicon.toggle-more {
+.vs .codicon.toggle-more,
+.hc-light .codicon.toggle-more {
 	background: url("ellipsis.svg") center center no-repeat;
 }
 
@@ -210,23 +237,27 @@
 	background: url("new_inverse.svg") center center no-repeat;
 }
 
-.vs .codicon:not(.masked-icon).new {
+.vs .codicon:not(.masked-icon).new,
+.hc-light .codicon:not(.masked-icon).new {
 	background: url("new.svg") center center no-repeat;
 }
 
 .vs .codicon.new-query,
+.hc-light .codicon.new-query,
 .vs-dark .codicon.new-query,
 .hc-black .codicon.new-query {
 	background: url("newquery.svg") center center no-repeat;
 }
 
 .vs .codicon.info,
+.hc-light .codicon.info,
 .hc-black .codicon.info,
 .vs-dark .codicon.info {
 	background: url("info.svg") center center no-repeat;
 }
 
 .vs .codicon.edit,
+.hc-light .codicon.edit,
 .hc-black .codicon.edit,
 .vs-dark .codicon.edit {
 	background: url("edit.svg") center center no-repeat;
@@ -237,7 +268,8 @@
 	background: url("pin_inverse.svg") center center no-repeat;
 }
 
-.vs .codicon.pin {
+.vs .codicon.pin,
+.hc-light .codicon.pin {
 	background: url("pin.svg") center center no-repeat;
 }
 
@@ -246,7 +278,8 @@
 	background: url("unpin_inverse.svg") center center no-repeat;
 }
 
-.vs .codicon.unpin {
+.vs .codicon.unpin,
+.hc-light .codicon.unpin {
 	background: url("unpin.svg") center center no-repeat;
 }
 
@@ -255,11 +288,13 @@
 	background: url("book_inverse.svg") center center no-repeat;
 }
 
-.vs .codicon.bookreport {
+.vs .codicon.bookreport,
+.hc-light .codicon.bookreport {
 	background: url("book.svg") center center no-repeat;
 }
 
-.vs .sql.codicon.pause {
+.vs .sql.codicon.pause,
+.hc-light .sql.codicon.pause {
 	background-image: url("pause.svg");
 }
 
@@ -268,7 +303,8 @@
 	background-image: url("pause_inverse.svg");
 }
 
-.vs .sql.codicon.continue {
+.vs .sql.codicon.continue,
+.hc-light .sql.codicon.continue {
 	background-image: url("continue.svg");
 }
 
@@ -277,7 +313,8 @@
 	background-image: url("continue_inverse.svg");
 }
 
-.vs .sql.codicon.checked {
+.vs .sql.codicon.checked,
+.hc-light .sql.codicon.checked {
 	background-image: url("check.svg");
 }
 
@@ -286,7 +323,8 @@
 	background-image: url("check_inverse.svg");
 }
 
-.vs .sql.codicon.start {
+.vs .sql.codicon.start,
+.hc-light .sql.codicon.start {
 	background-image: url("start.svg");
 }
 
@@ -295,7 +333,8 @@
 	background-image: url("start_inverse.svg");
 }
 
-.vs .sql.codicon.stop {
+.vs .sql.codicon.stop,
+.hc-light .sql.codicon.stop {
 	background-image: url("stop.svg");
 }
 
@@ -309,24 +348,29 @@
 	background: url("export_inverse.svg") center center no-repeat;
 }
 
-.vs .codicon.export {
+.vs .codicon.export,
+.hc-light .codicon.export {
 	background: url("export.svg") center center no-repeat;
 }
 
 /* Notebook cells */
-.codicon.toolbarIconRunInactive {
+.codicon.toolbarIconRunInactive,
+.hc-light .codicon.toolbarIconRunInactive {
 	background-image: url("execute_cell_grey.svg");
 }
 
-.codicon.toolbarIconRun {
+.codicon.toolbarIconRun,
+.hc-light .codicon.toolbarIconRun {
 	background-image: url("execute_cell.svg");
 }
 
-.codicon.toolbarIconRunError {
+.codicon.toolbarIconRunError,
+.hc-light .codicon.toolbarIconRunError {
 	background-image: url("execute_cell_error.svg");
 }
 
-.codicon.toolbarIconStop {
+.codicon.toolbarIconStop,
+.hc-light .codicon.toolbarIconStop {
 	background-image: url("stop_cell_solidanimation.svg");
 }
 
@@ -502,7 +546,8 @@ Includes non-masked style declarations. */
 	mask-image: url("packages.svg");
 }
 
-.codicon.arrow-up {
+.codicon.arrow-up,
+.hc-light .codicon.arrow-up {
 	background-image: url("chevron_up.svg");
 }
 
@@ -511,7 +556,8 @@ Includes non-masked style declarations. */
 	background-image: url("chevron_up_inverse.svg");
 }
 
-.codicon:not(.masked-icon).arrow-down {
+.codicon:not(.masked-icon).arrow-down,
+.hc-light .codicon:not(.masked-icon).arrow-down {
 	background-image: url("chevron_down.svg");
 }
 

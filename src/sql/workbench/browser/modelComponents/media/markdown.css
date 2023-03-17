@@ -56,15 +56,18 @@ modelview-dom-component .showEditorSelection li.code-line:hover:before {
 	left: -30px;
 }
 
-modelview-dom-component .showEditorSelection .code-active-line:before {
+modelview-dom-component .showEditorSelection .code-active-line:before,
+.monaco-workbench.hc-light modelview-dom-component .showEditorSelection .code-active-line:before {
 	border-left: 3px solid rgba(0, 0, 0, 0.15);
 }
 
-modelview-dom-component .showEditorSelection .code-line:hover:before {
+modelview-dom-component .showEditorSelection .code-line:hover:before,
+.monaco-workbench.hc-light modelview-dom-component .showEditorSelection .code-line:hover:before {
 	border-left: 3px solid rgba(0, 0, 0, 0.40);
 }
 
-modelview-dom-component .showEditorSelection .code-line .code-line:hover:before {
+modelview-dom-component .showEditorSelection .code-line .code-line:hover:before,
+.monaco-workbench.hc-light modelview-dom-component .showEditorSelection .code-line .code-line:hover:before {
 	border-left: none;
 }
 
@@ -89,6 +92,14 @@ modelview-dom-component .showEditorSelection .code-line .code-line:hover:before 
 
 .hc-black modelview-dom-component .showEditorSelection .code-line:hover:before {
 	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.hc-light modelview-dom-component .showEditorSelection .code-active-line:before {
+	border-left: 3px solid #6fc3df;
+}
+
+.hc-light modelview-dom-component .showEditorSelection .code-line:hover:before {
+	border-left: 3px solid #6fc3df;
 }
 
 modelview-dom-component .showEditorSelection .code-line .code-line:hover:before {
@@ -203,6 +214,14 @@ modelview-dom-component pre code {
 
 modelview-dom-component pre {
 	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.monaco-workbench.hc-light modelview-dom-component pre {
+	background-color: rgba(255, 255, 255);
+}
+
+.monaco-workbench.hc-light modelview-dom-component h1 {
+	border-color: rgba(255, 255, 255);
 }
 
 .monaco-workbench.vs-dark modelview-dom-component pre {

@@ -108,7 +108,8 @@
 	box-sizing: border-box;
 }
 
-.hc-black .carbon-taskbar .overflow {
+.hc-black .carbon-taskbar .overflow,
+.hc-light .carbon-taskbar .overflow {
 	box-shadow: none;
 }
 

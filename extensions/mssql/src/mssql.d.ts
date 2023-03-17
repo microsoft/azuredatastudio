@@ -354,7 +354,7 @@ declare module 'mssql' {
 		/**
 		 * Delete a database reference from a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param name Name of the reference to be deleted.  Name of the System DB, path of the sqlproj, or path of the dacpac
+		 * @param name Name of the reference to be deleted. Name of the System DB, path of the sqlproj, or path of the dacpac
 		 */
 		deleteDatabaseReference(projectUri: string, name: string): Promise<azdata.ResultStatus>;
 
@@ -1228,6 +1228,13 @@ declare module 'mssql' {
 		 * @param contextId The id of the view.
 		 */
 		disposeUserView(contextId: string): Thenable<void>;
+		/**
+		 * Rename an object.
+		 * @param connectionUri The URI of the server connection.
+		 * @param objectUrn Urn of the object to be renamed. More information: https://learn.microsoft.com/en-us/sql/relational-databases/server-management-objects-smo/overview-smo.
+		 * @param newName The new name of the object.
+		 */
+		rename(connectionUri: string, objectUrn: string, newName: string): Thenable<void>;
 	}
 	// Object Management - End.
 }

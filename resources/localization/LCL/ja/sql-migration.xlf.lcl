@@ -136,6 +136,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.delete.migration.confirmation" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Are you sure you want to delete this migration?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[この移行を削除しますか?]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.login.migration.aad.domain.name.input.box.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)]]></Val>
@@ -150,6 +159,15 @@
           <Val><![CDATA[Enter AAD Domain Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[AAD ドメイン名を入力してください]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.login.migration.collecting.target.logins.failed" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Collecting target login failed with error code {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ターゲット ログインの収集がエラー コード {0} で失敗しました]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -507,10 +525,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.login.migration.wizard.target.data.migration.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please note that login migration feature is in private preview mode.]]></Val>
+          <Val><![CDATA[Please note that login migration feature is in public preview mode.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ログイン移行機能はプライベート プレビュー モードであることにご注意ください。]]></Val>
+            <Val><![CDATA[ログイン移行機能はパブリック プレビュー モードであることに注意してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please note that login migration feature is in private preview mode.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1123,6 +1144,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cannot.delete" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Migration is currently in progress and cannot be deleted.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[移行は現在進行中です。削除できません。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cannot.retry" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Migration cannot be retried.]]></Val>
@@ -1620,10 +1650,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.help.description.sqldb" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).]]></Val>
+          <Val><![CDATA[A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL Server インスタンス (オンプレミスまたは Azure Virtual Machines) から Azure SQL Database (プレビュー) にデータベースを移行するためのステップ バイ ステップ チュートリアル。]]></Val>
+            <Val><![CDATA[SQL Server インスタンス (オンプレミスまたは Azure Virtual Machines) から Azure SQL Database にデータベースを移行するためのステップ バイ ステップ チュートリアルです。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1665,10 +1698,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.help.link.sqldb" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)]]></Val>
+          <Val><![CDATA[Tutorial:  Migrate to SQL Server on Azure SQL Database (offline)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[チュートリアル: Azure SQL Database でSQL Serverに移行する(オフライン) - (プレビュー)]]></Val>
+            <Val><![CDATA[チュートリアル: Azure SQL Database でSQL Serverに移行する (オフライン)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2136,6 +2172,24 @@
           <Val><![CDATA[Default database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[既定のデータベース]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.delete.error" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[An error occurred while deleting the migration.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[移行の削除中にエラーが発生しました。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.delete.migration" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Delete migration]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[移行の削除]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5400,12 +5454,12 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.recommendation.view.assessment.sqldb" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[To migrate to Azure SQL Database (PREVIEW), view assessment results and select one or more databases.]]></Val>
+          <Val><![CDATA[To migrate to Azure SQL Database, view assessment results and select one or more databases.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL Database (プレビュー) に移行するには、評価結果を表示し、1 つ以上のデータベースを選択します。]]></Val>
+            <Val><![CDATA[Azure SQL Database に移行するには、評価結果を表示し、1 つ以上のデータベースを選択します。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[To migrate to Azure SQL Database, view assessment results and select one or more databases.]]></Val>
+            <Val><![CDATA[To migrate to Azure SQL Database (PREVIEW), view assessment results and select one or more databases.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -5580,12 +5634,12 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.sqldb.card.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure SQL Database (PREVIEW)]]></Val>
+          <Val><![CDATA[Azure SQL Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL Database (プレビュー)]]></Val>
+            <Val><![CDATA[Azure SQL Database]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Azure SQL Database]]></Val>
+            <Val><![CDATA[Azure SQL Database (PREVIEW)]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -7219,6 +7273,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.validate.error.gatewaytimeout" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[A time-out was encountered while validating a resource connection. Learn more: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[リソース接続の検証中にタイムアウトが発生しました。詳細情報: https://aka.ms/dms-migrations-troubleshooting。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.validate.ir.column.status" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Status]]></Val>
@@ -8088,6 +8151,15 @@
           <Val><![CDATA[Database details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[データベースの詳細]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/package.delete-migration-menu" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Delete migration]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[移行の削除]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

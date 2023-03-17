@@ -284,6 +284,11 @@
         <source xml:lang="en">Controls the memory available to Azure Data Studio after restart when trying to open large files. Same effect as specifying `--max-memory=NEWSIZE` on the command line.</source>
         <target state="translated">Controla a memória disponível para o Azure Data Studio após a reinicialização ao tentar abrir arquivos grandes. O mesmo efeito que especificar `--max-memory=NEWSIZE` na linha de comando.</target>
       </trans-unit>
+      <trans-unit id="miNewDeployment">
+        <source xml:lang="en">New &amp;&amp;Deployment...</source>
+        <note>&amp;&amp; denotes a mnemonic</note>
+        <target state="translated">Nova &amp;&amp;Implantação...</target>
+      </trans-unit>
       <trans-unit id="miNewNotebook">
         <source xml:lang="en">&amp;&amp;New Notebook</source>
         <note>&amp;&amp; denotes a mnemonic</note>
@@ -307,6 +312,95 @@
         <source xml:lang="en">The notebook cell title menu</source>
         <target state="translated">O menu de título da célula do bloco de anotações</target>
       </trans-unit>
+      <trans-unit id="notebook.cellToolbarLocation.description">
+        <source xml:lang="en">Where the cell toolbar should be shown, or whether it should be hidden. (for VS Code Notebooks only)</source>
+        <target state="translated">Onde a barra de ferramentas da célula deve ser exibida ou se deve ser ocultada. (somente para Notebooks VS Code)</target>
+      </trans-unit>
+      <trans-unit id="notebook.cellToolbarVisibility.description">
+        <source xml:lang="en">Whether the cell toolbar should appear on hover or click. (for VS Code Notebooks only)</source>
+        <target state="translated">Se a barra de ferramentas celular deve aparecer no mouse ou clique. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.compactView.description">
+        <source xml:lang="en">Control whether the notebook editor should be rendered in a compact form. For example, when turned on, it will decrease the left margin width. (for VS Code Notebooks only)</source>
+        <target state="translated">Controle se o editor de notebook deve ser renderizado em um formulário compacto. Por exemplo, quando ligado, diminuirá a largura da margem esquerda. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.consolidatedOutputButton.description">
+        <source xml:lang="en">Control whether outputs action should be rendered in the output toolbar. (for VS Code Notebooks only)</source>
+        <target state="translated">Controle se a ação de saídas deve ser renderizada na barra de ferramentas de saída. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.consolidatedRunButton.description">
+        <source xml:lang="en">Control whether extra actions are shown in a dropdown next to the run button. (for VS Code Notebooks only)</source>
+        <target state="translated">Controle se as ações extras são mostradas em um suspensão ao lado do botão Executar. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.diff.enablePreview.description">
+        <source xml:lang="en">Whether to use the enhanced text diff editor for notebook. (for VS Code Notebooks only)</source>
+        <target state="translated">Se deve usar o editor de diff de texto aprimorado para notebook. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.displayOrder.description">
+        <source xml:lang="en">Priority list for output mime types. (for VS Code Notebooks only)</source>
+        <target state="translated">Lista de prioridades para os tipos de MIME de saída. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.dragAndDrop.description">
+        <source xml:lang="en">Control whether the notebook editor should allow moving cells through drag and drop. (for VS Code Notebooks only)</source>
+        <target state="translated">Controle se o editor de notebook deve permitir a movimentação de células através de arrasto e soltamento. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.editorOptions.experimentalCustomization">
+        <source xml:lang="en">Settings for code editors used in notebooks. This can be used to customize most editor.* settings. (for VS Code Notebooks only)</source>
+        <target state="translated">Configurações para editores de código usados em notebooks. Isso pode ser usado para personalizar a maioria dos editores.* Configurações. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.focusIndicator.description">
+        <source xml:lang="en">Controls where the focus indicator is rendered, either along the cell borders or on the left gutter. (for VS Code Notebooks only)</source>
+        <target state="translated">Controla onde o indicador de foco é renderizado, ao longo das fronteiras da célula ou na calha esquerda. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.globalToolbar.description">
+        <source xml:lang="en">Control whether to render a global toolbar inside the notebook editor. (for VS Code Notebooks only)</source>
+        <target state="translated">Controle se deve renderizar uma barra de ferramentas global dentro do editor de notebooks. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.globalToolbarShowLabel">
+        <source xml:lang="en">Control whether the actions on the notebook toolbar should render label or not. (for VS Code Notebooks only)</source>
+        <target state="translated">Controle se as ações na barra de ferramentas do notebook devem renderizar ou não. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.insertToolbarPosition.description">
+        <source xml:lang="en">Control where the insert cell actions should appear. (for VS Code Notebooks only)</source>
+        <target state="translated">Controle onde as ações da célula de inserção devem aparecer. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.interactiveWindow.collapseCodeCells">
+        <source xml:lang="en">Controls whether code cells in the interactive window are collapsed by default. (for VS Code Notebooks only)</source>
+        <target state="translated">Controla se as células de código na janela interativa são colapsadas por padrão. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.markup.fontSize">
+        <source xml:lang="en">Controls the font size in pixels of rendered markup in notebooks. When set to `0`, 120% of `#editor.fontSize#` is used. (for VS Code Notebooks only)</source>
+        <target state="translated">Controla o tamanho da fonte em pixels de marcação renderizada em notebooks. Quando definido como `0`, 120% do`#editor.fontsize#`é usado. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.outputFontFamily">
+        <source xml:lang="en">The font family for the output text for notebook cells. When set to empty, the `#editor.fontFamily#` is used. (for VS Code Notebooks only)</source>
+        <target state="translated">A família de fontes para o texto de saída para células de notebook. Quando configurado para esvaziar, o `#editor.fontfamily#` é usado. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.outputFontSize">
+        <source xml:lang="en">Font size for the output text for notebook cells. When set to 0 `#editor.fontSize#` is used. (for VS Code Notebooks only)</source>
+        <target state="translated">Tamanho da fonte para o texto de saída para células de notebook. Quando definido como 0 `#editor.fontsize#` é usado. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.outputLineHeight">
+        <source xml:lang="en">Line height of the output text for notebook cells.
+ - Values between 0 and 8 will be used as a multiplier with the font size.
+ - Values greater than or equal to 8 will be used as effective values. (for VS Code Notebooks only)</source>
+        <target state="translated">Altura de linha do texto de saída para células de notebook.
+ - Os valo
+res entre 0 e 8 serão usados como multiplicador com o tamanho da fonte.
+ - Valores maiores ou iguais a 8 serão usados como valores efetivos. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.showCellStatusbar.description">
+        <source xml:lang="en">Whether the cell status bar should be shown. (for VS Code Notebooks only)</source>
+        <target state="translated">Se a barra de status da célula deve ser mostrada. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.showFoldingControls.description">
+        <source xml:lang="en">Controls when the Markdown header folding arrow is shown. (for VS Code Notebooks only)</source>
+        <target state="translated">Controla quando o cabeçalho da seta dobrável do cabeçalho é mostrado. (apenas para cadernos de código vs)</target>
+      </trans-unit>
+      <trans-unit id="notebook.textOutputLineLimit">
+        <source xml:lang="en">Control how many lines of text in a text output is rendered. (for VS Code Notebooks only)</source>
+        <target state="translated">Controle quantas linhas de texto em uma saída de texto são renderizadas. (apenas para cadernos de código vs)</target>
+      </trans-unit>
       <trans-unit id="notebook.title">
         <source xml:lang="en">The notebook title menu</source>
         <target state="translated">O menu de título do bloco de anotações</target>
@@ -314,6 +408,10 @@
       <trans-unit id="notebook.toolbar">
         <source xml:lang="en">The notebook toolbar menu</source>
         <target state="translated">O menu da barra de ferramentas do bloco de anotações.</target>
+      </trans-unit>
+      <trans-unit id="notebook.undoRedoPerCell.description">
+        <source xml:lang="en">Whether to use separate undo/redo stack for each cell. (for VS Code Notebooks only)</source>
+        <target state="translated">Se deve usar a pilha de desfazer/refazer para cada célula. (apenas para cadernos de código vs)</target>
       </trans-unit>
       <trans-unit id="objectExplorer.context">
         <source xml:lang="en">The object explorer item context menu</source>
@@ -1032,6 +1130,14 @@ Comandos Padrão Ignorados:
       <trans-unit id="showConnectDialogOnStartup">
         <source xml:lang="en">Show connect dialog on startup</source>
         <target state="translated">Mostrar caixa de diálogo de conexão na inicialização</target>
+      </trans-unit>
+      <trans-unit id="useVSCodeNotebooks">
+        <source xml:lang="en">(Preview) Use VS Code notebooks as the default notebook experience. Note: Azure Data Studio will need to be restarted to enable this setting.</source>
+        <target state="translated">(Visualizar) Use o Code Notebooks como a experiência padrão do Notebook. Nota: O Azure Data Studio precisará ser reiniciado para ativar essa configuração.</target>
+      </trans-unit>
+      <trans-unit id="useVSCodeNotebooksTitle">
+        <source xml:lang="en">Use VS Code notebooks</source>
+        <target state="translated">Use vs notebooks de código</target>
       </trans-unit>
     </body>
   </file>
@@ -2286,6 +2392,10 @@ Comandos Padrão Ignorados:
   </file>
   <file original="src/sql/workbench/contrib/connection/common/connectionProviderExtension" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
+      <trans-unit id="schema.azureResource">
+        <source xml:lang="en">Azure resource endpoint for the provider.</source>
+        <target state="translated">Ponto de extremidade do recurso do Azure para o provedor.</target>
+      </trans-unit>
       <trans-unit id="schema.connectionOptions">
         <source xml:lang="en">Options for connection</source>
         <target state="translated">Opções de conexão</target>
@@ -3648,6 +3758,14 @@ Comandos Padrão Ignorados:
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanInput" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="epCompare.executionPlanEditorName">
+        <source xml:lang="en">ExecutionPlan</source>
+        <target state="translated">ExecutionPlan</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="executionPlanPropertiesEdgeOperationName">
@@ -3979,14 +4097,6 @@ Comandos Padrão Ignorados:
       <trans-unit id="previousSearchItemAction">
         <source xml:lang="en">Previous Match</source>
         <target state="translated">Correspondência Anterior</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/executionPlan/common/executionPlanInput" source-language="en" datatype="plaintext" target-language="pt-BR">
-    <body>
-      <trans-unit id="epCompare.executionPlanEditorName">
-        <source xml:lang="en">ExecutionPlan</source>
-        <target state="translated">ExecutionPlan</target>
       </trans-unit>
     </body>
   </file>
@@ -5675,8 +5785,8 @@ Erro: {1}</target>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error {0}</source>
-        <target state="translated">Falha na cópia com o erro {0}</target>
+        <source xml:lang="en">Copy failed with error: {0}</source>
+        <target state="translated">A cópia falhou com o erro: {0}</target>
       </trans-unit>
       <trans-unit id="notebook.showChart">
         <source xml:lang="en">Show chart</source>
@@ -6469,6 +6579,10 @@ Erro: {1}</target>
       <trans-unit id="maxColumnWidth">
         <source xml:lang="en">The maximum width in pixels for auto-sized columns</source>
         <target state="translated">A largura máxima em pixels para colunas dimensionadas automaticamente</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.showJsonAsLink">
+        <source xml:lang="en">Whether to show cells with JSON formatted string as hyperlink. When enabled, upon click the JSON value will be opened in another tab. The default value is true.</source>
+        <target state="translated">Se as células com cadeia de caracteres formatada em JSON devem ser mostradas como hiperlink. Quando ativado, ao clicar, o valor JSON será aberto em outra guia. O valor padrão é verdadeiro.</target>
       </trans-unit>
       <trans-unit id="resultsGridConfigurationTitle">
         <source xml:lang="en">Results Grid and Messages</source>
@@ -7299,13 +7413,33 @@ Erro: {1}</target>
         <source xml:lang="en">Close</source>
         <target state="translated">Fechar</target>
       </trans-unit>
+      <trans-unit id="addAccountFailedCodeMessage">
+        <source xml:lang="en">{0} 
+Error Message: {1}</source>
+        <target state="translated">{0} 
+Mensagem de Erro: {1}</target>
+      </trans-unit>
+      <trans-unit id="addAccountFailedGenericMessage">
+        <source xml:lang="en">Adding account failed, check Azure Accounts log for more info.</source>
+        <target state="translated">Adicionando falha na conta, verifique o log do Azure Contas para obter mais informações.</target>
+      </trans-unit>
+      <trans-unit id="addAccountFailedMessage">
+        <source xml:lang="en">{0}</source>
+        <target state="translated">{0}</target>
+      </trans-unit>
       <trans-unit id="loggingIn">
         <source xml:lang="en">Adding account...</source>
         <target state="translated">Adicionando conta...</target>
       </trans-unit>
-      <trans-unit id="refreshFailed">
+      <trans-unit id="refreshCanceled">
         <source xml:lang="en">Refresh account was canceled by the user</source>
         <target state="translated">A conta de atualização foi cancelada pelo usuário</target>
+      </trans-unit>
+      <trans-unit id="refreshFailed">
+        <source xml:lang="en">0 
+Error Message: 1</source>
+        <target state="translated">0 
+Mensagem de erro: 1</target>
       </trans-unit>
     </body>
   </file>
@@ -7547,10 +7681,6 @@ Erro: {1}</target>
         <source xml:lang="en">Connection error</source>
         <target state="translated">Erro de conexão</target>
       </trans-unit>
-      <trans-unit id="enableTrustServerCertificate">
-        <source xml:lang="en">Enable Trust server certificate</source>
-        <target state="translated">Certificado do servidor de confiança</target>
-      </trans-unit>
       <trans-unit id="kerberosErrorStart">
         <source xml:lang="en">Connection failed due to Kerberos error.</source>
         <target state="translated">A conexão falhou devido a um erro do Kerberos.</target>
@@ -7566,14 +7696,6 @@ Erro: {1}</target>
       <trans-unit id="runKinit">
         <source xml:lang="en">Run Kinit</source>
         <target state="translated">Executar o Kinit</target>
-      </trans-unit>
-      <trans-unit id="trustServerCertInstructionText">
-        <source xml:lang="en">Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable 'Trust server certificate' in the connection dialog.
-
-			Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? </source>
-        <target state="translated">A criptografia foi habilitada nesta conexão, examine sua configuração de SSL e certificado para a configuração de SQL Server, ou habilite 'Certificado do servidor de confiança' na caixa de diálogo de conexão.
-
-			Observação: um certificado autoassinado oferece apenas proteção limitada e não é uma prática recomendada para ambientes de produção. Deseja habilitar o 'Certificado do servidor de confiança' nesta conexão e tentar novamente? </target>
       </trans-unit>
     </body>
   </file>
@@ -7771,6 +7893,14 @@ Erro: {1}</target>
   </file>
   <file original="src/sql/workbench/services/connection/browser/passwordChangeDialog" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
+      <trans-unit id="passwordChangeDialog.Message1">
+        <source xml:lang="en">Password must be changed for '{0}' to continue logging into '{1}'.</source>
+        <target state="translated">A senha deve ser alterada para '{0}' para continuar fazendo logon em '{1}'.</target>
+      </trans-unit>
+      <trans-unit id="passwordChangeDialog.Message2">
+        <source xml:lang="en">Please enter a new password below:</source>
+        <target state="translated">Insira uma nova senha abaixo:</target>
+      </trans-unit>
       <trans-unit id="passwordChangeDialog.cancel">
         <source xml:lang="en">Cancel</source>
         <target state="translated">Cancelar</target>
@@ -7803,6 +7933,10 @@ Erro: {1}</target>
         <source xml:lang="en">OK</source>
         <target state="translated">OK</target>
       </trans-unit>
+      <trans-unit id="passwordChangeDialog.passwordChangeInProgress">
+        <source xml:lang="en">Password change already in progress</source>
+        <target state="translated">A alteração de senha já está em andamento</target>
+      </trans-unit>
       <trans-unit id="passwordChangeDialog.title">
         <source xml:lang="en">Change Password</source>
         <target state="translated">Alterar Senha</target>
@@ -7834,6 +7968,15 @@ Erro: {1}</target>
       <trans-unit id="wizardPageNumberDisplayText">
         <source xml:lang="en">Step {0}</source>
         <target state="translated">Etapa {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/dialog/browser/wizardNavigation.component" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="wizardNavigation.stepName">
+        <source xml:lang="en">Step {0}: {1}</source>
+        <note>Name of a step in wizard. {0}: step number, {1}: step name.</note>
+        <target state="translated">Etapa {0}: {1}</target>
       </trans-unit>
     </body>
   </file>
@@ -7903,6 +8046,14 @@ Erro: {1}</target>
   </file>
   <file original="src/sql/workbench/services/executionPlan/common/executionPlanService" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
+      <trans-unit id="executionPlanService.ensureCapabilitiesRegistered">
+        <source xml:lang="en">Provider with id {0} was not registered after 30 seconds.</source>
+        <target state="translated">O provedor com id {0} não foi registrado após 30 segundos.</target>
+      </trans-unit>
+      <trans-unit id="executionPlanService.ensureFileExtensionHandlerRegistered">
+        <source xml:lang="en">Execution plan provider which supports file format '{0}' was not registered after 30 seconds.</source>
+        <target state="translated">O provedor do plano de execução que oferece suporte ao formato de arquivo '{0}' não foi registrado após 30 segundos.</target>
+      </trans-unit>
       <trans-unit id="noHandlerRegistered">
         <source xml:lang="en">No valid execution plan handler is registered</source>
         <target state="translated">Nenhum manipulador de plano de execução válido está registrado</target>
@@ -8467,9 +8618,25 @@ Erro: {1}</target>
         <source xml:lang="en">Delete Connection</source>
         <target state="translated">Excluir Conexão</target>
       </trans-unit>
+      <trans-unit id="deleteConnectionConfirmation">
+        <source xml:lang="en">Are you sure you want to delete connection '{0}'?</source>
+        <target state="translated">Tem certeza de que deseja excluir a conexão '{0}'?</target>
+      </trans-unit>
+      <trans-unit id="deleteConnectionConfirmationNo">
+        <source xml:lang="en">No</source>
+        <target state="translated">Não</target>
+      </trans-unit>
+      <trans-unit id="deleteConnectionConfirmationYes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Sim</target>
+      </trans-unit>
       <trans-unit id="deleteConnectionGroup">
         <source xml:lang="en">Delete Group</source>
         <target state="translated">Excluir Grupo</target>
+      </trans-unit>
+      <trans-unit id="deleteConnectionGroupConfirmation">
+        <source xml:lang="en">Are you sure you want to delete connection group '{0}'?</source>
+        <target state="translated">Tem certeza de que deseja excluir o grupo de conexões '{0}'?</target>
       </trans-unit>
       <trans-unit id="showAllConnections">
         <source xml:lang="en">Show All Connections</source>
@@ -8551,6 +8718,10 @@ Erro: {1}</target>
         <source xml:lang="en">Add a clause</source>
         <target state="translated">Adicionar uma cláusula</target>
       </trans-unit>
+      <trans-unit id="profilerFilterDialog.allClausesCleared">
+        <source xml:lang="en">All clauses have been cleared.</source>
+        <target state="translated">Todas as cláusulas foram limpas.</target>
+      </trans-unit>
       <trans-unit id="profilerFilterDialog.apply">
         <source xml:lang="en">Apply</source>
         <target state="translated">Aplicar</target>
@@ -8582,6 +8753,10 @@ Erro: {1}</target>
       <trans-unit id="profilerFilterDialog.loadFilter">
         <source xml:lang="en">Load Filter</source>
         <target state="translated">Carregar Filtro</target>
+      </trans-unit>
+      <trans-unit id="profilerFilterDialog.newClauseAdded">
+        <source xml:lang="en">A new clause has been added.</source>
+        <target state="translated">Uma nova cláusula foi adicionada.</target>
       </trans-unit>
       <trans-unit id="profilerFilterDialog.notContainsOperator">
         <source xml:lang="en">Not Contains</source>
@@ -8668,8 +8843,8 @@ Erro: {1}</target>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error {0}</source>
-        <target state="translated">Falha na cópia com o erro {0}</target>
+        <source xml:lang="en">Copy failed with error: {0}</source>
+        <target state="translated">A cópia falhou com o erro: {0}</target>
       </trans-unit>
       <trans-unit id="elapsedBatchTime">
         <source xml:lang="en">Batch execution time: {0}</source>

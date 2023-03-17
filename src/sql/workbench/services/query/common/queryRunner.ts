@@ -21,7 +21,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { URI } from 'vs/base/common/uri';
 import * as perf from 'vs/base/common/performance';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-import { IGridDataProvider, getResultsString, getTableHeaderString } from 'sql/workbench/services/query/common/gridDataProvider';
+import { IGridDataProvider, getResultsString } from 'sql/workbench/services/query/common/gridDataProvider';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IRange, Range } from 'vs/editor/common/core/range';
@@ -564,16 +564,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 			const results = await getResultsString(this, selection, includeHeaders, tableView);
 			await this._clipboardService.writeText(results);
 		} catch (error) {
-			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
-		}
-	}
-
-	async copyHeaders(selection: Slick.Range[]): Promise<void> {
-		try {
-			const results = getTableHeaderString(this, selection);
-			await this._clipboardService.writeText(results);
-		} catch (error) {
-			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
+			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
 		}
 	}
 

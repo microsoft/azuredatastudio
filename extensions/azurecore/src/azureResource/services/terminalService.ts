@@ -10,6 +10,7 @@ import * as WS from 'ws';
 
 import { IAzureTerminalService } from '../interfaces';
 import { AzureAccount, Tenant } from 'azurecore';
+import { Logger } from '../../utils/Logger';
 
 const localize = nls.loadMessageBundle();
 
@@ -68,8 +69,8 @@ export class AzureTerminalService implements IAzureTerminalService {
 		let userSettingsResult: AxiosResponse<any>;
 		try {
 			userSettingsResult = await axios.get(userSettingsUri, settings);
-		} catch (ex) {
-			console.log(ex, ex.response);
+		} catch (ex) {// Log as info as exception is handled
+			Logger.info(ex, ex.response);
 			await handleNeverUsed();
 			return;
 		}
@@ -85,8 +86,8 @@ export class AzureTerminalService implements IAzureTerminalService {
 		let provisionResult: AxiosResponse<any>;
 		try {
 			provisionResult = await axios.put(consoleRequestUri, {}, settings);
-		} catch (ex) {
-			console.log(ex, ex.response);
+		} catch (ex) {// Log as info as exception is handled
+			Logger.info(ex, ex.response);
 			await handleNeverUsed();
 			return;
 		}
@@ -215,7 +216,7 @@ class AzureTerminal implements vscode.Pseudoterminal {
 				this.socket?.ping();
 			}, 5000);
 		} catch (ex) {
-			console.log(ex);
+			Logger.error(ex);
 		}
 	}
 
@@ -234,7 +235,7 @@ class AzureTerminal implements vscode.Pseudoterminal {
 				}
 			});
 		} catch (ex) {
-			console.log(`Error establishing terminal. ${ex}, ${ex.response}`);
+			Logger.info(`Error establishing terminal. ${ex}, ${ex.response}`);
 			await handleNeverUsed();
 			return undefined;
 		}
@@ -246,8 +247,8 @@ class AzureTerminal implements vscode.Pseudoterminal {
 		}
 
 		if (!terminalUri) {
-			console.log(terminalResult);
-			throw new Error(terminalResult.data);
+			Logger.error(terminalResult);
+			throw Error(terminalResult.data);
 		}
 
 		return terminalUri;
