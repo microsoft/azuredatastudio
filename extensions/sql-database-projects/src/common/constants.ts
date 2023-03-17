@@ -21,8 +21,8 @@ export const openApiSpecFileExtensions = ['yaml', 'yml', 'json'];
 
 //#region Placeholder values
 export const schemaCompareExtensionId = 'microsoft.schema-compare';
-export const master = 'Master';
-export const msdb = 'MSDB';
+export const master = 'master';
+export const msdb = 'msdb';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 export const sqlProjectSdk = 'Microsoft.Build.Sql';
