@@ -33,10 +33,10 @@ export class TelemetryParams {
 
 // ------------------------------- < Security Token Request > ------------------------------------------
 export interface RequestSecurityTokenParams {
-	authority: string;
 	provider: string;
+	authority: string;
 	resource: string;
-	scope: string;
+	scopes: string[];
 }
 
 export interface RequestSecurityTokenResponse {
@@ -1598,6 +1598,16 @@ export interface DisposeUserViewRequestParams {
 
 export namespace DisposeUserViewRequest {
 	export const type = new RequestType<DisposeUserViewRequestParams, void, void, void>('objectManagement/disposeUserView');
+}
+
+export interface RenameObjectRequestParams {
+	connectionUri: string;
+	newName: string;
+	objectUrn: string;
+}
+
+export namespace RenameObjectRequest {
+	export const type = new RequestType<RenameObjectRequestParams, void, void, void>('objectManagement/rename');
 }
 
 // ------------------------------- < Object Management > ------------------------------------

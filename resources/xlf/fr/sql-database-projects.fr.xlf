@@ -18,6 +18,10 @@
         <source xml:lang="en">In progress</source>
         <target state="translated">En cours</target>
       </trans-unit>
+      <trans-unit id="Move">
+        <source xml:lang="en">Move</source>
+        <target state="translated">Déplacer</target>
+      </trans-unit>
       <trans-unit id="PublishHistory">
         <source xml:lang="en">Publish History</source>
         <target state="translated">Publier l’historique</target>
@@ -270,10 +274,6 @@
         <source xml:lang="en">Data sources</source>
         <target state="translated">Sources de données</target>
       </trans-unit>
-      <trans-unit id="dataSourcesNodeName">
-        <source xml:lang="en">Data Sources</source>
-        <target state="translated">Sources de données</target>
-      </trans-unit>
       <trans-unit id="databaseLocation">
         <source xml:lang="en">Database location is required for adding a reference to a database</source>
         <target state="translated">L’emplacement de la base de données est requis pour l’ajout d’une référence à une base de données</target>
@@ -357,6 +357,10 @@
       <trans-unit id="deleteReferenceConfirmation">
         <source xml:lang="en">Are you sure you want to delete the reference to {0}?</source>
         <target state="translated">Voulez-vous vraiment supprimer la référence à {0} ?</target>
+      </trans-unit>
+      <trans-unit id="deleteSqlCmdVariableConfirmation">
+        <source xml:lang="en">Are you sure you want to delete the SQLCMD Variable '{0}'?</source>
+        <target state="translated">Voulez-vous vraiment supprimer la variable SQLCMD '{0}' ?</target>
       </trans-unit>
       <trans-unit id="deployAppSettingUpdateFailed">
         <source xml:lang="en">Failed to update app setting '{0}'</source>
@@ -502,6 +506,18 @@
         <source xml:lang="en">Enter new database name</source>
         <target state="translated">Entrer un nom de base de données</target>
       </trans-unit>
+      <trans-unit id="enterNewName">
+        <source xml:lang="en">Enter new name</source>
+        <target state="translated">Entrez le nouveau nom</target>
+      </trans-unit>
+      <trans-unit id="enterNewSqlCmdVariableDefaultValue">
+        <source xml:lang="en">Enter default value for SQLCMD variable '{0}'</source>
+        <target state="translated">Entrez la valeur par défaut de la variable SQLCMD '{0}'</target>
+      </trans-unit>
+      <trans-unit id="enterNewSqlCmdVariableName">
+        <source xml:lang="en">Enter new SQLCMD Variable name</source>
+        <target state="translated">Entrer le nom de la nouvelle variable SQLCMD</target>
+      </trans-unit>
       <trans-unit id="enterNewValueForVar">
         <source xml:lang="en">Enter new value for variable '{0}'</source>
         <target state="translated">Entrer une nouvelle valeur pour la variable « {0} »</target>
@@ -538,9 +554,17 @@
         <source xml:lang="en">Error finding build files location: {0}</source>
         <target state="translated">Erreur lors de la recherche de l’emplacement des fichiers de build : {0}</target>
       </trans-unit>
+      <trans-unit id="errorMovingFile">
+        <source xml:lang="en">Error when moving file from {0} to {1}. Error: {2}</source>
+        <target state="translated">Erreur lors du déplacement du fichier de {0} vers {1}. Erreur : {2}</target>
+      </trans-unit>
       <trans-unit id="errorReadingProjectGuid">
         <source xml:lang="en">Error trying to read {0} of project '{1}'</source>
         <target state="translated">Erreur lors de la tentative de lecture {0} du projet '{1}'</target>
+      </trans-unit>
+      <trans-unit id="errorRenamingFile">
+        <source xml:lang="en">Error when renaming file from {0} to {1}. Error: {2}</source>
+        <target state="translated">Erreur lors du changement de nom du fichier de {0} à {1}. Erreur : {2}</target>
       </trans-unit>
       <trans-unit id="errorRetrievingBuildFiles">
         <source xml:lang="en">Could not build project. Error retrieving files needed to build.</source>
@@ -740,6 +764,14 @@
         <source xml:lang="en">Missing 'version' entry in {0}</source>
         <target state="translated">Entrée 'version' manquante dans {0}.</target>
       </trans-unit>
+      <trans-unit id="moveConfirmationPrompt">
+        <source xml:lang="en">Are you sure you want to move {0} to {1}?</source>
+        <target state="translated">Voulez-vous vraiment déplacer {0} dans {1} ?</target>
+      </trans-unit>
+      <trans-unit id="movingFilesBetweenProjectsNotSupported">
+        <source xml:lang="en">Moving files between projects is not supported</source>
+        <target state="translated">Le déplacement de fichiers entre les projets n’est pas pris en charge</target>
+      </trans-unit>
       <trans-unit id="msec">
         <source xml:lang="en">msec</source>
         <target state="translated">msec</target>
@@ -827,6 +859,10 @@
       <trans-unit id="okString">
         <source xml:lang="en">Ok</source>
         <target state="translated">OK</target>
+      </trans-unit>
+      <trans-unit id="onlyMoveSqlFilesSupported">
+        <source xml:lang="en">Only moving .sql files is supported</source>
+        <target state="translated">Seul le déplacement de fichiers .sql est pris en charge</target>
       </trans-unit>
       <trans-unit id="openEulaString">
         <source xml:lang="en">Open License Agreement</source>
@@ -951,6 +987,10 @@
       <trans-unit id="publishOptions">
         <source xml:lang="en">Publish Options</source>
         <target state="translated">Options de publication</target>
+      </trans-unit>
+      <trans-unit id="publishProfileElements">
+        <source xml:lang="en">Publish profile elements</source>
+        <target state="translated">Publier les éléments de profil</target>
       </trans-unit>
       <trans-unit id="publishProjectSucceed">
         <source xml:lang="en">Database project published successfully</source>
@@ -1220,6 +1260,14 @@
         <source xml:lang="en">Database Projects</source>
         <target state="translated">Projets de base de données</target>
       </trans-unit>
+      <trans-unit id="sqlcmdVariableAlreadyExists">
+        <source xml:lang="en">A SQLCMD Variable with the same name already exists in this project</source>
+        <target state="translated">Une variable SQLCMD portant le même nom existe déjà dans ce projet</target>
+      </trans-unit>
+      <trans-unit id="sqlcmdVariablesNodeName">
+        <source xml:lang="en">SQLCMD Variables</source>
+        <target state="translated">Variables SQLCMD</target>
+      </trans-unit>
       <trans-unit id="storedProcedureFriendlyName">
         <source xml:lang="en">Stored Procedure</source>
         <target state="translated">Procédure stockée</target>
@@ -1388,6 +1436,10 @@
         <source xml:lang="en">Add Existing Item...</source>
         <target state="translated">Ajouter un élément ex_istant...</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.addSqlCmdVariable">
+        <source xml:lang="en">Add SQLCMD Variable</source>
+        <target state="translated">Ajouter une variable SQLCMD</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.autorestSqlVersion">
         <source xml:lang="en">Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.</source>
         <target state="translated">Version d’autorest. SQL à utiliser à partir de NPM.  La dernière version sera utilisée si elle n’est pas définie.</target>
@@ -1431,6 +1483,10 @@
       <trans-unit id="sqlDatabaseProjects.dotnetInstallLocation">
         <source xml:lang="en">Full path to .NET SDK on the machine. For example, if dotnet.exe is located at C:\folder1\dotnet\dotnet.exe, set the path for this setting to C:\folder1\dotnet</source>
         <target state="translated">Chemin d’accès complet au kit SDK .NET sur l’ordinateur. Par exemple, si dotnet.exe se trouve à C:\folder1\dotnet\dotnet.exe, définissez le chemin d’accès de ce paramètre sur C:\folder1\dotnet</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.edit">
+        <source xml:lang="en">Edit</source>
+        <target state="translated">Modifier</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.editProjectFile">
         <source xml:lang="en">Edit .sqlproj File</source>
@@ -1519,6 +1575,10 @@
       <trans-unit id="sqlDatabaseProjects.publish">
         <source xml:lang="en">Publish</source>
         <target state="translated">Publier</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.rename">
+        <source xml:lang="en">Rename</source>
+        <target state="translated">Renommer</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.schemaCompare">
         <source xml:lang="en">Schema Compare</source>

@@ -57,6 +57,10 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 				&& (this.isNewObject || this.objectInfo.password !== this.originalObjectInfo.password)) {
 				errors.push(localizedConstants.InvalidPasswordError);
 			}
+		} else if (this.objectInfo.type === UserType.WithLogin) {
+			if (!this.objectInfo.loginName) {
+				errors.push(localizedConstants.LoginNotSelectedError);
+			}
 		}
 		return errors;
 	}
@@ -69,7 +73,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		}
 	}
 
-	protected async onDispose(): Promise<void> {
+	protected async disposeView(): Promise<void> {
 		await this.objectManagementService.disposeUserView(this.contextId);
 	}
 
@@ -97,26 +101,17 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 			await this.runValidation(false);
 		}));
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
-
-		this.defaultSchemaDropdown = this.modelView.modelBuilder.dropDown().withProps({
-			ariaLabel: localizedConstants.DefaultSchemaText,
-			values: this.viewInfo.schemas,
-			value: this.objectInfo.defaultSchema,
-			width: DefaultInputWidth
-		}).component();
+		this.defaultSchemaDropdown = this.createDropdown(localizedConstants.DefaultSchemaText, this.viewInfo.schemas, this.objectInfo.defaultSchema);
 		this.defaultSchemaContainer = this.createLabelInputContainer(localizedConstants.DefaultSchemaText, this.defaultSchemaDropdown);
 		this.disposables.push(this.defaultSchemaDropdown.onValueChanged(() => {
 			this.objectInfo.defaultSchema = <string>this.defaultSchemaDropdown.value;
 			this.onObjectValueChange();
 		}));
 
-		this.typeDropdown = this.modelView.modelBuilder.dropDown().withProps({
-			ariaLabel: localizedConstants.UserTypeText,
-			values: [localizedConstants.UserWithLoginText, localizedConstants.UserWithWindowsGroupLoginText, localizedConstants.ContainedUserText, localizedConstants.UserWithNoConnectAccess],
-			value: getUserTypeDisplayName(this.objectInfo.type),
-			width: DefaultInputWidth,
-			enabled: this.isNewObject
-		}).component();
+		// only supporting user with login for initial preview
+		// const userTypes = [localizedConstants.UserWithLoginText, localizedConstants.UserWithWindowsGroupLoginText, localizedConstants.ContainedUserText, localizedConstants.UserWithNoConnectAccess],
+		const userTypes = [localizedConstants.UserWithLoginText];
+		this.typeDropdown = this.createDropdown(localizedConstants.UserTypeText, userTypes, getUserTypeDisplayName(this.objectInfo.type), this.isNewObject);
 		this.disposables.push(this.typeDropdown.onValueChanged(async () => {
 			this.objectInfo.type = getUserTypeByDisplayName(<string>this.typeDropdown.value);
 			this.onObjectValueChange();
@@ -124,17 +119,11 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 			await this.runValidation(false);
 		}));
 		this.typeContainer = this.createLabelInputContainer(localizedConstants.UserTypeText, this.typeDropdown);
-
-		this.loginDropdown = this.modelView.modelBuilder.dropDown().withProps({
-			ariaLabel: localizedConstants.LoginText,
-			values: this.viewInfo.logins,
-			value: this.objectInfo.loginName,
-			width: DefaultInputWidth,
-			enabled: this.isNewObject
-		}).component();
-		this.disposables.push(this.loginDropdown.onValueChanged(() => {
+		this.loginDropdown = this.createDropdown(localizedConstants.LoginText, this.viewInfo.logins, this.objectInfo.loginName, this.isNewObject);
+		this.disposables.push(this.loginDropdown.onValueChanged(async () => {
 			this.objectInfo.loginName = <string>this.loginDropdown.value;
 			this.onObjectValueChange();
+			await this.runValidation(false);
 		}));
 		this.loginContainer = this.createLabelInputContainer(localizedConstants.LoginText, this.loginDropdown);
 
@@ -148,13 +137,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		if (this.viewInfo.supportAADAuthentication) {
 			authTypes.push(localizedConstants.AADAuthenticationTypeDisplayText);
 		}
-		this.authTypeDropdown = this.modelView.modelBuilder.dropDown().withProps({
-			ariaLabel: localizedConstants.AuthTypeText,
-			values: authTypes,
-			value: getAuthenticationTypeDisplayName(this.objectInfo.authenticationType),
-			width: DefaultInputWidth,
-			enabled: this.isNewObject
-		}).component();
+		this.authTypeDropdown = this.createDropdown(localizedConstants.AuthTypeText, authTypes, getAuthenticationTypeDisplayName(this.objectInfo.authenticationType), this.isNewObject);
 		this.authTypeContainer = this.createLabelInputContainer(localizedConstants.AuthTypeText, this.authTypeDropdown);
 		this.disposables.push(this.authTypeDropdown.onValueChanged(async () => {
 			this.objectInfo.authenticationType = getAuthenticationTypeByDisplayName(<string>this.authTypeDropdown.value);
@@ -188,7 +171,11 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 	}
 
 	private initializeOwnedSchemaSection(): void {
-		this.ownedSchemaTable = this.createTableList(localizedConstants.OwnedSchemaSectionHeader, this.viewInfo.schemas, this.objectInfo.ownedSchemas);
+		const ownedSchemaData = this.viewInfo.schemas.map(name => {
+			const isSelected = this.objectInfo.ownedSchemas.indexOf(name) !== -1;
+			return [{ enabled: !isSelected, checked: isSelected }, name];
+		});
+		this.ownedSchemaTable = this.createTableList(localizedConstants.OwnedSchemaSectionHeader, this.viewInfo.schemas, this.objectInfo.ownedSchemas, ownedSchemaData);
 		this.ownedSchemaSection = this.createGroup(localizedConstants.OwnedSchemaSectionHeader, [this.ownedSchemaTable]);
 	}
 
@@ -198,12 +185,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 	}
 
 	private initializeAdvancedSection(): void {
-		this.defaultLanguageDropdown = this.modelView.modelBuilder.dropDown().withProps({
-			ariaLabel: localizedConstants.DefaultLanguageText,
-			values: this.viewInfo.languages,
-			value: this.objectInfo.defaultLanguage,
-			width: DefaultInputWidth
-		}).component();
+		this.defaultLanguageDropdown = this.createDropdown(localizedConstants.DefaultLanguageText, this.viewInfo.languages, this.objectInfo.defaultLanguage);
 		this.disposables.push(this.defaultLanguageDropdown.onValueChanged(() => {
 			this.objectInfo.defaultLanguage = <string>this.defaultLanguageDropdown.value;
 			this.onObjectValueChange();

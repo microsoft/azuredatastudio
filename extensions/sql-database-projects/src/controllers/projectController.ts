@@ -13,7 +13,7 @@ import * as templates from '../templates/templates';
 import * as vscode from 'vscode';
 import type * as azdataType from 'azdata';
 import * as dataworkspace from 'dataworkspace';
-import type * as mssqlVscode from 'vscode-mssql';
+import * as mssqlVscode from 'vscode-mssql';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
@@ -183,7 +183,6 @@ export class ProjectsController {
 		}
 
 		const targetPlatform = creationParams.targetPlatform ? constants.targetPlatformToVersion.get(creationParams.targetPlatform)! : constants.defaultDSP;
-		const sdkStyle = creationParams.sdkStyle ? mssql.ProjectType.SdkStyle : mssql.ProjectType.LegacyStyle;
 
 		let newProjFileName = creationParams.newProjName;
 
@@ -198,7 +197,13 @@ export class ProjectsController {
 		}
 
 		const sqlProjectsService = await utils.getSqlProjectsService();
-		await sqlProjectsService.createProject(newProjFilePath, sdkStyle, targetPlatform);
+		if (utils.getAzdataApi()) {
+			const projectStyle = creationParams.sdkStyle ? mssql.ProjectType.SdkStyle : mssql.ProjectType.LegacyStyle;
+			await (sqlProjectsService as mssql.ISqlProjectsService).createProject(newProjFilePath, projectStyle, targetPlatform);
+		} else {
+			const projectStyle = creationParams.sdkStyle ? mssqlVscode.ProjectType.SdkStyle : mssqlVscode.ProjectType.LegacyStyle;
+			await (sqlProjectsService as mssqlVscode.ISqlProjectsService).createProject(newProjFilePath, projectStyle, targetPlatform);
+		}
 
 		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);
 

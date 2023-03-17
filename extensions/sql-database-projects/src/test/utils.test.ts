@@ -83,12 +83,12 @@ describe('Tests to verify utils functions', function (): void {
 
 	it('Should convert from milliseconds to hr min sec correctly', () => {
 		should(timeConversion((60 * 60 * 1000) + (59 * 60 * 1000) + (59 * 1000))).equal('1 hr, 59 min, 59 sec');
-		should(timeConversion((60 * 60 * 1000) + (59 * 60 * 1000)              )).equal('1 hr, 59 min');
-		should(timeConversion((60 * 60 * 1000)                                 )).equal('1 hr');
-		should(timeConversion((60 * 60 * 1000)                    + (59 * 1000))).equal('1 hr, 59 sec');
-		should(timeConversion(                   (59 * 60 * 1000) + (59 * 1000))).equal('59 min, 59 sec');
-		should(timeConversion(                                      (59 * 1000))).equal('59 sec');
-		should(timeConversion(                                      (59))).equal('59 msec');
+		should(timeConversion((60 * 60 * 1000) + (59 * 60 * 1000))).equal('1 hr, 59 min');
+		should(timeConversion((60 * 60 * 1000))).equal('1 hr');
+		should(timeConversion((60 * 60 * 1000) + (59 * 1000))).equal('1 hr, 59 sec');
+		should(timeConversion((59 * 60 * 1000) + (59 * 1000))).equal('59 min, 59 sec');
+		should(timeConversion((59 * 1000))).equal('59 sec');
+		should(timeConversion((59))).equal('59 msec');
 	});
 
 	it('Should validate port number correctly', () => {
@@ -138,7 +138,7 @@ describe('Tests to verify utils functions', function (): void {
 		should(findSqlVersionInTargetPlatform('SQL Server 2012')).equals(2012, 'invalid number returned for SQL Server 2012');
 		should(findSqlVersionInTargetPlatform('SQL Server 2019')).equals(2019, 'invalid number returned for SQL Server 2019');
 		should(findSqlVersionInTargetPlatform('Azure SQL Database')).equals(undefined, 'invalid number returned for Azure SQL Database');
-		should(findSqlVersionInTargetPlatform('Azure Synapse Dedicated SQL Pool')).equals(undefined, 'invalid number returned for Azure Synapse Dedicated SQL Pool');
+		should(findSqlVersionInTargetPlatform('Azure Synapse SQL Pool')).equals(undefined, 'invalid number returned for Azure Synapse SQL Pool');
 	});
 });
 

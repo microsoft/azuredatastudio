@@ -10,6 +10,18 @@
         <source xml:lang="en">The access token for selected account '{0}' and tenant '{1}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.</source>
         <target state="translated">所选帐户“{0}”和租户“{1}”的访问令牌不再有效。请单击“链接账户”，并刷新帐户或选择其他帐户。</target>
       </trans-unit>
+      <trans-unit id="serviceCrashMessage">
+        <source xml:lang="en">Migration service component could not start. {0}</source>
+        <target state="translated">迁移服务组件无法启动。{0}</target>
+      </trans-unit>
+      <trans-unit id="serviceCrashed">
+        <source xml:lang="en">Service component crashed.</source>
+        <target state="translated">服务组件崩溃。</target>
+      </trans-unit>
+      <trans-unit id="serviceProviderIntializationError">
+        <source xml:lang="en">Service provider could not be initialized.</source>
+        <target state="translated">无法初始化服务提供程序。</target>
+      </trans-unit>
       <trans-unit id="sql-migration.login.wizard.title">
         <source xml:lang="en">Migrate logins from '{0}' to Azure SQL</source>
         <target state="translated">将登录从 "{0}" 迁移到 Azure SQL</target>
@@ -22,9 +34,17 @@
         <source xml:lang="en">Are you sure you want to cancel this migration?</source>
         <target state="translated">是否确实要取消此迁移?</target>
       </trans-unit>
-      <trans-unit id="sql.login.migration..error">
-        <source xml:lang="en">Login migration error: {0}</source>
-        <target state="translated">登录迁移错误: {0}</target>
+      <trans-unit id="sql.login.migration.aad.domain.name.input.box.label">
+        <source xml:lang="en">Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)</source>
+        <target state="translated">Azure Active Directory 域名(仅在迁移 Windows 身份验证登录名时需要)</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.aad.domain.name.input.box.placeholder">
+        <source xml:lang="en">Enter AAD Domain Name</source>
+        <target state="translated">输入 AAD 域名</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.collecting.target.logins.failed">
+        <source xml:lang="en">Collecting target login failed with error code {0}</source>
+        <target state="translated">收集目标登录失败，错误代码为 {0}</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.complete">
         <source xml:lang="en">Completed migrating logins</source>
@@ -33,6 +53,14 @@
       <trans-unit id="sql.login.migration.db.title">
         <source xml:lang="en">Azure SQL Database</source>
         <target state="translated">Azure SQL 数据库</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.enter.AAD.domain.name.to.continue">
+        <source xml:lang="en">Azure Active Directory (AAD) Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).</source>
+        <target state="translated">Azure Active Directory (AAD)域名是迁移 Windows 登录名所必需的。请输入 AAD 域名或取消选择 windows 登录名。</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.error">
+        <source xml:lang="en">Login migration error: {0}</source>
+        <target state="translated">登录迁移错误: {0}</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.establish.user.mappings">
         <source xml:lang="en">Validating and migrating logins completed.
@@ -61,6 +89,10 @@ Establishing user mappings.</source>
       <trans-unit id="sql.login.migration.in.progress">
         <source xml:lang="en">Login migration in progress</source>
         <target state="translated">登录迁移正在进行中</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.login.status.details.title">
+        <source xml:lang="en">Migration status details for {0}</source>
+        <target state="translated">{0} 的迁移状态详细信息</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.logins.found">
         <source xml:lang="en">Login found</source>
@@ -154,6 +186,14 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Succeeded</source>
         <target state="translated">成功</target>
       </trans-unit>
+      <trans-unit id="sql.login.migration.steps.migrate.logins">
+        <source xml:lang="en">Migrate logins</source>
+        <target state="translated">迁移登录名</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.steps.not.started">
+        <source xml:lang="en">Not started</source>
+        <target state="translated">未启动</target>
+      </trans-unit>
       <trans-unit id="sql.login.migration.target.status.column">
         <source xml:lang="en">Target Status</source>
         <target state="translated">目标状态</target>
@@ -175,8 +215,8 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <target state="translated">连接成功。</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.wizard.target.data.migration.warning">
-        <source xml:lang="en">Please note that login migration feature is in private preview mode.</source>
-        <target state="translated">请注意，登录迁移功能处于个人预览模式。</target>
+        <source xml:lang="en">Please note that login migration feature is in public preview mode.</source>
+        <target state="translated">请注意，登录迁移功能处于公共预览模式。</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.wizard.target.description">
         <source xml:lang="en">Select the target Azure SQL Managed Instance, Azure SQL VM, or Azure SQL database(s) where you want to migrate your logins.</source>
@@ -346,6 +386,10 @@ This may take some time.</source>
         <source xml:lang="en">A SQL Managed Instance migration cutover to the Business Critical service tier can take significantly longer than General Purpose because three secondary replicas have to be seeded for Always On High Availability group. The duration of the operation depends on the size of the data. Seeding speed in 90% of cases is 220 GB/hour or higher.</source>
         <target state="translated">SQL 托管实例迁移直接转换到业务关键服务层需要的时间可能远多于常规用途，因为必须为始终打开高可用性组设置三个次要副本的种子。该操作持续时间取决于数据的大小。在 90% 的情况下，设置种子的速度为 220 GB/小时或更高。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.blob.container.folder.label">
+        <source xml:lang="en">Folder</source>
+        <target state="translated">文件夹</target>
+      </trans-unit>
       <trans-unit id="sql.migration.blob.container.label">
         <source xml:lang="en">Blob container resource group</source>
         <target state="translated">Blob 容器资源组</target>
@@ -433,6 +477,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.complete.cutover">
         <source xml:lang="en">Complete cutover</source>
         <target state="translated">完成直接转换</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.completed.multi.steps.heading">
+        <source xml:lang="en">We ran the following steps:</source>
+        <target state="translated">我们运行了以下步骤:</target>
       </trans-unit>
       <trans-unit id="sql.migration.completing.cutover.warning">
         <source xml:lang="en">Completing cutover without restoring all the backups may result in a data loss.</source>
@@ -615,8 +663,8 @@ This may take some time.</source>
         <target state="translated">Azure Data Studio 的 Azure SQL 迁移扩展提供评估、获取适当大小的 Azure 建议以及将 SQL Server 数据库迁移到 Azure 的功能。</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.description.sqldb">
-        <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).</source>
-        <target state="translated">将数据库从 SQL Server 实例(本地或 Azure 虚拟机中)迁移到 Azure SQL 数据库(预览)的分步教程。</target>
+        <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database.</source>
+        <target state="translated">将数据库从 SQL Server 实例(本地或 Azure 虚拟机中)迁移到 Azure SQL 数据库的分步教程。</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.description.vm">
         <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.</source>
@@ -635,8 +683,8 @@ This may take some time.</source>
         <target state="translated">使用 Azure Data Studio 迁移数据库</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.link.sqldb">
-        <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)</source>
-        <target state="translated">教程: 迁移到 Azure SQL 数据库上的 SQL Server (脱机)–(预览)</target>
+        <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure SQL Database (offline)</source>
+        <target state="translated">教程: 迁移到 Azure SQL 数据库上的 SQL Server (脱机)</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.link.vm">
         <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)</source>
@@ -685,6 +733,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.database.already.exists">
         <source xml:lang="en">Database '{0}' already exists on the target managed instance '{1}'.</source>
         <target state="translated">目标托管实例“{1}”上已存在数据库“{0}”。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.already.exists.vm.info">
+        <source xml:lang="en">Ensure that the provided database name(s) do not already exist on the target SQL Server on Azure Virtual Machine.</source>
+        <target state="translated">确保 Azure 虚拟机上的目标 SQL Server 上尚不存在提供的数据库名称。</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.assessment.description">
         <source xml:lang="en">Select the databases that you want to assess for migration to Azure SQL.</source>
@@ -1018,6 +1070,10 @@ This may take some time.</source>
         <source xml:lang="en">To continue, select a valid last backup file for source database '{0}'.</source>
         <target state="translated">若要继续，请为源数据库“{0}”选择有效的上一个备份文件。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.invalid.blob.lastBackupFolder.error">
+        <source xml:lang="en">To continue, select a valid backup folder for source database '{0}'.</source>
+        <target state="translated">如果要继续，请为源数据库“{0}”选择有效的备份文件夹。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.invalid.blob.resourceGroup.error">
         <source xml:lang="en">To continue, select a valid resource group for source database '{0}'.</source>
         <target state="translated">若要继续，请为源数据库“{0}”选择有效的资源组。</target>
@@ -1045,6 +1101,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.invalid.network.share.location">
         <source xml:lang="en">Invalid network share location format. Example: {0}</source>
         <target state="translated">网络共享位置格式无效。示例: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.invalid.non.page.blob.backupFile.error">
+        <source xml:lang="en">To continue, select a blob container where all the backup files are page blobs for source database '{0}', as block blobs are supported only for targets running SQL Server 2016 or later. Learn more: https://aka.ms/dms-migrations-troubleshooting</source>
+        <target state="translated">如果要继续，请选择一个 blob 容器，其中所有备份文件都是源数据库“{0}”的页 blob，因为运行 SQL Server 2016 或更高版本的目标仅支持块 blob。要了解详细信息，请访问: https://aka.ms/dms-migrations-troubleshooting</target>
       </trans-unit>
       <trans-unit id="sql.migration.invalid.owner.uri.error">
         <source xml:lang="en">Cannot connect to the database due to invalid OwnerUri (Parameter 'OwnerUri')</source>
@@ -1250,6 +1310,38 @@ This may take some time.</source>
         <source xml:lang="en">More info</source>
         <target state="translated">详细信息</target>
       </trans-unit>
+      <trans-unit id="sql.migration.multi.step.all.steps.completed.errors">
+        <source xml:lang="en">All steps completed with the following error(s):{0}{1}</source>
+        <target state="translated">已完成所有步骤，但出现以下错误: {0}{1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.multi.step.all.steps.succeeded">
+        <source xml:lang="en">All steps succeeded.</source>
+        <target state="translated">所有步骤已成功。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.multi.step.some.steps.are.still.running">
+        <source xml:lang="en">Some steps are still running.</source>
+        <target state="translated">一些步骤仍在运行。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.multi.step.status">
+        <source xml:lang="en">Step status: {0}</source>
+        <target state="translated">步骤状态: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.multi.step.status.dialog.copy.results">
+        <source xml:lang="en">Copy results</source>
+        <target state="translated">复制结果</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.multi.step.status.dialog.heading">
+        <source xml:lang="en">Step details</source>
+        <target state="translated">步骤详细信息</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.multi.step.status.errors">
+        <source xml:lang="en">Step status: {0}{1}{2}</source>
+        <target state="translated">步骤状态: {0}{1}{2}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.multi.step.status.steps.title">
+        <source xml:lang="en">Steps</source>
+        <target state="translated">步骤</target>
+      </trans-unit>
       <trans-unit id="sql.migration.na">
         <source xml:lang="en">N/A</source>
         <target state="translated">不适用</target>
@@ -1349,6 +1441,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.no.blobFiles.found">
         <source xml:lang="en">No blob files found.</source>
         <target state="translated">未找到 Blob 文件。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.no.blobFolders.found">
+        <source xml:lang="en">No blob folders found.</source>
+        <target state="translated">找不到 Blob 文件夹。</target>
       </trans-unit>
       <trans-unit id="sql.migration.no.fileShares.found">
         <source xml:lang="en">No file shares found.</source>
@@ -1561,6 +1657,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.run.validation">
         <source xml:lang="en">Run validation</source>
         <target state="translated">运行验证</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.running.multi.steps.heading">
+        <source xml:lang="en">We are running the following steps:</source>
+        <target state="translated">我们正在运行以下步骤:</target>
       </trans-unit>
       <trans-unit id="sql.migration.save.assessment.report">
         <source xml:lang="en">Save assessment report</source>
@@ -2131,8 +2231,8 @@ This may take some time.</source>
         <target state="translated">若要迁移到 Azure SQL 托管实例，请查看评估结果并选择一个或多个数据库。</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommendation.view.assessment.sqldb">
-        <source xml:lang="en">To migrate to Azure SQL Database (PREVIEW), view assessment results and select one or more databases.</source>
-        <target state="translated">要迁移到 Azure SQL 数据库(预览)，请查看评估结果并选择一个或多个数据库。</target>
+        <source xml:lang="en">To migrate to Azure SQL Database, view assessment results and select one or more databases.</source>
+        <target state="translated">要迁移到 Azure SQL 数据库，请查看评估结果并选择一个或多个数据库。</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommendation.view.assessment.vm">
         <source xml:lang="en">To migrate to SQL Server on Azure Virtual Machine, view assessment results and select one or more databases.</source>
@@ -2207,8 +2307,8 @@ This may take some time.</source>
         <target state="translated">SQL tempdb</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.sqldb.card.title">
-        <source xml:lang="en">Azure SQL Database (PREVIEW)</source>
-        <target state="translated">Azure SQL 数据库(预览)</target>
+        <source xml:lang="en">Azure SQL Database</source>
+        <target state="translated">Azure SQL 数据库</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.sqldb.target.title">
         <source xml:lang="en">Azure SQL Database</source>
@@ -2346,6 +2446,14 @@ This may take some time.</source>
         <source xml:lang="en">SQL Virtual Machine</source>
         <target state="translated">SQL 虚拟机</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sql.vm.page.blob.info">
+        <source xml:lang="en">For target servers running SQL Server 2014 or below, you must store your database backups in an Azure Storage Blob Container instead of uploading them using the network share option. Additionally, you must store the backup files as page blobs, as block blobs are supported only for targets running SQL Server 2016 or later. Learn more: {0}</source>
+        <target state="translated">对于运行 SQL Server 2014 或更低版本的目标服务器，必须将数据库备份存储在 Azure 存储 Blob 容器中，而不是使用网络共享选项上传它们。此外，必须将备份文件存储为页 Blob，因为运行 SQL Server 2016 或更高版本的目标仅支持块 blob。要了解详细信息，请访问: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sql.vm.page.blob.url.label">
+        <source xml:lang="en">Known issues, limitations, and troubleshooting</source>
+        <target state="translated">已知问题、限制和故障排除</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sqldb.column.copyduration">
         <source xml:lang="en">Copy duration</source>
         <target state="translated">复制持续时间</target>
@@ -2421,6 +2529,34 @@ This may take some time.</source>
       <trans-unit id="sql.migration.starting.login.failed">
         <source xml:lang="en">Validating and migrating logins failed</source>
         <target state="translated">验证和迁移登录失败</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.starting.migration.dberror">
+        <source xml:lang="en">Error migrating certificate for database {0}. {1}</source>
+        <target state="translated">迁移数据库 {0} 的证书时出错。{1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.starting.migration.error">
+        <source xml:lang="en">An error occurred while starting the certificate migration: '{0}'</source>
+        <target state="translated">启动证书迁移时出错:“{0}”</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.state.canceled">
+        <source xml:lang="en">Canceled</source>
+        <target state="translated">已取消</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.state.failed">
+        <source xml:lang="en">Failed</source>
+        <target state="translated">失败</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.state.pending">
+        <source xml:lang="en">Pending</source>
+        <target state="translated">挂起</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.state.running">
+        <source xml:lang="en">Running</source>
+        <target state="translated">正在运行</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.state.succeeded">
+        <source xml:lang="en">Succeeded</source>
+        <target state="translated">成功</target>
       </trans-unit>
       <trans-unit id="sql.migration.status">
         <source xml:lang="en">Status</source>
@@ -2702,6 +2838,150 @@ This may take some time.</source>
         <source xml:lang="en">Target version</source>
         <target state="translated">目标版本</target>
       </trans-unit>
+      <trans-unit id="sql.migration.tde.button.caption">
+        <source xml:lang="en">Edit</source>
+        <target state="translated">编辑</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.button.migrate">
+        <source xml:lang="en">Migrate certificates</source>
+        <target state="translated">迁移证书</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.migrate.canceled">
+        <source xml:lang="en">Certificates migration was canceled. Please run and complete the certificates migration to continue.</source>
+        <target state="translated">证书迁移已取消。请运行并完成证书迁移以继续。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.migrate.canceled.errors">
+        <source xml:lang="en">Validation was canceled with the following error(s):{0}{1}</source>
+        <target state="translated">验证已取消，出现以下错误:{0}{1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.migrate.column.databases">
+        <source xml:lang="en">Databases</source>
+        <target state="translated">数据库</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.migrate.column.status">
+        <source xml:lang="en">Status</source>
+        <target state="translated">状态</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.migrate.completed.errors">
+        <source xml:lang="en">Migration completed with the following error(s):{0}{1}</source>
+        <target state="translated">迁移已完成，出现以下错误:{0}{1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.migrate.copy.results">
+        <source xml:lang="en">Copy migration results</source>
+        <target state="translated">复制迁移结果</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.migrate.done.button">
+        <source xml:lang="en">Done</source>
+        <target state="translated">完成</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.migrate.heading">
+        <source xml:lang="en">Migrating the certificates from the following databases:</source>
+        <target state="translated">从以下数据库迁移证书:</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.migrate.not.run">
+        <source xml:lang="en">Certificates migration has not been run for the current configuration. Please run and complete the certificates migration to continue.</source>
+        <target state="translated">尚未为当前配置运行证书迁移。请运行并完成证书迁移以继续。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.migrate.results.heading">
+        <source xml:lang="en">Certificates migration progress details:</source>
+        <target state="translated">证书迁移进度详细信息:</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.migrate.results.heading.completed">
+        <source xml:lang="en">Certificates migration results:</source>
+        <target state="translated">证书迁移结果:</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.migrate.results.heading.previous">
+        <source xml:lang="en">Previous certificates migration results:</source>
+        <target state="translated">以前的证书迁移结果:</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.migrate.start.validation">
+        <source xml:lang="en">Retry migration</source>
+        <target state="translated">重试迁移</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.migrate.status.details">
+        <source xml:lang="en">Migration status: {0}{1}{2}</source>
+        <target state="translated">迁移状态: {0}{1}{2}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.migrate.status.error">
+        <source xml:lang="en">{0}{1}{2}</source>
+        <target state="translated">{0}{1}{2}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.migrate.success">
+        <source xml:lang="en">Certificates migration completed successfully.  Please click Next to proceed with the migration.</source>
+        <target state="translated">证书迁移已成功完成。请单击“下一步”继续迁移。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.migrate.validation.camceled">
+        <source xml:lang="en">Migration canceled</source>
+        <target state="translated">迁移已取消</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.migrate.validation.completed">
+        <source xml:lang="en">Migration completed successfully.</source>
+        <target state="translated">已成功完成迁移。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.msg.databases.selected">
+        <source xml:lang="en">{0} Transparent Data Encryption enabled databases selected for migration. {1}</source>
+        <target state="translated">{0} 透明数据加密已为迁移选择的已启用数据库。{1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.msg.empty">
+        <source xml:lang="en">No encrypted database selected.</source>
+        <target state="translated">未选择加密数据库。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.msg.manual">
+        <source xml:lang="en">You have chosen to manually migrate certificates.</source>
+        <target state="translated">你已选择手动迁移证书。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.msg.tde">
+        <source xml:lang="en">You have given access to Azure Data Studio to migrate the encryption certificates and database.</source>
+        <target state="translated">你已授予迁移加密证书和数据库 Azure Data Studio 的访问权限。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.progress.update">
+        <source xml:lang="en">{0} of {1} completed</source>
+        <target state="translated">{1} 的 {0} 已完成</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.wizard.databases.selected">
+        <source xml:lang="en">{0} out of {1} selected database(s) is using transparent data encryption.</source>
+        <target state="translated">{1} 中所选 {0} 数据库正在使用透明数据加密。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.wizard.description">
+        <source xml:lang="en">To migrate an encrypted database successfully you need to provide access to the encryption certificates or migrate certificates manually before proceeding with the migration. {0}.</source>
+        <target state="translated">若要成功迁移加密数据库，需要在继续迁移之前提供对加密证书的访问权限或手动迁移证书。{0}。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.wizard.network.share.info">
+        <source xml:lang="en">Network path where certificate will be placed.</source>
+        <target state="translated">将放置证书的网络路径。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.wizard.network.share.label">
+        <source xml:lang="en">Network path for certificate</source>
+        <target state="translated">证书的网络路径</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.wizard.network.share.placeholder">
+        <source xml:lang="en">Enter network path</source>
+        <target state="translated">输入网络路径</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.wizard.optionads">
+        <source xml:lang="en">Export my certificates and private key to the target.</source>
+        <target state="translated">将我的证书和私钥导出到目标。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.wizard.optionadsconfirm">
+        <source xml:lang="en">I give consent to use my credentials for accessing the certificates.</source>
+        <target state="translated">我同意使用我的凭据访问证书。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.wizard.optionmanual">
+        <source xml:lang="en">I don't want Azure Data Studio to export the certificates.</source>
+        <target state="translated">我不希望 Azure Data Studio 导出证书。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.wizard.optionmanual.warning">
+        <source xml:lang="en">You must migrate the certificates before proceeding with the migration otherwise the migration will fail. {0}.</source>
+        <target state="translated">必须先迁移证书，然后再继续迁移，否则迁移将失败。{0}。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.wizard.optionscaption">
+        <source xml:lang="en">Certificate migration</source>
+        <target state="translated">证书迁移</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.wizard.title">
+        <source xml:lang="en">Encrypted database selected.</source>
+        <target state="translated">已选择加密数据库。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.test.connection">
         <source xml:lang="en">Test connection</source>
         <target state="translated">测试连接</target>
@@ -2733,6 +3013,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.username.placeholder">
         <source xml:lang="en">Enter the target user name</source>
         <target state="translated">输入目标用户名</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.validate.error.gatewaytimeout">
+        <source xml:lang="en">A time-out was encountered while validating a resource connection. Learn more: https://aka.ms/dms-migrations-troubleshooting.</source>
+        <target state="translated">验证资源连接时遇到超时。了解详细信息: https://aka.ms/dms-migrations-troubleshooting。</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.column.status">
         <source xml:lang="en">Status</source>
@@ -2880,11 +3164,11 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.vm.not.ready.iaas.extension">
         <source xml:lang="en">The virtual machine '{0}' is unavailable for migration because the SQL Server IaaS Agent extension is currently in '{1}' mode instead of Full mode. Learn more: https://aka.ms/sql-iaas-extension</source>
-        <target state="new">The virtual machine '{0}' is unavailable for migration because the SQL Server IaaS Agent extension is currently in '{1}' mode instead of Full mode. Learn more: https://aka.ms/sql-iaas-extension</target>
+        <target state="translated">虚拟机“{0}”不可用于迁移，因为 SQL Server IaaS 代理扩展当前处于“{1}”模式，而不是“完整”模式。了解详细信息: https://aka.ms/sql-iaas-extension</target>
       </trans-unit>
       <trans-unit id="sql.migration.vm.not.ready.power.state">
         <source xml:lang="en">The virtual machine '{0}' is unavailable for migration because the underlying virtual machine is not running. Please make sure it is powered on before retrying.</source>
-        <target state="new">The virtual machine '{0}' is unavailable for migration because the underlying virtual machine is not running. Please make sure it is powered on before retrying.</target>
+        <target state="translated">虚拟机“{0}”不可用于迁移，因为基础虚拟机未运行。请确保它已开机，然后重试。</target>
       </trans-unit>
       <trans-unit id="sql.migration.warning">
         <source xml:lang="en">Warning</source>
@@ -3003,19 +3287,19 @@ This may take some time.</source>
         <target state="translated">获取登录信息时出错: {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.target.mapping.error.duplicate">
-        <source xml:lang="en">Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.</source>
-        <target state="translated">数据库映射错误。无法将目标数据库“{0}”选为数据库“{1}”的迁移目标。已将目标数据库“${targetDatabaseName}”选为数据库“{2}”的迁移目标。请选择其他目标数据库。</target>
+        <source xml:lang="en">Database mapping error. Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '{2}' is already selected as a migration target for database '{3}'.  Please select a different target database.</source>
+        <target state="translated">数据库映射错误。无法将目标数据库“{0}”选为数据库“{1}”的迁移目标。已将目标数据库“{2}”选为数据库“{3}”的迁移目标。请选择其他目标数据库。</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.target.missing">
         <source xml:lang="en">Database mapping error. Missing target databases to migrate.  Please configure the target server connection and click connect to collect the list of available database migration targets.</source>
         <target state="translated">数据库映射错误。缺少要迁移的目标数据库。请配置目标服务器连接，然后单击“连接”以收集可用数据库迁移目标的列表。</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.target.source.collation.error">
-        <source xml:lang="en">A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.</source>
-        <target state="new">A mapping error was found between '{0}' and '{1}' databases. The source database collation '{2}' does not match the target database collation '{3}'. Please select or re-create a target database with the same collation as the source database.</target>
+        <source xml:lang="en">Database mapping error (Error code: {0}) was found between '{1}' and '{2}' databases. The source database collation '{3}' does not match the target database collation '{4}'. Please select or re-create a target database with the same collation as the source database.</source>
+        <target state="translated">在“{1}”和“{2}”数据库之间发现映射错误(错误代码: {0})。源数据库排序规则“{3}”与目标数据库排序规则“{4}”不匹配。请选择或重新创建与源数据库具有相同排序规则的目标数据库。</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.target.source.mapping.error">
-        <source xml:lang="en">Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.</source>
+        <source xml:lang="en">Database mapping error. Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.</source>
         <target state="translated">数据库映射错误。未将源数据库“{0}”映射到目标数据库。请选择要迁移到的目标数据库。</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.target.title">
@@ -3024,7 +3308,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.troubleshooting">
         <source xml:lang="en">Learn more: https://aka.ms/dms-migrations-troubleshooting.</source>
-        <target state="new">Learn more: https://aka.ms/dms-migrations-troubleshooting.</target>
+        <target state="translated">了解详细信息: https://aka.ms/dms-migrations-troubleshooting。</target>
       </trans-unit>
       <trans-unit id="sql.migration.yes">
         <source xml:lang="en">Yes</source>
@@ -3038,6 +3322,10 @@ This may take some time.</source>
         <source xml:lang="en">{0} of {1}</source>
         <target state="translated">{0} 个(共 {1} 个)</target>
       </trans-unit>
+      <trans-unit id="waitingForService">
+        <source xml:lang="en">Waiting for {0} component to start.</source>
+        <target state="translated">正在等待{0}组件启动。</target>
+      </trans-unit>
     </body>
   </file>
   <file original="extensions/sql-migration/dist/models/stateMachine" source-language="en" datatype="plaintext" target-language="zh-Hans">
@@ -3049,6 +3337,54 @@ This may take some time.</source>
       <trans-unit id="sql.migration.starting.migration.message">
         <source xml:lang="en">Starting migration for database {0} to {1} - {2}</source>
         <target state="translated">正在开始将数据库 {0} 迁移到 {1} - {2}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/sql-migration/dist/service/serviceClient" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="downloadingService">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">正在下载{0}</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceComplete">
+        <source xml:lang="en">Done downloading {0}</source>
+        <target state="translated">{0}下载完毕</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceSize">
+        <source xml:lang="en">({0} KB)</source>
+        <target state="translated">({0} KB)</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceStatus">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">正在下载{0}</target>
+      </trans-unit>
+      <trans-unit id="entryExtractedChannelMsg">
+        <source xml:lang="en">Extracted {0} ({1}/{2})</source>
+        <target state="translated">已提取 {0} ({1}/{2})</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.serviceStartFailed">
+        <source xml:lang="en">Failed to start {0}: {1}</source>
+        <target state="translated">未能启动 {0}: {1}</target>
+      </trans-unit>
+      <trans-unit id="installingService">
+        <source xml:lang="en">Installing {0} Service</source>
+        <target state="translated">正在安装{0}服务</target>
+      </trans-unit>
+      <trans-unit id="installingServiceDetailed">
+        <source xml:lang="en">Installing {0} to {1}</source>
+        <target state="translated">正在将 {0} 安装到 {1}</target>
+      </trans-unit>
+      <trans-unit id="serviceInstalled">
+        <source xml:lang="en">Installed {0}</source>
+        <target state="translated">已安装{0}</target>
+      </trans-unit>
+      <trans-unit id="serviceStarted">
+        <source xml:lang="en">{0} Started</source>
+        <target state="translated">已启动{0}</target>
+      </trans-unit>
+      <trans-unit id="serviceStarting">
+        <source xml:lang="en">Starting {0}</source>
+        <target state="translated">正在启动{0}</target>
       </trans-unit>
     </body>
   </file>

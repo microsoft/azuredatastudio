@@ -2499,7 +2499,11 @@ declare module 'azdata' {
 		/**
 		 * Power BI
 		 */
-		PowerBi = 11
+		PowerBi = 11,
+		/**
+		 * Represents custom resource URIs as received from server endpoint.
+		 */
+		Custom = 12
 	}
 
 	export interface DidChangeAccountsParams {
@@ -3570,7 +3574,7 @@ declare module 'azdata' {
 
 	export interface InputBoxProperties extends ComponentProperties {
 		value?: string | undefined;
-		ariaLive?: string | undefined;
+		ariaLive?: AriaLiveValue | undefined;
 		placeHolder?: string | undefined;
 		inputType?: InputBoxInputType | undefined;
 		required?: boolean | undefined;

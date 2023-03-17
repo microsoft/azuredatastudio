@@ -9,7 +9,7 @@ import * as Constants from './constants';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as path from 'path';
-import { getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getOrDownloadServer, getParallelMessageProcessingConfig, TracingLevel } from './utils';
+import { getAzureAuthenticationLibraryConfig, getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, TracingLevel } from './utils';
 import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature } from './features';
@@ -58,7 +58,7 @@ export class SqlToolsServer {
 			const serverPath = await this.download(context);
 			this.installDirectory = path.dirname(serverPath);
 			const installationComplete = Date.now();
-			let serverOptions = await generateServerOptions(context.extensionContext.logPath, serverPath);
+			let serverOptions = generateServerOptions(context.extensionContext.logPath, serverPath);
 			let clientOptions = getClientOptions(context);
 			this.client = new SqlOpsDataClient('mssql', Constants.serviceName, serverOptions, clientOptions);
 			const processStart = Date.now();
@@ -117,11 +117,16 @@ export class SqlToolsServer {
 	}
 }
 
-async function generateServerOptions(logPath: string, executablePath: string): Promise<ServerOptions> {
+function generateServerOptions(logPath: string, executablePath: string): ServerOptions {
 	const launchArgs = getCommonLaunchArgsAndCleanupOldLogFiles(logPath, 'sqltools.log', executablePath);
-	const enableAsyncMessageProcessing = await getParallelMessageProcessingConfig();
+	const enableAsyncMessageProcessing = getParallelMessageProcessingConfig();
 	if (enableAsyncMessageProcessing) {
 		launchArgs.push('--parallel-message-processing');
+	}
+	const enableSqlAuthenticationProvider = getEnableSqlAuthenticationProviderConfig();
+	const azureAuthLibrary = getAzureAuthenticationLibraryConfig();
+	if (azureAuthLibrary === 'MSAL' && enableSqlAuthenticationProvider === true) {
+		launchArgs.push('--enable-sql-authentication-provider');
 	}
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }

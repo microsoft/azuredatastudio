@@ -51,7 +51,7 @@ import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { alert, status } from 'vs/base/browser/ui/aria/aria';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
-import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/common/executionPlanInput';
+import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/browser/executionPlanInput';
 import { CopyAction } from 'vs/editor/contrib/clipboard/browser/clipboard';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/browser/format';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
@@ -66,7 +66,7 @@ const NO_ACTIONBAR_ADDITIONAL_PADDING = 75;
 const ACTIONBAR_WIDTH = 36;
 
 // minimum height needed to show the full actionbar
-const ACTIONBAR_HEIGHT = 120;
+const ACTIONBAR_HEIGHT = 140;
 
 // this handles min size if rows is greater than the min grid visible rows
 const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;

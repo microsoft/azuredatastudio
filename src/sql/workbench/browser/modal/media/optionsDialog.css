@@ -47,7 +47,8 @@
 	align-items: center;
 }
 
-.backButtonIcon {
+.backButtonIcon,
+.hc-light .backButtonIcon {
 	content: url('back.svg');
 	width: 20px;
 	margin-right: 10px;
@@ -73,7 +74,8 @@
 	background-size: 16px;
 }
 
-.vs .optionsDialog-options .optionsDialog-description .modal-title {
+.vs .optionsDialog-options .optionsDialog-description .modal-title,
+.hc-light .optionsDialog-options .optionsDialog-description .modal-title {
 	background-image: url('info_notification.svg')
 }
 

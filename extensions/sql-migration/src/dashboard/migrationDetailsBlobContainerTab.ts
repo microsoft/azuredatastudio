@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as loc from '../constants/strings';
 import { getSqlServerName, getMigrationStatusImage } from '../api/utils';
 import { logError, TelemetryViews } from '../telemetry';
-import { canCancelMigration, canCutoverMigration, canRetryMigration, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation } from '../constants/helper';
+import { canCancelMigration, canCutoverMigration, canDeleteMigration, canRetryMigration, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation } from '../constants/helper';
 import { getResourceName } from '../api/azure';
 import { InfoFieldSchema, infoFieldWidth, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
 import { EmptySettingValue } from './tabBase';
@@ -37,7 +37,7 @@ export class MigrationDetailsBlobContainerTab extends MigrationDetailsTabBase<Mi
 	public async create(
 		context: vscode.ExtensionContext,
 		view: azdata.ModelView,
-		openMigrationsListFcn: () => Promise<void>,
+		openMigrationsListFcn: (refresh?: boolean) => Promise<void>,
 		statusBar: DashboardStatusBar,
 	): Promise<MigrationDetailsBlobContainerTab> {
 
@@ -115,6 +115,7 @@ export class MigrationDetailsBlobContainerTab extends MigrationDetailsTabBase<Mi
 
 		this.cutoverButton.enabled = canCutoverMigration(migration);
 		this.cancelButton.enabled = canCancelMigration(migration);
+		this.deleteButton.enabled = canDeleteMigration(migration);
 		this.retryButton.enabled = canRetryMigration(migration);
 
 		this.refreshLoader.loading = false;

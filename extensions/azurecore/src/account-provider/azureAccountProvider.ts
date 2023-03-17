@@ -14,7 +14,7 @@ import {
 } from 'azurecore';
 import { Deferred } from './interfaces';
 import { AuthenticationResult, PublicClientApplication } from '@azure/msal-node';
-import { SimpleTokenCache } from './simpleTokenCache';
+import { SimpleTokenCache } from './utils/simpleTokenCache';
 import { Logger } from '../utils/Logger';
 import { MultiTenantTokenResponse, Token, AzureAuth } from './auths/azureAuth';
 import { AzureAuthCodeGrant } from './auths/azureAuthCodeGrant';
@@ -105,7 +105,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 	private async _initialize(storedAccounts: AzureAccount[]): Promise<AzureAccount[]> {
 		const accounts: AzureAccount[] = [];
-		console.log(`Initializing stored accounts ${JSON.stringify(accounts)}`);
+		Logger.verbose(`Initializing stored accounts ${JSON.stringify(accounts)}`);
 		const updatedAccounts = filterAccounts(storedAccounts, this.authLibrary);
 		for (let account of updatedAccounts) {
 			const azureAuth = this.getAuthMethod(account);
@@ -144,7 +144,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		await this.initCompletePromise;
 		const azureAuth = this.getAuthMethod(account);
 		if (azureAuth) {
-			Logger.pii(`Getting account security token for ${JSON.stringify(account.key)} (tenant ${tenantId}). Auth Method = ${azureAuth.userFriendlyName}`, [], []);
+			Logger.piiSanitized(`Getting account security token for ${JSON.stringify(account.key)} (tenant ${tenantId}). Auth Method = ${azureAuth.userFriendlyName}`, [], []);
 			if (this.authLibrary === Constants.AuthLibrary.MSAL) {
 				tenantId = tenantId || account.properties.owningTenant.id;
 				let authResult = await azureAuth.getTokenMsal(account.key.accountId, resource, tenantId);

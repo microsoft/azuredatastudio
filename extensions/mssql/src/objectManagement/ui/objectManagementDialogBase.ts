@@ -60,7 +60,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		const dialogTitle = isNewObject ? NewObjectDialogTitle(objectTypeDisplayName) : ObjectPropertiesDialogTitle(objectTypeDisplayName, objectName);
 		this.dialogObject = azdata.window.createModelViewDialog(dialogTitle, getDialogName(objectType, isNewObject), dialogWidth);
 		this.dialogObject.okButton.label = OkText;
-		this.disposables.push(this.dialogObject.onClosed(async () => { await this.dispose(); }));
+		this.disposables.push(this.dialogObject.onClosed(async (reason: azdata.window.CloseReason) => { await this.dispose(reason); }));
 		this._helpButton = azdata.window.createButton(HelpText, 'left');
 		this.disposables.push(this._helpButton.onClick(async () => {
 			await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(docUrl));
@@ -81,8 +81,13 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	protected abstract initializeData(): Promise<ViewInfoType>;
 	protected abstract initializeUI(): Promise<void>;
 	protected abstract onComplete(): Promise<void>;
-	protected abstract onDispose(): Promise<void>;
+	protected async onDispose(): Promise<void> { }
 	protected abstract validateInput(): Promise<string[]>;
+
+	/**
+	 * Dispose the information related to this view in the backend service.
+	 */
+	protected abstract disposeView(): Promise<void>;
 
 	protected onObjectValueChange(): void {
 		this.dialogObject.okButton.enabled = JSON.stringify(this.objectInfo) !== JSON.stringify(this._originalObjectInfo);
@@ -155,7 +160,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 							TelemetryReporter.sendTelemetryEvent(actionName, {
 								objectType: this.objectType
 							}, {
-								ellapsedTime: Date.now() - startTime
+								elapsedTimeMs: Date.now() - startTime
 							});
 							operation.updateStatus(azdata.TaskStatus.Succeeded);
 						}
@@ -165,6 +170,8 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 						TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, actionName, err).withAdditionalProperties({
 							objectType: this.objectType
 						}).send();
+					} finally {
+						await this.disposeView();
 					}
 				}
 			});
@@ -177,12 +184,16 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				objectType: this.objectType
 			}).send();
 			void vscode.window.showErrorMessage(getErrorMessage(err));
+			azdata.window.closeDialog(this.dialogObject);
 		}
 	}
 
-	private async dispose(): Promise<void> {
+	private async dispose(reason: azdata.window.CloseReason): Promise<void> {
 		await this.onDispose();
 		this.disposables.forEach(disposable => disposable.dispose());
+		if (reason !== 'ok') {
+			await this.disposeView();
+		}
 	}
 
 	protected async runValidation(showErrorMessage: boolean = true): Promise<boolean> {
@@ -223,9 +234,9 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	protected createGroup(header: string, items: azdata.Component[], collapsible: boolean = true, collapsed: boolean = false): azdata.GroupContainer {
 		return this.modelView.modelBuilder.groupContainer().withLayout({
 			header: header,
-			collapsed: false,
-			collapsible: collapsible
-		}).withProps({ collapsed: collapsed }).withItems(items).component();
+			collapsible: collapsible,
+			collapsed: collapsed
+		}).withItems(items).component();
 	}
 
 	protected createFormContainer(items: azdata.Component[]): azdata.DivContainer {
@@ -270,6 +281,21 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			this.onObjectValueChange();
 		}));
 		return table;
+	}
+
+	protected createDropdown(ariaLabel: string, values: string[], value: string, enabled: boolean = true, width: number = DefaultInputWidth): azdata.DropDownComponent {
+		// Automatically add an empty item to the beginning of the list if the current value is not specified.
+		// This is needed when no meaningful default value can be provided.
+		if (!value) {
+			values.unshift('');
+		}
+		return this.modelView.modelBuilder.dropDown().withProps({
+			ariaLabel: ariaLabel,
+			values: values,
+			value: value,
+			width: DefaultInputWidth,
+			enabled: enabled
+		}).component();
 	}
 
 	protected removeItem(container: azdata.DivContainer | azdata.FlexContainer, item: azdata.Component): void {

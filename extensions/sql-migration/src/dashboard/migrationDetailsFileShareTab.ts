@@ -10,7 +10,7 @@ import * as loc from '../constants/strings';
 import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, getMigrationStatusImage } from '../api/utils';
 import { logError, TelemetryViews } from '../telemetry';
 import * as styles from '../constants/styles';
-import { canCancelMigration, canCutoverMigration, canRetryMigration, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation } from '../constants/helper';
+import { canCancelMigration, canCutoverMigration, canDeleteMigration, canRetryMigration, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation } from '../constants/helper';
 import { getResourceName } from '../api/azure';
 import { EmptySettingValue } from './tabBase';
 import { InfoFieldSchema, infoFieldWidth, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
@@ -56,7 +56,7 @@ export class MigrationDetailsFileShareTab extends MigrationDetailsTabBase<Migrat
 	public async create(
 		context: vscode.ExtensionContext,
 		view: azdata.ModelView,
-		openMigrationsListFcn: () => Promise<void>,
+		openMigrationsListFcn: (refresh?: boolean) => Promise<void>,
 		statusBar: DashboardStatusBar): Promise<MigrationDetailsFileShareTab> {
 
 		this.view = view;
@@ -182,6 +182,7 @@ export class MigrationDetailsFileShareTab extends MigrationDetailsTabBase<Migrat
 
 			this.cutoverButton.enabled = canCutoverMigration(migration);
 			this.cancelButton.enabled = canCancelMigration(migration);
+			this.deleteButton.enabled = canDeleteMigration(migration);
 			this.retryButton.enabled = canRetryMigration(migration);
 		} catch (e) {
 			await this.statusBar.showError(

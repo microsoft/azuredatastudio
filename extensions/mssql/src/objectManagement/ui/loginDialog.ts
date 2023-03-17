@@ -84,7 +84,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		}
 	}
 
-	protected async onDispose(): Promise<void> {
+	protected async disposeView(): Promise<void> {
 		await this.objectManagementService.disposeLoginView(this.contextId);
 	}
 
@@ -138,13 +138,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		if (this.viewInfo.supportAADAuthentication) {
 			authTypes.push(localizedConstants.AADAuthenticationTypeDisplayText);
 		}
-		this.authTypeDropdown = this.modelView.modelBuilder.dropDown().withProps({
-			ariaLabel: localizedConstants.AuthTypeText,
-			values: authTypes,
-			value: getAuthenticationTypeDisplayName(this.objectInfo.authenticationType),
-			width: DefaultInputWidth,
-			enabled: this.isNewObject
-		}).component();
+		this.authTypeDropdown = this.createDropdown(localizedConstants.AuthTypeText, authTypes, getAuthenticationTypeDisplayName(this.objectInfo.authenticationType), this.isNewObject);
 		this.disposables.push(this.authTypeDropdown.onValueChanged(async () => {
 			this.objectInfo.authenticationType = getAuthenticationTypeByDisplayName(<string>this.authTypeDropdown.value);
 			this.setViewByAuthenticationType();
@@ -240,24 +234,14 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 	private initializeAdvancedSection(): void {
 		const items: azdata.Component[] = [];
 		if (this.viewInfo.supportAdvancedOptions) {
-			this.defaultDatabaseDropdown = this.modelView.modelBuilder.dropDown().withProps({
-				ariaLabel: localizedConstants.DefaultDatabaseText,
-				values: this.viewInfo.databases,
-				value: this.objectInfo.defaultDatabase,
-				width: DefaultInputWidth
-			}).component();
+			this.defaultDatabaseDropdown = this.createDropdown(localizedConstants.DefaultDatabaseText, this.viewInfo.databases, this.objectInfo.defaultDatabase);
 			const defaultDatabaseContainer = this.createLabelInputContainer(localizedConstants.DefaultDatabaseText, this.defaultDatabaseDropdown);
 			this.disposables.push(this.defaultDatabaseDropdown.onValueChanged(() => {
 				this.objectInfo.defaultDatabase = <string>this.defaultDatabaseDropdown.value;
 				this.onObjectValueChange();
 			}));
 
-			this.defaultLanguageDropdown = this.modelView.modelBuilder.dropDown().withProps({
-				ariaLabel: localizedConstants.DefaultLanguageText,
-				values: this.viewInfo.languages,
-				value: this.objectInfo.defaultLanguage,
-				width: DefaultInputWidth
-			}).component();
+			this.defaultLanguageDropdown = this.createDropdown(localizedConstants.DefaultLanguageText, this.viewInfo.languages, this.objectInfo.defaultLanguage);
 			const defaultLanguageContainer = this.createLabelInputContainer(localizedConstants.DefaultLanguageText, this.defaultLanguageDropdown);
 			this.disposables.push(this.defaultLanguageDropdown.onValueChanged(() => {
 				this.objectInfo.defaultLanguage = <string>this.defaultLanguageDropdown.value;
