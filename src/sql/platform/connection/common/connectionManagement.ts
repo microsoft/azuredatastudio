@@ -300,9 +300,11 @@ export interface IConnectionManagementService {
 	/**
 	 * Get the ServerInfo for a connected connection profile
 	 * @param profileId The id of the connection profile to get the password for
+	 * @param uri The specific uri of the exact profile we want to get (needed for Query Editor when changing database)
+	 * (since profile ids are currently shared among different profiles for the same general connection in different areas).
 	 * @returns ServerInfo
 	 */
-	getServerInfo(profileId: string): azdata.ServerInfo;
+	getServerInfo(profileId: string, uri?: string): azdata.ServerInfo;
 
 	/**
 	 * Get the connection string for the provided connection ID

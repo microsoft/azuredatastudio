@@ -33,8 +33,9 @@ export class ConnectionStatusManager {
 		}
 	}
 
-	public findConnectionByProfileId(profileId: string): ConnectionManagementInfo | undefined {
-		return values(this._connections).find(connection => connection.connectionProfile.id === profileId);
+	public findConnectionByProfileId(profileId: string, uri?: string): ConnectionManagementInfo | undefined {
+		return values(this._connections).find(connection => (
+			connection.connectionProfile.id === profileId && (uri !== undefined ? (connection.ownerUri === uri) : true)));
 	}
 
 	public findConnectionProfile(connectionProfile: IConnectionProfile): ConnectionManagementInfo | undefined {
