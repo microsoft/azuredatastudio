@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { createSqlMigrationService, getResourceName, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlMigrationService } from '../../api/azure';
-import { MigrationStateModel, NetworkContainerType } from '../../models/stateMachine';
+import { MigrationStateModel } from '../../models/stateMachine';
 import { logError, TelemetryViews } from '../../telemetry';
 import * as constants from '../../constants/strings';
 import * as os from 'os';
@@ -114,7 +114,7 @@ export class CreateSqlMigrationServiceDialog {
 						return;
 					}
 
-					if (this._isBlobContainerUsed) {
+					if (this._isBlobContainerUsed && !this._model.isSqlDbTarget) {
 						this._dialogObject.okButton.enabled = true;
 						this._statusLoadingComponent.loading = false;
 						this._setupContainer.display = 'none';
@@ -204,7 +204,7 @@ export class CreateSqlMigrationServiceDialog {
 			this._doneButtonEvent.emit('done', this._createdMigrationService, this._selectedResourceGroup);
 		}));
 
-		this._isBlobContainerUsed = this._model._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER;
+		this._isBlobContainerUsed = this._model.isBackupContainerBlobContainer;
 
 		return new Promise((resolve) => {
 			this._doneButtonEvent.once('done', (createdDms: SqlMigrationService, selectedResourceGroup: azureResource.AzureResourceResourceGroup) => {
