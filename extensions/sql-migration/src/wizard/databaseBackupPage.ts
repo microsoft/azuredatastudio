@@ -80,6 +80,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _migrationTableSection!: azdata.FlexContainer;
 	// key,value pair of sourceDatabaseName,status
 	private _schemaMigrationStatus: Map<string, SchemaMigrationState> = new Map<string, SchemaMigrationState>();
+	private _schemaMigrationInProgress: boolean = false;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.DATA_SOURCE_CONFIGURATION_PAGE_TITLE), migrationStateModel);
@@ -784,7 +785,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 
 			if (this.migrationStateModel.isIrMigration) {
-				this.wizard.nextButton.enabled = this.migrationStateModel.isIrTargetValidated;
+				this.wizard.nextButton.enabled = this.migrationStateModel.isIrTargetValidated && !this._schemaMigrationInProgress;
 				this.updateValidationResultUI();
 				return this.migrationStateModel.isIrTargetValidated;
 			} else {
@@ -1609,6 +1610,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				],
 			})
 			.withValidation(table => {
+				if (this._schemaMigrationInProgress) {
+					return false;
+				}
 				if (this.migrationStateModel.isSqlDbTarget) {
 					return this._validateTableSelection();
 				}
@@ -1625,15 +1629,21 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						const sourceDatabaseName = this._databaseTable.data[rowState.row][0];
 						const targetDatabaseInfo = this.migrationStateModel._sourceTargetMapping.get(sourceDatabaseName);
 						const targetDatabaseName = targetDatabaseInfo?.databaseName;
+						const schemaMigrationStatus = this._schemaMigrationStatus.get(sourceDatabaseName);
 						if (sourceDatabaseName && targetDatabaseName) {
-							// Start schema migration from nuget but don't await to allow for multiple calls.
-							// Updates given via notification events that will run _updateTableWithSchemaMigrationResult
-							void this.migrationStateModel.sqlSchemaMigrationModel.MigrateSchema(sourceDatabaseName, this.migrationStateModel, this._updateTableWithSchemaMigrationResult.bind(this));
-							this._schemaMigrationStatus.set(sourceDatabaseName, SchemaMigrationState.InProgress);
-							//Disable next button while schema migration is running
-							this.wizard.nextButton.enabled = false;
-							// Reload table
-							await this._loadTableData();
+							if (schemaMigrationStatus === undefined || schemaMigrationStatus === SchemaMigrationState.Failed) {
+								// Start schema migration from nuget but don't await to allow for multiple calls.
+								// Updates given via notification events that will run _updateTableWithSchemaMigrationResult
+								void this.migrationStateModel.sqlSchemaMigrationModel.MigrateSchema(sourceDatabaseName, this.migrationStateModel, this._updateTableWithSchemaMigrationResult.bind(this));
+								this._schemaMigrationStatus.set(sourceDatabaseName, SchemaMigrationState.InProgress);
+								this._schemaMigrationInProgress = true;
+								//Disable next button while schema migration is running
+								if (this.wizard.nextButton.enabled === true) {
+									this.wizard.nextButton.enabled = false;
+								}
+								// Reload table
+								await this._loadTableData();
+							}
 						}
 					}
 					// Select tables dialog
@@ -1675,15 +1685,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._refreshLoading.loading = true;
 		this.wizard.message = { text: '' };
 		const data: any[][] = [];
-		var inProgressSchemaMigrations = 0;
+		this._schemaMigrationInProgress = false;
 
 		this.migrationStateModel._sourceTargetMapping.forEach((targetDatabaseInfo, sourceDatabaseName) => {
 			if (sourceDatabaseName) {
 				const tableCount = targetDatabaseInfo?.sourceTables.size ?? 0;
 				const hasTables = tableCount > 0;
-
-				if (this._schemaMigrationStatus.get(sourceDatabaseName) === SchemaMigrationState.InProgress) {
-					inProgressSchemaMigrations++;
+				const schemaMigrationStatus = this._schemaMigrationStatus.get(sourceDatabaseName);
+				if (schemaMigrationStatus === SchemaMigrationState.InProgress) {
+					this._schemaMigrationInProgress = true;
 				}
 
 				let selectedCount = 0;
@@ -1696,15 +1706,22 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					targetDatabaseInfo?.databaseName,
 					// If key not added to _schemaMigrationHasCompleted then schema migration hasn't started.
 					<azdata.HyperlinkColumnCellValue>{				// Migrate schema
-						icon: this._schemaMigrationStatus.get(sourceDatabaseName) === undefined
+						icon: schemaMigrationStatus === undefined
 							? IconPathHelper.notStartedMigration
-							: this._schemaMigrationStatus.get(sourceDatabaseName) === SchemaMigrationState.InProgress
+							: schemaMigrationStatus === SchemaMigrationState.InProgress
 								? IconPathHelper.inProgressMigration
-								: this._schemaMigrationStatus.get(sourceDatabaseName) === SchemaMigrationState.Succeeded
+								: schemaMigrationStatus === SchemaMigrationState.Succeeded
 									? IconPathHelper.completedMigration
 									: IconPathHelper.error,
 
-						title: constants.MIGRATE_SCHEMA_BUTTON,
+						title: schemaMigrationStatus === undefined
+							? constants.MIGRATE_SCHEMA_BUTTON
+							: schemaMigrationStatus === SchemaMigrationState.InProgress
+								? constants.MigrationState.InProgress
+								: schemaMigrationStatus === SchemaMigrationState.Succeeded
+									? constants.MigrationState.Succeeded
+									: constants.MigrationState.Failed,
+						role: 'button'
 					},
 					<azdata.HyperlinkColumnCellValue>{				// table selection
 						icon: hasSelectedTables
@@ -1717,7 +1734,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 		});
 		// Re-enable next button if schema migrations are done and ir validation succeeded
-		if (inProgressSchemaMigrations === 0 && this.wizard.nextButton.enabled === false && this.migrationStateModel.isIrTargetValidated) {
+		if (!this._schemaMigrationInProgress && this.wizard.nextButton.enabled === false && this.migrationStateModel.isIrTargetValidated) {
 			this.wizard.nextButton.enabled = true;
 		}
 
@@ -1727,9 +1744,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	private async _updateTableWithSchemaMigrationResult(sourceDbName: string, succeeded: boolean): Promise<void> {
 		// If given invalid database name return without doing anything
-		if (this._schemaMigrationStatus.get(sourceDbName) === undefined)
+		if (this._schemaMigrationStatus.get(sourceDbName) === undefined) {
 			return;
-
+		}
 		// Set results of schema migration for the source database. (Don't need targetDb here since already in _sourceTargetMapping)
 		this._schemaMigrationStatus.set(sourceDbName,
 			succeeded ? SchemaMigrationState.Succeeded : SchemaMigrationState.Failed);
