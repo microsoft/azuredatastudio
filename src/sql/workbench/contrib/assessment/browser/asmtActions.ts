@@ -68,7 +68,7 @@ abstract class AsmtServerAction extends Action {
 		if (context && context.component && !context.component.isBusy) {
 			context.component.showProgress(this.asmtType);
 			let serverResults = this.getServerItems(context.ownerUri);
-			let connectionUri: string = this._connectionManagement.getConnectionUriFromId(context.connectionId);
+			let connectionUri: string = this._connectionManagement.getConnectionUriFromId(context.connectionId, context.ownerUri);
 			let connection = this._connectionManagement.getConnectionProfile(connectionUri);
 			let databaseListResult = this._connectionManagement.listDatabases(connectionUri);
 			context.component.showInitialResults(await serverResults, this.asmtType);
