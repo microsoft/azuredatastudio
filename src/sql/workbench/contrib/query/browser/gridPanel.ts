@@ -435,8 +435,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					? localize('xmlShowplan', "XML Showplan")
 					: escape(c.columnName),
 				field: i.toString(),
-				formatter: c.isXml ? hyperLinkFormatter : (row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string => {
-					this.populateCellCssParams(i, row, value);
+				formatter: c.isXml ? hyperLinkFormatter : (row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string | { text: string, addClasses: string } => {
 					return queryResultTextFormatter(this.gridConfig.showJsonAsLink, row, cell, value, columnDef, dataContext);
 				},
 				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined
@@ -656,16 +655,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		if (this.state.scrollPositionX || this.state.scrollPositionY) {
 			this.table.grid.scrollTo(this.state.scrollPositionY);
 			this.table.grid.getContainerNode().children[3].scrollLeft = this.state.scrollPositionX;
-		}
-	}
-
-	private populateCellCssParams(i: number, row: number | undefined, value: ICellValue) {
-		if (!this.table.cellCssParams[row]) {
-			this.table.cellCssParams[row] = {};
-		}
-
-		if (DBCellValue.isDBCellValue(value) && value.isNull) {
-			this.table.cellCssParams[row][i.toString()] = NULL_CELL_CSS_CLASS;
 		}
 	}
 
@@ -1026,10 +1015,17 @@ function isJsonCell(value: ICellValue): boolean {
 	return !!(value && !value.isNull && value.displayValue?.match(IsJsonRegex));
 }
 
-function queryResultTextFormatter(showJsonAsLink: boolean, row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string {
+function queryResultTextFormatter(showJsonAsLink: boolean, row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string | { text: string, addClasses: string } {
 	if (showJsonAsLink && isJsonCell(value)) {
 		return hyperLinkFormatter(row, cell, value, columnDef, dataContext);
 	} else {
-		return textFormatter(row, cell, value, columnDef, dataContext);
+		const textFormatResult = textFormatter(row, cell, value, columnDef, dataContext);
+		if (DBCellValue.isDBCellValue(value) && value.isNull) {
+			return {
+				text: textFormatResult,
+				addClasses: NULL_CELL_CSS_CLASS
+			};
+		}
+		return textFormatResult;
 	}
 }
