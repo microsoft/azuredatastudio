@@ -183,12 +183,11 @@ export class Project implements ISqlProject {
 		// get pre and post deploy scripts specified in the sqlproj
 		await this.readPreDeployScripts(true);
 		await this.readPostDeployScripts(true);
-		await this.readNoneItems();
+
+		await this.readNoneItems(); // also populates list of publish profiles, determined by file extension
 
 		await this.readFilesInProject(); // get SQL object scripts
 		await this.readFolders(); // get folders
-
-		await this.readPublishProfiles(); // get publish profiles specified in the sqlproj
 	}
 
 	//#region Reader helpers
@@ -341,26 +340,16 @@ export class Project implements ISqlProject {
 			}
 		}
 
-		this._noneDeployScripts = noneItemEntries.filter(f => !utils.isPublishProfile(f.relativePath));
-	}
+		this._noneDeployScripts = [];
+		this._publishProfiles = [];
 
-	/**
-	 *
-	 * @returns all the publish profiles (ending with *.publish.xml) specified as <None Include="file.publish.xml" /> in the sqlproj
-	 */
-	private async readPublishProfiles(): Promise<void> {
-		var result: GetScriptsResult = await this.sqlProjService.getNoneItems(this.projectFilePath);
-		this.throwIfFailed(result);
-
-		const noneItemEntries: FileProjectEntry[] = [];
-
-		if (result.scripts?.length > 0) { // empty array from SqlToolsService is deserialized as null
-			for (var path of result.scripts) {
-				noneItemEntries.push(this.createFileProjectEntry(path, EntryType.File));
+		for (const entry of noneItemEntries) {
+			if (utils.isPublishProfile(entry.relativePath)) {
+				this._publishProfiles.push(entry);
+			} else {
+				this._noneDeployScripts.push(entry);
 			}
 		}
-
-		this._publishProfiles = noneItemEntries.filter(f => utils.isPublishProfile(f.relativePath));
 	}
 
 	private async readDatabaseReferences(): Promise<void> {
@@ -843,23 +832,6 @@ export class Project implements ISqlProject {
 	 */
 	public getDatabaseSourceValues(): string[] {
 		return this._databaseSource.split(';');
-	}
-
-	/**
-	 * Adds publish profile to the project
-	 *
-	 * @param relativeFilePath Relative path of the file
-	 */
-	public async addPublishProfileToProjFile(absolutePublishProfilePath: string): Promise<FileProjectEntry> {
-		const relativePublishProfilePath = (utils.trimUri(Uri.file(this.projectFilePath), Uri.file(absolutePublishProfilePath)));
-
-		const result = await this.sqlProjService.addNoneItem(this.projectFilePath, relativePublishProfilePath);
-		this.throwIfFailed(result);
-
-		const fileEntry = this.createFileProjectEntry(relativePublishProfilePath, EntryType.File);
-		this._publishProfiles.push(fileEntry);
-
-		return fileEntry;
 	}
 
 	public createFileProjectEntry(relativePath: string, entryType: EntryType, sqlObjectType?: string, containsCreateTableStatement?: boolean): FileProjectEntry {

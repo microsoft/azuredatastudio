@@ -832,7 +832,7 @@ describe('Project: add SQLCMD Variables', function (): void {
 	});
 });
 
-describe('Project: add publish profiles', function (): void {
+describe('Project: publish profiles', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
 	});
@@ -841,18 +841,18 @@ describe('Project: add publish profiles', function (): void {
 		await testUtils.deleteGeneratedTestFolder();
 	});
 
-	it('Should update .sqlproj with new publish profiles', async function (): Promise<void> {
+	it('Should add new publish profile', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
-		should(Object.keys(project.publishProfiles).length).equal(3);
+		should(project.publishProfiles.length).equal(3);
 
 		// add a new publish profile
-		await project.addPublishProfileToProjFile(path.join(projFilePath, 'TestProjectName_4.publish.xml'));
+		const newProfilePath = path.join(project.projectFolderPath, 'TestProjectName_4.publish.xml');
+		await fs.writeFile(newProfilePath, '<fake-publish-profile type="stage"/>');
 
-		should(Object.keys(project.publishProfiles).length).equal(4);
+		await project.addNoneItem('TestProjectName_4.publish.xml');
 
-		const projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText).equal(baselines.openSqlProjectWithAdditionalPublishProfileBaseline.trim());
+		should(project.publishProfiles.length).equal(4);
 	});
 });
 
