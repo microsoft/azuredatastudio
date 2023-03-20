@@ -849,22 +849,23 @@ export class ProjectsController {
 				}
 			} else if (node instanceof SqlCmdVariableTreeItem) {
 				await project.deleteSqlCmdVariable(node.friendlyName);
-			} else if (node instanceof FileNode || node instanceof FolderNode) {
+			} else if (node instanceof FolderNode) {
+				await project.deleteFolder(node.entryKey);
+			} else if (node instanceof FileNode) {
 				switch (node.type) {
 					case constants.DatabaseProjectItemType.sqlObjectScript:
-						await project.deleteSqlObjectScript(node.relativeProjectUri.fsPath);
-						break;
-					case constants.DatabaseProjectItemType.folder:
-						await project.deleteFolder(node.relativeProjectUri.fsPath);
+					case constants.DatabaseProjectItemType.table:
+					case constants.DatabaseProjectItemType.externalStreamingJob:
+						await project.deleteSqlObjectScript(node.entryKey);
 						break;
 					case constants.DatabaseProjectItemType.preDeploymentScript:
-						await project.deletePreDeploymentScript(node.relativeProjectUri.fsPath);
+						await project.deletePreDeploymentScript(node.entryKey);
 						break;
 					case constants.DatabaseProjectItemType.postDeploymentScript:
-						await project.deletePostDeploymentScript(node.relativeProjectUri.fsPath);
+						await project.deletePostDeploymentScript(node.entryKey);
 						break;
 					case constants.DatabaseProjectItemType.noneFile:
-						await project.deleteNoneItem(node.relativeProjectUri.fsPath);
+						await project.deleteNoneItem(node.entryKey);
 						break;
 					default:
 						throw new Error(constants.unhandledDeleteType(node.type));

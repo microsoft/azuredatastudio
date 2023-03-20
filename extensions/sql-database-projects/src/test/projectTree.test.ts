@@ -21,27 +21,27 @@ describe('Project Tree tests', function (): void {
 		const sqlprojUri = vscode.Uri.file(`${root}Fake.sqlproj`);
 
 		let inputNodes: (FileNode | FolderNode)[] = [
-			new SqlObjectFileNode(vscode.Uri.file(`${root}C`), sqlprojUri),
-			new SqlObjectFileNode(vscode.Uri.file(`${root}D`), sqlprojUri),
-			new FolderNode(vscode.Uri.file(`${root}Z`), sqlprojUri),
-			new FolderNode(vscode.Uri.file(`${root}X`), sqlprojUri),
-			new SqlObjectFileNode(vscode.Uri.file(`${root}B`), sqlprojUri),
-			new SqlObjectFileNode(vscode.Uri.file(`${root}A`), sqlprojUri),
-			new FolderNode(vscode.Uri.file(`${root}W`), sqlprojUri),
-			new FolderNode(vscode.Uri.file(`${root}Y`), sqlprojUri)
+			new SqlObjectFileNode(vscode.Uri.file(`${root}C`), sqlprojUri, 'C'),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}D`), sqlprojUri, 'D'),
+			new FolderNode(vscode.Uri.file(`${root}Z`), sqlprojUri, 'Z'),
+			new FolderNode(vscode.Uri.file(`${root}X`), sqlprojUri, 'X'),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}B`), sqlprojUri, 'B'),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}A`), sqlprojUri, 'A'),
+			new FolderNode(vscode.Uri.file(`${root}W`), sqlprojUri, 'W'),
+			new FolderNode(vscode.Uri.file(`${root}Y`), sqlprojUri, 'Y')
 		];
 
 		inputNodes = inputNodes.sort(sortFileFolderNodes);
 
 		const expectedNodes: (FileNode | FolderNode)[] = [
-			new FolderNode(vscode.Uri.file(`${root}W`), sqlprojUri),
-			new FolderNode(vscode.Uri.file(`${root}X`), sqlprojUri),
-			new FolderNode(vscode.Uri.file(`${root}Y`), sqlprojUri),
-			new FolderNode(vscode.Uri.file(`${root}Z`), sqlprojUri),
-			new SqlObjectFileNode(vscode.Uri.file(`${root}A`), sqlprojUri),
-			new SqlObjectFileNode(vscode.Uri.file(`${root}B`), sqlprojUri),
-			new SqlObjectFileNode(vscode.Uri.file(`${root}C`), sqlprojUri),
-			new SqlObjectFileNode(vscode.Uri.file(`${root}D`), sqlprojUri)
+			new FolderNode(vscode.Uri.file(`${root}W`), sqlprojUri, 'W'),
+			new FolderNode(vscode.Uri.file(`${root}X`), sqlprojUri, 'X'),
+			new FolderNode(vscode.Uri.file(`${root}Y`), sqlprojUri, 'Y'),
+			new FolderNode(vscode.Uri.file(`${root}Z`), sqlprojUri, 'Z'),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}A`), sqlprojUri, 'A'),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}B`), sqlprojUri, 'B'),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}C`), sqlprojUri, 'C'),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}D`), sqlprojUri, 'D')
 		];
 
 		should(inputNodes.map(n => n.relativeProjectUri.path)).deepEqual(expectedNodes.map(n => n.relativeProjectUri.path));

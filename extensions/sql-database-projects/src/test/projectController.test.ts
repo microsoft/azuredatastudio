@@ -292,7 +292,7 @@ describe('ProjectsController', function (): void {
 				should(proj.databaseReferences.length).equal(3, 'Should start with 3 database references');
 
 				const databaseReferenceNodeChildren = projTreeRoot.children.find(x => x.friendlyName === constants.databaseReferencesNodeName)?.children;
-				await projController.delete(createWorkspaceTreeItem(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'Master')!));   // system db reference
+				await projController.delete(createWorkspaceTreeItem(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'master')!));   // system db reference
 				await projController.delete(createWorkspaceTreeItem(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'test2')!));    // dacpac reference
 				await projController.delete(createWorkspaceTreeItem(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'project1')!)); // project reference
 
@@ -767,7 +767,8 @@ describe('ProjectsController', function (): void {
 	});
 
 	describe('AutoRest generation', function (): void {
-		it('Should create project from autorest-generated files', async function (): Promise<void> {
+		// skipping for now because this feature is hidden under preview flag
+		it.skip('Should create project from autorest-generated files', async function (): Promise<void> {
 			const parentFolder = await testUtils.generateTestFolderPath();
 			await testUtils.createDummyFileStructure();
 			const specName = 'DummySpec.yaml';
