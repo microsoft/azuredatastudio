@@ -153,6 +153,19 @@ export function convertSlashesForSqlProj(filePath: string): string {
 }
 
 /**
+ * Converts a SystemDatabase enum to its string value
+ * @param systemDb
+ * @returns
+ */
+export function systemDatabaseToString(systemDb: mssql.SystemDatabase): string {
+	if (systemDb === mssql.SystemDatabase.Master) {
+		return constants.master;
+	} else {
+		return constants.msdb;
+	}
+}
+
+/**
  * Read SQLCMD variables from xmlDoc and return them
  * @param xmlDoc xml doc to read SQLCMD variables from. Format must be the same that sqlproj and publish profiles use
  * @param publishProfile true if reading from publish profile

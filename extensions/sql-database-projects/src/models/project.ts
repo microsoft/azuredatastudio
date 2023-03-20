@@ -694,8 +694,7 @@ export class Project implements ISqlProject {
 		const result = await this.sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, settings.databaseName);
 
 		if (!result.success && result.errorMessage) {
-			const systemDbName = settings.systemDb === SystemDatabase.Master ? constants.master : constants.msdb;
-			throw new Error(constants.errorAddingDatabaseReference(systemDbName, result.errorMessage));
+			throw new Error(constants.errorAddingDatabaseReference(utils.systemDatabaseToString(settings.systemDb), result.errorMessage));
 		}
 
 		await this.readDatabaseReferences();

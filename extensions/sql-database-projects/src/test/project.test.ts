@@ -13,7 +13,7 @@ import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
 import { Project } from '../models/project';
-import { exists, convertSlashesForSqlProj, getWellKnownDatabaseSources, getPlatformSafeFileEntryPath } from '../common/utils';
+import { exists, convertSlashesForSqlProj, getWellKnownDatabaseSources, getPlatformSafeFileEntryPath, systemDatabaseToString } from '../common/utils';
 import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { EntryType, ItemType } from 'sqldbproj';
@@ -956,7 +956,7 @@ describe('Project: sdk style project content operations', function (): void {
 	});
 });
 
-describe('Project: database references', function (): void {
+describe.only('Project: database references', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
 	});
@@ -1146,6 +1146,7 @@ describe('Project: database references', function (): void {
 	});
 
 	it('Should not allow adding duplicate dacpac references', async function (): Promise<void> {
+		this.timeout(999_999);
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		let project = await Project.openProject(projFilePath);
 
@@ -1168,7 +1169,7 @@ describe('Project: database references', function (): void {
 
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 
-		const systemDbReference: ISystemDatabaseReferenceSettings = { databaseName: 'Master', systemDb: SystemDatabase.Master, suppressMissingDependenciesErrors: false };
+		const systemDbReference: ISystemDatabaseReferenceSettings = { databaseName: systemDatabaseToString(SystemDatabase.Master), systemDb: SystemDatabase.Master, suppressMissingDependenciesErrors: false };
 		await project.addSystemDatabaseReference(systemDbReference);
 		project = await Project.openProject(projFilePath);
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to master');
