@@ -758,8 +758,12 @@ export class Project implements ISqlProject {
 		return found;
 	}
 
-	public async deleteDatabaseReference(entry: IDatabaseReferenceProjectEntry): Promise<void> {
-		const result = await this.sqlProjService.deleteDatabaseReference(this.projectFilePath, entry.pathForSqlProj());
+	public async deleteDatabaseReferenceByEntry(entry: IDatabaseReferenceProjectEntry): Promise<void> {
+		await this.deleteDatabaseReference(entry.pathForSqlProj());
+	}
+
+	public async deleteDatabaseReference(name: string): Promise<void> {
+		const result = await this.sqlProjService.deleteDatabaseReference(this.projectFilePath, name);
 		this.throwIfFailed(result);
 		await this.readDatabaseReferences();
 	}

@@ -42,6 +42,7 @@ export let openSdkStyleSqlProjectWithBuildRemoveBaseline: string;
 export let openSdkStyleSqlProjectNoProjectGuidBaseline: string;
 export let openSqlProjectWithAdditionalPublishProfileBaseline: string;
 export let sqlProjPropertyReadBaseline: string;
+export let databaseReferencesReadBaseline: string;
 
 const baselineFolderPath = __dirname;
 
@@ -81,6 +82,7 @@ export async function loadBaselines() {
 	openSdkStyleSqlProjectNoProjectGuidBaseline = await loadBaseline(baselineFolderPath, 'openSdkStyleSqlProjectNoProjectGuidBaseline.xml');
 	openSqlProjectWithAdditionalPublishProfileBaseline = await loadBaseline(baselineFolderPath, 'openSqlProjectWithAdditionalPublishProfileBaseline.xml');
 	sqlProjPropertyReadBaseline = await loadBaseline(baselineFolderPath, 'sqlProjPropertyRead.xml');
+	databaseReferencesReadBaseline = await loadBaseline(baselineFolderPath, 'databaseReferencesReadBaseline.xml');
 }
 
 async function loadBaseline(baselineFolderPath: string, fileName: string): Promise<string> {

@@ -845,7 +845,7 @@ export class ProjectsController {
 				const databaseReference = this.getDatabaseReference(project, node);
 
 				if (databaseReference) {
-					await project.deleteDatabaseReference(databaseReference);
+					await project.deleteDatabaseReferenceByEntry(databaseReference);
 				}
 			} else if (node instanceof SqlCmdVariableTreeItem) {
 				await project.deleteSqlCmdVariable(node.friendlyName);
