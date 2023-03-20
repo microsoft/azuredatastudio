@@ -10,7 +10,7 @@ import * as fileTree from './fileFolderTreeItem';
 import { Project } from '../project';
 import * as utils from '../../common/utils';
 import { DatabaseReferencesTreeItem } from './databaseReferencesTreeItem';
-import { DatabaseProjectItemType, RelativeOuterPath, ExternalStreamingJob, sqlprojExtension, CollapseProjectNodesKey } from '../../common/constants';
+import { DatabaseProjectItemType, RelativeOuterPath, ExternalStreamingJob, sqlprojExtension, CollapseProjectNodesKey, errorPrefix } from '../../common/constants';
 import { IconPathHelper } from '../../common/iconHelper';
 import { FileProjectEntry } from '../projectEntry';
 import { EntryType } from 'sqldbproj';
@@ -111,12 +111,6 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 			this.addNode(newNode, entry);
 		}
-
-		// folders
-		for (const entry of this.project.folders) {
-			const newNode = new fileTree.FolderNode(entry.fsUri, this.projectFileUri, entry.relativePath);
-			this.addNode(newNode, entry);
-		}
 	}
 
 	private addNode(newNode: fileTree.FileNode | fileTree.FolderNode, entry: FileProjectEntry): void {
@@ -152,8 +146,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 		for (const part of relativePathParts) { // iterate from the project root, down the path to the entry in question
 			if (current.fileChildren[part] === undefined) { // if the current node doesn't have the next child node in its list of children, add it
-				const parentPath = current instanceof ProjectRootTreeItem ? path.dirname(current.fileSystemUri.fsPath) : current.fileSystemUri.fsPath;
-				current.fileChildren[part] = new fileTree.FolderNode(vscode.Uri.file(path.join(parentPath, part)), this.projectFileUri, 'shouldnt happen');
+				throw new Error(errorPrefix('All parent nodes should have already been added'));
 			}
 
 			if (current.fileChildren[part] instanceof fileTree.FileNode) {
