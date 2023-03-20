@@ -956,7 +956,7 @@ describe('Project: sdk style project content operations', function (): void {
 	});
 });
 
-describe.only('Project: database references', function (): void {
+describe('Project: database references', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
 	});
