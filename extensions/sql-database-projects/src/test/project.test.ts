@@ -299,7 +299,7 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 });
 
-describe.only('Project: sdk style project content operations', function (): void {
+describe('Project: sdk style project content operations', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
 	});
