@@ -18,6 +18,7 @@ const extensionList = [
 	'cms',
 	'dacpac',
 	'data-workspace',
+	'datavirtualization',
 	'import',
 	'machine-learning',
 	//'mssql',
