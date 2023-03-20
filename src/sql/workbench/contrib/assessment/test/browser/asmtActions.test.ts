@@ -120,7 +120,7 @@ suite('Assessment Actions', () => {
 		connectionProfile.setup(cp => cp.clone()).returns(() => connectionProfile.object);
 		let connectionManagementService = TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService);
 		connectionManagementService.setup(c => c.listDatabases(TypeMoq.It.isAny())).returns(() => Promise.resolve(dbListResult));
-		connectionManagementService.setup(c => c.getConnectionUriFromId(TypeMoq.It.isAny())).returns(() => '');
+		connectionManagementService.setup(c => c.getConnectionUriFromId(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => '');
 		connectionManagementService.setup(c => c.getConnectionProfile(TypeMoq.It.isAny())).returns(() => connectionProfile.object);
 		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.isAny())).returns(() => Promise.resolve(''));
 
