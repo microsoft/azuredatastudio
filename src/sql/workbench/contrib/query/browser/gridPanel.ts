@@ -1019,13 +1019,6 @@ function queryResultTextFormatter(showJsonAsLink: boolean, row: number | undefin
 	if (showJsonAsLink && isJsonCell(value)) {
 		return hyperLinkFormatter(row, cell, value, columnDef, dataContext);
 	} else {
-		const textFormatResult = textFormatter(row, cell, value, columnDef, dataContext);
-		if (DBCellValue.isDBCellValue(value) && value.isNull) {
-			return {
-				text: textFormatResult,
-				addClasses: NULL_CELL_CSS_CLASS
-			};
-		}
-		return textFormatResult;
+		return textFormatter(row, cell, value, columnDef, dataContext, (DBCellValue.isDBCellValue(value) && value.isNull) ? NULL_CELL_CSS_CLASS : undefined);
 	}
 }
