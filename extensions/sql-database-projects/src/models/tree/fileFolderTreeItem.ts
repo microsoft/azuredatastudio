@@ -16,10 +16,12 @@ import { IconPathHelper } from '../../common/iconHelper';
 export class FolderNode extends BaseProjectTreeItem {
 	public fileChildren: { [childName: string]: (FolderNode | FileNode) } = {};
 	public fileSystemUri: vscode.Uri;
+	public override entryKey: string;
 
-	constructor(folderPath: vscode.Uri, sqlprojUri: vscode.Uri) {
+	constructor(folderPath: vscode.Uri, sqlprojUri: vscode.Uri, entryKey: string) {
 		super(fsPathToProjectUri(folderPath, sqlprojUri), sqlprojUri);
 		this.fileSystemUri = folderPath;
+		this.entryKey = entryKey;
 	}
 
 	public get children(): BaseProjectTreeItem[] {
@@ -44,10 +46,12 @@ export class FolderNode extends BaseProjectTreeItem {
  */
 export abstract class FileNode extends BaseProjectTreeItem {
 	public fileSystemUri: vscode.Uri;
+	public override entryKey: string;
 
-	constructor(filePath: vscode.Uri, sqlprojUri: vscode.Uri) {
+	constructor(filePath: vscode.Uri, sqlprojUri: vscode.Uri, entryKey: string) {
 		super(fsPathToProjectUri(filePath, sqlprojUri, true), sqlprojUri);
 		this.fileSystemUri = filePath;
+		this.entryKey = entryKey;
 	}
 
 	public get children(): BaseProjectTreeItem[] {

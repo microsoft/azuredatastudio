@@ -26,7 +26,6 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 	 */
 	constructor(projectNodeName: string, sqlprojUri: vscode.Uri, databaseReferences: IDatabaseReferenceProjectEntry[]) {
 		super(vscode.Uri.file(path.join(projectNodeName, constants.databaseReferencesNodeName)), sqlprojUri);
-
 		this.construct(databaseReferences);
 	}
 
@@ -60,6 +59,7 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 export class DatabaseReferenceTreeItem extends BaseProjectTreeItem {
 	constructor(private reference: IDatabaseReferenceProjectEntry, referencesNodeRelativeProjectUri: vscode.Uri, sqlprojUri: vscode.Uri) {
 		super(vscode.Uri.file(path.join(referencesNodeRelativeProjectUri.fsPath, reference.databaseName)), sqlprojUri);
+		this.entryKey = this.friendlyName;
 	}
 
 	public get children(): BaseProjectTreeItem[] {
