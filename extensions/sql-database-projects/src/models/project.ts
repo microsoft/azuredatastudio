@@ -209,7 +209,7 @@ export class Project implements ISqlProject {
 				this._configuration = Configuration.Output; // if the configuration doesn't match release or debug, the dacpac will get created in ./bin/Output
 		}
 
-		this._outputPath = props.outputPath;
+		this._outputPath = path.isAbsolute(props.outputPath) ? props.outputPath : path.join(this.projectFolderPath, props.outputPath);
 		this._databaseSource = props.databaseSource ?? '';
 		this._defaultCollation = props.defaultCollation;
 		this._databaseSchemaProvider = props.databaseSchemaProvider;
@@ -427,6 +427,10 @@ export class Project implements ISqlProject {
 	 * @param relativeFolderPath Relative path of the folder
 	 */
 	public async addFolder(relativeFolderPath: string): Promise<void> {
+		if (relativeFolderPath.endsWith('\\')) {
+			relativeFolderPath = relativeFolderPath.slice(0, -1);
+		}
+
 		const result = await this.sqlProjService.addFolder(this.projectFilePath, relativeFolderPath);
 		this.throwIfFailed(result);
 
@@ -542,7 +546,6 @@ export class Project implements ISqlProject {
 		const result = await this.sqlProjService.addNoneItem(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
-		await this.readPostDeployScripts();
 		await this.readNoneItems();
 		await this.readFolders();
 	}
@@ -551,7 +554,7 @@ export class Project implements ISqlProject {
 		const result = await this.sqlProjService.deleteNoneItem(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
-		await this.readPostDeployScripts();
+		await this.readNoneItems();
 		await this.readFolders();
 	}
 
@@ -559,7 +562,7 @@ export class Project implements ISqlProject {
 		const result = await this.sqlProjService.excludeNoneItem(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
-		await this.readPostDeployScripts();
+		await this.readNoneItems();
 		await this.readFolders();
 	}
 
