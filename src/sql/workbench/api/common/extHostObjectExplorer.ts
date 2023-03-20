@@ -66,6 +66,7 @@ export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape {
 export class ExtHostObjectExplorerNode implements azdata.objectexplorer.ObjectExplorerNode {
 	public connectionId: string;
 	public nodePath: string;
+	public parentNodePath: string;
 	public nodeType: string;
 	public nodeSubType: string;
 	public nodeStatus: string;
@@ -95,21 +96,30 @@ export class ExtHostObjectExplorerNode implements azdata.objectexplorer.ObjectEx
 		return this._proxy.$getChildren(this.connectionId, this.nodePath).then(children => children.map(nodeInfo => new ExtHostObjectExplorerNode(nodeInfo, this.connectionId, this._proxy)));
 	}
 
-	getParent(): Thenable<azdata.objectexplorer.ObjectExplorerNode> {
-		// Object nodes have a name like <schema>.<name> in the nodePath - we can't use label because
-		// that may have additional display information appended to it. Items without metadata are nodes
-		// such as folders that don't correspond to actual objects and so just use the label
-		let nodePathName = this.metadata ?
-			`${this.metadata.schema ? this.metadata.schema + '.' : ''}${this.metadata.name}` :
-			this.label;
+	getParent(): Thenable<azdata.objectexplorer.ObjectExplorerNode | undefined> {
+		let parentPath;
+		// parentNodePath property is introduced after we discovered the flaw of the following code.
+		// To maintain backward compatibility with other providers, we need to keep the following code.
+		if (this.parentNodePath === undefined) {
+			// Object nodes have a name like <schema>.<name> in the nodePath - we can't use label because
+			// that may have additional display information appended to it. Items without metadata are nodes
+			// such as folders that don't correspond to actual objects and so just use the label
+			let nodePathName = this.metadata ?
+				`${this.metadata.schema ? this.metadata.schema + '.' : ''}${this.metadata.name}` :
+				this.label;
 
-		// -1 to remove the / as well
-		let parentPathEndIndex: number = this.nodePath.lastIndexOf(nodePathName) - 1;
-		if (parentPathEndIndex < 0) {
+			// -1 to remove the / as well
+			let parentPathEndIndex: number = this.nodePath.lastIndexOf(nodePathName) - 1;
+			parentPath = this.nodePath.slice(0, parentPathEndIndex)
+		} else {
+			parentPath = this.parentNodePath;
+		}
+
+		if (!parentPath) {
 			// At root node
 			return Promise.resolve(undefined);
 		}
-		return this._proxy.$getNode(this.connectionId, this.nodePath.slice(0, parentPathEndIndex)).then(
+		return this._proxy.$getNode(this.connectionId, this.parentNodePath).then(
 			nodeInfo => nodeInfo ? new ExtHostObjectExplorerNode(nodeInfo, this.connectionId, this._proxy) : undefined);
 	}
 
@@ -119,6 +129,7 @@ export class ExtHostObjectExplorerNode implements azdata.objectexplorer.ObjectEx
 
 	private getDetailsFromInfo(nodeInfo: azdata.NodeInfo): void {
 		this.nodePath = nodeInfo.nodePath;
+		this.parentNodePath = nodeInfo.parentNodePath;
 		this.nodeType = nodeInfo.nodeType;
 		this.nodeSubType = nodeInfo.nodeSubType;
 		this.nodeStatus = nodeInfo.nodeStatus;
