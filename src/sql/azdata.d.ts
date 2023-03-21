@@ -308,7 +308,7 @@ declare module 'azdata' {
 			/**
 			 * Get the parent node. Returns undefined if there is none.
 			 */
-			getParent(): Thenable<ObjectExplorerNode>;
+			getParent(): Thenable<ObjectExplorerNode | undefined>;
 
 			/**
 			 * Refresh the node, expanding it if it has children
@@ -3574,7 +3574,7 @@ declare module 'azdata' {
 
 	export interface InputBoxProperties extends ComponentProperties {
 		value?: string | undefined;
-		ariaLive?: string | undefined;
+		ariaLive?: AriaLiveValue | undefined;
 		placeHolder?: string | undefined;
 		inputType?: InputBoxInputType | undefined;
 		required?: boolean | undefined;

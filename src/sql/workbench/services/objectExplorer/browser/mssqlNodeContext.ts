@@ -44,6 +44,7 @@ export class MssqlNodeContext extends Disposable {
 	static IsWindows = new RawContextKey<boolean>('isWindows', isWindows);
 	static IsCloud = new RawContextKey<boolean>('isCloud', false);
 	static NodeType = new RawContextKey<string>('nodeType', undefined);
+	static NodePath = new RawContextKey<string>('nodePath', undefined);
 	static ObjectType = new RawContextKey<string>('objectType', undefined);
 	static NodeLabel = new RawContextKey<string>('nodeLabel', undefined);
 	static EngineEdition = new RawContextKey<number>('engineEdition', DatabaseEngineEdition.Unknown);
@@ -60,6 +61,7 @@ export class MssqlNodeContext extends Disposable {
 	private nodeProviderKey!: IContextKey<string>;
 	private isCloudKey!: IContextKey<boolean>;
 	private nodeTypeKey!: IContextKey<string>;
+	private nodePathKey!: IContextKey<string>;
 	private objectTypeKey!: IContextKey<string>;
 	private nodeLabelKey!: IContextKey<string>;
 	private isDatabaseOrServerKey!: IContextKey<boolean>;
@@ -99,6 +101,9 @@ export class MssqlNodeContext extends Disposable {
 					this.setScriptingContextKeys();
 					this.nodeTypeKey.set(node.contextValue);
 				}
+				if (node.nodeInfo?.nodePath) {
+					this.nodePathKey.set(node.nodeInfo.nodePath);
+				}
 				this.setQueryEnabledKey();
 			}
 			if (node.label) {
@@ -112,6 +117,7 @@ export class MssqlNodeContext extends Disposable {
 		this.isCloudKey = MssqlNodeContext.IsCloud.bindTo(this.contextKeyService);
 		this.engineEditionKey = MssqlNodeContext.EngineEdition.bindTo(this.contextKeyService);
 		this.nodeTypeKey = MssqlNodeContext.NodeType.bindTo(this.contextKeyService);
+		this.nodePathKey = MssqlNodeContext.NodePath.bindTo(this.contextKeyService);
 		this.objectTypeKey = MssqlNodeContext.ObjectType.bindTo(this.contextKeyService);
 		this.nodeLabelKey = MssqlNodeContext.NodeLabel.bindTo(this.contextKeyService);
 		this.isDatabaseOrServerKey = MssqlNodeContext.IsDatabaseOrServer.bindTo(this.contextKeyService);

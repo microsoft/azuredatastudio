@@ -32,6 +32,9 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.deleteObject', async (context: azdata.ObjectExplorerContext) => {
 		await handleDeleteObjectCommand(context, service);
 	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.renameObject', async (context: azdata.ObjectExplorerContext) => {
+		await handleRenameObjectCommand(context, service);
+	}));
 }
 
 function getObjectManagementService(appContext: AppContext, useTestService: boolean): IObjectManagementService {
@@ -159,8 +162,60 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 				}).send();
 				return;
 			}
-			await refreshParentNode(context);
 			operation.updateStatus(azdata.TaskStatus.Succeeded);
+			await refreshParentNode(context);
+		}
+	});
+}
+
+async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+	const connectionUri = await getConnectionUri(context);
+	if (!connectionUri) {
+		return;
+	}
+	const nodeTypeDisplayName = getNodeTypeDisplayName(context.nodeInfo.nodeType);
+	const originalName = context.nodeInfo.metadata.name;
+	const newName = await vscode.window.showInputBox({
+		title: localizedConstants.RenameObjectDialogTitle,
+		value: originalName,
+		validateInput: (value: string): string | undefined => {
+			if (!value) {
+				return localizedConstants.NameCannotBeEmptyError;
+			} else {
+				// valid
+				return undefined;
+			}
+		}
+	});
+
+	// return if no change was made or the dialog was canceled.
+	if (newName === originalName || !newName) {
+		return;
+	}
+
+	azdata.tasks.startBackgroundOperation({
+		displayName: localizedConstants.RenameObjectOperationDisplayName(nodeTypeDisplayName, originalName, newName),
+		description: '',
+		isCancelable: false,
+		operation: async (operation) => {
+			try {
+				const startTime = Date.now();
+				await service.rename(connectionUri, context.nodeInfo.metadata.urn, newName);
+				TelemetryReporter.sendTelemetryEvent(TelemetryActions.RenameObject, {
+					objectType: context.nodeInfo.nodeType
+				}, {
+					elapsedTimeMs: Date.now() - startTime
+				});
+			}
+			catch (err) {
+				operation.updateStatus(azdata.TaskStatus.Failed, localizedConstants.RenameObjectError(nodeTypeDisplayName, originalName, newName, getErrorMessage(err)));
+				TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, TelemetryActions.RenameObject, err).withAdditionalProperties({
+					objectType: context.nodeInfo.nodeType
+				}).send();
+				return;
+			}
+			operation.updateStatus(azdata.TaskStatus.Succeeded);
+			await refreshParentNode(context);
 		}
 	});
 }

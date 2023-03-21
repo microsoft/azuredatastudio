@@ -100,7 +100,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	updatePiiLoggingLevel();
 
 	// Create the provider service and activate
-	initAzureAccountProvider(extensionContext, storagePath, authLibrary!).catch((err) => console.log(err));
+	initAzureAccountProvider(extensionContext, storagePath, authLibrary!).catch((err) => Logger.error(err));
 
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext, authLibrary);
@@ -119,7 +119,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 		if (portalEndpoint && subscriptionId && resourceGroup && type && name) {
 			await vscode.env.openExternal(vscode.Uri.parse(`${portalEndpoint}/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${type}/${name}`));
 		} else {
-			console.log(`Missing required values - subscriptionId : ${subscriptionId} resourceGroup : ${resourceGroup} type: ${type} name: ${name}`);
+			Logger.error(`Missing required values - subscriptionId : ${subscriptionId} resourceGroup : ${resourceGroup} type: ${type} name: ${name}`);
 			void vscode.window.showErrorMessage(loc.unableToOpenAzureLink);
 		}
 	});
@@ -248,7 +248,7 @@ async function findOrMakeStoragePath() {
 		await fs.mkdir(defaultLogLocation, { recursive: true });
 	} catch (e) {
 		if (e.code !== 'EEXIST') {
-			console.log(`Creating the base directory failed... ${e}`);
+			Logger.error(`Creating the base directory failed... ${e}`);
 			return undefined;
 		}
 	}
@@ -257,13 +257,13 @@ async function findOrMakeStoragePath() {
 		await fs.mkdir(storagePath, { recursive: true });
 	} catch (e) {
 		if (e.code !== 'EEXIST') {
-			console.error(`Initialization of Azure account extension storage failed: ${e}`);
-			console.error('Azure accounts will not be available');
+			Logger.error(`Initialization of Azure account extension storage failed: ${e}`);
+			Logger.error('Azure accounts will not be available');
 			return undefined;
 		}
 	}
 
-	console.log('Initialized Azure account extension storage.');
+	Logger.verbose('Initialized Azure account extension storage.');
 	return storagePath;
 }
 
@@ -273,7 +273,7 @@ async function initAzureAccountProvider(extensionContext: vscode.ExtensionContex
 		extensionContext.subscriptions.push(accountProviderService);
 		await accountProviderService.activate();
 	} catch (err) {
-		console.log('Unexpected error starting account provider: ' + err.message);
+		Logger.error('Unexpected error starting account provider: ' + err.message);
 	}
 }
 

@@ -10,6 +10,7 @@ import { IAzureResourceService } from '../interfaces';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { AzureAccount, azureResource } from 'azurecore';
+import { Logger } from '../../utils/Logger';
 
 export abstract class ResourceTreeDataProviderBase<T extends azureResource.AzureResource> implements azureResource.IAzureResourceTreeDataProvider {
 	public browseConnectionMode: boolean = false;
@@ -32,7 +33,7 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 				treeItem: this.getTreeItemForResource(resource, element.account)
 			}).sort((a, b) => (<any>a.treeItem.label).localeCompare(b.treeItem.label));
 		} catch (error) {
-			console.log(AzureResourceErrorMessageUtil.getErrorMessage(error));
+			Logger.error(AzureResourceErrorMessageUtil.getErrorMessage(error));
 			throw error;
 		}
 	}
@@ -102,7 +103,7 @@ export async function queryGraphResources<T extends GraphData>(resourceClient: R
 			}
 		} catch (err2) {
 			// Just log, we still want to throw the original error if something happens parsing the error
-			console.log(`Unexpected error while parsing error from querying resources : ${err2}`);
+			Logger.error(`Unexpected error while parsing error from querying resources : ${err2}`);
 		}
 		throw err;
 	}

@@ -7,8 +7,12 @@
  * The object types in object explorer's node context.
  */
 export enum NodeType {
+	Column = 'Column',
+	Database = 'Database',
 	Login = 'ServerLevelLogin',
-	User = 'User'
+	Table = 'Table',
+	User = 'User',
+	View = 'View'
 }
 
 export const PublicServerRoleName = 'public';
@@ -51,10 +55,11 @@ export const AlterLoginDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/sta
 
 export enum TelemetryActions {
 	CreateObject = 'CreateObject',
-	UpdateObject = 'UpdateObject',
 	DeleteObject = 'DeleteObject',
 	OpenNewObjectDialog = 'OpenNewObjectDialog',
-	OpenPropertiesDialog = 'OpenPropertiesDialog'
+	OpenPropertiesDialog = 'OpenPropertiesDialog',
+	RenameObject = 'RenameObject',
+	UpdateObject = 'UpdateObject'
 }
 
 export enum TelemetryViews {
