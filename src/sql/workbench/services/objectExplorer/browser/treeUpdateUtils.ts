@@ -15,6 +15,9 @@ import { Disposable, isDisposable } from 'vs/base/common/lifecycle';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
+import * as nls from 'vs/nls';
+import { NODE_EXPANSION_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export interface IExpandableTree extends ITree {
 	/**
@@ -264,7 +267,7 @@ export class TreeUpdateUtils {
 		}
 	}
 
-	public static async getAsyncConnectionNodeChildren(connection: ConnectionProfile, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService): Promise<TreeNode[]> {
+	public static async getAsyncConnectionNodeChildren(connection: ConnectionProfile, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, configurationService: IConfigurationService): Promise<TreeNode[]> {
 		if (connection.isDisconnecting) {
 			return [];
 		} else {
@@ -281,8 +284,13 @@ export class TreeUpdateUtils {
 					showFirewallRuleOnError: true,
 					showDashboard: false
 				};
+				const expansionTimeoutValueSec = configurationService.getValue<number>(NODE_EXPANSION_CONFIG);
 				// Need to wait for the OE service to update its nodes in order to resolve the children
 				const nodesUpdatedPromise = new Promise((resolve, reject) => {
+					const nodesUpdatedTimeout = setTimeout(() => {
+						reject(new Error(nls.localize('objectExplorerTimeout', "Object Explorer timed out")));
+						clearTimeout(nodesUpdatedTimeout);
+					}, expansionTimeoutValueSec * 1000);
 					objectExplorerService.onUpdateObjectExplorerNodes(e => {
 						if (e.errorMessage) {
 							reject(new Error(e.errorMessage));

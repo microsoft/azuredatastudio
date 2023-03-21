@@ -13,6 +13,7 @@ import Severity from 'vs/base/common/severity';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IAsyncDataSource } from 'vs/base/browser/ui/tree/tree';
 import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 /**
  * Implements the DataSource(that returns a parent/children of an element) for the server tree
@@ -22,7 +23,8 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 	constructor(
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService
+		@IErrorMessageService private _errorMessageService: IErrorMessageService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 	}
 	/**
@@ -45,7 +47,7 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 	public async getChildren(element: ServerTreeElement): Promise<ServerTreeElement[]> {
 		try {
 			if (element instanceof ConnectionProfile) {
-				return await TreeUpdateUtils.getAsyncConnectionNodeChildren(element, this._connectionManagementService, this._objectExplorerService);
+				return await TreeUpdateUtils.getAsyncConnectionNodeChildren(element, this._connectionManagementService, this._objectExplorerService, this._configurationService);
 			} else if (element instanceof ConnectionProfileGroup) {
 				return (element as ConnectionProfileGroup).getChildren();
 			} else if (element instanceof TreeNode) {

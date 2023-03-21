@@ -8,7 +8,7 @@ import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import {
 	IConnectionManagementService, INewConnectionParams,
 	ConnectionType, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks,
-	IConnectionParams, IConnectionResult, RunQueryOnConnectionMode
+	IConnectionParams, IConnectionResult, RunQueryOnConnectionMode, ConnectionUpdateParams, ConnectionGroupUpdateParams
 } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
@@ -75,6 +75,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _onLanguageFlavorChanged = new Emitter<azdata.DidChangeLanguageFlavorParams>();
 	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._notificationService);
 	private _uriToReconnectPromiseMap: { [uri: string]: Promise<IConnectionResult> } = {};
+
+	private _onNewConnectionProfile = new Emitter<ConnectionProfile>();
+	private _onUpdateConnectionProfile = new Emitter<ConnectionUpdateParams>();
+	private _onConnectionProfileConnected = new Emitter<ConnectionProfile>();
+	private _onNewConnectionProfileGroup = new Emitter<ConnectionProfileGroup>();
+	private _onUpdateConnectionProfileGroup = new Emitter<ConnectionGroupUpdateParams>();
+	private _onDeleteConnectionProfileGroup = new Emitter<ConnectionProfileGroup>();
 
 	private _mementoContext: Memento;
 	private _mementoObj: MementoObject;
@@ -189,6 +196,30 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	public get onLanguageFlavorChanged(): Event<azdata.DidChangeLanguageFlavorParams> {
 		return this._onLanguageFlavorChanged.event;
+	}
+
+	public get onNewConnectionProfile(): Event<ConnectionProfile> {
+		return this._onNewConnectionProfile.event;
+	}
+
+	public get onUpdateConnectionProfile(): Event<ConnectionUpdateParams> {
+		return this._onUpdateConnectionProfile.event;
+	}
+
+	public get onConnectionProfileConnected(): Event<ConnectionProfile> {
+		return this._onConnectionProfileConnected.event;
+	}
+
+	public get onUpdateConnectionProfileGroup(): Event<ConnectionGroupUpdateParams> {
+		return this._onUpdateConnectionProfileGroup.event;
+	}
+
+	public get onNewConnectionProfileGroup(): Event<ConnectionProfileGroup> {
+		return this._onNewConnectionProfileGroup.event;
+	}
+
+	public get onDeleteConnectionProfileGroup(): Event<ConnectionProfileGroup> {
+		return this._onDeleteConnectionProfileGroup.event;
 	}
 
 	public get providerNameToDisplayNameMap(): { readonly [providerDisplayName: string]: string } {
@@ -539,6 +570,18 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 					await this.saveToSettings(uri, connection, matcher).then(value => {
 						this._onAddConnectionProfile.fire(connection);
+						if (isEdit) {
+							this._onUpdateConnectionProfile.fire({
+								newProfile: <ConnectionProfile>connection,
+								oldProfileId: options.params.oldProfileId
+							});
+						} else {
+							if (options.params === undefined) {
+								this._onConnectionProfileConnected.fire(<ConnectionProfile>connection);
+							} else {
+								this._onNewConnectionProfile.fire(<ConnectionProfile>connection);
+							}
+						}
 						this.doActionsAfterConnectionComplete(value, options);
 					});
 				} else {
@@ -745,10 +788,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	public saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
+	public saveProfileGroup(group: IConnectionProfileGroup): Promise<string> {
 		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.AddServerGroup);
-		return this._connectionStore.saveProfileGroup(profile).then(groupId => {
+		return this._connectionStore.saveProfileGroup(group).then(groupId => {
 			this._onAddConnectionProfile.fire(undefined);
+
+			//Getting id for the new profile group
+			group.id = groupId;
+			this._onNewConnectionProfileGroup.fire(ConnectionProfileGroup.createConnectionProfileGroup(group));
+
 			return groupId;
 		});
 	}
@@ -1224,9 +1272,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public onIntelliSenseCacheComplete(handle: number, connectionUri: string): void {
 	}
 
-	public changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void> {
+	public async changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void> {
 		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.MoveServerConnection);
-		return this._connectionStore.changeGroupIdForConnectionGroup(source, target);
+		await this._connectionStore.changeGroupIdForConnectionGroup(source, target);
+		const updatedGroup = this.getConnectionGroups().filter(c => c.id === source.id)[0];
+		this._onUpdateConnectionProfileGroup.fire({
+			oldProfileGroupId: source.parentId,
+			newProfileGroup: updatedGroup
+		});
 	}
 
 	public changeGroupIdForConnection(source: ConnectionProfile, targetGroupId: string): Promise<void> {
@@ -1238,6 +1291,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				source.groupId = targetGroupId;
 			}
 			this.changeConnectionUri(Utils.generateUri(source), id);
+			this._onUpdateConnectionProfile.fire({
+				oldProfileId: source.id,
+				newProfile: source
+			});
 		});
 	}
 
@@ -1504,9 +1561,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return Promise.resolve(false);
 	}
 
-	public editGroup(group: ConnectionProfileGroup): Promise<void> {
+	public editGroup(group: ConnectionProfileGroup, oldGroup?: ConnectionProfileGroup): Promise<void> {
 		return this._connectionStore.editGroup(group).then(groupId => {
 			this._onAddConnectionProfile.fire(undefined);
+			this._onUpdateConnectionProfileGroup.fire({
+				newProfileGroup: group,
+				oldProfileGroupId: oldGroup.id
+			});
 		});
 	}
 
@@ -1566,6 +1627,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			// Remove profiles and groups from config
 			return this._connectionStore.deleteGroupFromConfiguration(group).then(() => {
 				this._onDeleteConnectionProfile.fire(group);
+				this._onDeleteConnectionProfileGroup.fire(group);
 				return true;
 			});
 		}).catch(() => false);

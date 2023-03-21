@@ -126,6 +126,8 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	public getChildren(): (ConnectionProfile | ConnectionProfileGroup)[] {
 		let allChildren: (ConnectionProfile | ConnectionProfileGroup)[] = [];
 		this._childConnections.forEach((conn) => {
+			conn.parent = this;
+			conn.groupId = this.id;
 			allChildren.push(conn);
 		});
 
@@ -233,5 +235,10 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 			});
 		}
 		return subgroups;
+	}
+
+	public static createConnectionProfileGroup(group: IConnectionProfileGroup): ConnectionProfileGroup {
+		const groupInstance = new ConnectionProfileGroup(group.name, undefined, group.id, group.color, group.description);
+		return groupInstance;
 	}
 }

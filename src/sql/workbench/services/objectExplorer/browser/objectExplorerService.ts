@@ -26,6 +26,7 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { NODE_EXPANSION_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -446,7 +447,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						}
 					});
 
-					const expansionTimeoutValueSec = this._configurationService.getValue<number>('serverTree.nodeExpansionTimeout');
+					const expansionTimeoutValueSec = this._configurationService.getValue<number>(NODE_EXPANSION_CONFIG);
 					const expansionTimeout = setTimeout(() => {
 						/**
 						 * If we don't get a response back from all the providers in specified expansion timeout seconds then we assume
