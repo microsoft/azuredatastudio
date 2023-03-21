@@ -11,6 +11,7 @@ import type * as azdataType from 'azdata';
 import { PublishDatabaseDialog } from './publishDatabaseDialog';
 import { DeployOptionsModel } from '../models/options/deployOptionsModel';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
+import { cssStyles } from '../common/uiConstants';
 
 export class PublishOptionsDialog {
 
@@ -25,7 +26,7 @@ export class PublishOptionsDialog {
 	private optionsChanged: boolean = false;
 	private isResetOptionsClicked: boolean = false;
 	private excludeObjectTypesOptionsTab: azdataType.window.DialogTab | undefined;
-	private excludeObjectTypesOptionsTable: azdataType.TableComponent | undefined;
+	private excludeObjectTypesOptionsTable: azdataType.DeclarativeTableComponent | undefined;
 	private excludeObjectTypesOptionsFlexBuilder: azdataType.FlexContainer | undefined;
 
 	constructor(defaultOptions: mssql.DeploymentOptions, private publish: PublishDatabaseDialog) {
@@ -135,20 +136,38 @@ export class PublishOptionsDialog {
 
 	private initializeExcludeObjectTypesOptionsDialogTab(): void {
 		this.excludeObjectTypesOptionsTab?.registerContent(async view => {
-			this.excludeObjectTypesOptionsTable = view.modelBuilder.table().component();
+			this.excludeObjectTypesOptionsTable = view.modelBuilder.declarativeTable().withProps({
+				width: '480px',
+				columns: [
+					{
+						valueType: utils.getAzdataApi()!.DeclarativeDataType.boolean,
+						width: '10%',
+						isReadOnly: false,
+						displayName: '',
+						headerCssStyles: cssStyles.optionsTableHeader,
+					},
+					{
+						valueType: utils.getAzdataApi()!.DeclarativeDataType.string,
+						width: '90%',
+						displayName: '',
+						isReadOnly: true,
+						headerCssStyles: cssStyles.optionsTableHeader,
+					}
+				],
+			}).component();
 			await this.updateExcludeObjectsTable();
 
 			// Update exclude type options value on checkbox onchange
-			this.disposableListeners.push(this.excludeObjectTypesOptionsTable!.onCellAction!((rowState) => {
-				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
-				if (checkboxState && checkboxState.row !== undefined) {
-					// data[row][1] contains the exclude type option display name
-					const displayName = this.excludeObjectTypesOptionsTable?.data[checkboxState.row][1];
-					this.optionsModel.setExcludeObjectTypesOptionValue(displayName, checkboxState.checked);
-					this.optionsChanged = true;
-					// customButton[0] is the reset button, enabling it when option checkbox is changed
-					this.dialog.customButtons[0].enabled = true;
-				}
+			this.disposableListeners.push(this.excludeObjectTypesOptionsTable.onDataChanged(() => {
+				this.excludeObjectTypesOptionsTable!.dataValues?.forEach((row) => {
+					const displayName = <string>row[1].value;
+					const checkboxValue = <boolean>row[0].value;
+					this.optionsModel.setExcludeObjectTypesOptionValue(displayName, checkboxValue);
+				});
+				this.optionsChanged = true;
+
+				// customButton[0] is the reset button, enabling it when option checkbox is changed
+				this.dialog.customButtons[0].enabled = true;
 			}));
 
 			this.excludeObjectTypesOptionsFlexBuilder = view.modelBuilder.flexContainer()
@@ -194,25 +213,9 @@ export class PublishOptionsDialog {
 	*/
 	private async updateExcludeObjectsTable(): Promise<void> {
 		const data = this.optionsModel.getExcludeObjectTypesOptionsData();
+		await this.excludeObjectTypesOptionsTable?.setDataValues(data);
+
 		await this.excludeObjectTypesOptionsTable?.updateProperties({
-			data: data,
-			columns: [
-				<azdataType.CheckboxColumn>
-				{
-					value: constants.OptionInclude,
-					type: utils.getAzdataApi()!.ColumnType.checkBox,
-					action: utils.getAzdataApi()!.ActionOnCellCheckboxCheck.customAction,
-					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header',
-					width: 50
-				},
-				{
-					value: constants.OptionName,
-					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header',
-					width: 50
-				}
-			],
 			ariaRowCount: data.length
 		});
 	}
