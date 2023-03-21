@@ -39,7 +39,7 @@ export class ObjectManagementService implements IObjectManagementService {
 			},
 			e => {
 				this.client.logFailedRequest(contracts.InitializeLoginViewRequest.type, e);
-				return Promise.reject(new Error(e.message));
+				return Promise.reject(e);
 			}
 		);
 	}
@@ -49,7 +49,7 @@ export class ObjectManagementService implements IObjectManagementService {
 			r => { },
 			e => {
 				this.client.logFailedRequest(contracts.CreateLoginRequest.type, e);
-				return Promise.reject(new Error(e.message));
+				return Promise.reject(e);
 			}
 		);
 	}
@@ -59,7 +59,7 @@ export class ObjectManagementService implements IObjectManagementService {
 			r => { },
 			e => {
 				this.client.logFailedRequest(contracts.UpdateLoginRequest.type, e);
-				return Promise.reject(new Error(e.message));
+				return Promise.reject(e);
 			}
 		);
 	}
@@ -69,7 +69,7 @@ export class ObjectManagementService implements IObjectManagementService {
 			r => { },
 			e => {
 				this.client.logFailedRequest(contracts.DisposeLoginViewRequest.type, e);
-				return Promise.reject(new Error(e.message));
+				return Promise.reject(e);
 			}
 		);
 	}
@@ -81,7 +81,7 @@ export class ObjectManagementService implements IObjectManagementService {
 			},
 			e => {
 				this.client.logFailedRequest(contracts.InitializeUserViewRequest.type, e);
-				return Promise.reject(new Error(e.message));
+				return Promise.reject(e);
 			}
 		);
 	}
@@ -91,7 +91,7 @@ export class ObjectManagementService implements IObjectManagementService {
 			r => { },
 			e => {
 				this.client.logFailedRequest(contracts.CreateUserRequest.type, e);
-				return Promise.reject(new Error(e.message));
+				return Promise.reject(e);
 			}
 		);
 	}
@@ -101,7 +101,7 @@ export class ObjectManagementService implements IObjectManagementService {
 			r => { },
 			e => {
 				this.client.logFailedRequest(contracts.UpdateUserRequest.type, e);
-				return Promise.reject(new Error(e.message));
+				return Promise.reject(e);
 			}
 		);
 	}
@@ -111,7 +111,7 @@ export class ObjectManagementService implements IObjectManagementService {
 			r => { },
 			e => {
 				this.client.logFailedRequest(contracts.DisposeUserViewRequest.type, e);
-				return Promise.reject(new Error(e.message));
+				return Promise.reject(e);
 			}
 		);
 	}
@@ -121,7 +121,7 @@ export class ObjectManagementService implements IObjectManagementService {
 			r => { },
 			e => {
 				this.client.logFailedRequest(contracts.RenameObjectRequest.type, e);
-				return Promise.reject(new Error(e.message));
+				return Promise.reject(e);
 			}
 		);
 	}
@@ -131,7 +131,7 @@ export class ObjectManagementService implements IObjectManagementService {
 			r => { },
 			e => {
 				this.client.logFailedRequest(contracts.DropObjectRequest.type, e);
-				return Promise.reject(new Error(e.message));
+				return Promise.reject(e);
 			}
 		);
 	}

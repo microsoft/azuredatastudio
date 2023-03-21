@@ -1539,15 +1539,6 @@ export namespace UpdateLoginRequest {
 	export const type = new RequestType<UpdateLoginRequestParams, void, void, void>('objectManagement/updateLogin');
 }
 
-export interface DeleteLoginRequestParams {
-	connectionUri: string;
-	name: string;
-}
-
-export namespace DeleteLoginRequest {
-	export const type = new RequestType<DeleteLoginRequestParams, void, void, void>('objectManagement/deleteLogin');
-}
-
 export interface DisposeLoginViewRequestParams {
 	contextId: string;
 }
@@ -1584,16 +1575,6 @@ export interface UpdateUserRequestParams {
 
 export namespace UpdateUserRequest {
 	export const type = new RequestType<UpdateUserRequestParams, void, void, void>('objectManagement/updateUser');
-}
-
-export interface DeleteUserRequestParams {
-	connectionUri: string;
-	database: string;
-	name: string;
-}
-
-export namespace DeleteUserRequest {
-	export const type = new RequestType<DeleteUserRequestParams, void, void, void>('objectManagement/deleteUser');
 }
 
 export interface DisposeUserViewRequestParams {

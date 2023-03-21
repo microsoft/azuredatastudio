@@ -1225,14 +1225,14 @@ declare module 'mssql' {
 		/**
 		 * Rename an object.
 		 * @param connectionUri The URI of the server connection.
-		 * @param objectUrn Urn of the object to be renamed. More information: https://learn.microsoft.com/en-us/sql/relational-databases/server-management-objects-smo/overview-smo.
+		 * @param objectUrn SMO Urn of the object to be renamed. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
 		 * @param newName The new name of the object.
 		 */
 		rename(connectionUri: string, objectUrn: string, newName: string): Thenable<void>;
 		/**
 		 * Drop an object.
 		 * @param connectionUri The URI of the server connection.
-		 * @param objectUrn Urn of the object to be dropped. More information: https://learn.microsoft.com/en-us/sql/relational-databases/server-management-objects-smo/overview-smo.
+		 * @param objectUrn SMO Urn of the object to be dropped. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
 		 */
 		drop(connectionUri: string, objectUrn: string): Thenable<void>;
 	}
