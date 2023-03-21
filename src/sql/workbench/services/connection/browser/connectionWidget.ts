@@ -1205,7 +1205,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				} catch (err) {
 					this._logService.error(`${this._providerName} Failed to parse the connection string : ${err}`)
 					this._errorMessageService.showDialog(Severity.Error, localize('connectionWidget.Error', "Error"),
-						localize('connectionWidget.ConnectionStringError', "Failed to parse the connection string. {0}", utils.getErrorMessage(err)));
+						localize('connectionWidget.ConnectionStringError', "Failed to parse the connection string. {0}", utils.getErrorMessage(err)), err.stack);
 					return false;
 				}
 			} else {
