@@ -252,7 +252,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 		id += ProviderConnectionInfo.idSeparator + 'groupId' + ProviderConnectionInfo.nameValueSeparator + this.groupId;
 
-		return id + ProviderConnectionInfo.idSeparator + 'groupName' + ProviderConnectionInfo.nameValueSeparator + this.groupFullName;
+		id += (this.groupFullName !== undefined && this.groupFullName !== '' && this.groupFullName !== '/') ? ProviderConnectionInfo.idSeparator + 'groupName' + ProviderConnectionInfo.nameValueSeparator + this.groupFullName : '';
 	}
 
 	/**
