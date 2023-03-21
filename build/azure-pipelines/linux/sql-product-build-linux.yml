@@ -48,7 +48,7 @@ steps:
 
   - script: |
       mkdir -p .build
-      node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js > .build/yarnlockhash
+      node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js $VSCODE_ARCH > .build/yarnlockhash
     displayName: Prepare yarn cache key
 
   - task: Cache@2
@@ -67,6 +67,7 @@ steps:
 
   - script: |
       set -e
+      export npm_config_arch=$(NPM_ARCH)
       CHILD_CONCURRENCY=1 yarn --frozen-lockfile
     displayName: Install dependencies
     env:
@@ -94,7 +95,7 @@ steps:
 
   - script: |
       set -e
-      yarn gulp vscode-linux-x64-min-ci
+      yarn gulp vscode-linux-$(VSCODE_ARCH)-min-ci
     displayName: Build
     env:
       VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
@@ -128,10 +129,10 @@ steps:
       # including the remote server and configure the integration tests
       # to run with these builds instead of running out of sources.
       set -e
-      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
+      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-$(VSCODE_ARCH)
       APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
       INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
-      VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-x64" \
+      VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-$(VSCODE_ARCH)" \
       DISPLAY=:10 ./scripts/test-integration.sh --build --tfs "Integration Tests"
     displayName: Run core integration tests
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
@@ -141,11 +142,11 @@ steps:
       # including the remote server and configure the unit tests
       # to run with these builds instead of running out of sources.
       set -e
-      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
+      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-$(VSCODE_ARCH)
       APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
       INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
       NO_CLEANUP=1 \
-      VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-x64" \
+      VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-$(VSCODE_ARCH)" \
       DISPLAY=:10 ./scripts/test-extensions-unit.sh --build --tfs "Extension Unit Tests"
     displayName: Run Extension Unit Tests (Continue on Error)
     continueOnError: true
@@ -156,24 +157,24 @@ steps:
       # including the remote server and configure the unit tests
       # to run with these builds instead of running out of sources.
       set -e
-      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
+      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-$(VSCODE_ARCH)
       APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
       INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
       NO_CLEANUP=1 \
-      VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-x64" \
+      VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-$(VSCODE_ARCH)" \
       DISPLAY=:10 ./scripts/test-extensions-unit.sh --build --tfs "Extension Unit Tests"
     displayName: Run Extension Unit Tests (Fail on Error)
     condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'false')))
 
   - bash: |
       set -e
-      mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-x64
+      mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-$(VSCODE_ARCH)
       cd /tmp
       for folder in adsuser*/
       do
       folder=${folder%/}
       # Only archive directories we want for debugging purposes
-      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder/User $folder/logs
+      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-$(VSCODE_ARCH)/$folder.tar.gz $folder/User $folder/logs
       done
     displayName: Archive Logs
     continueOnError: true
@@ -181,13 +182,13 @@ steps:
 
   - script: |
       set -e
-      yarn gulp vscode-linux-x64-build-deb
+      yarn gulp vscode-linux-$(VSCODE_ARCH)-build-deb
     displayName: Build Deb
     condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
       set -e
-      yarn gulp vscode-linux-x64-build-rpm
+      yarn gulp vscode-linux-$(VSCODE_ARCH)-build-rpm
     displayName: Build Rpm
     condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 

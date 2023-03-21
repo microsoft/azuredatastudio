@@ -97,6 +97,9 @@ stages:
       - Compile
     jobs:
       - job: Linux
+        variables:
+          NPM_CONFIG_ARCH: x64
+          VSCODE_ARCH: x64
         pool:
           vmImage: 'Ubuntu-20.04'
         container: linux-x64
@@ -105,7 +108,19 @@ stages:
           parameters:
             extensionsToUnitTest: ["admin-tool-ext-win", "agent", "azcli", "azurecore", "cms", "dacpac", "datavirtualization", "data-workspace", "import", "machine-learning", "notebook", "resource-deployment", "schema-compare", "sql-bindings", "sql-database-projects"]
         timeoutInMinutes: 90
-
+      - job: Linux_ARM64
+        variables:
+          NPM_CONFIG_ARCH: arm64
+          VSCODE_ARCH: arm64
+          AZDATA_RUNTIME: Linux_ARM64
+          RUN_TESTS: false
+        condition: and(succeeded(), eq(variables['VSCODE_BUILD_LINUX_ARM64'], 'true'))
+        pool:
+          vmImage: 'Ubuntu-20.04'
+        container: linux-x64
+        steps:
+        - template: linux/sql-product-build-linux.yml
+        timeoutInMinutes: 60
   - stage: Windows
     condition: and(succeeded(), or(eq(variables['VSCODE_BUILD_WIN32'], true), eq(variables['VSCODE_BUILD_WIN32_ARM64'], true)))
     pool:
