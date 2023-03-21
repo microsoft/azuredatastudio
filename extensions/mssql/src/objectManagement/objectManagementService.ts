@@ -63,16 +63,6 @@ export class ObjectManagementService implements IObjectManagementService {
 			}
 		);
 	}
-	deleteLogin(connectionUri: string, name: string): Thenable<void> {
-		const params: contracts.DeleteLoginRequestParams = { connectionUri, name };
-		return this.client.sendRequest(contracts.DeleteLoginRequest.type, params).then(
-			r => { },
-			e => {
-				this.client.logFailedRequest(contracts.DeleteLoginRequest.type, e);
-				return Promise.reject(new Error(e.message));
-			}
-		);
-	}
 	disposeLoginView(contextId: string): Thenable<void> {
 		const params: contracts.DisposeLoginViewRequestParams = { contextId };
 		return this.client.sendRequest(contracts.DisposeLoginViewRequest.type, params).then(
@@ -83,7 +73,6 @@ export class ObjectManagementService implements IObjectManagementService {
 			}
 		);
 	}
-
 	initializeUserView(connectionUri: string, database: string, contextId: string, isNewObject: boolean, name: string | undefined): Thenable<ObjectManagement.UserViewInfo> {
 		const params: contracts.InitializeUserViewRequestParams = { connectionUri, database, contextId, isNewObject, name };
 		return this.client.sendRequest(contracts.InitializeUserViewRequest.type, params).then(
@@ -116,16 +105,6 @@ export class ObjectManagementService implements IObjectManagementService {
 			}
 		);
 	}
-	deleteUser(connectionUri: string, database: string, name: string): Thenable<void> {
-		const params: contracts.DeleteUserRequestParams = { connectionUri, database, name };
-		return this.client.sendRequest(contracts.DeleteUserRequest.type, params).then(
-			r => { },
-			e => {
-				this.client.logFailedRequest(contracts.DeleteUserRequest.type, e);
-				return Promise.reject(new Error(e.message));
-			}
-		);
-	}
 	disposeUserView(contextId: string): Thenable<void> {
 		const params: contracts.DisposeUserViewRequestParams = { contextId };
 		return this.client.sendRequest(contracts.DisposeUserViewRequest.type, params).then(
@@ -142,6 +121,16 @@ export class ObjectManagementService implements IObjectManagementService {
 			r => { },
 			e => {
 				this.client.logFailedRequest(contracts.RenameObjectRequest.type, e);
+				return Promise.reject(new Error(e.message));
+			}
+		);
+	}
+	drop(connectionUri: string, objectUrn: string): Thenable<void> {
+		const params: contracts.DropObjectRequestParams = { connectionUri, objectUrn };
+		return this.client.sendRequest(contracts.DropObjectRequest.type, params).then(
+			r => { },
+			e => {
+				this.client.logFailedRequest(contracts.DropObjectRequest.type, e);
 				return Promise.reject(new Error(e.message));
 			}
 		);
@@ -226,13 +215,6 @@ export class TestObjectManagementService implements IObjectManagementService {
 			}, 3000);
 		});
 	}
-	async deleteLogin(connectionUri: string, name: string): Promise<void> {
-		return new Promise((resolve, reject) => {
-			setTimeout(() => {
-				resolve();
-			}, 3000);
-		});
-	}
 	async disposeLoginView(contextId: string): Promise<void> {
 	}
 	async initializeUserView(connectionUri: string, database: string, contextId: string, isNewObject: boolean, name: string): Promise<ObjectManagement.UserViewInfo> {
@@ -297,15 +279,14 @@ export class TestObjectManagementService implements IObjectManagementService {
 	async updateUser(contextId: string, login: ObjectManagement.User): Promise<void> {
 		return this.delayAndResolve();
 	}
-	async deleteUser(connectionUri: string, database: string, name: string): Promise<void> {
-		return this.delayAndResolve();
-	}
 	async disposeUserView(contextId: string): Promise<void> {
 	}
 	async rename(connectionUri: string, objectUrn: string, newName: string): Promise<void> {
 		return this.delayAndResolve();
 	}
-
+	async drop(connectionUri: string, objectUrn: string): Promise<void> {
+		return this.delayAndResolve();
+	}
 	private delayAndResolve(): Promise<void> {
 		return new Promise((resolve, reject) => {
 			setTimeout(() => {

@@ -1614,4 +1614,12 @@ export namespace RenameObjectRequest {
 	export const type = new RequestType<RenameObjectRequestParams, void, void, void>('objectManagement/rename');
 }
 
+export interface DropObjectRequestParams {
+	connectionUri: string;
+	objectUrn: string;
+}
+
+export namespace DropObjectRequest {
+	export const type = new RequestType<DropObjectRequestParams, void, void, void>('objectManagement/drop');
+}
 // ------------------------------- < Object Management > ------------------------------------

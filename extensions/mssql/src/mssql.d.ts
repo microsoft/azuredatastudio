@@ -1192,12 +1192,6 @@ declare module 'mssql' {
 		 */
 		updateLogin(contextId: string, login: ObjectManagement.Login): Thenable<void>;
 		/**
-		 * Delete a login.
-		 * @param connectionUri The URI of the server connection.
-		 * @param name Name of the login.
-		 */
-		deleteLogin(connectionUri: string, name: string): Thenable<void>;
-		/**
 		 * Dispose the login view.
 		 * @param contextId The id of the view.
 		 */
@@ -1218,18 +1212,11 @@ declare module 'mssql' {
 		 */
 		createUser(contextId: string, user: ObjectManagement.User): Thenable<void>;
 		/**
-		 * Create a login.
+		 * Update a user.
 		 * @param contextId Id of the view.
 		 * @param user The user information.
 		 */
 		updateUser(contextId: string, user: ObjectManagement.User): Thenable<void>;
-		/**
-		 * Create a login.
-		 * @param connectionUri The URI of the server connection.
-		 * @param database Name of the database.
-		 * @param name Name of the user.
-		 */
-		deleteUser(connectionUri: string, database: string, name: string): Thenable<void>;
 		/**
 		 * Dispose the user view.
 		 * @param contextId The id of the view.
@@ -1242,6 +1229,12 @@ declare module 'mssql' {
 		 * @param newName The new name of the object.
 		 */
 		rename(connectionUri: string, objectUrn: string, newName: string): Thenable<void>;
+		/**
+		 * Drop an object.
+		 * @param connectionUri The URI of the server connection.
+		 * @param objectUrn Urn of the object to be dropped. More information: https://learn.microsoft.com/en-us/sql/relational-databases/server-management-objects-smo/overview-smo.
+		 */
+		drop(connectionUri: string, objectUrn: string): Thenable<void>;
 	}
 	// Object Management - End.
 }

@@ -139,16 +139,7 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 		operation: async (operation) => {
 			try {
 				const startTime = Date.now();
-				switch (context.nodeInfo.nodeType) {
-					case NodeType.Login:
-						await service.deleteLogin(connectionUri, context.nodeInfo.label);
-						break;
-					case NodeType.User:
-						await service.deleteUser(connectionUri, context.connectionProfile.databaseName, context.nodeInfo.label);
-						break;
-					default:
-						return;
-				}
+				await service.drop(connectionUri, context.nodeInfo.metadata.urn);
 				TelemetryReporter.sendTelemetryEvent(TelemetryActions.DeleteObject, {
 					objectType: context.nodeInfo.nodeType
 				}, {
