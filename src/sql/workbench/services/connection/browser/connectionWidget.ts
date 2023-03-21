@@ -20,6 +20,7 @@ import { IAccountManagementService } from 'sql/platform/accounts/common/interfac
 
 import * as azdata from 'azdata';
 
+import * as utils from 'vs/base/common/errors';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
@@ -1197,17 +1198,14 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				try {
 					const connInfo = await this._connectionManagementService.buildConnectionInfo(this.connectionString, this._providerName);
 					if (!connInfo) {
-						this._logService.error(`${this._providerName}.buildConnectionInfo returned an undefined value.`)
-						this._errorMessageService.showDialog(Severity.Error, localize('connectionWidget.Error', "Error"), localize('connectionWidget.ConnectionStringError', "Failed to parse the connection string."),);
-						return false;
+						throw Error(localize('connectionWidget.ConnectionStringUndefined', 'No connection info returned.'));
 					}
 					model.options = connInfo.options;
 					model.savePassword = true;
 				} catch (err) {
-					this._logService.error(`Failed to parse the connection string : ${err}`)
+					this._logService.error(`${this._providerName} Failed to parse the connection string : ${err}`)
 					this._errorMessageService.showDialog(Severity.Error, localize('connectionWidget.Error', "Error"),
-						localize('connectionWidget.ConnectionStringError', "Failed to parse the connection string."),
-						String(err));
+						localize('connectionWidget.ConnectionStringError', "Failed to parse the connection string. {0}", utils.getErrorMessage(err)));
 					return false;
 				}
 			} else {
