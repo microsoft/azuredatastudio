@@ -8,13 +8,26 @@ import { WorkbenchAsyncDataTree } from 'vs/platform/list/browser/listService';
 import { FuzzyScore } from 'vs/base/common/filters';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IAsyncDataTreeViewState } from 'vs/base/browser/ui/tree/asyncDataTree';
+import { IAsyncDataTreeNode, IAsyncDataTreeViewState } from 'vs/base/browser/ui/tree/asyncDataTree';
 
 export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGroup, ServerTreeElement, FuzzyScore> {
 	override async setInput(input: ConnectionProfileGroup, viewState?: IAsyncDataTreeViewState): Promise<void> {
 		const originalInput = this.getInput();
 		await super.setInput(input, viewState);
 		originalInput?.dispose();
+	}
+
+	protected override getDataNode(element: ConnectionProfileGroup | ServerTreeElement): IAsyncDataTreeNode<ConnectionProfileGroup, ServerTreeElement> {
+		let node = undefined;
+		this.nodes.forEach((v, k) => {
+			if (element?.id === v?.id) {
+				node = v;
+			}
+		});
+		if (node) {
+			return node;
+		}
+		return super.getDataNode(element);
 	}
 
 	/**
