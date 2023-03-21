@@ -18,7 +18,7 @@ import {
 import { Deferred } from '../interfaces';
 import * as url from 'url';
 import * as Constants from '../../constants';
-import { SimpleTokenCache } from '../simpleTokenCache';
+import { SimpleTokenCache } from '../utils/simpleTokenCache';
 import { MemoryDatabase } from '../utils/memoryDatabase';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Logger } from '../../utils/Logger';

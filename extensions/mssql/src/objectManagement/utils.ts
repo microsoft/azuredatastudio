@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { getErrorMessage } from '../utils';
 import { AuthenticationType, NodeType, UserType } from './constants';
-import { AADAuthenticationTypeDisplayText, ContainedUserText, LoginTypeDisplayName, LoginTypeDisplayNameInTitle, RefreshObjectExplorerError, SQLAuthenticationTypeDisplayText, UserTypeDisplayName, UserTypeDisplayNameInTitle, UserWithLoginText, UserWithNoConnectAccess, UserWithWindowsGroupLoginText, WindowsAuthenticationTypeDisplayText } from './localizedConstants';
+import { AADAuthenticationTypeDisplayText, ColumnTypeDisplayName, ContainedUserText, DatabaseTypeDisplayName, LoginTypeDisplayName, LoginTypeDisplayNameInTitle, RefreshObjectExplorerError, SQLAuthenticationTypeDisplayText, TableTypeDisplayName, UserTypeDisplayName, UserTypeDisplayNameInTitle, UserWithLoginText, UserWithNoConnectAccess, UserWithWindowsGroupLoginText, ViewTypeDisplayName, WindowsAuthenticationTypeDisplayText } from './localizedConstants';
 
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
@@ -59,6 +59,14 @@ export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): 
 			return inTitle ? LoginTypeDisplayNameInTitle : LoginTypeDisplayName;
 		case NodeType.User:
 			return inTitle ? UserTypeDisplayNameInTitle : UserTypeDisplayName;
+		case NodeType.Table:
+			return TableTypeDisplayName;
+		case NodeType.View:
+			return ViewTypeDisplayName;
+		case NodeType.Column:
+			return ColumnTypeDisplayName;
+		case NodeType.Database:
+			return DatabaseTypeDisplayName;
 		default:
 			throw new Error(`Unkown node type: ${type}`);
 	}
@@ -85,6 +93,7 @@ export function getAuthenticationTypeByDisplayName(displayValue: string): Authen
 			return AuthenticationType.Sql;
 	}
 }
+
 export function getUserTypeDisplayName(userType: UserType): string {
 	switch (userType) {
 		case UserType.WithLogin:

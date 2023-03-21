@@ -76,6 +76,7 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 			errorMessage: undefined,
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
+			parentNodePath: this.parent?.generateNodePath() ?? '',
 			nodeStatus: undefined,
 			nodeType: AzureResourceItemType.subscription,
 			nodeSubType: undefined,

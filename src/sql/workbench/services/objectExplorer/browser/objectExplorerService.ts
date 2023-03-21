@@ -523,6 +523,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		let allNodes: azdata.NodeInfo[] = [];
 		let errorNode: azdata.NodeInfo = {
 			nodePath: nodePath,
+			parentNodePath: '',
 			objectType: 'error',
 			label: 'Error',
 			errorMessage: '',
@@ -691,7 +692,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			}
 		}
 
-		let node = new TreeNode(nodeInfo.nodeType, nodeInfo.objectType, nodeInfo.label, isLeaf, nodeInfo.nodePath,
+		let node = new TreeNode(nodeInfo.nodeType, nodeInfo.objectType, nodeInfo.label, isLeaf, nodeInfo.nodePath, nodeInfo.parentNodePath,
 			nodeInfo.nodeSubType!, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, nodeInfo.icon, {
 			getChildren: (treeNode?: TreeNode) => this.getChildren(treeNode),
 			isExpanded: treeNode => this.isExpanded(treeNode),
