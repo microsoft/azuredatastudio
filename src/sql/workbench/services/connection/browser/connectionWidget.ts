@@ -1194,12 +1194,17 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let validInputs = this.validateInputs();
 		if (validInputs) {
 			if (this.useConnectionString) {
-				const connInfo = await this._connectionManagementService.buildConnectionInfo(this.connectionString, this._providerName);
-				if (connInfo) {
+				try {
+					const connInfo = await this._connectionManagementService.buildConnectionInfo(this.connectionString, this._providerName);
+					if (!connInfo) {
+						throw Error(this._providerName + ".buildConnectionInfo had an undefined result.");
+					}
 					model.options = connInfo.options;
 					model.savePassword = true;
-				} else {
-					this._errorMessageService.showDialog(Severity.Error, localize('connectionWidget.Error', "Error"), localize('connectionWidget.ConnectionStringError', "Failed to parse the connection string."));
+				} catch (err) {
+					this._errorMessageService.showDialog(Severity.Error, localize('connectionWidget.Error', "Error"),
+						localize('connectionWidget.ConnectionStringError', "Failed to parse the connection string."),
+						String(err));
 					return false;
 				}
 			} else {
