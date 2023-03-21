@@ -800,7 +800,11 @@ export class Project implements ISqlProject {
 	 * @param databaseSource Source of the database to add
 	 */
 	public async addDatabaseSource(databaseSource: string): Promise<void> {
-		const sources: string[] = this._databaseSource.split(';');
+		if (databaseSource.includes(';')) {
+			throw Error(constants.invalidProjectPropertyValueProvided(';'));
+		}
+
+		const sources: string[] = this.getDatabaseSourceValues();
 		const index = sources.findIndex(x => x === databaseSource);
 
 		if (index !== -1) {
@@ -808,7 +812,10 @@ export class Project implements ISqlProject {
 		}
 
 		sources.push(databaseSource);
-		await this.sqlProjService.setDatabaseSource(this.projectFilePath, sources.join(';'));
+		const result = await this.sqlProjService.setDatabaseSource(this.projectFilePath, sources.join(';'));
+		this.throwIfFailed(result);
+
+		await this.readProjectProperties();
 	}
 
 	/**
@@ -818,7 +825,11 @@ export class Project implements ISqlProject {
 	 * @param databaseSource Source of the database to remove
 	 */
 	public async removeDatabaseSource(databaseSource: string): Promise<void> {
-		const sources: string[] = this._databaseSource.split(';');
+		if (databaseSource.includes(';')) {
+			throw Error(constants.invalidProjectPropertyValueProvided(';'));
+		}
+
+		const sources: string[] = this.getDatabaseSourceValues();
 		const index = sources.findIndex(x => x === databaseSource);
 
 		if (index === -1) {
@@ -826,7 +837,11 @@ export class Project implements ISqlProject {
 		}
 
 		sources.splice(index, 1);
-		await this.sqlProjService.setDatabaseSource(this.projectFilePath, sources.join(';'));
+
+		const result = await this.sqlProjService.setDatabaseSource(this.projectFilePath, sources.join(';'));
+		this.throwIfFailed(result);
+
+		await this.readProjectProperties();
 	}
 
 	/**
@@ -835,7 +850,7 @@ export class Project implements ISqlProject {
 	 * @returns Array of all database sources
 	 */
 	public getDatabaseSourceValues(): string[] {
-		return this._databaseSource.split(';');
+		return this._databaseSource.trim() === '' ? [] : this._databaseSource.split(';');
 	}
 
 	public createFileProjectEntry(relativePath: string, entryType: EntryType, sqlObjectType?: string, containsCreateTableStatement?: boolean): FileProjectEntry {
