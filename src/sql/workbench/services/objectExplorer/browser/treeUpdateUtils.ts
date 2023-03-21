@@ -74,9 +74,8 @@ export class TreeUpdateUtils {
 		}
 		const previousTreeInput = tree.getInput();
 		if (treeInput) {
-			let connections = treeInput.connections;
-			TreeUpdateUtils.alterConnectionTitles(connections);
-			treeInput.connections = connections;
+			let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput]);
+			treeInput = treeArray[0];
 			await tree.setInput(treeInput);
 		}
 		if (previousTreeInput instanceof Disposable) {
@@ -94,16 +93,26 @@ export class TreeUpdateUtils {
 		}
 	}
 
+	public static alterTreeChildrenTitles(inputGroups: ConnectionProfileGroup[]): ConnectionProfileGroup[] {
+		inputGroups.forEach(group => {
+			group.children = this.alterTreeChildrenTitles(group.children);
+			let connections = group.connections;
+			TreeUpdateUtils.alterConnectionTitles(connections);
+			group.connections = connections;
+		});
+
+		return inputGroups;
+	}
+
 	/**
 	 * Set input for the registered servers tree.
 	 */
 	public static async registeredServerUpdate(tree: ITree | AsyncServerTree, connectionManagementService: IConnectionManagementService, elementToSelect?: any): Promise<void> {
 		if (tree instanceof AsyncServerTree) {
-			const treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
+			let treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
 			if (treeInput) {
-				let connections = treeInput.connections;
-				TreeUpdateUtils.alterConnectionTitles(connections);
-				treeInput.connections = connections;
+				let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput]);
+				treeInput = treeArray[0];
 				await tree.setInput(treeInput);
 			}
 			tree.rerender();
@@ -132,9 +141,8 @@ export class TreeUpdateUtils {
 
 			let treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
 			if (treeInput) {
-				let connections = treeInput.connections;
-				TreeUpdateUtils.alterConnectionTitles(connections);
-				treeInput.connections = connections;
+				let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput]);
+				treeInput = treeArray[0];
 				const originalInput = tree.getInput();
 				if (treeInput !== originalInput) {
 					return tree.setInput(treeInput).then(async () => {
@@ -421,19 +429,19 @@ export class TreeUpdateUtils {
 									firstOption = false;
 									inputList[value[p]].title += ' (';
 								}
-								inputList[value[p]].title += (combinedOptions[i].name + ':' + optionValue + '|');
+								inputList[value[p]].title += (combinedOptions[i].name + '=' + optionValue + '; ');
 							}
 						}
 					}
 
 					//Add the final brace.
-					let finalIndex = inputList[value[p]].title.lastIndexOf('|');
+					let finalIndex = inputList[value[p]].title.lastIndexOf('; ');
 					if (finalIndex > -1) {
 						let finalString = inputList[value[p]].title.substring(0, finalIndex) + ')';
 						inputList[value[p]].title = finalString;
 					}
 				}
 			}
-		})
+		});
 	}
 }

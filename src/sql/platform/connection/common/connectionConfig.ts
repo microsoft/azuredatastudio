@@ -362,10 +362,7 @@ export class ConnectionConfig {
 		let profiles = this.getIConnectionProfileStores(true);
 		let existingProfile = profiles.find(p =>
 			p.providerName === profile.providerName &&
-			p.options.authenticationType === profile.options.authenticationType &&
-			p.options.database === profile.options.database &&
-			p.options.server === profile.options.server &&
-			p.options.user === profile.options.user &&
+			p.options === profile.options &&
 			p.groupId === newGroupID);
 		return existingProfile === undefined;
 	}
