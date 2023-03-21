@@ -100,7 +100,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	updatePiiLoggingLevel();
 
 	// Create the provider service and activate
-	initAzureAccountProvider(extensionContext, storagePath, authLibrary!).catch((err) => Logger.error(err));
+	let providerService = await initAzureAccountProvider(extensionContext, storagePath, authLibrary!).catch((err) => Logger.error(err));
+	let eventEmitter = providerService?.getEncryptionKeysEmitter()!;
 
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext, authLibrary);
@@ -130,7 +131,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 				? azureResourceUtils.getSelectedSubscriptions(appContext, account, ignoreErrors)
 				: azureResourceUtils.getSubscriptions(appContext, account, ignoreErrors);
 		},
-		getResourceGroups(account?: azurecore.AzureAccount, subscription?: azurecore.azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<azurecore.GetResourceGroupsResult> { return azureResourceUtils.getResourceGroups(appContext, account, subscription, ignoreErrors); },
+		getResourceGroups(account?: azurecore.AzureAccount, subscription?: azurecore.azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<azurecore.GetResourceGroupsResult> {
+			return azureResourceUtils.getResourceGroups(appContext, account, subscription, ignoreErrors);
+		},
 		getLocations(account?: azurecore.AzureAccount,
 			subscription?: azurecore.azureResource.AzureResourceSubscription,
 			ignoreErrors?: boolean): Promise<azurecore.GetLocationsResult> {
@@ -235,7 +238,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			ignoreErrors: boolean,
 			query: string): Promise<azurecore.ResourceQueryResult<T>> {
 			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, query);
-		}
+		},
+		getOnEncryptionKeysUpdated: eventEmitter.event
 	};
 }
 
@@ -267,13 +271,15 @@ async function findOrMakeStoragePath() {
 	return storagePath;
 }
 
-async function initAzureAccountProvider(extensionContext: vscode.ExtensionContext, storagePath: string, authLibrary: string): Promise<void> {
+async function initAzureAccountProvider(extensionContext: vscode.ExtensionContext, storagePath: string, authLibrary: string): Promise<AzureAccountProviderService | undefined> {
 	try {
 		const accountProviderService = new AzureAccountProviderService(extensionContext, storagePath, authLibrary);
 		extensionContext.subscriptions.push(accountProviderService);
 		await accountProviderService.activate();
+		return accountProviderService;
 	} catch (err) {
 		Logger.error('Unexpected error starting account provider: ' + err.message);
+		return undefined;
 	}
 }
 

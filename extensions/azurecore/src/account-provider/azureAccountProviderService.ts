@@ -12,7 +12,7 @@ import { promises as fsPromises } from 'fs';
 import { SimpleTokenCache } from './utils/simpleTokenCache';
 import providerSettings from './providerSettings';
 import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider';
-import { AzureAccountProviderMetadata } from 'azurecore';
+import { AzureAccountProviderMetadata, CacheEncryptionKeys } from 'azurecore';
 import { ProviderSettings } from './interfaces';
 import { MsalCachePluginProvider } from './utils/msalCachePlugin';
 import * as loc from '../localizedConstants';
@@ -41,10 +41,12 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private _event: events.EventEmitter = new events.EventEmitter();
 	private readonly _uriEventHandler: UriEventHandler = new UriEventHandler();
 	public clientApplication!: PublicClientApplication;
+	private _onEncryptionKeysUpdated: vscode.EventEmitter<CacheEncryptionKeys>;
 
 	constructor(private _context: vscode.ExtensionContext,
 		private _userStoragePath: string,
 		private _authLibrary: string) {
+		this._onEncryptionKeysUpdated = new vscode.EventEmitter<CacheEncryptionKeys>();
 		this._disposables.push(vscode.window.registerUriHandler(this._uriEventHandler));
 	}
 
@@ -73,6 +75,10 @@ export class AzureAccountProviderService implements vscode.Disposable {
 				this._configChangePromiseChain = this.onDidChangeConfiguration();
 				return true;
 			});
+	}
+
+	public getEncryptionKeysEmitter(): vscode.EventEmitter<CacheEncryptionKeys> {
+		return this._onEncryptionKeysUpdated;
 	}
 
 	public dispose() {
@@ -155,10 +161,12 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 			// ADAL Token Cache
 			let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, noSystemKeychain, this._credentialProvider);
-			await simpleTokenCache.init();
+			if (this._authLibrary === Constants.AuthLibrary.ADAL) {
+				await simpleTokenCache.init();
+			}
 
 			// MSAL Cache Plugin
-			this._cachePluginProvider = new MsalCachePluginProvider(tokenCacheKeyMsal, this._userStoragePath, this._credentialProvider);
+			this._cachePluginProvider = new MsalCachePluginProvider(tokenCacheKeyMsal, this._userStoragePath, this._credentialProvider, this._onEncryptionKeysUpdated);
 
 			const msalConfiguration: Configuration = {
 				auth: {

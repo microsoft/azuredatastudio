@@ -1615,3 +1615,25 @@ export namespace RenameObjectRequest {
 }
 
 // ------------------------------- < Object Management > ------------------------------------
+
+// ------------------------------- < Encryption IV/KEY updation Event > ------------------------------------
+/**
+ * Parameters for the MSAL cache encryption key notification
+ */
+export class DidChangeEncryptionIVKeyParams {
+	/**
+	 * Buffer encoded IV string for MSAL cache encryption
+	 */
+	public iv: string;
+	/**
+	 * Buffer encoded Key string for MSAL cache encryption
+	 */
+	public key: string;
+}
+
+/**
+ * Notification sent when the encryption keys are changed.
+ */
+export namespace EncryptionKeysChangedNotification {
+	export const type = new NotificationType<DidChangeEncryptionIVKeyParams, void>('connection/encryptionKeysChanged');
+}
