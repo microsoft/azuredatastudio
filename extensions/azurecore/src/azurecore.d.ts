@@ -317,7 +317,7 @@ declare module 'azurecore' {
 		runGraphQuery<T extends azureResource.AzureGraphResource>(account: AzureAccount, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors: boolean, query: string): Promise<ResourceQueryResult<T>>;
 		/**
 		 * Event emitted when encryption keys are updated in credential store.
-		 * Returns Credential Ids for connection providers use.
+		 * Returns encryption keys for connection providers use.
 		 */
 		getOnEncryptionKeysUpdated: vscode.Event<CacheEncryptionKeys>;
 	}
