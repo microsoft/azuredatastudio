@@ -85,6 +85,16 @@ export const SERVICE_ID = 'connectionManagementService';
 
 export const IConnectionManagementService = createDecorator<IConnectionManagementService>(SERVICE_ID);
 
+export interface ConnectionUpdateParams {
+	oldProfileId: string;
+	newProfile: ConnectionProfile;
+}
+
+export interface ConnectionGroupUpdateParams {
+	oldProfileGroupId: string;
+	newProfileGroup: ConnectionProfileGroup;
+}
+
 export interface IConnectionManagementService {
 	_serviceBrand: undefined;
 
@@ -95,6 +105,14 @@ export interface IConnectionManagementService {
 	onDisconnect: Event<IConnectionParams>;
 	onConnectionChanged: Event<IConnectionParams>;
 	onLanguageFlavorChanged: Event<azdata.DidChangeLanguageFlavorParams>;
+
+	// Event Emitters for async tree
+	onNewConnectionProfile: Event<ConnectionProfile>;
+	onUpdateConnectionProfile: Event<ConnectionUpdateParams>;
+	onConnectionProfileConnected: Event<ConnectionProfile>;
+	onNewConnectionProfileGroup: Event<ConnectionProfileGroup>;
+	onUpdateConnectionProfileGroup: Event<ConnectionGroupUpdateParams>;
+	onDeleteConnectionProfileGroup: Event<ConnectionProfileGroup>;
 
 	// Properties
 	providerNameToDisplayNameMap: { [providerDisplayName: string]: string };
@@ -219,7 +237,7 @@ export interface IConnectionManagementService {
 
 	registerIconProvider(providerId: string, provider: azdata.IconProvider): void;
 
-	editGroup(group: ConnectionProfileGroup): Promise<void>;
+	editGroup(group: ConnectionProfileGroup, oldGroup?: ConnectionProfileGroup): Promise<void>;
 
 	getConnectionProfile(fileUri: string): IConnectionProfile | undefined;
 
