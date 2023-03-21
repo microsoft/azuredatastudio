@@ -5,7 +5,7 @@ ROOT="$REPO/.."
 
 # Publish tarball
 mkdir -p $REPO/.build/linux/{archive,server}
-PLATFORM_LINUX="linux-x64"
+PLATFORM_LINUX="linux-$VSCODE_ARCH"
 BUILDNAME="azuredatastudio-$PLATFORM_LINUX"
 BUILD="$ROOT/$BUILDNAME"
 TARBALL_FILENAME="azuredatastudio-$PLATFORM_LINUX.tar.gz"
