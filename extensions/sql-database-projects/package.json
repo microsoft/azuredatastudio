@@ -499,7 +499,7 @@
     }
   },
   "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^3.0.0",
+    "@microsoft/ads-extension-telemetry": "^3.0.1",
     "@xmldom/xmldom": "0.8.4",
     "axios": "^0.27.2",
     "extract-zip": "^2.0.1",

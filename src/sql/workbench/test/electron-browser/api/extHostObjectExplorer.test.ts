@@ -14,6 +14,7 @@ const nodes: { [nodeName: string]: azdata.NodeInfo } =
 {
 	'Server1': {
 		nodePath: 'MyServer',
+		parentNodePath: '',
 		nodeStatus: '',
 		nodeSubType: '',
 		nodeType: 'Server',
@@ -24,6 +25,7 @@ const nodes: { [nodeName: string]: azdata.NodeInfo } =
 	},
 	'DatabasesFolder': {
 		nodePath: 'MyServer/Databases',
+		parentNodePath: 'MyServer',
 		nodeStatus: '',
 		nodeSubType: '',
 		nodeType: 'Folder',
@@ -34,6 +36,7 @@ const nodes: { [nodeName: string]: azdata.NodeInfo } =
 	},
 	'Database1': {
 		nodePath: 'MyServer/Databases/MyDatabase',
+		parentNodePath: 'MyServer/Databases',
 		nodeStatus: '',
 		nodeSubType: '',
 		nodeType: 'Database',
@@ -44,6 +47,7 @@ const nodes: { [nodeName: string]: azdata.NodeInfo } =
 	},
 	'Database2': {
 		nodePath: 'MyServer/Databases/My/TrickyDatabase',
+		parentNodePath: 'MyServer/Databases',
 		nodeStatus: '',
 		nodeSubType: '',
 		nodeType: 'Database',
@@ -54,6 +58,7 @@ const nodes: { [nodeName: string]: azdata.NodeInfo } =
 	},
 	'TablesFolder': {
 		nodePath: 'MyServer/Databases/My/TrickyDatabase/Tables',
+		parentNodePath: 'MyServer/Databases/My/TrickyDatabase',
 		nodeStatus: '',
 		nodeSubType: '',
 		nodeType: 'Folder',
