@@ -492,7 +492,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			await this._connectionStore.isDuplicateEdit(connection, matcher).then(result => {
 				if (result) {
 					this._logService.error(`Profile edit for '${connection.id}' exactly matches an existing profile with data: '${connection.getOptionsKey()}'`);
-					throw new Error(`This profile edit is identical to an already existing profile with data: ${connection.getOptionsKey()}`);
+					throw new Error(`Cannot save profile, the selected connection options are identical to an existing profile with details: \n${connection.getOptionsKey()}`);
 				}
 			})
 		}
