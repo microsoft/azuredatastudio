@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConnectionManagementService, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks, IConnectionResult, INewConnectionParams }
+import { IConnectionManagementService, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks, IConnectionResult, INewConnectionParams, ConnectionGroupUpdateParams, ConnectionUpdateParams }
 	from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -25,6 +25,12 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	onAddConnectionProfile = undefined!;
 	onDeleteConnectionProfile = undefined!;
 	onLanguageFlavorChanged = undefined!;
+	onNewConnectionProfile: Event<ConnectionProfile> = undefined!;
+	onUpdateConnectionProfile: Event<ConnectionUpdateParams> = undefined!;
+	onConnectionProfileConnected: Event<ConnectionProfile> = undefined!;
+	onNewConnectionProfileGroup: Event<ConnectionProfileGroup> = undefined!;
+	onUpdateConnectionProfileGroup: Event<ConnectionGroupUpdateParams> = undefined!;
+	onDeleteConnectionProfileGroup: Event<ConnectionProfileGroup> = undefined!;
 
 	public get onConnect(): Event<any> {
 		return Event.None;
