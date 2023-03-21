@@ -158,7 +158,7 @@ export class PublishOptionsDialog {
 			await this.updateExcludeObjectsTable();
 
 			// Update exclude type options value on checkbox onchange
-			this.excludeObjectTypesOptionsTable.onDataChanged(() => {
+			this.disposableListeners.push(this.excludeObjectTypesOptionsTable.onDataChanged(() => {
 				this.excludeObjectTypesOptionsTable!.dataValues?.forEach((row) => {
 					const displayName = <string>row[1].value;
 					const checkboxValue = <boolean>row[0].value;
@@ -168,7 +168,7 @@ export class PublishOptionsDialog {
 
 				// customButton[0] is the reset button, enabling it when option checkbox is changed
 				this.dialog.customButtons[0].enabled = true;
-			});
+			}));
 
 			this.excludeObjectTypesOptionsFlexBuilder = view.modelBuilder.flexContainer()
 				.withLayout({
