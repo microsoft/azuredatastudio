@@ -1197,11 +1197,14 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				try {
 					const connInfo = await this._connectionManagementService.buildConnectionInfo(this.connectionString, this._providerName);
 					if (!connInfo) {
-						throw Error(this._providerName + ".buildConnectionInfo had an undefined result.");
+						this._logService.error(`${this._providerName}.buildConnectionInfo returned an undefined value.`)
+						this._errorMessageService.showDialog(Severity.Error, localize('connectionWidget.Error', "Error"), localize('connectionWidget.ConnectionStringError', "Failed to parse the connection string."),);
+						return false;
 					}
 					model.options = connInfo.options;
 					model.savePassword = true;
 				} catch (err) {
+					this._logService.error(`Failed to parse the connection string : ${err}`)
 					this._errorMessageService.showDialog(Severity.Error, localize('connectionWidget.Error', "Error"),
 						localize('connectionWidget.ConnectionStringError', "Failed to parse the connection string."),
 						String(err));
