@@ -195,6 +195,7 @@
 	"title.newDatabaseRole": "New Database Role",
 	"title.newApplicationRole": "New Application Role",
 	"title.newUser": "New User",
-	"title.objectProperties": "Properties",
-	"title.deleteObject": "Delete"
+	"title.objectProperties": "Properties (Preview)",
+	"title.deleteObject": "Delete",
+	"title.renameObject": "Rename"
 }

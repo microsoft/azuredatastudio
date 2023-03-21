@@ -5,6 +5,7 @@
 import * as http from 'http';
 import * as url from 'url';
 import { AddressInfo } from 'net';
+import { Logger } from '../../utils/Logger';
 
 export type WebHandler = (req: http.IncomingMessage, reqUrl: url.UrlWithParsedQuery, res: http.ServerResponse) => void;
 
@@ -24,7 +25,7 @@ export class SimpleWebServer {
 			const time = new Date().getTime();
 
 			if (time - this.lastUsed > this.autoShutoffTimer) {
-				console.log('Shutting off webserver...');
+				Logger.verbose('Shutting off webserver...');
 				this.shutdown().catch(console.error);
 			}
 		}, 1000);

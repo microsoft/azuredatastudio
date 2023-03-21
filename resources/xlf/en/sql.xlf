@@ -4172,6 +4172,9 @@ Error: {1}</source>
     <trans-unit id="serverGroup.colors">
       <source xml:lang="en">Server Group color palette used in the Object Explorer viewlet.</source>
     </trans-unit>
+    <trans-unit id="serverTree.nodeExpansionTimeout">
+      <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
+    </trans-unit>
     <trans-unit id="serverTree.useAsyncServerTree">
       <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
     </trans-unit>
@@ -6185,6 +6188,9 @@ Error Message: 1</source>
     </trans-unit>
     <trans-unit id="nodeExpansionError">
       <source xml:lang="en">Multiple errors:</source>
+    </trans-unit>
+    <trans-unit id="nodeExpansionTimeout">
+      <source xml:lang="en">Node expansion timed out for node {0} for providers {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim" source-language="en" datatype="plaintext"><body>

@@ -1245,6 +1245,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			if (id && targetGroupId) {
 				source.groupId = targetGroupId;
 			}
+			// change the connection uri with the new group so that connection does not appear as disconnected in OE.
+			this.changeConnectionUri(Utils.generateUri(source), id);
 		});
 	}
 
