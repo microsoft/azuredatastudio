@@ -839,7 +839,7 @@ describe('Project: publish profiles', function (): void {
 	});
 });
 
-describe('Project: properties', function (): void {
+describe.only('Project: properties', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
 	});
@@ -855,18 +855,22 @@ describe('Project: properties', function (): void {
 		should(project.getProjectTargetVersion()).equal('150');
 	});
 
-	it('Should throw on missing target database version', async function (): Promise<void> {
+	it.only('Should throw on missing target database version', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectMissingVersionBaseline);
-		const project = await Project.openProject(projFilePath);
 
-		should(() => project.getProjectTargetVersion()).throw('Invalid DSP in .sqlproj file');
+		try {
+			await Project.openProject(projFilePath);
+			throw new Error('Should not have succeeded.');
+		} catch (e) {
+			(e.message).should.equal('Error: No target platform defined.  Missing <DSP> node.');
+		}
 	});
 
-	it('Should throw on invalid target database version', async function (): Promise<void> {
+	it.only('Should throw on invalid target database version', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidVersionBaseline);
-		const project = await Project.openProject(projFilePath);
+		await Project.openProject(projFilePath);
 
-		should(() => project.getProjectTargetVersion()).throw('Invalid DSP in .sqlproj file');
+		should(async () => await Project.openProject(projFilePath)).throw('Invalid DSP in .sqlproj file');
 	});
 
 	it('Should read default database collation', async function (): Promise<void> {

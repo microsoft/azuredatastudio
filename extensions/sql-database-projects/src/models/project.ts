@@ -193,11 +193,12 @@ export class Project implements ISqlProject {
 	//#region Reader helpers
 
 	private async readProjectProperties(): Promise<void> {
-		const props = await this.sqlProjService.getProjectProperties(this.projectFilePath);
+		const result = await this.sqlProjService.getProjectProperties(this.projectFilePath);
+		this.throwIfFailed(result);
 
-		this._projectGuid = props.projectGuid;
+		this._projectGuid = result.projectGuid;
 
-		switch (props.configuration.toLowerCase()) {
+		switch (result.configuration.toLowerCase()) {
 			case Configuration.Debug.toString().toLowerCase():
 				this._configuration = Configuration.Debug;
 				break;
@@ -208,11 +209,11 @@ export class Project implements ISqlProject {
 				this._configuration = Configuration.Output; // if the configuration doesn't match release or debug, the dacpac will get created in ./bin/Output
 		}
 
-		this._outputPath = path.isAbsolute(props.outputPath) ? props.outputPath : path.join(this.projectFolderPath, props.outputPath);
-		this._databaseSource = props.databaseSource ?? '';
-		this._defaultCollation = props.defaultCollation;
-		this._databaseSchemaProvider = props.databaseSchemaProvider;
-		this._sqlProjStyle = props.projectStyle;
+		this._outputPath = path.isAbsolute(result.outputPath) ? result.outputPath : path.join(this.projectFolderPath, result.outputPath);
+		this._databaseSource = result.databaseSource ?? '';
+		this._defaultCollation = result.defaultCollation;
+		this._databaseSchemaProvider = result.databaseSchemaProvider;
+		this._sqlProjStyle = result.projectStyle;
 
 		await this.readCrossPlatformCompatibility();
 	}
