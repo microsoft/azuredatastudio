@@ -112,7 +112,7 @@ stages:
         variables:
           NPM_CONFIG_ARCH: arm64
           VSCODE_ARCH: arm64
-          # AZDATA_RUNTIME: Linux_ARM64
+          AZDATA_RUNTIME: Linux_ARM64
           RUN_TESTS: false
         condition: and(succeeded(), eq(variables['VSCODE_BUILD_LINUX_ARM64'], 'true'))
         pool:

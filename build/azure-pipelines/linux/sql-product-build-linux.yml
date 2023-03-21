@@ -106,11 +106,13 @@ steps:
       yarn gulp compile-extensions
       yarn gulp package-external-extensions
     displayName: Package External extensions
+    condition: and(succeeded(), eq(variables['VSCODE_ARCH'], 'x64'))
 
   - script: |
       set -e
       yarn gulp package-langpacks
     displayName: Package Langpacks
+    condition: and(succeeded(), eq(variables['VSCODE_ARCH'], 'x64'))
 
   - script: |
       set -e
@@ -229,7 +231,7 @@ steps:
         ]
       SessionTimeout: 120
     displayName: 'Signing Extensions and Langpacks'
-    condition: and(succeeded(), eq(variables['signed'], true))
+    condition: and(succeeded(), eq(variables['signed'], true), eq(variables['VSCODE_ARCH'], 'x64'))
 
   - script: |
       set -e

@@ -7,7 +7,8 @@
 		"Windows_ARM64": "win-arm64-net7.0.zip",
 		"OSX": "osx-x64-net7.0.tar.gz",
 		"OSX_ARM64": "osx-arm64-net7.0.tar.gz",
-		"Linux": "rhel-x64-net7.0.tar.gz"
+		"Linux": "rhel-x64-net7.0.tar.gz",
+		"Linux_ARM64": "linux-arm64-net7.0.tar.gz"
 	},
 	"installDirectory": "./sqltoolsservice/{#platform#}/{#version#}",
 	"executableFiles": ["MicrosoftSqlToolsServiceLayer.exe", "MicrosoftSqlToolsServiceLayer"],
