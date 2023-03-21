@@ -6,6 +6,7 @@
 import * as mssql from 'mssql';
 import * as vscode from 'vscode';
 import * as constants from '../../common/constants';
+import { cssStyles } from '../../common/uiConstants';
 
 export class DeployOptionsModel {
 	// key is the option display name and values are checkboxValue and optionName
@@ -93,10 +94,19 @@ export class DeployOptionsModel {
 		let data: any[][] = [];
 		Object.entries(this.deploymentOptions.objectTypesDictionary).forEach(option => {
 			// option[1] is the display name and option[0] is the optionName
-			data.push([this.getExcludeObjectTypeOptionCheckStatus(option[0]), option[1]]);
+			data.push([
+				{
+					value: this.getExcludeObjectTypeOptionCheckStatus(option[0]),
+					style: cssStyles.optionsTableRowCheckbox,
+					ariaLabel: option[1]
+				},
+				{
+					value: option[1],
+					style: cssStyles.optionsTableRowLabel
+				}]);
 		});
 
-		return data.sort((a, b) => a[1].localeCompare(b[1]));
+		return data.sort((a, b) => a[1].value.localeCompare(b[1].value));
 	}
 
 	/*
