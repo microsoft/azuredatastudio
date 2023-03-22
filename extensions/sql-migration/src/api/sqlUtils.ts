@@ -5,11 +5,12 @@
 
 import * as azdata from 'azdata';
 import { azureResource } from 'azurecore';
-import { AzureSqlDatabase, AzureSqlDatabaseServer, SqlManagedInstance, SqlVMServer, StorageAccount } from './azure';
+import { AzureSqlDatabase, AzureSqlDatabaseServer, SqlManagedInstance, SqlVMServer, StorageAccount, Subscription } from './azure';
 import { generateGuid, MigrationTargetType } from './utils';
 import * as utils from '../api/utils';
 import { TelemetryAction, TelemetryViews, logError } from '../telemetry';
 import * as constants from '../constants/strings';
+import { NetworkInterfaceModel } from './dataModels/azure/networkInterfaceModel';
 
 const query_database_tables_sql = `
 	SELECT
@@ -510,7 +511,13 @@ export async function isSourceConnectionSysAdmin(): Promise<boolean> {
 	return getSqlBoolean(results.rows[0][0]);
 }
 
-export function canTargetConnectToStorageAccount(targetType: MigrationTargetType, targetServer: SqlManagedInstance | SqlVMServer | AzureSqlDatabaseServer, storageAccount: StorageAccount): boolean {
+export async function canTargetConnectToStorageAccount(
+	targetType: MigrationTargetType,
+	targetServer: SqlManagedInstance | SqlVMServer | AzureSqlDatabaseServer,
+	storageAccount: StorageAccount,
+	account: azdata.Account,
+	subscription: Subscription): Promise<boolean> {
+
 	// additional ARM properties which are not defined in azurecore
 	interface VirtualNetworkRule {
 		id: string,
@@ -518,56 +525,55 @@ export function canTargetConnectToStorageAccount(targetType: MigrationTargetType
 		action: string
 	}
 	interface NetworkRuleSet {
-		virtualNetworkRules: VirtualNetworkRule[]
+		virtualNetworkRules: VirtualNetworkRule[],
+		defaultAction: string
 	}
 
-	const storageAccountPublicAccessEnabled: boolean = (storageAccount as any)['properties']['allowBlobPublicAccess'];
-	const networkRules: NetworkRuleSet = (storageAccount as any)['properties']['networkAcls'];
-	const virtualNetworkRules: VirtualNetworkRule[] = networkRules.virtualNetworkRules;
+	const storageAccountPublicAccessEnabled: boolean = (storageAccount as any)['properties']['publicNetworkAccess'] === 'Enabled';
+	const storageAccountNetworkRules: NetworkRuleSet = (storageAccount as any)['properties']['networkAcls'];
+	const storageAccountDefaultIsAllow: boolean = storageAccountNetworkRules.defaultAction === 'Allow';
+	const storageAccountDefaultIsDeny: boolean = storageAccountNetworkRules.defaultAction === 'Deny';
 
-	var isVNetWhitelisted: boolean;
+	const storageAccountVirtualNetworkRules: VirtualNetworkRule[] = storageAccountNetworkRules.virtualNetworkRules;
+
+	var isVNetWhitelisted: boolean = false;
 	switch (targetType) {
 		case MigrationTargetType.SQLMI:
 			const targetManagedInstanceVNet: string = (targetServer.properties as any)['subnetId'];
-			isVNetWhitelisted = virtualNetworkRules.some(virtualNetworkRule => virtualNetworkRule.id.toLowerCase() === targetManagedInstanceVNet.toLowerCase() && virtualNetworkRule.action === 'Allow');
+			isVNetWhitelisted = storageAccountVirtualNetworkRules.some(virtualNetworkRule => virtualNetworkRule.action === 'Allow' && virtualNetworkRule.id.toLowerCase() === targetManagedInstanceVNet.toLowerCase());
 
-			console.log('subnetId: ' + targetManagedInstanceVNet);
-			console.log('allowBlobPublicAccess: ' + storageAccountPublicAccessEnabled);
-			console.log('virtualNetworkRules: ' + virtualNetworkRules);
-			console.log('isVNetWhitelisted: ' + isVNetWhitelisted);
+			console.log('MI subnetId: ' + targetManagedInstanceVNet);
 
 			break;
 
 		case MigrationTargetType.SQLVM:
-			break;
+			const networkInterfaces = Array.from((await NetworkInterfaceModel.getVmNetworkInterfaces(account, subscription, (targetServer as SqlVMServer))).values());
+			const subnets = networkInterfaces.map(networkInterface => networkInterface.properties.ipConfigurations.map(ipConfiguration => ipConfiguration.properties.subnet.id.toLowerCase())).flat();
 
+			isVNetWhitelisted = storageAccountVirtualNetworkRules.some(virtualNetworkRule => virtualNetworkRule.action === 'Allow' && subnets.includes(virtualNetworkRule.id.toLowerCase()));
+
+			console.log(subnets);
+
+			break;
 		default:
 			return true;
 	}
 
+	// Public network access:
+	//   Enabled from all networks - properties.publicNetworkAccess == "Enabled" && properties.networkAcls.defaultAction == "Allow"
+	//   Enabled from selected virtual networks and IP addresses - properties.publicNetworkAccess == "Enabled" && properties.networkAcls.defaultAction == "Deny" && virtualNetworkRules contains virtualNetworkRule.id == MI subnet with virtualNetworkRule.action == "Allow"
+	//   Disabled - properties.publicNetworkAccess == "E
 
-	if (targetServer) {
-		// SQL MI
-		const targetManagedInstanceVNet: string = (targetServer.properties as any)['subnetId'];
-		const isVNetWhitelisted: boolean = virtualNetworkRules.some(virtualNetworkRule => virtualNetworkRule.id.toLowerCase() === targetManagedInstanceVNet.toLowerCase() && virtualNetworkRule.action === 'Allow');
+	console.log('storageAccountPublicAccessEnabled: ' + storageAccountPublicAccessEnabled);
+	console.log('storageAccountDefaultIsAllow: ' + storageAccountDefaultIsAllow);
+	console.log('storageAccountDefaultIsDeny: ' + storageAccountDefaultIsDeny);
 
+	console.log('storageAccountVirtualNetworkRules: ' + storageAccountVirtualNetworkRules);
+	console.log('isVNetWhitelisted: ' + isVNetWhitelisted);
 
+	const enabledFromAllNetworks: boolean = storageAccountPublicAccessEnabled && storageAccountDefaultIsAllow;
+	const enabledFromWhitelistedVNet: boolean = storageAccountPublicAccessEnabled && storageAccountDefaultIsDeny && isVNetWhitelisted;
 
-		console.log('subnetId: ' + targetManagedInstanceVNet);
-		console.log('allowBlobPublicAccess: ' + storageAccountPublicAccessEnabled);
-		console.log('virtualNetworkRules: ' + virtualNetworkRules);
-		console.log('isVNetWhitelisted: ' + isVNetWhitelisted);
+	return enabledFromAllNetworks || enabledFromWhitelistedVNet;
 
-
-		return storageAccountPublicAccessEnabled || isVNetWhitelisted;
-
-	} else if (true) {
-		// SQL VM
-		return true;
-
-	} else {
-		// SQL DB
-		return true;
-
-	}
 }

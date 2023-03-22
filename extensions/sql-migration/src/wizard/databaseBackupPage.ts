@@ -1082,7 +1082,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 									// check for storage account connectivity
 									if ((this.migrationStateModel.isSqlMiTarget || this.migrationStateModel.isSqlVmTarget)) {
-										if (!canTargetConnectToStorageAccount(this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance, selectedStorageAccount)) {
+										if (!(await canTargetConnectToStorageAccount(this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance, selectedStorageAccount, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription))) {
 											const errorMessage = "Error: storage account connectivity for storage account " + selectedStorageAccount.name;
 											this._inaccessibleStorageErrors = this._inaccessibleStorageErrors.filter(err => err !== errorMessage);
 											this._inaccessibleStorageErrors.push(errorMessage);
@@ -1153,7 +1153,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						this._disposables.push(
 							blobContainerFolderDropdown.onValueChanged(value => {
 								if (value && value !== 'undefined') {
-									if (this.migrationStateModel._blobContainerFolders.includes(value) && !blobFolderErrorStrings.includes(value)) {
+									if (this.migrationStateModel._blobContainerFolders && this.migrationStateModel._blobContainerFolders.includes(value) && !blobFolderErrorStrings.includes(value)) {
 										const selectedFolder = value;
 										this.migrationStateModel._databaseBackup.blobs[index].folderName = selectedFolder;
 									}

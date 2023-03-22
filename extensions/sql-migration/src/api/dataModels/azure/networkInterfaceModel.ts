@@ -32,7 +32,8 @@ export interface NetworkInterfaceIpConfiguration extends NetworkResource {
 		privateIPAddress: string,
 		privateIPAddressVersion: string,
 		provisioningState: string,
-		publicIPAddress: NetworkResource
+		publicIPAddress: NetworkResource,
+		subnet: { id: string }
 	}
 }
 
