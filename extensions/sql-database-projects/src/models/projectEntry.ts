@@ -44,25 +44,32 @@ export class FileProjectEntry extends ProjectEntry implements IFileProjectEntry 
 }
 
 export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
-	databaseVariableLiteralValue?: string;
 	databaseSqlCmdVariable?: string;
+	databaseName?: string;
+	databaseVariableLiteralValue?: string;
 	serverName?: string;
 	serverSqlCmdVariable?: string;
 	suppressMissingDependenciesErrors: boolean;
 
 	constructor(settings: IDacpacReferenceSettings) {
-		super(settings.dacpacFileLocation, '', EntryType.DatabaseReference);
-		this.databaseSqlCmdVariable = settings.databaseVariable;
-		this.databaseVariableLiteralValue = settings.databaseName;
+		super(settings.dacpacFileLocation, /* relativePath doesn't get set for database references */ '', EntryType.DatabaseReference);
+		this.suppressMissingDependenciesErrors = settings.suppressMissingDependenciesErrors;
+
+		if (settings.databaseVariable) { // full SQLCMD variable
+			this.databaseName = settings.databaseName;
+			this.databaseSqlCmdVariable = settings.databaseVariable;
+		} else { // just a literal
+			this.databaseVariableLiteralValue = settings.databaseName;
+		}
+
 		this.serverName = settings.serverName;
 		this.serverSqlCmdVariable = settings.serverVariable;
-		this.suppressMissingDependenciesErrors = settings.suppressMissingDependenciesErrors;
 	}
 
 	/**
 	 * File name that gets displayed in the project tree
 	 */
-	public get databaseName(): string {
+	public get referenceName(): string {
 		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;
 	}
 
@@ -73,39 +80,47 @@ export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDa
 }
 
 export class SystemDatabaseReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
-	constructor(public databaseName: string, public databaseVariableLiteralValue: string | undefined, public suppressMissingDependenciesErrors: boolean) {
-		super(Uri.file(databaseName), databaseName, EntryType.DatabaseReference);
+	constructor(public referenceName: string, public databaseVariableLiteralValue: string | undefined, public suppressMissingDependenciesErrors: boolean) {
+		super(Uri.file(referenceName), referenceName, EntryType.DatabaseReference);
 	}
 
 	/**
 	 * Returns the name of the system database - this is used for deleting the system database reference
 	 */
 	public override pathForSqlProj(): string {
-		return this.databaseName;
+		return this.referenceName;
 	}
 }
 
 export class SqlProjectReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
-	projectName: string;
-	projectGuid: string;
-	databaseVariableLiteralValue?: string;
-	databaseSqlCmdVariable?: string;
-	serverName?: string;
-	serverSqlCmdVariable?: string;
-	suppressMissingDependenciesErrors: boolean;
+	public projectName: string;
+	public projectGuid: string;
+	public databaseVariableLiteralValue?: string;
+	public databaseName?: string;
+	public databaseSqlCmdVariable?: string;
+	public serverName?: string;
+	public serverSqlCmdVariable?: string;
+	public suppressMissingDependenciesErrors: boolean;
 
 	constructor(settings: IProjectReferenceSettings) {
-		super(settings.projectRelativePath!, '', EntryType.DatabaseReference);
+		super(settings.projectRelativePath!, /* relativePath doesn't get set for database references */ '', EntryType.DatabaseReference);
+
 		this.projectName = settings.projectName;
 		this.projectGuid = settings.projectGuid;
-		this.databaseSqlCmdVariable = settings.databaseVariable;
-		this.databaseVariableLiteralValue = settings.databaseName;
+		this.suppressMissingDependenciesErrors = settings.suppressMissingDependenciesErrors;
+
+		if (settings.databaseVariable) { // full SQLCMD variable
+			this.databaseName = settings.databaseName;
+			this.databaseSqlCmdVariable = settings.databaseVariable;
+		} else { // just a literal
+			this.databaseVariableLiteralValue = settings.databaseName;
+		}
+
 		this.serverName = settings.serverName;
 		this.serverSqlCmdVariable = settings.serverVariable;
-		this.suppressMissingDependenciesErrors = settings.suppressMissingDependenciesErrors;
 	}
 
-	public get databaseName(): string {
+	public get referenceName(): string {
 		return this.projectName;
 	}
 

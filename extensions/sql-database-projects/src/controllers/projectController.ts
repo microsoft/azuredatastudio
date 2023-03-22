@@ -991,7 +991,7 @@ export class ProjectsController {
 		const databaseReference = context as DatabaseReferenceTreeItem;
 
 		if (databaseReference) {
-			return project.databaseReferences.find(r => r.databaseName === databaseReference.treeItem.label);
+			return project.databaseReferences.find(r => r.referenceName === databaseReference.treeItem.label);
 		}
 
 		return undefined;

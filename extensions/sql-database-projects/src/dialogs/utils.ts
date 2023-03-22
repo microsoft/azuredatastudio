@@ -9,6 +9,8 @@ import * as utils from '../common/utils';
 import * as mssql from 'mssql';
 import { HttpClient } from '../common/httpClient';
 import { AgreementInfo, DockerImageInfo } from '../models/deploy/deployProfile';
+import { IUserDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { removeSqlCmdVariableFormatting } from '../common/utils';
 
 /**
  * Gets connection name from connection object if there is one,
@@ -212,5 +214,23 @@ export function mapExtractTargetEnum(inputTarget: string): mssql.ExtractTarget {
 		}
 	} else {
 		throw new Error(constants.extractTargetRequired);
+	}
+}
+
+export interface DbServerValues {
+	dbName?: string,
+	dbVariable?: string,
+	serverName?: string,
+	serverVariable?: string
+}
+
+export function populateResultWithVars(referenceSettings: IUserDatabaseReferenceSettings, dbServerValues: DbServerValues) {
+	if (dbServerValues.dbVariable) {
+		referenceSettings.databaseName = dbServerValues.dbName;
+		referenceSettings.databaseVariable = removeSqlCmdVariableFormatting(dbServerValues.dbVariable);
+		referenceSettings.serverName = dbServerValues.serverName;
+		referenceSettings.serverVariable = removeSqlCmdVariableFormatting(dbServerValues.serverVariable);
+	} else {
+		referenceSettings.databaseVariableLiteralValue = dbServerValues.dbName;
 	}
 }

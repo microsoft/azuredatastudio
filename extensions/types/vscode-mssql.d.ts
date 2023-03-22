@@ -1134,7 +1134,7 @@ declare module 'vscode-mssql' {
 	}
 
 	interface UserDatabaseReference extends DatabaseReference {
-		databaseVariable: SqlCmdVariable;
+		databaseVariable?: SqlCmdVariable;
 		serverVariable?: SqlCmdVariable;
 	}
 

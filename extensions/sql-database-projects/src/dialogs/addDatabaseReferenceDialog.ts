@@ -16,6 +16,7 @@ import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectRef
 import { Deferred } from '../common/promise';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { SystemDatabase } from 'mssql';
+import { DbServerValues, populateResultWithVars } from './utils';
 
 export enum ReferenceType {
 	project,
@@ -151,32 +152,42 @@ export class AddDatabaseReferenceDialog {
 	public async addReferenceClick(): Promise<void> {
 		let referenceSettings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings;
 
-		if (this.currentReferenceType === ReferenceType.project) {
-			referenceSettings = {
-				projectName: <string>this.projectDropdown?.value,
-				projectGuid: '',
-				projectRelativePath: undefined,
-				databaseName: this.ensureSetOrDefined(this.databaseNameTextbox?.value),
-				databaseVariable: this.ensureSetOrDefined(this.databaseVariableTextbox?.value),
-				serverName: this.ensureSetOrDefined(this.serverNameTextbox?.value),
-				serverVariable: this.ensureSetOrDefined(this.serverVariableTextbox?.value),
-				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
-			};
-		} else if (this.currentReferenceType === ReferenceType.systemDb) {
-			referenceSettings = {
-				databaseName: <string>this.databaseNameTextbox?.value,
+		if (this.currentReferenceType === ReferenceType.systemDb) {
+			const systemDbRef: ISystemDatabaseReferenceSettings = {
+				databaseVariableLiteralValue: <string>this.databaseNameTextbox?.value,
 				systemDb: getSystemDatabase(<string>this.systemDatabaseDropdown?.value),
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
-		} else { // this.currentReferenceType === ReferenceType.dacpac
-			referenceSettings = {
-				databaseName: this.ensureSetOrDefined(this.databaseNameTextbox?.value),
-				dacpacFileLocation: vscode.Uri.file(<string>this.dacpacTextbox?.value),
-				databaseVariable: this.ensureSetOrDefined(utils.removeSqlCmdVariableFormatting(<string>this.databaseVariableTextbox?.value)),
+
+			referenceSettings = systemDbRef;
+		} else {
+			if (this.currentReferenceType === ReferenceType.project) {
+				const projRef: IProjectReferenceSettings = {
+					projectName: <string>this.projectDropdown?.value,
+					projectGuid: '',
+					projectRelativePath: undefined,
+					suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
+				};
+
+				referenceSettings = projRef;
+			} else { // this.currentReferenceType === ReferenceType.dacpac
+				const dacpacRef: IDacpacReferenceSettings = {
+					databaseName: this.ensureSetOrDefined(this.databaseNameTextbox?.value),
+					dacpacFileLocation: vscode.Uri.file(<string>this.dacpacTextbox?.value),
+					suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
+				};
+
+				referenceSettings = dacpacRef;
+			}
+
+			const dbServerValues: DbServerValues = {
+				dbName: this.ensureSetOrDefined(this.databaseNameTextbox?.value),
+				dbVariable: this.ensureSetOrDefined(utils.removeSqlCmdVariableFormatting(<string>this.databaseVariableTextbox?.value)),
 				serverName: this.ensureSetOrDefined(this.serverNameTextbox?.value),
-				serverVariable: this.ensureSetOrDefined(utils.removeSqlCmdVariableFormatting(<string>this.serverVariableTextbox?.value)),
-				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
+				serverVariable: this.ensureSetOrDefined(utils.removeSqlCmdVariableFormatting(<string>this.serverVariableTextbox?.value))
 			};
+
+			populateResultWithVars(referenceSettings, dbServerValues);
 		}
 
 		TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
