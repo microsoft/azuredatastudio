@@ -12,7 +12,7 @@ import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
 import { Project } from '../models/project';
-import { exists, convertSlashesForSqlProj, getWellKnownDatabaseSources, getPlatformSafeFileEntryPath, systemDatabaseToString } from '../common/utils';
+import { exists, convertSlashesForSqlProj, getPlatformSafeFileEntryPath, systemDatabaseToString } from '../common/utils';
 import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { EntryType, ItemType } from 'sqldbproj';
@@ -857,16 +857,20 @@ describe('Project: properties', function (): void {
 
 	it('Should throw on missing target database version', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectMissingVersionBaseline);
-		const project = await Project.openProject(projFilePath);
 
-		should(() => project.getProjectTargetVersion()).throw('Invalid DSP in .sqlproj file');
+		await testUtils.shouldThrowSpecificError(async () => await Project.openProject(projFilePath), 'Error: No target platform defined.  Missing <DSP> node.');
 	});
 
 	it('Should throw on invalid target database version', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidVersionBaseline);
-		const project = await Project.openProject(projFilePath);
 
-		should(() => project.getProjectTargetVersion()).throw('Invalid DSP in .sqlproj file');
+		try {
+			await Project.openProject(projFilePath);
+			throw new Error('Should not have succeeded.');
+		} catch (e) {
+			(e.message).should.startWith('Error: Invalid value for Database Schema Provider:');
+			(e.message).should.endWith('expected to be in the form Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider');
+		}
 	});
 
 	it('Should read default database collation', async function (): Promise<void> {
@@ -883,29 +887,32 @@ describe('Project: properties', function (): void {
 		should(project.getDatabaseDefaultCollation()).equal('SQL_Latin1_General_CP1_CI_AS');
 	});
 
-	it('Should throw on invalid default database collation', async function (): Promise<void> {
+	// TODO: skipped until DacFx throws on invalid value
+	it.skip('Should throw on invalid default database collation', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
-		const project = await Project.openProject(projFilePath);
 
-		should(() => project.getDatabaseDefaultCollation())
-			.throw('Invalid value specified for the property \'DefaultCollation\' in .sqlproj file');
+		try {
+			await Project.openProject(projFilePath);
+			throw new Error('Should not have succeeded.');
+		} catch (e) {
+			(e.message).should.startWith('Error: Invalid value for DefaultCollation:');
+		}
 	});
 
 	it('Should add database source to project property', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
-		const project = await Project.openProject(projFilePath);
+		const project = await testUtils.createTestSqlProject();
 
 		// Should add a single database source
 		await project.addDatabaseSource('test1');
 		let databaseSourceItems: string[] = project.getDatabaseSourceValues();
-		should(databaseSourceItems.length).equal(1);
+		should(databaseSourceItems.length).equal(1, 'number of database sources: ' + databaseSourceItems);
 		should(databaseSourceItems[0]).equal('test1');
 
 		// Should add multiple database sources
 		await project.addDatabaseSource('test2');
 		await project.addDatabaseSource('test3');
 		databaseSourceItems = project.getDatabaseSourceValues();
-		should(databaseSourceItems.length).equal(3);
+		should(databaseSourceItems.length).equal(3, 'number of database sources: ' + databaseSourceItems);
 		should(databaseSourceItems[0]).equal('test1');
 		should(databaseSourceItems[1]).equal('test2');
 		should(databaseSourceItems[2]).equal('test3');
@@ -946,19 +953,6 @@ describe('Project: properties', function (): void {
 		databaseSourceItems = project.getDatabaseSourceValues();
 
 		should(databaseSourceItems.length).equal(0);
-	});
-
-	it('Should only return well known database strings when getWellKnownDatabaseSourceString function is called', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
-		const project = await Project.openProject(projFilePath);
-
-		await project.addDatabaseSource('test1');
-		await project.addDatabaseSource('test2');
-		await project.addDatabaseSource('test3');
-		await project.addDatabaseSource(constants.WellKnownDatabaseSources[0]);
-
-		should(getWellKnownDatabaseSources(project.getDatabaseSourceValues()).length).equal(1);
-		should(getWellKnownDatabaseSources(project.getDatabaseSourceValues())[0]).equal(constants.WellKnownDatabaseSources[0]);
 	});
 
 	it('Should throw error when adding or removing database source that contains semicolon', async function (): Promise<void> {
