@@ -28,7 +28,7 @@ export abstract class MigrationExtensionService extends SqlOpsFeature<undefined>
 export class SqlMigrationService extends MigrationExtensionService implements contracts.ISqlMigrationService {
 	private _reportUpdate: ((dbName: string, succeeded: boolean, error: string) => void) | undefined = undefined;
 
-	private _reportSchemaMigrationComplete: ((sourceDbName: string, succeeded: boolean) => void) | undefined = undefined;
+	private _reportSchemaMigrationComplete: ((sourceDbName: string, status: string) => void) | undefined = undefined;
 
 	override providerId = ApiType.SqlMigrationProvider;
 
@@ -68,7 +68,8 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 			if (this._reportSchemaMigrationComplete === undefined) {
 				return;
 			}
-			this._reportSchemaMigrationComplete(e.sourceDbName, e.succeeded);
+			//TODO handle other fields in complete event like error messages
+			this._reportSchemaMigrationComplete(e.sourceDatabaseName, e.status);
 		});
 	}
 
@@ -329,21 +330,24 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 
 	async migrateSqlSchema(
 		sourceConnectionString: string,
+		sourceDatabaseName: string,
 		targetConnectionString: string,
-		reportSchemaMigrationComplete: (sourceDbName: string, succeeded: boolean) => void): Promise<contracts.SchemaMigrationResult | undefined> {
+		targetDatabaseName: string,
+		reportSchemaMigrationComplete: (sourceDbName: string, status: string) => void): Promise<void> {
 
 		this._reportSchemaMigrationComplete = reportSchemaMigrationComplete;
 		let params: contracts.SchemaMigrationParams = {
-			sourceSqlConnectionString: sourceConnectionString,
-			targetSqlConnectionString: targetConnectionString
+			sourceConnectionString: sourceConnectionString,
+			sourceDatabaseName: sourceDatabaseName,
+			targetConnectionString: targetConnectionString,
+			targetDatabaseName: targetDatabaseName
 		};
 
 		try {
-			const result = await this._client.sendRequest(contracts.SchemaMigrationRequest.type, params);
-			return result;
+			void this._client.sendRequest(contracts.SchemaMigrationRequest.type, params);
 		}
 		catch (e) {
-			this._client.logFailedRequest(contracts.MigrateServerRolesAndSetPermissionsRequest.type, e);
+			this._client.logFailedRequest(contracts.SchemaMigrationRequest.type, e);
 		}
 
 		return undefined;

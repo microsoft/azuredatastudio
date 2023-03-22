@@ -503,8 +503,10 @@ export interface ISqlMigrationService {
 		reportUpdate: (dbName: string, succeeded: boolean, message: string) => void): Promise<TdeMigrationResult | undefined>;
 	migrateSqlSchema(
 		sourceConnectionString: string,
+		sourceDatabaseName: string,
 		targetConnectionString: string,
-		reportSchemaMigrationComplete: (sourceDbName: string, succeeded: boolean) => void): Promise<SchemaMigrationResult | undefined>;
+		TargetDatabaseName: string,
+		reportSchemaMigrationComplete: (sourceDbName: string, status: string) => void): Promise<void>;
 }
 
 export interface TdeMigrationRequest {
@@ -554,18 +556,21 @@ export interface TdeMigrateProgressParams {
 }
 
 export interface SchemaMigrationParams {
-	sourceSqlConnectionString: string;
-	targetSqlConnectionString: string;
+	sourceConnectionString: string;
+	sourceDatabaseName: string;
+	targetConnectionString: string;
+	targetDatabaseName: string;
 }
 
 export interface SchemaMigrationResult {
-	sourceDbName: string;
-	targetDbname: string;
-	succeeded: boolean;
+	sourceDatabaseName: string;
+	targetDatabasename: string;
+	status: string;
+	errorMessage: string;
 }
 
 export namespace SchemaMigrationRequest {
-	export const type = new RequestType<SchemaMigrationParams, SchemaMigrationResult, void, void>('migration/schemamigration');
+	export const type = new RequestType<SchemaMigrationParams, boolean, void, void>('migration/schemamigration');
 }
 
 export namespace SchemaMigrationCompleteEvent {

@@ -1592,7 +1592,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					<azdata.HyperlinkColumn>{
 						name: constants.DATABASE_TABLE_MIGRATE_SCHEMA_COLUMN_LABEL,
 						value: 'migrateSchema',
-						width: 160,
+						width: 90,
 						type: azdata.ColumnType.hyperlink,
 						cssClass: cssClass,
 						headerCssClass: cssClass,
@@ -1631,11 +1631,11 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						const targetDatabaseName = targetDatabaseInfo?.databaseName;
 						const schemaMigrationStatus = this._schemaMigrationStatus.get(sourceDatabaseName);
 						if (sourceDatabaseName && targetDatabaseName) {
-							if (schemaMigrationStatus === undefined || schemaMigrationStatus === SchemaMigrationState.Failed) {
+							if (schemaMigrationStatus === undefined || schemaMigrationStatus === SchemaMigrationState.CompletedWithError) {
 								// Start schema migration from nuget but don't await to allow for multiple calls.
 								// Updates given via notification events that will run _updateTableWithSchemaMigrationResult
 								void this.migrationStateModel.sqlSchemaMigrationModel.MigrateSchema(sourceDatabaseName, this.migrationStateModel, this._updateTableWithSchemaMigrationResult.bind(this));
-								this._schemaMigrationStatus.set(sourceDatabaseName, SchemaMigrationState.InProgress);
+								this._schemaMigrationStatus.set(sourceDatabaseName, SchemaMigrationState.SchemaMigrationInProgress);
 								this._schemaMigrationInProgress = true;
 								//Disable next button while schema migration is running
 								if (this.wizard.nextButton.enabled === true) {
@@ -1692,7 +1692,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				const tableCount = targetDatabaseInfo?.sourceTables.size ?? 0;
 				const hasTables = tableCount > 0;
 				const schemaMigrationStatus = this._schemaMigrationStatus.get(sourceDatabaseName);
-				if (schemaMigrationStatus === SchemaMigrationState.InProgress) {
+				if (schemaMigrationStatus !== SchemaMigrationState.Completed
+					&& schemaMigrationStatus !== SchemaMigrationState.CompletedWithError) {
 					this._schemaMigrationInProgress = true;
 				}
 
@@ -1708,19 +1709,19 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					<azdata.HyperlinkColumnCellValue>{				// Migrate schema
 						icon: schemaMigrationStatus === undefined
 							? IconPathHelper.notStartedMigration
-							: schemaMigrationStatus === SchemaMigrationState.InProgress
-								? IconPathHelper.inProgressMigration
-								: schemaMigrationStatus === SchemaMigrationState.Succeeded
+							: schemaMigrationStatus === SchemaMigrationState.CompletedWithError
+								? IconPathHelper.error
+								: schemaMigrationStatus === SchemaMigrationState.Completed
 									? IconPathHelper.completedMigration
-									: IconPathHelper.error,
+									: IconPathHelper.inProgressMigration,
 
 						title: schemaMigrationStatus === undefined
 							? constants.MIGRATE_SCHEMA_BUTTON
-							: schemaMigrationStatus === SchemaMigrationState.InProgress
-								? constants.MigrationState.InProgress
-								: schemaMigrationStatus === SchemaMigrationState.Succeeded
+							: schemaMigrationStatus === SchemaMigrationState.CompletedWithError
+								? constants.MigrationState.Failed
+								: schemaMigrationStatus === SchemaMigrationState.Completed
 									? constants.MigrationState.Succeeded
-									: constants.MigrationState.Failed,
+									: constants.MigrationState.InProgress,
 						role: 'button'
 					},
 					<azdata.HyperlinkColumnCellValue>{				// table selection
@@ -1742,14 +1743,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._refreshLoading.loading = false;
 	}
 
-	private async _updateTableWithSchemaMigrationResult(sourceDbName: string, succeeded: boolean): Promise<void> {
+	private async _updateTableWithSchemaMigrationResult(sourceDbName: string, status: string): Promise<void> {
 		// If given invalid database name return without doing anything
 		if (this._schemaMigrationStatus.get(sourceDbName) === undefined) {
 			return;
 		}
-		// Set results of schema migration for the source database. (Don't need targetDb here since already in _sourceTargetMapping)
+		// Set results of schema migration for the source database.
 		this._schemaMigrationStatus.set(sourceDbName,
-			succeeded ? SchemaMigrationState.Succeeded : SchemaMigrationState.Failed);
+			status === SchemaMigrationState.Completed ? SchemaMigrationState.Completed : SchemaMigrationState.CompletedWithError)
 
 		await this._loadTableData();
 	}

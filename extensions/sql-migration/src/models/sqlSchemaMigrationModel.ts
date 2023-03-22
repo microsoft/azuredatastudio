@@ -3,69 +3,42 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { getSourceConnectionString, getSqlDbConnectionString } from '../api/sqlUtils';
+import { getSourceConnectionString, getTargetConnectionString } from '../api/sqlUtils';
 import { MigrationStateModel } from './stateMachine';
 
 export enum SchemaMigrationState {
 	NotStarted = 'NotStarted',
-	InProgress = 'InProgress',
-	Succeeded = 'Succeeded',
-	Failed = 'Failed',
-}
-
-export enum SchemaMigrationDbState {
-	InProgress = 'InProgress',
-	Succeeded = 'Succeeded',
-	Failed = 'Failed',
-}
-
-export interface SchemaMigrationResult {
-	perDbResult: SchemaMigrationPerDbResult[];
-	state: SchemaMigrationState;
-}
-
-export interface SchemaMigrationPerDbResult {
-	sourceDbName: string;
-	targetDbName: string;
-	status: SchemaMigrationDbState;
+	CollectingObjects = 'CollectingObjects',
+	GeneratingScript = 'GeneratingScript',
+	DeployingSchema = 'DeployingSchema',
+	SchemaMigrationInProgress = 'SchemaMigrationInProgress',
+	DeploymentCompleted = 'DeploymentCompleted',
+	Completed = 'Completed',
+	CompletedWithError = 'CompletedWithError',
 }
 
 export class SqlSchemaMigrationModel {
-	public schemaMigrationResult: SchemaMigrationResult;
-
-	constructor() {
-		this.schemaMigrationResult = {
-			perDbResult: [],
-			state: SchemaMigrationState.NotStarted
-		}
-	}
 
 	public async MigrateSchema(sourceDatabaseName: string, stateMachine: MigrationStateModel,
-		reportSchemaMigrationComplete: (sourceDbName: string, succeeded: boolean) => Promise<void>): Promise<SchemaMigrationResult> {
+		reportSchemaMigrationComplete: (sourceDbName: string, status: string) => Promise<void>): Promise<void> {
 		const sourceConnectionString = await getSourceConnectionString();
-		const targetDbName = stateMachine._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? ""
-		const targetConnectionString = await getSqlDbConnectionString(
+		const targetDatabaseName = stateMachine._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? ""
+		const targetConnectionString = await getTargetConnectionString(
 			stateMachine.targetServerName,
-			stateMachine._azureTenant.id,
-			targetDbName,
+			stateMachine._targetServerInstance.id,
 			stateMachine._targetUserName,
-			stateMachine._targetPassword)
-
+			stateMachine._targetPassword,
+			// to-do: take as input from the user, should be true/false for DB/MI but true/true for VM
+			true /* encryptConnection */,
+			false /* trustServerCertificate */);
 		// Start async schema migration call
-		const result = await stateMachine.migrationService.migrateSqlSchema(
+		void stateMachine.migrationService.migrateSqlSchema(
 			sourceConnectionString,
+			sourceDatabaseName,
 			targetConnectionString,
+			targetDatabaseName,
 			reportSchemaMigrationComplete
 		);
-
-		this.schemaMigrationResult.perDbResult.push
-		{
-			result?.sourceDbName;
-			result?.targetDbname;
-			result?.succeeded;
-		}
-
-		return this.schemaMigrationResult;
 	}
 }
 
