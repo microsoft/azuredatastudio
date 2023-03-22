@@ -17,7 +17,9 @@ const files = [
 	'.build/win32-arm64/**/*.{exe,zip}', // windows arm64 binaries
 	'.build/linux/sha256hashes.txt', // linux hashes
 	'.build/linux/deb/amd64/deb/*.deb', // linux debs
+	'.build/linux/deb/arm64/deb/*.deb', // linux debs - arm64
 	'.build/linux/rpm/x86_64/*.rpm', // linux rpms
+	'.build/linux/rpm/aarch64/*.rpm', // linux rpms - arm64
 	'.build/linux/server/*', // linux server
 	'.build/linux/archive/*', // linux archive
 	'.build/docker/*', // docker images
