@@ -900,7 +900,6 @@ describe('Project: properties', function (): void {
 	});
 
 	it('Should add database source to project property', async function (): Promise<void> {
-		this.timeout(999_999);
 		const project = await testUtils.createTestSqlProject();
 
 		// Should add a single database source
