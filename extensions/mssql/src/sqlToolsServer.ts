@@ -50,7 +50,7 @@ export class SqlToolsServer {
 	private client: SqlOpsDataClient;
 	private config: IConfig;
 	private disposables = new Array<{ dispose: () => void }>();
-	public installDirectory: string | undefined = undefined;
+	public installDirectory: string;
 
 	public async start(context: AppContext): Promise<SqlOpsDataClient> {
 		try {
@@ -95,7 +95,7 @@ export class SqlToolsServer {
 		const rawConfig = await fs.readFile(path.join(configDir, 'config.json'));
 		this.config = JSON.parse(rawConfig.toString());
 		this.config.installDirectory = path.join(configDir, this.config.installDirectory);
-		this.config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
+		this.config.proxy = vscode.workspace.getConfiguration('http').get<string>('proxy', '');
 		this.config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL', true);
 		return getOrDownloadServer(this.config, handleServerProviderEvent);
 	}

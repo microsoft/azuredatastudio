@@ -6,7 +6,6 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as crypto from 'crypto';
 import * as os from 'os';
 import * as findRemoveSync from 'find-remove';
 import { promises as fs } from 'fs';
@@ -36,7 +35,7 @@ export const isLinux = os.platform() === 'linux';
 export function getAppDataPath() {
 	let platform = process.platform;
 	switch (platform) {
-		case 'win32': return process.env['APPDATA'] || path.join(process.env['USERPROFILE'], 'AppData', 'Roaming');
+		case 'win32': return process.env['APPDATA'] || path.join(process.env['USERPROFILE'] || '', 'AppData', 'Roaming');
 		case 'darwin': return path.join(os.homedir(), 'Library', 'Application Support');
 		case 'linux': return process.env['XDG_CONFIG_HOME'] || path.join(os.homedir(), '.config');
 		default: throw new Error('Platform not supported');
@@ -79,7 +78,7 @@ export function getAzureCoreExtConfiguration(config: string = azureExtensionConf
 	return vscode.workspace.getConfiguration(config);
 }
 
-export function getConfigLogFilesRemovalLimit(): number {
+export function getConfigLogFilesRemovalLimit(): number | undefined {
 	let config = getConfiguration();
 	if (config) {
 		return Number((config[configLogFilesRemovalLimit]).toFixed(0));
@@ -88,7 +87,7 @@ export function getConfigLogFilesRemovalLimit(): number {
 	}
 }
 
-export function getConfigLogRetentionSeconds(): number {
+export function getConfigLogRetentionSeconds(): number | undefined {
 	let config = getConfiguration();
 	if (config) {
 		return Number((config[configLogRetentionMinutes] * 60).toFixed(0));
@@ -131,7 +130,7 @@ export function getConfigPiiLogging(): boolean {
 export function getConfigPreloadDatabaseModel(): boolean {
 	let config = getConfiguration();
 	if (config) {
-		return config.get<boolean>(tableDesignerPreloadConfig);
+		return config.get<boolean>(tableDesignerPreloadConfig, false);
 	} else {
 		return false;
 	}
@@ -150,15 +149,13 @@ export function getParallelMessageProcessingConfig(): boolean {
 		return false;
 	}
 	const setting = config.inspect(parallelMessageProcessingConfig);
-	return (azdata.env.quality === azdata.env.AppQuality.dev && setting.globalValue === undefined && setting.workspaceValue === undefined) ? true : config[parallelMessageProcessingConfig];
+	return (azdata.env.quality === azdata.env.AppQuality.dev && setting?.globalValue === undefined && setting?.workspaceValue === undefined) ? true : config[parallelMessageProcessingConfig];
 }
 
 export function getAzureAuthenticationLibraryConfig(): string {
 	const config = getAzureCoreExtConfiguration();
 	if (config) {
-		return config.has(azureAuthenticationLibraryConfig)
-			? config.get<string>(azureAuthenticationLibraryConfig)
-			: 'MSAL'; // default Auth library
+		return config.get<string>(azureAuthenticationLibraryConfig, 'MSAL'); // default Auth library
 	}
 	else {
 		return 'MSAL';
@@ -168,9 +165,7 @@ export function getAzureAuthenticationLibraryConfig(): string {
 export function getEnableSqlAuthenticationProviderConfig(): boolean {
 	const config = getConfiguration();
 	if (config) {
-		return config.has(enableSqlAuthenticationProviderConfig)
-			? config.get<boolean>(enableSqlAuthenticationProviderConfig)
-			: false; // disabled by default
+		return config.get<boolean>(enableSqlAuthenticationProviderConfig, false); // disabled by default
 	}
 	else {
 		return false;
@@ -215,70 +210,6 @@ export function ensure(target: { [key: string]: any }, key: string): any {
 	return target[key];
 }
 
-export interface IPackageInfo {
-	name: string;
-	version: string;
-	aiKey: string;
-}
-
-export function getPackageInfo(packageJson: any): IPackageInfo {
-	if (packageJson) {
-		return {
-			name: packageJson.name,
-			version: packageJson.version,
-			aiKey: packageJson.aiKey
-		};
-	}
-	return undefined;
-}
-
-export function generateUserId(): Promise<string> {
-	return new Promise<string>(resolve => {
-		try {
-			let interfaces = os.networkInterfaces();
-			let mac;
-			for (let key of Object.keys(interfaces)) {
-				let item = interfaces[key][0];
-				if (!item.internal) {
-					mac = item.mac;
-					break;
-				}
-			}
-			if (mac) {
-				resolve(crypto.createHash('sha256').update(mac + os.homedir(), 'utf8').digest('hex'));
-			} else {
-				resolve(generateGuid());
-			}
-		} catch (err) {
-			resolve(generateGuid()); // fallback
-		}
-	});
-}
-
-export function generateGuid(): string {
-	let hexValues: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
-	// c.f. rfc4122 (UUID version 4 = xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx)
-	let oct: string = '';
-	let tmp: number;
-	/* tslint:disable:no-bitwise */
-	for (let a: number = 0; a < 4; a++) {
-		tmp = (4294967296 * Math.random()) | 0;
-		oct += hexValues[tmp & 0xF] +
-			hexValues[tmp >> 4 & 0xF] +
-			hexValues[tmp >> 8 & 0xF] +
-			hexValues[tmp >> 12 & 0xF] +
-			hexValues[tmp >> 16 & 0xF] +
-			hexValues[tmp >> 20 & 0xF] +
-			hexValues[tmp >> 24 & 0xF] +
-			hexValues[tmp >> 28 & 0xF];
-	}
-
-	// 'Set the two most significant bits (bits 6 and 7) of the clock_seq_hi_and_reserved to zero and one, respectively'
-	let clockSequenceHi: string = hexValues[8 + (Math.random() * 4) | 0];
-	return oct.substr(0, 8) + '-' + oct.substr(9, 4) + '-4' + oct.substr(13, 3) + '-' + clockSequenceHi + oct.substr(16, 3) + '-' + oct.substr(19, 12);
-	/* tslint:enable:no-bitwise */
-}
-
 export function verifyPlatform(): Thenable<boolean> {
 	if (os.platform() === 'darwin' && parseFloat(os.release()) < 16) {
 		return Promise.resolve(false);
@@ -320,7 +251,7 @@ export function isObjectExplorerContext(object: any): object is azdata.ObjectExp
 }
 
 export function getUserHome(): string {
-	return process.env.HOME || process.env.USERPROFILE;
+	return process.env.HOME || process.env.USERPROFILE || '';
 }
 
 export function isValidNumber(maybeNumber: any) {
