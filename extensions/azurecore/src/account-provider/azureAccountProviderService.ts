@@ -174,6 +174,10 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 			// MSAL Cache Plugin
 			this._cachePluginProvider = new MsalCachePluginProvider(tokenCacheKeyMsal, this._userStoragePath, this._credentialProvider, this._onEncryptionKeysUpdated);
+			if (this._authLibrary === Constants.AuthLibrary.MSAL) {
+				// Initialize cache provider and encryption keys
+				await this._cachePluginProvider.init();
+			}
 
 			const msalConfiguration: Configuration = {
 				auth: {

@@ -33,6 +33,10 @@ export class MsalCachePluginProvider {
 		return this._msalFilePath + '.lockfile';
 	}
 
+	public async init(): Promise<void> {
+		await this._fileEncryptionHelper.init();
+	}
+
 	public getCacheEncryptionKeys(): CacheEncryptionKeys {
 		return this._fileEncryptionHelper.getEncryptionKeys();
 	}
