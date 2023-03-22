@@ -256,10 +256,6 @@ const networkRequestViaHttps = <T>(
 		...NetworkUtils.urlToHttpOptions(url)
 	};
 
-	if (url.searchParams) {
-		customOptions.path += `?${url.searchParams}`;
-	}
-
 	if (timeout) {
 		customOptions.timeout = timeout;
 	}
