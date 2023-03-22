@@ -445,16 +445,6 @@ declare module 'azurecore' {
 			},
 		}
 
-		// export interface VirtualNetworkRule {
-		// 	id: string,
-		// 	state: string,
-		// 	action: string
-		// }
-
-		// export interface NetworkRuleSet {
-		// 	virtualNetworkRules: VirtualNetworkRule[]
-		// }
-
 		export interface AzureSqlManagedInstance extends AzureGraphResource {
 			sku: {
 				capacity: number;
@@ -480,8 +470,6 @@ declare module 'azurecore' {
 				proxyOverride: string,
 				vCores: number,
 				dnsZone: string,
-				// allowBlobPublicAccess: string,
-				// networkAcls: NetworkRuleSet,
 			}
 
 		}
