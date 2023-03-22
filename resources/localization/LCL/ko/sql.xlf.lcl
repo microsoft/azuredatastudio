@@ -7956,6 +7956,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/editData/browser/editDataGridPanel.editData.cellWithNullCharMessage" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[This cell contains the Unicode null character which is currently not supported for editing.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[이 셀에는 현재 편집이 지원되지 않는 유니코드 null 문자가 포함되어 있습니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/editData/browser/gridActions.copySelection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Copy]]></Val>
@@ -12164,12 +12173,12 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component.copyFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Copy failed with error: {0}]]></Val>
+          <Val><![CDATA[Copy failed with error {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[복사하지 못했습니다(오류: {0}).]]></Val>
+            <Val><![CDATA[{0} 오류를 나타내며 복사 실패]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Copy failed with error {0}]]></Val>
+            <Val><![CDATA[Copy failed with error: {0}]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -12251,6 +12260,15 @@
           <Val><![CDATA[Server Group color palette used in the Object Explorer viewlet.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[개체 탐색기 뷰렛에서 사용되는 서버 그룹 색상표입니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/objectExplorer/common/serverGroup.contribution.serverTree.nodeExpansionTimeout" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The timeout in seconds for expanding a node in the Servers view]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[서버 보기에서 노드를 확장하는 데 대한 시간 제한(초)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -17514,6 +17532,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/objectExplorerService.nodeExpansionTimeout" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Node expansion timed out for node {0} for providers {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{1} 공급자의 {0} 노드에 대한 노드 확장 시간을 초과했습니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim.firewallCanceled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Firewall dialog canceled]]></Val>
@@ -17876,12 +17903,12 @@
       </Item>
       <Item ItemId=";src/sql/workbench/services/query/common/queryRunner.copyFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Copy failed with error: {0}]]></Val>
+          <Val><![CDATA[Copy failed with error {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[복사하지 못했습니다(오류: {0}).]]></Val>
+            <Val><![CDATA[{0} 오류를 나타내며 복사 실패]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Copy failed with error {0}]]></Val>
+            <Val><![CDATA[Copy failed with error: {0}]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />

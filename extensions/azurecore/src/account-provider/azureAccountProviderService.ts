@@ -3,14 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as path from 'path';
 import * as azdata from 'azdata';
 import * as events from 'events';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
-import { SimpleTokenCache } from './simpleTokenCache';
+import { promises as fsPromises } from 'fs';
+import { SimpleTokenCache } from './utils/simpleTokenCache';
 import providerSettings from './providerSettings';
 import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider';
-import { AzureAccountProviderMetadata } from 'azurecore';
+import { AzureAccountProviderMetadata, CacheEncryptionKeys } from 'azurecore';
 import { ProviderSettings } from './interfaces';
 import { MsalCachePluginProvider } from './utils/msalCachePlugin';
 import * as loc from '../localizedConstants';
@@ -39,10 +41,12 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private _event: events.EventEmitter = new events.EventEmitter();
 	private readonly _uriEventHandler: UriEventHandler = new UriEventHandler();
 	public clientApplication!: PublicClientApplication;
+	private _onEncryptionKeysUpdated: vscode.EventEmitter<CacheEncryptionKeys>;
 
 	constructor(private _context: vscode.ExtensionContext,
 		private _userStoragePath: string,
 		private _authLibrary: string) {
+		this._onEncryptionKeysUpdated = new vscode.EventEmitter<CacheEncryptionKeys>();
 		this._disposables.push(vscode.window.registerUriHandler(this._uriEventHandler));
 	}
 
@@ -71,6 +75,10 @@ export class AzureAccountProviderService implements vscode.Disposable {
 				this._configChangePromiseChain = this.onDidChangeConfiguration();
 				return true;
 			});
+	}
+
+	public getEncryptionKeysEmitter(): vscode.EventEmitter<CacheEncryptionKeys> {
+		return this._onEncryptionKeysUpdated;
 	}
 
 	public dispose() {
@@ -144,8 +152,8 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf(Constants.Saw) > 0;
 		const noSystemKeychain = vscode.workspace.getConfiguration(Constants.AzureSection).get<boolean>(Constants.NoSystemKeyChainSection);
 		const tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
-		// Hardcode the MSAL Cache Key so there is only one cache location
-		const tokenCacheKeyMsal = `azureTokenCacheMsal-azure_publicCloud`;
+		const tokenCacheKeyMsal = Constants.MSALCacheName;
+		await this.clearOldCacheIfExists();
 		try {
 			if (!this._credentialProvider) {
 				throw new Error('Credential provider not registered');
@@ -153,10 +161,12 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 			// ADAL Token Cache
 			let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, noSystemKeychain, this._credentialProvider);
-			await simpleTokenCache.init();
+			if (this._authLibrary === Constants.AuthLibrary.ADAL) {
+				await simpleTokenCache.init();
+			}
 
 			// MSAL Cache Plugin
-			this._cachePluginProvider = new MsalCachePluginProvider(tokenCacheKeyMsal, this._userStoragePath);
+			this._cachePluginProvider = new MsalCachePluginProvider(tokenCacheKeyMsal, this._userStoragePath, this._credentialProvider, this._onEncryptionKeysUpdated);
 
 			const msalConfiguration: Configuration = {
 				auth: {
@@ -182,6 +192,22 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			this._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
 		} catch (e) {
 			console.error(`Failed to register account provider, isSaw: ${isSaw}: ${e}`);
+		}
+	}
+
+	/**
+	 * Clears old cache file that is no longer needed on system.
+	 */
+	private async clearOldCacheIfExists(): Promise<void> {
+		let filePath = path.join(this._userStoragePath, Constants.oldMsalCacheFileName);
+		try {
+			await fsPromises.access(filePath);
+			await fsPromises.unlink('file:' + filePath);
+			Logger.verbose(`Old cache file removed successfully.`);
+		} catch (e) {
+			if (e.code !== 'ENOENT') {
+				Logger.verbose(`Error occurred while removing old cache file: ${e}`);
+			} // else file doesn't exist.
 		}
 	}
 

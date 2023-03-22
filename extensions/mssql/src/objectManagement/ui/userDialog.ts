@@ -110,7 +110,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 
 		// only supporting user with login for initial preview
 		// const userTypes = [localizedConstants.UserWithLoginText, localizedConstants.UserWithWindowsGroupLoginText, localizedConstants.ContainedUserText, localizedConstants.UserWithNoConnectAccess],
-		const userTypes = [localizedConstants.UserWithLoginText];
+		const userTypes = [localizedConstants.UserWithLoginText, localizedConstants.UserWithWindowsGroupLoginText];
 		this.typeDropdown = this.createDropdown(localizedConstants.UserTypeText, userTypes, getUserTypeDisplayName(this.objectInfo.type), this.isNewObject);
 		this.disposables.push(this.typeDropdown.onValueChanged(async () => {
 			this.objectInfo.type = getUserTypeByDisplayName(<string>this.typeDropdown.value);

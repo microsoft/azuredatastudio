@@ -99,38 +99,43 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 
 	updatePiiLoggingLevel();
 
+	let eventEmitter: vscode.EventEmitter<azurecore.CacheEncryptionKeys>;
 	// Create the provider service and activate
-	initAzureAccountProvider(extensionContext, storagePath, authLibrary!).catch((err) => console.log(err));
+	let providerService = await initAzureAccountProvider(extensionContext, storagePath, authLibrary!).catch((err) => Logger.error(err));
+	if (providerService) {
+		eventEmitter = providerService.getEncryptionKeysEmitter();
 
-	registerAzureServices(appContext);
-	const azureResourceTree = new AzureResourceTreeProvider(appContext, authLibrary);
-	const connectionDialogTree = new ConnectionDialogTreeProvider(appContext, authLibrary);
-	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
-	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
-	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e)));
-	registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree, authLibrary);
-	azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext, authLibrary));
-	vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
-		const portalEndpoint = item.portalEndpoint;
-		const subscriptionId = item.subscriptionId;
-		const resourceGroup = item.resourceGroup;
-		const type = item.type;
-		const name = item.name;
-		if (portalEndpoint && subscriptionId && resourceGroup && type && name) {
-			await vscode.env.openExternal(vscode.Uri.parse(`${portalEndpoint}/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${type}/${name}`));
-		} else {
-			console.log(`Missing required values - subscriptionId : ${subscriptionId} resourceGroup : ${resourceGroup} type: ${type} name: ${name}`);
-			void vscode.window.showErrorMessage(loc.unableToOpenAzureLink);
-		}
-	});
-
+		registerAzureServices(appContext);
+		const azureResourceTree = new AzureResourceTreeProvider(appContext, authLibrary);
+		const connectionDialogTree = new ConnectionDialogTreeProvider(appContext, authLibrary);
+		pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
+		pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
+		pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e)));
+		registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree, authLibrary);
+		azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext, authLibrary));
+		vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
+			const portalEndpoint = item.portalEndpoint;
+			const subscriptionId = item.subscriptionId;
+			const resourceGroup = item.resourceGroup;
+			const type = item.type;
+			const name = item.name;
+			if (portalEndpoint && subscriptionId && resourceGroup && type && name) {
+				await vscode.env.openExternal(vscode.Uri.parse(`${portalEndpoint}/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${type}/${name}`));
+			} else {
+				Logger.error(`Missing required values - subscriptionId : ${subscriptionId} resourceGroup : ${resourceGroup} type: ${type} name: ${name}`);
+				void vscode.window.showErrorMessage(loc.unableToOpenAzureLink);
+			}
+		});
+	}
 	return {
 		getSubscriptions(account?: azurecore.AzureAccount, ignoreErrors?: boolean, selectedOnly: boolean = false): Promise<azurecore.GetSubscriptionsResult> {
 			return selectedOnly
 				? azureResourceUtils.getSelectedSubscriptions(appContext, account, ignoreErrors)
 				: azureResourceUtils.getSubscriptions(appContext, account, ignoreErrors);
 		},
-		getResourceGroups(account?: azurecore.AzureAccount, subscription?: azurecore.azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<azurecore.GetResourceGroupsResult> { return azureResourceUtils.getResourceGroups(appContext, account, subscription, ignoreErrors); },
+		getResourceGroups(account?: azurecore.AzureAccount, subscription?: azurecore.azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<azurecore.GetResourceGroupsResult> {
+			return azureResourceUtils.getResourceGroups(appContext, account, subscription, ignoreErrors);
+		},
 		getLocations(account?: azurecore.AzureAccount,
 			subscription?: azurecore.azureResource.AzureResourceSubscription,
 			ignoreErrors?: boolean): Promise<azurecore.GetLocationsResult> {
@@ -235,7 +240,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			ignoreErrors: boolean,
 			query: string): Promise<azurecore.ResourceQueryResult<T>> {
 			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, query);
-		}
+		},
+		onEncryptionKeysUpdated: eventEmitter!.event
 	};
 }
 
@@ -248,7 +254,7 @@ async function findOrMakeStoragePath() {
 		await fs.mkdir(defaultLogLocation, { recursive: true });
 	} catch (e) {
 		if (e.code !== 'EEXIST') {
-			console.log(`Creating the base directory failed... ${e}`);
+			Logger.error(`Creating the base directory failed... ${e}`);
 			return undefined;
 		}
 	}
@@ -257,23 +263,25 @@ async function findOrMakeStoragePath() {
 		await fs.mkdir(storagePath, { recursive: true });
 	} catch (e) {
 		if (e.code !== 'EEXIST') {
-			console.error(`Initialization of Azure account extension storage failed: ${e}`);
-			console.error('Azure accounts will not be available');
+			Logger.error(`Initialization of Azure account extension storage failed: ${e}`);
+			Logger.error('Azure accounts will not be available');
 			return undefined;
 		}
 	}
 
-	console.log('Initialized Azure account extension storage.');
+	Logger.verbose('Initialized Azure account extension storage.');
 	return storagePath;
 }
 
-async function initAzureAccountProvider(extensionContext: vscode.ExtensionContext, storagePath: string, authLibrary: string): Promise<void> {
+async function initAzureAccountProvider(extensionContext: vscode.ExtensionContext, storagePath: string, authLibrary: string): Promise<AzureAccountProviderService | undefined> {
 	try {
 		const accountProviderService = new AzureAccountProviderService(extensionContext, storagePath, authLibrary);
 		extensionContext.subscriptions.push(accountProviderService);
 		await accountProviderService.activate();
+		return accountProviderService;
 	} catch (err) {
-		console.log('Unexpected error starting account provider: ' + err.message);
+		Logger.error('Unexpected error starting account provider: ' + err.message);
+		return undefined;
 	}
 }
 

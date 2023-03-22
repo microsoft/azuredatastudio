@@ -136,6 +136,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.delete.migration.confirmation" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Are you sure you want to delete this migration?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[この移行を削除しますか?]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.login.migration.aad.domain.name.input.box.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)]]></Val>
@@ -1131,6 +1140,15 @@
           <Val><![CDATA[Migration is not in progress and cannot be cutover.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[移行は進行中ではないため、一括移行にすることができません。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cannot.delete" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Migration is currently in progress and cannot be deleted.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[移行は現在進行中です。削除できません。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2154,6 +2172,24 @@
           <Val><![CDATA[Default database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[既定のデータベース]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.delete.error" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[An error occurred while deleting the migration.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[移行の削除中にエラーが発生しました。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.delete.migration" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Delete migration]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[移行の削除]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -8115,6 +8151,15 @@
           <Val><![CDATA[Database details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[データベースの詳細]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/package.delete-migration-menu" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Delete migration]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[移行の削除]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
