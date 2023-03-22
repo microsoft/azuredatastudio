@@ -804,9 +804,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				this._callbacks.onAzureTenantSelection(tenant.id);
 			}
 			else {
-				// This can happen when connection dialog is opened with Azure MFA selected, but not with profile data.
-				// This is not an error since tenant is not available in this case, tenants will be populated for the account selected in account dropdown.
-				this._logService.debug(`onAzureTenantSelected : Tenant list not found as expected, missing tenant on index ${tenantIndex}`);
+				// This should ideally never ever happen!
+				this._logService.error(`onAzureTenantSelected : Tenant list not found as expected, missing tenant on index ${tenantIndex}`);
 			}
 		}
 	}
@@ -958,17 +957,18 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					await this.onAzureAccountSelected();
 
 					let tenantId = connectionInfo.azureTenantId;
-					if (account && account.properties.tenants && account.properties.tenants.length > 1) {
+					if (account && tenantId && account.properties.tenants && account.properties.tenants.length > 1) {
 						let tenant = account.properties.tenants.find(tenant => tenant.id === tenantId);
 						if (tenant) {
 							this._azureTenantDropdown.selectWithOptionName(tenant.displayName);
 						}
 						else {
-							// This can happen when connection dialog is opened with Azure MFA selected, but not with profile data which means 'tenantId' is not available.
-							// This is not an error since tenant is not available in this case, tenants will be populated for the account selected in account dropdown.
-							this._logService.debug(`fillInConnectionInputs : Could not find tenant with ID ${this._azureTenantId} for account ${accountName}`);
+							// This should ideally never ever happen!
+							this._logService.error(`fillInConnectionInputs : Could not find tenant with ID ${this._azureTenantId} for account ${accountName}`);
 						}
-						this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
+						if (this._azureTenantDropdown.value) {
+							this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
+						}
 					}
 					else if (account && account.properties.tenants && account.properties.tenants.length === 1) {
 						this._azureTenantId = account.properties.tenants[0].id;
