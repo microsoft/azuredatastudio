@@ -99,32 +99,34 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 
 	updatePiiLoggingLevel();
 
+	let eventEmitter: vscode.EventEmitter<azurecore.CacheEncryptionKeys>;
 	// Create the provider service and activate
 	let providerService = await initAzureAccountProvider(extensionContext, storagePath, authLibrary!).catch((err) => Logger.error(err));
-	let eventEmitter = providerService?.getEncryptionKeysEmitter()!;
+	if (providerService) {
+		eventEmitter = providerService.getEncryptionKeysEmitter();
 
-	registerAzureServices(appContext);
-	const azureResourceTree = new AzureResourceTreeProvider(appContext, authLibrary);
-	const connectionDialogTree = new ConnectionDialogTreeProvider(appContext, authLibrary);
-	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
-	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
-	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e)));
-	registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree, authLibrary);
-	azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext, authLibrary));
-	vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
-		const portalEndpoint = item.portalEndpoint;
-		const subscriptionId = item.subscriptionId;
-		const resourceGroup = item.resourceGroup;
-		const type = item.type;
-		const name = item.name;
-		if (portalEndpoint && subscriptionId && resourceGroup && type && name) {
-			await vscode.env.openExternal(vscode.Uri.parse(`${portalEndpoint}/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${type}/${name}`));
-		} else {
-			Logger.error(`Missing required values - subscriptionId : ${subscriptionId} resourceGroup : ${resourceGroup} type: ${type} name: ${name}`);
-			void vscode.window.showErrorMessage(loc.unableToOpenAzureLink);
-		}
-	});
-
+		registerAzureServices(appContext);
+		const azureResourceTree = new AzureResourceTreeProvider(appContext, authLibrary);
+		const connectionDialogTree = new ConnectionDialogTreeProvider(appContext, authLibrary);
+		pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
+		pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
+		pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e)));
+		registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree, authLibrary);
+		azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext, authLibrary));
+		vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
+			const portalEndpoint = item.portalEndpoint;
+			const subscriptionId = item.subscriptionId;
+			const resourceGroup = item.resourceGroup;
+			const type = item.type;
+			const name = item.name;
+			if (portalEndpoint && subscriptionId && resourceGroup && type && name) {
+				await vscode.env.openExternal(vscode.Uri.parse(`${portalEndpoint}/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${type}/${name}`));
+			} else {
+				Logger.error(`Missing required values - subscriptionId : ${subscriptionId} resourceGroup : ${resourceGroup} type: ${type} name: ${name}`);
+				void vscode.window.showErrorMessage(loc.unableToOpenAzureLink);
+			}
+		});
+	}
 	return {
 		getSubscriptions(account?: azurecore.AzureAccount, ignoreErrors?: boolean, selectedOnly: boolean = false): Promise<azurecore.GetSubscriptionsResult> {
 			return selectedOnly
@@ -239,7 +241,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			query: string): Promise<azurecore.ResourceQueryResult<T>> {
 			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, query);
 		},
-		getOnEncryptionKeysUpdated: eventEmitter.event
+		onEncryptionKeysUpdated: eventEmitter!.event
 	};
 }
 

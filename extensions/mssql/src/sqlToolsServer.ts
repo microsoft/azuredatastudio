@@ -100,7 +100,7 @@ export class SqlToolsServer {
 	 */
 	private async handleEncryptionKeyEventNotification(client: SqlOpsDataClient) {
 		if (getAzureAuthenticationLibraryConfig() === 'MSAL' && getEnableSqlAuthenticationProviderConfig()) {
-			let onDidEncryptionKeysChanged = (await this.getAzureCoreAPI()).getOnEncryptionKeysUpdated;
+			let onDidEncryptionKeysChanged = (await this.getAzureCoreAPI()).onEncryptionKeysUpdated;
 			// Register event listener from Azure Core extension
 			onDidEncryptionKeysChanged((keys: azurecore.CacheEncryptionKeys) => {
 				// Send client notification for updated encryption keys
@@ -116,7 +116,7 @@ export class SqlToolsServer {
 	private async getAzureCoreAPI(): Promise<azurecore.IExtension> {
 		const api = (await vscode.extensions.getExtension(azurecore.extension.name)?.activate()) as azurecore.IExtension;
 		if (!api) {
-			throw new Error('azure core API undefined for mssql extension');
+			throw new Error('Azure core extension could not be activated.');
 		}
 		return api;
 	}

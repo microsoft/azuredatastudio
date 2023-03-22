@@ -316,10 +316,11 @@ declare module 'azurecore' {
 		provideResources(): azureResource.IAzureResourceProvider[];
 		runGraphQuery<T extends azureResource.AzureGraphResource>(account: AzureAccount, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors: boolean, query: string): Promise<ResourceQueryResult<T>>;
 		/**
-		 * Event emitted when encryption keys are updated in credential store.
-		 * Returns encryption keys for connection providers use.
+		 * Event emitted when MSAL cache encryption keys are updated in credential store.
+		 * Returns encryption keys used for encryption/decryption of MSAL cache that can be used
+		 * by connection providers to read/write to the same access token cache for stable connectivity.
 		 */
-		getOnEncryptionKeysUpdated: vscode.Event<CacheEncryptionKeys>;
+		onEncryptionKeysUpdated: vscode.Event<CacheEncryptionKeys>;
 	}
 
 	export type GetSubscriptionsResult = { subscriptions: azureResource.AzureResourceSubscription[], errors: Error[] };
