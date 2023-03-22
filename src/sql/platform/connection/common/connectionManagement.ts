@@ -312,7 +312,7 @@ export interface IConnectionManagementService {
 	/**
 	 * Serialize connection string with optional provider
 	 */
-	buildConnectionInfo(connectionString: string, provider?: string): Thenable<azdata.ConnectionInfo>;
+	buildConnectionInfo(connectionString: string, provider?: string): Promise<azdata.ConnectionInfo>;
 
 	providerRegistered(providerId: string): boolean;
 	/**

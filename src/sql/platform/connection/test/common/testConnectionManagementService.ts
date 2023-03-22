@@ -286,7 +286,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined!;
 	}
 
-	buildConnectionInfo(connectionString: string, provider?: string): Thenable<azdata.ConnectionInfo> {
+	buildConnectionInfo(connectionString: string, provider?: string): Promise<azdata.ConnectionInfo> {
 		return undefined!;
 	}
 
