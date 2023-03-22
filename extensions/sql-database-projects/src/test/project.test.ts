@@ -996,8 +996,7 @@ describe('Project: round trip updates', function (): void {
 		await testUpdateInRoundTrip(baselines.SSDTProjectBaselineWithBeforeBuildTarget);
 	});
 
-	// skipped until projectController does the prompting, test should be moved to projectController.tests.ts
-	it.skip('Should not update project and no backup file should be created when update to project is rejected', async function (): Promise<void> {
+	it('Should not update project and no backup file should be created when prompt to update project is rejected', async function (): Promise<void> {
 		sinon.stub(window, 'showWarningMessage').returns(<any>Promise.resolve(constants.noString));
 		// setup test files
 		const folderPath = await testUtils.generateTestFolderPath();
@@ -1005,9 +1004,11 @@ describe('Project: round trip updates', function (): void {
 
 		const originalSqlProjContents = (await fs.readFile(sqlProjPath)).toString();
 
+		// validate original state
 		let project = await Project.openProject(sqlProjPath, false);
 		(project.isCrossPlatformCompatible).should.be.false('SSDT project should not be cross-platform compatible when not prompted to update');
 
+		// validate rejection result
 		project = await Project.openProject(sqlProjPath, true);
 		(project.isCrossPlatformCompatible).should.be.false('SSDT project should not be cross-platform compatible when update prompt is rejected');
 		(await exists(sqlProjPath + '_backup')).should.be.false('backup file should not be generated');
