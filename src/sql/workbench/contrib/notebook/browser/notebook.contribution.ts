@@ -51,7 +51,7 @@ import { ImageMimeTypes, TextCellEditModes } from 'sql/workbench/services/notebo
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { DefaultNotebookProviders, IExecuteManager } from 'sql/workbench/services/notebook/browser/notebookService';
+import { DefaultNotebookProviders, IExecuteManager, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookExplorerViewletViewsContribution } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IEditorResolverService, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorResolverService';
@@ -67,7 +67,10 @@ import { IViewDescriptorService, ViewContainerLocation } from 'vs/workbench/comm
 import { ToggleTabFocusModeAction } from 'vs/editor/contrib/toggleTabFocusMode/browser/toggleTabFocusMode';
 import { ActiveEditorContext } from 'vs/workbench/common/contextkeys';
 import { ILanguageService } from 'vs/editor/common/languages/language';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionType, IConnectableInput, IConnectionCompletionOptions, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory)
 	.registerEditorSerializer(FileNotebookInput.ID, FileNoteBookEditorSerializer);
@@ -103,11 +106,31 @@ const DE_NEW_NOTEBOOK_COMMAND_ID = 'dataExplorer.newNotebook';
 CommandsRegistry.registerCommand({
 	id: DE_NEW_NOTEBOOK_COMMAND_ID,
 	handler: async (accessor, args: TreeViewItemHandleArg) => {
-		const instantiationService = accessor.get(IInstantiationService);
+		const notebookService = accessor.get(INotebookService);
 		const connectionService = accessor.get(IConnectionManagementService);
+		const capabilitiesService = accessor.get(ICapabilitiesService);
 		let payload = await connectionService.fixProfile(args.$treeItem.payload);
-		const connectedContext: ConnectedContext = { connectionProfile: payload };
-		return instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run({ connectionProfile: connectedContext.connectionProfile, isConnectionNode: false, nodeInfo: undefined });
+		let editor = await notebookService.openNotebook(URI.from({ scheme: 'untitled' }), {});
+		// Connect our editor to the input connection
+		let connectableInput: IConnectableInput = {
+			uri: editor.input.resource.toString(),
+			onConnectCanceled: () => undefined,
+			onConnectReject: () => undefined,
+			onConnectStart: () => undefined,
+			onDisconnect: () => undefined,
+			onConnectSuccess: (params, profile) => {
+				let notebookEditor = notebookService.findNotebookEditor(editor.input.resource);
+				notebookEditor.model.changeContext(profile.connectionName, profile).catch(e => onUnexpectedError(e));
+			}
+		};
+		let options: IConnectionCompletionOptions = {
+			params: { connectionType: ConnectionType.editor, input: connectableInput },
+			saveTheConnection: false,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+		await connectionService.connect(new ConnectionProfile(capabilitiesService, payload), editor.input.resource.toString(), options);
 	}
 });
 
