@@ -1216,13 +1216,13 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				model.azureAccount = this.authToken;
 				model.savePassword = this._rememberPasswordCheckBox.checked;
 				model.databaseName = this.databaseName;
+				if (this._customOptionWidgets) {
+					this._customOptionWidgets.forEach((widget, i) => {
+						model.options[this._customOptions[i].name] = widget.value;
+					});
+				}
 			}
 			model.connectionName = this.connectionName;
-			if (this._customOptionWidgets) {
-				this._customOptionWidgets.forEach((widget, i) => {
-					model.options[this._customOptions[i].name] = widget.value;
-				});
-			}
 			if (this._serverGroupSelectBox) {
 				if (this._serverGroupSelectBox.value === this.DefaultServerGroup.name) {
 					model.groupFullName = '';
