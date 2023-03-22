@@ -322,7 +322,7 @@ declare module 'azurecore' {
 		 */
 		onEncryptionKeysUpdated: vscode.Event<CacheEncryptionKeys>;
 		/**
-		 * Fetches MSAL cache encryption keys currently in use, for instant access.
+		 * Fetches MSAL cache encryption keys currently in use.
 		 */
 		getEncryptionKeys(): Promise<CacheEncryptionKeys | undefined>;
 	}

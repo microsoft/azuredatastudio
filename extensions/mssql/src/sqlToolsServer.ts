@@ -20,7 +20,7 @@ import { SchemaCompareService } from './schemaCompare/schemaCompareService';
 import { AppContext } from './appContext';
 import { DacFxService } from './dacfx/dacFxService';
 import { CmsService } from './cms/cmsService';
-import { CompletionExtensionParams, CompletionExtLoadRequest, DidChangeEncryptionIVKeyParams, EncryptionKeysChangedNotification } from './contracts';
+import { CompletionExtensionParams, CompletionExtLoadRequest, EncryptionKeysChangedNotification } from './contracts';
 import { promises as fs } from 'fs';
 import * as nls from 'vscode-nls';
 import { LanguageExtensionService } from './languageExtension/languageExtensionService';
@@ -102,24 +102,23 @@ export class SqlToolsServer {
 		if (getAzureAuthenticationLibraryConfig() === 'MSAL' && getEnableSqlAuthenticationProviderConfig()) {
 			let azureCoreApi = await this.getAzureCoreAPI();
 			let onDidEncryptionKeysChanged = azureCoreApi.onEncryptionKeysUpdated;
-			// Register event listener from Azure Core extension
+			// Register event listener from Azure Core extension and
+			// send client notification for updated encryption keys
 			onDidEncryptionKeysChanged((keys: azurecore.CacheEncryptionKeys) => {
-				this.sendEncryptionKeysNotification(client, keys);
+				client.sendNotification(EncryptionKeysChangedNotification.type, keys);
 			});
-			// Fetch encryption keys directly from AzureCore as notification event may not fire again
-			// if Azure Core extension was activated before.
-			this.sendEncryptionKeysNotification(client, await azureCoreApi.getEncryptionKeys());
+
+			try {
+				// Fetch encryption keys directly from AzureCore as notification event may not fire again
+				// if Azure Core extension was activated before.
+				const keys = await azureCoreApi.getEncryptionKeys();
+				client.sendNotification(EncryptionKeysChangedNotification.type, keys);
+			}
+			catch (e) {
+				console.error(`An error occurred when fetching encryption keys: ${e}`);
+			}
 			logDebug('SqlToolsServer: Registered encryption key event handler.');
 		}
-	}
-
-	private sendEncryptionKeysNotification(client: SqlOpsDataClient, keys: azurecore.CacheEncryptionKeys) {
-		// Send client notification for updated encryption keys
-		client.sendNotification(EncryptionKeysChangedNotification.type,
-			<DidChangeEncryptionIVKeyParams>{
-				key: keys.key,
-				iv: keys.iv
-			});
 	}
 
 	private async getAzureCoreAPI(): Promise<azurecore.IExtension> {

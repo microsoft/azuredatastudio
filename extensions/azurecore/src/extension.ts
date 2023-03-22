@@ -243,6 +243,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 		},
 		onEncryptionKeysUpdated: eventEmitter!.event,
 		async getEncryptionKeys(): Promise<azurecore.CacheEncryptionKeys | undefined> {
+			if (!providerService) {
+				throw new Error("Failed to initialize Azure account provider.");
+			}
 			return await providerService?.getEncryptionKeys();
 		}
 	};
