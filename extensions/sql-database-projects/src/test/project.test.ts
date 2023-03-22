@@ -503,7 +503,7 @@ describe('Project: database references', function (): void {
 		await testUtils.deleteGeneratedTestFolder();
 	});
 
-	it.only('Should read database references correctly', async function (): Promise<void> {
+	it('Should read database references correctly', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.databaseReferencesReadBaseline);
 		const project = await Project.openProject(projFilePath);
 		(project.databaseReferences.length).should.equal(5, 'NUmber of database references');
