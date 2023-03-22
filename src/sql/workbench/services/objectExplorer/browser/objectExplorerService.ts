@@ -24,6 +24,8 @@ import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -170,12 +172,15 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private _serverTreeView?: IServerTreeView;
 
 	private _onSelectionOrFocusChange: Emitter<void>;
+	private _onNodeExpandedError: Emitter<NodeExpandInfoWithProviderId> = new Emitter<NodeExpandInfoWithProviderId>();
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@ILogService private logService: ILogService
+		@ILogService private logService: ILogService,
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@INotificationService private _notificationService: INotificationService
 	) {
 		this._onUpdateObjectExplorerNodes = new Emitter<ObjectExplorerNodeEventArgs>();
 		this._activeObjectExplorerNodes = {};
@@ -248,9 +253,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				}
 			} else {
 				this.logService.warn(`Cannot find node status for session: ${expandResponse.sessionId} and node path: ${expandResponse.nodePath}`);
+				this._onNodeExpandedError.fire(expandResponse);
 			}
 		} else {
 			this.logService.warn(`Cannot find session ${expandResponse.sessionId} for node path: ${expandResponse.nodePath}`);
+			this._onNodeExpandedError.fire(expandResponse);
 		}
 	}
 
@@ -415,16 +422,53 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						nodeProviders = nodeProviders.sort((a, b) => a.group!.toLowerCase().localeCompare(b.group!.toLowerCase()));
 						allProviders.push(...nodeProviders);
 					}
+					this.logService.trace(`${session.sessionId}: got providers for node expansion: ${allProviders.map(p => p.providerId).join(', ')}`);
+
+					const resolveExpansion = () => {
+						resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
+						// Have to delete it after get all responses otherwise couldn't find session for not the first response
+						clearTimeout(expansionTimeout);
+						if (newRequest) {
+							delete self._sessions[session.sessionId!].nodes[node.nodePath];
+							this.logService.trace(`Deleted node ${node.nodePath} from session ${session.sessionId}`);
+						}
+					}
+
+					// Incase node status not found.
+					this._onNodeExpandedError.event(e => {
+						//Ignore errors from other sessions and nodepaths.
+						if (e.sessionId === session.sessionId && e.nodePath === node.nodePath) {
+							resultMap.set(e.providerId, e);
+							// When get all responses from all providers, merge results
+							if (resultMap.size === allProviders.length) {
+								resolveExpansion();
+							}
+						}
+					});
+
+					const expansionTimeoutValueSec = this._configurationService.getValue<number>('serverTree.nodeExpansionTimeout');
+					const expansionTimeout = setTimeout(() => {
+						/**
+						 * If we don't get a response back from all the providers in specified expansion timeout seconds then we assume
+						 * it's not going to respond and resolve the promise with the results we have so far
+						 */
+						if (resultMap.size !== allProviders.length) {
+							const missingProviders = allProviders.filter(p => !resultMap.has(p.providerId));
+							this.logService.warn(`${session.sessionId}: Node expansion timed out for node ${node.nodePath} for providers ${missingProviders.map(p => p.providerId).join(', ')}`);
+							this._notificationService.error(nls.localize('nodeExpansionTimeout', "Node expansion timed out for node {0} for providers {1}", node.nodePath, missingProviders.map(p => p.providerId).join(', ')));
+						}
+						resolveExpansion();
+					}, expansionTimeoutValueSec * 1000);
 
 					self._sessions[session.sessionId!].nodes[node.nodePath].expandEmitter.event((expandResult: NodeExpandInfoWithProviderId) => {
 						if (expandResult && expandResult.providerId) {
+							this.logService.trace(`${session.sessionId}: Received expand result for node ${node.nodePath} from provider ${expandResult.providerId}`);
 							resultMap.set(expandResult.providerId, expandResult);
 							// If we got an error result back then send error our error event
-							// We only do this for the MSSQL provider
-							if (expandResult.errorMessage && expandResult.providerId === mssqlProviderName) {
+							if (expandResult.errorMessage) {
 								const errorType = expandResult.errorMessage.indexOf('Object Explorer task didn\'t complete') !== -1 ? 'Timeout' : 'Other';
-								// For folders send the actual name of the folder (since the nodeTypeId isn't useful in this case and the names are controlled by us)
-								const nodeType = node.nodeTypeId === NodeType.Folder ? node.label : node.nodeTypeId;
+								// For folders send the actual name of the folder for the MSSQL provider (since the nodeTypeId isn't useful in this case and the names are controlled by us)
+								const nodeType = expandResult.providerId === mssqlProviderName && node.nodeTypeId === NodeType.Folder ? node.label : node.nodeTypeId;
 								this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.ObjectExplorerExpandError, undefined, errorType)
 									.withAdditionalProperties({
 										nodeType,
@@ -438,13 +482,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 						// When get all responses from all providers, merge results
 						if (resultMap.size === allProviders.length) {
-							resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
-
-							// Have to delete it after get all responses otherwise couldn't find session for not the first response
-							if (newRequest) {
-								delete self._sessions[session.sessionId!].nodes[node.nodePath];
-								this.logService.trace(`Deleted node ${node.nodePath} from session ${session.sessionId}`);
-							}
+							resolveExpansion();
 						}
 					});
 					if (newRequest) {
@@ -463,6 +501,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 										sessionId: session.sessionId
 									};
 									resultMap.set(provider.providerId, emptyResult);
+									if (resultMap.size === allProviders.length) {
+										resolveExpansion();
+									}
 								}
 							}, error => {
 								reject(error);
@@ -481,6 +522,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		let allNodes: azdata.NodeInfo[] = [];
 		let errorNode: azdata.NodeInfo = {
 			nodePath: nodePath,
+			parentNodePath: '',
 			objectType: 'error',
 			label: 'Error',
 			errorMessage: '',
@@ -649,7 +691,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			}
 		}
 
-		let node = new TreeNode(nodeInfo.nodeType, nodeInfo.objectType, nodeInfo.label, isLeaf, nodeInfo.nodePath,
+		let node = new TreeNode(nodeInfo.nodeType, nodeInfo.objectType, nodeInfo.label, isLeaf, nodeInfo.nodePath, nodeInfo.parentNodePath,
 			nodeInfo.nodeSubType!, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, nodeInfo.icon, {
 			getChildren: (treeNode?: TreeNode) => this.getChildren(treeNode),
 			isExpanded: treeNode => this.isExpanded(treeNode),

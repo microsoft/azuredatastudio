@@ -96,7 +96,7 @@ export class SqlToolsServer {
 		this.config = JSON.parse(rawConfig.toString());
 		this.config.installDirectory = path.join(configDir, this.config.installDirectory);
 		this.config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
-		this.config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
+		this.config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL', true);
 		return getOrDownloadServer(this.config, handleServerProviderEvent);
 	}
 

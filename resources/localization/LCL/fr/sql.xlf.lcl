@@ -7956,6 +7956,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/editData/browser/editDataGridPanel.editData.cellWithNullCharMessage" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[This cell contains the Unicode null character which is currently not supported for editing.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cette cellule contient le caractère Unicode Nul qui n’est actuellement pas pris en charge pour la modification.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/editData/browser/gridActions.copySelection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Copy]]></Val>
@@ -12164,12 +12173,12 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component.copyFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Copy failed with error: {0}]]></Val>
+          <Val><![CDATA[Copy failed with error {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[La copie a échoué avec l’erreur : {0}]]></Val>
+            <Val><![CDATA[La copie a échoué avec l'erreur {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Copy failed with error {0}]]></Val>
+            <Val><![CDATA[Copy failed with error: {0}]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -12251,6 +12260,15 @@
           <Val><![CDATA[Server Group color palette used in the Object Explorer viewlet.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Palette de couleurs du groupe de serveurs utilisée dans la viewlet Explorateur d'objets.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/objectExplorer/common/serverGroup.contribution.serverTree.nodeExpansionTimeout" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The timeout in seconds for expanding a node in the Servers view]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Délai d'attente en secondes pour développer un nœud dans la vue Serveurs]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -17514,6 +17532,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/objectExplorerService.nodeExpansionTimeout" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Node expansion timed out for node {0} for providers {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L'expansion du nœud a expiré pour le nœud {0} pour les fournisseurs {1}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim.firewallCanceled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Firewall dialog canceled]]></Val>
@@ -17876,12 +17903,12 @@
       </Item>
       <Item ItemId=";src/sql/workbench/services/query/common/queryRunner.copyFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Copy failed with error: {0}]]></Val>
+          <Val><![CDATA[Copy failed with error {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[La copie a échoué avec l’erreur : {0}]]></Val>
+            <Val><![CDATA[La copie a échoué avec l'erreur {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Copy failed with error {0}]]></Val>
+            <Val><![CDATA[Copy failed with error: {0}]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
