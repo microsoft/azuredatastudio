@@ -957,7 +957,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					await this.onAzureAccountSelected();
 
 					let tenantId = connectionInfo.azureTenantId;
-					if (account && account.properties.tenants && account.properties.tenants.length > 1) {
+					if (account && tenantId && account.properties.tenants && account.properties.tenants.length > 1) {
 						let tenant = account.properties.tenants.find(tenant => tenant.id === tenantId);
 						if (tenant) {
 							this._azureTenantDropdown.selectWithOptionName(tenant.displayName);
@@ -966,7 +966,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 							// This should ideally never ever happen!
 							this._logService.error(`fillInConnectionInputs : Could not find tenant with ID ${this._azureTenantId} for account ${accountName}`);
 						}
-						this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
+						if (this._azureTenantDropdown.value) {
+							this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
+						}
 					}
 					else if (account && account.properties.tenants && account.properties.tenants.length === 1) {
 						this._azureTenantId = account.properties.tenants[0].id;
