@@ -25,6 +25,8 @@ import { Logger } from '../../utils/Logger';
 import * as qs from 'qs';
 import { AzureAuthError } from './azureAuthError';
 import { AccountInfo, AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
+import { HttpClient } from './httpClient';
+import { getProxyEnabledHttpClient } from '../../utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -38,6 +40,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly scopesString: string;
 	protected readonly clientId: string;
 	protected readonly resources: Resource[];
+	protected readonly httpClient: HttpClient;
 	private _authLibrary: string | undefined;
 
 	constructor(
@@ -94,6 +97,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		this.scopes = [...this.metadata.settings.scopes];
 		this.scopesString = this.scopes.join(' ');
+		this.httpClient = getProxyEnabledHttpClient();
 	}
 
 	public async startLogin(): Promise<AzureAccount | azdata.PromptFailedResult> {
@@ -473,8 +477,15 @@ export abstract class AzureAuth implements vscode.Disposable {
 		try {
 			Logger.verbose('Fetching tenants with uri {0}', tenantUri);
 			let tenantList: string[] = [];
-			const tenantResponse = await this.makeGetRequest(tenantUri, token);
-			const data = tenantResponse.data;
+
+			const tenantResponse = await this.httpClient.sendGetRequestAsync<any>(tenantUri, {
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				}
+			});
+
+			const data = tenantResponse.body;
 			if (data.error) {
 				Logger.error(`Error fetching tenants :${data.error.code} - ${data.error.message}`);
 				throw new Error(`${data.error.code} - ${data.error.message}`);
