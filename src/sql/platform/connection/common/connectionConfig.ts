@@ -362,9 +362,53 @@ export class ConnectionConfig {
 		let profiles = this.getIConnectionProfileStores(true);
 		let existingProfile = profiles.find(p =>
 			p.providerName === profile.providerName &&
-			p.options === profile.options &&
+			this.checkEveryProperty(p, profile) &&
 			p.groupId === newGroupID);
 		return existingProfile === undefined;
+	}
+
+	private checkEveryProperty(profileStore: IConnectionProfileStore, profile: ConnectionProfile): boolean {
+		//get every option for each profile
+		let profileKeys1 = profileStore.options;
+		let profileKeys2 = profile.options;
+
+		//Check to see that the same option exists for both.
+		let result = true;
+		Object.keys(profileKeys1).forEach(inputKey => {
+			let profile2Entry = Object.entries(profileKeys2).filter(([key]) => key === inputKey);
+			if (profile2Entry.length === 0) {
+				if (result) {
+					result = false;
+				}
+			}
+		});
+
+		Object.keys(profileKeys2).forEach(inputKey => {
+			let profile1Entry = Object.entries(profileKeys1).filter(([key]) => key === inputKey);
+			if (profile1Entry.length === 0) {
+				if (result) {
+					result = false;
+				}
+			}
+		});
+
+		let profile2OptionsList = profile.getConnectionOptionsList(false, false);
+		//Check that values match and are not default.
+		for (let i = 0; i < profile2OptionsList.length; i++) {
+			let optionName = profile2OptionsList[i].name;
+			let profileValue1 = profileStore.options[optionName];
+			let profileValue2 = profile.getOptionValue(optionName);
+			let defaultValue = profile2OptionsList[i].defaultValue;
+			let isProfile1Default = (profileValue1 === defaultValue || profileValue1 === undefined);
+			let isProfile2Default = (profileValue2 === defaultValue || profileValue2 === undefined);
+			if (!isProfile1Default || !isProfile2Default) {
+				if (profileValue1 !== profileValue2) {
+					result = false;
+				}
+			}
+		}
+
+		return result;
 	}
 
 	/**
