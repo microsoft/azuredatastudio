@@ -44,11 +44,11 @@ export class FileProjectEntry extends ProjectEntry implements IFileProjectEntry 
 }
 
 export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
-	databaseSqlCmdVariable?: string;
-	databaseName?: string;
+	databaseSqlCmdVariableValue?: string;
+	databaseSqlCmdVariableName?: string;
 	databaseVariableLiteralValue?: string;
-	serverName?: string;
-	serverSqlCmdVariable?: string;
+	serverSqlCmdVariableName?: string;
+	serverSqlCmdVariableValue?: string;
 	suppressMissingDependenciesErrors: boolean;
 
 	constructor(settings: IDacpacReferenceSettings) {
@@ -56,14 +56,14 @@ export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDa
 		this.suppressMissingDependenciesErrors = settings.suppressMissingDependenciesErrors;
 
 		if (settings.databaseVariable) { // full SQLCMD variable
-			this.databaseName = settings.databaseName;
-			this.databaseSqlCmdVariable = settings.databaseVariable;
+			this.databaseSqlCmdVariableName = settings.databaseName;
+			this.databaseSqlCmdVariableValue = settings.databaseVariable;
 		} else { // just a literal
 			this.databaseVariableLiteralValue = settings.databaseName;
 		}
 
-		this.serverName = settings.serverName;
-		this.serverSqlCmdVariable = settings.serverVariable;
+		this.serverSqlCmdVariableName = settings.serverName;
+		this.serverSqlCmdVariableValue = settings.serverVariable;
 	}
 
 	/**
@@ -96,10 +96,10 @@ export class SqlProjectReferenceProjectEntry extends FileProjectEntry implements
 	public projectName: string;
 	public projectGuid: string;
 	public databaseVariableLiteralValue?: string;
-	public databaseName?: string;
-	public databaseSqlCmdVariable?: string;
-	public serverName?: string;
-	public serverSqlCmdVariable?: string;
+	public databaseSqlCmdVariableName?: string;
+	public databaseSqlCmdVariableValue?: string;
+	public serverSqlCmdVariableName?: string;
+	public serverSqlCmdVariableValue?: string;
 	public suppressMissingDependenciesErrors: boolean;
 
 	constructor(settings: IProjectReferenceSettings) {
@@ -110,14 +110,14 @@ export class SqlProjectReferenceProjectEntry extends FileProjectEntry implements
 		this.suppressMissingDependenciesErrors = settings.suppressMissingDependenciesErrors;
 
 		if (settings.databaseVariable) { // full SQLCMD variable
-			this.databaseName = settings.databaseName;
-			this.databaseSqlCmdVariable = settings.databaseVariable;
+			this.databaseSqlCmdVariableName = settings.databaseName;
+			this.databaseSqlCmdVariableValue = settings.databaseVariable;
 		} else { // just a literal
 			this.databaseVariableLiteralValue = settings.databaseName;
 		}
 
-		this.serverName = settings.serverName;
-		this.serverSqlCmdVariable = settings.serverVariable;
+		this.serverSqlCmdVariableName = settings.serverName;
+		this.serverSqlCmdVariableValue = settings.serverVariable;
 	}
 
 	public get referenceName(): string {

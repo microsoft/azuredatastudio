@@ -521,10 +521,10 @@ describe('Project: database references', function (): void {
 		(projRef!.pathForSqlProj()).should.equal('..\\OtherProject\\ReferencedProject.sqlproj');
 		(projRef!.projectGuid).should.equal('{BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575}');
 		should(projRef!.databaseVariableLiteralValue).equal(undefined, 'databaseVariableLiteralValue for sqlproj');
-		(projRef!.databaseName!).should.equal('projDbVar');
-		(projRef!.databaseSqlCmdVariable!).should.equal('$(SqlCmdVar__1)');
-		(projRef!.serverName!).should.equal('projServerVar');
-		(projRef!.serverSqlCmdVariable!).should.equal('$(SqlCmdVar__2)');
+		(projRef!.databaseSqlCmdVariableName!).should.equal('projDbVar');
+		(projRef!.databaseSqlCmdVariableValue!).should.equal('$(SqlCmdVar__1)');
+		(projRef!.serverSqlCmdVariableName!).should.equal('projServerVar');
+		(projRef!.serverSqlCmdVariableValue!).should.equal('$(SqlCmdVar__2)');
 		(projRef!.suppressMissingDependenciesErrors).should.equal(true, 'suppressMissingDependenciesErrors');
 
 		const dacpacRef: DacpacReferenceProjectEntry | undefined = project.databaseReferences.find(r => r instanceof DacpacReferenceProjectEntry) as DacpacReferenceProjectEntry;
@@ -532,10 +532,10 @@ describe('Project: database references', function (): void {
 		(dacpacRef!.referenceName).should.equal('ReferencedDacpac');
 		(dacpacRef!.pathForSqlProj()).should.equal('..\\OtherDacpac\\ReferencedDacpac.dacpac');
 		should(dacpacRef!.databaseVariableLiteralValue).equal(undefined, 'databaseVariableLiteralValue for dacpac');
-		(dacpacRef!.databaseName!).should.equal('dacpacDbVar');
-		(dacpacRef!.databaseSqlCmdVariable!).should.equal('$(SqlCmdVar__3)');
-		(dacpacRef!.serverName!).should.equal('dacpacServerVar');
-		(dacpacRef!.serverSqlCmdVariable!).should.equal('$(SqlCmdVar__4)');
+		(dacpacRef!.databaseSqlCmdVariableName!).should.equal('dacpacDbVar');
+		(dacpacRef!.databaseSqlCmdVariableValue!).should.equal('$(SqlCmdVar__3)');
+		(dacpacRef!.serverSqlCmdVariableName!).should.equal('dacpacServerVar');
+		(dacpacRef!.serverSqlCmdVariableValue!).should.equal('$(SqlCmdVar__4)');
 		(dacpacRef!.suppressMissingDependenciesErrors).should.equal(false, 'suppressMissingDependenciesErrors');
 	});
 
