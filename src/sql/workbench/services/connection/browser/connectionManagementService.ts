@@ -1674,9 +1674,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	/**
-	 * Serialize connection with options provider
-	 */
 	public async buildConnectionInfo(connectionString: string, providerId: string): Promise<azdata.ConnectionInfo> {
 		const connectionProviderInfo = this._providers.get(providerId);
 		if (!connectionProviderInfo) {
