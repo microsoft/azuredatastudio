@@ -53,10 +53,18 @@ export class FileEncryptionHelper {
 
 		// Emit event with cache encryption keys to send notification to provider services.
 		if (this._authLibrary === AuthLibrary.MSAL && this._onEncryptionKeysUpdated) {
-			this._onEncryptionKeysUpdated.fire({
-				iv: this._ivBuffer.toString(this._bufferEncoding),
-				key: this._keyBuffer.toString(this._bufferEncoding)
-			});
+			this._onEncryptionKeysUpdated.fire(this.getEncryptionKeys());
+			Logger.verbose('FileEncryptionHelper: Fired encryption keys updated event.');
+		}
+	}
+
+	/**
+	 * Provides encryption keys in use for instant access.
+	 */
+	public getEncryptionKeys(): CacheEncryptionKeys {
+		return {
+			iv: this._ivBuffer!.toString(this._bufferEncoding),
+			key: this._keyBuffer!.toString(this._bufferEncoding)
 		}
 	}
 

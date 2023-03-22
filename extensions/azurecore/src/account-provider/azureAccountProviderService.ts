@@ -81,6 +81,13 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		return this._onEncryptionKeysUpdated;
 	}
 
+	public async getEncryptionKeys(): Promise<CacheEncryptionKeys | undefined> {
+		if (!this._cachePluginProvider) {
+			await this.onDidChangeConfiguration();
+		}
+		return this._cachePluginProvider?.getCacheEncryptionKeys();
+	}
+
 	public dispose() {
 		while (this._disposables.length) {
 			const item = this._disposables.pop();

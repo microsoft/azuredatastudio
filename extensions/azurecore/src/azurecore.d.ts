@@ -321,6 +321,10 @@ declare module 'azurecore' {
 		 * by connection providers to read/write to the same access token cache for stable connectivity.
 		 */
 		onEncryptionKeysUpdated: vscode.Event<CacheEncryptionKeys>;
+		/**
+		 * Fetches MSAL cache encryption keys currently in use, for instant access.
+		 */
+		getEncryptionKeys(): Promise<CacheEncryptionKeys | undefined>;
 	}
 
 	export type GetSubscriptionsResult = { subscriptions: azureResource.AzureResourceSubscription[], errors: Error[] };

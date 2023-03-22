@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as path from 'path';
 import * as azurecore from 'azurecore';
-import { getAzureAuthenticationLibraryConfig, getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, TracingLevel } from './utils';
+import { getAzureAuthenticationLibraryConfig, getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, logDebug, TracingLevel } from './utils';
 import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature } from './features';
@@ -100,17 +100,26 @@ export class SqlToolsServer {
 	 */
 	private async handleEncryptionKeyEventNotification(client: SqlOpsDataClient) {
 		if (getAzureAuthenticationLibraryConfig() === 'MSAL' && getEnableSqlAuthenticationProviderConfig()) {
-			let onDidEncryptionKeysChanged = (await this.getAzureCoreAPI()).onEncryptionKeysUpdated;
+			let azureCoreApi = await this.getAzureCoreAPI();
+			let onDidEncryptionKeysChanged = azureCoreApi.onEncryptionKeysUpdated;
 			// Register event listener from Azure Core extension
 			onDidEncryptionKeysChanged((keys: azurecore.CacheEncryptionKeys) => {
-				// Send client notification for updated encryption keys
-				client.sendNotification(EncryptionKeysChangedNotification.type,
-					<DidChangeEncryptionIVKeyParams>{
-						key: keys.key,
-						iv: keys.iv
-					});
+				this.sendEncryptionKeysNotification(client, keys);
 			});
+			// Fetch encryption keys directly from AzureCore as notification event may not fire again
+			// if Azure Core extension was activated before.
+			this.sendEncryptionKeysNotification(client, await azureCoreApi.getEncryptionKeys());
+			logDebug('SqlToolsServer: Registered encryption key event handler.');
 		}
+	}
+
+	private sendEncryptionKeysNotification(client: SqlOpsDataClient, keys: azurecore.CacheEncryptionKeys) {
+		// Send client notification for updated encryption keys
+		client.sendNotification(EncryptionKeysChangedNotification.type,
+			<DidChangeEncryptionIVKeyParams>{
+				key: keys.key,
+				iv: keys.iv
+			});
 	}
 
 	private async getAzureCoreAPI(): Promise<azurecore.IExtension> {
