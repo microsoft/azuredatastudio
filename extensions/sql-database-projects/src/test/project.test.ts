@@ -503,11 +503,10 @@ describe('Project: database references', function (): void {
 		await testUtils.deleteGeneratedTestFolder();
 	});
 
-	it('Should read database references correctly', async function (): Promise<void> {
-		this.timeout(999_999);
+	it.only('Should read database references correctly', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.databaseReferencesReadBaseline);
 		const project = await Project.openProject(projFilePath);
-		(project.databaseReferences.length).should.equal(3, 'There should be three database references');
+		(project.databaseReferences.length).should.equal(5, 'NUmber of database references');
 
 		const systemRef: SystemDatabaseReferenceProjectEntry | undefined = project.databaseReferences.find(r => r instanceof SystemDatabaseReferenceProjectEntry) as SystemDatabaseReferenceProjectEntry;
 		should(systemRef).not.equal(undefined, 'msdb reference');
@@ -515,28 +514,47 @@ describe('Project: database references', function (): void {
 		(systemRef!.databaseVariableLiteralValue!).should.equal('msdbLiteral');
 		(systemRef!.suppressMissingDependenciesErrors).should.equal(true, 'suppressMissingDependenciesErrors for system db');
 
-		const projRef: SqlProjectReferenceProjectEntry | undefined = project.databaseReferences.find(r => r instanceof SqlProjectReferenceProjectEntry) as SqlProjectReferenceProjectEntry;
-		should(projRef).not.equal(undefined, 'sqlproj reference');
-		(projRef!.referenceName).should.equal('ReferencedProject');
-		(projRef!.pathForSqlProj()).should.equal('..\\OtherProject\\ReferencedProject.sqlproj');
+		let projRef: SqlProjectReferenceProjectEntry | undefined = project.databaseReferences.find(r => r instanceof SqlProjectReferenceProjectEntry && r.referenceName === 'ReferencedProject') as SqlProjectReferenceProjectEntry;
+		should(projRef).not.equal(undefined, 'ReferencedProject reference');
+		(projRef!.pathForSqlProj()).should.equal('..\\ReferencedProject\\ReferencedProject.sqlproj');
 		(projRef!.projectGuid).should.equal('{BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575}');
-		should(projRef!.databaseVariableLiteralValue).equal(undefined, 'databaseVariableLiteralValue for sqlproj');
+		should(projRef!.databaseVariableLiteralValue).equal(null, 'databaseVariableLiteralValue for ReferencedProject');
 		(projRef!.databaseSqlCmdVariableName!).should.equal('projDbVar');
 		(projRef!.databaseSqlCmdVariableValue!).should.equal('$(SqlCmdVar__1)');
 		(projRef!.serverSqlCmdVariableName!).should.equal('projServerVar');
 		(projRef!.serverSqlCmdVariableValue!).should.equal('$(SqlCmdVar__2)');
-		(projRef!.suppressMissingDependenciesErrors).should.equal(true, 'suppressMissingDependenciesErrors');
+		(projRef!.suppressMissingDependenciesErrors).should.equal(true, 'suppressMissingDependenciesErrors for ReferencedProject');
 
-		const dacpacRef: DacpacReferenceProjectEntry | undefined = project.databaseReferences.find(r => r instanceof DacpacReferenceProjectEntry) as DacpacReferenceProjectEntry;
-		should(dacpacRef).not.equal(undefined, 'dacpac reference');
-		(dacpacRef!.referenceName).should.equal('ReferencedDacpac');
-		(dacpacRef!.pathForSqlProj()).should.equal('..\\OtherDacpac\\ReferencedDacpac.dacpac');
-		should(dacpacRef!.databaseVariableLiteralValue).equal(undefined, 'databaseVariableLiteralValue for dacpac');
+		projRef = project.databaseReferences.find(r => r instanceof SqlProjectReferenceProjectEntry && r.referenceName === 'OtherProject') as SqlProjectReferenceProjectEntry;
+		should(projRef).not.equal(undefined, 'OtherProject reference');
+		(projRef!.pathForSqlProj()).should.equal('..\\OtherProject\\OtherProject.sqlproj');
+		(projRef!.projectGuid).should.equal('{C0DEBA11-BA5E-5EA7-ACE5-BABB1E70A575}');
+		(projRef!.databaseVariableLiteralValue!).should.equal('OtherProjLiteral', 'databaseVariableLiteralValue for OtherProject');
+		should(projRef!.databaseSqlCmdVariableName).equal(undefined);
+		should(projRef!.databaseSqlCmdVariableValue).equal(undefined);
+		should(projRef!.serverSqlCmdVariableName).equal(undefined);
+		should(projRef!.serverSqlCmdVariableValue).equal(undefined);
+		(projRef!.suppressMissingDependenciesErrors).should.equal(false, 'suppressMissingDependenciesErrors for OtherProject');
+
+		let dacpacRef: DacpacReferenceProjectEntry | undefined = project.databaseReferences.find(r => r instanceof DacpacReferenceProjectEntry && r.referenceName === 'ReferencedDacpac') as DacpacReferenceProjectEntry;
+		should(dacpacRef).not.equal(undefined, 'dacpac reference for ReferencedDacpac');
+		(dacpacRef!.pathForSqlProj()).should.equal('..\\ReferencedDacpac\\ReferencedDacpac.dacpac');
+		should(dacpacRef!.databaseVariableLiteralValue).equal(null, 'databaseVariableLiteralValue for ReferencedDacpac');
 		(dacpacRef!.databaseSqlCmdVariableName!).should.equal('dacpacDbVar');
 		(dacpacRef!.databaseSqlCmdVariableValue!).should.equal('$(SqlCmdVar__3)');
 		(dacpacRef!.serverSqlCmdVariableName!).should.equal('dacpacServerVar');
 		(dacpacRef!.serverSqlCmdVariableValue!).should.equal('$(SqlCmdVar__4)');
-		(dacpacRef!.suppressMissingDependenciesErrors).should.equal(false, 'suppressMissingDependenciesErrors');
+		(dacpacRef!.suppressMissingDependenciesErrors).should.equal(false, 'suppressMissingDependenciesErrors for ReferencedDacpac');
+
+		dacpacRef = project.databaseReferences.find(r => r instanceof DacpacReferenceProjectEntry && r.referenceName === 'OtherDacpac') as DacpacReferenceProjectEntry;
+		should(dacpacRef).not.equal(undefined, 'dacpac reference for OtherDacpac');
+		(dacpacRef!.pathForSqlProj()).should.equal('..\\OtherDacpac\\OtherDacpac.dacpac');
+		(dacpacRef!.databaseVariableLiteralValue!).should.equal('OtherDacpacLiteral', 'databaseVariableLiteralValue for OtherDacpac');
+		should(dacpacRef!.databaseSqlCmdVariableName).equal(undefined);
+		should(dacpacRef!.databaseSqlCmdVariableValue).equal(undefined);
+		should(dacpacRef!.serverSqlCmdVariableName).equal(undefined);
+		should(dacpacRef!.serverSqlCmdVariableValue).equal(undefined);
+		(dacpacRef!.suppressMissingDependenciesErrors).should.equal(true, 'suppressMissingDependenciesErrors for OtherDacpac');
 	});
 
 	it('Should delete database references correctly', async function (): Promise<void> {

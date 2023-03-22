@@ -55,12 +55,9 @@ export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDa
 		super(settings.dacpacFileLocation, /* relativePath doesn't get set for database references */ '', EntryType.DatabaseReference);
 		this.suppressMissingDependenciesErrors = settings.suppressMissingDependenciesErrors;
 
-		if (settings.databaseVariable) { // full SQLCMD variable
-			this.databaseSqlCmdVariableName = settings.databaseName;
-			this.databaseSqlCmdVariableValue = settings.databaseVariable;
-		} else { // just a literal
-			this.databaseVariableLiteralValue = settings.databaseName;
-		}
+		this.databaseVariableLiteralValue = settings.databaseVariableLiteralValue;
+		this.databaseSqlCmdVariableName = settings.databaseName;
+		this.databaseSqlCmdVariableValue = settings.databaseVariable;
 
 		this.serverSqlCmdVariableName = settings.serverName;
 		this.serverSqlCmdVariableValue = settings.serverVariable;
@@ -109,12 +106,9 @@ export class SqlProjectReferenceProjectEntry extends FileProjectEntry implements
 		this.projectGuid = settings.projectGuid;
 		this.suppressMissingDependenciesErrors = settings.suppressMissingDependenciesErrors;
 
-		if (settings.databaseVariable) { // full SQLCMD variable
-			this.databaseSqlCmdVariableName = settings.databaseName;
-			this.databaseSqlCmdVariableValue = settings.databaseVariable;
-		} else { // just a literal
-			this.databaseVariableLiteralValue = settings.databaseName;
-		}
+		this.databaseVariableLiteralValue = settings.databaseVariableLiteralValue;
+		this.databaseSqlCmdVariableName = settings.databaseName;
+		this.databaseSqlCmdVariableValue = settings.databaseVariable;
 
 		this.serverSqlCmdVariableName = settings.serverName;
 		this.serverSqlCmdVariableValue = settings.serverVariable;

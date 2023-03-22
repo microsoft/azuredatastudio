@@ -10,7 +10,7 @@
   <Target Name="BeforeBuild">
     <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json" />
   </Target>
-  <ItemGroup>
+	<ItemGroup>
     <ArtifactReference Condition="'$(NetCoreBuild)' == 'true'" Include="$(SystemDacpacsLocation)\SystemDacpacs\150\msdb.dacpac">
       <SuppressMissingDependenciesErrors>True</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>msdbLiteral</DatabaseVariableLiteralValue>
@@ -19,10 +19,14 @@
       <SuppressMissingDependenciesErrors>True</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>msdbLiteral</DatabaseVariableLiteralValue>
     </ArtifactReference>
-    <ArtifactReference Include="..\OtherDacpac\ReferencedDacpac.dacpac">
+    <ArtifactReference Include="..\ReferencedDacpac\ReferencedDacpac.dacpac">
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseSqlCmdVariable>dacpacDbVar</DatabaseSqlCmdVariable>
       <ServerSqlCmdVariable>dacpacServerVar</ServerSqlCmdVariable>
+    </ArtifactReference>
+    <ArtifactReference Include="..\OtherDacpac\OtherDacpac.dacpac">
+      <SuppressMissingDependenciesErrors>True</SuppressMissingDependenciesErrors>
+      <DatabaseVariableLiteralValue>OtherDacpacLiteral</DatabaseVariableLiteralValue>
     </ArtifactReference>
   </ItemGroup>
   <ItemGroup>
@@ -44,13 +48,20 @@
     </SqlCmdVariable>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OtherProject\ReferencedProject.sqlproj">
+    <ProjectReference Include="..\ReferencedProject\ReferencedProject.sqlproj">
       <Name>ReferencedProject</Name>
       <Project>{BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575}</Project>
       <Private>True</Private>
       <SuppressMissingDependenciesErrors>True</SuppressMissingDependenciesErrors>
       <DatabaseSqlCmdVariable>projDbVar</DatabaseSqlCmdVariable>
       <ServerSqlCmdVariable>projServerVar</ServerSqlCmdVariable>
+    </ProjectReference>
+    <ProjectReference Include="..\OtherProject\OtherProject.sqlproj">
+      <Name>OtherProject</Name>
+      <Project>{C0DEBA11-BA5E-5EA7-ACE5-BABB1E70A575}</Project>
+      <Private>True</Private>
+      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
+      <DatabaseVariableLiteralValue>OtherProjLiteral</DatabaseVariableLiteralValue>
     </ProjectReference>
   </ItemGroup>
 </Project>
