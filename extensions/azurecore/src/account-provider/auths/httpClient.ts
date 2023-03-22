@@ -103,9 +103,6 @@ const networkRequestViaProxy = <T>(
 		path: destinationUrl.hostname,
 		headers: headers
 	};
-	if (destinationUrl.searchParams) {
-		tunnelRequestOptions.path += `?${destinationUrl.searchParams}`;
-	}
 
 	if (timeout) {
 		tunnelRequestOptions.timeout = timeout;
@@ -252,13 +249,11 @@ const networkRequestViaHttps = <T>(
 	const isPostRequest = httpMethod === HttpMethod.POST;
 	const body: string = options?.body || '';
 	const url = new URL(urlString);
-
-	const emptyHeaders: Record<string, string> = {};
-	const customOptions: https.RequestOptions = {
-		hostname: url.hostname,
-		path: url.pathname,
+	const optionHeaders = options?.headers || {} as Record<string, string>;
+	let customOptions: https.RequestOptions = {
 		method: httpMethod,
-		headers: options?.headers || emptyHeaders
+		headers: optionHeaders,
+		...NetworkUtils.urlToHttpOptions(url)
 	};
 
 	if (url.searchParams) {
