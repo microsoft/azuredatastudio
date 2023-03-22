@@ -21,7 +21,7 @@ import {
 } from 'azurecore';
 import { Deferred } from '../interfaces';
 import { AuthenticationResult, DeviceCodeRequest, PublicClientApplication } from '@azure/msal-node';
-import { SimpleTokenCache } from '../simpleTokenCache';
+import { SimpleTokenCache } from '../utils/simpleTokenCache';
 import { Logger } from '../../utils/Logger';
 
 const localize = nls.loadMessageBundle();
