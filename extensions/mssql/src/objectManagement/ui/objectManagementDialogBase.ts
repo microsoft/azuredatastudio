@@ -14,10 +14,9 @@ import { generateUuid } from 'vscode-languageclient/lib/utils/uuid';
 import { getErrorMessage } from '../../utils';
 import { NodeType, TelemetryActions, TelemetryViews } from '../constants';
 import {
-	ConfirmationAfterScripting,
 	CreateObjectOperationDisplayName, HelpText, LoadingDialogText,
 	NameText,
-	NewObjectDialogTitle, NoText, ObjectPropertiesDialogTitle, OkText, ScriptError, ScriptText, SelectedText, UpdateObjectOperationDisplayName, YesText
+	NewObjectDialogTitle, ObjectPropertiesDialogTitle, OkText, ScriptError, ScriptGeneratedText, ScriptText, SelectedText, UpdateObjectOperationDisplayName
 } from '../localizedConstants';
 import { deepClone, getNodeTypeDisplayName, refreshNode } from '../utils';
 import { TelemetryReporter } from '../../telemetry';
@@ -335,12 +334,15 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			}
 			const script = await this.generateScript();
 			await azdata.queryeditor.openQueryDocument({ content: script }, providerId);
-			const result = await vscode.window.showInformationMessage(ConfirmationAfterScripting, { modal: true }, { title: YesText }, { title: NoText, isCloseAffordance: true });
-			if (result.title === YesText) {
-				azdata.window.closeDialog(this.dialogObject);
-			}
+			this.dialogObject.message = {
+				text: ScriptGeneratedText,
+				level: azdata.window.MessageLevel.Information
+			};
 		} catch (err) {
-			await vscode.window.showErrorMessage(ScriptError(getErrorMessage(err)), { modal: true });
+			this.dialogObject.message = {
+				text: ScriptError(getErrorMessage(err)),
+				level: azdata.window.MessageLevel.Error
+			};
 		} finally {
 			this.updateLoadingStatus(false);
 		}

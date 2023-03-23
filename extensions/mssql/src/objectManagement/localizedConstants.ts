@@ -19,13 +19,12 @@ export const DatabaseTypeDisplayName: string = localize('objectManagement.Databa
 // Shared Strings
 export const HelpText: string = localize('objectManagement.helpText', "Help");
 export const YesText: string = localize('objectManagement.yesText', "Yes");
-export const NoText: string = localize('objectManagement.noText', "No");
 export const OkText: string = localize('objectManagement.OkText', "OK");
 export const LoadingDialogText: string = localize('objectManagement.loadingDialog', "Loading dialog...");
 export const FailedToRetrieveConnectionInfoErrorMessage: string = localize('objectManagement.noConnectionUriError', "Failed to retrieve the connection information, please reconnect and try again.")
 export const RenameObjectDialogTitle: string = localize('objectManagement.renameObjectDialogTitle', "Enter new name");
 export const ScriptText: string = localize('objectManagement.scriptText', "Script");
-export const ConfirmationAfterScripting: string = localize('objectManagement.scriptGeneratedCloseConfirmation', "Script has been generated successfully. Do you want to close the dialog?")
+export const ScriptGeneratedText: string = localize('objectManagement.scriptGenerated', "Script has been generated successfully.")
 
 
 export function RefreshObjectExplorerError(error: string): string {
