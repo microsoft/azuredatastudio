@@ -3,6 +3,10 @@ resources:
   - container: linux-x64
     image: sqltoolscontainers.azurecr.io/linux-build-agent:6
     endpoint: SqlToolsContainers
+  - container: linux-arm64
+    image: vscodehub.azurecr.io/vscode-linux-build-agent:stretch-arm64
+    endpoint: VSCodeHub
+    options: --user 0:0 --cap-add SYS_ADMIN
 
 stages:
   - stage: Compile
@@ -117,7 +121,7 @@ stages:
         condition: and(succeeded(), eq(variables['VSCODE_BUILD_LINUX_ARM64'], 'true'))
         pool:
           vmImage: 'Ubuntu-20.04'
-        container: linux-x64
+        container: linux-arm64
         steps:
         - template: linux/sql-product-build-linux.yml
         timeoutInMinutes: 60
