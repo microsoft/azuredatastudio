@@ -319,7 +319,7 @@ describe('ProjectsController', function (): void {
 
 				// confirm result
 				should(proj.files.length).equal(2, 'number of file entries'); // LowerFolder and the contained scripts should be deleted
-				should(proj.folders[0].relativePath).equal('UpperFolder', 'UpperFolder should still be there');
+				should(proj.folders.find(f => f.relativePath === 'UpperFolder')).not.equal(undefined, 'UpperFolder should still be there');
 				should(proj.preDeployScripts.length).equal(0, 'Pre deployment scripts');
 				should(proj.postDeployScripts.length).equal(0, 'Post deployment scripts');
 				should(proj.noneDeployScripts.length).equal(0, 'None files');
