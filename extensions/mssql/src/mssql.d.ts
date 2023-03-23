@@ -1192,6 +1192,12 @@ declare module 'mssql' {
 		 */
 		updateLogin(contextId: string, login: ObjectManagement.Login): Thenable<void>;
 		/**
+		 * Script a login.
+		 * @param contextId The login view's context id.
+		 * @param login The login information.
+		 */
+		scriptLogin(contextId: string, login: ObjectManagement.Login): Thenable<string>;
+		/**
 		 * Dispose the login view.
 		 * @param contextId The id of the view.
 		 */
@@ -1217,6 +1223,12 @@ declare module 'mssql' {
 		 * @param user The user information.
 		 */
 		updateUser(contextId: string, user: ObjectManagement.User): Thenable<void>;
+		/**
+		 * Script a user.
+		 * @param contextId Id of the view.
+		 * @param user The user information.
+		 */
+		scriptUser(contextId: string, user: ObjectManagement.User): Thenable<string>;
 		/**
 		 * Dispose the user view.
 		 * @param contextId The id of the view.

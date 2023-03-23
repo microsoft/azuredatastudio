@@ -19,10 +19,14 @@ export const DatabaseTypeDisplayName: string = localize('objectManagement.Databa
 // Shared Strings
 export const HelpText: string = localize('objectManagement.helpText', "Help");
 export const YesText: string = localize('objectManagement.yesText', "Yes");
+export const NoText: string = localize('objectManagement.noText', "No");
 export const OkText: string = localize('objectManagement.OkText', "OK");
 export const LoadingDialogText: string = localize('objectManagement.loadingDialog', "Loading dialog...");
 export const FailedToRetrieveConnectionInfoErrorMessage: string = localize('objectManagement.noConnectionUriError', "Failed to retrieve the connection information, please reconnect and try again.")
 export const RenameObjectDialogTitle: string = localize('objectManagement.renameObjectDialogTitle', "Enter new name");
+export const ScriptText: string = localize('objectManagement.scriptText', "Script");
+export const ConfirmationAfterScripting: string = localize('objectManagement.scriptGeneratedCloseConfirmation', "Script has been generated successfully. Do you want to close the dialog?")
+
 
 export function RefreshObjectExplorerError(error: string): string {
 	return localize({
@@ -106,6 +110,10 @@ export function RenameObjectError(objectType: string, originalName: string, newN
 		key: 'objectManagement.renameObjectError',
 		comment: ['{0} object type, {1}: original name, {2}: new name, {3}: error message.']
 	}, "An error occurred while renaming {0} '{1}' to '{2}'. {3}", objectType, originalName, newName, error);
+}
+
+export function ScriptError(error: string): string {
+	return localize('objectManagement.scriptError', "An error occurred while generating script. {0}", error);
 }
 
 export const NameText = localize('objectManagement.nameLabel', "Name");

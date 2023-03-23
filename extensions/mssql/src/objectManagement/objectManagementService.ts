@@ -63,6 +63,16 @@ export class ObjectManagementService implements IObjectManagementService {
 			}
 		);
 	}
+	scriptLogin(contextId: string, login: ObjectManagement.Login): Thenable<string> {
+		const params: contracts.ScriptLoginRequestParams = { contextId, login };
+		return this.client.sendRequest(contracts.ScriptLoginRequest.type, params).then(
+			r => { return r; },
+			e => {
+				this.client.logFailedRequest(contracts.ScriptLoginRequest.type, e);
+				return Promise.reject(e);
+			}
+		);
+	}
 	disposeLoginView(contextId: string): Thenable<void> {
 		const params: contracts.DisposeLoginViewRequestParams = { contextId };
 		return this.client.sendRequest(contracts.DisposeLoginViewRequest.type, params).then(
@@ -101,6 +111,16 @@ export class ObjectManagementService implements IObjectManagementService {
 			r => { },
 			e => {
 				this.client.logFailedRequest(contracts.UpdateUserRequest.type, e);
+				return Promise.reject(e);
+			}
+		);
+	}
+	scriptUser(contextId: string, user: ObjectManagement.User): Thenable<string> {
+		const params: contracts.ScriptUserRequestParams = { contextId, user };
+		return this.client.sendRequest(contracts.ScriptUserRequest.type, params).then(
+			r => { return r; },
+			e => {
+				this.client.logFailedRequest(contracts.ScriptUserRequest.type, e);
 				return Promise.reject(e);
 			}
 		);
@@ -215,6 +235,13 @@ export class TestObjectManagementService implements IObjectManagementService {
 			}, 3000);
 		});
 	}
+	async scriptLogin(contextId: string, login: ObjectManagement.Login): Promise<string> {
+		return new Promise((resolve, reject) => {
+			setTimeout(() => {
+				resolve('test script');
+			}, 1000);
+		});
+	}
 	async disposeLoginView(contextId: string): Promise<void> {
 	}
 	async initializeUserView(connectionUri: string, database: string, contextId: string, isNewObject: boolean, name: string): Promise<ObjectManagement.UserViewInfo> {
@@ -278,6 +305,13 @@ export class TestObjectManagementService implements IObjectManagementService {
 	}
 	async updateUser(contextId: string, login: ObjectManagement.User): Promise<void> {
 		return this.delayAndResolve();
+	}
+	async scriptUser(contextId: string, login: ObjectManagement.User): Promise<string> {
+		return new Promise((resolve, reject) => {
+			setTimeout(() => {
+				reject('generate script for user not supported');
+			}, 1000);
+		});
 	}
 	async disposeUserView(contextId: string): Promise<void> {
 	}
