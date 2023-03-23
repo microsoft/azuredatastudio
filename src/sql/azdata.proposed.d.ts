@@ -614,6 +614,13 @@ declare module 'azdata' {
 		 * Action to be taken, Supported values: 'show', 'hide'.
 		 */
 		action: string;
+
+		/**
+		 * Whether or not the option should be set to required when visible. Defaults to false.
+		 * NOTE: Since this is dynamically defined, option values are not updated on 'show' and validation is not performed.
+		 * When set to true, providers must handle property validation.
+		 */
+		showAsRequired?: boolean;
 	}
 
 	// Object Explorer interfaces  --------------------------------
