@@ -14,7 +14,7 @@ import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { DatabaseProjectItemType } from '../common/constants';
 import { EntryType } from 'sqldbproj';
 
-describe.only('Project Tree tests', function (): void {
+describe('Project Tree tests', function (): void {
 	it('Should correctly order tree nodes by type, then by name', function (): void {
 		const root = os.platform() === 'win32' ? 'Z:\\' : '/';
 
