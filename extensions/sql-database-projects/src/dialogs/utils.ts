@@ -226,11 +226,22 @@ export interface DbServerValues {
 
 export function populateResultWithVars(referenceSettings: IUserDatabaseReferenceSettings, dbServerValues: DbServerValues) {
 	if (dbServerValues.dbVariable) {
-		referenceSettings.databaseName = dbServerValues.dbName;
-		referenceSettings.databaseVariable = removeSqlCmdVariableFormatting(dbServerValues.dbVariable);
-		referenceSettings.serverName = dbServerValues.serverName;
-		referenceSettings.serverVariable = removeSqlCmdVariableFormatting(dbServerValues.serverVariable);
+		referenceSettings.databaseName = ensureSetOrDefined(dbServerValues.dbName);
+		referenceSettings.databaseVariable = ensureSetOrDefined(removeSqlCmdVariableFormatting(dbServerValues.dbVariable));
+		referenceSettings.serverName = ensureSetOrDefined(dbServerValues.serverName);
+		referenceSettings.serverVariable = ensureSetOrDefined(removeSqlCmdVariableFormatting(dbServerValues.serverVariable));
 	} else {
-		referenceSettings.databaseVariableLiteralValue = dbServerValues.dbName;
+		referenceSettings.databaseVariableLiteralValue = ensureSetOrDefined(dbServerValues.dbName);
 	}
+}
+
+/**
+ * Returns undefined for settings that are an empty string, meaning they are unset
+ * @param setting
+ */
+export function ensureSetOrDefined(setting?: string): string | undefined {
+	if (!setting || setting.trim().length === 0) {
+		return undefined;
+	}
+	return setting;
 }

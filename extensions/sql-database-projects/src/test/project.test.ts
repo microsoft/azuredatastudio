@@ -561,10 +561,10 @@ describe('Project: database references', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.databaseReferencesReadBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		(project.databaseReferences.length).should.equal(5, 'There should be three database references');
+		(project.databaseReferences.length).should.equal(5, 'There should be five database references');
 
 		await project.deleteDatabaseReference(constants.msdb);
-		(project.databaseReferences.length).should.equal(4, 'There should be three database references after deletion');
+		(project.databaseReferences.length).should.equal(4, 'There should be four database references after deletion');
 
 		let ref = project.databaseReferences.find(r => r.referenceName === constants.msdb);
 		should(ref).equal(undefined, 'msdb reference should be deleted');

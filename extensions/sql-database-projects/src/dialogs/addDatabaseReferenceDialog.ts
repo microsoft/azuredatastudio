@@ -16,7 +16,7 @@ import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectRef
 import { Deferred } from '../common/promise';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { SystemDatabase } from 'mssql';
-import { DbServerValues, populateResultWithVars } from './utils';
+import { DbServerValues, ensureSetOrDefined, populateResultWithVars } from './utils';
 
 export enum ReferenceType {
 	project,
@@ -172,7 +172,7 @@ export class AddDatabaseReferenceDialog {
 				referenceSettings = projRef;
 			} else { // this.currentReferenceType === ReferenceType.dacpac
 				const dacpacRef: IDacpacReferenceSettings = {
-					databaseName: this.ensureSetOrDefined(this.databaseNameTextbox?.value),
+					databaseName: ensureSetOrDefined(this.databaseNameTextbox?.value),
 					dacpacFileLocation: vscode.Uri.file(<string>this.dacpacTextbox?.value),
 					suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 				};
@@ -181,10 +181,10 @@ export class AddDatabaseReferenceDialog {
 			}
 
 			const dbServerValues: DbServerValues = {
-				dbName: this.ensureSetOrDefined(this.databaseNameTextbox?.value),
-				dbVariable: this.ensureSetOrDefined(utils.removeSqlCmdVariableFormatting(<string>this.databaseVariableTextbox?.value)),
-				serverName: this.ensureSetOrDefined(this.serverNameTextbox?.value),
-				serverVariable: this.ensureSetOrDefined(utils.removeSqlCmdVariableFormatting(<string>this.serverVariableTextbox?.value))
+				dbName: this.databaseNameTextbox?.value,
+				dbVariable: this.databaseVariableTextbox?.value,
+				serverName: this.serverNameTextbox?.value,
+				serverVariable: this.serverVariableTextbox?.value
 			};
 
 			populateResultWithVars(referenceSettings, dbServerValues);
@@ -197,17 +197,6 @@ export class AddDatabaseReferenceDialog {
 		await this.addReference!(this.project, referenceSettings);
 
 		this.dispose();
-	}
-
-	/**
-	 * Returns undefined for settings that are an empty string, meaning they are unset
-	 * @param setting
-	 */
-	private ensureSetOrDefined(setting?: string): string | undefined {
-		if (!setting || setting.trim().length === 0) {
-			return undefined;
-		}
-		return setting;
 	}
 
 	private createRadioButtons(): azdataType.FormComponent {
