@@ -32,8 +32,8 @@ export class SqlNotebookController implements vscode.Disposable {
 	private readonly _connProvider: azdata.ConnectionProvider;
 	private readonly _connectionLabelItem: vscode.StatusBarItem;
 
-	private _queryCompleteHandler: QueryCompletionHandler;
-	private _queryMessageHandler: QueryMessageHandler;
+	private _queryCompleteHandler: QueryCompletionHandler | undefined;
+	private _queryMessageHandler: QueryMessageHandler | undefined;
 	private _activeCellUri: string;
 
 	constructor() {
@@ -84,7 +84,7 @@ export class SqlNotebookController implements vscode.Disposable {
 		}
 	}
 
-	private async handleActiveEditorChanged(editor: vscode.TextEditor): Promise<void> {
+	private async handleActiveEditorChanged(editor: vscode.TextEditor | undefined): Promise<void> {
 		let notebook = editor?.document.notebook;
 		if (!notebook) {
 			// Hide status bar item if the current editor isn't a notebook
@@ -133,19 +133,19 @@ export class SqlNotebookController implements vscode.Disposable {
 
 	private updateCellConnection(notebookUri: vscode.Uri, connection: azdata.connection.Connection): void {
 		let docUri = vscode.window.activeTextEditor?.document.uri;
-		if (docUri?.scheme === this._cellUriScheme && docUri?.path === notebookUri.path) {
+		if (docUri && docUri.scheme === this._cellUriScheme && docUri.path === notebookUri.path) {
 			if (this._activeCellUri) {
 				this._connProvider.disconnect(this._activeCellUri).then(() => undefined, error => console.log(error));
 			}
 			this._activeCellUri = docUri.toString();
 			// Delay connecting in case user is clicking between cells a lot
 			setTimeout(() => {
-				if (this._activeCellUri === docUri.toString()) {
+				if (this._activeCellUri === docUri!.toString()) {
 					let profile = this.getConnectionProfile(connection);
-					this._connProvider.connect(docUri.toString(), profile).then(
+					this._connProvider.connect(docUri!.toString(), profile).then(
 						connected => {
 							if (!connected) {
-								console.log(`Failed to update cell connection for cell: ${docUri.toString()}`);
+								console.log(`Failed to update cell connection for cell: ${docUri!.toString()}`);
 							}
 						},
 						error => {
@@ -157,7 +157,7 @@ export class SqlNotebookController implements vscode.Disposable {
 	}
 
 	private async changeConnection(notebook?: vscode.NotebookDocument): Promise<azdata.connection.Connection | undefined> {
-		let connection: azdata.connection.Connection;
+		let connection: azdata.connection.Connection | undefined;
 		let notebookUri = notebook?.uri ?? vscode.window.activeTextEditor?.document.notebook?.uri;
 		if (notebookUri) {
 			connection = await azdata.connection.openConnectionDialog(['MSSQL']);
@@ -207,7 +207,7 @@ export class SqlNotebookController implements vscode.Disposable {
 			return;
 		}
 
-		let cancelHandler: vscode.Disposable;
+		let cancelHandler: vscode.Disposable | undefined;
 		try {
 			const ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
 			await this._queryProvider.runQueryString(ownerUri, cell.document.getText());
@@ -221,7 +221,7 @@ export class SqlNotebookController implements vscode.Disposable {
 							break;
 						}
 
-						for (let resultSummary of batchSummary.resultSetSummaries) {
+						for (let resultSummary of batchSummary.resultSetSummaries || []) {
 							if (execution.token.isCancellationRequested) {
 								break;
 							}
@@ -302,9 +302,7 @@ export class SqlNotebookController implements vscode.Disposable {
 			]);
 			execution.end(false, Date.now());
 		} finally {
-			if (cancelHandler) {
-				cancelHandler.dispose();
-			}
+			cancelHandler?.dispose();
 			this._queryCompleteHandler = undefined;
 			this._queryMessageHandler = undefined;
 		}
