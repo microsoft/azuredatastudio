@@ -939,6 +939,11 @@ suite('SQL ConnectionManagementService tests', () => {
 		assert.strictEqual(result.options, options);
 	});
 
+	test('buildConnectionInfo with unknown provider should throw', async () => {
+		let testConnectionString = 'test_connection_string';
+		await assert.rejects(() => connectionManagementService.buildConnectionInfo(testConnectionString, 'INVALID'));
+	});
+
 	test('removeConnectionProfileCredentials should return connection profile without password', () => {
 		let profile = Object.assign({}, connectionProfile);
 		connectionStore.setup(x => x.getProfileWithoutPassword(TypeMoq.It.isAny())).returns(() => {

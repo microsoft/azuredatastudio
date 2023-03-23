@@ -9,12 +9,14 @@ import * as vscode from 'vscode';
 import { AuthLibrary } from '../../constants';
 import * as LocalizedConstants from '../../localizedConstants';
 import { Logger } from '../../utils/Logger';
+import { CacheEncryptionKeys } from 'azurecore';
 
 export class FileEncryptionHelper {
 	constructor(
 		private readonly _authLibrary: AuthLibrary,
 		private readonly _credentialService: azdata.CredentialProvider,
-		protected readonly _fileName: string
+		protected readonly _fileName: string,
+		private readonly _onEncryptionKeysUpdated?: vscode.EventEmitter<CacheEncryptionKeys>
 	) {
 		this._algorithm = this._authLibrary === AuthLibrary.MSAL ? 'aes-256-cbc' : 'aes-256-gcm';
 		this._bufferEncoding = this._authLibrary === AuthLibrary.MSAL ? 'utf16le' : 'hex';
@@ -47,6 +49,22 @@ export class FileEncryptionHelper {
 		} else {
 			this._ivBuffer = Buffer.from(iv, this._bufferEncoding);
 			this._keyBuffer = Buffer.from(key, this._bufferEncoding);
+		}
+
+		// Emit event with cache encryption keys to send notification to provider services.
+		if (this._authLibrary === AuthLibrary.MSAL && this._onEncryptionKeysUpdated) {
+			this._onEncryptionKeysUpdated.fire(this.getEncryptionKeys());
+			Logger.verbose('FileEncryptionHelper: Fired encryption keys updated event.');
+		}
+	}
+
+	/**
+	 * Provides encryption keys in use for instant access.
+	 */
+	public getEncryptionKeys(): CacheEncryptionKeys {
+		return {
+			iv: this._ivBuffer!.toString(this._bufferEncoding),
+			key: this._keyBuffer!.toString(this._bufferEncoding)
 		}
 	}
 
