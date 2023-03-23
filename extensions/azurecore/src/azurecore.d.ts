@@ -324,7 +324,7 @@ declare module 'azurecore' {
 		/**
 		 * Fetches MSAL cache encryption keys currently in use.
 		 */
-		getEncryptionKeys(): Promise<CacheEncryptionKeys | undefined>;
+		getEncryptionKeys(): Promise<CacheEncryptionKeys>;
 	}
 
 	export type GetSubscriptionsResult = { subscriptions: azureResource.AzureResourceSubscription[], errors: Error[] };
