@@ -1089,7 +1089,7 @@ async function setupDeleteExcludeTest(proj: Project): Promise<[FileProjectEntry,
 
 	// confirm setup
 	should(proj.files.length).equal(3, 'number of file entries');
-	should(proj.folders.length).equal(3, 'number of folder entries');
+	should(proj.folders.length).equal(2, 'number of folder entries');
 	should(proj.preDeployScripts.length).equal(1, 'number of pre-deployment script entries');
 	should(proj.postDeployScripts.length).equal(1, 'number of post-deployment script entries');
 	should(proj.noneDeployScripts.length).equal(1, 'number of none script entries');
