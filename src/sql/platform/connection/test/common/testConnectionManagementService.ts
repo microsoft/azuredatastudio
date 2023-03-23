@@ -96,6 +96,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return [];
 	}
 
+	getConnectionGroupById(id: string): ConnectionProfileGroup | undefined {
+		return undefined;
+	}
+
 	getActiveConnections(providers?: string[]): ConnectionProfile[] {
 		return [];
 	}

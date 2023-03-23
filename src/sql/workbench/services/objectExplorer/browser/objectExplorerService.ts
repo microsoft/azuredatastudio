@@ -362,6 +362,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		const provider = this._providers[providerId];
 		if (provider) {
 			const result = await provider.createNewSession(connection.toConnectionInfo());
+			if (!result?.sessionId) {
+				throw new Error(nls.localize('objectExplorerSessionIdMissing', "Object Explorer session ID is missing for connection"));
+			}
 			if (this._sessions[result.sessionId]) {
 				this.logService.trace(`Overwriting session ${result.sessionId}`);
 			}

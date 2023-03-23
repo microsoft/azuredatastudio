@@ -18,6 +18,7 @@ import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplor
 import * as nls from 'vs/nls';
 import { NODE_EXPANSION_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import * as Utils from 'sql/platform/connection/common/utils';
 
 export interface IExpandableTree extends ITree {
 	/**
@@ -229,16 +230,20 @@ export class TreeUpdateUtils {
 		connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, tree: AsyncServerTree | ITree | undefined, requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<boolean> {
 		const connectedConnection = await TreeUpdateUtils.connectIfNotConnected(connection, options, connectionManagementService, tree);
 		if (connectedConnection) {
-			// append group ID and original display name to build unique OE session ID
-			connectedConnection.options['groupId'] = connection.groupId;
-			connectedConnection.options['databaseDisplayName'] = connection.databaseName;
-
-			let rootNode: TreeNode | undefined = objectExplorerService.getObjectExplorerNode(connectedConnection);
-			if (!rootNode) {
-				await objectExplorerService.updateObjectExplorerNodes(connectedConnection, requestStatus);
-				return true;
-				// The oe request is sent. an event will be raised when the session is created
-			} else {
+			try {
+				// append group ID and original display name to build unique OE session ID
+				connectedConnection.options['groupId'] = connection.groupId;
+				connectedConnection.options['databaseDisplayName'] = connection.databaseName;
+				let rootNode: TreeNode | undefined = objectExplorerService.getObjectExplorerNode(connectedConnection);
+				if (!rootNode) {
+					await objectExplorerService.updateObjectExplorerNodes(connectedConnection, requestStatus);
+					return true;
+					// The oe request is sent. an event will be raised when the session is created
+				} else {
+					return false;
+				}
+			} catch (e) { // in case of an error we disconnect the connection
+				connectionManagementService.disconnect(connectedConnection);
 				return false;
 			}
 		} else {
@@ -288,16 +293,22 @@ export class TreeUpdateUtils {
 				// Need to wait for the OE service to update its nodes in order to resolve the children
 				const nodesUpdatedPromise = new Promise((resolve, reject) => {
 					const nodesUpdatedTimeout = setTimeout(() => {
-						reject(new Error(nls.localize('objectExplorerTimeout', "Object Explorer timed out")));
+						reject(new Error(nls.localize('objectExplorerTimeout', "Object Explorer timed out for {0}", connection.databaseName)));
 						clearTimeout(nodesUpdatedTimeout);
 					}, expansionTimeoutValueSec * 1000);
 					objectExplorerService.onUpdateObjectExplorerNodes(e => {
 						if (e.errorMessage) {
 							reject(new Error(e.errorMessage));
-						}
-						if (e.connection.id === connection.id) {
+						} else if (e.connection.id === connection.id) {
+							resolve(undefined);
+						} else if (e.connection.matches(connection)) {
+							connection = <ConnectionProfile>e.connection;
+							resolve(undefined);
+						} else if (Utils.generateUri(connection) === Utils.generateUri(e.connection)) {
+							connection = <ConnectionProfile>e.connection;
 							resolve(undefined);
 						}
+						clearTimeout(nodesUpdatedTimeout);
 					});
 				});
 				await TreeUpdateUtils.connectAndCreateOeSession(connection, options, connectionManagementService, objectExplorerService, undefined);

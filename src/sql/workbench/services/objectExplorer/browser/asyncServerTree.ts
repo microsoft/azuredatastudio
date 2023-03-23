@@ -4,13 +4,58 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { WorkbenchAsyncDataTree } from 'vs/platform/list/browser/listService';
+import { IListService, IWorkbenchAsyncDataTreeOptions, WorkbenchAsyncDataTree } from 'vs/platform/list/browser/listService';
 import { FuzzyScore } from 'vs/base/common/filters';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IAsyncDataTreeNode, IAsyncDataTreeViewState } from 'vs/base/browser/ui/tree/asyncDataTree';
+import { IAsyncDataTreeNode, IAsyncDataTreeUpdateChildrenOptions, IAsyncDataTreeViewState } from 'vs/base/browser/ui/tree/asyncDataTree';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
+import { IAsyncDataSource, ITreeRenderer } from 'vs/base/browser/ui/tree/tree';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGroup, ServerTreeElement, FuzzyScore> {
+
+	constructor(
+		user: string,
+		container: HTMLElement,
+		delegate: IListVirtualDelegate<ServerTreeElement>,
+		renderers: ITreeRenderer<ServerTreeElement, FuzzyScore, any>[],
+		dataSource: IAsyncDataSource<ConnectionProfileGroup, ServerTreeElement>,
+		options: IWorkbenchAsyncDataTreeOptions<ServerTreeElement, FuzzyScore>,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IListService listService: IListService,
+		@IThemeService themeService: IThemeService,
+		@IConfigurationService configurationService: IConfigurationService,
+		@IKeybindingService keybindingService: IKeybindingService,
+		@IAccessibilityService accessibilityService: IAccessibilityService,
+	) {
+		super(
+			user, container, delegate,
+			renderers, dataSource, options,
+			contextKeyService, listService,
+			themeService, configurationService, keybindingService, accessibilityService);
+
+		this.onKeyDown(e => {
+			const standardKeyboardEvent = new StandardKeyboardEvent(e);
+			if (standardKeyboardEvent.keyCode === KeyCode.Enter || standardKeyboardEvent.keyCode === KeyCode.Space) {
+				const selectedElement = this.getSelection()[0];
+				if (selectedElement) {
+					if (this.isCollapsed(selectedElement)) {
+						this.expand(selectedElement);
+					} else {
+						this.collapse(selectedElement);
+					}
+				}
+			}
+		})
+	}
+
 	override async setInput(input: ConnectionProfileGroup, viewState?: IAsyncDataTreeViewState): Promise<void> {
 		const originalInput = this.getInput();
 		await super.setInput(input, viewState);
@@ -30,6 +75,65 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 		return super.getDataNode(element);
 	}
 
+	private getDataNodeById(id: string): IAsyncDataTreeNode<ConnectionProfileGroup, ServerTreeElement> | undefined {
+		let node = undefined;
+		this.nodes.forEach((v, k) => {
+			if (id === v?.id) {
+				node = v;
+			}
+		});
+		return node;
+	}
+
+	public override async updateChildren(element?: ServerTreeElement, recursive?: boolean, rerender?: boolean, options?: IAsyncDataTreeUpdateChildrenOptions<ServerTreeElement>): Promise<void> {
+		const viewState = this.getViewState();
+		const expandedElementIds = viewState?.expanded;
+		const expandedElements = expandedElementIds.map(id => this.getDataNodeById(id));
+		if (this.hasNode(element)) {
+			await super.updateChildren(element, recursive, rerender, options);
+			if (expandedElementIds) {
+				for (let i = 0; i <= expandedElementIds.length; i++) {
+					const id = expandedElementIds[i];
+					const node = this.getDataNodeById(id);
+					if (node) {
+						await this.expand(node.element);
+					} else {
+						if (expandedElements[i]) {
+							const elementPath = this.generatePath(expandedElements[i].element);
+							for (let n of this.nodes.values()) {
+								if (this.generatePath(n.element) === elementPath) {
+									await this.expand(n.element);
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private generatePath(element: ServerTreeElement): string {
+		let path = '';
+		if (element instanceof TreeNode) {
+			path = element.nodePath;
+		} else if (element instanceof ConnectionProfile) {
+			path = element.title;
+		} else if (element instanceof ConnectionProfileGroup) {
+			path = element.name;
+		}
+		let parent = element.parent;
+		while (parent) {
+			if (parent instanceof ConnectionProfile) {
+				path = parent.id + '/' + path;
+			} else if (parent instanceof ConnectionProfileGroup) {
+				path = parent.id + '/' + path;
+			}
+			parent = parent.parent;
+		}
+		return path;
+	}
+
 	/**
 	 * Delete and update the children of the parent
 	 */
@@ -42,6 +146,10 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 			}
 			await this.updateChildren(element.parent);
 		}
+	}
+
+	public async makeElementDirty(element: ServerTreeElement) {
+		this.getDataNode(element).stale = true;
 	}
 }
 

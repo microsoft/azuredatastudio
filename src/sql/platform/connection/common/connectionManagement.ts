@@ -177,6 +177,8 @@ export interface IConnectionManagementService {
 
 	getConnectionGroups(providers?: string[]): ConnectionProfileGroup[];
 
+	getConnectionGroupById(id: string): ConnectionProfileGroup | undefined;
+
 	getRecentConnections(providers?: string[]): ConnectionProfile[];
 
 	clearRecentConnectionsList(): void;

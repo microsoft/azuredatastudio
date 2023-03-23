@@ -46,10 +46,15 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 	 */
 	public async getChildren(element: ServerTreeElement): Promise<ServerTreeElement[]> {
 		try {
+
 			if (element instanceof ConnectionProfile) {
 				return await TreeUpdateUtils.getAsyncConnectionNodeChildren(element, this._connectionManagementService, this._objectExplorerService, this._configurationService);
 			} else if (element instanceof ConnectionProfileGroup) {
-				return (element as ConnectionProfileGroup).getChildren();
+				const group = this._connectionManagementService.getConnectionGroupById(element.id);
+				if (group) {
+					element = group;
+				}
+				return (group as ConnectionProfileGroup).getChildren();
 			} else if (element instanceof TreeNode) {
 				if (element.children) {
 					return element.children;
@@ -64,8 +69,6 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 			if (err.message) {
 				this.showError(err.message);
 			}
-
-			throw err;
 		}
 		return [];
 	}

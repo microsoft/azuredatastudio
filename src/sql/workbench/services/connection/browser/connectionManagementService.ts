@@ -759,7 +759,22 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public getConnectionGroups(providers?: string[]): ConnectionProfileGroup[] {
-		return this._connectionStore.getConnectionProfileGroups(false, providers);
+		const groups = this._connectionStore.getConnectionProfileGroups(false, providers);
+		return groups;
+	}
+
+	public getConnectionGroupById(id: string): ConnectionProfileGroup | undefined {
+		const groups = this.getConnectionGroups();
+		for (let group of groups) {
+			if (group.id === id) {
+				return group;
+			}
+			const subgroup = ConnectionProfileGroup.getSubgroups(group).find(g => g.id === id);
+			if (subgroup) {
+				return subgroup;
+			}
+		}
+		return undefined;
 	}
 
 	public getRecentConnections(providers?: string[]): ConnectionProfile[] {
