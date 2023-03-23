@@ -68,7 +68,7 @@ export const AzureTokenFolderName = 'Azure Accounts';
 
 export const MSALCacheName = 'accessTokenCache';
 
-export const DefaultAuthLibrary = 'ADAL';
+export const DefaultAuthLibrary = 'MSAL';
 
 export enum BuiltInCommands {
 	SetContext = 'setContext'
