@@ -67,7 +67,7 @@ steps:
 
   - script: |
       set -e
-      export npm_config_arch=$(NPM_ARCH)
+      export npm_config_arch=$(NPM_CONFIG_ARCH)
       CHILD_CONCURRENCY=1 yarn --frozen-lockfile
     displayName: Install dependencies
     env:
