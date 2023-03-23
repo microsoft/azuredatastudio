@@ -68,7 +68,8 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	 */
 	private construct() {
 		// folders
-		for (const folder of this.project.folders) {
+		// Note: folders must be sorted to ensure that parent folders come before their children
+		for (const folder of this.project.folders.sort((a, b) => a.relativePath < b.relativePath ? -1 : (a.relativePath > b.relativePath ? 1 : 0))) {
 			const newNode = new fileTree.FolderNode(folder.fsUri, this.projectFileUri, folder.relativePath);
 			this.addNode(newNode, folder);
 		}
@@ -145,8 +146,12 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 		let current: fileTree.FolderNode | ProjectRootTreeItem = this; // start with the Project root node
 
 		for (const part of relativePathParts) { // iterate from the project root, down the path to the entry in question
-			if (current.fileChildren[part] === undefined) { // if the current node doesn't have the next child node in its list of children, add it
-				throw new Error(errorPrefix('All parent nodes should have already been added'));
+			if (current.fileChildren[part] === undefined) {
+				// DacFx.Projects populates the list of folders with those implicitly included via parentage.
+				// e.g. <Folder Include="MySchema\Tables"> and <Build Include="MySchema\SomeScript.sql"> both result in the "MySchema" folder being automatically added,
+				// even if there's no <Folder Include="MySchema"> entry.
+				// Project tree unit tests need to explicitly include parent folders because they bypass DacFx's logic, or they'll hit this error.
+				throw new Error(errorPrefix(`All parent nodes for ${relativePathParts} should have already been added.`));
 			}
 
 			if (current.fileChildren[part] instanceof fileTree.FileNode) {

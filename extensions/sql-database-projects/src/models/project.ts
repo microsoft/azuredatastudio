@@ -360,17 +360,28 @@ export class Project implements ISqlProject {
 		for (const dacpacReference of databaseReferencesResult.dacpacReferences) {
 			this._databaseReferences.push(new DacpacReferenceProjectEntry({
 				dacpacFileLocation: Uri.file(dacpacReference.dacpacPath),
-				databaseName: dacpacReference.dacpacPath,
-				suppressMissingDependenciesErrors: dacpacReference.suppressMissingDependencies
+				suppressMissingDependenciesErrors: dacpacReference.suppressMissingDependencies,
+
+				databaseVariableLiteralValue: dacpacReference.databaseVariableLiteralName,
+				databaseName: dacpacReference.databaseVariable?.varName,
+				databaseVariable: dacpacReference.databaseVariable?.value,
+				serverName: dacpacReference.serverVariable?.varName,
+				serverVariable: dacpacReference.serverVariable?.value
 			}));
 		}
 
 		for (const projectReference of databaseReferencesResult.sqlProjectReferences) {
 			this._databaseReferences.push(new SqlProjectReferenceProjectEntry({
-				projectRelativePath: Uri.file(utils.getPlatformSafeFileEntryPath(projectReference.projectPath)),
 				projectName: path.basename(utils.getPlatformSafeFileEntryPath(projectReference.projectPath), constants.sqlprojExtension),
 				projectGuid: projectReference.projectGuid ?? '',
-				suppressMissingDependenciesErrors: projectReference.suppressMissingDependencies
+				suppressMissingDependenciesErrors: projectReference.suppressMissingDependencies,
+				projectRelativePath: Uri.file(utils.getPlatformSafeFileEntryPath(projectReference.projectPath)),
+
+				databaseVariableLiteralValue: projectReference.databaseVariableLiteralName,
+				databaseName: projectReference.databaseVariable?.varName,
+				databaseVariable: projectReference.databaseVariable?.value,
+				serverName: projectReference.serverVariable?.varName,
+				serverVariable: projectReference.serverVariable?.value
 			}));
 		}
 
@@ -679,12 +690,12 @@ export class Project implements ISqlProject {
 	 */
 	public async addSystemDatabaseReference(settings: ISystemDatabaseReferenceSettings): Promise<void> {
 		// check if reference to this database already exists
-		if (this.databaseReferences.find(r => r.databaseName === settings.databaseName)) {
+		if (this.databaseReferences.find(r => r.referenceName === settings.databaseVariableLiteralValue)) {
 			throw new Error(constants.databaseReferenceAlreadyExists);
 		}
 
 		const systemDb = <unknown>settings.systemDb as SystemDatabase;
-		const result = await this.sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, settings.databaseName);
+		const result = await this.sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, settings.databaseVariableLiteralValue);
 
 		if (!result.success && result.errorMessage) {
 			throw new Error(constants.errorAddingDatabaseReference(utils.systemDatabaseToString(settings.systemDb), result.errorMessage));
