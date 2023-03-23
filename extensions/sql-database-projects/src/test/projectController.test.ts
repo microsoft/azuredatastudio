@@ -728,7 +728,7 @@ describe('ProjectsController', function (): void {
 				{ treeDataProvider: new SqlDatabaseProjectTreeViewProvider(), element: undefined });
 			should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
 			should(project1.databaseReferences.length).equal(1, 'Dacpac reference should have been added');
-			should(project1.databaseReferences[0].databaseName).equal('sameFolderTest');
+			should(project1.databaseReferences[0].referenceName).equal('sameFolderTest');
 			should(project1.databaseReferences[0].pathForSqlProj()).equal('sameFolderTest.dacpac');
 			// make sure reference to sameFolderTest.dacpac was added to project file
 			let projFileText = (await fs.readFile(projFilePath)).toString();
@@ -743,7 +743,7 @@ describe('ProjectsController', function (): void {
 				{ treeDataProvider: new SqlDatabaseProjectTreeViewProvider(), element: undefined });
 			should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
 			should(project1.databaseReferences.length).equal(2, 'Another dacpac reference should have been added');
-			should(project1.databaseReferences[1].databaseName).equal('nestedFolderTest');
+			should(project1.databaseReferences[1].referenceName).equal('nestedFolderTest');
 			should(project1.databaseReferences[1].pathForSqlProj()).equal('refs\\nestedFolderTest.dacpac');
 			// make sure reference to nestedFolderTest.dacpac was added to project file
 			projFileText = (await fs.readFile(projFilePath)).toString();
@@ -758,7 +758,7 @@ describe('ProjectsController', function (): void {
 				{ treeDataProvider: new SqlDatabaseProjectTreeViewProvider(), element: undefined });
 			should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
 			should(project1.databaseReferences.length).equal(3, 'Another dacpac reference should have been added');
-			should(project1.databaseReferences[2].databaseName).equal('outsideFolderTest');
+			should(project1.databaseReferences[2].referenceName).equal('outsideFolderTest');
 			should(project1.databaseReferences[2].pathForSqlProj()).equal('..\\someFolder\\outsideFolderTest.dacpac');
 			// make sure reference to outsideFolderTest.dacpac was added to project file
 			projFileText = (await fs.readFile(projFilePath)).toString();

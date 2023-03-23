@@ -281,7 +281,7 @@ declare module 'sqldbproj' {
 	 * Represents a database reference entry in a project file
 	 */
 	export interface IDatabaseReferenceProjectEntry extends IFileProjectEntry {
-		databaseName: string;
+		referenceName: string;
 		databaseVariableLiteralValue?: string;
 		suppressMissingDependenciesErrors: boolean;
 	}
