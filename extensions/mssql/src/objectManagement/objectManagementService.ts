@@ -236,7 +236,8 @@ export class TestObjectManagementService implements IObjectManagementService {
 							authenticationType: AuthenticationType.Sql,
 							loginName: 'sa',
 							ownedSchemas: [],
-							databaseRoles: []
+							databaseRoles: [],
+							password: ''
 						},
 						languages: languages,
 						schemas: schemas,

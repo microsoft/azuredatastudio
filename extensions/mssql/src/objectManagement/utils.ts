@@ -31,7 +31,7 @@ export function deepClone<T>(obj: T): T {
 export async function refreshParentNode(context: azdata.ObjectExplorerContext): Promise<void> {
 	if (context) {
 		try {
-			const node = await azdata.objectexplorer.getNode(context.connectionProfile.id, context.nodeInfo.nodePath);
+			const node = await azdata.objectexplorer.getNode(context.connectionProfile!.id, context.nodeInfo!.nodePath);
 			const parentNode = await node?.getParent();
 			await parentNode?.refresh();
 		}
@@ -44,7 +44,7 @@ export async function refreshParentNode(context: azdata.ObjectExplorerContext): 
 export async function refreshNode(context: azdata.ObjectExplorerContext): Promise<void> {
 	if (context) {
 		try {
-			const node = await azdata.objectexplorer.getNode(context.connectionProfile.id, context.nodeInfo.nodePath);
+			const node = await azdata.objectexplorer.getNode(context.connectionProfile!.id, context.nodeInfo!.nodePath);
 			await node?.refresh();
 		}
 		catch (err) {
@@ -72,7 +72,9 @@ export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): 
 	}
 }
 
-export function getAuthenticationTypeDisplayName(authType: AuthenticationType): string {
+export function getAuthenticationTypeDisplayName(authType: AuthenticationType | undefined): string | undefined {
+	if (authType === undefined) { return undefined; }
+
 	switch (authType) {
 		case AuthenticationType.Windows:
 			return WindowsAuthenticationTypeDisplayText;

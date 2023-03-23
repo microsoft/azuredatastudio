@@ -53,7 +53,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		protected readonly objectManagementService: IObjectManagementService,
 		protected readonly connectionUri: string,
 		protected isNewObject: boolean,
-		protected readonly objectName: string | undefined = undefined,
+		protected readonly objectName: string = '',
 		protected readonly objectExplorerContext?: azdata.ObjectExplorerContext,
 		dialogWidth: azdata.window.DialogWidth = 'narrow') {
 		const objectTypeDisplayName = getNodeTypeDisplayName(objectType, true);
@@ -204,7 +204,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				level: azdata.window.MessageLevel.Error
 			};
 		} else {
-			this.dialogObject.message = undefined;
+			this.dialogObject.message = { text: '' };
 		}
 		return errors.length === 0;
 	}
@@ -270,7 +270,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				height: getTableHeight(tableData.length)
 			}
 		).component();
-		this.disposables.push(table.onCellAction((arg: azdata.ICheckboxCellActionEventArgs) => {
+		this.disposables.push(table.onCellAction!((arg: azdata.ICheckboxCellActionEventArgs) => {
 			const name = listValues[arg.row];
 			const idx = selectedValues.indexOf(name);
 			if (arg.checked && idx === -1) {
@@ -283,7 +283,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		return table;
 	}
 
-	protected createDropdown(ariaLabel: string, values: string[], value: string, enabled: boolean = true, width: number = DefaultInputWidth): azdata.DropDownComponent {
+	protected createDropdown(ariaLabel: string, values: string[], value: string | undefined, enabled: boolean = true, width: number = DefaultInputWidth): azdata.DropDownComponent {
 		// Automatically add an empty item to the beginning of the list if the current value is not specified.
 		// This is needed when no meaningful default value can be provided.
 		if (!value) {
