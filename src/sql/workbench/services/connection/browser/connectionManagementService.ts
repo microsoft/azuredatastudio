@@ -643,6 +643,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return result;
 	}
 
+	public getEditorConnectionProfileFullTitle(profile: interfaces.IConnectionProfile): string {
+		let tempProfile = new ConnectionProfile(this._capabilitiesService, profile);
+		let result = tempProfile.getEditorFullTitleWithOptions();
+		tempProfile.dispose();
+		return result;
+	}
+
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {
 		let connectionManagementInfo = this._connectionStatusManager.findConnection(uri);
 		if (!connectionManagementInfo) {

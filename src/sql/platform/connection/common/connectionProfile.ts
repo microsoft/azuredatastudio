@@ -205,6 +205,20 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		return super.title;
 	}
 
+	public getEditorFullTitleWithOptions(): string {
+		let textResult = '';
+		if (this.connectionName) {
+			textResult += `${this.connectionName}: `;
+		}
+		textResult += this.serverInfo;
+
+		if (textResult.length === 0) {
+			return undefined;
+		}
+
+		return textResult;
+	}
+
 	public override set title(value: string) {
 		this._title = value;
 	}

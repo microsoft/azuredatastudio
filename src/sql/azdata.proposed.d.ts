@@ -557,6 +557,13 @@ declare module 'azdata' {
 		 * @returns The new password that is returned from the operation or undefined if unsuccessful.
 		 */
 		export function openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined>;
+
+		/**
+		 * Gets the full title of the connection profile for display
+		 * @param profile The connection profile we want to get the full display info for (without non default options).
+		 * @returns The title formatted with connection name in front, server info in the middle, with non default options at the end.
+		 */
+		export function getEditorConnectionProfileFullTitle(profile: IConnectionProfile): Thenable<string>;
 	}
 
 	/*

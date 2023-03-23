@@ -23,9 +23,11 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
 		const tableIcon = context.nodeInfo.nodeSubType as azdata.designers.TableIcon;
 		const telemetryInfo = await getTelemetryInfo(context, tableIcon);
+		let connectionTitle = await azdata.connection.getEditorConnectionProfileFullTitle(context.connectionProfile);
+		connectionTitle = connectionTitle ? connectionTitle : `${context.connectionProfile.serverName} - ${context.connectionProfile.databaseName}`
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			title: NewTableText,
-			tooltip: `${context.connectionProfile.serverName} - ${context.connectionProfile.databaseName} - ${NewTableText}`,
+			tooltip: `${connectionTitle} - ${NewTableText}`,
 			server: context.connectionProfile.serverName,
 			database: context.connectionProfile.databaseName,
 			isNewTable: true,
@@ -40,6 +42,8 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 		void showPreloadDbModelSettingPrompt(appContext);
 		const server = context.connectionProfile.serverName;
 		const database = context.connectionProfile.databaseName;
+		let connectionTitle = await azdata.connection.getEditorConnectionProfileFullTitle(context.connectionProfile);
+		connectionTitle = connectionTitle ? connectionTitle : `${server} - ${database}`
 		const schema = context.nodeInfo.metadata.schema;
 		const name = context.nodeInfo.metadata.name;
 		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
@@ -47,7 +51,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 		const telemetryInfo = await getTelemetryInfo(context, tableIcon);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			title: `${schema}.${name}`,
-			tooltip: `${server} - ${database} - ${schema}.${name}`,
+			tooltip: `${connectionTitle} - ${schema}.${name}`,
 			server: server,
 			database: database,
 			isNewTable: false,

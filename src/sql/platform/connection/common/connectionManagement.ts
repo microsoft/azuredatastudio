@@ -346,6 +346,13 @@ export interface IConnectionManagementService {
 	 * @returns the new valid password that is entered, or undefined if cancelled or errored.
 	 */
 	openChangePasswordDialog(profile: IConnectionProfile): Promise<string | undefined>;
+
+	/**
+	 * Gets the string for the connection profile.
+	 * @param profile The connection profile to change the password.
+	 * @returns the new valid password that is entered, or undefined if cancelled or errored.
+	 */
+	getEditorConnectionProfileFullTitle(profile: IConnectionProfile): string;
 }
 
 export enum RunQueryOnConnectionMode {

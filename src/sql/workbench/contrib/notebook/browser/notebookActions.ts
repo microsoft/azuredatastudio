@@ -729,7 +729,10 @@ export class AttachToDropdown extends SelectBox {
 		} else {
 			let connections: string[] = [];
 			if (model.context && model.context.title && (connProviderIds.includes(this.model.context.providerName))) {
-				connections.push(model.context.title);
+				let textResult = model.context.title;
+				let fullTitleText = this._connectionManagementService.getEditorConnectionProfileFullTitle(model.context)
+				textResult = fullTitleText ? fullTitleText : textResult;
+				connections.push(textResult);
 			} else if (this._configurationService.getValue(saveConnectionNameConfigName) && model.savedConnectionName) {
 				connections.push(model.savedConnectionName);
 			} else {
