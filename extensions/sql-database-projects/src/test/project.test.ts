@@ -15,7 +15,7 @@ import { Project } from '../models/project';
 import { exists, convertSlashesForSqlProj, getPlatformSafeFileEntryPath, systemDatabaseToString } from '../common/utils';
 import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
-import { EntryType, ItemType } from 'sqldbproj';
+import { ItemType } from 'sqldbproj';
 import { SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry, DacpacReferenceProjectEntry } from '../models/projectEntry';
 import { ProjectType, SystemDatabase } from 'mssql';
 
