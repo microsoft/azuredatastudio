@@ -46,6 +46,9 @@ export const AccountVersion = '2.0';
 
 export const Bearer = 'Bearer';
 
+/** HTTP Client */
+export const httpConfigSectionName = 'http';
+
 /**
  * Use SHA-256 algorithm
  */
