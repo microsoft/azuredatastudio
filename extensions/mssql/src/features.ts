@@ -192,12 +192,12 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 
 		// Job management methods
 		let getJobs = (ownerUri: string): Thenable<azdata.AgentJobsResult> => {
-			let params: contracts.AgentJobsParams = { ownerUri: ownerUri, jobId: null };
+			let params: contracts.AgentJobsParams = { ownerUri: ownerUri, jobId: '' };
 			return client.sendRequest(contracts.AgentJobsRequest.type, params).then(
 				r => r,
 				e => {
 					client.logFailedRequest(contracts.AgentJobsRequest.type, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -209,7 +209,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				r => r,
 				e => {
 					client.logFailedRequest(contracts.AgentJobHistoryRequest.type, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -220,7 +220,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				r => r,
 				e => {
 					client.logFailedRequest(contracts.AgentJobActionRequest.type, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -238,7 +238,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -257,7 +257,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -275,7 +275,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -289,7 +289,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				r => r,
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -308,7 +308,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -327,7 +327,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -345,7 +345,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -357,7 +357,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				r => r,
 				e => {
 					client.logFailedRequest(contracts.AgentNotebooksRequest.type, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -370,7 +370,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 					r => r,
 					e => {
 						client.logFailedRequest(contracts.AgentNotebookHistoryRequest.type, e);
-						return Promise.resolve(undefined);
+						return Promise.reject(e);
 					}
 				);
 		};
@@ -382,7 +382,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 					r => r,
 					e => {
 						client.logFailedRequest(contracts.AgentNotebookMaterializedRequest.type, e);
-						return Promise.resolve(undefined);
+						return Promise.reject(e);
 					}
 				);
 		};
@@ -394,7 +394,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 					r => r,
 					e => {
 						client.logFailedRequest(contracts.AgentNotebookTemplateRequest.type, e);
-						return Promise.resolve(undefined);
+						return Promise.reject(e);
 					}
 				);
 		};
@@ -413,7 +413,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -434,7 +434,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -452,7 +452,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -464,7 +464,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 					r => r,
 					e => {
 						client.logFailedRequest(contracts.DeleteMaterializedNotebookRequest.type, e);
-						return Promise.resolve(undefined);
+						return Promise.reject(e);
 					}
 				);
 		};
@@ -476,7 +476,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 					r => r,
 					e => {
 						client.logFailedRequest(contracts.UpdateAgentNotebookRunNameRequest.type, e);
-						return Promise.resolve(undefined);
+						return Promise.reject(e);
 					}
 				);
 		};
@@ -488,7 +488,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 					r => r,
 					e => {
 						client.logFailedRequest(contracts.UpdateAgentNotebookRunPinRequest.type, e);
-						return Promise.resolve(undefined);
+						return Promise.reject(e);
 					}
 				);
 		};
@@ -505,7 +505,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				r => r,
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -523,7 +523,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -542,7 +542,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -560,7 +560,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -575,7 +575,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				r => r,
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -593,7 +593,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -612,7 +612,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -630,7 +630,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -645,12 +645,12 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				r => r,
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
 
-		let createProxy = (ownerUri: string, proxyInfo: azdata.AgentProxyInfo): Thenable<azdata.CreateAgentOperatorResult> => {
+		let createProxy = (ownerUri: string, proxyInfo: azdata.AgentProxyInfo): Thenable<azdata.CreateAgentProxyResult> => {
 			let params: contracts.CreateAgentProxyParams = {
 				ownerUri: ownerUri,
 				proxy: proxyInfo
@@ -663,12 +663,12 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
 
-		let updateProxy = (ownerUri: string, originalProxyName: string, proxyInfo: azdata.AgentProxyInfo): Thenable<azdata.UpdateAgentOperatorResult> => {
+		let updateProxy = (ownerUri: string, originalProxyName: string, proxyInfo: azdata.AgentProxyInfo): Thenable<azdata.UpdateAgentProxyResult> => {
 			let params: contracts.UpdateAgentProxyParams = {
 				ownerUri: ownerUri,
 				originalProxyName: originalProxyName,
@@ -682,7 +682,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -700,7 +700,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -715,7 +715,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				r => r,
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -731,7 +731,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				r => r,
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -749,7 +749,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -768,7 +768,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -786,7 +786,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -926,9 +926,8 @@ export class SqlAssessmentServicesFeature extends SqlOpsFeature<undefined> {
 			}
 			catch (e) {
 				client.logFailedRequest(contracts.SqlAssessmentInvokeRequest.type, e);
+				throw e;
 			}
-
-			return undefined;
 		};
 
 		let getAssessmentItems = async (ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult> => {
@@ -938,9 +937,8 @@ export class SqlAssessmentServicesFeature extends SqlOpsFeature<undefined> {
 			}
 			catch (e) {
 				client.logFailedRequest(contracts.GetSqlAssessmentItemsRequest.type, e);
+				throw e;
 			}
-
-			return undefined;
 		};
 
 		let generateAssessmentScript = async (items: azdata.SqlAssessmentResultItem[]): Promise<azdata.ResultStatus> => {
@@ -950,9 +948,8 @@ export class SqlAssessmentServicesFeature extends SqlOpsFeature<undefined> {
 			}
 			catch (e) {
 				client.logFailedRequest(contracts.GenerateSqlAssessmentScriptRequest.type, e);
+				throw e;
 			}
-
-			return undefined;
 		};
 
 		return azdata.dataprotocol.registerSqlAssessmentServicesProvider({
@@ -1062,7 +1059,7 @@ export class ProfilerFeature extends SqlOpsFeature<undefined> {
 		};
 
 		let connectSession = (sessionId: string): Thenable<boolean> => {
-			return undefined;
+			return Promise.resolve(false);
 		};
 
 		let disconnectSession = (ownerUri: string): Thenable<boolean> => {

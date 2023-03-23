@@ -242,6 +242,8 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 			} else {
 				return localize('blankValue', "blank");
 			}
+		} else if (cellData?.ariaLabel) {
+			return cellData.ariaLabel;
 		}
 
 		return '';

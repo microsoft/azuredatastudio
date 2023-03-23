@@ -321,18 +321,19 @@ export class AccountManagementService implements IAccountManagementService {
 		// Step 3) Update the account cache and fire an event
 		return this.doWithProvider(accountKey.providerId, async provider => {
 			const result = await this._accountStore.remove(accountKey);
+			let indexToRemove: number = provider.accounts.findIndex(account => {
+				return account.key.accountId === accountKey.accountId;
+			});
 			await provider.provider.clear(accountKey);
 			if (!result) {
 				return result;
 			}
 
-			let indexToRemove: number = provider.accounts.findIndex(account => {
-				return account.key.accountId === accountKey.accountId;
-			});
-
 			if (indexToRemove >= 0) {
 				provider.accounts.splice(indexToRemove, 1);
 				this.fireAccountListUpdate(provider, false);
+			} else {
+				this._logService.error(`Error when removing an account: ${accountKey.accountId} could not find account in provider list.`);
 			}
 			return result;
 		});
