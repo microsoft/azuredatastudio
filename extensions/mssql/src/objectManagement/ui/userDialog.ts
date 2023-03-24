@@ -53,7 +53,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 			if (this.objectInfo.password !== this.confirmPasswordInput.value) {
 				errors.push(localizedConstants.PasswordsNotMatchError);
 			}
-			if (!isValidSQLPassword(this.objectInfo.password, this.objectInfo.name)
+			if (!isValidSQLPassword(this.objectInfo.password!, this.objectInfo.name)
 				&& (this.isNewObject || this.objectInfo.password !== this.originalObjectInfo.password)) {
 				errors.push(localizedConstants.InvalidPasswordError);
 			}
@@ -96,12 +96,12 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 			width: DefaultInputWidth
 		}).component();
 		this.disposables.push(this.nameInput.onTextChanged(async () => {
-			this.objectInfo.name = this.nameInput.value;
+			this.objectInfo.name = this.nameInput.value!;
 			this.onObjectValueChange();
 			await this.runValidation(false);
 		}));
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
-		this.defaultSchemaDropdown = this.createDropdown(localizedConstants.DefaultSchemaText, this.viewInfo.schemas, this.objectInfo.defaultSchema);
+		this.defaultSchemaDropdown = this.createDropdown(localizedConstants.DefaultSchemaText, this.viewInfo.schemas, this.objectInfo.defaultSchema!);
 		this.defaultSchemaContainer = this.createLabelInputContainer(localizedConstants.DefaultSchemaText, this.defaultSchemaDropdown);
 		this.disposables.push(this.defaultSchemaDropdown.onValueChanged(() => {
 			this.objectInfo.defaultSchema = <string>this.defaultSchemaDropdown.value;
@@ -110,7 +110,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 
 		// only supporting user with login for initial preview
 		// const userTypes = [localizedConstants.UserWithLoginText, localizedConstants.UserWithWindowsGroupLoginText, localizedConstants.ContainedUserText, localizedConstants.UserWithNoConnectAccess],
-		const userTypes = [localizedConstants.UserWithLoginText];
+		const userTypes = [localizedConstants.UserWithLoginText, localizedConstants.UserWithWindowsGroupLoginText];
 		this.typeDropdown = this.createDropdown(localizedConstants.UserTypeText, userTypes, getUserTypeDisplayName(this.objectInfo.type), this.isNewObject);
 		this.disposables.push(this.typeDropdown.onValueChanged(async () => {
 			this.objectInfo.type = getUserTypeByDisplayName(<string>this.typeDropdown.value);

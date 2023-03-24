@@ -39,10 +39,20 @@ export class DeployOptionsModel {
 		let data: any[][] = [];
 		Object.entries(this.deploymentOptions.booleanOptionsDictionary).forEach(option => {
 			// option[1] holds checkedbox value and displayName
-			data.push([option[1].value, option[1].displayName]);
+			data.push([
+				{
+					value: option[1].value,
+					style: cssStyles.optionsTableRowCheckbox,
+					ariaLabel: option[1].displayName
+				},
+				{
+					value: option[1].displayName,
+					style: cssStyles.optionsTableRowLabel,
+				}
+			]);
 		});
 
-		return data.sort((a, b) => a[1].localeCompare(b[1]));
+		return data.sort((a, b) => a[1].value.localeCompare(b[1].value));
 	}
 
 	/*
