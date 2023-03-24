@@ -643,9 +643,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return result;
 	}
 
-	public getEditorConnectionProfileFullTitle(profile: interfaces.IConnectionProfile): string {
+	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getNonDefaultsOnly?: boolean): string {
 		let tempProfile = new ConnectionProfile(this._capabilitiesService, profile);
-		let result = tempProfile.getEditorFullTitleWithOptions();
+		let result = ''
+		if (!getNonDefaultsOnly) {
+			result = tempProfile.getEditorFullTitleWithOptions();
+		}
+		else {
+			result = tempProfile.getNonDefaultOptionsString();
+		}
 		tempProfile.dispose();
 		return result;
 	}

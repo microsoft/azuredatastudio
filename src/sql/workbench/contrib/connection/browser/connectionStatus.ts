@@ -69,7 +69,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 	// Set connection info to connection status bar
 	private _setConnectionText(connectionProfile: IConnectionProfile): void {
 		let text: string = undefined;
-		let fullEditorText: string = this.connectionManagementService.getEditorConnectionProfileFullTitle(connectionProfile);
+		let fullEditorText: string = this.connectionManagementService.getEditorConnectionProfileTitle(connectionProfile);
 		if (!fullEditorText) {
 			text = connectionProfile.serverName;
 			if (text) {

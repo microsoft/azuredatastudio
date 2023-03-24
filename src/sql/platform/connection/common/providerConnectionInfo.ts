@@ -370,7 +370,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	/**
 	 * Append all non default options to tooltip string if useFullOptions is enabled.
 	 */
-	private getNonDefaultOptionsString(): string {
+	public getNonDefaultOptionsString(): string {
 		let parts: string = "";
 
 		let nonDefaultOptions = this.getConnectionOptionsList(false, true);
