@@ -245,7 +245,11 @@ const compileExtensionsBuildTask = task.define('compile-extensions-build', task.
 ));
 
 gulp.task(compileExtensionsBuildTask);
-gulp.task(task.define('extensions-ci', task.series(compileExtensionsBuildTask, compileExtensionMediaBuildTask)));
+// {{SQL CARBON EDIT}} Needed to pass the "done" gulp callback function to fix "Did you roget to signal async completion" error
+gulp.task(task.define('extensions-ci', (done) => {
+	task.series(compileExtensionsBuildTask, compileExtensionMediaBuildTask);
+	done();
+}));
 
 exports.compileExtensionsBuildTask = compileExtensionsBuildTask;
 
