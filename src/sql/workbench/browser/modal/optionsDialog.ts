@@ -242,7 +242,7 @@ export class OptionsDialog extends Modal {
 					});
 				}));
 				event?.dependentOptionActions?.forEach((optionAction) => {
-					if (this._optionValues[optionAction.optionName] && optionAction.showAsRequired) {
+					if (this._optionValues[optionAction.optionName] && optionAction.required) {
 						let element = DialogHelper.getOptionContainerByName(container, optionAction.optionName) as HTMLElement;
 						// Append required indicator when not present.
 						if (element && element.childElementCount === 1) {
@@ -270,7 +270,7 @@ export class OptionsDialog extends Modal {
 		if ((acceptedValues.includes(selectedValue.toLocaleLowerCase()) && optionAction.action === Actions.Show)
 			|| (!acceptedValues.includes(selectedValue.toLocaleLowerCase()) && optionAction.action === Actions.Hide)) {
 			container.classList.remove(`hide-${widget.id}`);
-			if (optionAction.showAsRequired) {
+			if (optionAction.required) {
 				let element = DialogHelper.getOptionContainerByName(container, optionAction.optionName) as HTMLElement;
 				// Append required indicator when not present.
 				if (element && element.childElementCount === 1) {

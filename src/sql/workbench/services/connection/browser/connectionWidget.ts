@@ -355,7 +355,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if ((acceptedValues.includes(selectedValue.toLocaleLowerCase()) && optionAction.action === Actions.Show)
 			|| (!acceptedValues.includes(selectedValue.toLocaleLowerCase()) && optionAction.action === Actions.Hide)) {
 			this._tableContainer.classList.remove(`hide-${widget.id}`);
-			if (optionAction.showAsRequired) {
+			if (optionAction.required) {
 				let element = DialogHelper.getOptionContainerByName(this._tableContainer, optionAction.optionName);
 				if (element) {
 					DialogHelper.appendRequiredIndicator(element);

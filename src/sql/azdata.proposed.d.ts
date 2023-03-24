@@ -620,7 +620,7 @@ declare module 'azdata' {
 		 * NOTE: Since this is dynamically defined, option values are not updated on 'show' and validation is not performed.
 		 * When set to true, providers must handle property validation.
 		 */
-		showAsRequired?: boolean;
+		required?: boolean;
 	}
 
 	// Object Explorer interfaces  --------------------------------

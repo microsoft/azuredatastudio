@@ -1049,7 +1049,7 @@
                 {
                   "optionName": "attestationProtocol",
                   "action": "hide",
-                  "showAsRequired": true
+                  "required": true
                 }
               ]
             }
@@ -1091,7 +1091,7 @@
                 {
                   "optionName": "enclaveAttestationUrl",
                   "action": "hide",
-                  "showAsRequired": true
+                  "required": true
                 }
               ]
             }
