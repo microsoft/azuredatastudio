@@ -15,7 +15,7 @@ import { Project } from '../models/project';
 import { exists, convertSlashesForSqlProj, getPlatformSafeFileEntryPath, systemDatabaseToString } from '../common/utils';
 import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
-import { EntryType, ItemType } from 'sqldbproj';
+import { ItemType } from 'sqldbproj';
 import { SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry, DacpacReferenceProjectEntry } from '../models/projectEntry';
 import { ProjectType, SystemDatabase } from 'mssql';
 
@@ -38,13 +38,19 @@ describe('Project: sqlproj content operations', function (): void {
 		const project: Project = await Project.openProject(projFilePath);
 
 		// Files and folders
-		should(project.files.length).equal(6);
-		should(project.folders.length).equal(6);
+		(project.files.map(f => f.relativePath)).should.deepEqual([
+			'..\\Test\\Test.sql',
+			'MyExternalStreamingJob.sql',
+			'Tables\\Action History.sql',
+			'Tables\\Users.sql',
+			'Views\\Maintenance\\Database Performance.sql',
+			'Views\\User\\Profile.sql']);
 
-		should(project.folders.find(f => f.type === EntryType.Folder && f.relativePath === 'Views\\User')).not.equal(undefined); // mixed ItemGroup folder
-		should(project.files.find(f => f.relativePath === 'Views\\User\\Profile.sql')).not.equal(undefined); // mixed ItemGroup file
-		should(project.files.find(f => f.relativePath === '..\\Test\\Test.sql')).not.equal(undefined); // mixed ItemGroup file
-		should(project.files.find(f => f.relativePath === 'MyExternalStreamingJob.sql')).not.equal(undefined); // entry with custom attribute
+		(project.folders.map(f => f.relativePath)).should.deepEqual([
+			'Tables',
+			'Views',
+			'Views\\Maintenance',
+			'Views\\User']);
 
 		// SqlCmdVariables
 		should(Object.keys(project.sqlCmdVariables).length).equal(2);
