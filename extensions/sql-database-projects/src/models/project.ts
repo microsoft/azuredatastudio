@@ -209,7 +209,7 @@ export class Project implements ISqlProject {
 				this._configuration = Configuration.Output; // if the configuration doesn't match release or debug, the dacpac will get created in ./bin/Output
 		}
 
-		this._outputPath = path.isAbsolute(result.outputPath) ? result.outputPath : path.join(this.projectFolderPath, result.outputPath);
+		this._outputPath = path.isAbsolute(result.outputPath) ? result.outputPath : path.join(this.projectFolderPath, utils.getPlatformSafeFileEntryPath(result.outputPath));
 		this._databaseSource = result.databaseSource ?? '';
 		this._defaultCollation = result.defaultCollation;
 		this._databaseSchemaProvider = result.databaseSchemaProvider;

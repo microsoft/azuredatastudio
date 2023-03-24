@@ -21,7 +21,7 @@ describe('BuildHelper: Build Helper tests', function (): void {
 			should(resultArg).equal(' build "dummy\\\\project path\\\\more space in path" /p:NetCoreBuild=true /p:NETCoreTargetsPath="dummy\\\\dll path" /p:SystemDacpacsLocation="dummy\\\\dll path"');
 		}
 		else {
-			should(resultArg).equal(' build "dummy/project path/more space in path" /p:NetCoreBuild=true /p:NETCoreTargetsPath="dummy/dll path" /p:SystemDacpacsLocation="dummy\\\\dll path"');
+			should(resultArg).equal(' build "dummy/project path/more space in path" /p:NetCoreBuild=true /p:NETCoreTargetsPath="dummy/dll path" /p:SystemDacpacsLocation="dummy/dll path"');
 		}
 	});
 
