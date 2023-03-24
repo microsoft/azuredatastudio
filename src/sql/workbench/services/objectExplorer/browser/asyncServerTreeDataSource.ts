@@ -48,10 +48,21 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 		try {
 
 			if (element instanceof ConnectionProfile) {
+				if (element.isDisconnecting) {
+					element.isDisconnecting = false;
+					return [];
+				}
 				return await TreeUpdateUtils.getAsyncConnectionNodeChildren(element, this._connectionManagementService, this._objectExplorerService, this._configurationService);
 			} else if (element instanceof ConnectionProfileGroup) {
+				const currentConnectionInGroup = element.connections;
 				const group = this._connectionManagementService.getConnectionGroupById(element.id);
 				if (group) {
+					const groupConnections = group.connections;
+					for (let conn of currentConnectionInGroup) {
+						if (!groupConnections.find(c => c.matches(conn))) {
+							await this._objectExplorerService.deleteObjectExplorerNode(conn);
+						}
+					}
 					element = group;
 				}
 				return (group as ConnectionProfileGroup).getChildren();
@@ -69,6 +80,7 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 			if (err.message) {
 				this.showError(err.message);
 			}
+			throw err;
 		}
 		return [];
 	}

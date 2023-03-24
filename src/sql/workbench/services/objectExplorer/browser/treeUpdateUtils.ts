@@ -282,6 +282,7 @@ export class TreeUpdateUtils {
 				await objectExplorerService.resolveTreeNodeChildren(session, rootNode);
 				return rootNode.children ?? [];
 			} else {
+				let nodesUpdatedListener;
 				const options: IConnectionCompletionOptions = {
 					params: undefined,
 					saveTheConnection: true,
@@ -296,19 +297,25 @@ export class TreeUpdateUtils {
 						reject(new Error(nls.localize('objectExplorerTimeout', "Object Explorer timed out for {0}", connection.databaseName)));
 						clearTimeout(nodesUpdatedTimeout);
 					}, expansionTimeoutValueSec * 1000);
-					objectExplorerService.onUpdateObjectExplorerNodes(e => {
+
+					nodesUpdatedListener = objectExplorerService.onUpdateObjectExplorerNodes(e => {
 						if (e.errorMessage) {
 							reject(new Error(e.errorMessage));
 						} else if (e.connection.id === connection.id) {
+							clearTimeout(nodesUpdatedTimeout);
+							nodesUpdatedListener.dispose();
 							resolve(undefined);
 						} else if (e.connection.matches(connection)) {
+							clearTimeout(nodesUpdatedTimeout);
+							nodesUpdatedListener.dispose();
 							connection = <ConnectionProfile>e.connection;
 							resolve(undefined);
 						} else if (Utils.generateUri(connection) === Utils.generateUri(e.connection)) {
+							clearTimeout(nodesUpdatedTimeout);
+							nodesUpdatedListener.dispose();
 							connection = <ConnectionProfile>e.connection;
 							resolve(undefined);
 						}
-						clearTimeout(nodesUpdatedTimeout);
 					});
 				});
 				await TreeUpdateUtils.connectAndCreateOeSession(connection, options, connectionManagementService, objectExplorerService, undefined);

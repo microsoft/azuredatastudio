@@ -62,7 +62,7 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 		originalInput?.dispose();
 	}
 
-	protected override getDataNode(element: ConnectionProfileGroup | ServerTreeElement): IAsyncDataTreeNode<ConnectionProfileGroup, ServerTreeElement> {
+	public override getDataNode(element: ConnectionProfileGroup | ServerTreeElement): IAsyncDataTreeNode<ConnectionProfileGroup, ServerTreeElement> {
 		let node = undefined;
 		this.nodes.forEach((v, k) => {
 			if (element?.id === v?.id) {
@@ -73,6 +73,15 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 			return node;
 		}
 		return super.getDataNode(element);
+	}
+
+	public getDataById(id: string): ServerTreeElement {
+		for (let nodes of this.nodes.values()) {
+			if (nodes.element.id === id) {
+				return nodes.element;
+			}
+		}
+		return undefined;
 	}
 
 	private getDataNodeById(id: string): IAsyncDataTreeNode<ConnectionProfileGroup, ServerTreeElement> | undefined {
@@ -89,27 +98,26 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 		const viewState = this.getViewState();
 		const expandedElementIds = viewState?.expanded;
 		const expandedElements = expandedElementIds.map(id => this.getDataNodeById(id));
-		if (this.hasNode(element)) {
-			await super.updateChildren(element, recursive, rerender, options);
-			if (expandedElementIds) {
-				for (let i = 0; i <= expandedElementIds.length; i++) {
-					const id = expandedElementIds[i];
-					const node = this.getDataNodeById(id);
-					if (node) {
-						await this.expand(node.element);
-					} else {
-						if (expandedElements[i]) {
-							const elementPath = this.generatePath(expandedElements[i].element);
-							for (let n of this.nodes.values()) {
-								if (this.generatePath(n.element) === elementPath) {
-									await this.expand(n.element);
-									break;
-								}
+		await super.updateChildren(element, recursive, rerender, options);
+		if (expandedElementIds) {
+			for (let i = 0; i <= expandedElementIds.length; i++) {
+				const id = expandedElementIds[i];
+				const node = this.getDataNodeById(id);
+				if (node) {
+					await this.expand(node.element);
+				} else {
+					if (expandedElements[i]) {
+						const elementPath = this.generatePath(expandedElements[i].element);
+						for (let n of this.nodes.values()) {
+							if (this.generatePath(n.element) === elementPath) {
+								await this.expand(n.element);
+								break;
 							}
 						}
 					}
 				}
 			}
+
 		}
 	}
 

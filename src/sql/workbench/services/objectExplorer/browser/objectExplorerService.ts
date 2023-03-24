@@ -27,6 +27,7 @@ import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplor
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { NODE_EXPANSION_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
+import { clearInterval, setInterval } from 'timers';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -175,6 +176,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private _onSelectionOrFocusChange: Emitter<void>;
 	private _onNodeExpandedError: Emitter<NodeExpandInfoWithProviderId> = new Emitter<NodeExpandInfoWithProviderId>();
 
+	private _connectionsWaitingForSession: Map<string, boolean> = new Map<string, boolean>();
+
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
@@ -277,8 +280,28 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private async handleSessionCreated(session: azdata.ObjectExplorerSession): Promise<void> {
 		let connection: ConnectionProfile | undefined = undefined;
 		let errorMessage: string | undefined = undefined;
-		if (this._sessions[session.sessionId!]) {
-			connection = this._sessions[session.sessionId!].connection;
+		const sessionId = session.sessionId;
+
+		if (this._sessions[sessionId]) {
+
+			await new Promise<void>((resolve, reject) => {
+				let count = 0;
+				const waitingForSession = setInterval(() => {
+					connection = this._sessions[sessionId].connection;
+					if (connection) {
+						if (this._connectionsWaitingForSession.get(connection.id) === false) {
+							this._connectionsWaitingForSession.delete(connection.id);
+							clearInterval(waitingForSession);
+							resolve();
+						}
+						else if (count > this.getObjectExplorerTimeout()) {
+							clearInterval(waitingForSession);
+							reject(new Error(`Timeout waiting for session ${sessionId} to be created`));
+						}
+						count++;
+					}
+				}, 1000);
+			});
 
 			try {
 				if (session.success && session.rootNode) {
@@ -298,13 +321,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					await Promise.all(promises);
 				}
 			} catch (error) {
-				this.logService.warn(`cannot handle the session ${session.sessionId} in all nodeProviders`);
+				this.logService.warn(`cannot handle the session ${sessionId} in all nodeProviders`);
 			} finally {
 				this.sendUpdateNodeEvent(connection!, errorMessage);
 			}
 		}
 		else {
-			this.logService.warn(`cannot find session ${session.sessionId}`);
+			this.logService.warn(`cannot find session ${sessionId}`);
 		}
 	}
 
@@ -361,6 +384,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public async createNewSession(providerId: string, connection: ConnectionProfile): Promise<azdata.ObjectExplorerSessionResponse> {
 		const provider = this._providers[providerId];
 		if (provider) {
+			this._connectionsWaitingForSession.set(connection.id, true);
 			const result = await provider.createNewSession(connection.toConnectionInfo());
 			if (!result?.sessionId) {
 				throw new Error(nls.localize('objectExplorerSessionIdMissing', "Object Explorer session ID is missing for connection"));
@@ -372,8 +396,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				connection: connection,
 				nodes: {}
 			};
+			this._connectionsWaitingForSession.set(connection.id, false);
 			return result;
 		} else {
+			this._connectionsWaitingForSession.delete(connection.id);
 			throw new Error(`Provider doesn't exist. id: ${providerId}`);
 		}
 	}
@@ -450,7 +476,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						}
 					});
 
-					const expansionTimeoutValueSec = this._configurationService.getValue<number>(NODE_EXPANSION_CONFIG);
 					const expansionTimeout = setTimeout(() => {
 						/**
 						 * If we don't get a response back from all the providers in specified expansion timeout seconds then we assume
@@ -462,7 +487,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							this._notificationService.error(nls.localize('nodeExpansionTimeout', "Node expansion timed out for node {0} for providers {1}", node.nodePath, missingProviders.map(p => p.providerId).join(', ')));
 						}
 						resolveExpansion();
-					}, expansionTimeoutValueSec * 1000);
+					}, this.getObjectExplorerTimeout() * 1000);
 
 					self._sessions[session.sessionId!].nodes[node.nodePath].expandEmitter.event((expandResult: NodeExpandInfoWithProviderId) => {
 						if (expandResult && expandResult.providerId) {
@@ -935,5 +960,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			currentNode = nextNode;
 		}
 		return currentNode;
+	}
+
+	/**
+	 * Get object explorer timeout in seconds.
+	 */
+	public getObjectExplorerTimeout(): number {
+		return this._configurationService.getValue<number>(NODE_EXPANSION_CONFIG);
 	}
 }
