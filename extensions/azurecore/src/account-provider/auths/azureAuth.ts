@@ -349,13 +349,14 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 
 		// construct request
-		// forceRefresh needs to be set true here in order to fetch the correct token, due to this issue
+		// forceRefresh needs to be set true here in order to fetch the correct token for non-full tenants, due to this issue
 		// https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/3687
 		const tokenRequest = {
 			account: account,
 			authority: `${this.loginEndpointUrl}${tenantId}`,
 			scopes: newScope,
-			forceRefresh: true
+			// Force Refresh when tenant is NOT full tenant or organizational id that this account belongs to.
+			forceRefresh: tenantId !== account.tenantId
 		};
 		try {
 			return await this.clientApplication.acquireTokenSilent(tokenRequest);
