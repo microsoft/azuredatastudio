@@ -283,7 +283,7 @@ describe('Project: sqlproj content operations', function (): void {
 		await project.addExistingItem(txtFile);
 
 		// Validate files should have been added to project
-		(project.files.length).should.equal(1, 'SQL script object count');
+		(project.files.length).should.equal(1, `SQL script object count: ${project.files.map(x => x.relativePath).join('; ')}`);
 		(project.files[0].relativePath).should.equal('test.sql');
 
 		should(project.folders.length).equal(1, 'folders');
