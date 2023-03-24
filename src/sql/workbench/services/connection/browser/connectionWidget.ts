@@ -20,6 +20,7 @@ import { IAccountManagementService } from 'sql/platform/accounts/common/interfac
 
 import * as azdata from 'azdata';
 
+import * as utils from 'vs/base/common/errors';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
@@ -325,7 +326,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						let widget: AdsWidget | undefined = this._findWidget(collections, optionAction.optionName);
 						if (widget) {
 							createCSSRule(`.hide-${widget.id} .option-${widget.id}`, `display: none;`);
-							this._onValueChangeEvent(selectedValue, event.values, widget, defaultValue, optionAction.action);
+							this._onValueChangeEvent(selectedValue, event.values, widget, defaultValue, optionAction);
 						}
 					});
 				}));
@@ -350,16 +351,28 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	private _onValueChangeEvent(selectedValue: string, acceptedValues: string[],
-		widget: AdsWidget, defaultValue: string, action: string): void {
-		if ((acceptedValues.includes(selectedValue.toLocaleLowerCase()) && action === Actions.Show)
-			|| (!acceptedValues.includes(selectedValue.toLocaleLowerCase()) && action === Actions.Hide)) {
+		widget: AdsWidget, defaultValue: string, optionAction: azdata.DependentOptionAction): void {
+		if ((acceptedValues.includes(selectedValue.toLocaleLowerCase()) && optionAction.action === Actions.Show)
+			|| (!acceptedValues.includes(selectedValue.toLocaleLowerCase()) && optionAction.action === Actions.Hide)) {
 			this._tableContainer.classList.remove(`hide-${widget.id}`);
+			if (optionAction.required) {
+				let element = DialogHelper.getOptionContainerByName(this._tableContainer, optionAction.optionName);
+				if (element) {
+					DialogHelper.appendRequiredIndicator(element);
+				}
+			}
 		} else {
 			// Support more Widget classes here as needed.
 			if (widget instanceof SelectBox) {
 				widget.select(widget.values.indexOf(defaultValue));
 			} else if (widget instanceof InputBox) {
 				widget.value = defaultValue;
+			}
+
+			// Reset required indicator.
+			let element = DialogHelper.getOptionContainerByName(this._tableContainer, optionAction.optionName);
+			if (element && element!.hasChildNodes && element.childElementCount > 1) {
+				element!.children.item(1).remove();
 			}
 			this._tableContainer.classList.add(`hide-${widget.id}`);
 			widget.hideMessage();
@@ -956,7 +969,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					await this.onAzureAccountSelected();
 
 					let tenantId = connectionInfo.azureTenantId;
-					if (account && account.properties.tenants && account.properties.tenants.length > 1) {
+					if (account && tenantId && account.properties.tenants && account.properties.tenants.length > 1) {
 						let tenant = account.properties.tenants.find(tenant => tenant.id === tenantId);
 						if (tenant) {
 							this._azureTenantDropdown.selectWithOptionName(tenant.displayName);
@@ -965,7 +978,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 							// This should ideally never ever happen!
 							this._logService.error(`fillInConnectionInputs : Could not find tenant with ID ${this._azureTenantId} for account ${accountName}`);
 						}
-						this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
+						if (this._azureTenantDropdown.value) {
+							this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
+						}
 					}
 					else if (account && account.properties.tenants && account.properties.tenants.length === 1) {
 						this._azureTenantId = account.properties.tenants[0].id;
@@ -1194,12 +1209,17 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let validInputs = this.validateInputs();
 		if (validInputs) {
 			if (this.useConnectionString) {
-				const connInfo = await this._connectionManagementService.buildConnectionInfo(this.connectionString, this._providerName);
-				if (connInfo) {
+				try {
+					const connInfo = await this._connectionManagementService.buildConnectionInfo(this.connectionString, this._providerName);
+					if (!connInfo) {
+						throw Error(localize('connectionWidget.ConnectionStringUndefined', 'No connection info returned.'));
+					}
 					model.options = connInfo.options;
 					model.savePassword = true;
-				} else {
-					this._errorMessageService.showDialog(Severity.Error, localize('connectionWidget.Error', "Error"), localize('connectionWidget.ConnectionStringError', "Failed to parse the connection string."));
+				} catch (err) {
+					this._logService.error(`${this._providerName} Failed to parse the connection string : ${err}`)
+					this._errorMessageService.showDialog(Severity.Error, localize('connectionWidget.Error', "Error"),
+						localize('connectionWidget.ConnectionStringError', "Failed to parse the connection string. {0}", utils.getErrorMessage(err)), err.stack);
 					return false;
 				}
 			} else {
@@ -1209,26 +1229,26 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				model.authenticationType = this.authenticationType;
 				model.azureAccount = this.authToken;
 				model.savePassword = this._rememberPasswordCheckBox.checked;
-				model.connectionName = this.connectionName;
 				model.databaseName = this.databaseName;
 				if (this._customOptionWidgets) {
 					this._customOptionWidgets.forEach((widget, i) => {
 						model.options[this._customOptions[i].name] = widget.value;
 					});
 				}
-				if (this._serverGroupSelectBox) {
-					if (this._serverGroupSelectBox.value === this.DefaultServerGroup.name) {
-						model.groupFullName = '';
-						model.saveProfile = true;
-						model.groupId = this.findGroupId(model.groupFullName);
-					} else if (this._serverGroupSelectBox.value === this.NoneServerGroup.name) {
-						model.groupFullName = '';
-						model.saveProfile = false;
-					} else if (this._serverGroupSelectBox.value !== this._addNewServerGroup.name) {
-						model.groupFullName = this._serverGroupSelectBox.value;
-						model.saveProfile = true;
-						model.groupId = this.findGroupId(model.groupFullName);
-					}
+			}
+			model.connectionName = this.connectionName;
+			if (this._serverGroupSelectBox) {
+				if (this._serverGroupSelectBox.value === this.DefaultServerGroup.name) {
+					model.groupFullName = '';
+					model.saveProfile = true;
+					model.groupId = this.findGroupId(model.groupFullName);
+				} else if (this._serverGroupSelectBox.value === this.NoneServerGroup.name) {
+					model.groupFullName = '';
+					model.saveProfile = false;
+				} else if (this._serverGroupSelectBox.value !== this._addNewServerGroup.name) {
+					model.groupFullName = this._serverGroupSelectBox.value;
+					model.saveProfile = true;
+					model.groupId = this.findGroupId(model.groupFullName);
 				}
 			}
 		}

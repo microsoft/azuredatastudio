@@ -72,7 +72,7 @@ export class AzureMonitorServer {
 		this.config = JSON.parse(rawConfig.toString())!;
 		this.config.installDirectory = path.join(__dirname, this.config.installDirectory);
 		this.config.proxy = vscode.workspace.getConfiguration('http').get<string>('proxy')!;
-		this.config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
+		this.config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL', true);
 
 		const serverdownloader = new ServerProvider(this.config);
 		serverdownloader.eventEmitter.onAny(generateHandleServerProviderEvent());

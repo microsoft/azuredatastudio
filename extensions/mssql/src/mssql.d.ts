@@ -1097,11 +1097,11 @@ declare module 'mssql' {
 			/**
 			 * Schemas owned by the user.
 			 */
-			ownedSchemas: string[] | undefined;
+			ownedSchemas: string[];
 			/**
 			 * Database roles that the user belongs to.
 			 */
-			databaseRoles: string[] | undefined;
+			databaseRoles: string[];
 			/**
 			 * The name of the server login associated with the user.
 			 * Only applicable when the user type is 'WithLogin'.
