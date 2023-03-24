@@ -216,7 +216,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 	/**
 	 * Returns a key derived the connections options (providerName, authenticationType, serverName, databaseName, userName, groupid)
-	 * and all the other properties (Except connection name as its not supported by SQL connections) if useFullOptions is enabled for the provider.
+	 * and all the other properties if useFullOptions is enabled for the provider.
 	 * This key uniquely identifies a connection in a group
 	 * Example: "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
 	 * @param getOriginalOptions will return the original URI format regardless if useFullOptions was set or not. (used for retrieving passwords)
@@ -228,10 +228,11 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 			useFullOptions = this.serverCapabilities.useFullOptions
 			idNames = this.serverCapabilities.connectionOptions.map(o => {
 				// All options enabled, use every property besides password.
-				let newProperty = useFullOptions && !getOriginalOptions
+				let newProperty = useFullOptions && o.specialValueType !== ConnectionOptionSpecialType.password && !getOriginalOptions
 				// Fallback to original base IsIdentity properties otherwise.
-				let originalProperty = (o.specialValueType || o.isIdentity)
-				if ((newProperty || originalProperty) && o.specialValueType !== ConnectionOptionSpecialType.password && o.specialValueType !== ConnectionOptionSpecialType.connectionName) {
+				let originalProperty = (o.specialValueType || o.isIdentity) && o.specialValueType !== ConnectionOptionSpecialType.password
+					&& o.specialValueType !== ConnectionOptionSpecialType.connectionName;
+				if (newProperty || originalProperty) {
 					return o.name;
 				} else {
 					return undefined;
