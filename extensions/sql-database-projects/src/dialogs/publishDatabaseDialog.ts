@@ -807,6 +807,7 @@ export class PublishDatabaseDialog {
 	private createSelectConnectionButton(view: azdataType.ModelView): azdataType.Component {
 		this.selectConnectionButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.selectConnection,
+			title: constants.selectConnection,
 			iconPath: IconPathHelper.selectConnection,
 			height: '16px',
 			width: '16px'
@@ -849,6 +850,7 @@ export class PublishDatabaseDialog {
 	private createLoadProfileButton(view: azdataType.ModelView): azdataType.ButtonComponent {
 		let loadProfileButton: azdataType.ButtonComponent = view.modelBuilder.button().withProps({
 			ariaLabel: constants.loadProfilePlaceholderText,
+			title: constants.loadProfilePlaceholderText,
 			iconPath: IconPathHelper.folder_blue,
 			height: '18px',
 			width: '18px'
