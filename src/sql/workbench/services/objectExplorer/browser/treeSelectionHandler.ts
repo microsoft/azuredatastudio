@@ -62,7 +62,7 @@ export class TreeSelectionHandler {
 				this._lastClicked = undefined;
 			}
 			if (!TreeUpdateUtils.isInDragAndDrop) {
-				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, capabilitiesService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback, requestStatus, doubleClickHandler);
+				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, capabilitiesService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback, requestStatus, doubleClickHandler).catch(onUnexpectedError);
 			}
 		});
 
