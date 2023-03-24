@@ -108,6 +108,7 @@ export class ServiceClient {
 		launchArgs.push('--log-file', path.join(context.logUri.fsPath));
 		launchArgs.push('--tracing-level', this.getConfigTracingLevel());
 		launchArgs.push('--autoflush-log');
+		launchArgs.push('--parallel-message-processing');
 		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 	}
 
