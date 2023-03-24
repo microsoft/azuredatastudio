@@ -43,6 +43,7 @@ import { coalesce } from 'vs/base/common/arrays';
 import { CONNECTIONS_SORT_BY_CONFIG_KEY } from 'sql/platform/connection/common/connectionConfig';
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { debounce } from 'vs/base/common/decorators';
+import { ActionRunner } from 'vs/base/common/actions';
 
 export const CONTEXT_SERVER_TREE_VIEW = new RawContextKey<ServerTreeViewView>('serverTreeView.view', ServerTreeViewView.all);
 export const CONTEXT_SERVER_TREE_HAS_CONNECTIONS = new RawContextKey<boolean>('serverTreeView.hasConnections', false);
@@ -60,6 +61,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	private _actionProvider: ServerTreeActionProvider;
 	private _viewKey: IContextKey<ServerTreeViewView>;
 	private _hasConnectionsKey: IContextKey<boolean>;
+	private _actionRunner: ActionRunner;
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -79,6 +81,8 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		this._onSelectionOrFocusChange = new Emitter();
 		this._actionProvider = this._instantiationService.createInstance(ServerTreeActionProvider);
+		this._actionRunner = new ActionRunner();
+		this._register(this._actionRunner);
 		this._capabilitiesService.onCapabilitiesRegistered(async () => {
 			await this.handleOnCapabilitiesRegistered();
 		});
@@ -166,21 +170,8 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		this._register(this._tree.onDidBlur(() => this._onSelectionOrFocusChange.fire()));
 		this._register(this._tree.onDidChangeFocus(() => this._onSelectionOrFocusChange.fire()));
 		if (this._tree instanceof AsyncServerTree) {
-			this._register(this._tree.onContextMenu(e => this.onContextMenu(e)));
-			this._register(this._tree.onMouseDblClick(e => {
-				// Open dashboard on double click for server and database nodes
-				let connectionProfile: ConnectionProfile | undefined;
-				if (e.element instanceof ConnectionProfile) {
-					connectionProfile = e.element;
-				} else if (e.element instanceof TreeNode) {
-					if (TreeUpdateUtils.isAvailableDatabaseNode(e.element)) {
-						connectionProfile = TreeUpdateUtils.getConnectionProfile(e.element);
-					}
-				}
-				if (connectionProfile) {
-					this._connectionManagementService.showDashboard(connectionProfile);
-				}
-			}));
+			this._register(this._tree.onContextMenu(e => this.onTreeNodeContextMenu(e)));
+			this._register(this._tree.onMouseDblClick(async e => { await this.onTreeNodeDoubleClick(e.element); }));
 			this._register(this._connectionManagementService.onConnectionChanged(() => {
 				this.refreshTree().catch(err => errors.onUnexpectedError);
 			}));
@@ -539,7 +530,12 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	}
 
 	private onSelected(event: any): void {
-		this._treeSelectionHandler.onTreeSelect(event, this._tree!, this._connectionManagementService, this._objectExplorerService, this._capabilitiesService, () => this._onSelectionOrFocusChange.fire());
+		this._treeSelectionHandler.onTreeSelect(event, this._tree!,
+			this._connectionManagementService,
+			this._objectExplorerService,
+			this._capabilitiesService,
+			() => this._onSelectionOrFocusChange.fire(),
+			(node) => { this.onTreeNodeDoubleClick(node).catch(errors.onUnexpectedError); });
 		this._onSelectionOrFocusChange.fire();
 	}
 
@@ -592,7 +588,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			} else {
 				this._tree!.clearSelection();
 			}
-
 		}
 		if (selected) {
 			if (this._tree instanceof AsyncServerTree) {
@@ -626,35 +621,15 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	/**
 	 * Return actions in the context menu
 	 */
-	private onContextMenu(e: ITreeContextMenuEvent<ServerTreeElement>): boolean {
+	private onTreeNodeContextMenu(e: ITreeContextMenuEvent<ServerTreeElement>): void {
 		if (e.element) {
 			e.browserEvent.preventDefault();
 			e.browserEvent.stopPropagation();
 			this._tree!.setSelection([e.element]);
-
-			let actionContext: any;
-			if (e.element instanceof TreeNode) {
-				let context = new ObjectExplorerActionsContext();
-				context.nodeInfo = e.element.toNodeInfo();
-				// Note: getting DB name before, but intentionally not using treeUpdateUtils.getConnectionProfile as it replaces
-				// the connection ID with a new one. This breaks a number of internal tasks
-				context.connectionProfile = e.element.getConnectionProfile()!.toIConnectionProfile();
-				context.connectionProfile.databaseName = e.element.getDatabaseName();
-				actionContext = context;
-			} else if (e.element instanceof ConnectionProfile) {
-				let context = new ObjectExplorerActionsContext();
-				context.connectionProfile = e.element.toIConnectionProfile();
-				context.isConnectionNode = true;
-				actionContext = context;
-			} else {
-				// TODO: because the connection group is used as a context object and isn't serializable,
-				// the Group-level context menu is not currently extensible
-				actionContext = e.element;
-			}
-
+			const actionContext = this.getActionContext(e.element);
 			this._contextMenuService.showContextMenu({
 				getAnchor: () => e.anchor,
-				getActions: () => this._actionProvider.getActions(this._tree!, e.element!),
+				getActions: () => this._actionProvider.getActions(this._tree!, e.element),
 				getKeyBinding: (action) => this._keybindingService.lookupKeybinding(action.id),
 				onHide: (wasCancelled?: boolean) => {
 					if (wasCancelled) {
@@ -663,9 +638,56 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				},
 				getActionsContext: () => (actionContext)
 			});
-
-			return true;
 		}
-		return false;
+	}
+
+	private async onTreeNodeDoubleClick(node: ServerTreeElement): Promise<void> {
+		const action = this._actionProvider.getDefaultAction(this.tree, node);
+
+		if (action) {
+			this._actionRunner.run(action, this.getActionContext(node)).catch(errors.onUnexpectedError);
+		} else {
+			// If no default action is defined, fallback to the default behavior of opening the dashboard.
+			// Open dashboard on double click for server and database nodes
+			let connectionProfile: ConnectionProfile | undefined;
+			if (node instanceof ConnectionProfile) {
+				connectionProfile = node;
+				await TreeUpdateUtils.connectAndCreateOeSession(connectionProfile, {
+					params: undefined,
+					saveTheConnection: true,
+					showConnectionDialogOnError: true,
+					showFirewallRuleOnError: true,
+					showDashboard: true
+				}, this._connectionManagementService, this._objectExplorerService, this.tree);
+			} else if (node instanceof TreeNode) {
+				if (TreeUpdateUtils.isAvailableDatabaseNode(node)) {
+					connectionProfile = TreeUpdateUtils.getConnectionProfile(node);
+					this._connectionManagementService.showDashboard(connectionProfile);
+				}
+			}
+		}
+	}
+
+	private getActionContext(element: ServerTreeElement): any {
+		let actionContext: any;
+		if (element instanceof TreeNode) {
+			let context = new ObjectExplorerActionsContext();
+			context.nodeInfo = element.toNodeInfo();
+			// Note: getting DB name before, but intentionally not using treeUpdateUtils.getConnectionProfile as it replaces
+			// the connection ID with a new one. This breaks a number of internal tasks
+			context.connectionProfile = element.getConnectionProfile()!.toIConnectionProfile();
+			context.connectionProfile.databaseName = element.getDatabaseName();
+			actionContext = context;
+		} else if (element instanceof ConnectionProfile) {
+			let context = new ObjectExplorerActionsContext();
+			context.connectionProfile = element.toIConnectionProfile();
+			context.isConnectionNode = true;
+			actionContext = context;
+		} else {
+			// TODO: because the connection group is used as a context object and isn't serializable,
+			// the Group-level context menu is not currently extensible
+			actionContext = element;
+		}
+		return actionContext;
 	}
 }
