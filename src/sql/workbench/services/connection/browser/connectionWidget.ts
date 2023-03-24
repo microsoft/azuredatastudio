@@ -326,7 +326,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						let widget: AdsWidget | undefined = this._findWidget(collections, optionAction.optionName);
 						if (widget) {
 							createCSSRule(`.hide-${widget.id} .option-${widget.id}`, `display: none;`);
-							this._onValueChangeEvent(selectedValue, event.values, widget, defaultValue, optionAction.action);
+							this._onValueChangeEvent(selectedValue, event.values, widget, defaultValue, optionAction);
 						}
 					});
 				}));
@@ -351,16 +351,28 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	private _onValueChangeEvent(selectedValue: string, acceptedValues: string[],
-		widget: AdsWidget, defaultValue: string, action: string): void {
-		if ((acceptedValues.includes(selectedValue.toLocaleLowerCase()) && action === Actions.Show)
-			|| (!acceptedValues.includes(selectedValue.toLocaleLowerCase()) && action === Actions.Hide)) {
+		widget: AdsWidget, defaultValue: string, optionAction: azdata.DependentOptionAction): void {
+		if ((acceptedValues.includes(selectedValue.toLocaleLowerCase()) && optionAction.action === Actions.Show)
+			|| (!acceptedValues.includes(selectedValue.toLocaleLowerCase()) && optionAction.action === Actions.Hide)) {
 			this._tableContainer.classList.remove(`hide-${widget.id}`);
+			if (optionAction.required) {
+				let element = DialogHelper.getOptionContainerByName(this._tableContainer, optionAction.optionName);
+				if (element) {
+					DialogHelper.appendRequiredIndicator(element);
+				}
+			}
 		} else {
 			// Support more Widget classes here as needed.
 			if (widget instanceof SelectBox) {
 				widget.select(widget.values.indexOf(defaultValue));
 			} else if (widget instanceof InputBox) {
 				widget.value = defaultValue;
+			}
+
+			// Reset required indicator.
+			let element = DialogHelper.getOptionContainerByName(this._tableContainer, optionAction.optionName);
+			if (element && element!.hasChildNodes && element.childElementCount > 1) {
+				element!.children.item(1).remove();
 			}
 			this._tableContainer.classList.add(`hide-${widget.id}`);
 			widget.hideMessage();

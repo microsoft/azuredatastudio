@@ -128,7 +128,7 @@ export class AccountFeature implements StaticFeature {
 		}
 		let params: contracts.TokenRefreshedParams = {
 			token: securityToken.token,
-			expiresOn: securityToken.expiresOn,
+			expiresOn: securityToken.expiresOn!,
 			uri: request.uri
 		};
 

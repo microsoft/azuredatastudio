@@ -1049,7 +1049,8 @@
               "dependentOptionActions": [
                 {
                   "optionName": "attestationProtocol",
-                  "action": "hide"
+                  "action": "hide",
+                  "required": true
                 }
               ]
             }
@@ -1090,7 +1091,8 @@
               "dependentOptionActions": [
                 {
                   "optionName": "enclaveAttestationUrl",
-                  "action": "hide"
+                  "action": "hide",
+                  "required": true
                 }
               ]
             }
