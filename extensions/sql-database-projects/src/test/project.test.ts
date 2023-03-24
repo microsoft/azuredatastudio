@@ -489,7 +489,7 @@ describe('Project: sdk style project content operations', function (): void {
 		should(projFileText.includes(`<${constants.OutputPath}>`)).equal(false);
 
 		const project: Project = await Project.openProject(projFilePath);
-		should(project.outputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath(constants.defaultOutputPath(project.configuration.toString()))) + '\\');
+		should(project.outputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath(constants.defaultOutputPath(project.configuration.toString()))) + path.sep);
 		should(project.dacpacOutputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath(constants.defaultOutputPath(project.configuration.toString())), `${project.projectFileName}.dacpac`));
 	});
 });
