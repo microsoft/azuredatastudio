@@ -535,7 +535,7 @@ export async function canTargetConnectToStorageAccount(
 
 	const storageAccountProperties: StorageAccountAdditionalProperties = (storageAccount as any)['properties'];
 
-	const storageAccountPublicAccessEnabled: boolean = storageAccountProperties.publicNetworkAccess ? storageAccountProperties.publicNetworkAccess.toLowerCase() === 'Enabled'.toLowerCase() : true;		// publicNetworkAccess missing sometimes
+	const storageAccountPublicAccessEnabled: boolean = storageAccountProperties.publicNetworkAccess ? storageAccountProperties.publicNetworkAccess.toLowerCase() === 'Enabled'.toLowerCase() : true;
 	const storageAccountDefaultIsAllow: boolean = storageAccountProperties.networkAcls.defaultAction.toLowerCase() === 'Allow'.toLowerCase();
 	const storageAccountDefaultIsDeny: boolean = storageAccountProperties.networkAcls.defaultAction.toLowerCase() === 'Deny'.toLowerCase();
 	const storageAccountWhitelistedVNets: string[] = storageAccountProperties.networkAcls.virtualNetworkRules.filter(rule => rule.action.toLowerCase() === 'Allow'.toLowerCase()).map(rule => rule.id);
@@ -566,6 +566,8 @@ export async function canTargetConnectToStorageAccount(
 	// "Enabled from selected virtual networks and IP addresses" = public network access == Enabled, and default network rule == Deny,
 	// with some virtual network rule existing such that id == target subnet and action == Allow
 	const enabledFromWhitelistedVNet: boolean = storageAccountPublicAccessEnabled && storageAccountDefaultIsDeny && isTargetVNetWhitelisted;
+
+	// to-do: check private endpoint
 
 	return enabledFromAllNetworks || enabledFromWhitelistedVNet;
 

@@ -744,10 +744,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							errors.push(...this._nonPageBlobErrors);
 						}
 
-						// if (this._inaccessibleStorageErrors.length > 0) {
-						// 	errors.push(...this._inaccessibleStorageErrors)
-						// }
-
 						if (errors.length > 0) {
 							const duplicates: Map<string, number[]> = new Map();
 							for (let i = 0; i < this.migrationStateModel._targetDatabaseNames.length; i++) {
@@ -1083,9 +1079,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 									// check for storage account connectivity
 									if ((this.migrationStateModel.isSqlMiTarget || this.migrationStateModel.isSqlVmTarget)) {
-										this._inaccessibleStorageAccounts = this._inaccessibleStorageAccounts.filter(storageAccountName => storageAccountName.toLowerCase() !== selectedStorageAccount.name.toLowerCase() && storageAccountName.toLowerCase() !== oldSelectedStorageAccount.name.toLowerCase());
+										if (this.migrationStateModel._databaseBackup.blobs.filter((e, i) => i !== index).every(blob => blob.storageAccount.name.toLowerCase() !== oldSelectedStorageAccount.name.toLowerCase())) {
+											this._inaccessibleStorageAccounts = this._inaccessibleStorageAccounts.filter(storageAccountName => storageAccountName.toLowerCase() !== oldSelectedStorageAccount.name.toLowerCase());
+										}
 
 										if (!(await canTargetConnectToStorageAccount(this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance, selectedStorageAccount, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription))) {
+											this._inaccessibleStorageAccounts = this._inaccessibleStorageAccounts.filter(storageAccountName => storageAccountName.toLowerCase() !== selectedStorageAccount.name.toLowerCase());
 											this._inaccessibleStorageAccounts.push(selectedStorageAccount.name);
 										}
 
