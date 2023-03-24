@@ -518,61 +518,54 @@ export async function canTargetConnectToStorageAccount(
 	account: azdata.Account,
 	subscription: Subscription): Promise<boolean> {
 
-	// additional ARM properties which are not defined in azurecore
-	interface VirtualNetworkRule {
-		id: string,
-		state: string,
-		action: string
+	// additional ARM properties of storage accounts which aren't exposed in azurecore
+	interface StorageAccountAdditionalProperties {
+		publicNetworkAccess: string,
+		networkAcls: NetworkRuleSet
 	}
 	interface NetworkRuleSet {
 		virtualNetworkRules: VirtualNetworkRule[],
 		defaultAction: string
 	}
+	interface VirtualNetworkRule {
+		id: string,
+		state: string,
+		action: string
+	}
 
-	const storageAccountPublicAccessEnabled: boolean = (storageAccount as any)['properties']['publicNetworkAccess'] === 'Enabled';
-	const storageAccountNetworkRules: NetworkRuleSet = (storageAccount as any)['properties']['networkAcls'];
-	const storageAccountDefaultIsAllow: boolean = storageAccountNetworkRules.defaultAction === 'Allow';
-	const storageAccountDefaultIsDeny: boolean = storageAccountNetworkRules.defaultAction === 'Deny';
+	const storageAccountProperties: StorageAccountAdditionalProperties = (storageAccount as any)['properties'];
 
-	const storageAccountVirtualNetworkRules: VirtualNetworkRule[] = storageAccountNetworkRules.virtualNetworkRules;
+	const storageAccountPublicAccessEnabled: boolean = storageAccountProperties.publicNetworkAccess ? storageAccountProperties.publicNetworkAccess.toLowerCase() === 'Enabled'.toLowerCase() : true;		// publicNetworkAccess missing sometimes
+	const storageAccountDefaultIsAllow: boolean = storageAccountProperties.networkAcls.defaultAction.toLowerCase() === 'Allow'.toLowerCase();
+	const storageAccountDefaultIsDeny: boolean = storageAccountProperties.networkAcls.defaultAction.toLowerCase() === 'Deny'.toLowerCase();
+	const storageAccountWhitelistedVNets: string[] = storageAccountProperties.networkAcls.virtualNetworkRules.filter(rule => rule.action.toLowerCase() === 'Allow'.toLowerCase()).map(rule => rule.id);
 
-	var isVNetWhitelisted: boolean = false;
+	var isTargetVNetWhitelisted: boolean = true;
 	switch (targetType) {
 		case MigrationTargetType.SQLMI:
+			// for MI, subnet is directly exposed in properties
 			const targetManagedInstanceVNet: string = (targetServer.properties as any)['subnetId'];
-			isVNetWhitelisted = storageAccountVirtualNetworkRules.some(virtualNetworkRule => virtualNetworkRule.action === 'Allow' && virtualNetworkRule.id.toLowerCase() === targetManagedInstanceVNet.toLowerCase());
 
-			console.log('MI subnetId: ' + targetManagedInstanceVNet);
-
+			isTargetVNetWhitelisted = storageAccountWhitelistedVNets.some(vnet => vnet.toLowerCase() === targetManagedInstanceVNet.toLowerCase());
 			break;
-
 		case MigrationTargetType.SQLVM:
+			// for VM, get subnet by first checking underlying compute VM, then its network interface
 			const networkInterfaces = Array.from((await NetworkInterfaceModel.getVmNetworkInterfaces(account, subscription, (targetServer as SqlVMServer))).values());
 			const subnets = networkInterfaces.map(networkInterface => networkInterface.properties.ipConfigurations.map(ipConfiguration => ipConfiguration.properties.subnet.id.toLowerCase())).flat();
 
-			isVNetWhitelisted = storageAccountVirtualNetworkRules.some(virtualNetworkRule => virtualNetworkRule.action === 'Allow' && subnets.includes(virtualNetworkRule.id.toLowerCase()));
-
-			console.log(subnets);
-
+			isTargetVNetWhitelisted = storageAccountWhitelistedVNets.some(vnet => subnets.includes(vnet.toLowerCase()));
 			break;
 		default:
 			return true;
 	}
 
-	// Public network access:
-	//   Enabled from all networks - properties.publicNetworkAccess == "Enabled" && properties.networkAcls.defaultAction == "Allow"
-	//   Enabled from selected virtual networks and IP addresses - properties.publicNetworkAccess == "Enabled" && properties.networkAcls.defaultAction == "Deny" && virtualNetworkRules contains virtualNetworkRule.id == MI subnet with virtualNetworkRule.action == "Allow"
-	//   Disabled - properties.publicNetworkAccess == "E
 
-	console.log('storageAccountPublicAccessEnabled: ' + storageAccountPublicAccessEnabled);
-	console.log('storageAccountDefaultIsAllow: ' + storageAccountDefaultIsAllow);
-	console.log('storageAccountDefaultIsDeny: ' + storageAccountDefaultIsDeny);
-
-	console.log('storageAccountVirtualNetworkRules: ' + storageAccountVirtualNetworkRules);
-	console.log('isVNetWhitelisted: ' + isVNetWhitelisted);
-
+	// "Enabled from all networks" = public network access == Enabled, and default network rule == Allow
 	const enabledFromAllNetworks: boolean = storageAccountPublicAccessEnabled && storageAccountDefaultIsAllow;
-	const enabledFromWhitelistedVNet: boolean = storageAccountPublicAccessEnabled && storageAccountDefaultIsDeny && isVNetWhitelisted;
+
+	// "Enabled from selected virtual networks and IP addresses" = public network access == Enabled, and default network rule == Deny,
+	// with some virtual network rule existing such that id == target subnet and action == Allow
+	const enabledFromWhitelistedVNet: boolean = storageAccountPublicAccessEnabled && storageAccountDefaultIsDeny && isTargetVNetWhitelisted;
 
 	return enabledFromAllNetworks || enabledFromWhitelistedVNet;
 

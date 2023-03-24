@@ -71,7 +71,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	private _existingDatabases: string[] = [];
 	private _nonPageBlobErrors: string[] = [];
-	private _inaccessibleStorageErrors: string[] = [];
+	private _inaccessibleStorageAccounts: string[] = [];
 	private _disposables: vscode.Disposable[] = [];
 
 	// SQL DB table  selection
@@ -744,9 +744,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							errors.push(...this._nonPageBlobErrors);
 						}
 
-						if (this._inaccessibleStorageErrors.length > 0) {
-							errors.push(...this._inaccessibleStorageErrors)
-						}
+						// if (this._inaccessibleStorageErrors.length > 0) {
+						// 	errors.push(...this._inaccessibleStorageErrors)
+						// }
 
 						if (errors.length > 0) {
 							const duplicates: Map<string, number[]> = new Map();
@@ -1078,14 +1078,22 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							if (value && value !== 'undefined') {
 								const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === value);
 								if (selectedStorageAccount && !blobStorageAccountErrorStrings.includes(value)) {
+									const oldSelectedStorageAccount = this.migrationStateModel._databaseBackup.blobs[index].storageAccount;
 									this.migrationStateModel._databaseBackup.blobs[index].storageAccount = selectedStorageAccount;
 
 									// check for storage account connectivity
 									if ((this.migrationStateModel.isSqlMiTarget || this.migrationStateModel.isSqlVmTarget)) {
+										this._inaccessibleStorageAccounts = this._inaccessibleStorageAccounts.filter(storageAccountName => storageAccountName.toLowerCase() !== selectedStorageAccount.name.toLowerCase() && storageAccountName.toLowerCase() !== oldSelectedStorageAccount.name.toLowerCase());
+
 										if (!(await canTargetConnectToStorageAccount(this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance, selectedStorageAccount, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription))) {
-											const errorMessage = "Error: storage account connectivity for storage account " + selectedStorageAccount.name;
-											this._inaccessibleStorageErrors = this._inaccessibleStorageErrors.filter(err => err !== errorMessage);
-											this._inaccessibleStorageErrors.push(errorMessage);
+											this._inaccessibleStorageAccounts.push(selectedStorageAccount.name);
+										}
+
+										this.wizard.message = {
+											text: this._inaccessibleStorageAccounts.length > 0
+												? constants.STORAGE_ACCOUNT_CONNECTIVITY_WARNING(this.migrationStateModel._targetServerInstance.name, this._inaccessibleStorageAccounts)
+												: '',
+											level: azdata.window.MessageLevel.Warning
 										}
 									}
 
