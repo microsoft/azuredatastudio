@@ -239,6 +239,7 @@ export class CreateProjectFromDatabaseDialog {
 	private createSelectConnectionButton(view: azdataType.ModelView): azdataType.Component {
 		this.selectConnectionButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.selectConnection,
+			title: constants.selectConnection,
 			iconPath: IconPathHelper.selectConnection,
 			height: '16px',
 			width: '16px'
@@ -354,6 +355,7 @@ export class CreateProjectFromDatabaseDialog {
 	private createBrowseFolderButton(view: azdataType.ModelView): azdataType.ButtonComponent {
 		const browseFolderButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.browseButtonText,
+			title: constants.browseButtonText,
 			iconPath: IconPathHelper.folder_blue,
 			height: '18px',
 			width: '18px'
