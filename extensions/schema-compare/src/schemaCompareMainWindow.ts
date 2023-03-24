@@ -736,7 +736,7 @@ export class SchemaCompareMainWindow {
 			title: loc.compare
 		}).component();
 
-		this.compareButton.onDidClick(async (click) => {
+		this.compareButton.onDidClick(async () => {
 			await this.startCompare();
 		});
 	}
@@ -751,7 +751,7 @@ export class SchemaCompareMainWindow {
 			title: loc.stop
 		}).component();
 
-		this.cancelCompareButton.onDidClick(async (click) => {
+		this.cancelCompareButton.onDidClick(async () => {
 			await this.cancelCompare();
 		});
 	}
@@ -806,7 +806,7 @@ export class SchemaCompareMainWindow {
 			},
 		}).component();
 
-		this.generateScriptButton.onDidClick(async (click) => {
+		this.generateScriptButton.onDidClick(async () => {
 			await this.generateScript();
 		});
 	}
@@ -843,7 +843,7 @@ export class SchemaCompareMainWindow {
 			title: loc.options
 		}).component();
 
-		this.optionsButton.onDidClick(async (click) => {
+		this.optionsButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOptionsOpened');
 			// create fresh every time
 			this.schemaCompareOptionDialog = new SchemaCompareOptionsDialog(this.deploymentOptions, this);
@@ -861,7 +861,7 @@ export class SchemaCompareMainWindow {
 			},
 		}).component();
 
-		this.applyButton.onDidClick(async (click) => {
+		this.applyButton.onDidClick(async () => {
 			await this.publishChanges();
 		});
 	}
@@ -998,7 +998,7 @@ export class SchemaCompareMainWindow {
 			title: loc.switchDirectionDescription
 		}).component();
 
-		this.switchButton.onDidClick(async (click) => {
+		this.switchButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSwitch');
 			// switch source and target
 			[this.sourceEndpointInfo, this.targetEndpointInfo] = [this.targetEndpointInfo, this.sourceEndpointInfo];
@@ -1064,7 +1064,7 @@ export class SchemaCompareMainWindow {
 			title: loc.openScmpDescription
 		}).component();
 
-		this.openScmpButton.onDidClick(async (click) => {
+		this.openScmpButton.onDidClick(async () => {
 			await this.openScmp();
 		});
 	}
@@ -1180,7 +1180,7 @@ export class SchemaCompareMainWindow {
 			enabled: false
 		}).component();
 
-		this.saveScmpButton.onDidClick(async (click) => {
+		this.saveScmpButton.onDidClick(async () => {
 			await this.saveScmp();
 		});
 	}
