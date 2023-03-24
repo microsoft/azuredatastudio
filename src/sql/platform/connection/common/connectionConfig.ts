@@ -362,14 +362,19 @@ export class ConnectionConfig {
 		let profiles = this.getIConnectionProfileStores(true);
 		let existingProfile = profiles.find(p =>
 			p.providerName === profile.providerName &&
-			this.checkIfMatch(p, profile) &&
-			p.groupId === newGroupID);
+			p.options.authenticationType === profile.options.authenticationType &&
+			p.options.database === profile.options.database &&
+			p.options.server === profile.options.server &&
+			p.options.user === profile.options.user &&
+			p.options.connectionName === profile.options.connectionName &&
+			p.groupId === newGroupID &&
+			this.checkIfNonDefaultOptionsMatch(p, profile));
 		return existingProfile === undefined;
 	}
 
-	private checkIfMatch(profileStore: IConnectionProfileStore, profile: ConnectionProfile): boolean {
+	private checkIfNonDefaultOptionsMatch(profileStore: IConnectionProfileStore, profile: ConnectionProfile): boolean {
 		let tempProfile = ConnectionProfile.createFromStoredProfile(profileStore, this._capabilitiesService);
-		let result = profile.matches(tempProfile);
+		let result = profile.getNonDefaultOptionsString() === tempProfile.getNonDefaultOptionsString();
 		tempProfile.dispose();
 		return result;
 	}
