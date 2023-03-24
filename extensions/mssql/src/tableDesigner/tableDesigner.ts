@@ -20,30 +20,30 @@ const DidInformUserKey: string = 'tableDesigner.DidInformUser';
 export function registerTableDesignerCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newTable', async (context: azdata.ObjectExplorerContext) => {
 		void showPreloadDbModelSettingPrompt(appContext);
-		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
-		const tableIcon = context.nodeInfo.nodeSubType as azdata.designers.TableIcon;
+		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile!.id, true);
+		const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
 		const telemetryInfo = await getTelemetryInfo(context, tableIcon);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			title: NewTableText,
-			tooltip: `${context.connectionProfile.serverName} - ${context.connectionProfile.databaseName} - ${NewTableText}`,
-			server: context.connectionProfile.serverName,
-			database: context.connectionProfile.databaseName,
+			tooltip: `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`,
+			server: context.connectionProfile!.serverName,
+			database: context.connectionProfile!.databaseName,
 			isNewTable: true,
 			id: generateUuid(),
 			connectionString: connectionString,
-			accessToken: context.connectionProfile.options.azureAccountToken,
+			accessToken: context.connectionProfile!.options.azureAccountToken,
 			tableIcon: tableIcon
 		}, telemetryInfo);
 	}));
 
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.designTable', async (context: azdata.ObjectExplorerContext) => {
 		void showPreloadDbModelSettingPrompt(appContext);
-		const server = context.connectionProfile.serverName;
-		const database = context.connectionProfile.databaseName;
-		const schema = context.nodeInfo.metadata.schema;
-		const name = context.nodeInfo.metadata.name;
-		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
-		const tableIcon = context.nodeInfo.nodeSubType as azdata.designers.TableIcon;
+		const server = context.connectionProfile!.serverName;
+		const database = context.connectionProfile!.databaseName;
+		const schema = context.nodeInfo!.metadata!.schema;
+		const name = context.nodeInfo!.metadata!.name;
+		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile!.id, true);
+		const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
 		const telemetryInfo = await getTelemetryInfo(context, tableIcon);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			title: `${schema}.${name}`,
@@ -55,14 +55,14 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			schema: schema,
 			id: `${sqlProviderName}|${server}|${database}|${schema}|${name}`,
 			connectionString: connectionString,
-			accessToken: context.connectionProfile.options.azureAccountToken,
+			accessToken: context.connectionProfile!.options.azureAccountToken,
 			tableIcon: tableIcon
 		}, telemetryInfo);
 	}));
 }
 
 async function getTelemetryInfo(context: azdata.ObjectExplorerContext, tableType: string): Promise<telemetry.TelemetryEventProperties> {
-	const serverInfo = await azdata.connection.getServerInfo(context.connectionProfile.id);
+	const serverInfo = await azdata.connection.getServerInfo(context.connectionProfile!.id);
 	const telemetryInfo: telemetry.TelemetryEventProperties = {
 		tableType
 	};

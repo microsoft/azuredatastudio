@@ -136,5 +136,9 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 		super(client, ErrorDiagnosticsProvider.messagesTypes);
 	}
 
-	protected registerProvider(options: any): Disposable { return undefined; }
+	protected registerProvider(options: any): Disposable {
+		return {
+			dispose: () => { }
+		}
+	}
 }

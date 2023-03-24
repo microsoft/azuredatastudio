@@ -4,8 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as loc from './localizedConstants';
+import * as vscode from 'vscode';
+import * as constants from './constants';
+
 import { AzureRegion, azureResource } from 'azurecore';
 import { AppContext } from './appContext';
+import { HttpClient } from './account-provider/auths/httpClient';
+import { parse } from 'url';
+import { getProxyAgentOptions } from './proxy';
+import { HttpsProxyAgentOptions } from 'https-proxy-agent';
+
+const configProxy = 'proxy';
+const configProxyStrictSSL = 'proxyStrictSSL';
+const configProxyAuthorization = 'proxyAuthorization';
 
 /**
  * Converts a region value (@see AzureRegion) into the localized Display Name
@@ -125,6 +136,9 @@ export function getResourceTypeDisplayName(type: string): string {
 	}
 	return type;
 }
+function getHttpConfiguration(): vscode.WorkspaceConfiguration {
+	return vscode.workspace.getConfiguration(constants.httpConfigSectionName);
+}
 
 export function getResourceTypeIcon(appContext: AppContext, type: string): string {
 	switch (type) {
@@ -144,4 +158,24 @@ export function getResourceTypeIcon(appContext: AppContext, type: string): strin
 			return appContext.extensionContext.asAbsolutePath('resources/azureArcPostgresServer.svg');
 	}
 	return '';
+}
+
+
+export function getProxyEnabledHttpClient(): HttpClient {
+	const proxy = <string>getHttpConfiguration().get(configProxy);
+	const strictSSL = getHttpConfiguration().get(configProxyStrictSSL, true);
+	const authorization = getHttpConfiguration().get(configProxyAuthorization);
+
+	const url = parse(proxy);
+	let agentOptions = getProxyAgentOptions(url, proxy, strictSSL);
+
+	if (authorization && url.protocol === 'https:') {
+		let httpsAgentOptions = agentOptions as HttpsProxyAgentOptions;
+		httpsAgentOptions!.headers = Object.assign(httpsAgentOptions!.headers || {}, {
+			'Proxy-Authorization': authorization
+		});
+		agentOptions = httpsAgentOptions;
+	}
+
+	return new HttpClient(proxy, agentOptions);
 }

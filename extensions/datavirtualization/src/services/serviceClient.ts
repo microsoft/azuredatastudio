@@ -30,7 +30,7 @@ export class ServiceClient {
 		const config: IConfig = JSON.parse(rawConfig.toString());
 		config.installDirectory = path.join(context.extensionPath, config.installDirectory);
 		config.proxy = this.apiWrapper.getConfiguration('http').get('proxy');
-		config.strictSSL = this.apiWrapper.getConfiguration('http').get('proxyStrictSSL') || true;
+		config.strictSSL = this.apiWrapper.getConfiguration('http').get('proxyStrictSSL', true);
 
 		const serverdownloader = new ServerProvider(config);
 		serverdownloader.eventEmitter.onAny(this.generateHandleServerProviderEvent());

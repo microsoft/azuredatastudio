@@ -38,7 +38,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 			undefined,
 			e => {
 				this.client.logFailedRequest(contracts.SchemaCompareRequest.type, e);
-				return Promise.resolve(undefined);
+				return Promise.reject(e)
 			}
 		);
 	}
@@ -49,7 +49,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 			undefined,
 			e => {
 				this.client.logFailedRequest(contracts.SchemaCompareGenerateScriptRequest.type, e);
-				return Promise.resolve(undefined);
+				return Promise.reject(e)
 			}
 		);
 	}
@@ -60,7 +60,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 			undefined,
 			e => {
 				this.client.logFailedRequest(contracts.SchemaComparePublishDatabaseChangesRequest.type, e);
-				return Promise.resolve(undefined);
+				return Promise.reject(e)
 			}
 		);
 	}
@@ -71,7 +71,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 			undefined,
 			(e: any) => {
 				this.client.logFailedRequest(contracts.SchemaComparePublishProjectChangesRequest.type, e);
-				return Promise.resolve(undefined);
+				return Promise.reject(e)
 			}
 		);
 	}
@@ -82,7 +82,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 			undefined,
 			e => {
 				this.client.logFailedRequest(contracts.SchemaCompareGetDefaultOptionsRequest.type, e);
-				return Promise.resolve(undefined);
+				return Promise.reject(e)
 			}
 		);
 	}
@@ -93,7 +93,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 			undefined,
 			e => {
 				this.client.logFailedRequest(contracts.SchemaCompareIncludeExcludeNodeRequest.type, e);
-				return Promise.resolve(undefined);
+				return Promise.reject(e)
 			}
 		);
 	}
@@ -104,7 +104,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 			undefined,
 			e => {
 				this.client.logFailedRequest(contracts.SchemaCompareOpenScmpRequest.type, e);
-				return Promise.resolve(undefined);
+				return Promise.reject(e)
 			}
 		);
 	}
@@ -115,7 +115,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 			undefined,
 			e => {
 				this.client.logFailedRequest(contracts.SchemaCompareSaveScmpRequest.type, e);
-				return Promise.resolve(undefined);
+				return Promise.reject(e)
 			}
 		);
 	}
@@ -126,7 +126,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 			undefined,
 			e => {
 				this.client.logFailedRequest(contracts.SchemaCompareCancellationRequest.type, e);
-				return Promise.resolve(undefined);
+				return Promise.reject(e)
 			}
 		);
 	}
