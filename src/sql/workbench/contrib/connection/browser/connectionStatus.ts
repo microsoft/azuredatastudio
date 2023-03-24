@@ -70,7 +70,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 	private _setConnectionText(connectionProfile: IConnectionProfile): void {
 		let text: string = undefined;
 		let fullEditorText: string = this.connectionManagementService.getEditorConnectionProfileTitle(connectionProfile);
-		if (!fullEditorText) {
+		if (fullEditorText.length === 0) {
 			text = connectionProfile.serverName;
 			if (text) {
 				if (connectionProfile.databaseName && connectionProfile.databaseName !== '') {

@@ -731,7 +731,7 @@ export class AttachToDropdown extends SelectBox {
 			if (model.context && model.context.title && (connProviderIds.includes(this.model.context.providerName))) {
 				let textResult = model.context.title;
 				let fullTitleText = this._connectionManagementService.getEditorConnectionProfileTitle(model.context)
-				textResult = fullTitleText ? fullTitleText : textResult;
+				textResult = fullTitleText.length !== 0 ? fullTitleText : textResult;
 				connections.push(textResult);
 			} else if (this._configurationService.getValue(saveConnectionNameConfigName) && model.savedConnectionName) {
 				connections.push(model.savedConnectionName);
