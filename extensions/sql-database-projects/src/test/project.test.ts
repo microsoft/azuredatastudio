@@ -139,13 +139,13 @@ describe('Project: sqlproj content operations', function (): void {
 		//should(project.files.find(f => f.relativePath === convertSlashesForSqlProj(scriptPathTagged))?.sqlObjectType).equal(constants.ExternalStreamingJob);
 	});
 
-	// TODO: addToProject() can probably be removed
 	it('Should add folders and SQL object scripts to sqlproj with pre-existing scripts on disk', async function (): Promise<void> {
 		const project = await testUtils.createTestSqlProject();
 
 		const list: Uri[] = await testUtils.createListOfFiles(project.projectFolderPath);
+		const relativePaths = list.map(f => path.relative(project.projectFolderPath, f.path));
 
-		await project.addToProject(list);
+		await project.addSqlObjectScripts(relativePaths);
 
 		should(project.files.length).equal(11);
 		should(project.folders.length).equal(2);
@@ -161,7 +161,9 @@ describe('Project: sqlproj content operations', function (): void {
 		const nonexistentFile = path.join(testFolderPath, 'nonexistentFile.sql');
 		list.push(Uri.file(nonexistentFile));
 
-		await testUtils.shouldThrowSpecificError(async () => await project.addToProject(list), constants.fileOrFolderDoesNotExist(Uri.file(nonexistentFile).fsPath));
+		const relativePaths = list.map(f => path.relative(project.projectFolderPath, f.path));
+
+		await testUtils.shouldThrowSpecificError(async () => await project.addSqlObjectScripts(relativePaths), constants.fileOrFolderDoesNotExist(Uri.file(nonexistentFile).fsPath));
 	});
 
 	it('Should perform pre-deployment script operations', async function (): Promise<void> {
@@ -254,12 +256,12 @@ describe('Project: sqlproj content operations', function (): void {
 		let project: Project = await Project.openProject(projFilePath);
 
 		// Try adding project root folder itself - this is silently ignored
-		await project.addToProject([Uri.file(path.dirname(projFilePath))]);
+		await project.addFolder(path.dirname(projFilePath));
 		should.equal(project.files.length, 0, 'Nothing should be added to the project');
 
 		// Try adding a parent of the project folder
 		await testUtils.shouldThrowSpecificError(
-			async () => await project.addToProject([Uri.file(path.dirname(path.dirname(projFilePath)))]),
+			async () => await project.addFolder(path.dirname(path.dirname(projFilePath))),
 			'Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.',
 			'Folders outside the project folder should not be added.');
 	});

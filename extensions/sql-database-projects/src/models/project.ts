@@ -12,7 +12,6 @@ import * as mssql from 'mssql';
 
 import { Uri, window } from 'vscode';
 import { EntryType, IDatabaseReferenceProjectEntry, ISqlProject, ItemType } from 'sqldbproj';
-import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
@@ -459,6 +458,12 @@ export class Project implements ISqlProject {
 		await this.readFolders();
 	}
 
+	public async addSqlObjectScripts(relativePaths: string[]): Promise<void> {
+		for (const path in relativePaths) {
+			await this.addSqlObjectScript(path);
+		}
+	}
+
 	public async deleteSqlObjectScript(relativePath: string): Promise<void> {
 		const result = await this.sqlProjService.deleteSqlObjectScript(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
@@ -874,36 +879,6 @@ export class Project implements ISqlProject {
 			entryType,
 			sqlObjectType,
 			containsCreateTableStatement);
-	}
-
-	/**
-	 * Adds the list of sql files and directories to the project, and saves the project file
-	 *
-	 * @param list list of files and folder Uris. Files and folders must already exist. No files or folders will be added if any do not exist.
-	 */
-	public async addToProject(list: Uri[]): Promise<void> {
-		// verify all files/folders exist. If not all exist, none will be added
-		for (let file of list) {
-			const exists = await utils.exists(file.fsPath);
-
-			if (!exists) {
-				throw new Error(constants.fileOrFolderDoesNotExist(file.fsPath));
-			}
-		}
-
-		for (let file of list) {
-			const relativePath = utils.trimChars(utils.trimUri(Uri.file(this._projectFilePath), file), '/');
-
-			if (relativePath.length > 0) {
-				const fileStat = await fs.stat(file.fsPath);
-
-				if (fileStat.isFile() && file.fsPath.toLowerCase().endsWith(constants.sqlFileExtension)) {
-					await this.addSqlObjectScript(relativePath);
-				} else if (fileStat.isDirectory()) {
-					await this.addFolder(relativePath);
-				}
-			}
-		}
 	}
 
 	private throwIfFailed(result: ResultStatus): void {

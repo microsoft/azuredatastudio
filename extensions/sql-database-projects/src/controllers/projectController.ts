@@ -1403,12 +1403,15 @@ export class ProjectsController {
 			const project = await Project.openProject(newProjFilePath);
 
 			// 6. add generated files to SQL project
-			await project.addToProject(fileFolderList.filter(f => !f.fsPath.endsWith(constants.autorestPostDeploymentScriptName))); // Add generated file structure to the project
+
+			const uriList = fileFolderList.filter(f => !f.fsPath.endsWith(constants.autorestPostDeploymentScriptName))
+			const relativePaths = uriList.map(f => path.relative(project.projectFolderPath, f.path));
+			await project.addSqlObjectScripts(relativePaths); // Add generated file structure to the project
 
 			const postDeploymentScript: vscode.Uri | undefined = this.findPostDeploymentScript(fileFolderList);
 
 			if (postDeploymentScript) {
-				await project.addScriptItem(path.relative(project.projectFolderPath, postDeploymentScript.fsPath), undefined, ItemType.postDeployScript);
+				await project.addPostDeploymentScript(path.relative(project.projectFolderPath, postDeploymentScript.fsPath));
 			}
 
 			if (options?.doNotOpenInWorkspace !== true) {
@@ -1595,8 +1598,10 @@ export class ProjectsController {
 
 			let fileFolderList: vscode.Uri[] = model.extractTarget === mssql.ExtractTarget.file ? [vscode.Uri.file(model.filePath)] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
 
+			const relativePaths = fileFolderList.map(f => path.relative(project.projectFolderPath, f.path));
+
 			if (!model.sdkStyle) {
-				await project.addToProject(fileFolderList); // Add generated file structure to the project
+				await project.addSqlObjectScripts(relativePaths); // Add generated file structure to the project
 			}
 
 			// add project to workspace
@@ -1834,7 +1839,9 @@ export class ProjectsController {
 
 			let toAdd: vscode.Uri[] = [];
 			result.addedFiles.forEach((f: any) => toAdd.push(vscode.Uri.file(f)));
-			await project.addToProject(toAdd);
+			const relativePaths = toAdd.map(f => path.relative(project.projectFolderPath, f.path));
+
+			await project.addSqlObjectScripts(relativePaths);
 
 			let toRemove: vscode.Uri[] = [];
 			result.deletedFiles.forEach((f: any) => toRemove.push(vscode.Uri.file(f)));
