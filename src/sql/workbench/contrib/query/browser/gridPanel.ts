@@ -769,7 +769,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 
 	private onTableDoubleClick(event: ITableMouseEvent) {
-		if (event.cell) {
+		// the first column is already handled by rowNumberColumn plugin.
+		if (event.cell && event.cell.cell !== 0) {
 			// upon double clicking, we want to select the entire row so that it is easier to know which
 			// row is selected when the user needs to scroll horizontally.
 			this.table.grid.setSelectedRows([event.cell.row]);
