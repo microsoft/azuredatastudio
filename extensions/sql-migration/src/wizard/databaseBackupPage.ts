@@ -606,7 +606,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				fireOnTextChange: true,
 			}).component();
 		this._disposables.push(
-			this._networkShareContainerStorageAccountDropdown.onValueChanged((value) => {
+			this._networkShareContainerStorageAccountDropdown.onValueChanged(async (value) => {
 				if (value && value !== 'undefined') {
 					const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === value);
 					if (selectedStorageAccount) {
@@ -614,6 +614,22 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							this.migrationStateModel._databaseBackup.networkShares[i].storageAccount = selectedStorageAccount;
 						}
 						this.migrationStateModel.resetIrValidationResults();
+
+						// check for storage account connectivity
+						if ((this.migrationStateModel.isSqlMiTarget || this.migrationStateModel.isSqlVmTarget)) {
+							if (!(await canTargetConnectToStorageAccount(this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance, selectedStorageAccount, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription))) {
+								this._inaccessibleStorageAccounts = [selectedStorageAccount.name];
+							} else {
+								this._inaccessibleStorageAccounts = [];
+							}
+
+							this.wizard.message = {
+								text: this._inaccessibleStorageAccounts.length > 0
+									? constants.STORAGE_ACCOUNT_CONNECTIVITY_WARNING(this.migrationStateModel._targetServerInstance.name, this._inaccessibleStorageAccounts)
+									: '',
+								level: azdata.window.MessageLevel.Warning
+							}
+						}
 					}
 				}
 			}));
@@ -629,7 +645,26 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		this._disposables.push(
 			this._networkShareContainerStorageAccountRefreshButton.onDidClick(
-				value => this.loadNetworkShareStorageDropdown()));
+				async () => {
+					this.loadNetworkShareStorageDropdown();
+
+					// check for storage account connectivity
+					const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === (this._networkShareContainerStorageAccountDropdown.value as azdata.CategoryValue).displayName);
+					if ((this.migrationStateModel.isSqlMiTarget || this.migrationStateModel.isSqlVmTarget) && selectedStorageAccount) {
+						if (!(await canTargetConnectToStorageAccount(this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance, selectedStorageAccount, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription))) {
+							this._inaccessibleStorageAccounts = [selectedStorageAccount.name];
+						} else {
+							this._inaccessibleStorageAccounts = [];
+						}
+
+						this.wizard.message = {
+							text: this._inaccessibleStorageAccounts.length > 0
+								? constants.STORAGE_ACCOUNT_CONNECTIVITY_WARNING(this.migrationStateModel._targetServerInstance.name, this._inaccessibleStorageAccounts)
+								: '',
+							level: azdata.window.MessageLevel.Warning
+						}
+					}
+				}));
 
 		const storageAccountContainer = this._view.modelBuilder.flexContainer()
 			.withProps({ CSSStyles: { 'margin-top': '-1em' } })
