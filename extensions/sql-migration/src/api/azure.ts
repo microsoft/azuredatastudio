@@ -1008,6 +1008,7 @@ export interface DatabaseMigration {
 
 export interface DatabaseMigrationProperties {
 	scope: string;
+	kind: string;
 	provisioningState: 'Succeeded' | 'Failed' | 'Creating';
 	provisioningError: string;
 	migrationStatus: 'Canceled' | 'Canceling' | 'Completing' | 'Creating' | 'Failed' | 'InProgress' | 'ReadyForCutover' | 'Restoring' | 'Retriable' | 'Succeeded' | 'UploadingFullBackup' | 'UploadingLogBackup';
@@ -1043,6 +1044,22 @@ export interface MigrationStatusDetails {
 	invalidFiles: string[];
 	listOfCopyProgressDetails: CopyProgressDetail[];
 	sqlDataCopyErrors: string[];
+
+	// new fields
+	pendingDiffBackupsCount: number;
+	restorePercentCompleted: number;
+	currentRestoredSize: number;
+	currentRestorePlanSize: number;
+	lastUploadedFileName: string;
+	lastUploadedFileTime: string;
+	lastRestoredFileTime: string;
+	miRestoreState: "None" | "Initializing" | "NotStarted" | "SearchingBackups" | "Restoring" | "RestorePaused" | "RestoreCompleted" | "Waiting" | "CompletingMigration" | "Cancelled" | "Failed" | "Completed" | "Blocked";
+	detectedFiles: number;
+	queuedFiles: number;
+	skippedFiles: number;
+	restoringFiles: number;
+	restoredFiles: number;
+	unrestorableFiles: number;
 }
 
 export interface MigrationStatusWarnings {
@@ -1053,7 +1070,7 @@ export interface MigrationStatusWarnings {
 
 export interface CopyProgressDetail {
 	tableName: string;
-	status: 'PreparingForCopy' | 'Copying' | 'CopyFinished' | 'RebuildingIndexes' | 'Succeeded' | 'Failed' | 'Canceled',
+	status: 'PreparingForCopy' | 'Copying' | 'CopyFinished' | 'RebuildingIndexes' | 'Succeeded' | 'Failed' | 'Canceled';
 	parallelCopyType: string;
 	usedParallelCopies: number;
 	dataRead: number;
@@ -1061,7 +1078,7 @@ export interface CopyProgressDetail {
 	rowsRead: number;
 	rowsCopied: number;
 	copyStart: string;
-	copyThroughput: number,
+	copyThroughput: number;
 	copyDuration: number;
 	errors: string[];
 }
@@ -1083,22 +1100,30 @@ export interface ErrorInfo {
 
 export interface BackupSetInfo {
 	backupSetId: string;
-	firstLSN: string;
-	lastLSN: string;
-	backupType: string;
+	firstLSN: string;           // SHIR scenario only
+	lastLSN: string;            // SHIR scenario only
+	backupType: "Unknown" | "Database" | "TransactionLog" | "File" | "DifferentialDatabase" | "DifferentialFile" | "Partial" | "DifferentialPartial";
 	listOfBackupFiles: BackupFileInfo[];
-	backupStartDate: string;
-	backupFinishDate: string;
+	backupStartDate: string;    // SHIR scenario only
+	backupFinishDate: string;   // SHIR scenario only
 	isBackupRestored: boolean;
 	backupSize: number;
 	compressedBackupSize: number;
 	hasBackupChecksums: boolean;
 	familyCount: number;
+
+	// new fields
+	restoreStartDate: string;
+	restoreFinishDate: string;
+	restoreStatus: "None" | "Skipped" | "Queued" | "Restoring" | "Restored";
+	backupSizeMB: number;
+	numberOfStripes: number;
 }
 
 export interface SourceLocation {
 	fileShare?: DatabaseMigrationFileShare;
 	azureBlob?: DatabaseMigrationAzureBlob;
+	testConnectivity?: boolean;
 	fileStorageType: 'FileShare' | 'AzureBlob' | 'None';
 }
 
@@ -1109,6 +1134,7 @@ export interface TargetLocation {
 
 export interface BackupFileInfo {
 	fileName: string;
+	// fields below are only returned by SHIR scenarios
 	status: 'Arrived' | 'Uploading' | 'Uploaded' | 'Restoring' | 'Restored' | 'Canceled' | 'Ignored';
 	totalSize: number;
 	dataRead: number;

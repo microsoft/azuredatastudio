@@ -7,7 +7,7 @@ import { AzureAccount } from 'azurecore';
 import * as nls from 'vscode-nls';
 import { EOL } from 'os';
 import { MigrationSourceAuthenticationType } from '../models/stateMachine';
-import { formatNumber, ParallelCopyTypeCodes, PipelineStatusCodes } from './helper';
+import { BackupTypeCodes, formatNumber, InternalManagedDatabaseRestoreDetailsBackupSetStatusCodes, InternalManagedDatabaseRestoreDetailsStatusCodes, ParallelCopyTypeCodes, PipelineStatusCodes } from './helper';
 import { ValidationError } from '../api/azure';
 const localize = nls.loadMessageBundle();
 
@@ -982,16 +982,39 @@ export const TARGET_SERVER = localize('sql.migration.target.server', "Target ser
 export const TARGET_VERSION = localize('sql.migration.target.version', "Target version");
 export const MIGRATION_STATUS = localize('sql.migration.migration.status', "Migration status");
 export const MIGRATION_STATUS_FILTER = localize('sql.migration.migration.status.filter', "Migration status filter");
-export const FULL_BACKUP_FILES = localize('sql.migration.full.backup.files', "Full backup files");
+export const FULL_BACKUP_FILES = localize('sql.migration.full.backup.files', "Full backup file(s)");
 export const LAST_APPLIED_LSN = localize('sql.migration.last.applied.lsn', "Last applied LSN");
-export const LAST_APPLIED_BACKUP_FILES = localize('sql.migration.last.applied.backup.files', "Last applied backup files");
-export const LAST_APPLIED_BACKUP_FILES_TAKEN_ON = localize('sql.migration.last.applied.files.taken.on', "Last applied backup files taken on");
+export const LAST_APPLIED_BACKUP_FILES = localize('sql.migration.last.applied.backup.files', "Last applied backup file(s)");
+export const LAST_APPLIED_BACKUP_FILES_TAKEN_ON = localize('sql.migration.last.applied.files.taken.on', "Last applied backup taken on");
 export const CURRENTLY_RESTORING_FILE = localize('sql.migration.currently.restoring.file', "Currently restoring file");
 export const ALL_BACKUPS_RESTORED = localize('sql.migration.all.backups.restored', "All backups restored");
 export const ACTIVE_BACKUP_FILES = localize('sql.migration.active.backup.files', "Active backup files");
 export const MIGRATION_STATUS_REFRESH_ERROR = localize('sql.migration.cutover.status.refresh.error', 'An error occurred while refreshing the migration status.');
 export const MIGRATION_CANCELLATION_ERROR = localize('sql.migration.cancel.error', 'An error occurred while canceling the migration.');
 export const MIGRATION_DELETE_ERROR = localize('sql.migration.delete.error', 'An error occurred while deleting the migration.');
+
+export const FIELD_LABEL_LAST_UPLOADED_FILE = localize('sql.migration.field.label.last.uploaded.file', 'Last uploaded file');
+export const FIELD_LABEL_LAST_UPLOADED_FILE_TIME = localize('sql.migration.field.label.last.uloaded.file.time', 'Last uploaded file time');
+export const FIELD_LABEL_PENDING_DIFF_BACKUPS = localize('sql.migration.field.label.pending.differential.backups', 'Pending differential backups');
+export const FIELD_LABEL_DETECTED_FILES = localize('sql.migration.field.label.deteected.files', 'Detected files');
+export const FIELD_LABEL_QUEUED_FILES = localize('sql.migration.field.label.queued.files', 'Queued files');
+export const FIELD_LABEL_SKIPPED_FILES = localize('sql.migration.field.label.skipped.files', 'Skipped files');
+export const FIELD_LABEL_UNRESTORABLE_FILES = localize('sql.migration.field.label.unrestorable.files', 'Unrestorable files');
+export const FIELD_LABEL_LAST_RESTORED_FILE_TIME = localize('sql.migration.field.label.last.restored.file.time', 'Last restored file time');
+export const FIELD_LABEL_RESTORED_FILES = localize('sql.migration.field.label.restored.files', 'Restored files');
+export const FIELD_LABEL_RESTORING_FILES = localize('sql.migration.field.label.restoring.files', 'Restoring files');
+export const FIELD_LABEL_RESTORED_SIZE = localize('sql.migration.field.label.restored.size', 'Restored size (MB)');
+export const FIELD_LABEL_RESTORE_PLAN_SIZE = localize('sql.migration.field.label.restore.plan.size', 'Restore plan size (MB)');
+export const FIELD_LABEL_RESTORE_PERCENT_COMPLETED = localize('sql.migration.field.label.restore.percent.completed', 'Restore percent completed');
+export const FIELD_LABEL_MI_RESTORE_STATE = localize('sql.migration.field.label.mi.restore.state', 'MI Restore state');
+
+export const BACKUP_FILE_COLUMN_FILE_NAME = localize('sql.migration.backup.file.name', 'File name');
+export const BACKUP_FILE_COLUMN_FILE_STATUS = localize('sql.migration.backup.file.status', 'File status');
+export const BACKUP_FILE_COLUMN_RESTORE_STATUS = localize('sql.migration.backup.file.restore.status', 'Restore status');
+export const BACKUP_FILE_COLUMN_BACKUP_SIZE_MB = localize('sql.migration.backup.file.backup.size', 'Backup size (MB)');
+export const BACKUP_FILE_COLUMN_NUMBER_OF_STRIPES = localize('sql.migration.backup.file.number.of.stripes', 'Number of stripes');
+export const BACKUP_FILE_COLUMN_RESTORE_START_DATE = localize('sql.migration.backup.file.restore.start.date', 'Restore start date');
+export const BACKUP_FILE_COLUMN_RESTORE_FINISH_DATE = localize('sql.migration.backup.file.restore.finish.date', 'Restore finish date');
 
 export const STATUS = localize('sql.migration.status', "Status");
 export const BACKUP_START_TIME = localize('sql.migration.backup.start.time', "Backup start time");
@@ -1149,6 +1172,41 @@ export const ParallelCopyType: LookupTable<string | undefined> = {
 	[ParallelCopyTypeCodes.DynamicRange]: localize('sql.migration.parallel.copy.type.dynamic', 'Dynamic range'),
 };
 
+export const BackupTypeLookup: LookupTable<string | undefined> = {
+	[BackupTypeCodes.Unknown]: localize('sql.migration.restore.backuptype.unknown', 'Unknown'),
+	[BackupTypeCodes.Database]: localize('sql.migration.restore.backuptype.database', 'Database'),
+	[BackupTypeCodes.TransactionLog]: localize('sql.migration.restore.backuptype.transactionlog', 'Transaction log'),
+	[BackupTypeCodes.File]: localize('sql.migration.restore.backuptype.file', 'File'),
+	[BackupTypeCodes.DifferentialDatabase]: localize('sql.migration.restore.backuptype.differentialdatabase', 'Differential database'),
+	[BackupTypeCodes.DifferentialFile]: localize('sql.migration.restore.backuptype.differentialfile', 'Differential file'),
+	[BackupTypeCodes.Partial]: localize('sql.migration.restore.backuptype.partial', 'Partial'),
+	[BackupTypeCodes.DifferentialPartial]: localize('sql.migration.restore.backuptype.differentialpartial', 'Differential partial'),
+};
+
+export const BackupSetRestoreStatusLookup: LookupTable<string | undefined> = {
+	[InternalManagedDatabaseRestoreDetailsBackupSetStatusCodes.None]: localize('sql.migration.restore.backupset.status.none', 'None'),
+	[InternalManagedDatabaseRestoreDetailsBackupSetStatusCodes.Queued]: localize('sql.migration.restore.backupset.status.queued', 'Queued'),
+	[InternalManagedDatabaseRestoreDetailsBackupSetStatusCodes.Restored]: localize('sql.migration.restore.backupset.status.restored', 'Restored'),
+	[InternalManagedDatabaseRestoreDetailsBackupSetStatusCodes.Restoring]: localize('sql.migration.restore.backupset.status.restoring', 'Restoring'),
+	[InternalManagedDatabaseRestoreDetailsBackupSetStatusCodes.Skipped]: localize('sql.migration.restore.backupset.status.skipped', 'Skipped'),
+};
+
+export const InternalManagedDatabaseRestoreDetailsStatusLookup: LookupTable<string | undefined> = {
+	[InternalManagedDatabaseRestoreDetailsStatusCodes.None]: localize('sql.migration.restore.status.none', 'None'),
+	[InternalManagedDatabaseRestoreDetailsStatusCodes.Initializing]: localize('sql.migration.restore.status.initializing', 'Initializing'),
+	[InternalManagedDatabaseRestoreDetailsStatusCodes.NotStarted]: localize('sql.migration.restore.status.not.started', 'Not started'),
+	[InternalManagedDatabaseRestoreDetailsStatusCodes.SearchingBackups]: localize('sql.migration.restore.status.searching.backups', 'Searching backups'),
+	[InternalManagedDatabaseRestoreDetailsStatusCodes.Restoring]: localize('sql.migration.restore.status.Restoring', 'Restoring'),
+	[InternalManagedDatabaseRestoreDetailsStatusCodes.RestorePaused]: localize('sql.migration.restore.status.restore.paused', 'Restore paused'),
+	[InternalManagedDatabaseRestoreDetailsStatusCodes.RestoreCompleted]: localize('sql.migration.restore.status.restore.completed', 'Restore completed'),
+	[InternalManagedDatabaseRestoreDetailsStatusCodes.Waiting]: localize('sql.migration.restore.status.waiting', 'Waiting'),
+	[InternalManagedDatabaseRestoreDetailsStatusCodes.CompletingMigration]: localize('sql.migration.restore.status.completing.migration', 'Completing migration'),
+	[InternalManagedDatabaseRestoreDetailsStatusCodes.Cancelled]: localize('sql.migration.restore.status.cancelled', 'Cancelled'),
+	[InternalManagedDatabaseRestoreDetailsStatusCodes.Failed]: localize('sql.migration.restore.status.failed', 'Failed'),
+	[InternalManagedDatabaseRestoreDetailsStatusCodes.Completed]: localize('sql.migration.restore.status.completed', 'Completed'),
+	[InternalManagedDatabaseRestoreDetailsStatusCodes.Blocked]: localize('sql.migration.restore.status.blocked', 'Blocked'),
+};
+
 export function STATUS_WARNING_COUNT(status: string, count: number): string | undefined {
 	if (status === MigrationState.InProgress ||
 		status === MigrationState.ReadyForCutover ||
@@ -1199,8 +1257,8 @@ export const sizeFormatter = new Intl.NumberFormat(
 	maximumFractionDigits: 2,
 });
 
-export function formatSizeMb(sizeMb: number): string {
-	if (isNaN(sizeMb) || sizeMb < 0) {
+export function formatSizeMb(sizeMb: number | undefined): string {
+	if (sizeMb === undefined || isNaN(sizeMb) || sizeMb < 0) {
 		return '';
 	} else if (sizeMb < 1024) {
 		return localize('sql.migration.size.mb', "{0} MB", sizeFormatter.format(sizeMb));
