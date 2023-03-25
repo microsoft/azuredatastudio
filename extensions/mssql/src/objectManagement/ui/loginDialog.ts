@@ -122,7 +122,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 			width: DefaultInputWidth
 		}).component();
 		this.disposables.push(this.nameInput.onTextChanged(async () => {
-			this.objectInfo.name = this.nameInput.value;
+			this.objectInfo.name = this.nameInput.value!;
 			this.onObjectValueChange();
 			await this.runValidation(false);
 		}));
@@ -149,7 +149,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 
 		this.enabledCheckbox = this.createCheckbox(localizedConstants.EnabledText, this.objectInfo.isEnabled);
 		this.disposables.push(this.enabledCheckbox.onChanged(() => {
-			this.objectInfo.isEnabled = this.enabledCheckbox.checked;
+			this.objectInfo.isEnabled = this.enabledCheckbox.checked!;
 			this.onObjectValueChange();
 		}));
 		this.generalSection = this.createGroup(localizedConstants.GeneralSectionHeader, [nameContainer, authTypeContainer, this.enabledCheckbox], false);
@@ -222,7 +222,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 				this.lockedOutCheckbox = this.createCheckbox(localizedConstants.LoginLockedOutText, this.objectInfo.isLockedOut, this.viewInfo.canEditLockedOutState);
 				items.push(this.lockedOutCheckbox);
 				this.disposables.push(this.lockedOutCheckbox.onChanged(() => {
-					this.objectInfo.isLockedOut = this.lockedOutCheckbox.checked;
+					this.objectInfo.isLockedOut = this.lockedOutCheckbox.checked!;
 					this.onObjectValueChange();
 				}));
 			}
@@ -250,7 +250,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 
 			this.connectPermissionCheckbox = this.createCheckbox(localizedConstants.PermissionToConnectText, this.objectInfo.connectPermission);
 			this.disposables.push(this.connectPermissionCheckbox.onChanged(() => {
-				this.objectInfo.connectPermission = this.connectPermissionCheckbox.checked;
+				this.objectInfo.connectPermission = this.connectPermissionCheckbox.checked!;
 				this.onObjectValueChange();
 			}));
 			items.push(defaultDatabaseContainer, defaultLanguageContainer, this.connectPermissionCheckbox);

@@ -17,14 +17,14 @@ import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAc
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
-import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
+import { DBCellValue, hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { Emitter, Event } from 'vs/base/common/event';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { Disposable, dispose, DisposableStore } from 'vs/base/common/lifecycle';
 import { range } from 'vs/base/common/arrays';
@@ -56,6 +56,7 @@ import { CopyAction } from 'vs/editor/contrib/clipboard/browser/clipboard';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/browser/format';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { queryEditorNullBackground } from 'sql/platform/theme/common/colorRegistry';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -79,6 +80,9 @@ const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ES
 // Regex explaination: after removing the trailing whitespaces and line breaks, the string must start with '[' (to support arrays)
 // or '{', and there must be a '}' or ']' to close it.
 const IsJsonRegex = /^\s*[\{|\[][\S\s]*[\}\]]\s*$/g;
+
+// The css class for null cell
+const NULL_CELL_CSS_CLASS = 'cell-null';
 
 export class GridPanel extends Disposable {
 	private container = document.createElement('div');
@@ -431,7 +435,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					? localize('xmlShowplan', "XML Showplan")
 					: escape(c.columnName),
 				field: i.toString(),
-				formatter: c.isXml ? hyperLinkFormatter : (row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string => {
+				formatter: c.isXml ? hyperLinkFormatter : (row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string | { text: string, addClasses: string } => {
 					return queryResultTextFormatter(this.gridConfig.showJsonAsLink, row, cell, value, columnDef, dataContext);
 				},
 				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined
@@ -545,6 +549,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this._register(this.dataProvider.onFilterStateChange(() => { this.layout(); }));
 		this._register(this.table.onContextMenu(this.contextMenu, this));
 		this._register(this.table.onClick(this.onTableClick, this));
+		this._register(this.table.onDoubleClick(this.onTableDoubleClick, this));
 		this._register(this.dataProvider.onFilterStateChange(() => {
 			const columns = this.table.columns as FilterableColumn<T>[];
 			this.state.columnFilters = columns.filter((column) => column.filterValues?.length > 0).map(column => {
@@ -567,6 +572,13 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			refreshColumns: !autoSizeOnRender // The auto size columns plugin refreshes the columns so we don't need to refresh twice if both plugins are on.
 		});
 		this._register(attachTableFilterStyler(this.filterPlugin, this.themeService));
+		this._register(registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+			const nullBackground = theme.getColor(queryEditorNullBackground);
+			if (nullBackground) {
+				collector.addRule(`.${NULL_CELL_CSS_CLASS} { background: ${nullBackground};}`);
+			}
+		}));
+
 		this.table.registerPlugin(this.filterPlugin);
 		if (this.styles) {
 			this.table.style(this.styles);
@@ -753,6 +765,15 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					await this.editorService.openEditor(input);
 				}
 			}
+		}
+	}
+
+	private onTableDoubleClick(event: ITableMouseEvent) {
+		// the first column is already handled by rowNumberColumn plugin.
+		if (event.cell && event.cell.cell !== 0) {
+			// upon double clicking, we want to select the entire row so that it is easier to know which
+			// row is selected when the user needs to scroll horizontally.
+			this.table.grid.setSelectedRows([event.cell.row]);
 		}
 	}
 
@@ -1004,10 +1025,10 @@ function isJsonCell(value: ICellValue): boolean {
 	return !!(value && !value.isNull && value.displayValue?.match(IsJsonRegex));
 }
 
-function queryResultTextFormatter(showJsonAsLink: boolean, row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string {
+function queryResultTextFormatter(showJsonAsLink: boolean, row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string | { text: string, addClasses: string } {
 	if (showJsonAsLink && isJsonCell(value)) {
 		return hyperLinkFormatter(row, cell, value, columnDef, dataContext);
 	} else {
-		return textFormatter(row, cell, value, columnDef, dataContext);
+		return textFormatter(row, cell, value, columnDef, dataContext, (DBCellValue.isDBCellValue(value) && value.isNull) ? NULL_CELL_CSS_CLASS : undefined);
 	}
 }
