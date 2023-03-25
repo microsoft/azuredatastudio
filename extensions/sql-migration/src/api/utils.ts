@@ -36,6 +36,12 @@ export const MenuCommands = {
 	SendFeedback: 'sqlmigration.sendfeedback',
 };
 
+export enum MigrationTargetType {
+	SQLVM = 'AzureSqlVirtualMachine',
+	SQLMI = 'AzureSqlManagedInstance',
+	SQLDB = 'AzureSqlDatabase'
+}
+
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
 		return obj;

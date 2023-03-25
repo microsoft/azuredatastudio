@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
+import { MigrationStateModel } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
-import { debounce } from '../../api/utils';
+import { debounce, MigrationTargetType } from '../../api/utils';
 import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
 import * as styles from '../../constants/styles';
 import { EOL } from 'os';

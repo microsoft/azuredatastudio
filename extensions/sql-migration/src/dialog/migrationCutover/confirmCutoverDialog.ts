@@ -9,10 +9,10 @@ import { MigrationCutoverDialogModel } from './migrationCutoverDialogModel';
 import * as constants from '../../constants/strings';
 import { getMigrationTargetInstance, SqlManagedInstance } from '../../api/azure';
 import { IconPathHelper } from '../../constants/iconPathHelper';
-import { convertByteSizeToReadableUnit, get12HourTime } from '../../api/utils';
+import { convertByteSizeToReadableUnit, get12HourTime, MigrationTargetType } from '../../api/utils';
 import * as styles from '../../constants/styles';
 import { getMigrationTargetTypeEnum, isBlobMigration } from '../../constants/helper';
-import { MigrationTargetType, ServiceTier } from '../../models/stateMachine';
+import { ServiceTier } from '../../models/stateMachine';
 export class ConfirmCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
 	private _view!: azdata.ModelView;

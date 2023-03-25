@@ -13,11 +13,10 @@ import { TabBase } from './tabBase';
 import { MigrationCutoverDialogModel } from '../dialog/migrationCutover/migrationCutoverDialogModel';
 import { ConfirmCutoverDialog } from '../dialog/migrationCutover/confirmCutoverDialog';
 import { RetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDialog';
-import { MigrationTargetType } from '../models/stateMachine';
 import { DashboardStatusBar } from './DashboardStatusBar';
 import { canDeleteMigration } from '../constants/helper';
 import { logError, TelemetryViews } from '../telemetry';
-import { MenuCommands } from '../api/utils';
+import { MenuCommands, MigrationTargetType } from '../api/utils';
 
 export const infoFieldLgWidth: string = '330px';
 export const infoFieldWidth: string = '250px';
