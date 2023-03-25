@@ -826,10 +826,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 				this._blobContainerTargetDatabaseNamesTable.columns[folderColumnIndex].hidden = folderColumnNewHidden;
 
-
-
-
-
 				const connectionProfile = await getSourceConnectionProfile();
 				const queryProvider = await getSourceConnectionQueryProvider();
 				let username = '';
@@ -872,6 +868,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				this._blobContainerDropdowns = [];
 				this._blobContainerLastBackupFileDropdowns = [];
 				this._blobContainerFolderDropdowns = [];
+				this._inaccessibleStorageAccounts = [];
 
 				if (this.migrationStateModel.isSqlMiTarget) {
 					this._existingDatabases = await this.migrationStateModel.getManagedDatabases();
