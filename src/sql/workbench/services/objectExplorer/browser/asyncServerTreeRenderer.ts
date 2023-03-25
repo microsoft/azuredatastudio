@@ -39,9 +39,9 @@ class ConnectionProfileGroupTemplate extends Disposable {
 		private _option: ConnectionProfileGroupDisplayOptions
 	) {
 		super();
-		container.parentElement!.classList.add('server-group');
-		container.classList.add('server-group');
-		this._root = dom.append(container, dom.$('.server-group'));
+		container.parentElement!.classList.add('async-server-group');
+		container.classList.add('async-server-group');
+		this._root = dom.append(container, dom.$('.async-server-group-container'));
 		this._nameContainer = dom.append(this._root, dom.$('span.name'));
 	}
 
@@ -50,10 +50,10 @@ class ConnectionProfileGroupTemplate extends Disposable {
 		if (this._option.showColor && rowElement) {
 			rowElement.style.color = element.textColor;
 			if (element.color) {
-				rowElement.style.background = element.color;
+				this._nameContainer.style.background = element.color;
 			} else {
 				// If the group doesn't contain specific color, assign the default color
-				rowElement.style.background = DefaultServerGroupColor;
+				this._nameContainer.style.background = DefaultServerGroupColor;
 			}
 		}
 		if (element.description && (element.description !== '')) {
@@ -100,7 +100,7 @@ class ConnectionProfileTemplate extends Disposable {
 	) {
 		super();
 		container.parentElement!.classList.add('connection-profile');
-		this._root = dom.append(container, dom.$('.connection-tile'));
+		this._root = dom.append(container, dom.$('.connectionProfileContainer'));
 		this._icon = dom.append(this._root, dom.$('div.icon'));
 		this._connectionStatusBadge = dom.append(this._icon, dom.$('div.connection-status-badge'));
 		this._label = dom.append(this._root, dom.$('div.label'));
@@ -153,7 +153,7 @@ class TreeNodeTemplate extends Disposable {
 		container: HTMLElement
 	) {
 		super();
-		this._root = dom.append(container, dom.$('.object-element-group'));
+		this._root = dom.append(container, dom.$('.object-element-container'));
 		this._icon = dom.append(this._root, dom.$('div.object-icon'));
 		this._label = dom.append(this._root, dom.$('div.label'));
 	}
