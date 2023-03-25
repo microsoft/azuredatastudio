@@ -10,7 +10,7 @@ import { generateGuid, MigrationTargetType } from './utils';
 import * as utils from '../api/utils';
 import { TelemetryAction, TelemetryViews, logError } from '../telemetry';
 import * as constants from '../constants/strings';
-import { NetworkInterfaceModel } from './dataModels/azure/networkInterfaceModel';
+import { NetworkInterfaceModel, PrivateEndpointConnection } from './dataModels/azure/networkInterfaceModel';
 
 const query_database_tables_sql = `
 	SELECT
@@ -521,7 +521,8 @@ export async function canTargetConnectToStorageAccount(
 	// additional ARM properties of storage accounts which aren't exposed in azurecore
 	interface StorageAccountAdditionalProperties {
 		publicNetworkAccess: string,
-		networkAcls: NetworkRuleSet
+		networkAcls: NetworkRuleSet,
+		privateEndpointConnections: PrivateEndpointConnection[]
 	}
 	interface NetworkRuleSet {
 		virtualNetworkRules: VirtualNetworkRule[],
@@ -534,41 +535,48 @@ export async function canTargetConnectToStorageAccount(
 	}
 
 	const storageAccountProperties: StorageAccountAdditionalProperties = (storageAccount as any)['properties'];
-
 	const storageAccountPublicAccessEnabled: boolean = storageAccountProperties.publicNetworkAccess ? storageAccountProperties.publicNetworkAccess.toLowerCase() === 'Enabled'.toLowerCase() : true;
-	const storageAccountDefaultIsAllow: boolean = storageAccountProperties.networkAcls.defaultAction.toLowerCase() === 'Allow'.toLowerCase();
-	const storageAccountDefaultIsDeny: boolean = storageAccountProperties.networkAcls.defaultAction.toLowerCase() === 'Deny'.toLowerCase();
-	const storageAccountWhitelistedVNets: string[] = storageAccountProperties.networkAcls.virtualNetworkRules.filter(rule => rule.action.toLowerCase() === 'Allow'.toLowerCase()).map(rule => rule.id);
+	const storageAccountDefaultIsAllow: boolean = storageAccountProperties.networkAcls ? storageAccountProperties.networkAcls.defaultAction.toLowerCase() === 'Allow'.toLowerCase() : true;
+	const storageAccountWhitelistedVNets: string[] = storageAccountProperties.networkAcls ? storageAccountProperties.networkAcls.virtualNetworkRules.filter(rule => rule.action.toLowerCase() === 'Allow'.toLowerCase()).map(rule => rule.id) : [];
 
-	var isTargetVNetWhitelisted: boolean = true;
+	var enabledFromAllNetworks: boolean = false;
+	var enabledFromWhitelistedVNet: boolean = false;
+	var enabledFromPrivateEndpoint: boolean = false;
+
+	// 1) check for access from all networks
+	enabledFromAllNetworks = storageAccountPublicAccessEnabled && storageAccountDefaultIsAllow;
+
 	switch (targetType) {
 		case MigrationTargetType.SQLMI:
-			// for MI, subnet is directly exposed in properties
-			const targetManagedInstanceVNet: string = (targetServer.properties as any)['subnetId'];
+			const targetManagedInstanceVNet: string = (targetServer.properties as any)['subnetId'] ?? '';
+			const targetManagedInstancePrivateEndpointConnections: PrivateEndpointConnection[] = (targetServer.properties as any)['privateEndpointConnections'] ?? [];
+			const storageAccountPrivateEndpointConnections: PrivateEndpointConnection[] = storageAccountProperties.privateEndpointConnections ?? [];
 
-			isTargetVNetWhitelisted = storageAccountWhitelistedVNets.some(vnet => vnet.toLowerCase() === targetManagedInstanceVNet.toLowerCase());
+			// 2) check for access from whitelisted vnet
+			if (storageAccountWhitelistedVNets.length > 0) {
+				enabledFromWhitelistedVNet = storageAccountWhitelistedVNets.some(vnet => vnet.toLowerCase() === targetManagedInstanceVNet.toLowerCase());
+			}
+
+			// 3) check for access from private endpoint
+			if (targetManagedInstancePrivateEndpointConnections.length > 0) {
+				enabledFromPrivateEndpoint = storageAccountPrivateEndpointConnections.some(async privateEndpointConnection => {
+					const privateEndpoint = await NetworkInterfaceModel.getPrivateEndpoint(account, subscription, privateEndpointConnection.id);
+					const privateEndpointSubnet = privateEndpoint.properties.subnet ? privateEndpoint.properties.subnet.id : '';
+					return NetworkInterfaceModel.getVirtualNetworkFromSubnet(privateEndpointSubnet).toLowerCase() === NetworkInterfaceModel.getVirtualNetworkFromSubnet(targetManagedInstanceVNet).toLowerCase();
+				});
+			}
+
 			break;
 		case MigrationTargetType.SQLVM:
-			// for VM, get subnet by first checking underlying compute VM, then its network interface
-			const networkInterfaces = Array.from((await NetworkInterfaceModel.getVmNetworkInterfaces(account, subscription, (targetServer as SqlVMServer))).values());
-			const subnets = networkInterfaces.map(networkInterface => networkInterface.properties.ipConfigurations.map(ipConfiguration => ipConfiguration.properties.subnet.id.toLowerCase())).flat();
+			// to=do: VM scenario -- for VM, get subnet by first checking underlying compute VM, then its network interface
 
-			isTargetVNetWhitelisted = storageAccountWhitelistedVNets.some(vnet => subnets.includes(vnet.toLowerCase()));
-			break;
+			// const networkInterfaces = Array.from((await NetworkInterfaceModel.getVmNetworkInterfaces(account, subscription, (targetServer as SqlVMServer))).values());
+			// const subnets = networkInterfaces.map(networkInterface => networkInterface.properties.ipConfigurations.map(ipConfiguration => ipConfiguration.properties.subnet.id.toLowerCase())).flat();
+			// enabledFromWhitelistedVNet = storageAccountWhitelistedVNets.some(vnet => subnets.includes(vnet.toLowerCase()));
+			return true;
 		default:
 			return true;
 	}
 
-
-	// "Enabled from all networks" = public network access == Enabled, and default network rule == Allow
-	const enabledFromAllNetworks: boolean = storageAccountPublicAccessEnabled && storageAccountDefaultIsAllow;
-
-	// "Enabled from selected virtual networks and IP addresses" = public network access == Enabled, and default network rule == Deny,
-	// with some virtual network rule existing such that id == target subnet and action == Allow
-	const enabledFromWhitelistedVNet: boolean = storageAccountPublicAccessEnabled && storageAccountDefaultIsDeny && isTargetVNetWhitelisted;
-
-	// to-do: check private endpoint
-
-	return enabledFromAllNetworks || enabledFromWhitelistedVNet;
-
+	return enabledFromAllNetworks || enabledFromWhitelistedVNet || enabledFromPrivateEndpoint;
 }

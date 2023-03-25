@@ -614,8 +614,8 @@ export const MISSING_TARGET_USERNAME_ERROR = localize('sql.migration.missing.tar
 export const MISSING_TARGET_PASSWORD_ERROR = localize('sql.migration.missing.targetPassword.error', "To continue, enter a valid target password.");
 export function STORAGE_ACCOUNT_CONNECTIVITY_WARNING(targetServer: string, databases: string[]): string {
 	return databases.length === 1
-		? localize('sql.migration.storageAccount.warning.many', "Target instance '{0}' may not be able to access storage account '{1}'. Ensure that the subnet of the target instance (as well as of the private endpoint, if applicable) is whitelisted on the storage account.", targetServer, databases[0])
-		: localize('sql.migration.storageAccount.warning.one', "Target instance '{0}' may not be able to access storage accounts '{1}'. Ensure that the subnet of the target instance (as well as of the private endpoint, if applicable) is whitelisted on the storage accounts.", targetServer, databases.join("', '"));
+		? localize('sql.migration.storageAccount.warning.many', "Target instance '{0}' may not be able to access storage account '{1}'. Ensure that the subnet of the target instance is whitelisted on the storage account, and if applicable, that the private endpoint is in the same virtual network as the target server.", targetServer, databases[0])
+		: localize('sql.migration.storageAccount.warning.one', "Target instance '{0}' may not be able to access storage accounts '{1}'. Ensure that the subnet of the target instance is whitelisted on the storage accounts, and if applicable, that the private endpoints are on the same virtual network as the target server.", targetServer, databases.join("', '"));
 }
 
 export const TARGET_TABLE_NOT_EMPTY = localize('sql.migration.target.table.not.empty', "Target table is not empty.");
