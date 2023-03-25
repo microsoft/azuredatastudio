@@ -703,13 +703,13 @@ declare module 'azdata' {
 
 		/**
 		 * Enters the workspace with the provided path
-		 * @param workspacefile
+		 * @param workspaceFile
 		 */
 		export function enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 
 		/**
 		 * Saves and enters the workspace with the provided path
-		 * @param workspacefile
+		 * @param workspaceFile
 		 */
 		export function saveAndEnterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 	}
@@ -879,7 +879,7 @@ declare module 'azdata' {
 		 * Open a table designer window.
 		 * @param providerId The table designer provider Id.
 		 * @param tableInfo The table information. The object will be passed back to the table designer provider as the unique identifier for the table.
-		 * @param telemetryInfo: Optional Key-value pair containing any extra information that needs to be sent via telemetry
+		 * @param telemetryInfo Optional Key-value pair containing any extra information that needs to be sent via telemetry
 		 */
 		export function openTableDesigner(providerId: string, tableInfo: TableInfo, telemetryInfo?: { [key: string]: string }): Thenable<void>;
 

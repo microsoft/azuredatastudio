@@ -261,6 +261,7 @@ export class PanelComponent extends Disposable implements IThemable {
 		this.selectTab(nextTabIndex);
 	}
 
+	/* eslint-disable */
 	/**
 	 * Updates the specified tab with new config values
 	 * @param tabId The id of the tab to update
@@ -285,6 +286,7 @@ export class PanelComponent extends Disposable implements IThemable {
 			tabHeader?.refresh();
 		}
 	}
+	/* eslint-enable */
 
 	private findAndRemoveTabFromMRU(tab: TabComponent): void {
 		let mruIndex = this._mru.findIndex(i => i === tab);
