@@ -50,9 +50,6 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 			return await TreeUpdateUtils.getAsyncConnectionNodeChildren(element, this._connectionManagementService, this._objectExplorerService, this._configurationService);
 		} else if (element instanceof ConnectionProfileGroup) {
 			return element.getChildren();
-			const group = this._connectionManagementService.getConnectionGroupById(element.id);
-			const groupChildren = (group as ConnectionProfileGroup).getChildren();
-			return groupChildren;
 		} else if (element instanceof TreeNode) {
 			if (element.children) {
 				return element.children;
