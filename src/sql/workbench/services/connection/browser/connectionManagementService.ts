@@ -830,10 +830,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.AddServerGroup);
 		return this._connectionStore.saveProfileGroup(group).then(groupId => {
 			this._onAddConnectionProfile.fire(undefined);
-
 			//Getting id for the new profile group
 			group.id = groupId;
-			this._onConnectionProfileGroupCreated.fire(ConnectionProfileGroup.createConnectionProfileGroup(group));
+			const parentGroup = this.getConnectionGroupById(group.parentId);
+			this._onConnectionProfileGroupCreated.fire(ConnectionProfileGroup.createConnectionProfileGroup(group, parentGroup));
 
 			return groupId;
 		});
