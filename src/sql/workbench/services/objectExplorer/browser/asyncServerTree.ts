@@ -212,6 +212,8 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 	public async makeElementDirty(element: ServerTreeElement) {
 		this.getDataNode(element).stale = true;
 	}
+
+
 }
 
 export type ServerTreeElement = ConnectionProfile | ConnectionProfileGroup | TreeNode;
