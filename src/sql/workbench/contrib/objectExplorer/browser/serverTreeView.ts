@@ -196,99 +196,19 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			this.handleAddConnectionProfile(newProfile).catch(errors.onUnexpectedError);
 		}));
 
-		this._register(this._connectionManagementService.onNewConnectionProfile(async (e) => {
-			if (this._tree instanceof AsyncServerTree) {
-				const parent = this.getConnectionGroupInTree(e.groupId);
-				if (parent) {
-					await this._tree.updateChildren(parent);
-					const newConnection = <ConnectionProfile>this._tree.getDataById(e.id);
-					if (newConnection) {
-						await this._tree.setSelection([newConnection]);
-						await this._tree.rerender(newConnection);
-						await this._tree.reveal(newConnection);
-						await this._tree.updateChildren(newConnection);
-						await this._tree.expand(newConnection);
-					}
-				}
-			}
-		}));
-
-		this._register(this._connectionManagementService.onUpdateConnectionProfile(async (e) => {
-			if (this._tree instanceof AsyncServerTree) {
-				const existingConnection = this.getConnectionInTreeInput(e.oldProfileId);
-				// disconnecting and deleting the old connection
-				if (existingConnection) {
-					await this.disconnectConnection(existingConnection, true);
-				}
-				// adding back updated connection
-				const parent = this.getConnectionGroupInTree(e.newProfile.groupId);
-				if (parent) {
-					await this._tree.updateChildren(parent);
-					const newConnectionInTree = this.getConnectionInTreeInput(e.newProfile.id);
-					if (newConnectionInTree) {
-						await this._tree.setSelection([newConnectionInTree]);
-						await this._tree.rerender(newConnectionInTree);
-						await this._tree.reveal(newConnectionInTree);
-						await this._tree.updateChildren(newConnectionInTree);
-						await this._tree.expand(newConnectionInTree);
-					}
-				}
-			}
-		}));
-
-		this._register(this._connectionManagementService.onConnectionProfileConnected(async (e) => {
-			if (this._tree instanceof AsyncServerTree) {
-				const connection = this.getConnectionInTreeInput(e.id);
-				if (connection) {
-					// Rerending connection to update the badge.
-					await this._tree.rerender(connection);
-				}
-			}
-		}));
-
-		this._register(this._connectionManagementService.onDeleteConnectionProfileGroup(async (e) => {
-			if (this._tree instanceof AsyncServerTree) {
-				const parent = this.getConnectionGroupInTree(e.parentId);
-				if (parent) {
-					await this._tree.updateChildren(parent);
-				}
-			}
-		}));
-
-		this._register(this._connectionManagementService.onUpdateConnectionProfileGroup(async (e) => {
-			this.refreshTree();
-		}));
-
-		this._register(this._connectionManagementService.onNewConnectionProfileGroup(async (e) => {
-			if (this._tree instanceof AsyncServerTree) {
-				const parent = this.getConnectionGroupInTree(e.parentId);
-				if (parent) {
-					await this._tree.updateChildren(parent);
-				}
-			}
-		}));
-
-		this._register(this._connectionManagementService.onDeleteConnectionProfile((e) => {
-			if (this._tree instanceof AsyncServerTree) {
-				if (e instanceof ConnectionProfile) {
-					const parent = this.getConnectionGroupInTree(e.groupId);
-					if (parent) {
-						this._tree.updateChildren(parent);
-					}
-				}
-			} else {
+		this._register(this._connectionManagementService.onDeleteConnectionProfile(() => {
+			if (!this.isAsyncTree) {
 				this.refreshTree().catch(errors.onUnexpectedError);
 			}
 		}));
 
 		this._register(this._connectionManagementService.onDisconnect(async (connectionParams) => {
-			if (this.tree instanceof AsyncServerTree) {
-				this.disconnectConnection(<ConnectionProfile>connectionParams.connectionProfile);
-				this.tree.reveal(<ConnectionProfile>connectionParams.connectionProfile);
-			} else {
+			if (!this.isAsyncTree) {
 				if (this.isObjectExplorerConnectionUri(connectionParams.connectionUri)) {
 					this.deleteObjectExplorerNodeAndRefreshTree(connectionParams.connectionProfile).catch(errors.onUnexpectedError);
 				}
+			} else {
+				await this.disconnectConnection(<ConnectionProfile>connectionParams.connectionProfile);
 			}
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
@@ -299,16 +219,132 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 
 		if (this._objectExplorerService && this._objectExplorerService.onUpdateObjectExplorerNodes) {
 			this._register(this._objectExplorerService.onUpdateObjectExplorerNodes(args => {
-				if (!(this._tree instanceof AsyncServerTree)) {
-					if (args.errorMessage) {
-						this.showError(args.errorMessage);
+				if (args.errorMessage) {
+					this.showError(args.errorMessage);
+				}
+				if (args.connection) {
+					if (this._tree instanceof AsyncServerTree) {
+						this._tree.rerender(<ConnectionProfile>args.connection);
 					}
-					if (args.connection) {
-						this.onObjectExplorerSessionCreated(args.connection).catch(err => errors.onUnexpectedError);
-					}
+					this.onObjectExplorerSessionCreated(args.connection).catch(err => errors.onUnexpectedError);
 				}
 			}));
 		}
+
+		this._register(this._connectionManagementService.onConnectionProfileCreated(async (e) => {
+			if (this._tree instanceof AsyncServerTree) {
+				const connectionParentGroup = this._tree.getDataById(e.groupId);
+				if (connectionParentGroup) {
+					await this._tree.updateChildren(connectionParentGroup);
+					await this._tree.reveal(e);
+					await this._tree.setSelection([e]);
+					await this._tree.expand(e);
+				}
+			}
+		}));
+
+		this._register(this._connectionManagementService.onConnectionProfileConnected(async (e) => {
+			if (this._tree instanceof AsyncServerTree) {
+				const connectionInTree = this._tree.getDataById(e.id);
+				if (connectionInTree) {
+					await this._tree.rerender(connectionInTree);
+					await this._tree.reveal(connectionInTree);
+					await this._tree.setSelection([connectionInTree]);
+					await this._tree.updateChildren(connectionInTree);
+					await this._tree.expand(connectionInTree);
+				}
+			}
+		}));
+
+		this._register(this._connectionManagementService.onConnectionProfileDeleted(async (e) => {
+			if (this._tree instanceof AsyncServerTree) {
+				const parentGroup = this._tree.getDataById(e.groupId);
+				if (parentGroup) {
+					await this._tree.updateChildren(parentGroup);
+					await this._tree.reveal(parentGroup);
+					await this._tree.setSelection([parentGroup]);
+				}
+			}
+		}));
+
+		this._register(this._connectionManagementService.onConnectionProfileEdited(async (e) => {
+			if (this._tree instanceof AsyncServerTree) {
+				const oldProfile = <ConnectionProfile>this._tree.getDataById(e.olfProfileId);
+				const oldProfileParent = this._tree.getDataById(oldProfile.groupId);
+				if (oldProfileParent.id !== e.profile.groupId) {
+					await this._tree.updateChildren(oldProfileParent);
+				}
+				const newProfileParent = this._tree.getDataById(e.profile.groupId);
+				if (newProfileParent) {
+					await this._tree.updateChildren(newProfileParent);
+					await this._tree.reveal(e.profile);
+					await this._tree.setSelection([e.profile]);
+					await this._tree.expand(e.profile);
+				}
+			}
+		}));
+
+		this._register(this._connectionManagementService.onConnectionProfileMoved(async (e) => {
+			if (this._tree instanceof AsyncServerTree) {
+				const oldParent = this._tree.getDataById(e.oldGroupId);
+				const newParent = this._tree.getDataById(e.newGroupId);
+				const profileExpandedState = this._tree.getExpandedState(e.source);
+				if (oldParent) {
+					await this._tree.updateChildren(oldParent);
+				}
+				if (newParent) {
+					await this._tree.updateChildren(newParent);
+				}
+				const newConnection = this._tree.getDataById(e.source.id);
+				if (newConnection) {
+					await this._tree.reveal(newConnection);
+					await this._tree.setSelection([newConnection]);
+					await this._tree.expandElements(profileExpandedState);
+				}
+			}
+		}));
+
+		this._register(this._connectionManagementService.onConnectionProfileGroupDeleted(async (e) => {
+			if (this._tree instanceof AsyncServerTree) {
+				const parent = this._tree.getDataById(e.parentId);
+				await this._tree.updateChildren(parent);
+				await this._tree.reveal(parent);
+				await this._tree.setSelection([parent]);
+			}
+		}));
+
+		this._register(this._connectionManagementService.onConnectionProfileGroupCreated(async (e) => {
+			if (this._tree instanceof AsyncServerTree) {
+				const parent = this._tree.getDataById(e.parentId);
+				await this._tree.updateChildren(parent);
+				await this._tree.reveal(e);
+				await this._tree.setSelection([e]);
+			}
+		}));
+
+		this._register(this._connectionManagementService.onConnectionProfileGroupEdited(async (e) => {
+			if (this._tree instanceof AsyncServerTree) {
+				const newParent = this._tree.getDataById(e.parentId);
+				if (newParent) {
+					await this._tree.updateChildren(newParent);
+					await this._tree.reveal(e);
+					await this._tree.setSelection([e]);
+				}
+			}
+		}));
+
+		this._register(this._connectionManagementService.onConnectionProfileGroupMoved(async (e) => {
+			if (this._tree instanceof AsyncServerTree) {
+				const oldParent = this._tree.getDataById(e.oldGroupId);
+				const newParent = this._tree.getDataById(e.newGroupId);
+				const profileExpandedState = this._tree.getExpandedState(e.source);
+				await this._tree.updateChildren(oldParent);
+				await this._tree.updateChildren(newParent);
+				await this._tree.reveal(e.source);
+				await this._tree.setSelection([e.source]);
+				this._tree.expandElements(profileExpandedState);
+			}
+		}));
 
 		return new Promise<void>(async (resolve, reject) => {
 			await this.refreshTree();
@@ -317,9 +353,10 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			const expandGroups = this._configurationService.getValue<{ autoExpand: boolean }>(SERVER_GROUP_CONFIG).autoExpand;
 			if (expandGroups) {
 				if (this._tree instanceof AsyncServerTree) {
-					await Promise.all(ConnectionProfileGroup.getSubgroups(root).map(subgroup => {
-						return this._tree!.expand(subgroup);
-					}));
+					const subGroups = ConnectionProfileGroup.getSubgroups(root);
+					for (let group of subGroups) {
+						await this._tree.expand(group);
+					}
 				} else {
 					await this._tree!.expandAll(ConnectionProfileGroup.getSubgroups(root));
 				}
@@ -411,8 +448,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				await this._connectionManagementService.deleteConnection(profile);
 			}
 			const connectionProfile = this.getConnectionInTreeInput(profile.id);
-			connectionProfile.isDisconnecting = true;
-			this._tree.updateChildren(connectionProfile);
 			// Delete the node from the tree
 			await this._objectExplorerService.deleteObjectExplorerNode(connectionProfile);
 			// Collapse the node
@@ -421,8 +456,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			await this._tree.rerender(connectionProfile);
 			// Make the connection dirty so that the next expansion will refresh the node
 			await this._tree.makeElementDirty(connectionProfile);
-
-			this._tree.getDataNode(connectionProfile).hasChildren = false;
 		}
 	}
 
@@ -472,7 +505,8 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 					// Collapse the node before refreshing so the refresh doesn't try to fetch
 					// the children again (which causes it to try and connect)
 					this._tree.collapse(conn);
-					await this.refreshTree();
+					this._tree.rerender(conn);
+					this._tree.makeElementDirty(conn);
 				} else {
 					await this._tree!.collapse(conn);
 					return this._tree!.refresh(conn);
@@ -776,5 +810,9 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			return true;
 		}
 		return false;
+	}
+
+	public get isAsyncTree(): boolean {
+		return this._tree instanceof AsyncServerTree;
 	}
 }

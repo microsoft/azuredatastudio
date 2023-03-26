@@ -9,8 +9,6 @@ import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode'
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import Severity from 'vs/base/common/severity';
-import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IAsyncDataSource } from 'vs/base/browser/ui/tree/tree';
 import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -23,7 +21,6 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 	constructor(
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 	}
@@ -34,7 +31,7 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 		if (element instanceof ConnectionProfile) {
 			return true;
 		} else if (element instanceof ConnectionProfileGroup) {
-			return element.hasChildren();
+			return true;
 		} else if (element instanceof TreeNode) {
 			return !element.isAlwaysLeaf;
 		}
@@ -45,49 +42,23 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 	 * Returns the element's children as an array in a promise.
 	 */
 	public async getChildren(element: ServerTreeElement): Promise<ServerTreeElement[]> {
-		try {
-
-			if (element instanceof ConnectionProfile) {
-				if (element.isDisconnecting) {
-					element.isDisconnecting = false;
-					return [];
-				}
-				return await TreeUpdateUtils.getAsyncConnectionNodeChildren(element, this._connectionManagementService, this._objectExplorerService, this._configurationService);
-			} else if (element instanceof ConnectionProfileGroup) {
-				const currentConnectionInGroup = element.connections;
-				const group = this._connectionManagementService.getConnectionGroupById(element.id);
-				if (group) {
-					const groupConnections = group.connections;
-					for (let conn of currentConnectionInGroup) {
-						if (!groupConnections.find(c => c.matches(conn))) {
-							await this._objectExplorerService.deleteObjectExplorerNode(conn);
-						}
-					}
-					element = group;
-				}
-				return (group as ConnectionProfileGroup).getChildren();
-			} else if (element instanceof TreeNode) {
-				if (element.children) {
-					return element.children;
-				} else {
-					return await this._objectExplorerService.resolveTreeNodeChildren(element.getSession()!, element);
-				}
+		if (element instanceof ConnectionProfile) {
+			if (element.isDisconnecting) {
+				element.isDisconnecting = false;
+				return [];
 			}
-		} catch (err) {
-			if (element instanceof TreeNode) {
-				element.errorStateMessage = err.message ?? err;
+			return await TreeUpdateUtils.getAsyncConnectionNodeChildren(element, this._connectionManagementService, this._objectExplorerService, this._configurationService);
+		} else if (element instanceof ConnectionProfileGroup) {
+			const group = this._connectionManagementService.getConnectionGroupById(element.id);
+			const groupChildren = (group as ConnectionProfileGroup).getChildren();
+			return groupChildren;
+		} else if (element instanceof TreeNode) {
+			if (element.children) {
+				return element.children;
+			} else {
+				return await this._objectExplorerService.resolveTreeNodeChildren(element.getSession()!, element);
 			}
-			if (err.message) {
-				this.showError(err.message);
-			}
-			throw err;
 		}
 		return [];
-	}
-
-	private showError(errorMessage: string) {
-		if (this._errorMessageService) {
-			this._errorMessageService.showDialog(Severity.Error, '', errorMessage);
-		}
 	}
 }

@@ -85,14 +85,15 @@ export const SERVICE_ID = 'connectionManagementService';
 
 export const IConnectionManagementService = createDecorator<IConnectionManagementService>(SERVICE_ID);
 
-export interface ConnectionUpdateParams {
-	oldProfileId: string;
-	newProfile: ConnectionProfile;
+export interface ConnectionElementMovedParams {
+	source: ConnectionProfile | ConnectionProfileGroup;
+	oldGroupId: string;
+	newGroupId: string;
 }
 
-export interface ConnectionGroupUpdateParams {
-	oldProfileGroupId: string;
-	newProfileGroup: ConnectionProfileGroup;
+export interface ConnectionProfileEditedParams {
+	profile: ConnectionProfile;
+	olfProfileId: string;
 }
 
 export interface IConnectionManagementService {
@@ -100,19 +101,30 @@ export interface IConnectionManagementService {
 
 	// Event Emitters
 	onAddConnectionProfile: Event<IConnectionProfile>;
-	onDeleteConnectionProfile: Event<ConnectionProfile | ConnectionProfileGroup>;
+	onDeleteConnectionProfile: Event<void>;
 	onConnect: Event<IConnectionParams>;
 	onDisconnect: Event<IConnectionParams>;
 	onConnectionChanged: Event<IConnectionParams>;
 	onLanguageFlavorChanged: Event<azdata.DidChangeLanguageFlavorParams>;
 
 	// Event Emitters for async tree
-	onNewConnectionProfile: Event<ConnectionProfile>;
-	onUpdateConnectionProfile: Event<ConnectionUpdateParams>;
+	/**
+	 * Connection Profile events.
+	 */
+	onConnectionProfileCreated: Event<ConnectionProfile>;
+	onConnectionProfileEdited: Event<ConnectionProfileEditedParams>;
+	onConnectionProfileDeleted: Event<ConnectionProfile>;
+	onConnectionProfileMoved: Event<ConnectionElementMovedParams>;
 	onConnectionProfileConnected: Event<ConnectionProfile>;
-	onNewConnectionProfileGroup: Event<ConnectionProfileGroup>;
-	onUpdateConnectionProfileGroup: Event<ConnectionGroupUpdateParams>;
-	onDeleteConnectionProfileGroup: Event<ConnectionProfileGroup>;
+	onConnectionProfileDisconnected: Event<ConnectionProfile>;
+	/**
+	 * Connection Profile Group events.
+	 */
+	onConnectionProfileGroupCreated: Event<ConnectionProfileGroup>;
+	onConnectionProfileGroupEdited: Event<ConnectionProfileGroup>;
+	onConnectionProfileGroupDeleted: Event<ConnectionProfileGroup>;
+	onConnectionProfileGroupMoved: Event<ConnectionElementMovedParams>;
+	// End of Event Emitters for async tree
 
 	// Properties
 	providerNameToDisplayNameMap: { [providerDisplayName: string]: string };
@@ -239,7 +251,7 @@ export interface IConnectionManagementService {
 
 	registerIconProvider(providerId: string, provider: azdata.IconProvider): void;
 
-	editGroup(group: ConnectionProfileGroup, oldGroup?: ConnectionProfileGroup): Promise<void>;
+	editGroup(group: ConnectionProfileGroup): Promise<void>;
 
 	getConnectionProfile(fileUri: string): IConnectionProfile | undefined;
 

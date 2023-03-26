@@ -27,7 +27,6 @@ import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplor
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { NODE_EXPANSION_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
-import { clearInterval, setInterval } from 'timers';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -282,25 +281,51 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		let errorMessage: string | undefined = undefined;
 		const sessionId = session.sessionId;
 
+		await new Promise<void>((resolve, reject) => {
+			let count = 0;
+			const waitingForSessionId = () => {
+				const session = this._sessions[sessionId];
+				if (session) {
+					clearTimeout(timerId);
+					resolve();
+				} else if (count > this.getObjectExplorerTimeout()) {
+					clearTimeout(timerId);
+					reject(new Error(
+						nls.localize(
+							'objectExplorerMissingSession',
+							'Timed out while waiting for createNewSession response from the provider for this created session `{0}`', sessionId
+						)));
+				} else {
+					count++;
+					timerId = setTimeout(waitingForSessionId, 1000);
+				}
+			};
+			let timerId = setTimeout(waitingForSessionId, 0);
+		});
+
 		if (this._sessions[sessionId]) {
 
 			await new Promise<void>((resolve, reject) => {
 				let count = 0;
-				const waitingForSession = setInterval(() => {
+				const waitingForRightConnectionInSession = () => {
 					connection = this._sessions[sessionId].connection;
-					if (connection) {
-						if (this._connectionsWaitingForSession.get(connection.id) === false) {
-							this._connectionsWaitingForSession.delete(connection.id);
-							clearInterval(waitingForSession);
-							resolve();
-						}
-						else if (count > this.getObjectExplorerTimeout()) {
-							clearInterval(waitingForSession);
-							reject(new Error(`Timeout waiting for session ${sessionId} to be created`));
-						}
+					if (connection && this._connectionsWaitingForSession.get(connection.id) === false) {
+						this._connectionsWaitingForSession.delete(connection.id);
+						clearTimeout(timerId);
+						resolve();
+					} else if (count > this.getObjectExplorerTimeout()) {
+						clearTimeout(timerId);
+						reject(new Error(
+							nls.localize(
+								'objectExplorerMissingConnectionForSession',
+								'Timeout waiting for session "{0}" to be created for connection "{0}"', connection.id, sessionId
+							)));
+					} else {
 						count++;
+						timerId = setTimeout(waitingForRightConnectionInSession, 1000);
 					}
-				}, 1000);
+				};
+				let timerId = setTimeout(waitingForRightConnectionInSession, 0);
 			});
 
 			try {
@@ -387,7 +412,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			this._connectionsWaitingForSession.set(connection.id, true);
 			const result = await provider.createNewSession(connection.toConnectionInfo());
 			if (!result?.sessionId) {
-				throw new Error(nls.localize('objectExplorerSessionIdMissing', "Object Explorer session ID is missing for connection"));
+				throw new Error(nls.localize('objectExplorerSessionIdMissing', 'The session ID returned by provider "{0}" for connection "{1}" is invalid.', providerId, connection.title));
 			}
 			if (this._sessions[result.sessionId]) {
 				this.logService.trace(`Overwriting session ${result.sessionId}`);

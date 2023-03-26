@@ -38,7 +38,7 @@ export class ServerGroupController implements IServerGroupController {
 			this._group.name = viewModel.groupName;
 			this._group.color = viewModel.groupColor;
 			this._group.description = viewModel.groupDescription;
-			this.connectionManagementService.editGroup(this._group, tempGroup).then(() => {
+			this.connectionManagementService.editGroup(this._group).then(() => {
 				this._serverGroupDialog!.close();
 			}).catch(err => {
 				// rollback changes made

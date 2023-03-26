@@ -84,6 +84,24 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 		return undefined;
 	}
 
+	public getExpandedState(element: ServerTreeElement): ServerTreeElement[] {
+		const node = this.getDataNode(element);
+		const stack = [node];
+		const expanded: ServerTreeElement[] = [];
+		while (stack.length > 0) {
+			const node = stack.pop();
+			if (node) {
+				if (!this.isCollapsed(node.element)) {
+					expanded.push(node.element);
+					if (node.children) {
+						node.children.forEach(child => stack.push(child));
+					}
+				}
+			}
+		}
+		return expanded;
+	}
+
 	private getDataNodeById(id: string): IAsyncDataTreeNode<ConnectionProfileGroup, ServerTreeElement> | undefined {
 		let node = undefined;
 		this.nodes.forEach((v, k) => {
@@ -118,6 +136,41 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 				}
 			}
 
+		}
+	}
+
+	public getExpandedElementIds(): string[] {
+		const viewState = this.getViewState();
+		return viewState?.expanded;
+	}
+
+	public async expandElements(elements: ServerTreeElement[]): Promise<void> {
+		for (let element of elements) {
+			const id = element.id;
+			const node = this.getDataNodeById(id);
+			if (node) {
+				await this.expand(node.element);
+			} else {
+				if (element) {
+					const elementPath = this.generatePath(element);
+					for (let n of this.nodes.values()) {
+						if (this.generatePath(n.element) === elementPath) {
+							await this.expand(n.element);
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public async expandElementIds(ids: string[]): Promise<void> {
+		for (let i = 0; i < ids.length; i++) {
+			const id = ids[i];
+			const node = this.getDataNodeById(id);
+			if (node) {
+				await this.expand(node.element);
+			}
 		}
 	}
 

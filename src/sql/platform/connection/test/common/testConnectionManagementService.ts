@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConnectionManagementService, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks, IConnectionResult, INewConnectionParams, ConnectionGroupUpdateParams, ConnectionUpdateParams }
+import { IConnectionManagementService, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks, IConnectionResult, INewConnectionParams }
 	from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -25,12 +25,17 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	onAddConnectionProfile = undefined!;
 	onDeleteConnectionProfile = undefined!;
 	onLanguageFlavorChanged = undefined!;
-	onNewConnectionProfile: Event<ConnectionProfile> = undefined!;
-	onUpdateConnectionProfile: Event<ConnectionUpdateParams> = undefined!;
-	onConnectionProfileConnected: Event<ConnectionProfile> = undefined!;
-	onNewConnectionProfileGroup: Event<ConnectionProfileGroup> = undefined!;
-	onUpdateConnectionProfileGroup: Event<ConnectionGroupUpdateParams> = undefined!;
-	onDeleteConnectionProfileGroup: Event<ConnectionProfileGroup> = undefined!;
+
+	public onConnectionProfileCreated: Event<any> = Event.None;
+	public onConnectionProfileEdited: Event<any> = Event.None;
+	public onConnectionProfileDeleted: Event<any> = Event.None;
+	public onConnectionProfileMoved: Event<any> = Event.None;
+	public onConnectionProfileConnected: Event<any> = Event.None;
+	public onConnectionProfileDisconnected: Event<any> = Event.None;
+	public onConnectionProfileGroupCreated: Event<any> = Event.None;
+	public onConnectionProfileGroupEdited: Event<any> = Event.None;
+	public onConnectionProfileGroupDeleted: Event<any> = Event.None;
+	public onConnectionProfileGroupMoved: Event<any> = Event.None;
 
 	public get onConnect(): Event<any> {
 		return Event.None;

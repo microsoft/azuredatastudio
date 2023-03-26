@@ -8,7 +8,7 @@ import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import {
 	IConnectionManagementService, INewConnectionParams,
 	ConnectionType, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks,
-	IConnectionParams, IConnectionResult, RunQueryOnConnectionMode, ConnectionUpdateParams, ConnectionGroupUpdateParams
+	IConnectionParams, IConnectionResult, RunQueryOnConnectionMode, ConnectionElementMovedParams, ConnectionProfileEditedParams
 } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
@@ -67,7 +67,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _iconProviders = new Map<string, azdata.IconProvider>();
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
 	private _onAddConnectionProfile = new Emitter<interfaces.IConnectionProfile>();
-	private _onDeleteConnectionProfile = new Emitter<ConnectionProfile | ConnectionProfileGroup>();
+	private _onDeleteConnectionProfile = new Emitter<void>();
 	private _onConnect = new Emitter<IConnectionParams>();
 	private _onDisconnect = new Emitter<IConnectionParams>();
 	private _onConnectRequestSent = new Emitter<void>();
@@ -76,12 +76,16 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._notificationService);
 	private _uriToReconnectPromiseMap: { [uri: string]: Promise<IConnectionResult> } = {};
 
-	private _onNewConnectionProfile = new Emitter<ConnectionProfile>();
-	private _onUpdateConnectionProfile = new Emitter<ConnectionUpdateParams>();
+	private _onConnectionProfileCreated = new Emitter<ConnectionProfile>();
+	private _onConnectionProfileDeleted = new Emitter<ConnectionProfile>();
+	private _onConnectionProfileEdited = new Emitter<ConnectionProfileEditedParams>();
+	private _onConnectionProfileMoved = new Emitter<ConnectionElementMovedParams>();
 	private _onConnectionProfileConnected = new Emitter<ConnectionProfile>();
-	private _onNewConnectionProfileGroup = new Emitter<ConnectionProfileGroup>();
-	private _onUpdateConnectionProfileGroup = new Emitter<ConnectionGroupUpdateParams>();
-	private _onDeleteConnectionProfileGroup = new Emitter<ConnectionProfileGroup>();
+	private _onConnectionProfileDisconnected = new Emitter<ConnectionProfile>();
+	private _onConnectionProfileGroupCreated = new Emitter<ConnectionProfileGroup>();
+	private _onConnectionProfileGroupDeleted = new Emitter<ConnectionProfileGroup>();
+	private _onConnectionProfileGroupEdited = new Emitter<ConnectionProfileGroup>();
+	private _onConnectionProfileGroupMoved = new Emitter<ConnectionElementMovedParams>();
 
 	private _mementoContext: Memento;
 	private _mementoObj: MementoObject;
@@ -174,7 +178,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._onAddConnectionProfile.event;
 	}
 
-	public get onDeleteConnectionProfile(): Event<ConnectionProfile | ConnectionProfileGroup> {
+	public get onDeleteConnectionProfile(): Event<void> {
 		return this._onDeleteConnectionProfile.event;
 	}
 
@@ -198,28 +202,47 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._onLanguageFlavorChanged.event;
 	}
 
-	public get onNewConnectionProfile(): Event<ConnectionProfile> {
-		return this._onNewConnectionProfile.event;
+	/**
+	 * Async tree event emitters
+	 */
+	public get onConnectionProfileCreated(): Event<ConnectionProfile> {
+		return this._onConnectionProfileCreated.event;
 	}
 
-	public get onUpdateConnectionProfile(): Event<ConnectionUpdateParams> {
-		return this._onUpdateConnectionProfile.event;
+	public get onConnectionProfileEdited(): Event<ConnectionProfileEditedParams> {
+		return this._onConnectionProfileEdited.event;
+	}
+
+	public get onConnectionProfileDeleted(): Event<ConnectionProfile> {
+		return this._onConnectionProfileDeleted.event;
+	}
+
+	public get onConnectionProfileMoved(): Event<ConnectionElementMovedParams> {
+		return this._onConnectionProfileMoved.event;
 	}
 
 	public get onConnectionProfileConnected(): Event<ConnectionProfile> {
 		return this._onConnectionProfileConnected.event;
 	}
 
-	public get onUpdateConnectionProfileGroup(): Event<ConnectionGroupUpdateParams> {
-		return this._onUpdateConnectionProfileGroup.event;
+	public get onConnectionProfileDisconnected(): Event<ConnectionProfile> {
+		return this._onConnectionProfileDisconnected.event;
 	}
 
-	public get onNewConnectionProfileGroup(): Event<ConnectionProfileGroup> {
-		return this._onNewConnectionProfileGroup.event;
+	public get onConnectionProfileGroupCreated(): Event<ConnectionProfileGroup> {
+		return this._onConnectionProfileGroupCreated.event;
 	}
 
-	public get onDeleteConnectionProfileGroup(): Event<ConnectionProfileGroup> {
-		return this._onDeleteConnectionProfileGroup.event;
+	public get onConnectionProfileGroupDeleted(): Event<ConnectionProfileGroup> {
+		return this._onConnectionProfileGroupDeleted.event;
+	}
+
+	public get onConnectionProfileGroupEdited(): Event<ConnectionProfileGroup> {
+		return this._onConnectionProfileGroupEdited.event;
+	}
+
+	public get onConnectionProfileGroupMoved(): Event<ConnectionElementMovedParams> {
+		return this._onConnectionProfileGroupMoved.event;
 	}
 
 	public get providerNameToDisplayNameMap(): { readonly [providerDisplayName: string]: string } {
@@ -571,15 +594,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					await this.saveToSettings(uri, connection, matcher).then(value => {
 						this._onAddConnectionProfile.fire(connection);
 						if (isEdit) {
-							this._onUpdateConnectionProfile.fire({
-								newProfile: <ConnectionProfile>connection,
-								oldProfileId: options.params.oldProfileId
+							this._onConnectionProfileEdited.fire({
+								olfProfileId: options.params.oldProfileId,
+								profile: <ConnectionProfile>connection
 							});
 						} else {
 							if (options.params === undefined) {
 								this._onConnectionProfileConnected.fire(<ConnectionProfile>connection);
 							} else {
-								this._onNewConnectionProfile.fire(<ConnectionProfile>connection);
+								this._onConnectionProfileCreated.fire(<ConnectionProfile>connection);
 							}
 						}
 						this.doActionsAfterConnectionComplete(value, options);
@@ -810,7 +833,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 			//Getting id for the new profile group
 			group.id = groupId;
-			this._onNewConnectionProfileGroup.fire(ConnectionProfileGroup.createConnectionProfileGroup(group));
+			this._onConnectionProfileGroupCreated.fire(ConnectionProfileGroup.createConnectionProfileGroup(group));
 
 			return groupId;
 		});
@@ -1290,26 +1313,27 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public async changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void> {
 		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.MoveServerConnection);
 		await this._connectionStore.changeGroupIdForConnectionGroup(source, target);
-		const updatedGroup = this.getConnectionGroups().filter(c => c.id === source.id)[0];
-		this._onUpdateConnectionProfileGroup.fire({
-			oldProfileGroupId: source.parentId,
-			newProfileGroup: updatedGroup
+		this._onConnectionProfileGroupMoved.fire({
+			source: source,
+			oldGroupId: source.parentId,
+			newGroupId: target.id
 		});
 	}
 
-	public changeGroupIdForConnection(source: ConnectionProfile, targetGroupId: string): Promise<void> {
+	public async changeGroupIdForConnection(source: ConnectionProfile, targetGroupId: string): Promise<void> {
+		const oldProfileId = source.groupId;
 		let id = Utils.generateUri(source);
 		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.MoveServerGroup);
-		return this._connectionStore.changeGroupIdForConnection(source, targetGroupId).then(result => {
-			this._onAddConnectionProfile.fire(source);
-			if (id && targetGroupId) {
-				source.groupId = targetGroupId;
-			}
-			this.changeConnectionUri(Utils.generateUri(source), id);
-			this._onUpdateConnectionProfile.fire({
-				oldProfileId: source.id,
-				newProfile: source
-			});
+		await this._connectionStore.changeGroupIdForConnection(source, targetGroupId)
+		this._onAddConnectionProfile.fire(source);
+		if (id && targetGroupId) {
+			source.groupId = targetGroupId;
+		}
+		this.changeConnectionUri(Utils.generateUri(source), id);
+		this._onConnectionProfileMoved.fire({
+			source: source,
+			oldGroupId: oldProfileId,
+			newGroupId: targetGroupId,
 		});
 	}
 
@@ -1576,13 +1600,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return Promise.resolve(false);
 	}
 
-	public editGroup(group: ConnectionProfileGroup, oldGroup?: ConnectionProfileGroup): Promise<void> {
+	public editGroup(group: ConnectionProfileGroup): Promise<void> {
 		return this._connectionStore.editGroup(group).then(groupId => {
 			this._onAddConnectionProfile.fire(undefined);
-			this._onUpdateConnectionProfileGroup.fire({
-				newProfileGroup: group,
-				oldProfileGroupId: oldGroup.id
-			});
+			this._onConnectionProfileGroupEdited.fire(group);
 		});
 	}
 
@@ -1590,7 +1611,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Deletes a connection from registered servers.
 	 * Disconnects a connection before removing from settings.
 	 */
-	public deleteConnection(connection: ConnectionProfile): Promise<boolean> {
+	public async deleteConnection(connection: ConnectionProfile): Promise<boolean> {
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.DeleteConnection)
 			.withAdditionalProperties({
 				provider: connection.providerName
@@ -1602,7 +1623,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				if (result) {
 					// Remove profile from configuration
 					return this._connectionStore.deleteConnectionFromConfiguration(connection).then(() => {
-						this._onDeleteConnectionProfile.fire(connection);
+						this._onDeleteConnectionProfile.fire();
+						this._onConnectionProfileDeleted.fire(connection);
 						return true;
 					});
 
@@ -1613,7 +1635,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		} else {
 			// Remove disconnected profile from settings
 			return this._connectionStore.deleteConnectionFromConfiguration(connection).then(() => {
-				this._onDeleteConnectionProfile.fire(connection);
+				this._onDeleteConnectionProfile.fire();
+				this._onConnectionProfileDeleted.fire(connection);
 				return true;
 			});
 		}
@@ -1641,8 +1664,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return Promise.all(disconnected).then(() => {
 			// Remove profiles and groups from config
 			return this._connectionStore.deleteGroupFromConfiguration(group).then(() => {
-				this._onDeleteConnectionProfile.fire(group);
-				this._onDeleteConnectionProfileGroup.fire(group);
+				this._onDeleteConnectionProfile.fire();
+				this._onConnectionProfileGroupDeleted.fire(group);
 				return true;
 			});
 		}).catch(() => false);

@@ -225,23 +225,29 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			let oldParent: ConnectionProfileGroup = source.getParent();
 			const self = this;
 			if (this.isDropAllowed(targetConnectionProfileGroup, oldParent, source)) {
+				if (tree instanceof AsyncServerTree) {
+					if (source instanceof ConnectionProfileGroup) {
+						this._connectionManagementService.changeGroupIdForConnectionGroup(source, targetConnectionProfileGroup);
+					} else if (source instanceof ConnectionProfile) {
+						this._connectionManagementService.changeGroupIdForConnection(source, targetConnectionProfileGroup.id!);
+					}
+				} else {
+					if (source instanceof ConnectionProfile) {
+						// Change group id of profile
+						this._connectionManagementService.changeGroupIdForConnection(source, targetConnectionProfileGroup.id!).then(async () => {
+							if (tree) {
+								TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService, targetConnectionProfileGroup);
+							}
 
-				if (source instanceof ConnectionProfile) {
-					// Change group id of profile
-					this._connectionManagementService.changeGroupIdForConnection(source, targetConnectionProfileGroup.id!).then(() => {
-						if (tree) {
-							TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService, targetConnectionProfileGroup);
-						}
-
-					});
-				} else if (source instanceof ConnectionProfileGroup) {
-					// Change parent id of group
-					this._connectionManagementService.changeGroupIdForConnectionGroup(source, targetConnectionProfileGroup).then(() => {
-						if (tree) {
-							TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService);
-						}
-
-					});
+						});
+					} else if (source instanceof ConnectionProfileGroup) {
+						// Change parent id of group
+						this._connectionManagementService.changeGroupIdForConnectionGroup(source, targetConnectionProfileGroup).then(async () => {
+							if (tree) {
+								TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService);
+							}
+						});
+					}
 				}
 			}
 		}

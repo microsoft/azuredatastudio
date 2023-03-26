@@ -230,20 +230,16 @@ export class TreeUpdateUtils {
 		connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, tree: AsyncServerTree | ITree | undefined, requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<boolean> {
 		const connectedConnection = await TreeUpdateUtils.connectIfNotConnected(connection, options, connectionManagementService, tree);
 		if (connectedConnection) {
-			try {
-				// append group ID and original display name to build unique OE session ID
-				connectedConnection.options['groupId'] = connection.groupId;
-				connectedConnection.options['databaseDisplayName'] = connection.databaseName;
-				let rootNode: TreeNode | undefined = objectExplorerService.getObjectExplorerNode(connectedConnection);
-				if (!rootNode) {
-					await objectExplorerService.updateObjectExplorerNodes(connectedConnection, requestStatus);
-					return true;
-					// The oe request is sent. an event will be raised when the session is created
-				} else {
-					return false;
-				}
-			} catch (e) { // in case of an error we disconnect the connection
-				connectionManagementService.disconnect(connectedConnection);
+
+			// append group ID and original display name to build unique OE session ID
+			connectedConnection.options['groupId'] = connection.groupId;
+			connectedConnection.options['databaseDisplayName'] = connection.databaseName;
+			let rootNode: TreeNode | undefined = objectExplorerService.getObjectExplorerNode(connectedConnection);
+			if (!rootNode) {
+				await objectExplorerService.updateObjectExplorerNodes(connectedConnection, requestStatus);
+				return true;
+				// The oe request is sent. an event will be raised when the session is created
+			} else {
 				return false;
 			}
 		} else {
