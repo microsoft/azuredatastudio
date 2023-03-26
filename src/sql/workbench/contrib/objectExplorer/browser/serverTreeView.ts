@@ -236,6 +236,8 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				const connectionParentGroup = this._tree.getDataById(e.groupId) as ConnectionProfileGroup;
 				if (connectionParentGroup) {
 					connectionParentGroup.connections.push(e);
+					e.parent = connectionParentGroup;
+					e.groupId = connectionParentGroup.id;
 					await this._tree.updateChildren(connectionParentGroup);
 					await this._tree.reveal(e);
 					await this._tree.setSelection([e]);
@@ -335,8 +337,13 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 
 		this._register(this._connectionManagementService.onConnectionProfileGroupCreated(async (e) => {
 			if (this._tree instanceof AsyncServerTree) {
-				const parent = <ConnectionProfileGroup>this._tree.getDataById(e.parentId);
+				let parent = <ConnectionProfileGroup>this._tree.getDataById(e.parentId);
+				if (!parent) {
+					parent = this._tree.getInput(); // If the parent is not found then add the group to the root.
+				}
 				parent.children.push(e);
+				e.parent = parent;
+				e.parentId = parent.id;
 				await this._tree.updateChildren(parent);
 				await this._tree.reveal(e);
 				await this._tree.setSelection([e]);
@@ -357,17 +364,18 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 
 		this._register(this._connectionManagementService.onConnectionProfileGroupMoved(async (e) => {
 			if (this._tree instanceof AsyncServerTree) {
+				const movedGroup = <ConnectionProfileGroup>e.source;
 				const oldParent = <ConnectionProfileGroup>this._tree.getDataById(e.oldGroupId);
 				const newParent = <ConnectionProfileGroup>this._tree.getDataById(e.newGroupId);
-				const profileExpandedState = this._tree.getExpandedState(e.source);
-				oldParent.children = oldParent.children.filter(c => c.id !== e.source.id);
+				const profileExpandedState = this._tree.getExpandedState(movedGroup);
+				oldParent.children = oldParent.children.filter(c => c.id !== movedGroup.id);
 				await this._tree.updateChildren(oldParent);
-				newParent.children.push(<ConnectionProfileGroup>e.source);
-				(<ConnectionProfileGroup>e.source).parent = newParent;
-				(<ConnectionProfileGroup>e.source).parentId = newParent.id;
+				newParent.children.push(movedGroup);
+				(<ConnectionProfileGroup>movedGroup).parent = newParent;
+				(<ConnectionProfileGroup>movedGroup).parentId = newParent.id;
 				await this._tree.updateChildren(newParent);
-				await this._tree.reveal(e.source);
-				await this._tree.setSelection([e.source]);
+				await this._tree.reveal(movedGroup);
+				await this._tree.setSelection([movedGroup]);
 				this._tree.expandElements(profileExpandedState);
 			}
 		}));
