@@ -296,7 +296,7 @@ export class TreeUpdateUtils {
 				};
 				const expansionTimeoutValueSec = configurationService.getValue<number>(NODE_EXPANSION_CONFIG);
 				// Need to wait for the OE service to update its nodes in order to resolve the children
-				const nodesUpdatedPromise = new Promise((resolve, reject) => {
+				const nodesUpdatedPromise = new Promise<void>((resolve, reject) => {
 					// Clean up timeout and listener
 					const cleanup = () => {
 						clearTimeout(nodeUpdateTimer);
@@ -316,7 +316,7 @@ export class TreeUpdateUtils {
 							if (e.errorMessage) {
 								reject(new Error(e.errorMessage));
 							} else {
-								resolve(undefined);
+								resolve();
 							}
 							cleanup();
 						}
