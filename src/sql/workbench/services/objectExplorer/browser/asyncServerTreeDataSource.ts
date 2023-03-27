@@ -34,7 +34,7 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 		if (element instanceof ConnectionProfile) {
 			return true;
 		} else if (element instanceof ConnectionProfileGroup) {
-			return true;
+			return element.hasChildren();
 		} else if (element instanceof TreeNode) {
 			return !element.isAlwaysLeaf;
 		}
@@ -47,10 +47,6 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 	public async getChildren(element: ServerTreeElement): Promise<ServerTreeElement[]> {
 		try {
 			if (element instanceof ConnectionProfile) {
-				if (element.isDisconnecting) {
-					element.isDisconnecting = false;
-					return [];
-				}
 				return await TreeUpdateUtils.getAsyncConnectionNodeChildren(element, this._connectionManagementService, this._objectExplorerService, this._configurationService);
 			} else if (element instanceof ConnectionProfileGroup) {
 				return element.getChildren();
