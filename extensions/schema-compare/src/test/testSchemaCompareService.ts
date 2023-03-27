@@ -20,11 +20,11 @@ export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 		}
 	}
 
-	schemaComparePublishDatabaseChanges(_: string, __: string, ___: string, ____: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+	schemaComparePublishDatabaseChanges(_operationId: string, _targetServerName: string, _targetDatabaseName: string, _taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
 		throw new Error('Method not implemented.');
 	}
 
-	schemaComparePublishProjectChanges(_: string, __: string, ___: mssql.ExtractTarget, ____: azdata.TaskExecutionMode): Thenable<mssql.SchemaComparePublishProjectResult> {
+	schemaComparePublishProjectChanges(_operationId: string, _targetProjectPath: string, _targetFolderStructure: mssql.ExtractTarget, _taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaComparePublishProjectResult> {
 		throw new Error('Method not implemented.');
 	}
 
@@ -38,19 +38,19 @@ export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 		return Promise.resolve(result);
 	}
 
-	schemaCompareIncludeExcludeNode(_: string, __: mssql.DiffEntry, ___: boolean, ____: azdata.TaskExecutionMode): Thenable<mssql.SchemaCompareIncludeExcludeResult> {
+	schemaCompareIncludeExcludeNode(_operationId: string, _diffEntry: mssql.DiffEntry, _IncludeRequest: boolean, _taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaCompareIncludeExcludeResult> {
 		throw new Error('Method not implemented.');
 	}
 
-	schemaCompareOpenScmp(_: string): Thenable<mssql.SchemaCompareOpenScmpResult> {
+	schemaCompareOpenScmp(_filePath: string): Thenable<mssql.SchemaCompareOpenScmpResult> {
 		throw new Error('Method not implemented.');
 	}
 
-	schemaCompareSaveScmp(_: mssql.SchemaCompareEndpointInfo, __: mssql.SchemaCompareEndpointInfo, ____: azdata.TaskExecutionMode, _____: mssql.DeploymentOptions, ______: string, _______: mssql.SchemaCompareObjectId[], ________: mssql.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> {
+	schemaCompareSaveScmp(_sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, _targetEndpointInfo: mssql.SchemaCompareEndpointInfo, _taskExecutionMode: azdata.TaskExecutionMode, _deploymentOptions: mssql.DeploymentOptions, _scmpFilePath: string, _excludedSourceObjects: mssql.SchemaCompareObjectId[], _excludedTargetObjects: mssql.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> {
 		throw new Error('Method not implemented.');
 	}
 
-	schemaCompare(_: string, __: mssql.SchemaCompareEndpointInfo, ___: mssql.SchemaCompareEndpointInfo, ____: azdata.TaskExecutionMode, _____: mssql.DeploymentOptions): Thenable<mssql.SchemaCompareResult> {
+	schemaCompare(_operationId: string, _sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, _targetEndpointInfo: mssql.SchemaCompareEndpointInfo, _taskExecutionMode: azdata.TaskExecutionMode, _deploymentOptions: mssql.DeploymentOptions): Thenable<mssql.SchemaCompareResult> {
 		let result: mssql.SchemaCompareResult;
 		if (this.testState === testStateScmp.FAILURE) {
 			result = {
@@ -105,7 +105,7 @@ export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 		return Promise.resolve(result);
 	}
 
-	schemaCompareGenerateScript(_: string, __: string, ___: string, ____: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+	schemaCompareGenerateScript(_operationId: string, _targetServerName: string, _targetDatabaseName: string, _taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
 		let result: azdata.ResultStatus;
 		if (this.testState === testStateScmp.FAILURE) {
 			result = {
@@ -123,7 +123,7 @@ export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 		return Promise.resolve(result);
 	}
 
-	schemaCompareCancel(_: string): Thenable<azdata.ResultStatus> {
+	schemaCompareCancel(_operationId: string): Thenable<azdata.ResultStatus> {
 		let result: azdata.ResultStatus;
 		if (this.testState === testStateScmp.FAILURE) {
 			result = {
@@ -144,7 +144,7 @@ export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 	handle?: number;
 	readonly providerId: string = 'MSSQL';
 
-	registerOnUpdated(_: () => any): void {
+	registerOnUpdated(_handler: () => any): void {
 	}
 }
 
