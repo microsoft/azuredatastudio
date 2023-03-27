@@ -281,6 +281,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		let errorMessage: string | undefined = undefined;
 		const sessionId = session.sessionId;
 
+		/**
+		 * Sometimes ads recieves handleSessionCreated from providers before the createNewSession response is recieved.
+		 * We need to wait while the createNewSession response is recieved and the session map contains the session before we can continue.
+		 */
 		await new Promise<void>((resolve, reject) => {
 			let count = 0;
 			const waitingForSessionId = () => {
@@ -305,6 +309,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 		if (this._sessions[sessionId]) {
 
+			/**
+			 * In certain cases, when we try to connect to a previously connected server, we may encounter a situation where the session is present in this._sessions,
+			 * but the connection is outdated. This happens when the handleSessionCreated is recieved before the createNewSession response is recieved.
+			 * We are using a map to keep track of connections which are actually waiting for a session to be created. And we will continue only if we get createNewSession
+			 * reponse for those connections.
+			 */
 			await new Promise<void>((resolve, reject) => {
 				let count = 0;
 				const waitingForRightConnectionInSession = () => {
@@ -409,9 +419,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public async createNewSession(providerId: string, connection: ConnectionProfile): Promise<azdata.ObjectExplorerSessionResponse> {
 		const provider = this._providers[providerId];
 		if (provider) {
+			// set the connection to wait for session
 			this._connectionsWaitingForSession.set(connection.id, true);
 			const result = await provider.createNewSession(connection.toConnectionInfo());
+			// some providers return a malformed create sessions responses which don't have a session id. We should throw an error in this case
 			if (!result?.sessionId) {
+				this.logService.error(`The session ID returned by provider "${providerId}" for connection "${connection.title}" is invalid.`);
 				throw new Error(nls.localize('objectExplorerSessionIdMissing', 'The session ID returned by provider "{0}" for connection "{1}" is invalid.', providerId, connection.title));
 			}
 			if (this._sessions[result.sessionId]) {
@@ -421,6 +434,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				connection: connection,
 				nodes: {}
 			};
+			// once the session is created, set the connection to not wait for session
 			this._connectionsWaitingForSession.set(connection.id, false);
 			return result;
 		} else {
@@ -988,7 +1002,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	/**
-	 * Get object explorer timeout in seconds.
+	 * returns object explorer timeout in seconds.
 	 */
 	public getObjectExplorerTimeout(): number {
 		return this._configurationService.getValue<number>(NODE_EXPANSION_CONFIG);
