@@ -13,6 +13,7 @@ import * as constants from '../constants/strings';
 import { logError, TelemetryViews } from '../telemetry';
 import { AdsMigrationStatus } from '../dashboard/tabBase';
 import { getMigrationMode, getMigrationStatus, getMigrationTargetType, hasRestoreBlockingReason, PipelineStatusCodes } from '../constants/helper';
+import * as os from 'os';
 
 export type TargetServerType = azure.SqlVMServer | azureResource.AzureSqlManagedInstance | azure.AzureSqlDatabaseServer;
 
@@ -922,4 +923,21 @@ export async function promptUserForFolder(): Promise<string> {
 	}
 
 	return '';
+}
+
+export function isWindows(): boolean { return (os.platform() === 'win32') }
+
+export async function isAdmin(): Promise<boolean> {
+	let isAdmin: boolean = false;
+	try {
+		if (isWindows()) {
+			isAdmin = (await import('native-is-elevated'))();
+		} else {
+			isAdmin = process.getuid() === 0;
+		}
+	} catch (e) {
+		//Ignore error and return false;
+	}
+
+	return isAdmin;
 }
