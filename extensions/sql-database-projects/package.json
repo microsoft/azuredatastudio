@@ -419,7 +419,7 @@
         },
         {
           "command": "sqlDatabaseProjects.exclude",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^databaseProject.itemType.file/",
           "group": "9_dbProjectsLast@1"
         },
         {
