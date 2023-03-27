@@ -57,9 +57,15 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 					return await this._objectExplorerService.resolveTreeNodeChildren(element.getSession()!, element);
 				}
 			}
-		} catch (error) {
-			this.showError(error);
-			throw error;
+		} catch (err) {
+			if (element instanceof TreeNode) {
+				element.errorStateMessage = err.message ?? err;
+			}
+			if (err.message) {
+				this.showError(err.message);
+			}
+
+			throw err;
 		}
 		return [];
 	}
