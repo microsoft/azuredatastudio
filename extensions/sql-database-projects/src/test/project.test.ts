@@ -19,15 +19,9 @@ import { ItemType } from 'sqldbproj';
 import { SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry, DacpacReferenceProjectEntry } from '../models/projectEntry';
 import { ProjectType, SystemDatabase } from 'mssql';
 
-let projFilePath: string;
-
 describe('Project: sqlproj content operations', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
-	});
-
-	beforeEach(async () => {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
 	});
 
 	after(async function (): Promise<void> {
@@ -35,6 +29,7 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 
 	it('Should read Project from sqlproj', async function (): Promise<void> {
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openProjectFileBaseline);
 		const project: Project = await Project.openProject(projFilePath);
 
 		// Files and folders
@@ -80,7 +75,7 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 
 	it('Should read Project with Project reference from sqlproj', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectWithProjectReferencesBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openProjectWithProjectReferencesBaseline);
 		const project: Project = await Project.openProject(projFilePath);
 
 		// Database references
@@ -95,7 +90,7 @@ describe('Project: sqlproj content operations', function (): void {
 	it('Should throw warning message while reading Project with more than 1 pre-deploy script from sqlproj', async function (): Promise<void> {
 		const stub = sinon.stub(window, 'showWarningMessage').returns(<any>Promise.resolve(constants.okString));
 
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSqlProjectWithPrePostDeploymentError);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openSqlProjectWithPrePostDeploymentError);
 		const project: Project = await Project.openProject(projFilePath);
 
 		should(stub.calledOnce).be.true('showWarningMessage should have been called exactly once');
@@ -113,7 +108,7 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 
 	it('Should perform Folder and SQL object script operations', async function (): Promise<void> {
-		const project = await testUtils.createTestSqlProject();
+		const project = await testUtils.createTestSqlProject(this.test);
 
 		const folderPath = 'Stored Procedures';
 		const scriptPath = path.join(folderPath, 'Fake Stored Proc.sql');
@@ -140,9 +135,9 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 
 	it('Should add folders and SQL object scripts to sqlproj with pre-existing scripts on disk', async function (): Promise<void> {
-		const project = await testUtils.createTestSqlProject();
+		const project = await testUtils.createTestSqlProject(this.test);
 
-		const list: Uri[] = await testUtils.createListOfFiles(project.projectFolderPath);
+		const list: Uri[] = await testUtils.createListOfFiles(this.test, project.projectFolderPath);
 		const relativePaths = list.map(f => path.relative(project.projectFolderPath, f.path));
 
 		await project.addSqlObjectScripts(relativePaths);
@@ -153,10 +148,11 @@ describe('Project: sqlproj content operations', function (): void {
 
 	// TODO: move to DacFx once script contents supported
 	it('Should throw error while adding folders and SQL object scripts to sqlproj when a file/folder does not exist on disk', async function (): Promise<void> {
-		const project = await testUtils.createTestSqlProject();
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openProjectFileBaseline);
+		const project = await testUtils.createTestSqlProject(this.test);
 
 		let list: Uri[] = [];
-		let testFolderPath: string = await testUtils.createDummyFileStructure(true, list, path.dirname(projFilePath));
+		let testFolderPath: string = await testUtils.createDummyFileStructure(this.test, true, list, path.dirname(projFilePath));
 
 		const nonexistentFile = path.join(testFolderPath, 'nonexistentFile.sql');
 		list.push(Uri.file(nonexistentFile));
@@ -167,7 +163,7 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 
 	it('Should perform pre-deployment script operations', async function (): Promise<void> {
-		let project = await testUtils.createTestSqlProject();
+		let project = await testUtils.createTestSqlProject(this.test);
 
 		const relativePath = 'Script.PreDeployment1.sql';
 		const absolutePath = path.join(project.projectFolderPath, relativePath);
@@ -205,7 +201,7 @@ describe('Project: sqlproj content operations', function (): void {
 	it('Should show information messages when adding more than one pre/post deployment scripts to sqlproj', async function (): Promise<void> {
 		const stub = sinon.stub(window, 'showInformationMessage').returns(<any>Promise.resolve());
 
-		const project: Project = await testUtils.createTestSqlProject();
+		const project: Project = await testUtils.createTestSqlProject(this.test);
 
 		const preDeploymentScriptFilePath = 'Script.PreDeployment1.sql';
 		const postDeploymentScriptFilePath = 'Script.PostDeployment1.sql';
@@ -232,8 +228,8 @@ describe('Project: sqlproj content operations', function (): void {
 	// TODO: move to DacFx once script contents supported
 	it('Should not overwrite existing files', async function (): Promise<void> {
 		// Create new sqlproj
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const fileList = await testUtils.createListOfFiles(path.dirname(projFilePath));
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
+		const fileList = await testUtils.createListOfFiles(this.test, path.dirname(projFilePath));
 
 		let project: Project = await Project.openProject(projFilePath);
 
@@ -251,7 +247,7 @@ describe('Project: sqlproj content operations', function (): void {
 	// TODO: revisit correct behavior for this, since DacFx.Projects makes no restriction on absolute paths and external folders (which are represented as "..")
 	it.skip('Should not add folders outside of the project folder', async function (): Promise<void> {
 		// Create new sqlproj
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 
 		let project: Project = await Project.openProject(projFilePath);
 
@@ -268,8 +264,7 @@ describe('Project: sqlproj content operations', function (): void {
 
 	it('Should handle adding existing items to project', async function (): Promise<void> {
 		// Create new sqlproj
-		const project: Project = await testUtils.createTestSqlProject();
-
+		const project: Project = await testUtils.createTestSqlProject(this.test);
 		// Create 2 new files, a sql file and a txt file
 		const sqlFile = path.join(project.projectFolderPath, 'test.sql');
 		const txtFile = path.join(project.projectFolderPath, 'foo', 'test.txt');
@@ -285,7 +280,7 @@ describe('Project: sqlproj content operations', function (): void {
 		await project.addExistingItem(txtFile);
 
 		// Validate files should have been added to project
-		(project.files.length).should.equal(1, 'SQL script object count');
+		(project.files.length).should.equal(1, `SQL script object count: ${project.files.map(x => x.relativePath).join('; ')}`);
 		(project.files[0].relativePath).should.equal('test.sql');
 
 		should(project.folders.length).equal(1, 'folders');
@@ -296,7 +291,7 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 
 	it('Should read project properties', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjPropertyReadBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.sqlProjPropertyReadBaseline);
 		const project: Project = await Project.openProject(projFilePath);
 
 		(project.sqlProjStyle).should.equal(ProjectType.SdkStyle);
@@ -321,8 +316,8 @@ describe('Project: sdk style project content operations', function (): void {
 	});
 
 	it('Should exclude pre/post/none deploy scripts correctly', async function (): Promise<void> {
-		const folderPath = await testUtils.generateTestFolderPath();
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newSdkStyleProjectSdkNodeBaseline, folderPath);
+		const folderPath = await testUtils.generateTestFolderPath(this.test);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newSdkStyleProjectSdkNodeBaseline, folderPath);
 
 		const project: Project = await Project.openProject(projFilePath);
 		await project.addScriptItem('Script.PreDeployment1.sql', 'fake contents', ItemType.preDeployScript);
@@ -348,9 +343,9 @@ describe('Project: sdk style project content operations', function (): void {
 
 	// skipped because exclude folder not yet supported
 	it.skip('Should handle excluding glob included folders', async function (): Promise<void> {
-		const testFolderPath = await testUtils.generateTestFolderPath();
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline, testFolderPath);
-		await testUtils.createDummyFileStructureWithPrePostDeployScripts(false, undefined, path.dirname(projFilePath));
+		const testFolderPath = await testUtils.generateTestFolderPath(this.test);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openSdkStyleSqlProjectBaseline, testFolderPath);
+		await testUtils.createDummyFileStructureWithPrePostDeployScripts(this.test, false, undefined, path.dirname(projFilePath));
 
 		const project: Project = await Project.openProject(projFilePath);
 
@@ -376,9 +371,9 @@ describe('Project: sdk style project content operations', function (): void {
 
 	// skipped because exclude folder not yet supported
 	it.skip('Should handle excluding nested glob included folders', async function (): Promise<void> {
-		const testFolderPath = await testUtils.generateTestFolderPath();
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline, testFolderPath);
-		await testUtils.createDummyFileStructureWithPrePostDeployScripts(false, undefined, path.dirname(projFilePath));
+		const testFolderPath = await testUtils.generateTestFolderPath(this.test,);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openSdkStyleSqlProjectBaseline, testFolderPath);
+		await testUtils.createDummyFileStructureWithPrePostDeployScripts(this.test, false, undefined, path.dirname(projFilePath));
 
 		const project: Project = await Project.openProject(projFilePath);
 
@@ -401,9 +396,9 @@ describe('Project: sdk style project content operations', function (): void {
 
 	// skipped because exclude folder not yet supported
 	it.skip('Should handle excluding explicitly included folders', async function (): Promise<void> {
-		const testFolderPath = await testUtils.generateTestFolderPath();
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithFilesSpecifiedBaseline, testFolderPath);
-		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
+		const testFolderPath = await testUtils.generateTestFolderPath(this.test,);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openSdkStyleSqlProjectWithFilesSpecifiedBaseline, testFolderPath);
+		await testUtils.createDummyFileStructure(this.test, false, undefined, path.dirname(projFilePath));
 
 		const project: Project = await Project.openProject(projFilePath);
 
@@ -439,9 +434,9 @@ describe('Project: sdk style project content operations', function (): void {
 
 	// TODO: skipped until fix for folder trailing slashes comes in from DacFx
 	it.skip('Should handle deleting explicitly included folders', async function (): Promise<void> {
-		const testFolderPath = await testUtils.generateTestFolderPath();
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithFilesSpecifiedBaseline, testFolderPath);
-		await testUtils.createDummyFileStructureWithPrePostDeployScripts(false, undefined, path.dirname(projFilePath));
+		const testFolderPath = await testUtils.generateTestFolderPath(this.test,);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openSdkStyleSqlProjectWithFilesSpecifiedBaseline, testFolderPath);
+		await testUtils.createDummyFileStructureWithPrePostDeployScripts(this.test, false, undefined, path.dirname(projFilePath));
 
 		const project: Project = await Project.openProject(projFilePath);
 
@@ -477,7 +472,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 	// TODO: remove once DacFx exposes both absolute and relative outputPath
 	it('Should read OutputPath from sqlproj if there is one for SDK-style project', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openSdkStyleSqlProjectBaseline);
 		const projFileText = (await fs.readFile(projFilePath)).toString();
 
 		// Verify sqlproj has OutputPath
@@ -490,7 +485,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 	// TODO: move test to DacFx
 	it('Should use default output path if OutputPath is not specified in sqlproj', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithGlobsSpecifiedBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openSdkStyleSqlProjectWithGlobsSpecifiedBaseline);
 		const projFileText = (await fs.readFile(projFilePath)).toString();
 
 		// Verify sqlproj doesn't have <OutputPath>
@@ -512,7 +507,7 @@ describe('Project: database references', function (): void {
 	});
 
 	it('Should read database references correctly', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.databaseReferencesReadBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.databaseReferencesReadBaseline);
 		const project = await Project.openProject(projFilePath);
 		(project.databaseReferences.length).should.equal(5, 'NUmber of database references');
 
@@ -566,7 +561,7 @@ describe('Project: database references', function (): void {
 	});
 
 	it('Should delete database references correctly', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.databaseReferencesReadBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.databaseReferencesReadBaseline);
 		const project = await Project.openProject(projFilePath);
 
 		(project.databaseReferences.length).should.equal(5, 'There should be five database references');
@@ -579,7 +574,7 @@ describe('Project: database references', function (): void {
 	});
 
 	it('Should add system database reference correctly', async function (): Promise<void> {
-		let project = await testUtils.createTestSqlProject();
+		let project = await testUtils.createTestSqlProject(this.test);
 
 		const msdbRefSettings: ISystemDatabaseReferenceSettings = { databaseVariableLiteralValue: systemDatabaseToString(SystemDatabase.MSDB), systemDb: SystemDatabase.MSDB, suppressMissingDependenciesErrors: true };
 		await project.addSystemDatabaseReference(msdbRefSettings);
@@ -590,7 +585,7 @@ describe('Project: database references', function (): void {
 	});
 
 	it('Should add a dacpac reference to the same database correctly', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 		let project = await Project.openProject(projFilePath);
 
 		// add database reference in the same database
@@ -603,7 +598,7 @@ describe('Project: database references', function (): void {
 	});
 
 	it('Should add a dacpac reference to a different database in the same server correctly', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
 		// add database reference to a different database on the same server
@@ -620,7 +615,7 @@ describe('Project: database references', function (): void {
 	});
 
 	it('Should add a dacpac reference to a different database in a different server correctly', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
 		// add database reference to a different database on a different server
@@ -639,7 +634,7 @@ describe('Project: database references', function (): void {
 	});
 
 	it('Should add a project reference to the same database correctly', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 		let project = await Project.openProject(projFilePath);
 
 		// add database reference to a different database on a different server
@@ -659,7 +654,7 @@ describe('Project: database references', function (): void {
 	});
 
 	it('Should add a project reference to a different database in the same server correctly', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 		let project = await Project.openProject(projFilePath);
 
 		// add database reference to a different database on a different server
@@ -681,7 +676,7 @@ describe('Project: database references', function (): void {
 	});
 
 	it('Should add a project reference to a different database in a different server correctly', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 		let project = await Project.openProject(projFilePath);
 
 		// add database reference to a different database on a different server
@@ -705,7 +700,7 @@ describe('Project: database references', function (): void {
 	});
 
 	it('Should not allow adding duplicate dacpac references', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 		let project = await Project.openProject(projFilePath);
 
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
@@ -722,7 +717,7 @@ describe('Project: database references', function (): void {
 	});
 
 	it('Should not allow adding duplicate system database references', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 		let project = await Project.openProject(projFilePath);
 
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
@@ -739,7 +734,7 @@ describe('Project: database references', function (): void {
 	});
 
 	it('Should not allow adding duplicate project references', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 		let project = await Project.openProject(projFilePath);
 
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
@@ -761,7 +756,7 @@ describe('Project: database references', function (): void {
 	});
 
 	it('Should handle trying to add duplicate database references when slashes are different direction', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 		let project = await Project.openProject(projFilePath);
 
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
@@ -784,7 +779,7 @@ describe('Project: database references', function (): void {
 	});
 
 	it.skip('Should update sqlcmd variable values if value changes', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 		const databaseVariable = 'test3Db';
 		const serverVariable = 'otherServer';
@@ -845,7 +840,7 @@ describe('Project: add SQLCMD Variables', function (): void {
 	});
 
 	it('Should update .sqlproj with new sqlcmd variables', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openProjectFileBaseline);
 		let project = await Project.openProject(projFilePath);
 		should(Object.keys(project.sqlCmdVariables).length).equal(2, 'The project should have 2 sqlcmd variables when opened');
 
@@ -871,7 +866,7 @@ describe('Project: publish profiles', function (): void {
 	});
 
 	it('Should add new publish profile', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 		should(project.publishProfiles.length).equal(3);
 
@@ -895,20 +890,20 @@ describe('Project: properties', function (): void {
 	});
 
 	it('Should read target database version', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
 		should(project.getProjectTargetVersion()).equal('150');
 	});
 
 	it('Should throw on missing target database version', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectMissingVersionBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.sqlProjectMissingVersionBaseline);
 
 		await testUtils.shouldThrowSpecificError(async () => await Project.openProject(projFilePath), 'Error: No target platform defined.  Missing <DSP> node.');
 	});
 
 	it('Should throw on invalid target database version', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidVersionBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.sqlProjectInvalidVersionBaseline);
 
 		try {
 			await Project.openProject(projFilePath);
@@ -920,14 +915,14 @@ describe('Project: properties', function (): void {
 	});
 
 	it('Should read default database collation', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectCustomCollationBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.sqlProjectCustomCollationBaseline);
 		const project = await Project.openProject(projFilePath);
 
 		should(project.getDatabaseDefaultCollation()).equal('SQL_Latin1_General_CP1255_CS_AS');
 	});
 
 	it('Should return default value when database collation is not specified', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
 		should(project.getDatabaseDefaultCollation()).equal('SQL_Latin1_General_CP1_CI_AS');
@@ -935,7 +930,7 @@ describe('Project: properties', function (): void {
 
 	// TODO: skipped until DacFx throws on invalid value
 	it.skip('Should throw on invalid default database collation', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.sqlProjectInvalidCollationBaseline);
 
 		try {
 			await Project.openProject(projFilePath);
@@ -946,7 +941,7 @@ describe('Project: properties', function (): void {
 	});
 
 	it('Should add database source to project property', async function (): Promise<void> {
-		const project = await testUtils.createTestSqlProject();
+		const project = await testUtils.createTestSqlProject(this.test);
 
 		// Should add a single database source
 		await project.addDatabaseSource('test1');
@@ -974,7 +969,7 @@ describe('Project: properties', function (): void {
 	});
 
 	it('Should remove database source from project property', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.sqlProjectInvalidCollationBaseline);
 		const project = await Project.openProject(projFilePath);
 
 		await project.addDatabaseSource('test1');
@@ -1002,7 +997,7 @@ describe('Project: properties', function (): void {
 	});
 
 	it('Should throw error when adding or removing database source that contains semicolon', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.sqlProjectInvalidCollationBaseline);
 		const project = await Project.openProject(projFilePath);
 		const semicolon = ';';
 
@@ -1030,23 +1025,23 @@ describe('Project: round trip updates', function (): void {
 	});
 
 	it('Should update SSDT project to work in ADS', async function (): Promise<void> {
-		await testUpdateInRoundTrip(baselines.SSDTProjectFileBaseline);
+		await testUpdateInRoundTrip(this.test, baselines.SSDTProjectFileBaseline);
 	});
 
 	// skipped until https://mssqltools.visualstudio.com/SQL%20Tools%20Semester%20Work%20Tracking/_workitems/edit/15749 is fixed
 	it.skip('Should update SSDT project with new system database references', async function (): Promise<void> {
-		await testUpdateInRoundTrip(baselines.SSDTUpdatedProjectBaseline);
+		await testUpdateInRoundTrip(this.test, baselines.SSDTUpdatedProjectBaseline);
 	});
 
 	it('Should update SSDT project to work in ADS handling pre-existing targets', async function (): Promise<void> {
-		await testUpdateInRoundTrip(baselines.SSDTProjectBaselineWithBeforeBuildTarget);
+		await testUpdateInRoundTrip(this.test, baselines.SSDTProjectBaselineWithBeforeBuildTarget);
 	});
 
 	it('Should not update project and no backup file should be created when prompt to update project is rejected', async function (): Promise<void> {
 		sinon.stub(window, 'showWarningMessage').returns(<any>Promise.resolve(constants.noString));
 		// setup test files
-		const folderPath = await testUtils.generateTestFolderPath();
-		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
+		const folderPath = await testUtils.generateTestFolderPath(this.test);
+		const sqlProjPath = await testUtils.createTestSqlProjFile(this.test, baselines.SSDTProjectFileBaseline, folderPath);
 
 		const originalSqlProjContents = (await fs.readFile(sqlProjPath)).toString();
 
@@ -1067,29 +1062,29 @@ describe('Project: round trip updates', function (): void {
 
 	it('Should not show warning message for non-SSDT projects that have the additional information for Build', async function (): Promise<void> {
 		// setup test files
-		const folderPath = await testUtils.generateTestFolderPath();
-		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline, folderPath);
-		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
+		const folderPath = await testUtils.generateTestFolderPath(this.test);
+		const sqlProjPath = await testUtils.createTestSqlProjFile(this.test, baselines.openProjectFileBaseline, folderPath);
+		await testUtils.createTestDataSources(this.test, baselines.openDataSourcesBaseline, folderPath);
 
 		await Project.openProject(Uri.file(sqlProjPath).fsPath); // no error thrown
 	});
 
 	it('Should not show update project warning message when opening sdk style project using Sdk node', async function (): Promise<void> {
-		await shouldNotShowUpdateWarning(baselines.newSdkStyleProjectSdkNodeBaseline);
+		await shouldNotShowUpdateWarning(this.test, baselines.newSdkStyleProjectSdkNodeBaseline);
 	});
 
 	it('Should not show update project warning message when opening sdk style project using Project node with Sdk attribute', async function (): Promise<void> {
-		await shouldNotShowUpdateWarning(baselines.newSdkStyleProjectSdkProjectAttributeBaseline);
+		await shouldNotShowUpdateWarning(this.test, baselines.newSdkStyleProjectSdkProjectAttributeBaseline);
 	});
 
 	it('Should not show update project warning message when opening sdk style project using Import node with Sdk attribute', async function (): Promise<void> {
-		await shouldNotShowUpdateWarning(baselines.newStyleProjectSdkImportAttributeBaseline);
+		await shouldNotShowUpdateWarning(this.test, baselines.newStyleProjectSdkImportAttributeBaseline);
 	});
 
-	async function shouldNotShowUpdateWarning(baselineFile: string): Promise<void> {
+	async function shouldNotShowUpdateWarning(test: Mocha.Runnable | undefined, baselineFile: string): Promise<void> {
 		// setup test files
-		const folderPath = await testUtils.generateTestFolderPath();
-		const sqlProjPath = await testUtils.createTestSqlProjFile(baselineFile, folderPath);
+		const folderPath = await testUtils.generateTestFolderPath(test);
+		const sqlProjPath = await testUtils.createTestSqlProjFile(test, baselineFile, folderPath);
 		const spy = sinon.spy(window, 'showWarningMessage');
 
 		const project = await Project.openProject(Uri.file(sqlProjPath).fsPath);
@@ -1098,8 +1093,8 @@ describe('Project: round trip updates', function (): void {
 	}
 });
 
-async function testUpdateInRoundTrip(fileBeforeupdate: string): Promise<void> {
-	projFilePath = await testUtils.createTestSqlProjFile(fileBeforeupdate);
+async function testUpdateInRoundTrip(test: Mocha.Runnable | undefined, fileBeforeupdate: string): Promise<void> {
+	const projFilePath = await testUtils.createTestSqlProjFile(test, fileBeforeupdate);
 	const project = await Project.openProject(projFilePath); // project gets updated if needed in openProject()
 	should(project.isCrossPlatformCompatible).be.false('Project should not be cross-plat compatible before conversion');
 

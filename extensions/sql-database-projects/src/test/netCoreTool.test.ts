@@ -25,7 +25,7 @@ describe('NetCoreTool: Net core tests', function (): void {
 		testContext = createContext();
 	});
 
-	after(async function(): Promise<void> {
+	after(async function (): Promise<void> {
 		await deleteGeneratedTestFolder();
 	});
 
@@ -55,7 +55,7 @@ describe('NetCoreTool: Net core tests', function (): void {
 			should(result).true('dotnet not present in programfiles by default');
 		}
 
-		if (os.platform() === 'linux'){
+		if (os.platform() === 'linux') {
 			//check that path should start with /usr/share
 			let result = !netcoreTool.netcoreInstallLocation || netcoreTool.netcoreInstallLocation.toLowerCase() === '/usr/share/dotnet';
 			should(result).true('dotnet not present in /usr/share');
@@ -70,7 +70,7 @@ describe('NetCoreTool: Net core tests', function (): void {
 
 	it('should run a command successfully', async function (): Promise<void> {
 		const netcoreTool = new NetCoreTool(testContext.outputChannel);
-		const dummyFile =  path.join(await generateTestFolderPath(), 'dummy.dacpac');
+		const dummyFile = path.join(await generateTestFolderPath(this.test), 'dummy.dacpac');
 
 		try {
 			await netcoreTool.runStreamedCommand('echo test > ' + getQuotedPath(dummyFile), undefined);
