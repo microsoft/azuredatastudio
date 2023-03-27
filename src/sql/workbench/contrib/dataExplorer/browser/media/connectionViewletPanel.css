@@ -145,6 +145,12 @@
 	background: url('default_server.svg') center center no-repeat;
 }
 
+.monaco-list:focus .monaco-list-rows > .monaco-list-row.selected .connectionProfileContainer > .icon.server-page,
+.hc-light .monaco-list:focus .monaco-list-rows > .monaco-list-row.selected .connectionProfileContainer > .icon.server-page {
+	background: url('default_server_inverse.svg') center center no-repeat !important;
+	background-size: 16px 16px !important;
+}
+
 .vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page,
 .hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page,
 .vs-dark .monaco-list .monaco-list-rows > .monaco-list-row .connection-tile > .icon.server-page,
