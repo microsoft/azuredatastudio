@@ -39,9 +39,9 @@ class ConnectionProfileGroupTemplate extends Disposable {
 		private _option: ConnectionProfileGroupDisplayOptions
 	) {
 		super();
-		container.parentElement!.classList.add('async-server-group');
-		container.classList.add('async-server-group');
-		this._root = dom.append(container, dom.$('.async-server-group-container'));
+		container.parentElement!.classList.add('server-group');
+		container.classList.add('server-group');
+		this._root = dom.append(container, dom.$('.server-group'));
 		this._nameContainer = dom.append(this._root, dom.$('span.name'));
 	}
 
@@ -50,10 +50,10 @@ class ConnectionProfileGroupTemplate extends Disposable {
 		if (this._option.showColor && rowElement) {
 			rowElement.style.color = element.textColor;
 			if (element.color) {
-				this._nameContainer.style.background = element.color;
+				rowElement.style.background = element.color;
 			} else {
 				// If the group doesn't contain specific color, assign the default color
-				this._nameContainer.style.background = DefaultServerGroupColor;
+				rowElement.style.background = DefaultServerGroupColor;
 			}
 		}
 		if (element.description && (element.description !== '')) {
