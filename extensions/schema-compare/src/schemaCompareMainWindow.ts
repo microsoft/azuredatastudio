@@ -736,7 +736,7 @@ export class SchemaCompareMainWindow {
 			title: loc.compare
 		}).component();
 
-		this.compareButton.onDidClick(async () => {
+		this.compareButton.onDidClick(async (_click) => {
 			await this.startCompare();
 		});
 	}
@@ -751,7 +751,7 @@ export class SchemaCompareMainWindow {
 			title: loc.stop
 		}).component();
 
-		this.cancelCompareButton.onDidClick(async () => {
+		this.cancelCompareButton.onDidClick(async (_click) => {
 			await this.cancelCompare();
 		});
 	}
@@ -806,7 +806,7 @@ export class SchemaCompareMainWindow {
 			},
 		}).component();
 
-		this.generateScriptButton.onDidClick(async () => {
+		this.generateScriptButton.onDidClick(async (_click) => {
 			await this.generateScript();
 		});
 	}
@@ -843,7 +843,7 @@ export class SchemaCompareMainWindow {
 			title: loc.options
 		}).component();
 
-		this.optionsButton.onDidClick(async () => {
+		this.optionsButton.onDidClick(async (_click) => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOptionsOpened');
 			// create fresh every time
 			this.schemaCompareOptionDialog = new SchemaCompareOptionsDialog(this.deploymentOptions, this);
@@ -861,7 +861,7 @@ export class SchemaCompareMainWindow {
 			},
 		}).component();
 
-		this.applyButton.onDidClick(async () => {
+		this.applyButton.onDidClick(async (_click) => {
 			await this.publishChanges();
 		});
 	}
@@ -998,7 +998,7 @@ export class SchemaCompareMainWindow {
 			title: loc.switchDirectionDescription
 		}).component();
 
-		this.switchButton.onDidClick(async () => {
+		this.switchButton.onDidClick(async (_click) => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSwitch');
 			// switch source and target
 			[this.sourceEndpointInfo, this.targetEndpointInfo] = [this.targetEndpointInfo, this.sourceEndpointInfo];
@@ -1032,7 +1032,7 @@ export class SchemaCompareMainWindow {
 			secondary: true
 		}).component();
 
-		this.selectSourceButton.onDidClick(async () => {
+		this.selectSourceButton.onDidClick(async (_click) => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSelectSource');
 			this.schemaCompareDialog = new SchemaCompareDialog(this, undefined, this.extensionContext);
 			this.promise = this.schemaCompareDialog.openDialog();
@@ -1046,7 +1046,7 @@ export class SchemaCompareMainWindow {
 			secondary: true
 		}).component();
 
-		this.selectTargetButton.onDidClick(async () => {
+		this.selectTargetButton.onDidClick(async (_click) => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSelectTarget');
 			this.schemaCompareDialog = new SchemaCompareDialog(this, undefined, this.extensionContext);
 			this.promise = await this.schemaCompareDialog.openDialog();
@@ -1064,7 +1064,7 @@ export class SchemaCompareMainWindow {
 			title: loc.openScmpDescription
 		}).component();
 
-		this.openScmpButton.onDidClick(async () => {
+		this.openScmpButton.onDidClick(async (_click) => {
 			await this.openScmp();
 		});
 	}
@@ -1180,7 +1180,7 @@ export class SchemaCompareMainWindow {
 			enabled: false
 		}).component();
 
-		this.saveScmpButton.onDidClick(async () => {
+		this.saveScmpButton.onDidClick(async (_click) => {
 			await this.saveScmp();
 		});
 	}
