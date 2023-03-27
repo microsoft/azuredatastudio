@@ -100,7 +100,7 @@ class ConnectionProfileTemplate extends Disposable {
 	) {
 		super();
 		container.parentElement!.classList.add('connection-profile');
-		this._root = dom.append(container, dom.$('.connectionProfileContainer'));
+		this._root = dom.append(container, dom.$('.connection-tile'));
 		this._icon = dom.append(this._root, dom.$('div.icon'));
 		this._connectionStatusBadge = dom.append(this._icon, dom.$('div.connection-status-badge'));
 		this._label = dom.append(this._root, dom.$('div.label'));
@@ -153,7 +153,7 @@ class TreeNodeTemplate extends Disposable {
 		container: HTMLElement
 	) {
 		super();
-		this._root = dom.append(container, dom.$('.object-element-container'));
+		this._root = dom.append(container, dom.$('.object-element-group'));
 		this._icon = dom.append(this._root, dom.$('div.object-icon'));
 		this._label = dom.append(this._root, dom.$('div.label'));
 	}
