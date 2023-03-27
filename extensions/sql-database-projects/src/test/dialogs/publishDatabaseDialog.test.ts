@@ -26,7 +26,7 @@ describe('Publish Database Dialog', () => {
 		testContext = createContext();
 	});
 
-	after(async function(): Promise<void> {
+	after(async function (): Promise<void> {
 		await testUtils.deleteGeneratedTestFolder();
 	});
 
@@ -68,7 +68,7 @@ describe('Publish Database Dialog', () => {
 	});
 
 	it('Should include all info in publish profile', async function (): Promise<void> {
-		const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
+		const proj = await testUtils.createTestProject(this.currentTest, baselines.openProjectFileBaseline);
 		const dialog = TypeMoq.Mock.ofType(PublishDatabaseDialog, undefined, undefined, proj);
 		dialog.setup(x => x.getConnectionUri()).returns(() => { return Promise.resolve('Mock|Connection|Uri'); });
 		dialog.setup(x => x.targetDatabaseName).returns(() => 'MockDatabaseName');

@@ -70,7 +70,7 @@ describe('deploy service', function (): void {
 		sandbox = sinon.createSandbox();
 	});
 
-	after(async function(): Promise<void> {
+	after(async function (): Promise<void> {
 		await testUtils.deleteGeneratedTestFolder();
 	});
 
@@ -93,7 +93,7 @@ describe('deploy service', function (): void {
 				dockerBaseImageEula: ''
 			}
 		};
-		const projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.currentTest, baselines.newProjectFileBaseline);
 		const project1 = await Project.openProject(vscode.Uri.file(projFilePath).fsPath);
 		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
 		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
@@ -128,7 +128,7 @@ describe('deploy service', function (): void {
 				dockerBaseImageEula: ''
 			}
 		};
-		const projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.currentTest, baselines.newProjectFileBaseline);
 		const project1 = await Project.openProject(vscode.Uri.file(projFilePath).fsPath);
 		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
 		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),

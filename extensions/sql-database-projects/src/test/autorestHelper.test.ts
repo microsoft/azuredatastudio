@@ -25,7 +25,7 @@ describe('Autorest tests', function (): void {
 		sinon.restore();
 	});
 
-	after(async function(): Promise<void> {
+	after(async function (): Promise<void> {
 		await testUtils.deleteGeneratedTestFolder();
 	});
 
@@ -41,7 +41,7 @@ describe('Autorest tests', function (): void {
 		sinon.stub(window, 'showInformationMessage').returns(<any>Promise.resolve(runViaNpx)); // stub a selection in case test runner doesn't have autorest installed
 
 		const autorestHelper = new AutorestHelper(testContext.outputChannel);
-		const dummyFile = path.join(await testUtils.generateTestFolderPath(), 'testoutput.log');
+		const dummyFile = path.join(await testUtils.generateTestFolderPath(this.currentTest), 'testoutput.log');
 		sinon.stub(autorestHelper, 'constructAutorestCommand').returns(`${await autorestHelper.detectInstallation()} --version > ${dummyFile}`);
 
 		try {

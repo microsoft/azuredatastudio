@@ -14,7 +14,7 @@ import { Uri } from 'vscode';
 
 describe('Tests to verify utils functions', function (): void {
 	it('Should determine existence of files/folders', async () => {
-		let testFolderPath = await createDummyFileStructure();
+		let testFolderPath = await createDummyFileStructure(undefined);
 
 		should(await utils.exists(testFolderPath)).equal(true);
 		should(await utils.exists(path.join(testFolderPath, 'file1.sql'))).equal(true);
