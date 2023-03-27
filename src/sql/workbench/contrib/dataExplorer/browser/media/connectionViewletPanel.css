@@ -142,13 +142,15 @@
 .hc-light .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-profile-container > .icon.server-page,
 .monaco-list .monaco-list-rows > .monaco-list-row .connection-profile-container > .icon.server-page,
 .hc-light .monaco-list .monaco-list-rows > .monaco-list-row .connection-profile-container > .icon.server-page {
-	background: url('default_server.svg') center center no-repeat;
+	background-image: url('default_server.svg');
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 16px 16px;
 }
 
 .monaco-list:focus .monaco-list-rows > .monaco-list-row.selected .connection-profile-container > .icon.server-page,
 .hc-light .monaco-list:focus .monaco-list-rows > .monaco-list-row.selected .connection-profile-container > .icon.server-page {
-	background: url('default_server_inverse.svg') center center no-repeat !important;
-	background-size: 16px 16px !important;
+	background-image: url('default_server_inverse.svg');
 }
 
 .vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page,
@@ -159,7 +161,7 @@
 .hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-profile-container > .icon.server-page,
 .vs-dark .monaco-list .monaco-list-rows > .monaco-list-row .connection-profile-container > .icon.server-page,
 .hc-black .monaco-list .monaco-list-rows > .monaco-list-row .connection-profile-container > .icon.server-page {
-	background: url('default_server_inverse.svg') center center no-repeat;
+	background-image: url('default_server_inverse.svg');
 }
 
 /* loading for OE node */
@@ -184,13 +186,15 @@
 }
 
 /* Connected badge */
-.monaco-list .connection-tile .connection-status-badge.connected {
+.monaco-list .connection-tile .connection-status-badge.connected,
+.monaco-list-row .connection-profile .connection-profile-container .icon .connection-status-badge.connected {
 	border: 2.4px solid rgba(59, 180, 74, 100%);
 	background: rgba(59, 180, 74, 100%);
 }
 
 /* Disconnected badge */
-.monaco-list .connection-tile .connection-status-badge.disconnected {
+.monaco-list .connection-tile .connection-status-badge.disconnected,
+.monaco-list-row .connection-profile .connection-profile-container .icon .connection-status-badge.disconnected {
 	border: 2.4px solid rgba(208, 46, 0, 100%);
 	background: rgba(255, 255, 255, 80%);
 }
@@ -237,7 +241,6 @@
 
 .monaco-list-row .object-element-container .icon {
 	flex: 0 30px;
-	background-size: 16px !important;
 }
 
 .monaco-list-row .connection-profile .connection-profile-container {
@@ -252,7 +255,6 @@
 
 .monaco-list-row .connection-profile .connection-profile-container .icon {
 	flex: 0 30px;
-	background-size: 16px !important;
 	position: relative;
 }
 
@@ -264,14 +266,4 @@
 	width: 4px;
 	height: 4px;
 	border-radius: 50%;
-}
-
-.monaco-list-row .connection-profile .connection-profile-container .icon .connection-status-badge.connected {
-	border: 2.4px solid rgba(59, 180, 74, 100%);
-	background: rgba(59, 180, 74, 100%);
-}
-
-.monaco-list-row .connection-profile .connection-profile-container .icon .connection-status-badge.disconnected {
-	border: 2.4px solid rgba(208, 46, 0, 100%);
-	background: rgba(255, 255, 255, 80%);
 }
