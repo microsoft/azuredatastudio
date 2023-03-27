@@ -947,7 +947,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async startTdeMigration(
 		accessToken: string,
-		reportUpdate: (dbName: string, succeeded: boolean, message: string) => Promise<void>): Promise<OperationResult<TdeMigrationDbResult[]>> {
+		reportUpdate: (dbName: string, succeeded: boolean, message: string, statusCode: string) => Promise<void>): Promise<OperationResult<TdeMigrationDbResult[]>> {
 
 		const tdeEnabledDatabases = this.tdeMigrationConfig.getTdeEnabledDatabases();
 		const connectionString = await getSourceConnectionString();

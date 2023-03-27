@@ -126,7 +126,8 @@
             "enumDescriptions": [
               "Azure Active Directory Authentication Library",
               "Microsoft Authentication Library"
-            ]
+            ],
+            "deprecationMessage": "Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL (default option) instead."
           }
         }
       }
