@@ -13,9 +13,12 @@ export class AsyncServerTreeDelegate implements IListVirtualDelegate<ServerTreeE
 
 	getHeight(element: ServerTreeElement): number {
 		if (element instanceof ConnectionProfileGroup) {
-			return 35;
+			return ServerTreeRenderer.CONNECTION_GROUP_HEIGHT;
+		} else if (element instanceof ConnectionProfile) {
+			return ServerTreeRenderer.CONNECTION_HEIGHT;
+		} else {
+			return ServerTreeRenderer.OBJECTEXPLORER_HEIGHT;
 		}
-		return 25;
 	}
 
 	getTemplateId(element: ServerTreeElement): string {
