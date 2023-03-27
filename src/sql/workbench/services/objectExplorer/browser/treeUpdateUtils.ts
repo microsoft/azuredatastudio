@@ -100,7 +100,6 @@ export class TreeUpdateUtils {
 			TreeUpdateUtils.alterConnectionTitles(connections);
 			group.connections = connections;
 		});
-
 		return inputGroups;
 	}
 

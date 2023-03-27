@@ -223,7 +223,6 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		this._title = value;
 	}
 
-
 	public override clone(): ConnectionProfile {
 		let instance = new ConnectionProfile(this.capabilitiesService, this);
 		return instance;
@@ -278,7 +277,6 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		if (databaseDisplayName && !getOriginalOptions && this.serverCapabilities?.useFullOptions) {
 			id += ProviderConnectionInfo.idSeparator + 'databaseDisplayName' + ProviderConnectionInfo.nameValueSeparator + databaseDisplayName;
 		}
-
 		return id;
 	}
 

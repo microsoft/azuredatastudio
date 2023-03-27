@@ -253,7 +253,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 						title += `.${profile.databaseName}`;
 					}
 					title += ` (${profile.userName || profile.authenticationType})`;
-					title += profile.getOptionsKey()
+					title += profile.getOptionsKey();
 				}
 			} else {
 				title += localize('disconnected', "disconnected");
