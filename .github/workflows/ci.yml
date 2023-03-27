@@ -20,5 +20,5 @@ jobs:
         node-version: 14.17.3
     - run: yarn install --frozen-lockfile
       name: Install dependencies
-    - run: node scripts/validateGalleries.js
+    - run: node scripts/validateGalleries.js ${GITHUB_BASE_REF}
       name: Validate Extension Galleries
