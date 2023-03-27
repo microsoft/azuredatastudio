@@ -79,7 +79,6 @@ export enum TelemetryAction {
 	LoginMigrationCompleted = 'LoginMigrationCompleted',
 	TdeMigrationSuccess = 'TdeMigrationSuccess',
 	TdeMigrationFailures = 'TdeMigrationFailures',
-	TdeMigrationError = 'TdeMigrationError',
 	TdeMigrationClientException = 'TdeMigrationClientException',
 	TdeConfigurationUseADS = 'TdeConfigurationUseADS',
 	TdeConfigurationIgnoreADS = 'TdeConfigurationIgnoreADS'
