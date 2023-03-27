@@ -32,7 +32,7 @@ describe('Publish Database Dialog', () => {
 
 	it('Should open dialog successfully ', async function (): Promise<void> {
 		const projController = new ProjectsController(testContext.outputChannel);
-		const projFileDir = path.join(testUtils.generateBaseFolderName(), `TestProject_${new Date().getTime()}`);
+		const projFileDir = await testUtils.generateTestFolderPath(this.test);
 
 		const projFilePath = await projController.createNewProject({
 			newProjName: 'TestProjectName',
@@ -50,8 +50,7 @@ describe('Publish Database Dialog', () => {
 
 	it('Should create default database name correctly ', async function (): Promise<void> {
 		const projController = new ProjectsController(testContext.outputChannel);
-		const projFolder = `TestProject_${new Date().getTime()}`;
-		const projFileDir = path.join(testUtils.generateBaseFolderName(), projFolder);
+		const projFileDir = await testUtils.generateTestFolderPath(this.test);
 
 		const projFilePath = await projController.createNewProject({
 			newProjName: 'TestProjectName',

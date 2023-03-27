@@ -60,14 +60,14 @@ export async function createTestDataSources(test: Mocha.Runnable | undefined, co
 
 export async function generateTestFolderPath(test: Mocha.Runnable | undefined): Promise<string> {
 	const testName = test?.title === undefined ? '' : `${normalizeTestName(test?.title)}_`
-	const folderPath = path.join(generateBaseFolderName(), `TestRun_${testName}${new Date().getTime()}`);
+	const folderPath = path.join(generateBaseFolderName(), `Test_${testName}${new Date().getTime()}_${Math.floor((Math.random() * 1000))}`);
 	await fs.mkdir(folderPath, { recursive: true });
 
 	return folderPath;
 }
 
 function normalizeTestName(rawTestName: string): string {
-	return rawTestName.replace(/[^\w]+/g, '');
+	return rawTestName.replace(/[^\w]+/g, '').substring(0, 40); // remove all non-alphanumeric characters, then trim to a reasonable length
 }
 
 export function generateBaseFolderName(): string {
@@ -278,7 +278,6 @@ export async function createOtherDummyFiles(testFolderPath: string): Promise<Uri
 export async function deleteGeneratedTestFolder(): Promise<void> {
 	const testFolderPath: string = generateBaseFolderName();
 	if (await exists(testFolderPath)) {
-		// cleanup folder
-		await fs.rm(testFolderPath, { recursive: true });
+		await fs.rm(testFolderPath, { recursive: true }); // cleanup folder
 	}
 }

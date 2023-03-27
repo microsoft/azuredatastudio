@@ -57,7 +57,7 @@ describe('ProjectsController', function (): void {
 		describe('Project file operations and prompting', function (): void {
 			it('Should create new sqlproj file with correct specified target platform', async function (): Promise<void> {
 				const projController = new ProjectsController(testContext.outputChannel);
-				const projFileDir = path.join(testUtils.generateBaseFolderName(), `TestProject_${new Date().getTime()}`);
+				const projFileDir = await testUtils.generateTestFolderPath(this.test);
 				const projTargetPlatform = SqlTargetPlatform.sqlAzure; // default is SQL Server 2022
 
 				const projFilePath = await projController.createNewProject({
@@ -76,7 +76,7 @@ describe('ProjectsController', function (): void {
 
 			it('Should create new edge project with expected template files', async function (): Promise<void> {
 				const projController = new ProjectsController(testContext.outputChannel);
-				const projFileDir = path.join(testUtils.generateBaseFolderName(), `TestProject_${new Date().getTime()}`);
+				const projFileDir = await testUtils.generateTestFolderPath(this.test);
 
 				const projFilePath = await projController.createNewProject({
 					newProjName: 'TestProjectName',
