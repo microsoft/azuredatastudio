@@ -100,7 +100,7 @@ class ConnectionProfileTemplate extends Disposable {
 	) {
 		super();
 		container.parentElement!.classList.add('connection-profile');
-		this._root = dom.append(container, dom.$('.connectionProfileContainer'));
+		this._root = dom.append(container, dom.$('.connection-profile-container'));
 		this._icon = dom.append(this._root, dom.$('div.icon'));
 		this._connectionStatusBadge = dom.append(this._icon, dom.$('div.connection-status-badge'));
 		this._label = dom.append(this._root, dom.$('div.label'));
