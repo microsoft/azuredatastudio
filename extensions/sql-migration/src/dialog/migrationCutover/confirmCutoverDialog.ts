@@ -79,8 +79,8 @@ export class ConfirmCutoverDialog {
 			let infoDisplay = 'none';
 			if (getMigrationTargetTypeEnum(this.migrationCutoverModel.migration) === MigrationTargetType.SQLMI) {
 				const targetInstance = await getMigrationTargetInstance(
-					this.migrationCutoverModel.serviceConstext.azureAccount!,
-					this.migrationCutoverModel.serviceConstext.subscription!,
+					this.migrationCutoverModel.serviceContext.azureAccount!,
+					this.migrationCutoverModel.serviceContext.subscription!,
 					this.migrationCutoverModel.migration);
 
 				if ((<SqlManagedInstance>targetInstance)?.sku?.tier === ServiceTier.BusinessCritical) {
