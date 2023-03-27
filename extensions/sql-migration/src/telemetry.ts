@@ -44,6 +44,7 @@ export enum TelemetryViews {
 	LoginMigrationSelectorPage = 'LoginMigrationSelectorPage',
 	LoginMigrationStatusPage = 'LoginMigrationStatusPage',
 	TdeConfigurationDialog = 'TdeConfigurationDialog',
+	TdeMigrationDialog = 'TdeMigrationDialog',
 	ValidIrDialog = 'validIrDialog',
 }
 
@@ -76,10 +77,11 @@ export enum TelemetryAction {
 	OpenLoginMigrationWizard = 'OpenLoginMigrationWizard',
 	LoginMigrationStarted = 'LoginMigrationStarted',
 	LoginMigrationCompleted = 'LoginMigrationCompleted',
-}
-
-export enum TelemetryErrorName {
-	StartMigrationFailed = 'StartMigrationFailed'
+	TdeMigrationSuccess = 'TdeMigrationSuccess',
+	TdeMigrationFailures = 'TdeMigrationFailures',
+	TdeMigrationClientException = 'TdeMigrationClientException',
+	TdeConfigurationUseADS = 'TdeConfigurationUseADS',
+	TdeConfigurationIgnoreADS = 'TdeConfigurationIgnoreADS'
 }
 
 export function logError(telemetryView: TelemetryViews, err: string, error: any): void {
