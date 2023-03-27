@@ -12,6 +12,8 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { IAsyncDataSource } from 'vs/base/browser/ui/tree/tree';
 import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import Severity from 'vs/base/common/severity';
 
 /**
  * Implements the DataSource(that returns a parent/children of an element) for the server tree
@@ -21,7 +23,8 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 	constructor(
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IErrorMessageService private _errorMessageService: IErrorMessageService
 	) {
 	}
 	/**
@@ -42,21 +45,32 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 	 * Returns the element's children as an array in a promise.
 	 */
 	public async getChildren(element: ServerTreeElement): Promise<ServerTreeElement[]> {
-		if (element instanceof ConnectionProfile) {
-			if (element.isDisconnecting) {
-				element.isDisconnecting = false;
-				return [];
+		try {
+			if (element instanceof ConnectionProfile) {
+				if (element.isDisconnecting) {
+					element.isDisconnecting = false;
+					return [];
+				}
+				return await TreeUpdateUtils.getAsyncConnectionNodeChildren(element, this._connectionManagementService, this._objectExplorerService, this._configurationService);
+			} else if (element instanceof ConnectionProfileGroup) {
+				return element.getChildren();
+			} else if (element instanceof TreeNode) {
+				if (element.children) {
+					return element.children;
+				} else {
+					return await this._objectExplorerService.resolveTreeNodeChildren(element.getSession()!, element);
+				}
 			}
-			return await TreeUpdateUtils.getAsyncConnectionNodeChildren(element, this._connectionManagementService, this._objectExplorerService, this._configurationService);
-		} else if (element instanceof ConnectionProfileGroup) {
-			return element.getChildren();
-		} else if (element instanceof TreeNode) {
-			if (element.children) {
-				return element.children;
-			} else {
-				return await this._objectExplorerService.resolveTreeNodeChildren(element.getSession()!, element);
-			}
+		} catch (error) {
+			this.showError(error);
+			throw error;
 		}
 		return [];
+	}
+
+	private showError(errorMessage: string) {
+		if (this._errorMessageService) {
+			this._errorMessageService.showDialog(Severity.Error, '', errorMessage);
+		}
 	}
 }

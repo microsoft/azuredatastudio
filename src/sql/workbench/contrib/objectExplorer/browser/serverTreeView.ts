@@ -212,8 +212,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			this._register(this._objectExplorerService.onUpdateObjectExplorerNodes(args => {
 				if (args.errorMessage) {
 					this.showError(args.errorMessage);
-				}
-				if (args.connection) {
+				} else if (args.connection) {
 					if (this._tree instanceof AsyncServerTree) {
 						this._tree.rerender(<ConnectionProfile>args.connection);
 					}
@@ -488,13 +487,14 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		const element = this.getConnectionInTreeInput(connection.id);
 		if (element) {
 			if (this._tree instanceof AsyncServerTree) {
-				this._tree.rerender(element);
+				await this._tree.rerender(element);
+				await this._tree.reveal(element);
 			} else {
 				await this._tree!.refresh(element);
+				await this._tree!.expand(element);
+				await this._tree!.reveal(element, 0.5);
+				this._treeSelectionHandler.onTreeActionStateChange(false);
 			}
-			await this._tree!.expand(element);
-			await this._tree!.reveal(element, 0.5);
-			this._treeSelectionHandler.onTreeActionStateChange(false);
 		}
 	}
 
