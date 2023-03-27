@@ -18,7 +18,6 @@ import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplor
 import * as nls from 'vs/nls';
 import { NODE_EXPANSION_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import * as Utils from 'sql/platform/connection/common/utils';
 
 export interface IExpandableTree extends ITree {
 	/**
@@ -230,7 +229,6 @@ export class TreeUpdateUtils {
 		connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, tree: AsyncServerTree | ITree | undefined, requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<boolean> {
 		const connectedConnection = await TreeUpdateUtils.connectIfNotConnected(connection, options, connectionManagementService, tree);
 		if (connectedConnection) {
-
 			// append group ID and original display name to build unique OE session ID
 			connectedConnection.options['groupId'] = connection.groupId;
 			connectedConnection.options['databaseDisplayName'] = connection.databaseName;
@@ -289,28 +287,29 @@ export class TreeUpdateUtils {
 				const expansionTimeoutValueSec = configurationService.getValue<number>(NODE_EXPANSION_CONFIG);
 				// Need to wait for the OE service to update its nodes in order to resolve the children
 				const nodesUpdatedPromise = new Promise((resolve, reject) => {
-					const nodesUpdatedTimeout = setTimeout(() => {
+
+					// Clean up timeout and listener
+					const cleanup = () => {
+						clearTimeout(nodeUpdateTimer);
+						nodesUpdatedListener.dispose();
+					}
+
+					// If the node update takes too long, reject the promise
+					const nodeUpdateTimeout = () => {
 						reject(new Error(nls.localize('objectExplorerTimeout', "Object Explorer timed out for {0}", connection.databaseName)));
-						clearTimeout(nodesUpdatedTimeout);
-					}, expansionTimeoutValueSec * 1000);
+						cleanup();
+					}
+					const nodeUpdateTimer = setTimeout(nodeUpdateTimeout, expansionTimeoutValueSec * 1000);
+
 
 					nodesUpdatedListener = objectExplorerService.onUpdateObjectExplorerNodes(e => {
-						if (e.errorMessage) {
-							reject(new Error(e.errorMessage));
-						} else if (e.connection.id === connection.id) {
-							clearTimeout(nodesUpdatedTimeout);
-							nodesUpdatedListener.dispose();
-							resolve(undefined);
-						} else if (e.connection.matches(connection)) {
-							clearTimeout(nodesUpdatedTimeout);
-							nodesUpdatedListener.dispose();
-							connection = <ConnectionProfile>e.connection;
-							resolve(undefined);
-						} else if (Utils.generateUri(connection) === Utils.generateUri(e.connection)) {
-							clearTimeout(nodesUpdatedTimeout);
-							nodesUpdatedListener.dispose();
-							connection = <ConnectionProfile>e.connection;
-							resolve(undefined);
+						if (e.connection && e.connection.id === connection.id) {
+							if (e.errorMessage) {
+								reject(new Error(e.errorMessage));
+							} else {
+								resolve(undefined);
+							}
+							cleanup();
 						}
 					});
 				});
