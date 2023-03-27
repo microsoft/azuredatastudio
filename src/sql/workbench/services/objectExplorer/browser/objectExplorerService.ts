@@ -362,7 +362,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			}
 		}
 		else {
-			this.logService.warn(`cannot find session ${sessionId}`);
+			this.logService.warn(`Cannot find session ${sessionId}`);
 		}
 	}
 
