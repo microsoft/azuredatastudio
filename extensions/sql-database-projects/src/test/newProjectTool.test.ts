@@ -20,7 +20,7 @@ describe('NewProjectTool: New project tool tests', function (): void {
 
 	beforeEach(async function () {
 		previousSetting = await vscode.workspace.getConfiguration(projectConfigurationKey)[projectSaveLocationKey];
-		testFolderPath = await generateTestFolderPath(this.currentTest);
+		testFolderPath = await generateTestFolderPath(this.test);
 		// set the default project folder path to the test folder
 		await vscode.workspace.getConfiguration(projectConfigurationKey).update(projectSaveLocationKey, testFolderPath, true);
 
@@ -47,20 +47,20 @@ describe('NewProjectTool: New project tool tests', function (): void {
 	it('Should auto-increment default project names for new projects', async function (): Promise<void> {
 		should(newProjectTool.defaultProjectNameNewProj()).equal('DatabaseProject1');
 
-		await createTestFile(this.currentTest, '', 'DatabaseProject1', testFolderPath);
+		await createTestFile(this.test, '', 'DatabaseProject1', testFolderPath);
 		should(newProjectTool.defaultProjectNameNewProj()).equal('DatabaseProject2');
 
-		await createTestFile(this.currentTest, '', 'DatabaseProject2', testFolderPath);
+		await createTestFile(this.test, '', 'DatabaseProject2', testFolderPath);
 		should(newProjectTool.defaultProjectNameNewProj()).equal('DatabaseProject3');
 	});
 
 	it('Should auto-increment default project names for create project for database', async function (): Promise<void> {
 		should(newProjectTool.defaultProjectNameFromDb('master')).equal('DatabaseProjectmaster');
 
-		await createTestFile(this.currentTest, '', 'DatabaseProjectmaster', testFolderPath);
+		await createTestFile(this.test, '', 'DatabaseProjectmaster', testFolderPath);
 		should(newProjectTool.defaultProjectNameFromDb('master')).equal('DatabaseProjectmaster2');
 
-		await createTestFile(this.currentTest, '', 'DatabaseProjectmaster2', testFolderPath);
+		await createTestFile(this.test, '', 'DatabaseProjectmaster2', testFolderPath);
 		should(newProjectTool.defaultProjectNameFromDb('master')).equal('DatabaseProjectmaster3');
 	});
 

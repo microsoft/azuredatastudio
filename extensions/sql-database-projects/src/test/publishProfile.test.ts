@@ -35,7 +35,7 @@ describe('Publish profile tests', function (): void {
 
 	it('Should read database name, integrated security connection string, and SQLCMD variables from publish profile', async function (): Promise<void> {
 		await baselines.loadBaselines();
-		const profilePath = await testUtils.createTestFile(this.currentTest, baselines.publishProfileIntegratedSecurityBaseline, 'publishProfile.publish.xml');
+		const profilePath = await testUtils.createTestFile(this.test, baselines.publishProfileIntegratedSecurityBaseline, 'publishProfile.publish.xml');
 		const connectionResult = {
 			connected: true,
 			connectionId: 'connId',
@@ -58,7 +58,7 @@ describe('Publish profile tests', function (): void {
 
 	it('Should read database name, SQL login connection string, and SQLCMD variables from publish profile', async function (): Promise<void> {
 		await baselines.loadBaselines();
-		const profilePath = await testUtils.createTestFile(this.currentTest, baselines.publishProfileSqlLoginBaseline, 'publishProfile.publish.xml');
+		const profilePath = await testUtils.createTestFile(this.test, baselines.publishProfileSqlLoginBaseline, 'publishProfile.publish.xml');
 		const connectionResult = {
 			providerName: 'MSSQL',
 			connectionId: 'connId',
@@ -83,7 +83,7 @@ describe('Publish profile tests', function (): void {
 
 	it('Should read SQLCMD variables correctly from publish profile even if DefaultValue is used', async function (): Promise<void> {
 		await baselines.loadBaselines();
-		const profilePath = await testUtils.createTestFile(this.currentTest, baselines.publishProfileDefaultValueBaseline, 'publishProfile.publish.xml');
+		const profilePath = await testUtils.createTestFile(this.test, baselines.publishProfileDefaultValueBaseline, 'publishProfile.publish.xml');
 		testContext.dacFxService.setup(x => x.getOptionsFromProfile(TypeMoq.It.isAny())).returns(async () => {
 			return Promise.resolve(mockDacFxOptionsResult);
 		});
@@ -97,7 +97,7 @@ describe('Publish profile tests', function (): void {
 
 	it('Should throw error when connecting does not work', async function (): Promise<void> {
 		await baselines.loadBaselines();
-		const profilePath = await testUtils.createTestFile(this.currentTest, baselines.publishProfileIntegratedSecurityBaseline, 'publishProfile.publish.xml');
+		const profilePath = await testUtils.createTestFile(this.test, baselines.publishProfileIntegratedSecurityBaseline, 'publishProfile.publish.xml');
 
 		sinon.stub(azdata.connection, 'connect').throws(new Error('Could not connect'));
 

@@ -155,9 +155,9 @@ describe('Create Project From Database Quickpick', () => {
 	it('Should exit when folder structure is not selected and existing folder/file location is selected', async function (): Promise<void> {
 		//create folder and project file
 		const projectFileName = 'TestProject';
-		const testProjectFilePath = await generateTestFolderPath(this.currentTest);
+		const testProjectFilePath = await generateTestFolderPath(this.test);
 		await fs.rm(testProjectFilePath, { force: true, recursive: true });	//clean up if it already exists
-		await createTestFile(this.currentTest, '', `${projectFileName}.sqlproj`, testProjectFilePath);
+		await createTestFile(this.test, '', `${projectFileName}.sqlproj`, testProjectFilePath);
 
 		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');

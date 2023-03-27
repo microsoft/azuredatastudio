@@ -36,7 +36,7 @@ describe('Add Database Reference Dialog', () => {
 	});
 
 	it('Should open dialog successfully', async function (): Promise<void> {
-		const project = await testUtils.createTestProject(this.currentTest, baselines.newProjectFileBaseline);
+		const project = await testUtils.createTestProject(this.test, baselines.newProjectFileBaseline);
 
 		const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
 		dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([]));
@@ -48,7 +48,7 @@ describe('Add Database Reference Dialog', () => {
 	});
 
 	it('Should enable ok button correctly', async function (): Promise<void> {
-		const project = await testUtils.createTestProject(this.currentTest, baselines.newProjectFileBaseline);
+		const project = await testUtils.createTestProject(this.test, baselines.newProjectFileBaseline);
 
 		const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
 		dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([]));
@@ -107,7 +107,7 @@ describe('Add Database Reference Dialog', () => {
 	});
 
 	it('Should enable and disable input boxes depending on the reference type', async function (): Promise<void> {
-		const project = await testUtils.createTestProject(this.currentTest, baselines.newProjectFileBaseline);
+		const project = await testUtils.createTestProject(this.test, baselines.newProjectFileBaseline);
 
 		const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
 		dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([]));

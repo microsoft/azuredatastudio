@@ -19,7 +19,7 @@ describe('Data Sources: DataSource operations', function (): void {
 	});
 
 	it.skip('Should read DataSources from datasource.json', async function (): Promise<void> {
-		const dataSourcePath = await testUtils.createTestDataSources(this.currentTest, baselines.openDataSourcesBaseline);
+		const dataSourcePath = await testUtils.createTestDataSources(this.test, baselines.openDataSourcesBaseline);
 		const dataSourceList = await dataSources.load(dataSourcePath);
 
 		should(dataSourceList.length).equal(3);
