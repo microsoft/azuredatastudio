@@ -311,7 +311,7 @@ export class AsyncDataTree<TInput, T, TFilterData = void> implements IDisposable
 
 	protected readonly tree: ObjectTree<IAsyncDataTreeNode<TInput, T>, TFilterData>;
 	protected readonly root: IAsyncDataTreeNode<TInput, T>;
-	protected readonly nodes = new Map<null | T, IAsyncDataTreeNode<TInput, T>>(); // {{SQL CARBON EDIT}}}making nodes protected
+	protected readonly nodes = new Map<null | T, IAsyncDataTreeNode<TInput, T>>(); // {{SQL CARBON EDIT}}} making protected to access in subclass
 	private readonly sorter?: ITreeSorter<T>;
 	private readonly collapseByDefault?: { (e: T): boolean };
 
