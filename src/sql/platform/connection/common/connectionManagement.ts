@@ -342,9 +342,9 @@ export interface IConnectionManagementService {
 	getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 
 	/**
-	 * Serialize connection string with optional provider
+	 * Deserialize connection string using the specified provider
 	 */
-	buildConnectionInfo(connectionString: string, provider?: string): Thenable<azdata.ConnectionInfo>;
+	buildConnectionInfo(connectionString: string, provider: string): Promise<azdata.ConnectionInfo>;
 
 	providerRegistered(providerId: string): boolean;
 	/**
