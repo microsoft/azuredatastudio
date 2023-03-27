@@ -287,7 +287,6 @@ export class TreeUpdateUtils {
 				await objectExplorerService.resolveTreeNodeChildren(session, rootNode);
 				return rootNode.children ?? [];
 			} else {
-				let nodesUpdatedListener;
 				const options: IConnectionCompletionOptions = {
 					params: undefined,
 					saveTheConnection: true,
@@ -298,7 +297,6 @@ export class TreeUpdateUtils {
 				const expansionTimeoutValueSec = configurationService.getValue<number>(NODE_EXPANSION_CONFIG);
 				// Need to wait for the OE service to update its nodes in order to resolve the children
 				const nodesUpdatedPromise = new Promise((resolve, reject) => {
-
 					// Clean up timeout and listener
 					const cleanup = () => {
 						clearTimeout(nodeUpdateTimer);
@@ -313,7 +311,7 @@ export class TreeUpdateUtils {
 					const nodeUpdateTimer = setTimeout(nodeUpdateTimeout, expansionTimeoutValueSec * 1000);
 
 
-					nodesUpdatedListener = objectExplorerService.onUpdateObjectExplorerNodes(e => {
+					const nodesUpdatedListener = objectExplorerService.onUpdateObjectExplorerNodes(e => {
 						if (e.connection && e.connection.id === connection.id) {
 							if (e.errorMessage) {
 								reject(new Error(e.errorMessage));
