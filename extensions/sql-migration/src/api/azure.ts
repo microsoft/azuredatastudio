@@ -911,6 +911,7 @@ export enum AzureResourceKind {
 	SQLDB = 'SqlDb',
 	SQLMI = 'SqlMi',
 	SQLVM = 'SqlVm',
+	ORACLETOSQLDB = "OracleToSqlDb",
 }
 
 export interface ValidateIrSqlDatabaseMigrationRequest {

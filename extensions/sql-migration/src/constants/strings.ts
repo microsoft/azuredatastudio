@@ -1006,7 +1006,7 @@ export const FIELD_LABEL_RESTORING_FILES = localize('sql.migration.field.label.r
 export const FIELD_LABEL_RESTORED_SIZE = localize('sql.migration.field.label.restored.size', 'Restored size (MB)');
 export const FIELD_LABEL_RESTORE_PLAN_SIZE = localize('sql.migration.field.label.restore.plan.size', 'Restore plan size (MB)');
 export const FIELD_LABEL_RESTORE_PERCENT_COMPLETED = localize('sql.migration.field.label.restore.percent.completed', 'Restore percent completed');
-export const FIELD_LABEL_MI_RESTORE_STATE = localize('sql.migration.field.label.mi.restore.state', 'MI Restore state');
+export const FIELD_LABEL_MI_RESTORE_STATE = localize('sql.migration.field.label.mi.restore.state', 'Managed instance restore state');
 
 export const BACKUP_FILE_COLUMN_FILE_NAME = localize('sql.migration.backup.file.name', 'File name');
 export const BACKUP_FILE_COLUMN_FILE_STATUS = localize('sql.migration.backup.file.status', 'File status');

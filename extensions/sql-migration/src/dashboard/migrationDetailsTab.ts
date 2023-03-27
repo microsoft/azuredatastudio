@@ -10,8 +10,8 @@ import * as loc from '../constants/strings';
 import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getMigrationStatusImage } from '../api/utils';
 import { logError, TelemetryViews } from '../telemetry';
 import * as styles from '../constants/styles';
-import { canCancelMigration, canCutoverMigration, canDeleteMigration, canRetryMigration, getMigrationStatusString, getMigrationTargetTypeEnum, isManagedInstanceTarget, isOfflineMigation, isShirMigration } from '../constants/helper';
-import { DatabaseMigration, getResourceName } from '../api/azure';
+import { canCancelMigration, canCutoverMigration, canDeleteMigration, canRetryMigration, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation, isShirMigration } from '../constants/helper';
+import { AzureResourceKind, DatabaseMigration, getResourceName } from '../api/azure';
 import * as utils from '../api/utils';
 import * as helper from '../constants/helper';
 import { EmptySettingValue } from './tabBase';
@@ -249,7 +249,7 @@ export class MigrationDetailsTab extends MigrationDetailsTabBase<MigrationDetail
 				?? EmptySettingValue);
 
 			const isBlobMigration = helper.isBlobMigration(migration);
-			const isSqlVmTarget = helper.isSQLVirtualMachineTarget(migration);
+			const isSqlVmTarget = helper.isTargetType(migration, AzureResourceKind.SQLVM);
 			if (!isBlobMigration && !isSqlVmTarget) {
 				await this._fileCount.updateCssStyles({ ...styles.SECTION_HEADER_CSS, display: 'inline' });
 				this._fileCount.value = loc.ACTIVE_BACKUP_FILES_ITEMS(tableData.length);
@@ -335,8 +335,8 @@ export class MigrationDetailsTab extends MigrationDetailsTabBase<MigrationDetail
 
 	private async _showControls(migration: DatabaseMigration): Promise<void> {
 		const isSHIR = helper.isShirMigration(migration);
-		const isSqlMiTarget = helper.isManagedInstanceTarget(migration);
-		const isSqlVmTarget = helper.isSQLVirtualMachineTarget(migration);
+		const isSqlMiTarget = helper.isTargetType(migration, AzureResourceKind.SQLMI);
+		const isSqlVmTarget = helper.isTargetType(migration, AzureResourceKind.SQLVM);
 		const isBlobMigration = helper.isBlobMigration(migration);
 
 		await utils.updateControlDisplay(this._fullBackupFileOnInfoField.flexContainer, isSHIR);
@@ -373,7 +373,7 @@ export class MigrationDetailsTab extends MigrationDetailsTabBase<MigrationDetail
 	private _getTableColumns(migration?: DatabaseMigration): azdata.TableColumn[] {
 		const columns: azdata.TableColumn[] = [];
 		const isSHIR = isShirMigration(migration);
-		const isSqlMiTarget = isManagedInstanceTarget(migration);
+		const isSqlMiTarget = helper.isTargetType(migration, AzureResourceKind.SQLMI);
 
 		this._addItemIfTrue(columns, { value: 'backupFileName', name: loc.BACKUP_FILE_COLUMN_FILE_NAME, tooltip: loc.BACKUP_FILE_COLUMN_FILE_NAME, type: azdata.ColumnType.text, }, true);
 		this._addItemIfTrue(columns, { value: 'backupType', name: loc.TYPE, tooltip: loc.TYPE, type: azdata.ColumnType.text, }, true);
@@ -394,7 +394,7 @@ export class MigrationDetailsTab extends MigrationDetailsTabBase<MigrationDetail
 
 	private _getTableData(migration?: DatabaseMigration, data?: (string | number)[][]): any[] {
 		const isSHIR = isShirMigration(migration);
-		const isSqlMiTarget = isManagedInstanceTarget(migration);
+		const isSqlMiTarget = helper.isTargetType(migration, AzureResourceKind.SQLMI);
 
 		return data?.map(row => {
 			const rec: any[] = [];

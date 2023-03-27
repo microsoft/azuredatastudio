@@ -4,17 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DatabaseMigration } from '../api/azure';
+import { AzureResourceKind, DatabaseMigration } from '../api/azure';
 import { DefaultSettingValue, MigrationTargetType } from '../api/utils';
 import { FileStorageType, MigrationMode } from '../models/stateMachine';
 import * as loc from './strings';
-
-export const AzureResourceKind = {
-	SQLDB: 'SqlDb',
-	SQLMI: 'SqlMi',
-	SQLVM: 'SqlVm',
-	ORACLETOSQLDB: "OracleToSqlDb",
-};
 
 export enum SQLTargetAssetType {
 	SQLMI = 'microsoft.sql/managedinstances',
@@ -215,19 +208,7 @@ export function isFileShareMigration(migration?: DatabaseMigration): boolean {
 	return migration?.properties?.backupConfiguration?.sourceLocation?.fileStorageType === FileStorageTypeCodes.FileShare;
 }
 
-export function isSqlDbTarget(migration: DatabaseMigration): boolean {
-	return isTargetType(migration, AzureResourceKind.SQLDB);
-}
-
-export function isSQLVirtualMachineTarget(migration: DatabaseMigration): boolean {
-	return isTargetType(migration, AzureResourceKind.SQLVM);
-}
-
-export function isManagedInstanceTarget(migration?: DatabaseMigration): boolean {
-	return isTargetType(migration, AzureResourceKind.SQLMI);
-}
-
-function isTargetType(migration?: DatabaseMigration, kind?: string): boolean {
+export function isTargetType(migration?: DatabaseMigration, kind?: string): boolean {
 	return migration?.properties?.kind === kind;
 }
 

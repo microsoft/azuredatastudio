@@ -409,7 +409,7 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 			.withProps({
 				value: label,
 				title: label,
-				width: '150px',
+				width: '170px',
 				CSSStyles: {
 					'font-size': '13px',
 					'line-height': '18px',
