@@ -57,7 +57,7 @@ describe('ProjectsController', function (): void {
 		describe('Project file operations and prompting', function (): void {
 			it('Should create new sqlproj file with correct specified target platform', async function (): Promise<void> {
 				const projController = new ProjectsController(testContext.outputChannel);
-				const projFileDir = path.join(testUtils.generateBaseFolderName(), `TestProject_${new Date().getTime()}`);
+				const projFileDir = await testUtils.generateTestFolderPath(this.test);
 				const projTargetPlatform = SqlTargetPlatform.sqlAzure; // default is SQL Server 2022
 
 				const projFilePath = await projController.createNewProject({
@@ -76,7 +76,7 @@ describe('ProjectsController', function (): void {
 
 			it('Should create new edge project with expected template files', async function (): Promise<void> {
 				const projController = new ProjectsController(testContext.outputChannel);
-				const projFileDir = path.join(testUtils.generateBaseFolderName(), `TestProject_${new Date().getTime()}`);
+				const projFileDir = await testUtils.generateTestFolderPath(this.test);
 
 				const projFilePath = await projController.createNewProject({
 					newProjName: 'TestProjectName',
@@ -112,7 +112,7 @@ describe('ProjectsController', function (): void {
 				sinon.stub(utils, 'sanitizeStringForFilename').returns(tableName);
 				const spy = sinon.spy(vscode.window, 'showErrorMessage');
 				const projController = new ProjectsController(testContext.outputChannel);
-				let project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+				let project = await testUtils.createTestProject(this.test, baselines.newProjectFileBaseline);
 
 				should(project.files.length).equal(0, 'There should be no files');
 				await projController.addItemPrompt(project, '', { itemType: ItemType.script });
@@ -128,7 +128,7 @@ describe('ProjectsController', function (): void {
 				sinon.stub(vscode.window, 'showQuickPick').resolves(undefined);
 				const spy = sinon.spy(vscode.window, 'showErrorMessage');
 				const projController = new ProjectsController(testContext.outputChannel);
-				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+				const project = await testUtils.createTestProject(this.test, baselines.newProjectFileBaseline);
 
 				should(project.files.length).equal(0, 'There should be no files');
 				await projController.addItemPrompt(project, '');
@@ -142,7 +142,7 @@ describe('ProjectsController', function (): void {
 				sinon.stub(utils, 'sanitizeStringForFilename').returns(tableName);
 				const spy = sinon.spy(vscode.window, 'showErrorMessage');
 				const projController = new ProjectsController(testContext.outputChannel);
-				let project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+				let project = await testUtils.createTestProject(this.test, baselines.newProjectFileBaseline);
 
 				should(project.files.length).equal(0, 'There should be no files');
 				await projController.addItemPrompt(project, '', { itemType: ItemType.script });
@@ -172,7 +172,7 @@ describe('ProjectsController', function (): void {
 				sinon.stub(utils, 'sanitizeStringForFilename').returns(folderName);
 
 				const projController = new ProjectsController(testContext.outputChannel);
-				let project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+				let project = await testUtils.createTestProject(this.test, baselines.newProjectFileBaseline);
 				const projectRoot = new ProjectRootTreeItem(project);
 
 				should(project.folders.length).equal(0, 'There should be no other folders');
@@ -197,7 +197,7 @@ describe('ProjectsController', function (): void {
 				sinon.stub(utils, 'sanitizeStringForFilename').returns(folderName);
 
 				const projController = new ProjectsController(testContext.outputChannel);
-				let project = await testUtils.createTestProject(baselines.openProjectFileBaseline);
+				let project = await testUtils.createTestProject(this.test, baselines.openProjectFileBaseline);
 				const projectRoot = new ProjectRootTreeItem(project);
 
 				// make sure it's ok to add these folders if they aren't where the reserved folders are at the root of the project
@@ -238,7 +238,7 @@ describe('ProjectsController', function (): void {
 
 			// TODO: move test to DacFx and fix delete
 			it.skip('Should delete nested ProjectEntry from node', async function (): Promise<void> {
-				let proj = await testUtils.createTestProject(templates.newSqlProjectTemplate);
+				let proj = await testUtils.createTestProject(this.test, templates.newSqlProjectTemplate);
 
 				const setupResult = await setupDeleteExcludeTest(proj);
 				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1], preDeployEntry = setupResult[2], postDeployEntry = setupResult[3], noneEntry = setupResult[4];
@@ -268,7 +268,7 @@ describe('ProjectsController', function (): void {
 
 			it('Should delete database references', async function (): Promise<void> {
 				// setup - openProject baseline has a system db reference to master
-				let proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
+				let proj = await testUtils.createTestProject(this.test, baselines.openProjectFileBaseline);
 				const projController = new ProjectsController(testContext.outputChannel);
 				sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
 
@@ -303,7 +303,7 @@ describe('ProjectsController', function (): void {
 			});
 
 			it('Should exclude nested ProjectEntry from node', async function (): Promise<void> {
-				let proj = await testUtils.createTestProject(templates.newSqlProjectTemplate);
+				let proj = await testUtils.createTestProject(this.test, templates.newSqlProjectTemplate);
 				const setupResult = await setupDeleteExcludeTest(proj);
 				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1], preDeployEntry = setupResult[2], postDeployEntry = setupResult[3], noneEntry = setupResult[4];
 
@@ -332,7 +332,7 @@ describe('ProjectsController', function (): void {
 
 			// TODO: move test to DacFx and fix delete
 			it.skip('Should delete folders with excluded items', async function (): Promise<void> {
-				let proj = await testUtils.createTestProject(templates.newSqlProjectTemplate);
+				let proj = await testUtils.createTestProject(this.test, templates.newSqlProjectTemplate);
 				const setupResult = await setupDeleteExcludeTest(proj);
 
 				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1];
@@ -360,8 +360,8 @@ describe('ProjectsController', function (): void {
 
 			it('Should reload correctly after changing sqlproj file', async function (): Promise<void> {
 				// create project
-				const folderPath = await testUtils.generateTestFolderPath();
-				const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline, folderPath);
+				const folderPath = await testUtils.generateTestFolderPath(this.test);
+				const sqlProjPath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline, folderPath);
 				const treeProvider = new SqlDatabaseProjectTreeViewProvider();
 				const projController = new ProjectsController(testContext.outputChannel);
 				let project = await Project.openProject(vscode.Uri.file(sqlProjPath).fsPath);
@@ -390,7 +390,7 @@ describe('ProjectsController', function (): void {
 				const postDeployScriptName = 'PostDeployScript1.sql';
 
 				const projController = new ProjectsController(testContext.outputChannel);
-				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+				const project = await testUtils.createTestProject(this.test, baselines.newProjectFileBaseline);
 
 				sinon.stub(vscode.window, 'showInputBox').resolves(preDeployScriptName);
 				sinon.stub(utils, 'sanitizeStringForFilename').returns(preDeployScriptName);
@@ -410,7 +410,7 @@ describe('ProjectsController', function (): void {
 				sinon.stub(vscode.window, 'showQuickPick').resolves({ label: SqlTargetPlatform.sqlAzure });
 
 				const projController = new ProjectsController(testContext.outputChannel);
-				const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
+				const sqlProjPath = await testUtils.createTestSqlProjFile(this.test, baselines.openProjectFileBaseline);
 				const project = await Project.openProject(sqlProjPath);
 				should(project.getProjectTargetVersion()).equal(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2019));
 				should(project.databaseReferences.length).equal(1, 'Project should have one database reference to master');
@@ -437,9 +437,9 @@ describe('ProjectsController', function (): void {
 			});
 
 			it('Callbacks are hooked up and called from Publish dialog', async function (): Promise<void> {
-				const projectFile = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline)
+				const projectFile = await testUtils.createTestSqlProjFile(this.test, baselines.openProjectFileBaseline)
 				const projFolder = path.dirname(projectFile);
-				await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, projFolder);
+				await testUtils.createTestDataSources(this.test, baselines.openDataSourcesBaseline, projFolder);
 				const proj = await Project.openProject(projectFile);
 
 				const publishHoller = 'hello from callback for publish()';
@@ -498,12 +498,12 @@ describe('ProjectsController', function (): void {
 				projController.callBase = true;
 
 				projController.setup(x => x.buildProject(TypeMoq.It.isAny())).returns(async () => {
-					builtDacpacPath = await testUtils.createTestFile(fakeDacpacContents, 'output.dacpac');
+					builtDacpacPath = await testUtils.createTestFile(this.test, fakeDacpacContents, 'output.dacpac');
 					return builtDacpacPath;
 				});
 				sinon.stub(utils, 'getDacFxService').resolves(testContext.dacFxService.object);
 
-				const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
+				const proj = await testUtils.createTestProject(this.test, baselines.openProjectFileBaseline);
 
 				await projController.object.publishOrScriptProject(proj, { connectionUri: '', databaseName: '', serverName: '' }, false);
 
@@ -522,7 +522,7 @@ describe('ProjectsController', function (): void {
 		});
 
 		it('Should create list of all files and folders correctly', async function (): Promise<void> {
-			const testFolderPath = await testUtils.createDummyFileStructure();
+			const testFolderPath = await testUtils.createDummyFileStructure(this.test);
 
 			const projController = new ProjectsController(testContext.outputChannel);
 			const fileList = await projController.generateList(testFolderPath);
@@ -533,7 +533,7 @@ describe('ProjectsController', function (): void {
 		it('Should error out for inaccessible path', async function (): Promise<void> {
 			const spy = sinon.spy(vscode.window, 'showErrorMessage');
 
-			let testFolderPath = await testUtils.generateTestFolderPath();
+			let testFolderPath = await testUtils.generateTestFolderPath(this.test);
 			testFolderPath += '_nonexistentFolder';	// Modify folder path to point to a nonexistent location
 
 			const projController = new ProjectsController(testContext.outputChannel);
@@ -594,7 +594,7 @@ describe('ProjectsController', function (): void {
 		});
 
 		it('Should set model filePath correctly for ExtractType = File', async function (): Promise<void> {
-			let folderPath = await testUtils.generateTestFolderPath();
+			let folderPath = await testUtils.generateTestFolderPath(this.test);
 			let projectName = 'My Project';
 			let importPath;
 			let model: ImportDataModel = { connectionUri: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['file'], sdkStyle: false };
@@ -607,7 +607,7 @@ describe('ProjectsController', function (): void {
 		});
 
 		it('Should set model filePath correctly for ExtractType = Schema/Object Type', async function (): Promise<void> {
-			let folderPath = await testUtils.generateTestFolderPath();
+			let folderPath = await testUtils.generateTestFolderPath(this.test);
 			let projectName = 'My Project';
 			let importPath;
 			let model: ImportDataModel = { connectionUri: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['schemaObjectType'], sdkStyle: false };
@@ -636,7 +636,7 @@ describe('ProjectsController', function (): void {
 		});
 
 		it('Callbacks are hooked up and called from Add database reference dialog', async function (): Promise<void> {
-			const projPath = path.dirname(await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline));
+			const projPath = path.dirname(await testUtils.createTestSqlProjFile(this.test, baselines.openProjectFileBaseline));
 			const proj = new Project(projPath);
 
 			const addDbRefHoller = 'hello from callback for addDatabaseReference()';
@@ -667,8 +667,8 @@ describe('ProjectsController', function (): void {
 		});
 
 		it.skip('Should not allow adding circular project references', async function (): Promise<void> {
-			const projPath1 = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
-			const projPath2 = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+			const projPath1 = await testUtils.createTestSqlProjFile(this.test, baselines.openProjectFileBaseline);
+			const projPath2 = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 			const projController = new ProjectsController(testContext.outputChannel);
 
 			const project1 = await Project.openProject(vscode.Uri.file(projPath1).fsPath);
@@ -705,7 +705,7 @@ describe('ProjectsController', function (): void {
 		});
 
 		it.skip('Should add dacpac references as relative paths', async function (): Promise<void> {
-			const projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+			const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 			const projController = new ProjectsController(testContext.outputChannel);
 
 			const project1 = await Project.openProject(vscode.Uri.file(projFilePath).fsPath);
@@ -769,8 +769,8 @@ describe('ProjectsController', function (): void {
 	describe('AutoRest generation', function (): void {
 		// skipping for now because this feature is hidden under preview flag
 		it.skip('Should create project from autorest-generated files', async function (): Promise<void> {
-			const parentFolder = await testUtils.generateTestFolderPath();
-			await testUtils.createDummyFileStructure();
+			const parentFolder = await testUtils.generateTestFolderPath(this.test);
+			await testUtils.createDummyFileStructure(this.test);
 			const specName = 'DummySpec.yaml';
 			const renamedProjectName = 'RenamedProject';
 			const newProjFolder = path.join(parentFolder, renamedProjectName);
@@ -791,8 +791,8 @@ describe('ProjectsController', function (): void {
 			});
 
 			projController.setup(x => x.generateAutorestFiles(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => {
-				await testUtils.createDummyFileStructure(true, fileList, newProjFolder);
-				await testUtils.createTestFile('SELECT \'This is a post-deployment script\'', constants.autorestPostDeploymentScriptName, newProjFolder);
+				await testUtils.createDummyFileStructure(this.test, true, fileList, newProjFolder);
+				await testUtils.createTestFile(this.test, 'SELECT \'This is a post-deployment script\'', constants.autorestPostDeploymentScriptName, newProjFolder);
 				return 'some dummy console output';
 			});
 
@@ -821,7 +821,7 @@ describe('ProjectsController', function (): void {
 			const spy = sinon.spy(vscode.window, 'showErrorMessage');
 			sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.move));
 
-			let proj = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			let proj = await testUtils.createTestProject(this.test, baselines.openSdkStyleSqlProjectBaseline);
 
 			const projTreeRoot = await setupMoveTest(proj);
 
@@ -844,7 +844,7 @@ describe('ProjectsController', function (): void {
 			const spy = sinon.spy(vscode.window, 'showErrorMessage');
 			sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.move));
 
-			let proj = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			let proj = await testUtils.createTestProject(this.test, baselines.openSdkStyleSqlProjectBaseline);
 			const projTreeRoot = await setupMoveTest(proj);
 			const projController = new ProjectsController(testContext.outputChannel);
 
@@ -866,7 +866,7 @@ describe('ProjectsController', function (): void {
 
 		it('Should only allow moving files', async function (): Promise<void> {
 			const spy = sinon.spy(vscode.window, 'showErrorMessage');
-			let proj = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			let proj = await testUtils.createTestProject(this.test, baselines.openSdkStyleSqlProjectBaseline);
 			const projTreeRoot = await setupMoveTest(proj);
 			const projController = new ProjectsController(testContext.outputChannel);
 
@@ -900,8 +900,8 @@ describe('ProjectsController', function (): void {
 			const spy = sinon.spy(vscode.window, 'showErrorMessage');
 			sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.move));
 
-			let proj1 = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
-			let proj2 = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			let proj1 = await testUtils.createTestProject(this.test, baselines.openSdkStyleSqlProjectBaseline);
+			let proj2 = await testUtils.createTestProject(this.test, baselines.openSdkStyleSqlProjectBaseline);
 
 			const projTreeRoot1 = await setupMoveTest(proj1);
 			const projTreeRoot2 = await setupMoveTest(proj2);
@@ -924,7 +924,7 @@ describe('ProjectsController', function (): void {
 	describe('Rename file', function (): void {
 		it('Should not do anything if no new name is provided', async function (): Promise<void> {
 			sinon.stub(vscode.window, 'showInputBox').resolves('');
-			let proj = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			let proj = await testUtils.createTestProject(this.test, baselines.openSdkStyleSqlProjectBaseline);
 			const projTreeRoot = await setupMoveTest(proj);
 			const projController = new ProjectsController(testContext.outputChannel);
 
@@ -940,7 +940,7 @@ describe('ProjectsController', function (): void {
 
 		it('Should rename a sql object file', async function (): Promise<void> {
 			sinon.stub(vscode.window, 'showInputBox').resolves('newName');
-			let proj = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			let proj = await testUtils.createTestProject(this.test, baselines.openSdkStyleSqlProjectBaseline);
 			const projTreeRoot = await setupMoveTest(proj);
 			const projController = new ProjectsController(testContext.outputChannel);
 
@@ -955,7 +955,7 @@ describe('ProjectsController', function (): void {
 		});
 
 		it('Should rename a pre and post deploy script', async function (): Promise<void> {
-			let proj = await testUtils.createTestProject(baselines.newSdkStyleProjectSdkNodeBaseline);
+			let proj = await testUtils.createTestProject(this.test, baselines.newSdkStyleProjectSdkNodeBaseline);
 			await proj.addScriptItem('Script.PreDeployment1.sql', 'pre-deployment stuff', ItemType.preDeployScript);
 			await proj.addScriptItem('Script.PostDeployment1.sql', 'post-deployment stuff', ItemType.postDeployScript);
 
@@ -987,7 +987,7 @@ describe('ProjectsController', function (): void {
 
 	describe('SqlCmd Variables', function (): void {
 		it('Should delete sqlcmd variable', async function (): Promise<void> {
-			let project = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			let project = await testUtils.createTestProject(this.test, baselines.openSdkStyleSqlProjectBaseline);
 			const sqlProjectsService = await utils.getSqlProjectsService();
 			await sqlProjectsService.openProject(project.projectFilePath);
 
@@ -1013,7 +1013,7 @@ describe('ProjectsController', function (): void {
 		});
 
 		it('Should add sqlcmd variable', async function (): Promise<void> {
-			let project = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			let project = await testUtils.createTestProject(this.test, baselines.openSdkStyleSqlProjectBaseline);
 			const sqlProjectsService = await utils.getSqlProjectsService();
 			await sqlProjectsService.openProject(project.projectFilePath);
 
@@ -1041,7 +1041,7 @@ describe('ProjectsController', function (): void {
 		});
 
 		it('Should update sqlcmd variable', async function (): Promise<void> {
-			let project = await testUtils.createTestProject(baselines.openSdkStyleSqlProjectBaseline);
+			let project = await testUtils.createTestProject(this.test, baselines.openSdkStyleSqlProjectBaseline);
 			const sqlProjectsService = await utils.getSqlProjectsService();
 			await sqlProjectsService.openProject(project.projectFilePath);
 
