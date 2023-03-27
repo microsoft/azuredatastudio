@@ -109,8 +109,8 @@ class ConnectionProfileTemplate extends Disposable {
 	set(element: ConnectionProfile) {
 		if (!this._isCompact) {
 			if (this._connectionManagementService.isConnected(undefined, element)) {
-				this._connectionStatusBadge.classList.add('connected');
 				this._connectionStatusBadge.classList.remove('disconnected');
+				this._connectionStatusBadge.classList.add('connected');
 			} else {
 				this._connectionStatusBadge.classList.remove('connected');
 				this._connectionStatusBadge.classList.add('disconnected');
