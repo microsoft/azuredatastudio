@@ -928,11 +928,15 @@ export async function promptUserForFolder(): Promise<string> {
 export function isWindows(): boolean { return (os.platform() === 'win32') }
 
 export async function isAdmin(): Promise<boolean> {
-	let isAdmin: boolean;
-	if (isWindows()) {
-		isAdmin = (await import('native-is-elevated'))();
-	} else {
-		isAdmin = process.getuid() === 0;
+	let isAdmin: boolean = false;
+	try {
+		if (isWindows()) {
+			isAdmin = (await import('native-is-elevated'))();
+		} else {
+			isAdmin = process.getuid() === 0;
+		}
+	} catch (e) {
+		//Ignore error and return false;
 	}
 
 	return isAdmin;
