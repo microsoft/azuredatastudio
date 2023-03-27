@@ -297,7 +297,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					reject(new Error(
 						nls.localize(
 							'objectExplorerMissingSession',
-							'Timed out while waiting for createNewSession response from the provider for this created session `{0}`', sessionId
+							'Timed out while waiting for createNewSession response from the provider for this created session {0}', sessionId
 						)));
 				} else {
 					count++;
