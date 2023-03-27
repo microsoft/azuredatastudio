@@ -193,8 +193,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 				canDragOver = source.id !== targetElement.id && !source.isAncestorOf(targetElement);
 			}
 		} else {
-			// if target element is a not a group or connection profile we can reject
-			return DRAG_OVER_REJECT;
+			canDragOver = true;
 		}
 
 		if (canDragOver) {
@@ -226,11 +225,14 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			const self = this;
 			if (this.isDropAllowed(targetConnectionProfileGroup, oldParent, source)) {
 				if (tree instanceof AsyncServerTree) {
-					if (source instanceof ConnectionProfileGroup) {
-						this._connectionManagementService.changeGroupIdForConnectionGroup(source, targetConnectionProfileGroup);
-					} else if (source instanceof ConnectionProfile) {
-						this._connectionManagementService.changeGroupIdForConnection(source, targetConnectionProfileGroup.id!);
+					if (oldParent && source && targetConnectionProfileGroup) {
+						if (source instanceof ConnectionProfileGroup) {
+							this._connectionManagementService.changeGroupIdForConnectionGroup(source, targetConnectionProfileGroup);
+						} else if (source instanceof ConnectionProfile) {
+							this._connectionManagementService.changeGroupIdForConnection(source, targetConnectionProfileGroup.id!);
+						}
 					}
+
 				} else {
 					if (source instanceof ConnectionProfile) {
 						// Change group id of profile
@@ -257,13 +259,28 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		TreeUpdateUtils.isInDragAndDrop = false;
 	}
 
-	private getTargetGroup(targetElement: ConnectionProfileGroup | ConnectionProfile): ConnectionProfileGroup {
+	private getTargetGroup(targetElement: ConnectionProfileGroup | ConnectionProfile | TreeNode): ConnectionProfileGroup {
 		let targetConnectionProfileGroup: ConnectionProfileGroup;
 		if (targetElement instanceof ConnectionProfile) {
 			targetConnectionProfileGroup = targetElement.getParent()!;
-		}
-		else {
+		} else if (targetElement instanceof ConnectionProfileGroup) {
 			targetConnectionProfileGroup = targetElement;
+		} else if (targetElement instanceof TreeNode) {
+			let treeNode = targetElement;
+
+			// Not all tree nodes have a connection profile group, so we need to walk up the tree to find the first one
+			while (!treeNode?.connection) {
+				treeNode = treeNode.parent
+			}
+			if (treeNode) {
+				const groupId = treeNode.connection.groupId;
+				if (groupId) {
+					targetConnectionProfileGroup = this._connectionManagementService.getConnectionGroupById(groupId);
+				}
+			}
+			if (!targetConnectionProfileGroup) {
+				throw new Error('Cannot find parent for the node');
+			}
 		}
 
 		return targetConnectionProfileGroup;
