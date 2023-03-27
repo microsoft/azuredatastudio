@@ -13,6 +13,7 @@ import Severity from 'vs/base/common/severity';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IAsyncDataSource } from 'vs/base/browser/ui/tree/tree';
 import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 /**
  * Implements the DataSource(that returns a parent/children of an element) for the server tree
@@ -22,6 +23,7 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 	constructor(
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IConfigurationService private _configurationService: IConfigurationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService
 	) {
 	}
@@ -45,9 +47,9 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 	public async getChildren(element: ServerTreeElement): Promise<ServerTreeElement[]> {
 		try {
 			if (element instanceof ConnectionProfile) {
-				return await TreeUpdateUtils.getAsyncConnectionNodeChildren(element, this._connectionManagementService, this._objectExplorerService);
+				return await TreeUpdateUtils.getAsyncConnectionNodeChildren(element, this._connectionManagementService, this._objectExplorerService, this._configurationService);
 			} else if (element instanceof ConnectionProfileGroup) {
-				return (element as ConnectionProfileGroup).getChildren();
+				return element.getChildren();
 			} else if (element instanceof TreeNode) {
 				if (element.children) {
 					return element.children;
@@ -55,15 +57,9 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 					return await this._objectExplorerService.resolveTreeNodeChildren(element.getSession()!, element);
 				}
 			}
-		} catch (err) {
-			if (element instanceof TreeNode) {
-				element.errorStateMessage = err.message ?? err;
-			}
-			if (err.message) {
-				this.showError(err.message);
-			}
-
-			throw err;
+		} catch (error) {
+			this.showError(error);
+			throw error;
 		}
 		return [];
 	}
