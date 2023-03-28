@@ -354,7 +354,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				await Promise.all(promises);
 			}
 		} catch (error) {
-			this.logService.warn(`cannot handle the session ${sessionId} in all nodeProviders`);
+			this.logService.error(`An error occured while handling session ${sessionId} in all nodeProviders.`, error);
 		} finally {
 			this.sendUpdateNodeEvent(connection!, errorMessage);
 		}
