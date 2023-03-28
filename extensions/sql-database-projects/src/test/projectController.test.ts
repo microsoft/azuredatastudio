@@ -522,12 +522,15 @@ describe('ProjectsController', function (): void {
 		});
 
 		it('Should create list of all files and folders correctly', async function (): Promise<void> {
+			// dummy structure is 2 files (one .sql, one .txt) under parent folder + 2 directories with 5 .sql scripts each
 			const testFolderPath = await testUtils.createDummyFileStructure(this.test);
 
 			const projController = new ProjectsController(testContext.outputChannel);
-			const fileList = await projController.generateList(testFolderPath);
+			const fileList = await projController.generateScriptList(testFolderPath);
 
-			should(fileList.length).equal(15);	// Parent folder + 2 files under parent folder + 2 directories with 5 files each
+			// script list should only include the .sql files, no folders and not the .txt file
+			(fileList.length).should.equal(11, 'number of files returned by generateScriptList()');
+			(fileList.filter(x => path.extname(x.fsPath) !== constants.sqlFileExtension).length).should.equal(0, 'number of non-.sql files');
 		});
 
 		it('Should error out for inaccessible path', async function (): Promise<void> {
@@ -538,7 +541,7 @@ describe('ProjectsController', function (): void {
 
 			const projController = new ProjectsController(testContext.outputChannel);
 
-			await projController.generateList(testFolderPath);
+			await projController.generateScriptList(testFolderPath);
 			should(spy.calledOnce).be.true('showErrorMessage should have been called');
 			const msg = constants.cannotResolvePath(testFolderPath);
 			should(spy.calledWith(msg)).be.true(`showErrorMessage not called with expected message '${msg}' Actual '${spy.getCall(0).args[0]}'`);

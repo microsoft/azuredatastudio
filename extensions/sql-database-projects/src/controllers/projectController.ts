@@ -1596,7 +1596,7 @@ export class ProjectsController {
 				.withAdditionalMeasurements({ durationMs: timeToExtract })
 				.send();
 
-			let fileFolderList: vscode.Uri[] = model.extractTarget === mssql.ExtractTarget.file ? [vscode.Uri.file(model.filePath)] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
+			let fileFolderList: vscode.Uri[] = model.extractTarget === mssql.ExtractTarget.file ? [vscode.Uri.file(model.filePath)] : await this.generateScriptList(model.filePath); // Create a list of all the files to be added to project
 
 			const relativePaths = fileFolderList.map(f => path.relative(project.projectFolderPath, f.path));
 
@@ -1633,19 +1633,19 @@ export class ProjectsController {
 	}
 
 	/**
-	 * Generate a flat list of all files and folder under a folder.
+	 * Generate a flat list of all scripts under a folder.
 	 * @param absolutePath absolute path to folder to generate the list of files from
-	 * @returns array of uris of files and folders under the provided folder
+	 * @returns array of uris of files under the provided folder
 	 */
-	public async generateList(absolutePath: string): Promise<vscode.Uri[]> {
-		let fileFolderList: vscode.Uri[] = [];
+	public async generateScriptList(absolutePath: string): Promise<vscode.Uri[]> {
+		let fileList: vscode.Uri[] = [];
 
 		if (!await utils.exists(absolutePath)) {
 			if (await utils.exists(absolutePath + constants.sqlFileExtension)) {
 				absolutePath += constants.sqlFileExtension;
 			} else {
 				void vscode.window.showErrorMessage(constants.cannotResolvePath(absolutePath));
-				return fileFolderList;
+				return fileList;
 			}
 		}
 
@@ -1657,19 +1657,18 @@ export class ProjectsController {
 				const stat = await fs.stat(filepath);
 
 				if (stat.isDirectory()) {
-					fileFolderList.push(vscode.Uri.file(filepath));
 					(await fs
 						.readdir(filepath))
 						.forEach((f: string) => files.push(path.join(filepath, f)));
 				}
-				else if (stat.isFile()) {
-					fileFolderList.push(vscode.Uri.file(filepath));
+				else if (stat.isFile() && path.extname(filepath) === constants.sqlFileExtension) {
+					fileList.push(vscode.Uri.file(filepath));
 				}
 			}
 
 		} while (files.length !== 0);
 
-		return fileFolderList;
+		return fileList;
 	}
 
 	//#endregion
