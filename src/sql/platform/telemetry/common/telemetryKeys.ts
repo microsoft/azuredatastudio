@@ -43,6 +43,7 @@ export const enum TelemetryView {
 	ExecutionPlan = 'ExecutionPlan',
 	ExtensionHost = 'ExtensionHost',
 	ExtensionRecommendationDialog = 'ExtensionRecommendationDialog',
+	LinkedAccounts = 'LinkedAccounts',
 	Notebook = 'Notebook',
 	NotifyEncryptionDialog = 'NotifyEncryptionDialog',
 	ResultsPanel = 'ResultsPanel',
@@ -53,13 +54,16 @@ export const enum TelemetryView {
 
 export const enum TelemetryError {
 	DatabaseConnectionError = 'DatabaseConnectionError',
-	ObjectExplorerExpandError = 'ObjectExplorerExpandError'
+	ObjectExplorerExpandError = 'ObjectExplorerExpandError',
+	AddAzureAccountError = 'AddAzureAccountError',
+	RefreshAzureAccountError = 'RefreshAzureAccountError'
 }
 
 export const enum TelemetryAction {
 	adsCommandExecuted = 'adsCommandExecuted',
 	AddExecutionPlan = 'AddExecutionPlan',
 	AddServerGroup = 'AddServerGroup',
+	AddAzureAccount = 'AddAzureAccount',
 	BackupCreated = 'BackupCreated',
 	ConnectToServer = 'ConnectToServer',
 	CustomZoom = 'CustomZoom',
@@ -95,6 +99,7 @@ export const enum TelemetryAction {
 	OpenQuery = 'OpenQuery',
 	OpenExecutionPlanProperties = 'OpenExecutionPlanProperties',
 	PublishChanges = 'PublishChanges',
+	RefreshAzureAccount = 'RefreshAzureAccount',
 	RestoreRequested = 'RestoreRequested',
 	RunAgentJob = 'RunAgentJob',
 	RunQuery = 'RunQuery',
