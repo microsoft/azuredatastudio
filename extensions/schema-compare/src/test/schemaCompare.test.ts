@@ -363,7 +363,7 @@ describe('SchemaCompareMainWindow.results @DacFx@', function (): void {
 	function createServiceMock() {
 		let sc = new SchemaCompareTestService(testStateScmp.SUCCESS_NOT_EQUAL);
 		let service = TypeMoq.Mock.ofInstance(new SchemaCompareTestService());
-		service.setup(x => x.schemaCompareGetDefaultOptions()).returns(x => sc.schemaCompareGetDefaultOptions());
+		service.setup(x => x.schemaCompareGetDefaultOptions()).returns(() => sc.schemaCompareGetDefaultOptions());
 		service.setup(x => x.schemaCompare(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => sc.schemaCompare('', undefined, undefined, undefined, undefined));
 		return service;
 	}
