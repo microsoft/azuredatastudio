@@ -290,23 +290,27 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					this._connectionsWaitingForSession.delete(connection.id);
 				}
 				createNewSessionListener.dispose();
-				clearTimeout(timeout);
+				clearTimeout(timeoutHandle);
 			}
 			const onTimeout = () => {
 				if (!this._sessions[sessionId]) {
-					this.logService.error(`Timed out waiting for session to be created`);
-					reject(new Error('Timed out waiting for session to be created'));
+					this.logService.error(`Timed out waiting for session ${sessionId} to be created.
+					This has probably happened because OE service did not recieve a response for createNewSession from the provider.`);
+					reject(new Error(
+						nls.localize('objectExplorerMissingSession',
+							'Timed out waiting for session {0} to be created. This has probably happened because OE service did not recieve a response for createNewSession from the provider.', sessionId)));
 				} else {
-					this.logService.error(`Timeout waiting for session ${sessionId} to be created for connection "${connection.title}"`);
+					this.logService.error(`Timeout waiting for session ${sessionId} to be created for connection "${connection.title}".
+					This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection."${connection.title}`);
 					reject(new Error(nls.localize(
 						'objectExplorerMissingConnectionForSession',
-						'Timeout waiting for session {0} to be created for connection "{0}"', sessionId, connection.title
+						'Timeout waiting for session {0} to be created for connection "{1}". This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection "{1}"', sessionId, connection.title
 					)));
 				}
 
 				cleanup();
 			}
-			const timeout = setTimeout(onTimeout, this.getObjectExplorerTimeout() * 1000);
+			const timeoutHandle = setTimeout(onTimeout, this.getObjectExplorerTimeout() * 1000);
 			const createNewSessionListener = this._onCreateNewSession.event((response) => {
 				checkSessionAndConnection();
 			});
