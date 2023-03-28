@@ -272,6 +272,23 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 			this.providerName + ProviderConnectionInfo.idSeparator + idValues.join(ProviderConnectionInfo.idSeparator);
 	}
 
+	/**
+	 * Returns a more readable version of the options key intended for display areas, replaces the regular separators with display separators
+	 * @param optionsKey options key in the original format.
+	 */
+	public static getDisplayOptionsKey(optionsKey: string) {
+		let ids: string[] = optionsKey.split(ProviderConnectionInfo.idSeparator);
+		ids = ids.map(id => {
+			let idParts = id.split(ProviderConnectionInfo.nameValueSeparator);
+			let result = idParts[0] + ProviderConnectionInfo.displayNameValueSeparator;
+			if (idParts.length >= 2) {
+				result += idParts.slice(1).join(ProviderConnectionInfo.nameValueSeparator);
+			}
+			return result;
+		});
+		return ids.join(ProviderConnectionInfo.displayIdSeparator);
+	}
+
 	public static getProviderFromOptionsKey(optionsKey: string) {
 		let providerId: string = '';
 		if (optionsKey) {
@@ -322,11 +339,19 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public static get idSeparator(): string {
-		return '; ';
+		return '|';
 	}
 
 	public static get nameValueSeparator(): string {
-		return '=';
+		return ':';
+	}
+
+	public static get displayIdSeparator(): string {
+		return '; '
+	}
+
+	public static get displayNameValueSeparator(): string {
+		return '='
 	}
 
 
@@ -379,8 +404,8 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 			if (parts.length === 0) {
 				parts = " (";
 			}
-			let addValue = element.name + ProviderConnectionInfo.nameValueSeparator + `${value}`;
-			parts += parts === " (" ? addValue : (ProviderConnectionInfo.idSeparator + addValue);
+			let addValue = element.name + ProviderConnectionInfo.displayNameValueSeparator + `${value}`;
+			parts += parts === " (" ? addValue : (ProviderConnectionInfo.displayIdSeparator + addValue);
 		});
 		if (parts.length > 0) {
 			parts += ")";

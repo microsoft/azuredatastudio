@@ -492,10 +492,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			await this._connectionStore.isDuplicateEdit(connection, matcher).then(result => {
 				if (result) {
 					// Must get connection group name here as it may not always be initialized and causes problems when deleting when included with options.
-					this._logService.error(`Profile edit for '${connection.id}' exactly matches an existing profile with data: '${connection.getOptionsKey()}'`);
+					this._logService.error(`Profile edit for '${connection.id}' exactly matches an existing profile with data: '${ConnectionProfile.getDisplayOptionsKey(connection.getOptionsKey())}'`);
 					throw new Error(`Cannot save profile, the selected connection options are identical to an existing profile with details: \n
-					${connection.getOptionsKey()}${(connection.groupFullName !== undefined && connection.groupFullName !== '' && connection.groupFullName !== '/') ?
-							ConnectionProfile.idSeparator + 'groupName' + ConnectionProfile.nameValueSeparator + connection.groupFullName : ''}`);
+					${ConnectionProfile.getDisplayOptionsKey(connection.getOptionsKey())}${(connection.groupFullName !== undefined && connection.groupFullName !== '' && connection.groupFullName !== '/') ?
+							ConnectionProfile.displayIdSeparator + 'groupName' + ConnectionProfile.displayNameValueSeparator + connection.groupFullName : ''}`);
 				}
 			})
 		}
