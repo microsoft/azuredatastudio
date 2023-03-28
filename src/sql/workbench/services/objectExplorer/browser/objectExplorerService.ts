@@ -419,7 +419,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			const result = await provider.createNewSession(connection.toConnectionInfo());
 			// some providers return a malformed create sessions responses which don't have a session id. We should throw an error in this case
 			if (!result?.sessionId) {
-				this.logService.error(`The session ID returned by provider "${providerId}" for connection "${connection.title}" is invalid.`);
+				this.logService.error(`No session ID returned by provider '${providerId}' for connection '${connection.title}'.`);
 				throw new Error(nls.localize('objectExplorerSessionIdMissing', "No session ID returned by provider '{0}' for connection '{1}'.", providerId, connection.title));
 			}
 			if (this._sessions[result.sessionId]) {
