@@ -44,7 +44,7 @@ const serverGroupConfig: IConfigurationNode = {
 export const NODE_EXPANSION_CONFIG = 'serverTree.nodeExpansionTimeout';
 const serverTreeConfig: IConfigurationNode = {
 	'id': 'serverTree',
-	'title': 'Server Tree',
+	'title': localize('serverTree.configuration.title', "Server Tree"),
 	'type': 'object',
 	'properties': {
 		'serverTree.useAsyncServerTree': {
