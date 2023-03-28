@@ -143,9 +143,6 @@
 .monaco-list .monaco-list-rows > .monaco-list-row .connection-profile-container > .icon.server-page,
 .hc-light .monaco-list .monaco-list-rows > .monaco-list-row .connection-profile-container > .icon.server-page {
 	background-image: url('default_server.svg');
-	background-position: center center;
-	background-repeat: no-repeat;
-	background-size: 16px 16px;
 }
 
 .monaco-list:focus .monaco-list-rows > .monaco-list-row.selected .connection-profile-container > .icon.server-page,
@@ -266,4 +263,11 @@
 	width: 4px;
 	height: 4px;
 	border-radius: 50%;
+}
+
+.monaco-tree .monaco-tree-rows > .monaco-tree-row .icon,
+.monaco-list .monaco-list-rows > .monaco-list-row .icon {
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 16px 16px;
 }

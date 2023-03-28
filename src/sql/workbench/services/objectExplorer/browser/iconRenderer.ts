@@ -16,8 +16,9 @@ class IconRenderer {
 		const iconPath: ThemedIconUri = this.toThemedIconUri(path);
 		const iconUid: string | undefined = this.getIconUid(iconPath);
 		if (iconUid && !this.iconRegistered.has(iconUid)) {
-			createCSSRule(`.icon#${iconUid}, .hc-light .icon#${iconUid}`, `background: ${asCSSUrl(iconPath.light || iconPath.dark)} center center no-repeat`);
-			createCSSRule(`.vs-dark .icon#${iconUid}, .hc-black .icon#${iconUid}`, `background: ${asCSSUrl(iconPath.dark)} center center no-repeat`);
+			createCSSRule(`.icon#${iconUid}, .hc-light .icon#${iconUid}`, `background-image: ${asCSSUrl(iconPath.light || iconPath.dark)};`);
+			createCSSRule(`.vs-dark .icon#${iconUid}, .hc-black .icon#${iconUid}`, `background-image: ${asCSSUrl(iconPath.dark)};`);
+			createCSSRule(`.monaco-list:focus .monaco-list-rows > .monaco-list-row.selected .icon#${iconUid}`, `background-image: ${asCSSUrl(iconPath.dark)};`);
 			this.iconRegistered.add(iconUid);
 		}
 		return iconUid;
