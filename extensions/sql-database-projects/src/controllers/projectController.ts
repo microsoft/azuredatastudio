@@ -1384,9 +1384,9 @@ export class ProjectsController {
 				return;
 			}
 
-			const fileFolderList: vscode.Uri[] | undefined = await this.getSqlFileList(projectInfo.newProjectFolder);
+			const scriptList: vscode.Uri[] | undefined = await this.getSqlFileList(projectInfo.newProjectFolder);
 
-			if (!fileFolderList || fileFolderList.length === 0) {
+			if (!scriptList || scriptList.length === 0) {
 				void vscode.window.showInformationMessage(constants.noSqlFilesGenerated);
 				this._outputChannel.show();
 				return;
@@ -1404,11 +1404,11 @@ export class ProjectsController {
 
 			// 6. add generated files to SQL project
 
-			const uriList = fileFolderList.filter(f => !f.fsPath.endsWith(constants.autorestPostDeploymentScriptName))
+			const uriList = scriptList.filter(f => !f.fsPath.endsWith(constants.autorestPostDeploymentScriptName))
 			const relativePaths = uriList.map(f => path.relative(project.projectFolderPath, f.path));
 			await project.addSqlObjectScripts(relativePaths); // Add generated file structure to the project
 
-			const postDeploymentScript: vscode.Uri | undefined = this.findPostDeploymentScript(fileFolderList);
+			const postDeploymentScript: vscode.Uri | undefined = this.findPostDeploymentScript(scriptList);
 
 			if (postDeploymentScript) {
 				await project.addPostDeploymentScript(path.relative(project.projectFolderPath, postDeploymentScript.fsPath));
@@ -1596,9 +1596,9 @@ export class ProjectsController {
 				.withAdditionalMeasurements({ durationMs: timeToExtract })
 				.send();
 
-			let fileFolderList: vscode.Uri[] = model.extractTarget === mssql.ExtractTarget.file ? [vscode.Uri.file(model.filePath)] : await this.generateScriptList(model.filePath); // Create a list of all the files to be added to project
+			const scriptList: vscode.Uri[] = model.extractTarget === mssql.ExtractTarget.file ? [vscode.Uri.file(model.filePath)] : await this.generateScriptList(model.filePath); // Create a list of all the files to be added to project
 
-			const relativePaths = fileFolderList.map(f => path.relative(project.projectFolderPath, f.path));
+			const relativePaths = scriptList.map(f => path.relative(project.projectFolderPath, f.path));
 
 			if (!model.sdkStyle) {
 				await project.addSqlObjectScripts(relativePaths); // Add generated file structure to the project
