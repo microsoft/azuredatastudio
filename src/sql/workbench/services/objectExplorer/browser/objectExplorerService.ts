@@ -310,6 +310,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			checkSession();
 		});
 
+
+
+		connection = this._sessions[sessionId].connection;
 		/**
 		 * In certain cases, when we try to connect to a previously connected server, we may encounter a situation where the session is present in this._sessions,
 		 * but the connection is outdated. This happens when the handleSessionCreated is recieved before the createNewSession response is recieved.
@@ -331,7 +334,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				)));
 			}
 			const timeout = setTimeout(onTimeout, this.getObjectExplorerTimeout() * 1000);
-			connection = this._sessions[sessionId].connection;
 			const createNewSessionListener = this._onCreateNewSession.event((response) => {
 				checkConnection();
 			});
