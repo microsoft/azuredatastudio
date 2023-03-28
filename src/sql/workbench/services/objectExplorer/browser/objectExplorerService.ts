@@ -283,67 +283,53 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		let errorMessage: string | undefined = undefined;
 		const sessionId = session.sessionId;
 
-		/**
-		 * Sometimes ads recieves handleSessionCreated from providers before the createNewSession response is recieved.
-		 * We need to wait while the createNewSession response is recieved and the session map contains the session before we can continue.
-		 */
+
 		await new Promise<void>((resolve, reject) => {
 			const cleanup = () => {
+				if (connection) {
+					this._connectionsWaitingForSession.delete(connection.id);
+				}
 				createNewSessionListener.dispose();
 				clearTimeout(timeout);
 			}
 			const onTimeout = () => {
-				this.logService.error(`Timed out waiting for session to be created`);
-				reject(new Error('Timed out waiting for session to be created'));
+				if (!this._sessions[sessionId]) {
+					this.logService.error(`Timed out waiting for session to be created`);
+					reject(new Error('Timed out waiting for session to be created'));
+				} else {
+					this.logService.error(`Timeout waiting for session ${sessionId} to be created for connection "${connection.title}"`);
+					reject(new Error(nls.localize(
+						'objectExplorerMissingConnectionForSession',
+						'Timeout waiting for session {0} to be created for connection "{0}"', sessionId, connection.title
+					)));
+				}
+
 				cleanup();
 			}
 			const timeout = setTimeout(onTimeout, this.getObjectExplorerTimeout() * 1000);
 			const createNewSessionListener = this._onCreateNewSession.event((response) => {
-				checkSession();
+				checkSessionAndConnection();
 			});
-			const checkSession = () => {
+			const checkSessionAndConnection = () => {
+				/**
+				 * Sometimes ads recieves handleSessionCreated from providers before the createNewSession response is recieved.
+				 * We need to wait while the createNewSession response is recieved and the session map contains the session before we can continue.
+				 */
 				if (this._sessions[sessionId]) {
-					resolve();
-					cleanup();
+					connection = this._sessions[sessionId].connection;
+					/**
+					 * In certain cases, when we try to connect to a previously connected server, we may encounter a situation where the session is present in this._sessions,
+						 * but the connection is outdated. This happens when the handleSessionCreated is recieved before the createNewSession response is recieved.
+					 * We are using a map to keep track of connections which are actually waiting for a session to be created. And we will continue only if we get createNewSession
+					 * reponse for those connections.
+					 */
+					if (connection && this._connectionsWaitingForSession.get(connection.id) === false) {
+						resolve();
+						cleanup();
+					}
 				}
 			}
-			checkSession();
-		});
-
-
-
-		connection = this._sessions[sessionId].connection;
-		/**
-		 * In certain cases, when we try to connect to a previously connected server, we may encounter a situation where the session is present in this._sessions,
-		 * but the connection is outdated. This happens when the handleSessionCreated is recieved before the createNewSession response is recieved.
-		 * We are using a map to keep track of connections which are actually waiting for a session to be created. And we will continue only if we get createNewSession
-		 * reponse for those connections.
-		 */
-		await new Promise<void>((resolve, reject) => {
-			const cleanup = () => {
-				this._connectionsWaitingForSession.delete(connection.id);
-				clearTimeout(timeout);
-				createNewSessionListener.dispose();
-			}
-			const onTimeout = () => {
-				cleanup();
-				this.logService.error(`Timeout waiting for session ${sessionId} to be created for connection "${connection.title}"`);
-				reject(new Error(nls.localize(
-					'objectExplorerMissingConnectionForSession',
-					'Timeout waiting for session {0} to be created for connection "{0}"', sessionId, connection.title
-				)));
-			}
-			const timeout = setTimeout(onTimeout, this.getObjectExplorerTimeout() * 1000);
-			const createNewSessionListener = this._onCreateNewSession.event((response) => {
-				checkConnection();
-			});
-			const checkConnection = () => {
-				if (connection && this._connectionsWaitingForSession.get(connection.id) === false) {
-					resolve();
-					cleanup();
-				}
-			}
-			checkConnection();
+			checkSessionAndConnection();
 		});
 
 		try {
