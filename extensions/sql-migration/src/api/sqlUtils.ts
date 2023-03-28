@@ -534,10 +534,13 @@ export async function canTargetConnectToStorageAccount(
 		action: string
 	}
 
+	const ENABLED = 'Enabled';
+	const ALLOW = 'Allow';
+
 	const storageAccountProperties: StorageAccountAdditionalProperties = (storageAccount as any)['properties'];
-	const storageAccountPublicAccessEnabled: boolean = storageAccountProperties.publicNetworkAccess ? storageAccountProperties.publicNetworkAccess.toLowerCase() === 'Enabled'.toLowerCase() : true;
-	const storageAccountDefaultIsAllow: boolean = storageAccountProperties.networkAcls ? storageAccountProperties.networkAcls.defaultAction.toLowerCase() === 'Allow'.toLowerCase() : true;
-	const storageAccountWhitelistedVNets: string[] = storageAccountProperties.networkAcls ? storageAccountProperties.networkAcls.virtualNetworkRules.filter(rule => rule.action.toLowerCase() === 'Allow'.toLowerCase()).map(rule => rule.id) : [];
+	const storageAccountPublicAccessEnabled: boolean = storageAccountProperties.publicNetworkAccess ? storageAccountProperties.publicNetworkAccess.toLowerCase() === ENABLED.toLowerCase() : true;
+	const storageAccountDefaultIsAllow: boolean = storageAccountProperties.networkAcls ? storageAccountProperties.networkAcls.defaultAction.toLowerCase() === ALLOW.toLowerCase() : true;
+	const storageAccountWhitelistedVNets: string[] = storageAccountProperties.networkAcls ? storageAccountProperties.networkAcls.virtualNetworkRules.filter(rule => rule.action.toLowerCase() === ALLOW.toLowerCase()).map(rule => rule.id) : [];
 
 	var enabledFromAllNetworks: boolean = false;
 	var enabledFromWhitelistedVNet: boolean = false;
@@ -568,11 +571,7 @@ export async function canTargetConnectToStorageAccount(
 
 			break;
 		case MigrationTargetType.SQLVM:
-			// to=do: VM scenario -- for VM, get subnet by first checking underlying compute VM, then its network interface
-
-			// const networkInterfaces = Array.from((await NetworkInterfaceModel.getVmNetworkInterfaces(account, subscription, (targetServer as SqlVMServer))).values());
-			// const subnets = networkInterfaces.map(networkInterface => networkInterface.properties.ipConfigurations.map(ipConfiguration => ipConfiguration.properties.subnet.id.toLowerCase())).flat();
-			// enabledFromWhitelistedVNet = storageAccountWhitelistedVNets.some(vnet => subnets.includes(vnet.toLowerCase()));
+			// to-do: VM scenario -- get subnet by first checking underlying compute VM, then its network interface
 			return true;
 		default:
 			return true;
