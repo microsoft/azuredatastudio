@@ -41,6 +41,7 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 			contextKeyService, listService,
 			themeService, configurationService, keybindingService, accessibilityService);
 
+		// Adding support for expand/collapse on enter/space
 		this.onKeyDown(e => {
 			const standardKeyboardEvent = new StandardKeyboardEvent(e);
 			if (standardKeyboardEvent.keyCode === KeyCode.Enter || standardKeyboardEvent.keyCode === KeyCode.Space) {
@@ -56,26 +57,41 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 		})
 	}
 
+	// Overriding the setInput method to dispose the original input when a new input is set
 	override async setInput(input: ConnectionProfileGroup, viewState?: IAsyncDataTreeViewState): Promise<void> {
 		const originalInput = this.getInput();
 		await super.setInput(input, viewState);
 		originalInput?.dispose();
 	}
 
+	/**
+	 * The original implementation of getDataNode compares refrences of the elements to find the node.
+	 * This is not working for our case as we are creating new elements everytime we refresh the tree.
+	 * This method overrides the original implementation to find the node by comparing the ids of the elements.
+	 * If the node is not found in the original implementation, we search for the node in the nodes map by ids.
+	 */
 	public override getDataNode(element: ConnectionProfileGroup | ServerTreeElement): IAsyncDataTreeNode<ConnectionProfileGroup, ServerTreeElement> {
-		let node = undefined;
-		this.nodes.forEach((v, k) => {
-			if (element?.id === v?.id) {
-				node = v;
-			}
-		});
-		if (node) {
+		try {
+			const node = super.getDataNode(element);
 			return node;
+		} catch (e) {
+			let node = undefined;
+			this.nodes.forEach((v, k) => {
+				if (element?.id === v?.id) {
+					node = v;
+				}
+			});
+			if (node) {
+				return node;
+			}
+			throw e;
 		}
-		return super.getDataNode(element);
 	}
 
-	public getDataById(id: string): ServerTreeElement {
+	/**
+	 * Gets the element by id in the tree
+	 */
+	public getElementById(id: string): ServerTreeElement {
 		for (let nodes of this.nodes.values()) {
 			if (nodes.element.id === id) {
 				return nodes.element;
@@ -84,6 +100,9 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 		return undefined;
 	}
 
+	/**
+	 * Get the list of expanded elements in the tree
+	 */
 	public getExpandedState(element: ServerTreeElement): ServerTreeElement[] {
 		const node = this.getDataNode(element);
 		const stack = [node];
@@ -139,11 +158,6 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 		}
 	}
 
-	public getExpandedElementIds(): string[] {
-		const viewState = this.getViewState();
-		return viewState?.expanded;
-	}
-
 	public async expandElements(elements: ServerTreeElement[]): Promise<void> {
 		for (let element of elements) {
 			const id = element.id;
@@ -160,16 +174,6 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 						}
 					}
 				}
-			}
-		}
-	}
-
-	public async expandElementIds(ids: string[]): Promise<void> {
-		for (let i = 0; i < ids.length; i++) {
-			const id = ids[i];
-			const node = this.getDataNodeById(id);
-			if (node) {
-				await this.expand(node.element);
 			}
 		}
 	}
@@ -196,24 +200,12 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 	}
 
 	/**
-	 * Delete and update the children of the parent
+	 * Mark the element as dirty so that it will be refreshed when it is expanded next time
+	 * @param element The element to mark as dirty
 	 */
-	public async deleteElement(element: ConnectionProfile | ConnectionProfileGroup) {
-		if (this.hasNode(element) && this.hasNode(element.parent)) {
-			if (element instanceof ConnectionProfile) {
-				element.parent.connections = element.parent.connections.filter(c => c.id !== element.id);
-			} else if (element instanceof ConnectionProfileGroup) {
-				element.parent.children = element.parent.children.filter(c => c.id !== element.id);
-			}
-			await this.updateChildren(element.parent);
-		}
-	}
-
 	public async makeElementDirty(element: ServerTreeElement) {
 		this.getDataNode(element).stale = true;
 	}
-
-
 }
 
 export type ServerTreeElement = ConnectionProfile | ConnectionProfileGroup | TreeNode;

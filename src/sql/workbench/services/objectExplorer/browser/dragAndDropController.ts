@@ -178,11 +178,10 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	 */
 	public onDragOver(tree: AsyncServerTree | ITree, data: IDragAndDropData, targetElement: any, originalEvent: DragMouseEvent): IDragOverReaction {
 		let canDragOver: boolean = true;
-
+		const source = data.getData()[0];
 		if (targetElement instanceof ConnectionProfile || targetElement instanceof ConnectionProfileGroup) {
 			let targetConnectionProfileGroup = this.getTargetGroup(targetElement);
 			// Verify if the connection can be moved to the target group
-			const source = data.getData()[0];
 			if (source instanceof ConnectionProfile) {
 				if (!this._connectionManagementService.canChangeConnectionConfig(source, targetConnectionProfileGroup.id!)) {
 					canDragOver = false;
@@ -193,7 +192,11 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 				canDragOver = source.id !== targetElement.id && !source.isAncestorOf(targetElement);
 			}
 		} else {
-			canDragOver = true;
+			if (this.getTargetGroup(targetElement).id === this.getTargetGroup(source).id) {
+				canDragOver = true;
+			} else {
+				canDragOver = false;
+			}
 		}
 
 		if (canDragOver) {
@@ -266,18 +269,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		} else if (targetElement instanceof ConnectionProfileGroup) {
 			targetConnectionProfileGroup = targetElement;
 		} else if (targetElement instanceof TreeNode) {
-			let treeNode = targetElement;
-
-			// Not all tree nodes have a connection profile group, so we need to walk up the tree to find the first one
-			while (!treeNode?.connection) {
-				treeNode = treeNode.parent
-			}
-			if (treeNode) {
-				const groupId = treeNode.connection.groupId;
-				if (groupId) {
-					targetConnectionProfileGroup = this._connectionManagementService.getConnectionGroupById(groupId);
-				}
-			}
+			targetConnectionProfileGroup = this.getTreeNodeParentGroup(targetElement);
 			if (!targetConnectionProfileGroup) {
 				throw new Error('Cannot find parent for the node');
 			}
@@ -294,6 +286,20 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		let isDropToSameLevel = oldParent && oldParent.equals(targetConnectionProfileGroup);
 		let isUnsavedDrag = source && (source instanceof ConnectionProfileGroup) && (source.id === UNSAVED_GROUP_ID);
 		return (!isDropToSameLevel && !isDropToItself && !isUnsavedDrag);
+	}
+
+	private getTreeNodeParentGroup(element: TreeNode): ConnectionProfileGroup | undefined {
+		let treeNode = element;
+		while (!treeNode?.connection) {
+			treeNode = treeNode.parent;
+		}
+		if (treeNode) {
+			const groupId = treeNode.connection.groupId;
+			if (groupId) {
+				return this._connectionManagementService.getConnectionGroupById(groupId);
+			}
+		}
+		return undefined;
 	}
 }
 
