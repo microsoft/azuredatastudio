@@ -149,15 +149,29 @@ declare module 'sqldbproj' {
 		readProjFile(): Promise<void>;
 
 		/**
-		 * Adds the list of sql files and directories to the project, and saves the project file
-		 *
-		 * @param list list of files and folder Uris. Files and folders must already exist. No files or folders will be added if any do not exist.
+		 * Adds a pre-deployment script
+		 * @param relativePath
 		 */
-		addToProject(list: vscode.Uri[]): Promise<void>;
-
 		addPreDeploymentScript(relativePath: string): Promise<void>;
+
+		/**
+		 * Adds a post-deployment script
+		 * @param relativePath
+		 */
 		addPostDeploymentScript(relativePath: string): Promise<void>;
+
+		/**
+		 * Add a SQL object script that will be included in the schema
+		 * @param relativePath
+		 */
 		addSqlObjectScript(relativePath: string): Promise<void>;
+
+		/**
+		 * Adds multiple SQL object scripts that will be included in the schema
+		 * @param relativePaths Array of paths relative to the .sqlproj file
+		 */
+		addSqlObjectScripts(relativePaths: string[]): Promise<void>;
+
 		/**
 		 * Adds a folder to the project, and saves the project file
 		 *

@@ -1384,9 +1384,9 @@ export class ProjectsController {
 				return;
 			}
 
-			const fileFolderList: vscode.Uri[] | undefined = await this.getSqlFileList(projectInfo.newProjectFolder);
+			const scriptList: vscode.Uri[] | undefined = await this.getSqlFileList(projectInfo.newProjectFolder);
 
-			if (!fileFolderList || fileFolderList.length === 0) {
+			if (!scriptList || scriptList.length === 0) {
 				void vscode.window.showInformationMessage(constants.noSqlFilesGenerated);
 				this._outputChannel.show();
 				return;
@@ -1403,12 +1403,15 @@ export class ProjectsController {
 			const project = await Project.openProject(newProjFilePath);
 
 			// 6. add generated files to SQL project
-			await project.addToProject(fileFolderList.filter(f => !f.fsPath.endsWith(constants.autorestPostDeploymentScriptName))); // Add generated file structure to the project
 
-			const postDeploymentScript: vscode.Uri | undefined = this.findPostDeploymentScript(fileFolderList);
+			const uriList = scriptList.filter(f => !f.fsPath.endsWith(constants.autorestPostDeploymentScriptName))
+			const relativePaths = uriList.map(f => path.relative(project.projectFolderPath, f.path));
+			await project.addSqlObjectScripts(relativePaths); // Add generated file structure to the project
+
+			const postDeploymentScript: vscode.Uri | undefined = this.findPostDeploymentScript(scriptList);
 
 			if (postDeploymentScript) {
-				await project.addScriptItem(path.relative(project.projectFolderPath, postDeploymentScript.fsPath), undefined, ItemType.postDeployScript);
+				await project.addPostDeploymentScript(path.relative(project.projectFolderPath, postDeploymentScript.fsPath));
 			}
 
 			if (options?.doNotOpenInWorkspace !== true) {
@@ -1593,10 +1596,12 @@ export class ProjectsController {
 				.withAdditionalMeasurements({ durationMs: timeToExtract })
 				.send();
 
-			let fileFolderList: vscode.Uri[] = model.extractTarget === mssql.ExtractTarget.file ? [vscode.Uri.file(model.filePath)] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
+			const scriptList: vscode.Uri[] = model.extractTarget === mssql.ExtractTarget.file ? [vscode.Uri.file(model.filePath)] : await this.generateScriptList(model.filePath); // Create a list of all the files to be added to project
+
+			const relativePaths = scriptList.map(f => path.relative(project.projectFolderPath, f.path));
 
 			if (!model.sdkStyle) {
-				await project.addToProject(fileFolderList); // Add generated file structure to the project
+				await project.addSqlObjectScripts(relativePaths); // Add generated file structure to the project
 			}
 
 			// add project to workspace
@@ -1628,19 +1633,19 @@ export class ProjectsController {
 	}
 
 	/**
-	 * Generate a flat list of all files and folder under a folder.
+	 * Generate a flat list of all scripts under a folder.
 	 * @param absolutePath absolute path to folder to generate the list of files from
-	 * @returns array of uris of files and folders under the provided folder
+	 * @returns array of uris of files under the provided folder
 	 */
-	public async generateList(absolutePath: string): Promise<vscode.Uri[]> {
-		let fileFolderList: vscode.Uri[] = [];
+	public async generateScriptList(absolutePath: string): Promise<vscode.Uri[]> {
+		let fileList: vscode.Uri[] = [];
 
 		if (!await utils.exists(absolutePath)) {
 			if (await utils.exists(absolutePath + constants.sqlFileExtension)) {
 				absolutePath += constants.sqlFileExtension;
 			} else {
 				void vscode.window.showErrorMessage(constants.cannotResolvePath(absolutePath));
-				return fileFolderList;
+				return fileList;
 			}
 		}
 
@@ -1652,19 +1657,18 @@ export class ProjectsController {
 				const stat = await fs.stat(filepath);
 
 				if (stat.isDirectory()) {
-					fileFolderList.push(vscode.Uri.file(filepath));
 					(await fs
 						.readdir(filepath))
 						.forEach((f: string) => files.push(path.join(filepath, f)));
 				}
-				else if (stat.isFile()) {
-					fileFolderList.push(vscode.Uri.file(filepath));
+				else if (stat.isFile() && path.extname(filepath) === constants.sqlFileExtension) {
+					fileList.push(vscode.Uri.file(filepath));
 				}
 			}
 
 		} while (files.length !== 0);
 
-		return fileFolderList;
+		return fileList;
 	}
 
 	//#endregion
@@ -1834,7 +1838,9 @@ export class ProjectsController {
 
 			let toAdd: vscode.Uri[] = [];
 			result.addedFiles.forEach((f: any) => toAdd.push(vscode.Uri.file(f)));
-			await project.addToProject(toAdd);
+			const relativePaths = toAdd.map(f => path.relative(project.projectFolderPath, f.path));
+
+			await project.addSqlObjectScripts(relativePaths);
 
 			let toRemove: vscode.Uri[] = [];
 			result.deletedFiles.forEach((f: any) => toRemove.push(vscode.Uri.file(f)));
