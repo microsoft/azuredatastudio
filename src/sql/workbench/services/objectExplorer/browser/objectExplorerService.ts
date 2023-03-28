@@ -298,13 +298,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					This has probably happened because OE service did not recieve a response for createNewSession from the provider.`);
 					reject(new Error(
 						nls.localize('objectExplorerMissingSession',
-							'Timed out waiting for the Object Explorer session to be created.')));
+							'Timed out waiting for session {0} to be created. This has probably happened because OE service did not recieve a response for createNewSession from the provider.', sessionId)));
 				} else {
 					this.logService.error(`Timeout waiting for session ${sessionId} to be created for connection "${connection.title}".
 					This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection."${connection.title}`);
 					reject(new Error(nls.localize(
 						'objectExplorerMissingConnectionForSession',
-						"Timed out waiting for the Object Explorer session to be created for connection '{1}'.", connection.title
+						'Timeout waiting for session {0} to be created for connection "{1}". This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection "{1}"', sessionId, connection.title
 					)));
 				}
 
@@ -323,9 +323,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					connection = this._sessions[sessionId].connection;
 					/**
 					 * In certain cases, when we try to connect to a previously connected server, we may encounter a situation where the session is present in this._sessions,
-						 * but the connection is outdated. This happens when the handleSessionCreated is recieved before the createNewSession response is recieved.
-					 * We are using a map to keep track of connections which are actually waiting for a session to be created. And we will continue only if we get createNewSession
-					 * reponse for those connections.
+					 * probably becaue the close session request was not completed successfully with the same session id for an older connection. While creating this new session,
+					 * if we recieve the handleSessionCreated event before the createNewSession response is recieved, we will end up using the older connection stored in
+					 * this._sessions[sessionId].connection. To avoid this, we check if the connection id is false in this._connectionsWaitingForSession. If it is not false,
+					 * we know that the createNewSession response has been recieved and we have the correct connection.
 					 */
 					if (connection && this._connectionsWaitingForSession.get(connection.id) === false) {
 						resolve();
@@ -419,8 +420,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			const result = await provider.createNewSession(connection.toConnectionInfo());
 			// some providers return a malformed create sessions responses which don't have a session id. We should throw an error in this case
 			if (!result?.sessionId) {
-				this.logService.error(`No session ID returned by provider '${providerId}' for connection '${connection.title}'.`);
-				throw new Error(nls.localize('objectExplorerSessionIdMissing', "No session ID returned by provider '{0}' for connection '{1}'.", providerId, connection.title));
+				this.logService.error(`The session ID returned by provider "${providerId}" for connection "${connection.title}" is invalid.`);
+				throw new Error(nls.localize('objectExplorerSessionIdMissing', 'The session ID returned by provider "{0}" for connection "{1}" is invalid.', providerId, connection.title));
 			}
 			if (this._sessions[result.sessionId]) {
 				this.logService.trace(`Overwriting session ${result.sessionId}`);
