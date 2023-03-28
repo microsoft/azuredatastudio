@@ -420,7 +420,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			// some providers return a malformed create sessions responses which don't have a session id. We should throw an error in this case
 			if (!result?.sessionId) {
 				this.logService.error(`The session ID returned by provider "${providerId}" for connection "${connection.title}" is invalid.`);
-				throw new Error(nls.localize('objectExplorerSessionIdMissing', 'The session ID returned by provider "{0}" for connection "{1}" is invalid.', providerId, connection.title));
+				throw new Error(nls.localize('objectExplorerSessionIdMissing', "No session ID returned by provider '{0}' for connection '{1}'.", providerId, connection.title));
 			}
 			if (this._sessions[result.sessionId]) {
 				this.logService.trace(`Overwriting session ${result.sessionId}`);
