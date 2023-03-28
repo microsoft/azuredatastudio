@@ -9,7 +9,7 @@ import * as TypeChecker from 'vs/base/common/types';
 import { localize } from 'vs/nls';
 import * as strings from 'vs/base/common/strings';
 
-export const DefaultServerGroupColor = '#515151';
+export const DefaultServerGroupColor = '#393939';
 
 export class ServerGroupViewModel {
 	public groupName: string;

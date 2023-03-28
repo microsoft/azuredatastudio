@@ -23,13 +23,13 @@ const serverGroupConfig: IConfigurationNode = {
 			items: 'string',
 			'description': localize('serverGroup.colors', "Server Group color palette used in the Object Explorer viewlet."),
 			default: [
-				'#A1634D',
-				'#7F0000',
-				'#914576',
-				'#6E9B59',
-				'#5F82A5',
-				'#4452A6',
-				'#6A6599',
+				'#D13438',
+				'#DB7500',
+				'#038387',
+				'#0078D4',
+				'#004E8C',
+				'#8764B8',
+				'#69797E',
 				DefaultServerGroupColor
 			]
 		},
