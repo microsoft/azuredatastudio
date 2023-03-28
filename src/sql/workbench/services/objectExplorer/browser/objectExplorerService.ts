@@ -304,7 +304,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection."${connection.title}`);
 					reject(new Error(nls.localize(
 						'objectExplorerMissingConnectionForSession',
-						'Timeout waiting for session {0} to be created for connection "{1}". This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection "{1}"', sessionId, connection.title
+						"Timed out waiting for the Object Explorer session to be created for connection '{1}'.", connection.title
 					)));
 				}
 
