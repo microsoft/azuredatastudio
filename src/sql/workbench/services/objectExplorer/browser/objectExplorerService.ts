@@ -26,7 +26,6 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { NODE_EXPANSION_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -175,8 +174,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private _onSelectionOrFocusChange: Emitter<void>;
 	private _onNodeExpandedError: Emitter<NodeExpandInfoWithProviderId> = new Emitter<NodeExpandInfoWithProviderId>();
 
-	private _connectionsWaitingForSession: Map<string, boolean> = new Map<string, boolean>();
-
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
@@ -279,64 +276,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private async handleSessionCreated(session: azdata.ObjectExplorerSession): Promise<void> {
 		let connection: ConnectionProfile | undefined = undefined;
 		let errorMessage: string | undefined = undefined;
-		const sessionId = session.sessionId;
-
-		/**
-		 * Sometimes ads recieves handleSessionCreated from providers before the createNewSession response is recieved.
-		 * We need to wait while the createNewSession response is recieved and the session map contains the session before we can continue.
-		 */
-		await new Promise<void>((resolve, reject) => {
-			let count = 0;
-			const waitingForSessionId = () => {
-				const session = this._sessions[sessionId];
-				if (session) {
-					clearTimeout(timerId);
-					resolve();
-				} else if (count > this.getObjectExplorerTimeout()) {
-					clearTimeout(timerId);
-					reject(new Error(
-						nls.localize(
-							'objectExplorerMissingSession',
-							'Timed out while waiting for createNewSession response from the provider for this created session `{0}`', sessionId
-						)));
-				} else {
-					count++;
-					timerId = setTimeout(waitingForSessionId, 1000);
-				}
-			};
-			let timerId = setTimeout(waitingForSessionId, 0);
-		});
-
-		if (this._sessions[sessionId]) {
-
-			/**
-			 * In certain cases, when we try to connect to a previously connected server, we may encounter a situation where the session is present in this._sessions,
-			 * but the connection is outdated. This happens when the handleSessionCreated is recieved before the createNewSession response is recieved.
-			 * We are using a map to keep track of connections which are actually waiting for a session to be created. And we will continue only if we get createNewSession
-			 * reponse for those connections.
-			 */
-			await new Promise<void>((resolve, reject) => {
-				let count = 0;
-				const waitingForRightConnectionInSession = () => {
-					connection = this._sessions[sessionId].connection;
-					if (connection && this._connectionsWaitingForSession.get(connection.id) === false) {
-						this._connectionsWaitingForSession.delete(connection.id);
-						clearTimeout(timerId);
-						resolve();
-					} else if (count > this.getObjectExplorerTimeout()) {
-						clearTimeout(timerId);
-						reject(new Error(
-							nls.localize(
-								'objectExplorerMissingConnectionForSession',
-								'Timeout waiting for session "{0}" to be created for connection "{0}"', connection.id, sessionId
-							)));
-					} else {
-						count++;
-						timerId = setTimeout(waitingForRightConnectionInSession, 1000);
-					}
-				};
-				let timerId = setTimeout(waitingForRightConnectionInSession, 0);
-			});
+		if (this._sessions[session.sessionId!]) {
+			connection = this._sessions[session.sessionId!].connection;
 
 			try {
 				if (session.success && session.rootNode) {
@@ -356,13 +297,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					await Promise.all(promises);
 				}
 			} catch (error) {
-				this.logService.warn(`cannot handle the session ${sessionId} in all nodeProviders`);
+				this.logService.warn(`cannot handle the session ${session.sessionId} in all nodeProviders`);
 			} finally {
 				this.sendUpdateNodeEvent(connection!, errorMessage);
 			}
 		}
 		else {
-			this.logService.warn(`cannot find session ${sessionId}`);
+			this.logService.warn(`cannot find session ${session.sessionId}`);
 		}
 	}
 
@@ -419,14 +360,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public async createNewSession(providerId: string, connection: ConnectionProfile): Promise<azdata.ObjectExplorerSessionResponse> {
 		const provider = this._providers[providerId];
 		if (provider) {
-			// set the connection to wait for session
-			this._connectionsWaitingForSession.set(connection.id, true);
 			const result = await provider.createNewSession(connection.toConnectionInfo());
-			// some providers return a malformed create sessions responses which don't have a session id. We should throw an error in this case
-			if (!result?.sessionId) {
-				this.logService.error(`The session ID returned by provider "${providerId}" for connection "${connection.title}" is invalid.`);
-				throw new Error(nls.localize('objectExplorerSessionIdMissing', 'The session ID returned by provider "{0}" for connection "{1}" is invalid.', providerId, connection.title));
-			}
 			if (this._sessions[result.sessionId]) {
 				this.logService.trace(`Overwriting session ${result.sessionId}`);
 			}
@@ -434,11 +368,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				connection: connection,
 				nodes: {}
 			};
-			// once the session is created, set the connection to not wait for session
-			this._connectionsWaitingForSession.set(connection.id, false);
 			return result;
 		} else {
-			this._connectionsWaitingForSession.delete(connection.id);
 			throw new Error(`Provider doesn't exist. id: ${providerId}`);
 		}
 	}
@@ -515,6 +446,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						}
 					});
 
+					const expansionTimeoutValueSec = this._configurationService.getValue<number>('serverTree.nodeExpansionTimeout');
 					const expansionTimeout = setTimeout(() => {
 						/**
 						 * If we don't get a response back from all the providers in specified expansion timeout seconds then we assume
@@ -526,7 +458,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							this._notificationService.error(nls.localize('nodeExpansionTimeout', "Node expansion timed out for node {0} for providers {1}", node.nodePath, missingProviders.map(p => p.providerId).join(', ')));
 						}
 						resolveExpansion();
-					}, this.getObjectExplorerTimeout() * 1000);
+					}, expansionTimeoutValueSec * 1000);
 
 					self._sessions[session.sessionId!].nodes[node.nodePath].expandEmitter.event((expandResult: NodeExpandInfoWithProviderId) => {
 						if (expandResult && expandResult.providerId) {
@@ -999,12 +931,5 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			currentNode = nextNode;
 		}
 		return currentNode;
-	}
-
-	/**
-	 * returns object explorer timeout in seconds.
-	 */
-	public getObjectExplorerTimeout(): number {
-		return this._configurationService.getValue<number>(NODE_EXPANSION_CONFIG);
 	}
 }

@@ -9,11 +9,10 @@ import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode'
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import Severity from 'vs/base/common/severity';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IAsyncDataSource } from 'vs/base/browser/ui/tree/tree';
 import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-import Severity from 'vs/base/common/severity';
 
 /**
  * Implements the DataSource(that returns a parent/children of an element) for the server tree
@@ -23,7 +22,6 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 	constructor(
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IConfigurationService private _configurationService: IConfigurationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService
 	) {
 	}
@@ -47,9 +45,9 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 	public async getChildren(element: ServerTreeElement): Promise<ServerTreeElement[]> {
 		try {
 			if (element instanceof ConnectionProfile) {
-				return await TreeUpdateUtils.getAsyncConnectionNodeChildren(element, this._connectionManagementService, this._objectExplorerService, this._configurationService);
+				return await TreeUpdateUtils.getAsyncConnectionNodeChildren(element, this._connectionManagementService, this._objectExplorerService);
 			} else if (element instanceof ConnectionProfileGroup) {
-				return element.getChildren();
+				return (element as ConnectionProfileGroup).getChildren();
 			} else if (element instanceof TreeNode) {
 				if (element.children) {
 					return element.children;
@@ -57,9 +55,15 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 					return await this._objectExplorerService.resolveTreeNodeChildren(element.getSession()!, element);
 				}
 			}
-		} catch (error) {
-			this.showError(error);
-			throw error;
+		} catch (err) {
+			if (element instanceof TreeNode) {
+				element.errorStateMessage = err.message ?? err;
+			}
+			if (err.message) {
+				this.showError(err.message);
+			}
+
+			throw err;
 		}
 		return [];
 	}

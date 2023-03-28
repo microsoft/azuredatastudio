@@ -41,7 +41,6 @@ const serverGroupConfig: IConfigurationNode = {
 	}
 };
 
-export const NODE_EXPANSION_CONFIG = 'serverTree.nodeExpansionTimeout';
 const serverTreeConfig: IConfigurationNode = {
 	'id': 'serverTree',
 	'title': 'Server Tree',
@@ -55,7 +54,7 @@ const serverTreeConfig: IConfigurationNode = {
 		'serverTree.nodeExpansionTimeout': {
 			'type': 'number',
 			'default': '45',
-			'description': localize(NODE_EXPANSION_CONFIG, "The timeout in seconds for expanding a node in the Servers view"),
+			'description': localize('serverTree.nodeExpansionTimeout', "The timeout in seconds for expanding a node in the Servers view"),
 			'minimum': 1
 		}
 	}
