@@ -175,6 +175,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private _onSelectionOrFocusChange: Emitter<void>;
 	private _onNodeExpandedError: Emitter<NodeExpandInfoWithProviderId> = new Emitter<NodeExpandInfoWithProviderId>();
 
+	private _onCreateNewSession: Emitter<azdata.ObjectExplorerSessionResponse> = new Emitter<azdata.ObjectExplorerSessionResponse>();
+
 	private _connectionsWaitingForSession: Map<string, boolean> = new Map<string, boolean>();
 
 	constructor(
@@ -286,84 +288,85 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		 * We need to wait while the createNewSession response is recieved and the session map contains the session before we can continue.
 		 */
 		await new Promise<void>((resolve, reject) => {
-			let count = 0;
-			const waitingForSessionId = () => {
-				const session = this._sessions[sessionId];
-				if (session) {
-					clearTimeout(timerId);
+			const cleanup = () => {
+				createNewSessionListener.dispose();
+				clearTimeout(timeout);
+			}
+			const onTimeout = () => {
+				this.logService.error(`Timed out waiting for session to be created`);
+				reject(new Error('Timed out waiting for session to be created'));
+				cleanup();
+			}
+			const timeout = setTimeout(onTimeout, this.getObjectExplorerTimeout() * 1000);
+			const createNewSessionListener = this._onCreateNewSession.event((response) => {
+				checkSession();
+			});
+			const checkSession = () => {
+				if (this._sessions[sessionId]) {
 					resolve();
-				} else if (count > this.getObjectExplorerTimeout()) {
-					clearTimeout(timerId);
-					reject(new Error(
-						nls.localize(
-							'objectExplorerMissingSession',
-							'Timed out while waiting for createNewSession response from the provider for this created session {0}', sessionId
-						)));
-				} else {
-					count++;
-					timerId = setTimeout(waitingForSessionId, 1000);
+					cleanup();
 				}
-			};
-			let timerId = setTimeout(waitingForSessionId, 0);
+			}
+			checkSession();
 		});
 
-		if (this._sessions[sessionId]) {
-
-			/**
-			 * In certain cases, when we try to connect to a previously connected server, we may encounter a situation where the session is present in this._sessions,
-			 * but the connection is outdated. This happens when the handleSessionCreated is recieved before the createNewSession response is recieved.
-			 * We are using a map to keep track of connections which are actually waiting for a session to be created. And we will continue only if we get createNewSession
-			 * reponse for those connections.
-			 */
-			await new Promise<void>((resolve, reject) => {
-				let count = 0;
-				const waitingForRightConnectionInSession = () => {
-					connection = this._sessions[sessionId].connection;
-					if (connection && this._connectionsWaitingForSession.get(connection.id) === false) {
-						this._connectionsWaitingForSession.delete(connection.id);
-						clearTimeout(timerId);
-						resolve();
-					} else if (count > this.getObjectExplorerTimeout()) {
-						clearTimeout(timerId);
-						reject(new Error(
-							nls.localize(
-								'objectExplorerMissingConnectionForSession',
-								'Timeout waiting for session "{0}" to be created for connection "{0}"', connection.id, sessionId
-							)));
-					} else {
-						count++;
-						timerId = setTimeout(waitingForRightConnectionInSession, 1000);
-					}
-				};
-				let timerId = setTimeout(waitingForRightConnectionInSession, 0);
-			});
-
-			try {
-				if (session.success && session.rootNode) {
-					let server = this.toTreeNode(session.rootNode, undefined);
-					server.connection = connection;
-					server.session = session;
-					this._activeObjectExplorerNodes[connection!.id] = server;
-				}
-				else {
-					errorMessage = session && session.errorMessage ? session.errorMessage : errSessionCreateFailed;
-					this.logService.error(errorMessage);
-				}
-				// Send on session created about the session to all node providers so they can prepare for node expansion
-				let nodeProviders = this._nodeProviders[connection!.providerName];
-				if (nodeProviders) {
-					const promises = nodeProviders.map(p => p.handleSessionOpen(session));
-					await Promise.all(promises);
-				}
-			} catch (error) {
-				this.logService.warn(`cannot handle the session ${sessionId} in all nodeProviders`);
-			} finally {
-				this.sendUpdateNodeEvent(connection!, errorMessage);
+		/**
+		 * In certain cases, when we try to connect to a previously connected server, we may encounter a situation where the session is present in this._sessions,
+		 * but the connection is outdated. This happens when the handleSessionCreated is recieved before the createNewSession response is recieved.
+		 * We are using a map to keep track of connections which are actually waiting for a session to be created. And we will continue only if we get createNewSession
+		 * reponse for those connections.
+		 */
+		await new Promise<void>((resolve, reject) => {
+			const cleanup = () => {
+				this._connectionsWaitingForSession.delete(connection.id);
+				clearTimeout(timeout);
+				createNewSessionListener.dispose();
 			}
+			const onTimeout = () => {
+				cleanup();
+				this.logService.error(`Timeout waiting for session ${sessionId} to be created for connection "${connection.title}"`);
+				reject(new Error(nls.localize(
+					'objectExplorerMissingConnectionForSession',
+					'Timeout waiting for session {0} to be created for connection "{0}"', sessionId, connection.title
+				)));
+			}
+			const timeout = setTimeout(onTimeout, this.getObjectExplorerTimeout() * 1000);
+			connection = this._sessions[sessionId].connection;
+			const createNewSessionListener = this._onCreateNewSession.event((response) => {
+				checkConnection();
+			});
+			const checkConnection = () => {
+				if (connection && this._connectionsWaitingForSession.get(connection.id) === false) {
+					resolve();
+					cleanup();
+				}
+			}
+			checkConnection();
+		});
+
+		try {
+			if (session.success && session.rootNode) {
+				let server = this.toTreeNode(session.rootNode, undefined);
+				server.connection = connection;
+				server.session = session;
+				this._activeObjectExplorerNodes[connection!.id] = server;
+			}
+			else {
+				errorMessage = session && session.errorMessage ? session.errorMessage : errSessionCreateFailed;
+				this.logService.error(errorMessage);
+			}
+			// Send on session created about the session to all node providers so they can prepare for node expansion
+			let nodeProviders = this._nodeProviders[connection!.providerName];
+			if (nodeProviders) {
+				const promises = nodeProviders.map(p => p.handleSessionOpen(session));
+				await Promise.all(promises);
+			}
+		} catch (error) {
+			this.logService.warn(`cannot handle the session ${sessionId} in all nodeProviders`);
+		} finally {
+			this.sendUpdateNodeEvent(connection!, errorMessage);
 		}
-		else {
-			this.logService.warn(`Cannot find session ${sessionId}`);
-		}
+
 	}
 
 	/**
@@ -436,6 +439,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			};
 			// once the session is created, set the connection to not wait for session
 			this._connectionsWaitingForSession.set(connection.id, false);
+			this._onCreateNewSession.fire(result);
 			return result;
 		} else {
 			this._connectionsWaitingForSession.delete(connection.id);
