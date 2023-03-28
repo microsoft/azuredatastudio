@@ -1674,18 +1674,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	/**
-	 * Serialize connection with options provider
-	 * TODO this could be a map reduce operation
-	 */
-	public buildConnectionInfo(connectionString: string, provider: string): Thenable<azdata.ConnectionInfo> {
-		let connectionProvider = this._providers.get(provider);
-		if (connectionProvider) {
-			return connectionProvider.onReady.then(e => {
-				return e.buildConnectionInfo(connectionString);
-			});
+	public async buildConnectionInfo(connectionString: string, providerId: string): Promise<azdata.ConnectionInfo> {
+		const connectionProviderInfo = this._providers.get(providerId);
+		if (!connectionProviderInfo) {
+			throw new Error(nls.localize('connection.unknownProvider', "Unknown provider '{0}'", providerId));
 		}
-		return Promise.resolve(undefined);
+		const provider = await connectionProviderInfo.onReady;
+		return provider.buildConnectionInfo(connectionString)
 	}
 
 	public getProviderProperties(providerName: string): ConnectionProviderProperties {

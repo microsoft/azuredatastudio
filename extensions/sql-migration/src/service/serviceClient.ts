@@ -81,7 +81,7 @@ export class ServiceClient {
 		const config = JSON.parse(rawConfig.toString());
 		config.installDirectory = path.join(context.extensionPath, config.installDirectory);
 		config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
-		config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
+		config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL', true);
 		const serverdownloader = new ServerProvider(config);
 		serverdownloader.eventEmitter.onAny(this.generateHandleServerProviderEvent());
 		return serverdownloader.getOrDownloadServer();

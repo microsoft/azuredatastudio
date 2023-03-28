@@ -241,7 +241,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			query: string): Promise<azurecore.ResourceQueryResult<T>> {
 			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, query);
 		},
-		onEncryptionKeysUpdated: eventEmitter!.event
+		onEncryptionKeysUpdated: eventEmitter!.event,
+		async getEncryptionKeys(): Promise<azurecore.CacheEncryptionKeys> {
+			if (!providerService) {
+				throw new Error("Failed to initialize Azure account provider.");
+			}
+			return await providerService!.getEncryptionKeys();
+		}
 	};
 }
 
@@ -299,6 +305,9 @@ async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent): Pro
 		updatePiiLoggingLevel();
 	}
 	if (e.affectsConfiguration('azure.authenticationLibrary')) {
+		if (vscode.workspace.getConfiguration(Constants.AzureSection).get('authenticationLibrary') === 'ADAL') {
+			void vscode.window.showInformationMessage(loc.deprecatedOption);
+		}
 		await displayReloadAds();
 	}
 }
@@ -321,4 +330,3 @@ async function displayReloadAds(): Promise<boolean> {
 	}
 
 }
-

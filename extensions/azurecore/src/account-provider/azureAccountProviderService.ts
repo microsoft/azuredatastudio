@@ -81,6 +81,13 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		return this._onEncryptionKeysUpdated;
 	}
 
+	public async getEncryptionKeys(): Promise<CacheEncryptionKeys> {
+		if (!this._cachePluginProvider) {
+			await this.onDidChangeConfiguration();
+		}
+		return this._cachePluginProvider!.getCacheEncryptionKeys();
+	}
+
 	public dispose() {
 		while (this._disposables.length) {
 			const item = this._disposables.pop();
@@ -167,6 +174,10 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 			// MSAL Cache Plugin
 			this._cachePluginProvider = new MsalCachePluginProvider(tokenCacheKeyMsal, this._userStoragePath, this._credentialProvider, this._onEncryptionKeysUpdated);
+			if (this._authLibrary === Constants.AuthLibrary.MSAL) {
+				// Initialize cache provider and encryption keys
+				await this._cachePluginProvider.init();
+			}
 
 			const msalConfiguration: Configuration = {
 				auth: {

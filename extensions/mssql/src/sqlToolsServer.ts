@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as path from 'path';
 import * as azurecore from 'azurecore';
-import { getAzureAuthenticationLibraryConfig, getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, TracingLevel } from './utils';
+import { getAzureAuthenticationLibraryConfig, getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, logDebug, TracingLevel } from './utils';
 import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature } from './features';
@@ -20,7 +20,7 @@ import { SchemaCompareService } from './schemaCompare/schemaCompareService';
 import { AppContext } from './appContext';
 import { DacFxService } from './dacfx/dacFxService';
 import { CmsService } from './cms/cmsService';
-import { CompletionExtensionParams, CompletionExtLoadRequest, DidChangeEncryptionIVKeyParams, EncryptionKeysChangedNotification } from './contracts';
+import { CompletionExtensionParams, CompletionExtLoadRequest, EncryptionKeysChangedNotification } from './contracts';
 import { promises as fs } from 'fs';
 import * as nls from 'vscode-nls';
 import { LanguageExtensionService } from './languageExtension/languageExtensionService';
@@ -51,7 +51,7 @@ export class SqlToolsServer {
 	private client: SqlOpsDataClient;
 	private config: IConfig;
 	private disposables = new Array<{ dispose: () => void }>();
-	public installDirectory: string | undefined = undefined;
+	public installDirectory: string;
 
 	public async start(context: AppContext): Promise<SqlOpsDataClient> {
 		try {
@@ -100,16 +100,24 @@ export class SqlToolsServer {
 	 */
 	private async handleEncryptionKeyEventNotification(client: SqlOpsDataClient) {
 		if (getAzureAuthenticationLibraryConfig() === 'MSAL' && getEnableSqlAuthenticationProviderConfig()) {
-			let onDidEncryptionKeysChanged = (await this.getAzureCoreAPI()).onEncryptionKeysUpdated;
-			// Register event listener from Azure Core extension
+			let azureCoreApi = await this.getAzureCoreAPI();
+			let onDidEncryptionKeysChanged = azureCoreApi.onEncryptionKeysUpdated;
+			// Register event listener from Azure Core extension and
+			// send client notification for updated encryption keys
 			onDidEncryptionKeysChanged((keys: azurecore.CacheEncryptionKeys) => {
-				// Send client notification for updated encryption keys
-				client.sendNotification(EncryptionKeysChangedNotification.type,
-					<DidChangeEncryptionIVKeyParams>{
-						key: keys.key,
-						iv: keys.iv
-					});
+				client.sendNotification(EncryptionKeysChangedNotification.type, keys);
 			});
+
+			try {
+				// Fetch encryption keys directly from AzureCore as notification event may not fire again
+				// if Azure Core extension was activated before.
+				const keys = await azureCoreApi.getEncryptionKeys();
+				client.sendNotification(EncryptionKeysChangedNotification.type, keys);
+			}
+			catch (e) {
+				console.error(`An error occurred when fetching encryption keys: ${e}`);
+			}
+			logDebug('SqlToolsServer: Registered encryption key event handler.');
 		}
 	}
 
@@ -126,7 +134,7 @@ export class SqlToolsServer {
 		const rawConfig = await fs.readFile(path.join(configDir, 'config.json'));
 		this.config = JSON.parse(rawConfig.toString());
 		this.config.installDirectory = path.join(configDir, this.config.installDirectory);
-		this.config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
+		this.config.proxy = vscode.workspace.getConfiguration('http').get<string>('proxy', '');
 		this.config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL', true);
 		return getOrDownloadServer(this.config, handleServerProviderEvent);
 	}

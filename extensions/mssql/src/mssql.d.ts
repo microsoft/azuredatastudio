@@ -490,9 +490,8 @@ declare module 'mssql' {
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 * @param name Name of the SQLCMD variable
 		 * @param defaultValue Default value of the SQLCMD variable
-		 * @param value Value of the SQLCMD variable, with or without the $()
 		 */
-		addSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<azdata.ResultStatus>;
+		addSqlCmdVariable(projectUri: string, name: string, defaultValue: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Delete a SQLCMD variable from a project
@@ -506,9 +505,8 @@ declare module 'mssql' {
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 * @param name Name of the SQLCMD variable
 		 * @param defaultValue Default value of the SQLCMD variable
-		 * @param value Value of the SQLCMD variable, with or without the $()
 		 */
-		updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<azdata.ResultStatus>;
+		updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Add a SQL object script to a project
@@ -570,7 +568,7 @@ declare module 'mssql' {
 		getSqlCmdVariables(projectUri: string): Promise<GetSqlCmdVariablesResult>;
 
 		/**
-		 * getSqlObjectScripts
+		 * Get all the SQL object scripts in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
 		getSqlObjectScripts(projectUri: string): Promise<GetScriptsResult>;
@@ -708,7 +706,7 @@ declare module 'mssql' {
 	}
 
 	interface UserDatabaseReference extends DatabaseReference {
-		databaseVariable: SqlCmdVariable;
+		databaseVariable?: SqlCmdVariable;
 		serverVariable?: SqlCmdVariable;
 	}
 
@@ -726,13 +724,8 @@ declare module 'mssql' {
 	}
 
 	export const enum SystemDatabase {
-		master = 0,
-		msdb = 1
-	}
-
-	export const enum ProjectType {
-		sdkStyle = 0,
-		legacyStyle = 1
+		Master = 0,
+		MSDB = 1
 	}
 
 	export interface SqlCmdVariable {
@@ -1104,11 +1097,11 @@ declare module 'mssql' {
 			/**
 			 * Schemas owned by the user.
 			 */
-			ownedSchemas: string[] | undefined;
+			ownedSchemas: string[];
 			/**
 			 * Database roles that the user belongs to.
 			 */
-			databaseRoles: string[] | undefined;
+			databaseRoles: string[];
 			/**
 			 * The name of the server login associated with the user.
 			 * Only applicable when the user type is 'WithLogin'.

@@ -15,7 +15,8 @@ import { IconPathHelper } from '../common/iconHelper';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { Deferred } from '../common/promise';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { SystemDatabase } from '../models/projectEntry';
+import { SystemDatabase } from 'mssql';
+import { DbServerValues, ensureSetOrDefined, populateResultWithVars } from './utils';
 
 export enum ReferenceType {
 	project,
@@ -151,32 +152,42 @@ export class AddDatabaseReferenceDialog {
 	public async addReferenceClick(): Promise<void> {
 		let referenceSettings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings;
 
-		if (this.currentReferenceType === ReferenceType.project) {
-			referenceSettings = {
-				projectName: <string>this.projectDropdown?.value,
-				projectGuid: '',
-				projectRelativePath: undefined,
-				databaseName: <string>this.databaseNameTextbox?.value,
-				databaseVariable: <string>this.databaseVariableTextbox?.value,
-				serverName: <string>this.serverNameTextbox?.value,
-				serverVariable: <string>this.serverVariableTextbox?.value,
-				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
-			};
-		} else if (this.currentReferenceType === ReferenceType.systemDb) {
-			referenceSettings = {
-				databaseName: <string>this.databaseNameTextbox?.value,
+		if (this.currentReferenceType === ReferenceType.systemDb) {
+			const systemDbRef: ISystemDatabaseReferenceSettings = {
+				databaseVariableLiteralValue: <string>this.databaseNameTextbox?.value,
 				systemDb: getSystemDatabase(<string>this.systemDatabaseDropdown?.value),
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
-		} else { // this.currentReferenceType === ReferenceType.dacpac
-			referenceSettings = {
-				databaseName: <string>this.databaseNameTextbox?.value,
-				dacpacFileLocation: vscode.Uri.file(<string>this.dacpacTextbox?.value),
-				databaseVariable: utils.removeSqlCmdVariableFormatting(<string>this.databaseVariableTextbox?.value),
-				serverName: <string>this.serverNameTextbox?.value,
-				serverVariable: utils.removeSqlCmdVariableFormatting(<string>this.serverVariableTextbox?.value),
-				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
+
+			referenceSettings = systemDbRef;
+		} else {
+			if (this.currentReferenceType === ReferenceType.project) {
+				const projRef: IProjectReferenceSettings = {
+					projectName: <string>this.projectDropdown?.value,
+					projectGuid: '',
+					projectRelativePath: undefined,
+					suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
+				};
+
+				referenceSettings = projRef;
+			} else { // this.currentReferenceType === ReferenceType.dacpac
+				const dacpacRef: IDacpacReferenceSettings = {
+					databaseName: ensureSetOrDefined(this.databaseNameTextbox?.value),
+					dacpacFileLocation: vscode.Uri.file(<string>this.dacpacTextbox?.value),
+					suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
+				};
+
+				referenceSettings = dacpacRef;
+			}
+
+			const dbServerValues: DbServerValues = {
+				dbName: this.databaseNameTextbox?.value,
+				dbVariable: this.databaseVariableTextbox?.value,
+				serverName: this.serverNameTextbox?.value,
+				serverVariable: this.serverVariableTextbox?.value
 			};
+
+			populateResultWithVars(referenceSettings, dbServerValues);
 		}
 
 		TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
@@ -625,7 +636,7 @@ export function getSystemDbOptions(project: Project): string[] {
 }
 
 export function getSystemDatabase(name: string): SystemDatabase {
-	return name === constants.master ? SystemDatabase.master : SystemDatabase.msdb;
+	return name === constants.master ? SystemDatabase.Master : SystemDatabase.MSDB;
 }
 
 export async function promptDacpacLocation(): Promise<vscode.Uri[] | undefined> {

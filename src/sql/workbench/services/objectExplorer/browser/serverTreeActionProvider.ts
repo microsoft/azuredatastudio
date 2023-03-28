@@ -18,7 +18,7 @@ import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectio
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';
+import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
 import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
@@ -26,6 +26,7 @@ import { ServerInfoContextKey } from 'sql/workbench/services/connection/common/s
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ILogService } from 'vs/platform/log/common/log';
 
 /**
  *  Provides actions for the server tree elements
@@ -38,7 +39,8 @@ export class ServerTreeActionProvider {
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@IMenuService private menuService: IMenuService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@ILogService private _logService: ILogService
 	) {
 	}
 
@@ -63,6 +65,29 @@ export class ServerTreeActionProvider {
 			}
 		}
 		return [];
+	}
+
+	/**
+	 * Get the default action for the given element.
+	 */
+	public getDefaultAction(tree: AsyncServerTree | ITree, element: ServerTreeElement): IAction | undefined {
+		const actions = this.getActions(tree, element).filter(a => {
+			return a instanceof MenuItemAction && a.isDefault;
+		});
+		if (actions.length === 1) {
+			return actions[0];
+		} else if (actions.length > 1) {
+			let nodeName: string;
+			if (element instanceof ConnectionProfile) {
+				nodeName = element.serverName;
+			} else if (element instanceof ConnectionProfileGroup) {
+				nodeName = element.name;
+			} else {
+				nodeName = element.label;
+			}
+			this._logService.error(`Multiple default actions defined for node: ${nodeName}, actions: ${actions.map(a => a.id).join(', ')}`);
+		}
+		return undefined;
 	}
 
 	/**
