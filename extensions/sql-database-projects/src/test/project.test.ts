@@ -134,20 +134,28 @@ describe('Project: sqlproj content operations', function (): void {
 		//should(project.files.find(f => f.relativePath === convertSlashesForSqlProj(scriptPathTagged))?.sqlObjectType).equal(constants.ExternalStreamingJob);
 	});
 
-	it('Should add folders and SQL object scripts to sqlproj with pre-existing scripts on disk', async function (): Promise<void> {
+	it('Should bulk-add scripts to sqlproj with pre-existing scripts on disk', async function (): Promise<void> {
 		const project = await testUtils.createTestSqlProject(this.test);
 
-		const list: Uri[] = await testUtils.createListOfFiles(this.test, project.projectFolderPath);
-		const relativePaths = list.map(f => path.relative(project.projectFolderPath, f.path));
+		// initial setup
+		(project.files.length).should.equal(0, 'initial number of scripts');
 
-		await project.addSqlObjectScripts(relativePaths);
+		// create files on disk
+		const tablePath = path.join(project.projectFolderPath, 'MyTable.sql');
+		await fs.writeFile(tablePath, 'CREATE TABLE [MyTable] ([Name] [nvarchar(50)');
 
-		should(project.files.length).equal(11);
-		should(project.folders.length).equal(2);
+		const viewPath = path.join(project.projectFolderPath, 'MyView.sql');
+		await fs.writeFile(viewPath, 'CREATE VIEW [MyView] AS SELECT * FROM [MyTable]');
+
+		// add to project
+		await project.addSqlObjectScripts(['MyTable.sql', 'MyView.sql']);
+
+		// verify result
+		(project.files.length).should.equal(2, 'Number of scripts after adding');
 	});
 
 	// TODO: move to DacFx once script contents supported
-	it('Should throw error while adding folders and SQL object scripts to sqlproj when a file/folder does not exist on disk', async function (): Promise<void> {
+	it('Should throw error while adding folders and SQL object scripts to sqlproj when a file does not exist on disk', async function (): Promise<void> {
 		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openProjectFileBaseline);
 		const project = await testUtils.createTestSqlProject(this.test);
 
@@ -157,9 +165,9 @@ describe('Project: sqlproj content operations', function (): void {
 		const nonexistentFile = path.join(testFolderPath, 'nonexistentFile.sql');
 		list.push(Uri.file(nonexistentFile));
 
-		const relativePaths = list.map(f => path.relative(project.projectFolderPath, f.path));
+		const relativePaths = list.map(f => path.relative(project.projectFolderPath, f.fsPath));
 
-		await testUtils.shouldThrowSpecificError(async () => await project.addSqlObjectScripts(relativePaths), constants.fileOrFolderDoesNotExist(Uri.file(nonexistentFile).fsPath));
+		await testUtils.shouldThrowSpecificError(async () => await project.addSqlObjectScripts(relativePaths), `Error: No script found at '${nonexistentFile}'`);
 	});
 
 	it('Should perform pre-deployment script operations', async function (): Promise<void> {

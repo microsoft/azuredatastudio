@@ -459,7 +459,7 @@ export class Project implements ISqlProject {
 	}
 
 	public async addSqlObjectScripts(relativePaths: string[]): Promise<void> {
-		for (const path in relativePaths) {
+		for (const path of relativePaths) {
 			await this.addSqlObjectScript(path);
 		}
 	}

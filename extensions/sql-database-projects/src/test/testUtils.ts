@@ -111,17 +111,12 @@ export async function createDummyFileStructure(test: Mocha.Runnable | undefined,
 	let filePath = path.join(testFolderPath, 'file1.sql');
 	await fs.writeFile(filePath, '');
 	if (createList) {
-		list?.push(Uri.file(testFolderPath));
 		list?.push(Uri.file(filePath));
 	}
 
 	for (let dirCount = 1; dirCount <= 2; dirCount++) {
 		let dirName = path.join(testFolderPath, `folder${dirCount}`);
 		await fs.mkdir(dirName, { recursive: true });
-
-		if (createList) {
-			list?.push(Uri.file(dirName));
-		}
 
 		for (let fileCount = 1; fileCount <= 5; fileCount++) {
 			let fileName = path.join(dirName, `file${fileCount}.sql`);
@@ -133,7 +128,7 @@ export async function createDummyFileStructure(test: Mocha.Runnable | undefined,
 	}
 
 	filePath = path.join(testFolderPath, 'file2.txt');
-	//await touchFile(filePath);
+
 	await fs.writeFile(filePath, '');
 	if (createList) {
 		list?.push(Uri.file(filePath));
