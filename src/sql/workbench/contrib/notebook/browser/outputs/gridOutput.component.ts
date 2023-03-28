@@ -483,7 +483,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		let provider = this.cellModel.notebookModel.context?.providerName;
 		if (!provider) {
 			// Serizalize notebook query results to file is agnostic of database engine since the data is already in the notebook.
-			// We can let the mssql provider to handle it so that other providers don't have to implement it.
+			// We can let the mssql provider handle it so that other providers don't have to implement it.
 			provider = mssqlProviderName;
 		}
 		let formatSpecificParams = serializer.getBasicSaveParameters(format);
