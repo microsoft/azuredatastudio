@@ -305,7 +305,7 @@ export class TreeUpdateUtils {
 
 					// If the node update takes too long, reject the promise
 					const nodeUpdateTimeout = () => {
-						reject(new Error(nls.localize('objectExplorerTimeout', "Object Explorer timed out for {0}", connection.databaseName)));
+						reject(new Error(nls.localize('objectExplorerTimeout', "Object Explorer expansion timed out for '{0}'", connection.databaseName)));
 						cleanup();
 					}
 					const nodeUpdateTimer = setTimeout(nodeUpdateTimeout, expansionTimeoutValueSec * 1000);
