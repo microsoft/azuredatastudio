@@ -634,6 +634,9 @@ Default Skipped Commands:
     <trans-unit id="notebookFindRangeHighlight">
       <source xml:lang="en">Color of the range limiting the search. The color must not be opaque so as not to hide underlying decorations.</source>
     </trans-unit>
+    <trans-unit id="queryEditorNullBackground">
+      <source xml:lang="en">The background color for null values in the query editor results grid.</source>
+    </trans-unit>
     <trans-unit id="tileBorder">
       <source xml:lang="en">The border color of tiles</source>
     </trans-unit>
@@ -5559,6 +5562,9 @@ Error Message: 1</source>
     <trans-unit id="connection.refreshAzureTokenFailure">
       <source xml:lang="en">Failed to refresh Azure account token for connection</source>
     </trans-unit>
+    <trans-unit id="connection.unknownProvider">
+      <source xml:lang="en">Unknown provider '{0}'</source>
+    </trans-unit>
     <trans-unit id="connection.unsupportedServerVersionWarning">
       <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
     </trans-unit>
@@ -5604,7 +5610,10 @@ Error Message: 1</source>
       <source xml:lang="en">Add an account...</source>
     </trans-unit>
     <trans-unit id="connectionWidget.ConnectionStringError">
-      <source xml:lang="en">Failed to parse the connection string.</source>
+      <source xml:lang="en">Failed to parse the connection string. {0}</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.ConnectionStringUndefined">
+      <source xml:lang="en">No connection info returned.</source>
     </trans-unit>
     <trans-unit id="connectionWidget.Error">
       <source xml:lang="en">Error</source>
