@@ -322,11 +322,11 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public static get idSeparator(): string {
-		return '|';
+		return '; ';
 	}
 
 	public static get nameValueSeparator(): string {
-		return ':';
+		return '=';
 	}
 
 

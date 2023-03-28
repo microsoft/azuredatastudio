@@ -428,13 +428,13 @@ export class TreeUpdateUtils {
 									firstOption = false;
 									inputList[value[p]].title += ' (';
 								}
-								inputList[value[p]].title += (combinedOptions[i].name + '=' + optionValue + '; ');
+								inputList[value[p]].title += (combinedOptions[i].name + ConnectionProfile.nameValueSeparator + optionValue + ConnectionProfile.idSeparator);
 							}
 						}
 					}
 
 					//Add the final brace.
-					let finalIndex = inputList[value[p]].title.lastIndexOf('; ');
+					let finalIndex = inputList[value[p]].title.lastIndexOf(ConnectionProfile.idSeparator);
 					if (finalIndex > -1) {
 						let finalString = inputList[value[p]].title.substring(0, finalIndex) + ')';
 						inputList[value[p]].title = finalString;
