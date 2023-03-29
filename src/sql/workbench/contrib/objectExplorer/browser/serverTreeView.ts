@@ -472,6 +472,9 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				await this._connectionManagementService.deleteConnection(profile);
 			}
 			const connectionProfile = this.getConnectionInTreeInput(profile.id);
+			if (!connectionProfile.savePassword) {
+				connectionProfile.password = '';
+			}
 			// Delete the node from the tree
 			await this._objectExplorerService.deleteObjectExplorerNode(connectionProfile);
 			// Collapse the node
