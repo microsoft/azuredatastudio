@@ -155,7 +155,7 @@ const usGovAzureSettings: ProviderSettings = {
 			},
 			azureKustoResource: {
 				id: SettingIds.kusto,
-				endpoint: 'https://sqlazureusg.kusto.usgovcloudapi.net',
+				endpoint: 'https://kusto.kusto.usgovcloudapi.net',
 				azureResourceId: AzureResource.AzureKusto,
 			},
 			powerBiResource: {
@@ -224,7 +224,7 @@ const chinaAzureSettings: ProviderSettings = {
 			},
 			azureKustoResource: {
 				id: SettingIds.kusto,
-				endpoint: 'https://sqlazurechi2.chinanorth2.kusto.chinacloudapi.cn',
+				endpoint: 'https://kusto.kusto.chinacloudapi.cn',
 				azureResourceId: AzureResource.AzureKusto,
 			},
 			powerBiResource: {
