@@ -87,6 +87,9 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 	 * Gets the element by id in the tree
 	 */
 	public getElementById(id: string): ServerTreeElement | undefined {
+		if (this.getInput().id === id) {
+			return this.getInput();
+		}
 		return this.getDataNodeById(id)?.element;
 	}
 
