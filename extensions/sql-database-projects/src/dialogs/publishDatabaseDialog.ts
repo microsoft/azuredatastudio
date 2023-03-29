@@ -18,7 +18,7 @@ import { getAgreementDisplayText, getConnectionName, getDockerBaseImages, getPub
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { Deferred } from '../common/promise';
 import { PublishOptionsDialog } from './publishOptionsDialog';
-import { ISqlProjectPublishSettings, IPublishToDockerSettings } from 'sqldbproj';
+import { IPublishToDockerSettings, ISqlProjectPublishSettings } from '../models/deploy/publishSettings';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
 	dataSource: SqlConnectionDataSource;
