@@ -39,7 +39,7 @@ export function isValidFilenameCharacter(c: string): boolean {
 export function sanitizeStringForFilename(s: string): string {
 	// replace invalid characters with an underscore
 	let result = '';
-	for (let i = 0; i < s.length; ++i) {
+	for (let i = 0; i < s?.length; ++i) {
 		result += isValidFilenameCharacter(s[i]) ? s[i] : '_';
 	}
 

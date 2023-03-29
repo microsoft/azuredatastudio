@@ -6,15 +6,15 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as loc from '../constants/strings';
-import { getSqlServerName, getMigrationStatusImage, getPipelineStatusImage, debounce } from '../api/utils';
+import { getMigrationStatusImage, getPipelineStatusImage } from '../api/utils';
 import { logError, TelemetryViews } from '../telemetry';
 import { canCancelMigration, canCutoverMigration, canDeleteMigration, canRetryMigration, formatDateTimeString, formatNumber, formatSizeBytes, formatSizeKb, formatTime, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation, PipelineStatusCodes } from '../constants/helper';
 import { CopyProgressDetail, getResourceName } from '../api/azure';
-import { InfoFieldSchema, infoFieldLgWidth, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
+import { InfoFieldSchema, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { EOL } from 'os';
 import { DashboardStatusBar } from './DashboardStatusBar';
-import { getSourceConnectionServerInfo } from '../api/sqlUtils';
+import { EmptySettingValue } from './tabBase';
 
 const MigrationDetailsTableTabId = 'MigrationDetailsTableTab';
 
@@ -43,12 +43,12 @@ enum SummaryCardIndex {
 export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationDetailsTableTab> {
 	private _sourceDatabaseInfoField!: InfoFieldSchema;
 	private _sourceDetailsInfoField!: InfoFieldSchema;
-	private _sourceVersionInfoField!: InfoFieldSchema;
+	private _migrationStatusInfoField!: InfoFieldSchema;
 	private _targetDatabaseInfoField!: InfoFieldSchema;
 	private _targetServerInfoField!: InfoFieldSchema;
 	private _targetVersionInfoField!: InfoFieldSchema;
-	private _migrationStatusInfoField!: InfoFieldSchema;
 	private _serverObjectsInfoField!: InfoFieldSchema;
+
 	private _tableFilterInputBox!: azdata.InputBoxComponent;
 	private _columnSortDropdown!: azdata.DropDownComponent;
 	private _columnSortCheckbox!: azdata.CheckBoxComponent;
@@ -76,10 +76,10 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		return this;
 	}
 
-	@debounce(500)
-	public async refresh(): Promise<void> {
+	public async refresh(initialize?: boolean): Promise<void> {
 		if (this.isRefreshing ||
-			this.refreshLoader === undefined) {
+			this.refreshLoader === undefined ||
+			this.model?.migration === undefined) {
 
 			return;
 		}
@@ -88,7 +88,9 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 			this.isRefreshing = true;
 			this.refreshLoader.loading = true;
 			await this.statusBar.clearError();
-
+			if (initialize) {
+				await this._clearControlsValue();
+			}
 			await this.model.fetchStatus();
 			await this._loadData();
 		} catch (e) {
@@ -102,118 +104,16 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		}
 	}
 
-	private async _loadData(): Promise<void> {
-		const migration = this.model?.migration;
-		await this.showMigrationErrors(this.model?.migration);
-
-		await this.cutoverButton.updateCssStyles(
-			{ 'display': isOfflineMigation(migration) ? 'none' : 'block' });
-
-		const sqlServerName = migration?.properties.sourceServerName;
-		const sourceDatabaseName = migration?.properties.sourceDatabaseName;
-		const sqlServerInfo = await getSourceConnectionServerInfo();
-		const versionName = getSqlServerName(sqlServerInfo.serverMajorVersion!);
-		const sqlServerVersion = versionName ? versionName : sqlServerInfo.serverVersion;
-		const targetDatabaseName = migration?.name;
-		const targetServerName = getResourceName(migration?.properties.scope);
-
-		const targetType = getMigrationTargetTypeEnum(migration);
-		const targetServerVersion = MigrationTargetTypeName[targetType ?? ''];
-
-		this._progressDetail = migration?.properties.migrationStatusDetails?.listOfCopyProgressDetails ?? [];
-
-		const hashSet: loc.LookupTable<number> = {};
-		await this._populateTableData(hashSet);
-
-		const successCount = hashSet[PipelineStatusCodes.Succeeded] ?? 0;
-		const cancelledCount =
-			(hashSet[PipelineStatusCodes.Canceled] ?? 0) +
-			(hashSet[PipelineStatusCodes.Cancelled] ?? 0);
-
-		const failedCount = hashSet[PipelineStatusCodes.Failed] ?? 0;
-		const inProgressCount =
-			(hashSet[PipelineStatusCodes.Queued] ?? 0) +
-			(hashSet[PipelineStatusCodes.CopyFinished] ?? 0) +
-			(hashSet[PipelineStatusCodes.Copying] ?? 0) +
-			(hashSet[PipelineStatusCodes.PreparingForCopy] ?? 0) +
-			(hashSet[PipelineStatusCodes.RebuildingIndexes] ?? 0) +
-			(hashSet[PipelineStatusCodes.InProgress] ?? 0);
-
-		const totalCount = this._progressDetail.length;
-
-		this._updateSummaryComponent(SummaryCardIndex.TotalTables, totalCount);
-		this._updateSummaryComponent(SummaryCardIndex.InProgressTables, inProgressCount);
-		this._updateSummaryComponent(SummaryCardIndex.SuccessfulTables, successCount);
-		this._updateSummaryComponent(SummaryCardIndex.FailedTables, failedCount);
-		this._updateSummaryComponent(SummaryCardIndex.CanceledTables, cancelledCount);
-
-		this.databaseLabel.value = sourceDatabaseName;
-		this._sourceDatabaseInfoField.text.value = sourceDatabaseName;
-		this._sourceDetailsInfoField.text.value = sqlServerName;
-		this._sourceVersionInfoField.text.value = `${sqlServerVersion} ${sqlServerInfo.serverVersion}`;
-
-		this._targetDatabaseInfoField.text.value = targetDatabaseName;
-		this._targetServerInfoField.text.value = targetServerName;
-		this._targetVersionInfoField.text.value = targetServerVersion;
-
-		this._migrationStatusInfoField.text.value = getMigrationStatusString(migration);
-		this._migrationStatusInfoField.icon!.iconPath = getMigrationStatusImage(migration);
-		this._serverObjectsInfoField.text.value = totalCount.toLocaleString();
-
-		this.cutoverButton.enabled = canCutoverMigration(migration);
-		this.cancelButton.enabled = canCancelMigration(migration);
-		this.deleteButton.enabled = canDeleteMigration(migration);
-		this.retryButton.enabled = canRetryMigration(migration);
-	}
-
-	private async _populateTableData(hashSet: loc.LookupTable<number> = {}): Promise<void> {
-		if (this._progressTable.data.length > 0) {
-			await this._progressTable.updateProperty('data', []);
-		}
-
-		// Sort table data
-		this._sortTableMigrations(
-			this._progressDetail,
-			(<azdata.CategoryValue>this._columnSortDropdown.value).name,
-			this._columnSortCheckbox.checked === true);
-
-		const data = this._progressDetail.map((d) => {
-			hashSet[d.status] = (hashSet[d.status] ?? 0) + 1;
-			return [
-				d.tableName,
-				<azdata.HyperlinkColumnCellValue>{
-					icon: getPipelineStatusImage(d.status),
-					title: loc.PipelineRunStatus[d.status] ?? d.status?.toUpperCase(),
-				},
-				formatSizeBytes(d.dataRead),
-				formatSizeBytes(d.dataWritten),
-				formatNumber(d.rowsRead),
-				formatNumber(d.rowsCopied),
-				formatSizeKb(d.copyThroughput),
-				formatTime((d.copyDuration ?? 0) * 1000),
-				loc.ParallelCopyType[d.parallelCopyType] ?? d.parallelCopyType,
-				d.usedParallelCopies,
-				formatDateTimeString(d.copyStart),
-			];
-		}) ?? [];
-
-		// Filter tableData
-		const filteredData = this._filterTables(data, this._tableFilterInputBox.value);
-
-		await this._progressTable.updateProperty('data', filteredData);
-	}
-
 	protected async initialize(view: azdata.ModelView): Promise<void> {
 		try {
 			this._progressTable = this.view.modelBuilder.table()
 				.withProps({
 					ariaLabel: loc.ACTIVE_BACKUP_FILES,
-					CSSStyles: {
-						'padding-left': '0px',
-						'max-width': '1111px'
-					},
+					CSSStyles: { 'padding-left': '0px' },
+					forceFitColumns: azdata.ColumnSizingMode.ForceFit,
+					display: 'inline-flex',
 					data: [],
-					height: '300px',
+					height: '340px',
 					columns: [
 						{
 							value: TableColumns.tableName,
@@ -286,18 +186,23 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 					],
 				}).component();
 
-			const formItems: azdata.FormComponent<azdata.Component>[] = [
-				{ component: this.createMigrationToolbarContainer() },
-				{ component: await this.migrationInfoGrid() },
-				{
-					component: this.view.modelBuilder.separator()
-						.withProps({ width: '100%', CSSStyles: { 'padding': '0' } })
-						.component()
-				},
-				{ component: await this._createStatusBar() },
-				{ component: await this._createTableFilter() },
-				{ component: this._progressTable },
-			];
+			const container = this.view.modelBuilder.flexContainer()
+				.withItems([
+					this.createMigrationToolbarContainer(),
+					await this.migrationInfoGrid(),
+					this.view.modelBuilder.separator()
+						.withProps({
+							width: '100%',
+							CSSStyles: { 'padding': '0' }
+						})
+						.component(),
+					await this._createStatusBar(),
+					await this._createTableFilter(),
+					this._progressTable,
+				], { CSSStyles: { 'padding': '15px 15px 0 15px' } })
+				.withLayout({ flexFlow: 'column', })
+				.withProps({ width: '100%' })
+				.component();
 
 			this.disposables.push(
 				this._progressTable.onCellAction!(
@@ -319,17 +224,157 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 						}
 					}));
 
-			const formContainer = this.view.modelBuilder.formContainer()
-				.withFormItems(
-					formItems,
-					{ horizontal: false })
-				.withProps({ width: '100%', CSSStyles: { margin: '0 0 0 5px', padding: '0 15px 0 15px' } })
-				.component();
-
-			this.content = formContainer;
+			this.content = container;
 		} catch (e) {
 			logError(TelemetryViews.MigrationCutoverDialog, 'IntializingFailed', e);
 		}
+	}
+
+	protected override async migrationInfoGrid(): Promise<azdata.FlexContainer> {
+		// left side
+		this._sourceDatabaseInfoField = await this.createInfoField(loc.SOURCE_DATABASE, '');
+		this._sourceDetailsInfoField = await this.createInfoField(loc.SOURCE_SERVER, '');
+		this._migrationStatusInfoField = await this.createInfoField(loc.MIGRATION_STATUS, '', false, ' ');
+
+		// right side
+		this._targetDatabaseInfoField = await this.createInfoField(loc.TARGET_DATABASE_NAME, '');
+		this._targetServerInfoField = await this.createInfoField(loc.TARGET_SERVER, '');
+		this._targetVersionInfoField = await this.createInfoField(loc.TARGET_VERSION, '');
+		this._serverObjectsInfoField = await this.createInfoField(loc.SERVER_OBJECTS_FIELD_LABEL, '');
+
+		const leftSide = this.view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' })
+			.withProps({ width: '50%' })
+			.withItems([
+				this._sourceDatabaseInfoField.flexContainer,
+				this._sourceDetailsInfoField.flexContainer,
+				this._migrationStatusInfoField.flexContainer,
+			])
+			.component();
+
+		const rightSide = this.view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' })
+			.withProps({ width: '50%' })
+			.withItems([
+				this._targetDatabaseInfoField.flexContainer,
+				this._targetServerInfoField.flexContainer,
+				this._targetVersionInfoField.flexContainer,
+				this._serverObjectsInfoField.flexContainer,
+			])
+			.component();
+
+		return this.view.modelBuilder.flexContainer()
+			.withItems([leftSide, rightSide], { flex: '0 0 auto' })
+			.withLayout({ flexFlow: 'row', flexWrap: 'wrap' })
+			.component();
+	}
+
+	private async _loadData(): Promise<void> {
+		const migration = this.model?.migration;
+		await this.showMigrationErrors(this.model?.migration);
+
+		await this.cutoverButton.updateCssStyles(
+			{ 'display': isOfflineMigation(migration) ? 'none' : 'block' });
+
+		const sqlServerName = migration?.properties.sourceServerName;
+		const sourceDatabaseName = migration?.properties.sourceDatabaseName;
+		const targetDatabaseName = migration?.name;
+		const targetServerName = getResourceName(migration?.properties.scope);
+
+		const targetType = getMigrationTargetTypeEnum(migration);
+		const targetServerVersion = MigrationTargetTypeName[targetType ?? ''];
+
+		this._progressDetail = migration?.properties.migrationStatusDetails?.listOfCopyProgressDetails ?? [];
+
+		const hashSet: loc.LookupTable<number> = {};
+		await this._populateTableData(hashSet);
+
+		const successCount = hashSet[PipelineStatusCodes.Succeeded] ?? 0;
+		const cancelledCount =
+			(hashSet[PipelineStatusCodes.Canceled] ?? 0) +
+			(hashSet[PipelineStatusCodes.Cancelled] ?? 0);
+
+		const failedCount = hashSet[PipelineStatusCodes.Failed] ?? 0;
+		const inProgressCount =
+			(hashSet[PipelineStatusCodes.Queued] ?? 0) +
+			(hashSet[PipelineStatusCodes.CopyFinished] ?? 0) +
+			(hashSet[PipelineStatusCodes.Copying] ?? 0) +
+			(hashSet[PipelineStatusCodes.PreparingForCopy] ?? 0) +
+			(hashSet[PipelineStatusCodes.RebuildingIndexes] ?? 0) +
+			(hashSet[PipelineStatusCodes.InProgress] ?? 0);
+
+		const totalCount = this._progressDetail.length;
+
+		this._updateSummaryComponent(SummaryCardIndex.TotalTables, totalCount);
+		this._updateSummaryComponent(SummaryCardIndex.InProgressTables, inProgressCount);
+		this._updateSummaryComponent(SummaryCardIndex.SuccessfulTables, successCount);
+		this._updateSummaryComponent(SummaryCardIndex.FailedTables, failedCount);
+		this._updateSummaryComponent(SummaryCardIndex.CanceledTables, cancelledCount);
+
+		this.databaseLabel.value = sourceDatabaseName;
+		// Left side
+		this._updateInfoFieldValue(this._sourceDatabaseInfoField, sourceDatabaseName ?? EmptySettingValue);
+		this._updateInfoFieldValue(this._sourceDetailsInfoField, sqlServerName ?? EmptySettingValue);
+		this._updateInfoFieldValue(this._migrationStatusInfoField, getMigrationStatusString(migration) ?? EmptySettingValue);
+		this._migrationStatusInfoField.icon!.iconPath = getMigrationStatusImage(migration);
+
+		// Right side
+		this._updateInfoFieldValue(this._targetDatabaseInfoField, targetDatabaseName ?? EmptySettingValue);
+		this._updateInfoFieldValue(this._targetServerInfoField, targetServerName ?? EmptySettingValue);
+		this._updateInfoFieldValue(this._targetVersionInfoField, targetServerVersion ?? EmptySettingValue);
+		this._updateInfoFieldValue(this._serverObjectsInfoField, totalCount.toLocaleString() ?? EmptySettingValue);
+
+		this.cutoverButton.enabled = canCutoverMigration(migration);
+		this.cancelButton.enabled = canCancelMigration(migration);
+		this.deleteButton.enabled = canDeleteMigration(migration);
+		this.retryButton.enabled = canRetryMigration(migration);
+	}
+
+	private async _populateTableData(hashSet: loc.LookupTable<number> = {}): Promise<void> {
+		if (this._progressTable.data.length > 0) {
+			await this._progressTable.updateProperty('data', []);
+		}
+
+		// Sort table data
+		this._sortTableMigrations(
+			this._progressDetail,
+			(<azdata.CategoryValue>this._columnSortDropdown.value).name,
+			this._columnSortCheckbox.checked === true);
+
+		const data = this._progressDetail.map((d) => {
+			hashSet[d.status] = (hashSet[d.status] ?? 0) + 1;
+			return [
+				d.tableName,
+				<azdata.HyperlinkColumnCellValue>{
+					icon: getPipelineStatusImage(d.status),
+					title: loc.PipelineRunStatus[d.status] ?? d.status?.toUpperCase(),
+				},
+				formatSizeBytes(d.dataRead),
+				formatSizeBytes(d.dataWritten),
+				formatNumber(d.rowsRead),
+				formatNumber(d.rowsCopied),
+				formatSizeKb(d.copyThroughput),
+				formatTime((d.copyDuration ?? 0) * 1000),
+				loc.ParallelCopyType[d.parallelCopyType] ?? d.parallelCopyType,
+				d.usedParallelCopies,
+				formatDateTimeString(d.copyStart),
+			];
+		}) ?? [];
+
+		// Filter tableData
+		const filteredData = this._filterTables(data, this._tableFilterInputBox.value);
+		await this._progressTable.updateProperty('data', filteredData);
+	}
+
+	private _clearControlsValue(): void {
+		this._updateInfoFieldValue(this._sourceDatabaseInfoField, '');
+		this._updateInfoFieldValue(this._sourceDetailsInfoField, '');
+		this._updateInfoFieldValue(this._migrationStatusInfoField, '');
+
+		this._updateInfoFieldValue(this._targetDatabaseInfoField, '');
+		this._updateInfoFieldValue(this._targetServerInfoField, '');
+		this._updateInfoFieldValue(this._targetVersionInfoField, '');
+		this._updateInfoFieldValue(this._serverObjectsInfoField, '');
 	}
 
 	private _sortTableMigrations(data: CopyProgressDetail[], columnName: string, ascending: boolean): void {
@@ -514,56 +559,5 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 			.withItems([serverObjectsLabel, flexContainer])
 			.withLayout({ flexFlow: 'column' })
 			.component();
-	}
-
-	protected async migrationInfoGrid(): Promise<azdata.FlexContainer> {
-		const addInfoFieldToContainer = (infoField: InfoFieldSchema, container: azdata.FlexContainer): void => {
-			container.addItem(
-				infoField.flexContainer,
-				{ CSSStyles: { width: infoFieldLgWidth } });
-		};
-
-		const flexServer = this.view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'column' })
-			.component();
-		this._sourceDatabaseInfoField = await this.createInfoField(loc.SOURCE_DATABASE, '');
-		this._sourceDetailsInfoField = await this.createInfoField(loc.SOURCE_SERVER, '');
-		this._sourceVersionInfoField = await this.createInfoField(loc.SOURCE_VERSION, '');
-		addInfoFieldToContainer(this._sourceDatabaseInfoField, flexServer);
-		addInfoFieldToContainer(this._sourceDetailsInfoField, flexServer);
-		addInfoFieldToContainer(this._sourceVersionInfoField, flexServer);
-
-		const flexTarget = this.view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'column' })
-			.component();
-		this._targetDatabaseInfoField = await this.createInfoField(loc.TARGET_DATABASE_NAME, '');
-		this._targetServerInfoField = await this.createInfoField(loc.TARGET_SERVER, '');
-		this._targetVersionInfoField = await this.createInfoField(loc.TARGET_VERSION, '');
-		addInfoFieldToContainer(this._targetDatabaseInfoField, flexTarget);
-		addInfoFieldToContainer(this._targetServerInfoField, flexTarget);
-		addInfoFieldToContainer(this._targetVersionInfoField, flexTarget);
-
-		const flexStatus = this.view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'column' })
-			.component();
-		this._migrationStatusInfoField = await this.createInfoField(loc.MIGRATION_STATUS, '', false, ' ');
-		this._serverObjectsInfoField = await this.createInfoField(loc.SERVER_OBJECTS_FIELD_LABEL, '');
-		addInfoFieldToContainer(this._migrationStatusInfoField, flexStatus);
-		addInfoFieldToContainer(this._serverObjectsInfoField, flexStatus);
-
-		const flexInfoProps = {
-			flex: '0',
-			CSSStyles: { 'flex': '0', 'width': infoFieldLgWidth }
-		};
-
-		const flexInfo = this.view.modelBuilder.flexContainer()
-			.withLayout({ flexWrap: 'wrap' })
-			.withProps({ width: '100%' })
-			.component();
-		flexInfo.addItem(flexServer, flexInfoProps);
-		flexInfo.addItem(flexTarget, flexInfoProps);
-		flexInfo.addItem(flexStatus, flexInfoProps);
-
-		return flexInfo;
 	}
 }

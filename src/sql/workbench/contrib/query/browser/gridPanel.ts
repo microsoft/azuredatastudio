@@ -575,7 +575,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this._register(registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 			const nullBackground = theme.getColor(queryEditorNullBackground);
 			if (nullBackground) {
-				collector.addRule(`.${NULL_CELL_CSS_CLASS} { background: ${nullBackground};}`);
+				collector.addRule(`.slick-row:not(:hover) .${NULL_CELL_CSS_CLASS} { background: ${nullBackground};}`);
 			}
 		}));
 

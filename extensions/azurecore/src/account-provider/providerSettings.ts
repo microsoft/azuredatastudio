@@ -153,6 +153,11 @@ const usGovAzureSettings: ProviderSettings = {
 				endpointSuffix: '.core.usgovcloudapi.net/',
 				azureResourceId: AzureResource.AzureStorage
 			},
+			azureKustoResource: {
+				id: SettingIds.kusto,
+				endpoint: 'https://kusto.kusto.usgovcloudapi.net',
+				azureResourceId: AzureResource.AzureKusto,
+			},
 			powerBiResource: {
 				id: SettingIds.powerbi,
 				endpoint: 'https://analysis.windows.net/powerbi/api/',
@@ -216,6 +221,11 @@ const chinaAzureSettings: ProviderSettings = {
 				endpoint: '',
 				endpointSuffix: '.core.chinacloudapi.cn',
 				azureResourceId: AzureResource.AzureStorage
+			},
+			azureKustoResource: {
+				id: SettingIds.kusto,
+				endpoint: 'https://kusto.kusto.chinacloudapi.cn',
+				azureResourceId: AzureResource.AzureKusto,
 			},
 			powerBiResource: {
 				id: SettingIds.powerbi,

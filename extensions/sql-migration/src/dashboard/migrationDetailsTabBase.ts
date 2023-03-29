@@ -8,17 +8,15 @@ import * as vscode from 'vscode';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationServiceContext } from '../models/migrationLocalStorage';
 import * as loc from '../constants/strings';
-import * as styles from '../constants/styles';
 import { DatabaseMigration, deleteMigration } from '../api/azure';
 import { TabBase } from './tabBase';
 import { MigrationCutoverDialogModel } from '../dialog/migrationCutover/migrationCutoverDialogModel';
 import { ConfirmCutoverDialog } from '../dialog/migrationCutover/confirmCutoverDialog';
 import { RetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDialog';
-import { MigrationTargetType } from '../models/stateMachine';
 import { DashboardStatusBar } from './DashboardStatusBar';
 import { canDeleteMigration } from '../constants/helper';
 import { logError, TelemetryViews } from '../telemetry';
-import { MenuCommands } from '../api/utils';
+import { MenuCommands, MigrationTargetType } from '../api/utils';
 
 export const infoFieldLgWidth: string = '330px';
 export const infoFieldWidth: string = '250px';
@@ -26,9 +24,9 @@ export const infoFieldWidth: string = '250px';
 const statusImageSize: number = 14;
 
 export const MigrationTargetTypeName: loc.LookupTable<string> = {
-	[MigrationTargetType.SQLMI]: loc.AZURE_SQL_DATABASE_MANAGED_INSTANCE,
-	[MigrationTargetType.SQLVM]: loc.AZURE_SQL_DATABASE_VIRTUAL_MACHINE,
-	[MigrationTargetType.SQLDB]: loc.AZURE_SQL_DATABASE,
+	[MigrationTargetType.SQLMI]: loc.SQL_MANAGED_INSTANCE,
+	[MigrationTargetType.SQLVM]: loc.SQL_VIRTUAL_MACHINE,
+	[MigrationTargetType.SQLDB]: loc.SQL_DATABASE,
 };
 
 export interface InfoFieldSchema {
@@ -70,7 +68,7 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 		migration: DatabaseMigration): Promise<void> {
 		this.serviceContext = serviceContext;
 		this.model = new MigrationCutoverDialogModel(serviceContext, migration);
-		await this.refresh();
+		await this.refresh(true);
 	}
 
 	protected createBreadcrumbContainer(): azdata.FlexContainer {
@@ -404,37 +402,55 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 		icon?: azdata.ImageComponent
 	}> {
 		const flexContainer = this.view.modelBuilder.flexContainer()
-			.withProps({
-				CSSStyles: {
-					'flex-direction': 'column',
-					'padding-right': '12px'
-				}
-			}).component();
+			.withProps({ CSSStyles: { 'flex-direction': 'row', } })
+			.component();
 
 		const labelComponent = this.view.modelBuilder.text()
 			.withProps({
 				value: label,
+				title: label,
+				width: '170px',
 				CSSStyles: {
-					...styles.LIGHT_LABEL_CSS,
-					'margin-bottom': '0',
+					'font-size': '13px',
+					'line-height': '18px',
+					'margin': '2px 0 2px 0',
+					'float': 'left',
+					'overflow': 'hidden',
+					'text-overflow': 'ellipsis',
+					'display': 'inline-block',
+					'white-space': 'nowrap',
 				}
 			}).component();
-		flexContainer.addItem(labelComponent);
+		flexContainer.addItem(labelComponent, { flex: '0 0 auto' });
+
+		const separatorComponent = this.view.modelBuilder.text()
+			.withProps({
+				value: ':',
+				title: ':',
+				width: '15px',
+				CSSStyles: {
+					'font-size': '13px',
+					'line-height': '18px',
+					'margin': '2px 0 2px 0',
+					'float': 'left',
+				}
+			}).component();
+		flexContainer.addItem(separatorComponent, { flex: '0 0 auto' });
 
 		const textComponent = this.view.modelBuilder.text()
 			.withProps({
 				value: value,
 				title: value,
-				description: value,
-				width: '100%',
+				width: '300px',
 				CSSStyles: {
 					'font-size': '13px',
 					'line-height': '18px',
-					'margin': '4px 0 12px',
+					'margin': '2px 15px 2px 0',
 					'overflow': 'hidden',
 					'text-overflow': 'ellipsis',
-					'max-width': '230px',
 					'display': 'inline-block',
+					'float': 'left',
+					'white-space': 'nowrap',
 				}
 			}).component();
 
@@ -449,25 +465,24 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 					width: statusImageSize,
 					title: value,
 					CSSStyles: {
-						'margin': '7px 3px 0 0',
+						'margin': '4px 4px 0 0',
 						'padding': '0'
 					}
 				}).component();
 
 			const iconTextComponent = this.view.modelBuilder.flexContainer()
-				.withItems([
-					iconComponent,
-					textComponent
-				]).withProps({
+				.withItems([iconComponent, textComponent])
+				.withProps({
 					CSSStyles: {
 						'margin': '0',
-						'padding': '0'
+						'padding': '0',
+						'height': '18px',
 					},
 					display: 'inline-flex'
 				}).component();
-			flexContainer.addItem(iconTextComponent);
+			flexContainer.addItem(iconTextComponent, { flex: '0 0 auto' });
 		} else {
-			flexContainer.addItem(textComponent);
+			flexContainer.addItem(textComponent, { flex: '0 0 auto' });
 		}
 
 		return {
@@ -504,5 +519,14 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 
 	private _getMigrationDetails(): string {
 		return JSON.stringify(this.model.migration, undefined, 2);
+	}
+
+	protected _updateInfoFieldValue(info: InfoFieldSchema, value: string) {
+		info.text.value = value;
+		info.text.title = value;
+		info.text.description = value;
+		if (info.icon) {
+			info.icon.title = value;
+		}
 	}
 }
