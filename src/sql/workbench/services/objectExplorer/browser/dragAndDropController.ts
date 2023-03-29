@@ -167,7 +167,6 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			// to avoid creating a circular structure.
 			canDragOver = source.id !== targetConnectionProfileGroup.id && !source.isAncestorOf(targetConnectionProfileGroup);
 		}
-
 		return canDragOver;
 	}
 
@@ -178,37 +177,42 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	 */
 	public onDragOver(tree: AsyncServerTree | ITree, data: IDragAndDropData, targetElement: any, originalEvent: DragMouseEvent): IDragOverReaction {
 		let canDragOver: boolean = true;
-		const source = data.getData()[0];
-		if (targetElement instanceof ConnectionProfile || targetElement instanceof ConnectionProfileGroup) {
-			let targetConnectionProfileGroup = this.getTargetGroup(targetElement);
-			// Verify if the connection can be moved to the target group
-			if (source instanceof ConnectionProfile) {
-				if (!this._connectionManagementService.canChangeConnectionConfig(source, targetConnectionProfileGroup.id!)) {
-					canDragOver = false;
-				}
-			} else if (source instanceof ConnectionProfileGroup) {
-				// Dropping a group to itself or its descendants nodes is not allowed
-				// to avoid creating a circular structure.
-				canDragOver = source.id !== targetElement.id && !source.isAncestorOf(targetElement);
-			}
-		} else {
-			if (this.getTargetGroup(targetElement).id === this.getTargetGroup(source).id) {
-				canDragOver = true;
-			} else {
-				canDragOver = false;
-			}
-		}
 
+		const source = data.getData()[0];
+		if (source instanceof ConnectionProfileGroup) {
+			if (targetElement instanceof ConnectionProfileGroup) {
+				// If target group is parent of the source connection, then don't allow drag over
+				canDragOver = this.canDragToConnectionProfileGroup(source, targetElement);
+			} else if (targetElement instanceof ConnectionProfile) {
+				canDragOver = source.parentId !== targetElement.groupId;
+			} else if (targetElement instanceof TreeNode) {
+				const treeNodeParentGroupId = this.getTreeNodeParentGroup(targetElement).id;
+				canDragOver = source.parentId !== treeNodeParentGroupId && source.id !== treeNodeParentGroupId;
+			}
+		} else if (source instanceof ConnectionProfile) {
+			if (targetElement instanceof ConnectionProfileGroup) {
+				canDragOver = this.canDragToConnectionProfileGroup(source, targetElement);
+			} else if (targetElement instanceof ConnectionProfile) {
+				canDragOver = source.groupId !== targetElement.groupId &&
+					this._connectionManagementService.canChangeConnectionConfig(source, targetElement.groupId);
+			} else if (targetElement instanceof TreeNode) {
+				canDragOver = source.groupId !== this.getTreeNodeParentGroup(targetElement).id;
+			}
+		} else if (source instanceof TreeNode) {
+			canDragOver = false;
+		}
 		if (canDragOver) {
 			if (targetElement instanceof ConnectionProfile) {
 				const isConnected = this._connectionManagementService.isProfileConnected(targetElement);
 				// Don't auto-expand disconnected connections - doing so will try to connect the connection
 				// when expanded which is not something we want to support currently
 				return DRAG_OVER_ACCEPT_BUBBLE_DOWN(isConnected);
+			} else if (targetElement instanceof ConnectionProfileGroup) {
+				return DRAG_OVER_ACCEPT_BUBBLE_DOWN(true);
+			} else {
+				// Don't auto-expand treeNodes as we don't support drag and drop on them
+				return DRAG_OVER_ACCEPT_BUBBLE_DOWN(false);
 			}
-			// Auto-expand other elements (groups, tree nodes) so their children can be
-			// exposed for further dragging
-			return DRAG_OVER_ACCEPT_BUBBLE_DOWN(true);
 		} else {
 			return DRAG_OVER_REJECT;
 		}
