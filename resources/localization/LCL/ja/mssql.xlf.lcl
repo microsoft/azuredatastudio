@@ -96,6 +96,18 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.noConvertResult" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[No result returned from Notebook convert request]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.noDocumentFound" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[No document found for URI {0}]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.tokenRefreshFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} AAD token refresh failed, please reconnect to enable {0}]]></Val>
@@ -111,6 +123,12 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[エディター トークンの更新が失敗しました。エディターが切断されて再接続されるまで、オートコンプリートは無効になります]]></Val>
           </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.unsupportedPlatform" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unsupported platform {0}]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -137,6 +155,24 @@
           <Val><![CDATA[Search Server Names]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[サーバー名を検索]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.ColumnDisplayName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[column]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[列]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.DatabaseDisplayName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[database]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[データベース]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -168,6 +204,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.TableDisplayName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[table]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[テーブル]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.UserDisplayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[user]]></Val>
@@ -182,6 +227,15 @@
           <Val><![CDATA[User]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[ユーザー]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.ViewDisplayName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[view]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[表示]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -552,6 +606,27 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[オブジェクト エクスプローラーの更新中にエラーが発生しました。{0}]]></Val>
           </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.renameObjectDialogTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enter new name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[新しい名前の入力]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.renameObjectError" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[An error occurred while renaming {0} '{1}' to '{2}'. {3}]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.renameObjectOperationName" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Rename {0} '{1}' to '{2}']]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1286,10 +1361,13 @@
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.enclaveAttestationProtocol.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Attestation Protocol]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Val><![CDATA[Attestation protocol]]></Val>
+          <Tgt Cat="Text" Stat="Update" Orig="New">
             <Val><![CDATA[構成証明プロトコル]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Attestation Protocol]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1304,10 +1382,13 @@
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.enclaveAttestationUrl.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enclave Attestation URL]]></Val>
+          <Val><![CDATA[Attestation URL]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[エンクレーブ構成証明 URL]]></Val>
+            <Val><![CDATA[構成証明 URL]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Enclave Attestation URL]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1649,19 +1730,25 @@
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.secureEnclaves.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enables or disables Secure Enclaves for the connection]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Val><![CDATA[Enables or disables Secure enclaves for the connection]]></Val>
+          <Tgt Cat="Text" Stat="Update" Orig="New">
             <Val><![CDATA[接続のセキュリティで保護されたエンクレーブを有効または無効にします]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Enables or disables Secure Enclaves for the connection]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.secureEnclaves.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Secure Enclaves]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Val><![CDATA[Secure enclaves]]></Val>
+          <Tgt Cat="Text" Stat="Update" Orig="New">
             <Val><![CDATA[セキュリティで保護されたエンクレーブ]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Secure Enclaves]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2534,9 +2621,21 @@
       </Item>
       <Item ItemId=";extensions/mssql/package.title.objectProperties" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Properties]]></Val>
+          <Val><![CDATA[Properties (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[プロパティ]]></Val>
+            <Val><![CDATA[プロパティ (プレビュー)]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Properties]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.title.renameObject" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Rename]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[名前の変更]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
