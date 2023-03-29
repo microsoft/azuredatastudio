@@ -18,7 +18,7 @@ import { ShellExecutionHelper } from '../../tools/shellExecutionHelper';
 import * as TypeMoq from 'typemoq';
 import { AzureSqlClient } from '../../models/deploy/azureSqlClient';
 import { ConnectionService } from '../../models/connections/connectionService';
-import { IPublishToDockerSettings } from 'sqldbproj';
+import { IPublishToDockerSettings } from '../../models/deploy/publishSettings';
 
 export interface TestContext {
 	outputChannel: vscode.OutputChannel;

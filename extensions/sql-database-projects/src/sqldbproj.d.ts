@@ -5,8 +5,6 @@
 
 declare module 'sqldbproj' {
 	import * as vscode from 'vscode';
-	import { DeploymentOptions as mssqlDeploymentOptions } from 'mssql';
-	import { DeploymentOptions as vscodeMssqlDeploymentOptions } from 'vscode-mssql';
 
 	export const enum extension {
 		name = 'Microsoft.sql-database-projects',
@@ -65,12 +63,6 @@ declare module 'sqldbproj' {
 		 * @param options The additional options to use
 		 */
 		addItemPrompt(project: ISqlProject, relativeFilePath: string, options?: AddItemOptions): Promise<void>;
-
-		/**
-		 * Gathers information required for publishing a project to a docker container, prompting the user as necessary
-		 * @param project The Project being published
-		 */
-		getPublishToDockerSettings(project: ISqlProject): Promise<IPublishToDockerSettings | undefined>;
 
 		/**
 		 * Gets the information required to start a docker container for publishing to
@@ -325,36 +317,6 @@ declare module 'sqldbproj' {
 		dbName: string,
 		profileName?: string,
 		connectionRetryTimeout?: number
-	}
-
-	/**
-	 * Settings for creating the docker container a project is being published to
-	 */
-	export interface IDockerSettings extends ISqlConnectionProperties {
-		dockerBaseImage: string,
-		dockerBaseImageEula: string,
-	}
-
-	/**
-	 * Settings for publishing a SQL Project to a docker container
-	 */
-	export interface IPublishToDockerSettings {
-		dockerSettings: IDockerSettings;
-		sqlProjectPublishSettings: ISqlProjectPublishSettings;
-	}
-
-	export type DeploymentOptions = mssqlDeploymentOptions | vscodeMssqlDeploymentOptions;
-
-	/**
-	 * Settings to use when publishing a SQL Project
-	 */
-	export interface ISqlProjectPublishSettings {
-		databaseName: string;
-		serverName: string;
-		connectionUri: string;
-		sqlCmdVariables?: Record<string, string>;
-		deploymentOptions?: DeploymentOptions;
-		profileUsed?: boolean;
 	}
 
 	/**
