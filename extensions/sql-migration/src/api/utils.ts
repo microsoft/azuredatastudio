@@ -801,6 +801,30 @@ export function getBlobContainerNameWithFolder(blob: Blob, isOfflineMigration: b
 	}
 }
 
+// export function validateBackupLocationUniqueness(blobs: Blob[], wizard: window.Wizard, migrationMode: boolean): void {
+// 	// check for duplicate storage account/blob container/folder combination if migrating multiple databases,
+// 	// as they should all be unique - backups for multiple databases in the same location are not supported
+// 	var backupLocations: string[] = [];
+// 	backupLocations = blobs.map(blob => {
+// 		return blob && blob.storageAccount
+// 			? (blob.storageAccount.id + '/' + getBlobContainerNameWithFolder(blob, migrationMode)).toLowerCase()
+// 			: '';
+// 	}).filter(backupLocation => backupLocation !== '');
+
+// 	var uniqueBackupLocations = [...new Set(backupLocations)];
+
+// 	if (uniqueBackupLocations.length !== backupLocations.length) {
+// 		wizard.message = {
+// 			level: window.MessageLevel.Warning,
+// 			text: constants.DATABASE_BACKUP_BLOB_FOLDER_STRUCTURE_WARNING,
+// 		};
+// 	} else {
+// 		wizard.message = {
+// 			text: ''
+// 		};
+// 	}
+// }
+
 export function getLastBackupFileNameWithoutFolder(blob: Blob) {
 	const lastBackupFile = blob.lastBackupFile;
 	if (!lastBackupFile || lastBackupFile.split('/').length !== 2) {
