@@ -6,9 +6,10 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as utils from '../api/utils';
+import { MigrationTargetType } from '../api/utils';
 import * as contracts from '../service/contracts';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, MigrationTargetType, PerformanceDataSourceOptions, StateChangeEvent, AssessmentRuleId } from '../models/stateMachine';
+import { MigrationStateModel, PerformanceDataSourceOptions, StateChangeEvent, AssessmentRuleId } from '../models/stateMachine';
 import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
 import { SkuRecommendationResultsDialog } from '../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
 import { GetAzureRecommendationDialog } from '../dialog/skuRecommendationResults/getAzureRecommendationDialog';
