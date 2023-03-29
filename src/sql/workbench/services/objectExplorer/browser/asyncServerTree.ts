@@ -75,12 +75,7 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 			const node = super.getDataNode(element);
 			return node;
 		} catch (e) {
-			let node = undefined;
-			this.nodes.forEach((v, k) => {
-				if (element?.id === v?.id) {
-					node = v;
-				}
-			});
+			let node = this.getDataNodeById(element?.id);
 			if (node) {
 				return node;
 			}
@@ -91,13 +86,8 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 	/**
 	 * Gets the element by id in the tree
 	 */
-	public getElementById(id: string): ServerTreeElement {
-		for (let nodes of this.nodes.values()) {
-			if (nodes.element.id === id) {
-				return nodes.element;
-			}
-		}
-		return undefined;
+	public getElementById(id: string): ServerTreeElement | undefined {
+		return this.getDataNodeById(id)?.element;
 	}
 
 	/**

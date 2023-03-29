@@ -601,24 +601,23 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				await this._tree.updateChildren(treeInput!);
 				return;
 			}
-			this._tree!.setInput(treeInput!).then(async () => {
-				if (isHidden(this.messages!)) {
-					this._tree!.getFocus();
-					if (this._tree instanceof AsyncServerTree) {
-						await Promise.all(ConnectionProfileGroup.getSubgroups(treeInput!).map(subgroup => {
-							this._tree!.expand(subgroup);
-						}));
-					} else {
-						await this._tree!.expandAll(ConnectionProfileGroup.getSubgroups(treeInput!));
+			await this._tree.setInput(treeInput!);
+			if (isHidden(this.messages!)) {
+				this._tree.getFocus();
+				if (this._tree instanceof AsyncServerTree) {
+					for (const subgroup of ConnectionProfileGroup.getSubgroups(treeInput)) {
+						await this._tree.expand(subgroup);
 					}
 				} else {
-					if (this._tree instanceof AsyncServerTree) {
-						this._tree.setFocus([]);
-					} else {
-						this._tree!.clearFocus();
-					}
+					await this._tree!.expandAll(ConnectionProfileGroup.getSubgroups(treeInput!));
 				}
-			}, errors.onUnexpectedError);
+			} else {
+				if (this._tree instanceof AsyncServerTree) {
+					this._tree.setFocus([]);
+				} else {
+					this._tree!.clearFocus();
+				}
+			}
 		} else {
 			//no op
 		}
