@@ -19,7 +19,6 @@ import { collectTargetDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
 import { TdeMigrationDialog } from '../dialog/tdeConfiguration/tdeMigrationDialog';
 import { ValidationErrorCodes } from '../constants/helper';
-import { MigrationTargetType } from '../api/utils';
 
 const TDE_MIGRATION_BUTTON_INDEX = 1;
 

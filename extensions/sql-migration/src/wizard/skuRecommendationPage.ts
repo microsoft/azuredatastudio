@@ -23,7 +23,6 @@ import { logError, TelemetryViews, TelemetryAction, sendSqlMigrationActionEvent,
 import { TdeConfigurationDialog } from '../dialog/tdeConfiguration/tdeConfigurationDialog';
 import { TdeMigrationModel } from '../models/tdeModels';
 import { getSourceConnectionProfile } from '../api/sqlUtils';
-import { MigrationTargetType } from '../api/utils';
 
 export interface Product {
 	type: MigrationTargetType;

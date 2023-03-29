@@ -18,7 +18,6 @@ import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/a
 import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionProfile, isSourceConnectionSysAdmin, LoginTableInfo } from '../api/sqlUtils';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
 import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
-import { MigrationTargetType } from '../api/utils';
 
 export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;

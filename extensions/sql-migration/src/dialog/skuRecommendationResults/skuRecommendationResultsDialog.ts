@@ -13,7 +13,6 @@ import * as utils from '../../api/utils';
 import { MigrationTargetType } from '../../api/utils';
 import * as fs from 'fs';
 import path = require('path');
-import { MigrationTargetType } from '../../api/utils';
 
 export class SkuRecommendationResultsDialog {
 

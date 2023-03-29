@@ -14,7 +14,6 @@ import { MigrationTargetType } from '../../api/utils';
 import * as fs from 'fs';
 import path = require('path');
 import { SqlMigrationImpactedObjectInfo } from '../../service/contracts';
-import { MigrationTargetType } from '../../api/utils';
 
 export type Issues = {
 	description: string,

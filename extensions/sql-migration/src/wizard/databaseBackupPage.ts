@@ -19,7 +19,6 @@ import * as styles from '../constants/styles';
 import { TableMigrationSelectionDialog } from '../dialog/tableMigrationSelection/tableMigrationSelectionDialog';
 import { ValidateIrDialog } from '../dialog/validationResults/validateIrDialog';
 import { canTargetConnectToStorageAccount, getSourceConnectionCredentials, getSourceConnectionProfile, getSourceConnectionQueryProvider, getSourceConnectionUri } from '../api/sqlUtils';
-import { MigrationTargetType } from '../api/utils';
 
 const WIZARD_TABLE_COLUMN_WIDTH = '200px';
 const WIZARD_TABLE_COLUMN_WIDTH_SMALL = '170px';
