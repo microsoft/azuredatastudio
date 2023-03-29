@@ -134,7 +134,6 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 	public override async updateChildren(element?: ServerTreeElement, recursive?: boolean, rerender?: boolean, options?: IAsyncDataTreeUpdateChildrenOptions<ServerTreeElement>): Promise<void> {
 		const viewState = this.getViewState();
 		const expandedElementIds = viewState?.expanded;
-		const expandedElements = expandedElementIds.map(id => this.getDataNodeById(id));
 		await super.updateChildren(element, recursive, rerender, options);
 		if (expandedElementIds) {
 			for (let i = 0; i <= expandedElementIds.length; i++) {
@@ -142,16 +141,6 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 				const node = this.getDataNodeById(id);
 				if (node) {
 					await this.expand(node.element);
-				} else {
-					if (expandedElements[i]) {
-						const elementPath = this.generatePath(expandedElements[i].element);
-						for (let n of this.nodes.values()) {
-							if (this.generatePath(n.element) === elementPath) {
-								await this.expand(n.element);
-								break;
-							}
-						}
-					}
 				}
 			}
 
@@ -165,10 +154,11 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 			if (node) {
 				await this.expand(node.element);
 			} else {
+				// If the node is not found in the nodes map, we search for the node by comparing the relative paths of the elements
 				if (element) {
-					const elementPath = this.generatePath(element);
+					const elementPath = this.getRelativePath(element);
 					for (let n of this.nodes.values()) {
-						if (this.generatePath(n.element) === elementPath) {
+						if (this.getRelativePath(n.element) === elementPath) {
 							await this.expand(n.element);
 							break;
 						}
@@ -178,23 +168,23 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 		}
 	}
 
-	private generatePath(element: ServerTreeElement): string {
+	/**
+	 * Get the relative path of the element in the tree. For connection and group, the path is the id of the element.
+	 * For other elements, the path is the node path of the element and the id of the connection they belong to.
+	 */
+	private getRelativePath(element: ServerTreeElement): string {
 		let path = '';
 		if (element instanceof TreeNode) {
 			path = element.nodePath;
-		} else if (element instanceof ConnectionProfile) {
-			path = element.title;
-		} else if (element instanceof ConnectionProfileGroup) {
-			path = element.name;
-		}
-		let parent = element.parent;
-		while (parent) {
-			if (parent instanceof ConnectionProfile) {
-				path = parent.id + '/' + path;
-			} else if (parent instanceof ConnectionProfileGroup) {
-				path = parent.id + '/' + path;
+			let parent = element.parent;
+			while (parent.parent) {
+				parent = parent.parent;
 			}
-			parent = parent.parent;
+			if (parent.connection) {
+				path = parent.connection.id + '/' + path;
+			}
+		} else if (element instanceof ConnectionProfile || element instanceof ConnectionProfileGroup) {
+			path = element.id;
 		}
 		return path;
 	}
