@@ -97,6 +97,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	const authLibrary: string = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.AuthenticationLibrarySection)
 		?? Constants.DefaultAuthLibrary;
 
+	const piiLogging = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.piiLogging, false)
+	if (piiLogging) {
+		const disable = await vscode.window.showWarningMessage(loc.piiWarning, loc.disable, loc.dismiss);
+		if (disable) {
+			await vscode.workspace.getConfiguration(Constants.AzureSection).update(Constants.piiLogging, false, vscode.ConfigurationTarget.Global);
+		}
+	}
 	updatePiiLoggingLevel();
 
 	let eventEmitter: vscode.EventEmitter<azurecore.CacheEncryptionKeys>;

@@ -66,7 +66,10 @@ export const typeIcon = localize('azurecore.typeIcon', "Type Icon");
 export const reloadPrompt = localize('azurecore.reloadPrompt', "Authentication Library has changed, please reload Azure Data Studio.");
 export const reloadChoice = localize('azurecore.reloadChoice', "Reload Azure Data Studio");
 
-export const deprecatedOption = localize('azurecore.deprecated', "Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL instead.")
+export const deprecatedOption = localize('azurecore.deprecated', "Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL instead.");
+export const piiWarning = localize('azurecore.piiLogging.warning', "Warning: PII Logging is enabled. Enabling this option allows personally idetifiable information to be logged and should only be used for debugging purposes.");
+export const disable = localize('azurecore.disable', 'Disable');
+export const dismiss = localize('azurecore.dismiss', 'Dismiss');
 
 // Azure Resource Types
 export const sqlServer = localize('azurecore.sqlServer', "SQL server");
