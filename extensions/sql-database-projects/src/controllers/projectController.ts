@@ -1405,7 +1405,7 @@ export class ProjectsController {
 			// 6. add generated files to SQL project
 
 			const uriList = scriptList.filter(f => !f.fsPath.endsWith(constants.autorestPostDeploymentScriptName))
-			const relativePaths = uriList.map(f => path.relative(project.projectFolderPath, f.path));
+			const relativePaths = uriList.map(f => path.relative(project.projectFolderPath, f.fsPath));
 			await project.addSqlObjectScripts(relativePaths); // Add generated file structure to the project
 
 			const postDeploymentScript: vscode.Uri | undefined = this.findPostDeploymentScript(scriptList);
@@ -1598,7 +1598,7 @@ export class ProjectsController {
 
 			const scriptList: vscode.Uri[] = model.extractTarget === mssql.ExtractTarget.file ? [vscode.Uri.file(model.filePath)] : await this.generateScriptList(model.filePath); // Create a list of all the files to be added to project
 
-			const relativePaths = scriptList.map(f => path.relative(project.projectFolderPath, f.path));
+			const relativePaths = scriptList.map(f => path.relative(project.projectFolderPath, f.fsPath));
 
 			if (!model.sdkStyle) {
 				await project.addSqlObjectScripts(relativePaths); // Add generated file structure to the project
@@ -1838,7 +1838,7 @@ export class ProjectsController {
 
 			let toAdd: vscode.Uri[] = [];
 			result.addedFiles.forEach((f: any) => toAdd.push(vscode.Uri.file(f)));
-			const relativePaths = toAdd.map(f => path.relative(project.projectFolderPath, f.path));
+			const relativePaths = toAdd.map(f => path.relative(project.projectFolderPath, f.fsPath));
 
 			await project.addSqlObjectScripts(relativePaths);
 
@@ -1846,7 +1846,7 @@ export class ProjectsController {
 			result.deletedFiles.forEach((f: any) => toRemove.push(vscode.Uri.file(f)));
 
 			let toRemoveEntries: FileProjectEntry[] = [];
-			toRemove.forEach(f => toRemoveEntries.push(new FileProjectEntry(f, f.path.replace(projectPath + '\\', ''), EntryType.File)));
+			toRemove.forEach(f => toRemoveEntries.push(new FileProjectEntry(f, f.fsPath.replace(projectPath + '\\', ''), EntryType.File)));
 
 			toRemoveEntries.forEach(async f => await project.excludeSqlObjectScript(f.fsUri.fsPath));
 
