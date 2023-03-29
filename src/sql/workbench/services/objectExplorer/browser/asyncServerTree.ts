@@ -133,7 +133,6 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 					await this.expand(node.element);
 				}
 			}
-
 		}
 	}
 
