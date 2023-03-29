@@ -206,6 +206,12 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 	public async makeElementDirty(element: ServerTreeElement) {
 		this.getDataNode(element).stale = true;
 	}
+
+	public async revealSelectFocusElement(element: ServerTreeElement) {
+		await this.reveal(element);
+		await this.setSelection([element]);
+		this.setFocus([element]);
+	}
 }
 
 export type ServerTreeElement = ConnectionProfile | ConnectionProfileGroup | TreeNode;
