@@ -423,7 +423,7 @@ export function errorReadingProject(section: string, path: string, error?: strin
 export function errorAddingDatabaseReference(referenceName: string, error: string) { return localize('errorAddingDatabaseReference', "Error adding database reference to {0}. Error: {1}", referenceName, error); }
 export function errorNotSupportedInVsCode(actionDescription: string) { return localize('errorNotSupportedInVsCode', "Error: {0} is not currently supported in SQL Database Projects for VS Code.", actionDescription); }
 export function sqlcmdVariableNameCannotContainWhitespace(name: string) { return localize('sqlcmdVariableNameCannotBeWhitespace', "SQLCMD variable name '{0}' cannot contain whitespace", name); }
-export function sqlcmdVariableNameCannotContainIllegalChars(name: string) { return localize('sqlcmdVariableNameCannotContainIllegalChars', "SQLCMD variable name '{0}' cannot contain any of the following characters: {1}", name, illegalSqlCmdChars.join()); }
+export function sqlcmdVariableNameCannotContainIllegalChars(name: string) { return localize('sqlcmdVariableNameCannotContainIllegalChars', "SQLCMD variable name '{0}' cannot contain any of the following characters: {1}", name, illegalSqlCmdChars.join(', ')); }
 
 //#endregion
 
