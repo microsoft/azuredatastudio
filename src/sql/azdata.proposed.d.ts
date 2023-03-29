@@ -1934,4 +1934,21 @@ declare module 'azdata' {
 			isPrimary: boolean;
 		}
 	}
+
+	export interface ModelBuilder {
+		chart(): ComponentBuilder<ChartComponent, ChartComponentProperties>;
+	}
+
+	export interface ChartComponentProperties extends ComponentProperties {
+		chartType?: string | undefined;
+		data?: number[] | undefined;
+		labels?: string[] | undefined;
+		colors?: string[] | undefined;
+	}
+
+	export type ChartClickEvent = { label: string };
+
+	export interface ChartComponent extends Component, ChartComponentProperties {
+		onDidClick: vscode.Event<ChartClickEvent>;
+	}
 }

@@ -90,6 +90,7 @@ import { IInstantiationService, _util } from 'vs/platform/instantiation/common/i
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { PropertiesContainerModule } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.module';
 import { LoadingSpinnerModule } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner.module';
+import { ChartModule } from 'sql/base/browser/ui/chart/chart.module';
 
 
 const widgetComponents = [
@@ -145,7 +146,8 @@ export const DashboardModule = (params, selector: string, instantiationService: 
 			PanelModule,
 			ScrollableModule,
 			PropertiesContainerModule,
-			LoadingSpinnerModule
+			LoadingSpinnerModule,
+			ChartModule
 		],
 		providers: [
 			{ provide: APP_BASE_HREF, useValue: '/' },

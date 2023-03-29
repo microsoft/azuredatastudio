@@ -281,6 +281,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
+	chart(): azdata.ComponentBuilder<azdata.ChartComponent, azdata.ChartComponentProperties> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.ChartComponent, azdata.ChartComponentProperties> = this.getComponentBuilder(new ChartComponentWrapper(this._proxy, this._handle, id, this.logService), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	getComponentBuilder<T extends azdata.Component, TPropertyBag extends azdata.ComponentProperties>(component: ComponentWrapper, id: string): ComponentBuilderImpl<T, TPropertyBag> {
 		let componentBuilder: ComponentBuilderImpl<T, TPropertyBag> = new ComponentBuilderImpl<T, TPropertyBag>(component);
 		this._componentBuilders.set(id, componentBuilder);
@@ -2232,6 +2239,52 @@ class GroupContainerComponentWrapper extends ComponentWrapper implements azdata.
 	}
 	public set collapsed(v: boolean) {
 		this.setProperty('collapsed', v);
+	}
+}
+
+class ChartComponentWrapper extends ComponentWrapper implements azdata.ChartComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.Chart, id, logService);
+		this.properties = {};
+
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<azdata.ChartClickEvent>());
+	}
+
+	public get chartType(): string {
+		return this.properties['chartType'];
+	}
+
+	public set chartType(v: string) {
+		this.setProperty('chartType', v);
+	}
+
+	public get data(): number[] {
+		return this.properties['data'];
+	}
+
+	public set data(v: number[]) {
+		this.setProperty('data', v);
+	}
+
+	public get labels(): string[] {
+		return this.properties['labels'];
+	}
+
+	public set labels(v: string[]) {
+		this.setProperty('labels', v);
+	}
+
+	public get colors(): string[] {
+		return this.properties['colors'];
+	}
+
+	public set colors(v: string[]) {
+		this.setProperty('colors', v);
+	}
+
+	public get onDidClick(): vscode.Event<azdata.ChartClickEvent> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
 	}
 }
 
