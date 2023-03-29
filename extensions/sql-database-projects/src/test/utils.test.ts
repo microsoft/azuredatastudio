@@ -58,29 +58,28 @@ describe('Tests to verify utils functions', function (): void {
 
 	it('Should determine invalid sqlcmd variable names', () => {
 		// valid names
-		should(utils.isValidSqlCmdVariableName('$(test)')).equal(true);
-		should(utils.isValidSqlCmdVariableName('$(test    )')).equal(true, 'trailing spaces should be valid because they will be trimmed');
-		should(utils.isValidSqlCmdVariableName('test')).equal(true);
-		should(utils.isValidSqlCmdVariableName('test  ')).equal(true, 'trailing spaces should be valid because they will be trimmed');
-		should(utils.isValidSqlCmdVariableName('$(test')).equal(true);
-		should(utils.isValidSqlCmdVariableName('$(test    ')).equal(true, 'trailing spaces should be valid because they will be trimmed');
+		should(utils.validateSqlCmdVariableName('$(test)')).equal(null);
+		should(utils.validateSqlCmdVariableName('$(test    )')).equal(null, 'trailing spaces should be valid because they will be trimmed');
+		should(utils.validateSqlCmdVariableName('test')).equal(null);
+		should(utils.validateSqlCmdVariableName('test  ')).equal(null, 'trailing spaces should be valid because they will be trimmed');
+		should(utils.validateSqlCmdVariableName('$(test')).equal(null);
+		should(utils.validateSqlCmdVariableName('$(test    ')).equal(null, 'trailing spaces should be valid because they will be trimmed');
 
 		// whitespace
-		should(utils.isValidSqlCmdVariableName('')).equal(false);
-		should(utils.isValidSqlCmdVariableName(' ')).equal(false);
-		should(utils.isValidSqlCmdVariableName('     ')).equal(false);
-		should(utils.isValidSqlCmdVariableName('test abc')).equal(false);
-		should(utils.isValidSqlCmdVariableName('	')).equal(false);
+		should(utils.validateSqlCmdVariableName('')).equal(constants.sqlcmdVariableNameCannotContainWhitespace(''));
+		should(utils.validateSqlCmdVariableName(' ')).equal(constants.sqlcmdVariableNameCannotContainWhitespace(' '));
+		should(utils.validateSqlCmdVariableName('     ')).equal(constants.sqlcmdVariableNameCannotContainWhitespace('     '));
+		should(utils.validateSqlCmdVariableName('test abc')).equal(constants.sqlcmdVariableNameCannotContainWhitespace('test abc'));
+		should(utils.validateSqlCmdVariableName('	')).equal(constants.sqlcmdVariableNameCannotContainWhitespace('	'));
 
 		// invalid characters
-		should(utils.isValidSqlCmdVariableName('$($test')).equal(false);
-		should(utils.isValidSqlCmdVariableName('$test')).equal(false);
-		should(utils.isValidSqlCmdVariableName('$test')).equal(false);
-		should(utils.isValidSqlCmdVariableName('test@')).equal(false);
-		should(utils.isValidSqlCmdVariableName('test#')).equal(false);
-		should(utils.isValidSqlCmdVariableName('test"')).equal(false);
-		should(utils.isValidSqlCmdVariableName('test\'')).equal(false);
-		should(utils.isValidSqlCmdVariableName('test-1')).equal(false);
+		should(utils.validateSqlCmdVariableName('$($test')).equal(constants.sqlcmdVariableNameCannotContainIllegalChars('$($test'));
+		should(utils.validateSqlCmdVariableName('$test')).equal(constants.sqlcmdVariableNameCannotContainIllegalChars('$test'));
+		should(utils.validateSqlCmdVariableName('test@')).equal(constants.sqlcmdVariableNameCannotContainIllegalChars('test@'));
+		should(utils.validateSqlCmdVariableName('test#')).equal(constants.sqlcmdVariableNameCannotContainIllegalChars('test#'));
+		should(utils.validateSqlCmdVariableName('test"')).equal(constants.sqlcmdVariableNameCannotContainIllegalChars('test"'));
+		should(utils.validateSqlCmdVariableName('test\'')).equal(constants.sqlcmdVariableNameCannotContainIllegalChars('test\''));
+		should(utils.validateSqlCmdVariableName('test-1')).equal(constants.sqlcmdVariableNameCannotContainIllegalChars('test-1'));
 	});
 
 	it('Should convert from milliseconds to hr min sec correctly', () => {

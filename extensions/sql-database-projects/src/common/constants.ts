@@ -123,6 +123,7 @@ export function updatedToSdkStyleError(projectName: string) { return localize('u
 export const enterNewName = localize('enterNewName', "Enter new name");
 //#endregion
 
+export const illegalSqlCmdChars = ['$', '@', '#', '"', '\'', '-'];
 export const reservedProjectFolders = ['Properties', 'SQLCMD Variables', 'Database References'];
 
 //#region Publish dialog strings
@@ -393,6 +394,7 @@ export const prePostDeployCount = localize('prePostDeployCount', "To successfull
 export const invalidProjectReload = localize('invalidProjectReload', "Cannot access provided database project. Only valid, open database projects can be reloaded.");
 export const externalStreamingJobValidationPassed = localize('externalStreamingJobValidationPassed', "Validation of external streaming job passed.");
 export const errorRetrievingBuildFiles = localize('errorRetrievingBuildFiles', "Could not build project. Error retrieving files needed to build.");
+
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
@@ -412,7 +414,6 @@ export function unexpectedProjectContext(uri: string) { return localize('unexpec
 export function unableToPerformAction(action: string, uri: string) { return localize('unableToPerformAction', "Unable to locate '{0}' target: '{1}'", action, uri); }
 export function unableToFindObject(path: string, objType: string) { return localize('unableToFindFile', "Unable to find {1} with path '{0}'", path, objType); }
 export function deployScriptExists(scriptType: string) { return localize('deployScriptExists', "A {0} script already exists. The new script will not be included in build.", scriptType); }
-export function notValidVariableName(name: string) { return localize('notValidVariableName', "The variable name '{0}' is not valid.", name); }
 export function cantAddCircularProjectReference(project: string) { return localize('cantAddCircularProjectReference', "A reference to project '{0}' cannot be added. Adding this project as a reference would cause a circular dependency", project); }
 export function unableToFindSqlCmdVariable(variableName: string) { return localize('unableToFindSqlCmdVariable', "Unable to find SQLCMD variable '{0}'", variableName); }
 export function unableToFindDatabaseReference(reference: string) { return localize('unableToFindReference', "Unable to find database reference {0}", reference); }
@@ -421,6 +422,8 @@ export function invalidTargetPlatform(targetPlatform: string, supportedTargetPla
 export function errorReadingProject(section: string, path: string, error?: string) { return localize('errorReadingProjectGuid', "Error trying to read {0} of project '{1}'. {2}", section, path, error); }
 export function errorAddingDatabaseReference(referenceName: string, error: string) { return localize('errorAddingDatabaseReference', "Error adding database reference to {0}. Error: {1}", referenceName, error); }
 export function errorNotSupportedInVsCode(actionDescription: string) { return localize('errorNotSupportedInVsCode', "Error: {0} is not currently supported in SQL Database Projects for VS Code.", actionDescription); }
+export function sqlcmdVariableNameCannotContainWhitespace(name: string) { return localize('sqlcmdVariableNameCannotBeWhitespace', "SQLCMD variable name '{0}' cannot contain whitespace", name); }
+export function sqlcmdVariableNameCannotContainIllegalChars(name: string) { return localize('sqlcmdVariableNameCannotContainIllegalChars', "SQLCMD variable name '{0}' cannot contain any of the following characters: {1}", name, illegalSqlCmdChars.join(', ')); }
 
 //#endregion
 
