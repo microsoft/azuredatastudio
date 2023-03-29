@@ -6,7 +6,8 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../../constants/strings';
-import { logError, TelemetryErrorName, TelemetryViews } from '../../telemetry';
+import * as utils from '../../api/utils';
+import { logError, TelemetryAction, TelemetryViews, sendSqlMigrationActionEvent, getTelemetryProps } from '../../telemetry';
 import { EOL } from 'os';
 import { MigrationStateModel, OperationResult } from '../../models/stateMachine';
 import { IconPathHelper } from '../../constants/iconPathHelper';
@@ -317,12 +318,28 @@ export class TdeMigrationDialog {
 				};
 
 				this._model.tdeMigrationConfig.setTdeMigrationResult(this._tdeMigrationResult); // Set value on success.
+
+				sendSqlMigrationActionEvent(
+					TelemetryViews.TdeMigrationDialog,
+					TelemetryAction.TdeMigrationSuccess,
+					{
+						...getTelemetryProps(this._model)
+					},
+					{}
+				);
 			}
 			else {
 				this._dialog!.okButton.enabled = false;
-				const errorDetails = operationResult.errors.join(EOL);
 
-				logError(TelemetryViews.MigrationLocalStorage, TelemetryErrorName.StartMigrationFailed, errorDetails);
+				sendSqlMigrationActionEvent(
+					TelemetryViews.TdeMigrationDialog,
+					TelemetryAction.TdeMigrationFailures,
+					{
+						...getTelemetryProps(this._model),
+						'runningAsAdmin': (await utils.isAdmin()).toString()
+					},
+					{}
+				);
 			}
 
 			this._startMigrationLoader.loading = false;
@@ -339,6 +356,8 @@ export class TdeMigrationDialog {
 			this._copyButton.enabled = false;
 			this._dialog!.okButton.enabled = false;
 			this._progressReportText.value = '';
+
+			logError(TelemetryViews.TdeMigrationDialog, TelemetryAction.TdeMigrationClientException, error);
 		}
 
 		this._headingText.value = constants.TDE_MIGRATE_RESULTS_HEADING_COMPLETED;
@@ -433,12 +452,16 @@ export class TdeMigrationDialog {
 		}
 	}
 
-	private async _updateTableResultRow(dbName: string, succeeded: boolean, message: string): Promise<void> {
+	private async _updateTableResultRow(dbName: string, succeeded: boolean, message: string, statusCode: string): Promise<void> {
 		if (!this._dbRowsMap.has(dbName)) {
 			return; //Table not found
 		}
 
 		this._updateValidationResultRow(dbName, succeeded, message);
+
+		if (!succeeded) {
+			logError(TelemetryViews.TdeMigrationDialog, statusCode, {});
+		}
 
 		// Update the table
 		await this._updateTableData();
@@ -522,7 +545,4 @@ export class TdeMigrationDialog {
 				return IconPathHelper.notStartedMigration;
 		}
 	}
-
-
-
 }

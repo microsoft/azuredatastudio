@@ -32,13 +32,27 @@ export interface NetworkInterfaceIpConfiguration extends NetworkResource {
 		privateIPAddress: string,
 		privateIPAddressVersion: string,
 		provisioningState: string,
-		publicIPAddress: NetworkResource
+		publicIPAddress: NetworkResource,
+		subnet: { id: string }
 	}
 }
 
 export interface PublicIpAddress extends NetworkResource {
 	properties: {
 		ipAddress: string
+	}
+}
+
+export interface PrivateEndpointConnection extends NetworkResource {
+	properties: {
+		privateEndpoint: { id: string },
+		privateLinkServiceConnectionState: { description: string, status: string }
+	}
+}
+
+export interface PrivateEndpoint extends NetworkResource {
+	properties: {
+		subnet: { id: string }
 	}
 }
 
@@ -144,5 +158,14 @@ export class NetworkInterfaceModel {
 		}
 
 		return networkInterfaces;
+	}
+
+
+	public static async getPrivateEndpoint(account: azdata.Account, subscription: Subscription, privateEndpointId: string): Promise<PrivateEndpoint> {
+		return getAzureResourceGivenId(account, subscription, privateEndpointId, this.NETWORK_API_VERSION);
+	}
+
+	public static getVirtualNetworkFromSubnet(subnetId: string): string {
+		return subnetId.replace(RegExp('^(.*?)/virtualNetworks/'), '').replace(RegExp('/subnets/.*'), '').toLowerCase();
 	}
 }

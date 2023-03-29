@@ -305,6 +305,9 @@ async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent): Pro
 		updatePiiLoggingLevel();
 	}
 	if (e.affectsConfiguration('azure.authenticationLibrary')) {
+		if (vscode.workspace.getConfiguration(Constants.AzureSection).get('authenticationLibrary') === 'ADAL') {
+			void vscode.window.showInformationMessage(loc.deprecatedOption);
+		}
 		await displayReloadAds();
 	}
 }
@@ -327,4 +330,3 @@ async function displayReloadAds(): Promise<boolean> {
 	}
 
 }
-

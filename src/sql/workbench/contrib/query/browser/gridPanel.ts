@@ -549,6 +549,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this._register(this.dataProvider.onFilterStateChange(() => { this.layout(); }));
 		this._register(this.table.onContextMenu(this.contextMenu, this));
 		this._register(this.table.onClick(this.onTableClick, this));
+		this._register(this.table.onDoubleClick(this.onTableDoubleClick, this));
 		this._register(this.dataProvider.onFilterStateChange(() => {
 			const columns = this.table.columns as FilterableColumn<T>[];
 			this.state.columnFilters = columns.filter((column) => column.filterValues?.length > 0).map(column => {
@@ -574,7 +575,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this._register(registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 			const nullBackground = theme.getColor(queryEditorNullBackground);
 			if (nullBackground) {
-				collector.addRule(`.${NULL_CELL_CSS_CLASS} { background: ${nullBackground};}`);
+				collector.addRule(`.slick-row:not(:hover) .${NULL_CELL_CSS_CLASS} { background: ${nullBackground};}`);
 			}
 		}));
 
@@ -764,6 +765,15 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					await this.editorService.openEditor(input);
 				}
 			}
+		}
+	}
+
+	private onTableDoubleClick(event: ITableMouseEvent) {
+		// the first column is already handled by rowNumberColumn plugin.
+		if (event.cell && event.cell.cell !== 0) {
+			// upon double clicking, we want to select the entire row so that it is easier to know which
+			// row is selected when the user needs to scroll horizontally.
+			this.table.grid.setSelectedRows([event.cell.row]);
 		}
 	}
 

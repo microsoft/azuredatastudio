@@ -23,6 +23,7 @@ export interface IMenuItem {
 	when?: ContextKeyExpression;
 	group?: 'navigation' | string;
 	order?: number;
+	isDefault?: boolean; // {{SQL CARBON EDIT}} - Used by object explorer, indicating whether this is the action to be executed when a node is double clicked.
 }
 
 export interface ISubmenuItem {
@@ -365,6 +366,8 @@ export class MenuItemAction implements IAction {
 	private readonly _options: IMenuActionOptions | undefined;
 
 	readonly id: string;
+
+	isDefault: boolean = false; // {{SQL CARBON EDIT}}} - Add isDefault property to MenuItemAction.
 
 	// {{SQL CARBON EDIT}} -- remove readonly since notebook component sets these
 	label: string;

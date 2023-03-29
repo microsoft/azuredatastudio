@@ -40,7 +40,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 */
 	public async getProjectTreeDataProvider(projectFilePath: vscode.Uri): Promise<vscode.TreeDataProvider<BaseProjectTreeItem>> {
 		const provider = new SqlDatabaseProjectTreeViewProvider();
-		const project = await Project.openProject(projectFilePath.fsPath);
+		const project = await Project.openProject(projectFilePath.fsPath, true, true);
 
 		// open project in STS
 		const sqlProjectsService = await getSqlProjectsService();
@@ -112,7 +112,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * Opens and loads a .sqlproj file
 	 */
 	public openProject(projectFilePath: string): Promise<sqldbproj.ISqlProject> {
-		return Project.openProject(projectFilePath);
+		return Project.openProject(projectFilePath, true, true);
 	}
 
 	public addItemPrompt(project: sqldbproj.ISqlProject, relativeFilePath: string, options?: sqldbproj.AddItemOptions): Promise<void> {
