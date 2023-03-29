@@ -10,6 +10,7 @@ import { SqlDatabaseTree } from './sqlDatabasesTree';
 import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
 import * as constants from '../../constants/strings';
 import * as utils from '../../api/utils';
+import { MigrationTargetType } from '../../api/utils';
 import * as fs from 'fs';
 import path = require('path');
 import { SqlMigrationImpactedObjectInfo } from '../../service/contracts';

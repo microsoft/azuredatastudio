@@ -849,6 +849,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/azurecore/dist/localizedConstants.azure.credStoreSaveFailedError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Keys for token cache could not be saved in credential store, this may cause Azure access token persistence issues and connection instabilities. It's likely that SqlTools has reached credential storage limit on Windows, please clear at least 2 credentials that start with "Microsoft.SqlTools|" in Windows Credential Manager and reload.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[토큰 캐시에 대한 키를 자격 증명 저장소에 저장할 수 없습니다. 이로 인해 Azure 액세스 토큰 지속성 문제가 발생할 수 있으며 연결이 불안정해질 수 있습니다. SqlTools가 Windows의 자격 증명 저장 한도에 도달한 것 같습니다. Windows 자격 증명 관리자 "Microsoft.SqlTools|"로 시작하는 자격 증명을 2개 이상 지우고 다시 로드하세요.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/azurecore/dist/localizedConstants.azure.unableToOpenAzureLink" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unable to open link, missing required values]]></Val>
@@ -983,6 +992,15 @@
           <Val><![CDATA[Central US EUAP]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[미국 중부 EUAP]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.deprecated" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL instead.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[경고: ADAL은 더 이상 사용되지 않으며 향후 릴리스에서 제거될 예정입니다. 대신 MSAL을 사용하세요.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

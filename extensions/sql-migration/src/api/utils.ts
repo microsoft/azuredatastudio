@@ -158,7 +158,16 @@ export function getMigrationDuration(startDate: string, endDate: string): string
 }
 
 export function filterMigrations(databaseMigrations: azure.DatabaseMigration[], statusFilter: string, columnTextFilter?: string): azure.DatabaseMigration[] {
-	let filteredMigration: azure.DatabaseMigration[] = databaseMigrations || [];
+	const supportedKind: string[] = [
+		azure.AzureResourceKind.SQLDB,
+		azure.AzureResourceKind.SQLMI,
+		azure.AzureResourceKind.SQLVM,
+	];
+
+	let filteredMigration: azure.DatabaseMigration[] =
+		databaseMigrations.filter(m => supportedKind.includes(m.properties?.kind)) ||
+		[];
+
 	if (columnTextFilter) {
 		const filter = columnTextFilter.toLowerCase();
 		filteredMigration = filteredMigration.filter(
@@ -202,6 +211,7 @@ export function filterMigrations(databaseMigrations: azure.DatabaseMigration[], 
 			return filteredMigration.filter(
 				value => getMigrationStatus(value) === constants.MigrationState.Completing);
 	}
+
 	return filteredMigration;
 }
 

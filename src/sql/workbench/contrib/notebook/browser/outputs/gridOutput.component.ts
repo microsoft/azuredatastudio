@@ -487,9 +487,12 @@ export class DataResourceDataProvider implements IGridDataProvider {
 			let connProviders = this.cellModel.notebookModel.getApplicableConnectionProviderIds(this.cellModel.notebookModel.selectedKernelDisplayName);
 			if (connProviders?.length > 0) {
 				provider = connProviders[0];
-			} else {
-				provider = mssqlProviderName;
 			}
+		}
+		if (!provider || !this._serializationService.isProviderRegistered(provider)) {
+			// Serializing notebook query results to file is agnostic of database engine since the data is already available in the notebook.
+			// If the provider doesn't have its own serializer we can let the mssql provider handle it.
+			provider = mssqlProviderName;
 		}
 		let formatSpecificParams = serializer.getBasicSaveParameters(format);
 		let formatAgnosticParams = <Partial<SerializeDataParams>>{

@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as utils from '../api/utils';
+import { MigrationTargetType } from '../api/utils';
 import * as contracts from '../service/contracts';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, PerformanceDataSourceOptions, StateChangeEvent, AssessmentRuleId } from '../models/stateMachine';
