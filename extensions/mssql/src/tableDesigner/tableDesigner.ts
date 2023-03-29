@@ -40,6 +40,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				tableIcon: tableIcon
 			}, telemetryInfo);
 		} catch (error) {
+			console.error(error);
 			await vscode.window.showErrorMessage(getErrorMessage(error), { modal: true });
 		}
 	}));
@@ -52,7 +53,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			const schema = context.nodeInfo!.metadata!.schema;
 			const name = context.nodeInfo!.metadata!.name;
 			const connectionString = await azdata.connection.getConnectionString(context.connectionProfile!.id, true);
-			if (!connectionString) {
+			if (connectionString) {
 				throw new Error(FailedToGetConnectionStringError);
 			}
 			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
@@ -71,6 +72,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				tableIcon: tableIcon
 			}, telemetryInfo);
 		} catch (error) {
+			console.error(error);
 			await vscode.window.showErrorMessage(getErrorMessage(error), { modal: true });
 		}
 	}));
