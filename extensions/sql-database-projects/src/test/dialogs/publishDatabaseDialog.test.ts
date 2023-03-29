@@ -16,7 +16,7 @@ import { Project } from '../../models/project';
 import { ProjectsController } from '../../controllers/projectController';
 import { emptySqlDatabaseProjectTypeId } from '../../common/constants';
 import { createContext, mockDacFxOptionsResult, TestContext } from '../testContext';
-import { ISqlProjectPublishSettings, IPublishToDockerSettings } from 'sqldbproj';
+import { IPublishToDockerSettings, ISqlProjectPublishSettings } from '../../models/deploy/publishSettings';
 
 let testContext: TestContext;
 describe('Publish Database Dialog', () => {
