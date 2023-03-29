@@ -3434,14 +3434,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.22.0",
-							"lastUpdated": "2/15/2023",
+							"version": "0.23.0",
+							"lastUpdated": "3/29/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-0.22.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-0.23.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3471,7 +3471,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.40.0"
+									"value": ">=1.43.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
