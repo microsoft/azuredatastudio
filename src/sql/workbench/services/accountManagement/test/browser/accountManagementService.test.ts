@@ -19,7 +19,7 @@ import { TestNotificationService } from 'vs/platform/notification/test/common/te
 import { AccountDialog } from 'sql/workbench/services/accountManagement/browser/accountDialog';
 import { Emitter } from 'vs/base/common/event';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
-import { AdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
+import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 
 // SUITE CONSTANTS /////////////////////////////////////////////////////////
 const hasAccountProvider: azdata.AccountProviderMetadata = {
@@ -539,11 +539,11 @@ function getTestState(): AccountManagementState {
 
 	const testNotificationService = new TestNotificationService();
 	const testConfigurationService = new TestConfigurationService();
-	const mockTelemetryService = TypeMoq.Mock.ofType(AdsTelemetryService, TypeMoq.MockBehavior.Strict);
+	const mockTelemetryService = new NullAdsTelemetryService();
 
 	// Create the account management service
 	let ams = new AccountManagementService(mockInstantiationService.object, new TestStorageService(),
-		undefined, undefined, undefined, testNotificationService, testConfigurationService, mockTelemetryService.object);
+		undefined, undefined, undefined, testNotificationService, testConfigurationService, mockTelemetryService);
 
 	// Wire up event handlers
 	let evUpdate = new EventVerifierSingle<UpdateAccountListEventParams>();
@@ -569,7 +569,6 @@ function getMockAccountProvider(): TypeMoq.Mock<azdata.AccountProvider> {
 	mockProvider.setup(x => x.clear(TypeMoq.It.isAny())).returns(() => Promise.resolve());
 	mockProvider.setup(x => x.initialize(TypeMoq.It.isAny())).returns(param => Promise.resolve(param));
 	mockProvider.setup(x => x.prompt()).returns(() => Promise.resolve(account));
-
 	return mockProvider;
 }
 
