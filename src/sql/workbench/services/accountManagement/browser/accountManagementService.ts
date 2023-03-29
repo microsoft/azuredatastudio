@@ -29,7 +29,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { filterAccounts } from 'sql/workbench/services/accountManagement/browser/accountDialog';
 import { ADAL_AUTH_LIBRARY, MSAL_AUTH_LIBRARY, AuthLibrary, AZURE_AUTH_LIBRARY_CONFIG, getAuthLibrary } from 'sql/workbench/services/accountManagement/utils';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { TelemetryAction, TelemetryError, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
+import { TelemetryAction, TelemetryError, TelemetryPropertyName, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -153,7 +153,7 @@ export class AccountManagementService implements IAccountManagementService {
 						this._telemetryService.createErrorEvent(TelemetryView.LinkedAccounts, TelemetryError.AddAzureAccountError, accountResult.errorCode,
 							this.getErrorType(accountResult.errorMessage))
 							.withAdditionalProperties({
-								'AuthLibrary': this._authLibrary
+								[TelemetryPropertyName.AuthLibrary]: this._authLibrary
 							})
 							.send();
 						if (accountResult.errorCode && accountResult.errorMessage) {
@@ -165,11 +165,11 @@ export class AccountManagementService implements IAccountManagementService {
 				}
 				let result = await this._accountStore.addOrUpdate(accountResult);
 				if (!result) {
-					this._logService.error('adding account failed');
-					this._telemetryService.createErrorEvent(TelemetryView.LinkedAccounts, TelemetryError.AddAzureAccountError, '-1',
+					this._logService.error('Adding account failed, no result received.');
+					this._telemetryService.createErrorEvent(TelemetryView.LinkedAccounts, TelemetryError.AddAzureAccountErrorNoResult, '-1',
 						this.getErrorType())
 						.withAdditionalProperties({
-							'AuthLibrary': this._authLibrary
+							[TelemetryPropertyName.AuthLibrary]: this._authLibrary
 						})
 						.send();
 					throw new Error(genericAccountErrorMessage);
@@ -183,7 +183,7 @@ export class AccountManagementService implements IAccountManagementService {
 				}
 				this._telemetryService.createActionEvent(TelemetryView.LinkedAccounts, TelemetryAction.AddAzureAccount)
 					.withAdditionalProperties({
-						'AuthLibrary': this._authLibrary
+						[TelemetryPropertyName.AuthLibrary]: this._authLibrary
 					})
 					.send();
 				this.fireAccountListUpdate(provider, result.accountAdded);
@@ -236,7 +236,7 @@ export class AccountManagementService implements IAccountManagementService {
 					this._telemetryService.createErrorEvent(TelemetryView.LinkedAccounts, TelemetryError.RefreshAzureAccountError, refreshedAccount.errorCode,
 						this.getErrorType(refreshedAccount.errorMessage))
 						.withAdditionalProperties({
-							'AuthLibrary': this._authLibrary
+							[TelemetryPropertyName.AuthLibrary]: this._authLibrary
 						})
 						.send();
 					if (refreshedAccount.errorCode && refreshedAccount.errorMessage) {
@@ -250,6 +250,16 @@ export class AccountManagementService implements IAccountManagementService {
 			}
 
 			let result = await this._accountStore.addOrUpdate(account);
+			if (!result) {
+				this._logService.error('Refreshing account failed, no result received.');
+				this._telemetryService.createErrorEvent(TelemetryView.LinkedAccounts, TelemetryError.RefreshAzureAccountErrorNoResult, '-1',
+					this.getErrorType())
+					.withAdditionalProperties({
+						[TelemetryPropertyName.AuthLibrary]: this._authLibrary
+					})
+					.send();
+				throw new Error(genericAccountErrorMessage);
+			}
 			if (result.accountAdded) {
 				// Double check that there isn't a matching account
 				let indexToRemove = this.findAccountIndex(provider.accounts, result.changedAccount);
@@ -272,7 +282,7 @@ export class AccountManagementService implements IAccountManagementService {
 
 			this._telemetryService.createActionEvent(TelemetryView.LinkedAccounts, TelemetryAction.RefreshAzureAccount)
 				.withAdditionalProperties({
-					'AuthenticationLibrary': this._authLibrary
+					[TelemetryPropertyName.AuthLibrary]: this._authLibrary
 				})
 				.send();
 			this.fireAccountListUpdate(provider, result.accountAdded);

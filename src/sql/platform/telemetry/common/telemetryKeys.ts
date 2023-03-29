@@ -56,7 +56,9 @@ export const enum TelemetryError {
 	DatabaseConnectionError = 'DatabaseConnectionError',
 	ObjectExplorerExpandError = 'ObjectExplorerExpandError',
 	AddAzureAccountError = 'AddAzureAccountError',
-	RefreshAzureAccountError = 'RefreshAzureAccountError'
+	AddAzureAccountErrorNoResult = 'AddAzureAccountErrorNoResult',
+	RefreshAzureAccountError = 'RefreshAzureAccountError',
+	RefreshAzureAccountErrorNoResult = 'RefreshAzureAccountErrorNoResult',
 }
 
 export const enum TelemetryAction {
@@ -138,6 +140,7 @@ export const enum NbTelemetryAction {
 
 export const enum TelemetryPropertyName {
 	ChartMaxRowCountExceeded = 'chartMaxRowCountExceeded',
-	ConnectionSource = 'connectionSource'
+	ConnectionSource = 'connectionSource',
+	AuthLibrary = 'AuthLibrary'
 }
 
