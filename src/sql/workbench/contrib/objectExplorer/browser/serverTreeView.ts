@@ -266,7 +266,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 
 		this._register(this._connectionManagementService.onConnectionProfileEdited(async (e) => {
 			if (this._tree instanceof AsyncServerTree) {
-				const oldProfile = <ConnectionProfile>this._tree.getElementById(e.olfProfileId);
+				const oldProfile = <ConnectionProfile>this._tree.getElementById(e.oldProfileId);
 				const oldProfileParent = <ConnectionProfileGroup>this._tree.getElementById(oldProfile.groupId);
 				if (oldProfileParent.id !== e.profile.groupId) {
 					// If the profile was moved to a different group then remove it from the old group and add it to the new group.
@@ -281,7 +281,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 					await this._tree.expand(e.profile);
 				} else {
 					// If the profile was not moved to a different group then just update the profile in the group.
-					oldProfileParent.connections[oldProfileParent.connections.findIndex(c => c.id === e.olfProfileId)] = e.profile;
+					oldProfileParent.connections[oldProfileParent.connections.findIndex(c => c.id === e.oldProfileId)] = e.profile;
 					e.profile.parent = oldProfileParent;
 					e.profile.groupId = oldProfileParent.id;
 					await this._tree.updateChildren(oldProfileParent)

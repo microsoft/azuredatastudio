@@ -93,7 +93,7 @@ export interface ConnectionElementMovedParams {
 
 export interface ConnectionProfileEditedParams {
 	profile: ConnectionProfile;
-	olfProfileId: string;
+	oldProfileId: string;
 }
 
 export interface IConnectionManagementService {

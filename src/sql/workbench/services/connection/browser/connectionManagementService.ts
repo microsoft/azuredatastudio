@@ -595,7 +595,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						this._onAddConnectionProfile.fire(connection);
 						if (isEdit) {
 							this._onConnectionProfileEdited.fire({
-								olfProfileId: options.params.oldProfileId,
+								oldProfileId: options.params.oldProfileId,
 								profile: <ConnectionProfile>connection
 							});
 						} else {
