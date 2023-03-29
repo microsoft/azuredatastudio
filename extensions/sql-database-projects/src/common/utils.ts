@@ -239,9 +239,9 @@ export function formatSqlCmdVariable(name: string): string {
 }
 
 /**
- * Checks if it's a valid sqlcmd variable name.
+ * Checks if it's a valid sqlcmd variable name
  * https://docs.microsoft.com/en-us/sql/ssms/scripting/sqlcmd-use-with-scripting-variables?redirectedfrom=MSDN&view=sql-server-ver15#guidelines-for-scripting-variable-names-and-values
- * @param cleanedName variable name to validate
+ * @param name variable name to validate
  * @returns null if valid, otherwise an error message describing why input is invalid
 */
 export function validateSqlCmdVariableName(name: string | undefined): string | null {
