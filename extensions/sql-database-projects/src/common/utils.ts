@@ -239,28 +239,27 @@ export function formatSqlCmdVariable(name: string): string {
 }
 
 /**
- * Checks if it's a valid sqlcmd variable name
+ * Checks if it's a valid sqlcmd variable name.
  * https://docs.microsoft.com/en-us/sql/ssms/scripting/sqlcmd-use-with-scripting-variables?redirectedfrom=MSDN&view=sql-server-ver15#guidelines-for-scripting-variable-names-and-values
- * @param name variable name to validate
- */
-export function isValidSqlCmdVariableName(name: string | undefined): boolean {
+ * @param cleanedName variable name to validate
+ * @returns null if valid, otherwise an error message describing why input is invalid
+*/
+export function validateSqlCmdVariableName(name: string | undefined): string | null {
 	// remove $() around named if it's there
-	name = removeSqlCmdVariableFormatting(name);
+	const cleanedName = removeSqlCmdVariableFormatting(name);
 
 	// can't contain whitespace
-	if (!name || name.trim() === '' || name.includes(' ')) {
-		return false;
+	if (!cleanedName || cleanedName.trim() === '' || cleanedName.includes(' ')) {
+		return constants.sqlcmdVariableNameCannotContainWhitespace(name ?? '');
 	}
 
 	// can't contain these characters
-	if (name.includes('$') || name.includes('@') || name.includes('#') || name.includes('"') || name.includes('\'') || name.includes('-')) {
-		return false;
+	if (constants.illegalSqlCmdChars.some(c => cleanedName?.includes(c))) {
+		return constants.sqlcmdVariableNameCannotContainIllegalChars(name ?? '');
 	}
 
 	// TODO: tsql parsing to check if it's a reserved keyword or invalid tsql https://github.com/microsoft/azuredatastudio/issues/12204
-	// TODO: give more detail why variable name was invalid https://github.com/microsoft/azuredatastudio/issues/12231
-
-	return true;
+	return null;
 }
 
 /**

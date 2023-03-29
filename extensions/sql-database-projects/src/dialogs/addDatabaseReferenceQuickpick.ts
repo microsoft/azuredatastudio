@@ -6,7 +6,7 @@
 import path = require('path');
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
-import { getSqlProjectsInWorkspace, isValidSqlCmdVariableName } from '../common/utils';
+import { getSqlProjectsInWorkspace, validateSqlCmdVariableName } from '../common/utils';
 import { DbServerValues, populateResultWithVars } from './utils';
 import { AddDatabaseReferenceSettings } from '../controllers/projectController';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
@@ -211,7 +211,7 @@ async function promptDbVar(defaultValue: string): Promise<string> {
 			title: constants.databaseVariable,
 			value: defaultValue,
 			validateInput: (value: string) => {
-				return isValidSqlCmdVariableName(value) ? '' : constants.notValidVariableName(value);
+				return validateSqlCmdVariableName(value) ?? '';
 			},
 			ignoreFocusOut: true
 		}) ?? '';
@@ -235,7 +235,7 @@ async function promptServerVar(): Promise<string> {
 			title: constants.serverVariable,
 			value: constants.otherSeverVariable,
 			validateInput: (value: string) => {
-				return isValidSqlCmdVariableName(value) ? '' : constants.notValidVariableName(value);
+				return validateSqlCmdVariableName(value) ?? '';
 			},
 			ignoreFocusOut: true
 		}) ?? '';

@@ -564,9 +564,7 @@ export class AddDatabaseReferenceDialog {
 
 		// check for invalid variables
 		if (!this.validSqlCmdVariables()) {
-			let invalidName = !utils.isValidSqlCmdVariableName(this.databaseVariableTextbox?.value) ? this.databaseVariableTextbox!.value! : this.serverVariableTextbox!.value!;
-			invalidName = utils.removeSqlCmdVariableFormatting(invalidName);
-			newText = constants.notValidVariableName(invalidName);
+			newText = utils.validateSqlCmdVariableName(this.databaseVariableTextbox?.value) ?? utils.validateSqlCmdVariableName(this.serverVariableTextbox!.value!)!;
 		}
 
 		this.exampleUsage!.value = newText;
@@ -574,8 +572,8 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	private validSqlCmdVariables(): boolean {
-		if (this.databaseVariableTextbox?.enabled && this.databaseVariableTextbox?.value && !utils.isValidSqlCmdVariableName(this.databaseVariableTextbox?.value)
-			|| this.serverVariableTextbox?.enabled && this.serverVariableTextbox?.value && !utils.isValidSqlCmdVariableName(this.serverVariableTextbox?.value)) {
+		if (this.databaseVariableTextbox?.enabled && this.databaseVariableTextbox?.value && utils.validateSqlCmdVariableName(this.databaseVariableTextbox?.value)
+			|| this.serverVariableTextbox?.enabled && this.serverVariableTextbox?.value && utils.validateSqlCmdVariableName(this.serverVariableTextbox?.value)) {
 			return false;
 		}
 
