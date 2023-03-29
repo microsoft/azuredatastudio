@@ -382,6 +382,7 @@ declare module 'azurecore' {
 			storageAccount = 'microsoft.storage/storageaccounts',
 			logAnalytics = 'microsoft.operationalinsights/workspaces',
 			cosmosDbAccount = 'microsoft.documentdb/databaseaccounts',
+			cosmosDbCluster = 'microsoft.documentdb/mongoclusters',
 			mysqlFlexibleServer = 'microsoft.dbformysql/flexibleservers'
 		}
 
