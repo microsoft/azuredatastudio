@@ -85,6 +85,17 @@ export const SERVICE_ID = 'connectionManagementService';
 
 export const IConnectionManagementService = createDecorator<IConnectionManagementService>(SERVICE_ID);
 
+export interface ConnectionElementMovedParams {
+	source: ConnectionProfile | ConnectionProfileGroup;
+	oldGroupId: string;
+	newGroupId: string;
+}
+
+export interface ConnectionProfileEditedParams {
+	profile: ConnectionProfile;
+	oldProfileId: string;
+}
+
 export interface IConnectionManagementService {
 	_serviceBrand: undefined;
 
@@ -95,6 +106,25 @@ export interface IConnectionManagementService {
 	onDisconnect: Event<IConnectionParams>;
 	onConnectionChanged: Event<IConnectionParams>;
 	onLanguageFlavorChanged: Event<azdata.DidChangeLanguageFlavorParams>;
+
+	// Event Emitters for async tree
+	/**
+	 * Connection Profile events.
+	 */
+	onConnectionProfileCreated: Event<ConnectionProfile>;
+	onConnectionProfileEdited: Event<ConnectionProfileEditedParams>;
+	onConnectionProfileDeleted: Event<ConnectionProfile>;
+	onConnectionProfileMoved: Event<ConnectionElementMovedParams>;
+	onConnectionProfileConnected: Event<ConnectionProfile>;
+	onConnectionProfileDisconnected: Event<ConnectionProfile>;
+	/**
+	 * Connection Profile Group events.
+	 */
+	onConnectionProfileGroupCreated: Event<ConnectionProfileGroup>;
+	onConnectionProfileGroupEdited: Event<ConnectionProfileGroup>;
+	onConnectionProfileGroupDeleted: Event<ConnectionProfileGroup>;
+	onConnectionProfileGroupMoved: Event<ConnectionElementMovedParams>;
+	// End of Event Emitters for async tree
 
 	// Properties
 	providerNameToDisplayNameMap: { [providerDisplayName: string]: string };
@@ -158,6 +188,8 @@ export interface IConnectionManagementService {
 	onConnectionChangedNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void;
 
 	getConnectionGroups(providers?: string[]): ConnectionProfileGroup[];
+
+	getConnectionGroupById(id: string): ConnectionProfileGroup | undefined;
 
 	getRecentConnections(providers?: string[]): ConnectionProfile[];
 
