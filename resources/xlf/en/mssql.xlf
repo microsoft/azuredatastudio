@@ -34,11 +34,20 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="mssql.failedToFindTenants">
       <source xml:lang="en">Failed to find tenant '{0}' in account '{1}' when refreshing security token</source>
     </trans-unit>
+    <trans-unit id="mssql.noConvertResult">
+      <source xml:lang="en">No result returned from Notebook convert request</source>
+    </trans-unit>
+    <trans-unit id="mssql.noDocumentFound">
+      <source xml:lang="en">No document found for URI {0}</source>
+    </trans-unit>
     <trans-unit id="mssql.tokenRefreshFailed">
       <source xml:lang="en">{0} AAD token refresh failed, please reconnect to enable {0}</source>
     </trans-unit>
     <trans-unit id="mssql.tokenRefreshFailedNoSecurityToken">
       <source xml:lang="en">Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected</source>
+    </trans-unit>
+    <trans-unit id="mssql.unsupportedPlatform">
+      <source xml:lang="en">Unsupported platform {0}</source>
     </trans-unit>
 </body></file>
   <file original="extensions/mssql/dist/main" source-language="en" datatype="plaintext"><body>
@@ -53,6 +62,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     </trans-unit>
 </body></file>
   <file original="extensions/mssql/dist/objectManagement/localizedConstants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="objectManagement.ColumnDisplayName">
+      <source xml:lang="en">column</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.DatabaseDisplayName">
+      <source xml:lang="en">database</source>
+    </trans-unit>
     <trans-unit id="objectManagement.LoginTypeDisplayName">
       <source xml:lang="en">login</source>
     </trans-unit>
@@ -62,11 +77,17 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.OkText">
       <source xml:lang="en">OK</source>
     </trans-unit>
+    <trans-unit id="objectManagement.TableDisplayName">
+      <source xml:lang="en">table</source>
+    </trans-unit>
     <trans-unit id="objectManagement.UserDisplayName">
       <source xml:lang="en">user</source>
     </trans-unit>
     <trans-unit id="objectManagement.UserTypeDisplayNameInTitle">
       <source xml:lang="en">User</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.ViewDisplayName">
+      <source xml:lang="en">view</source>
     </trans-unit>
     <trans-unit id="objectManagement.advancedSectionHeader">
       <source xml:lang="en">Advanced</source>
@@ -199,6 +220,17 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.refreshOEError">
       <source xml:lang="en">An error occurred while while refreshing the object explorer. {0}</source>
       <note>{0}: error message.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.renameObjectDialogTitle">
+      <source xml:lang="en">Enter new name</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.renameObjectError">
+      <source xml:lang="en">An error occurred while renaming {0} '{1}' to '{2}'. {3}</source>
+      <note>{0} object type, {1}: original name, {2}: new name, {3}: error message.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.renameObjectOperationName">
+      <source xml:lang="en">Rename {0} '{1}' to '{2}'</source>
+      <note>{0} object type, {1}: original name, {2}: new name</note>
     </trans-unit>
     <trans-unit id="objectManagement.selectedLabel">
       <source xml:lang="en">Selected</source>
@@ -450,13 +482,13 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.displayName">
-      <source xml:lang="en">Attestation Protocol</source>
+      <source xml:lang="en">Attestation protocol</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.description">
       <source xml:lang="en">Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
-      <source xml:lang="en">Enclave Attestation URL</source>
+      <source xml:lang="en">Attestation URL</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.false">
       <source xml:lang="en">Optional (False)</source>
@@ -570,10 +602,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <source xml:lang="en">Replication</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.secureEnclaves.description">
-      <source xml:lang="en">Enables or disables Secure Enclaves for the connection</source>
+      <source xml:lang="en">Enables or disables Secure enclaves for the connection</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.secureEnclaves.displayName">
-      <source xml:lang="en">Secure Enclaves</source>
+      <source xml:lang="en">Secure enclaves</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.serverName.description">
       <source xml:lang="en">Name of the SQL Server instance</source>
@@ -861,7 +893,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <source xml:lang="en">New User</source>
     </trans-unit>
     <trans-unit id="title.objectProperties">
-      <source xml:lang="en">Properties</source>
+      <source xml:lang="en">Properties (Preview)</source>
+    </trans-unit>
+    <trans-unit id="title.renameObject">
+      <source xml:lang="en">Rename</source>
     </trans-unit>
     <trans-unit id="title.searchServers">
       <source xml:lang="en">Search: Servers</source>

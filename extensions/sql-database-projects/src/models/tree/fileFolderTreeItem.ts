@@ -16,19 +16,25 @@ import { IconPathHelper } from '../../common/iconHelper';
 export class FolderNode extends BaseProjectTreeItem {
 	public fileChildren: { [childName: string]: (FolderNode | FileNode) } = {};
 	public fileSystemUri: vscode.Uri;
+	public override entryKey: string;
 
-	constructor(folderPath: vscode.Uri, sqlprojUri: vscode.Uri) {
+	constructor(folderPath: vscode.Uri, sqlprojUri: vscode.Uri, entryKey: string) {
 		super(fsPathToProjectUri(folderPath, sqlprojUri), sqlprojUri);
 		this.fileSystemUri = folderPath;
+		this.entryKey = entryKey;
 	}
 
 	public get children(): BaseProjectTreeItem[] {
 		return Object.values(this.fileChildren).sort(sortFileFolderNodes);
 	}
 
+	public get type(): DatabaseProjectItemType {
+		return DatabaseProjectItemType.folder;
+	}
+
 	public get treeItem(): vscode.TreeItem {
 		const folderItem = new vscode.TreeItem(this.fileSystemUri, vscode.TreeItemCollapsibleState.Collapsed);
-		folderItem.contextValue = DatabaseProjectItemType.folder;
+		folderItem.contextValue = this.type;
 		folderItem.iconPath = IconPathHelper.folder;
 
 		return folderItem;
@@ -40,10 +46,12 @@ export class FolderNode extends BaseProjectTreeItem {
  */
 export abstract class FileNode extends BaseProjectTreeItem {
 	public fileSystemUri: vscode.Uri;
+	public override entryKey: string;
 
-	constructor(filePath: vscode.Uri, sqlprojUri: vscode.Uri) {
+	constructor(filePath: vscode.Uri, sqlprojUri: vscode.Uri, entryKey: string) {
 		super(fsPathToProjectUri(filePath, sqlprojUri, true), sqlprojUri);
 		this.fileSystemUri = filePath;
+		this.entryKey = entryKey;
 	}
 
 	public get children(): BaseProjectTreeItem[] {
@@ -68,63 +76,91 @@ export abstract class FileNode extends BaseProjectTreeItem {
 export class SqlObjectFileNode extends FileNode {
 	public override get treeItem(): vscode.TreeItem {
 		const treeItem = super.treeItem;
-		treeItem.contextValue = DatabaseProjectItemType.sqlObjectScript;
+		treeItem.contextValue = this.type;
 
 		return treeItem;
+	}
+
+	public get type(): DatabaseProjectItemType {
+		return DatabaseProjectItemType.sqlObjectScript;
 	}
 }
 
 export class ExternalStreamingJobFileNode extends SqlObjectFileNode {
 	public override get treeItem(): vscode.TreeItem {
 		const treeItem = super.treeItem;
-		treeItem.contextValue = DatabaseProjectItemType.externalStreamingJob;
+		treeItem.contextValue = this.type;
 
 		return treeItem;
+	}
+
+	public override get type(): DatabaseProjectItemType {
+		return DatabaseProjectItemType.externalStreamingJob;
 	}
 }
 
 export class TableFileNode extends SqlObjectFileNode {
 	public override get treeItem(): vscode.TreeItem {
 		const treeItem = super.treeItem;
-		treeItem.contextValue = DatabaseProjectItemType.table;
+		treeItem.contextValue = this.type;
 
 		return treeItem;
+	}
+
+	public override get type(): DatabaseProjectItemType {
+		return DatabaseProjectItemType.table;
 	}
 }
 
 export class PreDeployNode extends FileNode {
 	public override get treeItem(): vscode.TreeItem {
 		const treeItem = super.treeItem;
-		treeItem.contextValue = DatabaseProjectItemType.preDeploymentScript;
+		treeItem.contextValue = this.type;
 
 		return treeItem;
+	}
+
+	public get type(): DatabaseProjectItemType {
+		return DatabaseProjectItemType.preDeploymentScript;
 	}
 }
 
 export class PostDeployNode extends FileNode {
 	public override get treeItem(): vscode.TreeItem {
 		const treeItem = super.treeItem;
-		treeItem.contextValue = DatabaseProjectItemType.postDeploymentScript;
+		treeItem.contextValue = this.type;
 
 		return treeItem;
+	}
+
+	public get type(): DatabaseProjectItemType {
+		return DatabaseProjectItemType.postDeploymentScript;
 	}
 }
 
 export class NoneNode extends FileNode {
 	public override get treeItem(): vscode.TreeItem {
 		const treeItem = super.treeItem;
-		treeItem.contextValue = DatabaseProjectItemType.noneFile;
+		treeItem.contextValue = this.type;
 
 		return treeItem;
+	}
+
+	public get type(): DatabaseProjectItemType {
+		return DatabaseProjectItemType.noneFile;
 	}
 }
 
 export class PublishProfileNode extends FileNode {
 	public override get treeItem(): vscode.TreeItem {
 		const treeItem = super.treeItem;
-		treeItem.contextValue = DatabaseProjectItemType.publishProfile;
+		treeItem.contextValue = this.type;
 
 		return treeItem;
+	}
+
+	public get type(): DatabaseProjectItemType {
+		return DatabaseProjectItemType.publishProfile;
 	}
 }
 
