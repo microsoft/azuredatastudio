@@ -26,7 +26,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 		let nonDefaultOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true);
 		nonDefaultOptions = nonDefaultOptions.replace('(', '[').replace(')', ']');
 		if (nonDefaultOptions !== '') {
-			titleString += ` ${nonDefaultOptions}`;
+			titleString += `${nonDefaultOptions}`;
 		}
 		const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
 		const telemetryInfo = await getTelemetryInfo(context, tableIcon);
@@ -55,7 +55,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 		let nonDefaultOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true);
 		nonDefaultOptions = nonDefaultOptions.replace('(', '[').replace(')', ']');
 		if (nonDefaultOptions !== '') {
-			titleString += ` ${nonDefaultOptions}`;
+			titleString += `${nonDefaultOptions}`;
 		}
 		const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
 		const telemetryInfo = await getTelemetryInfo(context, tableIcon);

@@ -16,7 +16,7 @@ import * as Constants from 'sql/platform/connection/common/constants';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { IHandleFirewallRuleResult } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { IConnectionProfile, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { TestConnectionProvider } from 'sql/platform/connection/test/common/testConnectionProvider';
 import { TestResourceProvider } from 'sql/workbench/services/resourceProvider/test/common/testResourceProviderService';
@@ -131,7 +131,6 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 		connectionStore.setup(x => x.getConnectionProfileGroups(false, undefined)).returns(() => [root]);
 		connectionStore.setup(x => x.savePassword(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
-		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.is<IConnectionProfile>(c => c.serverName === connectionProfile.serverName), TypeMoq.It.isAny())).returns(() => Promise.resolve(false));
 
 		mssqlConnectionProvider.setup(x => x.connect(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => undefined);
 
@@ -1014,7 +1013,17 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
+		let originalProfileKey = '';
+		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((inputProfile, matcher) => {
+			let newProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), inputProfile);
+			let result = newProfile.getOptionsKey() === originalProfileKey;
+			newProfile.dispose();
+			return Promise.resolve(result)
+		});
 		await connect(uri1, options, true, profile);
+		let originalProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), connectionProfile);
+		originalProfileKey = originalProfile.getOptionsKey();
+		originalProfile.dispose();
 		let newProfile = Object.assign({}, connectionProfile);
 		newProfile.connectionName = newname;
 		options.params.isEditConnection = true;
@@ -1048,12 +1057,61 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
+		// In an actual edit situation, the profile options would be different for different URIs, as a placeholder, we check the test uris instead here.
+		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(uri1 === uri2));
 		await connect(uri1, options, true, profile);
 		options.params.isEditConnection = true;
 		await connect(uri2, options, true, profile);
 		let uri1info = connectionManagementService.getConnectionInfo(uri1);
 		let uri2info = connectionManagementService.getConnectionInfo(uri2);
 		assert.strictEqual(uri1info.connectionProfile.id, uri2info.connectionProfile.id);
+	});
+
+	test('Edit Connection - Connecting with an already connected profile via edit should throw an error', async () => {
+		let uri1 = 'test_uri1';
+		let profile = Object.assign({}, connectionProfile);
+		profile.id = '0451';
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri1
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: true
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		let originalProfileKey = '';
+		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((inputProfile, matcher) => {
+			let newProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), inputProfile);
+			let result = newProfile.getOptionsKey() === originalProfileKey;
+			newProfile.dispose();
+			return Promise.resolve(result)
+		});
+
+		await connect(uri1, options, true, profile);
+		let originalProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), connectionProfile);
+		originalProfileKey = originalProfile.getOptionsKey();
+		originalProfile.dispose();
+		let newProfile = Object.assign({}, connectionProfile);
+		options.params.isEditConnection = true;
+		try {
+			await connect(uri1, options, true, newProfile);
+			assert.fail;
+		}
+		catch {
+		}
 	});
 
 
@@ -1991,6 +2049,118 @@ test('clearRecentConnection and ConnectionsList should call connectionStore func
 	called = false;
 	connectionManagementService.clearRecentConnectionsList();
 	assert(called);
+});
+
+test('getEditorConnectionProfileTitle should return a correctly formatted title for a connection profile', () => {
+	let profile: IConnectionProfile = {
+		connectionName: 'new name',
+		serverName: 'new server',
+		databaseName: 'database',
+		userName: 'user',
+		password: 'password',
+		authenticationType: Constants.AuthenticationType.Integrated,
+		savePassword: true,
+		groupFullName: 'g2/g2-2',
+		groupId: 'group id',
+		getOptionsKey: () => { return ''; },
+		matches: undefined,
+		providerName: 'MSSQL',
+		options: {},
+		saveProfile: true,
+		id: undefined
+	};
+
+	let capabilitiesService = new TestCapabilitiesService();
+	const testOption1 = {
+		name: 'testOption1',
+		displayName: 'testOption1',
+		description: 'test description',
+		groupName: 'test group name',
+		valueType: ServiceOptionType.string,
+		specialValueType: undefined,
+		defaultValue: '',
+		categoryValues: undefined,
+		isIdentity: false,
+		isRequired: false
+	}
+
+	const testOption2 = {
+		name: 'testOption2',
+		displayName: 'testOption2',
+		description: 'test description',
+		groupName: 'test group name',
+		valueType: ServiceOptionType.number,
+		specialValueType: undefined,
+		defaultValue: '10',
+		categoryValues: undefined,
+		isIdentity: false,
+		isRequired: false
+	}
+
+	const testOption3 = {
+		name: 'testOption3',
+		displayName: 'testOption3',
+		description: 'test description',
+		groupName: 'test group name',
+		valueType: ServiceOptionType.string,
+		specialValueType: undefined,
+		defaultValue: 'default',
+		categoryValues: undefined,
+		isIdentity: false,
+		isRequired: false
+	}
+
+	profile.options['testOption1'] = 'test value';
+	profile.options['testOption2'] = '50';
+	profile.options['testOption3'] = 'default';
+
+	let mainProvider = capabilitiesService.capabilities['MSSQL'];
+	let mainProperties = mainProvider.connection;
+	let mainOptions = mainProperties.connectionOptions;
+
+	mainOptions.push(testOption1);
+	mainOptions.push(testOption2);
+	mainOptions.push(testOption3);
+
+	mainProperties.connectionOptions = mainOptions;
+	mainProvider.connection = mainProperties;
+
+	capabilitiesService.capabilities['MSSQL'] = mainProvider;
+
+	const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
+	const testInstantiationService = new TestInstantiationService();
+	testInstantiationService.stub(IStorageService, new TestStorageService());
+	sinon.stub(testInstantiationService, 'createInstance').withArgs(ConnectionStore).returns(connectionStoreMock.object);
+	const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, capabilitiesService, undefined, undefined, undefined, new TestErrorDiagnosticsService(), undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
+
+	// We should expect that non default options are returned when we try to get the nonDefaultOptions string.
+	let result = connectionManagementService.getEditorConnectionProfileTitle(profile, true);
+	let expectedNonDefaultOption = ' (testOption1=test value; testOption2=50)';
+	assert.strictEqual(result, expectedNonDefaultOption, `Profile non default options contained incorrect options`);
+
+	// We should expect that the string contains the connection name and the server info (with all non default options appended).
+	let generatedProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, profile);
+	let profileServerInfo = generatedProfile.serverInfo;
+	generatedProfile.dispose();
+	result = connectionManagementService.getEditorConnectionProfileTitle(profile);
+
+	assert.strictEqual(result, `${profile.connectionName}: ${profileServerInfo}`, `getEditorConnectionProfileTitle does not return the correct string for ${profile.connectionName}`);
+
+	// We should expect that the string contains only the server info (with non default options) if there is no connection name.
+	profile.connectionName = undefined;
+
+	result = connectionManagementService.getEditorConnectionProfileTitle(profile)
+
+	assert.strictEqual(result, `${profileServerInfo}`, `getEditorConnectionProfileTitle included a connection name when it shouldn't`);
+
+	// We should expect that the string only contains the server info without any non default options if no such options exist.
+	profile.options['testOption1'] = undefined;
+	profile.options['testOption2'] = undefined;
+	profile.options['testOption3'] = undefined;
+
+	result = connectionManagementService.getEditorConnectionProfileTitle(profile)
+
+	assert.notEqual(result, `${profileServerInfo}`, `getEditorConnectionProfileTitle included non default connection options when it shouldn't`);
 });
 
 export function createConnectionProfile(id: string, password?: string): ConnectionProfile {
