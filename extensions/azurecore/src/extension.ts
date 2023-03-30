@@ -99,10 +99,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 
 	const piiLogging = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.piiLogging, false)
 	if (piiLogging) {
-		const disable = await vscode.window.showWarningMessage(loc.piiWarning, loc.disable, loc.dismiss);
-		if (disable) {
-			await vscode.workspace.getConfiguration(Constants.AzureSection).update(Constants.piiLogging, false, vscode.ConfigurationTarget.Global);
-		}
+		void vscode.window.showWarningMessage(loc.piiWarning, loc.disable, loc.dismiss).then(async (value) => {
+			if (value === loc.disable) {
+				await vscode.workspace.getConfiguration(Constants.AzureSection).update(Constants.piiLogging, false, vscode.ConfigurationTarget.Global);
+			}
+		});
+
 	}
 	updatePiiLoggingLevel();
 
