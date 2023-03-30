@@ -1040,6 +1040,10 @@ export const DETAILS_COPIED = localize('sql.migration.details.copied', "Details 
 export const CANCEL_MIGRATION_CONFIRMATION = localize('sql.cancel.migration.confirmation', "Are you sure you want to cancel this migration?");
 export const DELETE_MIGRATION_CONFIRMATION = localize('sql.delete.migration.confirmation', "Are you sure you want to delete this migration?");
 
+export const RETRY_MIGRATION_TITLE = localize('sql.retry.migration.title', "The migration failed with the following errors.");
+export const RETRY_MIGRATION_SUMMARY = localize('sql.retry.migration.summary', "Please resolve any errors before retrying the migration.");
+export const RETRY_MIGRATION_PROMPT = localize('sql.retry.migration.prompt', "Do you want to continue and retry the failed table migrations?");
+
 export const YES = localize('sql.migration.yes', "Yes");
 export const NO = localize('sql.migration.no', "No");
 export const NA = localize('sql.migration.na', "N/A");
@@ -1358,6 +1362,11 @@ export const SAVED_ASSESSMENT_RESULT = localize('sql.migration.saved.assessment.
 export const MIGRATION_CANNOT_RETRY = localize('sql.migration.cannot.retry', 'Migration cannot be retried.');
 export const RETRY_MIGRATION = localize('sql.migration.retry.migration', "Retry migration");
 export const MIGRATION_RETRY_ERROR = localize('sql.migration.retry.migration.error', 'An error occurred while retrying the migration.');
+
+// Restart Migration
+export const MIGRATION_CANNOT_RESTART = localize('sql.migration.cannot.retry', 'Migration cannot be restarted.');
+export const RESTART_MIGRATION_WIZARD = localize('sql.migration.restart.migration.wizard', "Restart migration wizard");
+export const MIGRATION_RESTART_ERROR = localize('sql.migration.retry.migration.error', 'An error occurred while restarting the migration.');
 
 export const INVALID_OWNER_URI = localize('sql.migration.invalid.owner.uri.error', 'Cannot connect to the database due to invalid OwnerUri (Parameter \'OwnerUri\')');
 export const DATABASE_BACKUP_PAGE_LOAD_ERROR = localize('sql.migration.database.backup.load.error', 'An error occurred while accessing database details.');

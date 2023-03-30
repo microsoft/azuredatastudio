@@ -11,6 +11,7 @@ import { getSessionIdHeader } from './utils';
 import { URL } from 'url';
 import { MigrationSourceAuthenticationType, MigrationStateModel, NetworkShare } from '../models/stateMachine';
 import { NetworkInterface } from './dataModels/azure/networkInterfaceModel';
+import { EOL } from 'os';
 
 const ARM_MGMT_API_VERSION = '2021-04-01';
 const SQL_VM_API_VERSION = '2021-11-01-preview';
@@ -628,6 +629,20 @@ export async function stopMigration(account: azdata.Account, subscription: Subsc
 	}
 }
 
+export async function retryMigration(account: azdata.Account, subscription: Subscription, migration: DatabaseMigration): Promise<void> {
+	const api = await getAzureCoreAPI();
+	const path = encodeURI(`${migration.id}/retry?api-version=${DMSV2_API_VERSION}`);
+	const requestBody = { migrationOperationId: migration.properties.migrationOperationId };
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, requestBody, true, host);
+	if (response.errors.length > 0) {
+		const message = response.errors
+			.map(err => err.message)
+			.join(', ');
+		throw new Error(message);
+	}
+}
+
 export async function deleteMigration(account: azdata.Account, subscription: Subscription, migrationId: string): Promise<void> {
 	const api = await getAzureCoreAPI();
 	const path = encodeURI(`${migrationId}?api-version=${DMSV2_API_VERSION}`);
@@ -815,6 +830,27 @@ export function getResourceName(id: string): string {
 
 export function getBlobContainerId(resourceGroupId: string, storageAccountName: string, blobContainerName: string): string {
 	return `${resourceGroupId}/providers/Microsoft.Storage/storageAccounts/${storageAccountName}/blobServices/default/containers/${blobContainerName}`;
+}
+
+export function getMigrationErrors(migration: DatabaseMigration): string {
+	const errors = [];
+
+	if (migration?.properties) {
+		errors.push(migration.properties.provisioningError);
+		errors.push(migration.properties.migrationFailureError?.message);
+		errors.push(migration.properties.migrationStatusDetails?.fileUploadBlockingErrors ?? []);
+		errors.push(migration.properties.migrationStatusDetails?.restoreBlockingReason);
+		errors.push(migration.properties.migrationStatusDetails?.sqlDataCopyErrors);
+		errors.push(...migration.properties.migrationStatusDetails?.invalidFiles ?? []);
+		errors.push(migration.properties.migrationStatusWarnings?.completeRestoreErrorMessage);
+		errors.push(migration.properties.migrationStatusWarnings?.restoreBlockingReason);
+		errors.push(...migration.properties.migrationStatusDetails?.listOfCopyProgressDetails?.flatMap(cp => cp.errors) ?? []);
+	}
+
+	// remove undefined and duplicate error entries
+	return errors
+		.filter((e, i, arr) => e !== undefined && i === arr.indexOf(e))
+		.join(EOL);
 }
 
 export interface SqlMigrationServiceProperties {

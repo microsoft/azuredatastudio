@@ -8,15 +8,16 @@ import * as vscode from 'vscode';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationServiceContext } from '../models/migrationLocalStorage';
 import * as loc from '../constants/strings';
-import { DatabaseMigration, deleteMigration } from '../api/azure';
+import { DatabaseMigration, deleteMigration, getMigrationErrors, retryMigration } from '../api/azure';
 import { TabBase } from './tabBase';
 import { MigrationCutoverDialogModel } from '../dialog/migrationCutover/migrationCutoverDialogModel';
 import { ConfirmCutoverDialog } from '../dialog/migrationCutover/confirmCutoverDialog';
-import { RetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDialog';
+import { RestartMigrationDialog } from '../dialog/restartMigration/restartMigrationDialog';
 import { DashboardStatusBar } from './DashboardStatusBar';
-import { canDeleteMigration } from '../constants/helper';
+import { canDeleteMigration, canRetryMigration } from '../constants/helper';
 import { logError, TelemetryViews } from '../telemetry';
 import { MenuCommands, MigrationTargetType } from '../api/utils';
+import { openRetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDialog';
 
 export const infoFieldLgWidth: string = '330px';
 export const infoFieldWidth: string = '250px';
@@ -48,6 +49,7 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 	protected copyDatabaseMigrationDetails!: azdata.ButtonComponent;
 	protected newSupportRequest!: azdata.ButtonComponent;
 	protected retryButton!: azdata.ButtonComponent;
+	protected restartButton!: azdata.ButtonComponent;
 	protected summaryTextComponent: azdata.TextComponent[] = [];
 
 	public abstract create(
@@ -242,13 +244,53 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 		this.disposables.push(
 			this.retryButton.onDidClick(
 				async (e) => {
+					await this.statusBar.clearError();
+					if (canRetryMigration(this.model.migration)) {
+						const errorMessage = getMigrationErrors(this.model.migration);
+						await openRetryMigrationDialog(
+							errorMessage,
+							async () => {
+								try {
+									await retryMigration(
+										this.serviceContext.azureAccount!,
+										this.serviceContext.subscription!,
+										this.model.migration);
+									await this.refresh();
+								} catch (e) {
+									await this.statusBar.showError(
+										loc.MIGRATION_RETRY_ERROR,
+										loc.MIGRATION_RETRY_ERROR,
+										e.message);
+									logError(TelemetryViews.MigrationDetailsTab, MenuCommands.RetryMigration, e);
+								}
+							});
+					} else {
+						await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_RETRY);
+						logError(TelemetryViews.MigrationDetailsTab, MenuCommands.RetryMigration, "cannot retry migration");
+					}
+				}
+			));
+
+		this.restartButton = this.view.modelBuilder.button()
+			.withProps({
+				label: loc.RESTART_MIGRATION_WIZARD,
+				iconPath: IconPathHelper.retry,
+				enabled: false,
+				iconHeight: '16px',
+				iconWidth: '16px',
+				height: buttonHeight,
+			}).component();
+
+		this.disposables.push(
+			this.restartButton.onDidClick(
+				async (e) => {
 					await this.refresh();
-					const retryMigrationDialog = new RetryMigrationDialog(
+					const restartMigrationDialog = new RestartMigrationDialog(
 						this.context,
 						this.serviceContext,
 						this.model.migration,
 						this.serviceContextChangedEvent);
-					await retryMigrationDialog.openDialog();
+					await restartMigrationDialog.openDialog();
 				}
 			));
 
@@ -310,6 +352,7 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 			<azdata.ToolbarComponent>{ component: this.cancelButton },
 			<azdata.ToolbarComponent>{ component: this.deleteButton },
 			<azdata.ToolbarComponent>{ component: this.retryButton },
+			<azdata.ToolbarComponent>{ component: this.restartButton },
 			<azdata.ToolbarComponent>{ component: this.copyDatabaseMigrationDetails, toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.newSupportRequest, toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.refreshLoader },
@@ -493,7 +536,7 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 	}
 
 	protected async showMigrationErrors(migration: DatabaseMigration): Promise<void> {
-		const errorMessage = this.getMigrationErrors(migration);
+		const errorMessage = getMigrationErrors(migration);
 		if (errorMessage?.length > 0) {
 			await this.statusBar.showError(
 				loc.MIGRATION_ERROR_DETAILS_TITLE,
