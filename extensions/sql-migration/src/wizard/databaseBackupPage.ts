@@ -1198,14 +1198,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 										// check for duplicate storage account/blob container/last backup file combination if migrating multiple databases,
 										// as they should all be unique - backups for multiple databases in the same location are not supported
-										var backupLocations: string[] = [];
+										let backupLocations: string[] = [];
 										backupLocations = this.migrationStateModel._databaseBackup.blobs.map(blob => {
 											return blob && blob.storageAccount
 												? (blob.storageAccount.id + '/' + utils.getBlobContainerNameWithFolder(blob, this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE)).toLowerCase()
 												: '';
 										}).filter(backupLocation => backupLocation !== '');
 
-										var uniqueBackupLocations = [...new Set(backupLocations)];
+										let uniqueBackupLocations = [...new Set(backupLocations)];
 
 										if (uniqueBackupLocations.length !== backupLocations.length) {
 											this.wizard.message = {
@@ -1231,14 +1231,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 										// check for duplicate storage account/blob container/folder combination if migrating multiple databases,
 										// as they should all be unique - backups for multiple databases in the same location are not supported
-										var backupLocations: string[] = [];
+										let backupLocations: string[] = [];
 										backupLocations = this.migrationStateModel._databaseBackup.blobs.map(blob => {
 											return blob && blob.storageAccount
 												? (blob.storageAccount.id + '/' + utils.getBlobContainerNameWithFolder(blob, this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE)).toLowerCase()
 												: '';
 										}).filter(backupLocation => backupLocation !== '');
 
-										var uniqueBackupLocations = [...new Set(backupLocations)];
+										let uniqueBackupLocations = [...new Set(backupLocations)];
 
 										if (uniqueBackupLocations.length !== backupLocations.length) {
 											this.wizard.message = {
