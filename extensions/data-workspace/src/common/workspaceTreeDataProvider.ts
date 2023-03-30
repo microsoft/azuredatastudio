@@ -115,7 +115,7 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 	}
 
 	handleDrag(treeItems: readonly WorkspaceTreeItem[], dataTransfer: vscode.DataTransfer): void | Thenable<void> {
-		// don't do anything if trying to drag the project node since it is'nt supported and there's an error when trying to
+		// don't do anything if trying to drag the project node since it isn't supported and there's an error when trying to
 		// convert the project node to JSON https://github.com/microsoft/azuredatastudio/issues/22529
 		const relativePath = treeItems[0].element?.relativeProjectUri?.fsPath.substring(1); // remove leading slash
 		const projBaseName = path.basename(treeItems[0].element.projectFileUri.fsPath, path.extname(treeItems[0].element.projectFileUri.fsPath));
