@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { generateDashboardTabSchema, generateDashboardWidgetSchema } from 'sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution';
+import { NewNotebookTask } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { NewQueryTask } from 'sql/workbench/contrib/query/browser/queryActions';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 
@@ -78,7 +80,8 @@ const defaultVal = [
 		name: 'Tasks',
 		widget: {
 			'tasks-widget': [
-				'newQuery',
+				NewQueryTask.ID,
+				NewNotebookTask.ID,
 				{ name: 'restore', when: 'connectionProvider == \'MSSQL\' && !mssql:iscloud && mssql:engineedition != 11 || connectionProvider == \'PGSQL\'' }]
 		},
 		gridItemConfig: {
