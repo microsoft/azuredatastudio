@@ -67,7 +67,7 @@ export const whitespaceFilenameErrorMessage = localize('whitespaceFilenameErrorM
 export const invalidFileCharsErrorMessage = localize('invalidFileCharsErrorMessage', "Invalid file characters");
 export const reservedWindowsFilenameErrorMessage = localize('reservedWindowsFilenameErrorMessage', "This file name is reserved for use by Windows. Choose another name and try again");
 export const reservedValueErrorMessage = localize('reservedValueErrorMessage', "Reserved file name. Choose another name and try again");
-export const trailingWhitespaceErrorMessage = localize('trailingWhitespaceErrorMessage', "File name cannot end with a whitespace");
+export const trailingWhitespaceErrorMessage = localize('trailingWhitespaceErrorMessage', "File name cannot start or end with a whitespace");
 export const tooLongFilenameErrorMessage = localize('tooLongFilenameErrorMessage', "File name cannot be over 255 characters");
 
 //Open Existing Dialog

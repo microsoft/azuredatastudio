@@ -5,7 +5,6 @@
 
 import * as constants from './constants';
 import * as os from 'os';
-import * as path from 'path';
 
 const WINDOWS_INVALID_FILE_CHARS = /[\\/:\*\?"<>\|]/g;
 const UNIX_INVALID_FILE_CHARS = /[\\/]/g;
@@ -49,42 +48,41 @@ export function sanitizeStringForFilename(s: string): string {
 /**
  * Returns true if the string is a valid filename
  * Logic is copied from src\vs\base\common\extpath.ts
- * @param name filename to check
+ * @param fileName filename to check (without file path)
  */
-export function isValidBasename(name?: string): boolean {
+export function isValidBasename(fileName?: string): boolean {
 	const invalidFileChars = isWindows ? WINDOWS_INVALID_FILE_CHARS : UNIX_INVALID_FILE_CHARS;
 
-	if (!name) {
+	if (!fileName) {
 		return false;
 	}
 
-	if (isWindows && name[name.length - 1] === '.') {
+	if (isWindows && fileName[fileName.length - 1] === '.') {
 		return false; // Windows: file cannot end with a "."
 	}
 
-	let basename = path.parse(name).name;
-	if (!basename || basename.length === 0 || /^\s+$/.test(basename)) {
+	if (!fileName || fileName.length === 0 || /^\s+$/.test(fileName)) {
 		return false; // require a name that is not just whitespace
 	}
 
 	invalidFileChars.lastIndex = 0;
-	if (invalidFileChars.test(basename)) {
+	if (invalidFileChars.test(fileName)) {
 		return false; // check for certain invalid file characters
 	}
 
-	if (isWindows && WINDOWS_FORBIDDEN_NAMES.test(basename)) {
+	if (isWindows && WINDOWS_FORBIDDEN_NAMES.test(fileName)) {
 		return false; // check for certain invalid file names
 	}
 
-	if (basename === '.' || basename === '..') {
+	if (fileName === '.' || fileName === '..') {
 		return false; // check for reserved values
 	}
 
-	if (isWindows && basename.length !== basename.trim().length) {
-		return false; // Windows: file cannot end with a whitespace
+	if (isWindows && fileName.length !== fileName.trim().length) {
+		return false; // Windows: file cannot start or end with a whitespace
 	}
 
-	if (basename.length > 255) {
+	if (fileName.length > 255) {
 		return false; // most file systems do not allow files > 255 length
 	}
 
@@ -94,41 +92,40 @@ export function isValidBasename(name?: string): boolean {
 /**
  * Returns specific error message if file name is invalid
  * Logic is copied from src\vs\base\common\extpath.ts
- * @param name filename to check
+ * @param fileName filename to check (without file path)
  */
-export function isValidBasenameErrorMessage(name?: string): string {
+export function isValidBasenameErrorMessage(fileName?: string): string {
 	const invalidFileChars = isWindows ? WINDOWS_INVALID_FILE_CHARS : UNIX_INVALID_FILE_CHARS;
-	if (!name) {
+	if (!fileName) {
 		return constants.undefinedFilenameErrorMessage;
 	}
 
-	if (isWindows && name[name.length - 1] === '.') {
+	if (isWindows && fileName[fileName.length - 1] === '.') {
 		return constants.filenameEndingIsPeriodErrorMessage; // Windows: file cannot end with a "."
 	}
 
-	let basename = path.parse(name).name;
-	if (!basename || basename.length === 0 || /^\s+$/.test(basename)) {
+	if (!fileName || fileName.length === 0 || /^\s+$/.test(fileName)) {
 		return constants.whitespaceFilenameErrorMessage; // require a name that is not just whitespace
 	}
 
 	invalidFileChars.lastIndex = 0;
-	if (invalidFileChars.test(basename)) {
+	if (invalidFileChars.test(fileName)) {
 		return constants.invalidFileCharsErrorMessage; // check for certain invalid file characters
 	}
 
-	if (isWindows && WINDOWS_FORBIDDEN_NAMES.test(basename)) {
+	if (isWindows && WINDOWS_FORBIDDEN_NAMES.test(fileName)) {
 		return constants.reservedWindowsFilenameErrorMessage; // check for certain invalid file names
 	}
 
-	if (basename === '.' || basename === '..') {
+	if (fileName === '.' || fileName === '..') {
 		return constants.reservedValueErrorMessage; // check for reserved values
 	}
 
-	if (isWindows && basename.length !== basename.trim().length) {
-		return constants.trailingWhitespaceErrorMessage; // Windows: file cannot end with a whitespace
+	if (isWindows && fileName.length !== fileName.trim().length) {
+		return constants.trailingWhitespaceErrorMessage; // Windows: file cannot start or end with a whitespace
 	}
 
-	if (basename.length > 255) {
+	if (fileName.length > 255) {
 		return constants.tooLongFilenameErrorMessage; // most file systems do not allow files > 255 length
 	}
 
