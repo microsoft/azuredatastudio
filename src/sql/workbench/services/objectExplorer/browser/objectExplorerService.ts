@@ -736,16 +736,29 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			throw new Error('Failed to expand node - no provider name');
 		}
 		const expandResult = await this.callExpandOrRefreshFromService(providerName, session, parentTree, refresh);
-		const sessionTreeNodeCachce = this._treeNodeCache.get(session.sessionId!);
+		const sessionTreeNodeCache = this._treeNodeCache.get(session.sessionId!);
 		if (expandResult && expandResult.nodes) {
+			// In case of refresh, we want to clear the cache of the descendants of the node being refreshed
+			if (refresh) {
+				const stack = [...parentTree.children];
+				while (stack.length > 0) {
+					const currentTreeNode = stack.pop();
+					if (currentTreeNode) {
+						sessionTreeNodeCache.delete(this.getTreeNodeCacheKey(currentTreeNode.toNodeInfo()));
+						if (currentTreeNode.children) {
+							stack.push(...currentTreeNode.children);
+						}
+					}
+				}
+			}
 			const children = expandResult.nodes.map(node => {
 				const cacheKey = this.getTreeNodeCacheKey(node);
 				// In case of refresh, we want to update the existing node in the cache
-				if (!refresh && sessionTreeNodeCachce.has(cacheKey)) {
-					return sessionTreeNodeCachce.get(cacheKey);
+				if (!refresh && sessionTreeNodeCache.has(cacheKey)) {
+					return sessionTreeNodeCache.get(cacheKey);
 				} else {
 					const treeNode = this.toTreeNode(node, parentTree);
-					sessionTreeNodeCachce.set(cacheKey, treeNode);
+					sessionTreeNodeCache.set(cacheKey, treeNode);
 					return treeNode;
 				}
 			});
@@ -1021,6 +1034,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	private getTreeNodeCacheKey(node: azdata.NodeInfo): string {
-		return JSON.stringify(node);
+		return node.nodePath;
 	}
 }
