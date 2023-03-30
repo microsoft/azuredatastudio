@@ -50,6 +50,7 @@ export interface DbServerGraphData extends GraphData {
 	properties: {
 		fullyQualifiedDomainName: string;
 		administratorLogin: string;
+		connectionString: string;
 	};
 }
 

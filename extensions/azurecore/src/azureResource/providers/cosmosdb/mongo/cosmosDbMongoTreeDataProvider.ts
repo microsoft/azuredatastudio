@@ -39,9 +39,7 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 			payload: {
 				id: generateGuid(),
 				connectionName: databaseServer.name,
-				// TODO: find a reliable way to get the fqdn or connection string for clusters
-				// meanwhile assume the domain is always *.mongocluster.cosmos.azure.com
-				serverName: !databaseServer.isServer ? databaseServer.name : databaseServer.name + ".mongocluster.cosmos.azure.com",
+				serverName: databaseServer.fullName,
 				userName: databaseServer.loginName,
 				password: '',
 				authenticationType: databaseServer.isServer ? azdata.connection.AuthenticationType.SqlLogin : azdata.connection.AuthenticationType.AzureMFA,
