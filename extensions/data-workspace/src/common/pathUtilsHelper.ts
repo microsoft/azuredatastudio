@@ -51,50 +51,21 @@ export function sanitizeStringForFilename(s: string): string {
  * @param fileName filename to check (without file path)
  */
 export function isValidBasename(fileName?: string): boolean {
-	const invalidFileChars = isWindows ? WINDOWS_INVALID_FILE_CHARS : UNIX_INVALID_FILE_CHARS;
-
-	if (!fileName) {
-		return false;
+	if (isValidBasenameErrorMessage(fileName) !== undefined) {
+		return false;	//Return false depicting filename is invalid
+	} else {
+		return true;
 	}
 
-	if (isWindows && fileName[fileName.length - 1] === '.') {
-		return false; // Windows: file cannot end with a "."
-	}
 
-	if (!fileName || fileName.length === 0 || /^\s+$/.test(fileName)) {
-		return false; // require a name that is not just whitespace
-	}
-
-	invalidFileChars.lastIndex = 0;
-	if (invalidFileChars.test(fileName)) {
-		return false; // check for certain invalid file characters
-	}
-
-	if (isWindows && WINDOWS_FORBIDDEN_NAMES.test(fileName)) {
-		return false; // check for certain invalid file names
-	}
-
-	if (fileName === '.' || fileName === '..') {
-		return false; // check for reserved values
-	}
-
-	if (isWindows && fileName.length !== fileName.trim().length) {
-		return false; // Windows: file cannot start or end with a whitespace
-	}
-
-	if (fileName.length > 255) {
-		return false; // most file systems do not allow files > 255 length
-	}
-
-	return true;
 }
 
 /**
- * Returns specific error message if file name is invalid
+ * Returns specific error message if file name is invalid otherwise returns undefined
  * Logic is copied from src\vs\base\common\extpath.ts
  * @param fileName filename to check (without file path)
  */
-export function isValidBasenameErrorMessage(fileName?: string): string {
+export function isValidBasenameErrorMessage(fileName?: string): string | undefined {
 	const invalidFileChars = isWindows ? WINDOWS_INVALID_FILE_CHARS : UNIX_INVALID_FILE_CHARS;
 	if (!fileName) {
 		return constants.undefinedFilenameErrorMessage;
@@ -129,5 +100,5 @@ export function isValidBasenameErrorMessage(fileName?: string): string {
 		return constants.tooLongFilenameErrorMessage; // most file systems do not allow files > 255 length
 	}
 
-	return '';
+	return undefined;
 }

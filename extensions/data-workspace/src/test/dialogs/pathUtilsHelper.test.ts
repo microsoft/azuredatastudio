@@ -94,7 +94,7 @@ suite('Check for invalid filename tests', function (): void {
 suite('Check for invalid filename error tests', function (): void {
 	test('Should determine invalid filenames', async () => {
 		// valid filename
-		should(isValidBasenameErrorMessage('ValidName')).equal('');
+		should(isValidBasenameErrorMessage('ValidName')).equal(undefined);
 
 		// invalid for both Windows and non-Windows
 		should(isValidBasenameErrorMessage('	')).equal(constants.whitespaceFilenameErrorMessage);

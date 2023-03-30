@@ -72,7 +72,7 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 			title: constants.projectNamePlaceholderText,
 			value: defaultProjectNameFromDb(sanitizeStringForFilename(selectedDatabase)),
 			validateInput: (value) => {
-				return isValidBasename(value) ? undefined : isValidBasenameErrorMessage(value);
+				return isValidBasenameErrorMessage(value);
 			},
 			ignoreFocusOut: true
 		});

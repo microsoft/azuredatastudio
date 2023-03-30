@@ -40,7 +40,7 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 		{
 			title: constants.EnterProjectName,
 			validateInput: (value) => {
-				return isValidBasename(value) ? undefined : isValidBasenameErrorMessage(value);
+				return isValidBasenameErrorMessage(value);
 			},
 			ignoreFocusOut: true
 		});
