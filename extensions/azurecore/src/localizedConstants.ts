@@ -67,7 +67,7 @@ export const reloadPrompt = localize('azurecore.reloadPrompt', "Authentication L
 export const reloadChoice = localize('azurecore.reloadChoice', "Reload Azure Data Studio");
 
 export const deprecatedOption = localize('azurecore.deprecated', "Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL instead.");
-export const piiWarning = localize('azurecore.piiLogging.warning', "Warning: PII Logging is enabled. Enabling this option allows personally identifiable information to be logged and should only be used for debugging purposes.");
+export const piiWarning = localize('azurecore.piiLogging.warning', "Warning: Azure PII Logging is enabled. Enabling this option allows personally identifiable information to be logged and should only be used for debugging purposes.");
 export const disable = localize('azurecore.disable', 'Disable');
 export const dismiss = localize('azurecore.dismiss', 'Dismiss');
 
