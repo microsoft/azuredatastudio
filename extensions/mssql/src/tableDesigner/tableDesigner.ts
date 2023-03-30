@@ -53,7 +53,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			const schema = context.nodeInfo!.metadata!.schema;
 			const name = context.nodeInfo!.metadata!.name;
 			const connectionString = await azdata.connection.getConnectionString(context.connectionProfile!.id, true);
-			if (connectionString) {
+			if (!connectionString) {
 				throw new Error(FailedToGetConnectionStringError);
 			}
 			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
