@@ -153,6 +153,7 @@
 		},
 		"dist/localizedConstants": {
 			"azure.azureResourcesGridTitle": "Ressources Azure (préversion)",
+			"azure.credStoreSaveFailedError": "Impossible d’enregistrer les clés du cache de jetons dans le magasin d’informations d’identification. Cela peut entraîner des problèmes de persistance de jeton d’accès Azure et des instabilités de connexion. Il est probable que SqlTools ait atteint la limite de stockage des informations d’identification sur Windows. Effacez au moins 2 informations d’identification qui commencent par « Microsoft.SqlTools| » dans Windows Gestionnaire d'informations d'identification et rechargez.",
 			"azure.unableToOpenAzureLink": "Impossible d'ouvrir le lien, valeurs obligatoires manquantes",
 			"azurecore.australiacentral": "Australie Centre",
 			"azurecore.australiacentral2": "Australie Centre 2",
@@ -168,6 +169,7 @@
 			"azurecore.centralindia": "Inde Centre",
 			"azurecore.centralus": "USA Centre",
 			"azurecore.centraluseuap": "USA Centre EUAP",
+			"azurecore.deprecated": "Avertissement : ADAL a été déprécié et est planifié pour être supprimé dans une prochaine version. Utilisez MSAL à la place.",
 			"azurecore.eastasia": "Asie Est",
 			"azurecore.eastus": "USA Est",
 			"azurecore.eastus2": "USA Est 2",

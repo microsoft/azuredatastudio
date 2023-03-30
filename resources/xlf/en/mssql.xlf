@@ -306,6 +306,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     </trans-unit>
 </body></file>
   <file original="extensions/mssql/dist/tableDesigner/tableDesigner" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableDesigner.FailedToGetConnectionStringError">
+      <source xml:lang="en">Failed to get connection string for the table. Please reconnect to the server and try again.</source>
+    </trans-unit>
     <trans-unit id="tableDesigner.NewTable">
       <source xml:lang="en">New Table</source>
     </trans-unit>

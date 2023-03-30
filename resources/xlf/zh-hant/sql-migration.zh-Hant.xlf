@@ -34,6 +34,10 @@
         <source xml:lang="en">Are you sure you want to cancel this migration?</source>
         <target state="translated">確定要取消此移轉嗎?</target>
       </trans-unit>
+      <trans-unit id="sql.delete.migration.confirmation">
+        <source xml:lang="en">Are you sure you want to delete this migration?</source>
+        <target state="translated">確定要刪除此刪除嗎?</target>
+      </trans-unit>
       <trans-unit id="sql.login.migration.aad.domain.name.input.box.label">
         <source xml:lang="en">Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)</source>
         <target state="translated">Azure Active Directory 網域名稱 (僅需要移轉 Windows 驗證登入)</target>
@@ -462,6 +466,10 @@ This may take some time.</source>
         <source xml:lang="en">Migration is not in progress and cannot be cutover.</source>
         <target state="translated">移轉不在進行中，且無法完全移轉。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.cannot.delete">
+        <source xml:lang="en">Migration is currently in progress and cannot be deleted.</source>
+        <target state="translated">移轉目前正在進行中，無法刪除。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.cannot.retry">
         <source xml:lang="en">Migration cannot be retried.</source>
         <target state="translated">無法重試移轉。</target>
@@ -877,6 +885,14 @@ This may take some time.</source>
       <trans-unit id="sql.migration.default.database">
         <source xml:lang="en">Default database</source>
         <target state="translated">預設資料庫</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.delete.error">
+        <source xml:lang="en">An error occurred while deleting the migration.</source>
+        <target state="translated">刪除移轉時發生錯誤。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.delete.migration">
+        <source xml:lang="en">Delete migration</source>
+        <target state="translated">刪除移轉</target>
       </trans-unit>
       <trans-unit id="sql.migration.description">
         <source xml:lang="en">Description</source>
@@ -3405,6 +3421,10 @@ This may take some time.</source>
       <trans-unit id="database-details-menu">
         <source xml:lang="en">Database details</source>
         <target state="translated">資料庫詳細資料</target>
+      </trans-unit>
+      <trans-unit id="delete-migration-menu">
+        <source xml:lang="en">Delete migration</source>
+        <target state="translated">刪除移轉</target>
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">Azure SQL migration description</source>

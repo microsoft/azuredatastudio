@@ -153,6 +153,7 @@
 		},
 		"dist/localizedConstants": {
 			"azure.azureResourcesGridTitle": "Azure リソース (プレビュー)",
+			"azure.credStoreSaveFailedError": "トークン キャッシュのキーを資格情報ストアに保存できませんでした。Azure アクセス トークンの永続化に問題が発生して接続が不安定になる可能性があります。SqlTools が Windows の資格情報ストレージ制限に達していると考えられる場合は、Windows 資格情報マネージャーで、\"Microsoft.SqlTools|\" から始まる資格情報を少なくとも 2 つクリアし、再読み込みしてください。",
 			"azure.unableToOpenAzureLink": "リンクを開けません。必要な値がありません",
 			"azurecore.australiacentral": "オーストラリア中部",
 			"azurecore.australiacentral2": "オーストラリア中部 2",
@@ -168,6 +169,7 @@
 			"azurecore.centralindia": "インド中部",
 			"azurecore.centralus": "米国中部",
 			"azurecore.centraluseuap": "米国中部 EUAP",
+			"azurecore.deprecated": "警告: ADAL は非推奨となり、今後のリリースで削除される予定です。代わりに MSAL を使用してください。",
 			"azurecore.eastasia": "東アジア",
 			"azurecore.eastus": "米国東部",
 			"azurecore.eastus2": "米国東部 2",
