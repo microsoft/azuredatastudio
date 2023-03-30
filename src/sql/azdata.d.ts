@@ -4985,7 +4985,7 @@ declare module 'azdata' {
 			 * Set the informational message shown in the dialog. Hidden when the message is
 			 * undefined or the text is empty or undefined. The default level is error.
 			 */
-			message: DialogMessage;
+			message?: DialogMessage;
 
 			/**
 			 * Set the dialog name when opening

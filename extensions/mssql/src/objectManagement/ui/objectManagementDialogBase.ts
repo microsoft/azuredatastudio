@@ -204,7 +204,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				level: azdata.window.MessageLevel.Error
 			};
 		} else {
-			this.dialogObject.message = { text: '' };
+			this.dialogObject.message = undefined;
 		}
 		return errors.length === 0;
 	}
