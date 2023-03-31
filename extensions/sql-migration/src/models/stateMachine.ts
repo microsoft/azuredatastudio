@@ -13,7 +13,7 @@ import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
-import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBackupFileNameWithoutFolder } from '../api/utils';
+import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBackupFileNameWithoutFolder, MigrationTargetType } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getSourceConnectionUri, getTrustServerCertificateValue, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel } from './loginMigrationModel';
@@ -55,12 +55,6 @@ export enum State {
 export enum ServiceTier {
 	GeneralPurpose = 'GeneralPurpose',
 	BusinessCritical = 'BusinessCritical',
-}
-
-export enum MigrationTargetType {
-	SQLVM = 'AzureSqlVirtualMachine',
-	SQLMI = 'AzureSqlManagedInstance',
-	SQLDB = 'AzureSqlDatabase'
 }
 
 export enum MigrationSourceAuthenticationType {
@@ -1334,14 +1328,17 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			case MigrationTargetType.SQLMI:
 				const sqlMi = this._targetServerInstance as SqlManagedInstance;
 				this._targetServerName = sqlMi.properties.fullyQualifiedDomainName;
+				break;
 			case MigrationTargetType.SQLDB:
 				const sqlDb = this._targetServerInstance as AzureSqlDatabaseServer;
 				this._targetServerName = sqlDb.properties.fullyQualifiedDomainName;
+				break;
 			case MigrationTargetType.SQLVM:
 				// For sqlvm, we need to use ip address from the network interface to connect to the server
 				const sqlVm = this._targetServerInstance as SqlVMServer;
 				const networkInterfaces = Array.from(sqlVm.networkInterfaces.values());
 				this._targetServerName = NetworkInterfaceModel.getIpAddress(networkInterfaces);
+				break;
 		}
 	}
 

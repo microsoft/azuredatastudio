@@ -303,7 +303,7 @@ export class CreateProjectFromDatabaseDialog {
 
 		this.projectNameTextBox.onTextChanged(text => {
 			const errorMessage = isValidBasenameErrorMessage(text);
-			if (errorMessage) {
+			if (errorMessage !== undefined) {
 				// Set validation error message if project name is invalid
 				void this.projectNameTextBox!.updateProperty('validationErrorMessage', errorMessage);
 			} else {
