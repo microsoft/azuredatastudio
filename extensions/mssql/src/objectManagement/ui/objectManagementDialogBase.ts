@@ -198,13 +198,13 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 
 	protected async runValidation(showErrorMessage: boolean = true): Promise<boolean> {
 		const errors = await this.validateInput();
-		if (errors.length > 0 && (this.dialogObject.message || showErrorMessage)) {
+		if (errors.length > 0 && (this.dialogObject.message?.text || showErrorMessage)) {
 			this.dialogObject.message = {
 				text: errors.join(EOL),
 				level: azdata.window.MessageLevel.Error
 			};
 		} else {
-			this.dialogObject.message = { text: '' };
+			this.dialogObject.message = undefined;
 		}
 		return errors.length === 0;
 	}
