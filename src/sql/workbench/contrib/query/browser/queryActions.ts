@@ -918,9 +918,7 @@ export class ExportAsNotebookAction extends QueryTaskbarAction {
 		@ICommandService private _commandService: ICommandService
 	) {
 		super(connectionManagementService, editor, ExportAsNotebookAction.ID, ExportAsNotebookAction.IconClass);
-
-		this.label = nls.localize('queryEditor.exportSqlAsNotebookLabel', "Export");
-		this.tooltip = nls.localize('queryEditor.exportSqlAsNotebook', "Export as Notebook");
+		this.label = nls.localize('queryEditor.exportSqlAsNotebook', "Export as Notebook");
 	}
 
 	public override async run(): Promise<void> {
