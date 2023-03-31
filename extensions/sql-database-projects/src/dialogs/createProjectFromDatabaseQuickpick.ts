@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
-import { exists, getVscodeMssqlApi, isValidBasename, isValidBasenameErrorMessage, sanitizeStringForFilename } from '../common/utils';
+import { exists, getVscodeMssqlApi, isValidBasenameErrorMessage, sanitizeStringForFilename } from '../common/utils';
 import { IConnectionInfo } from 'vscode-mssql';
 import { defaultProjectNameFromDb, defaultProjectSaveLocation } from '../tools/newProjectTool';
 import { ImportDataModel } from '../models/api/import';
