@@ -153,6 +153,7 @@
 		},
 		"dist/localizedConstants": {
 			"azure.azureResourcesGridTitle": "Azure-Ressourcen (Vorschau)",
+			"azure.credStoreSaveFailedError": "Die Schlüssel für den Tokencache konnten nicht im Anmeldeinformationsspeicher gespeichert werden. Dies kann zu Problemen bei der Persistenz des Azure-Zugriffstokens und zu Verbindungsinstabilitäten führen. Wahrscheinlich hat SqlTools das Speicherlimit für Anmeldeinformationen unter Windows erreicht. Löschen Sie in der Windows-Anmeldeinformationsverwaltung mindestens 2 Anmeldeinformationen, die mit „Microsoft.SqlTools|“ beginnen, und wiederholen Sie den Ladevorgang.",
 			"azure.unableToOpenAzureLink": "Der Link kann nicht geöffnet werden, weil erforderliche Werte fehlen.",
 			"azurecore.australiacentral": "Australien, Mitte",
 			"azurecore.australiacentral2": "Australien, Mitte 2",
@@ -168,6 +169,7 @@
 			"azurecore.centralindia": "Indien, Mitte",
 			"azurecore.centralus": "USA, Mitte",
 			"azurecore.centraluseuap": "USA, Mitte EUAP",
+			"azurecore.deprecated": "Warnung: ADAL ist veraltet und wird voraussichtlich in einer zukünftigen Version entfernt werden. Bitte verwenden Sie stattdessen MSAL.",
 			"azurecore.eastasia": "Asien, Osten",
 			"azurecore.eastus": "USA, Osten",
 			"azurecore.eastus2": "USA, Osten 2",
