@@ -1040,9 +1040,9 @@ export const DETAILS_COPIED = localize('sql.migration.details.copied', "Details 
 export const CANCEL_MIGRATION_CONFIRMATION = localize('sql.cancel.migration.confirmation', "Are you sure you want to cancel this migration?");
 export const DELETE_MIGRATION_CONFIRMATION = localize('sql.delete.migration.confirmation', "Are you sure you want to delete this migration?");
 
-export const RETRY_MIGRATION_TITLE = localize('sql.retry.migration.title', "The migration failed with the following errors.");
+export const RETRY_MIGRATION_TITLE = localize('sql.retry.migration.title', "The migration failed with the following errors:");
 export const RETRY_MIGRATION_SUMMARY = localize('sql.retry.migration.summary', "Please resolve any errors before retrying the migration.");
-export const RETRY_MIGRATION_PROMPT = localize('sql.retry.migration.prompt', "Do you want to continue and retry the failed table migrations?");
+export const RETRY_MIGRATION_PROMPT = localize('sql.retry.migration.prompt', "Do you want to retry the failed table migrations?");
 
 export const YES = localize('sql.migration.yes', "Yes");
 export const NO = localize('sql.migration.no', "No");
