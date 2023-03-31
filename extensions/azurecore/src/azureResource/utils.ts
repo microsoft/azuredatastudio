@@ -23,6 +23,12 @@ import { NetworkRequestOptions } from '@azure/msal-common';
 
 const localize = nls.loadMessageBundle();
 
+export interface HttpClientResponse {
+	body: any;
+	headers: any;
+	status: Number;
+}
+
 function getErrorMessage(error: Error | string): string {
 	return (error instanceof Error) ? error.message : error;
 }
@@ -407,7 +413,7 @@ export async function makeHttpRequest(account: AzureAccount, subscription: azure
 	let response;
 	switch (requestType) {
 		case HttpRequestMethod.GET:
-			response = await httpClient.sendGetRequestAsync<any>(requestUrl, {
+			response = await httpClient.sendGetRequestAsync<HttpClientResponse>(requestUrl, {
 				headers: {
 					'Content-Type': 'application/json',
 					'Authorization': `Bearer ${securityToken.token}`,
@@ -416,13 +422,13 @@ export async function makeHttpRequest(account: AzureAccount, subscription: azure
 			})
 			break;
 		case HttpRequestMethod.POST:
-			response = await httpClient.sendPostRequestAsync<any>(requestUrl, networkRequestOptions);
+			response = await httpClient.sendPostRequestAsync<HttpClientResponse>(requestUrl, networkRequestOptions);
 			break;
 		case HttpRequestMethod.PUT:
-			response = await httpClient.sendPutRequestAsync<any>(requestUrl, networkRequestOptions);
+			response = await httpClient.sendPutRequestAsync<HttpClientResponse>(requestUrl, networkRequestOptions);
 			break;
 		case HttpRequestMethod.DELETE:
-			response = await httpClient.sendDeleteRequestAsync<any>(requestUrl, {
+			response = await httpClient.sendDeleteRequestAsync<HttpClientResponse>(requestUrl, {
 				headers: {
 					'Content-Type': 'application/json',
 					'Authorization': `Bearer ${securityToken.token}`,
