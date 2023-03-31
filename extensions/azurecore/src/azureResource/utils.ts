@@ -390,12 +390,14 @@ export async function makeHttpRequest(account: AzureAccount, subscription: azure
 		return result;
 	}
 
+	let reqHeaders = {
+		'Content-Type': 'application/json',
+		'Authorization': `Bearer ${securityToken.token}`,
+		...requestHeaders
+	}
+
 	let networkRequestOptions: NetworkRequestOptions = {
-		headers: {
-			'Content-Type': 'application/json',
-			'Authorization': `Bearer ${securityToken.token}`,
-			...requestHeaders
-		},
+		headers: reqHeaders,
 		body: requestBody
 	};
 
@@ -414,13 +416,9 @@ export async function makeHttpRequest(account: AzureAccount, subscription: azure
 	let response;
 	switch (requestType) {
 		case HttpRequestMethod.GET:
-			response = await httpClient.sendGetRequestAsync<HttpClientResponse>(requestUrl, {
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${securityToken.token}`,
-					...requestHeaders
-				}
-			})
+			response = await httpClient.sendGetRequestAsync<any>(requestUrl, {
+				headers: reqHeaders
+			});
 			break;
 		case HttpRequestMethod.POST:
 			response = await httpClient.sendPostRequestAsync<HttpClientResponse>(requestUrl, networkRequestOptions);
@@ -429,13 +427,9 @@ export async function makeHttpRequest(account: AzureAccount, subscription: azure
 			response = await httpClient.sendPutRequestAsync<HttpClientResponse>(requestUrl, networkRequestOptions);
 			break;
 		case HttpRequestMethod.DELETE:
-			response = await httpClient.sendDeleteRequestAsync<HttpClientResponse>(requestUrl, {
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${securityToken.token}`,
-					...requestHeaders
-				}
-			})
+			response = await httpClient.sendDeleteRequestAsync<any>(requestUrl, {
+				headers: reqHeaders
+			});
 			break;
 		default:
 			const error = new Error(`Unknown RequestType "${requestType}"`);
