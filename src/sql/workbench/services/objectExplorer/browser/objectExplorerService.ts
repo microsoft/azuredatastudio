@@ -739,7 +739,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		const sessionTreeNodeCache = this._treeNodeCache.get(session.sessionId!);
 		if (expandResult && expandResult.nodes) {
 			// In case of refresh, we want to clear the cache of the descendants of the node being refreshed
-			if (refresh) {
+			if (refresh && parentTree?.children) {
 				const stack = [...parentTree.children];
 				while (stack.length > 0) {
 					const currentTreeNode = stack.pop();
