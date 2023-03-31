@@ -29,6 +29,7 @@ export const MenuCommands = {
 	CancelMigration: 'sqlmigration.cancel.migration',
 	DeleteMigration: 'sqlmigration.delete.migration',
 	RetryMigration: 'sqlmigration.retry.migration',
+	RestartMigration: 'sqlmigration.restart.migration',
 	StartMigration: 'sqlmigration.start',
 	StartLoginMigration: 'sqlmigration.login.start',
 	IssueReporter: 'workbench.action.openIssueReporter',

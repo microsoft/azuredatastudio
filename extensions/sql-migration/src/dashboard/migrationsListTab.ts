@@ -9,8 +9,8 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { getCurrentMigrations, getSelectedServiceStatus } from '../models/migrationLocalStorage';
 import * as loc from '../constants/strings';
 import { filterMigrations, getMigrationDuration, getMigrationStatusImage, getMigrationStatusWithErrors, getMigrationTime, MenuCommands } from '../api/utils';
-import { getMigrationTargetType, getMigrationMode, canCancelMigration, canCutoverMigration, canDeleteMigration } from '../constants/helper';
-import { DatabaseMigration, getResourceName } from '../api/azure';
+import { getMigrationTargetType, getMigrationMode, canCancelMigration, canCutoverMigration, canDeleteMigration, canRetryMigration } from '../constants/helper';
+import { DatabaseMigration, getMigrationErrors, getResourceName } from '../api/azure';
 import { logError, TelemetryViews } from '../telemetry';
 import { SelectMigrationServiceDialog } from '../dialog/selectMigrationService/selectMigrationServiceDialog';
 import { AdsMigrationStatus, EmptySettingValue, ServiceContextChangeEvent, TabBase } from './tabBase';
@@ -565,7 +565,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 					// "Migration status" column
 					case 2:
 						const statusMessage = loc.DATABASE_MIGRATION_STATUS_LABEL(getMigrationStatusWithErrors(migration));
-						const errors = this.getMigrationErrors(migration!);
+						const errors = getMigrationErrors(migration!);
 
 						this.showDialogMessage(
 							loc.DATABASE_MIGRATION_STATUS_TITLE,
@@ -592,8 +592,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 		menuCommands.push(...[
 			MenuCommands.ViewDatabase,
 			MenuCommands.ViewTarget,
-			MenuCommands.ViewService,
-			MenuCommands.CopyMigration]);
+			MenuCommands.ViewService]);
 
 		if (canCancelMigration(migration)) {
 			menuCommands.push(MenuCommands.CancelMigration);
@@ -602,6 +601,12 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 		if (canDeleteMigration(migration)) {
 			menuCommands.push(MenuCommands.DeleteMigration);
 		}
+
+		if (canRetryMigration(migration)) {
+			menuCommands.push(MenuCommands.RetryMigration);
+		}
+
+		menuCommands.push(MenuCommands.CopyMigration);
 
 		return menuCommands;
 	}
