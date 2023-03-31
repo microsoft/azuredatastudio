@@ -125,18 +125,9 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 	}
 
 	public override async updateChildren(element?: ServerTreeElement, recursive?: boolean, rerender?: boolean, options?: IAsyncDataTreeUpdateChildrenOptions<ServerTreeElement>): Promise<void> {
-		const viewState = this.getViewState();
-		const expandedElementIds = viewState?.expanded;
+		const expandedChildren = this.getExpandedState(element);
 		await super.updateChildren(element, recursive, rerender, options);
-		if (expandedElementIds) {
-			for (let i = 0; i <= expandedElementIds.length; i++) {
-				const id = expandedElementIds[i];
-				const node = this.getDataNodeById(id);
-				if (node) {
-					await this.expand(node.element);
-				}
-			}
-		}
+		await this.expandElements(expandedChildren);
 	}
 
 	public async expandElements(elements: ServerTreeElement[]): Promise<void> {

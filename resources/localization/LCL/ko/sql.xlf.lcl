@@ -3753,6 +3753,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/platform/theme/common/colorRegistry.queryEditorNullBackground" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The background color for null values in the query editor results grid.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[쿼리 편집기 결과 표에서 null 값의 배경색입니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.tileBorder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The border color of tiles]]></Val>
@@ -15939,6 +15948,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionManagementService.connection.unknownProvider" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unknown provider '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[알 수 없는 공급자 '{0}']]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionManagementService.connectionNotAcceptedError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connection Not Accepted]]></Val>
@@ -16040,9 +16058,21 @@
       </Item>
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionWidget.connectionWidget.ConnectionStringError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Failed to parse the connection string.]]></Val>
+          <Val><![CDATA[Failed to parse the connection string. {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[연결 문자열을 구문 분석하지 못했습니다.]]></Val>
+            <Val><![CDATA[연결 문자열을 구문 분석하지 못했습니다. {0}]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Failed to parse the connection string.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionWidget.connectionWidget.ConnectionStringUndefined" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[No connection info returned.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[반환된 연결 정보가 없습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

@@ -99,12 +99,18 @@
       <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.noConvertResult" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No result returned from Notebook convert request]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Notebook 변환 요청에서 반환된 결과가 없습니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.noDocumentFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No document found for URI {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[URI {0}에 대한 문서를 찾을 수 없음]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -129,6 +135,9 @@
       <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.unsupportedPlatform" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unsupported platform {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[지원되지 않는 플랫폼 {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -172,7 +181,7 @@
         <Str Cat="Text">
           <Val><![CDATA[database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[데이터베이스]]></Val>
+            <Val><![CDATA[데이터 베이스]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -621,12 +630,18 @@
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.renameObjectError" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while renaming {0} '{1}' to '{2}'. {3}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} '{1}'의 이름을 '{2}'(으)로 바꾸는 동안 오류가 발생했습니다. {3}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.renameObjectOperationName" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Rename {0} '{1}' to '{2}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} '{1}'의 이름을 '{2}'(으)로 변경]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1362,7 +1377,7 @@
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.enclaveAttestationProtocol.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Attestation protocol]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[증명 프로토콜]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -1731,7 +1746,7 @@
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.secureEnclaves.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enables or disables Secure enclaves for the connection]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[연결에 대해 보안 Enclave를 사용하거나 사용하지 않도록 설정합니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -1743,7 +1758,7 @@
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.secureEnclaves.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Secure enclaves]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[보안 Enclave]]></Val>
           </Tgt>
           <Prev Cat="Text">
