@@ -33,7 +33,6 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { deepClone } from 'vs/base/common/objects';
 import { Event } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
-import * as DOM from 'vs/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
@@ -83,7 +82,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private cellSubmitInProgress: boolean;
 
 	// Manually submit the cell after edit end if it's the null row.
-	private isLastRowEnter: boolean;
+	private isInNullRow: boolean;
 
 	// Edit Data functions
 	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
@@ -134,7 +133,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	onInit(): void {
 		const self = this;
 		this.baseInit();
-		this._register(DOM.addDisposableListener(this.nativeElement, DOM.EventType.KEY_DOWN, e => this.tryHandleKeyEvent(new StandardKeyboardEvent(e))));
 
 		// Add the subscription to the list of things to be disposed on destroy, or else on a new component init
 		// may get the "destroyed" object still getting called back.
@@ -200,13 +198,12 @@ export class EditDataGridPanel extends GridParentComponent {
 			// In case the last row is entered in, we need to wait to get the cell value after edit end
 			// so that we can add a row, submit the value and move down. (SlickGrid tries to go down immediately
 			// which fails, as we haven't added the new row yet).
-			if (self.isLastRowEnter) {
-				self.isLastRowEnter = false;
+			if (self.isInNullRow) {
 				self.submitCurrentCellChange((result: EditUpdateCellResult) => {
 					self.table.grid.navigateDown();
 				},
 					(error: any) => {
-						this.notificationService.error(error);
+						self.notificationService.error(error);
 					}).catch(onUnexpectedError);
 			}
 		};
@@ -250,19 +247,30 @@ export class EditDataGridPanel extends GridParentComponent {
 		};
 
 		// Setup a function for generating a promise to lookup result subsets
+		// Function will be called upon refresh.
 		this.loadDataFunction = (offset: number, count: number): Promise<{}[]> => {
 			return self.dataService.getEditRows(offset, count).then(result => {
 				if (this.dataSet) {
+					let counter = 0;
 					let gridData = result.subset.map(r => {
+						// Newly added rows will have null values displayed as empty strings.
+						// Since it is currently impossible to add empty strings via edit data
+						// this must mean the empty strings on the newly added row are null values.
+						let isNewlyAddedRow = false;
+						if (this.isInNullRow && (counter === (count - 2))) {
+							isNewlyAddedRow = true;
+						}
 						let dataWithSchema = {};
 						// skip the first column since its a number column
 						for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
+							let isNewAddedNullCell = isNewlyAddedRow && r.cells[i - 1].displayValue === '';
 							dataWithSchema[this.dataSet.columnDefinitions[i].field] = {
 								displayValue: r.cells[i - 1].displayValue,
 								ariaLabel: escape(r.cells[i - 1].displayValue),
-								isNull: r.cells[i - 1].isNull
+								isNull: isNewAddedNullCell ? true : r.cells[i - 1].isNull
 							};
 						}
+						counter++;
 						return dataWithSchema;
 					});
 
@@ -278,9 +286,15 @@ export class EditDataGridPanel extends GridParentComponent {
 					if (gridData && gridData !== this.oldGridData) {
 						this.oldGridData = gridData;
 					}
+					if (this.isInNullRow) {
+						this.isInNullRow = false;
+					}
 					return gridData;
 				}
 				else {
+					if (this.isInNullRow) {
+						this.isInNullRow = false;
+					}
 					this.logService.error('Grid data is nonexistent, using last known good grid');
 					return this.oldGridData;
 				}
@@ -583,7 +597,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 
 		if (e.keyCode === KeyCode.Enter && this.isNullRow(this.currentCell.row)) {
-			this.isLastRowEnter = true;
+			this.isInNullRow = true;
 		}
 
 		return handled;
@@ -1214,7 +1228,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		let valueToDisplay = '';
 		let cellClasses = 'grid-cell-value-container';
 		/* tslint:disable:no-null-keyword */
-		let valueMissing = value === undefined || value === null || (Services.DBCellValue.isDBCellValue(value) && (value.isNull || value.displayValue.length === 0)) || value === 'NULL';
+		let valueMissing = value === undefined || value === null || (Services.DBCellValue.isDBCellValue(value) && value.isNull) || value === 'NULL';
 		let isStringNull = (Services.DBCellValue.isDBCellValue(value) && !value.isNull && value.displayValue === 'NULL');
 		if (valueMissing) {
 			valueToDisplay = 'NULL';
