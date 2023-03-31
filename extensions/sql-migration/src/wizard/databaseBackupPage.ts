@@ -49,6 +49,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _blobContainerDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerLastBackupFileDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerFolderDropdowns!: azdata.DropDownComponent[];
+	private _blobContainerFolderStructureInfoBox!: azdata.TextComponent;
 	private _blobContainerVmDatabaseAlreadyExistsInfoBox!: azdata.TextComponent;
 
 	private _networkShareStorageAccountDetails!: azdata.FlexContainer;
@@ -493,6 +494,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
+		this._blobContainerFolderStructureInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				text: constants.DATABASE_BACKUP_BLOB_FOLDER_STRUCTURE_INFO,
+				style: 'information',
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: { ...styles.BODY_CSS }
+			}).component();
+
 		this._blobContainerVmDatabaseAlreadyExistsInfoBox = this._view.modelBuilder.infoBox()
 			.withProps({
 				text: constants.DATABASE_ALREADY_EXISTS_VM_INFO,
@@ -505,6 +514,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withItems([
 				blobTableText,
 				allFieldsRequiredLabel,
+				this._blobContainerFolderStructureInfoBox,
 				this._blobContainerVmDatabaseAlreadyExistsInfoBox,
 				this._blobContainerTargetDatabaseNamesTable])
 			.withProps({ CSSStyles: { 'display': 'none', } })
@@ -711,6 +721,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		await utils.updateControlDisplay(this._networkShareVmDatabaseAlreadyExistsInfoBox, isSqlVmTarget);
 		await utils.updateControlDisplay(this._networkTableContainer, isNetworkShare && !isSqlDbTarget);
 		await utils.updateControlDisplay(this._blobContainer, isBlobContainer && !isSqlDbTarget);
+		await utils.updateControlDisplay(this._blobContainerFolderStructureInfoBox, isBlobContainer && !isSqlDbTarget);
 		await utils.updateControlDisplay(this._blobContainerVmDatabaseAlreadyExistsInfoBox, isSqlVmTarget);
 		await utils.updateControlDisplay(this._blobTableContainer, isBlobContainer && !isSqlDbTarget);
 
@@ -1184,6 +1195,28 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 										if (selectedLastBackupFile && !blobFileErrorStrings.includes(value)) {
 											this.migrationStateModel._databaseBackup.blobs[index].lastBackupFile = selectedLastBackupFile.name;
 										}
+
+										// check for duplicate storage account/blob container/last backup file combination if migrating multiple databases,
+										// as they should all be unique - backups for multiple databases in the same location are not supported
+										let backupLocations: string[] = [];
+										backupLocations = this.migrationStateModel._databaseBackup.blobs.map(blob => {
+											return blob && blob.storageAccount
+												? (blob.storageAccount.id + '/' + utils.getBlobContainerNameWithFolder(blob, this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE)).toLowerCase()
+												: '';
+										}).filter(backupLocation => backupLocation !== '');
+
+										let uniqueBackupLocations = [...new Set(backupLocations)];
+
+										if (uniqueBackupLocations.length !== backupLocations.length) {
+											this.wizard.message = {
+												level: azdata.window.MessageLevel.Warning,
+												text: constants.DATABASE_BACKUP_BLOB_FOLDER_STRUCTURE_WARNING,
+											};
+										} else {
+											this.wizard.message = {
+												text: ''
+											};
+										}
 									}
 								}
 							}));
@@ -1195,6 +1228,28 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 									if (this.migrationStateModel._blobContainerFolders && this.migrationStateModel._blobContainerFolders.includes(value) && !blobFolderErrorStrings.includes(value)) {
 										const selectedFolder = value;
 										this.migrationStateModel._databaseBackup.blobs[index].folderName = selectedFolder;
+
+										// check for duplicate storage account/blob container/folder combination if migrating multiple databases,
+										// as they should all be unique - backups for multiple databases in the same location are not supported
+										let backupLocations: string[] = [];
+										backupLocations = this.migrationStateModel._databaseBackup.blobs.map(blob => {
+											return blob && blob.storageAccount
+												? (blob.storageAccount.id + '/' + utils.getBlobContainerNameWithFolder(blob, this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE)).toLowerCase()
+												: '';
+										}).filter(backupLocation => backupLocation !== '');
+
+										let uniqueBackupLocations = [...new Set(backupLocations)];
+
+										if (uniqueBackupLocations.length !== backupLocations.length) {
+											this.wizard.message = {
+												level: azdata.window.MessageLevel.Warning,
+												text: constants.DATABASE_BACKUP_BLOB_FOLDER_STRUCTURE_WARNING,
+											};
+										} else {
+											this.wizard.message = {
+												text: ''
+											};
+										}
 									}
 								}
 							}));
