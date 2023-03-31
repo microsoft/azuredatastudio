@@ -27,6 +27,7 @@ export interface HttpClientResponse {
 	body: any;
 	headers: any;
 	status: Number;
+	error: any;
 }
 
 function getErrorMessage(error: Error | string): string {
