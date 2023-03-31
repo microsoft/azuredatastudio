@@ -164,7 +164,7 @@ export async function getLocations(appContext: AppContext, account?: AzureAccoun
 		const path = `/subscriptions/${subscription.id}/locations?api-version=2020-01-01`;
 		const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
 		const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors, host);
-		result.locations.push(...response.response.data.value);
+		result.locations.push(...response.response.body.value);
 		result.errors.push(...response.errors);
 	} catch (err) {
 		const error = new Error(localize('azure.accounts.getLocations.queryError', "Error fetching locations for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}",
@@ -467,7 +467,7 @@ export async function getManagedDatabases(account: AzureAccount, subscription: a
 	const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
 	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors, host);
 	return {
-		databases: response?.response?.data?.value ?? [],
+		databases: response?.response?.body?.value ?? [],
 		errors: response.errors ? response.errors : []
 	};
 }
@@ -477,7 +477,7 @@ export async function getBlobContainers(account: AzureAccount, subscription: azu
 	const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
 	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors, host);
 	return {
-		blobContainers: response?.response?.data?.value ?? [],
+		blobContainers: response?.response?.body?.value ?? [],
 		errors: response.errors ? response.errors : []
 	};
 }
@@ -487,7 +487,7 @@ export async function getFileShares(account: AzureAccount, subscription: azureRe
 	const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
 	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors, host);
 	return {
-		fileShares: response?.response?.data?.value ?? [],
+		fileShares: response?.response?.body?.value ?? [],
 		errors: response.errors ? response.errors : []
 	};
 }
