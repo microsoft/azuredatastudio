@@ -48,6 +48,7 @@ import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { gen3Version, sqlDataWarehouse } from 'sql/platform/connection/common/constants';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { Codicon } from 'vs/base/common/codicons';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -916,9 +917,10 @@ export class ExportAsNotebookAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@ICommandService private _commandService: ICommandService
 	) {
-		super(connectionManagementService, editor, ConnectDatabaseAction.ID, ExportAsNotebookAction.IconClass);
+		super(connectionManagementService, editor, ExportAsNotebookAction.ID, ExportAsNotebookAction.IconClass);
 
-		this.label = nls.localize('queryEditor.exportSqlAsNotebook', "Export as Notebook");
+		this.label = nls.localize('queryEditor.exportSqlAsNotebookLabel', "Export");
+		this.tooltip = nls.localize('queryEditor.exportSqlAsNotebook', "Export as Notebook");
 	}
 
 	public override async run(): Promise<void> {
@@ -929,3 +931,15 @@ export class ExportAsNotebookAction extends QueryTaskbarAction {
 export const CATEGORIES = {
 	ExecutionPlan: { value: nls.localize('ExecutionPlan', 'Execution Plan'), original: 'Execution Plan' }
 };
+
+export const ParseQueryCommandId = 'parseQueryAction';
+
+export class ParseQueryTaskbarAction extends Action {
+	constructor(@ICommandService private _commandService: ICommandService) {
+		super(ParseQueryCommandId, nls.localize('queryEditor.parse', "Parse"), Codicon.check.classNames);
+	}
+
+	public override async run(): Promise<void> {
+		this._commandService.executeCommand(ParseQueryCommandId);
+	}
+}
