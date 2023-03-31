@@ -920,7 +920,9 @@ export class PublishDatabaseDialog {
 		return data;
 	}
 
-	// disable "Revert SQLCMD variable values" button when there are no changes
+	/**
+	 * Enables or disables "Revert SQLCMD variable values" button depending on whether there are changes
+	 *  */
 	private updateRevertSqlCmdVarsButtonState(): void {
 		// no SQLCMD vars -> no button to update state for
 		if (!this.revertSqlCmdVarsButton) {
