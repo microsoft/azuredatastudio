@@ -224,13 +224,6 @@
 	min-height: 39px;
 }
 
-.monaco-workbench .codicon.dashboard-new-notebook,
-.monaco-workbench.hc-light .codicon.dashboard-new-notebook,
-.monaco-workbench.vs-dark .codicon.dashboard-new-notebook,
-.monaco-workbench.hc-black .codicon.dashboard-new-notebook {
-	background: url("./media/dashboard_new_notebook.svg") center center no-repeat;
-}
-
 .monaco-workbench .notebook-action.new-notebook,
 .monaco-workbench.hc-light .notebook-action.new-notebook {
 	background: url("./media/light/new_notebook.svg") center center no-repeat;

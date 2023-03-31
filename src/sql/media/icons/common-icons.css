@@ -249,6 +249,13 @@
 	background: url("newquery.svg") center center no-repeat;
 }
 
+.monaco-workbench .codicon.notebook,
+.monaco-workbench.hc-light .codicon.notebook,
+.monaco-workbench.vs-dark .codicon.notebook,
+.monaco-workbench.hc-black .codicon.notebook {
+	background: url("notebook-blue.svg") center center no-repeat;
+}
+
 .vs .codicon.info,
 .hc-light .codicon.info,
 .hc-black .codicon.info,
