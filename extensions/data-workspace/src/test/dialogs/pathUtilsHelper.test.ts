@@ -6,7 +6,6 @@
 import * as should from 'should';
 import * as constants from '../../common/constants';
 import * as os from 'os';
-import * as path from 'path';
 import { isValidBasename, isValidBasenameErrorMessage } from '../../common/pathUtilsHelper';
 
 const isWindows = os.platform() === 'win32';
@@ -14,21 +13,21 @@ const isWindows = os.platform() === 'win32';
 suite('Check for invalid filename tests', function (): void {
 	test('Should determine invalid filenames', async () => {
 		// valid filename
-		should(isValidBasename(formatFileName('ValidName.sqlproj'))).equal(true);
+		should(isValidBasename('ValidName')).equal(true);
 
 		// invalid for both Windows and non-Windows
 		let invalidNames: string[] = [
-			'	.sqlproj',
-			' .sqlproj',
-			'  	.sqlproj',
-			'..sqlproj',
-			'...sqlproj',
+			'	',
+			' ',
+			'  	',
+			'.',
+			'..',
 			// most file systems do not allow files > 255 length
-			'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.sqlproj'
+			'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
 		];
 
 		for (let invalidName of invalidNames) {
-			should(isValidBasename(formatFileName(invalidName))).equal(false);
+			should(isValidBasename(invalidName)).equal(false, `InvalidName that failed:${invalidName}`);
 		}
 
 		should(isValidBasename(undefined)).equal(false);
@@ -39,52 +38,55 @@ suite('Check for invalid filename tests', function (): void {
 	test('Should determine invalid Windows filenames', async () => {
 		let invalidNames: string[] = [
 			// invalid characters only for Windows
-			'?.sqlproj',
-			':.sqlproj',
-			'*.sqlproj',
-			'<.sqlproj',
-			'>.sqlproj',
-			'|.sqlproj',
-			'".sqlproj',
-			// Windows filenames cannot end with a whitespace
-			'test   .sqlproj',
-			'test	.sqlproj'
+			'?',
+			':',
+			'*',
+			'<',
+			'>',
+			'|',
+			'"',
+			'/',
+			'\\',
+			// Windows filenames cannot start or end with a whitespace
+			'test   ',
+			'test	',
+			' test'
 		];
 
 		for (let invalidName of invalidNames) {
-			should(isValidBasename(formatFileName(invalidName))).equal(isWindows ? false : true);
+			should(isValidBasename(invalidName)).equal(isWindows ? false : true, `InvalidName that failed:${invalidName}`);
 		}
 	});
 
 	test('Should determine Windows forbidden filenames', async () => {
 		let invalidNames: string[] = [
 			// invalid only for Windows
-			'CON.sqlproj',
-			'PRN.sqlproj',
-			'AUX.sqlproj',
-			'NUL.sqlproj',
-			'COM1.sqlproj',
-			'COM2.sqlproj',
-			'COM3.sqlproj',
-			'COM4.sqlproj',
-			'COM5.sqlproj',
-			'COM6.sqlproj',
-			'COM7.sqlproj',
-			'COM8.sqlproj',
-			'COM9.sqlproj',
-			'LPT1.sqlproj',
-			'LPT2.sqlproj',
-			'LPT3.sqlproj',
-			'LPT4.sqlproj',
-			'LPT5.sqlproj',
-			'LPT6.sqlproj',
-			'LPT7.sqlproj',
-			'LPT8.sqlproj',
-			'LPT9.sqlproj',
+			'CON',
+			'PRN',
+			'AUX',
+			'NUL',
+			'COM1',
+			'COM2',
+			'COM3',
+			'COM4',
+			'COM5',
+			'COM6',
+			'COM7',
+			'COM8',
+			'COM9',
+			'LPT1',
+			'LPT2',
+			'LPT3',
+			'LPT4',
+			'LPT5',
+			'LPT6',
+			'LPT7',
+			'LPT8',
+			'LPT9',
 		];
 
 		for (let invalidName of invalidNames) {
-			should(isValidBasename(formatFileName(invalidName))).equal(isWindows ? false : true);
+			should(isValidBasename(invalidName)).equal(isWindows ? false : true);
 		}
 	});
 });
@@ -92,76 +94,77 @@ suite('Check for invalid filename tests', function (): void {
 suite('Check for invalid filename error tests', function (): void {
 	test('Should determine invalid filenames', async () => {
 		// valid filename
-		should(isValidBasenameErrorMessage(formatFileName('ValidName.sqlproj'))).equal('');
+		should(isValidBasenameErrorMessage('ValidName')).equal(undefined);
 
 		// invalid for both Windows and non-Windows
-		should(isValidBasenameErrorMessage(formatFileName('	.sqlproj'))).equal(constants.whitespaceFilenameErrorMessage);
-		should(isValidBasenameErrorMessage(formatFileName(' .sqlproj'))).equal(constants.whitespaceFilenameErrorMessage);
-		should(isValidBasenameErrorMessage(formatFileName('  	.sqlproj'))).equal(constants.whitespaceFilenameErrorMessage);
-		should(isValidBasenameErrorMessage(formatFileName('..sqlproj'))).equal(constants.reservedValueErrorMessage);
-		should(isValidBasenameErrorMessage(formatFileName('...sqlproj'))).equal(constants.reservedValueErrorMessage);
+		should(isValidBasenameErrorMessage('	')).equal(constants.whitespaceFilenameErrorMessage);
+		should(isValidBasenameErrorMessage(' ')).equal(constants.whitespaceFilenameErrorMessage);
+		should(isValidBasenameErrorMessage('  	')).equal(constants.whitespaceFilenameErrorMessage);
+		should(isValidBasenameErrorMessage('.')).equal(constants.filenameEndingIsPeriodErrorMessage);
+		should(isValidBasenameErrorMessage('..')).equal(constants.filenameEndingIsPeriodErrorMessage);
 		should(isValidBasenameErrorMessage(undefined)).equal(constants.undefinedFilenameErrorMessage);
-		should(isValidBasenameErrorMessage('\\')).equal(isWindows ? constants.whitespaceFilenameErrorMessage : constants.invalidFileCharsErrorMessage);
-		should(isValidBasenameErrorMessage('/')).equal(constants.whitespaceFilenameErrorMessage);
+		should(isValidBasenameErrorMessage('\\')).equal(constants.invalidFileCharsErrorMessage);
+		should(isValidBasenameErrorMessage('/')).equal(constants.invalidFileCharsErrorMessage);
+		should(isValidBasenameErrorMessage(' ')).equal(constants.whitespaceFilenameErrorMessage);
 
 		// most file systems do not allow files > 255 length
-		should(isValidBasenameErrorMessage(formatFileName('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.sqlproj'))).equal(constants.tooLongFilenameErrorMessage);
+		should(isValidBasenameErrorMessage('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')).equal(constants.tooLongFilenameErrorMessage);
 	});
 
 	test('Should determine invalid Windows filenames', async () => {
 		let invalidNames: string[] = [
 			// invalid characters only for Windows
-			'?.sqlproj',
-			':.sqlproj',
-			'*.sqlproj',
-			'<.sqlproj',
-			'>.sqlproj',
-			'|.sqlproj',
-			'".sqlproj'
+			'?',
+			':',
+			'*',
+			'<',
+			'>',
+			'|',
+			'"',
+			'\\',
+			'/'
 		];
 
 		for (let invalidName of invalidNames) {
-			should(isValidBasenameErrorMessage(formatFileName(invalidName))).equal(isWindows ? constants.invalidFileCharsErrorMessage : '');
+			should(isValidBasenameErrorMessage(invalidName)).equal(isWindows ? constants.invalidFileCharsErrorMessage : '');
 		}
-		// Windows filenames cannot end with a whitespace
-		should(isValidBasenameErrorMessage(formatFileName('test   .sqlproj'))).equal(isWindows ? constants.trailingWhitespaceErrorMessage : '');
-		should(isValidBasenameErrorMessage(formatFileName('test	.sqlproj'))).equal(isWindows ? constants.trailingWhitespaceErrorMessage : '');
+		// Windows filenames cannot start or end with a whitespace
+		should(isValidBasenameErrorMessage('test   ')).equal(isWindows ? constants.trailingWhitespaceErrorMessage : '');
+		should(isValidBasenameErrorMessage('test	')).equal(isWindows ? constants.trailingWhitespaceErrorMessage : '');
+		should(isValidBasenameErrorMessage(' test')).equal(isWindows ? constants.trailingWhitespaceErrorMessage : '');
 	});
 
 	test('Should determine Windows forbidden filenames', async () => {
 		let invalidNames: string[] = [
 			// invalid only for Windows
-			'CON.sqlproj',
-			'PRN.sqlproj',
-			'AUX.sqlproj',
-			'NUL.sqlproj',
-			'COM1.sqlproj',
-			'COM2.sqlproj',
-			'COM3.sqlproj',
-			'COM4.sqlproj',
-			'COM5.sqlproj',
-			'COM6.sqlproj',
-			'COM7.sqlproj',
-			'COM8.sqlproj',
-			'COM9.sqlproj',
-			'LPT1.sqlproj',
-			'LPT2.sqlproj',
-			'LPT3.sqlproj',
-			'LPT4.sqlproj',
-			'LPT5.sqlproj',
-			'LPT6.sqlproj',
-			'LPT7.sqlproj',
-			'LPT8.sqlproj',
-			'LPT9.sqlproj',
+			'CON',
+			'PRN',
+			'AUX',
+			'NUL',
+			'COM1',
+			'COM2',
+			'COM3',
+			'COM4',
+			'COM5',
+			'COM6',
+			'COM7',
+			'COM8',
+			'COM9',
+			'LPT1',
+			'LPT2',
+			'LPT3',
+			'LPT4',
+			'LPT5',
+			'LPT6',
+			'LPT7',
+			'LPT8',
+			'LPT9',
 		];
 
 		for (let invalidName of invalidNames) {
-			should(isValidBasenameErrorMessage(formatFileName(invalidName))).equal(isWindows ? constants.reservedWindowsFilenameErrorMessage : '');
+			should(isValidBasenameErrorMessage(invalidName)).equal(isWindows ? constants.reservedWindowsFilenameErrorMessage : '', `InvalidName that failed:${invalidName}`);
 		}
 	});
 });
 
-function formatFileName(filename: string): string {
-	return path.join(os.tmpdir(), filename);
-}
 
