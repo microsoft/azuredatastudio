@@ -237,5 +237,84 @@ suite('treeUpdateUtils alterConnection', () => {
 		assert.equal(originalTitle + ' (testOption1=test string 2; testOption2=50)', updatedTitleMap[4]);
 	});
 
+	test('identical connections should have same title if on different levels', async () => {
+		let profile1: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: '',
+			savePassword: true,
+			groupFullName: 'g3',
+			groupId: 'g3',
+			getOptionsKey: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: {},
+			saveProfile: true,
+			id: undefined!,
+			connectionName: undefined!
+		};
+
+		let profile2: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: '',
+			savePassword: true,
+			groupFullName: 'g3-1',
+			groupId: 'g3-1',
+			getOptionsKey: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: {},
+			saveProfile: true,
+			id: undefined!,
+			connectionName: undefined!
+		};
+
+		let profile3: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: '',
+			savePassword: true,
+			groupFullName: 'g3-2',
+			groupId: 'g3-2',
+			getOptionsKey: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: {},
+			saveProfile: true,
+			id: undefined!,
+			connectionName: undefined!
+		};
+
+		let connectionProfile1 = new ConnectionProfile(capabilitiesService, profile1);
+		let connectionProfile2 = new ConnectionProfile(capabilitiesService, profile2);
+		let connectionProfile3 = new ConnectionProfile(capabilitiesService, profile3);
+
+		let connectionProfileGroup = new ConnectionProfileGroup('g3', undefined, 'g3', undefined, undefined);
+		let childConnectionProfileGroup = new ConnectionProfileGroup('g3-1', undefined, 'g3-1', undefined, undefined);
+		let grandChildConnectionProfileGroup = new ConnectionProfileGroup('g3-2', undefined, 'g3-2', undefined, undefined);
+		childConnectionProfileGroup.addConnections([connectionProfile2]);
+		connectionProfileGroup.addConnections([connectionProfile1]);
+		grandChildConnectionProfileGroup.addConnections([connectionProfile3]);
+		childConnectionProfileGroup.addGroups([grandChildConnectionProfileGroup]);
+		connectionProfileGroup.addGroups([childConnectionProfileGroup]);
+
+		let updatedProfileGroup = TreeUpdateUtils.alterTreeChildrenTitles([connectionProfileGroup]);
+
+		let updatedTitleMap = updatedProfileGroup[0].connections.map(profile => profile.title);
+		let updatedChildTitleMap = updatedProfileGroup[0].children[0].connections.map(profile => profile.title);
+		let updatedGrandChildTitleMap = updatedProfileGroup[0].children[0].children[0].connections.map(profile => profile.title);
+
+		// Titles should be the same if they're in different levels.
+		assert.equal(updatedTitleMap[0], updatedChildTitleMap[0]);
+		assert.equal(updatedTitleMap[0], updatedGrandChildTitleMap[0]);
+		assert.equal(updatedChildTitleMap[0], updatedGrandChildTitleMap[0]);
+	});
 	//TODO - Need to add more test scenarios for alterTreeChildrenTitles in depth.
 });
