@@ -592,8 +592,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 		menuCommands.push(...[
 			MenuCommands.ViewDatabase,
 			MenuCommands.ViewTarget,
-			MenuCommands.ViewService,
-			MenuCommands.CopyMigration]);
+			MenuCommands.ViewService]);
 
 		if (canCancelMigration(migration)) {
 			menuCommands.push(MenuCommands.CancelMigration);
@@ -606,6 +605,8 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 		if (canRetryMigration(migration)) {
 			menuCommands.push(MenuCommands.RetryMigration);
 		}
+
+		menuCommands.push(MenuCommands.CopyMigration);
 
 		return menuCommands;
 	}
