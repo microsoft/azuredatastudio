@@ -930,14 +930,16 @@ export const CATEGORIES = {
 	ExecutionPlan: { value: nls.localize('ExecutionPlan', 'Execution Plan'), original: 'Execution Plan' }
 };
 
-export const ParseQueryCommandId = 'parseQueryAction';
-
-export class ParseQueryTaskbarAction extends Action {
+// A wrapper for the ParseSyntaxAction.
+// We are not able to reference the ParseSyntaxAction directly in QueryEditor.ts because there is a circular dependency issue.
+// The command id is also defined here to avoid duplication.
+export const ParseSyntaxCommandId = 'parseQueryAction';
+export class ParseSyntaxTaskbarAction extends Action {
 	constructor(@ICommandService private _commandService: ICommandService) {
-		super(ParseQueryCommandId, nls.localize('queryEditor.parse', "Parse"), Codicon.check.classNames);
+		super(ParseSyntaxCommandId, nls.localize('queryEditor.parse', "Parse"), Codicon.check.classNames);
 	}
 
 	public override async run(): Promise<void> {
-		this._commandService.executeCommand(ParseQueryCommandId);
+		this._commandService.executeCommand(ParseSyntaxCommandId);
 	}
 }
