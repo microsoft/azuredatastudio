@@ -70,7 +70,7 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 	 * This method overrides the original implementation to find the node by comparing the ids of the elements.
 	 * If the node is not found in the original implementation, we search for the node in the nodes map by ids.
 	 */
-	public override getDataNode(element: ConnectionProfileGroup | ServerTreeElement): IAsyncDataTreeNode<ConnectionProfileGroup, ServerTreeElement> {
+	public override getDataNode(element: ServerTreeElement, throwError: boolean = true): IAsyncDataTreeNode<ConnectionProfileGroup, ServerTreeElement> | undefined {
 		try {
 			const node = super.getDataNode(element);
 			return node;
@@ -79,7 +79,10 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 			if (node) {
 				return node;
 			}
-			throw e;
+			if (throwError) {
+				throw e;
+			}
+			return undefined;
 		}
 	}
 
@@ -132,44 +135,11 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 
 	public async expandElements(elements: ServerTreeElement[]): Promise<void> {
 		for (let element of elements) {
-			const id = element.id;
-			const node = this.getDataNodeById(id);
+			const node = this.getDataNode(element, false);
 			if (node) {
 				await this.expand(node.element);
-			} else {
-				// If the node is not found in the nodes map, we search for the node by comparing the relative paths of the elements
-				if (element) {
-					const elementPath = this.getRelativePath(element);
-					for (let n of this.nodes.values()) {
-						if (this.getRelativePath(n.element) === elementPath) {
-							await this.expand(n.element);
-							break;
-						}
-					}
-				}
 			}
 		}
-	}
-
-	/**
-	 * Get the relative path of the element in the tree. For connection and group, the path is the id of the element.
-	 * For other elements, the path is the node path of the element and the id of the connection they belong to.
-	 */
-	private getRelativePath(element: ServerTreeElement): string {
-		let path = '';
-		if (element instanceof TreeNode) {
-			path = element.nodePath;
-			let parent = element.parent;
-			while (parent.parent) {
-				parent = parent.parent;
-			}
-			if (parent.connection) {
-				path = parent.connection.id + '/' + path;
-			}
-		} else if (element instanceof ConnectionProfile || element instanceof ConnectionProfileGroup) {
-			path = element.id;
-		}
-		return path;
 	}
 
 	/**
