@@ -56,7 +56,6 @@ export class PublishDatabaseDialog {
 	private connectionId: string | undefined;
 	private connectionIsDataSource: boolean | undefined;
 	private sqlCmdVars: Record<string, string> | undefined;
-	private originalSqlCmdVarValues: Record<string, string> | undefined;
 	private deploymentOptions: DeploymentOptions | undefined;
 	private profileUsed: boolean = false;
 	private serverName: string | undefined;
@@ -744,7 +743,6 @@ export class PublishDatabaseDialog {
 
 	private createSqlCmdTable(view: azdataType.ModelView): azdataType.DeclarativeTableComponent {
 		this.sqlCmdVars = { ...this.project.sqlCmdVariables };
-		this.originalSqlCmdVarValues = { ... this.project.sqlCmdVariables };
 
 		const table = view.modelBuilder.declarativeTable().withProps({
 			ariaLabel: constants.sqlCmdVariables,
@@ -795,17 +793,30 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		loadSqlCmdVarsButton.onDidClick(async () => {
-			this.sqlCmdVars = { ...this.project.sqlCmdVariables };
+			for (const varName in this.sqlCmdVars) {
+
+				this.sqlCmdVars[varName] = this.getDefaultSqlCmdValue(varName);
+			}
 
 			const data = this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars!);
 			await (<azdataType.DeclarativeTableComponent>this.sqlCmdVariablesTable)!.updateProperties({
 				dataValues: data
 			});
 
+			this.updateRevertSqlCmdVarsButtonState();
 			this.tryEnableGenerateScriptAndPublishButtons();
 		});
 
 		return loadSqlCmdVarsButton;
+	}
+
+	/**
+	 * Gets the default value of a SQLCMD variable for a project
+	 * @param varName
+	 * @returns value defined in the sqlproj file, or blank string if not defined
+	 */
+	private getDefaultSqlCmdValue(varName: string): string {
+		return Object.keys(this.project.sqlCmdVariables).includes(varName) ? this.project.sqlCmdVariables[varName] : '';
 	}
 
 	private createSelectConnectionButton(view: azdataType.ModelView): azdataType.Component {
@@ -893,6 +904,7 @@ export class PublishDatabaseDialog {
 					(<Record<string, string>>this.sqlCmdVars)[key] = result.sqlCmdVariables[key];
 				}
 
+				this.updateRevertSqlCmdVarsButtonState();
 				this.deploymentOptions = result.options;
 
 				const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForPublish());
@@ -931,8 +943,8 @@ export class PublishDatabaseDialog {
 
 		let revertButtonEnabled = false;
 
-		for (const key in this.originalSqlCmdVarValues) {
-			if (this.sqlCmdVars![key] !== this.originalSqlCmdVarValues[key]) {
+		for (const varName in this.sqlCmdVars) {
+			if (this.sqlCmdVars![varName] !== this.getDefaultSqlCmdValue(varName)) {
 				revertButtonEnabled = true;
 				break;
 			}
