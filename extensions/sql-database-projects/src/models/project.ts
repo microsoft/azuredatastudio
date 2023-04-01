@@ -179,13 +179,6 @@ export class Project implements ISqlProject {
 		if (blockingPrompt) {
 			const result = await window.showWarningMessage(constants.updateProjectForCrossPlatform(project.projectFileName), { modal: true }, constants.yesString, constants.noString);
 
-			// const result = await window.showQuickPick([constants.yesString, constants.noString], {
-			// 	canPickMany: false,
-			// 	ignoreFocusOut: true,
-			// 	title: constants.updateProjectForCrossPlatform(project.projectFileName),
-			// 	placeHolder: constants.updateProjectForCrossPlatformShort(project.projectFileName)
-			// });
-
 			if (result === constants.yesString) {
 				await project.updateProjectForCrossPlatform();
 			}
