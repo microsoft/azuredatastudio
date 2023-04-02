@@ -106,7 +106,8 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 		while (stack.length > 0) {
 			const node = stack.pop();
 			if (node) {
-				if (!this.isCollapsed(node.element)) {
+				// Root node is always expanded and isCollapsed method does not work for it
+				if (node === this.root || !this.isCollapsed(node.element)) {
 					expanded.push(node.element);
 					if (node.children) {
 						node.children.forEach(child => stack.push(child));
