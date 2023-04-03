@@ -154,6 +154,11 @@ class Menu implements IMenu {
 						? new MenuItemAction(item.command, item.alt, options, this._contextKeyService, this._commandService)
 						: new SubmenuItemAction(item, this._menuService, this._contextKeyService, options);
 
+					// {{SQL CARBON EDIT}} - Set isDefault property
+					if (isIMenuItem(item)) {
+						(<MenuItemAction>action).isDefault = item.isDefault;
+					}
+					// {{SQL CARBON EDIT}} - End
 					activeActions.push(action);
 				}
 			}

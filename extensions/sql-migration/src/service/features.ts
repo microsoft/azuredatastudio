@@ -26,7 +26,7 @@ export abstract class MigrationExtensionService extends SqlOpsFeature<undefined>
 }
 
 export class SqlMigrationService extends MigrationExtensionService implements contracts.ISqlMigrationService {
-	private _reportUpdate: ((dbName: string, succeeded: boolean, error: string) => void) | undefined = undefined;
+	private _reportUpdate: ((dbName: string, succeeded: boolean, error: string, statusCode: string) => void) | undefined = undefined;
 
 	override providerId = ApiType.SqlMigrationProvider;
 
@@ -58,7 +58,7 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 			if (this._reportUpdate === undefined) {
 				return;
 			}
-			this._reportUpdate(e.name, e.success, e.message);
+			this._reportUpdate(e.name, e.success, e.message, e.statusCode ?? '');
 		});
 	}
 
@@ -288,7 +288,7 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 		targetManagedInstanceName: string,
 		networkSharePath: string,
 		accessToken: string,
-		reportUpdate: (dbName: string, succeeded: boolean, message: string) => void): Promise<contracts.TdeMigrationResult | undefined> {
+		reportUpdate: (dbName: string, succeeded: boolean, message: string, statusCode: string) => void): Promise<contracts.TdeMigrationResult | undefined> {
 
 		this._reportUpdate = reportUpdate;
 		let params: contracts.TdeMigrationParams = {
@@ -306,7 +306,7 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 
 		try {
 			// This call needs to be awaited so, the updates are sent during the execution of the task.
-			// If the task is not await, the finally block will execute and no update will be sent.
+			// If the task is not awaited, the finally block will execute and no updates will be sent.
 			const result = await this._client.sendRequest(contracts.TdeMigrateRequest.type, params);
 			return result;
 		}

@@ -465,6 +465,10 @@
         <source xml:lang="en">Azure Resources (Preview)</source>
         <target state="translated">Ressources Azure (préversion)</target>
       </trans-unit>
+      <trans-unit id="azure.credStoreSaveFailedError">
+        <source xml:lang="en">Keys for token cache could not be saved in credential store, this may cause Azure access token persistence issues and connection instabilities. It's likely that SqlTools has reached credential storage limit on Windows, please clear at least 2 credentials that start with "Microsoft.SqlTools|" in Windows Credential Manager and reload.</source>
+        <target state="translated">Impossible d’enregistrer les clés du cache de jetons dans le magasin d’informations d’identification. Cela peut entraîner des problèmes de persistance de jeton d’accès Azure et des instabilités de connexion. Il est probable que SqlTools ait atteint la limite de stockage des informations d’identification sur Windows. Effacez au moins 2 informations d’identification qui commencent par « Microsoft.SqlTools| » dans Windows Gestionnaire d'informations d'identification et rechargez.</target>
+      </trans-unit>
       <trans-unit id="azure.unableToOpenAzureLink">
         <source xml:lang="en">Unable to open link, missing required values</source>
         <target state="translated">Impossible d'ouvrir le lien, valeurs obligatoires manquantes</target>
@@ -524,6 +528,10 @@
       <trans-unit id="azurecore.centraluseuap">
         <source xml:lang="en">Central US EUAP</source>
         <target state="translated">USA Centre EUAP</target>
+      </trans-unit>
+      <trans-unit id="azurecore.deprecated">
+        <source xml:lang="en">Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL instead.</source>
+        <target state="translated">Avertissement : ADAL a été déprécié et est planifié pour être supprimé dans une prochaine version. Utilisez MSAL à la place.</target>
       </trans-unit>
       <trans-unit id="azurecore.eastasia">
         <source xml:lang="en">East Asia</source>

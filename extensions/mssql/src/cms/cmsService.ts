@@ -42,7 +42,7 @@ export class CmsService implements ICmsService {
 			},
 			e => {
 				this.client.logFailedRequest(contracts.CreateCentralManagementServerRequest.type, e);
-				return Promise.reject(new Error(e.message));
+				return Promise.reject(e);
 			}
 		);
 	}
@@ -55,7 +55,7 @@ export class CmsService implements ICmsService {
 			},
 			e => {
 				this.client.logFailedRequest(contracts.ListRegisteredServersRequest.type, e);
-				return Promise.reject(new Error(e.message));
+				return Promise.reject(e);
 			}
 		);
 	}
@@ -68,7 +68,7 @@ export class CmsService implements ICmsService {
 			},
 			e => {
 				this.client.logFailedRequest(contracts.AddRegisteredServerRequest.type, e);
-				return Promise.reject(new Error(e.message));
+				return Promise.reject(e);
 			}
 		);
 	}
@@ -81,7 +81,7 @@ export class CmsService implements ICmsService {
 			},
 			e => {
 				this.client.logFailedRequest(contracts.RemoveRegisteredServerRequest.type, e);
-				return Promise.reject(new Error(e.message));
+				return Promise.reject(e);
 			}
 		);
 	}

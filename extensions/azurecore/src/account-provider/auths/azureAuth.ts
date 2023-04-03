@@ -18,13 +18,15 @@ import {
 import { Deferred } from '../interfaces';
 import * as url from 'url';
 import * as Constants from '../../constants';
-import { SimpleTokenCache } from '../simpleTokenCache';
+import { SimpleTokenCache } from '../utils/simpleTokenCache';
 import { MemoryDatabase } from '../utils/memoryDatabase';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Logger } from '../../utils/Logger';
 import * as qs from 'qs';
 import { AzureAuthError } from './azureAuthError';
 import { AccountInfo, AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
+import { HttpClient } from './httpClient';
+import { getProxyEnabledHttpClient } from '../../utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -38,6 +40,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly scopesString: string;
 	protected readonly clientId: string;
 	protected readonly resources: Resource[];
+	protected readonly httpClient: HttpClient;
 	private _authLibrary: string | undefined;
 
 	constructor(
@@ -94,6 +97,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		this.scopes = [...this.metadata.settings.scopes];
 		this.scopesString = this.scopes.join(' ');
+		this.httpClient = getProxyEnabledHttpClient();
 	}
 
 	public async startLogin(): Promise<AzureAccount | azdata.PromptFailedResult> {
@@ -345,13 +349,14 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 
 		// construct request
-		// forceRefresh needs to be set true here in order to fetch the correct token, due to this issue
+		// forceRefresh needs to be set true here in order to fetch the correct token for non-full tenants, due to this issue
 		// https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/3687
 		const tokenRequest = {
 			account: account,
 			authority: `${this.loginEndpointUrl}${tenantId}`,
 			scopes: newScope,
-			forceRefresh: true
+			// Force Refresh when tenant is NOT full tenant or organizational id that this account belongs to.
+			forceRefresh: tenantId !== account.tenantId
 		};
 		try {
 			return await this.clientApplication.acquireTokenSilent(tokenRequest);
@@ -473,8 +478,15 @@ export abstract class AzureAuth implements vscode.Disposable {
 		try {
 			Logger.verbose('Fetching tenants with uri {0}', tenantUri);
 			let tenantList: string[] = [];
-			const tenantResponse = await this.makeGetRequest(tenantUri, token);
-			const data = tenantResponse.data;
+
+			const tenantResponse = await this.httpClient.sendGetRequestAsync<any>(tenantUri, {
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				}
+			});
+
+			const data = tenantResponse.body;
 			if (data.error) {
 				Logger.error(`Error fetching tenants :${data.error.code} - ${data.error.message}`);
 				throw new Error(`${data.error.code} - ${data.error.message}`);

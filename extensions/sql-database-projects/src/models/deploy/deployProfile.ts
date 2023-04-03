@@ -4,8 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import type * as azdataType from 'azdata';
-import { ISqlProjectPublishSettings, ISqlConnectionProperties } from 'sqldbproj';
+import { ISqlConnectionProperties } from 'sqldbproj';
 import { IAzureAccountSession } from 'vscode-mssql';
+import { ISqlProjectPublishSettings } from './publishSettings';
 
 export enum AppSettingType {
 	None,

@@ -103,7 +103,7 @@ stages:
         steps:
         - template: linux/sql-product-build-linux.yml
           parameters:
-            extensionsToUnitTest: ["admin-tool-ext-win", "agent", "azcli", "azurecore", "cms", "dacpac", "data-workspace", "import", "machine-learning", "notebook", "resource-deployment", "schema-compare", "sql-bindings", "sql-database-projects"]
+            extensionsToUnitTest: ["admin-tool-ext-win", "agent", "azcli", "azurecore", "cms", "dacpac", "datavirtualization", "data-workspace", "import", "machine-learning", "notebook", "resource-deployment", "schema-compare", "sql-bindings", "sql-database-projects"]
         timeoutInMinutes: 90
 
   - stage: Windows

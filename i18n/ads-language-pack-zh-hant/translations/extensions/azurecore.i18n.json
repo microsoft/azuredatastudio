@@ -153,6 +153,7 @@
 		},
 		"dist/localizedConstants": {
 			"azure.azureResourcesGridTitle": "Azure 資源 (預覽)",
+			"azure.credStoreSaveFailedError": "權杖快取的金鑰無法儲存在認證存放區中，這可能會導致 Azure 存取權杖持續性問題和連線不穩定。SqlTools 可能已達到 Windows 的認證儲存限制，請清除 Windows 認證管理員中以 「Microsoft.SqlTools|」 開始的至少 2 個認證，然後重新載入。",
 			"azure.unableToOpenAzureLink": "無法開啟連結，缺少必要值",
 			"azurecore.australiacentral": "澳洲中部",
 			"azurecore.australiacentral2": "澳洲中部 2",
@@ -168,6 +169,7 @@
 			"azurecore.centralindia": "印度中部",
 			"azurecore.centralus": "美國中部",
 			"azurecore.centraluseuap": "美國中部 EUAP",
+			"azurecore.deprecated": "警告: ADAL 已被取代，並排定在未來的版本中移除。請改用 MSAL。",
 			"azurecore.eastasia": "東亞",
 			"azurecore.eastus": "美國東部",
 			"azurecore.eastus2": "美國東部 2",

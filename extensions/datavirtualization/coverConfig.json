@@ -3,13 +3,7 @@
 	"relativeSourcePath": "..",
 	"relativeCoverageDir": "../../coverage",
 	"ignorePatterns": [
-		"**/node_modules/**",
-		"**/libs/**",
-		"**/lib/**",
-		"**/htmlcontent/**/*.js",
-		"**/*.bundle.js",
-		"**/markdown-language-features/**",
-		"**/media/*.js"
+		"**/node_modules/**"
 	],
 	"includePid": false,
 	"reports": [

@@ -8,23 +8,37 @@ import { promises as fsPromises } from 'fs';
 
 import * as lockFile from 'lockfile';
 import * as path from 'path';
-import { AccountsClearTokenCacheCommand } from '../../constants';
+import * as azdata from 'azdata';
+import * as vscode from 'vscode';
+import { AccountsClearTokenCacheCommand, AuthLibrary } from '../../constants';
 import { Logger } from '../../utils/Logger';
+import { FileEncryptionHelper } from './fileEncryptionHelper';
+import { CacheEncryptionKeys } from 'azurecore';
 
 export class MsalCachePluginProvider {
 	constructor(
 		private readonly _serviceName: string,
 		private readonly _msalFilePath: string,
+		private readonly _credentialService: azdata.CredentialProvider,
+		private readonly _onEncryptionKeysUpdated: vscode.EventEmitter<CacheEncryptionKeys>
 	) {
 		this._msalFilePath = path.join(this._msalFilePath, this._serviceName);
-		this._serviceName = this._serviceName.replace(/-/, '_');
-		Logger.verbose(`MsalCachePluginProvider: Using cache path ${_msalFilePath} and serviceName ${_serviceName}`);
+		this._fileEncryptionHelper = new FileEncryptionHelper(AuthLibrary.MSAL, this._credentialService, this._serviceName, this._onEncryptionKeysUpdated);
 	}
 
 	private _lockTaken: boolean = false;
+	private _fileEncryptionHelper: FileEncryptionHelper;
 
 	private getLockfilePath(): string {
 		return this._msalFilePath + '.lockfile';
+	}
+
+	public async init(): Promise<void> {
+		await this._fileEncryptionHelper.init();
+	}
+
+	public getCacheEncryptionKeys(): CacheEncryptionKeys {
+		return this._fileEncryptionHelper.getEncryptionKeys();
 	}
 
 	public getCachePlugin(): ICachePlugin {
@@ -33,8 +47,9 @@ export class MsalCachePluginProvider {
 			await this.waitAndLock(lockFilePath);
 			try {
 				const cache = await fsPromises.readFile(this._msalFilePath, { encoding: 'utf8' });
+				const decryptedData = await this._fileEncryptionHelper.fileOpener(cache!);
 				try {
-					cacheContext.tokenCache.deserialize(cache);
+					cacheContext.tokenCache.deserialize(decryptedData);
 				} catch (e) {
 					// Handle deserialization error in cache file in case file gets corrupted.
 					// Clearing cache here will ensure account is marked stale so re-authentication can be triggered.
@@ -49,7 +64,8 @@ export class MsalCachePluginProvider {
 				}
 				else {
 					Logger.error(`MsalCachePlugin: Failed to read from cache file: ${e}`);
-					throw e;
+					Logger.verbose(`MsalCachePlugin: Error occurred when trying to read cache file, file contents will be cleared: ${e.message}`);
+					await fsPromises.writeFile(this._msalFilePath, '', { encoding: 'utf8' });
 				}
 			} finally {
 				lockFile.unlockSync(lockFilePath);
@@ -62,7 +78,8 @@ export class MsalCachePluginProvider {
 				await this.waitAndLock(lockFilePath);
 				try {
 					const data = cacheContext.tokenCache.serialize();
-					await fsPromises.writeFile(this._msalFilePath, data, { encoding: 'utf8' });
+					const encryptedData = await this._fileEncryptionHelper.fileSaver(data!);
+					await fsPromises.writeFile(this._msalFilePath, encryptedData, { encoding: 'utf8' });
 					Logger.verbose(`MsalCachePlugin: Token written to cache successfully.`);
 				} catch (e) {
 					Logger.error(`MsalCachePlugin: Failed to write to cache file. ${e}`);

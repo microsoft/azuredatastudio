@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
+import type * as azdata from 'azdata';
 import * as path from 'vs/base/common/path';
 
 import { Action, IAction, Separator } from 'vs/base/common/actions';
@@ -30,7 +30,7 @@ import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/co
 import { URI } from 'vs/base/common/uri';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IActionProvider } from 'vs/base/browser/ui/dropdown/dropdown';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
@@ -39,6 +39,8 @@ import { INotebookViews } from 'sql/workbench/services/notebook/browser/notebook
 import { Schemas } from 'vs/base/common/network';
 import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES, CONFIG_WORKBENCH_USEVSCODENOTEBOOKS } from 'sql/workbench/common/constants';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { Task } from 'sql/workbench/services/tasks/browser/tasksRegistry';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -835,6 +837,49 @@ export class AttachToDropdown extends SelectBox {
 	}
 }
 
+async function openNewNotebook(
+	telemetryService: IAdsTelemetryService,
+	notebookService: INotebookService,
+	configurationService: IConfigurationService,
+	commandService: ICommandService,
+	profile?: azdata.IConnectionProfile
+): Promise<void> {
+	telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.NewNotebookFromConnections)
+		.withConnectionInfo(profile)
+		.send();
+
+	const usePreviewFeatures = configurationService.getValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES);
+	const useVSCodeNotebooks = configurationService.getValue(CONFIG_WORKBENCH_USEVSCODENOTEBOOKS);
+	if (usePreviewFeatures && useVSCodeNotebooks) {
+		await commandService.executeCommand('ipynb.newUntitledIpynb');
+	} else {
+		await notebookService.openNotebook(URI.from({ scheme: 'untitled' }), { connectionProfile: profile });
+	}
+}
+
+export class NewNotebookTask extends Task {
+	public static ID = 'newNotebook';
+	public static LABEL = localize('newNotebookTask.newNotebook', "New Notebook");
+	public static ICON = 'notebook';
+
+	constructor() {
+		super({
+			id: NewNotebookTask.ID,
+			title: NewNotebookTask.LABEL,
+			iconPath: undefined,
+			iconClass: NewNotebookTask.ICON
+		});
+	}
+
+	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): Promise<void> {
+		const telemetryService = accessor.get(IAdsTelemetryService);
+		const notebookService = accessor.get(INotebookService);
+		const configurationService = accessor.get(IConfigurationService);
+		const commandService = accessor.get(ICommandService);
+		return openNewNotebook(telemetryService, notebookService, configurationService, commandService, profile);
+	}
+}
+
 export class NewNotebookAction extends Action {
 
 	public static readonly ID = 'notebook.command.new';
@@ -854,24 +899,15 @@ export class NewNotebookAction extends Action {
 	}
 
 	override async run(context?: azdata.ObjectExplorerContext): Promise<void> {
-		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.NewNotebookFromConnections)
-			.withConnectionInfo(context?.connectionProfile)
-			.send();
-
-		const usePreviewFeatures = this._configurationService.getValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES);
-		const useVSCodeNotebooks = this._configurationService.getValue(CONFIG_WORKBENCH_USEVSCODENOTEBOOKS);
-		if (usePreviewFeatures && useVSCodeNotebooks) {
-			await this._commandService.executeCommand('ipynb.newUntitledIpynb');
-		} else {
-			let connProfile: azdata.IConnectionProfile;
-			if (context && context.nodeInfo) {
-				let node = await this.objectExplorerService.getTreeNode(context.connectionProfile.id, context.nodeInfo.nodePath);
-				connProfile = TreeUpdateUtils.getConnectionProfile(node).toIConnectionProfile();
-			} else if (context && context.connectionProfile) {
-				connProfile = context.connectionProfile;
-			}
-			await this._notebookService.openNotebook(URI.from({ scheme: 'untitled' }), { connectionProfile: connProfile });
+		let connProfile: azdata.IConnectionProfile;
+		if (context && context.nodeInfo) {
+			let node = await this.objectExplorerService.getTreeNode(context.connectionProfile.id, context.nodeInfo.nodePath);
+			connProfile = TreeUpdateUtils.getConnectionProfile(node).toIConnectionProfile();
+		} else if (context && context.connectionProfile) {
+			connProfile = context.connectionProfile;
 		}
+
+		await openNewNotebook(this._telemetryService, this._notebookService, this._configurationService, this._commandService, connProfile);
 	}
 }
 

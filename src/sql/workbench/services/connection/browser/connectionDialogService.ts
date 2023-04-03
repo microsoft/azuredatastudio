@@ -270,6 +270,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			showFirewallRuleOnError: true
 		};
 
+		if (params && options.params === undefined) {
+			options.params = params;
+		}
 		try {
 			const connectionResult = await this._connectionManagementService.connectAndSaveProfile(connection, uri, options, params && params.input);
 			this._connecting = false;

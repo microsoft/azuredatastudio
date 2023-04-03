@@ -248,7 +248,7 @@ export class MockInputBoxComponent extends MockUIComponent implements azdata.Inp
 	onEnterKeyPressed: vscode.Event<string>;
 	value?: string;
 	ariaLabel?: string;
-	ariaLive?: string;
+	ariaLive?: azdata.AriaLiveValue;
 	placeHolder?: string;
 	inputType?: azdata.InputBoxInputType;
 	required?: boolean;

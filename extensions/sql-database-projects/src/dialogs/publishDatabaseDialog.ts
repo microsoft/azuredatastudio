@@ -18,7 +18,7 @@ import { getAgreementDisplayText, getConnectionName, getDockerBaseImages, getPub
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { Deferred } from '../common/promise';
 import { PublishOptionsDialog } from './publishOptionsDialog';
-import { ISqlProjectPublishSettings, IPublishToDockerSettings } from 'sqldbproj';
+import { IPublishToDockerSettings, ISqlProjectPublishSettings } from '../models/deploy/publishSettings';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -41,7 +41,7 @@ export class PublishDatabaseDialog {
 	private dataSourcesRadioButton: azdataType.RadioButtonComponent | undefined;
 	private sqlCmdVariablesTable: azdataType.DeclarativeTableComponent | undefined;
 	private sqlCmdVariablesFormComponentGroup: azdataType.FormComponentGroup | undefined;
-	private loadSqlCmdVarsButton: azdataType.ButtonComponent | undefined;
+	private revertSqlCmdVarsButton: azdataType.ButtonComponent | undefined;
 	private loadProfileTextBox: azdataType.InputBoxComponent | undefined;
 	private formBuilder: azdataType.FormBuilder | undefined;
 	private connectionRow: azdataType.FlexContainer | undefined;
@@ -124,13 +124,13 @@ export class PublishDatabaseDialog {
 			this.dataSourcesFormComponent = this.createDataSourcesFormComponent(view);
 
 			this.sqlCmdVariablesTable = this.createSqlCmdTable(view);
-			this.loadSqlCmdVarsButton = this.createLoadSqlCmdVarsButton(view);
+			this.revertSqlCmdVarsButton = this.createRevertSqlCmdVarsButton(view);
 
 			this.sqlCmdVariablesFormComponentGroup = {
 				components: [
 					{
 						title: '',
-						component: this.loadSqlCmdVarsButton
+						component: this.revertSqlCmdVarsButton
 					},
 					{
 						title: '',
@@ -416,7 +416,7 @@ export class PublishDatabaseDialog {
 		const radioButtonContainer = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withItems([this.existingServerRadioButton, this.dockerServerRadioButton])
-			.withProps({ ariaRole: 'radiogroup' })
+			.withProps({ ariaRole: 'radiogroup', ariaLabel: constants.publishTo })
 			.component();
 
 		let flexRadioButtonsModel: azdataType.FlexContainer = view.modelBuilder.flexContainer()
@@ -430,7 +430,7 @@ export class PublishDatabaseDialog {
 	private onPublishTypeChange(existingServer: boolean, view: azdataType.ModelView) {
 		this.existingServerSelected = existingServer;
 		this.createDatabaseRow(view);
-		this.tryEnableGenerateScriptAndOkButtons();
+		this.tryEnableGenerateScriptAndPublishButtons();
 		if (existingServer) {
 			if (this.connectionRow) {
 				this.formBuilder!.insertFormItem({
@@ -470,7 +470,7 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		this.targetConnectionTextBox.onTextChanged(() => {
-			this.tryEnableGenerateScriptAndOkButtons();
+			this.tryEnableGenerateScriptAndPublishButtons();
 		});
 
 		return this.targetConnectionTextBox;
@@ -509,7 +509,7 @@ export class PublishDatabaseDialog {
 
 		this.dataSourcesDropDown.onValueChanged(() => {
 			this.setDatabaseToSelectedDataSourceDatabase();
-			this.tryEnableGenerateScriptAndOkButtons();
+			this.tryEnableGenerateScriptAndPublishButtons();
 		});
 
 		return {
@@ -574,7 +574,7 @@ export class PublishDatabaseDialog {
 		}).withValidation(component => utils.validateSqlServerPortNumber(component.value)).component();
 
 		this.serverPortTextBox.onTextChanged(() => {
-			this.tryEnableGenerateScriptAndOkButtons();
+			this.tryEnableGenerateScriptAndPublishButtons();
 		});
 		const serverPortRow = this.createFormRow(view, constants.serverPortNumber(name), this.serverPortTextBox);
 		this.serverAdminPasswordTextBox = view.modelBuilder.inputBox().withProps({
@@ -600,13 +600,13 @@ export class PublishDatabaseDialog {
 			required: true
 		}).withValidation(component => component.value === this.serverAdminPasswordTextBox?.value).component();
 		this.serverAdminPasswordTextBox.onTextChanged(() => {
-			this.tryEnableGenerateScriptAndOkButtons();
+			this.tryEnableGenerateScriptAndPublishButtons();
 			if (this.serverConfigAdminPasswordTextBox) {
 				this.serverConfigAdminPasswordTextBox.value = '';
 			}
 		});
 		this.serverConfigAdminPasswordTextBox.onTextChanged(() => {
-			this.tryEnableGenerateScriptAndOkButtons();
+			this.tryEnableGenerateScriptAndPublishButtons();
 		});
 		const serverConfirmPasswordRow = this.createFormRow(view, constants.confirmServerPassword(name), this.serverConfigAdminPasswordTextBox);
 
@@ -636,7 +636,7 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		this.imageTagDropDown.onValueChanged(() => {
-			this.tryEnableGenerateScriptAndOkButtons();
+			this.tryEnableGenerateScriptAndPublishButtons();
 		});
 
 		const agreementInfo = baseImages[0].agreementInfo;
@@ -648,7 +648,7 @@ export class PublishDatabaseDialog {
 			required: true
 		}).component();
 		this.eulaCheckBox.onChanged(() => {
-			this.tryEnableGenerateScriptAndOkButtons();
+			this.tryEnableGenerateScriptAndPublishButtons();
 		});
 
 		const eulaRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
@@ -719,7 +719,7 @@ export class PublishDatabaseDialog {
 				}).component();
 
 				this.targetDatabaseDropDown.onValueChanged(() => {
-					this.tryEnableGenerateScriptAndOkButtons();
+					this.tryEnableGenerateScriptAndPublishButtons();
 				});
 			}
 
@@ -773,40 +773,56 @@ export class PublishDatabaseDialog {
 				(<Record<string, string>>this.sqlCmdVars)[<string>row[0].value] = <string>row[1].value;
 			});
 
-			this.tryEnableGenerateScriptAndOkButtons();
+			this.updateRevertSqlCmdVarsButtonState();
+			this.tryEnableGenerateScriptAndPublishButtons();
 		});
 
 		return table;
 	}
 
-	private createLoadSqlCmdVarsButton(view: azdataType.ModelView): azdataType.ButtonComponent {
+	private createRevertSqlCmdVarsButton(view: azdataType.ModelView): azdataType.ButtonComponent {
 		let loadSqlCmdVarsButton: azdataType.ButtonComponent = view.modelBuilder.button().withProps({
-			label: constants.loadSqlCmdVarsButtonTitle,
-			title: constants.loadSqlCmdVarsButtonTitle,
-			ariaLabel: constants.loadSqlCmdVarsButtonTitle,
+			label: constants.revertSqlCmdVarsButtonTitle,
+			title: constants.revertSqlCmdVarsButtonTitle,
+			ariaLabel: constants.revertSqlCmdVarsButtonTitle,
 			width: '210px',
 			iconPath: IconPathHelper.refresh,
 			height: '18px',
-			CSSStyles: { 'font-size': '13px' }
+			CSSStyles: { 'font-size': '13px' },
+			enabled: false // start disabled because no SQLCMD variable values have been edited yet
 		}).component();
 
 		loadSqlCmdVarsButton.onDidClick(async () => {
-			this.sqlCmdVars = { ...this.project.sqlCmdVariables };
+			for (const varName in this.sqlCmdVars) {
+
+				this.sqlCmdVars[varName] = this.getDefaultSqlCmdValue(varName);
+			}
 
 			const data = this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars!);
 			await (<azdataType.DeclarativeTableComponent>this.sqlCmdVariablesTable)!.updateProperties({
 				dataValues: data
 			});
 
-			this.tryEnableGenerateScriptAndOkButtons();
+			this.updateRevertSqlCmdVarsButtonState();
+			this.tryEnableGenerateScriptAndPublishButtons();
 		});
 
 		return loadSqlCmdVarsButton;
 	}
 
+	/**
+	 * Gets the default value of a SQLCMD variable for a project
+	 * @param varName
+	 * @returns value defined in the sqlproj file, or blank string if not defined
+	 */
+	private getDefaultSqlCmdValue(varName: string): string {
+		return Object.keys(this.project.sqlCmdVariables).includes(varName) ? this.project.sqlCmdVariables[varName] : '';
+	}
+
 	private createSelectConnectionButton(view: azdataType.ModelView): azdataType.Component {
 		this.selectConnectionButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.selectConnection,
+			title: constants.selectConnection,
 			iconPath: IconPathHelper.selectConnection,
 			height: '16px',
 			width: '16px'
@@ -849,6 +865,7 @@ export class PublishDatabaseDialog {
 	private createLoadProfileButton(view: azdataType.ModelView): azdataType.ButtonComponent {
 		let loadProfileButton: azdataType.ButtonComponent = view.modelBuilder.button().withProps({
 			ariaLabel: constants.loadProfilePlaceholderText,
+			title: constants.loadProfilePlaceholderText,
 			iconPath: IconPathHelper.folder_blue,
 			height: '18px',
 			width: '18px'
@@ -887,6 +904,7 @@ export class PublishDatabaseDialog {
 					(<Record<string, string>>this.sqlCmdVars)[key] = result.sqlCmdVariables[key];
 				}
 
+				this.updateRevertSqlCmdVarsButtonState();
 				this.deploymentOptions = result.options;
 
 				const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForPublish());
@@ -914,8 +932,29 @@ export class PublishDatabaseDialog {
 		return data;
 	}
 
-	// only enable Generate Script and Ok buttons if all fields are filled
-	private tryEnableGenerateScriptAndOkButtons(): void {
+	/**
+	 * Enables or disables "Revert SQLCMD variable values" button depending on whether there are changes
+	 *  */
+	private updateRevertSqlCmdVarsButtonState(): void {
+		// no SQLCMD vars -> no button to update state for
+		if (!this.revertSqlCmdVarsButton) {
+			return;
+		}
+
+		let revertButtonEnabled = false;
+
+		for (const varName in this.sqlCmdVars) {
+			if (this.sqlCmdVars![varName] !== this.getDefaultSqlCmdValue(varName)) {
+				revertButtonEnabled = true;
+				break;
+			}
+		}
+
+		this.revertSqlCmdVarsButton.enabled = revertButtonEnabled;
+	}
+
+	// only enable "Generate Script" and "Publish" buttons if all fields are filled
+	private tryEnableGenerateScriptAndPublishButtons(): void {
 		let publishEnabled: boolean = false;
 		let generateScriptEnabled: boolean = false;
 

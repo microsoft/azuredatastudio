@@ -61,5 +61,8 @@ export class AzurecoreApiStub implements azurecore.IExtension {
 	provideResources(): azurecore.azureResource.IAzureResourceProvider[] {
 		throw new Error('Method not implemented.');
 	}
-
+	onEncryptionKeysUpdated: any
+	getEncryptionKeys(): Promise<azurecore.CacheEncryptionKeys> {
+		throw new Error('Method not implemented.');
+	}
 }

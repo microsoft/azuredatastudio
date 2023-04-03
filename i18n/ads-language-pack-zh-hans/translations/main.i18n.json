@@ -11493,6 +11493,7 @@
 			"notebook.toolbarIcon": "笔记本: Markdown 工具栏图标",
 			"notebookFindMatchHighlight": "其他搜索匹配项的颜色。颜色必须透明，以免隐藏下面的修饰效果。",
 			"notebookFindRangeHighlight": "限制搜索范围的颜色。颜色不能不透明，以免隐藏底层装饰。",
+			"queryEditorNullBackground": "查询编辑器结果网格中 null 值的背景色。",
 			"tileBorder": "磁贴的边框颜色",
 			"tileBoxShadow": "磁贴框阴影颜色"
 		},
@@ -12877,7 +12878,7 @@
 			"viewOptionsModal.title": "配置视图"
 		},
 		"sql/workbench/contrib/notebook/browser/outputs/gridOutput.component": {
-			"copyFailed": "复制失败，出现错误: {0}",
+			"copyFailed": "复制失败，出现错误 {0}",
 			"notebook.showChart": "显示图表",
 			"notebook.showTable": "显示表"
 		},
@@ -12895,6 +12896,7 @@
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
 			"serverGroup.autoExpand": "在对象资源管理器 viewlet 中自动展开服务器组。",
 			"serverGroup.colors": "在对象资源管理器 viewlet 中使用的服务器组面板。",
+			"serverTree.nodeExpansionTimeout": "在“服务器”视图中展开节点的超时时间(秒)",
 			"serverTree.useAsyncServerTree": "(预览)使用“服务器”视图和“连接”对话框的新异步服务器树，支持动态节点筛选等新功能。"
 		},
 		"sql/workbench/contrib/preferences/browser/sqlSettingsLayout": {
@@ -13434,6 +13436,7 @@
 			"connection.neverShowUnsupportedVersionWarning": "不再显示",
 			"connection.noAzureAccount": "未能获取 Azure 帐户令牌用于连接",
 			"connection.refreshAzureTokenFailure": "未能刷新用于连接的 Azure 帐户令牌",
+			"connection.unknownProvider": "未知提供程序 \"{0}\"",
 			"connection.unsupportedServerVersionWarning": "Azure Data Studio 不支持此服务器版本，你仍然可以连接到它，但 Azure Data Studio 中的某些功能可能无法按预期工作。",
 			"connectionDialog.connectionProviderNotSupported": "当前未安装支持提供程序类型 \"{0}\" 的扩展。是否要查看扩展?",
 			"connectionManagementService.noProviderForUri": "找不到此 URI 的提供程序: {0}",
@@ -13450,7 +13453,8 @@
 			"connection.azureTenantDropdownLabel": "Azure AD 租户",
 			"connectionName": "名称(可选)",
 			"connectionWidget.AddAzureAccount": "添加帐户…",
-			"connectionWidget.ConnectionStringError": "无法分析连接字符串。",
+			"connectionWidget.ConnectionStringError": "无法分析连接字符串。 {0}",
+			"connectionWidget.ConnectionStringUndefined": "未返回连接信息。",
 			"connectionWidget.Error": "错误",
 			"connectionWidget.connectionString": "连接字符串",
 			"connectionWidget.invalidAzureAccount": "必须选择一个帐户",
@@ -13688,7 +13692,8 @@
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
 			"OeSessionFailedError": "未能创建对象资源管理器会话",
-			"nodeExpansionError": "多个错误:"
+			"nodeExpansionError": "多个错误:",
+			"nodeExpansionTimeout": "提供程序 {1} 的节点 {0} 的节点展开超时"
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim": {
 			"firewallCanceled": "防火墙对话已取消",
@@ -13743,7 +13748,7 @@
 			"updateCellFailed": "更新单元格失败:"
 		},
 		"sql/workbench/services/query/common/queryRunner": {
-			"copyFailed": "复制失败，出现错误: {0}",
+			"copyFailed": "复制失败，出现错误 {0}",
 			"elapsedBatchTime": "批处理执行时间: {0}",
 			"query.ExecutionFailedError": "由于意外错误，执行失败: {0}\t{1}",
 			"query.message.executionTime": "执行时间总计: {0}",
@@ -13953,6 +13958,9 @@
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanInput": {
 			"epCompare.executionPlanEditorName": "ExecutionPlan"
+		},
+		"sql/workbench/contrib/editData/browser/editDataGridPanel": {
+			"editData.cellWithNullCharMessage": "此单元格包含当前不支持进行编辑的 Unicode 空字符。"
 		}
 	}
 }

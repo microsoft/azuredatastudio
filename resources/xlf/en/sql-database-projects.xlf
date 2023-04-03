@@ -406,6 +406,9 @@
     <trans-unit id="equalComparison">
       <source xml:lang="en">The project is already up to date with the database.</source>
     </trans-unit>
+    <trans-unit id="errorAddingDatabaseReference">
+      <source xml:lang="en">Error adding database reference to {0}. Error: {1}</source>
+    </trans-unit>
     <trans-unit id="errorDownloading">
       <source xml:lang="en">Error downloading {0}. Error: {1}</source>
     </trans-unit>
@@ -418,8 +421,14 @@
     <trans-unit id="errorMovingFile">
       <source xml:lang="en">Error when moving file from {0} to {1}. Error: {2}</source>
     </trans-unit>
+    <trans-unit id="errorNotSupportedInVsCode">
+      <source xml:lang="en">Error: {0} is not currently supported in SQL Database Projects for VS Code.</source>
+    </trans-unit>
+    <trans-unit id="errorPrefix">
+      <source xml:lang="en">Error: {0}</source>
+    </trans-unit>
     <trans-unit id="errorReadingProjectGuid">
-      <source xml:lang="en">Error trying to read {0} of project '{1}'</source>
+      <source xml:lang="en">Error trying to read {0} of project '{1}'. {2}</source>
     </trans-unit>
     <trans-unit id="errorRenamingFile">
       <source xml:lang="en">Error when renaming file from {0} to {1}. Error: {2}</source>
@@ -443,6 +452,9 @@
     </trans-unit>
     <trans-unit id="excludeAction">
       <source xml:lang="en">Exclude</source>
+    </trans-unit>
+    <trans-unit id="excludeFolderNotSupported">
+      <source xml:lang="en">Excluding folders is not yet supported</source>
     </trans-unit>
     <trans-unit id="excludeObjectTypes">
       <source xml:lang="en">Exclude Object Types</source>
@@ -635,9 +647,6 @@
     </trans-unit>
     <trans-unit id="noneElements">
       <source xml:lang="en">None Elements</source>
-    </trans-unit>
-    <trans-unit id="notValidVariableName">
-      <source xml:lang="en">The variable name '{0}' is not valid.</source>
     </trans-unit>
     <trans-unit id="objectType">
       <source xml:lang="en">Object Type</source>
@@ -948,6 +957,12 @@
     <trans-unit id="sqlcmdVariableAlreadyExists">
       <source xml:lang="en">A SQLCMD Variable with the same name already exists in this project</source>
     </trans-unit>
+    <trans-unit id="sqlcmdVariableNameCannotBeWhitespace">
+      <source xml:lang="en">SQLCMD variable name '{0}' cannot contain whitespace</source>
+    </trans-unit>
+    <trans-unit id="sqlcmdVariableNameCannotContainIllegalChars">
+      <source xml:lang="en">SQLCMD variable name '{0}' cannot contain any of the following characters: {1}</source>
+    </trans-unit>
     <trans-unit id="sqlcmdVariablesNodeName">
       <source xml:lang="en">SQLCMD Variables</source>
     </trans-unit>
@@ -992,6 +1007,12 @@
     </trans-unit>
     <trans-unit id="unexpectedProjectContext">
       <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
+    </trans-unit>
+    <trans-unit id="unhandledDeleteType">
+      <source xml:lang="en">Unhandled item type during delete: '{0}</source>
+    </trans-unit>
+    <trans-unit id="unhandledMoveNode">
+      <source xml:lang="en">Unhandled node type for move</source>
     </trans-unit>
     <trans-unit id="unknownDataSourceType">
       <source xml:lang="en">Unknown data source type: </source>

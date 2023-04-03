@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { getErrorMessage } from '../utils';
 import { AuthenticationType, NodeType, UserType } from './constants';
-import { AADAuthenticationTypeDisplayText, ContainedUserText, LoginTypeDisplayName, LoginTypeDisplayNameInTitle, RefreshObjectExplorerError, SQLAuthenticationTypeDisplayText, UserTypeDisplayName, UserTypeDisplayNameInTitle, UserWithLoginText, UserWithNoConnectAccess, UserWithWindowsGroupLoginText, WindowsAuthenticationTypeDisplayText } from './localizedConstants';
+import { AADAuthenticationTypeDisplayText, ColumnTypeDisplayName, ContainedUserText, DatabaseTypeDisplayName, LoginTypeDisplayName, LoginTypeDisplayNameInTitle, RefreshObjectExplorerError, SQLAuthenticationTypeDisplayText, TableTypeDisplayName, UserTypeDisplayName, UserTypeDisplayNameInTitle, UserWithLoginText, UserWithNoConnectAccess, UserWithWindowsGroupLoginText, ViewTypeDisplayName, WindowsAuthenticationTypeDisplayText } from './localizedConstants';
 
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
@@ -31,7 +31,7 @@ export function deepClone<T>(obj: T): T {
 export async function refreshParentNode(context: azdata.ObjectExplorerContext): Promise<void> {
 	if (context) {
 		try {
-			const node = await azdata.objectexplorer.getNode(context.connectionProfile.id, context.nodeInfo.nodePath);
+			const node = await azdata.objectexplorer.getNode(context.connectionProfile!.id, context.nodeInfo!.nodePath);
 			const parentNode = await node?.getParent();
 			await parentNode?.refresh();
 		}
@@ -44,7 +44,7 @@ export async function refreshParentNode(context: azdata.ObjectExplorerContext): 
 export async function refreshNode(context: azdata.ObjectExplorerContext): Promise<void> {
 	if (context) {
 		try {
-			const node = await azdata.objectexplorer.getNode(context.connectionProfile.id, context.nodeInfo.nodePath);
+			const node = await azdata.objectexplorer.getNode(context.connectionProfile!.id, context.nodeInfo!.nodePath);
 			await node?.refresh();
 		}
 		catch (err) {
@@ -59,12 +59,22 @@ export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): 
 			return inTitle ? LoginTypeDisplayNameInTitle : LoginTypeDisplayName;
 		case NodeType.User:
 			return inTitle ? UserTypeDisplayNameInTitle : UserTypeDisplayName;
+		case NodeType.Table:
+			return TableTypeDisplayName;
+		case NodeType.View:
+			return ViewTypeDisplayName;
+		case NodeType.Column:
+			return ColumnTypeDisplayName;
+		case NodeType.Database:
+			return DatabaseTypeDisplayName;
 		default:
 			throw new Error(`Unkown node type: ${type}`);
 	}
 }
 
-export function getAuthenticationTypeDisplayName(authType: AuthenticationType): string {
+export function getAuthenticationTypeDisplayName(authType: AuthenticationType | undefined): string | undefined {
+	if (authType === undefined) { return undefined; }
+
 	switch (authType) {
 		case AuthenticationType.Windows:
 			return WindowsAuthenticationTypeDisplayText;
@@ -85,6 +95,7 @@ export function getAuthenticationTypeByDisplayName(displayValue: string): Authen
 			return AuthenticationType.Sql;
 	}
 }
+
 export function getUserTypeDisplayName(userType: UserType): string {
 	switch (userType) {
 		case UserType.WithLogin:
