@@ -416,9 +416,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				connectionType: this._connectionStatusManager.isEditorTypeUri(owner.uri) ? ConnectionType.editor : ConnectionType.default,
 				input: owner,
 				runQueryOnCompletion: RunQueryOnConnectionMode.none,
-				showDashboard: options.showDashboard,
-				isEditConnection: true,
-				oldProfileId: connection.id
+				showDashboard: options.showDashboard
 			};
 			return this.showConnectionDialog(params, options, connection, connectionResult).then(() => {
 				return connectionResult;
