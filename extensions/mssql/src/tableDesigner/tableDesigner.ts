@@ -11,53 +11,70 @@ import { generateUuid } from 'vscode-languageclient/lib/utils/uuid';
 import { fillServerInfo } from '../telemetry';
 import * as telemetry from '@microsoft/ads-extension-telemetry';
 import * as nls from 'vscode-nls';
-import { getConfigPreloadDatabaseModel, setConfigPreloadDatabaseModel } from '../utils';
+import { getConfigPreloadDatabaseModel, getErrorMessage, setConfigPreloadDatabaseModel } from '../utils';
 const localize = nls.loadMessageBundle();
 
 const NewTableText = localize('tableDesigner.NewTable', "New Table");
 const DidInformUserKey: string = 'tableDesigner.DidInformUser';
+const FailedToGetConnectionStringError = localize('tableDesigner.FailedToGetConnectionStringError', "Failed to get connection string for the table. Please reconnect to the server and try again.");
 
 export function registerTableDesignerCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newTable', async (context: azdata.ObjectExplorerContext) => {
-		void showPreloadDbModelSettingPrompt(appContext);
-		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile!.id, true);
-		const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
-		const telemetryInfo = await getTelemetryInfo(context, tableIcon);
-		await azdata.designers.openTableDesigner(sqlProviderName, {
-			title: NewTableText,
-			tooltip: `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`,
-			server: context.connectionProfile!.serverName,
-			database: context.connectionProfile!.databaseName,
-			isNewTable: true,
-			id: generateUuid(),
-			connectionString: connectionString,
-			accessToken: context.connectionProfile!.options.azureAccountToken,
-			tableIcon: tableIcon
-		}, telemetryInfo);
+		try {
+			void showPreloadDbModelSettingPrompt(appContext);
+			const connectionString = await azdata.connection.getConnectionString(context.connectionProfile!.id, true);
+			if (!connectionString) {
+				throw new Error(FailedToGetConnectionStringError);
+			}
+			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
+			const telemetryInfo = await getTelemetryInfo(context, tableIcon);
+			await azdata.designers.openTableDesigner(sqlProviderName, {
+				title: NewTableText,
+				tooltip: `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`,
+				server: context.connectionProfile!.serverName,
+				database: context.connectionProfile!.databaseName,
+				isNewTable: true,
+				id: generateUuid(),
+				connectionString: connectionString,
+				accessToken: context.connectionProfile!.options.azureAccountToken,
+				tableIcon: tableIcon
+			}, telemetryInfo);
+		} catch (error) {
+			console.error(error);
+			await vscode.window.showErrorMessage(getErrorMessage(error), { modal: true });
+		}
 	}));
 
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.designTable', async (context: azdata.ObjectExplorerContext) => {
-		void showPreloadDbModelSettingPrompt(appContext);
-		const server = context.connectionProfile!.serverName;
-		const database = context.connectionProfile!.databaseName;
-		const schema = context.nodeInfo!.metadata!.schema;
-		const name = context.nodeInfo!.metadata!.name;
-		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile!.id, true);
-		const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
-		const telemetryInfo = await getTelemetryInfo(context, tableIcon);
-		await azdata.designers.openTableDesigner(sqlProviderName, {
-			title: `${schema}.${name}`,
-			tooltip: `${server} - ${database} - ${schema}.${name}`,
-			server: server,
-			database: database,
-			isNewTable: false,
-			name: name,
-			schema: schema,
-			id: `${sqlProviderName}|${server}|${database}|${schema}|${name}`,
-			connectionString: connectionString,
-			accessToken: context.connectionProfile!.options.azureAccountToken,
-			tableIcon: tableIcon
-		}, telemetryInfo);
+		try {
+			void showPreloadDbModelSettingPrompt(appContext);
+			const server = context.connectionProfile!.serverName;
+			const database = context.connectionProfile!.databaseName;
+			const schema = context.nodeInfo!.metadata!.schema;
+			const name = context.nodeInfo!.metadata!.name;
+			const connectionString = await azdata.connection.getConnectionString(context.connectionProfile!.id, true);
+			if (!connectionString) {
+				throw new Error(FailedToGetConnectionStringError);
+			}
+			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
+			const telemetryInfo = await getTelemetryInfo(context, tableIcon);
+			await azdata.designers.openTableDesigner(sqlProviderName, {
+				title: `${schema}.${name}`,
+				tooltip: `${server} - ${database} - ${schema}.${name}`,
+				server: server,
+				database: database,
+				isNewTable: false,
+				name: name,
+				schema: schema,
+				id: `${sqlProviderName}|${server}|${database}|${schema}|${name}`,
+				connectionString: connectionString,
+				accessToken: context.connectionProfile!.options.azureAccountToken,
+				tableIcon: tableIcon
+			}, telemetryInfo);
+		} catch (error) {
+			console.error(error);
+			await vscode.window.showErrorMessage(getErrorMessage(error), { modal: true });
+		}
 	}));
 }
 

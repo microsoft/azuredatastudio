@@ -26,7 +26,7 @@ import { createandLoadNotebookModel } from 'sql/workbench/contrib/notebook/test/
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 
-export class TestSerializationProvider implements azdata.SerializationProvider {
+class TestSerializationProvider implements azdata.SerializationProvider {
 	providerId: string;
 	constructor(providerId: string = 'providerId') { }
 

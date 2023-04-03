@@ -21,27 +21,27 @@ describe('Project Tree tests', function (): void {
 		const sqlprojUri = vscode.Uri.file(`${root}Fake.sqlproj`);
 
 		let inputNodes: (FileNode | FolderNode)[] = [
-			new SqlObjectFileNode(vscode.Uri.file(`${root}C`), sqlprojUri),
-			new SqlObjectFileNode(vscode.Uri.file(`${root}D`), sqlprojUri),
-			new FolderNode(vscode.Uri.file(`${root}Z`), sqlprojUri),
-			new FolderNode(vscode.Uri.file(`${root}X`), sqlprojUri),
-			new SqlObjectFileNode(vscode.Uri.file(`${root}B`), sqlprojUri),
-			new SqlObjectFileNode(vscode.Uri.file(`${root}A`), sqlprojUri),
-			new FolderNode(vscode.Uri.file(`${root}W`), sqlprojUri),
-			new FolderNode(vscode.Uri.file(`${root}Y`), sqlprojUri)
+			new SqlObjectFileNode(vscode.Uri.file(`${root}C`), sqlprojUri, 'C'),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}D`), sqlprojUri, 'D'),
+			new FolderNode(vscode.Uri.file(`${root}Z`), sqlprojUri, 'Z'),
+			new FolderNode(vscode.Uri.file(`${root}X`), sqlprojUri, 'X'),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}B`), sqlprojUri, 'B'),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}A`), sqlprojUri, 'A'),
+			new FolderNode(vscode.Uri.file(`${root}W`), sqlprojUri, 'W'),
+			new FolderNode(vscode.Uri.file(`${root}Y`), sqlprojUri, 'Y')
 		];
 
 		inputNodes = inputNodes.sort(sortFileFolderNodes);
 
 		const expectedNodes: (FileNode | FolderNode)[] = [
-			new FolderNode(vscode.Uri.file(`${root}W`), sqlprojUri),
-			new FolderNode(vscode.Uri.file(`${root}X`), sqlprojUri),
-			new FolderNode(vscode.Uri.file(`${root}Y`), sqlprojUri),
-			new FolderNode(vscode.Uri.file(`${root}Z`), sqlprojUri),
-			new SqlObjectFileNode(vscode.Uri.file(`${root}A`), sqlprojUri),
-			new SqlObjectFileNode(vscode.Uri.file(`${root}B`), sqlprojUri),
-			new SqlObjectFileNode(vscode.Uri.file(`${root}C`), sqlprojUri),
-			new SqlObjectFileNode(vscode.Uri.file(`${root}D`), sqlprojUri)
+			new FolderNode(vscode.Uri.file(`${root}W`), sqlprojUri, 'W'),
+			new FolderNode(vscode.Uri.file(`${root}X`), sqlprojUri, 'X'),
+			new FolderNode(vscode.Uri.file(`${root}Y`), sqlprojUri, 'Y'),
+			new FolderNode(vscode.Uri.file(`${root}Z`), sqlprojUri, 'Z'),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}A`), sqlprojUri, 'A'),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}B`), sqlprojUri, 'B'),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}C`), sqlprojUri, 'C'),
+			new SqlObjectFileNode(vscode.Uri.file(`${root}D`), sqlprojUri, 'D')
 		];
 
 		should(inputNodes.map(n => n.relativeProjectUri.path)).deepEqual(expectedNodes.map(n => n.relativeProjectUri.path));
@@ -54,18 +54,18 @@ describe('Project Tree tests', function (): void {
 		// nested entries before explicit top-level folder entry
 		// also, ordering of files/folders at all levels
 		proj.files.push(proj.createFileProjectEntry(path.join('someFolder', 'bNestedTest.sql'), EntryType.File));
-		proj.files.push(proj.createFileProjectEntry(path.join('someFolder', 'bNestedFolder'), EntryType.Folder));
+		proj.folders.push(proj.createFileProjectEntry(path.join('someFolder', 'bNestedFolder'), EntryType.Folder));
 		proj.files.push(proj.createFileProjectEntry(path.join('someFolder', 'aNestedTest.sql'), EntryType.File));
-		proj.files.push(proj.createFileProjectEntry(path.join('someFolder', 'aNestedFolder'), EntryType.Folder));
-		proj.files.push(proj.createFileProjectEntry('someFolder', EntryType.Folder));
+		proj.folders.push(proj.createFileProjectEntry(path.join('someFolder', 'aNestedFolder'), EntryType.Folder));
+		proj.folders.push(proj.createFileProjectEntry('someFolder', EntryType.Folder));
 
 		// duplicate files
 		proj.files.push(proj.createFileProjectEntry('duplicate.sql', EntryType.File));
 		proj.files.push(proj.createFileProjectEntry('duplicate.sql', EntryType.File));
 
 		// duplicate folders
-		proj.files.push(proj.createFileProjectEntry('duplicateFolder', EntryType.Folder));
-		proj.files.push(proj.createFileProjectEntry('duplicateFolder', EntryType.Folder));
+		proj.folders.push(proj.createFileProjectEntry('duplicateFolder', EntryType.Folder));
+		proj.folders.push(proj.createFileProjectEntry('duplicateFolder', EntryType.Folder));
 
 		const tree = new ProjectRootTreeItem(proj);
 		should(tree.children.map(x => x.relativeProjectUri.path)).deepEqual([
@@ -102,7 +102,9 @@ describe('Project Tree tests', function (): void {
 		// nested entries before explicit top-level folder entry
 		// also, ordering of files/folders at all levels
 		proj.files.push(proj.createFileProjectEntry('someFolder1\\MyNestedFolder1\\MyFile1.sql', EntryType.File));
-		proj.files.push(proj.createFileProjectEntry('someFolder1\\MyNestedFolder2', EntryType.Folder));
+		proj.folders.push(proj.createFileProjectEntry('someFolder1\\MyNestedFolder2', EntryType.Folder));
+		proj.folders.push(proj.createFileProjectEntry('someFolder1', EntryType.Folder));
+		proj.folders.push(proj.createFileProjectEntry('someFolder1\\MyNestedFolder1', EntryType.Folder));
 		proj.files.push(proj.createFileProjectEntry('someFolder1\\MyFile2.sql', EntryType.File));
 
 		const tree = new ProjectRootTreeItem(proj);

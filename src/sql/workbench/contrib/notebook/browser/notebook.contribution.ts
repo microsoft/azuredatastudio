@@ -17,7 +17,7 @@ import { IWorkbenchActionRegistry, Extensions as WorkbenchActionsExtensions } fr
 import { SyncActionDescriptor, registerAction2, MenuRegistry, MenuId, Action2 } from 'vs/platform/actions/common/actions';
 
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
-import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { NewNotebookAction, NewNotebookTask } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { IConfigurationRegistry, Extensions as ConfigExtensions, ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
 import { GridOutputComponent } from 'sql/workbench/contrib/notebook/browser/outputs/gridOutput.component';
@@ -101,8 +101,10 @@ actionRegistry.registerWorkbenchAction(
 	NewNotebookAction.LABEL
 );
 
-const DE_NEW_NOTEBOOK_COMMAND_ID = 'dataExplorer.newNotebook';
 // New Notebook
+new NewNotebookTask().registerTask();
+
+const DE_NEW_NOTEBOOK_COMMAND_ID = 'dataExplorer.newNotebook';
 CommandsRegistry.registerCommand({
 	id: DE_NEW_NOTEBOOK_COMMAND_ID,
 	handler: async (accessor, args: TreeViewItemHandleArg) => {
@@ -134,7 +136,6 @@ CommandsRegistry.registerCommand({
 	}
 });
 
-// New Notebook
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: '0_query',
 	order: 3,

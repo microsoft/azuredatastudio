@@ -153,6 +153,19 @@ export function convertSlashesForSqlProj(filePath: string): string {
 }
 
 /**
+ * Converts a SystemDatabase enum to its string value
+ * @param systemDb
+ * @returns
+ */
+export function systemDatabaseToString(systemDb: mssql.SystemDatabase): string {
+	if (systemDb === mssql.SystemDatabase.Master) {
+		return constants.master;
+	} else {
+		return constants.msdb;
+	}
+}
+
+/**
  * Read SQLCMD variables from xmlDoc and return them
  * @param xmlDoc xml doc to read SQLCMD variables from. Format must be the same that sqlproj and publish profiles use
  * @param publishProfile true if reading from publish profile
@@ -229,25 +242,24 @@ export function formatSqlCmdVariable(name: string): string {
  * Checks if it's a valid sqlcmd variable name
  * https://docs.microsoft.com/en-us/sql/ssms/scripting/sqlcmd-use-with-scripting-variables?redirectedfrom=MSDN&view=sql-server-ver15#guidelines-for-scripting-variable-names-and-values
  * @param name variable name to validate
- */
-export function isValidSqlCmdVariableName(name: string | undefined): boolean {
+ * @returns null if valid, otherwise an error message describing why input is invalid
+*/
+export function validateSqlCmdVariableName(name: string | undefined): string | null {
 	// remove $() around named if it's there
-	name = removeSqlCmdVariableFormatting(name);
+	const cleanedName = removeSqlCmdVariableFormatting(name);
 
 	// can't contain whitespace
-	if (!name || name.trim() === '' || name.includes(' ')) {
-		return false;
+	if (!cleanedName || cleanedName.trim() === '' || cleanedName.includes(' ')) {
+		return constants.sqlcmdVariableNameCannotContainWhitespace(name ?? '');
 	}
 
 	// can't contain these characters
-	if (name.includes('$') || name.includes('@') || name.includes('#') || name.includes('"') || name.includes('\'') || name.includes('-')) {
-		return false;
+	if (constants.illegalSqlCmdChars.some(c => cleanedName?.includes(c))) {
+		return constants.sqlcmdVariableNameCannotContainIllegalChars(name ?? '');
 	}
 
 	// TODO: tsql parsing to check if it's a reserved keyword or invalid tsql https://github.com/microsoft/azuredatastudio/issues/12204
-	// TODO: give more detail why variable name was invalid https://github.com/microsoft/azuredatastudio/issues/12231
-
-	return true;
+	return null;
 }
 
 /**
@@ -303,14 +315,15 @@ export async function getSchemaCompareService(): Promise<ISchemaCompareService> 
 	}
 }
 
-export async function getSqlProjectsService(): Promise<ISqlProjectsService> {
+export async function getSqlProjectsService(): Promise<mssql.ISqlProjectsService> {
 	if (getAzdataApi()) {
 		const ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
 		const api = await ext.activate();
 		return api.sqlProjects;
 	} else {
-		const api = await getVscodeMssqlApi();
-		return api.sqlProjects;
+		throw new Error(constants.errorNotSupportedInVsCode('SqlProjectService'));
+		// const api = await getVscodeMssqlApi();
+		// return api.sqlProjects;
 	}
 }
 
@@ -772,7 +785,7 @@ export function isValidBasename(name?: string): boolean {
  * Returns specific error message if file name is invalid
  * @param name filename to check
  */
-export function isValidBasenameErrorMessage(name?: string): string {
+export function isValidBasenameErrorMessage(name?: string): string | undefined {
 	return getDataWorkspaceExtensionApi().isValidBasenameErrorMessage(name);
 }
 
@@ -784,4 +797,34 @@ export function isValidBasenameErrorMessage(name?: string): string {
 export function isPublishProfile(fileName: string): boolean {
 	const hasPublishExtension = fileName.trim().toLowerCase().endsWith(constants.publishProfileExtension);
 	return hasPublishExtension;
+}
+
+/**
+ * Checks to see if a file exists at absoluteFilePath, and writes contents if it doesn't.
+ * If either the file already exists and contents is specified or the file doesn't exist and contents is blank,
+ * then an exception is thrown.
+ * @param absoluteFilePath
+ * @param contents
+ */
+export async function ensureFileExists(absoluteFilePath: string, contents?: string): Promise<void> {
+	if (contents) {
+		// Create the file if contents were passed in and file does not exist yet
+		await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
+
+		try {
+			await fs.writeFile(absoluteFilePath, contents, { flag: 'wx' });
+		} catch (error) {
+			if (error.code === 'EEXIST') {
+				// Throw specialized error, if file already exists
+				throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
+			}
+
+			throw error;
+		}
+	} else {
+		// If no contents were provided, then check that file already exists
+		if (!await exists(absoluteFilePath)) {
+			throw new Error(constants.noFileExist(absoluteFilePath));
+		}
+	}
 }

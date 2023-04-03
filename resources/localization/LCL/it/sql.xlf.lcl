@@ -3753,6 +3753,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/platform/theme/common/colorRegistry.queryEditorNullBackground" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The background color for null values in the query editor results grid.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Colore di sfondo per i valori Null nella griglia dei risultati dell'editor di query.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.tileBorder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The border color of tiles]]></Val>
@@ -15939,6 +15948,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionManagementService.connection.unknownProvider" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unknown provider '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Provider sconosciuto '{0}']]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionManagementService.connectionNotAcceptedError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connection Not Accepted]]></Val>
@@ -16040,9 +16058,21 @@
       </Item>
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionWidget.connectionWidget.ConnectionStringError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Failed to parse the connection string.]]></Val>
+          <Val><![CDATA[Failed to parse the connection string. {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Non è stato possibile analizzare la stringa di connessione.]]></Val>
+            <Val><![CDATA[Non è stato possibile analizzare la stringa di connessione. {0}]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Failed to parse the connection string.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionWidget.connectionWidget.ConnectionStringUndefined" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[No connection info returned.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nessuna informazione di connessione restituita.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

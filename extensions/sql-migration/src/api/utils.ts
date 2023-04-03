@@ -13,6 +13,7 @@ import * as constants from '../constants/strings';
 import { logError, TelemetryViews } from '../telemetry';
 import { AdsMigrationStatus } from '../dashboard/tabBase';
 import { getMigrationMode, getMigrationStatus, getMigrationTargetType, hasRestoreBlockingReason, PipelineStatusCodes } from '../constants/helper';
+import * as os from 'os';
 
 export type TargetServerType = azure.SqlVMServer | azureResource.AzureSqlManagedInstance | azure.AzureSqlDatabaseServer;
 
@@ -28,6 +29,7 @@ export const MenuCommands = {
 	CancelMigration: 'sqlmigration.cancel.migration',
 	DeleteMigration: 'sqlmigration.delete.migration',
 	RetryMigration: 'sqlmigration.retry.migration',
+	RestartMigration: 'sqlmigration.restart.migration',
 	StartMigration: 'sqlmigration.start',
 	StartLoginMigration: 'sqlmigration.login.start',
 	IssueReporter: 'workbench.action.openIssueReporter',
@@ -35,6 +37,12 @@ export const MenuCommands = {
 	NewSupportRequest: 'sqlmigration.newsupportrequest',
 	SendFeedback: 'sqlmigration.sendfeedback',
 };
+
+export enum MigrationTargetType {
+	SQLVM = 'AzureSqlVirtualMachine',
+	SQLMI = 'AzureSqlManagedInstance',
+	SQLDB = 'AzureSqlDatabase'
+}
 
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
@@ -151,7 +159,16 @@ export function getMigrationDuration(startDate: string, endDate: string): string
 }
 
 export function filterMigrations(databaseMigrations: azure.DatabaseMigration[], statusFilter: string, columnTextFilter?: string): azure.DatabaseMigration[] {
-	let filteredMigration: azure.DatabaseMigration[] = databaseMigrations || [];
+	const supportedKind: string[] = [
+		azure.AzureResourceKind.SQLDB,
+		azure.AzureResourceKind.SQLMI,
+		azure.AzureResourceKind.SQLVM,
+	];
+
+	let filteredMigration: azure.DatabaseMigration[] =
+		databaseMigrations.filter(m => supportedKind.includes(m.properties?.kind)) ||
+		[];
+
 	if (columnTextFilter) {
 		const filter = columnTextFilter.toLowerCase();
 		filteredMigration = filteredMigration.filter(
@@ -195,6 +212,7 @@ export function filterMigrations(databaseMigrations: azure.DatabaseMigration[], 
 			return filteredMigration.filter(
 				value => getMigrationStatus(value) === constants.MigrationState.Completing);
 	}
+
 	return filteredMigration;
 }
 
@@ -922,4 +940,21 @@ export async function promptUserForFolder(): Promise<string> {
 	}
 
 	return '';
+}
+
+export function isWindows(): boolean { return (os.platform() === 'win32') }
+
+export async function isAdmin(): Promise<boolean> {
+	let isAdmin: boolean = false;
+	try {
+		if (isWindows()) {
+			isAdmin = (await import('native-is-elevated'))();
+		} else {
+			isAdmin = process.getuid() === 0;
+		}
+	} catch (e) {
+		//Ignore error and return false;
+	}
+
+	return isAdmin;
 }

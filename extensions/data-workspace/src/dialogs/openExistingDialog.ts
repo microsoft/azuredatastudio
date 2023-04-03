@@ -163,6 +163,7 @@ export class OpenExistingDialog extends DialogBase {
 
 		const localClonePathBrowseFolderButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.BrowseButtonText,
+			title: constants.BrowseButtonText,
 			iconPath: IconPathHelper.folder,
 			width: '18px',
 			height: '16px',
@@ -203,6 +204,7 @@ export class OpenExistingDialog extends DialogBase {
 
 		const localProjectBrowseFolderButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.BrowseButtonText,
+			title: constants.BrowseButtonText,
 			iconPath: IconPathHelper.folder,
 			width: '18px',
 			height: '16px'

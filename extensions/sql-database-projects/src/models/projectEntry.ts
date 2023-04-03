@@ -44,25 +44,29 @@ export class FileProjectEntry extends ProjectEntry implements IFileProjectEntry 
 }
 
 export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
+	databaseSqlCmdVariableValue?: string;
+	databaseSqlCmdVariableName?: string;
 	databaseVariableLiteralValue?: string;
-	databaseSqlCmdVariable?: string;
-	serverName?: string;
-	serverSqlCmdVariable?: string;
+	serverSqlCmdVariableName?: string;
+	serverSqlCmdVariableValue?: string;
 	suppressMissingDependenciesErrors: boolean;
 
 	constructor(settings: IDacpacReferenceSettings) {
-		super(settings.dacpacFileLocation, '', EntryType.DatabaseReference);
-		this.databaseSqlCmdVariable = settings.databaseVariable;
-		this.databaseVariableLiteralValue = settings.databaseName;
-		this.serverName = settings.serverName;
-		this.serverSqlCmdVariable = settings.serverVariable;
+		super(settings.dacpacFileLocation, /* relativePath doesn't get set for database references */ '', EntryType.DatabaseReference);
 		this.suppressMissingDependenciesErrors = settings.suppressMissingDependenciesErrors;
+
+		this.databaseVariableLiteralValue = settings.databaseVariableLiteralValue;
+		this.databaseSqlCmdVariableName = settings.databaseName;
+		this.databaseSqlCmdVariableValue = settings.databaseVariable;
+
+		this.serverSqlCmdVariableName = settings.serverName;
+		this.serverSqlCmdVariableValue = settings.serverVariable;
 	}
 
 	/**
 	 * File name that gets displayed in the project tree
 	 */
-	public get databaseName(): string {
+	public get referenceName(): string {
 		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;
 	}
 
@@ -73,49 +77,44 @@ export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDa
 }
 
 export class SystemDatabaseReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
-	constructor(uri: Uri, public ssdtUri: Uri, public databaseVariableLiteralValue: string | undefined, public suppressMissingDependenciesErrors: boolean) {
-		super(uri, '', EntryType.DatabaseReference);
+	constructor(public referenceName: string, public databaseVariableLiteralValue: string | undefined, public suppressMissingDependenciesErrors: boolean) {
+		super(Uri.file(referenceName), referenceName, EntryType.DatabaseReference);
 	}
 
 	/**
-	 * File name that gets displayed in the project tree
+	 * Returns the name of the system database - this is used for deleting the system database reference
 	 */
-	public get databaseName(): string {
-		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;
-	}
-
 	public override pathForSqlProj(): string {
-		// need to remove the leading slash for system database path for build to work on Windows
-		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
-	}
-
-	public ssdtPathForSqlProj(): string {
-		// need to remove the leading slash for system database path for build to work on Windows
-		return utils.convertSlashesForSqlProj(this.ssdtUri.path.substring(1));
+		return this.referenceName;
 	}
 }
 
 export class SqlProjectReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
-	projectName: string;
-	projectGuid: string;
-	databaseVariableLiteralValue?: string;
-	databaseSqlCmdVariable?: string;
-	serverName?: string;
-	serverSqlCmdVariable?: string;
-	suppressMissingDependenciesErrors: boolean;
+	public projectName: string;
+	public projectGuid: string;
+	public databaseVariableLiteralValue?: string;
+	public databaseSqlCmdVariableName?: string;
+	public databaseSqlCmdVariableValue?: string;
+	public serverSqlCmdVariableName?: string;
+	public serverSqlCmdVariableValue?: string;
+	public suppressMissingDependenciesErrors: boolean;
 
 	constructor(settings: IProjectReferenceSettings) {
-		super(settings.projectRelativePath!, '', EntryType.DatabaseReference);
+		super(settings.projectRelativePath!, /* relativePath doesn't get set for database references */ '', EntryType.DatabaseReference);
+
 		this.projectName = settings.projectName;
 		this.projectGuid = settings.projectGuid;
-		this.databaseSqlCmdVariable = settings.databaseVariable;
-		this.databaseVariableLiteralValue = settings.databaseName;
-		this.serverName = settings.serverName;
-		this.serverSqlCmdVariable = settings.serverVariable;
 		this.suppressMissingDependenciesErrors = settings.suppressMissingDependenciesErrors;
+
+		this.databaseVariableLiteralValue = settings.databaseVariableLiteralValue;
+		this.databaseSqlCmdVariableName = settings.databaseName;
+		this.databaseSqlCmdVariableValue = settings.databaseVariable;
+
+		this.serverSqlCmdVariableName = settings.serverName;
+		this.serverSqlCmdVariableValue = settings.serverVariable;
 	}
 
-	public get databaseName(): string {
+	public get referenceName(): string {
 		return this.projectName;
 	}
 
@@ -135,9 +134,4 @@ export enum DatabaseReferenceLocation {
 	sameDatabase,
 	differentDatabaseSameServer,
 	differentDatabaseDifferentServer
-}
-
-export enum SystemDatabase {
-	master,
-	msdb
 }

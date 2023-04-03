@@ -6,12 +6,13 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationMode, MigrationStateModel, MigrationTargetType, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
+import { MigrationMode, MigrationStateModel, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { createHeadingTextComponent, createInformationRow, createLabelTextComponent } from './wizardController';
 import { getResourceGroupFromId } from '../api/azure';
 import { TargetDatabaseSummaryDialog } from '../dialog/targetDatabaseSummary/targetDatabaseSummaryDialog';
 import * as styles from '../constants/styles';
+import { MigrationTargetType } from '../api/utils';
 
 export class SummaryPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;

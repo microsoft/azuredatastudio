@@ -17,10 +17,10 @@ Please report issues and feature requests [here.](https://github.com/microsoft/a
 
 ## Getting Started with Database Projects
 
-* Create a new database project by going to the **Projects** viewlet or by searching **Projects: New** in the command palette.
-* Existing database projects can be opened by going to the **Projects** viewlet or by searching **Projects: Open Existing** in the command palette.
-* Start from an existing database by using the **Create Project from Database** from the command palette or database context menu.
-* Start from an OpenAPI/Swagger spec by using the **Generate SQL Project from OpenAPI/Swagger spec** command.
+* Create a new database project by going to the `Database Projects` view or by searching `Database Projects: New` in the command palette.
+* Existing database projects can be opened by going to the `Database Projects` view or by searching `Database Projects: Open existing` in the command palette.
+* Start from an existing database by using the `Create Project from Database` from the command palette or database context menu.
+* Start from an OpenAPI/Swagger spec by using the `Generate SQL Project from OpenAPI/Swagger spec` command (Preview).
 
 ## Code of Conduct
 
@@ -28,7 +28,7 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Telemetry
 
-This extensions collects telemetry data, which is used to help understand how to improve the product. For example, this usage data helps to debug issues, such as slow start-up times, and to prioritize new features. While we appreciate the insights this data provides, we also know that not everyone wants to send usage data and you can disable telemetry as described [here for Azure Data Studio](https://github.com/Microsoft/azuredatastudio/wiki/How-to-Disable-Telemetry-Reporting#how-to-disable-telemetry-reporting) or [here for VS Code](https://code.visualstudio.com/docs/getstarted/telemetry#_disable-telemetry-reporting).
+This extensions collects telemetry data, which is used to help understand how to improve the product. For example, this usage data helps to debug issues, such as slow start-up times, and to prioritize new features. While we appreciate the insights this data provides, we also know that not everyone wants to send usage data and you can disable telemetry as described [here for Azure Data Studio](https://aka.ms/ads-disable-telemetry) or [here for VS Code](https://code.visualstudio.com/docs/getstarted/telemetry#_disable-telemetry-reporting).
 
 ## Privacy Statement
 
