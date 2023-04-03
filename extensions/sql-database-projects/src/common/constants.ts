@@ -142,7 +142,7 @@ export const profileReadError = (err: any) => localize('profileReadError', "Erro
 export const sqlCmdVariables = localize('sqlCmdTableLabel', "SQLCMD Variables");
 export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Name");
 export const sqlCmdValueColumn = localize('sqlCmdValueColumn', "Value");
-export const loadSqlCmdVarsButtonTitle = localize('reloadValuesFromProjectButtonTitle', "Reload values from project");
+export const revertSqlCmdVarsButtonTitle = localize('revertSqlCmdVarsButtonTitle', "Revert values to project defaults");
 export const profile = localize('profile', "Profile");
 export const selectConnection = localize('selectConnection', "Select connection");
 export const server = localize('server', "Server");
