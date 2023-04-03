@@ -9465,9 +9465,9 @@ slice-ansi@^2.1.0:
     astral-regex "^1.0.0"
     is-fullwidth-code-point "^2.0.0"
 
-"slickgrid@github:Microsoft/SlickGrid.ADS#2.3.42":
-  version "2.3.42"
-  resolved "https://codeload.github.com/Microsoft/SlickGrid.ADS/tar.gz/29021c4410512d0d644a3b8eb5115bc84ed277e9"
+"slickgrid@github:Microsoft/SlickGrid.ADS#2.3.43":
+  version "2.3.43"
+  resolved "https://codeload.github.com/Microsoft/SlickGrid.ADS/tar.gz/877ada4c52320a851bb9f7b54eed10831423c144"
 
 smart-buffer@^4.2.0:
   version "4.2.0"
