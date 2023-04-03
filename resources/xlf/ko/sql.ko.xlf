@@ -5855,10 +5855,6 @@ Error: {1}</source>
         <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
         <target state="translated">서버 보기에서 노드를 확장하는 데 대한 시간 제한(초)</target>
       </trans-unit>
-      <trans-unit id="serverTree.useAsyncServerTree">
-        <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
-        <target state="translated">(미리 보기) 동적 노드 필터링과 같은 새로운 기능 지원을 사용하여 서버 보기 및 연결 대화 상자에 새 비동기 서버 트리를 사용합니다.</target>
-      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/preferences/browser/sqlSettingsLayout" source-language="en" datatype="plaintext" target-language="ko">
@@ -7429,9 +7425,9 @@ Error: {1}</source>
         <target state="translated">닫기</target>
       </trans-unit>
       <trans-unit id="addAccountFailedCodeMessage">
-        <source xml:lang="en">{0} 
+        <source xml:lang="en">{0}
 Error Message: {1}</source>
-        <target state="translated">{0} 
+        <target state="translated">{0}
 오류 메시지: {1}</target>
       </trans-unit>
       <trans-unit id="addAccountFailedGenericMessage">
@@ -7451,9 +7447,9 @@ Error Message: {1}</source>
         <target state="translated">사용자가 계정 새로 고침을 취소했습니다.</target>
       </trans-unit>
       <trans-unit id="refreshFailed">
-        <source xml:lang="en">0 
+        <source xml:lang="en">0
 Error Message: 1</source>
-        <target state="translated">0 
+        <target state="translated">0
 오류 메시지: 1</target>
       </trans-unit>
     </body>
@@ -8217,7 +8213,7 @@ Error Message: 1</source>
       <trans-unit id="insightsDidNotFindResolvedFile">
         <source xml:lang="en">Could not find query file at any of the following paths :
  {0}</source>
-        <target state="translated">다음 경로에서 쿼리 파일을 찾을 수 없습니다. 
+        <target state="translated">다음 경로에서 쿼리 파일을 찾을 수 없습니다.
  {0}</target>
       </trans-unit>
     </body>

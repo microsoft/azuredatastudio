@@ -5855,10 +5855,6 @@ Error: {1}</source>
         <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
         <target state="translated">在“服务器”视图中展开节点的超时时间(秒)</target>
       </trans-unit>
-      <trans-unit id="serverTree.useAsyncServerTree">
-        <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
-        <target state="translated">(预览)使用“服务器”视图和“连接”对话框的新异步服务器树，支持动态节点筛选等新功能。</target>
-      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/preferences/browser/sqlSettingsLayout" source-language="en" datatype="plaintext" target-language="zh-Hans">
@@ -7429,9 +7425,9 @@ Error: {1}</source>
         <target state="translated">关闭</target>
       </trans-unit>
       <trans-unit id="addAccountFailedCodeMessage">
-        <source xml:lang="en">{0} 
+        <source xml:lang="en">{0}
 Error Message: {1}</source>
-        <target state="translated">{0} 
+        <target state="translated">{0}
 错误消息: {1}</target>
       </trans-unit>
       <trans-unit id="addAccountFailedGenericMessage">
@@ -7451,9 +7447,9 @@ Error Message: {1}</source>
         <target state="translated">用户已取消刷新帐户</target>
       </trans-unit>
       <trans-unit id="refreshFailed">
-        <source xml:lang="en">0 
+        <source xml:lang="en">0
 Error Message: 1</source>
-        <target state="translated">0 
+        <target state="translated">0
 错误消息: 1</target>
       </trans-unit>
     </body>

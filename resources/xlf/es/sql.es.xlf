@@ -5855,10 +5855,6 @@ Error: {1}</target>
         <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
         <target state="translated">Tiempo de espera en segundos para expandir un nodo en la vista Servidores</target>
       </trans-unit>
-      <trans-unit id="serverTree.useAsyncServerTree">
-        <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
-        <target state="translated">(Versión preliminar) Use el nuevo árbol de servidores asincrónicos para la vista Servidores y el cuadro de diálogo Conexión, con compatibilidad con nuevas características como el filtrado de nodos dinámicos.</target>
-      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/preferences/browser/sqlSettingsLayout" source-language="en" datatype="plaintext" target-language="es">
@@ -7429,9 +7425,9 @@ Error: {1}</target>
         <target state="translated">Cerrar</target>
       </trans-unit>
       <trans-unit id="addAccountFailedCodeMessage">
-        <source xml:lang="en">{0} 
+        <source xml:lang="en">{0}
 Error Message: {1}</source>
-        <target state="translated">{0} 
+        <target state="translated">{0}
 Mensaje de error: {1}</target>
       </trans-unit>
       <trans-unit id="addAccountFailedGenericMessage">
@@ -7451,9 +7447,9 @@ Mensaje de error: {1}</target>
         <target state="translated">El usuario canceló la actualización de la cuenta</target>
       </trans-unit>
       <trans-unit id="refreshFailed">
-        <source xml:lang="en">0 
+        <source xml:lang="en">0
 Error Message: 1</source>
-        <target state="translated">0 
+        <target state="translated">0
 Mensaje de error: 1</target>
       </trans-unit>
     </body>

@@ -4193,9 +4193,6 @@ Error: {1}</source>
     <trans-unit id="serverTree.nodeExpansionTimeout">
       <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
     </trans-unit>
-    <trans-unit id="serverTree.useAsyncServerTree">
-      <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
-    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/preferences/browser/sqlSettingsLayout" source-language="en" datatype="plaintext"><body>
     <trans-unit id="builtinCharts">
@@ -5329,7 +5326,7 @@ Error: {1}</source>
       <source xml:lang="en">Close</source>
     </trans-unit>
     <trans-unit id="addAccountFailedCodeMessage">
-      <source xml:lang="en">{0} 
+      <source xml:lang="en">{0}
 Error Message: {1}</source>
     </trans-unit>
     <trans-unit id="addAccountFailedGenericMessage">
@@ -5345,7 +5342,7 @@ Error Message: {1}</source>
       <source xml:lang="en">Refresh account was canceled by the user</source>
     </trans-unit>
     <trans-unit id="refreshFailed">
-      <source xml:lang="en">{0} 
+      <source xml:lang="en">{0}
 Error Message: {1}</source>
     </trans-unit>
 </body></file>

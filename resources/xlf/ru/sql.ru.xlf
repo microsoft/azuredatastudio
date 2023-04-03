@@ -5855,10 +5855,6 @@ Error: {1}</source>
         <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
         <target state="translated">Время ожидания в секундах для расширения узла в представлении "Серверы".</target>
       </trans-unit>
-      <trans-unit id="serverTree.useAsyncServerTree">
-        <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
-        <target state="translated">(Предварительная версия.) Используйте новое дерево асинхронных серверов для представления серверов и диалогового окна подключения с поддержкой новых функций, таких как фильтрация динамических узлов.</target>
-      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/preferences/browser/sqlSettingsLayout" source-language="en" datatype="plaintext" target-language="ru">
@@ -7429,9 +7425,9 @@ Error: {1}</source>
         <target state="translated">Закрыть</target>
       </trans-unit>
       <trans-unit id="addAccountFailedCodeMessage">
-        <source xml:lang="en">{0} 
+        <source xml:lang="en">{0}
 Error Message: {1}</source>
-        <target state="translated">{0} 
+        <target state="translated">{0}
 Сообщение об ошибке: {1}</target>
       </trans-unit>
       <trans-unit id="addAccountFailedGenericMessage">
@@ -7451,9 +7447,9 @@ Error Message: {1}</source>
         <target state="translated">Обновление учетной записи было отменено пользователем</target>
       </trans-unit>
       <trans-unit id="refreshFailed">
-        <source xml:lang="en">0 
+        <source xml:lang="en">0
 Error Message: 1</source>
-        <target state="translated">0 
+        <target state="translated">0
 Сообщение об ошибке: 1</target>
       </trans-unit>
     </body>
