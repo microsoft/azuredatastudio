@@ -50,6 +50,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Failed to find tenant '{0}' in account '{1}' when refreshing security token</source>
         <target state="translated">Не удалось найти клиент ''{0}'' в учетной записи ''{1}'' при обновлении токена безопасности</target>
       </trans-unit>
+      <trans-unit id="mssql.noConvertResult">
+        <source xml:lang="en">No result returned from Notebook convert request</source>
+        <target state="translated">Запрос на преобразование записной книжки не вернул результатов</target>
+      </trans-unit>
+      <trans-unit id="mssql.noDocumentFound">
+        <source xml:lang="en">No document found for URI {0}</source>
+        <target state="translated">Не найден документ для URI {0}</target>
+      </trans-unit>
       <trans-unit id="mssql.tokenRefreshFailed">
         <source xml:lang="en">{0} AAD token refresh failed, please reconnect to enable {0}</source>
         <target state="translated">{0} Не удалось обновить токен AAD. Пожалуйста, подключитесь повторно, чтобы включить {0}</target>
@@ -57,6 +65,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="mssql.tokenRefreshFailedNoSecurityToken">
         <source xml:lang="en">Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected</source>
         <target state="translated">Не удалось обновить токен редактора, автозаполнение будет отключено до тех пор, пока редактор не будет отключен и подключен снова.</target>
+      </trans-unit>
+      <trans-unit id="mssql.unsupportedPlatform">
+        <source xml:lang="en">Unsupported platform {0}</source>
+        <target state="translated">Неподдерживаемая платформа {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -78,6 +90,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
   </file>
   <file original="extensions/mssql/dist/objectManagement/localizedConstants" source-language="en" datatype="plaintext" target-language="ru">
     <body>
+      <trans-unit id="objectManagement.ColumnDisplayName">
+        <source xml:lang="en">column</source>
+        <target state="translated">столбец</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.DatabaseDisplayName">
+        <source xml:lang="en">database</source>
+        <target state="translated">база данных</target>
+      </trans-unit>
       <trans-unit id="objectManagement.LoginTypeDisplayName">
         <source xml:lang="en">login</source>
         <target state="translated">имя для входа</target>
@@ -90,6 +110,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">OK</source>
         <target state="translated">OK</target>
       </trans-unit>
+      <trans-unit id="objectManagement.TableDisplayName">
+        <source xml:lang="en">table</source>
+        <target state="translated">таблица</target>
+      </trans-unit>
       <trans-unit id="objectManagement.UserDisplayName">
         <source xml:lang="en">user</source>
         <target state="translated">пользователь</target>
@@ -97,6 +121,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.UserTypeDisplayNameInTitle">
         <source xml:lang="en">User</source>
         <target state="translated">Пользователь</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ViewDisplayName">
+        <source xml:lang="en">view</source>
+        <target state="translated">представление</target>
       </trans-unit>
       <trans-unit id="objectManagement.advancedSectionHeader">
         <source xml:lang="en">Advanced</source>
@@ -218,6 +246,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Windows Authentication</source>
         <target state="translated">Проверка подлинности Windows.</target>
       </trans-unit>
+      <trans-unit id="objectManagement.loginNotSelectedError">
+        <source xml:lang="en">Login is not selected.</source>
+        <target state="translated">Имя для входа не выбрано.</target>
+      </trans-unit>
       <trans-unit id="objectManagement.nameCannotBeEmptyError">
         <source xml:lang="en">Name cannot be empty.</source>
         <target state="translated">Необходимо ввести имя.</target>
@@ -230,6 +262,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">{0} - New (Preview)</source>
         <note>{0} object type.</note>
         <target state="translated">{0} — предварительная версия</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.noConnectionUriError">
+        <source xml:lang="en">Failed to retrieve the connection information, please reconnect and try again.</source>
+        <target state="translated">Не удалось получить сведения о подключении. Восстановите подключение и повторите попытку.</target>
       </trans-unit>
       <trans-unit id="objectManagement.objectPropertiesDialogTitle">
         <source xml:lang="en">{0} - {1} (Preview)</source>
@@ -262,6 +298,20 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">An error occurred while while refreshing the object explorer. {0}</source>
         <note>{0}: error message.</note>
         <target state="translated">Произошла ошибка при обновлении обозревателя объектов. {0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectDialogTitle">
+        <source xml:lang="en">Enter new name</source>
+        <target state="translated">Введите новое имя</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectError">
+        <source xml:lang="en">An error occurred while renaming {0} '{1}' to '{2}'. {3}</source>
+        <note>{0} object type, {1}: original name, {2}: new name, {3}: error message.</note>
+        <target state="translated">Произошла ошибка при переименовании {0} "{1}" на "{2}". {3}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectOperationName">
+        <source xml:lang="en">Rename {0} '{1}' to '{2}'</source>
+        <note>{0} object type, {1}: original name, {2}: new name</note>
+        <target state="translated">Переименовать {0} "{1}" на "{2}"</target>
       </trans-unit>
       <trans-unit id="objectManagement.selectedLabel">
         <source xml:lang="en">Selected</source>
@@ -601,7 +651,7 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">Задает протокол для аттестации анклава на стороне сервера, используемого Always Encrypted с защищенным анклавами</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.displayName">
-        <source xml:lang="en">Attestation Protocol</source>
+        <source xml:lang="en">Attestation protocol</source>
         <target state="translated">Протокол аттестации</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.description">
@@ -609,8 +659,8 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">Задает конечную точку для аттестации анклава на стороне сервера, используемого Always Encrypted с защищенным анклавами</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
-        <source xml:lang="en">Enclave Attestation URL</source>
-        <target state="translated">URL-адрес аттестации анклава</target>
+        <source xml:lang="en">Attestation URL</source>
+        <target state="translated">URL-адрес аттестации</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.false">
         <source xml:lang="en">Optional (False)</source>
@@ -761,12 +811,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">Репликация</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.secureEnclaves.description">
-        <source xml:lang="en">Enables or disables Secure Enclaves for the connection</source>
-        <target state="translated">Включает или отключает Secure Enclaves для подключения</target>
+        <source xml:lang="en">Enables or disables Secure enclaves for the connection</source>
+        <target state="translated">Включает или отключает защищенные анклавы для подключения</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.secureEnclaves.displayName">
-        <source xml:lang="en">Secure Enclaves</source>
-        <target state="translated">Secure Enclaves</target>
+        <source xml:lang="en">Secure enclaves</source>
+        <target state="translated">Защищенные анклавы</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.description">
         <source xml:lang="en">Name of the SQL Server instance</source>
@@ -1149,8 +1199,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">Новый пользователь</target>
       </trans-unit>
       <trans-unit id="title.objectProperties">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">Свойства</target>
+        <source xml:lang="en">Properties (Preview)</source>
+        <target state="translated">Свойства (предварительная версия)</target>
+      </trans-unit>
+      <trans-unit id="title.renameObject">
+        <source xml:lang="en">Rename</source>
+        <target state="translated">Переименовать</target>
       </trans-unit>
       <trans-unit id="title.searchServers">
         <source xml:lang="en">Search: Servers</source>

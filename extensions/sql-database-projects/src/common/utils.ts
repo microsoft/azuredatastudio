@@ -785,7 +785,7 @@ export function isValidBasename(name?: string): boolean {
  * Returns specific error message if file name is invalid
  * @param name filename to check
  */
-export function isValidBasenameErrorMessage(name?: string): string {
+export function isValidBasenameErrorMessage(name?: string): string | undefined {
 	return getDataWorkspaceExtensionApi().isValidBasenameErrorMessage(name);
 }
 

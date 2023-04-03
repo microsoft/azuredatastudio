@@ -5,173 +5,82 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as features from '../../service/features';
-import { azureResource } from 'azurecore';
-import { getLocations, getResourceGroupFromId, getBlobContainerId, getFullResourceGroupFromId, getResourceName, DatabaseMigration, getMigrationTargetInstance } from '../../api/azure';
-import { MigrationMode, MigrationStateModel, NetworkContainerType, SavedInfo } from '../../models/stateMachine';
-import { MigrationServiceContext } from '../../models/migrationLocalStorage';
-import { WizardController } from '../../wizard/wizardController';
-import { getMigrationModeEnum, getMigrationTargetTypeEnum } from '../../constants/helper';
 import * as constants from '../../constants/strings';
-import { ServiceContextChangeEvent } from '../../dashboard/tabBase';
-import { migrationServiceProvider } from '../../service/provider';
-import { getSourceConnectionProfile } from '../../api/sqlUtils';
 
-export class RetryMigrationDialog {
+export function openRetryMigrationDialog(
+	errorMessage: string,
+	onAcceptCallback: () => Promise<void>): void {
 
-	constructor(
-		private readonly _context: vscode.ExtensionContext,
-		private readonly _serviceContext: MigrationServiceContext,
-		private readonly _migration: DatabaseMigration,
-		private readonly _serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>) {
-	}
+	const disposables: vscode.Disposable[] = [];
+	const tab = azdata.window.createTab('');
 
-	private async createMigrationStateModel(
-		serviceContext: MigrationServiceContext,
-		migration: DatabaseMigration,
-		serverName: string,
-		migrationService: features.SqlMigrationService,
-		location: azureResource.AzureLocation): Promise<MigrationStateModel> {
+	tab.registerContent(async (view) => {
+		disposables.push(
+			view.onClosed(e =>
+				disposables.forEach(
+					d => { try { d.dispose(); } catch { } })));
 
-		const stateModel = new MigrationStateModel(this._context, migrationService);
-		const sourceDatabaseName = migration.properties.sourceDatabaseName;
-		const savedInfo: SavedInfo = {
-			closedPage: 0,
+		const flex = view.modelBuilder.flexContainer()
+			.withItems([
+				view.modelBuilder.text()
+					.withProps({
+						value: constants.RETRY_MIGRATION_TITLE,
+						title: constants.RETRY_MIGRATION_TITLE,
+						CSSStyles: { 'font-weight': '600', 'margin': '10px 0px 5px 0px' },
+					})
+					.component(),
+				view.modelBuilder.inputBox()
+					.withProps({
+						value: errorMessage,
+						title: errorMessage,
+						readOnly: true,
+						multiline: true,
+						inputType: 'text',
+						rows: 10,
+						CSSStyles: { 'overflow': 'hidden auto', 'margin': '0px 0px 10px 0px' },
+					})
+					.component(),
+				view.modelBuilder.text()
+					.withProps({
+						value: constants.RETRY_MIGRATION_SUMMARY,
+						title: constants.RETRY_MIGRATION_SUMMARY,
+						CSSStyles: { 'margin': '0px 0px 10px 0px' },
+					})
+					.component(),
+				view.modelBuilder.text()
+					.withProps({
+						value: constants.RETRY_MIGRATION_PROMPT,
+						title: constants.RETRY_MIGRATION_PROMPT,
+						CSSStyles: { 'margin': '0px 0px 5px 0px' },
+					})
+					.component(),
+			])
+			.withLayout({ flexFlow: 'column', })
+			.withProps({ CSSStyles: { 'margin': '0 15px 0 15px' } })
+			.component();
 
-			// DatabaseSelector
-			databaseAssessment: [sourceDatabaseName],
+		await view.initializeModel(flex);
+	});
 
-			// SKURecommendation
-			databaseList: [sourceDatabaseName],
-			databaseInfoList: [],
-			serverAssessment: null,
-			skuRecommendation: null,
-			migrationTargetType: getMigrationTargetTypeEnum(migration)!,
+	const dialog = azdata.window.createModelViewDialog(
+		'',
+		'retryMigrationDialog',
+		500,
+		'normal',
+		undefined,
+		false);
+	dialog.content = [tab];
+	dialog.okButton.label = constants.YES;
+	dialog.okButton.position = 'left';
+	dialog.cancelButton.label = constants.NO;
+	dialog.cancelButton.position = 'left';
+	dialog.cancelButton.focused = true;
 
-			// TargetSelection
-			azureAccount: serviceContext.azureAccount!,
-			azureTenant: serviceContext.azureAccount!.properties.tenants[0]!,
-			subscription: serviceContext.subscription!,
-			location: location,
-			resourceGroup: {
-				id: getFullResourceGroupFromId(migration.id),
-				name: getResourceGroupFromId(migration.id),
-				subscription: serviceContext.subscription!,
-			},
-			targetServerInstance: await getMigrationTargetInstance(
-				serviceContext.azureAccount!,
-				serviceContext.subscription!,
-				migration),
 
-			// MigrationMode
-			migrationMode: getMigrationModeEnum(migration),
 
-			// DatabaseBackup
-			targetDatabaseNames: [migration.name],
-			networkContainerType: null,
-			networkShares: [],
-			blobs: [],
+	disposables.push(
+		dialog.okButton.onClick(
+			async e => await onAcceptCallback()));
 
-			// Integration Runtime
-			sqlMigrationService: serviceContext.migrationService,
-		};
-
-		const getStorageAccountResourceGroup = (storageAccountResourceId: string): azureResource.AzureResourceResourceGroup => {
-			return {
-				id: getFullResourceGroupFromId(storageAccountResourceId!),
-				name: getResourceGroupFromId(storageAccountResourceId!),
-				subscription: this._serviceContext.subscription!
-			};
-		};
-		const getStorageAccount = (storageAccountResourceId: string): azureResource.AzureGraphResource => {
-			const storageAccountName = getResourceName(storageAccountResourceId);
-			return {
-				type: 'microsoft.storage/storageaccounts',
-				id: storageAccountResourceId!,
-				tenantId: savedInfo.azureTenant?.id!,
-				subscriptionId: this._serviceContext.subscription?.id!,
-				name: storageAccountName,
-				location: savedInfo.location!.name,
-			};
-		};
-
-		const sourceLocation = migration.properties.backupConfiguration?.sourceLocation;
-		if (sourceLocation?.fileShare) {
-			savedInfo.networkContainerType = NetworkContainerType.NETWORK_SHARE;
-			const storageAccountResourceId = migration.properties.backupConfiguration?.targetLocation?.storageAccountResourceId!;
-			savedInfo.networkShares = [
-				{
-					password: '',
-					networkShareLocation: sourceLocation?.fileShare?.path!,
-					windowsUser: sourceLocation?.fileShare?.username!,
-					storageAccount: getStorageAccount(storageAccountResourceId!),
-					resourceGroup: getStorageAccountResourceGroup(storageAccountResourceId!),
-					storageKey: ''
-				}
-			];
-		} else if (sourceLocation?.azureBlob) {
-			savedInfo.networkContainerType = NetworkContainerType.BLOB_CONTAINER;
-			const storageAccountResourceId = sourceLocation?.azureBlob?.storageAccountResourceId!;
-			savedInfo.blobs = [
-				{
-					blobContainer: {
-						id: getBlobContainerId(getFullResourceGroupFromId(storageAccountResourceId!), getResourceName(storageAccountResourceId!), sourceLocation?.azureBlob.blobContainerName),
-						name: sourceLocation?.azureBlob.blobContainerName,
-						subscription: this._serviceContext.subscription!
-					},
-					lastBackupFile: getMigrationModeEnum(migration) === MigrationMode.OFFLINE ? migration.properties.offlineConfiguration?.lastBackupName! : undefined,
-					storageAccount: getStorageAccount(storageAccountResourceId!),
-					resourceGroup: getStorageAccountResourceGroup(storageAccountResourceId!),
-					storageKey: ''
-				}
-			];
-		}
-
-		stateModel.retryMigration = true;
-		stateModel.savedInfo = savedInfo;
-		stateModel.serverName = serverName;
-		return stateModel;
-	}
-
-	public async openDialog(dialogName?: string) {
-		const locations = await getLocations(
-			this._serviceContext.azureAccount!,
-			this._serviceContext.subscription!);
-
-		const targetInstance = await getMigrationTargetInstance(
-			this._serviceContext.azureAccount!,
-			this._serviceContext.subscription!,
-			this._migration);
-
-		let location: azureResource.AzureLocation;
-		locations.forEach(azureLocation => {
-			if (azureLocation.name === targetInstance.location) {
-				location = azureLocation;
-			}
-		});
-
-		const activeConnection = await getSourceConnectionProfile();
-		let serverName: string = '';
-		if (!activeConnection) {
-			const connection = await azdata.connection.openConnectionDialog();
-			if (connection) {
-				serverName = connection.options.server;
-			}
-		} else {
-			serverName = activeConnection.serverName;
-		}
-
-		const migrationService = <features.SqlMigrationService>await migrationServiceProvider.getService(features.ApiType.SqlMigrationProvider)!;
-		const stateModel = await this.createMigrationStateModel(this._serviceContext, this._migration, serverName, migrationService, location!);
-
-		if (await stateModel.loadSavedInfo()) {
-			const wizardController = new WizardController(
-				this._context,
-				stateModel,
-				this._serviceContextChangedEvent);
-			await wizardController.openWizard();
-		} else {
-			void vscode.window.showInformationMessage(constants.MIGRATION_CANNOT_RETRY);
-		}
-	}
+	azdata.window.openDialog(dialog);
 }

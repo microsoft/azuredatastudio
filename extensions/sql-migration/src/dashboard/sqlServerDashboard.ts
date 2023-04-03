@@ -6,16 +6,16 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { promises as fs } from 'fs';
-import { DatabaseMigration, deleteMigration, getMigrationDetails } from '../api/azure';
+import { DatabaseMigration, deleteMigration, getMigrationDetails, getMigrationErrors, retryMigration } from '../api/azure';
 import { MenuCommands, SqlMigrationExtensionId } from '../api/utils';
-import { canCancelMigration, canCutoverMigration, canDeleteMigration, canRetryMigration } from '../constants/helper';
+import { canCancelMigration, canCutoverMigration, canDeleteMigration, canRestartMigrationWizard, canRetryMigration } from '../constants/helper';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationNotebookInfo, NotebookPathHelper } from '../constants/notebookPathHelper';
 import * as loc from '../constants/strings';
 import { SavedAssessmentDialog } from '../dialog/assessmentResults/savedAssessmentDialog';
 import { ConfirmCutoverDialog } from '../dialog/migrationCutover/confirmCutoverDialog';
 import { MigrationCutoverDialogModel } from '../dialog/migrationCutover/migrationCutoverDialogModel';
-import { RetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDialog';
+import { RestartMigrationDialog } from '../dialog/restartMigration/restartMigrationDialog';
 import { SqlMigrationServiceDetailsDialog } from '../dialog/sqlMigrationService/sqlMigrationServiceDetailsDialog';
 import { MigrationLocalStorage } from '../models/migrationLocalStorage';
 import { MigrationStateModel, SavedInfo } from '../models/stateMachine';
@@ -28,6 +28,7 @@ import { AdsMigrationStatus, MigrationDetailsEvent, ServiceContextChangeEvent } 
 import { migrationServiceProvider } from '../service/provider';
 import { ApiType, SqlMigrationService } from '../service/features';
 import { getSourceConnectionId, getSourceConnectionProfile } from '../api/sqlUtils';
+import { openRetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDialog';
 
 export interface MenuCommandArgs {
 	connectionId: string,
@@ -355,27 +356,61 @@ export class DashboardWidget {
 			vscode.commands.registerCommand(
 				MenuCommands.RetryMigration,
 				async (args: MenuCommandArgs) => {
+					await this.clearError(args.connectionId);
+					const service = await MigrationLocalStorage.getMigrationServiceContext();
+					const migration = await this._getMigrationById(args.migrationId, args.migrationOperationId);
+					if (service && migration && canRetryMigration(migration)) {
+						const errorMessage = getMigrationErrors(migration);
+						await openRetryMigrationDialog(
+							errorMessage,
+							async () => {
+								try {
+									await retryMigration(
+										service.azureAccount!,
+										service.subscription!,
+										migration);
+									await this._migrationsTab.refresh();
+								} catch (e) {
+									await this.showError(
+										args.connectionId,
+										loc.MIGRATION_RETRY_ERROR,
+										loc.MIGRATION_RETRY_ERROR,
+										e.message);
+									logError(TelemetryViews.MigrationsTab, MenuCommands.RetryMigration, e);
+								}
+							});
+					}
+					else {
+						await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_RETRY);
+						logError(TelemetryViews.MigrationsTab, MenuCommands.RetryMigration, "cannot retry migration");
+					}
+				}));
+
+		this._context.subscriptions.push(
+			vscode.commands.registerCommand(
+				MenuCommands.RestartMigration,
+				async (args: MenuCommandArgs) => {
 					try {
 						await this.clearError(args.connectionId);
 						const migration = await this._getMigrationById(args.migrationId, args.migrationOperationId);
-						if (migration && canRetryMigration(migration)) {
-							const retryMigrationDialog = new RetryMigrationDialog(
+						if (migration && canRestartMigrationWizard(migration)) {
+							const restartMigrationDialog = new RestartMigrationDialog(
 								this._context,
 								await MigrationLocalStorage.getMigrationServiceContext(),
 								migration,
 								this._onServiceContextChanged);
-							await retryMigrationDialog.openDialog();
+							await restartMigrationDialog.openDialog();
 						}
 						else {
-							await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_RETRY);
+							await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_RESTART);
 						}
 					} catch (e) {
 						await this.showError(
 							args.connectionId,
-							loc.MIGRATION_RETRY_ERROR,
-							loc.MIGRATION_RETRY_ERROR,
+							loc.MIGRATION_RESTART_ERROR,
+							loc.MIGRATION_RESTART_ERROR,
 							e.message);
-						logError(TelemetryViews.MigrationsTab, MenuCommands.RetryMigration, e);
+						logError(TelemetryViews.MigrationsTab, MenuCommands.RestartMigration, e);
 					}
 				}));
 

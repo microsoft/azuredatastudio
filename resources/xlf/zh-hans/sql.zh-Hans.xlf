@@ -894,6 +894,10 @@ Default Skipped Commands:
         <source xml:lang="en">Color of the range limiting the search. The color must not be opaque so as not to hide underlying decorations.</source>
         <target state="translated">限制搜索范围的颜色。颜色不能不透明，以免隐藏底层装饰。</target>
       </trans-unit>
+      <trans-unit id="queryEditorNullBackground">
+        <source xml:lang="en">The background color for null values in the query editor results grid.</source>
+        <target state="translated">查询编辑器结果网格中 null 值的背景色。</target>
+      </trans-unit>
       <trans-unit id="tileBorder">
         <source xml:lang="en">The border color of tiles</source>
         <target state="translated">磁贴的边框颜色</target>
@@ -3493,6 +3497,14 @@ Default Skipped Commands:
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/editData/browser/editDataGridPanel" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="editData.cellWithNullCharMessage">
+        <source xml:lang="en">This cell contains the Unicode null character which is currently not supported for editing.</source>
+        <target state="translated">此单元格包含当前不支持进行编辑的 Unicode 空字符。</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/editData/browser/gridActions" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="copySelection">
@@ -5784,8 +5796,8 @@ Error: {1}</source>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error: {0}</source>
-        <target state="translated">复制失败，出现错误: {0}</target>
+        <source xml:lang="en">Copy failed with error {0}</source>
+        <target state="translated">复制失败，出现错误 {0}</target>
       </trans-unit>
       <trans-unit id="notebook.showChart">
         <source xml:lang="en">Show chart</source>
@@ -5838,6 +5850,10 @@ Error: {1}</source>
       <trans-unit id="serverGroup.colors">
         <source xml:lang="en">Server Group color palette used in the Object Explorer viewlet.</source>
         <target state="translated">在对象资源管理器 viewlet 中使用的服务器组面板。</target>
+      </trans-unit>
+      <trans-unit id="serverTree.nodeExpansionTimeout">
+        <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
+        <target state="translated">在“服务器”视图中展开节点的超时时间(秒)</target>
       </trans-unit>
       <trans-unit id="serverTree.useAsyncServerTree">
         <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
@@ -7764,6 +7780,10 @@ Error Message: 1</source>
         <source xml:lang="en">Failed to refresh Azure account token for connection</source>
         <target state="translated">未能刷新用于连接的 Azure 帐户令牌</target>
       </trans-unit>
+      <trans-unit id="connection.unknownProvider">
+        <source xml:lang="en">Unknown provider '{0}'</source>
+        <target state="translated">未知提供程序 "{0}"</target>
+      </trans-unit>
       <trans-unit id="connection.unsupportedServerVersionWarning">
         <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
         <target state="translated">Azure Data Studio 不支持此服务器版本，你仍然可以连接到它，但 Azure Data Studio 中的某些功能可能无法按预期工作。</target>
@@ -7825,8 +7845,12 @@ Error Message: 1</source>
         <target state="translated">添加帐户…</target>
       </trans-unit>
       <trans-unit id="connectionWidget.ConnectionStringError">
-        <source xml:lang="en">Failed to parse the connection string.</source>
-        <target state="translated">无法分析连接字符串。</target>
+        <source xml:lang="en">Failed to parse the connection string. {0}</source>
+        <target state="translated">无法分析连接字符串。 {0}</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.ConnectionStringUndefined">
+        <source xml:lang="en">No connection info returned.</source>
+        <target state="translated">未返回连接信息。</target>
       </trans-unit>
       <trans-unit id="connectionWidget.Error">
         <source xml:lang="en">Error</source>
@@ -8654,6 +8678,10 @@ Error Message: 1</source>
         <source xml:lang="en">Multiple errors:</source>
         <target state="translated">多个错误:</target>
       </trans-unit>
+      <trans-unit id="nodeExpansionTimeout">
+        <source xml:lang="en">Node expansion timed out for node {0} for providers {1}</source>
+        <target state="translated">提供程序 {1} 的节点 {0} 的节点展开超时</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim" source-language="en" datatype="plaintext" target-language="zh-Hans">
@@ -8843,8 +8871,8 @@ Error Message: 1</source>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error: {0}</source>
-        <target state="translated">复制失败，出现错误: {0}</target>
+        <source xml:lang="en">Copy failed with error {0}</source>
+        <target state="translated">复制失败，出现错误 {0}</target>
       </trans-unit>
       <trans-unit id="elapsedBatchTime">
         <source xml:lang="en">Batch execution time: {0}</source>

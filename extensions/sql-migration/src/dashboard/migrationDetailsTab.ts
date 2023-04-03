@@ -10,7 +10,7 @@ import * as loc from '../constants/strings';
 import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getMigrationStatusImage } from '../api/utils';
 import { logError, TelemetryViews } from '../telemetry';
 import * as styles from '../constants/styles';
-import { canCancelMigration, canCutoverMigration, canDeleteMigration, canRetryMigration, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation, isShirMigration } from '../constants/helper';
+import { canCancelMigration, canCutoverMigration, canDeleteMigration, canRestartMigrationWizard, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation, isShirMigration } from '../constants/helper';
 import { AzureResourceKind, DatabaseMigration, getResourceName } from '../api/azure';
 import * as utils from '../api/utils';
 import * as helper from '../constants/helper';
@@ -291,7 +291,7 @@ export class MigrationDetailsTab extends MigrationDetailsTabBase<MigrationDetail
 			this.cutoverButton.enabled = canCutoverMigration(migration);
 			this.cancelButton.enabled = canCancelMigration(migration);
 			this.deleteButton.enabled = canDeleteMigration(migration);
-			this.retryButton.enabled = canRetryMigration(migration);
+			this.restartButton.enabled = canRestartMigrationWizard(migration);
 		} catch (e) {
 			await this.statusBar.showError(
 				loc.MIGRATION_STATUS_REFRESH_ERROR,
@@ -484,6 +484,8 @@ export class MigrationDetailsTab extends MigrationDetailsTabBase<MigrationDetail
 				.withLayout({ flexFlow: 'column', })
 				.withProps({ width: '100%' })
 				.component();
+
+			await utils.updateControlDisplay(this.retryButton, false);
 
 			this.content = container;
 		} catch (e) {

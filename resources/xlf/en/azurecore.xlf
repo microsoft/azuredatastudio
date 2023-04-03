@@ -369,6 +369,12 @@
     <trans-unit id="azurecore.deprecated">
       <source xml:lang="en">Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL instead.</source>
     </trans-unit>
+    <trans-unit id="azurecore.disable">
+      <source xml:lang="en">Disable</source>
+    </trans-unit>
+    <trans-unit id="azurecore.dismiss">
+      <source xml:lang="en">Dismiss</source>
+    </trans-unit>
     <trans-unit id="azurecore.eastasia">
       <source xml:lang="en">East Asia</source>
     </trans-unit>
@@ -431,6 +437,9 @@
     </trans-unit>
     <trans-unit id="azurecore.norwaywest">
       <source xml:lang="en">Norway West</source>
+    </trans-unit>
+    <trans-unit id="azurecore.piiLogging.warning">
+      <source xml:lang="en">Warning: Azure PII Logging is enabled. Enabling this option allows personally identifiable information to be logged and should only be used for debugging purposes.</source>
     </trans-unit>
     <trans-unit id="azurecore.postgresServer">
       <source xml:lang="en">Azure Database for PostgreSQL server</source>

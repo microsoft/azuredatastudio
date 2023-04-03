@@ -7,8 +7,6 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as loc from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { EOL } from 'os';
-import { DatabaseMigration } from '../api/azure';
 import { getSelectedServiceStatus } from '../models/migrationLocalStorage';
 import { MenuCommands, SqlMigrationExtensionId } from '../api/utils';
 import { DashboardStatusBar } from './DashboardStatusBar';
@@ -182,20 +180,6 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 				return await vscode.commands.executeCommand(actionId, args);
 			}));
 		return feedbackButton;
-	}
-
-	protected getMigrationErrors(migration: DatabaseMigration): string {
-		const errors = [];
-		errors.push(migration.properties.provisioningError);
-		errors.push(migration.properties.migrationFailureError?.message);
-		errors.push(migration.properties.migrationStatusDetails?.fileUploadBlockingErrors ?? []);
-		errors.push(migration.properties.migrationStatusDetails?.restoreBlockingReason);
-		errors.push(migration.properties.migrationStatusDetails?.sqlDataCopyErrors);
-
-		// remove undefined and duplicate error entries
-		return errors
-			.filter((e, i, arr) => e !== undefined && i === arr.indexOf(e))
-			.join(EOL);
 	}
 
 	protected showDialogMessage(

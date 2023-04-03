@@ -1108,7 +1108,7 @@ async function testUpdateInRoundTrip(test: Mocha.Runnable | undefined, fileBefor
 
 	project.isCrossPlatformCompatible.should.be.false('Project should not be cross-plat compatible before conversion');
 
-	await project.updateProjectForRoundTrip();
+	await project.updateProjectForCrossPlatform();
 
 	(project.isCrossPlatformCompatible).should.be.true('Project should be cross-plat compatible after conversion');
 	(await exists(projFilePath + '_backup')).should.be.true('Backup file should have been generated before the project was updated');
