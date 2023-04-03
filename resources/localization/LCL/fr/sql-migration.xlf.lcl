@@ -944,7 +944,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Number of stripes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nombre de rayures]]></Val>
+            <Val><![CDATA[Nombre de franges]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -971,7 +971,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Restore status]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[État de la restauration]]></Val>
+            <Val><![CDATA[État de restauration]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2581,6 +2581,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.field.label.mi.restore.state" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Managed instance restore state]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[État de restauration de Managed Instance]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4480,6 +4483,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.restore.status.searching.backups" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Searching backups]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Recherche des sauvegardes]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6925,12 +6931,18 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.storageAccount.warning.many" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target instance '{0}' may not be able to access storage account '{1}'. Ensure that the subnet of the target instance is whitelisted on the storage account, and if applicable, that the private endpoint is in the same virtual network as the target server.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L’instance cible '{0}' n’est peut-être pas en mesure d’accéder aux '{1}' du compte de stockage. Vérifiez que le sous-réseau du instance cible est sur liste verte sur le compte de stockage et, le cas échéant, que le point de terminaison privé se trouve dans le même réseau virtuel que le serveur cible.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.storageAccount.warning.one" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target instance '{0}' may not be able to access storage accounts '{1}'. Ensure that the subnet of the target instance is whitelisted on the storage accounts, and if applicable, that the private endpoints are on the same virtual network as the target server.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L’instance cible '{0}' n’est peut-être pas en mesure d’accéder aux '{1}' du compte de stockage. Vérifiez que le sous-réseau de l’instance cible est sur liste verte sur le compte de stockage et, le cas échéant, que les points de terminaison privés se trouvent dans le même réseau virtuel que le serveur cible.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
