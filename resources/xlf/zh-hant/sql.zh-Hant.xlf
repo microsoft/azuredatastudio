@@ -5855,6 +5855,10 @@ Error: {1}</source>
         <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
         <target state="translated">在伺服器檢視中展開節點的逾時 (以秒為單位)</target>
       </trans-unit>
+      <trans-unit id="serverTree.useAsyncServerTree">
+        <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
+        <target state="translated">(預覽) 針對伺服器檢視及連線對話方塊使用新的非同步伺服器樹狀結構，並支援動態節點篩選等新功能。</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/preferences/browser/sqlSettingsLayout" source-language="en" datatype="plaintext" target-language="zh-Hant">
@@ -7425,9 +7429,9 @@ Error: {1}</source>
         <target state="translated">關閉</target>
       </trans-unit>
       <trans-unit id="addAccountFailedCodeMessage">
-        <source xml:lang="en">{0}
+        <source xml:lang="en">{0} 
 Error Message: {1}</source>
-        <target state="translated">{0}
+        <target state="translated">{0} 
 錯誤訊息: {1}</target>
       </trans-unit>
       <trans-unit id="addAccountFailedGenericMessage">
@@ -7447,9 +7451,9 @@ Error Message: {1}</source>
         <target state="translated">使用者已取消重新整理帳戶</target>
       </trans-unit>
       <trans-unit id="refreshFailed">
-        <source xml:lang="en">0
+        <source xml:lang="en">0 
 Error Message: 1</source>
-        <target state="translated">0
+        <target state="translated">0 
 錯誤訊息: 1</target>
       </trans-unit>
     </body>

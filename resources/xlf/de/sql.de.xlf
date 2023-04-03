@@ -5855,6 +5855,10 @@ Fehler: {1}</target>
         <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
         <target state="translated">Timeout in Sekunden für das Erweitern eines Knotens in der Serveransicht</target>
       </trans-unit>
+      <trans-unit id="serverTree.useAsyncServerTree">
+        <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
+        <target state="translated">(Vorschau) Verwenden Sie die neue asynchrone Serverstruktur für die Serveransicht und das Verbindungsdialogfeld. Sie bietet Unterstützung für neue Features wie die dynamische Knotenfilterung.</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/preferences/browser/sqlSettingsLayout" source-language="en" datatype="plaintext" target-language="de">
@@ -7425,9 +7429,9 @@ Fehler: {1}</target>
         <target state="translated">Schließen</target>
       </trans-unit>
       <trans-unit id="addAccountFailedCodeMessage">
-        <source xml:lang="en">{0}
+        <source xml:lang="en">{0} 
 Error Message: {1}</source>
-        <target state="translated">{0}
+        <target state="translated">{0} 
 Fehlermeldung: {1}</target>
       </trans-unit>
       <trans-unit id="addAccountFailedGenericMessage">
@@ -7447,9 +7451,9 @@ Fehlermeldung: {1}</target>
         <target state="translated">Die Kontoaktualisierung wurde durch den Benutzer abgebrochen.</target>
       </trans-unit>
       <trans-unit id="refreshFailed">
-        <source xml:lang="en">0
+        <source xml:lang="en">0 
 Error Message: 1</source>
-        <target state="translated">0
+        <target state="translated">0 
 Fehlermeldung: 1</target>
       </trans-unit>
     </body>

@@ -50,7 +50,7 @@ const serverTreeConfig: IConfigurationNode = {
 		'serverTree.useAsyncServerTree': {
 			'type': 'boolean',
 			'default': true,
-			'description': localize('serverTree.useAsyncServerTree', "Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.")
+			'description': localize('serverTree.useAsyncServerTree', "(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.")
 		},
 		'serverTree.nodeExpansionTimeout': {
 			'type': 'number',
