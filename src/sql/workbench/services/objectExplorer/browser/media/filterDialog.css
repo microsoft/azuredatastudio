@@ -1,0 +1,33 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.filter-dialog-body {
+	height: 300px;
+	padding: 10px;
+}
+
+.clause-table-container .clause-table {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+.clause-table-container{
+	max-height: 270px;
+	overflow-y: scroll;
+}
+
+.profiler-filter-remove-condition {
+	width:20px;
+	height:20px;
+	cursor: pointer;
+}
+
+.profiler-filter-clause-table-action {
+	cursor: pointer;
+	margin-right: 10px;
+	padding: 2px;
+	text-decoration: underline;
+	display: inline-block;
+}

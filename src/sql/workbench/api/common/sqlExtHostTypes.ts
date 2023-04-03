@@ -478,6 +478,52 @@ export enum AzureResource {
 	Custom = 12 // Handles custom resource URIs as received from server endpoint.
 }
 
+export enum NodeInfoFilterPropertyType {
+	string = 0,
+	number = 1,
+	boolean = 2,
+	date = 3,
+	predefinedValues = 4
+}
+
+export enum NodeInfoDateTimeOperators {
+	equals = 0,
+	notEquals = 1,
+	lessThan = 2,
+	lessThanOrEquals = 3,
+	greaterThan = 4,
+	greaterThanOrEquals = 5,
+	between = 6,
+	notBetween = 7,
+}
+
+export enum NodeInfoStringOperators {
+	equals = 0,
+	contains = 1,
+	notContains = 2
+}
+
+export enum NodeInfoPredefinedValuesOperators {
+	equals = 0,
+	notEquals = 1
+}
+
+export enum NodeInfoNumberOperators {
+	equals = 0,
+	notEquals = 1,
+	lessThan = 2,
+	lessThanOrEquals = 3,
+	greaterThan = 4,
+	greaterThanOrEquals = 5,
+	between = 6,
+	notBetween = 7
+}
+
+export enum NodeInfoBooleanOperators {
+	equal = 0,
+	notEqual = 1
+}
+
 export class TreeItem extends vsExtTypes.TreeItem {
 	payload?: azdata.IConnectionProfile;
 	providerHandle?: string;

@@ -93,6 +93,12 @@ export class TreeNode {
 	 */
 	public children?: TreeNode[];
 
+	public isFilteringSupported?: boolean;
+
+	public defaultFilters?: azdata.NodeInfoFilterProperty[];
+
+	public filters?: azdata.NodeInfoFilterProperty[];
+
 
 	public connection?: ConnectionProfile;
 
@@ -108,6 +114,9 @@ export class TreeNode {
 		nodeSubType: string, nodeStatus?: string, parent?: TreeNode, metadata?: azdata.ObjectMetadata,
 		iconType?: string | SqlThemeIcon,
 		icon?: IconPath | SqlThemeIcon,
+		isFilteringSupported?: boolean,
+		defaultFilters?: azdata.NodeInfoFilterProperty[],
+		filters?: azdata.NodeInfoFilterProperty[],
 		private _objectExplorerCallbacks?: ObjectExplorerCallbacks) {
 		this.nodeTypeId = nodeTypeId;
 		this.objectType = objectType;
@@ -122,6 +131,9 @@ export class TreeNode {
 		this.nodeSubType = nodeSubType;
 		this.nodeStatus = nodeStatus;
 		this.icon = icon;
+		this.isFilteringSupported = isFilteringSupported;
+		this.defaultFilters = defaultFilters;
+		this.filters = filters;
 	}
 	public getConnectionProfile(): ConnectionProfile | undefined {
 		let currentNode: TreeNode = this;

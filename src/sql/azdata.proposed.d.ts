@@ -1780,6 +1780,87 @@ declare module 'azdata' {
 		 * The path of the parent node.
 		 */
 		parentNodePath: string;
+		/**
+		 * flag to indicate if the node supports filtering
+		 */
+		isFilteringSupported?: boolean;
+		/**
+		 * list of supported filter operators
+		 */
+		defaultFilters?: NodeInfoFilterProperty[];
+		/**
+		 * list of properties to filter the nodes on
+		 */
+		filters?: NodeInfoFilterProperty[];
+	}
+
+	export interface NodeInfoFilterProperty {
+		/**
+		 * The name of the filter property
+		 */
+		name: string;
+		/**
+		 * The type of the filter property
+		 */
+		type: NodeInfoFilterPropertyType;
+		/**
+		 * The operator of the filter property
+		 */
+		operator?: NodeInfoDateTimeOperators | NodeInfoStringOperators | NodeInfoPredefinedValuesOperators | NodeInfoNumberOperators | NodeInfoBooleanOperators;
+		/**
+		 * The value of the filter property
+		 */
+		value: string;
+		/**
+		 * The list of options for the filter property if the type is predefinedValues
+		 */
+		options?: string[];
+	}
+
+	export enum NodeInfoFilterPropertyType {
+		string = 0,
+		number = 1,
+		boolean = 2,
+		date = 3,
+		predefinedValues = 4
+	}
+
+	export enum NodeInfoDateTimeOperators {
+		equals = 0,
+		notEquals = 1,
+		lessThan = 2,
+		lessThanOrEquals = 3,
+		greaterThan = 4,
+		greaterThanOrEquals = 5,
+		between = 6,
+		notBetween = 7,
+	}
+
+	export enum NodeInfoStringOperators {
+		equals = 0,
+		contains = 1,
+		notContains = 2
+	}
+
+	export enum NodeInfoPredefinedValuesOperators {
+		equals = 0,
+		notEquals = 1
+	}
+
+	export enum NodeInfoNumberOperators {
+		equals = 0,
+		notEquals = 1,
+		lessThan = 2,
+		lessThanOrEquals = 3,
+		greaterThan = 4,
+		greaterThanOrEquals = 5,
+		between = 6,
+		notBetween = 7
+	}
+
+	export enum NodeInfoBooleanOperators {
+		equal = 0,
+		notEqual = 1
 	}
 
 	export namespace window {

@@ -179,6 +179,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private _connectionsWaitingForSession: Map<string, boolean> = new Map<string, boolean>();
 
+	private _filtersCache: Map<string, azdata.NodeInfoFilterProperty[]> = new Map<string, azdata.NodeInfoFilterProperty[]>();
+
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
@@ -469,6 +471,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		refresh: boolean = false): Promise<azdata.ObjectExplorerExpandInfo> {
 		let self = this;
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
+
 			if (session.sessionId! in self._sessions && self._sessions[session.sessionId!]) {
 				let newRequest = false;
 				if (!self._sessions[session.sessionId!].nodes[node.nodePath]) {
@@ -757,7 +760,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 
 		let node = new TreeNode(nodeInfo.nodeType, nodeInfo.objectType, nodeInfo.label, isLeaf, nodeInfo.nodePath, nodeInfo.parentNodePath,
-			nodeInfo.nodeSubType!, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, nodeInfo.icon, {
+			nodeInfo.nodeSubType!, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, nodeInfo.icon, nodeInfo.isFilteringSupported, nodeInfo.defaultFilters, nodeInfo.filters, {
 			getChildren: (treeNode?: TreeNode) => this.getChildren(treeNode),
 			isExpanded: treeNode => this.isExpanded(treeNode),
 			setNodeExpandedState: async (treeNode, expandedState) => await this.setNodeExpandedState(treeNode, expandedState),

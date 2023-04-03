@@ -10,7 +10,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import {
 	DisconnectConnectionAction, EditConnectionAction,
-	DeleteConnectionAction, RefreshAction, EditServerGroupAction, AddServerAction
+	DeleteConnectionAction, RefreshAction, EditServerGroupAction, AddServerAction, FilterChildren
 } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
@@ -217,6 +217,10 @@ export class ServerTreeActionProvider {
 		// Contribute refresh action for scriptable objects via contribution
 		if (!this.isScriptableObject(context)) {
 			actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.treeNode || context.profile));
+		}
+
+		if (treeNode instanceof TreeNode) {
+			actions.push(this._instantiationService.createInstance(FilterChildren, FilterChildren.ID, FilterChildren.LABEL, context.treeNode, context.tree));
 		}
 
 		return actions;

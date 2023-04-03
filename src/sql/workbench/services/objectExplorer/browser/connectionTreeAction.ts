@@ -21,6 +21,8 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { SqlIconId } from 'sql/base/common/codicons';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { ObjectExplorerServiceDialog } from 'sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export interface IServerView {
 	showFilteredTree(filter: string): void;
@@ -303,5 +305,24 @@ export class DeleteConnectionAction extends Action {
 				await this._connectionManagementService.deleteConnectionGroup(this.element);
 			}
 		}
+	}
+}
+
+export class FilterChildren extends Action {
+	public static ID = 'objectExplorer.filterChildren';
+	public static LABEL = localize('objectExplorer.filterChildren', "Filter");
+
+	constructor(
+		id: string,
+		label: string,
+		private _node: TreeNode,
+		private _tree: AsyncServerTree | ITree,
+		@IInstantiationService private _instantiationService: IInstantiationService) {
+		super(id, label);
+	}
+
+	public override async run(): Promise<void> {
+		const filterDialog = this._instantiationService.createInstance(ObjectExplorerServiceDialog, this._node, this._tree);
+		filterDialog.open();
 	}
 }
