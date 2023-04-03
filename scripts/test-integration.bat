@@ -23,13 +23,12 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 	:: and the build bundles extensions into .build webpacked
 	:: {{SQL CARBON EDIT}} Don't compile unused extensions
 	call yarn gulp 	compile-extension:azurecore^
-					compile-extension:git
+					compile-extension:git^
 					:: compile-extension:vscode-api-tests^
 					:: compile-extension:vscode-colorize-tests^
 					:: compile-extension:markdown-language-features^
 					:: compile-extension:typescript-language-features^
 					:: compile-extension:vscode-custom-editor-tests^
-					:: compile-extension:vscode-notebook-tests^
 					:: compile-extension:emmet^
 					:: compile-extension:css-language-features-server^
 					:: compile-extension:html-language-features-server^
@@ -75,9 +74,6 @@ set ALL_PLATFORMS_API_TESTS_EXTRA_ARGS=--disable-telemetry --skip-welcome --skip
 :: if %errorlevel% neq 0 exit /b %errorlevel%
 
 :: call "%INTEGRATION_TEST_ELECTRON_PATH%" $%~dp0\..\extensions\emmet\out\test\test-fixtures --extensionDevelopmentPath=%~dp0\..\extensions\emmet --extensionTestsPath=%~dp0\..\extensions\emmet\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS% .
-:: if %errorlevel% neq 0 exit /b %errorlevel%
-
-:: call "%INTEGRATION_TEST_ELECTRON_PATH%" %~dp0\..\extensions\vscode-notebook-tests\test --enable-proposed-api=vscode.vscode-notebook-tests --extensionDevelopmentPath=%~dp0\..\extensions\vscode-notebook-tests --extensionTestsPath=%~dp0\..\extensions\vscode-notebook-tests\out %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 :: if %errorlevel% neq 0 exit /b %errorlevel%
 
 :: call "%INTEGRATION_TEST_ELECTRON_PATH%" %~dp0\..\extensions\emmet\test-workspace --extensionDevelopmentPath=%~dp0\..\extensions\emmet --extensionTestsPath=%~dp0\..\extensions\emmet\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%

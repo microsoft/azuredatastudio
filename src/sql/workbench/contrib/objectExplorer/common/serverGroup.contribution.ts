@@ -26,8 +26,8 @@ const serverGroupConfig: IConfigurationNode = {
 				'#A1634D',
 				'#7F0000',
 				'#914576',
-				'#85AE72',
-				'#98AFC7',
+				'#6E9B59',
+				'#5F82A5',
 				'#4452A6',
 				'#6A6599',
 				DefaultServerGroupColor
@@ -50,6 +50,12 @@ const serverTreeConfig: IConfigurationNode = {
 			'type': 'boolean',
 			'default': false,
 			'description': localize('serverTree.useAsyncServerTree', "(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.")
+		},
+		'serverTree.nodeExpansionTimeout': {
+			'type': 'number',
+			'default': '45',
+			'description': localize('serverTree.nodeExpansionTimeout', "The timeout in seconds for expanding a node in the Servers view"),
+			'minimum': 1
 		}
 	}
 };

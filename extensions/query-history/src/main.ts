@@ -32,7 +32,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		await fs.mkdir(storageUri.fsPath);
 	} catch (err) {
 		if (err.code !== 'EEXIST') {
-			TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistory, 'CreatingStorageFolder');
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.QueryHistory, 'CreatingStorageFolder', err);
 			console.error(`Error creating query history global storage folder ${context.globalStorageUri.fsPath}. ${err}`);
 		}
 	}
@@ -104,6 +104,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.openStorageFolder', async () => {
 		return vscode.env.openExternal(storageUri);
 	}));
+	context.subscriptions.push(TelemetryReporter);
 }
 
 async function openQuery(item: QueryHistoryItem): Promise<void> {
@@ -113,7 +114,7 @@ async function openQuery(item: QueryHistoryItem): Promise<void> {
 				content: item.queryText
 			}, item.connectionProfile?.providerId);
 	} catch (err) {
-		TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistory, 'OpenQuery');
+		TelemetryReporter.sendErrorEvent2(TelemetryViews.QueryHistory, 'OpenQuery');
 	}
 
 }
@@ -135,7 +136,7 @@ async function runQuery(item: QueryHistoryItem): Promise<void> {
 		step = 'Run';
 		azdata.queryeditor.runQuery(doc.uri);
 	} catch (err) {
-		TelemetryReporter.createErrorEvent(TelemetryViews.QueryHistory, 'RunQuery')
+		TelemetryReporter.createErrorEvent2(TelemetryViews.QueryHistory, 'RunQuery', err)
 			.withAdditionalProperties({ step })
 			.send();
 	}

@@ -15,7 +15,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import {
 	IExtensionGalleryService, ILocalExtension, IGalleryExtension, IQueryOptions,
 	InstallExtensionEvent, DidUninstallExtensionEvent, InstallOperation, InstallOptions, WEB_EXTENSION_TAG, InstallExtensionResult,
-	IExtensionsControlManifest, InstallVSIXOptions, IExtensionInfo, IExtensionQueryOptions, IDeprecationInfo
+	IExtensionsControlManifest, InstallVSIXOptions, IExtensionInfo, IExtensionQueryOptions, IDeprecationInfo, ExtensionManagementError, ExtensionManagementErrorCode // {{SQL CARBON EDIT}} Added ExtensionManagementError and ExtensionManagementErrorCode
 } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionManagementServerService, IExtensionManagementServer, IWorkbenchExtensionManagementService, DefaultIconPath } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, areSameExtensions, groupByExtension, ExtensionKey, getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
@@ -32,9 +32,9 @@ import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import * as resources from 'vs/base/common/resources';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
+import { IStorageService, IStorageValueChangeEvent, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { IFileService } from 'vs/platform/files/common/files';
-import { IExtensionManifest, ExtensionType, IExtension as IPlatformExtension, TargetPlatform, ExtensionIdentifier, ExtensionsPolicyKey, ExtensionsPolicy } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
+import { IExtensionManifest, ExtensionType, IExtension as IPlatformExtension, TargetPlatform, ExtensionIdentifier, ExtensionsPolicyKey, ExtensionsPolicy, IExtensionIdentifier } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
 import { ILanguageService } from 'vs/editor/common/languages/language';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { FileAccess } from 'vs/base/common/network';
@@ -48,8 +48,10 @@ import { isBoolean, isUndefined } from 'vs/base/common/types';
 import { IExtensionManifestPropertiesService } from 'vs/workbench/services/extensions/common/extensionManifestPropertiesService';
 import { IExtensionService, IExtensionsStatus } from 'vs/workbench/services/extensions/common/extensions';
 import { ExtensionEditor } from 'vs/workbench/contrib/extensions/browser/extensionEditor';
-import { isWeb } from 'vs/base/common/platform';
+import { isWeb, language } from 'vs/base/common/platform';
 import { GDPRClassification } from 'vs/platform/telemetry/common/gdprTypings';
+import { ILanguagePackService } from 'vs/platform/languagePacks/common/languagePacks';
+import { ILocaleService } from 'vs/workbench/contrib/localization/common/locale';
 
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 
@@ -63,8 +65,9 @@ interface InstalledExtensionsEvent {
 }
 interface ExtensionsLoadClassification extends GDPRClassification<InstalledExtensionsEvent> {
 	owner: 'digitarald';
-	readonly extensionIds: { classification: 'PublicNonPersonalData'; purpose: 'FeatureInsight' };
-	readonly count: { classification: 'PublicNonPersonalData'; purpose: 'FeatureInsight' };
+	comment: 'Helps to understand which extensions are the most actively used.';
+	readonly extensionIds: { classification: 'PublicNonPersonalData'; purpose: 'FeatureInsight'; comment: 'The list of extension ids that are installed.' };
+	readonly count: { classification: 'PublicNonPersonalData'; purpose: 'FeatureInsight'; comment: 'The number of extensions that are installed.' };
 }
 
 export class Extension implements IExtension {
@@ -731,6 +734,8 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		@IExtensionManifestPropertiesService private readonly extensionManifestPropertiesService: IExtensionManifestPropertiesService,
 		@ILogService private readonly logService: ILogService,
 		@IExtensionService private readonly extensionService: IExtensionService,
+		@ILanguagePackService private readonly languagePackService: ILanguagePackService,
+		@ILocaleService private readonly localeService: ILocaleService,
 	) {
 		super();
 		const preferPreReleasesValue = configurationService.getValue('_extensions.preferPreReleases');
@@ -1298,10 +1303,38 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			this.openerService.open(URI.parse(ext.gallery!.assets.downloadPage.uri));
 			return Promise.resolve(undefined);
 		} else {
-			return this.installWithProgress(() => this.installFromGallery(extension, gallery, installOptions), gallery.displayName);
+			return this.extensionManagementService.installFromGallery(ext.gallery!); // {{SQL CARBON EDIT}} Use extensionManagementService
 		}
 	}
 	// {{SQL CARBON EDIT}} - End
+
+	canSetLanguage(extension: IExtension): boolean {
+		if (!isWeb) {
+			return false;
+		}
+
+		if (!extension.gallery) {
+			return false;
+		}
+
+		const locale = this.languagePackService.getLocale(extension.gallery);
+		if (!locale) {
+			return false;
+		}
+
+		return true;
+	}
+
+	async setLanguage(extension: IExtension): Promise<void> {
+		if (!this.canSetLanguage(extension)) {
+			throw new Error('Can not set language');
+		}
+		const locale = this.languagePackService.getLocale(extension.gallery!);
+		if (locale === language) {
+			return;
+		}
+		return this.localeService.setLocale({ id: locale, galleryExtension: extension.gallery, extensionId: extension.identifier.id, label: extension.displayName });
+	}
 
 	setEnablement(extensions: IExtension | IExtension[], enablementState: EnablementState): Promise<void> {
 		extensions = Array.isArray(extensions) ? extensions : [extensions];

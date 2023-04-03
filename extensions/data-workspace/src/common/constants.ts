@@ -21,6 +21,9 @@ export const noPreviousData = (tableName: string): string => { return localize('
 export const gitCloneMessage = (url: string): string => { return localize('gitCloneMessage', "Cloning git repository '{0}'...", url); };
 export const gitCloneError = localize('gitCloneError', "Error during git clone. View git output for more details");
 export const openedProjectsUndefinedAfterRefresh = localize('openedProjectsUndefinedAfterRefresh', "List of opened projects should not be undefined after refresh from disk.");
+export const dragAndDropNotSupported = localize('dragAndDropNotSupported', "This project type does not support drag and drop.");
+export const onlyMovingOneFileIsSupported = localize('onlyMovingOneFileIsSupported', "Only moving one file at a time is supported.");
+export const noProjectProvidingExtensionsInstalled = localize('noProjectProvidingExtensionsInstalled', "No database project extensions are installed. Please install a database project extension to use this feature.");
 
 // UI
 export const OkButtonText = localize('dataworkspace.ok', "OK");
@@ -58,6 +61,14 @@ export const SdkLearnMorePlaceholder = localize('dataworkspace.sdkLearnMorePlace
 export const Default = localize('dataworkspace.default', "Default");
 export const SelectTargetPlatform = localize('dataworkspace.selectTargetPlatform', "Select Target Platform");
 export const LocalDevInfo = (target: string) => localize('LocalDevInfo', "Click \"Learn more\" button for more information about local development experience to {0}", target);
+export const undefinedFilenameErrorMessage = localize('undefinedFilenameErrorMessage', "Undefined name");
+export const filenameEndingIsPeriodErrorMessage = localize('filenameEndingInPeriodErrorMessage', "File name cannot end with a period");
+export const whitespaceFilenameErrorMessage = localize('whitespaceFilenameErrorMessage', "File name cannot be whitespace");
+export const invalidFileCharsErrorMessage = localize('invalidFileCharsErrorMessage', "Invalid file characters");
+export const reservedWindowsFilenameErrorMessage = localize('reservedWindowsFilenameErrorMessage', "This file name is reserved for use by Windows. Choose another name and try again");
+export const reservedValueErrorMessage = localize('reservedValueErrorMessage', "Reserved file name. Choose another name and try again");
+export const trailingWhitespaceErrorMessage = localize('trailingWhitespaceErrorMessage', "File name cannot end with a whitespace");
+export const tooLongFilenameErrorMessage = localize('tooLongFilenameErrorMessage', "File name cannot be over 255 characters");
 
 //Open Existing Dialog
 export const OpenExistingDialogTitle = localize('dataworkspace.openExistingDialogTitle', "Open Existing Project");

@@ -57,6 +57,20 @@ export enum AuthenticationType {
 	None = 'None'
 }
 
+/*
+* Actions for the connection dialog to show/hide connection options.
+*/
+export enum Actions {
+	/**
+	 * Shows a connection option
+	 */
+	Show = 'show',
+	/**
+	 * Hides a connection option
+	 */
+	Hide = 'hide'
+}
+
 /* CMS constants */
 export const cmsProviderName = 'MSSQL-CMS';
 
@@ -65,6 +79,3 @@ export const UNSAVED_GROUP_ID = 'unsaved';
 /* Server Type Constants */
 export const sqlDataWarehouse = 'Azure SQL Data Warehouse';
 export const gen3Version = 12;
-
-/* SQL Server Password Reset Error Code */
-export const sqlPasswordErrorCode = 18488;

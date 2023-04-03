@@ -7,9 +7,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as utils from '../../common/utils';
 import { BaseProjectTreeItem } from './baseTreeItem';
-import { ProjectRootTreeItem } from './projectTreeItem';
-import { Project } from '../project';
-import { DatabaseProjectItemType } from '../../common/constants';
+import { DatabaseProjectItemType, sqlprojExtension } from '../../common/constants';
 import { IconPathHelper } from '../../common/iconHelper';
 
 /**
@@ -19,8 +17,8 @@ export class FolderNode extends BaseProjectTreeItem {
 	public fileChildren: { [childName: string]: (FolderNode | FileNode) } = {};
 	public fileSystemUri: vscode.Uri;
 
-	constructor(folderPath: vscode.Uri, parent: FolderNode | ProjectRootTreeItem) {
-		super(fsPathToProjectUri(folderPath, parent.root as ProjectRootTreeItem), parent);
+	constructor(folderPath: vscode.Uri, sqlprojUri: vscode.Uri) {
+		super(fsPathToProjectUri(folderPath, sqlprojUri), sqlprojUri);
 		this.fileSystemUri = folderPath;
 	}
 
@@ -35,20 +33,16 @@ export class FolderNode extends BaseProjectTreeItem {
 
 		return folderItem;
 	}
-
-	public get project(): Project {
-		return (<FolderNode | ProjectRootTreeItem>this.parent).project;
-	}
 }
 
 /**
  * Node representing a file in a project
  */
-export class FileNode extends BaseProjectTreeItem {
+export abstract class FileNode extends BaseProjectTreeItem {
 	public fileSystemUri: vscode.Uri;
 
-	constructor(filePath: vscode.Uri, parent: FolderNode | ProjectRootTreeItem) {
-		super(fsPathToProjectUri(filePath, parent.root as ProjectRootTreeItem, true), parent);
+	constructor(filePath: vscode.Uri, sqlprojUri: vscode.Uri) {
+		super(fsPathToProjectUri(filePath, sqlprojUri, true), sqlprojUri);
 		this.fileSystemUri = filePath;
 	}
 
@@ -71,7 +65,16 @@ export class FileNode extends BaseProjectTreeItem {
 	}
 }
 
-export class ExternalStreamingJobFileNode extends FileNode {
+export class SqlObjectFileNode extends FileNode {
+	public override get treeItem(): vscode.TreeItem {
+		const treeItem = super.treeItem;
+		treeItem.contextValue = DatabaseProjectItemType.sqlObjectScript;
+
+		return treeItem;
+	}
+}
+
+export class ExternalStreamingJobFileNode extends SqlObjectFileNode {
 	public override get treeItem(): vscode.TreeItem {
 		const treeItem = super.treeItem;
 		treeItem.contextValue = DatabaseProjectItemType.externalStreamingJob;
@@ -80,10 +83,46 @@ export class ExternalStreamingJobFileNode extends FileNode {
 	}
 }
 
-export class TableFileNode extends FileNode {
+export class TableFileNode extends SqlObjectFileNode {
 	public override get treeItem(): vscode.TreeItem {
 		const treeItem = super.treeItem;
 		treeItem.contextValue = DatabaseProjectItemType.table;
+
+		return treeItem;
+	}
+}
+
+export class PreDeployNode extends FileNode {
+	public override get treeItem(): vscode.TreeItem {
+		const treeItem = super.treeItem;
+		treeItem.contextValue = DatabaseProjectItemType.preDeploymentScript;
+
+		return treeItem;
+	}
+}
+
+export class PostDeployNode extends FileNode {
+	public override get treeItem(): vscode.TreeItem {
+		const treeItem = super.treeItem;
+		treeItem.contextValue = DatabaseProjectItemType.postDeploymentScript;
+
+		return treeItem;
+	}
+}
+
+export class NoneNode extends FileNode {
+	public override get treeItem(): vscode.TreeItem {
+		const treeItem = super.treeItem;
+		treeItem.contextValue = DatabaseProjectItemType.noneFile;
+
+		return treeItem;
+	}
+}
+
+export class PublishProfileNode extends FileNode {
+	public override get treeItem(): vscode.TreeItem {
+		const treeItem = super.treeItem;
+		treeItem.contextValue = DatabaseProjectItemType.publishProfile;
 
 		return treeItem;
 	}
@@ -100,15 +139,16 @@ export function sortFileFolderNodes(a: (FolderNode | FileNode), b: (FolderNode |
 	} else if (!(a instanceof FolderNode) && b instanceof FolderNode) {
 		return 1;
 	} else {
-		return a.projectUri.fsPath.localeCompare(b.projectUri.fsPath);
+		return a.relativeProjectUri.fsPath.localeCompare(b.relativeProjectUri.fsPath);
 	}
 }
 
 /**
  * Converts a full filesystem URI to a project-relative URI that's compatible with the project tree
  */
-function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootTreeItem, isFile?: boolean): vscode.Uri {
-	const projBaseDir = projectNode.project.projectFolderPath;
+function fsPathToProjectUri(fileSystemUri: vscode.Uri, sqlprojUri: vscode.Uri, isFile?: boolean): vscode.Uri {
+	const projBaseDir = path.dirname(sqlprojUri.fsPath);
+	const projectFolderName = path.basename(sqlprojUri.fsPath, sqlprojExtension);
 	let localUri = '';
 
 	if (fileSystemUri.fsPath.startsWith(projBaseDir)) {
@@ -120,5 +160,5 @@ function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootT
 		localUri = parts[parts.length - 1];
 	}
 
-	return vscode.Uri.file(path.join(projectNode.projectUri.fsPath, localUri));
+	return vscode.Uri.file(path.join(projectFolderName, localUri));
 }

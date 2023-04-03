@@ -10,7 +10,7 @@ import * as crypto from 'crypto';
 import * as azure from './azure';
 import { azureResource, Tenant } from 'azurecore';
 import * as constants from '../constants/strings';
-import { logError, TelemetryViews } from '../telemtery';
+import { logError, TelemetryViews } from '../telemetry';
 import { AdsMigrationStatus } from '../dashboard/tabBase';
 import { getMigrationMode, getMigrationStatus, getMigrationTargetType, hasRestoreBlockingReason, PipelineStatusCodes } from '../constants/helper';
 
@@ -26,6 +26,7 @@ export const MenuCommands = {
 	ViewService: 'sqlmigration.view.service',
 	CopyMigration: 'sqlmigration.copy.migration',
 	CancelMigration: 'sqlmigration.cancel.migration',
+	DeleteMigration: 'sqlmigration.delete.migration',
 	RetryMigration: 'sqlmigration.retry.migration',
 	StartMigration: 'sqlmigration.start',
 	StartLoginMigration: 'sqlmigration.login.start',
@@ -71,6 +72,19 @@ export function getSqlServerName(majorVersion: number): string | undefined {
 		default:
 			return undefined;
 	}
+}
+
+export function isTargetSqlVm2014OrBelow(sqlVm: azure.SqlVMServer): boolean {
+	// e.g. SQL2008-WS2012, SQL2008R2-WS2019, SQL2012-WS2016, SQL2014-WS2012R2, SQL2016-WS2019, SQL2017-WS2019, SQL2019-WS2022
+	const sqlImageOffer = sqlVm.properties.sqlImageOffer;
+
+	// parse image offer and extract SQL version (assuming it is a valid image offer)
+	if (sqlImageOffer && sqlImageOffer.toUpperCase().startsWith('SQL')) {
+		const version = parseInt(sqlImageOffer.substring(3, 7));
+		return version <= 2014;
+	}
+
+	return false;
 }
 
 export interface IPackageInfo {
@@ -410,7 +424,7 @@ export async function getAzureAccountsDropdownValues(accounts: Account[]): Promi
 	accounts.forEach((account) => {
 		accountsValues.push({
 			name: account.displayInfo.userId,
-			displayName: account.isStale
+			displayName: isAccountTokenStale(account)
 				? constants.ACCOUNT_CREDENTIALS_REFRESH(account.displayInfo.displayName)
 				: account.displayInfo.displayName
 		});
@@ -426,6 +440,10 @@ export async function getAzureAccountsDropdownValues(accounts: Account[]): Promi
 	return accountsValues;
 }
 
+export function isAccountTokenStale(account: Account | undefined): boolean {
+	return account === undefined || account?.isStale === true;
+}
+
 export function getAzureTenants(account?: Account): Tenant[] {
 	return account?.properties.tenants || [];
 }
@@ -433,9 +451,9 @@ export function getAzureTenants(account?: Account): Tenant[] {
 export async function getAzureSubscriptions(account?: Account): Promise<azureResource.AzureResourceSubscription[]> {
 	let subscriptions: azureResource.AzureResourceSubscription[] = [];
 	try {
-		if (account) {
-			subscriptions = !account.isStale ? await azure.getSubscriptions(account) : [];
-		}
+		subscriptions = account && !isAccountTokenStale(account)
+			? await azure.getSubscriptions(account)
+			: [];
 	} catch (e) {
 		logError(TelemetryViews.Utils, 'utils.getAzureSubscriptions', e);
 	}
@@ -548,7 +566,7 @@ export async function getManagedInstancesDropdownValues(managedInstances: azureR
 		managedInstances.forEach((managedInstance) => {
 			if (managedInstance.location.toLowerCase() === location.name.toLowerCase() && managedInstance.resourceGroup?.toLowerCase() === resourceGroup.name.toLowerCase()) {
 				let managedInstanceValue: CategoryValue;
-				if (managedInstance.properties.state === 'Ready') {
+				if (managedInstance.properties.state.toLowerCase() === 'Ready'.toLowerCase()) {
 					managedInstanceValue = {
 						name: managedInstance.id,
 						displayName: managedInstance.name
@@ -618,6 +636,53 @@ export async function getVirtualMachines(account?: Account, subscription?: azure
 	return virtualMachines;
 }
 
+export async function getVirtualMachinesDropdownValues(virtualMachines: azure.SqlVMServer[], location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup, account: Account, subscription: azureResource.AzureResourceSubscription): Promise<CategoryValue[]> {
+	let virtualMachinesValues: CategoryValue[] = [];
+	if (location && resourceGroup) {
+		for (const virtualMachine of virtualMachines) {
+			if (virtualMachine.location.toLowerCase() === location.name.toLowerCase() && azure.getResourceGroupFromId(virtualMachine.id).toLowerCase() === resourceGroup.name.toLowerCase()) {
+				let virtualMachineValue: CategoryValue;
+
+				// 1) check if VM is on by querying underlying compute resource's instance view
+				let vmInstanceView = await azure.getVMInstanceView(virtualMachine, account, subscription);
+				if (!vmInstanceView.statuses.some(status => status.code.toLowerCase() === 'PowerState/running'.toLowerCase())) {
+					virtualMachineValue = {
+						name: virtualMachine.id,
+						displayName: constants.UNAVAILABLE_TARGET_PREFIX(virtualMachine.name)
+					}
+				}
+
+				// 2) check for IaaS extension in Full mode
+				else if (virtualMachine.properties.sqlManagement.toLowerCase() !== 'Full'.toLowerCase()) {
+					virtualMachineValue = {
+						name: virtualMachine.id,
+						displayName: constants.UNAVAILABLE_TARGET_PREFIX(virtualMachine.name)
+					}
+				}
+
+				else {
+					virtualMachineValue = {
+						name: virtualMachine.id,
+						displayName: virtualMachine.name
+					};
+				}
+
+				virtualMachinesValues.push(virtualMachineValue);
+			}
+		}
+	}
+
+	if (virtualMachinesValues.length === 0) {
+		virtualMachinesValues = [
+			{
+				displayName: constants.NO_VIRTUAL_MACHINE_FOUND,
+				name: ''
+			}
+		];
+	}
+	return virtualMachinesValues;
+}
+
 export async function getStorageAccounts(account?: Account, subscription?: azureResource.AzureResourceSubscription): Promise<azure.StorageAccount[]> {
 	let storageAccounts: azure.StorageAccount[] = [];
 	try {
@@ -645,6 +710,15 @@ export async function getAzureSqlMigrationServices(account?: Account, subscripti
 	return [];
 }
 
+export interface Blob {
+	resourceGroup: azureResource.AzureResourceResourceGroup;
+	storageAccount: azureResource.AzureGraphResource;
+	blobContainer: azureResource.BlobContainer;
+	storageKey: string;
+	lastBackupFile?: string;
+	folderName?: string;
+}
+
 export async function getBlobContainer(account?: Account, subscription?: azureResource.AzureResourceSubscription, storageAccount?: azure.StorageAccount): Promise<azureResource.BlobContainer[]> {
 	let blobContainers: azureResource.BlobContainer[] = [];
 	try {
@@ -662,13 +736,78 @@ export async function getBlobLastBackupFileNames(account?: Account, subscription
 	let lastFileNames: azureResource.Blob[] = [];
 	try {
 		if (account && subscription && storageAccount && blobContainer) {
-			lastFileNames = await azure.getBlobs(account, subscription, storageAccount, blobContainer.name);
+			const blobs = await azure.getBlobs(account, subscription, storageAccount, blobContainer.name);
+
+			blobs.forEach(blob => {
+				// only show at most one folder deep
+				if ((blob.name.split('/').length === 1 || blob.name.split('/').length === 2) && !lastFileNames.includes(blob)) {
+					lastFileNames.push(blob);
+				}
+			});
 		}
 	} catch (e) {
 		logError(TelemetryViews.Utils, 'utils.getBlobLastBackupFileNames', e);
 	}
 	lastFileNames.sort((a, b) => a.name.localeCompare(b.name));
 	return lastFileNames;
+}
+
+export async function getBlobFolders(account?: Account, subscription?: azureResource.AzureResourceSubscription, storageAccount?: azure.StorageAccount, blobContainer?: azureResource.BlobContainer): Promise<string[]> {
+	let folders: string[] = [];
+	try {
+		if (account && subscription && storageAccount && blobContainer) {
+			const blobs = await azure.getBlobs(account, subscription, storageAccount, blobContainer.name);
+
+			blobs.forEach(blob => {
+				let folder: string = '';
+
+				if (blob.name.split('/').length === 1) {
+					folder = '/';	// no folder (root)
+				} else if (blob.name.split('/').length === 2) {
+					folder = blob.name.split('/')[0];	// one folder deep
+				}
+
+				if (folder && !folders.includes(folder)) {
+					folders.push(folder);
+				}
+			});
+		}
+	} catch (e) {
+		logError(TelemetryViews.Utils, 'utils.getBlobLastBackupFolders', e);
+	}
+	folders.sort();
+	return folders;
+}
+
+export function getBlobContainerNameWithFolder(blob: Blob, isOfflineMigration: boolean): string {
+	const blobContainerName = blob.blobContainer.name;
+
+	if (isOfflineMigration) {
+		const lastBackupFile = blob.lastBackupFile;
+		if (!lastBackupFile || lastBackupFile.split('/').length !== 2) {
+			return blobContainerName;
+		}
+
+		// for offline scenario, take the folder name out of the blob name and add it to the container name instead
+		return blobContainerName + '/' + lastBackupFile.split('/')[0];
+	} else {
+		const folderName = blob.folderName;
+		if (!folderName || folderName === '/' || folderName === 'undefined') {
+			return blobContainerName;
+		}
+
+		// for online scenario, take the explicitly provided folder name
+		return blobContainerName + '/' + folderName;
+	}
+}
+
+export function getLastBackupFileNameWithoutFolder(blob: Blob) {
+	const lastBackupFile = blob.lastBackupFile;
+	if (!lastBackupFile || lastBackupFile.split('/').length !== 2) {
+		return lastBackupFile;
+	}
+
+	return lastBackupFile.split('/')[1];
 }
 
 export function getAzureResourceDropdownValues(
@@ -702,12 +841,16 @@ export function getResourceDropdownValues(resources: { id: string, name: string 
 		|| [{ name: '', displayName: resourceNotFoundMessage }];
 }
 
-export async function getAzureTenantsDropdownValues(tenants: Tenant[]): Promise<CategoryValue[]> {
+export function getAzureTenantsDropdownValues(tenants: Tenant[]): CategoryValue[] {
+	if (!tenants || !tenants.length) {
+		return [{ name: '', displayName: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR }];
+	}
+
 	return tenants?.map(tenant => { return { name: tenant.id, displayName: tenant.displayName }; })
 		|| [{ name: '', displayName: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR }];
 }
 
-export async function getAzureLocationsDropdownValues(locations: azureResource.AzureLocation[]): Promise<CategoryValue[]> {
+export function getAzureLocationsDropdownValues(locations: azureResource.AzureLocation[]): CategoryValue[] {
 	if (!locations || !locations.length) {
 		return [{ name: '', displayName: constants.NO_LOCATION_FOUND }];
 	}
@@ -716,9 +859,22 @@ export async function getAzureLocationsDropdownValues(locations: azureResource.A
 		|| [{ name: '', displayName: constants.NO_LOCATION_FOUND }];
 }
 
-export async function getBlobLastBackupFileNamesValues(blobs: azureResource.Blob[]): Promise<CategoryValue[]> {
+export function getBlobLastBackupFileNamesValues(blobs: azureResource.Blob[]): CategoryValue[] {
+	if (!blobs || !blobs.length) {
+		return [{ name: '', displayName: constants.NO_BLOBFILES_FOUND }];
+	}
+
 	return blobs?.map(blob => { return { name: blob.name, displayName: blob.name }; })
 		|| [{ name: '', displayName: constants.NO_BLOBFILES_FOUND }];
+}
+
+export function getBlobFolderValues(folders: string[]): CategoryValue[] {
+	if (!folders || !folders.length) {
+		return [{ name: '', displayName: constants.NO_BLOBFOLDERS_FOUND }];
+	}
+
+	return folders?.map(folder => { return { name: folder, displayName: folder }; })
+		|| [{ name: '', displayName: constants.NO_BLOBFOLDERS_FOUND }];
 }
 
 export async function updateControlDisplay(control: Component, visible: boolean, displayStyle: DisplayType = 'inline'): Promise<void> {

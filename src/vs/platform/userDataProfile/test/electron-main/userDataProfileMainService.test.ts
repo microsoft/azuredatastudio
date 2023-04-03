@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -54,18 +54,20 @@ suite('UserDataProfileMainService', () => {
 		assert.strictEqual(testObject.defaultProfile.extensionsResource, undefined);
 	});
 
-	test('profiles are empty', () => {
-		assert.deepStrictEqual(testObject.profiles, []);
+	test('profiles always include default profile', () => {
+		assert.deepStrictEqual(testObject.profiles.length, 1);
+		assert.deepStrictEqual(testObject.profiles[0].isDefault, true);
+		assert.deepStrictEqual(testObject.profiles[0].extensionsResource, undefined);
 	});
 
 	test('default profile when there are profiles', async () => {
-		await testObject.createProfile(testObject.newProfile('test'));
+		await testObject.createProfile('test');
 		assert.strictEqual(testObject.defaultProfile.isDefault, true);
 		assert.strictEqual(testObject.defaultProfile.extensionsResource?.toString(), joinPath(environmentService.userRoamingDataHome, 'extensions.json').toString());
 	});
 
 	test('default profile when profiles are removed', async () => {
-		const profile = await testObject.createProfile(testObject.newProfile('test'));
+		const profile = await testObject.createProfile('test');
 		await testObject.removeProfile(profile);
 		assert.strictEqual(testObject.defaultProfile.isDefault, true);
 		assert.strictEqual(testObject.defaultProfile.extensionsResource, undefined);

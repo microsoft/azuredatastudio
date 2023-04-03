@@ -6,6 +6,7 @@
 import type { Event } from 'vs/base/common/event';
 import type { IDisposable } from 'vs/base/common/lifecycle';
 import type * as webviewMessages from 'vs/workbench/contrib/notebook/browser/view/renderers/webviewMessages';
+import { NotebookCellMetadata } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import type * as rendererApi from 'vscode-notebook-renderer';
 
 // !! IMPORTANT !! ----------------------------------------------------------------------------------
@@ -167,30 +168,6 @@ async function webviewPreloads(ctx: PreloadContext) {
 	};
 
 	document.body.addEventListener('click', handleInnerClick);
-
-	const preservedScriptAttributes: (keyof HTMLScriptElement)[] = [
-		'type', 'src', 'nonce', 'noModule', 'async',
-	];
-
-	// derived from https://github.com/jquery/jquery/blob/d0ce00cdfa680f1f0c38460bc51ea14079ae8b07/src/core/DOMEval.js
-	const domEval = (container: Element) => {
-		const arr = Array.from(container.getElementsByTagName('script'));
-		for (let n = 0; n < arr.length; n++) {
-			const node = arr[n];
-			const scriptTag = document.createElement('script');
-			const trustedScript = ttPolicy?.createScript(node.innerText) ?? node.innerText;
-			scriptTag.text = trustedScript as string;
-			for (const key of preservedScriptAttributes) {
-				const val = node[key] || node.getAttribute && node.getAttribute(key);
-				if (val) {
-					scriptTag.setAttribute(key, val as any);
-				}
-			}
-
-			// TODO@connor4312: should script with src not be removed?
-			container.appendChild(scriptTag).parentNode!.removeChild(scriptTag);
-		}
-	};
 
 	async function loadScriptSource(url: string, originalUri = url): Promise<string> {
 		const res = await fetch(url);
@@ -400,6 +377,10 @@ async function webviewPreloads(ctx: PreloadContext) {
 	function focusFirstFocusableInCell(cellId: string) {
 		const cellOutputContainer = document.getElementById(cellId);
 		if (cellOutputContainer) {
+			if (cellOutputContainer.contains(document.activeElement)) {
+				return;
+			}
+
 			const focusableElement = cellOutputContainer.querySelector('[tabindex="0"], [href], button, input, option, select, textarea') as HTMLElement | null;
 			focusableElement?.focus();
 		}
@@ -1431,7 +1412,7 @@ async function webviewPreloads(ctx: PreloadContext) {
 				return existing;
 			}
 
-			const cell = new MarkupCell(init.cellId, init.mime, init.content, top);
+			const cell = new MarkupCell(init.cellId, init.mime, init.content, top, init.metadata);
 			cell.element.style.visibility = visible ? 'visible' : 'hidden';
 			this._markupCells.set(init.cellId, cell);
 
@@ -1630,7 +1611,7 @@ async function webviewPreloads(ctx: PreloadContext) {
 		/// Internal field that holds text content
 		private _content: { readonly value: string; readonly version: number };
 
-		constructor(id: string, mime: string, content: string, top: number) {
+		constructor(id: string, mime: string, content: string, top: number, metadata: NotebookCellMetadata) {
 			this.id = id;
 			this._content = { value: content, version: 0 };
 
@@ -1641,7 +1622,7 @@ async function webviewPreloads(ctx: PreloadContext) {
 			this.outputItem = Object.freeze(<rendererApi.OutputItem>{
 				id,
 				mime,
-				metadata: undefined,
+				metadata,
 
 				text: (): string => {
 					return this._content.value;
@@ -1991,7 +1972,6 @@ async function webviewPreloads(ctx: PreloadContext) {
 			if (content.type === 0 /* RenderOutputType.Html */) {
 				const trustedHtml = ttPolicy?.createHTML(content.htmlContent) ?? content.htmlContent;
 				this.element.innerHTML = trustedHtml as string;
-				domEval(this.element);
 			} else if (preloadsAndErrors.some(e => e instanceof Error)) {
 				const errors = preloadsAndErrors.filter((e): e is Error => e instanceof Error);
 				showPreloadErrors(this.element, ...errors);

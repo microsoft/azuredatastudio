@@ -15,7 +15,7 @@ import { INotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes
 import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
-import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
+import { AbstractTextCodeEditor } from 'vs/workbench/browser/parts/editor/textCodeEditor';
 import { Range } from 'vs/editor/common/core/range';
 import { IEditorPane } from 'vs/workbench/common/editor';
 import { INotebookInput } from 'sql/workbench/services/notebook/browser/interface';
@@ -194,10 +194,9 @@ export interface INotebookSection {
 }
 
 export interface ICellEditorProvider {
-	hasEditor(): boolean;
 	isCellOutput: boolean;
 	cellGuid(): string;
-	getEditor(): BaseTextEditor<ICodeEditorViewState>;
+	getEditor(): AbstractTextCodeEditor<ICodeEditorViewState> | undefined;
 	deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void;
 }
 

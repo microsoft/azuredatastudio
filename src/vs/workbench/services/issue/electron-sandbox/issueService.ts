@@ -22,6 +22,7 @@ import { registerMainProcessRemoteService } from 'vs/platform/ipc/electron-sandb
 import { IWorkspaceTrustManagementService } from 'vs/platform/workspace/common/workspaceTrust';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration'; // {{SQL CARBON EDIT}} Add preview features flag
 import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES } from 'sql/workbench/common/constants'; // {{SQL CARBON EDIT}} Add preview features flag
+import { IIntegrityService } from 'vs/workbench/services/integrity/common/integrity';
 
 export class WorkbenchIssueService implements IWorkbenchIssueService {
 	declare readonly _serviceBrand: undefined;
@@ -36,7 +37,8 @@ export class WorkbenchIssueService implements IWorkbenchIssueService {
 		@IProductService private readonly productService: IProductService,
 		@IWorkbenchAssignmentService private readonly experimentService: IWorkbenchAssignmentService,
 		@IAuthenticationService private readonly authenticationService: IAuthenticationService,
-		@IConfigurationService private readonly configurationService: IConfigurationService // {{SQL CARBON EDIT}} Add preview features flag
+		@IConfigurationService private readonly configurationService: IConfigurationService, // {{SQL CARBON EDIT}} Add preview features flag
+		@IIntegrityService private readonly integrityService: IIntegrityService
 	) { }
 
 	async openReporter(dataOverrides: Partial<IssueReporterData> = {}): Promise<void> {
@@ -85,6 +87,14 @@ export class WorkbenchIssueService implements IWorkbenchIssueService {
 			// Ignore
 		}
 
+		// air on the side of caution and have false be the default
+		let isUnsupported = false;
+		try {
+			isUnsupported = !(await this.integrityService.isPure()).isPure;
+		} catch (e) {
+			// Ignore
+		}
+
 		const theme = this.themeService.getColorTheme();
 		const issueReporterData: IssueReporterData = Object.assign({
 			styles: getIssueReporterStyles(theme),
@@ -93,6 +103,7 @@ export class WorkbenchIssueService implements IWorkbenchIssueService {
 			experiments: experiments?.join('\n'),
 			restrictedMode: !this.workspaceTrustManagementService.isWorkspaceTrusted(),
 			previewFeaturesEnabled: this.configurationService.getValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES), // {{SQL CARBON EDIT}} Add preview features flag
+			isUnsupported,
 			githubAccessToken,
 		}, dataOverrides);
 		return this.issueService.openReporter(issueReporterData);

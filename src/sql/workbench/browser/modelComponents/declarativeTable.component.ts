@@ -403,7 +403,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 	private createMenuItem(commandId: string): MenuItemAction {
 		const command = MenuRegistry.getCommand(commandId);
-		return this.instantiationService.createInstance(MenuItemAction, command, undefined, { shouldForwardArgs: true });
+		return this.instantiationService.createInstance(MenuItemAction, command, undefined, { shouldForwardArgs: true }, undefined);
 	}
 
 	public onKey(e: KeyboardEvent, row: number) {

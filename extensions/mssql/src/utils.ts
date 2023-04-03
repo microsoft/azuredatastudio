@@ -14,13 +14,17 @@ import { IConfig, ServerProvider } from '@microsoft/ads-service-downloader';
 import { env } from 'process';
 
 const configTracingLevel = 'tracingLevel';
+const configPiiLogging = 'piiLogging';
 const configLogRetentionMinutes = 'logRetentionMinutes';
 const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
 const extensionConfigSectionName = 'mssql';
 const configLogDebugInfo = 'logDebugInfo';
 const parallelMessageProcessingConfig = 'parallelMessageProcessing';
+const enableSqlAuthenticationProviderConfig = 'enableSqlAuthenticationProvider';
 const tableDesignerPreloadConfig = 'tableDesigner.preloadDatabaseModel';
 
+const azureExtensionConfigName = 'azure';
+const azureAuthenticationLibraryConfig = 'authenticationLibrary';
 /**
  *
  * @returns Whether the current OS is linux or not
@@ -62,7 +66,17 @@ export function removeOldLogFiles(logPath: string, prefix: string): JSON {
 }
 
 export function getConfiguration(config: string = extensionConfigSectionName): vscode.WorkspaceConfiguration {
-	return vscode.workspace.getConfiguration(extensionConfigSectionName);
+	return vscode.workspace.getConfiguration(config);
+}
+/**
+ * We need Azure core extension configuration for fetching Authentication Library setting in use.
+ * This is required for 'enableSqlAuthenticationProvider' to be enabled (as it applies to MSAL only).
+ * This can be removed in future when ADAL support is dropped.
+ * @param config Azure core extension configuration section name
+ * @returns Azure core extension config section
+ */
+export function getAzureCoreExtConfiguration(config: string = azureExtensionConfigName): vscode.WorkspaceConfiguration {
+	return vscode.workspace.getConfiguration(config);
 }
 
 export function getConfigLogFilesRemovalLimit(): number {
@@ -105,6 +119,15 @@ export function getConfigTracingLevel(): TracingLevel {
 	}
 }
 
+export function getConfigPiiLogging(): boolean {
+	let config = getConfiguration();
+	if (config) {
+		return config[configPiiLogging];
+	} else {
+		return false;
+	}
+}
+
 export function getConfigPreloadDatabaseModel(): boolean {
 	let config = getConfiguration();
 	if (config) {
@@ -121,15 +144,37 @@ export function setConfigPreloadDatabaseModel(enable: boolean): void {
 	}
 }
 
-export async function getParallelMessageProcessingConfig(): Promise<boolean> {
+export function getParallelMessageProcessingConfig(): boolean {
 	const config = getConfiguration();
 	if (!config) {
 		return false;
 	}
 	const setting = config.inspect(parallelMessageProcessingConfig);
-	// For dev environment, we want to enable the feature by default unless it is set explicitely.
-	// Note: the quality property is not set for dev environment, we can use this to determine whether it is dev environment.
 	return (azdata.env.quality === azdata.env.AppQuality.dev && setting.globalValue === undefined && setting.workspaceValue === undefined) ? true : config[parallelMessageProcessingConfig];
+}
+
+export function getAzureAuthenticationLibraryConfig(): string {
+	const config = getAzureCoreExtConfiguration();
+	if (config) {
+		return config.has(azureAuthenticationLibraryConfig)
+			? config.get<string>(azureAuthenticationLibraryConfig)
+			: 'MSAL'; // default Auth library
+	}
+	else {
+		return 'MSAL';
+	}
+}
+
+export function getEnableSqlAuthenticationProviderConfig(): boolean {
+	const config = getConfiguration();
+	if (config) {
+		return config.has(enableSqlAuthenticationProviderConfig)
+			? config.get<boolean>(enableSqlAuthenticationProviderConfig)
+			: false; // disabled by default
+	}
+	else {
+		return false;
+	}
 }
 
 export function getLogFileName(prefix: string, pid: number): string {
@@ -138,6 +183,10 @@ export function getLogFileName(prefix: string, pid: number): string {
 
 export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileName: string, executablePath: string): string[] {
 	let launchArgs = [];
+	// Application Name determines app storage location or user data path.
+	launchArgs.push('--application-name', 'azuredatastudio');
+	launchArgs.push('--data-path', getAppDataPath());
+
 	launchArgs.push(`--locale`, vscode.env.language);
 
 	launchArgs.push('--log-file');
@@ -151,6 +200,9 @@ export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileNa
 	console.log(`Old log files deletion report: ${JSON.stringify(deletedLogFiles)}`);
 	launchArgs.push('--tracing-level');
 	launchArgs.push(getConfigTracingLevel());
+	if (getConfigPiiLogging()) {
+		launchArgs.push('--pii-logging');
+	}
 	// Always enable autoflush so that log entries are written immediately to disk, otherwise we can end up with partial logs
 	launchArgs.push('--autoflush-log');
 	return launchArgs;

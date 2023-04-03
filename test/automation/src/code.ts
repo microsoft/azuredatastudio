@@ -3,19 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { join } from 'path';
 import * as os from 'os';
 import * as cp from 'child_process';
 import { IElement, ILocalizedStrings, ILocaleInfo } from './driver';
 import { launch as launchPlaywrightBrowser } from './playwrightBrowser';
 import { launch as launchPlaywrightElectron } from './playwrightElectron';
 import { Logger, measureAndLog } from './logger';
-import { copyExtension } from './extensions';
 import * as treekill from 'tree-kill';
 import { teardown } from './processes';
 import { PlaywrightDriver } from './playwrightDriver';
-
-const rootPath = join(__dirname, '../../..');
 
 export interface LaunchOptions {
 	codePath?: string;
@@ -75,8 +71,6 @@ export async function launch(options: LaunchOptions): Promise<Code> {
 	if (stopped) {
 		throw new Error('Smoke test process has terminated, refusing to spawn Code');
 	}
-
-	await measureAndLog(copyExtension(rootPath, options.extensionsPath, 'vscode-notebook-tests'), 'copyExtension(vscode-notebook-tests)', options.logger);
 
 	// Browser smoke tests
 	if (options.web) {
@@ -164,16 +158,17 @@ export class Code {
 						});
 					}
 
-					if (retries === 40) {
-						done = true;
-						reject(new Error('Smoke test exit call did not terminate process after 20s, giving up'));
-					}
-
 					try {
 						process.kill(pid, 0); // throws an exception if the process doesn't exist anymore.
 						await new Promise(resolve => setTimeout(resolve, 500));
 					} catch (error) {
 						done = true;
+						resolve();
+					}
+
+					if (retries === 60) {
+						done = true;
+						this.logger.log('Smoke test exit call did not terminate process after 30s, giving up');
 						resolve();
 					}
 				}

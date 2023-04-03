@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as vsExtTypes from 'vs/workbench/api/common/extHostTypes';
 import { URI } from 'vs/base/common/uri';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 // SQL added extension host types
 export enum ServiceOptionType {
@@ -328,6 +329,29 @@ export interface IDialogProperties {
 	height: number
 }
 
+/**
+ * Provides dialog options to customize modal dialog content and layout
+ */
+export interface IErrorDialogOptions {
+	severity: MessageLevel;
+	headerTitle: string;
+	message: string;
+	messageDetails?: string;
+	telemetryView?: TelemetryView | string;
+	actions?: IDialogAction[];
+	instructionText?: string;
+	readMoreLink?: string;
+}
+
+/**
+ * An action that will be rendered as a button on the dialog.
+ */
+export interface IDialogAction {
+	id: string;
+	label: string;
+	isPrimary: boolean;
+}
+
 export enum MessageLevel {
 	Error = 0,
 	Warning = 1,
@@ -450,7 +474,8 @@ export enum AzureResource {
 	AzureLogAnalytics = 8,
 	AzureStorage = 9,
 	AzureKusto = 10,
-	PowerBi = 11
+	PowerBi = 11,
+	Custom = 12 // Handles custom resource URIs as received from server endpoint.
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {

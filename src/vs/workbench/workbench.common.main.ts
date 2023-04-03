@@ -53,6 +53,7 @@ import 'vs/workbench/browser/parts/views/viewsService';
 
 //#region --- workbench services
 
+import 'vs/platform/actions/common/actions.contribution';
 import 'vs/platform/undoRedo/common/undoRedoService';
 import 'vs/workbench/services/extensions/browser/extensionUrlHandler';
 import 'vs/workbench/services/keybinding/common/keybindingEditing';
@@ -77,7 +78,6 @@ import 'vs/workbench/services/commands/common/commandService';
 import 'vs/workbench/services/themes/browser/workbenchThemeService';
 import 'vs/workbench/services/label/common/labelService';
 import 'vs/workbench/services/extensions/common/extensionManifestPropertiesService';
-import 'vs/workbench/services/extensionManagement/browser/webExtensionsScannerService';
 import 'vs/workbench/services/extensionManagement/browser/extensionEnablementService';
 import 'vs/workbench/services/extensionManagement/browser/builtinExtensionsScannerService';
 import 'vs/workbench/services/extensionRecommendations/common/extensionIgnoredRecommendationsService';
@@ -118,8 +118,6 @@ import { ContextKeyService } from 'vs/platform/contextkey/browser/contextKeyServ
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfiguration';
 import { TextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
-import { IMenuService } from 'vs/platform/actions/common/actions';
-import { MenuService } from 'vs/platform/actions/common/menuService';
 import { IDownloadService } from 'vs/platform/download/common/download';
 import { DownloadService } from 'vs/platform/download/common/downloadService';
 import { OpenerService } from 'vs/editor/browser/services/openerService';
@@ -142,7 +140,6 @@ registerSingleton(IMarkerDecorationsService, MarkerDecorationsService);
 registerSingleton(IMarkerService, MarkerService, true);
 registerSingleton(IContextKeyService, ContextKeyService);
 registerSingleton(ITextResourceConfigurationService, TextResourceConfigurationService);
-registerSingleton(IMenuService, MenuService, true);
 registerSingleton(IDownloadService, DownloadService, true);
 registerSingleton(IOpenerService, OpenerService, true);
 registerSingleton(IExtensionsProfileScannerService, ExtensionsProfileScannerService);
@@ -223,6 +220,8 @@ import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/comm
 import { TableDesignerService } from 'sql/workbench/services/tableDesigner/browser/tableDesignerService';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { ExecutionPlanService } from 'sql/workbench/services/executionPlan/common/executionPlanService';
+import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
+import { ErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/browser/errorDiagnosticsService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -266,6 +265,7 @@ registerSingleton(IAssessmentService, AssessmentService);
 registerSingleton(IDataGridProviderService, DataGridProviderService);
 registerSingleton(ITableDesignerService, TableDesignerService);
 registerSingleton(IExecutionPlanService, ExecutionPlanService);
+registerSingleton(IErrorDiagnosticsService, ErrorDiagnosticsService);
 //#endregion
 
 
@@ -389,11 +389,6 @@ import 'vs/workbench/contrib/keybindings/browser/keybindings.contribution';
 
 // Snippets
 import 'vs/workbench/contrib/snippets/browser/snippets.contribution';
-import 'vs/workbench/contrib/snippets/browser/snippetsService';
-import 'vs/workbench/contrib/snippets/browser/insertSnippet';
-import 'vs/workbench/contrib/snippets/browser/surroundWithSnippet';
-import 'vs/workbench/contrib/snippets/browser/configureSnippets';
-import 'vs/workbench/contrib/snippets/browser/tabCompletion';
 
 // Formatter Help
 import 'vs/workbench/contrib/format/browser/format.contribution';
@@ -453,7 +448,7 @@ import 'vs/workbench/contrib/userDataSync/browser/userDataSync.contribution';
 import 'vs/workbench/contrib/userDataProfile/browser/userDataProfile.contribution';
 
 // Continue Edit Session
-import 'vs/workbench/contrib/sessionSync/browser/sessionSync.contribution';
+import 'vs/workbench/contrib/editSessions/browser/editSessions.contribution';
 
 // Code Actions
 import 'vs/workbench/contrib/codeActions/browser/codeActions.contribution';
@@ -578,5 +573,11 @@ import 'sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution';
 
 // execution plan
 import 'sql/workbench/contrib/executionPlan/browser/executionPlanContribution';
+
+// Deprecated Extension Migrator
+import 'vs/workbench/contrib/deprecatedExtensionMigrator/browser/deprecatedExtensionMigrator.contribution';
+
+// Bracket Pair Colorizer 2 Telemetry
+import 'vs/workbench/contrib/bracketPairColorizer2Telemetry/browser/bracketPairColorizer2Telemetry.contribution';
 
 //#endregion

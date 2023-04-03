@@ -37,7 +37,7 @@ interface IDropOperation {
 }
 
 function isDropIntoEditorEnabledGlobally(configurationService: IConfigurationService) {
-	return configurationService.getValue<boolean>('workbench.experimental.editor.dropIntoEditor.enabled');
+	return configurationService.getValue<boolean>('editor.dropIntoEditor.enabled');
 }
 
 function isDragIntoEditorEvent(e: DragEvent): boolean {
@@ -369,7 +369,7 @@ class DropOverlay extends Themable {
 
 			// {{SQL CARBON EDIT}}
 			let untitledOrFileResources: any = undefined;
-			untitledOrFileResources = await this.instantiationService.invokeFunction(extractEditorsDropData, event);
+			untitledOrFileResources = extractEditorsDropData(event); // {{SQL CARBON EDIT}} Signature no longer takes ServicesAccessor param
 			if (untitledOrFileResources && !untitledOrFileResources.length) {
 				return;
 			}
@@ -377,7 +377,8 @@ class DropOverlay extends Themable {
 			// {{SQL CARBON EDIT}}
 			const editor = this.editorService.activeTextEditorControl as ICodeEditor;
 			if (supportsNodeNameDrop(untitledOrFileResources[0].resource.scheme) || untitledOrFileResources[0].resource.scheme === 'Folder') {
-				SnippetController2.get(editor).insert(untitledOrFileResources[0].resource.query);
+				// Snippet support variable and $ is the reserved character, need to escape it so that it will treated as a normal character.
+				SnippetController2.get(editor).insert(untitledOrFileResources[0].resource.query?.replace(/\$/g, '\\$'));
 				editor.focus();
 				return;
 			}
@@ -618,11 +619,6 @@ export class EditorDropTarget extends Themable {
 	private registerListeners(): void {
 		this._register(addDisposableListener(this.container, EventType.DRAG_ENTER, e => this.onDragEnter(e)));
 		this._register(addDisposableListener(this.container, EventType.DRAG_LEAVE, () => this.onDragLeave()));
-		this._register(addDisposableListener(this.container, EventType.DRAG_OVER, e => {
-			if (!this.overlay) {
-				this.onDragEnter(e);
-			}
-		}));
 		[this.container, window].forEach(node => this._register(addDisposableListener(node as HTMLElement, EventType.DRAG_END, () => this.onDragEnd())));
 	}
 

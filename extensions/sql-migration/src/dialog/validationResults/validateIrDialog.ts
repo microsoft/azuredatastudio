@@ -10,8 +10,18 @@ import { validateIrDatabaseMigrationSettings, validateIrSqlDatabaseMigrationSett
 import { MigrationStateModel, MigrationTargetType, NetworkShare, ValidateIrState, ValidationResult } from '../../models/stateMachine';
 import { EOL } from 'os';
 import { IconPathHelper } from '../../constants/iconPathHelper';
+import { getEncryptConnectionValue, getSourceConnectionProfile, getTrustServerCertificateValue } from '../../api/sqlUtils';
+import { logError, TelemetryViews } from '../../telemetry';
 
 const DialogName = 'ValidateIrDialog';
+
+enum HttpStatusCodes {
+	GatewayTimeout = "504\r\n",
+}
+
+enum HttpStatusExceptionCodes {
+	ConnectionTimeoutError = "ConnectionTimeoutError",
+}
 
 enum ValidationResultIndex {
 	message = 0,
@@ -363,11 +373,10 @@ export class ValidateIrDialog {
 	}
 
 	private async _validateDatabaseMigration(): Promise<void> {
-		const sqlConnections = await azdata.connection.getConnections();
-		const currentConnection = sqlConnections.find(
-			value => value.connectionId === this._model.sourceConnectionId);
+		const currentConnection = await getSourceConnectionProfile();
 		const sourceServerName = currentConnection?.serverName!;
-		const trustServerCertificate = currentConnection?.options?.trustServerCertificate === true;
+		const encryptConnection = getEncryptConnectionValue(currentConnection);
+		const trustServerCertificate = getTrustServerCertificateValue(currentConnection);
 		const databaseCount = this._model._databasesForMigration.length;
 		const sourceDatabaseName = this._model._databasesForMigration[0];
 		const networkShare = this._model._databaseBackup.networkShares[0];
@@ -385,6 +394,7 @@ export class ValidateIrDialog {
 				const response = await validateIrDatabaseMigrationSettings(
 					this._model,
 					sourceServerName,
+					encryptConnection,
 					trustServerCertificate,
 					sourceDatabase,
 					network,
@@ -404,10 +414,12 @@ export class ValidateIrDialog {
 					return true;
 				}
 			} catch (error) {
+				const err = this._formatError(error);
+				logError(TelemetryViews.ValidIrDialog, err.message, error);
 				await this._updateValidateIrResults(
 					testNumber,
 					ValidateIrState.Failed,
-					[constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabase, error)]);
+					[constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabase, err)]);
 			}
 			return false;
 		};
@@ -446,12 +458,21 @@ export class ValidateIrDialog {
 		}
 	}
 
+	private _formatError(error: Error): Error {
+		if (error?.message?.startsWith(HttpStatusCodes.GatewayTimeout)) {
+			return {
+				name: HttpStatusExceptionCodes.ConnectionTimeoutError,
+				message: constants.VALIDATE_IR_ERROR_GATEWAY_TIMEOUT,
+			};
+		}
+		return error;
+	}
+
 	private async _validateSqlDbMigration(): Promise<void> {
-		const sqlConnections = await azdata.connection.getConnections();
-		const currentConnection = sqlConnections.find(
-			value => value.connectionId === this._model.sourceConnectionId);
+		const currentConnection = await getSourceConnectionProfile();
 		const sourceServerName = currentConnection?.serverName!;
-		const trustServerCertificate = currentConnection?.options['trustServerCertificate'] === true;
+		const encryptConnection = getEncryptConnectionValue(currentConnection);
+		const trustServerCertificate = getTrustServerCertificateValue(currentConnection);
 		const databaseCount = this._model._databasesForMigration.length;
 		const sourceDatabaseName = this._model._databasesForMigration[0];
 		const targetDatabaseName = this._model._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? '';
@@ -464,11 +485,12 @@ export class ValidateIrDialog {
 			testSourceConnectivity: boolean,
 			testTargetConnectivity: boolean): Promise<boolean> => {
 
-			await this._updateValidateIrResults(testNumber, ValidateIrState.Running);
 			try {
+				await this._updateValidateIrResults(testNumber, ValidateIrState.Running);
 				const response = await validateIrSqlDatabaseMigrationSettings(
 					this._model,
 					sourceServerName,
+					encryptConnection,
 					trustServerCertificate,
 					sourceDatabase,
 					targetDatabase,
@@ -487,10 +509,12 @@ export class ValidateIrDialog {
 					return true;
 				}
 			} catch (error) {
+				const err = this._formatError(error);
+				logError(TelemetryViews.ValidIrDialog, err.message, error);
 				await this._updateValidateIrResults(
 					testNumber,
 					ValidateIrState.Failed,
-					[constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabase, error)]);
+					[constants.VALIDATE_IR_VALIDATION_RESULT_API_ERROR(sourceDatabase, err)]);
 			}
 			return false;
 		};

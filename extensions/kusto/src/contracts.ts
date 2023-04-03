@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { NotificationType, RequestType } from 'vscode-languageclient';
-import { ITelemetryEventProperties, ITelemetryEventMeasures } from './telemetry';
+import * as telemetry from '@microsoft/ads-extension-telemetry';
 import * as azdata from 'azdata';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
@@ -22,8 +22,8 @@ export namespace TelemetryNotification {
 export class TelemetryParams {
 	public params!: {
 		eventName: string;
-		properties: ITelemetryEventProperties;
-		measures: ITelemetryEventMeasures;
+		properties: telemetry.TelemetryEventProperties;
+		measures: telemetry.TelemetryEventMeasures;
 	};
 }
 

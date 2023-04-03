@@ -27,7 +27,7 @@ import { Event } from 'vs/base/common/event';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { IAction } from 'vs/base/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
+import { AbstractTextCodeEditor } from 'vs/workbench/browser/parts/editor/textCodeEditor';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
@@ -71,7 +71,7 @@ export class QueryEditor extends EditorPane {
 
 	private textResourceEditor: TextResourceEditor;
 	private textFileEditor: TextFileEditor;
-	private currentTextEditor: BaseTextEditor<ICodeEditorViewState>;
+	private currentTextEditor: AbstractTextCodeEditor<ICodeEditorViewState>;
 
 	private textResourceEditorContainer: HTMLElement;
 	private textFileEditorContainer: HTMLElement;

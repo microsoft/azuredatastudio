@@ -219,7 +219,10 @@ export class MiaaModel extends ResourceModel {
 			saveProfile: true,
 			id: '',
 			groupId: undefined,
-			options: {}
+			options: {
+				encrypt: this._miaaInfo.encrypt || true,
+				trustServerCertificate: this._miaaInfo.trustServerCertificate || false
+			}
 		};
 	}
 
@@ -240,6 +243,8 @@ export class MiaaModel extends ResourceModel {
 		this._activeConnectionId = connectionProfile.id;
 		this.info.connectionId = connectionProfile.id;
 		this._miaaInfo.userName = connectionProfile.userName;
+		this._miaaInfo.encrypt = connectionProfile.options.encrypt;
+		this._miaaInfo.trustServerCertificate = connectionProfile.options.trustServerCertificate;
 		await this._treeDataProvider.saveControllers();
 	}
 
@@ -270,6 +275,5 @@ export class MiaaModel extends ResourceModel {
 				this._databaseTimeWindow.set(dbName, ['', '']);
 			}
 		}
-
 	}
 }

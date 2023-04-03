@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -56,7 +56,7 @@ export class UserDataProfileImportExportService implements IUserDataProfileImpor
 
 		await this.progressService.withProgress({
 			location: ProgressLocation.Notification,
-			title: localize('profiles.applying', "{0}: Importing...", PROFILES_CATEGORY),
+			title: localize('profiles.importing', "{0}: Importing...", PROFILES_CATEGORY),
 		}, async progress => {
 			await this.userDataProfileManagementService.createAndEnterProfile(name);
 			if (profileTemplate.settings) {
@@ -70,7 +70,25 @@ export class UserDataProfileImportExportService implements IUserDataProfileImpor
 			}
 		});
 
-		this.notificationService.info(localize('applied profile', "{0}: Imported successfully.", PROFILES_CATEGORY));
+		this.notificationService.info(localize('imported profile', "{0}: Imported successfully.", PROFILES_CATEGORY));
+	}
+
+	async setProfile(profile: IUserDataProfileTemplate): Promise<void> {
+		await this.progressService.withProgress({
+			location: ProgressLocation.Notification,
+			title: localize('profiles.applying', "{0}: Applying...", PROFILES_CATEGORY),
+		}, async progress => {
+			if (profile.settings) {
+				await this.settingsProfile.applyProfile(profile.settings);
+			}
+			if (profile.globalState) {
+				await this.globalStateProfile.applyProfile(profile.globalState);
+			}
+			if (profile.extensions) {
+				await this.extensionsProfile.applyProfile(profile.extensions);
+			}
+		});
+		this.notificationService.info(localize('applied profile', "{0}: Applied successfully.", PROFILES_CATEGORY));
 	}
 
 }

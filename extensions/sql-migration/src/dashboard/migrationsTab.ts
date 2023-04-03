@@ -16,6 +16,7 @@ import { MigrationDetailsFileShareTab } from './migrationDetailsFileShareTab';
 import { MigrationDetailsBlobContainerTab } from './migrationDetailsBlobContainerTab';
 import { MigrationDetailsTableTab } from './migrationDetailsTableTab';
 import { DashboardStatusBar } from './DashboardStatusBar';
+import { getSourceConnectionId } from '../api/sqlUtils';
 
 export const MigrationsTabId = 'MigrationsTab';
 
@@ -84,9 +85,12 @@ export class MigrationsTab extends TabBase<MigrationsTab> {
 			this.statusBar);
 		this.disposables.push(this._migrationsListTab);
 
-		const openMigrationsListTab = async (): Promise<void> => {
+		const openMigrationsListTab = async (refresh?: boolean): Promise<void> => {
 			await this.statusBar.clearError();
 			await this._openTab(this._migrationsListTab);
+			if (refresh) {
+				await this._migrationsListTab.refresh();
+			}
 		};
 
 		this._migrationDetailsBlobTab = await new MigrationDetailsBlobContainerTab().create(
@@ -110,11 +114,9 @@ export class MigrationsTab extends TabBase<MigrationsTab> {
 			this.statusBar);
 		this.disposables.push(this._migrationDetailsFileShareTab);
 
-		const connectionProfile = await azdata.connection.getCurrentConnection();
-		const connectionId = connectionProfile.connectionId;
 		this.disposables.push(
 			this._migrationDetailsEvent.event(async e => {
-				if (e.connectionId === connectionId) {
+				if (e.connectionId === await getSourceConnectionId()) {
 					const migration = await this._getMigrationDetails(e.migrationId, e.migrationOperationId);
 					if (migration) {
 						await this.openMigrationDetails(migration);

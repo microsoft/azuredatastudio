@@ -7,7 +7,7 @@ export class Deferred<T = void> {
 	promise: Promise<T> = new Promise<T>((resolve, reject) => {
 		this.resolve = resolve;
 		this.reject = reject;
-	});;
+	});
 	resolve!: (value: T | PromiseLike<T>) => void;
 	reject!: (reason?: any) => void;
 }

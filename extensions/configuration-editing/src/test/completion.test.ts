@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
@@ -71,6 +71,20 @@ suite('Completions in settings.json', () => {
 				'}',
 			].join('\n');
 			const expected = { label: '${activeEditorMedium}', resultText };
+			await testCompletion(testFile, 'jsonc', content, expected);
+		}
+		{ // replacing a partial variable
+			const content = [
+				'{',
+				'  "window.title": "${a|"',
+				'}',
+			].join('\n');
+			const resultText = [
+				'{',
+				'  "window.title": "${dirty}"',
+				'}',
+			].join('\n');
+			const expected = { label: '${dirty}', resultText };
 			await testCompletion(testFile, 'jsonc', content, expected);
 		}
 		{ // inserting a literal
@@ -375,6 +389,32 @@ suite('Completions in launch.json', () => {
 				'      "name": "Run Extension",',
 				'      "type": "extensionHost",',
 				'      "preLaunchTask": "${cwd}${defaultBuildTask}"',
+				'    }',
+				'  ]',
+				'}',
+			].join('\n');
+			const expected = { label: '${cwd}', resultText };
+			await testCompletion(testFile, 'jsonc', content, expected);
+		}
+		{
+			const content = [
+				'{',
+				'  "version": "0.2.0",',
+				'  "configurations": [',
+				'    {',
+				'      "name": "Do It",',
+				'      "program": "${workspace|"',
+				'    }',
+				'  ]',
+				'}',
+			].join('\n');
+			const resultText = [
+				'{',
+				'  "version": "0.2.0",',
+				'  "configurations": [',
+				'    {',
+				'      "name": "Do It",',
+				'      "program": "${cwd}"',
 				'    }',
 				'  ]',
 				'}',

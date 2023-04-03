@@ -337,7 +337,7 @@ export class TestingExplorerView extends ViewPane {
 			icon: group === TestRunProfileBitset.Run
 				? icons.testingRunAllIcon
 				: icons.testingDebugAllIcon,
-		}, undefined, undefined);
+		}, undefined, undefined, undefined);
 
 		const dropdownAction = new Action('selectRunConfig', 'Select Configuration...', 'codicon-chevron-down', true);
 
@@ -485,13 +485,13 @@ export class TestingExplorerViewModel extends Disposable {
 				instantiationService.createInstance(ErrorRenderer),
 			],
 			{
-				simpleKeyboardNavigation: true,
 				identityProvider: instantiationService.createInstance(IdentityProvider),
 				hideTwistiesOfChildlessElements: false,
 				sorter: instantiationService.createInstance(TreeSorter, this),
 				keyboardNavigationLabelProvider: instantiationService.createInstance(TreeKeyboardNavigationLabelProvider),
 				accessibilityProvider: instantiationService.createInstance(ListAccessibilityProvider),
 				filter: this.filter,
+				findWidgetEnabled: false
 			}) as WorkbenchObjectTree<TestExplorerTreeElement, FuzzyScore>;
 
 		this._register(this.tree.onDidChangeCollapseState(evt => {

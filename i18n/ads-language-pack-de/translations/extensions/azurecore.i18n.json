@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "Fehler beim Hinzufügen Ihres Kontos zum Cache.",
 			"azure.cacheErrorGet": "Fehler beim Abrufen Ihres Kontos aus dem Cache.",
 			"azure.cacheErrorParse": "Fehler beim Analysieren Ihres Kontos aus dem Cache.",
-			"azure.cacheErrrorRemove": "Fehler beim Entfernen Ihres Kontos aus dem Cache.",
 			"azure.microsoftAccountDisplayName": "Microsoft-Konto",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Bei der Authentifizierung ist ein Fehler aufgetreten, oder Ihre Token wurden aus dem System gelöscht. Versuchen Sie erneut, Ihr Konto in Azure Data Studio hinzuzufügen.",
@@ -21,8 +20,6 @@
 			"azure.owningTenantNotFound": "Informationen zum Besitzer des Mandanten wurden für das Konto nicht gefunden.",
 			"azure.responseError": "Fehler beim Abrufen des Tokens. [Entwicklertools öffnen] ({0}) für weitere Details.",
 			"azure.tenantNotFound": "Der angegebene Mandant mit der ID \"{0}\" wurde nicht gefunden.",
-			"azureAuth.unidentifiedError": "Unbekannter Fehler bei der Azure-Authentifizierung.",
-			"azureWorkAccountDisplayName": "Geschäfts-, Schul- oder Unikonto",
 			"azurecore.consentDialog.body": "Für Ihren Mandanten \"{0} ({1})\" müssen Sie sich erneut authentifizieren, um auf {2}-Ressourcen zuzugreifen. Klicken Sie auf \"Öffnen\", um den Authentifizierungsvorgang zu starten.",
 			"azurecore.consentDialog.cancel": "Abbrechen",
 			"azurecore.consentDialog.ignore": "Mandanten ignorieren",
@@ -44,7 +41,9 @@
 		"dist/account-provider/azureAccountProvider": {
 			"azure.NoAuthMethod.Available": "Es ist keine Azure-Authentifizierungsmethode verfügbar. Sie müssen die Authentifizierungsmethoden in der ADS-Konfiguration aktivieren.",
 			"azure.NoAuthMethod.Selected": "Es wurde keine Azure-Authentifizierungsmethode ausgewählt. Sie müssen die Art der Authentifizierung auswählen, die Sie verwenden möchten.",
-			"azure.deprecatedGetSecurityToken": "\"azdata.accounts.getSecurityToken\" wurde aufgerufen. Diese Methode ist veraltet und wird in zukünftigen Releases entfernt. Verwenden Sie stattdessen \"getAccountSecurityToken\"."
+			"azure.deprecatedGetSecurityToken": "\"azdata.accounts.getSecurityToken\" wurde aufgerufen. Diese Methode ist veraltet und wird in zukünftigen Releases entfernt. Verwenden Sie stattdessen \"getAccountSecurityToken\".",
+			"genericTokenError": "Fehler beim Abrufen des Tokens",
+			"msalTokenError": "Beim Abrufen des Tokens ist {0} aufgetreten. \r\n{1}"
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "Fehler beim Löschen des Tokencaches.",
@@ -52,10 +51,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure (China)",
-			"germanyCloud": "Azure (Deutschland)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (US-Regierungsbehörden)",
-			"usNatCloudDisplayName": "Azure (USA, national)"
+			"usGovCloudDisplayName": "Azure (US-Regierungsbehörden)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "Sie müssen ein Azure-Konto auswählen, damit dieses Feature funktioniert.",
@@ -99,6 +96,12 @@
 		},
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
 			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL Managed Instance – Azure Arc"
+		},
+		"dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider": {
+			"azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel": "Dedizierte SQL-Pools"
+		},
+		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
+			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
 		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "Keine Ressourcen gefunden."
@@ -188,6 +191,8 @@
 			"azurecore.norwaywest": "Norwegen, Westen",
 			"azurecore.postgresServer": "Azure Database for PostgreSQL-Server",
 			"azurecore.reload": "Neu laden",
+			"azurecore.reloadChoice": "Azure Data Studio neu laden",
+			"azurecore.reloadPrompt": "Die Authentifizierungsbibliothek wurde geändert, bitte laden Sie Azure Data Studio neu.",
 			"azurecore.requiresReload": "Bei Änderung dieser Einstellung muss das Fenster neu geladen werden, damit alle Änderungen wirksam werden.",
 			"azurecore.resourceGroup": "Ressourcengruppe",
 			"azurecore.resourceType": "Ressourcentyp",
@@ -233,6 +238,7 @@
 			"azure.resource.view.title": "Azure (Vorschau)",
 			"azure.tenant.config.filter.description": "Die Liste der Mandanten-IDs, die beim Abfragen von Azure-Ressourcen ignoriert werden sollen. Jedes Element ist eine Mandanten-ID.",
 			"azure.title": "Azure",
+			"config.authenticationLibrary": "Die Bibliothek, die für den AAD-Authentifizierungsfluss verwendet wird. Bitte starten Sie ADS neu, nachdem Sie diese Option geändert haben.",
 			"config.azureAccountConfigurationSection": "Azure-Kontokonfiguration",
 			"config.azureAuthMethodConfigurationSection": "Azure-Authentifizierungsmethode",
 			"config.azureCodeGrantMethod": "Gewährungsmethode über Code",

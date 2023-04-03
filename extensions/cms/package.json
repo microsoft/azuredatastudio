@@ -182,6 +182,20 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "name": "commandTimeout",
+          "displayName": "%cms.connectionOptions.commandTimeout.displayName%",
+          "description": "%cms.connectionOptions.commandTimeout.description%",
+          "groupName": "%cms.connectionOptions.groupName.initialization%",
+          "valueType": "number",
+          "defaultValue": "30",
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
           "name": "currentLanguage",
           "displayName": "%cms.connectionOptions.currentLanguage.displayName%",
           "description": "%cms.connectionOptions.currentLanguage.description%",
@@ -223,10 +237,23 @@
           "displayName": "%cms.connectionOptions.encrypt.displayName%",
           "description": "%cms.connectionOptions.encrypt.description%",
           "groupName": "%cms.connectionOptions.groupName.security%",
-          "valueType": "boolean",
+          "valueType": "category",
           "defaultValue": "true",
           "objectType": null,
-          "categoryValues": null,
+          "categoryValues": [
+            {
+              "displayName": "%cms.connectionOptions.encrypt.categoryValues.true%",
+              "name": "true"
+            },
+            {
+              "displayName": "%cms.connectionOptions.encrypt.categoryValues.strict%",
+              "name": "strict"
+            },
+            {
+              "displayName": "%cms.connectionOptions.encrypt.categoryValues.false%",
+              "name": "false"
+            }
+          ],
           "isRequired": false,
           "isArray": false,
           "showOnConnectionDialog": true
@@ -239,6 +266,20 @@
           "description": "%cms.connectionOptions.persistSecurityInfo.description%",
           "groupName": "%cms.connectionOptions.groupName.security%",
           "valueType": "boolean",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
+          "name": "hostNameInCertificate",
+          "displayName": "%cms.connectionOptions.hostNameInCertificate.displayName%",
+          "description": "%cms.connectionOptions.hostNameInCertificate.description%",
+          "groupName": "%cms.connectionOptions.groupName.security%",
+          "valueType": "string",
           "defaultValue": null,
           "objectType": null,
           "categoryValues": null,
@@ -651,7 +692,7 @@
     "should": "^13.2.1",
     "@microsoft/vscodetestcover": "^1.2.1",
     "typemoq": "^2.1.0",
-    "@microsoft/azdata-test": "^2.0.3"
+    "@microsoft/azdata-test": "^3.0.1"
   },
   "__metadata": {
     "id": "40",

@@ -42,7 +42,7 @@ export abstract class AbstractTelemetryOptOut implements IWorkbenchContribution 
 
 	protected async handleTelemetryOptOut(): Promise<void> {
 		if (this.productService.telemetryOptOutUrl &&
-			!this.storageService.get(AbstractTelemetryOptOut.TELEMETRY_OPT_OUT_SHOWN, StorageScope.GLOBAL) &&
+			!this.storageService.get(AbstractTelemetryOptOut.TELEMETRY_OPT_OUT_SHOWN, StorageScope.APPLICATION) &&
 			!this.environmentService.disableTelemetry) { // {{SQL CARBON EDIT}} Adding check to disable opt out toast when this flag is set.
 			const experimentId = 'telemetryOptOut';
 
@@ -52,7 +52,7 @@ export abstract class AbstractTelemetryOptOut implements IWorkbenchContribution 
 				return; // return early if meanwhile another window opened (we only show the opt-out once)
 			}
 
-			this.storageService.store(AbstractTelemetryOptOut.TELEMETRY_OPT_OUT_SHOWN, true, StorageScope.GLOBAL, StorageTarget.USER);
+			this.storageService.store(AbstractTelemetryOptOut.TELEMETRY_OPT_OUT_SHOWN, true, StorageScope.APPLICATION, StorageTarget.USER);
 
 			this.privacyUrl = this.productService.privacyStatementUrl || this.productService.telemetryOptOutUrl;
 

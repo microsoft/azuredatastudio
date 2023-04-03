@@ -11337,7 +11337,6 @@
 			"dataExplorer.context": "dataexplorer 항목 상황에 맞는 메뉴",
 			"dataGrid.context": "데이터 약식 표 항목 상황에 맞는 메뉴",
 			"default": "자동 업데이트 확인을 사용하도록 설정합니다. Azure Data Studio에서 정기적으로 업데이트를 자동 확인합니다.",
-			"docNotFoundForUriError": "지정한 URI의 Notebook 문서를 열 수 없습니다.",
 			"enable locally": "이 확장을 로컬에서 사용하려면 Azure Data Studio를 다시 로드하세요.",
 			"enable remote": "{0}에서 이 확장을 사용하도록 설정하려면 Azure Data Studio를 다시 로드하세요.",
 			"enableWindowsBackgroundUpdates": "새로운 Azure Data Studio 버전을 Windows 백그라운드에 다운로드 및 설치하려면 사용하도록 설정",
@@ -11345,14 +11344,36 @@
 			"incompatible": "Azure Data Studio '{2}'와(과) 호환되지 않으므로 '{1}' 확장의 '{0}' 버전을 설치할 수 없습니다. 확장을 설치하려면 Azure Data Studio {3}(으)로 업데이트하세요.",
 			"installExtensionCompletedAndReloadRequired": "{0} 확장 설치가 완료되었습니다. Azure Data Studio를 다시 로드하여 사용하도록 설정하세요.",
 			"maxMemoryForLargeFilesMB": "큰 파일을 열려고 할 때 다시 시작한 후 Azure Data Studio에 사용 가능한 메모리를 제어합니다. 명령줄에 '--max-memory=NEWSIZE'를 지정하는 것과 결과가 같습니다.",
+			"miNewDeployment": "새 배포(&&D)...",
 			"miNewNotebook": "새 Notebook(&&N)",
 			"miNewQuery": "새 쿼리(&&Q)",
 			"miinstallVsix": "VSIX 패키지에서 확장 설치",
 			"newQuery": "새 쿼리",
 			"notebook.cellTitle": "전자 필기장 셀 제목 메뉴",
-			"notebook.cellToolbarLocation.compatibilityDescription": "셀 도구 모음을 표시할지 또는 숨길지 여부입니다. 참고: 이 설정은 확장 호환성 용도로만 사용하도록 설정되었으므로 아무 영향을 주지 않습니다.",
+			"notebook.cellToolbarLocation.description": "셀 도구 모음을 표시할지 숨길지 여부입니다(VS Code 전자 필기장만 해당).",
+			"notebook.cellToolbarVisibility.description": "마우스로 가리키거나 클릭할 때 셀 도구 모음을 표시할지 여부입니다(VS Code 전자 필기장만 해당).",
+			"notebook.compactView.description": "전자 필기장 편집기를 압축된 형식으로 렌더링할지를 제어합니다. 예를 들어 이 기능을 켜면 왼쪽 여백 너비가 줄어듭니다(VS Code 전자 필기장만 해당).",
+			"notebook.consolidatedOutputButton.description": "출력 도구 모음에서 출력 동작을 렌더링할지를 제어합니다(VS Code 전자 필기장만 해당).",
+			"notebook.consolidatedRunButton.description": "실행 버튼 옆 드롭다운에 추가 작업을 표시할지를 제어합니다(VS Code 전자 필기장만 해당).",
+			"notebook.diff.enablePreview.description": "전자 필기장에 향상된 텍스트 diff 편집기를 사용할지 여부입니다(VS Code 전자 필기장만 해당).",
+			"notebook.displayOrder.description": "출력 MIME 형식의 우선 순위 목록입니다(VS Code 전자 필기장만 해당).",
+			"notebook.dragAndDrop.description": "Notebook 편집기에서 끌어서 놓기를 통해 셀을 이동할 수 있는지를 제어합니다(VS Code 전자 필기장만 해당).",
+			"notebook.editorOptions.experimentalCustomization": "전자 필기장에서 사용되는 코드 편집기에 대한 설정입니다. 이 항목은 대부분의 editor.* 설정을 사용자 지정하는 데 사용할 수 있습니다(VS Code 전자 필기장만 해당).",
+			"notebook.focusIndicator.description": "셀 테두리를 따라 또는 왼쪽 제본용 여백 중 포커스 표시기를 렌더링할 위치를 제어합니다(VS Code 전자 필기장만 해당).",
+			"notebook.globalToolbar.description": "전자 필기장 편집기 내에서 전역 도구 모음을 렌더링할지를 제어합니다(VS Code 전자 필기장만 해당).",
+			"notebook.globalToolbarShowLabel": "전자 필기장 도구 모음의 작업에서 레이블을 렌더링할지를 제어합니다(VS Code 전자 필기장만 해당).",
+			"notebook.insertToolbarPosition.description": "셀 삽입 작업을 표시할 위치를 제어합니다(VS Code 전자 필기장만 해당).",
+			"notebook.interactiveWindow.collapseCodeCells": "대화형 창의 코드 셀을 기본적으로 축소할지를 제어합니다(VS Code 전자 필기장만 해당).",
+			"notebook.markup.fontSize": "전자 필기장에서 렌더링된 태그의 글꼴 크기(픽셀)를 제어합니다. '0'으로 설정하면 '#editor.fontSize#'의 120%를 사용합니다(VS Code 전자 필기장만 해당).",
+			"notebook.outputFontFamily": "전자 필기장 셀의 출력 텍스트에 대한 글꼴 패밀리입니다. 비워 두면 `#editor.fontFamily#`를 사용합니다(VS Code 전자 필기장만 해당).",
+			"notebook.outputFontSize": "전자 필기장 셀의 출력 텍스트에 대한 글꼴 크기입니다. 0으로 설정하면 `#editor.fontSize#`를 사용합니다(VS Code 전자 필기장만 해당).",
+			"notebook.outputLineHeight": "전자 필기장 셀에 대한 출력 텍스트의 줄 높이입니다.\r\n - 0에서 8 사이의 값은 글꼴 크기의 승수로 사용됩니다.\r\n - 8보다 크거나 같은 값은 유효한 값으로 사용됩니다(VS Code 전자 필기장만 해당).",
+			"notebook.showCellStatusbar.description": "셀 상태 표시줄을 표시할지 여부입니다(VS Code 전자 필기장만 해당).",
+			"notebook.showFoldingControls.description": "Markdown 헤더 폴딩 화살표를 표시할 때를 제어합니다(VS Code 전자 필기장만 해당).",
+			"notebook.textOutputLineLimit": "텍스트 출력에서 렌더링할 텍스트 줄 수를 제어합니다(VS Code 전자 필기장만 해당).",
 			"notebook.title": "전자 필기장 제목 메뉴",
 			"notebook.toolbar": "전자 필기장 도구 모음 메뉴",
+			"notebook.undoRedoPerCell.description": "각 셀에 별도의 실행 취소/다시 실행 스택을 사용할지 여부입니다(VS Code 전자 필기장만 해당).",
 			"objectExplorer.context": "개체 탐색기 항목 상황에 맞는 메뉴",
 			"openDefaultSettingsJson": "기본 설정 JSON 열기",
 			"openDefaultSettingsJson.capitalized": "기본 설정 열기(JSON)",
@@ -11377,9 +11398,7 @@
 			"terminal.integrated.inheritEnv": "새 셸에서 $PATH 및 기타 개발 변수가 초기화되도록 로그인 셸을 제공할 수 있는 Azure Data Studio에서 환경을 상속해야 하는지 여부입니다. 이는 Windows에는 영향을 주지 않습니다.",
 			"uninstallExtensionComplete": "Azure Data Studio를 다시 로드하여 이 확장 {0}의 제거를 완료하세요.",
 			"updateLocale": "Azure Data Studio의 UI 언어를 {0}(으)로 변경하고 다시 시작하시겠습니까?",
-			"vscodeDocCreationFailedError": "Notebook 문서를 만들지 못했습니다.",
-			"vscodeFunctionalityNotSupportedError": "이 VS Code 기능은 Azure Data Studio에서 지원되지 않습니다.",
-			"vscodeInvalidArgumentsError": "잘못된 인수입니다.",
+			"vscodeNotebooksNotSupportedError": "Azure Data Studio에서 VS Code Notebook 확장이 지원되지 않습니다.",
 			"watermark.newNotebook": "새 Notebook",
 			"watermark.newSqlFile": "새 SQL 파일",
 			"workspace.trust.description": "Azure Data Studio 내에서 작업 영역 신뢰를 사용할지 여부를 제어합니다.",
@@ -11531,9 +11550,6 @@
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
 			"navigationProviderRequired": "유효한 providerId가 있는 NavigationProvider가 이 메서드에 전달되어야 합니다."
 		},
-		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "세션을 시작할 수 없습니다. 관리자가 아직 초기화되지 않았습니다."
-		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "저장된 모든 계정 지우기",
 			"configureDashboardLearnMore": "자세한 정보",
@@ -11545,7 +11561,9 @@
 			"enableObsoleteApiUsageNotificationTitle": "사용되지 않는 API 알림",
 			"previewFeatures.configEnable": "해제되지 않은 미리 보기 기능 사용",
 			"previewFeatures.configTitle": "미리 보기 기능",
-			"showConnectDialogOnStartup": "시작 시 연결 대화 상자 표시"
+			"showConnectDialogOnStartup": "시작 시 연결 대화 상자 표시",
+			"useVSCodeNotebooks": "(미리 보기) VS Code 전자 필기장을 기본 전자 필기장 환경으로 사용합니다. 참고: 이 설정을 사용하려면 Azure Data Studio를 다시 시작해야 합니다.",
+			"useVSCodeNotebooksTitle": "VS Code 전자 필기장 사용"
 		},
 		"sql/workbench/browser/designer/designer": {
 			"designer.actions": "기타 작업",
@@ -11908,6 +11926,7 @@
 			"status.connection.status": "연결 상태"
 		},
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
+			"schema.azureResource": "공급자의 Azure 리소스 엔드포인트입니다.",
 			"schema.connectionOptions": "연결 옵션",
 			"schema.displayName": "공급자의 표시 이름",
 			"schema.enableConnectionStringOption": "공급자가 연결 문자열을 입력 옵션으로 지원하는지 여부입니다. 기본값은 false입니다.",
@@ -12339,7 +12358,7 @@
 			"executionPlanCustomZoom": "사용자 지정 확대/축소",
 			"executionPlanDisableTooltip": "도구 설명 사용 안 함",
 			"executionPlanEnableTooltip": "도구 설명 활성화함",
-			"executionPlanFitGraphLabel": "크기에 맞게",
+			"executionPlanFitGraphLabel": "크기에 맞게 확대/축소",
 			"executionPlanHighlightExpensiveOperationAction": "비용이 많이 드는 작업 강조 표시",
 			"executionPlanOpenGraphFile": "쿼리 계획 XML 표시",
 			"executionPlanPropertiesActionLabel": "속성",
@@ -12397,9 +12416,6 @@
 			"executionPlanSelectSearchTypeTitle": "검색 유형 선택",
 			"nextSearchItemAction": "다음 검색 결과",
 			"previousSearchItemAction": "이전 검색 결과"
-		},
-		"sql/workbench/contrib/executionPlan/common/executionPlanInput": {
-			"epCompare.executionPlanEditorName": "ExecutionPlan"
 		},
 		"sql/workbench/contrib/extensions/browser/contributionRenders": {
 			"insight condition": "시기",
@@ -12702,6 +12718,7 @@
 			"notebook.markdownModeDescription": "텍스트가 Markdown으로 표시됩니다.",
 			"notebook.markdownPreviewLineHeight": "Notebook markdown 미리 보기에서 사용되는 줄 높이를 제어합니다. 해당 숫자는 글꼴 크기에 상대적입니다.",
 			"notebook.maxRichTextUndoHistory": "전자 필기장 서식 있는 텍스트 편집기의 실행 취소 기록에 저장된 최대 변경 내용 수입니다.",
+			"notebook.renderTablesInHtml": "Markdown 표로 변환하는 대신 텍스트 셀에 표를 HTML 형식으로 표시하고 저장합니다.",
 			"notebook.richTextModeDescription": "텍스트는 서식 있는 텍스트로 표시됩니다(이 텍스트는 WYSIWYG라고도 함).",
 			"notebook.saveConnectionName": "(미리 보기) 연결 이름을 Notebook 메타데이터에 저장합니다.",
 			"notebook.showAllKernels": "(미리 보기) 현재 Notebook 공급자의 모든 커널을 표시합니다.",
@@ -12860,7 +12877,7 @@
 			"viewOptionsModal.title": "보기 구성"
 		},
 		"sql/workbench/contrib/notebook/browser/outputs/gridOutput.component": {
-			"copyFailed": "{0} 오류를 나타내며 복사 실패",
+			"copyFailed": "복사하지 못했습니다(오류: {0}).",
 			"notebook.showChart": "차트 표시",
 			"notebook.showTable": "테이블 표시"
 		},
@@ -12947,6 +12964,7 @@
 		},
 		"sql/workbench/contrib/query/browser/actions": {
 			"chart": "차트",
+			"copyHeaders": "머리글 복사",
 			"copySelection": "복사",
 			"copyWithHeaders": "복사(머리글 포함)",
 			"jsonEncoding": "JSON으로 내보낼 때 결과 인코딩이 저장되지 않습니다. 파일이 만들어지면 원하는 인코딩으로 저장해야 합니다.",
@@ -13022,6 +13040,7 @@
 			"queryEditor.results.saveAsMarkdown.lineSeparator": "Markdown으로 내보낼 때 줄을 구분하는 데 사용할 문자입니다. 기본값은 시스템 줄 끝입니다.",
 			"queryEditor.results.saveAsXml.encoding": "결과를 XML로 저장할 때 사용되는 파일 인코딩",
 			"queryEditor.results.saveAsXml.formatted": "true이면 결과를 XML로 저장할 때 XML 출력에 형식이 지정됩니다.",
+			"queryEditor.results.showActionBar": "쿼리 결과 뷰에 작업 모음을 표시할지 여부",
 			"queryEditor.results.streaming": "결과 스트리밍을 사용하도록 설정합니다. 몇 가지 사소한 시각적 문제가 있습니다.",
 			"queryEditor.showConnectionInfoInTitle": "제목에 있는 탭에 연결 정보를 표시할지 여부를 제어합니다.",
 			"queryEditor.tabColorMode": "활성 연결의 서버 그룹을 기준으로 탭 색상 지정 방법을 제어합니다.",
@@ -13067,6 +13086,8 @@
 			"status.query.selection-summary": "선택 요약",
 			"status.query.status": "실행 상태",
 			"status.query.summaryText": "평균: {0} 개수: {1} 합계: {2}",
+			"status.query.summaryTextNonNumeric": "개수: {0}  고유 카운트: {1} null 개수: {2}",
+			"status.query.summaryTooltip": "평균: {0} 개수: {1} 고유 카운트: {2} 최대 {3} 최소: {4} null 개수: {5} 합계: {6}",
 			"status.query.timeElapsed": "경과 시간"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13077,6 +13098,7 @@
 			"fontWeight": "글꼴 두께를 제어합니다.",
 			"letterSpacing": "문자 간격(픽셀)을 제어합니다.",
 			"maxColumnWidth": "자동으로 크기가 조정되는 열의 최대 너비(픽셀)",
+			"resultsGrid.showJsonAsLink": "JSON 서식 문자열이 있는 셀을 하이퍼링크로 표시할지 여부입니다. 사용하도록 설정하면 클릭 시 JSON 값이 다른 탭에서 열립니다. 기본값은 true입니다.",
 			"resultsGridConfigurationTitle": "결과 표 및 메시지",
 			"rowHeight": "행 높이(픽셀)를 제어합니다."
 		},
@@ -13311,8 +13333,12 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "닫기",
+			"addAccountFailedCodeMessage": "{0} \r\n오류 메시지: {1}",
+			"addAccountFailedGenericMessage": "계정을 추가하지 못했습니다. 자세한 내용은 Azure 계정 로그를 확인하세요.",
+			"addAccountFailedMessage": "{0}",
 			"loggingIn": "계정 추가...",
-			"refreshFailed": "사용자가 계정 새로 고침을 취소했습니다."
+			"refreshCanceled": "사용자가 계정 새로 고침을 취소했습니다.",
+			"refreshFailed": "0 \r\n오류 메시지: 1"
 		},
 		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
 			"azureAccount": "Azure 계정",
@@ -13385,12 +13411,10 @@
 		},
 		"sql/workbench/services/connection/browser/connectionDialogService": {
 			"connectionError": "연결 오류",
-			"enableTrustServerCertificate": "신뢰 서버 인증서 활성화",
 			"kerberosErrorStart": "Kerberos 오류로 인해 연결이 실패했습니다.",
 			"kerberosHelpLink": "Kerberos 구성 도움말이 {0}에 있습니다.",
 			"kerberosKinit": "이전에 연결된 경우 kinit을 다시 실행해야 할 수 있습니다.",
-			"runKinit": "Kinit 실행",
-			"trustServerCertInstructionText": "이 연결에서 암호화가 사용 설정되었습니다. 대상 SQL Server의 SSL 및 인증서 구성을 검토하거나 연결 대화 상자에서 '신뢰할 수 있는 서버 인증서'를 사용 설정하세요.\r\n\r\n 참고: 자체 서명된 인증서 제한된 보호만 제공하며 프로덕션 환경에서는 권장되지 않습니다. 이 연결에서 '신뢰할 수 있는 서버 인증서'를 활성화하고 다시 시도하시겠습니까? "
+			"runKinit": "Kinit 실행"
 		},
 		"sql/workbench/services/connection/browser/connectionDialogWidget": {
 			"connectType": "연결 형식",
@@ -13444,6 +13468,20 @@
 			"onDidDisconnectMessage": "연결 끊김",
 			"unsavedGroupLabel": "저장되지 않은 연결"
 		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.Message1": "'{1}'에 계속 로그인하려면 '{0}'의 암호를 변경해야 합니다.",
+			"passwordChangeDialog.Message2": "아래에 새 암호를 입력하세요.",
+			"passwordChangeDialog.cancel": "취소",
+			"passwordChangeDialog.confirmPassword": "암호 확인:",
+			"passwordChangeDialog.connecting": "연결 중",
+			"passwordChangeDialog.errorHeader": "암호를 변경하는 동안 오류가 발생했습니다.",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "입력한 암호가 일치하지 않습니다.",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "확인을 누르고 두 상자에 정확히 동일한 암호를 입력하세요.",
+			"passwordChangeDialog.newPassword": "새 암호:",
+			"passwordChangeDialog.ok": "확인",
+			"passwordChangeDialog.passwordChangeInProgress": "암호 변경이 이미 진행 중입니다.",
+			"passwordChangeDialog.title": "암호 변경"
+		},
 		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
 			"newDashboardTab.cancel": "취소",
 			"newDashboardTab.ok": "확인",
@@ -13474,6 +13512,8 @@
 			"warning": "경고"
 		},
 		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"executionPlanService.ensureCapabilitiesRegistered": "Provider with id {0} was not registered after 30 seconds.",
+			"executionPlanService.ensureFileExtensionHandlerRegistered": "Execution plan provider which supports file format '{0}' was not registered after 30 seconds.",
 			"noHandlerRegistered": "유효한 실행 계획 처리기가 등록되지 않았습니다.",
 			"providerIdNotValidError": "ExecutionPlanService와 상호 작용하려면 유효한 공급자가 필요합니다.",
 			"selectExecutionPlanProvider": "실행 계획을 열 공급자 선택"
@@ -13583,6 +13623,7 @@
 			"deleteCellFailed": "셀을 삭제하지 못했습니다.",
 			"injectedParametersMsg": "# 삽입된 매개 변수\r\n",
 			"kernelRequiresConnection": "이 커널에 대해 셀을 실행하려면 연결을 선택하세요.",
+			"savedKernelNotSupported": "이 Notebook의 '{0}' 커널은 지원되지 않습니다. 대신 SQL 커널을 기본값으로 설정합니다.",
 			"shutdownClientSessionError": "Notebook을 닫는 동안 클라이언트 세션 오류가 발생했습니다. {0}",
 			"startSessionFailed": "{0} 세션을 시작할 수 없습니다."
 		},
@@ -13619,14 +13660,13 @@
 			"unknownCellType": "알 수 없는 셀 형식 {0}"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "이 매직이 나타내는 선택적 실행 대상(예: Spark 및 SQL)",
+			"carbon.extension.contributes.notebook.executionTarget": "이 매직이 나타내는 선택적 실행 대상(예: Python 및 SQL)",
 			"carbon.extension.contributes.notebook.fileExtensions": "이 Notebook 공급자에 등록해야 하는 파일 확장명",
-			"carbon.extension.contributes.notebook.kernels": "유효한 선택적 커널 세트(예: python3, pyspark, sql)",
+			"carbon.extension.contributes.notebook.kernels": "유효한 선택적 커널 집합(예: python3, sql)",
 			"carbon.extension.contributes.notebook.language": "이 셀 매직이 셀에 포함되는 경우 사용되는 셀 언어",
 			"carbon.extension.contributes.notebook.magic": "'%%sql'과(와) 같은 셀 매직의 이름입니다.",
 			"carbon.extension.contributes.notebook.provider": "Notebook 공급자의 식별자입니다.",
 			"carbon.extension.contributes.notebook.standardKernels": "이 Notebook 공급자에서 표준이어야 하는 커널",
-			"providerNotInRegistryError": "지정된 공급자 '{0}'이(가) 전자 필기장 레지스트리에 없습니다.",
 			"vscode.extension.contributes.notebook.languagemagics": "Notebook 언어를 적용합니다.",
 			"vscode.extension.contributes.notebook.providersDescriptions": "전자 필기장 공급자 설명을 제공합니다."
 		},
@@ -13639,7 +13679,11 @@
 			"connectionTree.editServerGroup": "서버 그룹 편집",
 			"connectionTree.refresh": "새로 고침",
 			"deleteConnection": "연결 삭제",
+			"deleteConnectionConfirmation": "'{0}' 연결을 삭제할까요?",
+			"deleteConnectionConfirmationNo": "아니요",
+			"deleteConnectionConfirmationYes": "예",
 			"deleteConnectionGroup": "그룹 삭제",
+			"deleteConnectionGroupConfirmation": "'{0}' 연결 그룹을 삭제할까요?",
 			"showAllConnections": "모든 연결 표시"
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
@@ -13665,6 +13709,7 @@
 		},
 		"sql/workbench/services/profiler/browser/profilerFilterDialog": {
 			"profilerFilterDialog.addClauseText": "절 추가",
+			"profilerFilterDialog.allClausesCleared": "모든 절이 지워졌습니다.",
 			"profilerFilterDialog.apply": "적용",
 			"profilerFilterDialog.cancel": "취소",
 			"profilerFilterDialog.clear": "모두 지우기",
@@ -13673,6 +13718,7 @@
 			"profilerFilterDialog.isNotNullOperator": "Null이 아님",
 			"profilerFilterDialog.isNullOperator": "Null임",
 			"profilerFilterDialog.loadFilter": "필터 로드",
+			"profilerFilterDialog.newClauseAdded": "새 절이 추가되었습니다.",
 			"profilerFilterDialog.notContainsOperator": "포함하지 않음",
 			"profilerFilterDialog.notStartsWithOperator": "다음으로 시작하지 않음",
 			"profilerFilterDialog.ok": "확인",
@@ -13697,7 +13743,7 @@
 			"updateCellFailed": "셀 업데이트 실패: "
 		},
 		"sql/workbench/services/query/common/queryRunner": {
-			"copyFailed": "{0} 오류를 나타내며 복사 실패",
+			"copyFailed": "복사하지 못했습니다(오류: {0}).",
 			"elapsedBatchTime": "일괄 처리 실행 시간: {0}",
 			"query.ExecutionFailedError": "예기치 않은 오류로 인해 실행하지 못했습니다. {0}\t{1}",
 			"query.message.executionTime": "총 실행 시간: {0}",
@@ -13724,8 +13770,9 @@
 			"filewallRule": "방화벽 규칙",
 			"firewall.cancel": "취소",
 			"firewall.ok": "확인",
-			"firewallRuleDialogDescription": "클라이언트 IP 주소에서 서버에 액세스할 수 없습니다. Azure 계정에 로그인하고 액세스를 허용하는 새 방화벽 규칙을 만드세요.",
-			"firewallRuleHelpDescription": "방화벽 설정에 대한 자세한 정보",
+			"firewall.ruleName": "규칙 이름",
+			"firewallRuleDescription": "SQL Server 인스턴스에 액세스하려면 방화벽 규칙이 필요합니다. 새 방화벽 규칙을 만들려면 아래 링크를 클릭하세요.",
+			"firewallRuleHelpLink": "방화벽 규칙에 대한 자세한 정보",
 			"from": "시작",
 			"to": "끝"
 		},
@@ -13900,6 +13947,12 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "시작(&S)",
 			"showReleaseNotes": "시작 표시"
+		},
+		"sql/workbench/services/dialog/browser/wizardNavigation.component": {
+			"wizardNavigation.stepName": "{0}단계: {1}"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanInput": {
+			"epCompare.executionPlanEditorName": "ExecutionPlan"
 		}
 	}
 }

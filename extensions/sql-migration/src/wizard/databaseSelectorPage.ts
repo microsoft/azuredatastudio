@@ -11,7 +11,7 @@ import * as constants from '../constants/strings';
 import { debounce } from '../api/utils';
 import * as styles from '../constants/styles';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { getDatabasesList, excludeDatabases } from '../api/sqlUtils';
+import { getDatabasesList, excludeDatabases, SourceDatabaseInfo, getSourceConnectionProfile } from '../api/sqlUtils';
 
 export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -228,7 +228,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	}
 
 	private async _loadDatabaseList(stateMachine: MigrationStateModel, selectedDatabases: string[]): Promise<void> {
-		const allDatabases = (<azdata.DatabaseInfo[]>await getDatabasesList(await stateMachine.getSourceConnectionProfile()));
+		const allDatabases = (<azdata.DatabaseInfo[]>await getDatabasesList(await getSourceConnectionProfile()));
 
 		const databaseList = allDatabases
 			.filter(database => !excludeDatabases.includes(database.options.name))
@@ -236,10 +236,12 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 
 		databaseList.sort((a, b) => a.options.name.localeCompare(b.options.name));
 		this._dbNames = [];
+		stateMachine._databaseInfosForMigration = [];
 
 		this._databaseTableValues = databaseList.map(database => {
 			const databaseName = database.options.name;
 			this._dbNames.push(databaseName);
+			stateMachine._databaseInfosForMigration.push(this.getSourceDatabaseInfo(database));
 			return [
 				selectedDatabases?.indexOf(databaseName) > -1,
 				<azdata.IconColumnCellValue>{
@@ -270,5 +272,14 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				this._databaseSelectorTable.data?.length || 0)
 		});
 		this.migrationStateModel._databasesForAssessment = selectedDatabases;
+	}
+
+	private getSourceDatabaseInfo(database: azdata.DatabaseInfo): SourceDatabaseInfo {
+		return {
+			databaseName: database.options.name,
+			databaseCollation: database.options.collation,
+			databaseSizeInMB: database.options.sizeInMB,
+			databaseState: database.options.state
+		};
 	}
 }

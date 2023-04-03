@@ -47,6 +47,6 @@ export class OneDataSystemAppender extends AbstractOneDataSystemAppender {
 			}
 		};
 
-		super(eventPrefix, defaultData, iKeyOrClientFactory, customHttpXHROverride);
+		super(isInternalTelemetry, eventPrefix, defaultData, iKeyOrClientFactory, customHttpXHROverride);
 	}
 }

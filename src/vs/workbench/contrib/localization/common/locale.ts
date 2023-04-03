@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
@@ -10,6 +10,6 @@ export const ILocaleService = createDecorator<ILocaleService>('localizationServi
 
 export interface ILocaleService {
 	readonly _serviceBrand: undefined;
-	setLocale(languagePackItem: ILanguagePackItem): Promise<boolean>;
-	clearLocalePreference(): Promise<boolean>;
+	setLocale(languagePackItem: ILanguagePackItem): Promise<void>;
+	clearLocalePreference(): Promise<void>;
 }

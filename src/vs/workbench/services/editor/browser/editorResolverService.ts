@@ -10,11 +10,11 @@ import { basename, extname, isEqual } from 'vs/base/common/resources';
 import { URI } from 'vs/base/common/uri';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { EditorActivation, EditorResolution, IEditorOptions } from 'vs/platform/editor/common/editor';
-import { DEFAULT_EDITOR_ASSOCIATION, EditorResourceAccessor, EditorInputWithOptions, IResourceSideBySideEditorInput, isEditorInputWithOptions, isEditorInputWithOptionsAndGroup, isResourceDiffEditorInput, isResourceSideBySideEditorInput, isUntitledResourceEditorInput, IUntypedEditorInput, SideBySideEditor } from 'vs/workbench/common/editor';
+import { DEFAULT_EDITOR_ASSOCIATION, EditorResourceAccessor, EditorInputWithOptions, IResourceSideBySideEditorInput, isEditorInputWithOptions, isEditorInputWithOptionsAndGroup, isResourceDiffEditorInput, isResourceSideBySideEditorInput, isUntitledResourceEditorInput, isResourceMergeEditorInput, IUntypedEditorInput, SideBySideEditor } from 'vs/workbench/common/editor';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { Schemas } from 'vs/base/common/network';
-import { RegisteredEditorInfo, RegisteredEditorPriority, RegisteredEditorOptions, DiffEditorInputFactoryFunction, EditorAssociation, EditorAssociations, EditorInputFactoryFunction, editorsAssociationsSettingId, globMatchesResource, IEditorResolverService, priorityToRank, ResolvedEditor, ResolvedStatus, UntitledEditorInputFactoryFunction } from 'vs/workbench/services/editor/common/editorResolverService';
+import { RegisteredEditorInfo, RegisteredEditorPriority, RegisteredEditorOptions, EditorAssociation, EditorAssociations, editorsAssociationsSettingId, globMatchesResource, IEditorResolverService, priorityToRank, ResolvedEditor, ResolvedStatus, EditorInputFactoryObject } from 'vs/workbench/services/editor/common/editorResolverService';
 import { IKeyMods, IQuickInputService, IQuickPickItem, IQuickPickSeparator } from 'vs/platform/quickinput/common/quickInput';
 import { localize } from 'vs/nls';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -33,9 +33,7 @@ interface RegisteredEditor {
 	globPattern: string | glob.IRelativePattern;
 	editorInfo: RegisteredEditorInfo;
 	options?: RegisteredEditorOptions;
-	createEditorInput: EditorInputFactoryFunction;
-	createUntitledEditorInput?: UntitledEditorInputFactoryFunction | undefined;
-	createDiffEditorInput?: DiffEditorInputFactoryFunction;
+	editorFactoryObject: EditorInputFactoryObject;
 }
 
 type RegisteredEditors = Array<RegisteredEditor>;
@@ -69,9 +67,8 @@ export class EditorResolverService extends Disposable implements IEditorResolver
 	) {
 		super();
 		// Read in the cache on statup
-		// this.cache = new Set<string>(JSON.parse(this.storageService.get(EditorOverrideService.overrideCacheStorageID, StorageScope.GLOBAL, JSON.stringify([])))); {{SQL CARBON EDIT}} Remove unused
-		this.storageService.remove(EditorResolverService.cacheStorageID, StorageScope.GLOBAL);
-		this.convertOldAssociationFormat();
+		// this.cache = new Set<string>(JSON.parse(this.storageService.get(EditorResolverService.cacheStorageID, StorageScope.PROFILE, JSON.stringify([])))); {{SQL CARBON EDIT}} Remove unused
+		this.storageService.remove(EditorResolverService.cacheStorageID, StorageScope.PROFILE);
 
 		this._register(this.storageService.onWillSaveState(() => {
 			// We want to store the glob patterns we would activate on, this allows us to know if we need to await the ext host on startup for opening a resource
@@ -196,10 +193,8 @@ export class EditorResolverService extends Disposable implements IEditorResolver
 		// If no override we take the selected editor id so that matches works with the isActive check
 		untypedEditor.options = { override: selectedEditor.editorInfo.id, ...untypedEditor.options };
 
-		let handlesDiff = typeof selectedEditor.options?.canHandleDiff === 'function' ? selectedEditor.options.canHandleDiff() : selectedEditor.options?.canHandleDiff;
-		// Also check that it has a factory function or else it doesn't matter
-		handlesDiff = handlesDiff && selectedEditor.createDiffEditorInput !== undefined;
-		if (handlesDiff === false && isResourceDiffEditorInput(untypedEditor)) {
+		// Check if diff can be created based on prescene of factory function
+		if (selectedEditor.editorFactoryObject.createDiffEditorInput === undefined && isResourceDiffEditorInput(untypedEditor)) {
 			return ResolvedStatus.NONE;
 		}
 
@@ -245,9 +240,7 @@ export class EditorResolverService extends Disposable implements IEditorResolver
 		globPattern: string | glob.IRelativePattern,
 		editorInfo: RegisteredEditorInfo,
 		options: RegisteredEditorOptions,
-		createEditorInput: EditorInputFactoryFunction,
-		createUntitledEditorInput?: UntitledEditorInputFactoryFunction | undefined,
-		createDiffEditorInput?: DiffEditorInputFactoryFunction
+		editorFactoryObject: EditorInputFactoryObject
 	): IDisposable {
 		let registeredEditor = this._editors.get(globPattern);
 		if (registeredEditor === undefined) {
@@ -258,9 +251,7 @@ export class EditorResolverService extends Disposable implements IEditorResolver
 			globPattern,
 			editorInfo,
 			options,
-			createEditorInput,
-			createUntitledEditorInput,
-			createDiffEditorInput
+			editorFactoryObject
 		});
 		this._onDidChangeEditorRegistrations.fire();
 		return toDisposable(() => {
@@ -275,23 +266,6 @@ export class EditorResolverService extends Disposable implements IEditorResolver
 		const allEditors: RegisteredEditors = this._registeredEditors;
 		// Ensure that the settings are valid editors
 		return matchingAssociations.filter(association => allEditors.find(c => c.editorInfo.id === association.viewType));
-	}
-
-	private convertOldAssociationFormat(): void {
-		const rawAssociations = this.configurationService.getValue<EditorAssociations | { [fileNamePattern: string]: string }>(editorsAssociationsSettingId) || [];
-		// If it's not an array, then it's the new format
-		if (!Array.isArray(rawAssociations)) {
-			return;
-		}
-		const newSettingObject = Object.create(null);
-		// Make the correctly formatted object from the array and then set that object
-		for (const association of rawAssociations) {
-			if (association.filenamePattern) {
-				newSettingObject[association.filenamePattern] = association.viewType;
-			}
-		}
-		this.logService.info(`Migrating ${editorsAssociationsSettingId}`);
-		this.configurationService.updateValue(editorsAssociationsSettingId, newSettingObject);
 	}
 
 	private getAllUserAssociations(): EditorAssociations {
@@ -437,12 +411,21 @@ export class EditorResolverService extends Disposable implements IEditorResolver
 			options = { ...options, activation: options.preserveFocus ? EditorActivation.RESTORE : undefined };
 		}
 
-		// If it's a diff editor we trigger the create diff editor input
-		if (isResourceDiffEditorInput(editor)) {
-			if (!selectedEditor.createDiffEditorInput) {
+		// If it's a merge editor we trigger the create merge editor input
+		if (isResourceMergeEditorInput(editor)) {
+			if (!selectedEditor.editorFactoryObject.createMergeEditorInput) {
 				return undefined; // {{SQL CARBON EDIT}} Strict nulls
 			}
-			const inputWithOptions = await selectedEditor.createDiffEditorInput(editor, group);
+			const inputWithOptions = await selectedEditor.editorFactoryObject.createMergeEditorInput(editor, group);
+			return { editor: inputWithOptions.editor, options: inputWithOptions.options ?? options };
+		}
+
+		// If it's a diff editor we trigger the create diff editor input
+		if (isResourceDiffEditorInput(editor)) {
+			if (!selectedEditor.editorFactoryObject.createDiffEditorInput) {
+				return undefined; // {{SQL CARBON EDIT}} Strict nulls
+			}
+			const inputWithOptions = await selectedEditor.editorFactoryObject.createDiffEditorInput(editor, group);
 			return { editor: inputWithOptions.editor, options: inputWithOptions.options ?? options };
 		}
 
@@ -451,10 +434,10 @@ export class EditorResolverService extends Disposable implements IEditorResolver
 		}
 
 		if (isUntitledResourceEditorInput(editor)) {
-			if (!selectedEditor.createUntitledEditorInput) {
+			if (!selectedEditor.editorFactoryObject.createUntitledEditorInput) {
 				return undefined; // {{SQL CARBON EDIT}} Strict nulls
 			}
-			const inputWithOptions = await selectedEditor.createUntitledEditorInput(editor, group);
+			const inputWithOptions = await selectedEditor.editorFactoryObject.createUntitledEditorInput(editor, group);
 			return { editor: inputWithOptions.editor, options: inputWithOptions.options ?? options };
 		}
 
@@ -472,8 +455,13 @@ export class EditorResolverService extends Disposable implements IEditorResolver
 			}
 		}
 
+		// If no factory is above, return flow back to caller letting them know we could not resolve it
+		if (!selectedEditor.editorFactoryObject.createEditorInput) {
+			return undefined; // {{SQL CARBON EDIT}} strict nulls
+		}
+
 		// Respect options passed back
-		const inputWithOptions = await selectedEditor.createEditorInput(editor, group);
+		const inputWithOptions = await selectedEditor.editorFactoryObject.createEditorInput(editor, group);
 		options = inputWithOptions.options ?? options;
 		const input = inputWithOptions.editor;
 

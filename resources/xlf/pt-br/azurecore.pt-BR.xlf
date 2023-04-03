@@ -18,10 +18,6 @@
         <source xml:lang="en">Error when parsing your account from the cache</source>
         <target state="translated">Erro ao analisar a sua conta do cache</target>
       </trans-unit>
-      <trans-unit id="azure.cacheErrrorRemove">
-        <source xml:lang="en">Error when removing your account from the cache.</source>
-        <target state="translated">Erro ao remover a sua conta do cache.</target>
-      </trans-unit>
       <trans-unit id="azure.microsoftAccountDisplayName">
         <source xml:lang="en">Microsoft Account</source>
         <target state="translated">Conta Microsoft</target>
@@ -49,14 +45,6 @@
       <trans-unit id="azure.tenantNotFound">
         <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
         <target state="translated">Locatário especificado com ID '{0}' não encontrado.</target>
-      </trans-unit>
-      <trans-unit id="azureAuth.unidentifiedError">
-        <source xml:lang="en">Unidentified error with azure authentication</source>
-        <target state="translated">Erro não identificado com a autenticação do Azure</target>
-      </trans-unit>
-      <trans-unit id="azureWorkAccountDisplayName">
-        <source xml:lang="en">Work or school account</source>
-        <target state="translated">Conta corporativa ou de estudante</target>
       </trans-unit>
       <trans-unit id="azurecore.consentDialog.body">
         <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
@@ -134,6 +122,16 @@
         <source xml:lang="en">A call was made to azdata.accounts.getSecurityToken, this method is deprecated and will be removed in future releases. Please use getAccountSecurityToken instead.</source>
         <target state="translated">Uma chamada foi realizada para azdata.accounts.getSecurityToken. Esse método foi preterido e será removido em versões futuras. Em vez disso, use getAccountSecurityToken.</target>
       </trans-unit>
+      <trans-unit id="genericTokenError">
+        <source xml:lang="en">Failed to get token</source>
+        <target state="translated">Falha ao obter o token</target>
+      </trans-unit>
+      <trans-unit id="msalTokenError">
+        <source xml:lang="en">{0} occurred when acquiring token. 
+{1}</source>
+        <target state="translated">{0} ocorreu ao adquirir o token. 
+{1}</target>
+      </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/account-provider/azureAccountProviderService" source-language="en" datatype="plaintext" target-language="pt-BR">
@@ -154,10 +152,6 @@
         <source xml:lang="en">Azure (China)</source>
         <target state="translated">Azure (China)</target>
       </trans-unit>
-      <trans-unit id="germanyCloud">
-        <source xml:lang="en">Azure (Germany)</source>
-        <target state="translated">Azure (Alemanha)</target>
-      </trans-unit>
       <trans-unit id="publicCloudDisplayName">
         <source xml:lang="en">Azure</source>
         <target state="translated">Azure</target>
@@ -165,10 +159,6 @@
       <trans-unit id="usGovCloudDisplayName">
         <source xml:lang="en">Azure (US Government)</source>
         <target state="translated">Azure (Governo dos EUA)</target>
-      </trans-unit>
-      <trans-unit id="usNatCloudDisplayName">
-        <source xml:lang="en">Azure (US National)</source>
-        <target state="translated">Azure (Nacional dos EUA)</target>
       </trans-unit>
     </body>
   </file>
@@ -293,6 +283,22 @@
       <trans-unit id="azure.resource.providers.sqlInstanceArcContainerLabel">
         <source xml:lang="en">SQL managed instance – Azure Arc</source>
         <target state="translated">Instância gerenciada de SQL – Azure Arc</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel">
+        <source xml:lang="en">Dedicated SQL Pools</source>
+        <target state="translated">Pool de SQL Dedicados</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel">
+        <source xml:lang="en">Azure Synapse Analytics</source>
+        <target state="translated">Azure Synapse Analytics</target>
       </trans-unit>
     </body>
   </file>
@@ -611,6 +617,14 @@
         <source xml:lang="en">Reload</source>
         <target state="translated">Recarregar</target>
       </trans-unit>
+      <trans-unit id="azurecore.reloadChoice">
+        <source xml:lang="en">Reload Azure Data Studio</source>
+        <target state="translated">Recarregar o Azure Data Studio</target>
+      </trans-unit>
+      <trans-unit id="azurecore.reloadPrompt">
+        <source xml:lang="en">Authentication Library has changed, please reload Azure Data Studio.</source>
+        <target state="translated">A Biblioteca de Autenticação foi alterada, recarregue o Azure Data Studio.</target>
+      </trans-unit>
       <trans-unit id="azurecore.requiresReload">
         <source xml:lang="en">Modifying this setting requires reloading the window for all changes to take effect.</source>
         <target state="translated">Modificar esta configuração requer o recarregamento da janela para que todas as alterações entrem em vigor.</target>
@@ -786,6 +800,10 @@
       <trans-unit id="azure.title">
         <source xml:lang="en">Azure</source>
         <target state="translated">Azure</target>
+      </trans-unit>
+      <trans-unit id="config.authenticationLibrary">
+        <source xml:lang="en">The library used for the AAD auth flow. Please restart ADS after changing this option.</source>
+        <target state="translated">A biblioteca usada para o fluxo de autenticação do AAD. Reinicie o ADS após alterar esta opção.</target>
       </trans-unit>
       <trans-unit id="config.azureAccountConfigurationSection">
         <source xml:lang="en">Azure Account Configuration</source>

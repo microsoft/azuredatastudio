@@ -13,6 +13,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { IThemeService, ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { MenuEntryActionViewItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 
 const ids = new IdGenerator('menu-item-action-item-icon-');
 
@@ -32,9 +33,10 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 		@IKeybindingService labeledkeybindingService: IKeybindingService,
 		@INotificationService _notificationService: INotificationService,
 		@IContextKeyService _contextKeyService: IContextKeyService,
-		@IThemeService _themeService: IThemeService
+		@IThemeService _themeService: IThemeService,
+		@IContextMenuService _contextMenuService: IContextMenuService
 	) {
-		super(_action, undefined, labeledkeybindingService, _notificationService, _contextKeyService, _themeService);
+		super(_action, undefined, labeledkeybindingService, _notificationService, _contextKeyService, _themeService, _contextMenuService);
 	}
 
 	override updateLabel(): void {
@@ -62,7 +64,7 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 					iconClass = ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!;
 				} else {
 					iconClass = ids.nextId();
-					createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.light || item.icon.dark)} !important`);
+					createCSSRule(`.codicon.${iconClass}, .hc-light .codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.light || item.icon.dark)} !important`);
 					createCSSRule(`.vs-dark .codicon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.dark)} !important`);
 					ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
 				}
@@ -106,9 +108,10 @@ export class MaskedLabeledMenuItemActionItem extends MenuEntryActionViewItem {
 		@IKeybindingService keybindingService: IKeybindingService,
 		@INotificationService notificationService: INotificationService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IThemeService _themeService: IThemeService
+		@IThemeService _themeService: IThemeService,
+		@IContextMenuService _contextMenuService: IContextMenuService
 	) {
-		super(action, undefined, keybindingService, notificationService, contextKeyService, _themeService);
+		super(action, undefined, keybindingService, notificationService, contextKeyService, _themeService, _contextMenuService);
 	}
 
 	override updateLabel(): void {

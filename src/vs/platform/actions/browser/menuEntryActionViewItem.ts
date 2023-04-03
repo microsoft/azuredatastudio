@@ -26,6 +26,7 @@ import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storag
 import { IThemeService, ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { isDark } from 'vs/platform/theme/common/theme';
 import { IHoverDelegate } from 'vs/base/browser/ui/iconLabel/iconHoverDelegate';
+import { assertType } from 'vs/base/common/types';
 
 export function createAndFillInContextMenuActions(menu: IMenu, options: IMenuActionOptions | undefined, target: IAction[] | { primary: IAction[]; secondary: IAction[] }, primaryGroup?: string): IDisposable {
 	const groups = menu.getActions(options);
@@ -140,7 +141,8 @@ export class MenuEntryActionViewItem extends ActionViewItem {
 		@IKeybindingService protected readonly _keybindingService: IKeybindingService,
 		@INotificationService protected _notificationService: INotificationService,
 		@IContextKeyService protected _contextKeyService: IContextKeyService,
-		@IThemeService protected _themeService: IThemeService
+		@IThemeService protected _themeService: IThemeService,
+		@IContextMenuService protected _contextMenuService: IContextMenuService
 	) {
 		super(undefined, action, { icon: !!(action.class || action.item.icon), label: !action.class && !action.item.icon, draggable: options?.draggable, keybinding: options?.keybinding, hoverDelegate: options?.hoverDelegate });
 		this._altKey = ModifierKeyEmitter.getInstance();
@@ -209,7 +211,7 @@ export class MenuEntryActionViewItem extends ActionViewItem {
 		}
 	}
 
-	override updateTooltip(): void {
+	override getTooltip() {
 		const keybinding = this._keybindingService.lookupKeybinding(this._commandAction.id, this._contextKeyService);
 		const keybindingLabel = keybinding && keybinding.getLabel();
 
@@ -227,7 +229,7 @@ export class MenuEntryActionViewItem extends ActionViewItem {
 
 			title = localize('titleAndKbAndAlt', "{0}\n[{1}] {2}", title, UILabelProvider.modifierLabels[OS].altKey, altTitleSection);
 		}
-		this._applyUpdateTooltip(title);
+		return title;
 	}
 
 	override updateClass(): void {
@@ -291,10 +293,10 @@ export class SubmenuEntryActionViewItem extends DropdownMenuActionViewItem {
 	constructor(
 		action: SubmenuItemAction,
 		options: IDropdownMenuActionViewItemOptions | undefined,
-		@IContextMenuService contextMenuService: IContextMenuService,
+		@IContextMenuService protected _contextMenuService: IContextMenuService,
 		@IThemeService protected _themeService: IThemeService
 	) {
-		super(action, { getActions: () => action.actions }, contextMenuService, Object.assign({}, options ?? Object.create(null), {
+		super(action, { getActions: () => action.actions }, _contextMenuService, Object.assign({}, options ?? Object.create(null), { // {{SQL CARBON EDIT}} Removed dropDownOptions assignment to fix super must be called before anything else error
 			menuAsChild: options?.menuAsChild ?? false,
 			classNames: options?.classNames ?? (ThemeIcon.isThemeIcon(action.item.icon) ? ThemeIcon.asClassName(action.item.icon) : undefined),
 		}));
@@ -302,26 +304,27 @@ export class SubmenuEntryActionViewItem extends DropdownMenuActionViewItem {
 
 	override render(container: HTMLElement): void {
 		super.render(container);
-		if (this.element) {
-			container.classList.add('menu-entry');
-			const { icon } = (<SubmenuItemAction>this._action).item;
-			if (icon && !ThemeIcon.isThemeIcon(icon)) {
-				this.element.classList.add('icon');
-				const setBackgroundImage = () => {
-					if (this.element) {
-						this.element.style.backgroundImage = (
-							isDark(this._themeService.getColorTheme().type)
-								? asCSSUrl(icon.dark)
-								: asCSSUrl(icon.light)
-						);
-					}
-				};
+		assertType(this.element);
+
+		container.classList.add('menu-entry');
+		const action = <SubmenuItemAction>this._action;
+		const { icon } = action.item;
+		if (icon && !ThemeIcon.isThemeIcon(icon)) {
+			this.element.classList.add('icon');
+			const setBackgroundImage = () => {
+				if (this.element) {
+					this.element.style.backgroundImage = (
+						isDark(this._themeService.getColorTheme().type)
+							? asCSSUrl(icon.dark)
+							: asCSSUrl(icon.light)
+					);
+				}
+			};
+			setBackgroundImage();
+			this._register(this._themeService.onDidColorThemeChange(() => {
+				// refresh when the theme changes in case we go between dark <-> light
 				setBackgroundImage();
-				this._register(this._themeService.onDidColorThemeChange(() => {
-					// refresh when the theme changes in case we go between dark <-> light
-					setBackgroundImage();
-				}));
-			}
+			}));
 		}
 	}
 }
@@ -353,7 +356,7 @@ export class DropdownWithDefaultActionViewItem extends BaseActionViewItem {
 	) {
 		super(null, submenuAction);
 		this._options = options;
-		this._storageKey = `${submenuAction.item.submenu._debugName}_lastActionId`;
+		this._storageKey = `${submenuAction.item.submenu.id}_lastActionId`;
 
 		// determine default action
 		let defaultAction: IAction | undefined;

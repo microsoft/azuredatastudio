@@ -442,6 +442,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.openAfterSave', "Whether to open the file in Azure Data Studio after the result is saved."),
 			'default': true
 		},
+		'queryEditor.results.showActionBar': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.showActionBar', "Whether to show the action bar in the query results view"),
+			'default': true
+		},
 		'queryEditor.messages.showBatchTime': {
 			'type': 'boolean',
 			'description': localize('queryEditor.messages.showBatchTime', "Should execution time be shown for individual batches"),
@@ -572,17 +577,19 @@ export class QueryEditorOverrideContribution extends Disposable implements IWork
 				},
 				{
 					// Fall back to using the normal text based diff editor - we don't want the query bar and related items showing up in the diff editor
-					canHandleDiff: () => false
+					// canHandleDiff: () => false
 				},
-				async (editorInput, group) => {
-					const fileInput = await this._editorService.createEditorInput(editorInput) as FileEditorInput;
-					const langAssociation = languageAssociationRegistry.getAssociationForLanguage(lang);
-					const queryEditorInput = langAssociation?.syncConvertInput?.(fileInput);
-					if (!queryEditorInput) {
-						this._logService.warn('Unable to create input for resolving editor ', editorInput.resource);
-						return undefined;
+				{
+					createEditorInput: async (editorInput, group) => {
+						const fileInput = await this._editorService.createEditorInput(editorInput) as FileEditorInput;
+						const langAssociation = languageAssociationRegistry.getAssociationForLanguage(lang);
+						const queryEditorInput = langAssociation?.syncConvertInput?.(fileInput);
+						if (!queryEditorInput) {
+							this._logService.warn('Unable to create input for resolving editor ', editorInput.resource);
+							return undefined;
+						}
+						return { editor: queryEditorInput, options: editorInput.options, group: group };
 					}
-					return { editor: queryEditorInput, options: editorInput.options, group: group };
 				}
 			));
 		});

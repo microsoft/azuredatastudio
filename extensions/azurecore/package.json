@@ -63,16 +63,6 @@
             "default": false,
             "description": "%config.enableUsGovCloudDescription%"
           },
-          "accounts.azure.cloud.enableUsNatCloud": {
-            "type": "boolean",
-            "default": false,
-            "description": "%config.enableUsNatCloudDescription%"
-          },
-          "accounts.azure.cloud.enableGermanyCloud": {
-            "type": "boolean",
-            "default": false,
-            "description": "%config.enableGermanyCloudDescription%"
-          },
           "accounts.azure.cloud.enableChinaCloud": {
             "type": "boolean",
             "default": false,
@@ -360,12 +350,10 @@
   "dependencies": {
     "@azure/arm-resourcegraph": "^4.0.0",
     "@azure/arm-subscriptions": "^3.0.0",
-    "@azure/msal-node": "^1.9.0",
+    "@azure/msal-node": "^1.16.0",
     "@azure/storage-blob": "^12.6.0",
     "axios": "^0.27.2",
-    "crypto": "^1.0.1",
     "lockfile": "1.0.4",
-    "msal": "^1.4.16",
     "node-fetch": "^2.6.7",
     "qs": "^6.9.1",
     "universalify": "^0.1.2",
@@ -373,7 +361,7 @@
     "ws": "^7.4.6"
   },
   "devDependencies": {
-    "@microsoft/azdata-test": "^2.0.3",
+    "@microsoft/azdata-test": "^3.0.1",
     "@microsoft/vscodetestcover": "^1.2.1",
     "@types/keytar": "4.4.0",
     "@types/lockfile": "^1.0.2",
@@ -387,8 +375,5 @@
     "should": "^13.2.1",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0"
-  },
-  "resolutions": {
-    "jsonwebtoken": "9.0.0"
   }
 }

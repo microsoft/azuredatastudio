@@ -6,7 +6,7 @@ import * as nls from 'vscode-nls';
 import { SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import { ClientCapabilities, StaticFeature, RPCMessageType, ServerCapabilities } from 'vscode-languageclient';
 import { Disposable, window, QuickPickItem, QuickPickOptions } from 'vscode';
-import { Telemetry } from './telemetry';
+import { TelemetryReporter } from './telemetry';
 import * as contracts from './contracts';
 import * as azdata from 'azdata';
 import * as Utils from './utils';
@@ -27,7 +27,7 @@ export class TelemetryFeature implements StaticFeature {
 
 	initialize(): void {
 		this._client.onNotification(contracts.TelemetryNotification.type, e => {
-			Telemetry.sendTelemetryEvent(e.params.eventName, e.params.properties, e.params.measures);
+			TelemetryReporter.sendTelemetryEvent(e.params.eventName, e.params.properties, e.params.measures);
 		});
 	}
 }

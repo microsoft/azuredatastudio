@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "Error al agregar la cuenta a la memoria caché.",
 			"azure.cacheErrorGet": "Error al obtener la cuenta de la memoria caché.",
 			"azure.cacheErrorParse": "Error al analizar la cuenta desde la memoria caché.",
-			"azure.cacheErrrorRemove": "Error al quitar la cuenta de la memoria caché.",
 			"azure.microsoftAccountDisplayName": "Cuenta de Microsoft",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Ha habido algún error problema con la autenticación, o bien los tokens se han eliminado del sistema. Pruebe a volver a agregar la cuenta de Azure Data Studio.",
@@ -21,8 +20,6 @@
 			"azure.owningTenantNotFound": "No se encontró la información del inquilino propietario para la cuenta.",
 			"azure.responseError": "Error al recuperar el token. [Abra las herramientas de desarrollo]({0}) para obtener más detalles.",
 			"azure.tenantNotFound": "No se encuentra el inquilino especificado con el id. \"{0}\".",
-			"azureAuth.unidentifiedError": "Error no identificado con la autenticación de Azure.",
-			"azureWorkAccountDisplayName": "Cuenta profesional o educativa",
 			"azurecore.consentDialog.body": "El inquilino \"{0} ({1})\" requiere que vuelva a autenticarse para acceder a {2} recursos. Presione Abrir para iniciar el proceso de autenticación.",
 			"azurecore.consentDialog.cancel": "Cancelar",
 			"azurecore.consentDialog.ignore": "Omitir inquilino",
@@ -44,7 +41,9 @@
 		"dist/account-provider/azureAccountProvider": {
 			"azure.NoAuthMethod.Available": "No hay ningún método de autenticación de Azure disponible. Debe habilitar los métodos de autenticación en la configuración de ADS.",
 			"azure.NoAuthMethod.Selected": "No se ha seleccionado ningún método de autenticación de Azure. Debe seleccionar el método de autenticación que quiera usar.",
-			"azure.deprecatedGetSecurityToken": "Se ha realizado una llamada a azdata.accounts.getSecurityToken. Este método está en desuso y se quitará en versiones futuras. En su lugar, use getAccountSecurityToken."
+			"azure.deprecatedGetSecurityToken": "Se ha realizado una llamada a azdata.accounts.getSecurityToken. Este método está en desuso y se quitará en versiones futuras. En su lugar, use getAccountSecurityToken.",
+			"genericTokenError": "No se pudo obtener el token.",
+			"msalTokenError": "{0} al adquirir el token. \r\n{1}"
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "No se pudo borrar la memoria caché de tokens",
@@ -52,10 +51,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure (China)",
-			"germanyCloud": "Azure (Alemania)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (Gobierno de EE. UU.)",
-			"usNatCloudDisplayName": "Azure (Nacional de EE. UU.)"
+			"usGovCloudDisplayName": "Azure (Gobierno de EE. UU.)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "Debe seleccionar una cuenta de Azure para que esta característica funcione.",
@@ -99,6 +96,12 @@
 		},
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
 			"azure.resource.providers.sqlInstanceArcContainerLabel": "Instancia administrada de SQL: Azure Arc"
+		},
+		"dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider": {
+			"azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel": "Grupos de SQL dedicados"
+		},
+		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
+			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
 		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "No se han encontrado recursos"
@@ -188,6 +191,8 @@
 			"azurecore.norwaywest": "Oeste de Noruega",
 			"azurecore.postgresServer": "Servidor de Azure Database for PostgreSQL",
 			"azurecore.reload": "Recargar",
+			"azurecore.reloadChoice": "Vuelva a cargar Azure Data Studio",
+			"azurecore.reloadPrompt": "La biblioteca de autenticación ha cambiado. Vuelva a cargar Azure Data Studio.",
 			"azurecore.requiresReload": "La modificación de esta configuración requiere volver a cargar la ventana para que se apliquen todos los cambios.",
 			"azurecore.resourceGroup": "Grupo de recursos",
 			"azurecore.resourceType": "Tipo de recurso",
@@ -233,6 +238,7 @@
 			"azure.resource.view.title": "Azure (versión preliminar)",
 			"azure.tenant.config.filter.description": "Lista de id. de inquilino para ignorar al realizar una consultar relativa a recursos de Azure. Cada elemento es un id. de inquilino.",
 			"azure.title": "Azure",
+			"config.authenticationLibrary": "Biblioteca usada para el flujo de autenticación de AAD. Reinicie ADS después de cambiar esta opción.",
 			"config.azureAccountConfigurationSection": "Configuración de la cuenta de Azure",
 			"config.azureAuthMethodConfigurationSection": "Método de autenticación de Azure",
 			"config.azureCodeGrantMethod": "Método de concesión de código",

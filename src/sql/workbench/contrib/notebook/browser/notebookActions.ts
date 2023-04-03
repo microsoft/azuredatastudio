@@ -37,6 +37,8 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { KernelsLanguage } from 'sql/workbench/services/notebook/common/notebookConstants';
 import { INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { Schemas } from 'vs/base/common/network';
+import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES, CONFIG_WORKBENCH_USEVSCODENOTEBOOKS } from 'sql/workbench/common/constants';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -844,6 +846,8 @@ export class NewNotebookAction extends Action {
 		@IObjectExplorerService private objectExplorerService: IObjectExplorerService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 		@INotebookService private _notebookService: INotebookService,
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@ICommandService private _commandService: ICommandService,
 	) {
 		super(id, label);
 		this.class = 'notebook-action new-notebook';
@@ -853,14 +857,21 @@ export class NewNotebookAction extends Action {
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.NewNotebookFromConnections)
 			.withConnectionInfo(context?.connectionProfile)
 			.send();
-		let connProfile: azdata.IConnectionProfile;
-		if (context && context.nodeInfo) {
-			let node = await this.objectExplorerService.getTreeNode(context.connectionProfile.id, context.nodeInfo.nodePath);
-			connProfile = TreeUpdateUtils.getConnectionProfile(node).toIConnectionProfile();
-		} else if (context && context.connectionProfile) {
-			connProfile = context.connectionProfile;
+
+		const usePreviewFeatures = this._configurationService.getValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES);
+		const useVSCodeNotebooks = this._configurationService.getValue(CONFIG_WORKBENCH_USEVSCODENOTEBOOKS);
+		if (usePreviewFeatures && useVSCodeNotebooks) {
+			await this._commandService.executeCommand('ipynb.newUntitledIpynb');
+		} else {
+			let connProfile: azdata.IConnectionProfile;
+			if (context && context.nodeInfo) {
+				let node = await this.objectExplorerService.getTreeNode(context.connectionProfile.id, context.nodeInfo.nodePath);
+				connProfile = TreeUpdateUtils.getConnectionProfile(node).toIConnectionProfile();
+			} else if (context && context.connectionProfile) {
+				connProfile = context.connectionProfile;
+			}
+			await this._notebookService.openNotebook(URI.from({ scheme: 'untitled' }), { connectionProfile: connProfile });
 		}
-		await this._notebookService.openNotebook(URI.from({ scheme: 'untitled' }), { connectionProfile: connProfile });
 	}
 }
 

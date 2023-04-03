@@ -11317,9 +11317,9 @@
 			"rowDetailView.loadError": "読み込みエラー..."
 		},
 		"sql/base/browser/ui/table/table": {
-			"table.resizeColumn": "Provide new column width",
-			"table.resizeColumn.invalid": "Invalid column width",
-			"table.resizeColumn.negativeSize": "Size cannot be 0 or negative"
+			"table.resizeColumn": "新しい列幅を指定する",
+			"table.resizeColumn.invalid": "列の幅が無効です",
+			"table.resizeColumn.negativeSize": "サイズを 0 または負にすることはできません"
 		},
 		"sql/base/browser/ui/taskbar/overflowActionbar": {
 			"toggleMore": "詳細の切り替え"
@@ -11337,7 +11337,6 @@
 			"dataExplorer.context": "データエクスプローラー項目のコンテキスト メニュー",
 			"dataGrid.context": "データ グリッド項目のコンテキスト メニュー",
 			"default": "自動更新チェックを有効にします。Azure Data Studio は、更新プログラムを自動的かつ定期的に確認します。",
-			"docNotFoundForUriError": "指定した URI のノートブック ドキュメントを開けませんでした。",
 			"enable locally": "この拡張機能をローカルで有効にするには、Azure Data Studio を再度読み込んでください。",
 			"enable remote": "この拡張機能を {0} で有効にするには、Azure Data Studio を再度読み込んでください。",
 			"enableWindowsBackgroundUpdates": "Windows で新しい Azure Data Studio バージョンをバックグラウンドでダウンロードしてインストールできるようにする",
@@ -11345,14 +11344,36 @@
 			"incompatible": "Azure Data Studio '{2}' と互換性がないため、拡張機能 '{1}' のバージョン '{0}' をインストールできません。拡張機能をインストールするには、Azure Data Studio {3} に更新してください。",
 			"installExtensionCompletedAndReloadRequired": "拡張機能 {0} のインストールが完了しました。これを有効にするには、Azure Data Studio を再度読み込んでください。",
 			"maxMemoryForLargeFilesMB": "大きなファイルを開こうとすると再起動後に Azure Data Studio に対して使用できるメモリを制御します。コマンド ラインで '--max-memory=NEWSIZE' を指定する場合と同じ効果があります。",
+			"miNewDeployment": "新しい展開(&&D)",
 			"miNewNotebook": "新しいノートブック(&N)",
 			"miNewQuery": "新しいクエリ(&Q)",
 			"miinstallVsix": "VSIX パッケージから拡張機能をインストールする",
 			"newQuery": "新しいクエリ",
 			"notebook.cellTitle": "ノートブックのセル タイトル メニュー",
-			"notebook.cellToolbarLocation.compatibilityDescription": "セル ツール バーを表示すべき場所、または非表示にする必要があるかどうか。注: この設定は拡張機能の互換性の目的のみで有効で、何も影響しません。",
+			"notebook.cellToolbarLocation.description": "セル ツール バーを表示する場所、または非表示にする必要があるかどうか。(VS Code ノートブックの場合のみ)",
+			"notebook.cellToolbarVisibility.description": "セル ツール バーをホバーまたはクリックのどちらに表示するかを指定します。(VS Code ノートブックのみ)",
+			"notebook.compactView.description": "ノートブック エディターをコンパクト形式で表示するかどうかを制御します。たとえば、オンにすると、左余白の幅が小さくなります。(VS Code ノートブックの場合のみ)",
+			"notebook.consolidatedOutputButton.description": "出力ツール バーに出力アクションを表示するかどうかを制御します。(VS Code ノートブックの場合のみ)",
+			"notebook.consolidatedRunButton.description": "実行ボタンの横のドロップダウンに追加のアクションを表示するかどうかを制御します。(VS Code ノートブックの場合のみ)",
+			"notebook.diff.enablePreview.description": "ノートブック用の拡張テキスト差分エディターを使用するかどうか。(VS Code ノートブックのみ)",
+			"notebook.displayOrder.description": "出力 MIME の種類の優先順位のリスト。(VS Code ノートブックの場合のみ)",
+			"notebook.dragAndDrop.description": "ノートブック エディターでドラッグ アンド ドロップによるセルの移動を許可するかどうかを制御します。(VS Code ノートブックの場合のみ)",
+			"notebook.editorOptions.experimentalCustomization": "ノートブックで使用されるコード エディターの設定です。これを使用して、ほとんどのエディター * 設定をカスタマイズできます。(VS Code ノートブックの場合のみ)",
+			"notebook.focusIndicator.description": "フォーカス インジケーターがレンダリングされている場所を、セルの境界線または左端余白に沿って制御します。(VS Code ノートブックの場合のみ)",
+			"notebook.globalToolbar.description": "ノートブック エディター内でグローバル ツール バーをレンダリングするかどうかを制御します。(VS Code ノートブックの場合のみ)",
+			"notebook.globalToolbarShowLabel": "ノートブック ツール バーのアクションでラベルをレンダリングするかどうかを制御します (VS Code ノートブックの場合のみ)",
+			"notebook.insertToolbarPosition.description": "セルの挿入アクションを表示する場所を制御します。(VS Code ノートブックの場合のみ)",
+			"notebook.interactiveWindow.collapseCodeCells": "対話型ウィンドウのコード セルを既定で折りたたむかどうかを制御します。(VS Code ノートブックの場合のみ)",
+			"notebook.markup.fontSize": "ノートブックでレンダリングされるマークアップのフォント サイズをピクセル単位で制御します。'0' に設定すると、`#editor.fontSize#` の 120% が使用されます。(VS Code ノートブックの場合のみ)",
+			"notebook.outputFontFamily": "ノートブック セルの出力テキストのフォント ファミリ。空に設定すると、`#editor.fontFamily#` が使用されます。(VS Code ノートブックの場合のみ)",
+			"notebook.outputFontSize": "ノートブック セルの出力テキストのフォント サイズ。0 に設定すると、`#editor.fontSize#` が使用されます。(VS Code ノートブックの場合のみ)",
+			"notebook.outputLineHeight": "ノートブック セルの出力テキストの行の高さ。\r\n - 0 から 8 の値は、フォント サイズの乗数として使用されます。\r\n - 8 以上の値が有効な値として使用されます。(VS Code ノートブックの場合のみ)",
+			"notebook.showCellStatusbar.description": "セルのステータス バーを表示するかどうか。(VS Code ノートブックの場合のみ)",
+			"notebook.showFoldingControls.description": "Markdown ヘッダーの折りたたみ矢印を表示するタイミングを制御します。(VS Code ノートブックの場合のみ)",
+			"notebook.textOutputLineLimit": "テキスト出力内のテキストの行数を制御します。(VS Code ノートブックのみ)",
 			"notebook.title": "ノートブックのタイトル メニュー",
 			"notebook.toolbar": "ノートブックのツール バー メニュー",
+			"notebook.undoRedoPerCell.description": "セルごとに個別の元に戻す/やり直すスタックを使用するかどうか。(VS Code ノートブックの場合のみ)",
 			"objectExplorer.context": "オブジェクト エクスプローラー項目のコンテキスト メニュー",
 			"openDefaultSettingsJson": "既定の設定の JSON を開く",
 			"openDefaultSettingsJson.capitalized": "既定の設定 (JSON) を開く",
@@ -11377,9 +11398,7 @@
 			"terminal.integrated.inheritEnv": "新しいシェルが$PATHやその他の開発変数が確実に初期化されるようにログインシェルをソースとする可能性のある Azure Data Studio から環境を継承するかどうか。これは Windows には影響しません。",
 			"uninstallExtensionComplete": "拡張機能 {0}のアンインストールを完了するには、Azure Data Studio を再度読み込んでください。",
 			"updateLocale": "Azure Data Studio の UI 言語を {0} に変更して再起動しますか?",
-			"vscodeDocCreationFailedError": "ノートブック ドキュメントを作成できませんでした。",
-			"vscodeFunctionalityNotSupportedError": "この VS Code 機能は、Azure Data Studio ではサポートされていません。",
-			"vscodeInvalidArgumentsError": "引数が無効です。",
+			"vscodeNotebooksNotSupportedError": "VS Code ノートブック拡張機能は、Azure Data Studioではサポートされていません。",
 			"watermark.newNotebook": "新しいノートブック",
 			"watermark.newSqlFile": "新しい SQL ファイル",
 			"workspace.trust.description": "Azure Data Studio 内でワークスペースの信頼を有効にするかどうかを制御します。",
@@ -11531,9 +11550,6 @@
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
 			"navigationProviderRequired": "有効な providerId を持つ NavigationProvider をこのメソッドに渡す必要があります"
 		},
-		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "セッションを開始できません。マネージャーがまだ初期化されていません"
-		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "保存されているすべてのアカウントのクリア",
 			"configureDashboardLearnMore": "詳細情報",
@@ -11545,7 +11561,9 @@
 			"enableObsoleteApiUsageNotificationTitle": "古い API 通知",
 			"previewFeatures.configEnable": "未リリースのプレビュー機能を有効にする",
 			"previewFeatures.configTitle": "プレビュー機能",
-			"showConnectDialogOnStartup": "起動時に接続ダイアログを表示"
+			"showConnectDialogOnStartup": "起動時に接続ダイアログを表示",
+			"useVSCodeNotebooks": "(プレビュー) 既定のノートブック エクスペリエンスとして VS Code ノートブックを使用します。注: この設定を有効にするには、Azure Data Studio を再起動する必要があります。",
+			"useVSCodeNotebooksTitle": "VS Code ノートブックの使用"
 		},
 		"sql/workbench/browser/designer/designer": {
 			"designer.actions": "その他の操作",
@@ -11908,6 +11926,7 @@
 			"status.connection.status": "接続状態"
 		},
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
+			"schema.azureResource": "プロバイダーの Azure リソース エンドポイント。",
 			"schema.connectionOptions": "接続のオプション",
 			"schema.displayName": "プロバイダーの表示名",
 			"schema.enableConnectionStringOption": "プロバイダーが入力オプションとして接続文字列をサポートするかどうか。既定値は false です。",
@@ -12268,7 +12287,7 @@
 			"epCompare.zoomInAction": "拡大",
 			"epCompare.zoomOutAction": "縮小",
 			"epCompare.zoomReset": "ズームのリセット",
-			"epCompare.zoomToFit": "ウィンドウのサイズに合わせて拡大",
+			"epCompare.zoomToFit": "拡大して合わせる",
 			"executionPlanComparison.bottomPlanDiagram.name": "下位実行プラン {0}",
 			"executionPlanComparison.topPlanDiagram.name": "上位実行プラン {0}",
 			"executionPlanDisableTooltip": "ヒントが無効",
@@ -12333,13 +12352,13 @@
 		"sql/workbench/contrib/executionPlan/browser/executionPlanView": {
 			"executionPlan.SaveFileDescription": "実行プラン ファイル",
 			"executionPlan.diagram.ariaLabel": "実行プラン {0}",
-			"executionPlanCompareExecutionPlanAction": "比較実行プラン",
+			"executionPlanCompareExecutionPlanAction": "実行プランの比較",
 			"executionPlanContextMenuDisableTooltip": "ヒントを無効にする",
 			"executionPlanContextMenuEnableTooltip": "ツールヒントを有効にする",
 			"executionPlanCustomZoom": "ズームのカスタマイズ",
 			"executionPlanDisableTooltip": "ヒントが無効になっています",
 			"executionPlanEnableTooltip": "ツールヒントが有効",
-			"executionPlanFitGraphLabel": "ウィンドウのサイズに合わせて拡大",
+			"executionPlanFitGraphLabel": "拡大して合わせる",
 			"executionPlanHighlightExpensiveOperationAction": "負荷の高い操作を強調表示する",
 			"executionPlanOpenGraphFile": "クエリ プラン XML の表示",
 			"executionPlanPropertiesActionLabel": "プロパティ",
@@ -12397,9 +12416,6 @@
 			"executionPlanSelectSearchTypeTitle": "検索の種類の選択",
 			"nextSearchItemAction": "次の一致",
 			"previousSearchItemAction": "前の一致"
-		},
-		"sql/workbench/contrib/executionPlan/common/executionPlanInput": {
-			"epCompare.executionPlanEditorName": "ExecutionPlan"
 		},
 		"sql/workbench/contrib/extensions/browser/contributionRenders": {
 			"insight condition": "タイミング",
@@ -12702,6 +12718,7 @@
 			"notebook.markdownModeDescription": "テキストはマークダウンとして表示されます。",
 			"notebook.markdownPreviewLineHeight": "ノートブック マークダウン プレビューで使用される行の高さを制御します。この数値はフォント サイズを基準とします。",
 			"notebook.maxRichTextUndoHistory": "ノートブックのリッチ テキスト エディターを元に戻す操作の履歴に格納される変更の最大数です。",
+			"notebook.renderTablesInHtml": "テーブルを、Markdown テーブルに変換するのではなく、HTML 形式でテキスト セルに表示し保存します。",
 			"notebook.richTextModeDescription": "テキストはリッチ テキスト (WYSIWYG とも呼ばれる) として表示されます。",
 			"notebook.saveConnectionName": "(プレビュー) ノートブック メタデータに接続名を保存します。",
 			"notebook.showAllKernels": "(プレビュー) 現在のノートブック プロバイダーのすべてのカーネルを表示します。",
@@ -12860,7 +12877,7 @@
 			"viewOptionsModal.title": "ビューの構成"
 		},
 		"sql/workbench/contrib/notebook/browser/outputs/gridOutput.component": {
-			"copyFailed": "エラー {0} でコピーに失敗しました",
+			"copyFailed": "コピーに失敗しました。エラー: {0}",
 			"notebook.showChart": "グラフの表示",
 			"notebook.showTable": "テーブルの表示"
 		},
@@ -12947,6 +12964,7 @@
 		},
 		"sql/workbench/contrib/query/browser/actions": {
 			"chart": "グラフ",
+			"copyHeaders": "ヘッダーのコピー",
 			"copySelection": "コピー",
 			"copyWithHeaders": "ヘッダー付きでコピー",
 			"jsonEncoding": "JSON にエクスポートするときに結果のエンコードは保存されません。ファイルが作成されたら、目的のエンコードで保存することを忘れないでください。",
@@ -13022,6 +13040,7 @@
 			"queryEditor.results.saveAsMarkdown.lineSeparator": "Markdown にエクスポートするときに行を区切るために使用する文字。既定では、システム行の末尾が使用されます",
 			"queryEditor.results.saveAsXml.encoding": "結果を XML として保存するときに使用されるファイル エンコード",
 			"queryEditor.results.saveAsXml.formatted": "true の場合、XML として結果を保存すると XML 出力がフォーマットされます",
+			"queryEditor.results.showActionBar": "クエリ結果ビューにアクション バーを表示するかどうか",
 			"queryEditor.results.streaming": "結果のストリーミングを有効にします。視覚上の小さな問題がいくつかあります",
 			"queryEditor.showConnectionInfoInTitle": "タイトルにタブの接続情報を表示するかを制御します。",
 			"queryEditor.tabColorMode": "アクティブな接続のサーバー グループに基づいてタブに色を付ける方法を制御します",
@@ -13067,6 +13086,8 @@
 			"status.query.selection-summary": "選択の要約",
 			"status.query.status": "実行状態",
 			"status.query.summaryText": "平均: {0}  数: {1}  合計: {2}",
+			"status.query.summaryTextNonNumeric": "カウント: {0} 個別カウント: {1} Null カウント: {2}",
+			"status.query.summaryTooltip": "平均: {0} カウント: {1} Distinct Count: {2} Max : {3} 最小値: {4} Null カウント: {5} 合計: {6}",
 			"status.query.timeElapsed": "経過時間"
 		},
 		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
@@ -13077,6 +13098,7 @@
 			"fontWeight": "フォントの太さを制御します。",
 			"letterSpacing": "文字間隔 (ピクセル単位) を制御します。",
 			"maxColumnWidth": "自動サイズ設定される列の最大幅 (ピクセル単位)",
+			"resultsGrid.showJsonAsLink": "JSON 形式の文字列を含むセルをハイパーリンクとして表示するかどうか。有効にすると、クリック時に JSON 値が別のタブで開きます。既定値は true です。",
 			"resultsGridConfigurationTitle": "結果グリッドとメッセージ",
 			"rowHeight": "ピクセル単位で行の高さを制御する"
 		},
@@ -13186,7 +13208,7 @@
 			"enablePreviewFeatures.yes": "はい (推奨)"
 		},
 		"sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog": {
-			"notifyEncryption.message": "Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.",
+			"notifyEncryption.message": "Azure Data Studio、すべてのSQL Server接続で既定で暗号化が有効になりました。これにより、特定の暗号化関連の接続プロパティが変更されない限り、既存の接続が機能しなくなる可能性があります。{0}詳細については、以下のリンクを確認することをお勧めします。",
 			"notifyEncryption.moreInfoLink": "詳細情報",
 			"notifyEncryption.title": "重要な更新プログラム"
 		},
@@ -13311,8 +13333,12 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "閉じる",
+			"addAccountFailedCodeMessage": "{0} \r\nエラー メッセージ: {1}",
+			"addAccountFailedGenericMessage": "アカウントの追加に失敗しました。詳細については、Azure アカウント ログを確認してください。",
+			"addAccountFailedMessage": "{0}",
 			"loggingIn": "アカウントを追加しています...",
-			"refreshFailed": "ユーザーがアカウントの更新をキャンセルしました"
+			"refreshCanceled": "ユーザーがアカウントの更新をキャンセルしました",
+			"refreshFailed": "0 \r\nエラー メッセージ: 1"
 		},
 		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
 			"azureAccount": "Azure アカウント",
@@ -13385,12 +13411,10 @@
 		},
 		"sql/workbench/services/connection/browser/connectionDialogService": {
 			"connectionError": "接続エラー",
-			"enableTrustServerCertificate": "信頼サーバー証明書を有効にする",
 			"kerberosErrorStart": "接続は、Kerberos エラーのため失敗しました。",
 			"kerberosHelpLink": "Kerberos を構成するためのヘルプを {0} で確認できます",
 			"kerberosKinit": "以前に接続した場合は、kinit を再実行しなければならない場合があります。",
-			"runKinit": "Kinit の実行",
-			"trustServerCertInstructionText": "この接続で暗号化が有効になっているか、ターゲット SQL Serverの SSL と証明書の構成を確認するか、接続ダイアログで [サーバー証明書の信頼] を有効にします。\r\n\r\n注意: 自己署名証明書では保護が制限されるだけで、運用環境では推奨されません。この接続で 'サーバー証明書の信頼' を有効にして再試行しますか?"
+			"runKinit": "Kinit の実行"
 		},
 		"sql/workbench/services/connection/browser/connectionDialogWidget": {
 			"connectType": "接続の種類",
@@ -13444,6 +13468,20 @@
 			"onDidDisconnectMessage": "切断",
 			"unsavedGroupLabel": "保存されていない接続"
 		},
+		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.Message1": "'{1}' へのログインを続行するには、'{0}' のパスワードを変更する必要があります。",
+			"passwordChangeDialog.Message2": "新しいパスワードを以下に入力してください:",
+			"passwordChangeDialog.cancel": "キャンセル",
+			"passwordChangeDialog.confirmPassword": "パスワードの確認入力:",
+			"passwordChangeDialog.connecting": "接続しています",
+			"passwordChangeDialog.errorHeader": "パスワードを変更しようとしたときにエラーが発生しました",
+			"passwordChangeDialog.errorPasswordMismatchErrorMessage": "入力されたパスワードが一致しません",
+			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "[OK] を押し、両方のボックスにまったく同じパスワードを入力します。",
+			"passwordChangeDialog.newPassword": "新しいパスワード:",
+			"passwordChangeDialog.ok": "OK",
+			"passwordChangeDialog.passwordChangeInProgress": "パスワードの変更は既に進行中です",
+			"passwordChangeDialog.title": "パスワードの変更"
+		},
 		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
 			"newDashboardTab.cancel": "キャンセル",
 			"newDashboardTab.ok": "OK",
@@ -13474,6 +13512,8 @@
 			"warning": "警告"
 		},
 		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"executionPlanService.ensureCapabilitiesRegistered": "Provider with id {0} was not registered after 30 seconds.",
+			"executionPlanService.ensureFileExtensionHandlerRegistered": "Execution plan provider which supports file format '{0}' was not registered after 30 seconds.",
 			"noHandlerRegistered": "有効な実行プラン ハンドラーが登録されていません",
 			"providerIdNotValidError": "ExecutionPlanService と対話するには、有効なプロバイダーが必要です",
 			"selectExecutionPlanProvider": "実行プランを開くプロバイダーを選択する"
@@ -13583,6 +13623,7 @@
 			"deleteCellFailed": "セルの削除に失敗しました。",
 			"injectedParametersMsg": "# Injected-Parameters\r\n",
 			"kernelRequiresConnection": "このカーネルのセルを実行する接続を選択してください",
+			"savedKernelNotSupported": "このノートブックの '{0}' カーネルはサポートされていません。代わりに SQL カーネルに既定値を設定します。",
 			"shutdownClientSessionError": "ノートブックを閉じるときにクライアント セッション エラーが発生しました: {0}",
 			"startSessionFailed": "セッションを開始できませんでした: {0}"
 		},
@@ -13619,14 +13660,13 @@
 			"unknownCellType": "セルの種類 {0} が不明"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.executionTarget": "Spark / SQL など、このマジックが示すオプションの実行対象",
+			"carbon.extension.contributes.notebook.executionTarget": "このマジックが示すオプションの実行ターゲット (Python vs SQL など)",
 			"carbon.extension.contributes.notebook.fileExtensions": "このノートブック プロバイダーにどのファイル拡張子を登録する必要があるか",
 			"carbon.extension.contributes.notebook.kernels": "これが有効なカーネルのオプションのセット (python3、pyspark、sql など)",
 			"carbon.extension.contributes.notebook.language": "このセル マジックがセルに含まれる場合に使用されるセルの言語",
 			"carbon.extension.contributes.notebook.magic": "'%%sql' などのセル マジックの名前。",
 			"carbon.extension.contributes.notebook.provider": "ノートブック プロバイダーの識別子。",
 			"carbon.extension.contributes.notebook.standardKernels": "このノートブック プロバイダーへの標準装備が必要なカーネル",
-			"providerNotInRegistryError": "指定されたプロバイダー '{0}' がノートブック レジストリに存在しません。",
 			"vscode.extension.contributes.notebook.languagemagics": "ノートブックの言語を提供します。",
 			"vscode.extension.contributes.notebook.providersDescriptions": "ノートブック プロバイダーの説明を提供します。"
 		},
@@ -13639,7 +13679,11 @@
 			"connectionTree.editServerGroup": "サーバー グループの編集",
 			"connectionTree.refresh": "最新の情報に更新",
 			"deleteConnection": "接続の削除",
+			"deleteConnectionConfirmation": "接続 '{0}' を削除しますか?",
+			"deleteConnectionConfirmationNo": "いいえ",
+			"deleteConnectionConfirmationYes": "はい",
 			"deleteConnectionGroup": "グループの削除",
+			"deleteConnectionGroupConfirmation": "接続グループ '{0}' を削除しますか?",
 			"showAllConnections": "すべての接続を表示"
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
@@ -13665,6 +13709,7 @@
 		},
 		"sql/workbench/services/profiler/browser/profilerFilterDialog": {
 			"profilerFilterDialog.addClauseText": "句を追加する",
+			"profilerFilterDialog.allClausesCleared": "すべての句がクリアされました。",
 			"profilerFilterDialog.apply": "適用",
 			"profilerFilterDialog.cancel": "キャンセル",
 			"profilerFilterDialog.clear": "すべてクリア",
@@ -13673,6 +13718,7 @@
 			"profilerFilterDialog.isNotNullOperator": "Null でない",
 			"profilerFilterDialog.isNullOperator": "Null である",
 			"profilerFilterDialog.loadFilter": "フィルターを読み込む",
+			"profilerFilterDialog.newClauseAdded": "新しい句が追加されました。",
 			"profilerFilterDialog.notContainsOperator": "含まない",
 			"profilerFilterDialog.notStartsWithOperator": "次で始まらない",
 			"profilerFilterDialog.ok": "OK",
@@ -13697,7 +13743,7 @@
 			"updateCellFailed": "セルの更新が失敗しました: "
 		},
 		"sql/workbench/services/query/common/queryRunner": {
-			"copyFailed": "エラー {0} でコピーに失敗しました",
+			"copyFailed": "コピーに失敗しました。エラー: {0}",
 			"elapsedBatchTime": "バッチ実行時間: {0}",
 			"query.ExecutionFailedError": "予期しないエラーにより、実行が失敗しました: {0} {1}",
 			"query.message.executionTime": "総実行時間: {0}",
@@ -13724,8 +13770,9 @@
 			"filewallRule": "ファイアウォール規則",
 			"firewall.cancel": "キャンセル",
 			"firewall.ok": "OK",
-			"firewallRuleDialogDescription": "このクライアント IP アドレスではサーバーにアクセスできません。アクセスできるようにするには、Azure アカウントにサインインし、新しいファイアウォール規則を作成します。",
-			"firewallRuleHelpDescription": "ファイアウォール設定の詳細情報",
+			"firewall.ruleName": "ルール名",
+			"firewallRuleDescription": "SQL Server インスタンスにアクセスするには、ファイアウォール規則が必要です。新しいファイアウォール規則を作成するには、下のリンクをクリックしてください。",
+			"firewallRuleHelpLink": "ファイアウォール規則の詳細",
 			"from": "開始",
 			"to": "終了"
 		},
@@ -13900,6 +13947,12 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "はじめに(&&S)",
 			"showReleaseNotes": "「はじめに」を表示する"
+		},
+		"sql/workbench/services/dialog/browser/wizardNavigation.component": {
+			"wizardNavigation.stepName": "ステップ {0}: {1}"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanInput": {
+			"epCompare.executionPlanEditorName": "ExecutionPlan"
 		}
 	}
 }

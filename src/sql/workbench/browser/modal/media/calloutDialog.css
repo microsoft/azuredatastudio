@@ -24,6 +24,8 @@
 .modal.callout-dialog .modal-content .row  {
 	margin-bottom: 16px;
 }
+
+.hc-light .modal.callout-dialog .modal-dialog,
 .hc-black .modal.callout-dialog .modal-dialog {
 	box-shadow: none;
 }
@@ -55,9 +57,12 @@
 	width: 26px;
 }
 
+.hc-light .callout-arrow:before,
 .hc-black .callout-arrow:before {
 	box-shadow: none;
 }
+
+.hc-light .callout-arrow.from-left:before,
 .hc-black .callout-arrow.from-left:before {
 	box-shadow: none;
 }

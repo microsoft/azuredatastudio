@@ -13,8 +13,10 @@ import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as utils from '../api/utils';
 import { azureResource } from 'azurecore';
-import { AzureSqlDatabaseServer, SqlVMServer } from '../api/azure';
-import { collectTargetDatabaseInfo, TargetDatabaseInfo, isSysAdmin } from '../api/sqlUtils';
+import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/azure';
+import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionProfile, isSourceConnectionSysAdmin, LoginTableInfo } from '../api/sqlUtils';
+import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
+import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
 
 export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -65,8 +67,8 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
-		const hasSysAdminPermissions: boolean = await isSysAdmin(this.migrationStateModel.sourceConnectionId);
-		const connectionProfile: azdata.connection.ConnectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
+		const hasSysAdminPermissions: boolean = await isSourceConnectionSysAdmin();
+		const connectionProfile: azdata.connection.ConnectionProfile = await getSourceConnectionProfile();
 		const permissionsInfoBox = this._view.modelBuilder.infoBox()
 			.withProps({
 				style: 'warning',
@@ -151,9 +153,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				break;
 		}
 
-		const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
-		console.log(isSqlDbTarget);
-
 		if (this._targetUserNameInputBox) {
 			await this._targetUserNameInputBox.updateProperty('required', true);
 		}
@@ -173,6 +172,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			this._targetPasswordInputBox.value = '';
 			this.migrationStateModel._sqlMigrationServices = undefined!;
 			this.migrationStateModel._targetServerInstance = undefined!;
+			this.migrationStateModel._targetServerName = undefined!;
 			this.migrationStateModel._resourceGroup = undefined!;
 			this.migrationStateModel._location = undefined!;
 			await this.populateLocationDropdown();
@@ -328,7 +328,14 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			await this.populateAzureAccountsDropdown();
 			await this.populateSubscriptionDropdown();
 			await this.populateLocationDropdown();
-			console.log(this.migrationStateModel._targetType);
+
+			// Collect source login info here, as it will speed up loading the next page
+			const sourceLogins: LoginTableInfo[] = [];
+			sourceLogins.push(...await collectSourceLogins(
+				await getSourceConnectionId(),
+				this.migrationStateModel.isWindowsAuthMigrationSupported));
+			this.migrationStateModel._loginMigrationModel.collectedSourceLogins = true;
+			this.migrationStateModel._loginMigrationModel.loginsOnSource = sourceLogins;
 		}));
 
 		const flexContainer = this._view.modelBuilder.flexContainer()
@@ -596,21 +603,28 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			this._testConectionButton.onDidClick(async (value) => {
 				this.wizard.message = { text: '' };
 
-				const targetDatabaseServer = this.migrationStateModel._targetServerInstance as AzureSqlDatabaseServer;
+				const targetDatabaseServer = this.migrationStateModel._targetServerInstance;
 				const userName = this.migrationStateModel._targetUserName;
 				const password = this.migrationStateModel._targetPassword;
-				const targetDatabases: TargetDatabaseInfo[] = [];
+				const loginsOnTarget: string[] = [];
+				let connectionSuccessful = false;
 				if (targetDatabaseServer && userName && password) {
 					try {
 						connectionButtonLoadingContainer.loading = true;
 						await utils.updateControlDisplay(this._connectionResultsInfoBox, false);
 						this.wizard.nextButton.enabled = false;
-						targetDatabases.push(
-							...await collectTargetDatabaseInfo(
-								targetDatabaseServer,
+						loginsOnTarget.push(
+							...await collectTargetLogins(
+								this.migrationStateModel.targetServerName,
+								targetDatabaseServer.id,
 								userName,
-								password));
-						await this._showConnectionResults(targetDatabases);
+								password,
+								this.migrationStateModel.isWindowsAuthMigrationSupported));
+						this.migrationStateModel._loginMigrationModel.collectedTargetLogins = true;
+						this.migrationStateModel._loginMigrationModel.loginsOnTarget = loginsOnTarget;
+
+						await this._showConnectionResults(loginsOnTarget);
+						connectionSuccessful = true;
 					} catch (error) {
 						this.wizard.message = {
 							level: azdata.window.MessageLevel.Error,
@@ -618,11 +632,22 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 							description: constants.SQL_TARGET_CONNECTION_ERROR(error.message),
 						};
 						await this._showConnectionResults(
-							targetDatabases,
+							loginsOnTarget,
 							constants.AZURE_SQL_TARGET_CONNECTION_ERROR_TITLE);
+
+						logError(TelemetryViews.LoginMigrationTargetSelectionPage, 'ConnectingToTargetFailed', error);
+						connectionSuccessful = false;
 					}
 					finally {
 						connectionButtonLoadingContainer.loading = false;
+						sendSqlMigrationActionEvent(
+							TelemetryViews.LoginMigrationTargetSelectionPage,
+							TelemetryAction.ConnectToTarget,
+							{
+								...getTelemetryProps(this.migrationStateModel),
+								'connectionSuccessful': JSON.stringify(connectionSuccessful)
+							},
+							{});
 					}
 				}
 			}));
@@ -653,19 +678,16 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	}
 
 	private async _showConnectionResults(
-		databases: TargetDatabaseInfo[],
+		logins: string[],
 		errorMessage?: string): Promise<void> {
 
 		const hasError = errorMessage !== undefined;
-		const hasDatabases = databases.length > 0;
 		this._connectionResultsInfoBox.style = hasError
 			? 'error'
-			: hasDatabases
-				? 'success'
-				: 'warning';
+			: 'success';
 		this._connectionResultsInfoBox.text = hasError
 			? constants.SQL_TARGET_CONNECTION_ERROR(errorMessage)
-			: constants.SQL_TARGET_CONNECTION_SUCCESS_LOGINS(databases.length.toLocaleString());
+			: constants.SQL_TARGET_CONNECTION_SUCCESS_LOGINS(logins.length.toLocaleString());
 		await utils.updateControlDisplay(this._connectionResultsInfoBox, true);
 
 		if (!hasError) {
@@ -735,6 +757,32 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 							const selectedVm = this.migrationStateModel._targetSqlVirtualMachines.find(vm => vm.name === value);
 							if (selectedVm) {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(selectedVm)! as SqlVMServer;
+								this.migrationStateModel._vmInstanceView = await getVMInstanceView(this.migrationStateModel._targetServerInstance, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription);
+								this.migrationStateModel._targetServerInstance.networkInterfaces = await NetworkInterfaceModel.getVmNetworkInterfaces(
+									this.migrationStateModel._azureAccount,
+									this.migrationStateModel._targetSubscription,
+									this.migrationStateModel._targetServerInstance);
+								this.migrationStateModel.setTargetServerName();
+
+								this.wizard.message = { text: '' };
+
+								// validate power state from VM instance view
+								const runningState = 'PowerState/running'.toLowerCase();
+								if (!this.migrationStateModel._vmInstanceView.statuses.some(status => status.code.toLowerCase() === runningState)) {
+									this.wizard.message = {
+										text: constants.VM_NOT_READY_POWER_STATE_ERROR(this.migrationStateModel._targetServerInstance.name),
+										level: azdata.window.MessageLevel.Warning
+									};
+								}
+
+								// validate IaaS extension mode
+								const fullMode = 'Full'.toLowerCase();
+								if (this.migrationStateModel._targetServerInstance.properties.sqlManagement.toLowerCase() !== fullMode) {
+									this.wizard.message = {
+										text: constants.VM_NOT_READY_IAAS_EXTENSION_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.sqlManagement),
+										level: azdata.window.MessageLevel.Warning
+									};
+								}
 							}
 							break;
 						case MigrationTargetType.SQLMI:
@@ -744,6 +792,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 
 							if (selectedMi) {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(selectedMi)! as azureResource.AzureSqlManagedInstance;
+								this.migrationStateModel.setTargetServerName();
 
 								this.wizard.message = { text: '' };
 								if (this.migrationStateModel._targetServerInstance.properties.state !== 'Ready') {
@@ -762,6 +811,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 
 							if (sqlDatabaseServer) {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(sqlDatabaseServer)! as AzureSqlDatabaseServer;
+								this.migrationStateModel.setTargetServerName();
 								this.wizard.message = { text: '' };
 								if (this.migrationStateModel._targetServerInstance.properties.state === 'Ready') {
 									this._targetUserNameInputBox.value = this.migrationStateModel._targetServerInstance.properties.administratorLogin;
@@ -778,6 +828,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 					}
 				} else {
 					this.migrationStateModel._targetServerInstance = undefined!;
+					this.migrationStateModel._targetServerName = undefined!;
 					if (isSqlDbTarget) {
 						this._targetUserNameInputBox.value = '';
 					}
@@ -826,9 +877,10 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private async populateTenantsDropdown(): Promise<void> {
 		try {
 			this._accountTenantDropdown.loading = true;
-			if (this.migrationStateModel._azureAccount && this.migrationStateModel._azureAccount.isStale === false && this.migrationStateModel._azureAccount.properties.tenants.length > 0) {
+			if (!utils.isAccountTokenStale(this.migrationStateModel._azureAccount) &&
+				this.migrationStateModel._azureAccount?.properties?.tenants?.length > 0) {
 				this.migrationStateModel._accountTenants = utils.getAzureTenants(this.migrationStateModel._azureAccount);
-				this._accountTenantDropdown.values = await utils.getAzureTenantsDropdownValues(this.migrationStateModel._accountTenants);
+				this._accountTenantDropdown.values = utils.getAzureTenantsDropdownValues(this.migrationStateModel._accountTenants);
 			}
 			utils.selectDefaultDropdownValue(
 				this._accountTenantDropdown,
@@ -892,7 +944,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._targetSqlDatabaseServers);
 					break;
 			}
-			this._azureLocationDropdown.values = await utils.getAzureLocationsDropdownValues(this.migrationStateModel._locations);
+			this._azureLocationDropdown.values = utils.getAzureLocationsDropdownValues(this.migrationStateModel._locations);
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -954,6 +1006,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._location,
 						this.migrationStateModel._resourceGroup?.name,
 						constants.NO_VIRTUAL_MACHINE_FOUND);
+
 					break;
 				case MigrationTargetType.SQLDB:
 					this._azureResourceDropdown.values = utils.getAzureResourceDropdownValues(

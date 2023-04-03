@@ -75,7 +75,6 @@
 			"newMarkdown": "Nuovo markdown (anteprima)",
 			"newNotebook": "Nuovo blocco appunti (anteprima)",
 			"newSection": "Nuova sezione (anteprima)",
-			"noBDCConnectionError": "Con i kernel Spark è richiesta una connessione a un'istanza master del cluster Big Data di SQL Server.",
 			"noBooksSelected": "Nessun Book è attualmente selezionato nel viewlet.",
 			"onGitHub": "GitHub",
 			"onsharedFile": "File condiviso",
@@ -87,7 +86,6 @@
 			"openNotebookCommand": "Apri notebook",
 			"openNotebookError": "L'apertura del notebook {0} non è riuscita: {1}",
 			"openUntitledNotebookError": "L'apertura del notebook senza titolo {0} come senza titolo non è riuscita: {1}",
-			"providerNotValidError": "I provider non MSSQL non sono supportati per i kernel Spark.",
 			"readBookError": "Non è possibile leggere Jupyter Book {0}: {1}",
 			"releases": "Versioni",
 			"repoUrl": "URL del repository",
@@ -101,7 +99,6 @@
 			"version": "Versione"
 		},
 		"dist/common/notebookUtils": {
-			"msgSampleCodeDataFrame": "Questo codice di esempio consente di caricare il file in un frame di dati e visualizzare i primi 10 risultati.",
 			"noNotebookVisible": "Non ci sono editor di notebook attivi",
 			"notebookFiles": "Notebook"
 		},
@@ -219,12 +216,7 @@
 			"shutdownError": "L'arresto del server di Notebook non è riuscito: {0}"
 		},
 		"dist/jupyter/jupyterSessionManager": {
-			"bdcConnectError": "Errore: {0}. ",
-			"clusterControllerConnectionRequired": "Per eseguire processi Spark è necessaria una connessione al controller del cluster",
-			"errorStartBeforeReady": "Non è possibile avviare una sessione. Il gestore non è ancora inizializzato",
-			"notebook.couldNotFindKnoxGateway": "Non è stato possibile trovare l'endpoint del gateway Knox",
-			"promptBDCPassword": "Specificare la password per la connessione al controller BDC",
-			"promptBDCUsername": "{0}Specificare il nome utente per la connessione al controller BDC:"
+			"errorStartBeforeReady": "Non è possibile avviare una sessione. Il gestore non è ancora inizializzato"
 		},
 		"dist/jupyter/pypiClient": {
 			"managePackages.packageRequestError": "La richiesta di informazioni sul pacchetto non è riuscita. Errore: {0} {1}"

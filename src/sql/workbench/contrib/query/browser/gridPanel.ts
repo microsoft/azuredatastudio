@@ -43,7 +43,7 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { Progress } from 'vs/platform/progress/common/progress';
 import { ScrollableView, IView } from 'sql/base/browser/ui/scrollableView/scrollableView';
-import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { IQueryEditorConfiguration, IResultGridConfiguration } from 'sql/platform/query/common/query';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { FilterButtonWidth, HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
@@ -51,7 +51,7 @@ import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { alert, status } from 'vs/base/browser/ui/aria/aria';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
-import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/common/executionPlanInput';
+import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/browser/executionPlanInput';
 import { CopyAction } from 'vs/editor/contrib/clipboard/browser/clipboard';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/browser/format';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
@@ -62,10 +62,11 @@ const HEADER_HEIGHT = 26;
 const MIN_GRID_HEIGHT_ROWS = 8;
 const ESTIMATED_SCROLL_BAR_HEIGHT = 15;
 const BOTTOM_PADDING = 15;
+const NO_ACTIONBAR_ADDITIONAL_PADDING = 75;
 const ACTIONBAR_WIDTH = 36;
 
 // minimum height needed to show the full actionbar
-const ACTIONBAR_HEIGHT = 120;
+const ACTIONBAR_HEIGHT = 140;
 
 // this handles min size if rows is greater than the min grid visible rows
 const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
@@ -361,6 +362,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private dataProvider: HybridDataProvider<T>;
 	private filterPlugin: HeaderFilter<T>;
 	private isDisposed: boolean = false;
+	private gridConfig: IResultGridConfiguration;
 
 	private columns: Slick.Column<T>[];
 
@@ -416,8 +418,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		super();
 
 		this.options = { ...defaultGridTableOptions, ...options };
-		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
-		this.rowHeight = config && config.rowHeight ? config.rowHeight : ROW_HEIGHT;
+		this.gridConfig = this.configurationService.getValue<IResultGridConfiguration>('resultsGrid');
+		this.rowHeight = this.gridConfig.rowHeight ?? ROW_HEIGHT;
 		this.state = state;
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
@@ -429,7 +431,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					? localize('xmlShowplan', "XML Showplan")
 					: escape(c.columnName),
 				field: i.toString(),
-				formatter: c.isXml ? hyperLinkFormatter : queryResultTextFormatter,
+				formatter: c.isXml ? hyperLinkFormatter : (row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string => {
+					return queryResultTextFormatter(this.gridConfig.showJsonAsLink, row, cell, value, columnDef, dataContext);
+				},
 				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined
 			};
 		});
@@ -480,7 +484,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private build(): void {
 		let actionBarContainer = document.createElement('div');
 
-		// Create a horizontal actionbar if orientation passed in is HORIZONTAL
+		// Create a horizontal actionbar if orientation passed in is HORIZONTAL.
+		// The horizontal actionbar gets created up top here so that it will appear above the results table.
+		// A vertical actionbar is supposed to come after the results table, so it gets created later down below.
 		if (this.options.actionOrientation === ActionsOrientation.HORIZONTAL) {
 			actionBarContainer.className = 'grid-panel action-bar horizontal';
 			this.container.appendChild(actionBarContainer);
@@ -489,7 +495,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.tableContainer = document.createElement('div');
 		this.tableContainer.className = 'grid-panel';
 		this.tableContainer.style.display = 'inline-block';
-		this.tableContainer.style.width = `calc(100% - ${ACTIONBAR_WIDTH}px)`;
+
+		let actionBarWidth = this.showActionBar ? ACTIONBAR_WIDTH : 0;
+		this.tableContainer.style.width = `calc(100% - ${actionBarWidth}px)`;
 
 		this.container.appendChild(this.tableContainer);
 
@@ -530,8 +538,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.table.setTableTitle(localize('resultsGrid', "Results grid"));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
-		const autoSizeOnRender: boolean = !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns');
-		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: autoSizeOnRender, maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth'), extraColumnHeaderWidth: FilterButtonWidth }));
+		const autoSizeOnRender: boolean = !this.state.columnSizes && this.gridConfig.autoSizeColumns;
+		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: autoSizeOnRender, maxWidth: this.gridConfig.maxColumnWidth, extraColumnHeaderWidth: FilterButtonWidth }));
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
 		this._register(this.dataProvider.onFilterStateChange(() => { this.layout(); }));
@@ -563,12 +571,13 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		if (this.styles) {
 			this.table.style(this.styles);
 		}
-		// If the actionsOrientation passed in is "VERTICAL" (or no actionsOrientation is passed in at all), create a vertical actionBar
+		// if the actionsOrientation passed in is "VERTICAL" (or no actionsOrientation is passed in at all), create a vertical actionBar
 		if (this.options.actionOrientation === ActionsOrientation.VERTICAL) {
 			actionBarContainer.className = 'grid-panel action-bar vertical';
-			actionBarContainer.style.width = ACTIONBAR_WIDTH + 'px';
+			actionBarContainer.style.width = (this.showActionBar ? ACTIONBAR_WIDTH : 0) + 'px';
 			this.container.appendChild(actionBarContainer);
 		}
+
 		let context: IGridActionContext = {
 			gridDataProvider: this.gridDataProvider,
 			table: this.table,
@@ -579,11 +588,14 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.actionBar = new ActionBar(actionBarContainer, {
 			orientation: this.options.actionOrientation, context: context
 		});
+
 		// update context before we run an action
 		this.selectionModel.onSelectedRangesChanged.subscribe(e => {
 			this.actionBar.context = this.generateContext();
 		});
+
 		this.rebuildActionBar();
+
 		this.selectionModel.onSelectedRangesChanged.subscribe(async e => {
 			if (this.state) {
 				this.state.selection = this.selectionModel.getSelectedRanges();
@@ -721,8 +733,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		if (column) {
 			const subset = await this.getRowData(event.cell.row, 1);
 			const value = subset[0][event.cell.cell - 1];
-			const isJson = isJsonCell(value);
-			if (column.isXml || isJson) {
+			if (column.isXml || (this.gridConfig.showJsonAsLink && isJsonCell(value))) {
 				const result = await this.executionPlanService.isExecutionPlan(this.providerId, value.displayValue);
 				if (result.isExecutionPlan) {
 					const executionPlanGraphInfo = {
@@ -810,11 +821,17 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	public get minimumSize(): number {
 		// clamp between ensuring we can show the actionbar, while also making sure we don't take too much space
 		// if there is only one table then allow a minimum size of ROW_HEIGHT
-		return this.isOnlyTable ? ROW_HEIGHT : Math.max(Math.min(this.maxSize, MIN_GRID_HEIGHT), ACTIONBAR_HEIGHT + BOTTOM_PADDING);
+		let actionBarHeight = this.showActionBar ? ACTIONBAR_HEIGHT : 0;
+		let bottomPadding = this.showActionBar ? BOTTOM_PADDING : BOTTOM_PADDING + NO_ACTIONBAR_ADDITIONAL_PADDING;
+
+		return this.isOnlyTable ? ROW_HEIGHT : Math.max(Math.min(this.maxSize, MIN_GRID_HEIGHT), actionBarHeight + bottomPadding);
 	}
 
 	public get maximumSize(): number {
-		return Math.max(this.maxSize, ACTIONBAR_HEIGHT + BOTTOM_PADDING);
+		let actionBarHeight = this.showActionBar ? ACTIONBAR_HEIGHT : 0;
+		let bottomPadding = this.showActionBar ? BOTTOM_PADDING : BOTTOM_PADDING + NO_ACTIONBAR_ADDITIONAL_PADDING;
+
+		return Math.max(this.maxSize, actionBarHeight + bottomPadding);
 	}
 
 	private loadData(offset: number, count: number): Thenable<T[]> {
@@ -933,7 +950,7 @@ class GridTable<T> extends GridTableBase<T> {
 		super(state, resultSet, {
 			actionOrientation: ActionsOrientation.VERTICAL,
 			inMemoryDataProcessing: true,
-			showActionBar: true,
+			showActionBar: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.showActionBar,
 			inMemoryDataCountThreshold: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.inMemoryDataProcessingThreshold,
 		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
@@ -987,8 +1004,8 @@ function isJsonCell(value: ICellValue): boolean {
 	return !!(value && !value.isNull && value.displayValue?.match(IsJsonRegex));
 }
 
-function queryResultTextFormatter(row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string {
-	if (isJsonCell(value)) {
+function queryResultTextFormatter(showJsonAsLink: boolean, row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string {
+	if (showJsonAsLink && isJsonCell(value)) {
 		return hyperLinkFormatter(row, cell, value, columnDef, dataContext);
 	} else {
 		return textFormatter(row, cell, value, columnDef, dataContext);

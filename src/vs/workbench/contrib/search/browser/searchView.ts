@@ -89,6 +89,7 @@ export enum SearchViewPosition {
 }
 
 const SEARCH_CANCELLED_MESSAGE = nls.localize('searchCanceled', "Search was canceled before any results could be found - ");
+const DEBOUNCE_DELAY = 75;
 export class SearchView extends ViewPane {
 
 	protected static readonly ACTIONS_RIGHT_CLASS_NAME = 'actions-right'; // {{SQL CARBON EDIT}}
@@ -737,7 +738,7 @@ export class SearchView extends ViewPane {
 					}
 					return null;
 				}),
-				multipleSelectionSupport: false,
+				multipleSelectionSupport: true,
 				selectionNavigation: true,
 				overrideStyles: {
 					listBackground: this.getBackgroundColor()
@@ -750,7 +751,7 @@ export class SearchView extends ViewPane {
 		this._register(this.viewModel.searchResult.onChange(() => updateHasSomeCollapsible()));
 		this._register(this.tree.onDidChangeCollapseState(() => updateHasSomeCollapsible()));
 
-		this._register(Event.debounce(this.tree.onDidOpen, (last, event) => event, 75, true)(options => {
+		this._register(Event.debounce(this.tree.onDidOpen, (last, event) => event, DEBOUNCE_DELAY, true)(options => {
 			if (options.element instanceof Match) {
 				const selectedMatch: Match = options.element;
 				this.currentSelectedFileMatch?.setSelectedMatch(null);
@@ -758,6 +759,14 @@ export class SearchView extends ViewPane {
 				this.currentSelectedFileMatch.setSelectedMatch(selectedMatch);
 
 				this.onFocus(selectedMatch, options.editorOptions.preserveFocus, options.sideBySide, options.editorOptions.pinned);
+			}
+		}));
+
+		this._register(Event.debounce(this.tree.onDidChangeFocus, (last, event) => event, DEBOUNCE_DELAY, true)(() => {
+			const selection = this.tree.getSelection();
+			const focus = this.tree.getFocus()[0];
+			if (selection.length > 1 && focus instanceof Match) {
+				this.onFocus(focus, true);
 			}
 		}));
 

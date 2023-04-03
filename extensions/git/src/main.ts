@@ -117,6 +117,9 @@ async function createModel(context: ExtensionContext, outputChannelLogger: Outpu
 		new GitTimelineProvider(model, cc)
 	);
 
+	// const postCommitCommandsProvider = new GitPostCommitCommandsProvider(); {{SQL CARBON TODO}} lewissanchez - Do we need this?
+	// model.registerPostCommitCommandsProvider(postCommitCommandsProvider); {{SQL CARBON TODO}} lewissanchez - Do we need this?
+
 	// checkGitVersion(info); {{SQL CARBON EDIT}} Don't check git version
 
 	return model;

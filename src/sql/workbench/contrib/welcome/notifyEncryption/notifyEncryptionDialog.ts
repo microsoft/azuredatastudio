@@ -20,6 +20,7 @@ import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storag
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 export class NotifyEncryptionDialog extends ErrorMessageDialog {
 	private static NOTIFY_ENCRYPT_SHOWN = 'workbench.notifyEncryptionShown';
@@ -42,17 +43,17 @@ export class NotifyEncryptionDialog extends ErrorMessageDialog {
 	}
 
 	public override open(): void {
-		if (this._storageService.get(NotifyEncryptionDialog.NOTIFY_ENCRYPT_SHOWN, StorageScope.GLOBAL)) {
+		if (this._storageService.get(NotifyEncryptionDialog.NOTIFY_ENCRYPT_SHOWN, StorageScope.APPLICATION)) {
 			return;
 		}
 
-		this._storageService.store(NotifyEncryptionDialog.NOTIFY_ENCRYPT_SHOWN, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
+		this._storageService.store(NotifyEncryptionDialog.NOTIFY_ENCRYPT_SHOWN, true, StorageScope.APPLICATION, StorageTarget.MACHINE);
 
 		if (!this._connectionManagementService.getConnections()?.some(conn => conn.providerName === mssqlProviderName)) {
 			return;
 		}
 
-		super.open(Severity.Info,
+		super.open(TelemetryView.NotifyEncryptionDialog, Severity.Info,
 			localize('notifyEncryption.title', 'Important Update'),
 			localize('notifyEncryption.message', 'Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.', '\n\n'));
 	}

@@ -21,7 +21,7 @@ import { InstallLocalExtensionsInRemoteAction, InstallRemoteExtensionsInLocalAct
 import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IWorkbenchExtensionEnablementService, IExtensionManagementServerService, IExtensionManagementServer } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput';
-import { ExtensionsListView, EnabledExtensionsView, DisabledExtensionsView, RecommendedExtensionsView, WorkspaceRecommendedExtensionsView, BuiltInFeatureExtensionsView, BuiltInThemesExtensionsView, BuiltInProgrammingLanguageExtensionsView, ServerInstalledExtensionsView, DefaultRecommendedExtensionsView, UntrustedWorkspaceUnsupportedExtensionsView, UntrustedWorkspacePartiallySupportedExtensionsView, VirtualWorkspaceUnsupportedExtensionsView, VirtualWorkspacePartiallySupportedExtensionsView } from 'vs/workbench/contrib/extensions/browser/extensionsViews'; // {{SQL CARBON EDIT}} Remove unused
+import { ExtensionsListView, EnabledExtensionsView, DisabledExtensionsView, RecommendedExtensionsView, WorkspaceRecommendedExtensionsView, BuiltInFeatureExtensionsView, BuiltInThemesExtensionsView, BuiltInProgrammingLanguageExtensionsView, ServerInstalledExtensionsView, DefaultRecommendedExtensionsView, UntrustedWorkspaceUnsupportedExtensionsView, UntrustedWorkspacePartiallySupportedExtensionsView, VirtualWorkspaceUnsupportedExtensionsView, VirtualWorkspacePartiallySupportedExtensionsView, SearchMarketplaceExtensionsView, DeprecatedExtensionsView } from 'vs/workbench/contrib/extensions/browser/extensionsViews'; // {{SQL CARBON EDIT}} Remove unused
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import Severity from 'vs/base/common/severity';
@@ -33,7 +33,6 @@ import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storag
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IContextKeyService, ContextKeyExpr, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { getMaliciousExtensionsSet } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { ILogService } from 'vs/platform/log/common/log';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
@@ -61,7 +60,7 @@ import { coalesce } from 'vs/base/common/arrays';
 import { extractEditorsAndFilesDropData } from 'vs/platform/dnd/browser/dnd';
 import { extname } from 'vs/base/common/resources';
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
-
+import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 
 const SearchMarketplaceExtensionsContext = new RawContextKey<boolean>('searchMarketplaceExtensions', false);
 const SearchIntalledExtensionsContext = new RawContextKey<boolean>('searchInstalledExtensions', false);
@@ -174,7 +173,12 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 					constructor() {
 						super({
 							id: 'workbench.extensions.installLocalExtensions',
-							get title() { return localize('select and install local extensions', "Install Local Extensions in '{0}'...", server.label); },
+							get title() {
+								return {
+									value: localize('select and install local extensions', "Install Local Extensions in '{0}'...", server.label),
+									original: `Install Local Extensions in '${server.label}'...`,
+								};
+							},
 							category: localize({ key: 'remote', comment: ['Remote as in remote machine'] }, "Remote"),
 							icon: installLocalInRemoteIcon,
 							f1: true,
@@ -819,12 +823,11 @@ export class MaliciousExtensionChecker implements IWorkbenchContribution {
 	}
 
 	private checkForMaliciousExtensions(): Promise<void> {
-		return this.extensionsManagementService.getExtensionsControlManifest().then(report => {
-			const maliciousSet = getMaliciousExtensionsSet(report);
+		return this.extensionsManagementService.getExtensionsControlManifest().then(extensionsControlManifest => {
 
 			return this.extensionsManagementService.getInstalled(ExtensionType.User).then(installed => {
 				const maliciousExtensions = installed
-					.filter(e => maliciousSet.has(e.identifier.id));
+					.filter(e => extensionsControlManifest.malicious.some(identifier => areSameExtensions(e.identifier, identifier)));
 
 				if (maliciousExtensions.length) {
 					return Promises.settled(maliciousExtensions.map(e => this.extensionsManagementService.uninstall(e).then(() => {

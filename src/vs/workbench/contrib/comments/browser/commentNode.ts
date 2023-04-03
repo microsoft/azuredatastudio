@@ -382,7 +382,7 @@ export class CommentNode<T extends IRange | ICellRange> extends Disposable {
 
 	private createCommentEditor(editContainer: HTMLElement): void {
 		const container = dom.append(editContainer, dom.$('.edit-textarea'));
-		this._commentEditor = this.instantiationService.createInstance(SimpleCommentEditor, container, SimpleCommentEditor.getEditorOptions(), this.parentThread);
+		this._commentEditor = this.instantiationService.createInstance(SimpleCommentEditor, container, SimpleCommentEditor.getEditorOptions(this.configurationService), this.parentThread);
 		const resource = URI.parse(`comment:commentinput-${this.comment.uniqueIdInThread}-${Date.now()}.md`);
 		this._commentEditorModel = this.modelService.createModel('', this.languageService.createByFilepathOrFirstLine(resource), resource, false);
 
@@ -528,15 +528,17 @@ export class CommentNode<T extends IRange | ICellRange> extends Disposable {
 			this.updateCommentBody(newComment.body);
 		}
 
-		if (newComment.mode !== undefined && newComment.mode !== this.comment.mode) {
+		const isChangingMode: boolean = newComment.mode !== undefined && newComment.mode !== this.comment.mode;
+
+		this.comment = newComment;
+
+		if (isChangingMode) {
 			if (newComment.mode === languages.CommentMode.Editing) {
 				this.switchToEditMode();
 			} else {
 				this.removeCommentEditor();
 			}
 		}
-
-		this.comment = newComment;
 
 		if (newComment.label) {
 			this._isPendingLabel.innerText = newComment.label;

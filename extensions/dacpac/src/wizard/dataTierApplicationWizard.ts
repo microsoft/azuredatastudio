@@ -335,7 +335,7 @@ export class DataTierApplicationWizard {
 		additionalMeasurements.totalDurationMs = (new Date().getTime() - deployStartTime);
 		additionalMeasurements.deployDacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
 		additionalProps.upgradeExistingDatabase = this.model.upgradeExisting.toString();
-		additionalProps.potentialDataLoss = this.model.potentialDataLoss.toString();
+		additionalProps.potentialDataLoss = this.model.potentialDataLoss?.toString();
 
 		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.DeployDacpac, additionalProps, additionalMeasurements);
 
@@ -493,7 +493,7 @@ export class DataTierApplicationWizard {
 				.withAdditionalMeasurements(additionalMeasurements)
 				.send();
 		} else {
-			TelemetryReporter.createErrorEvent(TelemetryViews.DataTierApplicationWizard, telemetryAction)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.DataTierApplicationWizard, telemetryAction)
 				.withAdditionalProperties(additionalProps)
 				.withAdditionalMeasurements(additionalMeasurements)
 				.send();

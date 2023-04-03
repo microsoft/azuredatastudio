@@ -34,9 +34,6 @@
     <trans-unit id="azure.tenantNotFound">
       <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
     </trans-unit>
-    <trans-unit id="azureAuth.unidentifiedError">
-      <source xml:lang="en">Unidentified error with azure authentication</source>
-    </trans-unit>
     <trans-unit id="azurecore.consentDialog.body">
       <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
     </trans-unit>
@@ -91,6 +88,13 @@
     <trans-unit id="azure.deprecatedGetSecurityToken">
       <source xml:lang="en">A call was made to azdata.accounts.getSecurityToken, this method is deprecated and will be removed in future releases. Please use getAccountSecurityToken instead.</source>
     </trans-unit>
+    <trans-unit id="genericTokenError">
+      <source xml:lang="en">Failed to get token</source>
+    </trans-unit>
+    <trans-unit id="msalTokenError">
+      <source xml:lang="en">{0} occurred when acquiring token. 
+{1}</source>
+    </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/account-provider/azureAccountProviderService" source-language="en" datatype="plaintext"><body>
     <trans-unit id="clearTokenCacheFailure">
@@ -104,17 +108,11 @@
     <trans-unit id="chinaCloudDisplayName">
       <source xml:lang="en">Azure (China)</source>
     </trans-unit>
-    <trans-unit id="germanyCloud">
-      <source xml:lang="en">Azure (Germany)</source>
-    </trans-unit>
     <trans-unit id="publicCloudDisplayName">
       <source xml:lang="en">Azure</source>
     </trans-unit>
     <trans-unit id="usGovCloudDisplayName">
       <source xml:lang="en">Azure (US Government)</source>
-    </trans-unit>
-    <trans-unit id="usNatCloudDisplayName">
-      <source xml:lang="en">Azure (US National)</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/commands" source-language="en" datatype="plaintext"><body>

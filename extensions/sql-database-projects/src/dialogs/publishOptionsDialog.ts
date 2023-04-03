@@ -105,7 +105,8 @@ export class PublishOptionsDialog {
 				// data[row][1] contains the option display name
 				const displayName = this.optionsTable?.data[row!][1];
 				await this.descriptionText?.updateProperties({
-					value: this.optionsModel.getOptionDescription(displayName)
+					value: this.optionsModel.getOptionDescription(displayName),
+					ariaLive: 'polite'
 				});
 			}));
 

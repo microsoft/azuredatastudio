@@ -52,7 +52,7 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 	promptRecommendedExtensionsByScenario(scenarioType: string): void {
 		const storageKey = 'extensionAssistant/RecommendationsIgnore/' + scenarioType;
 
-		if (this.storageService.getBoolean(storageKey, StorageScope.GLOBAL, false) || this.ignoreRecommendations()) {
+		if (this.storageService.getBoolean(storageKey, StorageScope.APPLICATION, false) || this.ignoreRecommendations()) {
 			return;
 		}
 
@@ -104,7 +104,7 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 								'NeverShowAgainButton',
 								visualizerExtensionNotificationService
 							);
-							this.storageService.store(storageKey, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
+							this.storageService.store(storageKey, true, StorageScope.APPLICATION, StorageTarget.MACHINE);
 						}
 					}],
 					{

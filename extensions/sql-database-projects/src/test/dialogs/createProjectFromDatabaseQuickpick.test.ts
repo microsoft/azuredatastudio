@@ -12,10 +12,11 @@ import * as constants from '../../common/constants';
 import * as utils from '../../common/utils'
 import * as quickpickHelper from '../../dialogs/quickpickHelper'
 import * as createProjectFromDatabaseQuickpick from '../../dialogs/createProjectFromDatabaseQuickpick';
+import * as newProjectTool from '../../tools/newProjectTool';
 import { createTestUtils, mockConnectionInfo, TestUtils } from './testUtils';
 import { promises as fs } from 'fs';
 import { ImportDataModel } from '../../models/api/import';
-import { createTestFile, deleteGeneratedTestFolder } from '../testUtils';
+import { createTestFile, deleteGeneratedTestFolder, generateTestFolderPath } from '../testUtils';
 
 let testUtils: TestUtils;
 const projectFilePath = 'test';
@@ -25,10 +26,14 @@ describe('Create Project From Database Quickpick', () => {
 	beforeEach(function (): void {
 		testUtils = createTestUtils();
 		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);	//set vscode mssql extension api
+		sinon.stub(newProjectTool, 'defaultProjectSaveLocation').returns(undefined);
+		sinon.stub(newProjectTool, 'defaultProjectNameFromDb').returns('DatabaseProjectTestProject');
+		sinon.stub(utils, 'sanitizeStringForFilename').returns('TestProject');
 	});
 
-	afterEach(function (): void {
+	afterEach(async function (): Promise<void> {
 		sinon.restore();
+		await deleteGeneratedTestFolder();
 	});
 
 	it('Should prompt for connection and exit when connection is not selected', async function (): Promise<void> {
@@ -150,9 +155,9 @@ describe('Create Project From Database Quickpick', () => {
 	it('Should exit when folder structure is not selected and existing folder/file location is selected', async function (): Promise<void> {
 		//create folder and project file
 		const projectFileName = 'TestProject';
-		const testProjectFilePath = 'TestProjectPath'
+		const testProjectFilePath = await generateTestFolderPath();
 		await fs.rm(testProjectFilePath, { force: true, recursive: true });	//clean up if it already exists
-		await createTestFile('', projectFileName, testProjectFilePath);
+		await createTestFile('', `${projectFileName}.sqlproj`, testProjectFilePath);
 
 		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');

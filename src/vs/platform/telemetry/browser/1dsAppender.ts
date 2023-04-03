@@ -9,11 +9,12 @@ import { AbstractOneDataSystemAppender } from 'vs/platform/telemetry/common/1dsA
 
 export class OneDataSystemWebAppender extends AbstractOneDataSystemAppender {
 	constructor(
+		isInternalTelemetry: boolean,
 		eventPrefix: string,
 		defaultData: { [key: string]: any } | null,
 		iKeyOrClientFactory: string | (() => AppInsightsCore), // allow factory function for testing
 	) {
-		super(eventPrefix, defaultData, iKeyOrClientFactory);
+		super(isInternalTelemetry, eventPrefix, defaultData, iKeyOrClientFactory);
 
 		// If we cannot fetch the endpoint it means it is down and we should not send any telemetry.
 		// This is most likely due to ad blockers

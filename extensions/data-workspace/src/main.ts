@@ -10,12 +10,13 @@ import { WorkspaceTreeItem, IExtension } from 'dataworkspace';
 import { DataWorkspaceExtension } from './common/dataWorkspaceExtension';
 import { NewProjectDialog } from './dialogs/newProjectDialog';
 import { browseForProject, OpenExistingDialog } from './dialogs/openExistingDialog';
-import { IWorkspaceService } from './common/interfaces';
 import { IconPathHelper } from './common/iconHelper';
 import { ProjectDashboard } from './dialogs/projectDashboard';
 import { getAzdataApi } from './common/utils';
 import { createNewProjectWithQuickpick } from './dialogs/newProjectQuickpick';
 import Logger from './common/logger';
+import { TelemetryReporter } from './common/telemetry';
+import { noProjectProvidingExtensionsInstalled } from './common/constants';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const startTime = new Date().getTime();
@@ -41,21 +42,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	Logger.log(`DataWorkspaceExtension constructor took ${new Date().getTime() - dataWorkspaceExtensionStartTime}ms`);
 
-	const registerTreeDataProvidertartTime = new Date().getTime();
-	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
-	Logger.log(`registerTreeDataProvider took ${new Date().getTime() - registerTreeDataProvidertartTime}ms`);
-
-	const settingProjectProviderContextStartTime = new Date().getTime();
-	context.subscriptions.push(vscode.extensions.onDidChange(() => {
-		setProjectProviderContextValue(workspaceService);
-	}));
-	setProjectProviderContextValue(workspaceService);
-	Logger.log(`setProjectProviderContextValue took ${new Date().getTime() - settingProjectProviderContextStartTime}ms`);
-
 	const registerCommandStartTime = new Date().getTime();
 	context.subscriptions.push(vscode.commands.registerCommand('projects.new', async () => {
 		// Make sure all project providing extensions are activated to be sure the project templates show up
 		await workspaceService.ensureProviderExtensionLoaded(undefined, true);
+
+		if (!workspaceService.isProjectProviderAvailable) {
+			void vscode.window.showErrorMessage(noProjectProvidingExtensionsInstalled);
+			return;
+		}
 
 		if (azdataApi) {
 			const dialog = new NewProjectDialog(workspaceService);
@@ -68,6 +63,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	context.subscriptions.push(vscode.commands.registerCommand('projects.openExisting', async () => {
 		// Make sure all project providing extensions are activated so that all supported project types show up in the file filter
 		await workspaceService.ensureProviderExtensionLoaded(undefined, true);
+
+		if (!workspaceService.isProjectProviderAvailable) {
+			void vscode.window.showErrorMessage(noProjectProvidingExtensionsInstalled);
+			return;
+		}
 
 		if (azdataApi) {
 			const dialog = new OpenExistingDialog(workspaceService);
@@ -99,16 +99,17 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	}));
 	Logger.log(`Registering commands took ${new Date().getTime() - registerCommandStartTime}ms`);
 
+	context.subscriptions.push(vscode.extensions.onDidChange(() => {
+		workspaceService.updateIfProjectProviderAvailable();
+	}));
+
 	const iconPathHelperTime = new Date().getTime();
 	IconPathHelper.setExtensionContext(context);
 	Logger.log(`IconPathHelper took ${new Date().getTime() - iconPathHelperTime}ms`);
 
+	context.subscriptions.push(TelemetryReporter);
 	Logger.log(`Finished activating Data Workspace extension. Total time = ${new Date().getTime() - startTime}ms`);
 	return Promise.resolve(dataWorkspaceExtension);
-}
-
-function setProjectProviderContextValue(workspaceService: IWorkspaceService): void {
-	void vscode.commands.executeCommand('setContext', 'isProjectProviderAvailable', workspaceService.isProjectProviderAvailable);
 }
 
 export function deactivate(): void {

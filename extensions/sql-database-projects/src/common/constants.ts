@@ -14,6 +14,7 @@ const localize = nls.loadMessageBundle();
 export const dataSourcesFileName = 'datasources.json';
 export const sqlprojExtension = '.sqlproj';
 export const sqlFileExtension = '.sql';
+export const publishProfileExtension = '.publish.xml';
 export const openApiSpecFileExtensions = ['yaml', 'yml', 'json'];
 export const schemaCompareExtensionId = 'microsoft.schema-compare';
 export const master = 'master';
@@ -77,8 +78,8 @@ export const vscodeOpenCommand = 'vscode.open';
 export const refreshDataWorkspaceCommand = 'dataworkspace.refresh';
 
 // UI Strings
-export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources");
 export const databaseReferencesNodeName = localize('databaseReferencesNodeName', "Database References");
+export const sqlcmdVariablesNodeName = localize('sqlcmdVariablesNodeName', "SQLCMD Variables");
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
 export const yesString = localize('yesString', "Yes");
 export const openEulaString = localize('openEulaString', "Open License Agreement");
@@ -104,11 +105,13 @@ export function newObjectNamePrompt(objectType: string) { return localize('newOb
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
 export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }
 export function deleteReferenceConfirmation(toDelete: string) { return localize('deleteReferenceConfirmation', "Are you sure you want to delete the reference to {0}?", toDelete); }
+export function deleteSqlCmdVariableConfirmation(toDelete: string) { return localize('deleteSqlCmdVariableConfirmation', "Are you sure you want to delete the SQLCMD Variable '{0}'?", toDelete); }
 export function selectTargetPlatform(currentTargetPlatform: string) { return localize('selectTargetPlatform', "Current target platform: {0}. Select new target platform", currentTargetPlatform); }
 export function currentTargetPlatform(projectName: string, currentTargetPlatform: string) { return localize('currentTargetPlatform', "Target platform of the project {0} is now {1}", projectName, currentTargetPlatform); }
 export function projectUpdatedToSdkStyle(projectName: string) { return localize('projectUpdatedToSdkStyle', "The project {0} has been updated to be an SDK-style project. Click 'Learn More' for details on the Microsoft.Build.Sql SDK and ways to simplify the project file.", projectName); }
 export function convertToSdkStyleConfirmation(projectName: string) { return localize('convertToSdkStyleConfirmation', "The project '{0}' will not be fully compatible with SSDT after conversion. A backup copy of the project file will be created in the project folder prior to conversion. More information is available at https://aka.ms/sqlprojsdk. Continue with converting to SDK-style project?", projectName); }
 export function updatedToSdkStyleError(projectName: string) { return localize('updatedToSdkStyleError', "Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.", projectName); }
+export const enterNewName = localize('enterNewName', "Enter new name");
 
 // Publish dialog strings
 export const publishDialogName = localize('publishDialogName', "Publish project");
@@ -138,6 +141,9 @@ export const browseForProfileWithIcon = `$(folder) ${localize('browseForProfile'
 export const chooseAction = localize('chooseAction', "Choose action");
 export const chooseSqlcmdVarsToModify = localize('chooseSqlcmdVarsToModify', "Choose SQLCMD variables to modify");
 export const enterNewValueForVar = (varName: string) => localize('enterNewValueForVar', "Enter new value for variable '{0}'", varName);
+export const enterNewSqlCmdVariableName = localize('enterNewSqlCmdVariableName', "Enter new SQLCMD Variable name");
+export const enterNewSqlCmdVariableDefaultValue = (varName: string) => localize('enterNewSqlCmdVariableDefaultValue', "Enter default value for SQLCMD variable '{0}'", varName);
+export const sqlcmdVariableAlreadyExists = localize('sqlcmdVariableAlreadyExists', "A SQLCMD Variable with the same name already exists in this project");
 export const resetAllVars = localize('resetAllVars', "Reset all variables");
 export const createNew = localize('createNew', "Create New");
 export const enterNewDatabaseName = localize('enterNewDatabaseName', "Enter new database name");
@@ -478,6 +484,7 @@ export const ImportElements = localize('importElements', "Import Elements");
 export const ProjectReferenceNameElement = localize('projectReferenceNameElement', "Project reference name element");
 export const ProjectReferenceElement = localize('projectReferenceElement', "Project reference");
 export const DacpacReferenceElement = localize('dacpacReferenceElement', "Dacpac reference");
+export const PublishProfileElements = localize('publishProfileElements', "Publish profile elements");
 
 /** Name of the property item in the project file that defines default database collation. */
 export const DefaultCollationProperty = 'DefaultCollation';
@@ -539,6 +546,9 @@ export const authenticationSetting = 'Authentication';
 export const activeDirectoryInteractive = 'active directory interactive';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
+export const encryptSetting = 'Encrypt';
+export const trustServerCertificateSetting = 'Trust Server Certificate';
+export const hostnameInCertificateSetting = 'Host Name in Certificate';
 
 export const azureAddAccount = localize('azureAddAccount', "Add an Account...");
 
@@ -553,6 +563,13 @@ export enum DatabaseProjectItemType {
 	referencesRoot = 'databaseProject.itemType.referencesRoot',
 	reference = 'databaseProject.itemType.reference',
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
+	sqlcmdVariablesRoot = 'databaseProject.itemType.sqlcmdVariablesRoot',
+	sqlcmdVariable = 'databaseProject.itemType.sqlcmdVariable',
+	preDeploymentScript = 'databaseProject.itemType.file.preDeploymentScript',
+	postDeploymentScript = 'databaseProject.itemType.file.postDeployScript',
+	noneFile = 'databaseProject.itemType.file.noneFile',
+	sqlObjectScript = 'databaseProject.itemType.file.sqlObjectScript',
+	publishProfile = 'databaseProject.itemType.file.publishProfile'
 }
 
 // AutoRest
@@ -640,3 +657,11 @@ export function downloadingFromTo(from: string, to: string) { return localize('d
 export function extractingDacFxDlls(location: string) { return localize('extractingDacFxDlls', "Extracting DacFx build DLLs to {0}", location); }
 export function errorDownloading(url: string, error: string) { return localize('errorDownloading', "Error downloading {0}. Error: {1}", url, error); }
 export function errorExtracting(path: string, error: string) { return localize('errorExtracting', "Error extracting files from {0}. Error: {1}", path, error); }
+
+// move
+export const onlyMoveSqlFilesSupported = localize('onlyMoveSqlFilesSupported', "Only moving .sql files is supported");
+export const movingFilesBetweenProjectsNotSupported = localize('movingFilesBetweenProjectsNotSupported', "Moving files between projects is not supported");
+export function errorMovingFile(source: string, destination: string, error: string) { return localize('errorMovingFile', "Error when moving file from {0} to {1}. Error: {2}", source, destination, error); }
+export function moveConfirmationPrompt(source: string, destination: string) { return localize('moveConfirmationPrompt', "Are you sure you want to move {0} to {1}?", source, destination); }
+export const move = localize('Move', "Move");
+export function errorRenamingFile(source: string, destination: string, error: string) { return localize('errorRenamingFile', "Error when renaming file from {0} to {1}. Error: {2}", source, destination, error); }

@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/datavirtualization/dist/localizedConstants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="externalTable.databaseNameTitle">
+      <source xml:lang="en">Database Name</source>
+    </trans-unit>
+    <trans-unit id="externalTable.externalSchemaTitle">
+      <source xml:lang="en">External Schema</source>
+    </trans-unit>
+    <trans-unit id="externalTable.externalTableTitle">
+      <source xml:lang="en">External Table</source>
+    </trans-unit>
+    <trans-unit id="externalTable.hostnameTitle">
+      <source xml:lang="en">Hostname</source>
+    </trans-unit>
+    <trans-unit id="externalTable.serverNameTitle">
+      <source xml:lang="en">Server Name</source>
+    </trans-unit>
+    <trans-unit id="externalTable.serviceNameTitle">
+      <source xml:lang="en">Service name / SID</source>
+    </trans-unit>
+    <trans-unit id="externalTable.sourceSchemaTitle">
+      <source xml:lang="en">Source Schema</source>
+    </trans-unit>
+    <trans-unit id="externalTable.sourceTableTitle">
+      <source xml:lang="en">Source Table</source>
+    </trans-unit>
+    <trans-unit id="msgMissingNodeContext">
+      <source xml:lang="en">Node Command called without any node passed</source>
+    </trans-unit>
+    <trans-unit id="sqlServerTypeName">
+      <source xml:lang="en">SQL Server</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/datavirtualization/dist/services/serviceClient" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="downloadingService">
+      <source xml:lang="en">Downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceComplete">
+      <source xml:lang="en">Done downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceSize">
+      <source xml:lang="en">({0} KB)</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceStatus">
+      <source xml:lang="en">Downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="installingService">
+      <source xml:lang="en">Installing {0}</source>
+    </trans-unit>
+    <trans-unit id="installingServiceDetailed">
+      <source xml:lang="en">Installing {0} to {1}</source>
+    </trans-unit>
+    <trans-unit id="serviceInstalled">
+      <source xml:lang="en">Installed {0}</source>
+    </trans-unit>
+    <trans-unit id="serviceStartFailed">
+      <source xml:lang="en">Failed to start {0}: {1}</source>
+    </trans-unit>
+    <trans-unit id="serviceStarted">
+      <source xml:lang="en">{0} started</source>
+    </trans-unit>
+    <trans-unit id="serviceStarting">
+      <source xml:lang="en">Starting {0}...</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/datavirtualization/dist/services/telemetry" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="serviceCrashButton">
+      <source xml:lang="en">View Known Issues</source>
+    </trans-unit>
+    <trans-unit id="serviceCrashMessage">
+      <source xml:lang="en">service component could not start</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/datavirtualization/dist/utils" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executeCommandProcessExited">
+      <source xml:lang="en">Process exited with code {0}</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/datavirtualization/dist/wizards/tableFromFile/pages/fileConfigPage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableFromFileImport.dataSourceDropdown">
+      <source xml:lang="en">External data source for new external table</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.databaseDropdownTitle">
+      <source xml:lang="en">Database the external table will be created in</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.destConnTitle">
+      <source xml:lang="en">Destination Server</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.fileFormatExists">
+      <source xml:lang="en">The specified external file format name already exists.</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.fileFormatTextboxTitle">
+      <source xml:lang="en">Name for new table's external file format</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.fileTextboxTitle">
+      <source xml:lang="en">Source File</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.folderTextboxTitle">
+      <source xml:lang="en">Source Folder</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.noDataSources">
+      <source xml:lang="en">No valid external data sources were found in the specified database.</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.noSchemas">
+      <source xml:lang="en">No user schemas were found in the specified database.</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.refreshButtonTitle">
+      <source xml:lang="en">Refresh</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.schemaTextboxTitle">
+      <source xml:lang="en">Schema for new external table</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.tableExists">
+      <source xml:lang="en">The specified table name already exists under the specified schema.</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.tableTextboxTitle">
+      <source xml:lang="en">Name for new external table </source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/datavirtualization/dist/wizards/tableFromFile/pages/modifyColumnsPage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableFromFileImport.allowNulls">
+      <source xml:lang="en">Allow Nulls</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.columnName">
+      <source xml:lang="en">Column Name</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.dataType">
+      <source xml:lang="en">Data Type</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/datavirtualization/dist/wizards/tableFromFile/pages/prosePreviewPage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableFromFileImport.noPreviewData">
+      <source xml:lang="en">Failed to retrieve any data from the specified file.</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.noProseInfo">
+      <source xml:lang="en">Failed to generate column information for the specified file.</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.prosePreviewMessage">
+      <source xml:lang="en">This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/datavirtualization/dist/wizards/tableFromFile/pages/summaryPage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableFromFileImport.databaseName">
+      <source xml:lang="en">Database name</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.fileFormat">
+      <source xml:lang="en">File format name</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.importData">
+      <source xml:lang="en">Virtualize Data</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.importInformation">
+      <source xml:lang="en">Data Virtualization information</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.next">
+      <source xml:lang="en">Next</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.serverName">
+      <source xml:lang="en">Server name</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.summaryFileName">
+      <source xml:lang="en">Source File</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.summaryFolderName">
+      <source xml:lang="en">Source Folder</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.tableName">
+      <source xml:lang="en">Table name</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.tableSchema">
+      <source xml:lang="en">Table schema</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/datavirtualization/dist/wizards/tableFromFile/tableFromFileWizard" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="import.needFile">
+      <source xml:lang="en">Please select a source file or folder before using this wizard.</source>
+    </trans-unit>
+    <trans-unit id="tableFromFile.taskLabel">
+      <source xml:lang="en">Virtualize Data</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.noCsvFileFound">
+      <source xml:lang="en">No csv files were found in the specified folder.</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.onlyCsvSupported">
+      <source xml:lang="en">Currently only csv files are supported for this wizard.</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.openScriptMsg">
+      <source xml:lang="en">The script has opened in a document window. You can view it once the wizard is closed.</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.page0Name">
+      <source xml:lang="en">Select the destination database for your external table</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.page1Name">
+      <source xml:lang="en">Preview Data</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.page2Name">
+      <source xml:lang="en">Modify Columns</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.page3Name">
+      <source xml:lang="en">Summary</source>
+    </trans-unit>
+    <trans-unit id="tableFromFileImport.wizardName">
+      <source xml:lang="en">Virtualize Data From CSV</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/datavirtualization/dist/wizards/virtualizeData/connectionDetailsPage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="connectionDetailsTitle">
+      <source xml:lang="en">Create a connection to your Data Source</source>
+    </trans-unit>
+    <trans-unit id="credNameHelpText">
+      <source xml:lang="en">The name of the Database Scoped Credential used to securely store the login information for the External Data Source you are creating.</source>
+    </trans-unit>
+    <trans-unit id="credentialFields">
+      <source xml:lang="en">Configure Credential</source>
+    </trans-unit>
+    <trans-unit id="credentialNameDropdown">
+      <source xml:lang="en">Choose Credential</source>
+    </trans-unit>
+    <trans-unit id="credentialNameInput">
+      <source xml:lang="en">New Credential Name</source>
+    </trans-unit>
+    <trans-unit id="dataSourceHelpText">
+      <source xml:lang="en">The name for your External Data Source.</source>
+    </trans-unit>
+    <trans-unit id="newCredOption">
+      <source xml:lang="en">-- Create New Credential --</source>
+    </trans-unit>
+    <trans-unit id="passwordInput">
+      <source xml:lang="en">Password</source>
+    </trans-unit>
+    <trans-unit id="serverFields">
+      <source xml:lang="en">Server Connection</source>
+    </trans-unit>
+    <trans-unit id="sourceNameInput">
+      <source xml:lang="en">External Data Source Name</source>
+    </trans-unit>
+    <trans-unit id="usernameInput">
+      <source xml:lang="en">Username</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/datavirtualization/dist/wizards/virtualizeData/createMasterKeyPage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="createMasterKeyDescription">
+      <source xml:lang="en">A master key is required. This secures the credentials used by an External Data Source. Note that you should back up the master key by using BACKUP MASTER KEY and store the backup in a secure, off-site location.</source>
+    </trans-unit>
+    <trans-unit id="createMasterKeyTitle">
+      <source xml:lang="en">Create Database Master Key</source>
+    </trans-unit>
+    <trans-unit id="masterKeyExistsMsg">
+      <source xml:lang="en">A Master Key already exists for the selected database. No action is required on this page.</source>
+    </trans-unit>
+    <trans-unit id="masterKeyPasswordConfirmInput">
+      <source xml:lang="en">Confirm Password</source>
+    </trans-unit>
+    <trans-unit id="masterKeyPasswordInput">
+      <source xml:lang="en">Password</source>
+    </trans-unit>
+    <trans-unit id="masterKeyPasswordLabel">
+      <source xml:lang="en">Set the Master Key password.</source>
+    </trans-unit>
+    <trans-unit id="passwordMismatchWithConfirmError">
+      <source xml:lang="en">Password values do not match.</source>
+    </trans-unit>
+    <trans-unit id="pwdReminderText">
+      <source xml:lang="en">Strong passwords use a combination of alphanumeric, upper, lower, and special characters.</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/datavirtualization/dist/wizards/virtualizeData/objectMappingPage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="externalTableMappingLabel">
+      <source xml:lang="en">Column Mapping</source>
+    </trans-unit>
+    <trans-unit id="mapping.SourceName">
+      <source xml:lang="en">Source</source>
+    </trans-unit>
+    <trans-unit id="mapping.collations">
+      <source xml:lang="en">Collations</source>
+    </trans-unit>
+    <trans-unit id="mapping.externalName">
+      <source xml:lang="en">External</source>
+    </trans-unit>
+    <trans-unit id="mapping.nullable">
+      <source xml:lang="en">Nullable</source>
+    </trans-unit>
+    <trans-unit id="mapping.sqlDataType">
+      <source xml:lang="en">SQL Data Type</source>
+    </trans-unit>
+    <trans-unit id="mappingTableCheckboxHelpText">
+      <source xml:lang="en">Clicking on the checkbox will select that table to be mapped.</source>
+    </trans-unit>
+    <trans-unit id="mappingTableHelpText">
+      <source xml:lang="en">Clicking on the table name will show you the column mapping information for that table.</source>
+    </trans-unit>
+    <trans-unit id="noObjectSelectedMessage">
+      <source xml:lang="en">No objects were selected.</source>
+    </trans-unit>
+    <trans-unit id="noTableError">
+      <source xml:lang="en">No table information present for '{0}'</source>
+    </trans-unit>
+    <trans-unit id="objectMappingTitle">
+      <source xml:lang="en">Map your data source objects to your external table</source>
+    </trans-unit>
+    <trans-unit id="tableFolderLabel">
+      <source xml:lang="en">Tables</source>
+    </trans-unit>
+    <trans-unit id="viewFolderLabel">
+      <source xml:lang="en">Views</source>
+    </trans-unit>
+    <trans-unit id="warning.unsupported_column_type_description">
+      <source xml:lang="en">These column types are not supported for external tables:{0}{1}</source>
+    </trans-unit>
+    <trans-unit id="warning.unsupported_column_type_title">
+      <source xml:lang="en">Unsupported Column Types found</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/datavirtualization/dist/wizards/virtualizeData/selectDataSourcePage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="defaultSourceType">
+      <source xml:lang="en">Default</source>
+    </trans-unit>
+    <trans-unit id="destDBHelpText">
+      <source xml:lang="en">The database in which to create your External Data Source.</source>
+    </trans-unit>
+    <trans-unit id="destDBLabel">
+      <source xml:lang="en">Select the destination database for your external table</source>
+    </trans-unit>
+    <trans-unit id="noDestDatabaseError">
+      <source xml:lang="en">A destination database must be selected.</source>
+    </trans-unit>
+    <trans-unit id="noServerTypeError">
+      <source xml:lang="en">A data source type must be selected.</source>
+    </trans-unit>
+    <trans-unit id="selectDataSrcTitle">
+      <source xml:lang="en">Select a Data Source</source>
+    </trans-unit>
+    <trans-unit id="sourceCardsLabel">
+      <source xml:lang="en">Select your data source type</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/datavirtualization/dist/wizards/virtualizeData/summaryPage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="createSourceError">
+      <source xml:lang="en">External Table creation failed</source>
+    </trans-unit>
+    <trans-unit id="createSourceInfo">
+      <source xml:lang="en">External Table creation completed successfully</source>
+    </trans-unit>
+    <trans-unit id="summaryCredLabel">
+      <source xml:lang="en">Database Scoped Credential</source>
+    </trans-unit>
+    <trans-unit id="summaryDataSrcLabel">
+      <source xml:lang="en">External Data Source</source>
+    </trans-unit>
+    <trans-unit id="summaryDestDb">
+      <source xml:lang="en">Destination Database:</source>
+    </trans-unit>
+    <trans-unit id="summaryExternalTableLabel">
+      <source xml:lang="en">External Table</source>
+    </trans-unit>
+    <trans-unit id="summaryMasterKeyLabel">
+      <source xml:lang="en">Database Master Key</source>
+    </trans-unit>
+    <trans-unit id="summaryNewSchemaLabel">
+      <source xml:lang="en">Schema</source>
+    </trans-unit>
+    <trans-unit id="summaryObjNameLabel">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="summaryObjTypeLabel">
+      <source xml:lang="en">Object type</source>
+    </trans-unit>
+    <trans-unit id="summaryPageTitle">
+      <source xml:lang="en">Summary</source>
+    </trans-unit>
+    <trans-unit id="summaryTitle">
+      <source xml:lang="en">The following objects will be created in the destination database:</source>
+    </trans-unit>
+    <trans-unit id="virtualizeTaskLabel">
+      <source xml:lang="en">Virtualize Data</source>
+    </trans-unit>
+    <trans-unit id="virtualizeTaskStart">
+      <source xml:lang="en">Executing script...</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/datavirtualization/dist/wizards/virtualizeData/virtualizeDataWizard" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="doneButtonLabel">
+      <source xml:lang="en">Create</source>
+    </trans-unit>
+    <trans-unit id="getExtDataTitle">
+      <source xml:lang="en">Virtualize Data</source>
+    </trans-unit>
+    <trans-unit id="openScriptMsg">
+      <source xml:lang="en">The script has opened in a document window. You can view it once the wizard is closed.</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/datavirtualization/dist/wizards/wizardCommands" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="noConnection">
+      <source xml:lang="en">Data Virtualization requires a connection to be selected.</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/datavirtualization/package" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="config.extensionDescription">
+      <source xml:lang="en">Support for Data Virtualization in SQL Server, including wizards for creating an External Table from an External Data Source or CSV files.</source>
+    </trans-unit>
+    <trans-unit id="config.logDebugInfo">
+      <source xml:lang="en">Enable/disable logging debug information to the developer console.</source>
+    </trans-unit>
+    <trans-unit id="config.proseParsingMaxLines">
+      <source xml:lang="en">Number of lines to read from a file to run PROSE parsing on.</source>
+    </trans-unit>
+    <trans-unit id="description.datavirtualization">
+      <source xml:lang="en">Support for Data Virtualization features in SQL Server</source>
+    </trans-unit>
+    <trans-unit id="title.datavirtualization">
+      <source xml:lang="en">Data Virtualization</source>
+    </trans-unit>
+    <trans-unit id="title.openMssqlHdfsTableWizard">
+      <source xml:lang="en">Virtualize Data From CSV Files</source>
+    </trans-unit>
+    <trans-unit id="title.openVirtualizeDataWizard">
+      <source xml:lang="en">Virtualize Data</source>
+    </trans-unit>
+    <trans-unit id="title.tasks">
+      <source xml:lang="en">Tasks</source>
+    </trans-unit>
+</body></file>
+</xliff>

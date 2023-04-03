@@ -7,6 +7,9 @@ import * as should from 'should';
 import * as azdata from 'azdata';
 import * as mssql from 'mssql';
 import * as sinon from 'sinon';
+import * as utils from '../../common/utils'
+import * as newProjectTool from '../../tools/newProjectTool';
+
 import { CreateProjectFromDatabaseDialog } from '../../dialogs/createProjectFromDatabaseDialog';
 import { mockConnectionProfile } from '../testContext';
 import { ImportDataModel } from '../../models/api/import';
@@ -18,7 +21,7 @@ describe('Create Project From Database Dialog', () => {
 
 	it('Should open dialog successfully', async function (): Promise<void> {
 		sinon.stub(azdata.connection, 'getConnections').resolves([]);
-		sinon.stub(azdata.connection, 'connect').resolves({ connected: true, connectionId: '0', errorMessage: '', errorCode: 0});
+		sinon.stub(azdata.connection, 'connect').resolves({ connected: true, connectionId: '0', errorMessage: '', errorCode: 0 });
 		sinon.stub(azdata.connection, 'listDatabases').resolves([]);
 		const dialog = new CreateProjectFromDatabaseDialog(mockConnectionProfile);
 		await dialog.openDialog();
@@ -27,7 +30,7 @@ describe('Create Project From Database Dialog', () => {
 
 	it('Should enable ok button correctly with a connection profile', async function (): Promise<void> {
 		sinon.stub(azdata.connection, 'getConnections').resolves([]);
-		sinon.stub(azdata.connection, 'connect').resolves({ connected: true, connectionId: '0', errorMessage: '', errorCode: 0});
+		sinon.stub(azdata.connection, 'connect').resolves({ connected: true, connectionId: '0', errorMessage: '', errorCode: 0 });
 		sinon.stub(azdata.connection, 'listDatabases').resolves([]);
 		const dialog = new CreateProjectFromDatabaseDialog(mockConnectionProfile);
 		await dialog.openDialog();		// should set connection details
@@ -79,8 +82,10 @@ describe('Create Project From Database Dialog', () => {
 
 	it('Should create default project name correctly when database information is populated', async function (): Promise<void> {
 		sinon.stub(azdata.connection, 'getConnections').resolves([]);
-		sinon.stub(azdata.connection, 'connect').resolves({ connected: true, connectionId: '0', errorMessage: '', errorCode: 0});
+		sinon.stub(azdata.connection, 'connect').resolves({ connected: true, connectionId: '0', errorMessage: '', errorCode: 0 });
 		sinon.stub(azdata.connection, 'listDatabases').resolves(['My Database']);
+		sinon.stub(utils, 'sanitizeStringForFilename').returns('My Database');
+		sinon.stub(newProjectTool, 'defaultProjectNameFromDb').returns('DatabaseProjectMy Database');
 		const dialog = new CreateProjectFromDatabaseDialog(mockConnectionProfile);
 		await dialog.openDialog();
 		dialog.setProjectName();
@@ -92,7 +97,7 @@ describe('Create Project From Database Dialog', () => {
 		const stubUri = 'My URI';
 		const dialog = new CreateProjectFromDatabaseDialog(mockConnectionProfile);
 		sinon.stub(azdata.connection, 'getConnections').resolves([]);
-		sinon.stub(azdata.connection, 'connect').resolves({ connected: true, connectionId: '0', errorMessage: '', errorCode: 0});
+		sinon.stub(azdata.connection, 'connect').resolves({ connected: true, connectionId: '0', errorMessage: '', errorCode: 0 });
 		sinon.stub(azdata.connection, 'listDatabases').resolves(['My Database']);
 		sinon.stub(azdata.connection, 'getUriForConnection').resolves(stubUri);
 		await dialog.openDialog();

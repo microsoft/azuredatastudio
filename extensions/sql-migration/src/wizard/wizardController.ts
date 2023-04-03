@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as mssql from 'mssql';
 import { MigrationStateModel, NetworkContainerType, Page } from '../models/stateMachine';
 import * as loc from '../constants/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
@@ -17,11 +16,12 @@ import { SummaryPage } from './summaryPage';
 import { LoginMigrationStatusPage } from './loginMigrationStatusPage';
 import { DatabaseSelectorPage } from './databaseSelectorPage';
 import { LoginSelectorPage } from './loginSelectorPage';
-import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
+import { sendSqlMigrationActionEvent, sendButtonClickEvent, TelemetryAction, TelemetryViews, logError, getTelemetryProps } from '../telemetry';
 import * as styles from '../constants/styles';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
 import { azureResource } from 'azurecore';
 import { ServiceContextChangeEvent } from '../dashboard/tabBase';
+import { getSourceConnectionProfile } from '../api/sqlUtils';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
@@ -33,24 +33,18 @@ export class WizardController {
 		private readonly _serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>) {
 	}
 
-	public async openWizard(connectionId: string): Promise<void> {
-		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
-		if (api) {
-			this.extensionContext.subscriptions.push(this._model);
-			await this.createWizard(this._model);
-		}
+	public async openWizard(): Promise<void> {
+		this.extensionContext.subscriptions.push(this._model);
+		await this.createWizard(this._model);
 	}
 
-	public async openLoginWizard(connectionId: string): Promise<void> {
-		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
-		if (api) {
-			this.extensionContext.subscriptions.push(this._model);
-			await this.createLoginWizard(this._model);
-		}
+	public async openLoginWizard(): Promise<void> {
+		this.extensionContext.subscriptions.push(this._model);
+		await this.createLoginWizard(this._model);
 	}
 
 	private async createWizard(stateModel: MigrationStateModel): Promise<void> {
-		const serverName = (await stateModel.getSourceConnectionProfile()).serverName;
+		const serverName = (await getSourceConnectionProfile()).serverName;
 		this._wizardObject = azdata.window.createWizard(
 			loc.WIZARD_TITLE(serverName),
 			'MigrationWizard',
@@ -79,7 +73,13 @@ export class WizardController {
 		validateButton.secondary = false;
 		validateButton.hidden = true;
 
-		this._wizardObject.customButtons = [validateButton, saveAndCloseButton];
+		const tdeMigrateButton = azdata.window.createButton(
+			loc.TDE_MIGRATE_BUTTON,
+			'left');
+		tdeMigrateButton.secondary = false;
+		tdeMigrateButton.hidden = true;
+
+		this._wizardObject.customButtons = [validateButton, tdeMigrateButton, saveAndCloseButton];
 		const databaseSelectorPage = new DatabaseSelectorPage(this._wizardObject, stateModel);
 		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
 		const targetSelectionPage = new TargetSelectionPage(this._wizardObject, stateModel);
@@ -112,10 +112,14 @@ export class WizardController {
 				this._model.refreshDatabaseBackupPage = true;
 			}
 
-			// if the user selected network share and selected save & close afterwards, it should always return to the database backup page so that
-			// the user can input their password again
-			if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime &&
+			if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime && this._model.isSqlDbTarget) {
+				// if the user selected the tables and selected save & close afterwards in SQLDB scenario,
+				// it should always return to the target database selection page so that the user can input their password again
+				wizardSetupPromises.push(this._wizardObject.setCurrentPage(Page.TargetSelection));
+			} else if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime &&
 				this._model.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
+				// if the user selected network share and selected save & close afterwards, it should always return to the database backup page so that
+				// the user can input their password again
 				wizardSetupPromises.push(this._wizardObject.setCurrentPage(Page.IntegrationRuntime));
 			} else {
 				wizardSetupPromises.push(this._wizardObject.setCurrentPage(this._model.savedInfo.closedPage));
@@ -127,7 +131,7 @@ export class WizardController {
 				async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 					const newPage = pageChangeInfo.newPage;
 					const lastPage = pageChangeInfo.lastPage;
-					this.sendPageButtonClickEvent(pageChangeInfo)
+					this.sendPageButtonClickEvent(TelemetryViews.SqlMigrationWizard, pageChangeInfo)
 						.catch(e => logError(
 							TelemetryViews.MigrationWizardController,
 							'ErrorSendingPageButtonClick', e));
@@ -159,7 +163,7 @@ export class WizardController {
 					TelemetryViews.SqlMigrationWizard,
 					TelemetryAction.PageButtonClick,
 					{
-						...this.getTelemetryProps(),
+						...getTelemetryProps(this._model),
 						'buttonPressed': TelemetryAction.Cancel,
 						'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
 					},
@@ -178,7 +182,7 @@ export class WizardController {
 						TelemetryViews.SqlMigrationWizard,
 						TelemetryAction.PageButtonClick,
 						{
-							...this.getTelemetryProps(),
+							...getTelemetryProps(this._model),
 							'buttonPressed': TelemetryAction.Done,
 							'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
 						},
@@ -188,7 +192,7 @@ export class WizardController {
 	}
 
 	private async createLoginWizard(stateModel: MigrationStateModel): Promise<void> {
-		const serverName = (await stateModel.getSourceConnectionProfile()).serverName;
+		const serverName = (await getSourceConnectionProfile()).serverName;
 		this._wizardObject = azdata.window.createWizard(
 			loc.LOGIN_WIZARD_TITLE(serverName),
 			'LoginMigrationWizard',
@@ -212,12 +216,16 @@ export class WizardController {
 		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
 		wizardSetupPromises.push(this._wizardObject.open());
 
+		// Emit telemetry for starting login migration wizard
+		const firstPageTitle = this._wizardObject.pages.length > 0 ? this._wizardObject.pages[0].title : "";
+		sendButtonClickEvent(this._model, TelemetryViews.LoginMigrationWizard, TelemetryAction.OpenLoginMigrationWizard, "", firstPageTitle);
+
 		this._model.extensionContext.subscriptions.push(
 			this._wizardObject.onPageChanged(
 				async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 					const newPage = pageChangeInfo.newPage;
 					const lastPage = pageChangeInfo.lastPage;
-					this.sendPageButtonClickEvent(pageChangeInfo)
+					this.sendPageButtonClickEvent(TelemetryViews.LoginMigrationWizard, pageChangeInfo)
 						.catch(e => logError(
 							TelemetryViews.LoginMigrationWizardController,
 							'ErrorSendingPageButtonClick', e));
@@ -239,8 +247,21 @@ export class WizardController {
 					TelemetryViews.LoginMigrationWizard,
 					TelemetryAction.PageButtonClick,
 					{
-						...this.getTelemetryProps(),
+						...getTelemetryProps(this._model),
 						'buttonPressed': TelemetryAction.Cancel,
+						'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
+					},
+					{});
+			}));
+
+		this._disposables.push(
+			this._wizardObject.doneButton.onClick(async (e) => {
+				sendSqlMigrationActionEvent(
+					TelemetryViews.LoginMigrationWizard,
+					TelemetryAction.PageButtonClick,
+					{
+						...getTelemetryProps(this._model),
+						'buttonPressed': TelemetryAction.Done,
 						'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
 					},
 					{});
@@ -304,31 +325,15 @@ export class WizardController {
 		return undefined;
 	}
 
-	private async sendPageButtonClickEvent(pageChangeInfo: azdata.window.WizardPageChangeInfo) {
+	private async sendPageButtonClickEvent(telemetryView: TelemetryViews, pageChangeInfo: azdata.window.WizardPageChangeInfo) {
 		const buttonPressed = pageChangeInfo.newPage > pageChangeInfo.lastPage
 			? TelemetryAction.Next
 			: TelemetryAction.Prev;
 		const pageTitle = this._wizardObject.pages[pageChangeInfo.lastPage]?.title;
-		sendSqlMigrationActionEvent(
-			TelemetryViews.SqlMigrationWizard,
-			TelemetryAction.PageButtonClick,
-			{
-				...this.getTelemetryProps(),
-				'buttonPressed': buttonPressed,
-				'pageTitle': pageTitle
-			},
-			{});
+		const newPageTitle = this._wizardObject.pages[pageChangeInfo.newPage]?.title;
+		sendButtonClickEvent(this._model, telemetryView, buttonPressed, pageTitle, newPageTitle);
 	}
 
-	private getTelemetryProps() {
-		return {
-			'sessionId': this._model._sessionId,
-			'subscriptionId': this._model._targetSubscription?.id,
-			'resourceGroup': this._model._resourceGroup?.name,
-			'targetType': this._model._targetType,
-			'tenantId': this._model?._azureAccount?.properties?.tenants[0]?.id
-		};
-	}
 }
 
 export function createInformationRow(

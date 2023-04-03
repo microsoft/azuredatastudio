@@ -179,7 +179,9 @@ export class UpdateProjectFromDatabaseDialog {
 		this.serverDropdown = view.modelBuilder.dropDown().withProps({
 			editable: true,
 			fireOnTextChange: true,
-			width: cssStyles.updateProjectFromDatabaseTextboxWidth
+			width: cssStyles.updateProjectFromDatabaseTextboxWidth,
+			ariaLabel: constants.server,
+			required: true
 		}).component();
 
 		this.createConnectionButton(view);
@@ -193,7 +195,9 @@ export class UpdateProjectFromDatabaseDialog {
 		this.databaseDropdown = view.modelBuilder.dropDown().withProps({
 			editable: true,
 			fireOnTextChange: true,
-			width: cssStyles.updateProjectFromDatabaseTextboxWidth
+			width: cssStyles.updateProjectFromDatabaseTextboxWidth,
+			ariaLabel: constants.databaseNameLabel,
+			required: true
 		}).component();
 
 		this.databaseDropdown.onValueChanged(() => {
@@ -250,6 +254,11 @@ export class UpdateProjectFromDatabaseDialog {
 				values: values,
 				value: values[0],
 			});
+
+			// change the database dropdown value to the connection's database if there is one
+			if (connectionProfile.options.database && connectionProfile.options.database !== constants.master) {
+				this.databaseDropdown!.value = connectionProfile.options.database;
+			}
 		}
 
 		this.databaseDropdown!.loading = false;
@@ -377,7 +386,9 @@ export class UpdateProjectFromDatabaseDialog {
 			fireOnTextChange: true,
 			value: value,
 			values: values,
-			width: cssStyles.updateProjectFromDatabaseTextboxWidth
+			width: cssStyles.updateProjectFromDatabaseTextboxWidth,
+			ariaLabel: constants.location,
+			required: true
 		}).component();
 
 		this.projectFileDropdown.onValueChanged(async () => {
@@ -486,7 +497,6 @@ export class UpdateProjectFromDatabaseDialog {
 
 		const actionLabel = view.modelBuilder.text().withProps({
 			value: constants.actionLabel,
-			requiredIndicator: true,
 			width: cssStyles.updateProjectFromDatabaseLabelWidth
 		}).component();
 

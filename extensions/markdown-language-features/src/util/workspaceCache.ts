@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
@@ -31,7 +31,7 @@ class LazyResourceMap<T> {
 
 	public entries(): Promise<Array<[vscode.Uri, T]>> {
 		return Promise.all(Array.from(this._map.entries(), async ([key, entry]) => {
-			return [key, await entry.value];
+			return [key, await entry.value] as [vscode.Uri, T]; // {{SQL CARBON EDIT}} lewissanchez - Added strict typing
 		}));
 	}
 }
@@ -108,77 +108,6 @@ export class MdDocumentInfoCache<T> extends Disposable {
 		if (this._cache.has(document.uri)) {
 			this.resetEntry(document);
 		}
-	}
-
-	private onDidDeleteDocument(resource: vscode.Uri) {
-		this._cache.delete(resource);
-	}
-}
-
-/**
- * Cache of information across all markdown files in the workspace.
- *
- * Unlike {@link MdDocumentInfoCache}, the entries here are computed eagerly for every file in the workspace.
- * However the computation of the values is still lazy.
- */
-export class MdWorkspaceInfoCache<T> extends Disposable {
-
-	private readonly _cache = new LazyResourceMap<T>();
-	private _init?: Promise<void>;
-
-	public constructor(
-		private readonly workspace: IMdWorkspace,
-		private readonly getValue: (document: ITextDocument) => Promise<T>,
-	) {
-		super();
-	}
-
-	public async entries(): Promise<Array<[vscode.Uri, T]>> {
-		await this.ensureInit();
-		return this._cache.entries();
-	}
-
-	public async values(): Promise<Array<T>> {
-		await this.ensureInit();
-		return Array.from(await this._cache.entries(), x => x[1]);
-	}
-
-	public async getForDocs(docs: readonly ITextDocument[]): Promise<T[]> {
-		for (const doc of docs) {
-			if (!this._cache.has(doc.uri)) {
-				this.update(doc);
-			}
-		}
-
-		return Promise.all(docs.map(doc => this._cache.get(doc.uri) as Promise<T>));
-	}
-
-	private async ensureInit(): Promise<void> {
-		if (!this._init) {
-			this._init = this.populateCache();
-
-			this._register(this.workspace.onDidChangeMarkdownDocument(this.onDidChangeDocument, this));
-			this._register(this.workspace.onDidCreateMarkdownDocument(this.onDidChangeDocument, this));
-			this._register(this.workspace.onDidDeleteMarkdownDocument(this.onDidDeleteDocument, this));
-		}
-		await this._init;
-	}
-
-	private async populateCache(): Promise<void> {
-		const markdownDocumentUris = await this.workspace.getAllMarkdownDocuments();
-		for (const document of markdownDocumentUris) {
-			if (!this._cache.has(document.uri)) {
-				this.update(document);
-			}
-		}
-	}
-
-	private update(document: ITextDocument): void {
-		this._cache.set(document.uri, lazy(() => this.getValue(document)));
-	}
-
-	private onDidChangeDocument(document: ITextDocument) {
-		this.update(document);
 	}
 
 	private onDidDeleteDocument(resource: vscode.Uri) {

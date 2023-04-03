@@ -55,6 +55,8 @@ import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/b
 import { ViewContainerLocation } from 'vs/workbench/common/views';
 import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
+import { PasswordChangeDialog } from 'sql/workbench/services/connection/browser/passwordChangeDialog';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -94,6 +96,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IQuickInputService private _quickInputService: IQuickInputService,
 		@INotificationService private _notificationService: INotificationService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
+		@IErrorDiagnosticsService private _errorDiagnosticsService: IErrorDiagnosticsService,
 		@IAngularEventingService private _angularEventing: IAngularEventingService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@ILogService private _logService: ILogService,
@@ -109,7 +112,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this._connectionStatusManager = _instantiationService.createInstance(ConnectionStatusManager);
 		if (this._storageService) {
 			this._mementoContext = new Memento(ConnectionManagementService.CONNECTION_MEMENTO, this._storageService);
-			this._mementoObj = this._mementoContext.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE);
+			this._mementoObj = this._mementoContext.getMemento(StorageScope.APPLICATION, StorageTarget.MACHINE);
 		}
 
 		this.initializeConnectionProvidersMap();
@@ -326,7 +329,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 			// If the password is required and still not loaded show the dialog
 			if ((!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
-				return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options);
+				return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, messageDetails: undefined, errorCode: undefined }, options);
 			} else {
 				// Try to connect
 				return this.connectWithOptions(newConnection, owner.uri, options, owner).then(connectionResult => {
@@ -400,6 +403,24 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this.tryConnect(connection, input, options);
 	}
 
+	public async fixProfile(profile?: interfaces.IConnectionProfile): Promise<interfaces.IConnectionProfile> {
+		if (profile) {
+			if (profile.authenticationType !== undefined && profile.authenticationType === '') {
+				// we need to set auth type here, because it's value is part of the session key
+				profile.authenticationType = this.getDefaultAuthenticationTypeId(profile.providerName);
+			}
+
+			// If this is Azure MFA Authentication, fix username to azure Account user. Falls back to current user name.
+			// This is required, as by default, server login / administrator is the username.
+			if (profile.authenticationType === 'AzureMFA') {
+				let accounts = await this._accountManagementService?.getAccounts();
+				profile.userName = accounts?.find(a => a.key.accountId === profile.azureAccount)?.displayInfo.displayName
+					?? profile.userName;
+			}
+		}
+		return profile;
+	}
+
 	/**
 	 * If there's already a connection for given profile and purpose, returns the ownerUri for the connection
 	 * otherwise tries to make a connection and returns the owner uri when connection is complete
@@ -430,7 +451,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Changes password of the connection profile's user.
 	 */
-	public changePassword(connection: interfaces.IConnectionProfile, uri: string, newPassword: string):
+	public async changePassword(connection: interfaces.IConnectionProfile, uri: string, newPassword: string):
 		Promise<azdata.PasswordChangeResult> {
 		return this.sendChangePasswordRequest(connection, uri, newPassword);
 	}
@@ -552,20 +573,40 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private handleConnectionError(connection: interfaces.IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
+	private async handleConnectionError(connection: interfaces.IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
 		let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', "Connection Not Accepted");
 		if (options.showFirewallRuleOnError && connectionResult.errorCode) {
-			return this.handleFirewallRuleError(connection, connectionResult).then(success => {
-				if (success) {
-					options.showFirewallRuleOnError = false;
-					return this.connectWithOptions(connection, uri, options, callbacks);
-				} else {
+			let firewallRuleErrorHandled = await this.handleFirewallRuleError(connection, connectionResult);
+			if (firewallRuleErrorHandled) {
+				options.showFirewallRuleOnError = false;
+				return this.connectWithOptions(connection, uri, options, callbacks);
+			}
+			else {
+				let connectionErrorHandleResult = await this._errorDiagnosticsService.tryHandleConnectionError(connectionResult, connection.providerName, connection);
+				if (connectionErrorHandleResult.handled) {
+					connectionResult.errorHandled = true;
+					if (connectionErrorHandleResult.options) {
+						//copy over altered connection options from the result if provided.
+						connection.options = connectionErrorHandleResult.options;
+					}
+					if (connectionErrorHandleResult.reconnect) {
+						// Attempt reconnect if requested by provider
+						return this.connectWithOptions(connection, uri, options, callbacks);
+					} else {
+						if (callbacks.onConnectCanceled) {
+							callbacks.onConnectCanceled();
+						}
+						return connectionResult;
+					}
+				}
+				else {
+					// Error not handled by any registered providers so fail the connection
 					if (callbacks.onConnectReject) {
 						callbacks.onConnectReject(connectionNotAcceptedError);
 					}
 					return connectionResult;
 				}
-			});
+			}
 		} else {
 			if (callbacks.onConnectReject) {
 				callbacks.onConnectReject(connectionNotAcceptedError);
@@ -583,6 +624,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				return false;
 			}
 		});
+	}
+
+	public async openChangePasswordDialog(profile: interfaces.IConnectionProfile): Promise<string | undefined> {
+		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
+		let result = await dialog.open(profile);
+		return result;
 	}
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {
@@ -833,7 +880,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		// default to SQL if there are no provides or registered resources
 		let provider = this._providers.get(connection.providerName);
 		if (!provider || !provider.properties || !provider.properties.azureResource) {
-			this._logService.warn('Connection providers incorrectly registered. Defaulting to SQL Azure resource,');
+			this._logService.warn(`Connection provider '${connection.providerName}' is incorrectly registered, defaulting to 'SQL' Azure resource. Provider must specify applicable 'azureResource' in 'connectionProvider' configuration.`);
 			return AzureResource.Sql;
 		}
 
@@ -1082,12 +1129,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 
 		return this._providers.get(providerId).onReady.then(provider => {
-			return provider.listDatabases(uri).then(result => {
-				if (result && result.databaseNames) {
-					result.databaseNames.sort();
-				}
-				return result;
-			});
+			return provider.listDatabases(uri);
 		});
 	}
 
@@ -1155,7 +1197,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			}
 		} else {
 			connection.connectHandler(false, info.errorMessage, info.errorNumber, info.messages);
-			this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.DatabaseConnectionError, info.errorNumber.toString())
+			this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.DatabaseConnectionError, info.errorNumber?.toString())
 				.withConnectionInfo(connection.connectionProfile)
 				.withAdditionalMeasurements({
 					extensionConnectionTimeMs: connection.extensionTimer.elapsed() - connection.serviceTimer.elapsed(),
@@ -1278,18 +1320,18 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				if (connectionMngInfo && connectionMngInfo.deleted) {
 					this._logService.info(`Found deleted connection management info for ${uri} - removing`);
 					this._connectionStatusManager.deleteConnection(uri);
-					resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, callStack: undefined, errorHandled: true, connectionProfile: connection });
+					resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, messageDetails: undefined, errorHandled: true, connectionProfile: connection });
 				} else {
 					if (errorMessage) {
 						// Connection to the server failed
 						this._logService.info(`Error occurred while connecting, removing connection management info for ${uri}`);
 						this._connectionStatusManager.deleteConnection(uri);
-						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, messageDetails: callStack, connectionProfile: connection });
 					} else {
 						if (connectionMngInfo.serverInfo) {
 							connection.options.isCloud = connectionMngInfo.serverInfo.isCloud;
 						}
-						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, messageDetails: callStack, connectionProfile: connection });
 					}
 				}
 			});

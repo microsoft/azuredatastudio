@@ -11,7 +11,7 @@ import { ITelemetryAppender, validateTelemetryData } from 'vs/platform/telemetry
 
 const endpointUrl = 'https://mobile.events.data.microsoft.com/OneCollector/1.0';
 
-async function getClient(instrumentationKey: string, xhrOverride?: IXHROverride): Promise<AppInsightsCore> {
+async function getClient(instrumentationKey: string, addInternalFlag?: boolean, xhrOverride?: IXHROverride): Promise<AppInsightsCore> {
 	const oneDs = await import('@microsoft/1ds-core-js');
 	const postPlugin = await import('@microsoft/1ds-post-js');
 	const appInsightsCore = new oneDs.AppInsightsCore();
@@ -43,10 +43,12 @@ async function getClient(instrumentationKey: string, xhrOverride?: IXHROverride)
 	appInsightsCore.initialize(coreConfig, []);
 
 	appInsightsCore.addTelemetryInitializer((envelope) => {
-		envelope['ext'] = envelope['ext'] ?? {};
-		envelope['ext']['utc'] = envelope['ext']['utc'] ?? {};
-		// Sets it to be internal only based on Windows UTC flagging
-		envelope['ext']['utc']['flags'] = 0x0000811ECD;
+		if (addInternalFlag) {
+			envelope['ext'] = envelope['ext'] ?? {};
+			envelope['ext']['utc'] = envelope['ext']['utc'] ?? {};
+			// Sets it to be internal only based on Windows UTC flagging
+			envelope['ext']['utc']['flags'] = 0x0000811ECD;
+		}
 	});
 
 	return appInsightsCore;
@@ -60,6 +62,7 @@ export abstract class AbstractOneDataSystemAppender implements ITelemetryAppende
 	protected readonly endPointUrl = endpointUrl;
 
 	constructor(
+		private readonly _isInternalTelemetry: boolean,
 		private _eventPrefix: string,
 		private _defaultData: { [key: string]: any } | null,
 		iKeyOrClientFactory: string | (() => AppInsightsCore), // allow factory function for testing
@@ -88,7 +91,7 @@ export abstract class AbstractOneDataSystemAppender implements ITelemetryAppende
 		}
 
 		if (!this._asyncAiCore) {
-			this._asyncAiCore = getClient(this._aiCoreOrKey, this._xhrOverride);
+			this._asyncAiCore = getClient(this._aiCoreOrKey, this._isInternalTelemetry, this._xhrOverride);
 		}
 
 		this._asyncAiCore.then(
@@ -111,10 +114,13 @@ export abstract class AbstractOneDataSystemAppender implements ITelemetryAppende
 		const name = this._eventPrefix + '/' + eventName;
 
 		try {
-			this._withAIClient((aiClient) => aiClient.track({
-				name,
-				baseData: { name, properties: data?.properties, measurements: data?.measurements }
-			}));
+			this._withAIClient((aiClient) => {
+				aiClient.pluginVersionString = data?.properties.version ?? 'Unknown';
+				aiClient.track({
+					name,
+					baseData: { name, properties: data?.properties, measurements: data?.measurements }
+				});
+			});
 		} catch { }
 	}
 

@@ -42,11 +42,11 @@ export function createOptionElement(option: azdata.ServiceOption, rowContainer: 
 				}
 			},
 			ariaLabel: option.displayName
-		});
+		}, option.name);
 		optionWidget.value = optionValue;
 		inputElement = findElement(rowContainer, 'input');
 	} else if (option.valueType === ServiceOptionType.category || option.valueType === ServiceOptionType.boolean) {
-		optionWidget = new SelectBox(possibleInputs, optionValue.toString(), contextViewService, undefined, { ariaLabel: option.displayName });
+		optionWidget = new SelectBox(possibleInputs, optionValue.toString(), contextViewService, undefined, { ariaLabel: option.displayName }, option.name);
 		DialogHelper.appendInputSelectBox(rowContainer, optionWidget);
 		inputElement = findElement(rowContainer, 'monaco-select-box');
 	} else if (option.valueType === ServiceOptionType.string || option.valueType === ServiceOptionType.password) {
@@ -55,7 +55,7 @@ export function createOptionElement(option: azdata.ServiceOption, rowContainer: 
 				validation: (value: string) => (!value && option.isRequired) ? ({ type: MessageType.ERROR, content: option.displayName + missingErrorMessage }) : null
 			},
 			ariaLabel: option.displayName
-		});
+		}, option.name);
 		optionWidget.value = optionValue;
 		if (option.valueType === ServiceOptionType.password) {
 			optionWidget.inputElement.type = 'password';

@@ -10,6 +10,8 @@ import { TerminalLocationString, TerminalSettingId } from 'vs/platform/terminal/
 import { isMacintosh, isWindows } from 'vs/base/common/platform';
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as loc from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}} For strings we need to change
+import { Codicon } from 'vs/base/common/codicons';
+import { terminalColorSchema, terminalIconSchema } from 'vs/platform/terminal/common/terminalPlatformConfiguration';
 
 const terminalDescriptors = '\n- ' + [
 	'`\${cwd}`: ' + localize("cwd", "the terminal's current working directory"),
@@ -35,9 +37,18 @@ const terminalConfiguration: IConfigurationNode = {
 	type: 'object',
 	properties: {
 		[TerminalSettingId.SendKeybindingsToShell]: {
-			markdownDescription: localize('terminal.integrated.sendKeybindingsToShell', "Dispatches most keybindings to the terminal instead of the workbench, overriding `#terminal.integrated.commandsToSkipShell#`, which can be used alternatively for fine tuning."),
+			markdownDescription: localize('terminal.integrated.sendKeybindingsToShell', "Dispatches most keybindings to the terminal instead of the workbench, overriding {0}, which can be used alternatively for fine tuning.", '`#terminal.integrated.commandsToSkipShell#`'),
 			type: 'boolean',
 			default: false
+		},
+		[TerminalSettingId.TabsDefaultColor]: {
+			description: localize('terminal.integrated.tabs.defaultColor', "A theme color ID to associate with terminal icons by default."),
+			...terminalColorSchema
+		},
+		[TerminalSettingId.TabsDefaultIcon]: {
+			description: localize('terminal.integrated.tabs.defaultIcon', "A codicon ID to associate with terminal icons by default."),
+			...terminalIconSchema,
+			default: Codicon.terminal.id,
 		},
 		[TerminalSettingId.TabsEnabled]: {
 			description: localize('terminal.integrated.tabs.enabled', 'Controls whether terminal tabs display as a list to the side of the terminal. When this is disabled a dropdown will display instead.'),
@@ -107,17 +118,17 @@ const terminalConfiguration: IConfigurationNode = {
 		[TerminalSettingId.ShellIntegrationDecorationIconSuccess]: {
 			type: 'string',
 			default: 'primitive-dot',
-			markdownDescription: localize('terminal.integrated.shellIntegration.decorationIconSuccess', "Controls the icon that will be used for each command in terminals with shell integration enabled that do not have an associated exit code. Set to `''` to hide the icon or disable decorations with `#terminal.integrated.shellIntegration.decorationsEnabled#`")
+			markdownDescription: localize('terminal.integrated.shellIntegration.decorationIconSuccess', "Controls the icon that will be used for each command in terminals with shell integration enabled that do not have an associated exit code. Set to {0} to hide the icon or disable decorations with {1}.", '`\"\"`', '`#terminal.integrated.shellIntegration.decorationsEnabled#`')
 		},
 		[TerminalSettingId.ShellIntegrationDecorationIconError]: {
 			type: 'string',
 			default: 'error-small',
-			markdownDescription: localize('terminal.integrated.shellIntegration.decorationIconError', "Controls the icon that will be used for each command in terminals with shell integration enabled that do have an associated exit code. Set to `''` to hide the icon or disable decorations with `#terminal.integrated.shellIntegration.decorationsEnabled#`.")
+			markdownDescription: localize('terminal.integrated.shellIntegration.decorationIconError', "Controls the icon that will be used for each command in terminals with shell integration enabled that do have an associated exit code. Set to {0} to hide the icon or disable decorations with {1}.", '`\"\"`', '`#terminal.integrated.shellIntegration.decorationsEnabled#`')
 		},
 		[TerminalSettingId.ShellIntegrationDecorationIcon]: {
 			type: 'string',
 			default: 'circle-outline',
-			markdownDescription: localize('terminal.integrated.shellIntegration.decorationIcon', "Controls the icon that will be used for skipped/empty commands. Set to `''` to hide the icon or disable decorations with `#terminal.integrated.shellIntegration.decorationsEnabled#`")
+			markdownDescription: localize('terminal.integrated.shellIntegration.decorationIcon', "Controls the icon that will be used for skipped/empty commands. Set to {0} to hide the icon or disable decorations with {1}.", '`\"\"`', '`#terminal.integrated.shellIntegration.decorationsEnabled#`')
 		},
 		[TerminalSettingId.TabsFocusMode]: {
 			type: 'string',
@@ -140,7 +151,7 @@ const terminalConfiguration: IConfigurationNode = {
 			default: false
 		},
 		[TerminalSettingId.AltClickMovesCursor]: {
-			markdownDescription: localize('terminal.integrated.altClickMovesCursor', "If enabled, alt/option + click will reposition the prompt cursor to underneath the mouse when `#editor.multiCursorModifier#` is set to `'alt'` (the default value). This may not work reliably depending on your shell."),
+			markdownDescription: localize('terminal.integrated.altClickMovesCursor', "If enabled, alt/option + click will reposition the prompt cursor to underneath the mouse when {0} is set to {1} (the default value). This may not work reliably depending on your shell.", '`#editor.multiCursorModifier#`', '`\'alt\'`'),
 			type: 'boolean',
 			default: true
 		},
@@ -160,7 +171,7 @@ const terminalConfiguration: IConfigurationNode = {
 			default: true
 		},
 		[TerminalSettingId.FontFamily]: {
-			markdownDescription: localize('terminal.integrated.fontFamily', "Controls the font family of the terminal, this defaults to `#editor.fontFamily#`'s value."),
+			markdownDescription: localize('terminal.integrated.fontFamily', "Controls the font family of the terminal, this defaults to {0}'s value.", '`#editor.fontFamily#`'),
 			type: 'string'
 		},
 		// TODO: Support font ligatures
@@ -255,7 +266,7 @@ const terminalConfiguration: IConfigurationNode = {
 			default: TerminalCursorStyle.BLOCK
 		},
 		[TerminalSettingId.CursorWidth]: {
-			markdownDescription: localize('terminal.integrated.cursorWidth', "Controls the width of the cursor when `#terminal.integrated.cursorStyle#` is set to `line`."),
+			markdownDescription: localize('terminal.integrated.cursorWidth', "Controls the width of the cursor when {0} is set to {1}.", '`#terminal.integrated.cursorStyle#`', '`line`'),
 			type: 'number',
 			default: 1
 		},
@@ -460,7 +471,7 @@ const terminalConfiguration: IConfigurationNode = {
 			default: 30,
 		},
 		[TerminalSettingId.LocalEchoEnabled]: {
-			markdownDescription: localize('terminal.integrated.localEchoEnabled', "When local echo should be enabled. This will override `#terminal.integrated.localEchoLatencyThreshold#`"),
+			markdownDescription: localize('terminal.integrated.localEchoEnabled', "When local echo should be enabled. This will override {0}", '`#terminal.integrated.localEchoLatencyThreshold#`'),
 			type: 'string',
 			enum: ['on', 'off', 'auto'],
 			enumDescriptions: [
@@ -530,15 +541,22 @@ const terminalConfiguration: IConfigurationNode = {
 		},
 		[TerminalSettingId.ShellIntegrationEnabled]: {
 			restricted: true,
-			markdownDescription: localize('terminal.integrated.shellIntegration.enabled', "Enable features like enhanced command tracking and current working directory detection. \n\nShell integration works by injecting the shell with a startup script. The script gives VS Code insight into what is happening within the terminal.\n\nSupported shells:\n\n- Linux/macOS: bash, pwsh, zsh\n - Windows: pwsh\n\nThis setting applies only when terminals are created, so you will need to restart your terminals for it to take effect.\n\n Note that the script injection may not work if you have custom arguments defined in the terminal profile, a [complex bash `PROMPT_COMMAND`](https://code.visualstudio.com/docs/editor/integrated-terminal#_complex-bash-promptcommand), or other unsupported setup."),
+			markdownDescription: localize('terminal.integrated.shellIntegration.enabled', "Determines whether or not shell integration is auto-injected to support features like enhanced command tracking and current working directory detection. \n\nShell integration works by injecting the shell with a startup script. The script gives VS Code insight into what is happening within the terminal.\n\nSupported shells:\n\n- Linux/macOS: bash, pwsh, zsh\n - Windows: pwsh\n\nThis setting applies only when terminals are created, so you will need to restart your terminals for it to take effect.\n\n Note that the script injection may not work if you have custom arguments defined in the terminal profile, a [complex bash `PROMPT_COMMAND`](https://code.visualstudio.com/docs/editor/integrated-terminal#_complex-bash-promptcommand), or other unsupported setup. To disable decorations, see {0}", '`#terminal.integrated.shellIntegrations.decorationsEnabled#`'),
 			type: 'boolean',
-			default: false
+			default: true
 		},
 		[TerminalSettingId.ShellIntegrationDecorationsEnabled]: {
 			restricted: true,
 			markdownDescription: localize('terminal.integrated.shellIntegration.decorationsEnabled', "When shell integration is enabled, adds a decoration for each command."),
-			type: 'boolean',
-			default: true
+			type: 'string',
+			enum: ['both', 'gutter', 'overviewRuler', 'never'],
+			enumDescriptions: [
+				localize('terminal.integrated.shellIntegration.decorationsEnabled.both', "Show decorations in the gutter (left) and overview ruler (right)"),
+				localize('terminal.integrated.shellIntegration.decorationsEnabled.gutter', "Show gutter decorations to the left of the terminal"),
+				localize('terminal.integrated.shellIntegration.decorationsEnabled.overviewRuler', "Show overview ruler decorations to the right of the terminal"),
+				localize('terminal.integrated.shellIntegration.decorationsEnabled.never', "Do not show decorations"),
+			],
+			default: 'both'
 		},
 		[TerminalSettingId.ShellIntegrationCommandHistory]: {
 			restricted: true,

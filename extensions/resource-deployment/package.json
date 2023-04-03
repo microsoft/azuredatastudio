@@ -311,7 +311,7 @@
           },
           {
             "name": "sql-windows-setup_2022",
-            "webPageUrl": "https://go.microsoft.com/fwlink/?linkid=2195585",
+            "webPageUrl": "https://go.microsoft.com/fwlink/?linkid=2215158",
             "requiredTools": [],
             "when": "version=sql2022"
           }
@@ -524,7 +524,7 @@
     ]
   },
   "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^1.3.2",
+    "@microsoft/ads-extension-telemetry": "^3.0.0",
     "axios": "^0.27.2",
     "linux-release-info": "^2.0.0",
     "promisify-child-process": "^3.1.1",
@@ -538,7 +538,7 @@
     "@types/semver": "^7.3.1",
     "@types/sinon": "^9.0.8",
     "@types/yamljs": "0.2.30",
-    "@microsoft/azdata-test": "^2.0.3",
+    "@microsoft/azdata-test": "^3.0.2",
     "mocha": "^7.1.1",
     "should": "^13.2.3",
     "sinon": "^9.2.0",

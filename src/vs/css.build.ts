@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 interface ICSSPluginConfig {
@@ -50,7 +50,7 @@ const inlinedResources: string[] = [];
 /**
  * Invoked by the loader at build-time
  */
-export function load(name: string, req: AMDLoader.IRelativeRequire, load: AMDLoader.IPluginLoadCallback, config: AMDLoader.IConfigurationOptions): void {
+export function load(name: string, req: AMDLoader.IRelativeRequire, load: AMDLoader.IPluginLoadCallback, config: AMDLoader.IConfigurationOptions | { isBuild?: boolean }): void { // {{SQL CARBON EDIT}} Added type to config
 	if (!fs) {
 		throw new Error(`Cannot load files without 'fs'!`);
 	}

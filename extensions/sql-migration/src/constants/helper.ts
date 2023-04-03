@@ -44,6 +44,11 @@ export const LoginMigrationStatusCodes = {
 	Failed: 'Failed',
 };
 
+export const ValidationErrorCodes = {
+	// TODO: adding other error codes for troubleshooting
+	SqlInfoValidationFailed: '2056'
+};
+
 const _dateFormatter = new Intl.DateTimeFormat(
 	undefined, {
 	year: 'numeric',
@@ -73,7 +78,8 @@ export function formatTime(miliseconds: number): string {
 	if (miliseconds > 0) {
 		// hh:mm:ss
 		const matches = (new Date(miliseconds))?.toUTCString()?.match(/(\d\d:\d\d:\d\d)/) || [];
-		return matches?.length > 0 ? matches[0] : '';
+		let match = matches?.length > 0 ? matches[0] : ''; // {{SQL CARBON EDIT}}
+		return match ?? ''; // {{SQL CARBON EDIT}}
 	}
 	return '';
 }

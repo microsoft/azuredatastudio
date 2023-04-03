@@ -66,6 +66,7 @@ export class ExtHostDocumentData extends MirrorTextModel {
 				get version() { return that._versionId; },
 				get isClosed() { return that._isDisposed; },
 				get isDirty() { return that._isDirty; },
+				get notebook() { return that.notebook; }, // {{SQL CARBON EDIT}}
 				save() { return that._save(); },
 				getText(range?) { return range ? that._getTextInRange(range) : that.getText(); },
 				get eol() { return that._eol === '\n' ? EndOfLine.LF : EndOfLine.CRLF; },

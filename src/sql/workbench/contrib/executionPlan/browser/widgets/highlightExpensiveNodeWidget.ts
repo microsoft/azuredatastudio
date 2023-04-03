@@ -181,7 +181,7 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 
 	public showStoreDefaultMetricPrompt(): void {
 		const currentDefaultExpensiveOperationMetric = this.getDefaultExpensiveOperationMetric();
-		if (this._selectedExpensiveOperationType === currentDefaultExpensiveOperationMetric || !this._storageService.getBoolean('qp.expensiveOperationMetric.showChangeDefaultExpensiveMetricPrompt', StorageScope.GLOBAL, true)) {
+		if (this._selectedExpensiveOperationType === currentDefaultExpensiveOperationMetric || !this._storageService.getBoolean('qp.expensiveOperationMetric.showChangeDefaultExpensiveMetricPrompt', StorageScope.APPLICATION, true)) {
 			return;
 		}
 
@@ -197,7 +197,7 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 			},
 			{
 				label: localize('qp.expensiveOperationMetric.dontShowAgain', "Don't Show Again"),
-				run: () => this._storageService.store('qp.expensiveOperationMetric.showChangeDefaultExpensiveMetricPrompt', false, StorageScope.GLOBAL, StorageTarget.USER)
+				run: () => this._storageService.store('qp.expensiveOperationMetric.showChangeDefaultExpensiveMetricPrompt', false, StorageScope.APPLICATION, StorageTarget.USER)
 			}
 		];
 
