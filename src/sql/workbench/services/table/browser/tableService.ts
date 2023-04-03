@@ -9,13 +9,21 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
-
 export const SERVICE_ID = 'tableService';
 export const ITableService = createDecorator<ITableService>(SERVICE_ID);
 
+/**
+ * Service to manage the table components used by the application.
+ */
 export interface ITableService {
 	_serviceBrand: undefined;
+	/**
+	 * Register a table
+	 */
 	registerTable(table: Table<any>): IDisposable;
+	/**
+	 * Get the table that has the focus.
+	 */
 	getActiveTable(): Table<any> | undefined;
 }
 
