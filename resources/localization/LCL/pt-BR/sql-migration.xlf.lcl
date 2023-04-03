@@ -926,7 +926,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Backup size (MB)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Tamanho do backup (MB)]]></Val>
+            <Val><![CDATA[Tamanho do Backup (MB)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -953,7 +953,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Restore finish date]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Data de término da restauração]]></Val>
+            <Val><![CDATA[Restaurar data de término]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -971,7 +971,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Restore status]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Status da Restauração]]></Val>
+            <Val><![CDATA[Restaurar status]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2573,7 +2573,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Last uploaded file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Último arquivo carregado]]></Val>
+            <Val><![CDATA[Último arquivo enviado]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2581,6 +2581,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.field.label.mi.restore.state" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Managed instance restore state]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Estado de restauração da instância gerenciada]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2597,7 +2600,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Queued files]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Arquivos na fila]]></Val>
+            <Val><![CDATA[Arquivos em fila]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2651,7 +2654,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Skipped files]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Arquivos ignorados]]></Val>
+            <Val><![CDATA[Arquivos ignorados]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2660,7 +2663,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Unrestorable files]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Arquivos não recuperáveis]]></Val>
+            <Val><![CDATA[Arquivos irrecuperáveis]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2699,7 +2702,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Full backup file(s)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Arquivos de backup completo]]></Val>
+            <Val><![CDATA[Arquivo(s) de backup completo(s)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Full backup files]]></Val>
@@ -4274,7 +4277,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Queued]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Na fila]]></Val>
+            <Val><![CDATA[Enfileirado]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4310,7 +4313,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Banco de dados]]></Val>
+            <Val><![CDATA[Base de dados]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4400,7 +4403,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Cancelled]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Cancelada]]></Val>
+            <Val><![CDATA[Cancelado]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4427,7 +4430,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Com falha]]></Val>
+            <Val><![CDATA[Fracassado]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4454,7 +4457,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Not started]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Não iniciado]]></Val>
+            <Val><![CDATA[Não foi iniciado]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4472,7 +4475,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Restore paused]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Restauração em pausa]]></Val>
+            <Val><![CDATA[Restauração pausada]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4480,6 +4483,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.restore.status.searching.backups" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Searching backups]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Pesquisando backups]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4487,7 +4493,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Waiting]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Aguardando]]></Val>
+            <Val><![CDATA[Esperando]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6925,12 +6931,18 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.storageAccount.warning.many" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target instance '{0}' may not be able to access storage account '{1}'. Ensure that the subnet of the target instance is whitelisted on the storage account, and if applicable, that the private endpoint is in the same virtual network as the target server.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[A instância de destino '{0}' pode não conseguir acessar a conta de armazenamento '{1}'. Verifique se a sub-rede da instância de destino está na lista de permissões da conta de armazenamento e, se aplicável, se o ponto de extremidade privado está na mesma rede virtual que o servidor de destino.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.storageAccount.warning.one" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target instance '{0}' may not be able to access storage accounts '{1}'. Ensure that the subnet of the target instance is whitelisted on the storage accounts, and if applicable, that the private endpoints are on the same virtual network as the target server.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[A instância de destino '{0}' pode não conseguir acessar as contas de armazenamento '{1}'. Certifique-se de que a sub-rede da instância de destino esteja na lista de permissões das contas de armazenamento e, se aplicável, de que os pontos de extremidade privados estejam na mesma rede virtual que o servidor de destino.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

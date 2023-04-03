@@ -1215,6 +1215,9 @@
       <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.piiLogging.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Warning: Azure PII Logging is enabled. Enabling this option allows personally identifiable information to be logged and should only be used for debugging purposes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Avviso: la registrazione delle informazioni personali di Azure è abilitata. L'abilitazione di questa opzione consente la registrazione delle informazioni personali e deve essere utilizzata solo a scopo di debug.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
