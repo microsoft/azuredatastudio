@@ -57,6 +57,7 @@ import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/co
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { queryEditorNullBackground } from 'sql/platform/theme/common/colorRegistry';
+import { ITableService } from 'sql/workbench/services/table/browser/tableService';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -417,7 +418,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		@INotificationService private readonly notificationService: INotificationService,
 		@IExecutionPlanService private readonly executionPlanService: IExecutionPlanService,
 		@IAccessibilityService private readonly accessibilityService: IAccessibilityService,
-		@IQuickInputService private readonly quickInputService: IQuickInputService
+		@IQuickInputService private readonly quickInputService: IQuickInputService,
+		@ITableService private readonly tableService: ITableService
 	) {
 		super();
 
@@ -580,6 +582,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}));
 
 		this.table.registerPlugin(this.filterPlugin);
+		this._register(this.tableService.registerTable(this.table));
 		if (this.styles) {
 			this.table.style(this.styles);
 		}
@@ -966,14 +969,15 @@ class GridTable<T> extends GridTableBase<T> {
 		@INotificationService notificationService: INotificationService,
 		@IExecutionPlanService executionPlanService: IExecutionPlanService,
 		@IAccessibilityService accessibilityService: IAccessibilityService,
-		@IQuickInputService quickInputService: IQuickInputService
+		@IQuickInputService quickInputService: IQuickInputService,
+		@ITableService tableService: ITableService
 	) {
 		super(state, resultSet, {
 			actionOrientation: ActionsOrientation.VERTICAL,
 			inMemoryDataProcessing: true,
 			showActionBar: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.showActionBar,
 			inMemoryDataCountThreshold: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.inMemoryDataProcessingThreshold,
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService, tableService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 		this.providerId = this._runner.getProviderId();
 	}
