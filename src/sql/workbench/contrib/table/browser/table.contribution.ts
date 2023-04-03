@@ -20,8 +20,8 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	weight: KeybindingWeight.WorkbenchContrib,
 	when: InTable,
 	primary: KeyMod.Shift | KeyMod.Alt | KeyCode.KeyS,
-	handler: (accessor) => {
-		handleTableCommand(accessor, async (table) => {
+	handler: async (accessor) => {
+		await handleTableCommand(accessor, async (table) => {
 			await table.resizeActiveColumn();
 		});
 	}
@@ -32,8 +32,8 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	weight: KeybindingWeight.WorkbenchContrib,
 	when: ContextKeyExpr.and(InTable, FilteringEnabled),
 	primary: KeyCode.F3,
-	handler: (accessor) => {
-		handleTableCommand(accessor, async (table) => {
+	handler: async (accessor) => {
+		await handleTableCommand(accessor, async (table) => {
 			let plugin = table.grid.getPlugins().find(p => p instanceof HeaderFilter) as HeaderFilter<any>;
 			if (plugin) {
 				await plugin.showMenu();
