@@ -316,5 +316,291 @@ suite('treeUpdateUtils alterConnection', () => {
 		assert.equal(updatedTitleMap[0], updatedGrandChildTitleMap[0]);
 		assert.equal(updatedChildTitleMap[0], updatedGrandChildTitleMap[0]);
 	});
-	//TODO - Need to add more test scenarios for alterTreeChildrenTitles in depth.
+
+	test('connections should not affect connections on a different level', async () => {
+		let profile1: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: '',
+			savePassword: true,
+			groupFullName: 'g3',
+			groupId: 'g3',
+			getOptionsKey: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: { testOption1: 'value1' },
+			saveProfile: true,
+			id: undefined!,
+			connectionName: undefined!
+		};
+
+		let profile1a: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: '',
+			savePassword: true,
+			groupFullName: 'g3',
+			groupId: 'g3',
+			getOptionsKey: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: { testOption1: 'value2' },
+			saveProfile: true,
+			id: undefined!,
+			connectionName: undefined!
+		};
+
+		let profile2: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: '',
+			savePassword: true,
+			groupFullName: 'g3-1',
+			groupId: 'g3-1',
+			getOptionsKey: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: {},
+			saveProfile: true,
+			id: undefined!,
+			connectionName: undefined!
+		};
+
+		let connectionProfile1 = new ConnectionProfile(capabilitiesService, profile1);
+		let connectionProfile1a = new ConnectionProfile(capabilitiesService, profile1a);
+		let connectionProfile2 = new ConnectionProfile(capabilitiesService, profile2);
+
+		let connectionProfileGroup = new ConnectionProfileGroup('g3', undefined, 'g3', undefined, undefined);
+		let childConnectionProfileGroup = new ConnectionProfileGroup('g3-1', undefined, 'g3-1', undefined, undefined);
+
+		childConnectionProfileGroup.addConnections([connectionProfile2]);
+		connectionProfileGroup.addConnections([connectionProfile1, connectionProfile1a]);
+		connectionProfileGroup.addGroups([childConnectionProfileGroup]);
+
+		let updatedProfileGroup = TreeUpdateUtils.alterTreeChildrenTitles([connectionProfileGroup]);
+
+		let updatedTitleMap = updatedProfileGroup[0].connections.map(profile => profile.title);
+		let updatedChildTitleMap = updatedProfileGroup[0].children[0].connections.map(profile => profile.title);
+
+		// Titles should be altered for the first group only.
+		assert.equal(updatedChildTitleMap[0] + ' (testOption1=value1)', updatedTitleMap[0]);
+		assert.equal(updatedChildTitleMap[0] + ' (testOption1=value2)', updatedTitleMap[1]);
+	});
+
+	test('non default options should only be appended to the connection with non default options', async () => {
+		let profile1: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: '',
+			savePassword: true,
+			groupFullName: 'g3',
+			groupId: 'g3',
+			getOptionsKey: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: {},
+			saveProfile: true,
+			id: undefined!,
+			connectionName: undefined!
+		};
+
+		let profile2: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: '',
+			savePassword: true,
+			groupFullName: 'g3',
+			groupId: 'g3',
+			getOptionsKey: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: { testOption1: 'value1', testOption2: '15' },
+			saveProfile: true,
+			id: undefined!,
+			connectionName: undefined!
+		};
+
+		let connectionProfile1 = new ConnectionProfile(capabilitiesService, profile1);
+		let connectionProfile2 = new ConnectionProfile(capabilitiesService, profile2);
+
+		let connectionProfileGroup = new ConnectionProfileGroup('g3', undefined, 'g3', undefined, undefined);
+
+		connectionProfileGroup.addConnections([connectionProfile1, connectionProfile2]);
+
+		let updatedProfileGroup = TreeUpdateUtils.alterTreeChildrenTitles([connectionProfileGroup]);
+
+		let updatedTitleMap = updatedProfileGroup[0].connections.map(profile => profile.title);
+
+		//Title for second profile should be the same as the first but with non default options appended.
+		assert.equal(updatedTitleMap[0] + ' (testOption1=value1; testOption2=15)', updatedTitleMap[1]);
+	});
+
+	test('identical profiles added into one group and separate groups should have the same options appended', async () => {
+		let profile1: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: '',
+			savePassword: true,
+			groupFullName: 'g3',
+			groupId: 'g3',
+			getOptionsKey: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: { testOption1: 'value1', testOption2: '15' },
+			saveProfile: true,
+			id: undefined!,
+			connectionName: undefined!
+		};
+
+		let profile2: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: '',
+			savePassword: true,
+			groupFullName: 'g3',
+			groupId: 'g3',
+			getOptionsKey: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: { testOption1: 'value2', testOption2: '30' },
+			saveProfile: true,
+			id: undefined!,
+			connectionName: undefined!
+		};
+
+		let connectionProfile1Base = new ConnectionProfile(capabilitiesService, profile1);
+		let connectionProfile2Base = new ConnectionProfile(capabilitiesService, profile2);
+
+		let connectionProfileGroup = new ConnectionProfileGroup('g3', undefined, 'g3', undefined, undefined);
+
+		connectionProfileGroup.addConnections([connectionProfile1Base, connectionProfile2Base]);
+
+		profile1.groupFullName = 'g3-1';
+		profile1.groupId = 'g3-1';
+		profile2.groupFullName = 'g3-1';
+		profile2.groupId = 'g3-1';
+
+		let connectionProfile1Child = new ConnectionProfile(capabilitiesService, profile1);
+		let connectionProfile2Child = new ConnectionProfile(capabilitiesService, profile2);
+
+		let childConnectionProfileGroup = new ConnectionProfileGroup('g3-1', undefined, 'g3-1', undefined, undefined);
+
+		childConnectionProfileGroup.addConnections([connectionProfile1Child, connectionProfile2Child]);
+
+		profile1.groupFullName = 'g3-2';
+		profile1.groupId = 'g3-2';
+		profile2.groupFullName = 'g3-2';
+		profile2.groupId = 'g3-2';
+
+		let connectionProfile1Grandchild = new ConnectionProfile(capabilitiesService, profile1);
+		let connectionProfile2Grandchild = new ConnectionProfile(capabilitiesService, profile2);
+
+		let grandchildConnectionProfileGroup = new ConnectionProfileGroup('g3-2', undefined, 'g3-2', undefined, undefined);
+
+		grandchildConnectionProfileGroup.addConnections([connectionProfile1Grandchild, connectionProfile2Grandchild]);
+
+		childConnectionProfileGroup.addGroups([grandchildConnectionProfileGroup]);
+
+		connectionProfileGroup.addGroups([childConnectionProfileGroup]);
+
+		let updatedProfileGroup = TreeUpdateUtils.alterTreeChildrenTitles([connectionProfileGroup]);
+
+		let updatedTitleMap = updatedProfileGroup[0].connections.map(profile => profile.title);
+		let updatedChildTitleMap = updatedProfileGroup[0].children[0].connections.map(profile => profile.title);
+		let updatedGrandchildTitleMap = updatedProfileGroup[0].children[0].children[0].connections.map(profile => profile.title);
+
+		//Titles for the same profile in different groups should be identical
+		assert.equal(updatedTitleMap[0], updatedChildTitleMap[0]);
+		assert.equal(updatedTitleMap[0], updatedGrandchildTitleMap[0]);
+		assert.equal(updatedTitleMap[1], updatedChildTitleMap[1]);
+		assert.equal(updatedTitleMap[1], updatedGrandchildTitleMap[1]);
+	});
+
+	test('profiles in adjacent groups on the same layer should not affect titles on nearby groups', async () => {
+		let profile1: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: '',
+			savePassword: true,
+			groupFullName: 'g3a',
+			groupId: 'g3a',
+			getOptionsKey: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: {},
+			saveProfile: true,
+			id: undefined!,
+			connectionName: undefined!
+		};
+
+		let profile2: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: '',
+			savePassword: true,
+			groupFullName: 'g3a',
+			groupId: 'g3a',
+			getOptionsKey: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: { testOption1: 'value2', testOption2: '30' },
+			saveProfile: true,
+			id: undefined!,
+			connectionName: undefined!
+		};
+
+		let connectionProfile1a = new ConnectionProfile(capabilitiesService, profile1);
+		let connectionProfile2a = new ConnectionProfile(capabilitiesService, profile2);
+
+		let connectionProfileGroup = new ConnectionProfileGroup('g3', undefined, 'g3', undefined, undefined);
+
+		let childConnectionProfileGroup1 = new ConnectionProfileGroup('g3a', undefined, 'g3a', undefined, undefined);
+		childConnectionProfileGroup1.addConnections([connectionProfile1a, connectionProfile2a]);
+
+		profile1.groupFullName = 'g3b';
+		profile1.groupId = 'g3b';
+		profile2.groupFullName = 'g3b';
+		profile2.groupId = 'g3b';
+
+		let connectionProfile1b = new ConnectionProfile(capabilitiesService, profile1);
+		let connectionProfile2b = new ConnectionProfile(capabilitiesService, profile2);
+
+		let childConnectionProfileGroup2 = new ConnectionProfileGroup('g3b', undefined, 'g3b', undefined, undefined);
+
+		childConnectionProfileGroup2.addConnections([connectionProfile1b, connectionProfile2b]);
+
+		connectionProfileGroup.addGroups([childConnectionProfileGroup1]);
+
+		connectionProfileGroup.addGroups([childConnectionProfileGroup2]);
+
+		let updatedProfileGroup = TreeUpdateUtils.alterTreeChildrenTitles([connectionProfileGroup]);
+
+		let updatedChildATitleMap = updatedProfileGroup[0].children[0].connections.map(profile => profile.title);
+		let updatedChildBTitleMap = updatedProfileGroup[0].children[1].connections.map(profile => profile.title);
+
+		//Check that titles are generated properly for the first group.
+		assert.equal(updatedChildATitleMap[0] + ' (testOption1=value2; testOption2=30)', updatedChildATitleMap[1])
+
+		//Titles for the same profile in adjacent groups should be identical
+		assert.equal(updatedChildATitleMap[0], updatedChildBTitleMap[0]);
+		assert.equal(updatedChildATitleMap[1], updatedChildBTitleMap[1]);
+	});
 });
