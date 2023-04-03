@@ -30,19 +30,6 @@ import { setup as setupDataLocalizationTests } from './areas/workbench/localizat
 import { setup as setupLaunchTests } from './areas/workbench/launch.test';
 import { setup as setupTaskTests } from './areas/task/task.test';*/
 
-const testDataPath = path.join(os.tmpdir(), 'vscsmoke');
-if (fs.existsSync(testDataPath)) {
-	rimraf.sync(testDataPath);
-}
-fs.mkdirSync(testDataPath);
-process.once('exit', () => {
-	try {
-		rimraf.sync(testDataPath);
-	} catch {
-		// noop
-	}
-});
-
 const [, , ...args] = process.argv;
 const opts = minimist(args, {
 	string: [
@@ -146,8 +133,8 @@ process.once('exit', () => {
 	}
 });
 
-const testRepoUrl = 'https://github.com/microsoft/vscode-smoketest-express';
-const workspacePath = path.join(testDataPath, 'vscode-smoketest-express');
+const testRepoUrl = 'https://github.com/Microsoft/azuredatastudio-smoke-test-repo.git';
+const workspacePath = path.join(testDataPath, 'azuredatastudio-smoke-test-repo');
 // {{SQL CARBON EDIT}} Let callers control extensions dir for non-packaged extensions
 let extensionsPath = opts.extensionsDir;
 if (!extensionsPath) {
@@ -155,7 +142,17 @@ if (!extensionsPath) {
 	mkdirp.sync(extensionsPath);
 }
 console.log(`Using extensions dir : ${extensionsPath}`);
-mkdirp.sync(extensionsPath);
+
+
+const screenshotsPath = opts.screenshots ? path.resolve(opts.screenshots) : null;
+if (screenshotsPath) {
+	mkdirp.sync(screenshotsPath);
+}
+
+const logPath = opts.log ? path.resolve(opts.log) : null;
+if (logPath) {
+	mkdirp.sync(path.dirname(logPath));
+}
 
 function fail(errorMessage): void {
 	logger.log(errorMessage);
