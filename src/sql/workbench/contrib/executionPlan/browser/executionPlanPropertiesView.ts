@@ -15,6 +15,7 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { ITableService } from 'sql/workbench/services/table/browser/tableService';
 
 export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase {
 	// Div that holds the name of the element selected
@@ -28,9 +29,10 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IContextViewService contextViewService: IContextViewService,
 		@IAccessibilityService accessibilityService: IAccessibilityService,
-		@IQuickInputService quickInputService: IQuickInputService
+		@IQuickInputService quickInputService: IQuickInputService,
+		@ITableService tableService: ITableService
 	) {
-		super(parentContainer, themeService, instantiationService, contextMenuService, contextViewService, accessibilityService, quickInputService);
+		super(parentContainer, themeService, instantiationService, contextMenuService, contextViewService, accessibilityService, quickInputService, tableService);
 		this._model = <ExecutionPlanPropertiesView>{};
 		this._operationName = DOM.$('h3');
 		this._operationName.classList.add('operation-name');
