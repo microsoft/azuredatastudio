@@ -80,14 +80,14 @@ steps:
 # Run these separately to avoid OOM errors on pipeline machines
 - script: |
     set -e
-    yarn npm-run-all -lp core-ci
-    yarn npm-run-all -lp extensions-ci
-  displayName: Compile
+    yarn npm-run-all -lp core-ci extensions-ci
+    yarn npm-run-all -lp hygiene eslint
+  displayName: Compile & Hygiene
 
 - script: |
     set -e
-    yarn npm-run-all -lp hygiene eslint valid-layers-check
-  displayName: Compile Hygiene
+    yarn npm-run-all --max_old_space_size=5120 -lp  valid-layers-check
+  displayName: Valid Layers Check
 
 - script: |
     set -e
