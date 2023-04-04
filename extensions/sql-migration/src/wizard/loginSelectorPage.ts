@@ -13,7 +13,7 @@ import * as styles from '../constants/styles';
 import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, LoginTableInfo } from '../api/sqlUtils';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import * as utils from '../api/utils';
-import { logError, TelemetryViews } from '../telemetry';
+import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
 
 
 export class LoginSelectorPage extends MigrationWizardPage {
@@ -368,6 +368,16 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			};
 
 			logError(TelemetryViews.LoginMigrationWizard, 'CollectingSourceLoginsFailed', error);
+
+			sendSqlMigrationActionEvent(
+				TelemetryViews.LoginMigrationSelectorPage,
+				TelemetryAction.LoginMigrationError,
+				{
+					...getTelemetryProps(this.migrationStateModel),
+					'errorMessage': 'CollectingSourceLoginsFailed',
+				},
+				{}
+			);
 		}
 	}
 
@@ -401,6 +411,16 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			};
 
 			logError(TelemetryViews.LoginMigrationWizard, 'CollectingTargetLoginsFailed', error);
+
+			sendSqlMigrationActionEvent(
+				TelemetryViews.LoginMigrationSelectorPage,
+				TelemetryAction.LoginMigrationError,
+				{
+					...getTelemetryProps(this.migrationStateModel),
+					'errorMessage': 'CollectingTargetLoginsFailed',
+				},
+				{}
+			);
 		}
 	}
 

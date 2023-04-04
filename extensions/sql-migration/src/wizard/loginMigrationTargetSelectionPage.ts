@@ -637,6 +637,15 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 							constants.AZURE_SQL_TARGET_CONNECTION_ERROR_TITLE);
 
 						logError(TelemetryViews.LoginMigrationTargetSelectionPage, 'ConnectingToTargetFailed', error);
+						sendSqlMigrationActionEvent(
+							TelemetryViews.LoginMigrationTargetSelectionPage,
+							TelemetryAction.LoginMigrationError,
+							{
+								...getTelemetryProps(this.migrationStateModel),
+								'errorMessage': 'ConnectingToTargetFailed',
+							},
+							{}
+						);
 						connectionSuccessful = false;
 					}
 					finally {

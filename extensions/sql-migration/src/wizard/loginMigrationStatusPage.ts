@@ -94,6 +94,16 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 
 			this._progressLoader.loading = false;
 			logError(TelemetryViews.LoginMigrationWizard, 'LoginMigrationFailed', 'Login Migrations Internal Server Error');
+
+			sendSqlMigrationActionEvent(
+				TelemetryViews.LoginMigrationStatusPage,
+				TelemetryAction.LoginMigrationError,
+				{
+					...getTelemetryProps(this.migrationStateModel),
+					'errorMessage': 'Login Migrations Internal Server Error',
+				},
+				{}
+			);
 		}
 
 		this._logMigrationResult();
