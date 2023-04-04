@@ -82,10 +82,12 @@ steps:
     set -e
     yarn npm-run-all -lp core-ci
     yarn npm-run-all -lp extensions-ci
-    yarn npm-run-all -lp hygiene
-    yarn npm-run-all -lp eslint
-    yarn npm-run-all -lp valid-layers-check
-  displayName: Compile & Hygiene
+  displayName: Compile
+
+- script: |
+    set -e
+    yarn npm-run-all -lp hygiene eslint valid-layers-check
+  displayName: Compile Hygiene
 
 - script: |
     set -e
