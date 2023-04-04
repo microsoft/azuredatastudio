@@ -81,8 +81,7 @@ const serverResources = [
 	'out-build/vs/workbench/contrib/terminal/browser/media/shellIntegration-bash.sh',
 	'out-build/vs/workbench/contrib/terminal/browser/media/shellIntegration-env.zsh',
 	'out-build/vs/workbench/contrib/terminal/browser/media/shellIntegration-profile.zsh',
-	'out-build/vs/workbench/contrib/terminal/browser/media/shellIntegration-rc.zsh',
-	'out-build/vs/workbench/contrib/terminal/browser/media/shellIntegration-login.zsh',
+	'out-build/vs/workbench/contrib/terminal/browser/media/shellIntegration.zsh',
 
 	'!**/test/**'
 ];
@@ -117,7 +116,7 @@ const serverEntryPoints = [
 		name: 'vs/workbench/api/node/extensionHostProcess',
 		exclude: ['vs/css', 'vs/nls']
 	},
-  {
+	{
 		name: 'vs/platform/files/node/watcher/watcherMain',
 		exclude: ['vs/css', 'vs/nls']
 	},
@@ -136,7 +135,7 @@ try {
 
 		// Include workbench web
 		...vscodeWebEntryPoints
-		];
+	];
 } catch (err) {
 	serverWithWebEntryPoints = [
 		// Include all of server
@@ -357,14 +356,14 @@ function copyConfigTask(folder) {
 		const json = require('gulp-json-editor');
 
 		return gulp.src(['remote/pkg-package.json'], { base: 'remote' })
-		.pipe(rename(path => path.basename += '.' + folder))
-		.pipe(json(obj => {
-			const pkg = obj.pkg;
-			pkg.scripts = pkg.scripts && pkg.scripts.map(p => path.join(destination, p));
-			pkg.assets = pkg.assets && pkg.assets.map(p => path.join(destination, p));
-			return obj;
-		}))
-		.pipe(vfs.dest('out-vscode-reh-pkg'));
+			.pipe(rename(path => path.basename += '.' + folder))
+			.pipe(json(obj => {
+				const pkg = obj.pkg;
+				pkg.scripts = pkg.scripts && pkg.scripts.map(p => path.join(destination, p));
+				pkg.assets = pkg.assets && pkg.assets.map(p => path.join(destination, p));
+				return obj;
+			}))
+			.pipe(vfs.dest('out-vscode-reh-pkg'));
 	};
 }
 
@@ -600,7 +599,7 @@ function packageTask(type, platform, arch, sourceFolderName, destinationFolderNa
 			].map(resource => gulp.src(resource, { base: '.' }).pipe(rename(resource)));
 		}
 
-		const all = es.merge(
+		let all = es.merge(
 			packageJsonStream,
 			productJsonStream,
 			license,
