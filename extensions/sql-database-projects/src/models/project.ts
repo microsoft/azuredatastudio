@@ -184,11 +184,17 @@ export class Project implements ISqlProject {
 			}
 		} else {
 			// use "void" with a .then() to not block the UI thread while prompting the user
-			void window.showErrorMessage(constants.updateProjectForCrossPlatform(project.projectFileName), constants.yesString, constants.noString).then(async (result) => {
-				if (result === constants.yesString) {
-					await project.updateProjectForCrossPlatform();
+			void window.showErrorMessage(constants.updateProjectForCrossPlatform(project.projectFileName), constants.yesString, constants.noString).then(
+				async (result) => {
+					if (result === constants.yesString) {
+						try {
+							await project.updateProjectForCrossPlatform();
+						} catch (error) {
+							void window.showErrorMessage(utils.getErrorMessage(utils.getErrorMessage(error)));
+						}
+					}
 				}
-			});
+			);
 		}
 
 		return project.isCrossPlatformCompatible;
