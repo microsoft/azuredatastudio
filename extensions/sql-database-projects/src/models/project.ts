@@ -180,15 +180,22 @@ export class Project implements ISqlProject {
 			const result = await window.showWarningMessage(constants.updateProjectForCrossPlatform(project.projectFileName), { modal: true }, constants.yesString, constants.noString);
 
 			if (result === constants.yesString) {
+				throw new Error('Failed to update test; blocking');
 				await project.updateProjectForCrossPlatform();
 			}
 		} else {
 			// use "void" with a .then() to not block the UI thread while prompting the user
-			void window.showErrorMessage(constants.updateProjectForCrossPlatform(project.projectFileName), constants.yesString, constants.noString).then(async (result) => {
-				if (result === constants.yesString) {
-					await project.updateProjectForCrossPlatform();
+			void window.showErrorMessage(constants.updateProjectForCrossPlatform(project.projectFileName), constants.yesString, constants.noString).then(
+				async (result) => {
+					if (result === constants.yesString) {
+						throw new Error('Failed to update test; non-blocking');
+						await project.updateProjectForCrossPlatform();
+					}
+				},
+				async (error) => {
+					console.log(error);
 				}
-			});
+			);
 		}
 
 		return project.isCrossPlatformCompatible;
