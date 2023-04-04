@@ -23,6 +23,8 @@ import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/a
 import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { NodeInfoFilterPropertyType, NodeInfoStringOperators } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 
 function FilterDialogTitle(nodePath: string): string { return localize('objectExplorer.filterDialogTitle', "Filter Settings: {0}", nodePath) }
 const OkButtonText = localize('objectExplorer.okButtonText', "OK");
@@ -75,7 +77,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 		this.title = FilterDialogTitle(this._treeNode.nodePath);
 		this.titleIconClassName = TitleIconClass;
 		this._register(attachModalDialogStyler(this, this._themeService));
-		this._okButton = this.addFooterButton(OkButtonText, () => { this.onAccept() });
+		this._okButton = this.addFooterButton(OkButtonText, () => { this.onOK() });
 		this._cancelButton = this.addFooterButton(CancelButtonText, () => { this.onClose() });
 		this._register(attachButtonStyler(this._okButton, this._themeService));
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));
@@ -83,8 +85,8 @@ export class ObjectExplorerServiceDialog extends Modal {
 
 	protected renderBody(container: HTMLElement): void {
 		const body = DOM.append(container, DOM.$('.filter-dialog-body'));
-		const clauseTableContainer = DOM.append(body, DOM.$('.clause-table-container'));
-		this._clauseBuilder = DOM.append(clauseTableContainer, DOM.$('.clause-table'));
+		const clauseTableContainer = DOM.append(body, DOM.$('.filter-table-container'));
+		this._clauseBuilder = DOM.append(clauseTableContainer, DOM.$('.filter-table'));
 
 		const inputBox = new InputBox(this._clauseBuilder, this._contextViewService, {});
 		inputBox.inputElement.type = 'date';
@@ -102,7 +104,9 @@ export class ObjectExplorerServiceDialog extends Modal {
 	}
 
 	private addFilterRow(filter: azdata.NodeInfoFilterProperty): void {
-
+		const row = DOM.append(this._clauseBuilder, DOM.$('tr'));
+		const propertyCell = DOM.append(row, DOM.$('td'));
+		const propertySelect = new SelectBox()
 	}
 
 	protected layout(height?: number): void {
@@ -114,17 +118,34 @@ export class ObjectExplorerServiceDialog extends Modal {
 	}
 
 	private getFilters(): azdata.NodeInfoFilterProperty[] {
-		return [];
+		return [
+			{
+				name: 'name',
+				type: NodeInfoFilterPropertyType.string,
+				operator: NodeInfoStringOperators.contains,
+				value: 'test',
+				options: []
+			}
+		];
 	}
 
-	protected override async onAccept() {
+	private async onOK(): Promise<void> {
 		this.hide('ok');
 		this._treeNode.filters = this.getFilters();
 		if (this._tree instanceof AsyncServerTree) {
+			await this._tree.rerender(this._treeNode);
 			await this._tree.updateChildren(this._treeNode);
 			await this._tree.expand(this._treeNode);
 		} else {
 			this._tree.refresh(this._treeNode);
 		}
+	}
+
+
+
+	// This method is called by modal when the enter button is pressed
+	// We override it to do nothing so that the enter button doesn't close the dialog
+	protected override async onAccept() {
+		// noop
 	}
 }

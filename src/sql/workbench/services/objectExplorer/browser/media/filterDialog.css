@@ -8,12 +8,12 @@
 	padding: 10px;
 }
 
-.clause-table-container .clause-table {
+.filter-table-container .filter-table {
 	width: 100%;
 	margin-bottom: 10px;
 }
 
-.clause-table-container{
+.filter-table-container{
 	max-height: 270px;
 	overflow-y: scroll;
 }

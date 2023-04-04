@@ -179,9 +179,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private _connectionsWaitingForSession: Map<string, boolean> = new Map<string, boolean>();
 
-	private _filtersCache: Map<string, azdata.NodeInfoFilterProperty[]> = new Map<string, azdata.NodeInfoFilterProperty[]>();
 	// Cache of tree nodes for each connection by session ids
 	private _treeNodeCache: Map<string, Map<string, TreeNode>> = new Map<string, Map<string, TreeNode>>();
+
+
+	private _nodeFilterCache: Map<string, azdata.NodeInfoFilterProperty[]> = new Map<string, azdata.NodeInfoFilterProperty[]>();
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -477,6 +479,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		let self = this;
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
 
+			// If the node has filters we need to cache them so that we can reapply them when the node is refreshed.
+			if (node.filters) {
+				this._nodeFilterCache.set(this.getNodeFilterCacheKey(node), node.filters);
+			}
+
 			if (session.sessionId! in self._sessions && self._sessions[session.sessionId!]) {
 				let newRequest = false;
 				if (!self._sessions[session.sessionId!].nodes[node.nodePath]) {
@@ -754,15 +761,23 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				}
 			}
 			const children = expandResult.nodes.map(node => {
+				let treeNode;
 				const cacheKey = this.getTreeNodeCacheKey(node);
 				// In case of refresh, we want to update the existing node in the cache
 				if (!refresh && sessionTreeNodeCache.has(cacheKey)) {
-					return sessionTreeNodeCache.get(cacheKey);
+					treeNode = sessionTreeNodeCache.get(cacheKey);
 				} else {
-					const treeNode = this.toTreeNode(node, parentTree);
+					treeNode = this.toTreeNode(node, parentTree);
 					sessionTreeNodeCache.set(cacheKey, treeNode);
-					return treeNode;
 				}
+
+				// Making sure we retain the filters for the node.
+				if (this._nodeFilterCache.has(this.getNodeFilterCacheKey(treeNode))) {
+					treeNode.filters = this._nodeFilterCache.get(this.getNodeFilterCacheKey(treeNode)) ?? [];
+				} else {
+					treeNode.filters = [];
+				}
+				return treeNode;
 			});
 			parentTree.children = children.filter(c => c !== undefined);
 			return children;
@@ -1037,5 +1052,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private getTreeNodeCacheKey(node: azdata.NodeInfo): string {
 		return node.nodePath;
+	}
+
+	private getNodeFilterCacheKey(node: TreeNode): string {
+		return Utils.generateUri(node.getConnectionProfile()) + node.nodePath;
 	}
 }

@@ -23,6 +23,7 @@ import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser
 import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { instanceOfSqlThemeIcon } from 'sql/workbench/services/objectExplorer/common/nodeType';
+import { localize } from 'vs/nls';
 
 const DefaultConnectionIconClass = 'server-page';
 
@@ -191,8 +192,11 @@ class TreeNodeTemplate extends Disposable {
 		if (element.icon && !instanceOfSqlThemeIcon(element.icon)) {
 			iconRenderer.putIcon(this._icon, element.icon);
 		}
-
-		this._label.textContent = element.label;
+		if (element.filters.length > 0) {
+			this._label.textContent = localize('objectExplorer.filteredNodeLabel', "{0} (filtered)", element.label);
+		} else {
+			this._label.textContent = element.label;
+		}
 		this._root.title = element.label;
 	}
 }
