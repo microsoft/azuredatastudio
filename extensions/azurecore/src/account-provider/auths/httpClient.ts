@@ -152,7 +152,7 @@ const networkRequestViaProxy = <T>(
 	// compose a request string for the socket
 	let postRequestStringContent: string = '';
 	if (httpMethod === HttpMethod.POST || httpMethod === HttpMethod.PUT) {
-		const body = JSON.stringify(options?.body || '');
+		const body = (new TextEncoder()).encode(JSON.stringify(options?.body || ''));
 		postRequestStringContent =
 			'Content-Type: application/x-www-form-urlencoded\r\n' +
 			`Content-Length: ${body.length}\r\n` +
