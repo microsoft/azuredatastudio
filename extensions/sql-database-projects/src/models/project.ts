@@ -184,7 +184,7 @@ export class Project implements ISqlProject {
 			}
 		} else {
 			// use "void" with a .then() to not block the UI thread while prompting the user
-			void vscode.window.showErrorMessage(constants.updateProjectForCrossPlatform(project.projectFileName), constants.yesString, constants.noString).then(
+			void window.showErrorMessage(constants.updateProjectForCrossPlatform(project.projectFileName), constants.yesString, constants.noString).then(
 				async (result) => {
 					if (result === constants.yesString) {
 						try {
