@@ -452,7 +452,9 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 				'hasSystemError': JSON.stringify(this.migrationStateModel._loginMigrationModel.hasSystemError),
 				// AKMA TODO: add error code string count map
 			},
-			{}
+			{
+				'numberLogins': this.migrationStateModel._loginMigrationModel.loginsForMigration.length,
+			}
 		);
 	}
 }
