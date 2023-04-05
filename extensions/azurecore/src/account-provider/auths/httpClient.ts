@@ -7,6 +7,7 @@
 import { INetworkModule, NetworkRequestOptions, NetworkResponse } from '@azure/msal-common';
 import * as http from 'http';
 import * as https from 'https';
+import { TextEncoder } from 'util';
 import { NetworkUtils } from './networkUtils';
 
 /**
@@ -151,7 +152,7 @@ const networkRequestViaProxy = <T>(
 	// compose a request string for the socket
 	let postRequestStringContent: string = '';
 	if (httpMethod === HttpMethod.POST || httpMethod === HttpMethod.PUT) {
-		const body = options?.body || '';
+		const body = (new TextEncoder()).encode(JSON.stringify(options?.body || ''));
 		postRequestStringContent =
 			'Content-Type: application/x-www-form-urlencoded\r\n' +
 			`Content-Length: ${body.length}\r\n` +
@@ -284,7 +285,7 @@ const networkRequestViaHttps = <T>(
 ): Promise<NetworkResponse<T>> => {
 	const isPostRequest = httpMethod === HttpMethod.POST;
 	const isPutRequest = httpMethod === HttpMethod.PUT;
-	const body: string = options?.body || '';
+	const body = (new TextEncoder()).encode(JSON.stringify(options?.body || ''));
 	const url = new URL(urlString);
 	const optionHeaders = options?.headers || {} as Record<string, string>;
 	let customOptions: https.RequestOptions = {
@@ -319,7 +320,7 @@ const networkRequestViaHttps = <T>(
 			});
 		}
 
-		if (isPostRequest) {
+		if (isPostRequest || isPutRequest) {
 			request.write(body);
 		}
 
