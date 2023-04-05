@@ -86,8 +86,7 @@ steps:
 
 - script: |
     set -e
-    NODE_OPTIONS=--max_old_space_size=16384
-    yarn npm-run-all -lp  valid-layers-check
+    yarn npm-run-all --max_old_space_size=16384 -lp  valid-layers-check
   displayName: Valid Layers Check
 
 - script: |
