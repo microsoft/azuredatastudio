@@ -1207,7 +1207,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 										let uniqueBackupLocations = [...new Set(backupLocations)];
 
-										if (uniqueBackupLocations.length !== backupLocations.length) {
+										if (!isSqlDbTarget && uniqueBackupLocations.length !== backupLocations.length) {
 											this.wizard.message = {
 												level: azdata.window.MessageLevel.Warning,
 												text: constants.DATABASE_BACKUP_BLOB_FOLDER_STRUCTURE_WARNING,
@@ -1240,7 +1240,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 										let uniqueBackupLocations = [...new Set(backupLocations)];
 
-										if (uniqueBackupLocations.length !== backupLocations.length) {
+										if (!isSqlDbTarget && uniqueBackupLocations.length !== backupLocations.length) {
 											this.wizard.message = {
 												level: azdata.window.MessageLevel.Warning,
 												text: constants.DATABASE_BACKUP_BLOB_FOLDER_STRUCTURE_WARNING,
