@@ -1125,9 +1125,21 @@ export const SQL_DATABASE = localize('sql.migration.sql.database', "SQL Database
 export const TARGET_AZURE_SQL_INSTANCE_NAME = localize('sql.migration.target.azure.sql.instance.name', "Target name");
 export const TARGET_SERVER_COLUMN = localize('sql.migration.target.azure.sql.instance.server.name', "Target name");
 export const TARGET_DATABASE_COLUMN = localize('sql.migration.target.azure.sql.instance.database.name', "Target database");
-export const MIGRATION_MODE = localize('sql.migration.cutover.type', "Mode");
+export const MIGRATION_MODE = localize('sql.migration.cutover.type', "Migration mode");
 export const START_TIME = localize('sql.migration.start.time', "Start time");
 export const FINISH_TIME = localize('sql.migration.finish.time', "Finish time");
+
+export const SRC_SERVER_TOOL_TIP = localize('sql.migration.src.server.tool.tip', "Name of the source server");
+export const SRC_DATABASE_TOOL_TIP = localize('sql.migration.src.database.tool.tip', "Name of the source database");
+export const STATUS_TOOL_TIP = localize('sql.migration.database.status.tool.tip', "The current status of the migration");
+export const DURATION_TOOL_TIP = localize('sql.migration.database.migration.duration.tool.tip', "The duration of the migration");
+export const AZURE_SQL_TARGET_TOOL_TIP = localize('sql.migration.database.migration.target.type.tool.tip', "The azure resource target type [SQL Managed Instance, SQL Virtual Machine, SQL Database]");
+export const TARGET_SERVER_TOOL_TIP = localize('sql.migration.database.migration.target.instance.server.name.tool.tip', "The target server name");
+export const TARGET_DATABASE_TOOL_TIP = localize('sql.migration.database.migration.target.instance.database.name.tool.tip', "The target database name");
+export const MIGRATION_MODE_TOOL_TIP = localize('sql.migration.database.migration.migration.mode.tool.tip', "In Azure Database Migration Service, you can migrate your databases offline or while they are online. In an offline migration, application downtime starts when the migration starts. To limit downtime to the time it takes you to cut over to the new environment after the migration, use an online migration.");
+export const START_TIME_TOOL_TIP = localize('sql.migration.database.migration.start.time.tool.tip', "The start time for the migration");
+export const FINISH_TIME_TOOL_TIP = localize('sql.migration.database.migration.finish.time.tool.tip', "The fininish time for the migration");
+export const CONTEXT_MENU_TOOL_TIP = localize('sql.migration.database.migration.context.menu.tool.tip', "Click this column to activate the context command menu");
 
 export function STATUS_VALUE(status: string): string {
 	return localize('sql.migration.status.value', "{0}", StatusLookup[status] ?? status);

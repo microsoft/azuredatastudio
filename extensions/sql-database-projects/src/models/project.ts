@@ -10,6 +10,7 @@ import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
 
+import { promises as fs } from 'fs';
 import { Uri, window } from 'vscode';
 import { EntryType, IDatabaseReferenceProjectEntry, ISqlProject, ItemType } from 'sqldbproj';
 import { DataSource } from './dataSources/dataSources';
@@ -184,11 +185,17 @@ export class Project implements ISqlProject {
 			}
 		} else {
 			// use "void" with a .then() to not block the UI thread while prompting the user
-			void window.showErrorMessage(constants.updateProjectForCrossPlatform(project.projectFileName), constants.yesString, constants.noString).then(async (result) => {
-				if (result === constants.yesString) {
-					await project.updateProjectForCrossPlatform();
+			void window.showErrorMessage(constants.updateProjectForCrossPlatform(project.projectFileName), constants.yesString, constants.noString).then(
+				async (result) => {
+					if (result === constants.yesString) {
+						try {
+							await project.updateProjectForCrossPlatform();
+						} catch (error) {
+							void window.showErrorMessage(utils.getErrorMessage(utils.getErrorMessage(error)));
+						}
+					}
 				}
-			});
+			);
 		}
 
 		return project.isCrossPlatformCompatible;
@@ -438,6 +445,18 @@ export class Project implements ISqlProject {
 		}
 
 		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectForRoundtrip);
+
+		// due to bug in DacFx.Projects, if a backup file already exists this will fail
+		// workaround is to rename the existing backup
+
+		if (await utils.exists(this.projectFilePath + '_backup')) {
+			let counter = 2;
+			while (await utils.exists(this.projectFilePath + '_backup' + counter)) {
+				counter++;
+			}
+
+			await fs.rename(this.projectFilePath + '_backup', this.projectFilePath + '_backup' + counter);
+		}
 
 		const result = await this.sqlProjService.updateProjectForCrossPlatform(this.projectFilePath);
 		this.throwIfFailed(result);
