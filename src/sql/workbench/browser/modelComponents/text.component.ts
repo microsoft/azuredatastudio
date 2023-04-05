@@ -167,7 +167,7 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		for (let i: number = 0; i < links.length; i++) {
 			const placeholderIndex = text.indexOf(`{${i}}`);
 			if (placeholderIndex < 0) {
-				this.logService.warn(`Could not find placeholder text {${i}} in text '${this.value}'. Link: ${links[i]}`);
+				this.logService.warn(`Could not find placeholder text {${i}} in text '${this.value}'. Link: ${JSON.stringify(links[i])}`);
 				// Just continue on so we at least show the rest of the text if just one was missed or something
 				continue;
 			}
