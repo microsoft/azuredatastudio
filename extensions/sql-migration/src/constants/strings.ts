@@ -583,8 +583,12 @@ export const DATABASE_BACKUP_BLOB_STORAGE_TABLE_HELP_TEXT = localize('sql.migrat
 export const DATABASE_BACKUP_BLOB_STORAGE_SUBSCRIPTION_LABEL = localize('sql.migration.blob.storage.subscription.label', "Subscription");
 export const DATABASE_BACKUP_MIGRATION_MODE_LABEL = localize('sql.migration.database.migration.mode.label', "Migration mode");
 export const DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION = localize('sql.migration.database.migration.mode.description', "To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.");
-export const DATABASE_TABLE_SELECTION_LABEL = localize('sql.migration.database.table.selection.label', "Migration table selection");
-export const DATABASE_TABLE_SELECTION_DESCRIPTION = localize('sql.migration.database.table.selection.description', "To migrate to the Azure SQL target, select tables in each database for migration.");
+export const DATABASE_TABLE_SELECTION_LABEL = localize('sql.migration.database.table.selection.label', "Table selection");
+export const DATABASE_TABLE_SELECTION_DESCRIPTION = localize('sql.migration.database.table.selection.description', "For each database below, click Edit to select the tables to migrate from source to target. Then, before clicking Next, validate the provided configuration by clicking 'Run validation'.");
+export const DATABASE_SCHEMA_MIGRATION_HELP = localize('sql.migration.database.schema.migration.help', "Make sure to migrate the database schema from source to target by using the {0} or the {1} in Azure Data Studio before selecting the list of tables to migrate.");
+export const DATABASE_SCHEMA_MIGRATION_DACPAC_EXTENSION = localize('sql.migration.database.schema.migration.dacpac', "SQL Server dacpac extension");
+export const DATABASE_SCHEMA_MIGRATION_PROJECTS_EXTENSION = localize('sql.migration.database.schema.migration.project', "SQL Database Projects extension");
+
 export const DATABASE_TABLE_REFRESH_LABEL = localize('sql.migration.database.table.refresh.label', "Refresh");
 export const DATABASE_TABLE_SOURCE_DATABASE_COLUMN_LABEL = localize('sql.migration.database.table.source.column.label', "Source database");
 export const DATABASE_TABLE_TARGET_DATABASE_COLUMN_LABEL = localize('sql.migration.database.table.target.column.label', "Target database");
@@ -656,12 +660,16 @@ export const INVALID_NETWORK_SHARE_LOCATION = localize('sql.migration.invalid.ne
 export const INVALID_USER_ACCOUNT = localize('sql.migration.invalid.user.account', "Invalid user account format. Example: {0}", WINDOWS_USER_ACCOUNT);
 export const INVALID_TARGET_NAME_ERROR = localize('sql.migration.invalid.target.name.error', "Enter a valid name for the target database.");
 export const PROVIDE_UNIQUE_CONTAINERS = localize('sql.migration.provide.unique.containers', "Provide a unique container for each target database. Databases affected: ");
-export function SQL_SOURCE_DETAILS(authMethod: MigrationSourceAuthenticationType, serverName: string): string {
+export function SQL_SOURCE_DETAILS(authMethod: MigrationSourceAuthenticationType, serverName: string, isSqlDbScenario: boolean = false): string {
 	switch (authMethod) {
 		case MigrationSourceAuthenticationType.Integrated:
-			return localize('sql.migration.source.details.windowAuth', "Enter the Windows Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup files.", serverName);
+			return isSqlDbScenario
+				? localize('sql.migration.source.details.windowAuth.db', "Enter the Windows Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance from the self-hosted integration runtime.", serverName)
+				: localize('sql.migration.source.details.windowAuth.nonDb', "Enter the Windows Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup files.", serverName);
 		case MigrationSourceAuthenticationType.Sql:
-			return localize('sql.migration.source.details.sqlAuth', "Enter the SQL Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup files.", serverName);
+			return isSqlDbScenario
+				? localize('sql.migration.source.details.sqlAuth.db', "Enter the SQL Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance from the self-hosted integration runtime.", serverName)
+				: localize('sql.migration.source.details.sqlAuth.nonDb', "Enter the SQL Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup files.", serverName);
 	}
 }
 export const SELECT_RESOURCE_GROUP_PROMPT = localize('sql.migration.blob.resourceGroup.select.prompt', "Select a resource group value first.");
