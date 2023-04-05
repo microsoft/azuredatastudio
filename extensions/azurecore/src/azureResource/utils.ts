@@ -5,6 +5,7 @@
 
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as azdata from 'azdata';
 import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult, GetBlobsResult, GetStorageAccountAccessKeyResult, AzureAccount, azureResource, AzureAccountProviderMetadata } from 'azurecore';
 import { EOL } from 'os';
@@ -17,18 +18,8 @@ import { AzureResourceGroupService } from './providers/resourceGroup/resourceGro
 import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
 import providerSettings from '../account-provider/providerSettings';
 import * as Constants from '../constants';
-import { getProxyEnabledHttpClient } from '../utils';
-import { HttpClient } from '../account-provider/auths/httpClient';
-import { NetworkRequestOptions } from '@azure/msal-common';
 
 const localize = nls.loadMessageBundle();
-
-export interface HttpClientResponse {
-	body: any;
-	headers: any;
-	status: Number;
-	error: any;
-}
 
 function getErrorMessage(error: Error | string): string {
 	return (error instanceof Error) ? error.message : error;
@@ -171,7 +162,7 @@ export async function getLocations(appContext: AppContext, account?: AzureAccoun
 		const path = `/subscriptions/${subscription.id}/locations?api-version=2020-01-01`;
 		const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
 		const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors, host);
-		result.locations.push(...response.response.body.value);
+		result.locations.push(...response.response.data.value);
 		result.errors.push(...response.errors);
 	} catch (err) {
 		const error = new Error(localize('azure.accounts.getLocations.queryError', "Error fetching locations for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}",
@@ -350,7 +341,6 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
  */
 export async function makeHttpRequest(account: AzureAccount, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors: boolean = false, host: string = 'https://management.azure.com', requestHeaders: { [key: string]: string } = {}): Promise<AzureRestResponse> {
 	const result: AzureRestResponse = { response: {}, errors: [] };
-	const httpClient: HttpClient = getProxyEnabledHttpClient();
 
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
 		const error = new Error(invalidAzureAccount);
@@ -390,15 +380,15 @@ export async function makeHttpRequest(account: AzureAccount, subscription: azure
 		return result;
 	}
 
-	let reqHeaders = {
+	const reqHeaders = {
 		'Content-Type': 'application/json',
 		'Authorization': `Bearer ${securityToken.token}`,
 		...requestHeaders
-	}
+	};
 
-	let networkRequestOptions: NetworkRequestOptions = {
+	const config: AxiosRequestConfig = {
 		headers: reqHeaders,
-		body: requestBody
+		validateStatus: () => true // Never throw
 	};
 
 	// Adding '/' if path does not begin with it.
@@ -413,23 +403,19 @@ export async function makeHttpRequest(account: AzureAccount, subscription: azure
 		requestUrl = `${account.properties.providerSettings.settings.armResource.endpoint}${path}`;
 	}
 
-	let response;
+	let response: AxiosResponse | undefined;
 	switch (requestType) {
 		case HttpRequestMethod.GET:
-			response = await httpClient.sendGetRequestAsync<any>(requestUrl, {
-				headers: reqHeaders
-			});
+			response = await axios.get(requestUrl, config);
 			break;
 		case HttpRequestMethod.POST:
-			response = await httpClient.sendPostRequestAsync<HttpClientResponse>(requestUrl, networkRequestOptions);
+			response = await axios.post(requestUrl, requestBody, config);
 			break;
 		case HttpRequestMethod.PUT:
-			response = await httpClient.sendPutRequestAsync<HttpClientResponse>(requestUrl, networkRequestOptions);
+			response = await axios.put(requestUrl, requestBody, config);
 			break;
 		case HttpRequestMethod.DELETE:
-			response = await httpClient.sendDeleteRequestAsync<any>(requestUrl, {
-				headers: reqHeaders
-			});
+			response = await axios.delete(requestUrl, config);
 			break;
 		default:
 			const error = new Error(`Unknown RequestType "${requestType}"`);
@@ -448,8 +434,9 @@ export async function makeHttpRequest(account: AzureAccount, subscription: azure
 	} else if (response.status < 200 || response.status > 299) {
 		let errorMessage: string[] = [];
 		errorMessage.push(response.status.toString());
-		if (response.body && response.body.error) {
-			errorMessage.push(`${response.body.error.code} : ${response.body.error.message}`);
+		errorMessage.push(response.statusText);
+		if (response.data && response.data.error) {
+			errorMessage.push(`${response.data.error.code} : ${response.data.error.message}`);
 		}
 		const error = new Error(errorMessage.join(EOL));
 		if (!ignoreErrors) {
@@ -468,7 +455,7 @@ export async function getManagedDatabases(account: AzureAccount, subscription: a
 	const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
 	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors, host);
 	return {
-		databases: response?.response?.body?.value ?? [],
+		databases: response?.response?.data?.value ?? [],
 		errors: response.errors ? response.errors : []
 	};
 }
@@ -478,7 +465,7 @@ export async function getBlobContainers(account: AzureAccount, subscription: azu
 	const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
 	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors, host);
 	return {
-		blobContainers: response?.response?.body?.value ?? [],
+		blobContainers: response?.response?.data?.value ?? [],
 		errors: response.errors ? response.errors : []
 	};
 }
@@ -488,7 +475,7 @@ export async function getFileShares(account: AzureAccount, subscription: azureRe
 	const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
 	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors, host);
 	return {
-		fileShares: response?.response?.body?.value ?? [],
+		fileShares: response?.response?.data?.value ?? [],
 		errors: response.errors ? response.errors : []
 	};
 }
