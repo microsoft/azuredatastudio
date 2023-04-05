@@ -6,10 +6,22 @@ SQL Database Projects for Azure Data Studio and VS Code provides a way to design
 
 Learn more in the documentation: https://aka.ms/azuredatastudio-sqlprojects
 
-![AdventureWorks SQL project](images/readme-sqlproj.png)
-
 ## Features
 
+- Develop database objects using T-SQL
+- Store the database schema in source control
+- Validate object relationships with project build
+- Publish the database objects to a SQL Server or Azure SQL instance
+- Publish the database objects to a local development container
+- Update the database project from a database
+
+### Preview Features
+
+- Microsoft.Build.Sql SDK-style projects
+- Generate SQL projects from OpenAPI/Swagger specs
+
+
+![AdventureWorks SQL project](images/readme-sqlproj.png)
 
 
 ## Getting Started with Database Projects
@@ -21,7 +33,16 @@ Learn more in the documentation: https://aka.ms/azuredatastudio-sqlprojects
 
 ## Settings
 
+### General Settings
+- `sqlDatabaseProjects.dotnetSDK Location`: The path to the dotnet SDK. If not set, the extension will attempt to find the dotnet SDK on the system.
+- `sqlDatabaseProjects.microsoftBuildSqlVersion`: Version of Microsoft.Build.Sql to use for SDK-style SQL projects. If not set, the extension will use 0.1.9-preview.
+- `sqlDatabaseProjects.netCoreDoNotAsk`: Override option to not ask to install .NET Core SDK when a supported installation is not found.
+- `sqlDatabaseProjects.collapseProjectNodes`: Option to set the default state of the project nodes in the database projects view to collapsed. If not set, the extension will default to expanded.
 
+### Autorest Settings (preview)
+
+- `sqlDatabaseProjects.nodejsDoNotAsk`: Override option to not ask to install Node.js when a supported installation is not found.
+- `sqlDatabaseProjects.autorestSqlVersion`: Version of autorest.sql to use for generating SQL projects from OpenAPI/Swagger specs. If not set, the extension will use the latest version.
 
 ## Code of Conduct
 
