@@ -41,7 +41,7 @@
     "strict-initialization-watch": "tsc --watch -p src/tsconfig.json --noEmit --strictPropertyInitialization",
     "tsec-compile-check": "node node_modules/tsec/bin/tsec -p src/tsconfig.tsec.json",
     "vscode-dts-compile-check": "tsc -p src/tsconfig.vscode-dts.json && tsc -p src/tsconfig.vscode-proposed-dts.json",
-    "valid-layers-check": "node build/lib/layersChecker.js",
+    "valid-layers-check": "node --max_old_space_size=8192 build/lib/layersChecker.js",
     "update-distro": "node build/npm/update-distro.mjs",
     "web": "echo 'yarn web' is replaced by './scripts/code-server' or './scripts/code-web'",
     "compile-web": "node --max_old_space_size=4095 ./node_modules/gulp/bin/gulp.js compile-web",
