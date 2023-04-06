@@ -135,6 +135,16 @@ export class ObjectManagementService implements IObjectManagementService {
 			}
 		);
 	}
+	create(contextId: string, object: ObjectManagement.SqlObject): Thenable<void> {
+		const params: contracts.CreateObjectRequestParams = { contextId, object };
+		return this.client.sendRequest(contracts.CreateObjectRequest.type, params).then(
+			r => { },
+			e => {
+				this.client.logFailedRequest(contracts.CreateObjectRequest.type, e);
+				return Promise.reject(e);
+			}
+		);
+	}
 }
 
 export class TestObjectManagementService implements IObjectManagementService {
@@ -286,6 +296,9 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve();
 	}
 	async drop(connectionUri: string, objectUrn: string): Promise<void> {
+		return this.delayAndResolve();
+	}
+	async create(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
 		return this.delayAndResolve();
 	}
 	private delayAndResolve(): Promise<void> {

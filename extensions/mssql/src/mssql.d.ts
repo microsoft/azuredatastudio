@@ -1228,6 +1228,12 @@ declare module 'mssql' {
 		 * @param objectUrn SMO Urn of the object to be dropped. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
 		 */
 		drop(connectionUri: string, objectUrn: string): Thenable<void>;
+		/**
+		 * Create an object.
+		 * @param contextId The id of the view.
+		 * @param object The object information.
+		 */
+		create(contextId: string, object: ObjectManagement.SqlObject): Thenable<void>;
 	}
 	// Object Management - End.
 }

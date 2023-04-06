@@ -78,7 +78,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 
 	protected async onComplete(): Promise<void> {
 		if (this.isNewObject) {
-			await this.objectManagementService.createLogin(this.contextId, this.objectInfo);
+			await this.objectManagementService.create(this.contextId, this.objectInfo);
 		} else {
 			await this.objectManagementService.updateLogin(this.contextId, this.objectInfo);
 		}

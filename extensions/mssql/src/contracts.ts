@@ -1599,6 +1599,15 @@ export interface DropObjectRequestParams {
 export namespace DropObjectRequest {
 	export const type = new RequestType<DropObjectRequestParams, void, void, void>('objectManagement/drop');
 }
+
+export interface CreateObjectRequestParams {
+	contextId: string;
+	object: any;
+}
+
+export namespace CreateObjectRequest {
+	export const type = new RequestType<CreateObjectRequestParams, void, void, void>('objectManagement/create');
+}
 // ------------------------------- < Object Management > ------------------------------------
 
 // ------------------------------- < Encryption IV/KEY updation Event > ------------------------------------
