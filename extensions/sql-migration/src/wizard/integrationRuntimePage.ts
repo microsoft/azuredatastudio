@@ -636,15 +636,12 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				const state = migrationService.properties.integrationRuntimeState;
 				if (state === 'Online') {
 					await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
-						text: constants.SERVICE_READY(
-							this.migrationStateModel._sqlMigrationService!.name,
-							this.migrationStateModel._nodeNames.join(', ')),
+						text: `${constants.SERVICE_READY(this.migrationStateModel._sqlMigrationService!.name, this.migrationStateModel._nodeNames.join(', '))} \n\n ${constants.REREGISTER_IR_PROMPT}`,
 						style: 'success'
 					});
 				} else {
 					await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
-						text: constants.SERVICE_NOT_READY(
-							this.migrationStateModel._sqlMigrationService!.name),
+						text: `${constants.SERVICE_NOT_READY(this.migrationStateModel._sqlMigrationService!.name)} \n\n ${constants.REGISTER_IR_PROMPT}`,
 						style: 'error'
 					});
 				}
