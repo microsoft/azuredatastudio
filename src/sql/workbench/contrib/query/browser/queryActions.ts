@@ -481,11 +481,13 @@ export class ConnectDatabaseAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		let label: string;
+		let tooltip: string;
 		let enabledClass: string;
 
 		if (isChangeConnectionAction) {
 			enabledClass = ConnectDatabaseAction.EnabledChangeClass;
-			label = nls.localize('changeConnectionDatabaseLabel', "Change Connection");
+			label = nls.localize('changeConnectionDatabaseLabel', "Change");
+			tooltip = nls.localize('changeConnectionDatabaseTooltip', "Change Connection");
 		} else {
 			enabledClass = ConnectDatabaseAction.EnabledDefaultClass;
 			label = nls.localize('connectDatabaseLabel', "Connect");
@@ -494,6 +496,7 @@ export class ConnectDatabaseAction extends QueryTaskbarAction {
 		super(connectionManagementService, editor, ConnectDatabaseAction.ID, enabledClass);
 
 		this.label = label;
+		this.tooltip = tooltip;
 	}
 
 	public override async run(): Promise<void> {
@@ -908,8 +911,6 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
  * into a Notebook document
  */
 export class ExportAsNotebookAction extends QueryTaskbarAction {
-
-	public static IconClass = 'export';
 	public static ID = 'exportAsNotebookAction';
 
 	constructor(
@@ -917,8 +918,9 @@ export class ExportAsNotebookAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@ICommandService private _commandService: ICommandService
 	) {
-		super(connectionManagementService, editor, ExportAsNotebookAction.ID, ExportAsNotebookAction.IconClass);
-		this.label = nls.localize('queryEditor.exportSqlAsNotebook', "Export as Notebook");
+		super(connectionManagementService, editor, ExportAsNotebookAction.ID, Codicon.notebook.classNames);
+		this.label = nls.localize('queryEditor.exportSqlAsNotebookLabel', "To Notebook");
+		this.tooltip = nls.localize('queryEditor.exportSqlAsNotebookTooltip', "Export as Notebook");
 	}
 
 	public override async run(): Promise<void> {
