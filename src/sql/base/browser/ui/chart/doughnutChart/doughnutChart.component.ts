@@ -8,15 +8,16 @@ import { } from 'ng2-charts';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 @Component({
-	selector: 'chart-component',
-	templateUrl: decodeURI(require.toUrl('./chart.component.html'))
+	selector: 'doughnutChart-component',
+	templateUrl: decodeURI(require.toUrl('./doughnutChart.component.html'))
 })
-export class Chart extends Disposable {
+export class DoughnutChart extends Disposable {
 
-	private _labels: string[] = [];
-	private _data: number[] = [];
+	private dougnutChartLabels: string[] = [];
+	private doughnutChartData: number[] = [];
 	private _colors: string[] = [];
 	public doughnutChartColors: any[] = [];
+	public readonly doughnutChartType: ChartType = 'doughnut';
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
@@ -25,25 +26,21 @@ export class Chart extends Disposable {
 	}
 
 	public set labels(val: string[]) {
-		this._labels = val;
+		this.dougnutChartLabels = val;
 		this._changeRef.detectChanges();
 	}
 
 	public get labels(): string[] {
-		return this._labels;
+		return this.dougnutChartLabels;
 	}
 
 	public set data(val: number[]) {
-		this._data = val;
+		this.doughnutChartData = val;
 		this._changeRef.detectChanges();
 	}
 
 	public get data(): number[] {
-		return this._data;
-	}
-
-	public get colors(): string[] {
-		return this._colors;
+		return this.doughnutChartData;
 	}
 
 	public set colors(val: string[]) {
@@ -56,7 +53,9 @@ export class Chart extends Disposable {
 		this._changeRef.detectChanges();
 	}
 
-	doughnutChartType: ChartType = 'doughnut';
+	public get colors(): string[] {
+		return this._colors;
+	}
 
 	public doughnutChartOptions: ChartOptions = {
 		responsive: true,

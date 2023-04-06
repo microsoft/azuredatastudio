@@ -281,9 +281,9 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
-	chart(): azdata.ComponentBuilder<azdata.ChartComponent, azdata.ChartComponentProperties> {
+	doughnutChart(): azdata.ComponentBuilder<azdata.DoughnutChartComponent, azdata.DoughnutChartComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.ChartComponent, azdata.ChartComponentProperties> = this.getComponentBuilder(new ChartComponentWrapper(this._proxy, this._handle, id, this.logService), id);
+		let builder: ComponentBuilderImpl<azdata.DoughnutChartComponent, azdata.DoughnutChartComponentProperties> = this.getComponentBuilder(new DoughnutChartComponentWrapper(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -2242,20 +2242,12 @@ class GroupContainerComponentWrapper extends ComponentWrapper implements azdata.
 	}
 }
 
-class ChartComponentWrapper extends ComponentWrapper implements azdata.ChartComponent {
+class DoughnutChartComponentWrapper extends ComponentWrapper implements azdata.DoughnutChartComponent {
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
-		super(proxy, handle, ModelComponentTypes.Chart, id, logService);
+		super(proxy, handle, ModelComponentTypes.DoughnutChart, id, logService);
 		this.properties = {};
 
 		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<azdata.ChartClickEvent>());
-	}
-
-	public get chartType(): string {
-		return this.properties['chartType'];
-	}
-
-	public set chartType(v: string) {
-		this.setProperty('chartType', v);
 	}
 
 	public get data(): number[] {

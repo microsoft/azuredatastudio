@@ -285,7 +285,7 @@ export function createViewContext(): ViewTestContext {
 		modelBuilder: {
 			listView: undefined!,
 			radioCardGroup: undefined!,
-			chart: undefined!,
+			doughnutChart: undefined!,
 			navContainer: undefined!,
 			divContainer: () => divBuilder,
 			flexContainer: () => flexBuilder,

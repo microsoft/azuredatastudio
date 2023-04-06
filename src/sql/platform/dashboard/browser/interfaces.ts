@@ -150,5 +150,5 @@ export enum ModelComponentTypes {
 	PropertiesContainer,
 	InfoBox,
 	Slider,
-	Chart
+	DoughnutChart
 }
