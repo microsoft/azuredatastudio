@@ -179,11 +179,12 @@ steps:
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  - script: |
-      set -e
-      yarn gulp vscode-linux-x64-build-deb
-    displayName: Build Deb
-    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
+  # {{SQL CARBON TODO}} - Reenable
+  # - script: |
+  #     set -e
+  #     yarn gulp vscode-linux-x64-build-deb
+  #   displayName: Build Deb
+  #   condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
       set -e
