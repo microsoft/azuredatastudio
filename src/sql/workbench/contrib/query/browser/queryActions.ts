@@ -481,11 +481,13 @@ export class ConnectDatabaseAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		let label: string;
+		let tooltip: string;
 		let enabledClass: string;
 
 		if (isChangeConnectionAction) {
 			enabledClass = ConnectDatabaseAction.EnabledChangeClass;
-			label = nls.localize('changeConnectionDatabaseLabel', "Change Connection");
+			label = nls.localize('changeConnectionDatabaseLabel', "Change");
+			tooltip = nls.localize('changeConnectionDatabaseTooltip', "Change Connection");
 		} else {
 			enabledClass = ConnectDatabaseAction.EnabledDefaultClass;
 			label = nls.localize('connectDatabaseLabel', "Connect");
@@ -494,6 +496,7 @@ export class ConnectDatabaseAction extends QueryTaskbarAction {
 		super(connectionManagementService, editor, ConnectDatabaseAction.ID, enabledClass);
 
 		this.label = label;
+		this.tooltip = tooltip;
 	}
 
 	public override async run(): Promise<void> {
@@ -918,7 +921,8 @@ export class ExportAsNotebookAction extends QueryTaskbarAction {
 		@ICommandService private _commandService: ICommandService
 	) {
 		super(connectionManagementService, editor, ExportAsNotebookAction.ID, ExportAsNotebookAction.IconClass);
-		this.label = nls.localize('queryEditor.exportSqlAsNotebook', "Export as Notebook");
+		this.label = nls.localize('queryEditor.exportSqlAsNotebookLabel', "Export");
+		this.tooltip = nls.localize('queryEditor.exportSqlAsNotebookTooltip', "Export as Notebook");
 	}
 
 	public override async run(): Promise<void> {
