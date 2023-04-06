@@ -911,8 +911,6 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
  * into a Notebook document
  */
 export class ExportAsNotebookAction extends QueryTaskbarAction {
-
-	public static IconClass = 'export';
 	public static ID = 'exportAsNotebookAction';
 
 	constructor(
@@ -920,8 +918,8 @@ export class ExportAsNotebookAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@ICommandService private _commandService: ICommandService
 	) {
-		super(connectionManagementService, editor, ExportAsNotebookAction.ID, ExportAsNotebookAction.IconClass);
-		this.label = nls.localize('queryEditor.exportSqlAsNotebookLabel', "Export");
+		super(connectionManagementService, editor, ExportAsNotebookAction.ID, Codicon.notebook.classNames);
+		this.label = nls.localize('queryEditor.exportSqlAsNotebookLabel', "To Notebook");
 		this.tooltip = nls.localize('queryEditor.exportSqlAsNotebookTooltip', "Export as Notebook");
 	}
 
