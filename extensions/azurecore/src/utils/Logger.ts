@@ -98,6 +98,7 @@ function sanitize(objOrArray: any): string {
 }
 
 function sanitizeImpl(obj: any): string {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	obj = Object.assign({}, obj);
 	delete obj.domains; // very long and not really useful
 	// shorten all tokens since we don't usually need the exact values and there's security concerns if they leaked

@@ -126,8 +126,6 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	public getChildren(): (ConnectionProfile | ConnectionProfileGroup)[] {
 		let allChildren: (ConnectionProfile | ConnectionProfileGroup)[] = [];
 		this._childConnections.forEach((conn) => {
-			conn.parent = this;
-			conn.groupId = this.id;
 			allChildren.push(conn);
 		});
 
