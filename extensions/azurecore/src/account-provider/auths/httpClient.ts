@@ -14,7 +14,9 @@ import { NetworkUtils } from './networkUtils';
  */
 export enum HttpMethod {
 	GET = 'get',
-	POST = 'post'
+	POST = 'post',
+	PUT = 'put',
+	DELETE = 'delete'
 }
 
 export enum HttpStatus {
@@ -81,6 +83,40 @@ export class HttpClient implements INetworkModule {
 			return networkRequestViaHttps(url, HttpMethod.POST, options, this.customAgentOptions as https.AgentOptions, cancellationToken);
 		}
 	}
+
+	/**
+	 * Http Put request
+	 * @param url
+	 * @param options
+	 */
+	async sendPutRequestAsync<T>(
+		url: string,
+		options?: NetworkRequestOptions,
+		cancellationToken?: number
+	): Promise<NetworkResponse<T>> {
+		if (this.proxyUrl) {
+			return networkRequestViaProxy(url, this.proxyUrl, HttpMethod.PUT, options, this.customAgentOptions as http.AgentOptions, cancellationToken);
+		} else {
+			return networkRequestViaHttps(url, HttpMethod.PUT, options, this.customAgentOptions as https.AgentOptions, cancellationToken);
+		}
+	}
+
+	/**
+	 * Http Delete request
+	 * @param url
+	 * @param options
+	 */
+	async sendDeleteRequestAsync<T>(
+		url: string,
+		options?: NetworkRequestOptions
+	): Promise<NetworkResponse<T>> {
+		if (this.proxyUrl) {
+			return networkRequestViaProxy(url, this.proxyUrl, HttpMethod.DELETE, options, this.customAgentOptions as http.AgentOptions);
+		} else {
+			return networkRequestViaHttps(url, HttpMethod.DELETE, options, this.customAgentOptions as https.AgentOptions);
+		}
+	}
+
 }
 
 const networkRequestViaProxy = <T>(
@@ -114,7 +150,7 @@ const networkRequestViaProxy = <T>(
 
 	// compose a request string for the socket
 	let postRequestStringContent: string = '';
-	if (httpMethod === HttpMethod.POST) {
+	if (httpMethod === HttpMethod.POST || httpMethod === HttpMethod.PUT) {
 		const body = options?.body || '';
 		postRequestStringContent =
 			'Content-Type: application/x-www-form-urlencoded\r\n' +
@@ -247,6 +283,7 @@ const networkRequestViaHttps = <T>(
 	timeout?: number
 ): Promise<NetworkResponse<T>> => {
 	const isPostRequest = httpMethod === HttpMethod.POST;
+	const isPutRequest = httpMethod === HttpMethod.PUT;
 	const body: string = options?.body || '';
 	const url = new URL(urlString);
 	const optionHeaders = options?.headers || {} as Record<string, string>;
@@ -264,7 +301,7 @@ const networkRequestViaHttps = <T>(
 		customOptions.agent = new https.Agent(agentOptions);
 	}
 
-	if (isPostRequest) {
+	if (isPostRequest || isPutRequest) {
 		// needed for post request to work
 		customOptions.headers = {
 			...customOptions.headers,
