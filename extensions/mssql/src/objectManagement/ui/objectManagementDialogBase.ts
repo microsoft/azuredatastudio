@@ -102,7 +102,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	}
 
 	protected get objectInfo(): ObjectInfoType {
-		return this._viewInfo?.objectInfo;
+		return this._viewInfo.objectInfo;
 	}
 
 	protected get originalObjectInfo(): ObjectInfoType {
