@@ -294,7 +294,7 @@ export class CreateProjectFromDatabaseDialog {
 			component => isValidBasename(component.value)
 		)
 			.withProps({
-				ariaLabel: constants.projectNamePlaceholderText,
+				ariaLabel: constants.projectNameLabel,
 				placeHolder: constants.projectNamePlaceholderText,
 				required: true,
 				width: cssStyles.createProjectFromDatabaseTextboxWidth
