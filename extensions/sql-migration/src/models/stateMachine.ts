@@ -95,7 +95,7 @@ export enum Page {
 export enum WizardEntryPoint {
 	Default = 'Default',
 	SaveAndClose = 'SaveAndClose',
-	RetryMigration = 'RetryMigration',
+	RestartMigration = 'RestartMigration',
 }
 
 export enum PerformanceDataSourceOptions {
@@ -260,7 +260,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _skuEnableElastic!: boolean;
 
 	public refreshDatabaseBackupPage!: boolean;
-	public retryMigration!: boolean;
+	public restartMigration!: boolean;
 	public resumeAssessment!: boolean;
 	public savedInfo!: SavedInfo;
 	public closedPage!: number;
@@ -1121,8 +1121,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				let wizardEntryPoint = WizardEntryPoint.Default;
 				if (this.resumeAssessment) {
 					wizardEntryPoint = WizardEntryPoint.SaveAndClose;
-				} else if (this.retryMigration) {
-					wizardEntryPoint = WizardEntryPoint.RetryMigration;
+				} else if (this.restartMigration) {
+					wizardEntryPoint = WizardEntryPoint.RestartMigration;
 				}
 				if (response.status === 201 || response.status === 200) {
 					sendSqlMigrationActionEvent(
@@ -1167,7 +1167,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			finally {
 				// kill existing data collection if user start migration
 				await this.refreshPerfDataCollection();
-				if ((!this.resumeAssessment || this.retryMigration) && this._perfDataCollectionIsCollecting) {
+				if ((!this.resumeAssessment || this.restartMigration) && this._perfDataCollectionIsCollecting) {
 					void this.stopPerfDataCollection();
 					void vscode.window.showInformationMessage(
 						constants.AZURE_RECOMMENDATION_STOP_POPUP);

@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as loc from '../constants/strings';
 import { getMigrationStatusImage, getPipelineStatusImage } from '../api/utils';
 import { logError, TelemetryViews } from '../telemetry';
-import { canCancelMigration, canCutoverMigration, canDeleteMigration, canRetryMigration, formatDateTimeString, formatNumber, formatSizeBytes, formatSizeKb, formatTime, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation, PipelineStatusCodes } from '../constants/helper';
+import { canCancelMigration, canCutoverMigration, canDeleteMigration, canRestartMigrationWizard, canRetryMigration, formatDateTimeString, formatNumber, formatSizeBytes, formatSizeKb, formatTime, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation, PipelineStatusCodes } from '../constants/helper';
 import { CopyProgressDetail, getResourceName } from '../api/azure';
 import { InfoFieldSchema, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
 import { IconPathHelper } from '../constants/iconPathHelper';
@@ -328,6 +328,7 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		this.cancelButton.enabled = canCancelMigration(migration);
 		this.deleteButton.enabled = canDeleteMigration(migration);
 		this.retryButton.enabled = canRetryMigration(migration);
+		this.restartButton.enabled = canRestartMigrationWizard(migration);
 	}
 
 	private async _populateTableData(hashSet: loc.LookupTable<number> = {}): Promise<void> {
