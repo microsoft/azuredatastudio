@@ -211,11 +211,9 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			textResult += `${this.connectionName}: `;
 		}
 		textResult += this.serverInfo;
-
 		if (textResult.length === 0) {
 			return undefined;
 		}
-
 		return textResult;
 	}
 

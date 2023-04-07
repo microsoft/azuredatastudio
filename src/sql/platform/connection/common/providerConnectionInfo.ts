@@ -263,7 +263,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 			else {
 				value = value ? value : '';
 			}
-			if (value) {
+			if ((!getOriginalOptions && value !== undefined) || getOriginalOptions) {
 				idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
 			}
 		}
@@ -347,11 +347,11 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public static get displayIdSeparator(): string {
-		return '; '
+		return '; ';
 	}
 
 	public static get displayNameValueSeparator(): string {
-		return '='
+		return '=';
 	}
 
 
@@ -388,7 +388,6 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		}
 		//Need to sort for consistency.
 		connectionOptions.sort();
-
 		return connectionOptions;
 	}
 
@@ -397,7 +396,6 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	 */
 	public getNonDefaultOptionsString(): string {
 		let parts: string = "";
-
 		let nonDefaultOptions = this.getConnectionOptionsList(false, true);
 		nonDefaultOptions.forEach(element => {
 			let value = this.getOptionValue(element.name);

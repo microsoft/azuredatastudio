@@ -230,11 +230,18 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	});
 
 	test('getOptionsKey should create a valid unique id', () => {
+		// Test the new option key format
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
-		// **IMPORTANT** This should NEVER change without thorough review and consideration of side effects. This key controls
-		//				 things like how passwords are saved, which means if its changed then serious side effects will occur.
 		let expectedId = 'providerName:MSSQL|databaseName:database|serverName:new server|userName:user';
 		let id = conn.getOptionsKey();
+		assert.strictEqual(id, expectedId);
+
+		// Test for original options key (used for retrieving passwords and as a fallback for unsupported providers)
+
+		// **IMPORTANT** The original format option key should NEVER change without thorough review and consideration of side effects. This version of the key controls
+		//				 things like how passwords are saved, which means if its changed then serious side effects will occur.
+		expectedId = 'providerName:MSSQL|authenticationType:|databaseName:database|serverName:new server|userName:user';
+		id = conn.getOptionsKey(true);
 		assert.strictEqual(id, expectedId);
 	});
 

@@ -28,7 +28,7 @@ suite('treeUpdateUtils alterConnection', () => {
 		categoryValues: undefined,
 		isIdentity: false,
 		isRequired: false
-	}
+	};
 
 	const testOption2 = {
 		name: 'testOption2',
@@ -41,7 +41,7 @@ suite('treeUpdateUtils alterConnection', () => {
 		categoryValues: undefined,
 		isIdentity: false,
 		isRequired: false
-	}
+	};
 
 	const testOption3 = {
 		name: 'testOption3',
@@ -54,7 +54,7 @@ suite('treeUpdateUtils alterConnection', () => {
 		categoryValues: undefined,
 		isIdentity: false,
 		isRequired: false
-	}
+	};
 
 	setup(() => {
 		capabilitiesService = new TestCapabilitiesService();
@@ -597,7 +597,7 @@ suite('treeUpdateUtils alterConnection', () => {
 		let updatedChildBTitleMap = updatedProfileGroup[0].children[1].connections.map(profile => profile.title);
 
 		//Check that titles are generated properly for the first group.
-		assert.equal(updatedChildATitleMap[0] + ' (testOption1=value2; testOption2=30)', updatedChildATitleMap[1])
+		assert.equal(updatedChildATitleMap[0] + ' (testOption1=value2; testOption2=30)', updatedChildATitleMap[1]);
 
 		//Titles for the same profile in adjacent groups should be identical
 		assert.equal(updatedChildATitleMap[0], updatedChildBTitleMap[0]);

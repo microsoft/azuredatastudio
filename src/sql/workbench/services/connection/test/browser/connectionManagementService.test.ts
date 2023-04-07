@@ -1018,7 +1018,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			let newProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), inputProfile);
 			let result = newProfile.getOptionsKey() === originalProfileKey;
 			newProfile.dispose();
-			return Promise.resolve(result)
+			return Promise.resolve(result);
 		});
 		await connect(uri1, options, true, profile);
 		let originalProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), connectionProfile);
@@ -2082,7 +2082,7 @@ test('getEditorConnectionProfileTitle should return a correctly formatted title 
 		categoryValues: undefined,
 		isIdentity: false,
 		isRequired: false
-	}
+	};
 
 	const testOption2 = {
 		name: 'testOption2',
@@ -2095,7 +2095,7 @@ test('getEditorConnectionProfileTitle should return a correctly formatted title 
 		categoryValues: undefined,
 		isIdentity: false,
 		isRequired: false
-	}
+	};
 
 	const testOption3 = {
 		name: 'testOption3',
@@ -2108,7 +2108,7 @@ test('getEditorConnectionProfileTitle should return a correctly formatted title 
 		categoryValues: undefined,
 		isIdentity: false,
 		isRequired: false
-	}
+	};
 
 	profile.options['testOption1'] = 'test value';
 	profile.options['testOption2'] = '50';
@@ -2149,7 +2149,7 @@ test('getEditorConnectionProfileTitle should return a correctly formatted title 
 	// We should expect that the string contains only the server info (with non default options) if there is no connection name.
 	profile.connectionName = undefined;
 
-	result = connectionManagementService.getEditorConnectionProfileTitle(profile)
+	result = connectionManagementService.getEditorConnectionProfileTitle(profile);
 
 	assert.strictEqual(result, `${profileServerInfo}`, `getEditorConnectionProfileTitle included a connection name when it shouldn't`);
 
@@ -2158,7 +2158,7 @@ test('getEditorConnectionProfileTitle should return a correctly formatted title 
 	profile.options['testOption2'] = undefined;
 	profile.options['testOption3'] = undefined;
 
-	result = connectionManagementService.getEditorConnectionProfileTitle(profile)
+	result = connectionManagementService.getEditorConnectionProfileTitle(profile);
 
 	assert.notEqual(result, `${profileServerInfo}`, `getEditorConnectionProfileTitle included non default connection options when it shouldn't`);
 });

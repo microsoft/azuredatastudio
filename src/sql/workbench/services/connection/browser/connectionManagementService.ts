@@ -553,7 +553,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					${ConnectionProfile.getDisplayOptionsKey(connection.getOptionsKey())}${(connection.groupFullName !== undefined && connection.groupFullName !== '' && connection.groupFullName !== '/') ?
 							ConnectionProfile.displayIdSeparator + 'groupName' + ConnectionProfile.displayNameValueSeparator + connection.groupFullName : ''}`);
 				}
-			})
+			});
 		}
 
 		if (!uri) {
