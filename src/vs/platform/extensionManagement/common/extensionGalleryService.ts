@@ -762,6 +762,12 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		let query = new Query()
 			.withPage(1, pageSize);
 
+		// {{SQL CARBON EDIT}} exclude extensions matching excludeFlags options
+		if (options.excludeFlags) {
+			query = query.withFilter(FilterType.ExcludeWithFlags, options.excludeFlags);
+		}
+		// {{SQL CARBON EDIT}}} - END
+
 		if (text) {
 			// Use category filter instead of "category:themes"
 			text = text.replace(/\bcategory:("([^"]*)"|([^"]\S*))(\s+|\b|$)/g, (_, quotedCategory, category) => {
