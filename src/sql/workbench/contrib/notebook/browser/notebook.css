@@ -225,16 +225,12 @@
 }
 
 .monaco-workbench .notebook-action.new-notebook,
-.monaco-workbench.hc-light .notebook-action.new-notebook,
-.monaco-workbench .codicon.new-notebook,
-.monaco-workbench.hc-light .codicon.new-notebook {
+.monaco-workbench.hc-light .notebook-action.new-notebook {
 	background: url("./media/light/new_notebook.svg") center center no-repeat;
 }
 
 .monaco-workbench.vs-dark .notebook-action.new-notebook,
-.monaco-workbench.hc-black .notebook-action.new-notebook,
-.monaco-workbench.vs-dark .codicon.new-notebook,
-.monaco-workbench.hc-black .codicon.new-notebook {
+.monaco-workbench.hc-black .notebook-action.new-notebook {
 	background: url("./media/dark/new_notebook_inverse.svg") center center
 		no-repeat;
 }
