@@ -473,6 +473,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'sourceDatabase',
 						width: 170,
 						type: azdata.ColumnType.hyperlink,
+						toolTip: loc.SRC_DATABASE_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,
@@ -481,6 +482,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'sourceServer',
 						width: 170,
 						type: azdata.ColumnType.text,
+						toolTip: loc.SRC_SERVER_TOOL_TIP,
 					},
 					<azdata.HyperlinkColumn>{
 						cssClass: rowCssStyles,
@@ -489,14 +491,16 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'status',
 						width: 160,
 						type: azdata.ColumnType.hyperlink,
+						toolTip: loc.STATUS_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,
 						headerCssClass: headerCssStyles,
 						name: loc.MIGRATION_MODE,
 						value: 'mode',
-						width: 55,
+						width: 120,
 						type: azdata.ColumnType.text,
+						toolTip: loc.MIGRATION_MODE_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,
@@ -505,6 +509,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'targetType',
 						width: 120,
 						type: azdata.ColumnType.text,
+						toolTip: loc.AZURE_SQL_TARGET_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,
@@ -513,6 +518,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'targetDatabase',
 						width: 125,
 						type: azdata.ColumnType.text,
+						toolTip: loc.TARGET_DATABASE_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,
@@ -521,6 +527,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'targetServer',
 						width: 125,
 						type: azdata.ColumnType.text,
+						toolTip: loc.TARGET_SERVER_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,
@@ -529,6 +536,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'duration',
 						width: 55,
 						type: azdata.ColumnType.text,
+						toolTip: loc.DURATION_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,
@@ -537,6 +545,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'startTime',
 						width: 115,
 						type: azdata.ColumnType.text,
+						toolTip: loc.START_TIME_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,
@@ -545,6 +554,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'finishTime',
 						width: 115,
 						type: azdata.ColumnType.text,
+						toolTip: loc.FINISH_TIME_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,
@@ -553,6 +563,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'contextMenu',
 						width: 25,
 						type: azdata.ColumnType.contextMenu,
+						toolTip: loc.CONTEXT_MENU_TOOL_TIP,
 					}
 				]
 			}).component();
