@@ -146,8 +146,8 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			return undefined;
 		}
 
-		// Here we default to ConnectionType.editor which saves the connecton in the connection store by default
-		let connectionType = ConnectionType.editor;
+		// Here we default to ConnectionType.default which saves the connection in the connection store and server tree by default
+		let connectionType = ConnectionType.default;
 
 		// If the API call explicitly set saveConnection to false, set it to ConnectionType.extension
 		// which doesn't save the connection by default

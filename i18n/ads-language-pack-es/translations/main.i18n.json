@@ -11493,6 +11493,7 @@
 			"notebook.toolbarIcon": "Cuaderno: iconos de la barra de herramientas de Markdown",
 			"notebookFindMatchHighlight": "Color de los otros resultados de la búsqueda. El color no debe ser opaco para no ocultar las decoraciones subyacentes.",
 			"notebookFindRangeHighlight": "Color de la gama que limita la búsqueda. El color no debe ser opaco para no ocultar decoraciones subyacentes.",
+			"queryEditorNullBackground": "Color de fondo de los valores NULL en la cuadrícula de resultados del editor de consultas.",
 			"tileBorder": "Color del borde de los iconos",
 			"tileBoxShadow": "Color de la sombra del cuadro del icono"
 		},
@@ -12877,7 +12878,7 @@
 			"viewOptionsModal.title": "Configurar vista"
 		},
 		"sql/workbench/contrib/notebook/browser/outputs/gridOutput.component": {
-			"copyFailed": "Error de copia: {0}",
+			"copyFailed": "Error de copia {0}",
 			"notebook.showChart": "Mostrar gráfico",
 			"notebook.showTable": "Mostrar tabla"
 		},
@@ -12895,6 +12896,7 @@
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
 			"serverGroup.autoExpand": "Expanda automáticamente los grupos de servidores en el viewlet del Explorador de Objetos.",
 			"serverGroup.colors": "Paleta de colores del grupo de servidores utilizada en el viewlet del Explorador de objetos.",
+			"serverTree.nodeExpansionTimeout": "Tiempo de espera en segundos para expandir un nodo en la vista Servidores",
 			"serverTree.useAsyncServerTree": "(Versión preliminar) Use el nuevo árbol de servidores asincrónicos para la vista Servidores y el cuadro de diálogo Conexión, con compatibilidad con nuevas características como el filtrado de nodos dinámicos."
 		},
 		"sql/workbench/contrib/preferences/browser/sqlSettingsLayout": {
@@ -13434,6 +13436,7 @@
 			"connection.neverShowUnsupportedVersionWarning": "No volver a mostrar",
 			"connection.noAzureAccount": "Error al obtener el token de cuenta de Azure para conexión",
 			"connection.refreshAzureTokenFailure": "Error al actualizar el token de cuenta de Azure para conexión",
+			"connection.unknownProvider": "Proveedor desconocido '{0}'",
 			"connection.unsupportedServerVersionWarning": "La versión del servidor no es compatible con Azure Data Studio, es posible que aún pueda conectarse a ella, pero puede que algunas características de Azure Data Studio no funcionen de la forma esperada.",
 			"connectionDialog.connectionProviderNotSupported": "La extensión que admite el tipo de proveedor '{0}' no está instalada actualmente. ¿Quiere ver las extensiones?",
 			"connectionManagementService.noProviderForUri": "No se encontró ningún proveedor para el URI: {0}",
@@ -13450,7 +13453,8 @@
 			"connection.azureTenantDropdownLabel": "Inquilino de Azure AD",
 			"connectionName": "Nombre (opcional)",
 			"connectionWidget.AddAzureAccount": "Agregar una cuenta...",
-			"connectionWidget.ConnectionStringError": "No se pudo analizar la cadena de conexión.",
+			"connectionWidget.ConnectionStringError": "No se ha podido analizar la cadena de conexión. {0}",
+			"connectionWidget.ConnectionStringUndefined": "No se ha devuelto la información de conexión.",
 			"connectionWidget.Error": "Error",
 			"connectionWidget.connectionString": "Cadena de conexión",
 			"connectionWidget.invalidAzureAccount": "Debe seleccionar una cuenta",
@@ -13688,7 +13692,8 @@
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
 			"OeSessionFailedError": "Error al crear la sesión del Explorador de objetos",
-			"nodeExpansionError": "Varios errores:"
+			"nodeExpansionError": "Varios errores:",
+			"nodeExpansionTimeout": "Se agotó el tiempo de espera de expansión del nodo {0} para los proveedores {1}"
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim": {
 			"firewallCanceled": "Diálogo de firewall cancelado",
@@ -13743,7 +13748,7 @@
 			"updateCellFailed": "Error en la actualización de la celda: "
 		},
 		"sql/workbench/services/query/common/queryRunner": {
-			"copyFailed": "Error de copia: {0}",
+			"copyFailed": "Error de copia {0}",
 			"elapsedBatchTime": "Tiempo de ejecución por lotes: {0}",
 			"query.ExecutionFailedError": "La ejecución no se completó debido a un error inesperado: {0} {1}",
 			"query.message.executionTime": "Tiempo total de ejecución: {0}",
@@ -13953,6 +13958,9 @@
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanInput": {
 			"epCompare.executionPlanEditorName": "ExecutionPlan"
+		},
+		"sql/workbench/contrib/editData/browser/editDataGridPanel": {
+			"editData.cellWithNullCharMessage": "Esta celda contiene el carácter nulo Unicode, que no se admite actualmente para la edición."
 		}
 	}
 }

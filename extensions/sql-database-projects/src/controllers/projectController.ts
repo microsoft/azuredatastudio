@@ -299,6 +299,19 @@ export class ProjectsController {
 		};
 
 		try {
+			const crossPlatCompatible: boolean = await Project.checkPromptCrossPlatStatus(project, true /* blocking prompt */);
+
+			if (!crossPlatCompatible) {
+				// user rejected updating for cross-plat
+				void vscode.window.showErrorMessage(constants.projectNeedsUpdatingForCrossPlat(project.projectFileName));
+				return ''
+			}
+		} catch (error) {
+			void vscode.window.showErrorMessage(utils.getErrorMessage(error));
+			return '';
+		}
+
+		try {
 			await this.netCoreTool.runDotnetCommand(options);
 			const timeToBuild = new Date().getTime() - startTime.getTime();
 

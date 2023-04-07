@@ -142,7 +142,7 @@ export const profileReadError = (err: any) => localize('profileReadError', "Erro
 export const sqlCmdVariables = localize('sqlCmdTableLabel', "SQLCMD Variables");
 export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Name");
 export const sqlCmdValueColumn = localize('sqlCmdValueColumn', "Value");
-export const loadSqlCmdVarsButtonTitle = localize('reloadValuesFromProjectButtonTitle', "Reload values from project");
+export const revertSqlCmdVarsButtonTitle = localize('revertSqlCmdVarsButtonTitle', "Revert values to project defaults");
 export const profile = localize('profile', "Profile");
 export const selectConnection = localize('selectConnection', "Select connection");
 export const server = localize('server', "Server");
@@ -377,8 +377,10 @@ export const invalidSqlConnectionString = localize('invalidSqlConnectionString',
 export const extractTargetRequired = localize('extractTargetRequired', "Target information for extract is required to create database project.");
 export const schemaCompareNotInstalled = localize('schemaCompareNotInstalled', "Schema compare extension installation is required to run schema compare");
 export const buildFailedCannotStartSchemaCompare = localize('buildFailedCannotStartSchemaCompare', "Schema compare could not start because build failed");
-export function updateProjectForRoundTrip(projectName: string) { return localize('updateProjectForRoundTrip', "The targets, references, and system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?", projectName); }
-export function updateProjectDatabaseReferencesForRoundTrip(projectName: string) { return localize('updateProjectDatabaseReferencesForRoundTrip', "The system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?", projectName); }
+export function projectNeedsUpdatingForCrossPlat(projectName: string) { return localize('projectNeedsUpdatingForCrossPlat', "The targets, references, and system database references need to be updated to build the project '{0}'.", projectName); }
+export function updateProjectForCrossPlatform(projectName: string) { return localize('updateProjectForCrossPlatform', "{0} If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?", projectNeedsUpdatingForCrossPlat(projectName)); }
+export function updateProjectForCrossPlatformShort(projectName: string) { return localize('updateProjectForCrossPlatformShort', "Update {0} for cross-platform support?", projectName); }
+export function updateProjectDatabaseReferencesForCrossPlatform(projectName: string) { return localize('updateProjectDatabaseReferencesForRoundTrip', "The system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?", projectName); }
 export const databaseReferenceTypeRequired = localize('databaseReferenceTypeRequired', "Database reference type is required for adding a reference to a database");
 export const systemDatabaseReferenceRequired = localize('systemDatabaseReferenceRequired', "System database selection is required for adding a reference to a system database");
 export const dacpacFileLocationRequired = localize('dacpacFileLocationRequired', "Dacpac file location is required for adding a reference to a database");

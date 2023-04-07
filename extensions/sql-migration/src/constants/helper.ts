@@ -265,6 +265,11 @@ export function canDeleteMigration(migration: DatabaseMigration | undefined): bo
 
 export function canRetryMigration(migration: DatabaseMigration | undefined): boolean {
 	const status = getMigrationStatus(migration);
+	return status === loc.MigrationState.Retriable;
+}
+
+export function canRestartMigrationWizard(migration: DatabaseMigration | undefined): boolean {
+	const status = getMigrationStatus(migration);
 	return status === loc.MigrationState.Canceled
 		|| status === loc.MigrationState.Retriable
 		|| status === loc.MigrationState.Failed

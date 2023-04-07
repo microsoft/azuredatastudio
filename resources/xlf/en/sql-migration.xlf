@@ -280,6 +280,27 @@ This may take some time.</source>
     <trans-unit id="sql.migration.azureRecommendation.open">
       <source xml:lang="en">Open</source>
     </trans-unit>
+    <trans-unit id="sql.migration.backup.file.backup.size">
+      <source xml:lang="en">Backup size (MB)</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.backup.file.name">
+      <source xml:lang="en">File name</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.backup.file.number.of.stripes">
+      <source xml:lang="en">Number of stripes</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.backup.file.restore.finish.date">
+      <source xml:lang="en">Restore finish date</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.backup.file.restore.start.date">
+      <source xml:lang="en">Restore start date</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.backup.file.restore.status">
+      <source xml:lang="en">Restore status</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.backup.file.status">
+      <source xml:lang="en">File status</source>
+    </trans-unit>
     <trans-unit id="sql.migration.backup.location">
       <source xml:lang="en">Backup location</source>
     </trans-unit>
@@ -757,6 +778,48 @@ This may take some time.</source>
     <trans-unit id="sql.migration.feedback.issue.title">
       <source xml:lang="en">Feedback on the migration experience</source>
     </trans-unit>
+    <trans-unit id="sql.migration.field.label.deteected.files">
+      <source xml:lang="en">Detected files</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.field.label.last.restored.file.time">
+      <source xml:lang="en">Last restored file time</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.field.label.last.uloaded.file.time">
+      <source xml:lang="en">Last uploaded file time</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.field.label.last.uploaded.file">
+      <source xml:lang="en">Last uploaded file</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.field.label.mi.restore.state">
+      <source xml:lang="en">Managed instance restore state</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.field.label.pending.differential.backups">
+      <source xml:lang="en">Pending differential backups</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.field.label.queued.files">
+      <source xml:lang="en">Queued files</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.field.label.restore.percent.completed">
+      <source xml:lang="en">Restore percent completed</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.field.label.restore.plan.size">
+      <source xml:lang="en">Restore plan size (MB)</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.field.label.restored.files">
+      <source xml:lang="en">Restored files</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.field.label.restored.size">
+      <source xml:lang="en">Restored size (MB)</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.field.label.restoring.files">
+      <source xml:lang="en">Restoring files</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.field.label.skipped.files">
+      <source xml:lang="en">Skipped files</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.field.label.unrestorable.files">
+      <source xml:lang="en">Unrestorable files</source>
+    </trans-unit>
     <trans-unit id="sql.migration.file.name">
       <source xml:lang="en">File name</source>
     </trans-unit>
@@ -767,7 +830,7 @@ This may take some time.</source>
       <source xml:lang="en">First LSN</source>
     </trans-unit>
     <trans-unit id="sql.migration.full.backup.files">
-      <source xml:lang="en">Full backup files</source>
+      <source xml:lang="en">Full backup file(s)</source>
     </trans-unit>
     <trans-unit id="sql.migration.generic.congratulations">
       <source xml:lang="en">We have completed the assessment of your SQL Server instance '{0}'.</source>
@@ -914,10 +977,10 @@ This may take some time.</source>
       <source xml:lang="en">Last LSN</source>
     </trans-unit>
     <trans-unit id="sql.migration.last.applied.backup.files">
-      <source xml:lang="en">Last applied backup files</source>
+      <source xml:lang="en">Last applied backup file(s)</source>
     </trans-unit>
     <trans-unit id="sql.migration.last.applied.files.taken.on">
-      <source xml:lang="en">Last applied backup files taken on</source>
+      <source xml:lang="en">Last applied backup taken on</source>
     </trans-unit>
     <trans-unit id="sql.migration.last.applied.lsn">
       <source xml:lang="en">Last applied LSN</source>
@@ -1233,6 +1296,84 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.resourceGroups">
       <source xml:lang="en">Resource group</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.backupset.status.none">
+      <source xml:lang="en">None</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.backupset.status.queued">
+      <source xml:lang="en">Queued</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.backupset.status.restored">
+      <source xml:lang="en">Restored</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.backupset.status.restoring">
+      <source xml:lang="en">Restoring</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.backupset.status.skipped">
+      <source xml:lang="en">Skipped</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.backuptype.database">
+      <source xml:lang="en">Database</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.backuptype.differentialdatabase">
+      <source xml:lang="en">Differential database</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.backuptype.differentialfile">
+      <source xml:lang="en">Differential file</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.backuptype.differentialpartial">
+      <source xml:lang="en">Differential partial</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.backuptype.file">
+      <source xml:lang="en">File</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.backuptype.partial">
+      <source xml:lang="en">Partial</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.backuptype.transactionlog">
+      <source xml:lang="en">Transaction log</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.backuptype.unknown">
+      <source xml:lang="en">Unknown</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.status.Restoring">
+      <source xml:lang="en">Restoring</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.status.blocked">
+      <source xml:lang="en">Blocked</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.status.cancelled">
+      <source xml:lang="en">Cancelled</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.status.completed">
+      <source xml:lang="en">Completed</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.status.completing.migration">
+      <source xml:lang="en">Completing migration</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.status.failed">
+      <source xml:lang="en">Failed</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.status.initializing">
+      <source xml:lang="en">Initializing</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.status.none">
+      <source xml:lang="en">None</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.status.not.started">
+      <source xml:lang="en">Not started</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.status.restore.completed">
+      <source xml:lang="en">Restore completed</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.status.restore.paused">
+      <source xml:lang="en">Restore paused</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.status.searching.backups">
+      <source xml:lang="en">Searching backups</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.restore.status.waiting">
+      <source xml:lang="en">Waiting</source>
     </trans-unit>
     <trans-unit id="sql.migration.resume.session">
       <source xml:lang="en">Resume previously saved session</source>
@@ -2013,6 +2154,12 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.storage.account">
       <source xml:lang="en">Storage account</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.storageAccount.warning.many">
+      <source xml:lang="en">Target instance '{0}' may not be able to access storage account '{1}'. Ensure that the subnet of the target instance is whitelisted on the storage account, and if applicable, that the private endpoint is in the same virtual network as the target server.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.storageAccount.warning.one">
+      <source xml:lang="en">Target instance '{0}' may not be able to access storage accounts '{1}'. Ensure that the subnet of the target instance is whitelisted on the storage accounts, and if applicable, that the private endpoints are on the same virtual network as the target server.</source>
     </trans-unit>
     <trans-unit id="sql.migration.subscription">
       <source xml:lang="en">Subscription</source>

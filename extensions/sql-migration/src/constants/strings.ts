@@ -1042,6 +1042,10 @@ export const DETAILS_COPIED = localize('sql.migration.details.copied', "Details 
 export const CANCEL_MIGRATION_CONFIRMATION = localize('sql.cancel.migration.confirmation', "Are you sure you want to cancel this migration?");
 export const DELETE_MIGRATION_CONFIRMATION = localize('sql.delete.migration.confirmation', "Are you sure you want to delete this migration?");
 
+export const RETRY_MIGRATION_TITLE = localize('sql.retry.migration.title', "The migration failed with the following errors:");
+export const RETRY_MIGRATION_SUMMARY = localize('sql.retry.migration.summary', "Please resolve any errors before retrying the migration.");
+export const RETRY_MIGRATION_PROMPT = localize('sql.retry.migration.prompt', "Do you want to retry the failed table migrations?");
+
 export const YES = localize('sql.migration.yes', "Yes");
 export const NO = localize('sql.migration.no', "No");
 export const NA = localize('sql.migration.na', "N/A");
@@ -1120,9 +1124,21 @@ export const SQL_DATABASE = localize('sql.migration.sql.database', "SQL Database
 export const TARGET_AZURE_SQL_INSTANCE_NAME = localize('sql.migration.target.azure.sql.instance.name', "Target name");
 export const TARGET_SERVER_COLUMN = localize('sql.migration.target.azure.sql.instance.server.name', "Target name");
 export const TARGET_DATABASE_COLUMN = localize('sql.migration.target.azure.sql.instance.database.name', "Target database");
-export const MIGRATION_MODE = localize('sql.migration.cutover.type', "Mode");
+export const MIGRATION_MODE = localize('sql.migration.cutover.type', "Migration mode");
 export const START_TIME = localize('sql.migration.start.time', "Start time");
 export const FINISH_TIME = localize('sql.migration.finish.time', "Finish time");
+
+export const SRC_SERVER_TOOL_TIP = localize('sql.migration.src.server.tool.tip', "Name of the source server");
+export const SRC_DATABASE_TOOL_TIP = localize('sql.migration.src.database.tool.tip', "Name of the source database");
+export const STATUS_TOOL_TIP = localize('sql.migration.database.status.tool.tip', "The current status of the migration");
+export const DURATION_TOOL_TIP = localize('sql.migration.database.migration.duration.tool.tip', "The duration of the migration");
+export const AZURE_SQL_TARGET_TOOL_TIP = localize('sql.migration.database.migration.target.type.tool.tip', "The azure resource target type [SQL Managed Instance, SQL Virtual Machine, SQL Database]");
+export const TARGET_SERVER_TOOL_TIP = localize('sql.migration.database.migration.target.instance.server.name.tool.tip', "The target server name");
+export const TARGET_DATABASE_TOOL_TIP = localize('sql.migration.database.migration.target.instance.database.name.tool.tip', "The target database name");
+export const MIGRATION_MODE_TOOL_TIP = localize('sql.migration.database.migration.migration.mode.tool.tip', "In Azure Database Migration Service, you can migrate your databases offline or while they are online. In an offline migration, application downtime starts when the migration starts. To limit downtime to the time it takes you to cut over to the new environment after the migration, use an online migration.");
+export const START_TIME_TOOL_TIP = localize('sql.migration.database.migration.start.time.tool.tip', "The start time for the migration");
+export const FINISH_TIME_TOOL_TIP = localize('sql.migration.database.migration.finish.time.tool.tip', "The fininish time for the migration");
+export const CONTEXT_MENU_TOOL_TIP = localize('sql.migration.database.migration.context.menu.tool.tip', "Click this column to activate the context command menu");
 
 export function STATUS_VALUE(status: string): string {
 	return localize('sql.migration.status.value', "{0}", StatusLookup[status] ?? status);
@@ -1360,6 +1376,11 @@ export const SAVED_ASSESSMENT_RESULT = localize('sql.migration.saved.assessment.
 export const MIGRATION_CANNOT_RETRY = localize('sql.migration.cannot.retry', 'Migration cannot be retried.');
 export const RETRY_MIGRATION = localize('sql.migration.retry.migration', "Retry migration");
 export const MIGRATION_RETRY_ERROR = localize('sql.migration.retry.migration.error', 'An error occurred while retrying the migration.');
+
+// Restart Migration
+export const MIGRATION_CANNOT_RESTART = localize('sql.migration.cannot.retry', 'Migration cannot be restarted.');
+export const RESTART_MIGRATION_WIZARD = localize('sql.migration.restart.migration.wizard', "Restart migration wizard");
+export const MIGRATION_RESTART_ERROR = localize('sql.migration.retry.migration.error', 'An error occurred while restarting the migration.');
 
 export const INVALID_OWNER_URI = localize('sql.migration.invalid.owner.uri.error', 'Cannot connect to the database due to invalid OwnerUri (Parameter \'OwnerUri\')');
 export const DATABASE_BACKUP_PAGE_LOAD_ERROR = localize('sql.migration.database.backup.load.error', 'An error occurred while accessing database details.');

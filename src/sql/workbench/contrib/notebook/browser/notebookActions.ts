@@ -863,7 +863,7 @@ async function openNewNotebook(
 export class NewNotebookTask extends Task {
 	public static ID = 'newNotebook';
 	public static LABEL = localize('newNotebookTask.newNotebook', "New Notebook");
-	public static ICON = 'new-notebook';
+	public static ICON = 'notebook';
 
 	constructor() {
 		super({
