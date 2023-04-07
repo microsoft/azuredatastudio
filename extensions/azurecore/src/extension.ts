@@ -241,7 +241,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			query: string): Promise<azurecore.ResourceQueryResult<T>> {
 			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, query);
 		},
-		onEncryptionKeysUpdated: eventEmitter!.event
+		onEncryptionKeysUpdated: eventEmitter!.event,
+		async getEncryptionKeys(): Promise<azurecore.CacheEncryptionKeys> {
+			if (!providerService) {
+				throw new Error("Failed to initialize Azure account provider.");
+			}
+			return await providerService!.getEncryptionKeys();
+		}
 	};
 }
 
