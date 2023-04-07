@@ -32,6 +32,7 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { filterIconClassNames, searchPlaceholder, topOperationsSearchDescription } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { ITableService } from 'sql/workbench/services/table/browser/tableService';
 
 const TABLE_SORT_COLUMN_KEY = 'tableCostColumnForSorting';
 
@@ -66,6 +67,7 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IAccessibilityService private _accessibilityService: IAccessibilityService,
 		@IQuickInputService private _quickInputService: IQuickInputService,
+		@ITableService private _tableService: ITableService
 	) {
 		super();
 	}
@@ -407,6 +409,8 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 		new ResizeObserver((e) => {
 			table.layout(new DOM.Dimension(tableContainer.clientWidth, tableContainer.clientHeight));
 		}).observe(tableContainer);
+
+		this._register(this._tableService.registerTable(table));
 
 		return table;
 	}

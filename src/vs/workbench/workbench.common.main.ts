@@ -222,6 +222,7 @@ import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/comm
 import { ExecutionPlanService } from 'sql/workbench/services/executionPlan/common/executionPlanService';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import { ErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/browser/errorDiagnosticsService';
+import { ITableService, TableService } from 'sql/workbench/services/table/browser/tableService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -266,6 +267,7 @@ registerSingleton(IDataGridProviderService, DataGridProviderService);
 registerSingleton(ITableDesignerService, TableDesignerService);
 registerSingleton(IExecutionPlanService, ExecutionPlanService);
 registerSingleton(IErrorDiagnosticsService, ErrorDiagnosticsService);
+registerSingleton(ITableService, TableService);
 //#endregion
 
 
@@ -573,6 +575,9 @@ import 'sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution';
 
 // execution plan
 import 'sql/workbench/contrib/executionPlan/browser/executionPlanContribution';
+
+// table
+import 'sql/workbench/contrib/table/browser/table.contribution';
 
 // Deprecated Extension Migrator
 import 'vs/workbench/contrib/deprecatedExtensionMigrator/browser/deprecatedExtensionMigrator.contribution';
