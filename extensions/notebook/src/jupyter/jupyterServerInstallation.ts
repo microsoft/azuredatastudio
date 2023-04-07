@@ -470,14 +470,14 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 						.catch(err => {
 							let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
 							op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
-							this._installCompletion.reject(errorMsg);
+							this._installCompletion.reject(new Error(errorMsg));
 							this._installInProgress = false;
 						});
 				}
 			});
 		} catch (err) {
 			let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
-			this._installCompletion.reject(errorMsg);
+			this._installCompletion.reject(new Error(errorMsg));
 			this._installInProgress = false;
 		}
 		return this._installCompletion.promise;
