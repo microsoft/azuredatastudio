@@ -187,7 +187,7 @@ export class NewProjectDialog extends DialogBase {
 
 		this.register(projectNameTextBox.onTextChanged(text => {
 			const errorMessage = isValidBasenameErrorMessage(text);
-			if (errorMessage) {
+			if (errorMessage !== undefined) {
 				// Set validation error message if project name is invalid
 				return void projectNameTextBox.updateProperty('validationErrorMessage', errorMessage);
 			} else {
