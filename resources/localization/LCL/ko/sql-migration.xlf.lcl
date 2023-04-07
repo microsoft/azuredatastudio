@@ -926,7 +926,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Backup size (MB)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[백업 크기 MB]]></Val>
+            <Val><![CDATA[백업 크기(MB)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -944,7 +944,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Number of stripes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[줄무늬 수]]></Val>
+            <Val><![CDATA[스트라이프 수]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2581,6 +2581,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.field.label.mi.restore.state" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Managed instance restore state]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[관리되는 인스턴스 복원 상태]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4274,7 +4277,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Queued]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[큐에 추가됨]]></Val>
+            <Val><![CDATA[큐에 대기됨]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4292,7 +4295,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Restoring]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[복원]]></Val>
+            <Val><![CDATA[복원 중]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4319,7 +4322,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Differential database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[차등 데이터베이스]]></Val>
+            <Val><![CDATA[데이터베이스 차등]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4328,7 +4331,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Differential file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[차등 파일]]></Val>
+            <Val><![CDATA[파일 차등]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4337,7 +4340,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Differential partial]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[차등적 부분]]></Val>
+            <Val><![CDATA[부분 차등]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4355,7 +4358,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Partial]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[부분적]]></Val>
+            <Val><![CDATA[부분]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4382,7 +4385,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Restoring]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[복원]]></Val>
+            <Val><![CDATA[복원 중]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4409,7 +4412,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Completed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[완료됨]]></Val>
+            <Val><![CDATA[완료]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4480,6 +4483,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.restore.status.searching.backups" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Searching backups]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[백업 검색 중]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4487,7 +4493,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Waiting]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[기다리는 중]]></Val>
+            <Val><![CDATA[대기 중]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6925,12 +6931,18 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.storageAccount.warning.many" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target instance '{0}' may not be able to access storage account '{1}'. Ensure that the subnet of the target instance is whitelisted on the storage account, and if applicable, that the private endpoint is in the same virtual network as the target server.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['{0}' 대상 인스턴스가 '{1}' 스토리지 계정에 액세스하지 못할 수 있습니다. 대상 인스턴스의 서브넷이 스토리지 계정의 허용 목록에 있는지 확인하고, 해당하는 경우 프라이빗 엔드포인트가 대상 서버와 동일한 가상 네트워크에 있는지 확인하세요.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.storageAccount.warning.one" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target instance '{0}' may not be able to access storage accounts '{1}'. Ensure that the subnet of the target instance is whitelisted on the storage accounts, and if applicable, that the private endpoints are on the same virtual network as the target server.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['{0}' 대상 인스턴스가 '{1}' 스토리지 계정에 액세스하지 못할 수 있습니다. 대상 인스턴스의 서브넷이 스토리지 계정의 허용 목록에 있는지 확인하고, 해당하는 경우 프라이빗 엔드포인트가 대상 서버와 동일한 가상 네트워크에 있는지 확인하세요.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
