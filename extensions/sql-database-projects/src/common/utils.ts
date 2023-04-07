@@ -153,6 +153,19 @@ export function convertSlashesForSqlProj(filePath: string): string {
 }
 
 /**
+ * Converts a SystemDatabase enum to its string value
+ * @param systemDb
+ * @returns
+ */
+export function systemDatabaseToString(systemDb: mssql.SystemDatabase): string {
+	if (systemDb === mssql.SystemDatabase.Master) {
+		return constants.master;
+	} else {
+		return constants.msdb;
+	}
+}
+
+/**
  * Read SQLCMD variables from xmlDoc and return them
  * @param xmlDoc xml doc to read SQLCMD variables from. Format must be the same that sqlproj and publish profiles use
  * @param publishProfile true if reading from publish profile
@@ -303,14 +316,15 @@ export async function getSchemaCompareService(): Promise<ISchemaCompareService> 
 	}
 }
 
-export async function getSqlProjectsService(): Promise<ISqlProjectsService> {
+export async function getSqlProjectsService(): Promise<mssql.ISqlProjectsService> {
 	if (getAzdataApi()) {
 		const ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
 		const api = await ext.activate();
 		return api.sqlProjects;
 	} else {
-		const api = await getVscodeMssqlApi();
-		return api.sqlProjects;
+		throw new Error(constants.errorNotSupportedInVsCode('SqlProjectService'));
+		// const api = await getVscodeMssqlApi();
+		// return api.sqlProjects;
 	}
 }
 
@@ -784,4 +798,34 @@ export function isValidBasenameErrorMessage(name?: string): string {
 export function isPublishProfile(fileName: string): boolean {
 	const hasPublishExtension = fileName.trim().toLowerCase().endsWith(constants.publishProfileExtension);
 	return hasPublishExtension;
+}
+
+/**
+ * Checks to see if a file exists at absoluteFilePath, and writes contents if it doesn't.
+ * If either the file already exists and contents is specified or the file doesn't exist and contents is blank,
+ * then an exception is thrown.
+ * @param absoluteFilePath
+ * @param contents
+ */
+export async function ensureFileExists(absoluteFilePath: string, contents?: string): Promise<void> {
+	if (contents) {
+		// Create the file if contents were passed in and file does not exist yet
+		await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
+
+		try {
+			await fs.writeFile(absoluteFilePath, contents, { flag: 'wx' });
+		} catch (error) {
+			if (error.code === 'EEXIST') {
+				// Throw specialized error, if file already exists
+				throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
+			}
+
+			throw error;
+		}
+	} else {
+		// If no contents were provided, then check that file already exists
+		if (!await exists(absoluteFilePath)) {
+			throw new Error(constants.noFileExist(absoluteFilePath));
+		}
+	}
 }

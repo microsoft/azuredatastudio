@@ -9,6 +9,8 @@ import * as utils from '../common/utils';
 import * as mssql from 'mssql';
 import { HttpClient } from '../common/httpClient';
 import { AgreementInfo, DockerImageInfo } from '../models/deploy/deployProfile';
+import { IUserDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { removeSqlCmdVariableFormatting } from '../common/utils';
 
 /**
  * Gets connection name from connection object if there is one,
@@ -213,4 +215,33 @@ export function mapExtractTargetEnum(inputTarget: string): mssql.ExtractTarget {
 	} else {
 		throw new Error(constants.extractTargetRequired);
 	}
+}
+
+export interface DbServerValues {
+	dbName?: string,
+	dbVariable?: string,
+	serverName?: string,
+	serverVariable?: string
+}
+
+export function populateResultWithVars(referenceSettings: IUserDatabaseReferenceSettings, dbServerValues: DbServerValues) {
+	if (dbServerValues.dbVariable) {
+		referenceSettings.databaseName = ensureSetOrDefined(dbServerValues.dbName);
+		referenceSettings.databaseVariable = ensureSetOrDefined(removeSqlCmdVariableFormatting(dbServerValues.dbVariable));
+		referenceSettings.serverName = ensureSetOrDefined(dbServerValues.serverName);
+		referenceSettings.serverVariable = ensureSetOrDefined(removeSqlCmdVariableFormatting(dbServerValues.serverVariable));
+	} else {
+		referenceSettings.databaseVariableLiteralValue = ensureSetOrDefined(dbServerValues.dbName);
+	}
+}
+
+/**
+ * Returns undefined for settings that are an empty string, meaning they are unset
+ * @param setting
+ */
+export function ensureSetOrDefined(setting?: string): string | undefined {
+	if (!setting || setting.trim().length === 0) {
+		return undefined;
+	}
+	return setting;
 }
