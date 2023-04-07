@@ -223,7 +223,7 @@ class FlatAccountTreeNodeLoader {
 			}
 			// Create "No Resources Found" message node if no resources found under azure account.
 			if (this._nodes.length === 0) {
-				this._nodes.push(AzureResourceMessageTreeNode.create(localize('azure.resource.flatAccountTreeNode.noResourcesLabel', "No Resources found"), this._accountNode))
+				this._nodes.push(AzureResourceMessageTreeNode.create(localize('azure.resource.flatAccountTreeNode.noResourcesLabel', "No Resources found."), this._accountNode))
 			}
 		} catch (error) {
 			if (error instanceof AzureSubscriptionError) {
