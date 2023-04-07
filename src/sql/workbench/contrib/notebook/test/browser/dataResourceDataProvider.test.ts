@@ -59,7 +59,7 @@ suite('Data Resource Data Provider', function () {
 
 	// Create test data with two rows and two columns
 	let source: IDataResource = {
-		data: [{ 0: '1', 1: '2' }, { 0: '3', 1: '4' }],
+		data: [{ 'col1': '1', 'col2': '2' }, { 'col1': '3', 'col2': '4' }],
 		schema: { fields: [{ name: 'col1' }, { name: 'col2' }] }
 	};
 	let resultSet: ResultSetSummary = {

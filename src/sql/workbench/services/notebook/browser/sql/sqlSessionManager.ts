@@ -608,7 +608,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			this._rowsMap.set(key, rows.concat(queryResult.rows));
 
 			// Convert rows to data resource and html and send to cell model to be saved
-			let dataResourceRows = this.convertRowsToDataResource(queryResult.rows);
+			let dataResourceRows = this.convertRowsToDataResource(resultSet.columnInfo, queryResult.rows);
 			let saveData = this._dataToSaveMap.get(key);
 			saveData['application/vnd.dataresource+json'].data = saveData['application/vnd.dataresource+json'].data.concat(dataResourceRows);
 			let htmlRows = this.convertRowsToHtml(queryResult.rows, key);
@@ -702,11 +702,12 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		return htmlTable;
 	}
 
-	private convertRowsToDataResource(rows: ICellValue[][]): any[] {
+	private convertRowsToDataResource(columns: IColumn[], rows: ICellValue[][]): { [key: string]: any }[] {
 		return rows.map(row => {
 			let rowObject: { [key: string]: any; } = {};
 			row.forEach((val, index) => {
-				rowObject[index] = val.displayValue;
+				let columnName = columns[index];
+				rowObject[columnName.columnName] = val.displayValue;
 			});
 			return rowObject;
 		});
@@ -775,7 +776,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 
 export interface IDataResource {
 	schema: IDataResourceFields;
-	data: any[];
+	data: { [key: string]: any }[];
 }
 
 export interface IDataResourceFields {
