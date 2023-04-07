@@ -48,9 +48,8 @@ export class TableMigrationSelectionDialog {
 	private async _loadData(): Promise<void> {
 		try {
 			this._refreshLoader.loading = true;
-			this._dialog!.message = { text: '' };
 
-			await this._updateRowSelection();
+			this._updateRowSelection();
 			await updateControlDisplay(this._tableSelectionTable, false);
 			await updateControlDisplay(this._missingTargetTablesTable, false);
 
@@ -98,6 +97,7 @@ export class TableMigrationSelectionDialog {
 					this._tableSelectionMap.set(table.tableName, tableInfo);
 				});
 			}
+			this._dialog!.message = { text: '', level: azdata.window.MessageLevel.Information };
 		} catch (error) {
 			this._dialog!.message = {
 				text: constants.DATABASE_TABLE_CONNECTION_ERROR,
@@ -105,10 +105,9 @@ export class TableMigrationSelectionDialog {
 				level: azdata.window.MessageLevel.Error
 			};
 		} finally {
+			this._refreshLoader.loading = false;
 			await updateControlDisplay(this._tableSelectionTable, true, 'flex');
 			await updateControlDisplay(this._missingTargetTablesTable, true, 'flex');
-			this._refreshLoader.loading = false;
-
 			await this._loadControls();
 		}
 	}
@@ -151,7 +150,7 @@ export class TableMigrationSelectionDialog {
 		this._tableSelectionTable.selectedRows = selectedItems;
 		await this._missingTargetTablesTable.updateProperty('data', missingData);
 
-		await this._updateRowSelection();
+		this._updateRowSelection();
 		if (this._missingTableCount > 0 && this._tabs.items.length === 1) {
 			this._tabs.updateTabs([this._selectableTablesTab, this._missingTablesTab]);
 		}
@@ -256,15 +255,14 @@ export class TableMigrationSelectionDialog {
 		flexTopRow.addItem(this._filterInputBox, { flex: '0 0 auto' });
 		flexTopRow.addItem(this._refreshLoader, { flex: '0 0 auto' });
 
-		this._tableSelectionTable = await this._createSelectionTable(view);
+		this._tableSelectionTable = this._createSelectionTable(view);
 
 		const flex = view.modelBuilder.flexContainer()
-			.withItems([])
 			.withItems([
 				flexTopRow,
 				this._headingText,
-				this._tableSelectionTable,
-			], { flex: '0 0 auto' })
+				this._tableSelectionTable],
+				{ flex: '0 0 auto' })
 			.withProps({ CSSStyles: { 'margin': '10px 0 0 15px' } })
 			.withLayout({
 				flexFlow: 'column',
@@ -280,11 +278,12 @@ export class TableMigrationSelectionDialog {
 	}
 
 	private async _createMissingTablesTab(view: azdata.ModelView): Promise<void> {
-		this._missingTargetTablesTable = await this._createMissingTablesTable(view);
+		this._missingTargetTablesTable = this._createMissingTablesTable(view);
 
 		const flex = view.modelBuilder.flexContainer()
-			.withItems([this._missingTargetTablesTable], { flex: '0 0 auto' })
-			.withItems([])
+			.withItems(
+				[this._missingTargetTablesTable],
+				{ flex: '0 0 auto' })
 			.withProps({ CSSStyles: { 'margin': '10px 0 0 15px' } })
 			.withLayout({
 				flexFlow: 'column',
@@ -299,7 +298,7 @@ export class TableMigrationSelectionDialog {
 		};
 	}
 
-	private async _createSelectionTable(view: azdata.ModelView): Promise<azdata.TableComponent> {
+	private _createSelectionTable(view: azdata.ModelView): azdata.TableComponent {
 		const cssClass = 'no-borders';
 		const table = view.modelBuilder.table()
 			.withProps({
@@ -361,13 +360,13 @@ export class TableMigrationSelectionDialog {
 						}
 					});
 
-					await this._updateRowSelection();
+					this._updateRowSelection();
 				}));
 
 		return table;
 	}
 
-	private async _createMissingTablesTable(view: azdata.ModelView): Promise<azdata.TableComponent> {
+	private _createMissingTablesTable(view: azdata.ModelView): azdata.TableComponent {
 		const cssClass = 'no-borders';
 		const table = view.modelBuilder.table()
 			.withProps({
@@ -390,7 +389,7 @@ export class TableMigrationSelectionDialog {
 		return table;
 	}
 
-	private async _updateRowSelection(): Promise<void> {
+	private _updateRowSelection(): void {
 		this._headingText.value = this._refreshLoader.loading
 			? constants.DATABASE_LOADING_TABLES
 			: this._tableSelectionTable.data?.length > 0

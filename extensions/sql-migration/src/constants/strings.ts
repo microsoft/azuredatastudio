@@ -675,10 +675,10 @@ export function SELECT_DATABASE_TABLES_TITLE(targetDatabaseName: string): string
 export const TABLE_SELECTION_EDIT = localize('sql.migration.table.selection.edit', "Edit");
 
 export function TABLE_SELECTION_COUNT(selectedCount: number, rowCount: number): string {
-	return localize('sql.migration.table.selection.count', "{0} of {1}", selectedCount, rowCount);
+	return localize('sql.migration.table.selection.count', "{0} of {1}", formatNumber(selectedCount), formatNumber(rowCount));
 }
 export function TABLE_SELECTED_COUNT(selectedCount: number, rowCount: number): string {
-	return localize('sql.migration.table.selected.count', "{0} of {1} tables selected", selectedCount, rowCount);
+	return localize('sql.migration.table.selected.count', "{0} of {1} tables selected", formatNumber(selectedCount), formatNumber(rowCount));
 }
 export function MISSING_TARGET_TABLES_COUNT(tables: number): string {
 	return localize('sql.migration.table.missing.count', "Tables missing on target: {0}", formatNumber(tables));
@@ -935,7 +935,9 @@ export const AZURE_STORAGE_ACCOUNT_TO_UPLOAD_BACKUPS = localize('sql.migration.a
 export const SHIR = localize('sql.migration.shir', "Self-hosted integration runtime node");
 export const DATABASE_TO_BE_MIGRATED = localize('sql.migration.database.to.be.migrated', "Database to be migrated");
 export function COUNT_DATABASES(count: number): string {
-	return (count === 1) ? localize('sql.migration.count.database.single', "{0} database", count) : localize('sql.migration.count.database.multiple', "{0} databases", count);
+	return (count === 1)
+		? localize('sql.migration.count.database.single', "{0} database", count)
+		: localize('sql.migration.count.database.multiple', "{0} databases", formatNumber(count));
 }
 export function TOTAL_TABLES_SELECTED(selected: number, total: number): string {
 	return localize('total.tables.selected.of.total', "{0} of {1}", formatNumber(selected), formatNumber(total));
