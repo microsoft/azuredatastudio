@@ -9,22 +9,6 @@ import * as vscode from 'vscode';
 
 declare module 'azdata' {
 
-	export namespace env {
-		/**
-		 * Well-known app quality values
-		 */
-		export enum AppQuality {
-			stable = 'stable',
-			insider = 'insider',
-			dev = 'dev'
-		}
-
-		/**
-		 * The version of Azure Data Studio this is currently running as - such as `stable`, or `insider`
-		 */
-		export const quality: AppQuality | string | undefined;
-	}
-
 	export namespace nb {
 		export interface NotebookDocument {
 			/**
@@ -423,10 +407,6 @@ declare module 'azdata' {
 	}
 
 	export interface IConnectionProfile extends ConnectionInfo {
-		/**
-		 * The type of authentication to use when connecting
-		 */
-		authenticationType: string | connection.AuthenticationType;
 		azureAccount?: string;
 		azureResourceId?: string;
 		azurePortalEndpoint?: string;
@@ -521,35 +501,6 @@ declare module 'azdata' {
 	}
 
 	export namespace connection {
-		/**
-		 * Well-known Authentication types commonly supported by connection providers.
-		 */
-		export enum AuthenticationType {
-			/**
-			 * Username and password
-			 */
-			SqlLogin = 'SqlLogin',
-			/**
-			 * Windows Authentication
-			 */
-			Integrated = 'Integrated',
-			/**
-			 * Azure Active Directory - Universal with MFA support
-			 */
-			AzureMFA = 'AzureMFA',
-			/**
-			 * Azure Active Directory - Password
-			 */
-			AzureMFAAndUser = 'AzureMFAAndUser',
-			/**
-			 * Datacenter Security Token Service Authentication
-			 */
-			DSTSAuth = 'dstsAuth',
-			/**
-			 * No authentication required
-			 */
-			None = 'None'
-		}
 
 		/**
 		 * Opens the change password dialog.
@@ -726,13 +677,6 @@ declare module 'azdata' {
 		 * Specifies whether to use headerFilter plugin
 		 */
 		headerFilter?: boolean,
-	}
-
-	export interface TableComponent {
-		/**
-		 * Append data to an existing table data.
-		 */
-		appendData(data: any[][]): Thenable<void>;
 	}
 
 	export interface ListViewOption {
@@ -1819,66 +1763,11 @@ declare module 'azdata' {
 	 */
 	export type AriaLiveValue = 'polite' | 'assertive' | 'off';
 
-	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ContainerProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
-		/**
-		 * Sets the initial set of properties for the container being created
-		 * @param properties The properties to apply to the container
-		 */
-		withProps(properties: TPropertyBag): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
-	}
-
 	export interface ContainerProperties extends ComponentProperties {
 		/**
 		 * Corresponds to the aria-live accessibility attribute for this component
 		 */
 		ariaLive?: AriaLiveValue
-	}
-	export namespace queryeditor {
-
-		export interface QueryMessage {
-			/**
-			 * The message string
-			 */
-			message: string;
-			/**
-			 * Whether this message is an error message or not
-			 */
-			isError: boolean;
-			/**
-			 * The timestamp for when this message was sent
-			 */
-			time?: string;
-		}
-
-		/**
-		 * Information about a query that was executed
-		 */
-		export interface QueryInfo {
-			/**
-			 * Any messages that have been received from the query provider
-			 */
-			messages: QueryMessage[];
-			/**
-			 * The ranges for each batch that has executed so far
-			 */
-			batchRanges: vscode.Range[];
-		}
-
-		export interface QueryEventListener {
-			/**
-			 * An event that is fired for query events
-			 * @param type The type of query event
-			 * @param document The document this event was sent by
-			 * @param args The extra information for the event, if any
-			 * The args sent depend on the type of event :
-			 * queryStart: undefined
-			 * queryStop: undefined
-			 * executionPlan: string (the plan itself)
-			 * visualize: ResultSetSummary (the result set to be visualized)
-			 * @param queryInfo The information about the query that triggered this event
-			 */
-			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: QueryInfo): void;
-		}
 	}
 
 	export interface NodeInfo {
