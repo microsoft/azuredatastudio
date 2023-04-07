@@ -897,14 +897,16 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				this._sqlSourceUsernameInput.value = username;
 				this._sqlSourcePassword.value = (await getSourceConnectionCredentials()).password;
 
-				this._windowsUserAccountText.value =
-					this.migrationStateModel._databaseBackup.networkShares[0]?.windowsUser
-					?? this.migrationStateModel.savedInfo?.networkShares[0]?.windowsUser
-					?? '';
-				this._passwordText.value =
-					this.migrationStateModel._databaseBackup.networkShares[0]?.password
-					?? this.migrationStateModel.savedInfo?.networkShares[0]?.password
-					?? '';
+				const networkShares = this.migrationStateModel._databaseBackup?.networkShares?.length > 0
+					? this.migrationStateModel._databaseBackup?.networkShares
+					: this.migrationStateModel.savedInfo?.networkShares ?? [];
+
+				const networkShare = networkShares?.length > 0
+					? networkShares[0]
+					: undefined;
+
+				this._windowsUserAccountText.value = networkShare?.windowsUser ?? '';
+				this._passwordText.value = networkShare?.password ?? '';
 
 				this._networkShareTargetDatabaseNames = [];
 				this._networkShareLocations = [];
@@ -1379,13 +1381,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						break;
 					case NetworkContainerType.NETWORK_SHARE:
 						// All network share migrations use the same storage account
-						const storageAccount = this.migrationStateModel._databaseBackup.networkShares[0]?.storageAccount;
-						const storageKey = (await getStorageAccountAccessKeys(
-							this.migrationStateModel._azureAccount,
-							this.migrationStateModel._databaseBackup.subscription,
-							storageAccount)).keyName1;
-						for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
-							this.migrationStateModel._databaseBackup.networkShares[i].storageKey = storageKey;
+						if (this.migrationStateModel._databaseBackup.networkShares?.length > 0) {
+							const storageAccount = this.migrationStateModel._databaseBackup.networkShares[0]?.storageAccount;
+							const storageKey = (await getStorageAccountAccessKeys(
+								this.migrationStateModel._azureAccount,
+								this.migrationStateModel._databaseBackup.subscription,
+								storageAccount)).keyName1;
+							for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
+								this.migrationStateModel._databaseBackup.networkShares[i].storageKey = storageKey;
+							}
 						}
 						break;
 				}
