@@ -286,14 +286,17 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	protected createDropdown(ariaLabel: string, values: string[], value: string | undefined, enabled: boolean = true, width: number = DefaultInputWidth): azdata.DropDownComponent {
 		// Automatically add an empty item to the beginning of the list if the current value is not specified.
 		// This is needed when no meaningful default value can be provided.
+		// Create a new array so that the original array isn't modified.
+		const dropdownValues = [];
+		dropdownValues.push(...values);
 		if (!value) {
-			values.unshift('');
+			dropdownValues.unshift('');
 		}
 		return this.modelView.modelBuilder.dropDown().withProps({
 			ariaLabel: ariaLabel,
-			values: values,
+			values: dropdownValues,
 			value: value,
-			width: DefaultInputWidth,
+			width: width,
 			enabled: enabled
 		}).component();
 	}
