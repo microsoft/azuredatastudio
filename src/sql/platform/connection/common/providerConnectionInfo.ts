@@ -252,7 +252,8 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		for (let index = 0; index < idNames.length; index++) {
 			let value = this.options[idNames[index]!];
 			// If we're using the new URI format, we do not include any values that are empty or are default.
-			if (useFullOptions && !getOriginalOptions) {
+			let isFullOptions = useFullOptions && !getOriginalOptions;
+			if (isFullOptions) {
 				let finalValue = undefined;
 				let options = this.serverCapabilities.connectionOptions.filter(value => value.name === idNames[index]!);
 				if (options.length > 0 && value) {
@@ -263,7 +264,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 			else {
 				value = value ? value : '';
 			}
-			if ((!getOriginalOptions && value !== undefined) || getOriginalOptions) {
+			if ((isFullOptions && value !== undefined) || !isFullOptions) {
 				idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
 			}
 		}
