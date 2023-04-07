@@ -166,7 +166,8 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 				description: loc.MIGRATION_SERVICE_DESCRIPTION,
 				buttonType: azdata.ButtonType.Informational,
 				width: 230,
-			}).component();
+			})
+			.component();
 
 		this.disposables.push(
 			this._serviceContextButton.onDidClick(

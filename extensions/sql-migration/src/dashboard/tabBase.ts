@@ -50,7 +50,7 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 
 	protected abstract initialize(view: azdata.ModelView): Promise<void>;
 
-	public abstract refresh(): Promise<void>;
+	public abstract refresh(initialize?: boolean): Promise<void>;
 
 	dispose() {
 		this.disposables.forEach(
