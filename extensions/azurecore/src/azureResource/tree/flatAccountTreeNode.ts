@@ -21,6 +21,7 @@ import { AzureResourceService } from '../resourceService';
 import { AzureResourceResourceTreeNode } from '../resourceTreeNode';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { Logger } from '../../utils/Logger';
+import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 
 export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 	public constructor(
@@ -219,6 +220,10 @@ class FlatAccountTreeNodeLoader {
 						}
 					}
 				}
+			}
+			// Create "No Resources Found" message node if no resources found under azure account.
+			if (this._nodes.length === 0) {
+				this._nodes.push(AzureResourceMessageTreeNode.create(localize('azure.resource.resourceTreeNode.noResourcesLabel', "No Resources found"), this._accountNode))
 			}
 		} catch (error) {
 			if (error instanceof AzureSubscriptionError) {
