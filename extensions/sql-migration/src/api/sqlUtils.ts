@@ -5,11 +5,12 @@
 
 import * as azdata from 'azdata';
 import { azureResource } from 'azurecore';
-import { AzureSqlDatabase, AzureSqlDatabaseServer } from './azure';
-import { generateGuid } from './utils';
+import { AzureSqlDatabase, AzureSqlDatabaseServer, SqlManagedInstance, SqlVMServer, StorageAccount, Subscription } from './azure';
+import { generateGuid, MigrationTargetType } from './utils';
 import * as utils from '../api/utils';
 import { TelemetryAction, TelemetryViews, logError } from '../telemetry';
 import * as constants from '../constants/strings';
+import { NetworkInterfaceModel, PrivateEndpointConnection } from './dataModels/azure/networkInterfaceModel';
 
 const query_database_tables_sql = `
 	SELECT
@@ -508,4 +509,73 @@ export async function isSourceConnectionSysAdmin(): Promise<boolean> {
 		query_is_sys_admin_sql);
 
 	return getSqlBoolean(results.rows[0][0]);
+}
+
+export async function canTargetConnectToStorageAccount(
+	targetType: MigrationTargetType,
+	targetServer: SqlManagedInstance | SqlVMServer | AzureSqlDatabaseServer,
+	storageAccount: StorageAccount,
+	account: azdata.Account,
+	subscription: Subscription): Promise<boolean> {
+
+	// additional ARM properties of storage accounts which aren't exposed in azurecore
+	interface StorageAccountAdditionalProperties {
+		publicNetworkAccess: string,
+		networkAcls: NetworkRuleSet,
+		privateEndpointConnections: PrivateEndpointConnection[]
+	}
+	interface NetworkRuleSet {
+		virtualNetworkRules: VirtualNetworkRule[],
+		defaultAction: string
+	}
+	interface VirtualNetworkRule {
+		id: string,
+		state: string,
+		action: string
+	}
+
+	const ENABLED = 'Enabled';
+	const ALLOW = 'Allow';
+
+	const storageAccountProperties: StorageAccountAdditionalProperties = (storageAccount as any)['properties'];
+	const storageAccountPublicAccessEnabled: boolean = storageAccountProperties.publicNetworkAccess ? storageAccountProperties.publicNetworkAccess.toLowerCase() === ENABLED.toLowerCase() : true;
+	const storageAccountDefaultIsAllow: boolean = storageAccountProperties.networkAcls ? storageAccountProperties.networkAcls.defaultAction.toLowerCase() === ALLOW.toLowerCase() : true;
+	const storageAccountWhitelistedVNets: string[] = storageAccountProperties.networkAcls ? storageAccountProperties.networkAcls.virtualNetworkRules.filter(rule => rule.action.toLowerCase() === ALLOW.toLowerCase()).map(rule => rule.id) : [];
+
+	var enabledFromAllNetworks: boolean = false;
+	var enabledFromWhitelistedVNet: boolean = false;
+	var enabledFromPrivateEndpoint: boolean = false;
+
+	// 1) check for access from all networks
+	enabledFromAllNetworks = storageAccountPublicAccessEnabled && storageAccountDefaultIsAllow;
+
+	switch (targetType) {
+		case MigrationTargetType.SQLMI:
+			const targetManagedInstanceVNet: string = (targetServer.properties as any)['subnetId'] ?? '';
+			const targetManagedInstancePrivateEndpointConnections: PrivateEndpointConnection[] = (targetServer.properties as any)['privateEndpointConnections'] ?? [];
+			const storageAccountPrivateEndpointConnections: PrivateEndpointConnection[] = storageAccountProperties.privateEndpointConnections ?? [];
+
+			// 2) check for access from whitelisted vnet
+			if (storageAccountWhitelistedVNets.length > 0) {
+				enabledFromWhitelistedVNet = storageAccountWhitelistedVNets.some(vnet => vnet.toLowerCase() === targetManagedInstanceVNet.toLowerCase());
+			}
+
+			// 3) check for access from private endpoint
+			if (targetManagedInstancePrivateEndpointConnections.length > 0) {
+				enabledFromPrivateEndpoint = storageAccountPrivateEndpointConnections.some(async privateEndpointConnection => {
+					const privateEndpoint = await NetworkInterfaceModel.getPrivateEndpoint(account, subscription, privateEndpointConnection.id);
+					const privateEndpointSubnet = privateEndpoint.properties.subnet ? privateEndpoint.properties.subnet.id : '';
+					return NetworkInterfaceModel.getVirtualNetworkFromSubnet(privateEndpointSubnet).toLowerCase() === NetworkInterfaceModel.getVirtualNetworkFromSubnet(targetManagedInstanceVNet).toLowerCase();
+				});
+			}
+
+			break;
+		case MigrationTargetType.SQLVM:
+			// to-do: VM scenario -- get subnet by first checking underlying compute VM, then its network interface
+			return true;
+		default:
+			return true;
+	}
+
+	return enabledFromAllNetworks || enabledFromWhitelistedVNet || enabledFromPrivateEndpoint;
 }
