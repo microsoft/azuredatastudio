@@ -401,7 +401,11 @@ export class CreateSqlMigrationServiceDialog {
 				constants.RESOURCE_GROUP_NOT_FOUND);
 
 			const selectedResourceGroupValue = this.migrationServiceResourceGroupDropdown.values.find(v => v.name.toLowerCase() === this._resourceGroupPreset.toLowerCase());
-			this.migrationServiceResourceGroupDropdown.value = (selectedResourceGroupValue) ? selectedResourceGroupValue : this.migrationServiceResourceGroupDropdown.values[0];
+			this.migrationServiceResourceGroupDropdown.value = (selectedResourceGroupValue)
+				? selectedResourceGroupValue
+				: this.migrationServiceResourceGroupDropdown.values?.length > 0
+					? this.migrationServiceResourceGroupDropdown.values[0]
+					: '';
 		} finally {
 			this.migrationServiceResourceGroupDropdown.loading = false;
 		}

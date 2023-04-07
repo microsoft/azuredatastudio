@@ -9,6 +9,8 @@ import * as constants from '../../constants/strings';
 import { AzureSqlDatabaseServer } from '../../api/azure';
 import { collectSourceDatabaseTableInfo, collectTargetDatabaseTableInfo, TableInfo } from '../../api/sqlUtils';
 import { MigrationStateModel } from '../../models/stateMachine';
+import { IconPathHelper } from '../../constants/iconPathHelper';
+import { Tab } from 'azdata';
 import { updateControlDisplay } from '../../api/utils';
 
 const DialogName = 'TableMigrationSelection';
@@ -16,10 +18,11 @@ const DialogName = 'TableMigrationSelection';
 export class TableMigrationSelectionDialog {
 	private _dialog: azdata.window.Dialog | undefined;
 	private _headingText!: azdata.TextComponent;
-	private _missingTablesText!: azdata.TextComponent;
+	private _refreshButton!: azdata.ButtonComponent;
 	private _filterInputBox!: azdata.InputBoxComponent;
 	private _tableSelectionTable!: azdata.TableComponent;
-	private _tableLoader!: azdata.LoadingComponent;
+	private _missingTargetTablesTable!: azdata.TableComponent;
+	private _refreshLoader!: azdata.LoadingComponent;
 	private _disposables: vscode.Disposable[] = [];
 	private _isOpen: boolean = false;
 	private _model: MigrationStateModel;
@@ -28,6 +31,9 @@ export class TableMigrationSelectionDialog {
 	private _targetTableMap!: Map<string, TableInfo>;
 	private _onSaveCallback: () => Promise<void>;
 	private _missingTableCount: number = 0;
+	private _selectableTablesTab!: Tab;
+	private _missingTablesTab!: Tab;
+	private _tabs!: azdata.TabbedPanelComponent;
 
 	constructor(
 		model: MigrationStateModel,
@@ -41,7 +47,13 @@ export class TableMigrationSelectionDialog {
 
 	private async _loadData(): Promise<void> {
 		try {
-			this._tableLoader.loading = true;
+			this._refreshLoader.loading = true;
+			this._dialog!.message = { text: '' };
+
+			await this._updateRowSelection();
+			await updateControlDisplay(this._tableSelectionTable, false);
+			await updateControlDisplay(this._missingTargetTablesTable, false);
+
 			const targetDatabaseInfo = this._model._sourceTargetMapping.get(this._sourceDatabaseName);
 			if (targetDatabaseInfo) {
 				const sourceTableList: TableInfo[] = await collectSourceDatabaseTableInfo(
@@ -93,13 +105,17 @@ export class TableMigrationSelectionDialog {
 				level: azdata.window.MessageLevel.Error
 			};
 		} finally {
-			this._tableLoader.loading = false;
+			await updateControlDisplay(this._tableSelectionTable, true, 'flex');
+			await updateControlDisplay(this._missingTargetTablesTable, true, 'flex');
+			this._refreshLoader.loading = false;
+
 			await this._loadControls();
 		}
 	}
 
 	private async _loadControls(): Promise<void> {
 		const data: any[][] = [];
+		const missingData: any[][] = [];
 		const filterText = this._filterInputBox.value ?? '';
 		const selectedItems: number[] = [];
 		let tableRow = 0;
@@ -125,67 +141,45 @@ export class TableMigrationSelectionDialog {
 					}
 
 					tableRow++;
+				} else {
+					this._missingTableCount++;
+					missingData.push([sourceTable.tableName]);
 				}
-
-				this._missingTableCount += targetTable ? 0 : 1;
 			}
 		});
 		await this._tableSelectionTable.updateProperty('data', data);
 		this._tableSelectionTable.selectedRows = selectedItems;
+		await this._missingTargetTablesTable.updateProperty('data', missingData);
+
 		await this._updateRowSelection();
+		if (this._missingTableCount > 0 && this._tabs.items.length === 1) {
+			this._tabs.updateTabs([this._selectableTablesTab, this._missingTablesTab]);
+		}
 	}
 
 	private async _initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
-		dialog.registerContent(async (view) => {
-			this._filterInputBox = view.modelBuilder.inputBox()
-				.withProps({
-					inputType: 'search',
-					placeHolder: constants.TABLE_SELECTION_FILTER,
-					width: 268,
-				}).component();
+		const tab = azdata.window.createTab('');
+		tab.registerContent(async (view) => {
 
-			this._disposables.push(
-				this._filterInputBox.onTextChanged(
-					async e => await this._loadControls()));
-
-			this._headingText = view.modelBuilder.text()
-				.withProps({ value: constants.DATABASE_LOADING_TABLES })
+			this._tabs = view.modelBuilder.tabbedPanel()
+				.withTabs([])
 				.component();
 
-			this._missingTablesText = view.modelBuilder.text()
-				.withProps({ display: 'none' })
-				.component();
+			await this._createSelectableTablesTab(view);
+			await this._createMissingTablesTab(view);
 
-			this._tableSelectionTable = await this._createSelectionTable(view);
-			this._tableLoader = view.modelBuilder.loadingComponent()
-				.withItem(this._tableSelectionTable)
-				.withProps({
-					loading: false,
-					loadingText: constants.DATABASE_TABLE_DATA_LOADING
-				}).component();
-
-			const flex = view.modelBuilder.flexContainer()
-				.withItems([
-					this._filterInputBox,
-					this._headingText,
-					this._missingTablesText,
-					this._tableLoader],
-					{ flex: '0 0 auto' })
-				.withProps({ CSSStyles: { 'margin': '0 0 0 15px' } })
-				.withLayout({
-					flexFlow: 'column',
-					height: '100%',
-					width: 565,
-				}).component();
+			this._tabs.updateTabs([this._selectableTablesTab]);
 
 			this._disposables.push(
 				view.onClosed(e =>
 					this._disposables.forEach(
 						d => { try { d.dispose(); } catch { } })));
 
-			await view.initializeModel(flex);
+			await view.initializeModel(this._tabs);
 			await this._loadData();
 		});
+
+		dialog.content = [tab];
 	}
 
 	public async openDialog(dialogTitle: string) {
@@ -194,7 +188,7 @@ export class TableMigrationSelectionDialog {
 			this._dialog = azdata.window.createModelViewDialog(
 				dialogTitle,
 				DialogName,
-				600);
+				600, undefined, undefined, false);
 
 			this._dialog.okButton.label = constants.TABLE_SELECTION_UPDATE_BUTTON;
 			this._dialog.okButton.position = 'left';
@@ -214,13 +208,105 @@ export class TableMigrationSelectionDialog {
 		}
 	}
 
+	private async _createSelectableTablesTab(view: azdata.ModelView): Promise<void> {
+		this._headingText = view.modelBuilder.text()
+			.withProps({ value: constants.DATABASE_LOADING_TABLES })
+			.component();
+
+		this._filterInputBox = view.modelBuilder.inputBox()
+			.withProps({
+				inputType: 'search',
+				placeHolder: constants.TABLE_SELECTION_FILTER,
+				width: 268,
+			}).component();
+
+		this._disposables.push(
+			this._filterInputBox.onTextChanged(
+				async e => await this._loadControls()));
+
+		this._refreshButton = view.modelBuilder.button()
+			.withProps({
+				buttonType: azdata.ButtonType.Normal,
+				iconHeight: 16,
+				iconWidth: 16,
+				iconPath: IconPathHelper.refresh,
+				label: constants.DATABASE_TABLE_REFRESH_LABEL,
+				width: 70,
+				CSSStyles: { 'margin': '5px 0 0 15px' },
+			})
+			.component();
+		this._disposables.push(
+			this._refreshButton.onDidClick(
+				async e => await this._loadData()));
+
+		this._refreshLoader = view.modelBuilder.loadingComponent()
+			.withItem(this._refreshButton)
+			.withProps({
+				loading: false,
+				CSSStyles: { 'height': '8px', 'margin': '5px 0 0 15px' }
+			})
+			.component();
+
+		const flexTopRow = view.modelBuilder.flexContainer()
+			.withLayout({
+				flexFlow: 'row',
+				flexWrap: 'wrap',
+			})
+			.component();
+		flexTopRow.addItem(this._filterInputBox, { flex: '0 0 auto' });
+		flexTopRow.addItem(this._refreshLoader, { flex: '0 0 auto' });
+
+		this._tableSelectionTable = await this._createSelectionTable(view);
+
+		const flex = view.modelBuilder.flexContainer()
+			.withItems([])
+			.withItems([
+				flexTopRow,
+				this._headingText,
+				this._tableSelectionTable,
+			], { flex: '0 0 auto' })
+			.withProps({ CSSStyles: { 'margin': '10px 0 0 15px' } })
+			.withLayout({
+				flexFlow: 'column',
+				height: '100%',
+				width: 550,
+			}).component();
+
+		this._selectableTablesTab = {
+			content: flex,
+			id: 'tableSelectionTab',
+			title: constants.SELECT_TABLES_FOR_MIGRATION,
+		};
+	}
+
+	private async _createMissingTablesTab(view: azdata.ModelView): Promise<void> {
+		this._missingTargetTablesTable = await this._createMissingTablesTable(view);
+
+		const flex = view.modelBuilder.flexContainer()
+			.withItems([this._missingTargetTablesTable], { flex: '0 0 auto' })
+			.withItems([])
+			.withProps({ CSSStyles: { 'margin': '10px 0 0 15px' } })
+			.withLayout({
+				flexFlow: 'column',
+				height: '100%',
+				width: 550,
+			}).component();
+
+		this._missingTablesTab = {
+			content: flex,
+			id: 'missingTablesTab',
+			title: constants.MISSING_TARGET_TABLES_COUNT(this._missingTableCount),
+		};
+	}
+
 	private async _createSelectionTable(view: azdata.ModelView): Promise<azdata.TableComponent> {
 		const cssClass = 'no-borders';
 		const table = view.modelBuilder.table()
 			.withProps({
 				data: [],
-				width: 565,
+				width: 550,
 				height: '600px',
+				display: 'flex',
 				forceFitColumns: azdata.ColumnSizingMode.ForceFit,
 				columns: [
 					<azdata.CheckboxColumn>{
@@ -236,7 +322,7 @@ export class TableMigrationSelectionDialog {
 						name: constants.TABLE_SELECTION_TABLENAME_COLUMN,
 						value: 'tableName',
 						type: azdata.ColumnType.text,
-						width: 300,
+						width: 285,
 						cssClass: cssClass,
 						headerCssClass: cssClass,
 					},
@@ -281,17 +367,39 @@ export class TableMigrationSelectionDialog {
 		return table;
 	}
 
+	private async _createMissingTablesTable(view: azdata.ModelView): Promise<azdata.TableComponent> {
+		const cssClass = 'no-borders';
+		const table = view.modelBuilder.table()
+			.withProps({
+				data: [],
+				width: 550,
+				height: '600px',
+				display: 'flex',
+				forceFitColumns: azdata.ColumnSizingMode.ForceFit,
+				columns: [{
+					name: constants.MISSING_TABLE_NAME_COLUMN,
+					value: 'tableName',
+					type: azdata.ColumnType.text,
+					cssClass: cssClass,
+					headerCssClass: cssClass,
+				}],
+			})
+			.withValidation(() => true)
+			.component();
+
+		return table;
+	}
+
 	private async _updateRowSelection(): Promise<void> {
-		this._headingText.value = this._tableSelectionTable.data.length > 0
-			? constants.TABLE_SELECTED_COUNT(
-				this._tableSelectionTable.selectedRows?.length ?? 0,
-				this._tableSelectionTable.data.length)
-			: this._tableLoader.loading
-				? constants.DATABASE_LOADING_TABLES
+		this._headingText.value = this._refreshLoader.loading
+			? constants.DATABASE_LOADING_TABLES
+			: this._tableSelectionTable.data?.length > 0
+				? constants.TABLE_SELECTED_COUNT(
+					this._tableSelectionTable.selectedRows?.length ?? 0,
+					this._tableSelectionTable.data?.length ?? 0)
 				: constants.DATABASE_MISSING_TABLES;
 
-		this._missingTablesText.value = constants.MISSING_TARGET_TABLES_COUNT(this._missingTableCount);
-		await updateControlDisplay(this._missingTablesText, this._missingTableCount > 0);
+		this._missingTablesTab.title = constants.MISSING_TARGET_TABLES_COUNT(this._missingTableCount);
 	}
 
 	private async _save(): Promise<void> {
@@ -303,7 +411,7 @@ export class TableMigrationSelectionDialog {
 			selectedRows.forEach(rowIndex => {
 				const tableRow = this._tableSelectionTable.data[rowIndex];
 				const tableName = tableRow.length > 1
-					? this._tableSelectionTable.data[rowIndex][1] as string
+					? tableRow[1] as string
 					: '';
 				const tableInfo = this._tableSelectionMap.get(tableName);
 				if (tableInfo) {
