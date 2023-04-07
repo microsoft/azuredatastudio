@@ -387,7 +387,7 @@ export namespace UpdateAgentNotebookRunPinRequest {
 }
 
 export namespace AgentNotebookTemplateRequest {
-	export const type = new RequestType<AgentNotebookTemplateParams, azdata.ResultStatus, void, void>('agent/notebooktemplate');
+	export const type = new RequestType<AgentNotebookTemplateParams, azdata.AgentNotebookTemplateResult, void, void>('agent/notebooktemplate');
 }
 
 export namespace CreateAgentNotebookRequest {
