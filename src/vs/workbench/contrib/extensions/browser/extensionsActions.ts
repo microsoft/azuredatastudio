@@ -516,7 +516,7 @@ export class InstallAndSyncAction extends AbstractInstallAction {
 		@ILabelService labelService: ILabelService,
 		@IDialogService dialogService: IDialogService,
 		@IPreferencesService preferencesService: IPreferencesService,
-		@IProductService productService: IProductService,
+		@IProductService private readonly productService: IProductService, // {{SQL CARBON EDIT}} made productService a property
 		@IUserDataSyncEnablementService private readonly userDataSyncEnablementService: IUserDataSyncEnablementService,
 		@INotificationService readonly localNotificationService: INotificationService // {{SQL CARBON EDIT}}
 	) {
