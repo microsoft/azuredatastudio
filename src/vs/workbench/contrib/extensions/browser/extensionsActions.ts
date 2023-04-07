@@ -280,6 +280,7 @@ export abstract class AbstractInstallAction extends ExtensionAction {
 		if (this.extension.state === ExtensionState.Uninstalled && await this.extensionsWorkbenchService.canInstall(this.extension)) {
 			this.enabled = this.installPreReleaseVersion ? this.extension.hasPreReleaseVersion : this.extension.hasReleaseVersion;
 			this.updateLabel();
+			this.updateTooltip(); // {{SQL CARBON EDIT}} Update tooltip for download extensions
 		}
 	}
 
@@ -406,6 +407,8 @@ export abstract class AbstractInstallAction extends ExtensionAction {
 		return null;
 	}
 
+	protected abstract updateTooltip(): void; // {{SQL CARBON EDIT}} Update tooltip for download extensions
+
 	protected updateLabel(): void {
 		this.label = this.getLabel();
 	}
@@ -419,7 +422,7 @@ export abstract class AbstractInstallAction extends ExtensionAction {
 		if (this.extension?.hasPreReleaseVersion) {
 			return primary ? localize('install', "Install") : localize('install release version', "Install Release Version");
 		}
-		return localize('install', "Install");
+		return this.extension?.downloadPage ? locConstants.download : localize('install', "Install"); // {{SQL CARBON EDIT}} Update label for download extensions
 	}
 
 	protected getInstallOptions(): InstallOptions {
@@ -449,6 +452,13 @@ export class InstallAction extends AbstractInstallAction {
 		this._register(labelService.onDidChangeFormatters(() => this.updateLabel(), this));
 		this._register(Event.any(userDataSyncEnablementService.onDidChangeEnablement,
 			Event.filter(userDataSyncEnablementService.onDidChangeResourceEnablement, e => e[0] === SyncResource.Extensions))(() => this.update()));
+	}
+
+	// {{SQL CARBON EDIT}} Update tooltip for download extensions
+	protected updateTooltip(): void {
+		this.tooltip = this.extension?.downloadPage ?
+			locConstants.downloadTooltip :
+			locConstants.installTooltip;
 	}
 
 	override getLabel(primary?: boolean): string {
@@ -512,9 +522,18 @@ export class InstallAndSyncAction extends AbstractInstallAction {
 	) {
 		super('extensions.installAndSync', installPreReleaseVersion, AbstractInstallAction.Class,
 			extensionsWorkbenchService, instantiationService, runtimeExtensionService, workbenchThemeService, labelService, dialogService, preferencesService, localNotificationService); // {{SQL CARBON EDIT}} Add local notification service
-		this.tooltip = localize({ key: 'install everywhere tooltip', comment: ['Placeholder is the name of the product. Eg: Visual Studio Code or Visual Studio Code - Insiders'] }, "Install this extension in all your synced {0} instances", productService.nameLong);
+		// {{SQL CARBON EDIT}} Update tooltip for download extensions - this is done in updateTooltip below
+		// this.tooltip = localize({ key: 'install everywhere tooltip', comment: ['Placeholder is the name of the product. Eg: Azure Data Studio or Azure Data Studio - Insiders'] }, "Install this extension in all your synced {0} instances", productService.nameLong);
+		this.updateTooltip();
 		this._register(Event.any(userDataSyncEnablementService.onDidChangeEnablement,
 			Event.filter(userDataSyncEnablementService.onDidChangeResourceEnablement, e => e[0] === SyncResource.Extensions))(() => this.update()));
+	}
+
+	// {{SQL CARBON EDIT}} Update tooltip for download extensions
+	protected updateTooltip(): void {
+		this.tooltip = this.extension?.downloadPage ?
+			locConstants.downloadTooltip :
+			localize({ key: 'install everywhere tooltip', comment: ['Placeholder is the name of the product. Eg: Azure Data Studio or Azure Data Studio - Insiders'] }, "Install this extension in all your synced {0} instances", this.productService.nameLong)
 	}
 
 	protected override async computeAndUpdateEnablement(): Promise<void> {
