@@ -2469,6 +2469,27 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.azuredatastudio.download" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Download]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Baixar]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.azuredatastudio.downloadTooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Download this extension from an external source]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.azuredatastudio.installTooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Install this extension]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/base/common/locConstants.connectionDialogBrowseTree.context" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The connection dialog's browse tree context menu]]></Val>
@@ -11559,6 +11580,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookActions.newNotebookTask.newNotebook" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[New Notebook]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Novo Notebook]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookActions.newViewLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create New View]]></Val>
@@ -12270,6 +12300,12 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Paleta de cores do grupo de servidores usada no viewlet do Pesquisador de Objetos.]]></Val>
           </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/objectExplorer/common/serverGroup.contribution.serverTree.configuration.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Server Tree]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -15369,24 +15405,18 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/services/accountManagement/browser/accountManagementService.addAccountFailedMessage" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0}]]></Val>
-          </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[0 ]D;]A;Error Message: 1]]></Val>
-          </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/workbench/services/accountManagement/browser/accountManagementService.loggingIn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Adding account...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Adicionando conta...]]></Val>
           </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/accountManagement/browser/accountManagementService.refreshAccountFailedGenericMessage" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Refreshing account failed, check Azure Accounts log for more info.]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -15401,12 +15431,12 @@
       </Item>
       <Item ItemId=";src/sql/workbench/services/accountManagement/browser/accountManagementService.refreshFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[0 ]D;]A;Error Message: 1]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Val><![CDATA[{0} ]D;]A;Error Message: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Update" Orig="New">
             <Val><![CDATA[0 ]D;]A;Mensagem de erro: 1]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Refresh account was canceled by the user]]></Val>
+            <Val><![CDATA[0 ]D;]A;Error Message: 1]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -17571,6 +17601,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/objectExplorerService.objectExplorerMissingConnectionForSession" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Timeout waiting for session {0} to be created for connection "{1}". This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection "{1}"]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/objectExplorerService.objectExplorerMissingSession" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Timed out waiting for session {0} to be created. This has probably happened because OE service did not recieve a response for createNewSession from the provider.]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/objectExplorerService.objectExplorerSessionIdMissing" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The session ID returned by provider "{0}" for connection "{1}" is invalid.]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim.firewallCanceled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Firewall dialog canceled]]></Val>
@@ -17622,6 +17670,12 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Servidores]]></Val>
           </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/treeUpdateUtils.objectExplorerTimeout" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Object Explorer expansion timed out for '{0}']]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>
