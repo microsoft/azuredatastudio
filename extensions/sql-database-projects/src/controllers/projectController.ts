@@ -37,7 +37,7 @@ import { DashboardData, PublishData, Status } from '../models/dashboardData/dash
 import { getPublishDatabaseSettings, launchPublishTargetOption } from '../dialogs/publishDatabaseQuickpick';
 import { launchCreateAzureServerQuickPick } from '../dialogs/deployDatabaseQuickpick';
 import { DeployService } from '../models/deploy/deployService';
-import { AddItemOptions, EntryType, GenerateProjectFromOpenApiSpecOptions, IDatabaseReferenceProjectEntry, ISqlProjectPublishSettings, IPublishToDockerSettings, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
+import { AddItemOptions, EntryType, GenerateProjectFromOpenApiSpecOptions, IDatabaseReferenceProjectEntry, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
 import { AutorestHelper } from '../tools/autorestHelper';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
@@ -48,6 +48,7 @@ import { AzureSqlClient } from '../models/deploy/azureSqlClient';
 import { ConnectionService } from '../models/connections/connectionService';
 import { getPublishToDockerSettings } from '../dialogs/publishToDockerQuickpick';
 import { SqlCmdVariableTreeItem } from '../models/tree/sqlcmdVariableTreeItem';
+import { IPublishToDockerSettings, ISqlProjectPublishSettings } from '../models/deploy/publishSettings';
 
 const maxTableLength = 10;
 
