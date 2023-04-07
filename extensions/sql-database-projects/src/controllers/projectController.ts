@@ -298,6 +298,14 @@ export class ProjectsController {
 			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath, project.sqlProjStyle)
 		};
 
+		const crossPlatCompatible: boolean = await Project.checkPromptCrossPlatStatus(project, true /* blocking prompt */);
+
+		if (!crossPlatCompatible) {
+			// user rejected updating for cross-plat
+			void vscode.window.showErrorMessage(constants.projectNeedsUpdatingForCrossPlat(project.projectFileName));
+			return ''
+		}
+
 		try {
 			await this.netCoreTool.runDotnetCommand(options);
 			const timeToBuild = new Date().getTime() - startTime.getTime();

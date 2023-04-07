@@ -158,15 +158,40 @@ export class Project implements ISqlProject {
 
 		await proj.readProjFile();
 
-		if (!proj.isCrossPlatformCompatible && promptIfNeedsUpdating) {
-			const result = await window.showWarningMessage(constants.updateProjectForRoundTrip(proj.projectFileName), constants.yesString, constants.noString);
-
-			if (result === constants.yesString) {
-				await proj.updateProjectForRoundTrip();
-			}
+		if (promptIfNeedsUpdating) {
+			await this.checkPromptCrossPlatStatus(proj, false /* don't block the thread until the  prompt*/);
 		}
 
 		return proj;
+	}
+
+	/**
+	 * If project does not support cross-plat building, prompts the user for whether to update and updates if accepted
+	 * @param project
+	 * @param blockingPrompt whether to block the thread until the user updates, or to fire and forget
+	 * @returns true if the project is updated after return, false if the user rejected the prompt
+	 */
+	public static async checkPromptCrossPlatStatus(project: Project, blockingPrompt: boolean): Promise<boolean> {
+		if (project.isCrossPlatformCompatible) {
+			return true;
+		}
+
+		if (blockingPrompt) {
+			const result = await window.showWarningMessage(constants.updateProjectForCrossPlatform(project.projectFileName), { modal: true }, constants.yesString, constants.noString);
+
+			if (result === constants.yesString) {
+				await project.updateProjectForCrossPlatform();
+			}
+		} else {
+			// use "void" with a .then() to not block the UI thread while prompting the user
+			void window.showErrorMessage(constants.updateProjectForCrossPlatform(project.projectFileName), constants.yesString, constants.noString).then(async (result) => {
+				if (result === constants.yesString) {
+					await project.updateProjectForCrossPlatform();
+				}
+			});
+		}
+
+		return project.isCrossPlatformCompatible;
 	}
 
 	/**
@@ -407,7 +432,7 @@ export class Project implements ISqlProject {
 		this._configuration = Configuration.Debug;
 	}
 
-	public async updateProjectForRoundTrip(): Promise<void> {
+	public async updateProjectForCrossPlatform(): Promise<void> {
 		if (this.isCrossPlatformCompatible) {
 			return;
 		}
