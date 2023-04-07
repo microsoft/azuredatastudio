@@ -215,6 +215,7 @@ export class NewProjectDialog extends DialogBase {
 
 		const browseFolderButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.BrowseButtonText,
+			title: constants.BrowseButtonText,
 			iconPath: IconPathHelper.folder,
 			height: '16px',
 			width: '18px'
