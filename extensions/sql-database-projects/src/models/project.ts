@@ -494,18 +494,23 @@ export class Project implements ISqlProject {
 
 	//#region SQL object scripts
 
-	public async addSqlObjectScript(relativePath: string): Promise<void> {
+	public async addSqlObjectScript(relativePath: string, reloadAfter: boolean = true): Promise<void> {
 		const result = await this.sqlProjService.addSqlObjectScript(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
-		await this.readFilesInProject();
-		await this.readFolders();
+		if (reloadAfter) {
+			await this.readFilesInProject();
+			await this.readFolders();
+		}
 	}
 
 	public async addSqlObjectScripts(relativePaths: string[]): Promise<void> {
 		for (const path of relativePaths) {
-			await this.addSqlObjectScript(path);
+			await this.addSqlObjectScript(path, false /* reloadAfter */);
 		}
+
+		await this.readFilesInProject();
+		await this.readFolders();
 	}
 
 	public async deleteSqlObjectScript(relativePath: string): Promise<void> {
