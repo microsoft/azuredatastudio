@@ -667,21 +667,24 @@ export const SELECT_RESOURCE_GROUP_PROMPT = localize('sql.migration.blob.resourc
 export const SELECT_STORAGE_ACCOUNT = localize('sql.migration.blob.storageAccount.select', "Select a storage account value first.");
 export const SELECT_BLOB_CONTAINER = localize('sql.migration.blob.container.select', "Select a blob container value first.");
 
+
+export const MISSING_TABLE_NAME_COLUMN = localize('sql.migration.missing.table.name.column', "Table name");
 export function SELECT_DATABASE_TABLES_TITLE(targetDatabaseName: string): string {
 	return localize('sql.migration.table.select.label', "Select tables for {0}", targetDatabaseName);
 }
 export const TABLE_SELECTION_EDIT = localize('sql.migration.table.selection.edit', "Edit");
 
 export function TABLE_SELECTION_COUNT(selectedCount: number, rowCount: number): string {
-	return localize('sql.migration.table.selection.count', "{0} of {1}", selectedCount, rowCount);
+	return localize('sql.migration.table.selection.count', "{0} of {1}", formatNumber(selectedCount), formatNumber(rowCount));
 }
 export function TABLE_SELECTED_COUNT(selectedCount: number, rowCount: number): string {
-	return localize('sql.migration.table.selected.count', "{0} of {1} tables selected", selectedCount, rowCount);
+	return localize('sql.migration.table.selected.count', "{0} of {1} tables selected", formatNumber(selectedCount), formatNumber(rowCount));
 }
 export function MISSING_TARGET_TABLES_COUNT(tables: number): string {
-	return localize('sql.migration.table.missing.count', "Missing target tables excluded from list: {0}", tables);
+	return localize('sql.migration.table.missing.count', "Tables missing on target: {0}", formatNumber(tables));
 }
-export const DATABASE_MISSING_TABLES = localize('sql.migration.database.missing.tables', "0 tables found.");
+export const SELECT_TABLES_FOR_MIGRATION = localize('sql.migration.select.migration.tables', "Select tables for migration");
+export const DATABASE_MISSING_TABLES = localize('sql.migration.database.missing.tables', "0 tables found on source database.");
 export const DATABASE_LOADING_TABLES = localize('sql.migration.database.loading.tables', "Loading tables list...");
 export const TABLE_SELECTION_FILTER = localize('sql.migration.table.selection.filter', "Filter tables");
 export const TABLE_SELECTION_UPDATE_BUTTON = localize('sql.migration.table.selection.update.button', "Update");
@@ -932,7 +935,9 @@ export const AZURE_STORAGE_ACCOUNT_TO_UPLOAD_BACKUPS = localize('sql.migration.a
 export const SHIR = localize('sql.migration.shir', "Self-hosted integration runtime node");
 export const DATABASE_TO_BE_MIGRATED = localize('sql.migration.database.to.be.migrated', "Database to be migrated");
 export function COUNT_DATABASES(count: number): string {
-	return (count === 1) ? localize('sql.migration.count.database.single', "{0} database", count) : localize('sql.migration.count.database.multiple', "{0} databases", count);
+	return (count === 1)
+		? localize('sql.migration.count.database.single', "{0} database", count)
+		: localize('sql.migration.count.database.multiple', "{0} databases", formatNumber(count));
 }
 export function TOTAL_TABLES_SELECTED(selected: number, total: number): string {
 	return localize('total.tables.selected.of.total', "{0} of {1}", formatNumber(selected), formatNumber(total));
