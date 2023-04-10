@@ -13,14 +13,33 @@
 	margin-bottom: 10px;
 }
 
-.filter-table-container{
+.filter-table-container {
 	max-height: 270px;
 	overflow-y: scroll;
 }
 
+.filter-table-container table.filter-table-element {
+	width: 97.2%;
+	border-collapse: collapse;
+	table-layout: fixed;
+}
+
+.filter-table-container table.filter-table-element td {
+	width: calc((100% - 36px) / (4 - 1));
+	/* equal width for all but last column */
+}
+
+.filter-table-container table.filter-table-element td.delete-cell {
+	width: 36px;
+}
+
+.filter-action-button-container div {
+	padding: 5px;
+}
+
 .profiler-filter-remove-condition {
-	width:20px;
-	height:20px;
+	width: 20px;
+	height: 20px;
 	cursor: pointer;
 }
 
@@ -30,4 +49,13 @@
 	padding: 2px;
 	text-decoration: underline;
 	display: inline-block;
+}
+
+.headerRow td {
+	text-align: center;
+}
+
+.filter-table-element .monaco-inputbox {
+	height: 25px;
+	font-size: 11px;
 }

@@ -41,7 +41,7 @@ export class TableCellEditorFactory {
 		};
 	}
 
-	public getTextEditorClass(context: any, inputType: 'text' | 'number' = 'text'): any {
+	public getTextEditorClass(context: any, inputType: 'text' | 'number' | 'date' = 'text'): any {
 		const self = this;
 		class TextEditor extends Disposable {
 			private _originalValue: string;

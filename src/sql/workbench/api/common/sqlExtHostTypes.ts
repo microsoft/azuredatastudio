@@ -499,8 +499,9 @@ export enum NodeInfoDateTimeOperators {
 
 export enum NodeInfoStringOperators {
 	equals = 0,
-	contains = 1,
-	notContains = 2
+	notequals = 1,
+	contains = 2,
+	notContains = 3,
 }
 
 export enum NodeInfoPredefinedValuesOperators {
