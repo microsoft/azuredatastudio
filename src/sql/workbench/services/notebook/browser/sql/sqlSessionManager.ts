@@ -706,8 +706,8 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		return rows.map(row => {
 			let rowObject: { [key: string]: any; } = {};
 			row.forEach((val, index) => {
-				let columnName = columns[index];
-				rowObject[columnName.columnName] = val.displayValue;
+				let columnName = columns[index].columnName;
+				rowObject[columnName] = val.displayValue;
 			});
 			return rowObject;
 		});

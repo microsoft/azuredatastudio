@@ -370,23 +370,27 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	private transformSource(source: IDataResource): void {
-		let columns = source.schema.fields;
-		// Check if column names match the keys in the data. If they don't, then fall back to using ordinal keys for the data.
-		let useColumnNameKey = equals(columns.map(column => column.name), Object.keys(source.data[0]));
-		this._rows = source.data.map(row => {
-			let rowData: azdata.DbCellValue[] = [];
-			Object.keys(row).forEach((val, index) => {
-				let key = useColumnNameKey ? columns[index].name : index.toString();
-				let displayValue = String(row[key]);
-				// Since the columns[0] represents the row number, start at 1
-				rowData.push({
-					displayValue: displayValue,
-					isNull: false,
-					invariantCultureDisplayValue: displayValue
-				});
+		if (source.data.length > 0) {
+			let columns = source.schema.fields;
+			// Check if column names match the keys in the data. If they don't, then fall back to using ordinal keys for the data.
+			let useColumnNameKey = equals(columns.map(column => column.name), Object.keys(source.data[0]));
+			this._rows = source.data.map(row => {
+				let rowData: azdata.DbCellValue[] = [];
+				for (let index = 0; index < Object.keys(row).length; index++) {
+					let key = useColumnNameKey ? columns[index].name : index;
+					let displayValue = String(row[key]);
+					// Since the columns[0] represents the row number, start at 1
+					rowData.push({
+						displayValue: displayValue,
+						isNull: false,
+						invariantCultureDisplayValue: displayValue
+					});
+				}
+				return rowData;
 			});
-			return rowData;
-		});
+		} else {
+			this._rows = [];
+		}
 	}
 
 	public updateResultSet(resultSet: ResultSetSummary, rows: ICellValue[][]): void {
