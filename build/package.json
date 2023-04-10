@@ -43,7 +43,7 @@
     "@types/tmp": "^0.2.1",
     "@types/underscore": "^1.8.9",
     "@types/webpack": "^4.41.25",
-    "@types/xml2js": "0.0.33",
+    "@types/xml2js": "0.4.11",
     "@typescript-eslint/experimental-utils": "~2.13.0",
     "@typescript-eslint/parser": "^5.10.0",
     "applicationinsights": "1.0.8",
@@ -81,6 +81,7 @@
   },
   "dependencies": {},
   "resolutions": {
+    "xml2js": "^0.5.0",
     "json-schema": "0.4.0",
     "jsonwebtoken": "9.0.0"
   }
