@@ -684,11 +684,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				diagnostics: diagnostics,
 				env,
 				NodeInfoFilterPropertyType: sqlExtHostTypes.NodeInfoFilterPropertyType,
-				NodeInfoDateTimeOperators: sqlExtHostTypes.NodeInfoDateTimeOperators,
-				NodeInfoStringOperators: sqlExtHostTypes.NodeInfoStringOperators,
-				NodeInfoPredefinedValuesOperators: sqlExtHostTypes.NodeInfoPredefinedValuesOperators,
-				NodeInfoNumberOperators: sqlExtHostTypes.NodeInfoNumberOperators,
-				NodeInfoBooleanOperators: sqlExtHostTypes.NodeInfoBooleanOperators,
+				NodeInfoOperators: sqlExtHostTypes.NodeInfoOperators
 			};
 		}
 	};

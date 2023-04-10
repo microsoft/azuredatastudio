@@ -486,7 +486,7 @@ export enum NodeInfoFilterPropertyType {
 	predefinedValues = 4
 }
 
-export enum NodeInfoDateTimeOperators {
+export enum NodeInfoOperators {
 	equals = 0,
 	notEquals = 1,
 	lessThan = 2,
@@ -495,34 +495,8 @@ export enum NodeInfoDateTimeOperators {
 	greaterThanOrEquals = 5,
 	between = 6,
 	notBetween = 7,
-}
-
-export enum NodeInfoStringOperators {
-	equals = 0,
-	notequals = 1,
-	contains = 2,
-	notContains = 3,
-}
-
-export enum NodeInfoPredefinedValuesOperators {
-	equals = 0,
-	notEquals = 1
-}
-
-export enum NodeInfoNumberOperators {
-	equals = 0,
-	notEquals = 1,
-	lessThan = 2,
-	lessThanOrEquals = 3,
-	greaterThan = 4,
-	greaterThanOrEquals = 5,
-	between = 6,
-	notBetween = 7
-}
-
-export enum NodeInfoBooleanOperators {
-	equal = 0,
-	notEqual = 1
+	contains = 8,
+	notContains = 9,
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {

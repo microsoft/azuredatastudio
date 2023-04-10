@@ -23,7 +23,7 @@ import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/a
 import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { NodeInfoFilterPropertyType, NodeInfoStringOperators } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { NodeInfoFilterPropertyType, NodeInfoOperators } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableCellEditorFactory } from 'sql/base/browser/ui/table/tableCellEditorFactory';
@@ -40,6 +40,7 @@ import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { Codicon } from 'vs/base/common/codicons';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import Severity from 'vs/base/common/severity';
 
 function FilterDialogTitle(nodePath: string): string { return localize('objectExplorer.filterDialogTitle', "Filter Settings: {0}", nodePath) }
 const OkButtonText = localize('objectExplorer.okButtonText', "OK");
@@ -267,6 +268,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 		const tableData: Slick.SlickData[] = [];
 
 		this._treeNode.defaultFilters.forEach((f, i) => {
+			const appliedFilter = this._treeNode.filters.find(filter => filter.name === f.name);
 			const row: Slick.SlickData = {
 				property: {
 					value: f.name
@@ -282,9 +284,29 @@ export class ObjectExplorerServiceDialog extends Modal {
 				index: i
 			};
 
-
-
+			if (appliedFilter) {
+				row.operator.value = this.getFilterString(appliedFilter.operator);
+				row.value.value = appliedFilter.value;
+			}
 			tableData.push(row);
+			if (appliedFilter?.operator === NodeInfoOperators.between || appliedFilter?.operator === NodeInfoOperators.notBetween) {
+				const newRow: Slick.SlickData = {
+					property: {
+						value: ''
+					},
+					operator: {
+						value: AND_SELECT_BOX,
+						values: [AND_SELECT_BOX]
+					},
+					value: {
+						value: appliedFilter.value2,
+						values: []
+					},
+					index: -1
+				};
+
+				tableData.push(newRow);
+			}
 		});
 
 		const dataProvider = new TableDataView<Slick.SlickData>();
@@ -335,11 +357,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 		});
 
 		this.filterTable.registerPlugin(clearValueColumn);
-
-
-		this.filterTable.layout(new DOM.Dimension(600, (this._treeNode.defaultFilters.length + 2) * TableRowHeight));
-
-
+		this.filterTable.layout(new DOM.Dimension(600, (tableData.length + 2) * TableRowHeight));
 	}
 
 	protected layout(height?: number): void {
@@ -359,22 +377,48 @@ export class ObjectExplorerServiceDialog extends Modal {
 		this.filterTable.rerenderGrid();
 	}
 
-	private getFiltersFromUI(): azdata.NodeInfoFilterProperty[] {
-		return [
-			{
-				name: 'name',
-				type: NodeInfoFilterPropertyType.string,
-				operator: NodeInfoStringOperators.contains,
-				value: 'test',
-				options: []
-			}
-		];
-	}
-
 	// This method is called when the ok button is pressed
 	private async onApply(): Promise<void> {
-		this.hide('ok');
-		this._treeNode.filters = this.getFiltersFromUI();
+		const tableData = this.filterTable.getData().getItems();
+
+		this._treeNode.filters = [];
+
+		for (let i = 0; i < tableData.length; i++) {
+			const row = tableData[i];
+
+			let filter: azdata.NodeInfoFilterProperty = {
+				name: row.property.value,
+				type: this._treeNode.defaultFilters[row.index].type,
+				operator: this.convertOperatorToEnum(row.operator.value),
+				value: row.value.value,
+				options: []
+			};
+
+			const isMultipleValueFilter = filter.operator === NodeInfoOperators.between || filter.operator === NodeInfoOperators.notBetween;
+
+			if (isMultipleValueFilter) {
+				i++;
+				const row2 = tableData[i];
+				filter.value2 = row2.value.value;
+			}
+
+			if (isMultipleValueFilter) {
+				if (filter.value === '' && filter.value2 !== '') {
+					// start date not specified.
+					this._dialogService.show(Severity.Error, localize('filterDialog.errorStartDate', "Start date is not specified."));
+					return;
+				} else if (filter.value !== '' && filter.value2 === '') {
+					// end date not specified.
+					this._dialogService.show(Severity.Error, localize('filterDialog.errorEndDate', "End date is not specified."));
+					return;
+				}
+			}
+
+			if (filter.value !== '') {
+				this._treeNode.filters.push(filter);
+			}
+		}
+
 		if (this._tree instanceof AsyncServerTree) {
 			await this._tree.rerender(this._treeNode);
 			await this._tree.updateChildren(this._treeNode);
@@ -383,6 +427,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 			await this._tree.refresh(this._treeNode);
 			await this._tree.expand(this._treeNode);
 		}
+		this.hide('ok');
 	}
 
 	// This method is called by modal when the enter button is pressed
@@ -432,6 +477,63 @@ export class ObjectExplorerServiceDialog extends Modal {
 					BETWEEN_SELECT_BOX,
 					NOT_BETWEEN_SELECT_BOX
 				];
+		}
+	}
+
+	private getFilterString(operator: NodeInfoOperators): string {
+		switch (operator) {
+			case NodeInfoOperators.contains:
+				return CONTAINS_SELECT_BOX;
+			case NodeInfoOperators.notContains:
+				return NOT_CONTAINS_SELECT_BOX;
+			case NodeInfoOperators.equals:
+				return EQUALS_SELECT_BOX;
+			case NodeInfoOperators.notEquals:
+				return NOT_EQUALS_SELECT_BOX;
+			case NodeInfoOperators.greaterThan:
+				return GREATER_THAN_SELECT_BOX;
+			case NodeInfoOperators.greaterThanOrEquals:
+				return GREATER_THAN_OR_EQUALS_SELECT_BOX;
+			case NodeInfoOperators.lessThan:
+				return LESS_THAN_SELECT_BOX;
+			case NodeInfoOperators.lessThanOrEquals:
+				return LESS_THAN_OR_EQUALS_SELECT_BOX;
+			case NodeInfoOperators.between:
+				return BETWEEN_SELECT_BOX;
+			case NodeInfoOperators.notBetween:
+				return NOT_BETWEEN_SELECT_BOX;
+
+		}
+	}
+
+	private convertOperatorToEnum(operator: string): NodeInfoOperators {
+		switch (operator) {
+			case CONTAINS_SELECT_BOX:
+				return NodeInfoOperators.contains;
+			case NOT_CONTAINS_SELECT_BOX:
+				return NodeInfoOperators.notContains;
+			case EQUALS_SELECT_BOX:
+				return NodeInfoOperators.equals;
+			case NOT_EQUALS_SELECT_BOX:
+				return NodeInfoOperators.notEquals;
+			case GREATER_THAN_SELECT_BOX:
+				return NodeInfoOperators.greaterThan;
+			case GREATER_THAN_OR_EQUALS_SELECT_BOX:
+				return NodeInfoOperators.greaterThanOrEquals;
+			case LESS_THAN_SELECT_BOX:
+				return NodeInfoOperators.lessThan;
+			case LESS_THAN_OR_EQUALS_SELECT_BOX:
+				return NodeInfoOperators.lessThanOrEquals;
+			case BETWEEN_SELECT_BOX:
+				return NodeInfoOperators.between;
+			case NOT_BETWEEN_SELECT_BOX:
+				return NodeInfoOperators.notBetween;
+			case TRUE_SELECT_BOX:
+				return NodeInfoOperators.equals;
+			case FALSE_SELECT_BOX:
+				return NodeInfoOperators.notEquals;
+			default:
+				return undefined;
 		}
 	}
 
