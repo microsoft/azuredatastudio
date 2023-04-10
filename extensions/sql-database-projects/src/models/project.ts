@@ -117,6 +117,10 @@ export class Project implements ISqlProject {
 		return this._sqlProjStyle;
 	}
 
+	public get sqlProjStyleName(): string {
+		return this.sqlProjStyle === ProjectType.SdkStyle ? 'SdkStyle' : 'LegacyStyle';
+	}
+
 	public get isCrossPlatformCompatible(): boolean {
 		return this._isCrossPlatformCompatible;
 	}
