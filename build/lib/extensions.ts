@@ -98,7 +98,7 @@ function fromLocalWebpack(extensionPath: string, webpackConfigFileName: string):
 		}
 	}
 
-	const vsce = require('vsce') as typeof import('vsce');
+	const vsce = require('@vscode/vsce') as typeof import('@vscode/vsce');
 	const webpack = require('webpack');
 	const webpackGulp = require('webpack-stream');
 
@@ -180,7 +180,7 @@ function fromLocalWebpack(extensionPath: string, webpackConfigFileName: string):
 export function fromLocalNormal(extensionPath: string): Stream { // {{SQL CARBON EDIT}} - Needed in locFunc
 	const result = es.through();
 
-	const vsce = require('vsce') as typeof import('vsce');
+	const vsce = require('@vscode/vsce') as typeof import('@vscode/vsce');
 
 	vsce.listFiles({ cwd: extensionPath, packageManager: vsce.PackageManager.Yarn })
 		.then(fileNames => {

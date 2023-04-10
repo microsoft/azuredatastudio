@@ -6,6 +6,7 @@
     "@azure/cosmos": "^3.14.1",
     "@azure/identity": "^2.1.0",
     "@azure/storage-blob": "^12.8.0",
+    "@vscode/vsce": "2.18.0",
     "@electron/get": "^1.12.4",
     "@types/ansi-colors": "^3.2.0",
     "@types/azure": "0.9.19",
@@ -71,7 +72,6 @@
     "source-map": "0.6.1",
     "tmp": "^0.2.1",
     "typescript": "^4.5.0-dev.20210817",
-    "vsce": "2.8.0",
     "vscode-universal-bundler": "^0.0.2"
   },
   "scripts": {
@@ -81,7 +81,6 @@
   },
   "dependencies": {},
   "resolutions": {
-    "xml2js": "^0.5.0",
     "json-schema": "0.4.0",
     "jsonwebtoken": "9.0.0"
   }

@@ -45,7 +45,6 @@
     "@microsoft/azdata-test": "^3.0.1"
   },
   "resolutions": {
-    "xml2js": "^0.5.0",
     "jsonwebtoken": "9.0.0"
   }
 }
