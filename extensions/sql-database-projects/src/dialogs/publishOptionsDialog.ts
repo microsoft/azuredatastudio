@@ -11,6 +11,7 @@ import type * as azdataType from 'azdata';
 import { PublishDatabaseDialog } from './publishDatabaseDialog';
 import { DeployOptionsModel } from '../models/options/deployOptionsModel';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
+import { cssStyles } from '../common/uiConstants';
 
 export class PublishOptionsDialog {
 
@@ -19,13 +20,13 @@ export class PublishOptionsDialog {
 	private disposableListeners: vscode.Disposable[] = [];
 	private descriptionHeading: azdataType.TableComponent | undefined;
 	private descriptionText: azdataType.TextComponent | undefined;
-	private optionsTable: azdataType.TableComponent | undefined;
+	private optionsTable: azdataType.DeclarativeTableComponent | undefined;
 	public optionsModel: DeployOptionsModel;
 	private optionsFlexBuilder: azdataType.FlexContainer | undefined;
 	private optionsChanged: boolean = false;
 	private isResetOptionsClicked: boolean = false;
 	private excludeObjectTypesOptionsTab: azdataType.window.DialogTab | undefined;
-	private excludeObjectTypesOptionsTable: azdataType.TableComponent | undefined;
+	private excludeObjectTypesOptionsTable: azdataType.DeclarativeTableComponent | undefined;
 	private excludeObjectTypesOptionsFlexBuilder: azdataType.FlexContainer | undefined;
 
 	constructor(defaultOptions: mssql.DeploymentOptions, private publish: PublishDatabaseDialog) {
@@ -95,15 +96,33 @@ export class PublishOptionsDialog {
 				value: ' '
 			}).component();
 
-			this.optionsTable = view.modelBuilder.table().component();
+			this.optionsTable = view.modelBuilder.declarativeTable().withProps({
+				width: '480px',
+				enableRowSelection: true,
+				selectedRow: 0, // start with the first row selected so that the option description is populated
+				columns: [
+					{
+						valueType: utils.getAzdataApi()!.DeclarativeDataType.boolean,
+						width: '10%',
+						isReadOnly: false,
+						displayName: '',
+						headerCssStyles: cssStyles.optionsTableHeader,
+					},
+					{
+						valueType: utils.getAzdataApi()!.DeclarativeDataType.string,
+						width: '90%',
+						displayName: '',
+						isReadOnly: true,
+						headerCssStyles: cssStyles.optionsTableHeader,
+					}
+				],
+			}).component();
 			await this.updateOptionsTable();
 
 			// Get the description of the selected option
-			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
-				// selectedRows[0] contains selected row number
-				const row = this.optionsTable?.selectedRows![0];
+			this.disposableListeners.push(this.optionsTable.onRowSelected(async (selectedRow) => {
 				// data[row][1] contains the option display name
-				const displayName = this.optionsTable?.data[row!][1];
+				const displayName = <string>this.optionsTable!.dataValues![selectedRow.row!][1].value;
 				await this.descriptionText?.updateProperties({
 					value: this.optionsModel.getOptionDescription(displayName),
 					ariaLive: 'polite'
@@ -111,12 +130,11 @@ export class PublishOptionsDialog {
 			}));
 
 			// Update deploy options value on checkbox onchange
-			this.disposableListeners.push(this.optionsTable.onCellAction!((rowState) => {
-				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
-				if (checkboxState && checkboxState.row !== undefined) {
-					// data[row][1] contains the option display name
-					const displayName = this.optionsTable?.data[checkboxState.row][1];
-					this.optionsModel.setOptionValue(displayName, checkboxState.checked);
+			this.disposableListeners.push(this.optionsTable.onDataChanged!((changedData) => {
+				if (changedData.row !== undefined) {
+					// dataValues[row][1] contains the option display name
+					const displayName = <string>this.optionsTable?.dataValues![changedData.row][1].value;
+					this.optionsModel.setOptionValue(displayName, changedData.value);
 					this.optionsChanged = true;
 					// customButton[0] is the reset button, enabling it when option checkbox is changed
 					this.dialog.customButtons[0].enabled = true;
@@ -135,20 +153,36 @@ export class PublishOptionsDialog {
 
 	private initializeExcludeObjectTypesOptionsDialogTab(): void {
 		this.excludeObjectTypesOptionsTab?.registerContent(async view => {
-			this.excludeObjectTypesOptionsTable = view.modelBuilder.table().component();
+			this.excludeObjectTypesOptionsTable = view.modelBuilder.declarativeTable().withProps({
+				width: '480px',
+				columns: [
+					{
+						valueType: utils.getAzdataApi()!.DeclarativeDataType.boolean,
+						width: '10%',
+						isReadOnly: false,
+						displayName: '',
+						headerCssStyles: cssStyles.optionsTableHeader,
+					},
+					{
+						valueType: utils.getAzdataApi()!.DeclarativeDataType.string,
+						width: '90%',
+						displayName: '',
+						isReadOnly: true,
+						headerCssStyles: cssStyles.optionsTableHeader,
+					}
+				],
+			}).component();
 			await this.updateExcludeObjectsTable();
 
 			// Update exclude type options value on checkbox onchange
-			this.disposableListeners.push(this.excludeObjectTypesOptionsTable!.onCellAction!((rowState) => {
-				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
-				if (checkboxState && checkboxState.row !== undefined) {
-					// data[row][1] contains the exclude type option display name
-					const displayName = this.excludeObjectTypesOptionsTable?.data[checkboxState.row][1];
-					this.optionsModel.setExcludeObjectTypesOptionValue(displayName, checkboxState.checked);
-					this.optionsChanged = true;
-					// customButton[0] is the reset button, enabling it when option checkbox is changed
-					this.dialog.customButtons[0].enabled = true;
-				}
+			this.disposableListeners.push(this.excludeObjectTypesOptionsTable.onDataChanged((changedData) => {
+				const displayName = <string>this.excludeObjectTypesOptionsTable?.dataValues![changedData.row][1].value;
+				const checkboxValue = <boolean>changedData.value;
+				this.optionsModel.setExcludeObjectTypesOptionValue(displayName, checkboxValue);
+				this.optionsChanged = true;
+
+				// customButton[0] is the reset button, enabling it when option checkbox is changed
+				this.dialog.customButtons[0].enabled = true;
 			}));
 
 			this.excludeObjectTypesOptionsFlexBuilder = view.modelBuilder.flexContainer()
@@ -166,25 +200,8 @@ export class PublishOptionsDialog {
 	*/
 	private async updateOptionsTable(): Promise<void> {
 		const data = this.optionsModel.getOptionsData();
+		await this.optionsTable!.setDataValues(data);
 		await this.optionsTable?.updateProperties({
-			data: data,
-			columns: [
-				<azdataType.CheckboxColumn>
-				{
-					value: constants.OptionInclude,
-					type: utils.getAzdataApi()!.ColumnType.checkBox,
-					action: utils.getAzdataApi()!.ActionOnCellCheckboxCheck.customAction,
-					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header',
-					width: 50
-				},
-				{
-					value: constants.OptionName,
-					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header',
-					width: 50
-				}
-			],
 			ariaRowCount: data.length
 		});
 	}
@@ -194,25 +211,9 @@ export class PublishOptionsDialog {
 	*/
 	private async updateExcludeObjectsTable(): Promise<void> {
 		const data = this.optionsModel.getExcludeObjectTypesOptionsData();
+		await this.excludeObjectTypesOptionsTable?.setDataValues(data);
+
 		await this.excludeObjectTypesOptionsTable?.updateProperties({
-			data: data,
-			columns: [
-				<azdataType.CheckboxColumn>
-				{
-					value: constants.OptionInclude,
-					type: utils.getAzdataApi()!.ColumnType.checkBox,
-					action: utils.getAzdataApi()!.ActionOnCellCheckboxCheck.customAction,
-					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header',
-					width: 50
-				},
-				{
-					value: constants.OptionName,
-					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header',
-					width: 50
-				}
-			],
 			ariaRowCount: data.length
 		});
 	}

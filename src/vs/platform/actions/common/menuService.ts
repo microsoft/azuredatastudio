@@ -266,6 +266,11 @@ class Menu implements IMenu {
 					}
 
 					if (action) {
+						// {{SQL CARBON EDIT}} - Set isDefault property
+						if (isIMenuItem(item)) {
+							(<MenuItemAction>action).isDefault = item.isDefault;
+						}
+						// {{SQL CARBON EDIT}} - End
 						activeActions.push(action);
 					}
 				}

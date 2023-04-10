@@ -41,10 +41,15 @@ export const NoSystemKeyChainSection = 'noSystemKeychain';
 
 export const oldMsalCacheFileName = 'azureTokenCacheMsal-azure_publicCloud';
 
+export const piiLogging = 'piiLogging';
+
 /** MSAL Account version */
 export const AccountVersion = '2.0';
 
 export const Bearer = 'Bearer';
+
+/** HTTP Client */
+export const httpConfigSectionName = 'http';
 
 /**
  * Use SHA-256 algorithm
@@ -65,7 +70,7 @@ export const AzureTokenFolderName = 'Azure Accounts';
 
 export const MSALCacheName = 'accessTokenCache';
 
-export const DefaultAuthLibrary = 'ADAL';
+export const DefaultAuthLibrary = 'MSAL';
 
 export enum BuiltInCommands {
 	SetContext = 'setContext'

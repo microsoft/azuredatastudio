@@ -11,6 +11,7 @@ import { AzureResourceErrorMessageUtil } from '../utils';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { AzureAccount, azureResource } from 'azurecore';
 import { Logger } from '../../utils/Logger';
+import { ErrorResponse } from '@azure/arm-resourcegraph/esm/models';
 
 export abstract class ResourceTreeDataProviderBase<T extends azureResource.AzureResource> implements azureResource.IAzureResourceTreeDataProvider {
 	public browseConnectionMode: boolean = false;
@@ -78,7 +79,7 @@ export async function queryGraphResources<T extends GraphData>(resourceClient: R
 				skipToken: skipToken
 			}
 		});
-		const resources: T[] = response.data;
+		const resources: T[] = response.data as T[];
 		totalProcessed += resources.length;
 		allResources.push(...resources);
 		if (response.skipToken && totalProcessed < response.totalRecords) {
@@ -91,7 +92,7 @@ export async function queryGraphResources<T extends GraphData>(resourceClient: R
 		try {
 			if (err.response?.body) {
 				// The response object contains more useful error info than the error originally comes back with
-				const response = JSON.parse(err.response.body);
+				const response = JSON.parse(err.response.body) as ErrorResponse;
 				if (response.error?.details && Array.isArray(response.error.details) && response.error.details.length > 0) {
 					if (response.error.details[0].message) {
 						err.message = `${response.error.details[0].message}\n${err.message}`;

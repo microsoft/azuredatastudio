@@ -50,6 +50,14 @@ Nota: Un certificado autofirmado solo ofrece una protección limitada y no es un
         <source xml:lang="en">Failed to find tenant '{0}' in account '{1}' when refreshing security token</source>
         <target state="translated">No se pudo encontrar el inquilino '{0}' en la cuenta '{1}' al actualizar el token de seguridad</target>
       </trans-unit>
+      <trans-unit id="mssql.noConvertResult">
+        <source xml:lang="en">No result returned from Notebook convert request</source>
+        <target state="translated">No se ha devuelto ningún resultado de la solicitud de conversión de Notebook</target>
+      </trans-unit>
+      <trans-unit id="mssql.noDocumentFound">
+        <source xml:lang="en">No document found for URI {0}</source>
+        <target state="translated">No se ha encontrado ningún documento para el URI {0}</target>
+      </trans-unit>
       <trans-unit id="mssql.tokenRefreshFailed">
         <source xml:lang="en">{0} AAD token refresh failed, please reconnect to enable {0}</source>
         <target state="translated">Error al actualizar el token de AAD {0}, vuelva a conectarse para habilitar {0}</target>
@@ -57,6 +65,10 @@ Nota: Un certificado autofirmado solo ofrece una protección limitada y no es un
       <trans-unit id="mssql.tokenRefreshFailedNoSecurityToken">
         <source xml:lang="en">Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected</source>
         <target state="translated">Error al actualizar el token del editor; la función de autocompletar se deshabilitará hasta que el editor se desconecte y vuelva a conectarse</target>
+      </trans-unit>
+      <trans-unit id="mssql.unsupportedPlatform">
+        <source xml:lang="en">Unsupported platform {0}</source>
+        <target state="translated">Plataforma no admitida {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -78,6 +90,14 @@ Nota: Un certificado autofirmado solo ofrece una protección limitada y no es un
   </file>
   <file original="extensions/mssql/dist/objectManagement/localizedConstants" source-language="en" datatype="plaintext" target-language="es">
     <body>
+      <trans-unit id="objectManagement.ColumnDisplayName">
+        <source xml:lang="en">column</source>
+        <target state="translated">columna</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.DatabaseDisplayName">
+        <source xml:lang="en">database</source>
+        <target state="translated">base de datos</target>
+      </trans-unit>
       <trans-unit id="objectManagement.LoginTypeDisplayName">
         <source xml:lang="en">login</source>
         <target state="translated">inicio de sesión</target>
@@ -90,6 +110,10 @@ Nota: Un certificado autofirmado solo ofrece una protección limitada y no es un
         <source xml:lang="en">OK</source>
         <target state="translated">Aceptar</target>
       </trans-unit>
+      <trans-unit id="objectManagement.TableDisplayName">
+        <source xml:lang="en">table</source>
+        <target state="translated">tabla</target>
+      </trans-unit>
       <trans-unit id="objectManagement.UserDisplayName">
         <source xml:lang="en">user</source>
         <target state="translated">usuario</target>
@@ -97,6 +121,10 @@ Nota: Un certificado autofirmado solo ofrece una protección limitada y no es un
       <trans-unit id="objectManagement.UserTypeDisplayNameInTitle">
         <source xml:lang="en">User</source>
         <target state="translated">Usuario</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ViewDisplayName">
+        <source xml:lang="en">view</source>
+        <target state="translated">Ver</target>
       </trans-unit>
       <trans-unit id="objectManagement.advancedSectionHeader">
         <source xml:lang="en">Advanced</source>
@@ -218,6 +246,10 @@ Nota: Un certificado autofirmado solo ofrece una protección limitada y no es un
         <source xml:lang="en">Windows Authentication</source>
         <target state="translated">Autenticación de Windows</target>
       </trans-unit>
+      <trans-unit id="objectManagement.loginNotSelectedError">
+        <source xml:lang="en">Login is not selected.</source>
+        <target state="translated">No se ha seleccionado el inicio de sesión.</target>
+      </trans-unit>
       <trans-unit id="objectManagement.nameCannotBeEmptyError">
         <source xml:lang="en">Name cannot be empty.</source>
         <target state="translated">El nombre no puede estar vacío.</target>
@@ -230,6 +262,10 @@ Nota: Un certificado autofirmado solo ofrece una protección limitada y no es un
         <source xml:lang="en">{0} - New (Preview)</source>
         <note>{0} object type.</note>
         <target state="translated">{0} - Nuevo (Versión preliminar)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.noConnectionUriError">
+        <source xml:lang="en">Failed to retrieve the connection information, please reconnect and try again.</source>
+        <target state="translated">No se pudo recuperar la información de conexión. Vuelva a conectarse e inténtelo de nuevo.</target>
       </trans-unit>
       <trans-unit id="objectManagement.objectPropertiesDialogTitle">
         <source xml:lang="en">{0} - {1} (Preview)</source>
@@ -262,6 +298,20 @@ Nota: Un certificado autofirmado solo ofrece una protección limitada y no es un
         <source xml:lang="en">An error occurred while while refreshing the object explorer. {0}</source>
         <note>{0}: error message.</note>
         <target state="translated">Error al actualizar el explorador de objetos. {0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectDialogTitle">
+        <source xml:lang="en">Enter new name</source>
+        <target state="translated">Escriba un nombre nuevo</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectError">
+        <source xml:lang="en">An error occurred while renaming {0} '{1}' to '{2}'. {3}</source>
+        <note>{0} object type, {1}: original name, {2}: new name, {3}: error message.</note>
+        <target state="translated">Error al cambiar el nombre de {0} '{1}' a '{2}'. {3}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectOperationName">
+        <source xml:lang="en">Rename {0} '{1}' to '{2}'</source>
+        <note>{0} object type, {1}: original name, {2}: new name</note>
+        <target state="translated">Cambie el nombre de {0} '{1}' a '{2}'</target>
       </trans-unit>
       <trans-unit id="objectManagement.selectedLabel">
         <source xml:lang="en">Selected</source>
@@ -601,7 +651,7 @@ Nota: Un certificado autofirmado solo ofrece una protección limitada y no es un
         <target state="translated">Especifica un protocolo para la atestación de un enclave de servidor empleado con Always Encrypted con enclaves seguros.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.displayName">
-        <source xml:lang="en">Attestation Protocol</source>
+        <source xml:lang="en">Attestation protocol</source>
         <target state="translated">Protocolo de atestación</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.description">
@@ -609,8 +659,8 @@ Nota: Un certificado autofirmado solo ofrece una protección limitada y no es un
         <target state="translated">Especifica un punto de conexión para la atestación de un enclave de servidor empleado con Always Encrypted con enclaves seguros.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
-        <source xml:lang="en">Enclave Attestation URL</source>
-        <target state="translated">Dirección URL de atestación del enclave</target>
+        <source xml:lang="en">Attestation URL</source>
+        <target state="translated">URL de atestación</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.false">
         <source xml:lang="en">Optional (False)</source>
@@ -761,11 +811,11 @@ Nota: Un certificado autofirmado solo ofrece una protección limitada y no es un
         <target state="translated">Replicación</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.secureEnclaves.description">
-        <source xml:lang="en">Enables or disables Secure Enclaves for the connection</source>
-        <target state="translated">Habilita o deshabilita enclaves seguros para la conexión</target>
+        <source xml:lang="en">Enables or disables Secure enclaves for the connection</source>
+        <target state="translated">Habilitar o deshabilitar enclaves seguros para la conexión</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.secureEnclaves.displayName">
-        <source xml:lang="en">Secure Enclaves</source>
+        <source xml:lang="en">Secure enclaves</source>
         <target state="translated">Enclaves seguros</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.description">
@@ -1149,8 +1199,12 @@ Nota: Un certificado autofirmado solo ofrece una protección limitada y no es un
         <target state="translated">Nuevo usuario</target>
       </trans-unit>
       <trans-unit id="title.objectProperties">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">Propiedades</target>
+        <source xml:lang="en">Properties (Preview)</source>
+        <target state="translated">Propiedades (versión preliminar)</target>
+      </trans-unit>
+      <trans-unit id="title.renameObject">
+        <source xml:lang="en">Rename</source>
+        <target state="translated">Renombrar</target>
       </trans-unit>
       <trans-unit id="title.searchServers">
         <source xml:lang="en">Search: Servers</source>

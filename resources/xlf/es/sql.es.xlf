@@ -894,6 +894,10 @@ Comandos omitidos predeterminados:
         <source xml:lang="en">Color of the range limiting the search. The color must not be opaque so as not to hide underlying decorations.</source>
         <target state="translated">Color de la gama que limita la búsqueda. El color no debe ser opaco para no ocultar decoraciones subyacentes.</target>
       </trans-unit>
+      <trans-unit id="queryEditorNullBackground">
+        <source xml:lang="en">The background color for null values in the query editor results grid.</source>
+        <target state="translated">Color de fondo de los valores NULL en la cuadrícula de resultados del editor de consultas.</target>
+      </trans-unit>
       <trans-unit id="tileBorder">
         <source xml:lang="en">The border color of tiles</source>
         <target state="translated">Color del borde de los iconos</target>
@@ -3493,6 +3497,14 @@ Comandos omitidos predeterminados:
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/editData/browser/editDataGridPanel" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="editData.cellWithNullCharMessage">
+        <source xml:lang="en">This cell contains the Unicode null character which is currently not supported for editing.</source>
+        <target state="translated">Esta celda contiene el carácter nulo Unicode, que no se admite actualmente para la edición.</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/editData/browser/gridActions" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="copySelection">
@@ -5784,8 +5796,8 @@ Error: {1}</target>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error: {0}</source>
-        <target state="translated">Error de copia: {0}</target>
+        <source xml:lang="en">Copy failed with error {0}</source>
+        <target state="translated">Error de copia {0}</target>
       </trans-unit>
       <trans-unit id="notebook.showChart">
         <source xml:lang="en">Show chart</source>
@@ -5838,6 +5850,10 @@ Error: {1}</target>
       <trans-unit id="serverGroup.colors">
         <source xml:lang="en">Server Group color palette used in the Object Explorer viewlet.</source>
         <target state="translated">Paleta de colores del grupo de servidores utilizada en el viewlet del Explorador de objetos.</target>
+      </trans-unit>
+      <trans-unit id="serverTree.nodeExpansionTimeout">
+        <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
+        <target state="translated">Tiempo de espera en segundos para expandir un nodo en la vista Servidores</target>
       </trans-unit>
       <trans-unit id="serverTree.useAsyncServerTree">
         <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
@@ -7764,6 +7780,10 @@ Mensaje de error: 1</target>
         <source xml:lang="en">Failed to refresh Azure account token for connection</source>
         <target state="translated">Error al actualizar el token de cuenta de Azure para conexión</target>
       </trans-unit>
+      <trans-unit id="connection.unknownProvider">
+        <source xml:lang="en">Unknown provider '{0}'</source>
+        <target state="translated">Proveedor desconocido '{0}'</target>
+      </trans-unit>
       <trans-unit id="connection.unsupportedServerVersionWarning">
         <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
         <target state="translated">La versión del servidor no es compatible con Azure Data Studio, es posible que aún pueda conectarse a ella, pero puede que algunas características de Azure Data Studio no funcionen de la forma esperada.</target>
@@ -7825,8 +7845,12 @@ Mensaje de error: 1</target>
         <target state="translated">Agregar una cuenta...</target>
       </trans-unit>
       <trans-unit id="connectionWidget.ConnectionStringError">
-        <source xml:lang="en">Failed to parse the connection string.</source>
-        <target state="translated">No se pudo analizar la cadena de conexión.</target>
+        <source xml:lang="en">Failed to parse the connection string. {0}</source>
+        <target state="translated">No se ha podido analizar la cadena de conexión. {0}</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.ConnectionStringUndefined">
+        <source xml:lang="en">No connection info returned.</source>
+        <target state="translated">No se ha devuelto la información de conexión.</target>
       </trans-unit>
       <trans-unit id="connectionWidget.Error">
         <source xml:lang="en">Error</source>
@@ -8654,6 +8678,10 @@ Mensaje de error: 1</target>
         <source xml:lang="en">Multiple errors:</source>
         <target state="translated">Varios errores:</target>
       </trans-unit>
+      <trans-unit id="nodeExpansionTimeout">
+        <source xml:lang="en">Node expansion timed out for node {0} for providers {1}</source>
+        <target state="translated">Se agotó el tiempo de espera de expansión del nodo {0} para los proveedores {1}</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim" source-language="en" datatype="plaintext" target-language="es">
@@ -8843,8 +8871,8 @@ Mensaje de error: 1</target>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error: {0}</source>
-        <target state="translated">Error de copia: {0}</target>
+        <source xml:lang="en">Copy failed with error {0}</source>
+        <target state="translated">Error de copia {0}</target>
       </trans-unit>
       <trans-unit id="elapsedBatchTime">
         <source xml:lang="en">Batch execution time: {0}</source>

@@ -465,6 +465,10 @@
         <source xml:lang="en">Azure Resources (Preview)</source>
         <target state="translated">Ресурсы Azure (предварительная версия)</target>
       </trans-unit>
+      <trans-unit id="azure.credStoreSaveFailedError">
+        <source xml:lang="en">Keys for token cache could not be saved in credential store, this may cause Azure access token persistence issues and connection instabilities. It's likely that SqlTools has reached credential storage limit on Windows, please clear at least 2 credentials that start with "Microsoft.SqlTools|" in Windows Credential Manager and reload.</source>
+        <target state="translated">Не удалось сохранить ключи для кэша маркеров в хранилище учетных данных, что может привести к проблемам с сохранением маркера доступа Azure и нестабильности подключения. Вполне вероятно, что SqlTools достиг предела хранения учетных данных в Windows. Очистите по крайней мере 2 записи учетных данных, которые начинаются с «Microsoft.SqlTools|» в диспетчере учетных данных Windows и перезагрузите.</target>
+      </trans-unit>
       <trans-unit id="azure.unableToOpenAzureLink">
         <source xml:lang="en">Unable to open link, missing required values</source>
         <target state="translated">Не удается открыть ссылку, отсутствуют обязательные значения</target>
@@ -524,6 +528,10 @@
       <trans-unit id="azurecore.centraluseuap">
         <source xml:lang="en">Central US EUAP</source>
         <target state="translated">Центральная часть США (EUAP)</target>
+      </trans-unit>
+      <trans-unit id="azurecore.deprecated">
+        <source xml:lang="en">Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL instead.</source>
+        <target state="translated">Предупреждение. ADAL не рекомендуется и будет удален в будущем выпуске. Вместо этого используйте MSAL.</target>
       </trans-unit>
       <trans-unit id="azurecore.eastasia">
         <source xml:lang="en">East Asia</source>

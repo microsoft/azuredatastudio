@@ -19,7 +19,7 @@ export class AzureBlobService implements mssql.IAzureBlobService {
 			undefined,
 			e => {
 				this.client.logFailedRequest(contracts.CreateSasRequest.type, e);
-				return Promise.resolve(undefined);
+				return Promise.reject(e);
 			}
 		);
 	}

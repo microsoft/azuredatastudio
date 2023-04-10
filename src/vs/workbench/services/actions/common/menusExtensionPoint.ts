@@ -341,6 +341,7 @@ namespace schema {
 		alt?: string;
 		when?: string;
 		group?: string;
+		isDefault?: boolean; // {{SQL CARBON EDIT}} - Used by object explorer, indicating whether this is the action to be executed when a node is double clicked.
 	}
 
 	export interface IUserFriendlySubmenuItem {
@@ -852,6 +853,8 @@ menusExtensionPoint.setHandler(extensions => {
 					}
 
 					item = { command, alt, group: undefined, order: undefined, when: undefined };
+
+					(<IMenuItem>item).isDefault = menuItem.isDefault; // {{SQL CARBON EDIT}}} Set isDefault property.
 				} else {
 					if (menu.supportsSubmenus === false) {
 						collector.error(localize('unsupported.submenureference', "Menu item references a submenu for a menu which doesn't have submenu support."));

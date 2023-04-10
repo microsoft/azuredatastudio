@@ -22,7 +22,7 @@ import { ScrollEvent } from 'vs/base/common/scrollable';
 import { IThemable } from 'vs/base/common/styler';
 import { isIterable } from 'vs/base/common/types';
 
-interface IAsyncDataTreeNode<TInput, T> {
+export interface IAsyncDataTreeNode<TInput, T> { // {{SQL CARBON EDIT}} - exporting interface
 	element: TInput | T;
 	readonly parent: IAsyncDataTreeNode<TInput, T> | null;
 	readonly children: IAsyncDataTreeNode<TInput, T>[];
@@ -305,7 +305,7 @@ export class AsyncDataTree<TInput, T, TFilterData = void> implements IDisposable
 
 	protected readonly tree: ObjectTree<IAsyncDataTreeNode<TInput, T>, TFilterData>;
 	protected readonly root: IAsyncDataTreeNode<TInput, T>;
-	private readonly nodes = new Map<null | T, IAsyncDataTreeNode<TInput, T>>();
+	protected readonly nodes = new Map<null | T, IAsyncDataTreeNode<TInput, T>>(); // {{SQL CARBON EDIT}}} making protected to access in subclass
 	private readonly sorter?: ITreeSorter<T>;
 	private readonly collapseByDefault?: { (e: T): boolean };
 
@@ -714,7 +714,7 @@ export class AsyncDataTree<TInput, T, TFilterData = void> implements IDisposable
 
 	// Implementation
 
-	private getDataNode(element: TInput | T): IAsyncDataTreeNode<TInput, T> {
+	protected getDataNode(element: TInput | T): IAsyncDataTreeNode<TInput, T> { // {{SQL CARBON EDIT}} making protected to override
 		const node: IAsyncDataTreeNode<TInput, T> | undefined = this.nodes.get((element === this.root.element ? null : element) as T);
 
 		if (!node) {

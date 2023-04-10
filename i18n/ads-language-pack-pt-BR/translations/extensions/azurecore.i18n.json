@@ -153,6 +153,7 @@
 		},
 		"dist/localizedConstants": {
 			"azure.azureResourcesGridTitle": "Recursos do Azure (Versão Prévia)",
+			"azure.credStoreSaveFailedError": "As chaves para cache de token não puderam ser salvas no armazenamento de credenciais, isso pode causar problemas de persistência de token de acesso do Azure e instabilidades de conexão. É provável que o SqlTools tenha atingido o limite de armazenamento de credenciais no Windows, limpe pelo menos 2 credenciais que comecem com \"Microsoft.SqlTools|\" no Gerenciador de Credenciais do Windows e recarregue.",
 			"azure.unableToOpenAzureLink": "Não é possível abrir o link, os valores necessários estão ausentes",
 			"azurecore.australiacentral": "Austrália Central",
 			"azurecore.australiacentral2": "Austrália Central 2",
@@ -168,6 +169,7 @@
 			"azurecore.centralindia": "Índia Central",
 			"azurecore.centralus": "EUA Central",
 			"azurecore.centraluseuap": "EUA Central EUAP",
+			"azurecore.deprecated": "Aviso: a ADAL foi preterida e está agendada para ser removida em uma versão futura. Em vez disso, use a MSAL.",
 			"azurecore.eastasia": "Leste da Ásia",
 			"azurecore.eastus": "Leste dos EUA",
 			"azurecore.eastus2": "Leste dos EUA 2",
