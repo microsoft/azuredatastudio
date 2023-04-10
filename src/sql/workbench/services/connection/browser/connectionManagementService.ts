@@ -540,6 +540,22 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		let isEdit = options?.params?.isEditConnection ?? false;
 
+		let matcher: interfaces.ProfileMatcher;
+		if (isEdit) {
+			matcher = (a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile) => a.id === options.params.oldProfileId;
+
+			//Check to make sure the edits are not identical to another connection.
+			await this._connectionStore.isDuplicateEdit(connection, matcher).then(result => {
+				if (result) {
+					// Must get connection group name here as it may not always be initialized and causes problems when deleting when included with options.
+					this._logService.error(`Profile edit for '${connection.id}' exactly matches an existing profile with data: '${ConnectionProfile.getDisplayOptionsKey(connection.getOptionsKey())}'`);
+					throw new Error(`Cannot save profile, the selected connection options are identical to an existing profile with details: \n
+					${ConnectionProfile.getDisplayOptionsKey(connection.getOptionsKey())}${(connection.groupFullName !== undefined && connection.groupFullName !== '' && connection.groupFullName !== '/') ?
+							ConnectionProfile.displayIdSeparator + 'groupName' + ConnectionProfile.displayNameValueSeparator + connection.groupFullName : ''}`);
+				}
+			});
+		}
+
 		if (!uri) {
 			uri = Utils.generateUri(connection);
 		}
@@ -588,11 +604,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
 				}
 				if (options.saveTheConnection || isEdit) {
-					let matcher: interfaces.ProfileMatcher;
-					if (isEdit) {
-						matcher = (a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile) => a.id === options.params.oldProfileId;
-					}
-
 					await this.saveToSettings(uri, connection, matcher).then(value => {
 						this._onAddConnectionProfile.fire(connection);
 						if (isEdit) {
@@ -697,6 +708,21 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public async openChangePasswordDialog(profile: interfaces.IConnectionProfile): Promise<string | undefined> {
 		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
 		let result = await dialog.open(profile);
+		return result;
+	}
+
+	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getNonDefaultsOnly?: boolean): string {
+		let result = '';
+		if (profile) {
+			let tempProfile = new ConnectionProfile(this._capabilitiesService, profile);
+			if (!getNonDefaultsOnly) {
+				result = tempProfile.getEditorFullTitleWithOptions();
+			}
+			else {
+				result = tempProfile.getNonDefaultOptionsString();
+			}
+			tempProfile.dispose();
+		}
 		return result;
 	}
 
@@ -1267,7 +1293,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				this._connectionGlobalStatus.setStatusToConnected(info.connectionSummary);
 			}
 
-			const connectionUniqueId = connection.connectionProfile.getConnectionInfoId();
+			const connectionUniqueId = connection.connectionProfile.getOptionsKey();
 			if (info.isSupportedVersion === false
 				&& this._connectionsGotUnsupportedVersionWarning.indexOf(connectionUniqueId) === -1
 				&& this._configurationService.getValue<boolean>('connection.showUnsupportedServerVersionWarning')) {
