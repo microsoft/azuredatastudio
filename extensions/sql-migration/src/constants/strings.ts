@@ -111,6 +111,7 @@ export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_BYPASS = localize('sql.migratio
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_DETAIL = localize('sql.migration.wizard.sku.assessment.error.detail', '[There are no assessment results to validate readiness of your database migration. By checking this box, you acknowledge you want to proceed migrating your database to the desired Azure SQL target.]',);
 export const REFRESH_ASSESSMENT_BUTTON_LABEL = localize('sql.migration.refresh.assessment.button.label', "Refresh assessment");
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose your Azure SQL target");
+export const SKU_RECOMMENDATION_CHOOSE_A_TARGET_HELP = localize('sql.migration.wizard.sku.choose_a_target.help', "Not sure which Azure SQL target is right for you? Learn more");
 
 export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure SQL Managed Instance");
 export const SKU_RECOMMENDATION_SQLDB_CARD_TEXT = localize('sql.migration.sku.sqldb.card.title', "Azure SQL Database");
@@ -582,8 +583,12 @@ export const DATABASE_BACKUP_BLOB_STORAGE_TABLE_HELP_TEXT = localize('sql.migrat
 export const DATABASE_BACKUP_BLOB_STORAGE_SUBSCRIPTION_LABEL = localize('sql.migration.blob.storage.subscription.label', "Subscription");
 export const DATABASE_BACKUP_MIGRATION_MODE_LABEL = localize('sql.migration.database.migration.mode.label', "Migration mode");
 export const DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION = localize('sql.migration.database.migration.mode.description', "To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.");
-export const DATABASE_TABLE_SELECTION_LABEL = localize('sql.migration.database.table.selection.label', "Migration table selection");
-export const DATABASE_TABLE_SELECTION_DESCRIPTION = localize('sql.migration.database.table.selection.description', "To migrate to the Azure SQL target, select tables in each database for migration.");
+export const DATABASE_TABLE_SELECTION_LABEL = localize('sql.migration.database.table.selection.label', "Table selection");
+export const DATABASE_TABLE_SELECTION_DESCRIPTION = localize('sql.migration.database.table.selection.description', "For each database below, click Edit to select the tables to migrate from source to target. Then, before clicking Next, validate the provided configuration by clicking 'Run validation'.");
+export const DATABASE_SCHEMA_MIGRATION_HELP = localize('sql.migration.database.schema.migration.help', "Make sure to migrate the database schema from source to target by using the {0} or the {1} in Azure Data Studio before selecting the list of tables to migrate.");
+export const DATABASE_SCHEMA_MIGRATION_DACPAC_EXTENSION = localize('sql.migration.database.schema.migration.dacpac', "SQL Server dacpac extension");
+export const DATABASE_SCHEMA_MIGRATION_PROJECTS_EXTENSION = localize('sql.migration.database.schema.migration.project', "SQL Database Projects extension");
+
 export const DATABASE_TABLE_REFRESH_LABEL = localize('sql.migration.database.table.refresh.label', "Refresh");
 export const DATABASE_TABLE_SOURCE_DATABASE_COLUMN_LABEL = localize('sql.migration.database.table.source.column.label', "Source database");
 export const DATABASE_TABLE_TARGET_DATABASE_COLUMN_LABEL = localize('sql.migration.database.table.target.column.label', "Target database");
@@ -655,33 +660,40 @@ export const INVALID_NETWORK_SHARE_LOCATION = localize('sql.migration.invalid.ne
 export const INVALID_USER_ACCOUNT = localize('sql.migration.invalid.user.account', "Invalid user account format. Example: {0}", WINDOWS_USER_ACCOUNT);
 export const INVALID_TARGET_NAME_ERROR = localize('sql.migration.invalid.target.name.error', "Enter a valid name for the target database.");
 export const PROVIDE_UNIQUE_CONTAINERS = localize('sql.migration.provide.unique.containers', "Provide a unique container for each target database. Databases affected: ");
-export function SQL_SOURCE_DETAILS(authMethod: MigrationSourceAuthenticationType, serverName: string): string {
+export function SQL_SOURCE_DETAILS(authMethod: MigrationSourceAuthenticationType, serverName: string, isSqlDbScenario: boolean = false): string {
 	switch (authMethod) {
 		case MigrationSourceAuthenticationType.Integrated:
-			return localize('sql.migration.source.details.windowAuth', "Enter the Windows Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup files.", serverName);
+			return isSqlDbScenario
+				? localize('sql.migration.source.details.windowAuth.db', "Enter the Windows Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance from the self-hosted integration runtime.", serverName)
+				: localize('sql.migration.source.details.windowAuth.nonDb', "Enter the Windows Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup files.", serverName);
 		case MigrationSourceAuthenticationType.Sql:
-			return localize('sql.migration.source.details.sqlAuth', "Enter the SQL Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup files.", serverName);
+			return isSqlDbScenario
+				? localize('sql.migration.source.details.sqlAuth.db', "Enter the SQL Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance from the self-hosted integration runtime.", serverName)
+				: localize('sql.migration.source.details.sqlAuth.nonDb', "Enter the SQL Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup files.", serverName);
 	}
 }
 export const SELECT_RESOURCE_GROUP_PROMPT = localize('sql.migration.blob.resourceGroup.select.prompt', "Select a resource group value first.");
 export const SELECT_STORAGE_ACCOUNT = localize('sql.migration.blob.storageAccount.select', "Select a storage account value first.");
 export const SELECT_BLOB_CONTAINER = localize('sql.migration.blob.container.select', "Select a blob container value first.");
 
+
+export const MISSING_TABLE_NAME_COLUMN = localize('sql.migration.missing.table.name.column', "Table name");
 export function SELECT_DATABASE_TABLES_TITLE(targetDatabaseName: string): string {
 	return localize('sql.migration.table.select.label', "Select tables for {0}", targetDatabaseName);
 }
 export const TABLE_SELECTION_EDIT = localize('sql.migration.table.selection.edit', "Edit");
 
 export function TABLE_SELECTION_COUNT(selectedCount: number, rowCount: number): string {
-	return localize('sql.migration.table.selection.count', "{0} of {1}", selectedCount, rowCount);
+	return localize('sql.migration.table.selection.count', "{0} of {1}", formatNumber(selectedCount), formatNumber(rowCount));
 }
 export function TABLE_SELECTED_COUNT(selectedCount: number, rowCount: number): string {
-	return localize('sql.migration.table.selected.count', "{0} of {1} tables selected", selectedCount, rowCount);
+	return localize('sql.migration.table.selected.count', "{0} of {1} tables selected", formatNumber(selectedCount), formatNumber(rowCount));
 }
 export function MISSING_TARGET_TABLES_COUNT(tables: number): string {
-	return localize('sql.migration.table.missing.count', "Missing target tables excluded from list: {0}", tables);
+	return localize('sql.migration.table.missing.count', "Tables missing on target: {0}", formatNumber(tables));
 }
-export const DATABASE_MISSING_TABLES = localize('sql.migration.database.missing.tables', "0 tables found.");
+export const SELECT_TABLES_FOR_MIGRATION = localize('sql.migration.select.migration.tables', "Select tables for migration");
+export const DATABASE_MISSING_TABLES = localize('sql.migration.database.missing.tables', "0 tables found on source database.");
 export const DATABASE_LOADING_TABLES = localize('sql.migration.database.loading.tables', "Loading tables list...");
 export const TABLE_SELECTION_FILTER = localize('sql.migration.table.selection.filter', "Filter tables");
 export const TABLE_SELECTION_UPDATE_BUTTON = localize('sql.migration.table.selection.update.button', "Update");
@@ -932,7 +944,9 @@ export const AZURE_STORAGE_ACCOUNT_TO_UPLOAD_BACKUPS = localize('sql.migration.a
 export const SHIR = localize('sql.migration.shir', "Self-hosted integration runtime node");
 export const DATABASE_TO_BE_MIGRATED = localize('sql.migration.database.to.be.migrated', "Database to be migrated");
 export function COUNT_DATABASES(count: number): string {
-	return (count === 1) ? localize('sql.migration.count.database.single', "{0} database", count) : localize('sql.migration.count.database.multiple', "{0} databases", count);
+	return (count === 1)
+		? localize('sql.migration.count.database.single', "{0} database", count)
+		: localize('sql.migration.count.database.multiple', "{0} databases", formatNumber(count));
 }
 export function TOTAL_TABLES_SELECTED(selected: number, total: number): string {
 	return localize('total.tables.selected.of.total', "{0} of {1}", formatNumber(selected), formatNumber(total));
