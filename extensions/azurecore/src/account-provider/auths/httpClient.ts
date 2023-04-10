@@ -155,7 +155,7 @@ const networkRequestViaProxy = <T>(
 		// Note: Text Encoder is necessary here because otherwise it was not able to handle Chinese characters in table names.
 		const body = (new TextEncoder()).encode(JSON.stringify(options?.body || ''));
 		postRequestStringContent =
-			'Content-Type: application/x-www-form-urlencoded\r\n' +
+			'Content-Type: application/json\r\n' +
 			`Content-Length: ${body.length}\r\n` +
 			`\r\n${body}`;
 	}
