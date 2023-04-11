@@ -118,7 +118,7 @@ describe('Azure Authentication', function () {
 			});
 
 			azureAuthCodeGrant.setup(x => x.refreshTokenAdal(mockTenant, provider.settings.ossRdbmsResource!, mockRefreshToken)).returns((): Promise<OAuthTokenResponse> => {
-				const mockToken: AccessToken = JSON.parse(JSON.stringify(mockAccessToken));
+				const mockToken: AccessToken = JSON.parse(JSON.stringify(mockAccessToken)) as AccessToken;
 				delete (mockToken as any).invalidData;
 				return Promise.resolve({
 					accessToken: mockToken
@@ -164,7 +164,7 @@ describe('Azure Authentication', function () {
 				});
 			});
 			azureAuthCodeGrant.setup(x => x.refreshTokenAdal(mockTenant, provider.settings.microsoftResource!, mockRefreshToken)).returns((): Promise<OAuthTokenResponse> => {
-				const mockToken: AccessToken = JSON.parse(JSON.stringify(mockAccessToken));
+				const mockToken: AccessToken = JSON.parse(JSON.stringify(mockAccessToken)) as AccessToken;
 				delete (mockToken as any).invalidData;
 				return Promise.resolve({
 					accessToken: mockToken

@@ -1243,6 +1243,7 @@ declare namespace Slick {
 
 		// #region Plugins
 
+		public getPlugins(): Plugin<T>[];
 		public registerPlugin(plugin: Plugin<T>): void;
 		public unregisterPlugin(plugin: Plugin<T>): void;
 

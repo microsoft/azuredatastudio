@@ -807,7 +807,9 @@ export function sortResourceArrayByName(resourceArray: SortableAzureResources[])
 export function getMigrationTargetId(migration: DatabaseMigration): string {
 	// `${targetServerId}/providers/Microsoft.DataMigration/databaseMigrations/${targetDatabaseName}?api-version=${DMSV2_API_VERSION}`
 	const paths = migration.id.split('/providers/Microsoft.DataMigration/', 1);
-	return paths[0];
+	return paths?.length > 0
+		? paths[0]
+		: '';
 }
 
 export function getMigrationTargetName(migration: DatabaseMigration): string {
