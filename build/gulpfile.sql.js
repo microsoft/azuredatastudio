@@ -188,17 +188,22 @@ gulp.task('package-langpacks', task.series(
 			const extensionPath = path.dirname(path.join(root, manifestPath));
 			const extensionName = path.basename(extensionPath);
 			return { name: extensionName, path: extensionPath };
-		}).map(element => {
-			const pkgJson = require(path.join(element.path, 'package.json'));
-			const vsixDirectory = path.join(root, '.build', 'langpacks');
-			mkdirp.sync(vsixDirectory);
-			const packagePath = path.join(vsixDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
-			console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
-			return vsce.createVSIX({
-				cwd: element.path,
-				packagePath: packagePath,
-				useYarn: true
-			});
+		}).map(async element => {
+			try {
+				const pkgJson = require(path.join(element.path, 'package.json'));
+				const vsixDirectory = path.join(root, '.build', 'langpacks');
+				mkdirp.sync(vsixDirectory);
+				const packagePath = path.join(vsixDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
+				console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
+				return await vsce.createVSIX({
+					cwd: element.path,
+					packagePath: packagePath,
+					useYarn: false
+				});
+			} catch (e) {
+				console.error(`Failed to create vsix for ${element.path}, error occurred: ${e}`);
+				throw e;
+			}
 		});
 
 		return Promise.all(vsixes);
