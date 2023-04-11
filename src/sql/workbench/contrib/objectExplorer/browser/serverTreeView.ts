@@ -415,7 +415,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				if (profile) {
 					newProfile = profile;
 				}
-				groups.forEach(group => group.dispose());
 			}
 
 			const currentSelections = this._tree!.getSelection();

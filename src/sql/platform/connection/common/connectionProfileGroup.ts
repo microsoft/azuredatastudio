@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { Disposable } from 'vs/base/common/lifecycle';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 
 export interface INewConnectionProfileGroup {
@@ -19,7 +18,7 @@ export interface IConnectionProfileGroup extends INewConnectionProfileGroup {
 	id?: string;
 }
 
-export class ConnectionProfileGroup extends Disposable implements IConnectionProfileGroup {
+export class ConnectionProfileGroup implements IConnectionProfileGroup {
 
 	private _childGroups: ConnectionProfileGroup[] = [];
 	private _childConnections: ConnectionProfile[] = [];
@@ -35,7 +34,6 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		public color?: string,
 		public description?: string
 	) {
-		super();
 		this.parentId = parent ? parent.id : undefined;
 		if (ConnectionProfileGroup.isRoot(this.name)) {
 			this.name = '';
@@ -155,7 +153,6 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		groups?.forEach((group) => {
 			this._childGroups = this._childGroups.filter((grp) => { return group.id !== grp.id; });
 			group.parent = this;
-			this._register(group);
 			this._childGroups.push(group);
 		});
 	}
