@@ -447,6 +447,11 @@
     methods "^1.1.2"
     path-to-regexp "^6.1.0"
 
+"@kurkle/color@^0.3.0":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@kurkle/color/-/color-0.3.2.tgz#5acd38242e8bde4f9986e7913c8fdf49d3aa199f"
+  integrity sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==
+
 "@microsoft/1ds-core-js@3.2.6", "@microsoft/1ds-core-js@^3.2.2":
   version "3.2.6"
   resolved "https://registry.yarnpkg.com/@microsoft/1ds-core-js/-/1ds-core-js-3.2.6.tgz#8a77909f89f991aa2f0b4ae8825c75042962e68e"
@@ -820,11 +825,6 @@
   integrity sha512-dQ3Hb58ERe5YNKFVyvU9BrEvpgKeb6Ht9HkCyBvsOZxhx6yKSwF3e+xml3PJQ3JiVOvf6gM/PmE3MdWDl1L6aA==
   dependencies:
     applicationinsights "*"
-
-"@types/chart.js@2.9.4":
-  version "2.9.4"
-  resolved "https://registry.yarnpkg.com/@types/chart.js/-/chart.js-2.9.4.tgz#19d12fae10536e7a2a6ea768c7a3811c626ca455"
-  integrity sha512-uKF7vOdTTAfrsKREKG4oojDqE/dQ5GkwdMRQGfk19aKmeC4wIF6eTWdN98PA8d+F4TPI8hy7oOTB6/JoWepEJw==
 
 "@types/cookie@^0.3.3":
   version "0.3.3"
@@ -2590,13 +2590,20 @@ charenc@0.0.2:
   resolved "https://registry.yarnpkg.com/charenc/-/charenc-0.0.2.tgz#c0a1d2f3a7092e03774bfa83f14c0fc5790a8667"
   integrity sha512-yrLQ/yVUFXkzg7EDQsPieE/53+0RlaWTs+wBrvW36cyilJ2SaDWfl4Yj7MtLTXleV9uEKefbAGUPv2/iWSooRA==
 
-chart.js@^2.6.0, chart.js@^2.9.4:
+chart.js@^2.6.0:
   version "2.9.4"
   resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-2.9.4.tgz#0827f9563faffb2dc5c06562f8eb10337d5b9684"
   integrity sha512-B07aAzxcrikjAPyV+01j7BmOpxtQETxTSlQ26BEYJ+3iUkbNKaOJ/nDbT6JjyqYxseM0ON12COHYdU2cTIjC7A==
   dependencies:
     chartjs-color "^2.1.0"
     moment "^2.10.2"
+
+chart.js@^4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-4.2.1.tgz#d2bd5c98e9a0ae35408975b638f40513b067ba1d"
+  integrity sha512-6YbpQ0nt3NovAgOzbkSSeeAQu/3za1319dPUQTXn9WcOpywM8rGKxJHrhS8V8xEkAlk8YhEfjbuAPfUyp6jIsw==
+  dependencies:
+    "@kurkle/color" "^0.3.0"
 
 chartjs-color-string@^0.6.0:
   version "0.6.0"
