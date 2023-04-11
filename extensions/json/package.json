@@ -6,7 +6,7 @@
   "publisher": "vscode",
   "license": "MIT",
   "engines": {
-    "vscode": "^0.10.0"
+    "vscode": "0.10.x"
   },
   "scripts": {
     "update-grammar": "node ./build/update-grammars.js"
