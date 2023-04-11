@@ -587,6 +587,11 @@ declare module 'azdata' {
 		 * Authentication token for the current session.
 		 */
 		securityToken?: accounts.AccountSecurityToken | undefined;
+
+		/**
+		 * Filter for expanding node.
+		 */
+		filters?: NodeInfoFilterProperty[];
 	}
 	// End Object Explorer interfaces  ----------------------------
 

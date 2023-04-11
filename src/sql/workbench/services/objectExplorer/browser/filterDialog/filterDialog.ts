@@ -41,6 +41,8 @@ import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plu
 import { Codicon } from 'vs/base/common/codicons';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import Severity from 'vs/base/common/severity';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 
 function FilterDialogTitle(nodePath: string): string { return localize('objectExplorer.filterDialogTitle', "Filter Settings: {0}", nodePath) }
 const OkButtonText = localize('objectExplorer.okButtonText', "OK");
@@ -87,6 +89,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 	constructor(
 		private _treeNode: TreeNode,
 		private _tree: AsyncServerTree | ITree,
+		private _connectionProfile: ConnectionProfile | undefined,
 		@IThemeService themeService: IThemeService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@ILayoutService layoutService: ILayoutService,
@@ -97,7 +100,8 @@ export class ObjectExplorerServiceDialog extends Modal {
 		@IContextViewService private readonly _contextViewProvider: IContextViewService,
 		@IAccessibilityService private readonly _accessibilityService: IAccessibilityService,
 		@IQuickInputService private readonly _quickInputService: IQuickInputService,
-		@IDialogService private _dialogService: IDialogService
+		@IDialogService private _dialogService: IDialogService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
 	) {
 		super(
 			'ObjectExplorerServiceDialog',
@@ -114,6 +118,10 @@ export class ObjectExplorerServiceDialog extends Modal {
 				hasTitleIcon: true
 			}
 		);
+
+		if (this._connectionProfile) {
+			this._treeNode = this._objectExplorerService.getObjectExplorerNode(this._connectionProfile);
+		}
 
 		this._treeNode.defaultFilters = [
 			{
@@ -274,7 +282,9 @@ export class ObjectExplorerServiceDialog extends Modal {
 
 
 		const tableData: Slick.SlickData[] = [];
-
+		if (!this._treeNode.filters) {
+			this._treeNode.filters = [];
+		}
 		this._treeNode.defaultFilters.forEach((f, i) => {
 			const appliedFilter = this._treeNode.filters.find(filter => filter.name === f.name);
 			const row: Slick.SlickData = {
@@ -444,14 +454,29 @@ export class ObjectExplorerServiceDialog extends Modal {
 			}
 		}
 
-		if (this._tree instanceof AsyncServerTree) {
-			await this._tree.rerender(this._treeNode);
-			await this._tree.updateChildren(this._treeNode);
-			await this._tree.expand(this._treeNode);
+		if (this._connectionProfile) {
+			const treeNode = this._objectExplorerService.getObjectExplorerNode(this._connectionProfile);
+			treeNode.filters = this._treeNode.filters;
+			if (this._tree instanceof AsyncServerTree) {
+				await this._tree.rerender(this._connectionProfile);
+				await this._tree.updateChildren(this._connectionProfile);
+				await this._tree.expand(this._connectionProfile);
+			} else {
+				await this._tree.refresh(this._connectionProfile);
+				await this._tree.expand(this._connectionProfile);
+			}
 		} else {
-			await this._tree.refresh(this._treeNode);
-			await this._tree.expand(this._treeNode);
+			if (this._tree instanceof AsyncServerTree) {
+				await this._tree.rerender(this._treeNode);
+				await this._tree.updateChildren(this._treeNode);
+				await this._tree.expand(this._treeNode);
+			} else {
+				await this._tree.refresh(this._treeNode);
+				await this._tree.expand(this._treeNode);
+			}
 		}
+
+
 		this.hide('ok');
 	}
 

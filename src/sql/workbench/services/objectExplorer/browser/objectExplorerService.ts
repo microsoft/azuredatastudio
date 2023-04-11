@@ -570,7 +570,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							self.callExpandOrRefreshFromProvider(provider, {
 								sessionId: session.sessionId!,
 								nodePath: node.nodePath,
-								securityToken: session.securityToken
+								securityToken: session.securityToken,
+								filters: node.filters
 							}, refresh).then(isExpanding => {
 								if (!isExpanding) {
 									// The provider stated it's not going to expand the node, therefore do not need to track when merging results

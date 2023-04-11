@@ -317,12 +317,47 @@ export class FilterChildren extends Action {
 		label: string,
 		private _node: TreeNode,
 		private _tree: AsyncServerTree | ITree,
+		private _profile: ConnectionProfile | undefined,
 		@IInstantiationService private _instantiationService: IInstantiationService) {
 		super(id, label);
 	}
 
 	public override async run(): Promise<void> {
-		const filterDialog = this._instantiationService.createInstance(ObjectExplorerServiceDialog, this._node, this._tree);
+		const filterDialog = this._instantiationService.createInstance(ObjectExplorerServiceDialog, this._node, this._tree, this._profile);
 		filterDialog.open();
+	}
+}
+
+export class RemoveFilterAction extends Action {
+	public static ID = 'objectExplorer.removeFilter';
+	public static LABEL = localize('objectExplorer.removeFilter', "Remove Filter");
+
+	constructor(
+		id: string,
+		label: string,
+		private _node: TreeNode,
+		private _tree: AsyncServerTree | ITree,
+		private _profile: ConnectionProfile | undefined,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
+	) {
+		super(id, label);
+	}
+
+	public override async run(): Promise<void> {
+		let node = this._node;
+		let nodeToRefresh: ServerTreeElement = this._node;
+		if (this._profile) {
+			node = this._objectExplorerService.getObjectExplorerNode(this._profile);
+			nodeToRefresh = this._profile;
+		}
+		node.filters = [];
+		if (this._tree instanceof AsyncServerTree) {
+			await this._tree.rerender(nodeToRefresh);
+			await this._tree.updateChildren(nodeToRefresh);
+			await this._tree.expand(nodeToRefresh);
+		} else {
+			await this._tree.refresh(nodeToRefresh);
+			await this._tree.expand(nodeToRefresh);
+		}
 	}
 }

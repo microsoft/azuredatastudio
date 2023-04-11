@@ -51,11 +51,7 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 			} else if (element instanceof ConnectionProfileGroup) {
 				return element.getChildren();
 			} else if (element instanceof TreeNode) {
-				if (element.children) {
-					return element.children;
-				} else {
-					return await this._objectExplorerService.resolveTreeNodeChildren(element.getSession()!, element);
-				}
+				return await this._objectExplorerService.resolveTreeNodeChildren(element.getSession()!, element);
 			}
 		} catch (err) {
 			if (element instanceof TreeNode) {

@@ -24,6 +24,7 @@ import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/comm
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { instanceOfSqlThemeIcon } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { localize } from 'vs/nls';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 
 const DefaultConnectionIconClass = 'server-page';
 
@@ -97,7 +98,8 @@ class ConnectionProfileTemplate extends Disposable {
 	constructor(
 		container: HTMLElement,
 		private _isCompact: boolean,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
 	) {
 		super();
 		container.parentElement!.classList.add('connection-profile');
@@ -123,6 +125,11 @@ class ConnectionProfileTemplate extends Disposable {
 		let label = element.title;
 		this._label.textContent = label;
 		this._root.title = element.serverInfo;
+
+		const treeNode = this._objectExplorerService.getObjectExplorerNode(element);
+		if (treeNode?.filters?.length > 0) {
+			this._label.textContent = localize('objectExplorer.filteredNodeLabel', "{0} (filtered)", this._label.textContent);
+		}
 	}
 }
 
