@@ -146,7 +146,6 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		connections?.forEach((conn) => {
 			this._childConnections = this._childConnections.filter((curConn) => { return curConn.id !== conn.id; });
 			conn.parent = this;
-			this._register(conn);
 			this._childConnections.push(conn);
 		});
 
