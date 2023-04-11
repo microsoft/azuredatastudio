@@ -57,19 +57,6 @@ suite('Data Resource Data Provider', function () {
 	let cellModel = TypeMoq.Mock.ofType(CellModel);
 	let configurationService = new TestConfigurationService();
 
-	// Create test data with two rows and two columns
-	let source: IDataResource = {
-		data: [{ 'col1': '1', 'col2': '2' }, { 'col1': '3', 'col2': '4' }],
-		schema: { fields: [{ name: 'col1' }, { name: 'col2' }] }
-	};
-	let resultSet: ResultSetSummary = {
-		batchId: 0,
-		columnInfo: [{ columnName: 'col1' }, { columnName: 'col2' }],
-		complete: true,
-		id: 0,
-		rowCount: 2
-	};
-
 	suiteSetup(async () => {
 		let notebookModel = await createandLoadNotebookModel();
 		cellModel.setup(x => x.notebookModel).returns(() => notebookModel);
@@ -98,6 +85,33 @@ suite('Data Resource Data Provider', function () {
 	});
 
 	test('serializeResults call is successful', async function (): Promise<void> {
+		// Create test data with two rows and two columns
+		let source: IDataResource = {
+			data: [{ 'col1': '1', 'col2': '2' }, { 'col1': '3', 'col2': '4' }],
+			schema: { fields: [{ name: 'col1' }, { name: 'col2' }] }
+		};
+
+		await runSerializeTest(source);
+	});
+
+	test('serializeResults call is successful with ordinal keys for source data', async function (): Promise<void> {
+		// Create test data with two rows and two columns
+		let source: IDataResource = {
+			data: [{ 0: '1', 1: '2' }, { 0: '3', 1: '4' }],
+			schema: { fields: [{ name: 'col1' }, { name: 'col2' }] }
+		};
+
+		await runSerializeTest(source);
+	});
+
+	async function runSerializeTest(source: IDataResource): Promise<void> {
+		let resultSet: ResultSetSummary = {
+			batchId: 0,
+			columnInfo: [{ columnName: 'col1' }, { columnName: 'col2' }],
+			complete: true,
+			id: 0,
+			rowCount: 2
+		};
 		let tempFolderPath = path.join(os.tmpdir(), `TestDataResourceDataProvider_${uuid.v4()}`);
 		await fs.mkdir(tempFolderPath);
 		let dataResourceDataProvider = new DataResourceDataProvider(
@@ -140,5 +154,5 @@ suite('Data Resource Data Provider', function () {
 
 		const withHeadersResult = await fs.readFile(withHeadersFile.fsPath);
 		assert.strictEqual(withHeadersResult.toString(), 'col1 col2\n1 2\n3 4\n', 'result data should include headers');
-	});
+	}
 });
