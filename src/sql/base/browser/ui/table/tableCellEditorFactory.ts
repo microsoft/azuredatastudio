@@ -96,11 +96,18 @@ export class TableCellEditorFactory {
 
 			public loadValue(item: Slick.SlickData): void {
 				this._originalValue = self._options.valueGetter(item, this._args.column) ?? '';
-				this._input.value = this._originalValue;
+				if (inputType === 'date') {
+					this._input.inputElement.valueAsDate = new Date(this._originalValue);
+				} else {
+					this._input.value = this._originalValue;
+				}
 			}
 
 			public applyValue(item: Slick.SlickData, state: string): void {
 				const activeCell = this._args.grid.getActiveCell();
+				if (inputType === 'date') {
+					state = new Date(state).toLocaleDateString();
+				}
 				self._options.valueSetter(context, activeCell.row, item, this._args.column, state);
 			}
 

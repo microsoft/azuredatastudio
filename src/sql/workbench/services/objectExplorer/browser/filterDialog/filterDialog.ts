@@ -67,6 +67,8 @@ const VALUE_COLUMN_HEADER = localize('objectExplorer.valueColumnHeader', "Value"
 const TRUE_SELECT_BOX = localize('objectExplorer.trueSelectBox', "True");
 const FALSE_SELECT_BOX = localize('objectExplorer.falseSelectBox', "False");
 
+function NodePath(nodepath: string): string { return localize('objectExplorer.nodePath', "Node Path: {0}", nodepath) }
+
 const PROPERTY_COLUMN_ID = 'property';
 const OPERATOR_COLUMN_ID = 'operator';
 const VALUE_COLUMN_ID = 'value';
@@ -80,6 +82,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 	private filterTable: Table<Slick.SlickData>;
 	private _tableCellEditorFactory: TableCellEditorFactory;
 	private _onStyleChangeEventEmitter = new Emitter<void>();
+	private _description: HTMLElement;
 
 	constructor(
 		private _treeNode: TreeNode,
@@ -117,19 +120,22 @@ export class ObjectExplorerServiceDialog extends Modal {
 				name: 'Name',
 				type: NodeInfoFilterPropertyType.string,
 				operator: undefined,
-				value: undefined
+				value: undefined,
+				description: 'Include or exclude objects based on the name or part of a name.'
 			},
 			{
 				name: 'Schema',
 				type: NodeInfoFilterPropertyType.date,
 				operator: undefined,
-				value: undefined
+				value: undefined,
+				description: 'Include or exclude objects based on the name or part of a schema.'
 			},
 			{
 				name: 'IsSystemObject',
 				type: NodeInfoFilterPropertyType.boolean,
 				operator: undefined,
-				value: undefined
+				value: undefined,
+				description: 'Include or exclude objects based on the name or part of a is system object.'
 			}
 		];
 
@@ -143,7 +149,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 
 	public override render() {
 		super.render();
-		this.title = FilterDialogTitle(this._treeNode.nodePath);
+		this.title = FilterDialogTitle(this._treeNode.getConnectionProfile().title);
 		this.titleIconClassName = TitleIconClass;
 		this._register(attachModalDialogStyler(this, this._themeService));
 		this._okButton = this.addFooterButton(OkButtonText, () => { this.onApply() });
@@ -156,6 +162,8 @@ export class ObjectExplorerServiceDialog extends Modal {
 
 	protected renderBody(container: HTMLElement): void {
 		const body = DOM.append(container, DOM.$('.filter-dialog-body'));
+		const nodePath = DOM.append(body, DOM.$('.filter-dialog-node-path'));
+		nodePath.innerText = NodePath(this._treeNode.nodePath);
 		const clauseTableContainer = DOM.append(body, DOM.$('.filter-table-container'));
 		const filter = DOM.append(clauseTableContainer, DOM.$('.filter-table'));
 		this._tableCellEditorFactory = new TableCellEditorFactory(
@@ -356,8 +364,24 @@ export class ObjectExplorerServiceDialog extends Modal {
 			autoHeight: true,
 		});
 
+		this.filterTable.grid.onActiveCellChanged.subscribe((e, any) => {
+			if (this.filterTable.grid.getActiveCell()) {
+				const row = this.filterTable.grid.getActiveCell().row;
+				const data = this.filterTable.getData().getItems()[row];
+				let index = data.index;
+				if (index === -1) {
+					index = this.filterTable.getData().getItems()[row - 1].index;
+				}
+				this._description.innerText = this._treeNode.defaultFilters[index].description;
+			}
+		});
+
 		this.filterTable.registerPlugin(clearValueColumn);
 		this.filterTable.layout(new DOM.Dimension(600, (tableData.length + 2) * TableRowHeight));
+		this._register(attachTableStyler(this.filterTable, this._themeService));
+
+		this._description = DOM.append(body, DOM.$('.filter-dialog-description'));
+		this._description.innerHTML = this._treeNode.defaultFilters[0].description;
 	}
 
 	protected layout(height?: number): void {
@@ -391,7 +415,8 @@ export class ObjectExplorerServiceDialog extends Modal {
 				type: this._treeNode.defaultFilters[row.index].type,
 				operator: this.convertOperatorToEnum(row.operator.value),
 				value: row.value.value,
-				options: []
+				options: [],
+				description: ''
 			};
 
 			const isMultipleValueFilter = filter.operator === NodeInfoOperators.between || filter.operator === NodeInfoOperators.notBetween;

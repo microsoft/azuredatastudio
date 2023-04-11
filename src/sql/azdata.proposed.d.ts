@@ -1811,11 +1811,18 @@ declare module 'azdata' {
 		 * The value of the filter property
 		 */
 		value: string;
+		/**
+		 * The second value of the filter property if the operator is between or notBetween
+		 */
 		value2?: string;
 		/**
 		 * The list of options for the filter property if the type is predefinedValues
 		 */
 		options?: string[];
+		/**
+		 * The description of the filter property
+		 */
+		description: string;
 	}
 
 	export enum NodeInfoFilterPropertyType {

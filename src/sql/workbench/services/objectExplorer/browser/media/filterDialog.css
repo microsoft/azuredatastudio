@@ -6,6 +6,8 @@
 .filter-dialog-body {
 	height: 300px;
 	padding: 10px;
+	display: flex;
+	flex-direction: column;
 }
 
 .filter-table-container .filter-table {
@@ -13,9 +15,15 @@
 	margin-bottom: 10px;
 }
 
+.filter-dialog-body .filter-dialog-node-path {
+	padding: 10px 0px;
+	font-size: 13px;
+}
+
 .filter-table-container {
 	max-height: 270px;
 	overflow-y: scroll;
+	flex: 1;
 }
 
 .filter-table-container table.filter-table-element {
@@ -58,4 +66,11 @@
 .filter-table-element .monaco-inputbox {
 	height: 25px;
 	font-size: 11px;
+}
+
+
+.filter-dialog-body .filter-dialog-description {
+	height: 50px;
+	border: 1px solid;
+	padding: 5px;
 }
