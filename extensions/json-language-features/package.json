@@ -7,7 +7,7 @@
   "license": "MIT",
   "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
   "engines": {
-    "vscode": "0.10.x"
+    "vscode": "^0.10.0"
   },
   "icon": "icons/json.png",
   "activationEvents": [
