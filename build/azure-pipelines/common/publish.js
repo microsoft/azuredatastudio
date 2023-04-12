@@ -6,10 +6,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const crypto = require("crypto");
-const azure = require("azure-storage");
 const mime = require("mime");
 const minimist = require("minimist");
 const documentdb_1 = require("documentdb");
+const storage_blob_1 = require("@azure/storage-blob");
 // {{SQL CARBON EDIT}}
 if (process.argv.length < 9) {
     console.error('Usage: node publish.js <product_quality> <platform> <file_type> <file_name> <version> <is_update> <file> [commit_id]');
@@ -104,21 +104,31 @@ function createOrUpdate(commit, quality, platform, type, release, asset, isUpdat
         });
     }));
 }
-async function assertContainer(blobService, quality) {
-    await new Promise((c, e) => blobService.createContainerIfNotExists(quality, { publicAccessLevel: 'blob' }, err => err ? e(err) : c()));
+async function assertContainer(containerClient) {
+    let containerResponse = await containerClient.createIfNotExists({ access: 'blob' });
+    return containerResponse && !!containerResponse.errorCode;
 }
-async function doesAssetExist(blobService, quality, blobName) {
-    const existsResult = await new Promise((c, e) => blobService.doesBlobExist(quality, blobName, (err, r) => err ? e(err) : c(r)));
-    return existsResult.exists;
-}
-async function uploadBlob(blobService, quality, blobName, file) {
-    const blobOptions = {
-        contentSettings: {
-            contentType: mime.lookup(file),
-            cacheControl: 'max-age=31536000, public'
-        }
-    };
-    await new Promise((c, e) => blobService.createBlockBlobFromLocalFile(quality, blobName, file, blobOptions, err => err ? e(err) : c()));
+async function uploadBlob(blobClient, file) {
+    var _a;
+    blobClient.setHTTPHeaders({
+        blobContentType: mime.lookup(file),
+        blobCacheControl: 'max-age=31536000, public'
+    });
+    const copyPoller = await blobClient.beginCopyFromURL(file, {
+        onProgress(state) {
+            console.log(`Progress: ${state.copyProgress}`);
+        },
+    });
+    while (!copyPoller.isDone()) {
+        await copyPoller.poll();
+    }
+    const result = copyPoller.getResult();
+    if (result && result.copyStatus === 'success') {
+        console.log(`Blobs uploaded successfully.`);
+    }
+    else {
+        console.error(`Blobs failed to upload, response status: ${(_a = result === null || result === void 0 ? void 0 : result._response) === null || _a === void 0 ? void 0 : _a.status}, copy status: ${result === null || result === void 0 ? void 0 : result.copyStatus}, errorcode: ${result === null || result === void 0 ? void 0 : result.errorCode}`);
+    }
 }
 async function publish(commit, quality, platform, type, name, version, _isUpdate, file, opts) {
     const isUpdate = _isUpdate === 'true';
@@ -142,54 +152,62 @@ async function publish(commit, quality, platform, type, name, version, _isUpdate
     console.log('SHA256:', sha256hash);
     const blobName = commit + '/' + name;
     const storageAccount = process.env['AZURE_STORAGE_ACCOUNT_2'];
-    const blobService = azure.createBlobService(storageAccount, process.env['AZURE_STORAGE_ACCESS_KEY_2'])
-        .withFilter(new azure.ExponentialRetryPolicyFilter(20));
-    await assertContainer(blobService, quality);
-    const blobExists = await doesAssetExist(blobService, quality, blobName);
-    if (blobExists) {
-        console.log(`Blob ${quality}, ${blobName} already exists, not publishing again.`);
-        return;
-    }
-    console.log('Uploading blobs to Azure storage...');
-    await uploadBlob(blobService, quality, blobName, file);
-    console.log('Blobs successfully uploaded.');
-    const config = await getConfig(quality);
-    console.log('Quality config:', config);
-    const asset = {
-        platform: platform,
-        type: type,
-        url: `${process.env['AZURE_CDN_URL']}/${quality}/${blobName}`,
-        hash: sha1hash,
-        sha256hash,
-        size
-    };
-    // Remove this if we ever need to rollback fast updates for windows
-    if (/win32/.test(platform)) {
-        asset.supportsFastUpdate = true;
-    }
-    console.log('Asset:', JSON.stringify(asset, null, '  '));
-    // {{SQL CARBON EDIT}}
-    // Insiders: nightly build from main
-    const isReleased = (((quality === 'insider' && /^main$|^refs\/heads\/main$/.test(sourceBranch)) ||
-        (quality === 'rc1' && /^release\/|^refs\/heads\/release\//.test(sourceBranch))) &&
-        /Project Collection Service Accounts|Microsoft.VisualStudio.Services.TFS/.test(queuedBy));
-    const release = {
-        id: commit,
-        timestamp: (new Date()).getTime(),
-        version,
-        isReleased: isReleased,
-        sourceBranch,
-        queuedBy,
-        assets: [],
-        updates: {}
-    };
-    if (!opts['upload-only']) {
-        release.assets.push(asset);
-        if (isUpdate) {
-            release.updates[platform] = type;
+    const storageKey = process.env['AZURE_STORAGE_ACCESS_KEY_2'];
+    const connectionString = `DefaultEndpointsProtocol=https;AccountName=${storageAccount};AccountKey=${storageKey}`;
+    let blobServiceClient = storage_blob_1.BlobServiceClient.fromConnectionString(connectionString, {
+        retryOptions: {
+            maxTries: 20,
+            retryPolicyType: storage_blob_1.StorageRetryPolicyType.EXPONENTIAL
         }
+    });
+    let containerClient = blobServiceClient.getContainerClient(quality);
+    if (await assertContainer(containerClient)) {
+        const blobClient = containerClient.getBlobClient(blobName);
+        const blobExists = await blobClient.exists();
+        if (blobExists) {
+            console.log(`Blob ${quality}, ${blobName} already exists, not publishing again.`);
+            return;
+        }
+        console.log('Uploading blobs to Azure storage...');
+        await uploadBlob(blobClient, file);
+        const config = await getConfig(quality);
+        console.log('Quality config:', config);
+        const asset = {
+            platform: platform,
+            type: type,
+            url: `${process.env['AZURE_CDN_URL']}/${quality}/${blobName}`,
+            hash: sha1hash,
+            sha256hash,
+            size
+        };
+        // Remove this if we ever need to rollback fast updates for windows
+        if (/win32/.test(platform)) {
+            asset.supportsFastUpdate = true;
+        }
+        console.log('Asset:', JSON.stringify(asset, null, '  '));
+        // {{SQL CARBON EDIT}}
+        // Insiders: nightly build from main
+        const isReleased = (((quality === 'insider' && /^main$|^refs\/heads\/main$/.test(sourceBranch)) ||
+            (quality === 'rc1' && /^release\/|^refs\/heads\/release\//.test(sourceBranch))) &&
+            /Project Collection Service Accounts|Microsoft.VisualStudio.Services.TFS/.test(queuedBy));
+        const release = {
+            id: commit,
+            timestamp: (new Date()).getTime(),
+            version,
+            isReleased: isReleased,
+            sourceBranch,
+            queuedBy,
+            assets: [],
+            updates: {}
+        };
+        if (!opts['upload-only']) {
+            release.assets.push(asset);
+            if (isUpdate) {
+                release.updates[platform] = type;
+            }
+        }
+        await createOrUpdate(commit, quality, platform, type, release, asset, isUpdate);
     }
-    await createOrUpdate(commit, quality, platform, type, release, asset, isUpdate);
 }
 const RETRY_TIMES = 10;
 async function retry(fn) {

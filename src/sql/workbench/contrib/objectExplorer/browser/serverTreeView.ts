@@ -228,7 +228,12 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			if (this._tree instanceof AsyncServerTree) {
 				const connectionParentGroup = this._tree.getElementById(newConnection.groupId) as ConnectionProfileGroup;
 				if (connectionParentGroup) {
-					connectionParentGroup.connections.push(newConnection);
+					const matchingConnectionIndex = connectionParentGroup.connections.findIndex((connection) => connection.matches(newConnection));
+					if (matchingConnectionIndex !== -1) {
+						connectionParentGroup.connections[matchingConnectionIndex] = newConnection;
+					} else {
+						connectionParentGroup.connections.push(newConnection);
+					}
 					newConnection.parent = connectionParentGroup;
 					newConnection.groupId = connectionParentGroup.id;
 					await this._tree.updateChildren(connectionParentGroup);
@@ -415,7 +420,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				if (profile) {
 					newProfile = profile;
 				}
-				groups.forEach(group => group.dispose());
 			}
 
 			const currentSelections = this._tree!.getSelection();
