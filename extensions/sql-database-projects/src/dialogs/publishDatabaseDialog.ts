@@ -966,6 +966,9 @@ export class PublishDatabaseDialog {
 
 			this.profileUsed = true;
 			this.publishProfileUri = filePath;
+
+			await this.project.addNoneItem(path.relative(this.project.projectFolderPath, filePath.fsPath));
+			void vscode.commands.executeCommand(constants.refreshDataWorkspaceCommand);		//refresh data workspace to load the newly added profile to the tree
 		});
 
 		return saveProfileAsButton;

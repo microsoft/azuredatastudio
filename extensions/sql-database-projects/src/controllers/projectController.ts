@@ -821,6 +821,7 @@ export class ProjectsController {
 					await project.excludePostDeploymentScript(fileEntry.relativePath);
 					break;
 				case constants.DatabaseProjectItemType.noneFile:
+				case constants.DatabaseProjectItemType.publishProfile:
 					await project.excludeNoneItem(fileEntry.relativePath);
 					break;
 				default:
@@ -880,6 +881,7 @@ export class ProjectsController {
 						await project.deletePostDeploymentScript(node.entryKey);
 						break;
 					case constants.DatabaseProjectItemType.noneFile:
+					case constants.DatabaseProjectItemType.publishProfile:
 						await project.deleteNoneItem(node.entryKey);
 						break;
 					default:
@@ -904,13 +906,21 @@ export class ProjectsController {
 		const node = context.element as BaseProjectTreeItem;
 		const project = await this.getProjectFromContext(node);
 		const file = this.getFileProjectEntry(project, node);
+		const baseName = path.basename(node.friendlyName);
+		let fileExtension: string;
+
+		if (utils.isPublishProfile(baseName)) {
+			fileExtension = constants.publishProfileExtension;
+		} else {
+			fileExtension = constants.sqlFileExtension;
+		}
 
 		// need to use quickpick because input box isn't supported in treeviews
 		// https://github.com/microsoft/vscode/issues/117502 and https://github.com/microsoft/vscode/issues/97190
 		const newFileName = await vscode.window.showInputBox(
 			{
 				title: constants.enterNewName,
-				value: path.basename(node.friendlyName, constants.sqlFileExtension),
+				value: path.basename(baseName, fileExtension),
 				ignoreFocusOut: true,
 				validateInput: async (value) => {
 					return await this.fileAlreadyExists(value, file?.fsUri.fsPath!) ? constants.fileAlreadyExists(value) : undefined;
@@ -921,7 +931,7 @@ export class ProjectsController {
 			return;
 		}
 
-		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(file?.relativePath!)), `${newFileName}.sql`);
+		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(file?.relativePath!)), `${newFileName}${fileExtension}`);
 
 		const renameResult = await project.move(node, newFilePath);
 
