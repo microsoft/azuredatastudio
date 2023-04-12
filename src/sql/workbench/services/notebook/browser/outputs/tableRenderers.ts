@@ -8,7 +8,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
-import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
+import { IDataResource, IDataResourceRow } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
@@ -88,7 +88,7 @@ export function renderDataResource(
 }
 
 // SlickGrid requires columns and data to be in a very specific format; this code was adapted from tableInsight.component.ts
-function transformData(rows: { [key: string]: any }[], columns: Slick.Column<any>[]): { [key: string]: string }[] {
+function transformData(rows: IDataResourceRow[], columns: Slick.Column<any>[]): IDataResourceRow[] {
 	let useColumnNameKey = equals(columns.map(column => column.name), Object.keys(rows[0]));
 	return rows.map(row => {
 		let dataWithSchema = {};

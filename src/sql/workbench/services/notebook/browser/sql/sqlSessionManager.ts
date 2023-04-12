@@ -702,9 +702,9 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		return htmlTable;
 	}
 
-	private convertRowsToDataResource(columns: IColumn[], rows: ICellValue[][]): { [key: string]: any }[] {
+	private convertRowsToDataResource(columns: IColumn[], rows: ICellValue[][]): IDataResourceRow[] {
 		return rows.map(row => {
-			let rowObject: { [key: string]: any; } = {};
+			let rowObject = {};
 			row.forEach((val, index) => {
 				let columnName = columns[index].columnName;
 				rowObject[columnName] = val.displayValue;
@@ -776,7 +776,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 
 export interface IDataResource {
 	schema: IDataResourceFields;
-	data: { [key: string]: any }[];
+	data: IDataResourceRow[];
 }
 
 export interface IDataResourceFields {
@@ -786,6 +786,10 @@ export interface IDataResourceFields {
 export interface IDataResourceSchema {
 	name: string;
 	type?: string;
+}
+
+export interface IDataResourceRow {
+	[key: string]: any;
 }
 
 class ExternalScriptMagic {
