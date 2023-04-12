@@ -17,7 +17,6 @@ import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additio
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { equals } from 'vs/base/common/arrays';
 
 /**
  * Render DataResource as a grid into a host node.
@@ -89,7 +88,8 @@ export function renderDataResource(
 
 // SlickGrid requires columns and data to be in a very specific format; this code was adapted from tableInsight.component.ts
 function transformData(rows: IDataResourceRow[], columns: Slick.Column<any>[]): IDataResourceRow[] {
-	let useColumnNameKey = equals(columns.map(column => column.name), Object.keys(rows[0]));
+	// Rows are either indexed by column name or ordinal number, so check for one column name to see if it uses that format
+	let useColumnNameKey = Object.keys(rows[0]).includes(columns[0].name);
 	return rows.map(row => {
 		let dataWithSchema = {};
 		Object.keys(row).forEach((val, index) => {

@@ -372,8 +372,8 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	private transformSource(source: IDataResource): void {
 		if (source.data.length > 0) {
 			let columns = source.schema.fields;
-			// Check if column names match the keys in the data. If they don't, then fall back to using ordinal keys for the data.
-			let useColumnNameKey = equals(columns.map(column => column.name), Object.keys(source.data[0]));
+			// Rows are either indexed by column name or ordinal number, so check for one column name to see if it uses that format
+			let useColumnNameKey = Object.keys(source.data[0]).includes(columns[0].name);
 			this._rows = source.data.map(row => {
 				let rowData: azdata.DbCellValue[] = [];
 				for (let index = 0; index < Object.keys(row).length; index++) {
