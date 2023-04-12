@@ -9,18 +9,21 @@ import { promises as fsPromises } from 'fs';
 import * as lockFile from 'lockfile';
 import * as path from 'path';
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { AccountsClearTokenCacheCommand, AuthLibrary } from '../../constants';
 import { Logger } from '../../utils/Logger';
 import { FileEncryptionHelper } from './fileEncryptionHelper';
+import { CacheEncryptionKeys } from 'azurecore';
 
 export class MsalCachePluginProvider {
 	constructor(
 		private readonly _serviceName: string,
 		private readonly _msalFilePath: string,
-		private readonly _credentialService: azdata.CredentialProvider
+		private readonly _credentialService: azdata.CredentialProvider,
+		private readonly _onEncryptionKeysUpdated: vscode.EventEmitter<CacheEncryptionKeys>
 	) {
 		this._msalFilePath = path.join(this._msalFilePath, this._serviceName);
-		this._fileEncryptionHelper = new FileEncryptionHelper(AuthLibrary.MSAL, this._credentialService, this._serviceName);
+		this._fileEncryptionHelper = new FileEncryptionHelper(AuthLibrary.MSAL, this._credentialService, this._serviceName, this._onEncryptionKeysUpdated);
 	}
 
 	private _lockTaken: boolean = false;
@@ -28,6 +31,14 @@ export class MsalCachePluginProvider {
 
 	private getLockfilePath(): string {
 		return this._msalFilePath + '.lockfile';
+	}
+
+	public async init(): Promise<void> {
+		await this._fileEncryptionHelper.init();
+	}
+
+	public getCacheEncryptionKeys(): CacheEncryptionKeys {
+		return this._fileEncryptionHelper.getEncryptionKeys();
 	}
 
 	public getCachePlugin(): ICachePlugin {

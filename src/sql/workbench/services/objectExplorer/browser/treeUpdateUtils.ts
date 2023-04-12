@@ -15,6 +15,9 @@ import { Disposable, isDisposable } from 'vs/base/common/lifecycle';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
+import * as nls from 'vs/nls';
+import { NODE_EXPANSION_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export interface IExpandableTree extends ITree {
 	/**
@@ -148,10 +151,7 @@ export class TreeUpdateUtils {
 
 	public static getTreeInput(connectionManagementService: IConnectionManagementService, providers?: string[]): ConnectionProfileGroup | undefined {
 		const groups = connectionManagementService.getConnectionGroups(providers);
-		const input = groups.find(group => group.isRoot);
-		// Dispose of the unused groups to clean up their handlers
-		groups.filter(g => g !== input).forEach(g => g.dispose());
-		return input;
+		return groups.find(group => group.isRoot);
 	}
 
 	public static hasObjectExplorerNode(connection: ConnectionProfile, connectionManagementService: IConnectionManagementService): boolean {
@@ -222,8 +222,13 @@ export class TreeUpdateUtils {
 	 * @param connectionManagementService Connection management service instance
 	 * @param objectExplorerService Object explorer service instance
 	 */
-	public static async connectAndCreateOeSession(connection: ConnectionProfile, options: IConnectionCompletionOptions,
-		connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, tree: AsyncServerTree | ITree | undefined, requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<boolean> {
+	public static async connectAndCreateOeSession(
+		connection: ConnectionProfile,
+		options: IConnectionCompletionOptions,
+		connectionManagementService: IConnectionManagementService,
+		objectExplorerService: IObjectExplorerService,
+		tree: AsyncServerTree | ITree | undefined,
+		requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<boolean> {
 		const connectedConnection = await TreeUpdateUtils.connectIfNotConnected(connection, options, connectionManagementService, tree);
 		if (connectedConnection) {
 			// append group ID and original display name to build unique OE session ID
@@ -264,7 +269,12 @@ export class TreeUpdateUtils {
 		}
 	}
 
-	public static async getAsyncConnectionNodeChildren(connection: ConnectionProfile, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService): Promise<TreeNode[]> {
+	public static async getAsyncConnectionNodeChildren(
+		connection: ConnectionProfile,
+		connectionManagementService: IConnectionManagementService,
+		objectExplorerService: IObjectExplorerService,
+		configurationService: IConfigurationService
+	): Promise<TreeNode[]> {
 		if (connection.isDisconnecting) {
 			return [];
 		} else {
@@ -281,14 +291,31 @@ export class TreeUpdateUtils {
 					showFirewallRuleOnError: true,
 					showDashboard: false
 				};
+				const expansionTimeoutValueSec = configurationService.getValue<number>(NODE_EXPANSION_CONFIG);
 				// Need to wait for the OE service to update its nodes in order to resolve the children
-				const nodesUpdatedPromise = new Promise((resolve, reject) => {
-					objectExplorerService.onUpdateObjectExplorerNodes(e => {
-						if (e.errorMessage) {
-							reject(new Error(e.errorMessage));
-						}
-						if (e.connection.id === connection.id) {
-							resolve(undefined);
+				const nodesUpdatedPromise = new Promise<void>((resolve, reject) => {
+					// Clean up timeout and listener
+					const cleanup = () => {
+						clearTimeout(nodeUpdateTimer);
+						nodesUpdatedListener.dispose();
+					}
+
+					// If the node update takes too long, reject the promise
+					const nodeUpdateTimeout = () => {
+						cleanup();
+						reject(new Error(nls.localize('objectExplorerTimeout', "Object Explorer expansion timed out for '{0}'", connection.databaseName)));
+					}
+					const nodeUpdateTimer = setTimeout(nodeUpdateTimeout, expansionTimeoutValueSec * 1000);
+
+
+					const nodesUpdatedListener = objectExplorerService.onUpdateObjectExplorerNodes(e => {
+						if (e.connection && e.connection.id === connection.id) {
+							if (e.errorMessage) {
+								reject(new Error(e.errorMessage));
+							} else {
+								resolve();
+							}
+							cleanup();
 						}
 					});
 				});

@@ -11,8 +11,9 @@ import { promptForPublishProfile } from './publishDatabaseDialog';
 import { getDefaultPublishDeploymentOptions, getVscodeMssqlApi } from '../common/utils';
 import { IConnectionInfo, IFireWallRuleError } from 'vscode-mssql';
 import { getPublishServerName } from './utils';
-import { ISqlProjectPublishSettings, ISqlProject, SqlTargetPlatform } from 'sqldbproj';
+import { ISqlProject, SqlTargetPlatform } from 'sqldbproj';
 import { DBProjectConfigurationKey } from '../tools/netcoreTool';
+import { ISqlProjectPublishSettings } from '../models/deploy/publishSettings';
 
 /**
  * Create flow for Publishing a database using only VS Code-native APIs such as QuickPick

@@ -141,7 +141,7 @@ export class InfoBox extends Disposable implements IThemable {
 		for (let i = 0; i < this._links.length; i++) {
 			const placeholderIndex = text.indexOf(`{${i}}`);
 			if (placeholderIndex < 0) {
-				this._logService.warn(`Could not find placeholder text {${i}} in text ${text}`);
+				this._logService.warn(`Could not find placeholder text {${i}} in text '${text}'. Link: ${JSON.stringify(this._links[i])}`);
 				// Just continue on so we at least show the rest of the text if just one was missed or something
 				continue;
 			}

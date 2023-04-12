@@ -387,7 +387,7 @@ export namespace UpdateAgentNotebookRunPinRequest {
 }
 
 export namespace AgentNotebookTemplateRequest {
-	export const type = new RequestType<AgentNotebookTemplateParams, azdata.ResultStatus, void, void>('agent/notebooktemplate');
+	export const type = new RequestType<AgentNotebookTemplateParams, azdata.AgentNotebookTemplateResult, void, void>('agent/notebooktemplate');
 }
 
 export namespace CreateAgentNotebookRequest {
@@ -908,10 +908,6 @@ export interface AddSqlCmdVariableParams extends SqlProjectParams {
 	 * Default value of the SQLCMD variable
 	 */
 	defaultValue: string;
-	/**
-	 * Value of the SQLCMD variable, with or without the $()
-	 */
-	value: string;
 }
 
 export interface DeleteSqlCmdVariableParams extends SqlProjectParams {
@@ -1539,15 +1535,6 @@ export namespace UpdateLoginRequest {
 	export const type = new RequestType<UpdateLoginRequestParams, void, void, void>('objectManagement/updateLogin');
 }
 
-export interface DeleteLoginRequestParams {
-	connectionUri: string;
-	name: string;
-}
-
-export namespace DeleteLoginRequest {
-	export const type = new RequestType<DeleteLoginRequestParams, void, void, void>('objectManagement/deleteLogin');
-}
-
 export interface DisposeLoginViewRequestParams {
 	contextId: string;
 }
@@ -1586,16 +1573,6 @@ export namespace UpdateUserRequest {
 	export const type = new RequestType<UpdateUserRequestParams, void, void, void>('objectManagement/updateUser');
 }
 
-export interface DeleteUserRequestParams {
-	connectionUri: string;
-	database: string;
-	name: string;
-}
-
-export namespace DeleteUserRequest {
-	export const type = new RequestType<DeleteUserRequestParams, void, void, void>('objectManagement/deleteUser');
-}
-
 export interface DisposeUserViewRequestParams {
 	contextId: string;
 }
@@ -1614,4 +1591,34 @@ export namespace RenameObjectRequest {
 	export const type = new RequestType<RenameObjectRequestParams, void, void, void>('objectManagement/rename');
 }
 
+export interface DropObjectRequestParams {
+	connectionUri: string;
+	objectUrn: string;
+}
+
+export namespace DropObjectRequest {
+	export const type = new RequestType<DropObjectRequestParams, void, void, void>('objectManagement/drop');
+}
 // ------------------------------- < Object Management > ------------------------------------
+
+// ------------------------------- < Encryption IV/KEY updation Event > ------------------------------------
+/**
+ * Parameters for the MSAL cache encryption key notification
+ */
+export class DidChangeEncryptionIVKeyParams {
+	/**
+	 * Buffer encoded IV string for MSAL cache encryption
+	 */
+	public iv: string;
+	/**
+	 * Buffer encoded Key string for MSAL cache encryption
+	 */
+	public key: string;
+}
+
+/**
+ * Notification sent when the encryption keys are changed.
+ */
+export namespace EncryptionKeysChangedNotification {
+	export const type = new NotificationType<DidChangeEncryptionIVKeyParams, void>('connection/encryptionKeysChanged');
+}

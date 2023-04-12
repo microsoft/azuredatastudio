@@ -493,7 +493,8 @@
         {
           "command": "mssql.designTable",
           "when": "connectionProvider == MSSQL && nodeType == Table && nodeSubType != LedgerDropped",
-          "group": "0_query@3"
+          "group": "0_query@3",
+          "isDefault": true
         },
         {
           "command": "mssql.newTable",
@@ -513,7 +514,8 @@
         {
           "command": "mssql.objectProperties",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
-          "group": "0_query@1"
+          "group": "0_query@1",
+          "isDefault": true
         },
         {
           "command": "mssql.deleteObject",
@@ -1048,7 +1050,8 @@
               "dependentOptionActions": [
                 {
                   "optionName": "attestationProtocol",
-                  "action": "hide"
+                  "action": "hide",
+                  "required": true
                 }
               ]
             }
@@ -1089,7 +1092,8 @@
               "dependentOptionActions": [
                 {
                   "optionName": "enclaveAttestationUrl",
-                  "action": "hide"
+                  "action": "hide",
+                  "required": true
                 }
               ]
             }
@@ -1449,7 +1453,7 @@
     }
   },
   "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^3.0.0",
+    "@microsoft/ads-extension-telemetry": "^3.0.1",
     "@microsoft/ads-service-downloader": "^1.2.1",
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.3.2",
     "find-remove": "1.2.1",

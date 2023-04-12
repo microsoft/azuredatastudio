@@ -16,7 +16,7 @@ import { Project } from '../../models/project';
 import { ProjectsController } from '../../controllers/projectController';
 import { emptySqlDatabaseProjectTypeId } from '../../common/constants';
 import { createContext, mockDacFxOptionsResult, TestContext } from '../testContext';
-import { ISqlProjectPublishSettings, IPublishToDockerSettings } from 'sqldbproj';
+import { IPublishToDockerSettings, ISqlProjectPublishSettings } from '../../models/deploy/publishSettings';
 
 let testContext: TestContext;
 describe('Publish Database Dialog', () => {
@@ -26,13 +26,13 @@ describe('Publish Database Dialog', () => {
 		testContext = createContext();
 	});
 
-	after(async function(): Promise<void> {
+	after(async function (): Promise<void> {
 		await testUtils.deleteGeneratedTestFolder();
 	});
 
 	it('Should open dialog successfully ', async function (): Promise<void> {
 		const projController = new ProjectsController(testContext.outputChannel);
-		const projFileDir = path.join(testUtils.generateBaseFolderName(), `TestProject_${new Date().getTime()}`);
+		const projFileDir = await testUtils.generateTestFolderPath(this.test);
 
 		const projFilePath = await projController.createNewProject({
 			newProjName: 'TestProjectName',
@@ -50,8 +50,7 @@ describe('Publish Database Dialog', () => {
 
 	it('Should create default database name correctly ', async function (): Promise<void> {
 		const projController = new ProjectsController(testContext.outputChannel);
-		const projFolder = `TestProject_${new Date().getTime()}`;
-		const projFileDir = path.join(testUtils.generateBaseFolderName(), projFolder);
+		const projFileDir = await testUtils.generateTestFolderPath(this.test);
 
 		const projFilePath = await projController.createNewProject({
 			newProjName: 'TestProjectName',
@@ -68,7 +67,7 @@ describe('Publish Database Dialog', () => {
 	});
 
 	it('Should include all info in publish profile', async function (): Promise<void> {
-		const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
+		const proj = await testUtils.createTestProject(this.test, baselines.openProjectFileBaseline);
 		const dialog = TypeMoq.Mock.ofType(PublishDatabaseDialog, undefined, undefined, proj);
 		dialog.setup(x => x.getConnectionUri()).returns(() => { return Promise.resolve('Mock|Connection|Uri'); });
 		dialog.setup(x => x.targetDatabaseName).returns(() => 'MockDatabaseName');

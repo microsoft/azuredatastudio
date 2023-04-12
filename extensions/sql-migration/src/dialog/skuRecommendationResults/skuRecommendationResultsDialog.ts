@@ -5,11 +5,12 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
+import { MigrationStateModel } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import * as contracts from '../../service/contracts';
 import * as styles from '../../constants/styles';
 import * as utils from '../../api/utils';
+import { MigrationTargetType } from '../../api/utils';
 import * as fs from 'fs';
 import path = require('path');
 

@@ -8,16 +8,17 @@ import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { getStorageAccountAccessKeys, SqlVMServer } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, NetworkShare, StateChangeEvent, ValidateIrState, ValidationResult } from '../models/stateMachine';
+import { MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, NetworkContainerType, NetworkShare, StateChangeEvent, ValidateIrState, ValidationResult } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as utils from '../api/utils';
+import { MigrationTargetType } from '../api/utils';
 import { logError, TelemetryViews } from '../telemetry';
 import * as styles from '../constants/styles';
 import { TableMigrationSelectionDialog } from '../dialog/tableMigrationSelection/tableMigrationSelectionDialog';
 import { ValidateIrDialog } from '../dialog/validationResults/validateIrDialog';
-import { getSourceConnectionCredentials, getSourceConnectionProfile, getSourceConnectionQueryProvider, getSourceConnectionUri } from '../api/sqlUtils';
+import { canTargetConnectToStorageAccount, getSourceConnectionCredentials, getSourceConnectionProfile, getSourceConnectionQueryProvider, getSourceConnectionUri } from '../api/sqlUtils';
 
 const WIZARD_TABLE_COLUMN_WIDTH = '200px';
 const WIZARD_TABLE_COLUMN_WIDTH_SMALL = '170px';
@@ -48,6 +49,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _blobContainerDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerLastBackupFileDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerFolderDropdowns!: azdata.DropDownComponent[];
+	private _blobContainerFolderStructureInfoBox!: azdata.TextComponent;
 	private _blobContainerVmDatabaseAlreadyExistsInfoBox!: azdata.TextComponent;
 
 	private _networkShareStorageAccountDetails!: azdata.FlexContainer;
@@ -70,6 +72,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	private _existingDatabases: string[] = [];
 	private _nonPageBlobErrors: string[] = [];
+	private _inaccessibleStorageAccounts: string[] = [];
 	private _disposables: vscode.Disposable[] = [];
 
 	// SQL DB table  selection
@@ -491,6 +494,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
+		this._blobContainerFolderStructureInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				text: constants.DATABASE_BACKUP_BLOB_FOLDER_STRUCTURE_INFO,
+				style: 'information',
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: { ...styles.BODY_CSS }
+			}).component();
+
 		this._blobContainerVmDatabaseAlreadyExistsInfoBox = this._view.modelBuilder.infoBox()
 			.withProps({
 				text: constants.DATABASE_ALREADY_EXISTS_VM_INFO,
@@ -503,6 +514,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withItems([
 				blobTableText,
 				allFieldsRequiredLabel,
+				this._blobContainerFolderStructureInfoBox,
 				this._blobContainerVmDatabaseAlreadyExistsInfoBox,
 				this._blobContainerTargetDatabaseNamesTable])
 			.withProps({ CSSStyles: { 'display': 'none', } })
@@ -604,7 +616,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				fireOnTextChange: true,
 			}).component();
 		this._disposables.push(
-			this._networkShareContainerStorageAccountDropdown.onValueChanged((value) => {
+			this._networkShareContainerStorageAccountDropdown.onValueChanged(async (value) => {
 				if (value && value !== 'undefined') {
 					const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === value);
 					if (selectedStorageAccount) {
@@ -612,6 +624,22 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							this.migrationStateModel._databaseBackup.networkShares[i].storageAccount = selectedStorageAccount;
 						}
 						this.migrationStateModel.resetIrValidationResults();
+
+						// check for storage account connectivity
+						if ((this.migrationStateModel.isSqlMiTarget || this.migrationStateModel.isSqlVmTarget)) {
+							if (!(await canTargetConnectToStorageAccount(this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance, selectedStorageAccount, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription))) {
+								this._inaccessibleStorageAccounts = [selectedStorageAccount.name];
+							} else {
+								this._inaccessibleStorageAccounts = [];
+							}
+
+							this.wizard.message = {
+								text: this._inaccessibleStorageAccounts.length > 0
+									? constants.STORAGE_ACCOUNT_CONNECTIVITY_WARNING(this.migrationStateModel._targetServerInstance.name, this._inaccessibleStorageAccounts)
+									: '',
+								level: azdata.window.MessageLevel.Warning
+							}
+						}
 					}
 				}
 			}));
@@ -627,7 +655,26 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		this._disposables.push(
 			this._networkShareContainerStorageAccountRefreshButton.onDidClick(
-				value => this.loadNetworkShareStorageDropdown()));
+				async () => {
+					this.loadNetworkShareStorageDropdown();
+
+					// check for storage account connectivity
+					const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === (this._networkShareContainerStorageAccountDropdown.value as azdata.CategoryValue).displayName);
+					if ((this.migrationStateModel.isSqlMiTarget || this.migrationStateModel.isSqlVmTarget) && selectedStorageAccount) {
+						if (!(await canTargetConnectToStorageAccount(this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance, selectedStorageAccount, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription))) {
+							this._inaccessibleStorageAccounts = [selectedStorageAccount.name];
+						} else {
+							this._inaccessibleStorageAccounts = [];
+						}
+
+						this.wizard.message = {
+							text: this._inaccessibleStorageAccounts.length > 0
+								? constants.STORAGE_ACCOUNT_CONNECTIVITY_WARNING(this.migrationStateModel._targetServerInstance.name, this._inaccessibleStorageAccounts)
+								: '',
+							level: azdata.window.MessageLevel.Warning
+						}
+					}
+				}));
 
 		const storageAccountContainer = this._view.modelBuilder.flexContainer()
 			.withProps({ CSSStyles: { 'margin-top': '-1em' } })
@@ -674,6 +721,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		await utils.updateControlDisplay(this._networkShareVmDatabaseAlreadyExistsInfoBox, isSqlVmTarget);
 		await utils.updateControlDisplay(this._networkTableContainer, isNetworkShare && !isSqlDbTarget);
 		await utils.updateControlDisplay(this._blobContainer, isBlobContainer && !isSqlDbTarget);
+		await utils.updateControlDisplay(this._blobContainerFolderStructureInfoBox, isBlobContainer && !isSqlDbTarget);
 		await utils.updateControlDisplay(this._blobContainerVmDatabaseAlreadyExistsInfoBox, isSqlVmTarget);
 		await utils.updateControlDisplay(this._blobTableContainer, isBlobContainer && !isSqlDbTarget);
 
@@ -824,10 +872,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 				this._blobContainerTargetDatabaseNamesTable.columns[folderColumnIndex].hidden = folderColumnNewHidden;
 
-
-
-
-
 				const connectionProfile = await getSourceConnectionProfile();
 				const queryProvider = await getSourceConnectionQueryProvider();
 				let username = '';
@@ -848,19 +892,22 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							: undefined!;
 				this._sourceHelpText.value = constants.SQL_SOURCE_DETAILS(
 					this.migrationStateModel._authenticationType,
-					connectionProfile.serverName);
+					connectionProfile.serverName,
+					isSqlDbTarget);
 
 				this._sqlSourceUsernameInput.value = username;
 				this._sqlSourcePassword.value = (await getSourceConnectionCredentials()).password;
 
-				this._windowsUserAccountText.value =
-					this.migrationStateModel._databaseBackup.networkShares[0]?.windowsUser
-					?? this.migrationStateModel.savedInfo?.networkShares[0]?.windowsUser
-					?? '';
-				this._passwordText.value =
-					this.migrationStateModel._databaseBackup.networkShares[0]?.password
-					?? this.migrationStateModel.savedInfo?.networkShares[0]?.password
-					?? '';
+				const networkShares = this.migrationStateModel._databaseBackup?.networkShares?.length > 0
+					? this.migrationStateModel._databaseBackup?.networkShares
+					: this.migrationStateModel.savedInfo?.networkShares ?? [];
+
+				const networkShare = networkShares?.length > 0
+					? networkShares[0]
+					: undefined;
+
+				this._windowsUserAccountText.value = networkShare?.windowsUser ?? '';
+				this._passwordText.value = networkShare?.password ?? '';
 
 				this._networkShareTargetDatabaseNames = [];
 				this._networkShareLocations = [];
@@ -870,6 +917,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				this._blobContainerDropdowns = [];
 				this._blobContainerLastBackupFileDropdowns = [];
 				this._blobContainerFolderDropdowns = [];
+				this._inaccessibleStorageAccounts = [];
 
 				if (this.migrationStateModel.isSqlMiTarget) {
 					this._existingDatabases = await this.migrationStateModel.getManagedDatabases();
@@ -1072,7 +1120,28 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							if (value && value !== 'undefined') {
 								const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === value);
 								if (selectedStorageAccount && !blobStorageAccountErrorStrings.includes(value)) {
+									const oldSelectedStorageAccount = this.migrationStateModel._databaseBackup.blobs[index].storageAccount ? this.migrationStateModel._databaseBackup.blobs[index].storageAccount.name : '';
 									this.migrationStateModel._databaseBackup.blobs[index].storageAccount = selectedStorageAccount;
+
+									// check for storage account connectivity
+									if ((this.migrationStateModel.isSqlMiTarget || this.migrationStateModel.isSqlVmTarget)) {
+										if (this.migrationStateModel._databaseBackup.blobs.filter((e, i) => i !== index).every(blob => blob.storageAccount && blob.storageAccount.name.toLowerCase() !== oldSelectedStorageAccount.toLowerCase())) {
+											this._inaccessibleStorageAccounts = this._inaccessibleStorageAccounts.filter(storageAccountName => storageAccountName.toLowerCase() !== oldSelectedStorageAccount.toLowerCase());
+										}
+
+										if (!(await canTargetConnectToStorageAccount(this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance, selectedStorageAccount, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription))) {
+											this._inaccessibleStorageAccounts = this._inaccessibleStorageAccounts.filter(storageAccountName => storageAccountName.toLowerCase() !== selectedStorageAccount.name.toLowerCase());
+											this._inaccessibleStorageAccounts.push(selectedStorageAccount.name);
+										}
+
+										this.wizard.message = {
+											text: this._inaccessibleStorageAccounts.length > 0
+												? constants.STORAGE_ACCOUNT_CONNECTIVITY_WARNING(this.migrationStateModel._targetServerInstance.name, this._inaccessibleStorageAccounts)
+												: '',
+											level: azdata.window.MessageLevel.Warning
+										}
+									}
+
 									await this.loadBlobContainerDropdown(index);
 									await blobContainerDropdown.updateProperties({ enabled: true });
 								} else {
@@ -1089,6 +1158,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 								if (selectedBlobContainer && !blobContainerErrorStrings.includes(value)) {
 									this.migrationStateModel._databaseBackup.blobs[index].blobContainer = selectedBlobContainer;
 
+									// check for block blobs for SQL VM <= 2014
 									if (this.migrationStateModel.isSqlVmTarget && utils.isTargetSqlVm2014OrBelow(this.migrationStateModel._targetServerInstance as SqlVMServer)) {
 										const backups = await utils.getBlobLastBackupFileNames(
 											this.migrationStateModel._azureAccount,
@@ -1128,6 +1198,28 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 										if (selectedLastBackupFile && !blobFileErrorStrings.includes(value)) {
 											this.migrationStateModel._databaseBackup.blobs[index].lastBackupFile = selectedLastBackupFile.name;
 										}
+
+										// check for duplicate storage account/blob container/last backup file combination if migrating multiple databases,
+										// as they should all be unique - backups for multiple databases in the same location are not supported
+										let backupLocations: string[] = [];
+										backupLocations = this.migrationStateModel._databaseBackup.blobs.map(blob => {
+											return blob && blob.storageAccount
+												? (blob.storageAccount.id + '/' + utils.getBlobContainerNameWithFolder(blob, this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE)).toLowerCase()
+												: '';
+										}).filter(backupLocation => backupLocation !== '');
+
+										let uniqueBackupLocations = [...new Set(backupLocations)];
+
+										if (!isSqlDbTarget && uniqueBackupLocations.length !== backupLocations.length) {
+											this.wizard.message = {
+												level: azdata.window.MessageLevel.Warning,
+												text: constants.DATABASE_BACKUP_BLOB_FOLDER_STRUCTURE_WARNING,
+											};
+										} else {
+											this.wizard.message = {
+												text: ''
+											};
+										}
 									}
 								}
 							}));
@@ -1136,9 +1228,31 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						this._disposables.push(
 							blobContainerFolderDropdown.onValueChanged(value => {
 								if (value && value !== 'undefined') {
-									if (this.migrationStateModel._blobContainerFolders.includes(value) && !blobFolderErrorStrings.includes(value)) {
+									if (this.migrationStateModel._blobContainerFolders && this.migrationStateModel._blobContainerFolders.includes(value) && !blobFolderErrorStrings.includes(value)) {
 										const selectedFolder = value;
 										this.migrationStateModel._databaseBackup.blobs[index].folderName = selectedFolder;
+
+										// check for duplicate storage account/blob container/folder combination if migrating multiple databases,
+										// as they should all be unique - backups for multiple databases in the same location are not supported
+										let backupLocations: string[] = [];
+										backupLocations = this.migrationStateModel._databaseBackup.blobs.map(blob => {
+											return blob && blob.storageAccount
+												? (blob.storageAccount.id + '/' + utils.getBlobContainerNameWithFolder(blob, this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE)).toLowerCase()
+												: '';
+										}).filter(backupLocation => backupLocation !== '');
+
+										let uniqueBackupLocations = [...new Set(backupLocations)];
+
+										if (!isSqlDbTarget && uniqueBackupLocations.length !== backupLocations.length) {
+											this.wizard.message = {
+												level: azdata.window.MessageLevel.Warning,
+												text: constants.DATABASE_BACKUP_BLOB_FOLDER_STRUCTURE_WARNING,
+											};
+										} else {
+											this.wizard.message = {
+												text: ''
+											};
+										}
 									}
 								}
 							}));
@@ -1268,13 +1382,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						break;
 					case NetworkContainerType.NETWORK_SHARE:
 						// All network share migrations use the same storage account
-						const storageAccount = this.migrationStateModel._databaseBackup.networkShares[0]?.storageAccount;
-						const storageKey = (await getStorageAccountAccessKeys(
-							this.migrationStateModel._azureAccount,
-							this.migrationStateModel._databaseBackup.subscription,
-							storageAccount)).keyName1;
-						for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
-							this.migrationStateModel._databaseBackup.networkShares[i].storageKey = storageKey;
+						if (this.migrationStateModel._databaseBackup.networkShares?.length > 0) {
+							const storageAccount = this.migrationStateModel._databaseBackup.networkShares[0]?.storageAccount;
+							const storageKey = (await getStorageAccountAccessKeys(
+								this.migrationStateModel._azureAccount,
+								this.migrationStateModel._databaseBackup.subscription,
+								storageAccount)).keyName1;
+							for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
+								this.migrationStateModel._databaseBackup.networkShares[i].storageKey = storageKey;
+							}
 						}
 						break;
 				}
@@ -1541,6 +1657,32 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	private _migrationTableSelectionContainer(): azdata.FlexContainer {
+		const tableMappingHeader = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_TABLE_SELECTION_LABEL,
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: { ...styles.SECTION_HEADER_CSS }
+			}).component();
+
+		const tableMappingText = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_TABLE_SELECTION_DESCRIPTION,
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: { ...styles.BODY_CSS }
+			}).component();
+
+		const tableMappingInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				text: constants.DATABASE_SCHEMA_MIGRATION_HELP,
+				style: 'information',
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: { ...styles.BODY_CSS, 'margin': '5px 0 0 0' },
+				links: [
+					{ text: constants.DATABASE_SCHEMA_MIGRATION_DACPAC_EXTENSION, url: 'https://learn.microsoft.com/sql/azure-data-studio/extensions/sql-server-dacpac-extension' },
+					{ text: constants.DATABASE_SCHEMA_MIGRATION_PROJECTS_EXTENSION, url: 'https://learn.microsoft.com/sql/azure-data-studio/extensions/sql-database-project-extension' },
+				]
+			}).component();
+
 		this._refreshButton = this._view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
@@ -1624,6 +1766,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		return this._view.modelBuilder.flexContainer()
 			.withItems([
+				tableMappingHeader,
+				tableMappingText,
+				tableMappingInfoBox,
 				this._refreshLoading,
 				this._databaseTable])
 			.withLayout({ flexFlow: 'column' })

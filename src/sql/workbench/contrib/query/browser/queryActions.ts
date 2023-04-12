@@ -48,6 +48,7 @@ import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { gen3Version, sqlDataWarehouse } from 'sql/platform/connection/common/constants';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { Codicon } from 'vs/base/common/codicons';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -480,11 +481,13 @@ export class ConnectDatabaseAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		let label: string;
+		let tooltip: string;
 		let enabledClass: string;
 
 		if (isChangeConnectionAction) {
 			enabledClass = ConnectDatabaseAction.EnabledChangeClass;
-			label = nls.localize('changeConnectionDatabaseLabel', "Change Connection");
+			label = nls.localize('changeConnectionDatabaseLabel', "Change");
+			tooltip = nls.localize('changeConnectionDatabaseTooltip', "Change Connection");
 		} else {
 			enabledClass = ConnectDatabaseAction.EnabledDefaultClass;
 			label = nls.localize('connectDatabaseLabel', "Connect");
@@ -493,6 +496,7 @@ export class ConnectDatabaseAction extends QueryTaskbarAction {
 		super(connectionManagementService, editor, ConnectDatabaseAction.ID, enabledClass);
 
 		this.label = label;
+		this.tooltip = tooltip;
 	}
 
 	public override async run(): Promise<void> {
@@ -909,8 +913,6 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
  * into a Notebook document
  */
 export class ExportAsNotebookAction extends QueryTaskbarAction {
-
-	public static IconClass = 'export';
 	public static ID = 'exportAsNotebookAction';
 
 	constructor(
@@ -918,9 +920,9 @@ export class ExportAsNotebookAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@ICommandService private _commandService: ICommandService
 	) {
-		super(connectionManagementService, editor, ConnectDatabaseAction.ID, ExportAsNotebookAction.IconClass);
-
-		this.label = nls.localize('queryEditor.exportSqlAsNotebook', "Export as Notebook");
+		super(connectionManagementService, editor, ExportAsNotebookAction.ID, Codicon.notebook.classNames);
+		this.label = nls.localize('queryEditor.exportSqlAsNotebookLabel', "To Notebook");
+		this.tooltip = nls.localize('queryEditor.exportSqlAsNotebookTooltip', "Export as Notebook");
 	}
 
 	public override async run(): Promise<void> {
@@ -931,3 +933,17 @@ export class ExportAsNotebookAction extends QueryTaskbarAction {
 export const CATEGORIES = {
 	ExecutionPlan: { value: nls.localize('ExecutionPlan', 'Execution Plan'), original: 'Execution Plan' }
 };
+
+// A wrapper for the ParseSyntaxAction.
+// We are not able to reference the ParseSyntaxAction directly in QueryEditor.ts because there is a circular dependency issue.
+// The command id is also defined here to avoid duplication.
+export const ParseSyntaxCommandId = 'parseQueryAction';
+export class ParseSyntaxTaskbarAction extends Action {
+	constructor(@ICommandService private _commandService: ICommandService) {
+		super(ParseSyntaxCommandId, nls.localize('queryEditor.parse', "Parse"), Codicon.check.classNames);
+	}
+
+	public override async run(): Promise<void> {
+		this._commandService.executeCommand(ParseSyntaxCommandId);
+	}
+}

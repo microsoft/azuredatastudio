@@ -7,11 +7,12 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, MigrationTargetType, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as utils from '../api/utils';
+import { MigrationTargetType } from '../api/utils';
 import { azureResource } from 'azurecore';
 import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/azure';
 import { collectTargetDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
@@ -42,7 +43,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	private _targetPasswordInputBox!: azdata.InputBoxComponent;
 	private _testConectionButton!: azdata.ButtonComponent;
 	private _connectionResultsInfoBox!: azdata.InfoBoxComponent;
-	private _migrationTargetPlatform!: MigrationTargetType;
+	private _migrationTargetPlatform!: utils.MigrationTargetType;
 	private _serviceContext!: MigrationServiceContext;
 
 	constructor(

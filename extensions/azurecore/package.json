@@ -126,7 +126,8 @@
             "enumDescriptions": [
               "Azure Active Directory Authentication Library",
               "Microsoft Authentication Library"
-            ]
+            ],
+            "deprecationMessage": "Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL (default option) instead."
           }
         }
       }
@@ -350,8 +351,9 @@
   "dependencies": {
     "@azure/arm-resourcegraph": "^4.0.0",
     "@azure/arm-subscriptions": "^3.0.0",
+    "@azure/msal-common": "^11.0.0",
     "@azure/msal-node": "^1.16.0",
-    "@azure/storage-blob": "^12.6.0",
+    "@azure/storage-blob": "^12.13.0",
     "axios": "^0.27.2",
     "lockfile": "1.0.4",
     "node-fetch": "^2.6.7",

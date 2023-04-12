@@ -14,7 +14,6 @@
 		"declaration": false,
 		"strict": false,
 		"noImplicitAny": false,
-		"noUnusedParameters": false,
 		"noImplicitReturns": false,
 		"noUnusedLocals": false,
 		"strictNullChecks": false

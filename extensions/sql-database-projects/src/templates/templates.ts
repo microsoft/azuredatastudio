@@ -77,7 +77,7 @@ export function macroExpansion(template: string, macroDict: Record<string, strin
 	return output;
 }
 
-async function loadObjectTypeInfo(key: string, friendlyName: string, templateFolderPath: string, fileName: string): Promise<string> {
+async function loadObjectTypeInfo(key: ItemType, friendlyName: string, templateFolderPath: string, fileName: string): Promise<string> {
 	const template = await loadTemplate(templateFolderPath, fileName);
 	scriptTypes.push(new ProjectScriptType(key, friendlyName, template));
 
@@ -89,11 +89,11 @@ async function loadTemplate(templateFolderPath: string, fileName: string): Promi
 }
 
 export class ProjectScriptType {
-	type: string;
+	type: ItemType;
 	friendlyName: string;
 	templateScript: string;
 
-	constructor(type: string, friendlyName: string, templateScript: string) {
+	constructor(type: ItemType, friendlyName: string, templateScript: string) {
 		this.type = type;
 		this.friendlyName = friendlyName;
 		this.templateScript = templateScript;

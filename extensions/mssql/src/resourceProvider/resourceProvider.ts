@@ -65,8 +65,8 @@ function asCreateFirewallRuleParams(account: azdata.Account, params: azdata.Fire
 		account: account,
 		firewallRuleName: params.firewallRuleName,
 		serverName: params.serverName,
-		startIpAddress: params.startIpAddress,
-		endIpAddress: params.endIpAddress,
+		startIpAddress: params.startIpAddress || '',
+		endIpAddress: params.endIpAddress || '',
 		securityTokenMappings: params.securityTokenMappings
 	};
 }

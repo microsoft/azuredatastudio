@@ -14,7 +14,6 @@ import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProje
 import { ProjectsController } from '../controllers/projectController';
 import { Project } from '../models/project';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
-import { getPublishToDockerSettings } from '../dialogs/publishToDockerQuickpick';
 import { getDockerImageSpec } from '../models/deploy/deployService';
 
 export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvider, sqldbproj.IExtension {
@@ -40,7 +39,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 */
 	public async getProjectTreeDataProvider(projectFilePath: vscode.Uri): Promise<vscode.TreeDataProvider<BaseProjectTreeItem>> {
 		const provider = new SqlDatabaseProjectTreeViewProvider();
-		const project = await Project.openProject(projectFilePath.fsPath);
+		const project = await Project.openProject(projectFilePath.fsPath, true, true);
 
 		// open project in STS
 		const sqlProjectsService = await getSqlProjectsService();
@@ -112,7 +111,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * Opens and loads a .sqlproj file
 	 */
 	public openProject(projectFilePath: string): Promise<sqldbproj.ISqlProject> {
-		return Project.openProject(projectFilePath);
+		return Project.openProject(projectFilePath, true, true);
 	}
 
 	public addItemPrompt(project: sqldbproj.ISqlProject, relativeFilePath: string, options?: sqldbproj.AddItemOptions): Promise<void> {
@@ -227,10 +226,6 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 
 	public generateProjectFromOpenApiSpec(options?: sqldbproj.GenerateProjectFromOpenApiSpecOptions): Promise<sqldbproj.ISqlProject | undefined> {
 		return this.projectController.generateProjectFromOpenApiSpec(options);
-	}
-
-	public getPublishToDockerSettings(project: sqldbproj.ISqlProject): Promise<sqldbproj.IPublishToDockerSettings | undefined> {
-		return getPublishToDockerSettings(project);
 	}
 
 	public getDockerImageSpec(projectName: string, baseImage: string, imageUniqueId?: string): sqldbproj.DockerImageSpec {

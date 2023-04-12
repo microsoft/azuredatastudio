@@ -55,6 +55,7 @@ import { timeout } from 'vs/base/common/async';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { ITableService } from 'sql/workbench/services/table/browser/tableService';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -117,7 +118,8 @@ export class Designer extends Disposable implements IThemable {
 		@IThemeService private readonly _themeService: IThemeService,
 		@IContextMenuService private readonly _contextMenuService: IContextMenuService,
 		@IAccessibilityService private readonly _accessibilityService: IAccessibilityService,
-		@IQuickInputService private readonly _quickInputService: IQuickInputService) {
+		@IQuickInputService private readonly _quickInputService: IQuickInputService,
+		@ITableService private readonly _tableService: ITableService) {
 		super();
 		this._tableCellEditorFactory = new TableCellEditorFactory(
 			{
@@ -1026,6 +1028,7 @@ export class Designer extends Disposable implements IThemable {
 					currentTableActions.forEach(a => a.updateState());
 					table.grid.setSelectedRows([]);
 				});
+				this._register(this._tableService.registerTable(table));
 				component = table;
 				break;
 			default:

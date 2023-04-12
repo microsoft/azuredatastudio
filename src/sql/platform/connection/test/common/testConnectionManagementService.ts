@@ -26,6 +26,17 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	onDeleteConnectionProfile = undefined!;
 	onLanguageFlavorChanged = undefined!;
 
+	public onConnectionProfileCreated: Event<any> = Event.None;
+	public onConnectionProfileEdited: Event<any> = Event.None;
+	public onConnectionProfileDeleted: Event<any> = Event.None;
+	public onConnectionProfileMoved: Event<any> = Event.None;
+	public onConnectionProfileConnected: Event<any> = Event.None;
+	public onConnectionProfileDisconnected: Event<any> = Event.None;
+	public onConnectionProfileGroupCreated: Event<any> = Event.None;
+	public onConnectionProfileGroupEdited: Event<any> = Event.None;
+	public onConnectionProfileGroupDeleted: Event<any> = Event.None;
+	public onConnectionProfileGroupMoved: Event<any> = Event.None;
+
 	public get onConnect(): Event<any> {
 		return Event.None;
 	}
@@ -88,6 +99,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	getConnectionGroups(providers?: string[]): ConnectionProfileGroup[] {
 		return [];
+	}
+
+	getConnectionGroupById(id: string): ConnectionProfileGroup | undefined {
+		return undefined;
 	}
 
 	getActiveConnections(providers?: string[]): ConnectionProfile[] {
@@ -286,7 +301,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined!;
 	}
 
-	buildConnectionInfo(connectionString: string, provider?: string): Thenable<azdata.ConnectionInfo> {
+	buildConnectionInfo(connectionString: string, provider: string): Promise<azdata.ConnectionInfo> {
 		return undefined!;
 	}
 
