@@ -8,7 +8,7 @@ import { IListService, IWorkbenchAsyncDataTreeOptions, WorkbenchAsyncDataTree } 
 import { FuzzyScore } from 'vs/base/common/filters';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IAsyncDataTreeNode, IAsyncDataTreeUpdateChildrenOptions, IAsyncDataTreeViewState } from 'vs/base/browser/ui/tree/asyncDataTree';
+import { IAsyncDataTreeNode, IAsyncDataTreeUpdateChildrenOptions } from 'vs/base/browser/ui/tree/asyncDataTree';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -57,13 +57,6 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 		})
 	}
 
-	// Overriding the setInput method to dispose the original input when a new input is set
-	override async setInput(input: ConnectionProfileGroup, viewState?: IAsyncDataTreeViewState): Promise<void> {
-		const originalInput = this.getInput();
-		await super.setInput(input, viewState);
-		originalInput?.dispose();
-	}
-
 	/**
 	 * The original implementation of getDataNode compares refrences of the elements to find the node.
 	 * This is not working for our case as we are creating new elements everytime we refresh the tree.
@@ -106,7 +99,9 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 		while (stack.length > 0) {
 			const node = stack.pop();
 			if (node) {
-				if (!this.isCollapsed(node.element)) {
+				// The root of the tree is a special case connection group that is always expanded. It is not rendered
+				// and this.isCollapsed returns an error when called on it. So we need to check for it explicitly.
+				if (node === this.root || !this.isCollapsed(node.element)) {
 					expanded.push(node.element);
 					if (node.children) {
 						node.children.forEach(child => stack.push(child));

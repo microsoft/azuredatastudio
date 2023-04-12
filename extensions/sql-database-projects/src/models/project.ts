@@ -10,6 +10,7 @@ import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
 
+import { promises as fs } from 'fs';
 import { Uri, window } from 'vscode';
 import { EntryType, IDatabaseReferenceProjectEntry, ISqlProject, ItemType } from 'sqldbproj';
 import { DataSource } from './dataSources/dataSources';
@@ -116,6 +117,10 @@ export class Project implements ISqlProject {
 		return this._sqlProjStyle;
 	}
 
+	public get sqlProjStyleName(): string {
+		return this.sqlProjStyle === ProjectType.SdkStyle ? 'SdkStyle' : 'LegacyStyle';
+	}
+
 	public get isCrossPlatformCompatible(): boolean {
 		return this._isCrossPlatformCompatible;
 	}
@@ -158,15 +163,46 @@ export class Project implements ISqlProject {
 
 		await proj.readProjFile();
 
-		if (!proj.isCrossPlatformCompatible && promptIfNeedsUpdating) {
-			const result = await window.showWarningMessage(constants.updateProjectForRoundTrip(proj.projectFileName), constants.yesString, constants.noString);
-
-			if (result === constants.yesString) {
-				await proj.updateProjectForRoundTrip();
-			}
+		if (promptIfNeedsUpdating) {
+			await this.checkPromptCrossPlatStatus(proj, false /* don't block the thread until the  prompt*/);
 		}
 
 		return proj;
+	}
+
+	/**
+	 * If project does not support cross-plat building, prompts the user for whether to update and updates if accepted
+	 * @param project
+	 * @param blockingPrompt whether to block the thread until the user updates, or to fire and forget
+	 * @returns true if the project is updated after return, false if the user rejected the prompt
+	 */
+	public static async checkPromptCrossPlatStatus(project: Project, blockingPrompt: boolean): Promise<boolean> {
+		if (project.isCrossPlatformCompatible) {
+			return true;
+		}
+
+		if (blockingPrompt) {
+			const result = await window.showWarningMessage(constants.updateProjectForCrossPlatform(project.projectFileName), { modal: true }, constants.yesString, constants.noString);
+
+			if (result === constants.yesString) {
+				await project.updateProjectForCrossPlatform();
+			}
+		} else {
+			// use "void" with a .then() to not block the UI thread while prompting the user
+			void window.showErrorMessage(constants.updateProjectForCrossPlatform(project.projectFileName), constants.yesString, constants.noString).then(
+				async (result) => {
+					if (result === constants.yesString) {
+						try {
+							await project.updateProjectForCrossPlatform();
+						} catch (error) {
+							void window.showErrorMessage(utils.getErrorMessage(utils.getErrorMessage(error)));
+						}
+					}
+				}
+			);
+		}
+
+		return project.isCrossPlatformCompatible;
 	}
 
 	/**
@@ -407,12 +443,24 @@ export class Project implements ISqlProject {
 		this._configuration = Configuration.Debug;
 	}
 
-	public async updateProjectForRoundTrip(): Promise<void> {
+	public async updateProjectForCrossPlatform(): Promise<void> {
 		if (this.isCrossPlatformCompatible) {
 			return;
 		}
 
 		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectForRoundtrip);
+
+		// due to bug in DacFx.Projects, if a backup file already exists this will fail
+		// workaround is to rename the existing backup
+
+		if (await utils.exists(this.projectFilePath + '_backup')) {
+			let counter = 2;
+			while (await utils.exists(this.projectFilePath + '_backup' + counter)) {
+				counter++;
+			}
+
+			await fs.rename(this.projectFilePath + '_backup', this.projectFilePath + '_backup' + counter);
+		}
 
 		const result = await this.sqlProjService.updateProjectForCrossPlatform(this.projectFilePath);
 		this.throwIfFailed(result);
@@ -450,18 +498,23 @@ export class Project implements ISqlProject {
 
 	//#region SQL object scripts
 
-	public async addSqlObjectScript(relativePath: string): Promise<void> {
+	public async addSqlObjectScript(relativePath: string, reloadAfter: boolean = true): Promise<void> {
 		const result = await this.sqlProjService.addSqlObjectScript(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
-		await this.readFilesInProject();
-		await this.readFolders();
+		if (reloadAfter) {
+			await this.readFilesInProject();
+			await this.readFolders();
+		}
 	}
 
 	public async addSqlObjectScripts(relativePaths: string[]): Promise<void> {
 		for (const path of relativePaths) {
-			await this.addSqlObjectScript(path);
+			await this.addSqlObjectScript(path, false /* reloadAfter */);
 		}
+
+		await this.readFilesInProject();
+		await this.readFolders();
 	}
 
 	public async deleteSqlObjectScript(relativePath: string): Promise<void> {

@@ -151,10 +151,7 @@ export class TreeUpdateUtils {
 
 	public static getTreeInput(connectionManagementService: IConnectionManagementService, providers?: string[]): ConnectionProfileGroup | undefined {
 		const groups = connectionManagementService.getConnectionGroups(providers);
-		const input = groups.find(group => group.isRoot);
-		// Dispose of the unused groups to clean up their handlers
-		groups.filter(g => g !== input).forEach(g => g.dispose());
-		return input;
+		return groups.find(group => group.isRoot);
 	}
 
 	public static hasObjectExplorerNode(connection: ConnectionProfile, connectionManagementService: IConnectionManagementService): boolean {

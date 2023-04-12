@@ -1005,6 +1005,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.disable" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Disable]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Deaktivieren]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.dismiss" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Dismiss]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Schließen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.eastasia" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[East Asia]]></Val>
@@ -1190,6 +1208,15 @@
           <Val><![CDATA[Norway West]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Norwegen, Westen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.piiLogging.warning" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Warning: Azure PII Logging is enabled. Enabling this option allows personally identifiable information to be logged and should only be used for debugging purposes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Warnung: Die Azure-PII-Protokollierung ist aktiviert. Wenn Sie diese Option aktivieren, können personenbezogene Informationen protokolliert werden. Sie dürfen nur zu Debugzwecken verwendet werden.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
