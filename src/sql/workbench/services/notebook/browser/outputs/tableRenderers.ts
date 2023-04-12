@@ -8,7 +8,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
-import { IDataResource, IDataResourceRow } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
+import { IDataResource, IDataResourceRow, rowHasColumnNameKeys } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
@@ -89,7 +89,7 @@ export function renderDataResource(
 // SlickGrid requires columns and data to be in a very specific format; this code was adapted from tableInsight.component.ts
 function transformData(rows: IDataResourceRow[], columns: Slick.Column<any>[]): IDataResourceRow[] {
 	// Rows are either indexed by column name or ordinal number, so check for one column name to see if it uses that format
-	let useColumnNameKey = Object.keys(rows[0]).includes(columns[0].name);
+	let useColumnNameKey = rowHasColumnNameKeys(rows[0], columns.map(column => column.name));
 	return rows.map(row => {
 		let dataWithSchema = {};
 		Object.keys(row).forEach((val, index) => {

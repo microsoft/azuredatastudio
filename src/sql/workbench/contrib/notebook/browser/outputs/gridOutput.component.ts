@@ -11,7 +11,7 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
+import { IDataResource, rowHasColumnNameKeys } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, ResultSetSubset, ICellValue } from 'sql/workbench/services/query/common/query';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -373,7 +373,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		if (source.data.length > 0) {
 			let columns = source.schema.fields;
 			// Rows are either indexed by column name or ordinal number, so check for one column name to see if it uses that format
-			let useColumnNameKey = Object.keys(source.data[0]).includes(columns[0].name);
+			let useColumnNameKey = rowHasColumnNameKeys(source.data[0], source.schema.fields.map(field => field.name));
 			this._rows = source.data.map(row => {
 				let rowData: azdata.DbCellValue[] = [];
 				for (let index = 0; index < Object.keys(row).length; index++) {

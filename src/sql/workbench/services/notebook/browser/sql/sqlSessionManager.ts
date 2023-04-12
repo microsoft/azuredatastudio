@@ -792,6 +792,16 @@ export interface IDataResourceRow {
 	[key: string]: any;
 }
 
+/**
+ * Determines whether a row from a query result set uses column name keys to access its cell data, rather than ordinal number.
+ * @param row The data row to inspect.
+ * @param columnNames The array of column names from the result set's column schema. Column names can be in any order.
+ */
+export function rowHasColumnNameKeys(row: IDataResourceRow, columnNames: string[]): boolean {
+	let columnNameSet = new Set(columnNames);
+	return Object.keys(row).every(rowKey => columnNameSet.has(rowKey));
+}
+
 class ExternalScriptMagic {
 
 	constructor(private language: string) {
