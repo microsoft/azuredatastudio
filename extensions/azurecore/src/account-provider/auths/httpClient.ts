@@ -7,7 +7,6 @@
 import { INetworkModule, NetworkRequestOptions, NetworkResponse } from '@azure/msal-common';
 import * as http from 'http';
 import * as https from 'https';
-import { TextEncoder } from 'util';
 import { NetworkUtils } from './networkUtils';
 
 /**
@@ -152,10 +151,9 @@ const networkRequestViaProxy = <T>(
 	// compose a request string for the socket
 	let postRequestStringContent: string = '';
 	if (httpMethod === HttpMethod.POST || httpMethod === HttpMethod.PUT) {
-		// Note: Text Encoder is necessary here because otherwise it was not able to handle Chinese characters in table names.
-		const body = (new TextEncoder()).encode(JSON.stringify(options?.body || ''));
+		const body = options?.body || '';
 		postRequestStringContent =
-			'Content-Type: application/json\r\n' +
+			'Content-Type: application/x-www-form-urlencoded\r\n' +
 			`Content-Length: ${body.length}\r\n` +
 			`\r\n${body}`;
 	}
@@ -286,8 +284,7 @@ const networkRequestViaHttps = <T>(
 ): Promise<NetworkResponse<T>> => {
 	const isPostRequest = httpMethod === HttpMethod.POST;
 	const isPutRequest = httpMethod === HttpMethod.PUT;
-	// Note: Text Encoder is necessary here because otherwise it was not able to handle Chinese characters in table names.
-	const body = (new TextEncoder()).encode(JSON.stringify(options?.body || ''));
+	const body: string = options?.body || '';
 	const url = new URL(urlString);
 	const optionHeaders = options?.headers || {} as Record<string, string>;
 	let customOptions: https.RequestOptions = {
@@ -322,7 +319,7 @@ const networkRequestViaHttps = <T>(
 			});
 		}
 
-		if (isPostRequest || isPutRequest) {
+		if (isPostRequest) {
 			request.write(body);
 		}
 

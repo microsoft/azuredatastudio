@@ -18,18 +18,18 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 |         |.rpm             |[64 bit][linux-rpm] |
 |Mac      |.zip             |[Universal][osx-universal]&emsp;[Intel Chip][osx-zip]&emsp;[Apple Silicon][osx-arm64] |
 
-[win-user]: https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-user/stable
-[win-system]: https://azuredatastudio-update.azurewebsites.net/latest/win32-x64/stable
-[win-zip]: https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-archive/stable
-[win-user-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/win32-arm64-user/stable
-[win-system-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/win32-arm64/stable
-[win-zip-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/win32-arm64-archive/stable
-[linux-zip]: https://azuredatastudio-update.azurewebsites.net/latest/linux-x64/stable
-[linux-deb]: https://azuredatastudio-update.azurewebsites.net/latest/linux-deb-x64/stable
-[linux-rpm]: https://azuredatastudio-update.azurewebsites.net/latest/linux-rpm-x64/stable
-[osx-universal]: https://azuredatastudio-update.azurewebsites.net/latest/darwin-universal/stable
-[osx-zip]: https://azuredatastudio-update.azurewebsites.net/latest/darwin/stable
-[osx-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/darwin-arm64/stable
+[win-user]: https://go.microsoft.com/fwlink/?linkid=2228644
+[win-system]: https://go.microsoft.com/fwlink/?linkid=2228645
+[win-zip]: https://go.microsoft.com/fwlink/?linkid=2228646
+[win-user-arm64]: https://go.microsoft.com/fwlink/?linkid=2229004
+[win-system-arm64]: https://go.microsoft.com/fwlink/?linkid=2228647
+[win-zip-arm64]: https://go.microsoft.com/fwlink/?linkid=2229005
+[osx-universal]: https://go.microsoft.com/fwlink/?linkid=2228649
+[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2228179
+[osx-arm64]: https://go.microsoft.com/fwlink/?linkid=2228648
+[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2229006
+[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2228650
+[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2228180
 
 Go to our [download page](https://aka.ms/getazuredatastudio) for more specific instructions.
 

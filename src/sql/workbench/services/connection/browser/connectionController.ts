@@ -150,9 +150,10 @@ export class ConnectionController implements IConnectionComponentController {
 		}
 		allGroups.push(Object.assign({}, this._connectionWidget.DefaultServerGroup, { id: defaultGroupId }));
 		allGroups.push(this._connectionWidget.NoneServerGroup);
-		if (connectionGroupRoot?.length > 0) {
+		if (connectionGroupRoot && connectionGroupRoot.length > 0) {
 			this.flattenGroups(connectionGroupRoot[0], allGroups);
 		}
+		connectionGroupRoot.forEach(cpg => cpg.dispose());
 		return allGroups;
 	}
 

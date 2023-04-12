@@ -1,38 +1,5 @@
 # Change Log
 
-## Version 1.43.0
-* Release number: 1.43.0
-* Release date: April 12, 2023
-
-### What's new in 1.43.0
-
-| New Item | Details |
-| --- | --- |
-| Connection | Added notation for required properties (e.g. Attestation protocol and Attestation URL) when Secure Enclaves are enabled |
-| SQL Database Projects extension | General Availability |
-| SQL Database Projects extension | Move and rename files within Database Projects view |
-| SQL Database Projects extension | SQLCMD variables available for editing in Database Projects view |
-| Object Explorer | Double-clicking on a user or table in Object Explorer will open the designer for the object |
-| Query Editor | Added a Parse button to the Query Editor toolbar for parsing queries before execution |
-| Query Results | Added support to select a row in query results via double click |
-
-### Bug fixes in 1.43.0
-
-| New Item | Details |
-| --- | --- |
-| Connection | Added support for linked accounts with same username but different domains |
-| Connection | Fixed issue with incorrect cache write path |
-| Connection | Added ability to include optional name and grouping when creating a new connection using a connection string |
-| Connection | Updating username in MSSQL connections to use Preferred username for the display name |
-| Connection | Fixed issue with encoding for OSX keychain on macOS |
-| Connection | Added support for Azure MFA and ‘Sql Authentication Provider’ on Linux |
-| Dataverse | Addressed error generated when expanding the database node for a Dataverse database in Object Explorer |
-| IntelliCode extension | Fixed error that occurred when launching Azure Data Studio with Visual Studio Code IntelliCode extension installed |
-| PostgreSQL extension | Implemented support for exporting query results on Apple M1 from a notebook |
-| SQL Database Projects extension | Added Accessibility Fixes related to screen reader, label names, and improved focus when navigating |
-
-For a full list of bug fixes addressed for the April 2023 release, visit the [April 2023 Release on GitHub](https://github.com/microsoft/azuredatastudio/milestone/99?closed=1).
-
 ## Version 1.42.0
 * Release number: 1.42.0
 * Release date: March 22, 2023

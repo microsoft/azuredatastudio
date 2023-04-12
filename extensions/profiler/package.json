@@ -1,99 +1,99 @@
 {
-  "name": "profiler",
-  "displayName": "%displayName%",
-  "description": "%description%",
-  "version": "0.13.0",
-  "publisher": "Microsoft",
-  "preview": true,
-  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
-  "icon": "images/extension.png",
-  "engines": {
-    "vscode": "0.10.x"
-  },
-  "activationEvents": [
-    "*"
-  ],
-  "main": "./out/main",
-  "scripts": {
-    "compile": "gulp compile-extension:profiler-client"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Microsoft/azuredatastudio.git"
-  },
-  "extensionDependencies": [
-    "Microsoft.mssql"
-  ],
-  "capabilities": {
-    "virtualWorkspaces": false,
-    "untrustedWorkspaces": {
-      "supported": true
-    }
-  },
-  "contributes": {
-    "commands": [
-      {
-        "command": "profiler.newProfiler",
-        "title": "%profiler.contributes.title.newProfler%",
-        "category": "%profiler.category%"
-      },
-      {
-        "command": "profiler.start",
-        "title": "profiler.contributes.title.start",
-        "category": "%profiler.category%"
-      },
-      {
-        "command": "profiler.stop",
-        "title": "profiler.contributes.title.stop",
-        "category": "%profiler.category%"
-      },
-      {
-        "command": "profiler.openCreateSessionDialog",
-        "title": "profiler.contributes.title.openCreateSessionDialog",
-        "category": "%profiler.category%"
-      }
-    ],
-    "menus": {
-      "commandPalette": [
-        {
-          "command": "profiler.start",
-          "when": "False"
-        },
-        {
-          "command": "profiler.stop",
-          "when": "False"
-        },
-        {
-          "command": "profiler.openCreateSessionDialog",
-          "when": "False"
-        }
-      ],
-      "objectExplorer/item/context": [
-        {
-          "command": "profiler.newProfiler",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
-          "group": "profiler"
-        }
-      ],
-      "dataExplorer/context": [
-        {
-          "command": "profiler.newProfiler",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
-          "group": "profiler"
-        }
-      ]
-    },
-    "outputChannels": [
-      "sqlprofiler"
-    ]
-  },
-  "dependencies": {
-    "vscode-nls": "^4.1.2"
-  },
-  "devDependencies": {},
-  "__metadata": {
-    "id": "18",
-    "publisherDisplayName": "Microsoft",
-    "publisherId": "Microsoft"
-  }
+	"name": "profiler",
+	"displayName": "%displayName%",
+	"description": "%description%",
+	"version": "0.13.0",
+	"publisher": "Microsoft",
+	"preview": true,
+	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
+	"icon": "images/extension.png",
+	"engines": {
+		"vscode": "0.10.x"
+	},
+	"activationEvents": [
+		"*"
+	],
+	"main": "./out/main",
+	"scripts": {
+		"compile": "gulp compile-extension:profiler-client"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Microsoft/azuredatastudio.git"
+	},
+	"extensionDependencies": [
+		"Microsoft.mssql"
+	],
+	"capabilities": {
+		"virtualWorkspaces": false,
+		"untrustedWorkspaces": {
+		  "supported": true
+		}
+	},
+	"contributes": {
+		"commands": [
+			{
+				"command": "profiler.newProfiler",
+				"title": "%profiler.contributes.title.newProfler%",
+				"category": "%profiler.category%"
+			},
+			{
+				"command": "profiler.start",
+				"title": "profiler.contributes.title.start",
+				"category": "%profiler.category%"
+			},
+			{
+				"command": "profiler.stop",
+				"title": "profiler.contributes.title.stop",
+				"category": "%profiler.category%"
+			},
+			{
+				"command": "profiler.openCreateSessionDialog",
+				"title": "profiler.contributes.title.openCreateSessionDialog",
+				"category": "%profiler.category%"
+			}
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "profiler.start",
+					"when": "False"
+				},
+				{
+					"command": "profiler.stop",
+					"when": "False"
+				},
+				{
+					"command": "profiler.openCreateSessionDialog",
+					"when": "False"
+				}
+			],
+			"objectExplorer/item/context": [
+				{
+					"command": "profiler.newProfiler",
+					"when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
+					"group": "profiler"
+				}
+			],
+			"dataExplorer/context": [
+				{
+					"command": "profiler.newProfiler",
+					"when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
+					"group": "profiler"
+				}
+			]
+		},
+		"outputChannels": [
+			"sqlprofiler"
+		]
+	},
+	"dependencies": {
+		"vscode-nls": "^4.1.2"
+	},
+	"devDependencies": { },
+	"__metadata": {
+		"id": "18",
+		"publisherDisplayName": "Microsoft",
+		"publisherId": "Microsoft"
+	}
 }

@@ -356,10 +356,14 @@ export class ConnectionDialogWidget extends Modal {
 		actionProvider.onRecentConnectionRemoved(() => {
 			const recentConnections: ConnectionProfile[] = this.connectionManagementService.getRecentConnections();
 			this.open(recentConnections.length > 0).catch(err => this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from action provider: ${err}`));
+			// We're just using the connections to determine if there are connections to show, dispose them right after to clean up their handlers
+			recentConnections.forEach(conn => conn.dispose());
 		});
 		controller.onRecentConnectionRemoved(() => {
 			const recentConnections: ConnectionProfile[] = this.connectionManagementService.getRecentConnections();
 			this.open(recentConnections.length > 0).catch(err => this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from controller : ${err}`));
+			// We're just using the connections to determine if there are connections to show, dispose them right after to clean up their handlers
+			recentConnections.forEach(conn => conn.dispose());
 		});
 		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, this._configurationService, localize('connectionDialog.recentConnections', "Recent Connections"), controller);
 		if (this._recentConnectionTree instanceof AsyncServerTree) {

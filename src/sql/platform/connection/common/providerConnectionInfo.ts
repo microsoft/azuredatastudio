@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Disposable } from 'vs/base/common/lifecycle';
 import { isString } from 'vs/base/common/types';
 
 import * as azdata from 'azdata';
@@ -13,7 +14,7 @@ import { localize } from 'vs/nls';
 
 type SettableProperty = 'serverName' | 'authenticationType' | 'databaseName' | 'password' | 'connectionName' | 'userName';
 
-export class ProviderConnectionInfo implements azdata.ConnectionInfo {
+export class ProviderConnectionInfo extends Disposable implements azdata.ConnectionInfo {
 
 	options: { [name: string]: any } = {};
 
@@ -24,6 +25,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 		protected capabilitiesService: ICapabilitiesService,
 		model: string | azdata.IConnectionProfile | azdata.connection.ConnectionProfile | undefined
 	) {
+		super();
 		// we can't really do a whole lot if we don't have a provider
 		if (model) {
 			this.providerName = isString(model) ? model : 'providerName' in model ? model.providerName : model.providerId;
@@ -65,6 +67,14 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 
 	public set providerName(name: string) {
 		this._providerName = name;
+	}
+
+	public override dispose(): void {
+		// Notes:
+		// 1. It is not recommended to add disposables to this class considering the way we create and use the connection objects,
+		//    there are places that the connection objects are not being disposed properly.
+		// 2. Remember to dispose the listeners added to this class.
+		super.dispose();
 	}
 
 	public clone(): ProviderConnectionInfo {
