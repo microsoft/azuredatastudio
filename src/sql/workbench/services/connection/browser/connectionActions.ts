@@ -159,9 +159,7 @@ export class GetCurrentConnectionStringAction extends Action {
 				&& this._connectionManagementService.isConnected(activeInput.uri)) {
 				let includePassword = false;
 				let connectionProfile = this._connectionManagementService.getConnectionProfile(activeInput.uri);
-				// Since several areas have profiles for similar connections that share the same profile id,
-				// we need to specify that we want the profile corresponding to the activeInput directly.
-				this._connectionManagementService.getConnectionString(connectionProfile.id, includePassword, activeInput.uri).then(result => {
+				this._connectionManagementService.getConnectionString(connectionProfile.id, includePassword).then(result => {
 
 					//Copy to clipboard
 					this._clipboardService.writeText(result);

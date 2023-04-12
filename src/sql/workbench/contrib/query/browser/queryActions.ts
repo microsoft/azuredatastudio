@@ -775,8 +775,8 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 	 * @param id profile id
 	 * @returns boolean saying if the server connection is a Gen 3 DW server
 	 */
-	private isDWGen3Database(id: string, uri: string): boolean {
-		const serverInfo = this.connectionManagementService.getServerInfo(id, uri);
+	private isDWGen3Database(id: string): boolean {
+		const serverInfo = this.connectionManagementService.getServerInfo(id);
 		if (serverInfo) {
 			return serverInfo.serverEdition === sqlDataWarehouse &&
 				serverInfo.serverMajorVersion === gen3Version;
@@ -807,9 +807,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		if (uri) {
 			let profile = this.connectionManagementService.getConnectionProfile(uri);
 			if (profile) {
-				// We need to specify to get the server info for the query and NOT the ones from object explorer
-				// that share the same profile ID currently.
-				if (this.isDWGen3Database(profile.id, uri)) {
+				if (this.isDWGen3Database(profile.id)) {
 					return this.removePoolInstanceName(profile.databaseName);
 				}
 				return profile.databaseName;

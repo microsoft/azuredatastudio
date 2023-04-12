@@ -819,9 +819,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStatusManager.getActiveConnectionProfiles(providers);
 	}
 
-	public getConnectionUriFromId(connectionId: string, editorUri?: string): string | undefined {
-		// If editorUri is passed in, we must confirm that a connection with the URI and general connection exists in CSM.
-		let connectionInfo = this._connectionStatusManager.findConnectionByProfileId(connectionId, editorUri);
+	public getConnectionUriFromId(connectionId: string): string | undefined {
+		let connectionInfo = this._connectionStatusManager.findConnectionByProfileId(connectionId);
 		if (connectionInfo) {
 			return connectionInfo.ownerUri;
 		} else {
@@ -1736,8 +1735,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return credentials;
 	}
 
-	public getServerInfo(profileId: string, uri?: string): azdata.ServerInfo | undefined {
-		let profile = this._connectionStatusManager.findConnectionByProfileId(profileId, uri);
+	public getServerInfo(profileId: string): azdata.ServerInfo | undefined {
+		let profile = this._connectionStatusManager.findConnectionByProfileId(profileId);
 		if (!profile) {
 			return undefined;
 		}
@@ -1753,10 +1752,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
-	 * Gets the connection string for the first profile matching with the provided connection ID, editorUri is provided in case we want to get a specific connection among several connections with the same name.
+	 * Get the connection string for the provided connection ID
 	 */
-	public getConnectionString(connectionId: string, includePassword: boolean = false, editorUri?: string): Thenable<string> {
-		let ownerUri = this.getConnectionUriFromId(connectionId, editorUri);
+	public getConnectionString(connectionId: string, includePassword: boolean = false): Thenable<string> {
+		let ownerUri = this.getConnectionUriFromId(connectionId);
 
 		if (!ownerUri) {
 			return Promise.resolve(undefined);

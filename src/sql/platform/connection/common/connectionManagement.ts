@@ -215,7 +215,7 @@ export interface IConnectionManagementService {
 
 	getFormattedUri(uri: string, connectionProfile: IConnectionProfile): string;
 
-	getConnectionUriFromId(connectionId: string, editorUri?: string): string | undefined;
+	getConnectionUriFromId(connectionId: string): string | undefined;
 
 	isConnected(fileUri: string): boolean;
 
@@ -332,16 +332,14 @@ export interface IConnectionManagementService {
 	/**
 	 * Get the ServerInfo for a connected connection profile
 	 * @param profileId The id of the connection profile to get the password for
-	 * @param uri The specific uri of the exact profile we want to get (needed for Query Editor when changing database)
-	 * (since profile ids are currently shared among different profiles for the same general connection in different areas).
 	 * @returns ServerInfo
 	 */
-	getServerInfo(profileId: string, uri?: string): azdata.ServerInfo;
+	getServerInfo(profileId: string): azdata.ServerInfo;
 
 	/**
-	 * Get the connection string for the provided connection ID, and editor uri if specified (due to several connections sharing the same id)
+	 * Get the connection string for the provided connection ID
 	 */
-	getConnectionString(connectionId: string, includePassword: boolean, editorUri?: string): Thenable<string>;
+	getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 
 	/**
 	 * Deserialize connection string using the specified provider
