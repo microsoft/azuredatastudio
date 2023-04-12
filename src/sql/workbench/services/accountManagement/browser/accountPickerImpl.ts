@@ -204,7 +204,6 @@ export class AccountPicker extends Disposable {
 		}
 	}
 
-
 	public setInitialTenant(tenant: string): void {
 		this.initialTenant = tenant;
 	}
@@ -213,7 +212,9 @@ export class AccountPicker extends Disposable {
 		this.initialAccount = account;
 	}
 
-	public setAccountSelection(): void {
+	// PRIVATE HELPERS /////////////////////////////////////////////////////
+
+	private setAccountSelection(): void {
 		let index = 0;
 		let accountFound = false;
 		while (index < this._accountList.length) {
@@ -228,7 +229,7 @@ export class AccountPicker extends Disposable {
 		}
 	}
 
-	public setTenantSelection(): void {
+	private setTenantSelection(): void {
 		let index = 0;
 		let tenantFound = false;
 		while (index < this._tenantList.length) {
@@ -242,8 +243,6 @@ export class AccountPicker extends Disposable {
 			this._tenantList.setSelection([index]);
 		}
 	}
-
-	// PRIVATE HELPERS /////////////////////////////////////////////////////
 
 	private createLabelElement(content: string, isHeader?: boolean) {
 		let className = 'dialog-label';
