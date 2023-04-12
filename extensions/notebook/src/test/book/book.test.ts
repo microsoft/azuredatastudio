@@ -22,6 +22,7 @@ import { NavigationProviders } from '../../common/constants';
 import { openFileError } from '../../common/localizedConstants';
 import * as sinon from 'sinon';
 import { AppContext } from '../../common/appContext';
+import { sleep } from '../common/testUtils';
 
 export interface IExpectedBookItem {
 	title: string;
@@ -730,6 +731,7 @@ describe('BooksTreeViewTests', function () {
 				afterEach(async function (): Promise<void> {
 					sinon.restore();
 					await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+					await sleep(500);
 				});
 
 				it('should add book and initialize book on openBook', async () => {
