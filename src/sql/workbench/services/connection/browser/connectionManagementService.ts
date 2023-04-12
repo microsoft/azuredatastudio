@@ -884,9 +884,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	public hasRegisteredServers(): boolean {
 		const groups: ConnectionProfileGroup[] = this.getConnectionGroups();
-		const hasRegisteredServers: boolean = this.doHasRegisteredServers(groups);
-		groups.forEach(cpg => cpg.dispose());
-		return hasRegisteredServers;
+		return this.doHasRegisteredServers(groups);
 	}
 
 	private doHasRegisteredServers(root: ConnectionProfileGroup[]): boolean {
