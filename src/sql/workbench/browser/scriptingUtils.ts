@@ -8,7 +8,6 @@ import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionT
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import * as nls from 'vs/nls';
 import Severity from 'vs/base/common/severity';
-import { generateUuid } from 'vs/base/common/uuid';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
@@ -58,8 +57,6 @@ export async function scriptSelect(connectionProfile: IConnectionProfile, metada
 				showConnectionDialogOnError: true,
 				showFirewallRuleOnError: true
 			};
-			// Profile will need to have a different id to distinguish it from the initial connection entry. (One not used by the query, but by the dashboard)
-			connectionProfile.id = generateUuid();
 			await connectionService.connect(connectionProfile, owner.uri, options);
 		} else {
 			throw new Error(nls.localize('selectScriptNotGeneratedError', "Failed to generate select script for the selected object."));
@@ -87,8 +84,6 @@ export async function scriptEditSelect(connectionProfile: IConnectionProfile, me
 				showConnectionDialogOnError: true,
 				showFirewallRuleOnError: true
 			};
-			// Profile will need to have a different id to distinguish it from the initial connection entry. (One not used by the query, but by the dashboard)
-			connectionProfile.id = generateUuid();
 			await connectionService.connect(connectionProfile, owner.uri, options);
 		} else {
 			throw new Error(nls.localize('selectScriptForEditNotGeneratedError', "Failed to generate script for Edit Data editor."));
@@ -147,8 +142,6 @@ export async function script(connectionProfile: IConnectionProfile, metadata: az
 					showConnectionDialogOnError: true,
 					showFirewallRuleOnError: true
 				};
-				// Profile will need to have a different id to distinguish it from the initial connection entry. (One not used by the query, but by the dashboard)
-				connectionProfile.id = generateUuid();
 				await connectionService.connect(connectionProfile, owner.uri, options);
 			} else {
 				let scriptNotFoundMsg = nls.localize('scriptNotFoundForObject', "No script was returned when scripting as {0} on object {1}",
