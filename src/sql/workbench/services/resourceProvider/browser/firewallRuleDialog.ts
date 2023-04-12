@@ -326,7 +326,6 @@ export class FirewallRuleDialog extends Modal {
 		this._accountPickerService.setInitialAccountTenant(account, tenant);
 	}
 
-
 	public onAccountSelectionChange(account: azdata.Account | undefined): void {
 		this.viewModel.selectedAccount = account;
 		if (account && !account.isStale) {

@@ -39,7 +39,7 @@ suite('Account picker service tests', () => {
 		let instantiationService = createInstantiationService();
 
 		// ... Create instance of the service and reder account picker
-		let service = new AccountPickerService(instantiationService);
+		let service = new AccountPickerService(instantiationService, undefined);
 		service.renderAccountPicker(TypeMoq.It.isAny());
 
 		// Then:
