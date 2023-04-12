@@ -168,7 +168,13 @@ export class WorkspaceService implements IWorkspaceService {
 
 		try {
 			const projectPromises = vscode.workspace.workspaceFolders?.map(f => this.getAllProjectsInFolder(f.uri)) ?? [];
-			this.openedProjects = (await Promise.all(projectPromises)).reduce((prev, curr) => prev.concat(curr), []);
+			const allProjects = (await Promise.all(projectPromises)).reduce((prev, curr) => prev.concat(curr), []);
+
+			// convert to set to make sure all the fsPaths are unique so projects aren't listed multiple times if they are included by multiple workspace folders.
+			// Need to use fsPath for the set to be able to filter out duplicates because it's a string, rather than the vscode.Uri
+			const uniqueProjects = [...new Set(allProjects.map(p => p.fsPath))];
+			this.openedProjects = uniqueProjects.map(p => vscode.Uri.file(p));
+
 			this.getProjectsPromise.resolve();
 		} catch (err) {
 			this.getProjectsPromise.reject(err);
