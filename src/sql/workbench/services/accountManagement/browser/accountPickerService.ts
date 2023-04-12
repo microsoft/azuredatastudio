@@ -53,6 +53,16 @@ export class AccountPickerService implements IAccountPickerService {
 		}
 	}
 
+	public setAccountSelection(account: string): void {
+		if (this._accountPicker) {
+			this._accountPicker.setAccountSelection(account);
+		} else {
+			// log could not set account selection
+			return undefined;
+		}
+	}
+
+
 	/**
 	 * Render account picker
 	 */

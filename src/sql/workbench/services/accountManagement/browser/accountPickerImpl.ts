@@ -176,6 +176,7 @@ export class AccountPicker extends Disposable {
 		actionBar.push(this._refreshAccountAction, { icon: false, label: true });
 
 		if (this._accountList.length > 0) {
+			// Should set account list selection to accout selected in the connection dialog instead of setting to [0]
 			this._accountList.setSelection([0]);
 			this.onAccountSelectionChange(this._accountList.getSelectedElements()[0]);
 		} else {
@@ -198,6 +199,25 @@ export class AccountPicker extends Disposable {
 			this._accountList.dispose();
 		}
 	}
+
+	// public setInitialAccount()
+
+	public setAccountSelection(account: string): void {
+		let index = 0;
+		// find index
+		while (account !== this._accountList.view.items[index].element.key.accountId) {
+			index++
+		}
+		this._accountList.setSelection([index]);
+	}
+
+	// public setTenantSelection(tenant: string): void {
+	// 	let index = 0;
+	// 	while (tenant !== this._tenantList[index].id) {
+	// 		index++
+	// 	}
+	// 	this._tenantList.setSelection([index]);
+	// }
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 
@@ -316,6 +336,7 @@ export class AccountPicker extends Disposable {
 			if (selectedIndex && selectedIndex !== -1) {
 				this._accountList!.setSelection([selectedIndex]);
 			} else {
+				// Should set account list selection to account selected in the connection dialog instead of setting to [0]
 				this._accountList!.setSelection([0]);
 			}
 		} else {

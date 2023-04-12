@@ -322,6 +322,11 @@ export class FirewallRuleDialog extends Modal {
 		}
 	}
 
+	public setAccountSelection(account: string) {
+		this._accountPickerService.setAccountSelection(account);
+	}
+
+
 	public onAccountSelectionChange(account: azdata.Account | undefined): void {
 		this.viewModel.selectedAccount = account;
 		if (account && !account.isStale) {
@@ -330,6 +335,11 @@ export class FirewallRuleDialog extends Modal {
 			this._createButton!.enabled = false;
 		}
 	}
+
+	public setTenantSelection(tenantId: string) {
+
+	}
+
 
 	public onTenantSelectionChange(tenantId: string): void {
 		this.viewModel.selectedTenantId = tenantId;
