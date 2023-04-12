@@ -9,6 +9,7 @@ import * as azdata from 'azdata';
 
 import { IAccountPickerService } from 'sql/workbench/services/accountManagement/browser/accountPicker';
 import { AccountPicker } from 'sql/workbench/services/accountManagement/browser/accountPickerImpl';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class AccountPickerService implements IAccountPickerService {
 	_serviceBrand: undefined;
@@ -32,7 +33,8 @@ export class AccountPickerService implements IAccountPickerService {
 	public get onTenantSelectionChangeEvent(): Event<string | undefined> { return this._onTenantSelectionChangeEvent.event; }
 
 	constructor(
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@ILogService private readonly _logService: ILogService
 	) {
 		// Create event emitters
 		this._addAccountCompleteEmitter = new Emitter<void>();
@@ -53,12 +55,12 @@ export class AccountPickerService implements IAccountPickerService {
 		}
 	}
 
-	public setAccountSelection(account: string): void {
+	public setInitialAccountTenant(account: string, tenant: string): void {
 		if (this._accountPicker) {
-			this._accountPicker.setAccountSelection(account);
+			this._accountPicker.setInitialAccount(account);
+			this._accountPicker.setInitialTenant(tenant);
 		} else {
-			// log could not set account selection
-			return undefined;
+			this._logService.error('Account Picker was undefined. Could not set initial account/tenant for firewall dialog.');
 		}
 	}
 

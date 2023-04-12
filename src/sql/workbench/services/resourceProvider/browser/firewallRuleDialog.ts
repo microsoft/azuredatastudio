@@ -322,8 +322,8 @@ export class FirewallRuleDialog extends Modal {
 		}
 	}
 
-	public setAccountSelection(account: string) {
-		this._accountPickerService.setAccountSelection(account);
+	public setInitialAccountTenant(account: string, tenant: string) {
+		this._accountPickerService.setInitialAccountTenant(account, tenant);
 	}
 
 

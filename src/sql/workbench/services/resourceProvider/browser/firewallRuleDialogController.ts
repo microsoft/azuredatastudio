@@ -49,7 +49,7 @@ export class FirewallRuleDialogController {
 		this._resourceProviderId = resourceProviderId;
 		this._firewallRuleDialog.viewModel.updateDefaultValues(ipAddress);
 		this._firewallRuleDialog.open();
-		this._firewallRuleDialog.setAccountSelection(connection.azureAccount);
+		this._firewallRuleDialog.setInitialAccountTenant(connection.azureAccount, connection.azureTenantId);
 		this._deferredPromise = new Deferred();
 		return this._deferredPromise.promise;
 	}
