@@ -296,7 +296,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					default:
 						this._customOptionWidgets[i] = new InputBox(customOptionsContainer, this._contextViewService, {
 							ariaLabel: option.displayName,
-							placeholder: option.placeHolder
+							placeholder: option.placeholder
 						});
 						this._register(styler.attachInputBoxStyler(this._customOptionWidgets[i] as InputBox, this._themeService));
 						break;
@@ -393,7 +393,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				}
 			},
 			ariaLabel: serverNameOption.displayName,
-			placeholder: serverNameOption.placeHolder
+			placeholder: serverNameOption.placeholder
 		});
 		this._register(this._serverNameInputBox);
 	}
@@ -408,7 +408,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				validation: (value: string) => self.validateUsername(value, userNameOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", userNameOption.displayName) }) : null
 			},
 			ariaLabel: userNameOption.displayName,
-			placeholder: userNameOption.placeHolder
+			placeholder: userNameOption.placeholder
 		});
 		this._register(this._userNameInputBox);
 		// Password
@@ -416,7 +416,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let password = DialogHelper.appendRow(this._tableContainer, passwordOption.displayName, 'connection-label', 'connection-input', 'password-row');
 		this._passwordInputBox = new InputBox(password, this._contextViewService, {
 			ariaLabel: passwordOption.displayName,
-			placeholder: passwordOption.placeHolder
+			placeholder: passwordOption.placeholder
 		});
 		this._passwordInputBox.inputElement.type = 'password';
 		this._register(this._passwordInputBox);
@@ -452,7 +452,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._databaseNameInputBox = new Dropdown(databaseName, this._contextViewService, {
 				values: [this._defaultDatabaseName, this._loadingDatabaseName],
 				strictSelection: false,
-				placeholder: databaseOption.placeHolder ?? this._defaultDatabaseName,
+				placeholder: databaseOption.placeholder ?? this._defaultDatabaseName,
 				maxHeight: 125,
 				ariaLabel: databaseOption.displayName
 			});
@@ -475,7 +475,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let connectionNameBuilder = DialogHelper.appendRow(this._tableContainer, connectionNameOption.displayName, 'connection-label', 'connection-input');
 		this._connectionNameInputBox = new InputBox(connectionNameBuilder, this._contextViewService, {
 			ariaLabel: connectionNameOption.displayName,
-			placeholder: connectionNameOption.placeHolder
+			placeholder: connectionNameOption.placeholder
 		});
 		this._register(this._connectionNameInputBox);
 	}

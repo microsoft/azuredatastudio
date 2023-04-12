@@ -525,7 +525,7 @@ declare module 'azdata' {
 		/**
 		 * Used to define placeholder text
 		 */
-		placeHolder?: string;
+		placeholder?: string;
 
 		/**
 		 * When set to true, the respective connection option will be rendered on the main connection dialog
