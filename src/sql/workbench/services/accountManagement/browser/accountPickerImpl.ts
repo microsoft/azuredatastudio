@@ -202,7 +202,7 @@ export class AccountPicker extends Disposable {
 	public setAccountSelection(account: string): void {
 		let index = 0;
 		// find index
-		while (account !== this._accountList.view.items[index].element.key.accountId) {
+		while (account !== this._accountList.element(index).key.accountId) {
 			index++
 		}
 		this._accountList.setSelection([index]);
