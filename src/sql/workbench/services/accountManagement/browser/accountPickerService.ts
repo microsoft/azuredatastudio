@@ -59,6 +59,7 @@ export class AccountPickerService implements IAccountPickerService {
 		if (this._accountPicker) {
 			this._accountPicker.setInitialAccount(account);
 			this._accountPicker.setInitialTenant(tenant);
+			this._logService.info(`Set initial account: ${account} and tenant: ${tenant}`)
 		} else {
 			this._logService.error('Account Picker was undefined. Could not set initial account/tenant for firewall dialog.');
 		}

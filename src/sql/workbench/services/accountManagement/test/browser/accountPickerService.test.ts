@@ -14,6 +14,7 @@ import { TestAccountManagementService } from 'sql/platform/accounts/test/common/
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import { AccountPickerService } from 'sql/workbench/services/accountManagement/browser/accountPickerService';
+import { NullLogService } from 'vs/platform/log/common/log';
 
 // SUITE STATE /////////////////////////////////////////////////////////////
 let mockAddAccountCompleteEmitter: Emitter<void>;
@@ -37,9 +38,10 @@ suite('Account picker service tests', () => {
 		// Setup:
 		// ... Create instantiation service
 		let instantiationService = createInstantiationService();
+		let logService = new NullLogService();
 
-		// ... Create instance of the service and reder account picker
-		let service = new AccountPickerService(instantiationService, undefined);
+		// ... Create instance of the service and render account picker
+		let service = new AccountPickerService(instantiationService, logService);
 		service.renderAccountPicker(TypeMoq.It.isAny());
 
 		// Then:
