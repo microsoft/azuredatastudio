@@ -87,12 +87,6 @@ export class DacFxService extends BaseService implements mssql.IDacFxService {
 
 	public async savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: mssql.DeploymentOptions): Promise<azdata.ResultStatus> {
 		const params: contracts.SavePublishProfileParams = { profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions };
-		try {
-			const result = await this.client.sendRequest(contracts.SavePublishProfileRequest.type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(contracts.SavePublishProfileRequest.type, e);
-			throw e;
-		}
+		return this.runWithErrorHandling(contracts.SavePublishProfileRequest.type, params);
 	}
 }
