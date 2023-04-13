@@ -110,6 +110,8 @@ export class TreeNode {
 
 	public icon?: IconPath | SqlThemeIcon;
 
+	public forceRefresh: boolean = false;
+
 	constructor(nodeTypeId: string, objectType: string, label: string, isAlwaysLeaf: boolean, nodePath: string, parentNodePath: string,
 		nodeSubType: string, nodeStatus?: string, parent?: TreeNode, metadata?: azdata.ObjectMetadata,
 		iconType?: string | SqlThemeIcon,

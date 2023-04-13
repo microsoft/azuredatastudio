@@ -115,37 +115,14 @@ export class ObjectExplorerServiceDialog extends Modal {
 			contextKeyService,
 			{
 				dialogStyle: 'normal',
-				hasTitleIcon: true
+				hasTitleIcon: true,
+				hasSpinner: true
 			}
 		);
 
 		if (this._connectionProfile) {
 			this._treeNode = this._objectExplorerService.getObjectExplorerNode(this._connectionProfile);
 		}
-
-		this._treeNode.defaultFilters = [
-			{
-				name: 'Name',
-				type: NodeInfoFilterPropertyType.string,
-				operator: undefined,
-				value: undefined,
-				description: 'Include or exclude objects based on the name or part of a name.'
-			},
-			{
-				name: 'Schema',
-				type: NodeInfoFilterPropertyType.date,
-				operator: undefined,
-				value: undefined,
-				description: 'Include or exclude objects based on the name or part of a schema.'
-			},
-			{
-				name: 'IsSystemObject',
-				type: NodeInfoFilterPropertyType.boolean,
-				operator: undefined,
-				value: undefined,
-				description: 'Include or exclude objects based on the name or part of a is system object.'
-			}
-		];
 
 	}
 
@@ -453,7 +430,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 				this._treeNode.filters.push(filter);
 			}
 		}
-
+		this.spinner = true;
 		if (this._connectionProfile) {
 			const treeNode = this._objectExplorerService.getObjectExplorerNode(this._connectionProfile);
 			treeNode.filters = this._treeNode.filters;
@@ -466,15 +443,24 @@ export class ObjectExplorerServiceDialog extends Modal {
 				await this._tree.expand(this._connectionProfile);
 			}
 		} else {
-			if (this._tree instanceof AsyncServerTree) {
-				await this._tree.rerender(this._treeNode);
-				await this._tree.updateChildren(this._treeNode);
-				await this._tree.expand(this._treeNode);
-			} else {
-				await this._tree.refresh(this._treeNode);
-				await this._tree.expand(this._treeNode);
+			this._modalOptions.onSpinnerHideText
+			try {
+				this._treeNode.forceRefresh = true;
+				if (this._tree instanceof AsyncServerTree) {
+					await this._tree.rerender(this._treeNode);
+					await this._tree.updateChildren(this._treeNode);
+					await this._tree.expand(this._treeNode);
+				} else {
+					await this._tree.refresh(this._treeNode);
+					await this._tree.expand(this._treeNode);
+				}
+			} catch (e) {
+
+				this._dialogService.show(Severity.Error, localize('filterDialog.error', "Error while applying filter: {0}", e));
 			}
+
 		}
+		this.spinner = false;
 
 
 		this.hide('ok');

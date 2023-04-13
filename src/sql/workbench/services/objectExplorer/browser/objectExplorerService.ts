@@ -710,7 +710,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	public resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]> {
 		// Always refresh the node if it has an error, otherwise expand it normally
-		let needsRefresh = !!parentTree.errorStateMessage;
+		let needsRefresh = !!parentTree.errorStateMessage || parentTree.forceRefresh;
+		parentTree.forceRefresh = false;
 		return this.expandOrRefreshTreeNode(session, parentTree, needsRefresh);
 	}
 

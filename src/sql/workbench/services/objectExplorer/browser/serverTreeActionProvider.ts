@@ -164,9 +164,12 @@ export class ServerTreeActionProvider {
 		if (isProfileConnected && !this.isScriptableObject(context)) {
 			actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.profile));
 
-			actions.push(this._instantiationService.createInstance(FilterChildren, FilterChildren.ID, FilterChildren.LABEL, context.treeNode, context.tree, context.profile));
 
 			const treeNode = this._objectExplorerService.getObjectExplorerNode(context.profile);
+
+			if (treeNode?.defaultFilters?.length > 0) {
+				actions.push(this._instantiationService.createInstance(FilterChildren, FilterChildren.ID, FilterChildren.LABEL, context.treeNode, context.tree, context.profile));
+			}
 			if (treeNode.filters?.length > 0) {
 				actions.push(this._instantiationService.createInstance(RemoveFilterAction, RemoveFilterAction.ID, RemoveFilterAction.LABEL, context.treeNode, context.tree, context.profile));
 			}
@@ -227,7 +230,9 @@ export class ServerTreeActionProvider {
 		if (!this.isScriptableObject(context)) {
 			actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.treeNode || context.profile));
 
-			actions.push(this._instantiationService.createInstance(FilterChildren, FilterChildren.ID, FilterChildren.LABEL, context.treeNode, context.tree, undefined));
+			if (treeNode?.defaultFilters?.length > 0) {
+				actions.push(this._instantiationService.createInstance(FilterChildren, FilterChildren.ID, FilterChildren.LABEL, context.treeNode, context.tree, undefined));
+			}
 			if (treeNode?.filters?.length > 0) {
 				actions.push(this._instantiationService.createInstance(RemoveFilterAction, RemoveFilterAction.ID, RemoveFilterAction.LABEL, context.treeNode, context.tree, undefined));
 			}

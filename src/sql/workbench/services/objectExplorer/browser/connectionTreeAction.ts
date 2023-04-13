@@ -351,6 +351,9 @@ export class RemoveFilterAction extends Action {
 			nodeToRefresh = this._profile;
 		}
 		node.filters = [];
+		if (nodeToRefresh instanceof TreeNode) {
+			nodeToRefresh.forceRefresh = true;
+		}
 		if (this._tree instanceof AsyncServerTree) {
 			await this._tree.rerender(nodeToRefresh);
 			await this._tree.updateChildren(nodeToRefresh);

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 .filter-dialog-body {
-	height: 300px;
+	height: 400px;
 	padding: 10px;
 	display: flex;
 	flex-direction: column;
