@@ -6,7 +6,7 @@
 import 'mocha';
 import * as vscode from 'vscode';
 
-describe.skip('Extension activate test', () => { // {{SQL CARBON TODO}} - reenable later - (Failing to access property 'activate' on undefiend)
+describe('Extension activate test', () => {
 	it('Extension should activate correctly', async function (): Promise<void> {
 		await vscode.extensions.getExtension('Microsoft.admin-tool-ext-win')!.activate();
 	});
