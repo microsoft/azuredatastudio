@@ -17,6 +17,7 @@ import { TreeItemCollapsibleState } from 'sql/workbench/services/objectExplorer/
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import * as assert from 'assert';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
+import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 
 suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
@@ -38,7 +39,7 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 		);
 		mockConnectionManagementService.setup(x => x.getConnectionGroups()).returns(x => []);
 		mockConnectionManagementService.setup(x => x.hasRegisteredServers()).returns(() => true);
-		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, new TestThemeService(), undefined, undefined, capabilitiesService, undefined, undefined, new MockContextKeyService());
+		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, new TestThemeService(), undefined, new TestConfigurationService(), capabilitiesService, undefined, undefined, new MockContextKeyService(), undefined, undefined);
 		mockTree = TypeMoq.Mock.ofType<ITree>(TestTree);
 		(serverTreeView as any)._tree = mockTree.object;
 		mockRefreshTreeMethod = TypeMoq.Mock.ofType(Function);
