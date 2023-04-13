@@ -11,8 +11,9 @@ import * as Utils from '../utils';
 import * as constants from '../constants';
 import * as contracts from '../contracts';
 import { AuthenticationType, UserType } from './constants';
+import { BaseService } from '../baseService';
 
-export class ObjectManagementService implements IObjectManagementService {
+export class ObjectManagementService extends BaseService implements IObjectManagementService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
 		return class extends ObjectManagementService {
 			constructor(client: SqlOpsDataClient) {
@@ -28,112 +29,57 @@ export class ObjectManagementService implements IObjectManagementService {
 		};
 	}
 
-	private constructor(context: AppContext, protected readonly client: SqlOpsDataClient) {
+	private constructor(context: AppContext, client: SqlOpsDataClient) {
+		super(client);
 		context.registerService(constants.ObjectManagementService, this);
 	}
-	initializeLoginView(connectionUri: string, contextId: string, isNewObject: boolean, name: string | undefined): Thenable<ObjectManagement.LoginViewInfo> {
+
+	initializeLoginView(connectionUri: string, contextId: string, isNewObject: boolean, name: string | undefined): Promise<ObjectManagement.LoginViewInfo> {
 		const params: contracts.InitializeLoginViewRequestParams = { connectionUri, contextId, isNewObject, name };
-		return this.client.sendRequest(contracts.InitializeLoginViewRequest.type, params).then(
-			r => {
-				return r;
-			},
-			e => {
-				this.client.logFailedRequest(contracts.InitializeLoginViewRequest.type, e);
-				return Promise.reject(e);
-			}
-		);
+		return this.runWithErrorHandling(contracts.InitializeLoginViewRequest.type, params);
 	}
-	createLogin(contextId: string, login: ObjectManagement.Login): Thenable<void> {
+
+	createLogin(contextId: string, login: ObjectManagement.Login): Promise<void> {
 		const params: contracts.CreateLoginRequestParams = { contextId, login };
-		return this.client.sendRequest(contracts.CreateLoginRequest.type, params).then(
-			r => { },
-			e => {
-				this.client.logFailedRequest(contracts.CreateLoginRequest.type, e);
-				return Promise.reject(e);
-			}
-		);
+		return this.runWithErrorHandling(contracts.CreateLoginRequest.type, params);
 	}
-	updateLogin(contextId: string, login: ObjectManagement.Login): Thenable<void> {
+
+	updateLogin(contextId: string, login: ObjectManagement.Login): Promise<void> {
 		const params: contracts.UpdateLoginRequestParams = { contextId, login };
-		return this.client.sendRequest(contracts.UpdateLoginRequest.type, params).then(
-			r => { },
-			e => {
-				this.client.logFailedRequest(contracts.UpdateLoginRequest.type, e);
-				return Promise.reject(e);
-			}
-		);
+		return this.runWithErrorHandling(contracts.UpdateLoginRequest.type, params);
 	}
-	disposeLoginView(contextId: string): Thenable<void> {
+	disposeLoginView(contextId: string): Promise<void> {
 		const params: contracts.DisposeLoginViewRequestParams = { contextId };
-		return this.client.sendRequest(contracts.DisposeLoginViewRequest.type, params).then(
-			r => { },
-			e => {
-				this.client.logFailedRequest(contracts.DisposeLoginViewRequest.type, e);
-				return Promise.reject(e);
-			}
-		);
+		return this.runWithErrorHandling(contracts.DisposeLoginViewRequest.type, params);
 	}
-	initializeUserView(connectionUri: string, database: string, contextId: string, isNewObject: boolean, name: string | undefined): Thenable<ObjectManagement.UserViewInfo> {
+
+	initializeUserView(connectionUri: string, database: string, contextId: string, isNewObject: boolean, name: string | undefined): Promise<ObjectManagement.UserViewInfo> {
 		const params: contracts.InitializeUserViewRequestParams = { connectionUri, database, contextId, isNewObject, name };
-		return this.client.sendRequest(contracts.InitializeUserViewRequest.type, params).then(
-			r => {
-				return r;
-			},
-			e => {
-				this.client.logFailedRequest(contracts.InitializeUserViewRequest.type, e);
-				return Promise.reject(e);
-			}
-		);
+		return this.runWithErrorHandling(contracts.InitializeUserViewRequest.type, params);
 	}
-	createUser(contextId: string, user: ObjectManagement.User): Thenable<void> {
+
+	createUser(contextId: string, user: ObjectManagement.User): Promise<void> {
 		const params: contracts.CreateUserRequestParams = { contextId, user };
-		return this.client.sendRequest(contracts.CreateUserRequest.type, params).then(
-			r => { },
-			e => {
-				this.client.logFailedRequest(contracts.CreateUserRequest.type, e);
-				return Promise.reject(e);
-			}
-		);
+		return this.runWithErrorHandling(contracts.CreateUserRequest.type, params);
 	}
-	updateUser(contextId: string, user: ObjectManagement.User): Thenable<void> {
+
+	updateUser(contextId: string, user: ObjectManagement.User): Promise<void> {
 		const params: contracts.UpdateUserRequestParams = { contextId, user };
-		return this.client.sendRequest(contracts.UpdateUserRequest.type, params).then(
-			r => { },
-			e => {
-				this.client.logFailedRequest(contracts.UpdateUserRequest.type, e);
-				return Promise.reject(e);
-			}
-		);
+		return this.runWithErrorHandling(contracts.UpdateUserRequest.type, params);
 	}
-	disposeUserView(contextId: string): Thenable<void> {
+
+	disposeUserView(contextId: string): Promise<void> {
 		const params: contracts.DisposeUserViewRequestParams = { contextId };
-		return this.client.sendRequest(contracts.DisposeUserViewRequest.type, params).then(
-			r => { },
-			e => {
-				this.client.logFailedRequest(contracts.DisposeUserViewRequest.type, e);
-				return Promise.reject(e);
-			}
-		);
+		return this.runWithErrorHandling(contracts.DisposeUserViewRequest.type, params);
 	}
-	rename(connectionUri: string, objectUrn: string, newName: string): Thenable<void> {
+
+	rename(connectionUri: string, objectUrn: string, newName: string): Promise<void> {
 		const params: contracts.RenameObjectRequestParams = { connectionUri, objectUrn, newName };
-		return this.client.sendRequest(contracts.RenameObjectRequest.type, params).then(
-			r => { },
-			e => {
-				this.client.logFailedRequest(contracts.RenameObjectRequest.type, e);
-				return Promise.reject(e);
-			}
-		);
+		return this.runWithErrorHandling(contracts.RenameObjectRequest.type, params);
 	}
-	drop(connectionUri: string, objectUrn: string): Thenable<void> {
+	drop(connectionUri: string, objectUrn: string): Promise<void> {
 		const params: contracts.DropObjectRequestParams = { connectionUri, objectUrn };
-		return this.client.sendRequest(contracts.DropObjectRequest.type, params).then(
-			r => { },
-			e => {
-				this.client.logFailedRequest(contracts.DropObjectRequest.type, e);
-				return Promise.reject(e);
-			}
-		);
+		return this.runWithErrorHandling(contracts.DropObjectRequest.type, params);
 	}
 }
 

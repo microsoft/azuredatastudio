@@ -6,21 +6,18 @@
 import type * as mssql from 'mssql';
 import { SqlOpsDataClient } from 'dataprotocol-client';
 import * as contracts from '../contracts';
+import { BaseService } from '../baseService';
 
-export class AzureBlobService implements mssql.IAzureBlobService {
+export class AzureBlobService extends BaseService implements mssql.IAzureBlobService {
 
-	public constructor(protected readonly client: SqlOpsDataClient) { }
+	public constructor(client: SqlOpsDataClient) {
+		super(client);
+	}
 
 	public async createSas(ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string, expirationDate: string): Promise<mssql.CreateSasResponse> {
 		// This isn't registered as a feature since it's not something that we expect every tools client to implement currently since the usage is
 		// specifically for ADS and SqlToolsService.
 		const params: contracts.CreateSasParams = { ownerUri, blobContainerUri, blobContainerKey, storageAccountName, expirationDate };
-		return this.client.sendRequest(contracts.CreateSasRequest.type, params).then(
-			undefined,
-			e => {
-				this.client.logFailedRequest(contracts.CreateSasRequest.type, e);
-				return Promise.reject(e);
-			}
-		);
+		return this.runWithErrorHandling(contracts.CreateSasRequest.type, params);
 	}
 }

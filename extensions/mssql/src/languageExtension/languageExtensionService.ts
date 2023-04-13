@@ -10,9 +10,9 @@ import * as mssql from 'mssql';
 import * as Utils from '../utils';
 import { ClientCapabilities } from 'vscode-languageclient';
 import * as contracts from '../contracts';
+import { BaseService } from '../baseService';
 
-export class LanguageExtensionService implements mssql.ILanguageExtensionService {
-
+export class LanguageExtensionService extends BaseService implements mssql.ILanguageExtensionService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
 		return class extends LanguageExtensionService {
 			constructor(client: SqlOpsDataClient) {
@@ -28,44 +28,23 @@ export class LanguageExtensionService implements mssql.ILanguageExtensionService
 		};
 	}
 
-	private constructor(context: AppContext, protected readonly client: SqlOpsDataClient) {
+	private constructor(context: AppContext, client: SqlOpsDataClient) {
+		super(client);
 		context.registerService(constants.LanguageExtensionService, this);
 	}
 
-	public listLanguages(ownerUri: string): Thenable<mssql.ExternalLanguage[]> {
+	public listLanguages(ownerUri: string): Promise<mssql.ExternalLanguage[]> {
 		const params: contracts.LanguageExtensionRequestParam = { ownerUri: ownerUri };
-		return this.client.sendRequest(contracts.LanguageExtensibilityListRequest.type, params).then(
-			r => {
-				return r.languages;
-			},
-			e => {
-				this.client.logFailedRequest(contracts.LanguageExtensibilityListRequest.type, e);
-				return Promise.reject(e);
-			}
-		);
+		return this.runWithErrorHandling(contracts.LanguageExtensibilityListRequest.type, params).then((r) => r.languages);
 	}
 
-	public updateLanguage(ownerUri: string, language: mssql.ExternalLanguage): Thenable<void> {
+	public updateLanguage(ownerUri: string, language: mssql.ExternalLanguage): Promise<void> {
 		const params: contracts.ExternalLanguageUpdateRequestParam = { ownerUri: ownerUri, language: language };
-		return this.client.sendRequest(contracts.LanguageExtensibilityUpdateRequest.type, params).then(
-			() => {
-			},
-			e => {
-				this.client.logFailedRequest(contracts.LanguageExtensibilityUpdateRequest.type, e);
-				return Promise.reject(e);
-			}
-		);
+		return this.runWithErrorHandling(contracts.LanguageExtensibilityUpdateRequest.type, params).then();
 	}
 
-	public deleteLanguage(ownerUri: string, languageName: string): Thenable<void> {
+	public deleteLanguage(ownerUri: string, languageName: string): Promise<void> {
 		const params: contracts.ExternalLanguageRequestParam = { ownerUri: ownerUri, languageName: languageName };
-		return this.client.sendRequest(contracts.LanguageExtensibilityDeleteRequest.type, params).then(
-			() => {
-			},
-			e => {
-				this.client.logFailedRequest(contracts.LanguageExtensibilityDeleteRequest.type, e);
-				return Promise.reject(e);
-			}
-		);
+		return this.runWithErrorHandling(contracts.LanguageExtensibilityDeleteRequest.type, params).then();
 	}
 }
