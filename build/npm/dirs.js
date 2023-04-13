@@ -49,6 +49,7 @@ exports.dirs = [
 	'extensions/search-result',
 	'extensions/server-report',
 	'extensions/simple-browser',
+	'extensions/sql',
 	'extensions/sql-assessment',
 	'extensions/sql-bindings',
 	'extensions/sql-database-projects',
