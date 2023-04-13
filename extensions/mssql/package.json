@@ -837,6 +837,7 @@
           "groupName": "%mssql.connectionOptions.groupName.source%",
           "valueType": "string",
           "defaultValue": null,
+          "placeholder": "%mssql.connectionOptions.serverName.placeholder%",
           "objectType": null,
           "categoryValues": null,
           "isRequired": true,
