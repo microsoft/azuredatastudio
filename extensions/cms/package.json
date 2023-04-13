@@ -566,9 +566,9 @@
         {
           "specialValueType": null,
           "isIdentity": false,
-          "name": "attachDBFileName",
-          "displayName": "%cms.connectionOptions.attachDBFileName.displayName%",
-          "description": "%cms.connectionOptions.attachDBFileName.description%",
+          "name": "attachDbFilename",
+          "displayName": "%cms.connectionOptions.attachDbFilename.displayName%",
+          "description": "%cms.connectionOptions.attachDbFilename.description%",
           "groupName": "%cms.connectionOptions.groupName.source%",
           "valueType": "string",
           "defaultValue": null,
