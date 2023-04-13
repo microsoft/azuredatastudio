@@ -57,7 +57,6 @@ import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensio
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import { PasswordChangeDialog } from 'sql/workbench/services/connection/browser/passwordChangeDialog';
-import { generateUuid } from 'vs/base/common/uuid';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -439,10 +438,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public connect(connection: interfaces.IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		if (!uri) {
 			uri = Utils.generateUri(connection);
-		}
-		else {
-			// Editor profile will need to have a different id to distinguish it from the dashboard connection entry (if looking up by id).
-			connection.id = generateUuid();
 		}
 		let input: IConnectableInput = options && options.params ? options.params.input : undefined;
 		if (!input) {
