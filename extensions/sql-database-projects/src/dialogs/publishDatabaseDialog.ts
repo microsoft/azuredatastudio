@@ -542,11 +542,12 @@ export class PublishDatabaseDialog {
 		this.loadProfileTextBox = view.modelBuilder.inputBox().withProps({
 			placeHolder: constants.loadProfilePlaceholderText,
 			ariaLabel: constants.profile,
-			width: cssStyles.publishDialogTextboxWidth,
+			width: '200px',
 			enabled: false
 		}).component();
 
-		const profileRow = view.modelBuilder.flexContainer().withItems([this.loadProfileTextBox, selectProfileButton, saveProfileAsButton], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const buttonsList = view.modelBuilder.flexContainer().withItems([selectProfileButton, saveProfileAsButton], { flex: '0 0 auto', CSSStyles: { 'margin-right': '5px', 'text-align': 'justify' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const profileRow = view.modelBuilder.flexContainer().withItems([this.loadProfileTextBox, buttonsList], { flex: '0 0 auto', CSSStyles: { 'margin-right': '15px', 'text-align': 'justify' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		return profileRow;
 	}
@@ -874,7 +875,7 @@ export class PublishDatabaseDialog {
 			label: constants.selectProfile,
 			title: constants.selectProfile,
 			ariaLabel: constants.selectProfile,
-			width: cssStyles.PublishingOptionsButtonWidth,
+			width: '90px',
 			height: '25px',
 			secondary: true,
 		}).component();
