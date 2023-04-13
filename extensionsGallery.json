@@ -4963,7 +4963,7 @@
 					"extensionId": "98",
 					"extensionName": "ads-extension-mongo-migration",
 					"displayName": "Azure Cosmos DB Migration for MongoDB",
-					"shortDescription": "This extension helps you migrate your MongoDB databases to Azure Cosmos DB for MongoDB",
+					"shortDescription": "This extension helps you assess migration of your MongoDB databases to Azure Cosmos DB for MongoDB",
 					"publisher": {
 						"displayName": "Microsoft",
 						"publisherId": "Microsoft",
