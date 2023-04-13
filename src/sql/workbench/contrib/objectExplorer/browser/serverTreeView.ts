@@ -96,6 +96,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			// get the full ConnectionProfiles with the server info updated properly
 			const treeInput = TreeUpdateUtils.getTreeInput(this._connectionManagementService)!;
 			await this._tree.setInput(treeInput);
+			await this.refreshConnectionTreeTitles();
 			this._treeSelectionHandler.onTreeActionStateChange(false);
 		} else {
 			if (this._connectionManagementService.hasRegisteredServers()) {
