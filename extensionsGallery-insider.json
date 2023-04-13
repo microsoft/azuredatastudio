@@ -4386,7 +4386,7 @@
 					"extensionId": "87",
 					"extensionName": "dsct-oracle-to-ms-sql",
 					"displayName": "Database Schema Conversion Toolkit",
-					"shortDescription": "Azure Data Studio extensions to perform database schema conversion between different database platforms",
+					"shortDescription": "Azure Data Studio extension to perform database schema conversion between different database platforms",
 					"publisher": {
 						"displayName": "Microsoft",
 						"publisherId": "Microsoft",
