@@ -161,7 +161,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 			}
 		}
 		// The provider capabilities are registered at the same time at load time, we can assume all providers are registered as long as the collection is not empty.
-		else if (Object.keys(this.capabilitiesService.providers).length > 0) {
+		else if (this.hasLoaded()) {
 			return localize('connection.unsupported', "Unsupported connection");
 		} else {
 			return localize('loading', "Loading...");
@@ -171,6 +171,10 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 
 	public hasServerCapabilities(): boolean {
 		return (this.serverCapabilities !== undefined);
+	}
+
+	public hasLoaded(): boolean {
+		return Object.keys(this.capabilitiesService.providers).length > 0;
 	}
 
 	public get serverInfo(): string {

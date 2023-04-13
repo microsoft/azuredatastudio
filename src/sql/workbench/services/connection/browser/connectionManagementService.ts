@@ -721,7 +721,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			else {
 				result = tempProfile.getNonDefaultOptionsString();
 			}
-			tempProfile.dispose();
 		}
 		return result;
 	}

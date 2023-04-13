@@ -405,7 +405,7 @@ export class TreeUpdateUtils {
 		// Map the indices of profiles that share the same connection name.
 		for (let i = 0; i < inputList.length; i++) {
 			// do not add if the profile is still loading as that will result in erroneous entries.
-			if (inputList[i].hasServerCapabilities) {
+			if (inputList[i].hasServerCapabilities && inputList[i].hasLoaded()) {
 				let titleKey = inputList[i].getOriginalTitle();
 				if (profileListMap.has(titleKey)) {
 					let profilesForKey = profileListMap.get(titleKey);

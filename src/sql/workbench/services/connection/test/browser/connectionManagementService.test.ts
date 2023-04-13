@@ -1017,13 +1017,11 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((inputProfile, matcher) => {
 			let newProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), inputProfile);
 			let result = newProfile.getOptionsKey() === originalProfileKey;
-			newProfile.dispose();
 			return Promise.resolve(result);
 		});
 		await connect(uri1, options, true, profile);
 		let originalProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), connectionProfile);
 		originalProfileKey = originalProfile.getOptionsKey();
-		originalProfile.dispose();
 		let newProfile = Object.assign({}, connectionProfile);
 		newProfile.connectionName = newname;
 		options.params.isEditConnection = true;
@@ -1096,14 +1094,12 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((inputProfile, matcher) => {
 			let newProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), inputProfile);
 			let result = newProfile.getOptionsKey() === originalProfileKey;
-			newProfile.dispose();
 			return Promise.resolve(result)
 		});
 
 		await connect(uri1, options, true, profile);
 		let originalProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), connectionProfile);
 		originalProfileKey = originalProfile.getOptionsKey();
-		originalProfile.dispose();
 		let newProfile = Object.assign({}, connectionProfile);
 		options.params.isEditConnection = true;
 		try {
@@ -2141,7 +2137,6 @@ test('getEditorConnectionProfileTitle should return a correctly formatted title 
 	// We should expect that the string contains the connection name and the server info (with all non default options appended).
 	let generatedProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, profile);
 	let profileServerInfo = generatedProfile.serverInfo;
-	generatedProfile.dispose();
 	result = connectionManagementService.getEditorConnectionProfileTitle(profile);
 
 	assert.strictEqual(result, `${profile.connectionName}: ${profileServerInfo}`, `getEditorConnectionProfileTitle does not return the correct string for ${profile.connectionName}`);

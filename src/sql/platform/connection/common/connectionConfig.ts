@@ -91,7 +91,6 @@ export class ConnectionConfig {
 				if (match && (matcher.toString() !== ConnectionProfile.matchesProfile.toString())) {
 					firstMatchProfile = value;
 				}
-				providerConnectionProfile.dispose();
 				return match;
 			});
 
@@ -107,7 +106,6 @@ export class ConnectionConfig {
 				let matchesExistingProfile = profiles.find(value => {
 					const providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
 					const match = ConnectionProfile.matchesProfile(providerConnectionProfile, connectionProfile);
-					providerConnectionProfile.dispose();
 					return match;
 				});
 
@@ -373,7 +371,6 @@ export class ConnectionConfig {
 	private checkIfNonDefaultOptionsMatch(profileStore: IConnectionProfileStore, profile: ConnectionProfile): boolean {
 		let tempProfile = ConnectionProfile.createFromStoredProfile(profileStore, this._capabilitiesService);
 		let result = profile.getNonDefaultOptionsString() === tempProfile.getNonDefaultOptionsString();
-		tempProfile.dispose();
 		return result;
 	}
 
