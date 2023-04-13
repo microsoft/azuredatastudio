@@ -188,7 +188,7 @@ async function publish(commit: string, quality: string, platform: string, type: 
 	const blobName = commit + '/' + name;
 	const storageAccount = process.env['AZURE_STORAGE_ACCOUNT_2']!;
 	const storageKey = process.env['AZURE_STORAGE_ACCESS_KEY_2']!;
-	const connectionString = `DefaultEndpointsProtocol=https;AccountName=${storageAccount};AccountKey=${storageKey}`;
+	const connectionString = `DefaultEndpointsProtocol=https;AccountName=${storageAccount};AccountKey=${storageKey};EndpointSuffix=core.windows.net`;
 
 	let blobServiceClient = BlobServiceClient.fromConnectionString(connectionString, {
 		retryOptions: {

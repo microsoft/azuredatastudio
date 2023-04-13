@@ -1118,11 +1118,11 @@ export namespace SchemaCompareGetDefaultOptionsRequest {
 }
 
 export namespace SchemaCompareIncludeExcludeNodeRequest {
-	export const type = new RequestType<SchemaCompareNodeParams, azdata.ResultStatus, void, void>('schemaCompare/includeExcludeNode');
+	export const type = new RequestType<SchemaCompareNodeParams, mssql.SchemaCompareIncludeExcludeResult, void, void>('schemaCompare/includeExcludeNode');
 }
 
 export namespace SchemaCompareOpenScmpRequest {
-	export const type = new RequestType<SchemaCompareOpenScmpParams, azdata.ResultStatus, void, void>('schemaCompare/openScmp');
+	export const type = new RequestType<SchemaCompareOpenScmpParams, mssql.SchemaCompareOpenScmpResult, void, void>('schemaCompare/openScmp');
 }
 
 export namespace SchemaCompareSaveScmpRequest {
