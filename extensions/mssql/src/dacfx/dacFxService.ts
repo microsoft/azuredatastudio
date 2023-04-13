@@ -35,47 +35,47 @@ export class DacFxService extends BaseService implements mssql.IDacFxService {
 		context.registerService(constants.DacFxService, this);
 	}
 
-	public exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> {
+	public exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Promise<mssql.DacFxResult> {
 		const params: contracts.ExportParams = { databaseName: databaseName, packageFilePath: packageFilePath, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 		return this.runWithErrorHandling(contracts.ExportRequest.type, params);
 	}
 
-	public importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> {
+	public importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Promise<mssql.DacFxResult> {
 		const params: contracts.ImportParams = { packageFilePath: packageFilePath, databaseName: databaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 		return this.runWithErrorHandling(contracts.ImportRequest.type, params);
 	}
 
-	public extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> {
+	public extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Promise<mssql.DacFxResult> {
 		const params: contracts.ExtractParams = { databaseName: databaseName, packageFilePath: packageFilePath, applicationName: applicationName, applicationVersion: applicationVersion, ownerUri: ownerUri, extractTarget: mssql.ExtractTarget.dacpac, taskExecutionMode: taskExecutionMode };
 		return this.runWithErrorHandling(contracts.ExtractRequest.type, params);
 	}
 
-	public createProjectFromDatabase(databaseName: string, targetFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, extractTarget: mssql.ExtractTarget, taskExecutionMode: azdata.TaskExecutionMode, includePermissions?: boolean): Thenable<mssql.DacFxResult> {
+	public createProjectFromDatabase(databaseName: string, targetFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, extractTarget: mssql.ExtractTarget, taskExecutionMode: azdata.TaskExecutionMode, includePermissions?: boolean): Promise<mssql.DacFxResult> {
 		const params: contracts.ExtractParams = { databaseName: databaseName, packageFilePath: targetFilePath, applicationName: applicationName, applicationVersion: applicationVersion, ownerUri: ownerUri, extractTarget: extractTarget, taskExecutionMode: taskExecutionMode, includePermissions: includePermissions };
 		return this.runWithErrorHandling(contracts.ExtractRequest.type, params);
 	}
 
-	public deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: mssql.DeploymentOptions): Thenable<mssql.DacFxResult> {
+	public deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: mssql.DeploymentOptions): Promise<mssql.DacFxResult> {
 		const params: contracts.DeployParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, upgradeExisting: upgradeExisting, sqlCommandVariableValues: sqlCommandVariableValues, deploymentOptions: deploymentOptions, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 		return this.runWithErrorHandling(contracts.DeployRequest.type, params);
 	}
 
-	public generateDeployScript(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: mssql.DeploymentOptions): Thenable<mssql.DacFxResult> {
+	public generateDeployScript(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: mssql.DeploymentOptions): Promise<mssql.DacFxResult> {
 		const params: contracts.GenerateDeployScriptParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, sqlCommandVariableValues: sqlCommandVariableValues, deploymentOptions: deploymentOptions, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 		return this.runWithErrorHandling(contracts.GenerateDeployScriptRequest.type, params);
 	}
 
-	public generateDeployPlan(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.GenerateDeployPlanResult> {
+	public generateDeployPlan(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Promise<mssql.GenerateDeployPlanResult> {
 		const params: contracts.GenerateDeployPlanParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 		return this.runWithErrorHandling(contracts.GenerateDeployPlanRequest.type, params);
 	}
 
-	public getOptionsFromProfile(profilePath: string): Thenable<mssql.DacFxOptionsResult> {
+	public getOptionsFromProfile(profilePath: string): Promise<mssql.DacFxOptionsResult> {
 		const params: contracts.GetOptionsFromProfileParams = { profilePath: profilePath };
 		return this.runWithErrorHandling(contracts.GetOptionsFromProfileRequest.type, params);
 	}
 
-	public validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<mssql.ValidateStreamingJobResult> {
+	public validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Promise<mssql.ValidateStreamingJobResult> {
 		const params: contracts.ValidateStreamingJobParams = { packageFilePath: packageFilePath, createStreamingJobTsql: createStreamingJobTsql };
 		return this.runWithErrorHandling(contracts.ValidateStreamingJobRequest.type, params);
 	}
