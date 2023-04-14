@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as uiUtils from './utils';
+import * as path from 'path';
 
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
@@ -59,6 +60,7 @@ export class PublishDatabaseDialog {
 	protected optionsButton: azdataType.ButtonComponent | undefined;
 	private publishOptionsDialog: PublishOptionsDialog | undefined;
 	public publishOptionsModified: boolean = false;
+	private publishProfileUri: vscode.Uri | undefined;
 
 	private completionPromise: Deferred = new Deferred();
 
@@ -68,6 +70,7 @@ export class PublishDatabaseDialog {
 	public publishToContainer: ((proj: Project, profile: IPublishToDockerSettings) => any) | undefined;
 	public generateScript: ((proj: Project, profile: ISqlProjectPublishSettings) => any) | undefined;
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
+	public savePublishProfile: ((profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions) => any) | undefined;
 
 	constructor(private project: Project) {
 		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.publishDialogName, 'sqlProjectPublishDialog');
@@ -137,13 +140,14 @@ export class PublishDatabaseDialog {
 			const options = await this.getDefaultDeploymentOptions();
 			this.setDeploymentOptions(options);
 
-			const profileRow = this.createProfileRow(view);
+			const profileRow = this.createProfileSection(view);
+
 			this.connectionRow = this.createConnectionRow(view);
 			this.databaseRow = this.createDatabaseRow(view);
 			const displayOptionsButton = this.createOptionsButton(view);
 
 			const horizontalFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			horizontalFormSection.addItems([profileRow, this.databaseRow]);
+			horizontalFormSection.addItems([this.databaseRow]);
 
 			this.formBuilder = <azdataType.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
@@ -153,6 +157,10 @@ export class PublishDatabaseDialog {
 							{
 								component: flexRadioButtonsModel,
 								title: ''
+							},
+							{
+								component: profileRow,
+								title: constants.profile
 							},
 							{
 								component: this.connectionRow,
@@ -385,18 +393,20 @@ export class PublishDatabaseDialog {
 		this.createDatabaseRow(view);
 		this.tryEnableGenerateScriptAndPublishButtons();
 		if (existingServer) {
-			if (this.connectionRow) {
-				this.formBuilder!.insertFormItem({
-					title: '',
-					component: this.connectionRow
-				}, 2);
-			}
 			if (this.localDbSection) {
 				this.formBuilder!.removeFormItem({
 					title: '',
 					component: this.localDbSection
 				});
 			}
+
+			if (this.connectionRow) {
+				this.formBuilder!.insertFormItem({
+					title: '',
+					component: this.connectionRow
+				}, 3);
+			}
+
 		} else {
 			if (this.connectionRow) {
 				this.formBuilder!.removeFormItem({
@@ -404,6 +414,7 @@ export class PublishDatabaseDialog {
 					component: this.connectionRow
 				});
 			}
+
 			if (this.localDbSection) {
 				this.formBuilder!.insertFormItem({
 					title: '',
@@ -429,22 +440,19 @@ export class PublishDatabaseDialog {
 		return this.targetConnectionTextBox;
 	}
 
-	private createProfileRow(view: azdataType.ModelView): azdataType.FlexContainer {
-		const loadProfileButton = this.createLoadProfileButton(view);
+	private createProfileSection(view: azdataType.ModelView): azdataType.FlexContainer {
+		const selectProfileButton = this.createSelectProfileButton(view);
+		const saveProfileAsButton = this.createSaveProfileAsButton(view);
+
 		this.loadProfileTextBox = view.modelBuilder.inputBox().withProps({
 			placeHolder: constants.loadProfilePlaceholderText,
 			ariaLabel: constants.profile,
-			width: cssStyles.publishDialogTextboxWidth,
+			width: '200px',
 			enabled: false
 		}).component();
 
-		const profileLabel = view.modelBuilder.text().withProps({
-			value: constants.profile,
-			width: cssStyles.publishDialogLabelWidth
-		}).component();
-
-		const profileRow = view.modelBuilder.flexContainer().withItems([profileLabel, this.loadProfileTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-		profileRow.insertItem(loadProfileButton, 2, { CSSStyles: { 'margin-right': '0px' } });
+		const buttonsList = view.modelBuilder.flexContainer().withItems([selectProfileButton, saveProfileAsButton], { flex: '0 0 auto', CSSStyles: { 'margin-right': '5px', 'text-align': 'justify' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const profileRow = view.modelBuilder.flexContainer().withItems([this.loadProfileTextBox, buttonsList], { flex: '0 0 auto', CSSStyles: { 'margin-right': '15px', 'text-align': 'justify' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		return profileRow;
 	}
@@ -767,13 +775,14 @@ export class PublishDatabaseDialog {
 		}
 	}
 
-	private createLoadProfileButton(view: azdataType.ModelView): azdataType.ButtonComponent {
+	private createSelectProfileButton(view: azdataType.ModelView): azdataType.ButtonComponent {
 		let loadProfileButton: azdataType.ButtonComponent = view.modelBuilder.button().withProps({
-			ariaLabel: constants.loadProfilePlaceholderText,
-			title: constants.loadProfilePlaceholderText,
-			iconPath: IconPathHelper.folder_blue,
-			height: '18px',
-			width: '18px'
+			label: constants.selectProfile,
+			title: constants.selectProfile,
+			ariaLabel: constants.selectProfile,
+			width: '90px',
+			height: '25px',
+			secondary: true,
 		}).component();
 
 		loadProfileButton.onDidClick(async () => {
@@ -822,10 +831,53 @@ export class PublishDatabaseDialog {
 				await this.loadProfileTextBox!.updateProperty('title', fileUris[0].fsPath);
 
 				this.profileUsed = true;
+				this.publishProfileUri = fileUris[0];
 			}
 		});
 
 		return loadProfileButton;
+	}
+
+	private createSaveProfileAsButton(view: azdataType.ModelView): azdataType.ButtonComponent {
+		let saveProfileAsButton: azdataType.ButtonComponent = view.modelBuilder.button().withProps({
+			label: constants.saveProfileAsButtonText,
+			title: constants.saveProfileAsButtonText,
+			ariaLabel: constants.saveProfileAsButtonText,
+			width: cssStyles.PublishingOptionsButtonWidth,
+			height: '25px',
+			secondary: true
+		}).component();
+
+		saveProfileAsButton.onDidClick(async () => {
+			const filePath = await vscode.window.showSaveDialog(
+				{
+					defaultUri: this.publishProfileUri ?? vscode.Uri.file(path.join(this.project.projectFolderPath, `${this.project.projectFileName}_1`)),
+					saveLabel: constants.save,
+					filters: {
+						'Publish Settings Files': ['publish.xml'],
+					}
+				}
+			);
+
+			if (!filePath) {
+				return;
+			}
+
+			if (this.savePublishProfile) {
+				const targetConnectionString = this.connectionId ? await utils.getAzdataApi()!.connection.getConnectionString(this.connectionId, false) : '';
+				const targetDatabaseName = this.targetDatabaseName ?? '';
+				const deploymentOptions = await this.getDeploymentOptions();
+				await this.savePublishProfile(filePath.fsPath, targetDatabaseName, targetConnectionString, this.getSqlCmdVariablesForPublish(), deploymentOptions);
+			}
+
+			this.profileUsed = true;
+			this.publishProfileUri = filePath;
+
+			await this.project.addNoneItem(path.relative(this.project.projectFolderPath, filePath.fsPath));
+			void vscode.commands.executeCommand(constants.refreshDataWorkspaceCommand);		//refresh data workspace to load the newly added profile to the tree
+		});
+
+		return saveProfileAsButton;
 	}
 
 	private convertSqlCmdVarsToTableFormat(sqlCmdVars: Record<string, string>): azdataType.DeclarativeTableCellValue[][] {
