@@ -298,7 +298,7 @@ suite('SQL Connection Tree Action tests', () => {
 			return new Promise((resolve) => resolve({}));
 		});
 
-		let serverTreeView = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Strict, undefined, instantiationService.object, undefined, undefined, undefined, undefined, capabilitiesService, undefined, undefined, new MockContextKeyService());
+		let serverTreeView = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Strict, undefined, instantiationService.object, undefined, undefined, undefined, new TestConfigurationService(), capabilitiesService, undefined, undefined, new MockContextKeyService());
 		serverTreeView.setup(x => x.showFilteredTree(TypeMoq.It.isAny()));
 		serverTreeView.setup(x => x.refreshTree());
 		serverTreeView.setup(x => x.view).returns(() => ServerTreeViewView.all);
@@ -316,7 +316,7 @@ suite('SQL Connection Tree Action tests', () => {
 			return new Promise((resolve) => resolve({}));
 		});
 
-		let serverTreeView = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Strict, undefined, instantiationService.object, undefined, undefined, undefined, undefined, capabilitiesService, undefined, undefined, new MockContextKeyService());
+		let serverTreeView = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Strict, undefined, instantiationService.object, undefined, undefined, undefined, new TestConfigurationService(), capabilitiesService, undefined, undefined, new MockContextKeyService());
 		serverTreeView.setup(x => x.showFilteredTree(TypeMoq.It.isAny()));
 		serverTreeView.setup(x => x.refreshTree());
 		serverTreeView.setup(x => x.view).returns(() => ServerTreeViewView.active);
