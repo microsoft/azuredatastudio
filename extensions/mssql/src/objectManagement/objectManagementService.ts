@@ -34,50 +34,50 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		context.registerService(constants.ObjectManagementService, this);
 	}
 
-	initializeLoginView(connectionUri: string, contextId: string, isNewObject: boolean, name: string | undefined): Promise<ObjectManagement.LoginViewInfo> {
+	async initializeLoginView(connectionUri: string, contextId: string, isNewObject: boolean, name: string | undefined): Promise<ObjectManagement.LoginViewInfo> {
 		const params: contracts.InitializeLoginViewRequestParams = { connectionUri, contextId, isNewObject, name };
 		return this.runWithErrorHandling(contracts.InitializeLoginViewRequest.type, params);
 	}
 
-	createLogin(contextId: string, login: ObjectManagement.Login): Promise<void> {
+	async createLogin(contextId: string, login: ObjectManagement.Login): Promise<void> {
 		const params: contracts.CreateLoginRequestParams = { contextId, login };
 		return this.runWithErrorHandling(contracts.CreateLoginRequest.type, params);
 	}
 
-	updateLogin(contextId: string, login: ObjectManagement.Login): Promise<void> {
+	async updateLogin(contextId: string, login: ObjectManagement.Login): Promise<void> {
 		const params: contracts.UpdateLoginRequestParams = { contextId, login };
 		return this.runWithErrorHandling(contracts.UpdateLoginRequest.type, params);
 	}
-	disposeLoginView(contextId: string): Promise<void> {
+	async disposeLoginView(contextId: string): Promise<void> {
 		const params: contracts.DisposeLoginViewRequestParams = { contextId };
 		return this.runWithErrorHandling(contracts.DisposeLoginViewRequest.type, params);
 	}
 
-	initializeUserView(connectionUri: string, database: string, contextId: string, isNewObject: boolean, name: string | undefined): Promise<ObjectManagement.UserViewInfo> {
+	async initializeUserView(connectionUri: string, database: string, contextId: string, isNewObject: boolean, name: string | undefined): Promise<ObjectManagement.UserViewInfo> {
 		const params: contracts.InitializeUserViewRequestParams = { connectionUri, database, contextId, isNewObject, name };
 		return this.runWithErrorHandling(contracts.InitializeUserViewRequest.type, params);
 	}
 
-	createUser(contextId: string, user: ObjectManagement.User): Promise<void> {
+	async createUser(contextId: string, user: ObjectManagement.User): Promise<void> {
 		const params: contracts.CreateUserRequestParams = { contextId, user };
 		return this.runWithErrorHandling(contracts.CreateUserRequest.type, params);
 	}
 
-	updateUser(contextId: string, user: ObjectManagement.User): Promise<void> {
+	async updateUser(contextId: string, user: ObjectManagement.User): Promise<void> {
 		const params: contracts.UpdateUserRequestParams = { contextId, user };
 		return this.runWithErrorHandling(contracts.UpdateUserRequest.type, params);
 	}
 
-	disposeUserView(contextId: string): Promise<void> {
+	async disposeUserView(contextId: string): Promise<void> {
 		const params: contracts.DisposeUserViewRequestParams = { contextId };
 		return this.runWithErrorHandling(contracts.DisposeUserViewRequest.type, params);
 	}
 
-	rename(connectionUri: string, objectUrn: string, newName: string): Promise<void> {
+	async rename(connectionUri: string, objectUrn: string, newName: string): Promise<void> {
 		const params: contracts.RenameObjectRequestParams = { connectionUri, objectUrn, newName };
 		return this.runWithErrorHandling(contracts.RenameObjectRequest.type, params);
 	}
-	drop(connectionUri: string, objectUrn: string): Promise<void> {
+	async drop(connectionUri: string, objectUrn: string): Promise<void> {
 		const params: contracts.DropObjectRequestParams = { connectionUri, objectUrn };
 		return this.runWithErrorHandling(contracts.DropObjectRequest.type, params);
 	}

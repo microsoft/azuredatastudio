@@ -33,32 +33,32 @@ export class CmsService extends BaseService implements ICmsService {
 		context.registerService(constants.CmsService, this);
 	}
 
-	createCmsServer(name: string, description: string, connectiondetails: azdata.ConnectionInfo, ownerUri: string): Promise<ListRegisteredServersResult> {
+	async createCmsServer(name: string, description: string, connectiondetails: azdata.ConnectionInfo, ownerUri: string): Promise<ListRegisteredServersResult> {
 		const params: contracts.CreateCentralManagementServerParams = { registeredServerName: name, registeredServerDescription: description, connectParams: { ownerUri: ownerUri, connection: connectiondetails } };
 		return this.runWithErrorHandling(contracts.CreateCentralManagementServerRequest.type, params);
 	}
 
-	getRegisteredServers(ownerUri: string, relativePath: string): Promise<ListRegisteredServersResult> {
+	async getRegisteredServers(ownerUri: string, relativePath: string): Promise<ListRegisteredServersResult> {
 		const params: contracts.ListRegisteredServersParams = { parentOwnerUri: ownerUri, relativePath: relativePath };
 		return this.runWithErrorHandling(contracts.ListRegisteredServersRequest.type, params);
 	}
 
-	addRegisteredServer(ownerUri: string, relativePath: string, registeredServerName: string, registeredServerDescription: string, connectionDetails: azdata.ConnectionInfo): Promise<boolean> {
+	async addRegisteredServer(ownerUri: string, relativePath: string, registeredServerName: string, registeredServerDescription: string, connectionDetails: azdata.ConnectionInfo): Promise<boolean> {
 		const params: contracts.AddRegisteredServerParams = { parentOwnerUri: ownerUri, relativePath: relativePath, registeredServerName: registeredServerName, registeredServerDescription: registeredServerDescription, registeredServerConnectionDetails: connectionDetails };
 		return this.runWithErrorHandling(contracts.AddRegisteredServerRequest.type, params);
 	}
 
-	removeRegisteredServer(ownerUri: string, relativePath: string, registeredServerName: string): Promise<boolean> {
+	async removeRegisteredServer(ownerUri: string, relativePath: string, registeredServerName: string): Promise<boolean> {
 		const params: contracts.RemoveRegisteredServerParams = { parentOwnerUri: ownerUri, relativePath: relativePath, registeredServerName: registeredServerName };
 		return this.runWithErrorHandling(contracts.RemoveRegisteredServerRequest.type, params);
 	}
 
-	addServerGroup(ownerUri: string, relativePath: string, groupName: string, groupDescription: string): Promise<boolean> {
+	async addServerGroup(ownerUri: string, relativePath: string, groupName: string, groupDescription: string): Promise<boolean> {
 		const params: contracts.AddServerGroupParams = { parentOwnerUri: ownerUri, relativePath: relativePath, groupName: groupName, groupDescription: groupDescription };
 		return this.runWithErrorHandling(contracts.AddServerGroupRequest.type, params);
 	}
 
-	removeServerGroup(ownerUri: string, relativePath: string, groupName: string): Promise<boolean> {
+	async removeServerGroup(ownerUri: string, relativePath: string, groupName: string): Promise<boolean> {
 		const params: contracts.RemoveServerGroupParams = { parentOwnerUri: ownerUri, relativePath: relativePath, groupName: groupName };
 		return this.runWithErrorHandling(contracts.RemoveServerGroupRequest.type, params);
 	}

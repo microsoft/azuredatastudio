@@ -33,17 +33,17 @@ export class LanguageExtensionService extends BaseService implements mssql.ILang
 		context.registerService(constants.LanguageExtensionService, this);
 	}
 
-	public listLanguages(ownerUri: string): Promise<mssql.ExternalLanguage[]> {
+	public async listLanguages(ownerUri: string): Promise<mssql.ExternalLanguage[]> {
 		const params: contracts.LanguageExtensionRequestParam = { ownerUri: ownerUri };
 		return this.runWithErrorHandling(contracts.LanguageExtensibilityListRequest.type, params).then((r) => r.languages);
 	}
 
-	public updateLanguage(ownerUri: string, language: mssql.ExternalLanguage): Promise<void> {
+	public async updateLanguage(ownerUri: string, language: mssql.ExternalLanguage): Promise<void> {
 		const params: contracts.ExternalLanguageUpdateRequestParam = { ownerUri: ownerUri, language: language };
 		return this.runWithErrorHandling(contracts.LanguageExtensibilityUpdateRequest.type, params).then();
 	}
 
-	public deleteLanguage(ownerUri: string, languageName: string): Promise<void> {
+	public async deleteLanguage(ownerUri: string, languageName: string): Promise<void> {
 		const params: contracts.ExternalLanguageRequestParam = { ownerUri: ownerUri, languageName: languageName };
 		return this.runWithErrorHandling(contracts.LanguageExtensibilityDeleteRequest.type, params).then();
 	}
