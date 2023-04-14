@@ -49,8 +49,8 @@ describe('Project: sqlproj content operations', function (): void {
 
 		// SqlCmdVariables
 		should(Object.keys(project.sqlCmdVariables).length).equal(2);
-		should(project.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
-		should(project.sqlCmdVariables['BackupDatabaseName']).equal('MyBackupDatabase');
+		should(project.sqlCmdVariables.get('ProdDatabaseName')).equal('MyProdDatabase');
+		should(project.sqlCmdVariables.get('BackupDatabaseName')).equal('MyBackupDatabase');
 
 		// Database references
 		// should only have one database reference even though there are two master.dacpac references (1 for ADS and 1 for SSDT)
@@ -859,8 +859,8 @@ describe('Project: add SQLCMD Variables', function (): void {
 		await project.updateSqlCmdVariable('ProdDatabaseName', 'NewProdName');
 
 		should(Object.keys(project.sqlCmdVariables).length).equal(3, 'There should be 3 sqlcmd variables after adding TestDatabaseName');
-		should(project.sqlCmdVariables['TestDatabaseName']).equal('TestDb', 'Value of TestDatabaseName should be TestDb');
-		should(project.sqlCmdVariables['ProdDatabaseName']).equal('NewProdName', 'ProdDatabaseName value should have been updated to the new value');
+		should(project.sqlCmdVariables.get('TestDatabaseName')).equal('TestDb', 'Value of TestDatabaseName should be TestDb');
+		should(project.sqlCmdVariables.get('ProdDatabaseName')).equal('NewProdName', 'ProdDatabaseName value should have been updated to the new value');
 	});
 });
 

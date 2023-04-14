@@ -957,7 +957,7 @@ export class ProjectsController {
 		const node = context.element as SqlCmdVariableTreeItem;
 		const project = await this.getProjectFromContext(node);
 		const variableName = node.friendlyName;
-		const originalValue = project.sqlCmdVariables[variableName];
+		const originalValue = project.sqlCmdVariables.get(variableName);
 
 		const newValue = await vscode.window.showInputBox(
 			{

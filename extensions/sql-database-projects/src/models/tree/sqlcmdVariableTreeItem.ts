@@ -23,21 +23,19 @@ export class SqlCmdVariablesTreeItem extends BaseProjectTreeItem {
 	 * @param sqlCmdVariables Collection of SQLCMD variables in the project
 	 * @param project
 	 */
-	constructor(projectNodeName: string, sqlprojUri: vscode.Uri, sqlCmdVariables: Record<string, string>) {
+	constructor(projectNodeName: string, sqlprojUri: vscode.Uri, sqlCmdVariables: Map<string, string>) {
 		super(vscode.Uri.file(path.join(projectNodeName, constants.sqlcmdVariablesNodeName)), sqlprojUri);
 
 		this.construct(sqlCmdVariables);
 	}
 
-	private construct(sqlCmdVariables: Record<string, string>) {
+	private construct(sqlCmdVariables: Map<string, string>) {
 		if (!sqlCmdVariables) {
 			return;
 		}
 
-		for (const sqlCmdVariable of Object.keys(sqlCmdVariables)) {
-			if (sqlCmdVariable) {
-				this.sqlcmdVariableTreeItems.push(new SqlCmdVariableTreeItem(sqlCmdVariable, this.relativeProjectUri, this.projectFileUri));
-			}
+		for (const sqlCmdVariable of sqlCmdVariables.keys()) {
+			this.sqlcmdVariableTreeItems.push(new SqlCmdVariableTreeItem(sqlCmdVariable, this.relativeProjectUri, this.projectFileUri));
 		}
 	}
 

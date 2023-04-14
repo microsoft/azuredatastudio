@@ -1056,13 +1056,13 @@ describe('ProjectsController', function (): void {
 			const inputBoxStub = sinon.stub(vscode.window, 'showInputBox');
 			inputBoxStub.resolves('');
 			const sqlcmdVarToUpdate = projRoot.children.find(x => x.friendlyName === constants.sqlcmdVariablesNodeName)!.children[0];
-			const originalValue = project.sqlCmdVariables[sqlcmdVarToUpdate.friendlyName];
+			const originalValue = project.sqlCmdVariables.get(sqlcmdVarToUpdate.friendlyName);
 			await projController.editSqlCmdVariable(createWorkspaceTreeItem(sqlcmdVarToUpdate));
 
 			// reload project
 			project = await Project.openProject(project.projectFilePath);
 			should(Object.keys(project.sqlCmdVariables).length).equal(2, 'The project should still have 2 sqlcmd variables');
-			should(project.sqlCmdVariables[sqlcmdVarToUpdate.friendlyName]).equal(originalValue, 'The value of the sqlcmd variable should not have changed');
+			should(project.sqlCmdVariables.get(sqlcmdVarToUpdate.friendlyName)).equal(originalValue, 'The value of the sqlcmd variable should not have changed');
 
 			inputBoxStub.reset();
 			const updatedValue = 'newValue';
@@ -1072,7 +1072,7 @@ describe('ProjectsController', function (): void {
 			// reload project
 			project = await Project.openProject(project.projectFilePath);
 			should(Object.keys(project.sqlCmdVariables).length).equal(2, 'The project should still have 2 sqlcmd variables');
-			should(project.sqlCmdVariables[sqlcmdVarToUpdate.friendlyName]).equal(updatedValue, 'The value of the sqlcmd variable should have been updated');
+			should(project.sqlCmdVariables.get(sqlcmdVarToUpdate.friendlyName)).equal(updatedValue, 'The value of the sqlcmd variable should have been updated');
 		});
 	});
 });
