@@ -551,6 +551,14 @@ export interface ParseTSqlScriptParams {
 	databaseSchemaProvider: string;
 }
 
+export interface SavePublishProfileParams {
+	profilePath: string;
+	databaseName: string;
+	connectionString: string;
+	sqlCommandVariableValues?: Record<string, string>;
+	deploymentOptions?: mssql.DeploymentOptions;
+}
+
 export namespace ExportRequest {
 	export const type = new RequestType<ExportParams, mssql.DacFxResult, void, void>('dacfx/export');
 }
@@ -585,6 +593,10 @@ export namespace ValidateStreamingJobRequest {
 
 export namespace ParseTSqlScriptRequest {
 	export const type = new RequestType<ParseTSqlScriptParams, mssql.ParseTSqlScriptResult, void, void>('dacfx/parseTSqlScript');
+}
+
+export namespace SavePublishProfileRequest {
+	export const type = new RequestType<SavePublishProfileParams, azdata.ResultStatus, void, void>('dacfx/savePublishProfile');
 }
 
 // ------------------------------- </ DacFx > ------------------------------------
@@ -1106,11 +1118,11 @@ export namespace SchemaCompareGetDefaultOptionsRequest {
 }
 
 export namespace SchemaCompareIncludeExcludeNodeRequest {
-	export const type = new RequestType<SchemaCompareNodeParams, azdata.ResultStatus, void, void>('schemaCompare/includeExcludeNode');
+	export const type = new RequestType<SchemaCompareNodeParams, mssql.SchemaCompareIncludeExcludeResult, void, void>('schemaCompare/includeExcludeNode');
 }
 
 export namespace SchemaCompareOpenScmpRequest {
-	export const type = new RequestType<SchemaCompareOpenScmpParams, azdata.ResultStatus, void, void>('schemaCompare/openScmp');
+	export const type = new RequestType<SchemaCompareOpenScmpParams, mssql.SchemaCompareOpenScmpResult, void, void>('schemaCompare/openScmp');
 }
 
 export namespace SchemaCompareSaveScmpRequest {

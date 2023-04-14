@@ -11,7 +11,7 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
+import { IDataResource, rowHasColumnNameKeys } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, ResultSetSubset, ICellValue } from 'sql/workbench/services/query/common/query';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -37,7 +37,6 @@ import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
-import { values } from 'vs/base/common/collections';
 import { URI } from 'vs/base/common/uri';
 import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
 import { equals } from 'vs/base/common/arrays';
@@ -195,7 +194,7 @@ function reorderGridData(source: IDataResource): void {
 	if (source.data.length > 0) {
 		let rowKeys = Object.keys(source.data[0]);
 		if (!equals(columnNames, rowKeys)) {
-			// SQL notebooks do not use columnName as key (instead use indices)
+			// Older SQL notebooks use indices as keys instead of the column name.
 			// Indicies indicate the row is ordered properly
 			// We must check the data to know if it is in index form
 			let notIndexOrderKeys = false;
@@ -371,19 +370,27 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	private transformSource(source: IDataResource): void {
-		this._rows = source.data.map(row => {
-			let rowData: azdata.DbCellValue[] = [];
-			Object.keys(row).forEach((val, index) => {
-				let displayValue = String(values(row)[index]);
-				// Since the columns[0] represents the row number, start at 1
-				rowData.push({
-					displayValue: displayValue,
-					isNull: false,
-					invariantCultureDisplayValue: displayValue
-				});
+		if (source.data.length > 0) {
+			let columns = source.schema.fields;
+			// Rows are either indexed by column name or ordinal number, so check for one column name to see if it uses that format
+			let useColumnNameKey = rowHasColumnNameKeys(source.data[0], source.schema.fields.map(field => field.name));
+			this._rows = source.data.map(row => {
+				let rowData: azdata.DbCellValue[] = [];
+				for (let index = 0; index < Object.keys(row).length; index++) {
+					let key = useColumnNameKey ? columns[index].name : index;
+					let displayValue = String(row[key]);
+					// Since the columns[0] represents the row number, start at 1
+					rowData.push({
+						displayValue: displayValue,
+						isNull: false,
+						invariantCultureDisplayValue: displayValue
+					});
+				}
+				return rowData;
 			});
-			return rowData;
-		});
+		} else {
+			this._rows = [];
+		}
 	}
 
 	public updateResultSet(resultSet: ResultSetSummary, rows: ICellValue[][]): void {

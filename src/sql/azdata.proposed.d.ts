@@ -531,6 +531,11 @@ declare module 'azdata' {
 		defaultValueOsOverrides?: DefaultValueOsOverride[];
 
 		/**
+		 * Used to define placeholder text
+		 */
+		placeholder?: string;
+
+		/**
 		 * When set to true, the respective connection option will be rendered on the main connection dialog
 		 * and not the Advanced Options window.
 		 */
@@ -543,6 +548,11 @@ declare module 'azdata' {
 	}
 
 	export interface ServiceOption {
+		/**
+		 * Used to define placeholder text
+		 */
+		placeholder?: string;
+
 		/**
 		 * Used to define list of values based on which another option is rendered visible/hidden.
 		 */
