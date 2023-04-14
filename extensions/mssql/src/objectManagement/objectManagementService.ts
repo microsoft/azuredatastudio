@@ -48,6 +48,12 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		const params: contracts.UpdateLoginRequestParams = { contextId, login };
 		return this.runWithErrorHandling(contracts.UpdateLoginRequest.type, params);
 	}
+
+	async scriptLogin(contextId: string, login: ObjectManagement.Login): Promise<string> {
+		const params: contracts.ScriptLoginRequestParams = { contextId, login };
+		return this.runWithErrorHandling(contracts.ScriptLoginRequest.type, params);
+	}
+
 	async disposeLoginView(contextId: string): Promise<void> {
 		const params: contracts.DisposeLoginViewRequestParams = { contextId };
 		return this.runWithErrorHandling(contracts.DisposeLoginViewRequest.type, params);
@@ -66,6 +72,11 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 	async updateUser(contextId: string, user: ObjectManagement.User): Promise<void> {
 		const params: contracts.UpdateUserRequestParams = { contextId, user };
 		return this.runWithErrorHandling(contracts.UpdateUserRequest.type, params);
+	}
+
+	async scriptUser(contextId: string, user: ObjectManagement.User): Promise<string> {
+		const params: contracts.ScriptUserRequestParams = { contextId, user };
+		return this.runWithErrorHandling(contracts.ScriptUserRequest.type, params);
 	}
 
 	async disposeUserView(contextId: string): Promise<void> {
@@ -161,6 +172,13 @@ export class TestObjectManagementService implements IObjectManagementService {
 			}, 3000);
 		});
 	}
+	async scriptLogin(contextId: string, login: ObjectManagement.Login): Promise<string> {
+		return new Promise((resolve, reject) => {
+			setTimeout(() => {
+				resolve('test script');
+			}, 1000);
+		});
+	}
 	async disposeLoginView(contextId: string): Promise<void> {
 	}
 	async initializeUserView(connectionUri: string, database: string, contextId: string, isNewObject: boolean, name: string): Promise<ObjectManagement.UserViewInfo> {
@@ -225,6 +243,13 @@ export class TestObjectManagementService implements IObjectManagementService {
 	}
 	async updateUser(contextId: string, login: ObjectManagement.User): Promise<void> {
 		return this.delayAndResolve();
+	}
+	async scriptUser(contextId: string, login: ObjectManagement.User): Promise<string> {
+		return new Promise((resolve, reject) => {
+			setTimeout(() => {
+				reject('generate script for user not supported');
+			}, 1000);
+		});
 	}
 	async disposeUserView(contextId: string): Promise<void> {
 	}

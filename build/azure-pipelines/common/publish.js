@@ -109,25 +109,18 @@ async function assertContainer(containerClient) {
     return containerResponse && !!containerResponse.errorCode;
 }
 async function uploadBlob(blobClient, file) {
-    var _a;
-    blobClient.setHTTPHeaders({
-        blobContentType: mime.lookup(file),
-        blobCacheControl: 'max-age=31536000, public'
+    var _a, _b;
+    const result = await blobClient.uploadFile(file, {
+        blobHTTPHeaders: {
+            blobContentType: mime.lookup(file),
+            blobCacheControl: 'max-age=31536000, public'
+        }
     });
-    const copyPoller = await blobClient.beginCopyFromURL(file, {
-        onProgress(state) {
-            console.log(`Progress: ${state.copyProgress}`);
-        },
-    });
-    while (!copyPoller.isDone()) {
-        await copyPoller.poll();
-    }
-    const result = copyPoller.getResult();
-    if (result && result.copyStatus === 'success') {
-        console.log(`Blobs uploaded successfully.`);
+    if (result && !result.errorCode) {
+        console.log(`Blobs uploaded successfully, response status: ${(_a = result === null || result === void 0 ? void 0 : result._response) === null || _a === void 0 ? void 0 : _a.status}`);
     }
     else {
-        console.error(`Blobs failed to upload, response status: ${(_a = result === null || result === void 0 ? void 0 : result._response) === null || _a === void 0 ? void 0 : _a.status}, copy status: ${result === null || result === void 0 ? void 0 : result.copyStatus}, errorcode: ${result === null || result === void 0 ? void 0 : result.errorCode}`);
+        console.error(`Blobs failed to upload, response status: ${(_b = result === null || result === void 0 ? void 0 : result._response) === null || _b === void 0 ? void 0 : _b.status}, errorcode: ${result === null || result === void 0 ? void 0 : result.errorCode}`);
     }
 }
 async function publish(commit, quality, platform, type, name, version, _isUpdate, file, opts) {
@@ -162,7 +155,7 @@ async function publish(commit, quality, platform, type, name, version, _isUpdate
     });
     let containerClient = blobServiceClient.getContainerClient(quality);
     if (await assertContainer(containerClient)) {
-        const blobClient = containerClient.getBlobClient(blobName);
+        const blobClient = containerClient.getBlockBlobClient(blobName);
         const blobExists = await blobClient.exists();
         if (blobExists) {
             console.log(`Blob ${quality}, ${blobName} already exists, not publishing again.`);

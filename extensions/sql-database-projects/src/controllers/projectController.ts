@@ -25,7 +25,7 @@ import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
 import { ShellCommandOptions } from '../tools/shellExecutionHelper';
 import { BuildHelper } from '../tools/buildHelper';
-import { readPublishProfile } from '../models/publishProfile/publishProfile';
+import { readPublishProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
@@ -445,6 +445,7 @@ export class ProjectsController {
 			publishDatabaseDialog.publishToContainer = async (proj, prof) => this.publishToDockerContainer(proj, prof);
 			publishDatabaseDialog.generateScript = async (proj, prof) => this.publishOrScriptProject(proj, prof, false);
 			publishDatabaseDialog.readPublishProfile = async (profileUri) => readPublishProfile(profileUri);
+			publishDatabaseDialog.savePublishProfile = async (profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions) => savePublishProfile(profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions);
 
 			publishDatabaseDialog.openDialog();
 
@@ -820,6 +821,7 @@ export class ProjectsController {
 					await project.excludePostDeploymentScript(fileEntry.relativePath);
 					break;
 				case constants.DatabaseProjectItemType.noneFile:
+				case constants.DatabaseProjectItemType.publishProfile:
 					await project.excludeNoneItem(fileEntry.relativePath);
 					break;
 				default:
@@ -879,6 +881,7 @@ export class ProjectsController {
 						await project.deletePostDeploymentScript(node.entryKey);
 						break;
 					case constants.DatabaseProjectItemType.noneFile:
+					case constants.DatabaseProjectItemType.publishProfile:
 						await project.deleteNoneItem(node.entryKey);
 						break;
 					default:
@@ -903,13 +906,21 @@ export class ProjectsController {
 		const node = context.element as BaseProjectTreeItem;
 		const project = await this.getProjectFromContext(node);
 		const file = this.getFileProjectEntry(project, node);
+		const baseName = path.basename(node.friendlyName);
+		let fileExtension: string;
+
+		if (utils.isPublishProfile(baseName)) {
+			fileExtension = constants.publishProfileExtension;
+		} else {
+			fileExtension = constants.sqlFileExtension;
+		}
 
 		// need to use quickpick because input box isn't supported in treeviews
 		// https://github.com/microsoft/vscode/issues/117502 and https://github.com/microsoft/vscode/issues/97190
 		const newFileName = await vscode.window.showInputBox(
 			{
 				title: constants.enterNewName,
-				value: path.basename(node.friendlyName, constants.sqlFileExtension),
+				value: path.basename(baseName, fileExtension),
 				ignoreFocusOut: true,
 				validateInput: async (value) => {
 					return await this.fileAlreadyExists(value, file?.fsUri.fsPath!) ? constants.fileAlreadyExists(value) : undefined;
@@ -920,7 +931,7 @@ export class ProjectsController {
 			return;
 		}
 
-		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(file?.relativePath!)), `${newFileName}.sql`);
+		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(file?.relativePath!)), `${newFileName}${fileExtension}`);
 
 		const renameResult = await project.move(node, newFilePath);
 
@@ -1810,7 +1821,7 @@ export class ProjectsController {
 		}
 
 		// Publish the changes (retrieved from the cache by operationId)
-		const publishResult = await this.schemaComparePublishProjectChanges(operationId, target.projectFilePath, target.folderStructure);
+		const publishResult = await this.schemaComparePublishProjectChanges(operationId, target.projectFilePath, target.extractTarget);
 
 		if (publishResult.success) {
 			void vscode.window.showInformationMessage(constants.applySuccess);

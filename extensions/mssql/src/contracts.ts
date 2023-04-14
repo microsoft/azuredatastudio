@@ -551,6 +551,14 @@ export interface ParseTSqlScriptParams {
 	databaseSchemaProvider: string;
 }
 
+export interface SavePublishProfileParams {
+	profilePath: string;
+	databaseName: string;
+	connectionString: string;
+	sqlCommandVariableValues?: Record<string, string>;
+	deploymentOptions?: mssql.DeploymentOptions;
+}
+
 export namespace ExportRequest {
 	export const type = new RequestType<ExportParams, mssql.DacFxResult, void, void>('dacfx/export');
 }
@@ -585,6 +593,10 @@ export namespace ValidateStreamingJobRequest {
 
 export namespace ParseTSqlScriptRequest {
 	export const type = new RequestType<ParseTSqlScriptParams, mssql.ParseTSqlScriptResult, void, void>('dacfx/parseTSqlScript');
+}
+
+export namespace SavePublishProfileRequest {
+	export const type = new RequestType<SavePublishProfileParams, azdata.ResultStatus, void, void>('dacfx/savePublishProfile');
 }
 
 // ------------------------------- </ DacFx > ------------------------------------
@@ -1526,6 +1538,15 @@ export namespace CreateLoginRequest {
 	export const type = new RequestType<CreateLoginRequestParams, void, void, void>('objectManagement/createLogin');
 }
 
+export interface ScriptLoginRequestParams {
+	contextId: string;
+	login: mssql.ObjectManagement.Login;
+}
+
+export namespace ScriptLoginRequest {
+	export const type = new RequestType<ScriptLoginRequestParams, string, void, void>('objectManagement/scriptLogin');
+}
+
 export interface UpdateLoginRequestParams {
 	contextId: string;
 	login: mssql.ObjectManagement.Login;
@@ -1562,6 +1583,15 @@ export interface CreateUserRequestParams {
 
 export namespace CreateUserRequest {
 	export const type = new RequestType<CreateUserRequestParams, void, void, void>('objectManagement/createUser');
+}
+
+export interface ScriptUserRequestParams {
+	contextId: string;
+	user: mssql.ObjectManagement.User;
+}
+
+export namespace ScriptUserRequest {
+	export const type = new RequestType<ScriptUserRequestParams, string, void, void>('objectManagement/scriptUser');
 }
 
 export interface UpdateUserRequestParams {

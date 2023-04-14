@@ -11,7 +11,7 @@ import * as crypto from 'crypto';
 import * as mime from 'mime';
 import * as minimist from 'minimist';
 import { DocumentClient, NewDocument } from 'documentdb';
-import { BlobServiceClient, BlobClient, ContainerClient, StorageRetryPolicyType } from '@azure/storage-blob';
+import { BlobServiceClient, BlockBlobClient, ContainerClient, StorageRetryPolicyType } from '@azure/storage-blob';
 
 // {{SQL CARBON EDIT}}
 if (process.argv.length < 9) {
@@ -132,25 +132,17 @@ async function assertContainer(containerClient: ContainerClient): Promise<boolea
 	return containerResponse && !!containerResponse.errorCode;
 }
 
-async function uploadBlob(blobClient: BlobClient, file: string): Promise<void> {
-	blobClient.setHTTPHeaders({
-		blobContentType: mime.lookup(file),
-		blobCacheControl: 'max-age=31536000, public'
+async function uploadBlob(blobClient: BlockBlobClient, file: string): Promise<void> {
+	const result = await blobClient.uploadFile(file, {
+		blobHTTPHeaders: {
+			blobContentType: mime.lookup(file),
+			blobCacheControl: 'max-age=31536000, public'
+		}
 	});
-	const copyPoller = await blobClient.beginCopyFromURL(file, {
-		onProgress(state) {
-			console.log(`Progress: ${state.copyProgress}`);
-		},
-
-	});
-	while (!copyPoller.isDone()) {
-		await copyPoller.poll();
-	}
-	const result = copyPoller.getResult();
-	if (result && result.copyStatus === 'success') {
-		console.log(`Blobs uploaded successfully.`);
+	if (result && !result.errorCode) {
+		console.log(`Blobs uploaded successfully, response status: ${result?._response?.status}`);
 	} else {
-		console.error(`Blobs failed to upload, response status: ${result?._response?.status}, copy status: ${result?.copyStatus}, errorcode: ${result?.errorCode}`)
+		console.error(`Blobs failed to upload, response status: ${result?._response?.status}, errorcode: ${result?.errorCode}`)
 	}
 }
 
@@ -199,7 +191,7 @@ async function publish(commit: string, quality: string, platform: string, type: 
 
 	let containerClient = blobServiceClient.getContainerClient(quality);
 	if (await assertContainer(containerClient)) {
-		const blobClient = containerClient.getBlobClient(blobName);
+		const blobClient = containerClient.getBlockBlobClient(blobName);
 		const blobExists = await blobClient.exists();
 
 		if (blobExists) {

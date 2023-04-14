@@ -16,10 +16,11 @@ import { NodeType, TelemetryActions, TelemetryViews } from '../constants';
 import {
 	CreateObjectOperationDisplayName, HelpText, LoadingDialogText,
 	NameText,
-	NewObjectDialogTitle, ObjectPropertiesDialogTitle, OkText, SelectedText, UpdateObjectOperationDisplayName
+	NewObjectDialogTitle, ObjectPropertiesDialogTitle, OkText, ScriptError, ScriptGeneratedText, ScriptText, SelectedText, UpdateObjectOperationDisplayName
 } from '../localizedConstants';
 import { deepClone, getNodeTypeDisplayName, refreshNode } from '../utils';
 import { TelemetryReporter } from '../../telemetry';
+import { providerId } from '../../constants';
 
 export const DefaultLabelWidth = 150;
 export const DefaultInputWidth = 300;
@@ -47,6 +48,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	private _loadingComponent: azdata.LoadingComponent;
 	private _formContainer: azdata.DivContainer;
 	private _helpButton: azdata.window.Button;
+	private _scriptButton: azdata.window.Button;
 
 	constructor(private readonly objectType: NodeType,
 		docUrl: string,
@@ -65,9 +67,10 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		this.disposables.push(this._helpButton.onClick(async () => {
 			await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(docUrl));
 		}));
-		this.dialogObject.customButtons = [this._helpButton];
-		this.dialogObject.okButton.hidden = true;
-		this._helpButton.hidden = true;
+		this._scriptButton = azdata.window.createButton(ScriptText, 'left');
+		this.disposables.push(this._scriptButton.onClick(async () => { await this.onScriptButtonClick(); }));
+		this.dialogObject.customButtons = [this._helpButton, this._scriptButton];
+		this.updateLoadingStatus(true);
 		this.contextId = generateUuid();
 		this.dialogObject.registerCloseValidator(async (): Promise<boolean> => {
 			const confirmed = await this.onConfirmation();
@@ -83,6 +86,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	protected abstract onComplete(): Promise<void>;
 	protected async onDispose(): Promise<void> { }
 	protected abstract validateInput(): Promise<string[]>;
+	protected abstract generateScript(): Promise<string>;
 
 	/**
 	 * Dispose the information related to this view in the backend service.
@@ -90,7 +94,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	protected abstract disposeView(): Promise<void>;
 
 	protected onObjectValueChange(): void {
-		this.dialogObject.okButton.enabled = JSON.stringify(this.objectInfo) !== JSON.stringify(this._originalObjectInfo);
+		this.dialogObject.okButton.enabled = this.isDirty;
 	}
 
 	protected async onConfirmation(): Promise<boolean> {
@@ -175,9 +179,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 					}
 				}
 			});
-			this.dialogObject.okButton.hidden = false;
-			this._helpButton.hidden = false;
-			this._loadingComponent.loading = false;
+			this.updateLoadingStatus(false);
 		} catch (err) {
 			const actionName = this.isNewObject ? TelemetryActions.OpenNewObjectDialog : TelemetryActions.OpenPropertiesDialog;
 			TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, actionName, err).withAdditionalProperties({
@@ -315,5 +317,41 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				container.insertItem(item, index);
 			}
 		}
+	}
+
+	private updateLoadingStatus(isLoading: boolean): void {
+		this._scriptButton.enabled = !isLoading;
+		this._helpButton.enabled = !isLoading;
+		this.dialogObject.okButton.enabled = isLoading ? false : this.isDirty;
+		if (this._loadingComponent) {
+			this._loadingComponent.loading = isLoading;
+		}
+	}
+
+	private async onScriptButtonClick(): Promise<void> {
+		this.updateLoadingStatus(true);
+		try {
+			const isValid = await this.runValidation();
+			if (!isValid) {
+				return;
+			}
+			const script = await this.generateScript();
+			await azdata.queryeditor.openQueryDocument({ content: script }, providerId);
+			this.dialogObject.message = {
+				text: ScriptGeneratedText,
+				level: azdata.window.MessageLevel.Information
+			};
+		} catch (err) {
+			this.dialogObject.message = {
+				text: ScriptError(getErrorMessage(err)),
+				level: azdata.window.MessageLevel.Error
+			};
+		} finally {
+			this.updateLoadingStatus(false);
+		}
+	}
+
+	private get isDirty(): boolean {
+		return JSON.stringify(this.objectInfo) !== JSON.stringify(this._originalObjectInfo);
 	}
 }
