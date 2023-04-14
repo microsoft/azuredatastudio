@@ -20,7 +20,7 @@ export interface PublishProfile {
 	serverName: string;
 	connectionId: string;
 	connection: string;
-	sqlCmdVariables: Record<string, string>;
+	sqlCmdVariables: Map<string, string>;
 	options?: mssql.DeploymentOptions | vscodeMssql.DeploymentOptions;
 }
 
@@ -60,7 +60,7 @@ export async function load(profileUri: vscode.Uri, dacfxService: utils.IDacFxSer
 		.withAdditionalProperties({
 			hasTargetDbName: (!!targetDbName).toString(),
 			hasConnectionString: (!!connectionInfo?.connectionId).toString(),
-			hasSqlCmdVariables: (Object.keys(sqlCmdVariables).length > 0).toString()
+			hasSqlCmdVariables: (sqlCmdVariables.size > 0).toString()
 		}).send();
 
 	return {

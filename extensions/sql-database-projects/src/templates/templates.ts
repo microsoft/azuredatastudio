@@ -13,14 +13,14 @@ export let newSdkSqlProjectTemplate: string;
 
 // Object maps
 
-let scriptTypeMap: Record<string, ProjectScriptType> = {};
+let scriptTypeMap: Map<string, ProjectScriptType> = new Map();
 
 export function get(key: string): ProjectScriptType {
-	if (Object.keys(scriptTypeMap).length === 0) {
+	if (scriptTypeMap.size === 0) {
 		throw new Error('Templates must be loaded from file before attempting to use.');
 	}
 
-	return scriptTypeMap[key.toLocaleLowerCase()];
+	return scriptTypeMap.get(key.toLocaleLowerCase())!;
 }
 
 let scriptTypes: ProjectScriptType[] = [];
@@ -56,22 +56,22 @@ export async function loadTemplates(templateFolderPath: string) {
 			throw new Error(`Script type map already contains ${scriptType.type} or its friendlyName.`);
 		}
 
-		scriptTypeMap[scriptType.type.toLocaleLowerCase()] = scriptType;
-		scriptTypeMap[scriptType.friendlyName.toLocaleLowerCase()] = scriptType;
+		scriptTypeMap.set(scriptType.type.toLocaleLowerCase(), scriptType);
+		scriptTypeMap.set(scriptType.friendlyName.toLocaleLowerCase(), scriptType);
 	}
 }
 
-export function macroExpansion(template: string, macroDict: Record<string, string>): string {
+export function macroExpansion(template: string, macroDict: Map<string, string>): string {
 	const macroIndicator = '@@';
 	let output = template;
 
 	for (const macro in macroDict) {
 		// check if value contains the macroIndicator, which could break expansion for successive macros
-		if (macroDict[macro].includes(macroIndicator)) {
-			throw new Error(`Macro value ${macroDict[macro]} is invalid because it contains ${macroIndicator}`);
+		if (macroDict.get(macro)!.includes(macroIndicator)) {
+			throw new Error(`Macro value ${macroDict.get(macro)} is invalid because it contains ${macroIndicator}`);
 		}
 
-		output = output.replace(new RegExp(macroIndicator + macro + macroIndicator, 'g'), macroDict[macro]);
+		output = output.replace(new RegExp(macroIndicator + macro + macroIndicator, 'g'), macroDict.get(macro)!);
 	}
 
 	return output;
@@ -104,6 +104,6 @@ export class ProjectScriptType {
  * For testing purposes only
  */
 export function reset() {
-	scriptTypeMap = {};
+	scriptTypeMap = new Map();
 	scriptTypes = [];
 }
