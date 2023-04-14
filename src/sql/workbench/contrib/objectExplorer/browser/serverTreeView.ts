@@ -98,12 +98,12 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 					Severity.Info,
 					localize('serverTreeViewChangeNotification', "Server tree has changed. Please reload the window to see the changes."),
 					[{
-						label: localize('serverTreeViewChangeNotification.restart', "Restart"),
+						label: localize('serverTreeViewChangeNotification.reload', "Reload"),
 						run: () => {
 							this._hostService.reload();
 						}
 					}, {
-						label: localize('serverTreeViewChangeNotification.doNotRestart', "Don't Restart"),
+						label: localize('serverTreeViewChangeNotification.doNotReload', "Don't Reload"),
 						run: () => { }
 					}],
 					{
