@@ -183,7 +183,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private _treeNodeCache: Map<string, Map<string, TreeNode>> = new Map<string, Map<string, TreeNode>>();
 
 
-	private _nodeFilterCache: Map<string, azdata.NodeInfoFilterProperty[]> = new Map<string, azdata.NodeInfoFilterProperty[]>();
+	private _nodeFilterCache: Map<string, azdata.NodeInfoFilter[]> = new Map<string, azdata.NodeInfoFilter[]>();
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,

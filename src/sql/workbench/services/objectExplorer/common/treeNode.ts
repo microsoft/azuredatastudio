@@ -95,9 +95,9 @@ export class TreeNode {
 
 	public isFilteringSupported?: boolean;
 
-	public defaultFilters?: azdata.NodeInfoFilterProperty[];
+	public defaultFilters?: azdata.NodeInfoFilter[];
 
-	public filters?: azdata.NodeInfoFilterProperty[];
+	public filters?: azdata.NodeInfoFilter[];
 
 
 	public connection?: ConnectionProfile;
@@ -117,8 +117,8 @@ export class TreeNode {
 		iconType?: string | SqlThemeIcon,
 		icon?: IconPath | SqlThemeIcon,
 		isFilteringSupported?: boolean,
-		defaultFilters?: azdata.NodeInfoFilterProperty[],
-		filters?: azdata.NodeInfoFilterProperty[],
+		defaultFilters?: azdata.NodeInfoFilter[],
+		filters?: azdata.NodeInfoFilter[],
 		private _objectExplorerCallbacks?: ObjectExplorerCallbacks) {
 		this.nodeTypeId = nodeTypeId;
 		this.objectType = objectType;

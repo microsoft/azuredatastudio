@@ -397,7 +397,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 		for (let i = 0; i < tableData.length; i++) {
 			const row = tableData[i];
 
-			let filter: azdata.NodeInfoFilterProperty = {
+			let filter: azdata.NodeInfoFilter = {
 				name: row.property.value,
 				type: this._treeNode.defaultFilters[row.index].type,
 				operator: this.convertOperatorToEnum(row.operator.value),
@@ -573,7 +573,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 		}
 	}
 
-	private getValuesForType(f: azdata.NodeInfoFilterProperty): string[] {
+	private getValuesForType(f: azdata.NodeInfoFilter): string[] {
 		switch (f.type) {
 			case NodeInfoFilterPropertyType.boolean:
 				return ['', TRUE_SELECT_BOX, FALSE_SELECT_BOX];

@@ -601,7 +601,7 @@ declare module 'azdata' {
 		/**
 		 * Filter for expanding node.
 		 */
-		filters?: NodeInfoFilterProperty[];
+		filters?: NodeInfoFilter[];
 	}
 	// End Object Explorer interfaces  ----------------------------
 
@@ -1802,14 +1802,14 @@ declare module 'azdata' {
 		/**
 		 * list of supported filter operators
 		 */
-		defaultFilters?: NodeInfoFilterProperty[];
+		defaultFilters?: NodeInfoFilter[];
 		/**
 		 * list of properties to filter the nodes on
 		 */
-		filters?: NodeInfoFilterProperty[];
+		filters?: NodeInfoFilter[];
 	}
 
-	export interface NodeInfoFilterProperty {
+	export interface NodeInfoFilter {
 		/**
 		 * The name of the filter property
 		 */
