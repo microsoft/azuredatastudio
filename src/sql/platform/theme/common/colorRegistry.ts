@@ -93,4 +93,4 @@ export const calloutDialogShadowColor = registerColor('calloutDialog.shadow', { 
 export const DesignerPaneSeparator = registerColor('designer.paneSeparator', { light: '#DDDDDD', dark: '#8A8886', hcDark: contrastBorder, hcLight: contrastBorder }, nls.localize('designer.paneSeparator', 'The pane separator color.'));
 
 // Query Editor
-export const queryEditorNullBackground = registerColor('queryEditor.nullBackground', { light: '#FFFFE1', dark: '#4B0082', hcDark: '#000000', hcLight: '#FFFFE1' }, nls.localize('queryEditorNullBackground', 'The background color for null values in the query editor results grid.'));
+export const queryEditorNullBackground = registerColor('queryEditor.nullBackground', { light: '#FFFFE1', dark: '#4B0082', hcDark: '#000000', hcLight: '#FFFFE1' }, nls.localize('queryEditorNullBackground', 'The background color for null values in the query editor results grid. To disable the background color, add the following setting to settings.json:') + '\"workbench.colorCustomizations\": {\"queryEditor.nullBackground\": \"#ff000000\"}.');
