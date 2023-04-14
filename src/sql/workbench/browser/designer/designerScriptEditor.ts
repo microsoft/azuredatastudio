@@ -72,7 +72,9 @@ export class DesignerScriptEditor extends AbstractTextCodeEditor<editorCommon.IC
 	}
 
 	public override createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
-		return this.instantiationService.createInstance(DesignerCodeEditor, parent, configuration, {});
+		this.editorControl = this.instantiationService.createInstance(DesignerCodeEditor, parent, configuration, {});
+
+		return this.editorControl;
 	}
 
 	protected override getConfigurationOverrides(): IEditorOptions {

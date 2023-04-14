@@ -56,7 +56,9 @@ export class ProfilerResourceEditor extends AbstractTextCodeEditor<editorCommon.
 	}
 
 	public override createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
-		return this.instantiationService.createInstance(ProfilerResourceCodeEditor, parent, configuration, {});
+		this.editorControl = this.instantiationService.createInstance(ProfilerResourceCodeEditor, parent, configuration, {});
+
+		return this.editorControl;
 	}
 
 	protected override getConfigurationOverrides(): IEditorOptions {

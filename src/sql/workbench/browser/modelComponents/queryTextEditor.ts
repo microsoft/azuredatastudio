@@ -58,7 +58,9 @@ export class QueryTextEditor extends AbstractTextCodeEditor<editorCommon.ICodeEd
 	}
 
 	public override createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
-		return this.instantiationService.createInstance(CodeEditorWidget, parent, configuration, {});
+		this.editorControl = this.instantiationService.createInstance(CodeEditorWidget, parent, configuration, {});
+
+		return this.editorControl;
 	}
 
 	protected override getConfigurationOverrides(): IEditorOptions {
