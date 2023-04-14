@@ -37,7 +37,7 @@ suite('SQL Future', function () {
 		};
 		const expectedData = {
 			'application/vnd.dataresource+json': {
-				data: [{ 0: '1', 1: '2' }, { 0: '3', 1: '4' }],
+				data: [{ 'col1': '1', 'col2': '2' }, { 'col1': '3', 'col2': '4' }],
 				schema: { fields: [{ name: 'col1' }, { name: 'col2' }] }
 			},
 			'text/html': ['<table>', '<tr><th>col1</th><th>col2</th></tr>', '<tr><td>1</td><td>2</td></tr>', '<tr><td>3</td><td>4</td></tr>', '</table>']

@@ -30,6 +30,8 @@ export class AccountPicker extends Disposable {
 	public static ACCOUNTPICKERLIST_HEIGHT = 47;
 	public static ACCOUNTTENANTLIST_HEIGHT = 32;
 	public viewModel: AccountPickerViewModel;
+	public initialAccount: string;
+	public initialTenant: string;
 	private _accountList?: List<azdata.Account>;
 	private _rootContainer?: HTMLElement;
 
@@ -189,6 +191,9 @@ export class AccountPicker extends Disposable {
 		this.viewModel.initialize()
 			.then((accounts: azdata.Account[]) => {
 				this.updateAccountList(accounts);
+				// Need to set account selection after account list has been updated
+				this.setAccountSelection();
+				this.setTenantSelection();
 			});
 	}
 
@@ -199,7 +204,45 @@ export class AccountPicker extends Disposable {
 		}
 	}
 
+	public setInitialTenant(tenant: string): void {
+		this.initialTenant = tenant;
+	}
+
+	public setInitialAccount(account: string): void {
+		this.initialAccount = account;
+	}
+
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
+
+	private setAccountSelection(): void {
+		let index = 0;
+		let accountFound = false;
+		while (index < this._accountList.length) {
+			if (this.initialAccount === this._accountList.element(index).key.accountId) {
+				accountFound = true;
+				break;
+			}
+			index++
+		}
+		if (accountFound) {
+			this._accountList.setSelection([index]);
+		}
+	}
+
+	private setTenantSelection(): void {
+		let index = 0;
+		let tenantFound = false;
+		while (index < this._tenantList.length) {
+			if (this.initialTenant === this._tenantList.element(index).id) {
+				tenantFound = true;
+				break;
+			}
+			index++
+		}
+		if (tenantFound) {
+			this._tenantList.setSelection([index]);
+		}
+	}
 
 	private createLabelElement(content: string, isHeader?: boolean) {
 		let className = 'dialog-label';

@@ -11,7 +11,7 @@ import { AzureResourceItemType } from '../../../constants';
 import { generateGuid } from '../../../utils';
 import { IAzureResourceService } from '../../../interfaces';
 import { ResourceTreeDataProviderBase } from '../../resourceTreeDataProviderBase';
-import { azureResource } from 'azurecore';
+import { AzureAccountProperties, azureResource } from 'azurecore';
 import * as azdata from 'azdata';
 
 export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
@@ -52,7 +52,7 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 				azureAccount: account.key.accountId,
 				azureTenantId: databaseServer.tenant,
 				azureResourceId: databaseServer.id,
-				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
+				azurePortalEndpoint: (account.properties as AzureAccountProperties).providerSettings.settings.portalEndpoint
 			},
 			childProvider: CosmosDbMongoTreeDataProvider.COSMOSDG_MONGO_PROVIDER_ID,
 			type: azdata.ExtensionNodeType.Server
