@@ -24,7 +24,7 @@ export const LoadingDialogText: string = localize('objectManagement.loadingDialo
 export const FailedToRetrieveConnectionInfoErrorMessage: string = localize('objectManagement.noConnectionUriError', "Failed to retrieve the connection information, please reconnect and try again.")
 export const RenameObjectDialogTitle: string = localize('objectManagement.renameObjectDialogTitle', "Enter new name");
 export const ScriptText: string = localize('objectManagement.scriptText', "Script");
-export const ScriptGeneratedText: string = localize('objectManagement.scriptGenerated', "Script has been generated successfully.")
+export const ScriptGeneratedText: string = localize('objectManagement.scriptGenerated', "Script has been generated successfully. You can close the dialog to view it in the newly opened editor.")
 
 
 export function RefreshObjectExplorerError(error: string): string {
