@@ -10,9 +10,8 @@ import * as azdata from 'azdata';
 import * as contracts from '../contracts';
 
 import { AppContext } from '../appContext';
-import { ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
+import { BaseService, ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
 import { ClientCapabilities } from 'vscode-languageclient';
-import { BaseService } from '../baseService';
 
 export class DacFxService extends BaseService implements mssql.IDacFxService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {

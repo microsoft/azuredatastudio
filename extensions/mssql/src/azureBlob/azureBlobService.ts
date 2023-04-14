@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import type * as mssql from 'mssql';
-import { SqlOpsDataClient } from 'dataprotocol-client';
 import * as contracts from '../contracts';
-import { BaseService } from '../baseService';
+import { BaseService, SqlOpsDataClient } from 'dataprotocol-client';
 
 export class AzureBlobService extends BaseService implements mssql.IAzureBlobService {
 

@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as mssql from 'mssql';
-import { AppContext } from '../appContext';
-import { SqlOpsDataClient, ISqlOpsFeature } from 'dataprotocol-client';
-import { ClientCapabilities } from 'vscode-languageclient';
-import * as constants from '../constants';
 import * as azdata from 'azdata';
 import * as contracts from '../contracts';
-import { BaseService } from '../baseService';
+import * as constants from '../constants';
+
+import { AppContext } from '../appContext';
+import { SqlOpsDataClient, ISqlOpsFeature, BaseService } from 'dataprotocol-client';
+import { ClientCapabilities } from 'vscode-languageclient';
 
 export class SqlAssessmentService extends BaseService implements mssql.ISqlAssessmentService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {

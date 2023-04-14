@@ -3,15 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
-import { ObjectManagement, IObjectManagementService } from 'mssql';
-import { ClientCapabilities } from 'vscode-languageclient';
-import { AppContext } from '../appContext';
 import * as Utils from '../utils';
 import * as constants from '../constants';
 import * as contracts from '../contracts';
+
+import { BaseService, ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
+import { ObjectManagement, IObjectManagementService } from 'mssql';
+import { ClientCapabilities } from 'vscode-languageclient';
+import { AppContext } from '../appContext';
 import { AuthenticationType, UserType } from './constants';
-import { BaseService } from '../baseService';
 
 export class ObjectManagementService extends BaseService implements IObjectManagementService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {

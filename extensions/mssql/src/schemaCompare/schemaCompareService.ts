@@ -3,15 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AppContext } from '../appContext';
-import { SqlOpsDataClient, ISqlOpsFeature } from 'dataprotocol-client';
 import * as constants from '../constants';
 import * as mssql from 'mssql';
 import * as Utils from '../utils';
-import { ClientCapabilities } from 'vscode-languageclient';
 import * as azdata from 'azdata';
 import * as contracts from '../contracts';
-import { BaseService } from '../baseService';
+
+import { ClientCapabilities } from 'vscode-languageclient';
+import { AppContext } from '../appContext';
+import { SqlOpsDataClient, ISqlOpsFeature, BaseService } from 'dataprotocol-client';
 
 export class SchemaCompareService extends BaseService implements mssql.ISchemaCompareService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {

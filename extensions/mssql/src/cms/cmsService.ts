@@ -6,12 +6,11 @@
 import * as azdata from 'azdata';
 import * as constants from '../constants';
 import * as contracts from '../contracts';
+import * as Utils from '../utils';
 import { AppContext } from '../appContext';
 import { ClientCapabilities } from 'dataprotocol-client/lib/protocol';
-import { SqlOpsDataClient, ISqlOpsFeature } from 'dataprotocol-client';
+import { SqlOpsDataClient, ISqlOpsFeature, BaseService } from 'dataprotocol-client';
 import { ListRegisteredServersResult, ICmsService } from 'mssql';
-import * as Utils from '../utils';
-import { BaseService } from '../baseService';
 
 export class CmsService extends BaseService implements ICmsService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {

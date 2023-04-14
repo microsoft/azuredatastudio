@@ -209,7 +209,7 @@
     "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-azuremonitor ./syntaxes/azuremonitor.tmLanguage"
   },
   "dependencies": {
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.3.3",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.3.4",
     "figures": "^2.0.0",
     "find-remove": "1.2.1",
     "@microsoft/ads-service-downloader": "^1.2.1",

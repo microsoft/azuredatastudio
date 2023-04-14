@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AppContext } from '../appContext';
-import { SqlOpsDataClient, ISqlOpsFeature } from 'dataprotocol-client';
-import { ClientCapabilities } from 'vscode-languageclient';
 import * as constants from '../constants';
 import * as contracts from '../contracts';
-import { BaseService } from '../baseService';
+
+import { AppContext } from '../appContext';
+import { SqlOpsDataClient, ISqlOpsFeature, BaseService } from 'dataprotocol-client';
+import { ClientCapabilities } from 'vscode-languageclient';
 
 export interface INotebookConvertService {
 	convertNotebookToSql(content: string): Promise<contracts.ConvertNotebookToSqlResult | undefined>;
