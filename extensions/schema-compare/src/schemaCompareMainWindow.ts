@@ -1152,7 +1152,7 @@ export class SchemaCompareMainWindow {
 				projectFilePath: endpoint.projectFilePath,
 				targetScripts: [],
 				dataSchemaProvider: endpoint.dataSchemaProvider,
-				extractTarget: endpoint.extractTarget			// TODO: Pick this automatically from the scmp file, after issue #20332 is resolved (check dsp as well)
+				extractTarget: endpoint.extractTarget
 			};
 		} else {
 			// need to do this instead of just setting it to the endpoint because some fields are null which will cause an error when sending the compare request
