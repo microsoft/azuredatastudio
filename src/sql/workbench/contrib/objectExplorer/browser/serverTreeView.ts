@@ -92,7 +92,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			await this.handleOnCapabilitiesRegistered();
 		});
 		this.registerCommands();
-		this._configurationService.onDidChangeConfiguration(e => {
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration(USE_ASYNC_SERVER_TREE_CONFIG)) {
 				this._notificationService.prompt(
 					Severity.Info,
@@ -111,7 +111,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 					}
 				);
 			}
-		})
+		}));
 	}
 
 	@debounce(50)
