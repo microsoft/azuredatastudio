@@ -66,7 +66,6 @@ export class MsalCachePluginProvider {
 					Logger.error(`MsalCachePlugin: Failed to read from cache file: ${e}`);
 					Logger.verbose(`MsalCachePlugin: Error occurred when trying to read cache file, file will be deleted: ${e.message}`);
 					await fsPromises.unlink(this._msalFilePath);
-					// await fsPromises.writeFile(this._msalFilePath, '', { encoding: 'utf8' });
 				}
 			} finally {
 				lockFile.unlockSync(lockFilePath);
