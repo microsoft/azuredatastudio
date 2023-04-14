@@ -48,7 +48,7 @@ describe('Project: sqlproj content operations', function (): void {
 			'Views\\User']);
 
 		// SqlCmdVariables
-		should(Object.keys(project.sqlCmdVariables).length).equal(2);
+		should(project.sqlCmdVariables.size).equal(2);
 		should(project.sqlCmdVariables.get('ProdDatabaseName')).equal('MyProdDatabase');
 		should(project.sqlCmdVariables.get('BackupDatabaseName')).equal('MyBackupDatabase');
 
@@ -647,7 +647,7 @@ describe('Project: database references', function (): void {
 
 		// add database reference to a different database on a different server
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
-		should(Object.keys(project.sqlCmdVariables).length).equal(0, `There should be no sqlcmd variables to start with. Actual: ${Object.keys(project.sqlCmdVariables).length}`);
+		should(project.sqlCmdVariables.size).equal(0, `There should be no sqlcmd variables to start with. Actual: ${project.sqlCmdVariables.size}`);
 		await project.addProjectReference({
 			projectName: 'project1',
 			projectGuid: '',
@@ -658,7 +658,7 @@ describe('Project: database references', function (): void {
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to project1');
 		should(project.databaseReferences[0].referenceName).equal('project1', 'The database reference should be project1');
 		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
-		should(Object.keys(project.sqlCmdVariables).length).equal(0, `There should be no sqlcmd variables added. Actual: ${Object.keys(project.sqlCmdVariables).length}`);
+		should(project.sqlCmdVariables.size).equal(0, `There should be no sqlcmd variables added. Actual: ${project.sqlCmdVariables.size}`);
 	});
 
 	it('Should add a project reference to a different database in the same server correctly', async function (): Promise<void> {
@@ -667,7 +667,7 @@ describe('Project: database references', function (): void {
 
 		// add database reference to a different database on a different server
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
-		should(Object.keys(project.sqlCmdVariables).length).equal(0, 'There should be no sqlcmd variables to start with');
+		should(project.sqlCmdVariables.size).equal(0, 'There should be no sqlcmd variables to start with');
 		await project.addProjectReference({
 			projectName: 'project1',
 			projectGuid: '',
@@ -680,7 +680,7 @@ describe('Project: database references', function (): void {
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to project1');
 		should(project.databaseReferences[0].referenceName).equal('project1', 'The database reference should be project1');
 		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
-		should(Object.keys(project.sqlCmdVariables).length).equal(1, `There should be one new sqlcmd variable added. Actual: ${Object.keys(project.sqlCmdVariables).length}`);
+		should(project.sqlCmdVariables.size).equal(1, `There should be one new sqlcmd variable added. Actual: ${project.sqlCmdVariables.size}`);
 	});
 
 	it('Should add a project reference to a different database in a different server correctly', async function (): Promise<void> {
@@ -689,7 +689,7 @@ describe('Project: database references', function (): void {
 
 		// add database reference to a different database on a different server
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
-		should(Object.keys(project.sqlCmdVariables).length).equal(0, 'There should be no sqlcmd variables to start with');
+		should(project.sqlCmdVariables.size).equal(0, 'There should be no sqlcmd variables to start with');
 		await project.addProjectReference({
 			projectName: 'project1',
 			projectGuid: '',
@@ -704,7 +704,7 @@ describe('Project: database references', function (): void {
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to project1');
 		should(project.databaseReferences[0].referenceName).equal('project1', 'The database reference should be project1');
 		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
-		should(Object.keys(project.sqlCmdVariables).length).equal(2, `There should be two new sqlcmd variables added. Actual: ${Object.keys(project.sqlCmdVariables).length}`);
+		should(project.sqlCmdVariables.size).equal(2, `There should be two new sqlcmd variables added. Actual: ${project.sqlCmdVariables.size}`);
 	});
 
 	it('Should not allow adding duplicate dacpac references', async function (): Promise<void> {
@@ -803,7 +803,7 @@ describe('Project: database references', function (): void {
 		});
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to test3');
 		should(project.databaseReferences[0].referenceName).equal('test3', 'The database reference should be test3');
-		should(Object.keys(project.sqlCmdVariables).length).equal(2, 'There should be 2 sqlcmdvars after adding the dacpac reference');
+		should(project.sqlCmdVariables.size).equal(2, 'There should be 2 sqlcmdvars after adding the dacpac reference');
 
 		// make sure reference to test3.dacpac and SQLCMD variables were added
 		let projFileText = (await fs.readFile(projFilePath)).toString();
@@ -815,7 +815,7 @@ describe('Project: database references', function (): void {
 		// delete reference
 		await project.deleteDatabaseReferenceByEntry(project.databaseReferences[0]);
 		should(project.databaseReferences.length).equal(0, 'There should be no database references after deleting');
-		should(Object.keys(project.sqlCmdVariables).length).equal(2, 'There should still be 2 sqlcmdvars after deleting the dacpac reference');
+		should(project.sqlCmdVariables.size).equal(2, 'There should still be 2 sqlcmdvars after deleting the dacpac reference');
 
 		// add reference to the same dacpac again but with different values for the sqlcmd variables
 		await project.addDatabaseReference({
@@ -828,7 +828,7 @@ describe('Project: database references', function (): void {
 		});
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to test3');
 		should(project.databaseReferences[0].referenceName).equal('test3', 'The database reference should be test3');
-		should(Object.keys(project.sqlCmdVariables).length).equal(2, 'There should still be 2 sqlcmdvars after adding the dacpac reference again with different sqlcmdvar values');
+		should(project.sqlCmdVariables.size).equal(2, 'There should still be 2 sqlcmdvars after adding the dacpac reference again with different sqlcmdvar values');
 
 		projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql('<SqlCmdVariable Include="test3Db">');
@@ -850,7 +850,7 @@ describe('Project: add SQLCMD Variables', function (): void {
 	it('Should update .sqlproj with new sqlcmd variables', async function (): Promise<void> {
 		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openProjectFileBaseline);
 		let project = await Project.openProject(projFilePath);
-		should(Object.keys(project.sqlCmdVariables).length).equal(2, 'The project should have 2 sqlcmd variables when opened');
+		should(project.sqlCmdVariables.size).equal(2, 'The project should have 2 sqlcmd variables when opened');
 
 		// add a new variable
 		await project.addSqlCmdVariable('TestDatabaseName', 'TestDb');
@@ -858,7 +858,7 @@ describe('Project: add SQLCMD Variables', function (): void {
 		// update value of an existing sqlcmd variable
 		await project.updateSqlCmdVariable('ProdDatabaseName', 'NewProdName');
 
-		should(Object.keys(project.sqlCmdVariables).length).equal(3, 'There should be 3 sqlcmd variables after adding TestDatabaseName');
+		should(project.sqlCmdVariables.size).equal(3, 'There should be 3 sqlcmd variables after adding TestDatabaseName');
 		should(project.sqlCmdVariables.get('TestDatabaseName')).equal('TestDb', 'Value of TestDatabaseName should be TestDb');
 		should(project.sqlCmdVariables.get('ProdDatabaseName')).equal('NewProdName', 'ProdDatabaseName value should have been updated to the new value');
 	});

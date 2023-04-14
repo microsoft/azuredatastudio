@@ -587,7 +587,7 @@ export class ProjectsController {
 		const timeToPublish = actionEndTime - actionStartTime;
 		telemetryProps.actionDuration = timeToPublish.toString();
 		telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
-		telemetryProps.sqlcmdVariablesCount = Object.keys(project.sqlCmdVariables).length.toString();
+		telemetryProps.sqlcmdVariablesCount = project.sqlCmdVariables.size.toString();
 		telemetryProps.projectTargetPLatform = project.getProjectTargetVersion();
 
 		const currentPublishIndex = this.publishInfo.findIndex(d => d.startDate === currentPublishTimeInfo);
@@ -986,7 +986,7 @@ export class ProjectsController {
 				title: constants.enterNewSqlCmdVariableName,
 				ignoreFocusOut: true,
 				validateInput: (value) => {
-					return this.sqlCmdVariableNameAlreadyExists(value, project) ? constants.sqlcmdVariableAlreadyExists : undefined;
+					return project.sqlCmdVariables.has(value) ? constants.sqlcmdVariableAlreadyExists : undefined;
 				}
 			});
 
@@ -1006,10 +1006,6 @@ export class ProjectsController {
 
 		await project.addSqlCmdVariable(variableName, defaultValue);
 		this.refreshProjectsTree(context);
-	}
-
-	private sqlCmdVariableNameAlreadyExists(newVariableName: string, project: Project): boolean {
-		return Object.keys(project.sqlCmdVariables).findIndex(v => v === newVariableName) !== -1;
 	}
 
 	private getDatabaseReference(project: Project, context: BaseProjectTreeItem): IDatabaseReferenceProjectEntry | undefined {
