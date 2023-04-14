@@ -14,7 +14,6 @@ import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import { values } from 'vs/base/common/collections';
 import { Schemas } from 'vs/base/common/network';
-import { generateUuid } from 'vs/base/common/uuid';
 
 export class ConnectionStatusManager {
 
@@ -86,14 +85,8 @@ export class ConnectionStatusManager {
 
 	public addConnection(connection: IConnectionProfile, id: string): ConnectionManagementInfo {
 		this._logService.info(`Adding connection ${id}`);
-		let profileInfo = this.findConnectionByProfileId(connection.id);
-		let idInfo = this.findConnection(id);
 		// Always create a copy and save that in the list
 		let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
-		// Need to set new ID in case there is an entry with the same connection profile id, to avoid confusion when looking up by id.
-		if (profileInfo !== idInfo) {
-			connectionProfile.id = generateUuid();
-		}
 		let connectionInfo: ConnectionManagementInfo = {
 			providerId: connection.providerName,
 			extensionTimer: StopWatch.create(),

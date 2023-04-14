@@ -12,6 +12,7 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IScriptingService, ScriptOperation } from 'sql/platform/scripting/common/scriptingService';
+import { generateUuid } from 'vs/base/common/uuid';
 
 // map for the version of SQL Server (default is 140)
 const scriptCompatibilityOptionMap = {
@@ -49,6 +50,8 @@ export async function scriptSelect(connectionProfile: IConnectionProfile, metada
 		const result = await scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails);
 		if (result && result.script) {
 			const owner = await queryEditorService.newSqlEditor({ initalContent: result.script }, connectionProfile?.providerName);
+			// Profile will need to have a different id to distinguish it from the initial connection entry.
+			connectionProfile.id = generateUuid();
 			// Connect our editor to the input connection
 			let options: IConnectionCompletionOptions = {
 				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.executeQuery, input: owner },
@@ -76,6 +79,8 @@ export async function scriptEditSelect(connectionProfile: IConnectionProfile, me
 		const result = await scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails!);
 		if (result && result.script) {
 			const owner = await queryEditorService.newEditDataEditor(metadata.schema, metadata.name, result.script);
+			// Profile will need to have a different id to distinguish it from the initial connection entry.
+			connectionProfile.id = generateUuid();
 			// Connect our editor
 			let options: IConnectionCompletionOptions = {
 				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: owner },
@@ -134,6 +139,8 @@ export async function script(connectionProfile: IConnectionProfile, metadata: az
 			if (script) {
 				let description = (metadata.schema && metadata.schema !== '') ? `${metadata.schema}.${metadata.name}` : metadata.name;
 				const owner = await queryEditorService.newSqlEditor({ initalContent: script, description }, connectionProfile.providerName);
+				// Profile will need to have a different id to distinguish it from the initial connection entry.
+				connectionProfile.id = generateUuid();
 				// Connect our editor to the input connection
 				let options: IConnectionCompletionOptions = {
 					params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: owner },
