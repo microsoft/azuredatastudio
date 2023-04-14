@@ -425,9 +425,9 @@ crypt@~0.0.1:
   resolved "https://registry.yarnpkg.com/crypt/-/crypt-0.0.2.tgz#88d7ff7ec0dfb86f713dc87bbb42d044d3e6c41b"
   integrity sha1-iNf/fsDfuG9xPch7u0LQRNPmxBs=
 
-"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#1.3.2":
-  version "1.3.2"
-  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/e3be16cffbac882ef545e4da9654a82dc010d1b7"
+"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#1.3.3":
+  version "1.3.3"
+  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/a2162dd7f7bb7efd73d2965549a0728291b8a3d0"
   dependencies:
     vscode-languageclient "5.2.1"
 
