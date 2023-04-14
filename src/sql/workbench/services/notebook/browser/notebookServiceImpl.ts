@@ -909,7 +909,11 @@ export class NotebookService extends Disposable implements INotebookService {
 			standardKernels: [{
 				name: notebookConstants.SQL,
 				displayName: notebookConstants.SQL,
-				connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER],
+				connectionProviderIds: [
+					notebookConstants.SQL_CONNECTION_PROVIDER,
+					notebookConstants.MYSQL_CONNECTION_PROVIDER,
+					notebookConstants.PGSQL_CONNECTION_PROVIDER
+				],
 				supportedLanguages: [notebookConstants.sqlKernelSpec.language]
 			}]
 		});
