@@ -445,7 +445,7 @@ export class UpdateProjectFromDatabaseDialog {
 	private createFolderStructureRow(view: azdata.ModelView): azdata.FlexContainer {
 		this.folderStructureDropDown = view.modelBuilder.dropDown().withProps({
 			values: [constants.file, constants.flat, constants.objectType, constants.schema, constants.schemaObjectType],
-			value: constants.schemaObjectType,			//TODO: Read this value from project info after fixing https://github.com/microsoft/azuredatastudio/issues/20332
+			value: constants.schemaObjectType,
 			ariaLabel: constants.folderStructureLabel,
 			required: true,
 			width: cssStyles.updateProjectFromDatabaseTextboxWidth
