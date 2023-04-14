@@ -1827,7 +1827,7 @@ declare module 'azdata' {
 		 */
 		values: string[];
 		/**
-		 * The list of options for the filter property if the type is predefinedValues
+		 * The list of options for the filter property if the type is enum
 		 */
 		options?: string[];
 		/**
