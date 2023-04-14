@@ -654,6 +654,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				FrequencyTypes: sqlExtHostTypes.FrequencyTypes,
 				FrequencySubDayTypes: sqlExtHostTypes.FrequencySubDayTypes,
 				FrequencyRelativeIntervals: sqlExtHostTypes.FrequencyRelativeIntervals,
+				NodeInfoFilterDataType: sqlExtHostTypes.NodeInfoFilterDataType,
+				NodeInfoFilterOperators: sqlExtHostTypes.NodeInfoFilterOperators,
 				window,
 				tasks,
 				dashboard,
