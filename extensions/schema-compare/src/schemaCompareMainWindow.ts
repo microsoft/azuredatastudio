@@ -131,7 +131,7 @@ export class SchemaCompareMainWindow {
 				projectFilePath: '',
 				targetScripts: [],
 				dataSchemaProvider: '',
-				folderStructure: mssql.ExtractTarget.schemaObjectType
+				extractTarget: mssql.ExtractTarget.schemaObjectType
 			};
 		} else if (sourceDacpac) {
 			source = {
@@ -145,7 +145,7 @@ export class SchemaCompareMainWindow {
 				projectFilePath: '',
 				targetScripts: [],
 				dataSchemaProvider: '',
-				folderStructure: mssql.ExtractTarget.schemaObjectType
+				extractTarget: mssql.ExtractTarget.schemaObjectType
 			};
 		} else if (sourceProject) {
 			source = {
@@ -159,7 +159,7 @@ export class SchemaCompareMainWindow {
 				projectFilePath: sourceProject,
 				targetScripts: [],
 				dataSchemaProvider: undefined,
-				folderStructure: mssql.ExtractTarget.schemaObjectType
+				extractTarget: mssql.ExtractTarget.schemaObjectType
 			};
 		}
 
@@ -889,7 +889,7 @@ export class SchemaCompareMainWindow {
 						result = await service.schemaComparePublishDatabaseChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
 						break;
 					case mssql.SchemaCompareEndpointType.Project:
-						result = await vscode.commands.executeCommand(loc.sqlDatabaseProjectsPublishChanges, this.comparisonResult.operationId, this.targetEndpointInfo.projectFilePath, this.targetEndpointInfo.folderStructure);
+						result = await vscode.commands.executeCommand(loc.sqlDatabaseProjectsPublishChanges, this.comparisonResult.operationId, this.targetEndpointInfo.projectFilePath, this.targetEndpointInfo.extractTarget);
 						if (!result.success) {
 							void vscode.window.showErrorMessage(loc.applyError);
 						}
@@ -1151,8 +1151,8 @@ export class SchemaCompareMainWindow {
 				connectionDetails: undefined,
 				projectFilePath: endpoint.projectFilePath,
 				targetScripts: [],
-				dataSchemaProvider: '',
-				folderStructure: mssql.ExtractTarget.schemaObjectType			// TODO: Pick this automatically from the scmp file, after issue #20332 is resolved (check dsp as well)
+				dataSchemaProvider: endpoint.dataSchemaProvider,
+				extractTarget: endpoint.extractTarget			// TODO: Pick this automatically from the scmp file, after issue #20332 is resolved (check dsp as well)
 			};
 		} else {
 			// need to do this instead of just setting it to the endpoint because some fields are null which will cause an error when sending the compare request

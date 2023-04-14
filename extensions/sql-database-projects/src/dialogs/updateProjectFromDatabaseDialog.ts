@@ -556,7 +556,7 @@ export class UpdateProjectFromDatabaseDialog {
 			connectionDetails: connectionDetails,
 			ownerUri: ownerUri,
 			projectFilePath: '',
-			folderStructure: mssql.ExtractTarget.schemaObjectType,
+			extractTarget: mssql.ExtractTarget.schemaObjectType,
 			targetScripts: [],
 			dataSchemaProvider: '',
 			packageFilePath: '',
@@ -566,7 +566,7 @@ export class UpdateProjectFromDatabaseDialog {
 		const targetEndpointInfo: mssql.SchemaCompareEndpointInfo = {
 			endpointType: mssql.SchemaCompareEndpointType.Project,
 			projectFilePath: this.projectFileDropdown!.value! as string,
-			folderStructure: mapExtractTargetEnum(<string>this.folderStructureDropDown!.value),
+			extractTarget: mapExtractTargetEnum(<string>this.folderStructureDropDown!.value),
 			targetScripts: [],
 			dataSchemaProvider: '',
 			connectionDetails: connectionDetails,

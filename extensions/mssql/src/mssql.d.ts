@@ -135,7 +135,7 @@ declare module 'mssql' {
 		connectionName?: string;
 		projectFilePath: string;
 		targetScripts: string[];
-		folderStructure: ExtractTarget;
+		extractTarget: ExtractTarget;
 		dataSchemaProvider: string;
 	}
 

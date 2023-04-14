@@ -118,7 +118,7 @@ export class SchemaCompareDialog {
 				ownerUri: ownerUri,
 				projectFilePath: '',
 				targetScripts: [],
-				folderStructure: mssql.ExtractTarget.schemaObjectType,
+				extractTarget: mssql.ExtractTarget.schemaObjectType,
 				packageFilePath: '',
 				dataSchemaProvider: '',
 				connectionDetails: undefined,
@@ -133,7 +133,7 @@ export class SchemaCompareDialog {
 				ownerUri: '',
 				projectFilePath: '',
 				targetScripts: [],
-				folderStructure: mssql.ExtractTarget.schemaObjectType,
+				extractTarget: mssql.ExtractTarget.schemaObjectType,
 				dataSchemaProvider: '',
 				packageFilePath: this.sourceTextBox.value,
 				connectionDetails: undefined
@@ -144,7 +144,7 @@ export class SchemaCompareDialog {
 				projectFilePath: this.sourceTextBox.value,
 				targetScripts: await this.getProjectScriptFiles(this.sourceTextBox.value),
 				dataSchemaProvider: await this.getDatabaseSchemaProvider(this.sourceTextBox.value),
-				folderStructure: mssql.ExtractTarget.schemaObjectType,
+				extractTarget: mssql.ExtractTarget.schemaObjectType,
 				serverDisplayName: '',
 				serverName: '',
 				databaseName: '',
@@ -165,7 +165,7 @@ export class SchemaCompareDialog {
 				databaseName: this.targetDatabaseDropdown.value.toString(),
 				ownerUri: ownerUri,
 				projectFilePath: '',
-				folderStructure: mssql.ExtractTarget.schemaObjectType,
+				extractTarget: mssql.ExtractTarget.schemaObjectType,
 				targetScripts: [],
 				packageFilePath: '',
 				dataSchemaProvider: '',
@@ -180,7 +180,7 @@ export class SchemaCompareDialog {
 				databaseName: '',
 				ownerUri: '',
 				projectFilePath: '',
-				folderStructure: mssql.ExtractTarget.schemaObjectType,
+				extractTarget: mssql.ExtractTarget.schemaObjectType,
 				targetScripts: [],
 				dataSchemaProvider: '',
 				packageFilePath: this.targetTextBox.value,
@@ -190,7 +190,7 @@ export class SchemaCompareDialog {
 			this.schemaCompareMainWindow.targetEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Project,
 				projectFilePath: this.targetTextBox.value,
-				folderStructure: mapExtractTargetEnum(<string>this.targetStructureDropdown!.value),
+				extractTarget: mapExtractTargetEnum(<string>this.targetStructureDropdown!.value),
 				targetScripts: await this.getProjectScriptFiles(this.targetTextBox.value),
 				dataSchemaProvider: await this.getDatabaseSchemaProvider(this.targetTextBox.value),
 				serverDisplayName: '',
@@ -447,13 +447,14 @@ export class SchemaCompareDialog {
 	}
 
 	private createStructureDropdown(): azdata.FormComponent {
+		const value = !this.schemaCompareMainWindow.targetEndpointInfo ? loc.schemaObjectType : mapExtractTargetToString(this.schemaCompareMainWindow.targetEndpointInfo.extractTarget);
 		this.targetStructureDropdown = this.view.modelBuilder.dropDown().withProps({
 			editable: true,
 			fireOnTextChange: true,
 			ariaLabel: loc.targetStructure,
 			width: this.textBoxWidth,
 			values: [loc.file, loc.flat, loc.objectType, loc.schema, loc.schemaObjectType],
-			value: loc.schemaObjectType,
+			value: value,
 		}).component();
 
 		return {
@@ -1027,5 +1028,16 @@ export function mapExtractTargetEnum(inputTarget: string): mssql.ExtractTarget {
 		case loc.schema: return mssql.ExtractTarget.schema;
 		case loc.schemaObjectType:
 		default: return mssql.ExtractTarget.schemaObjectType;
+	}
+}
+
+export function mapExtractTargetToString(inputTarget: mssql.ExtractTarget) {
+	switch (inputTarget) {
+		case mssql.ExtractTarget.file: return loc.file;
+		case mssql.ExtractTarget.flat: return loc.flat;
+		case mssql.ExtractTarget.objectType: return loc.objectType;
+		case mssql.ExtractTarget.schema: return loc.schema;
+		case mssql.ExtractTarget.schemaObjectType:
+		default: return loc.schemaObjectType;
 	}
 }
