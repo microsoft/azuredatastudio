@@ -190,5 +190,7 @@
 	"title.newUser": "New User",
 	"title.objectProperties": "Properties (Preview)",
 	"title.deleteObject": "Delete",
-	"title.renameObject": "Rename"
+	"title.renameObject": "Rename",
+	"title.createDatabase": "Create Database",
+	"title.deleteDatabase": "Delete"
 }

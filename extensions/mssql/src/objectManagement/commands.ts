@@ -35,6 +35,12 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.renameObject', async (context: azdata.ObjectExplorerContext) => {
 		await handleRenameObjectCommand(context, service);
 	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.createDatabase', async (context: azdata.ObjectExplorerContext) => {
+		await handleCreateDatabaseDialogCommand(context, service);
+	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.deleteDatabase', async (context: azdata.ObjectExplorerContext) => {
+		await handleDeleteDatabaseDialogCommand(context, service);
+	}));
 }
 
 function getObjectManagementService(appContext: AppContext, useTestService: boolean): IObjectManagementService {
@@ -217,4 +223,40 @@ async function getConnectionUri(context: azdata.ObjectExplorerContext): Promise<
 		await vscode.window.showErrorMessage(localizedConstants.FailedToRetrieveConnectionInfoErrorMessage, { modal: true });
 	}
 	return connectionUri;
+}
+
+async function handleCreateDatabaseDialogCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+	const connectionUri = await getConnectionUri(context);
+	if (!connectionUri) {
+		return;
+	}
+
+	try {
+		const dialog = new CreateDatabaseDialog(service, connectionUri, context);
+		await dialog.open();
+	}
+	catch (err) {
+		TelemetryReporter.createErrorEvent2(TelemetryViews.Admin, TelemetryActions.CreateDatabaseDialog, err).withAdditionalProperties({
+			objectType: context.nodeInfo!.nodeType
+		}).send();
+		await vscode.window.showErrorMessage(localizedConstants.OpenCreateDatabaseDialogError(getErrorMessage(err)));
+	}
+}
+
+async function handleDeleteDatabaseDialogCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+	const connectionUri = await getConnectionUri(context);
+	if (!connectionUri) {
+		return;
+	}
+
+	try {
+		const dialog = new DeleteDatabaseDialog(service, connectionUri, context);
+		await dialog.open();
+	}
+	catch (err) {
+		TelemetryReporter.createErrorEvent2(TelemetryViews.Admin, TelemetryActions.DeleteDatabaseDialog, err).withAdditionalProperties({
+			objectType: context.nodeInfo!.nodeType
+		}).send();
+		await vscode.window.showErrorMessage(localizedConstants.OpenDeleteDatabaseDialogError(getErrorMessage(err)));
+	}
 }

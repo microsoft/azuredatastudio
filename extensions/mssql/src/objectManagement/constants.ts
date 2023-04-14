@@ -59,9 +59,12 @@ export enum TelemetryActions {
 	OpenNewObjectDialog = 'OpenNewObjectDialog',
 	OpenPropertiesDialog = 'OpenPropertiesDialog',
 	RenameObject = 'RenameObject',
-	UpdateObject = 'UpdateObject'
+	UpdateObject = 'UpdateObject',
+	CreateDatabaseDialog = 'CreateDatabaseDialog',
+	DeleteDatabaseDialog = 'DeleteDatabaseDialog',
 }
 
 export enum TelemetryViews {
-	ObjectManagement = 'ObjectManagement'
+	ObjectManagement = 'ObjectManagement',
+	Admin = 'Admin'
 }

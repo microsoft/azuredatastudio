@@ -98,6 +98,16 @@
         "title": "%title.renameObject%"
       },
       {
+        "command": "mssql.createDatabase",
+        "category": "MSSQL",
+        "title": "%title.createDatabase%"
+      },
+      {
+        "command": "mssql.deleteDatabase",
+        "category": "MSSQL",
+        "title": "%title.deleteDatabase%"
+      },
+      {
         "command": "mssql.enableGroupBySchema",
         "category": "MSSQL",
         "title": "%mssql.objectExplorer.enableGroupBySchema%",
@@ -487,6 +497,14 @@
         {
           "command": "mssql.renameObject",
           "when": "false"
+        },
+        {
+          "command": "mssql.createDatabase",
+          "when": "false"
+        },
+        {
+          "command": "mssql.deleteDatabase",
+          "when": "false"
         }
       ],
       "objectExplorer/item/context": [
@@ -530,6 +548,16 @@
         {
           "command": "mssql.renameObject",
           "when": "connectionProvider == MSSQL && nodeType == Column && config.workbench.enablePreviewFeatures && nodePath =~ /^.*\/Tables\/.*\/Columns\/.*$",
+          "group": "0_query@3"
+        },
+        {
+          "command": "mssql.createDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Server && config.workbench.enablePreviewFeatures",
+          "group": "0_query@3"
+        },
+        {
+          "command": "mssql.deleteDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Database && config.workbench.enablePreviewFeatures",
           "group": "0_query@3"
         },
         {

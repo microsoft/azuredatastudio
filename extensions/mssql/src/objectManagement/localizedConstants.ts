@@ -108,6 +108,20 @@ export function RenameObjectError(objectType: string, originalName: string, newN
 	}, "An error occurred while renaming {0} '{1}' to '{2}'. {3}", objectType, originalName, newName, error);
 }
 
+export function OpenCreateDatabaseDialogError(error: string): string {
+	return localize({
+		key: 'admin.openCreateDatabaseDialogError',
+		comment: ['{0}: error message.']
+	}, "An error occurred while opening the Create Database dialog: {0}", error);
+}
+
+export function OpenDeleteDatabaseDialogError(error: string): string {
+	return localize({
+		key: 'admin.openDeleteDatabaseDialogError',
+		comment: ['{0}: error message.']
+	}, "An error occurred while opening the Delete Database dialog: {0}", error);
+}
+
 export const NameText = localize('objectManagement.nameLabel', "Name");
 export const SelectedText = localize('objectManagement.selectedLabel', "Selected");
 export const GeneralSectionHeader = localize('objectManagement.generalSectionHeader', "General");
