@@ -1841,7 +1841,7 @@ declare module 'azdata' {
 		number = 1,
 		boolean = 2,
 		date = 3,
-		predefinedValues = 4
+		enum = 4
 	}
 
 	export enum NodeInfoFilterOperators {
