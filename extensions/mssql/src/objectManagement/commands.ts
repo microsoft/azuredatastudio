@@ -16,6 +16,8 @@ import { IObjectManagementService } from 'mssql';
 import * as constants from '../constants';
 import { getNodeTypeDisplayName, refreshParentNode } from './utils';
 import { TelemetryReporter } from '../telemetry';
+import { CreateDatabaseDialog } from './ui/createDatabaseDialog';
+import { DeleteDatabaseDialog } from './ui/deleteDatabaseDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.

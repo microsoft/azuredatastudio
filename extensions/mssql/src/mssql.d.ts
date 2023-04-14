@@ -1162,6 +1162,16 @@ declare module 'mssql' {
 			 */
 			databaseRoles: string[];
 		}
+
+		export interface Database extends SqlObject {
+			name: string;
+		}
+
+		export interface CreateDatabaseViewInfo extends ObjectViewInfo<Database> {
+		}
+
+		export interface DeleteDatabaseViewInfo extends ObjectViewInfo<Database> {
+		}
 	}
 
 	export interface IObjectManagementService {

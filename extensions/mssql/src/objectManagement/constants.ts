@@ -12,7 +12,8 @@ export enum NodeType {
 	Login = 'ServerLevelLogin',
 	Table = 'Table',
 	User = 'User',
-	View = 'View'
+	View = 'View',
+	Server = 'Server',
 }
 
 export const PublicServerRoleName = 'public';
