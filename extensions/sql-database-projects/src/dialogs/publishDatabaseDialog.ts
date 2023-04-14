@@ -190,7 +190,7 @@ export class PublishDatabaseDialog {
 				});
 
 			// add SQLCMD variables table if the project has any
-			if (Object.keys(this.project.sqlCmdVariables).length > 0) {
+			if (this.project.sqlCmdVariables.size > 0) {
 				this.formBuilder.addFormItem(this.sqlCmdVariablesFormComponentGroup);
 			}
 

@@ -52,7 +52,7 @@ export async function loadTemplates(templateFolderPath: string) {
 	]);
 
 	for (const scriptType of scriptTypes) {
-		if (Object.keys(scriptTypeMap).find(s => s === scriptType.type.toLocaleLowerCase() || s === scriptType.friendlyName.toLocaleLowerCase())) {
+		if (scriptTypeMap.has(scriptType.type.toLocaleLowerCase()) || scriptTypeMap.has(scriptType.friendlyName.toLocaleLowerCase())) {
 			throw new Error(`Script type map already contains ${scriptType.type} or its friendlyName.`);
 		}
 
