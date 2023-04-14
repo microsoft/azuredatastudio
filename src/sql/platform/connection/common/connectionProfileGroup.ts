@@ -157,6 +157,39 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 		});
 	}
 
+	public removeConnections(connections: ConnectionProfile[]): void {
+		connections.forEach((conn) => {
+			this._childConnections = this._childConnections.filter((curConn) => { return curConn.id !== conn.id; });
+		});
+	}
+
+	public getMatchingConnection(connection: ConnectionProfile): ConnectionProfile | undefined {
+		return this._childConnections.find((conn) => connection.matches(conn));
+	}
+
+	public addConnection(connection: ConnectionProfile): void {
+		const matchingConnection = this.getMatchingConnection(connection);
+		connection.parent = this;
+		connection.groupId = this.id;
+		if (matchingConnection) {
+			const matchingConnectionIndex = this._childConnections.indexOf(matchingConnection);
+			this._childConnections[matchingConnectionIndex] = connection;
+		} else {
+			this._childConnections.push(connection);
+		}
+	}
+
+	public replaceConnection(connection: ConnectionProfile, oldConnectionId: string): void {
+		const oldConnectionIndex = this._childConnections.findIndex((conn) => conn.id === oldConnectionId);
+		if (oldConnectionIndex !== -1) {
+			this._childConnections[oldConnectionIndex] = connection;
+			connection.parent = this;
+			connection.groupId = this.id;
+		} else {
+			throw new Error(`Could not find connection with id ${oldConnectionId} in group ${this.name}`);
+		}
+	}
+
 	public getParent(): ConnectionProfileGroup | undefined {
 		return this.parent;
 	}
