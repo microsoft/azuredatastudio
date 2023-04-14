@@ -441,6 +441,7 @@ export class Project implements ISqlProject {
 		this._noneDeployScripts = [];
 		this._outputPath = '';
 		this._configuration = Configuration.Debug;
+		this._publishProfiles = [];
 	}
 
 	public async updateProjectForCrossPlatform(): Promise<void> {

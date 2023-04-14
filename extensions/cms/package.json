@@ -66,6 +66,7 @@
           "groupName": "%cms.connectionOptions.groupName.source%",
           "valueType": "string",
           "defaultValue": null,
+          "placeholder": "%cms.connectionOptions.serverName.placeholder%",
           "objectType": null,
           "categoryValues": null,
           "isRequired": true,

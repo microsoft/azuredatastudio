@@ -24,7 +24,6 @@
 	"cms.logRetentionMinutes": "Number of minutes to retain log files for backend services. Default is 1 week.",
 	"cms.logFilesRemovalLimit": "Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.",
 	"ignorePlatformWarning": "[Optional] Do not show unsupported platform warnings",
-
 	"onprem.databaseProperties.recoveryModel": "Recovery Model",
 	"onprem.databaseProperties.lastBackupDate": "Last Database Backup",
 	"onprem.databaseProperties.lastLogBackupDate": "Last Log Backup",
@@ -34,19 +33,18 @@
 	"onprem.serverProperties.serverEdition": "Edition",
 	"onprem.serverProperties.machineName": "Computer Name",
 	"onprem.serverProperties.osVersion": "OS Version",
-
 	"cloud.databaseProperties.azureEdition": "Edition",
 	"cloud.databaseProperties.serviceLevelObjective": "Pricing Tier",
 	"cloud.databaseProperties.compatibilityLevel": "Compatibility Level",
 	"cloud.databaseProperties.owner": "Owner",
 	"cloud.serverProperties.serverVersion": "Version",
 	"cloud.serverProperties.serverEdition": "Type",
-
 	"cms.provider.displayName": "Microsoft SQL Server",
 	"cms.connectionOptions.connectionName.displayName": "Name (optional)",
 	"cms.connectionOptions.connectionName.description": "Custom name of the connection",
 	"cms.connectionOptions.serverName.displayName": "Server",
 	"cms.connectionOptions.serverName.description": "Name of the SQL Server instance",
+	"cms.connectionOptions.serverName.placeholder": "e.g. tcp:servername,1433",
 	"cms.connectionOptions.serverDescription.displayName": "Server Description",
 	"cms.connectionOptions.serverDescription.description": "Description of the SQL Server instance",
 	"cms.connectionOptions.authType.displayName": "Authentication type",
