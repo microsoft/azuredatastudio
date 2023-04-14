@@ -597,6 +597,11 @@ declare module 'azdata' {
 		 * Authentication token for the current session.
 		 */
 		securityToken?: accounts.AccountSecurityToken | undefined;
+
+		/**
+		 * Filter for expanding node.
+		 */
+		filters?: NodeInfoFilter[];
 	}
 	// End Object Explorer interfaces  ----------------------------
 
@@ -1790,6 +1795,66 @@ declare module 'azdata' {
 		 * The path of the parent node.
 		 */
 		parentNodePath: string;
+		/**
+		 * flag to indicate if the node supports filtering
+		 */
+		isFilteringSupported?: boolean;
+		/**
+		 * list of filters that are supported by the node
+		 */
+		defaultFilters?: NodeInfoFilter[];
+		/**
+		 * list of properties to filter children nodes on
+		 */
+		filters?: NodeInfoFilter[];
+	}
+
+	export interface NodeInfoFilter {
+		/**
+		 * The name of the filter property
+		 */
+		name: string;
+		/**
+		 * The type of the filter property
+		 */
+		type: NodeInfoFilterDataType;
+		/**
+		 * The operator of the filter property
+		 */
+		operator?: NodeInfoFilterOperators;
+		/**
+		 * The applied values of the filter property
+		 */
+		values: string[];
+		/**
+		 * The list of options for the filter property if the type is predefinedValues
+		 */
+		options?: string[];
+		/**
+		 * The description of the filter property
+		 */
+		description: string;
+	}
+
+	export enum NodeInfoFilterDataType {
+		string = 0,
+		number = 1,
+		boolean = 2,
+		date = 3,
+		predefinedValues = 4
+	}
+
+	export enum NodeInfoFilterOperators {
+		equals = 0,
+		notEquals = 1,
+		lessThan = 2,
+		lessThanOrEquals = 3,
+		greaterThan = 4,
+		greaterThanOrEquals = 5,
+		between = 6,
+		notBetween = 7,
+		contains = 8,
+		notContains = 9,
 	}
 
 	export namespace window {
