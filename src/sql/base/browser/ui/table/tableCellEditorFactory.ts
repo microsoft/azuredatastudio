@@ -106,7 +106,7 @@ export class TableCellEditorFactory {
 			public applyValue(item: Slick.SlickData, state: string): void {
 				const activeCell = this._args.grid.getActiveCell();
 				if (inputType === 'date') {
-					state = new Date(state).toLocaleDateString();
+					state = new Date(state).toLocaleDateString('en-US', { timeZone: 'UTC' });
 				}
 				self._options.valueSetter(context, activeCell.row, item, this._args.column, state);
 			}
