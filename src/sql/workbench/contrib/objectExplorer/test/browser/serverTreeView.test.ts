@@ -17,7 +17,7 @@ import { TreeItemCollapsibleState } from 'sql/workbench/services/objectExplorer/
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import * as assert from 'assert';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
-import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
+import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 
 suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
