@@ -57,6 +57,7 @@ import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/co
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { queryEditorNullBackground } from 'sql/platform/theme/common/colorRegistry';
+import { ITableService } from 'sql/workbench/services/table/browser/tableService';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -417,7 +418,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		@INotificationService private readonly notificationService: INotificationService,
 		@IExecutionPlanService private readonly executionPlanService: IExecutionPlanService,
 		@IAccessibilityService private readonly accessibilityService: IAccessibilityService,
-		@IQuickInputService private readonly quickInputService: IQuickInputService
+		@IQuickInputService private readonly quickInputService: IQuickInputService,
+		@ITableService private readonly tableService: ITableService
 	) {
 		super();
 
@@ -549,6 +551,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this._register(this.dataProvider.onFilterStateChange(() => { this.layout(); }));
 		this._register(this.table.onContextMenu(this.contextMenu, this));
 		this._register(this.table.onClick(this.onTableClick, this));
+		this._register(this.table.onDoubleClick(this.onTableDoubleClick, this));
 		this._register(this.dataProvider.onFilterStateChange(() => {
 			const columns = this.table.columns as FilterableColumn<T>[];
 			this.state.columnFilters = columns.filter((column) => column.filterValues?.length > 0).map(column => {
@@ -574,11 +577,12 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this._register(registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 			const nullBackground = theme.getColor(queryEditorNullBackground);
 			if (nullBackground) {
-				collector.addRule(`.${NULL_CELL_CSS_CLASS} { background: ${nullBackground};}`);
+				collector.addRule(`.slick-row:not(:hover) .${NULL_CELL_CSS_CLASS} { background: ${nullBackground};}`);
 			}
 		}));
 
 		this.table.registerPlugin(this.filterPlugin);
+		this._register(this.tableService.registerTable(this.table));
 		if (this.styles) {
 			this.table.style(this.styles);
 		}
@@ -764,6 +768,15 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					await this.editorService.openEditor(input);
 				}
 			}
+		}
+	}
+
+	private onTableDoubleClick(event: ITableMouseEvent) {
+		// the first column is already handled by rowNumberColumn plugin.
+		if (event.cell && event.cell.cell !== 0) {
+			// upon double clicking, we want to select the entire row so that it is easier to know which
+			// row is selected when the user needs to scroll horizontally.
+			this.table.grid.setSelectedRows([event.cell.row]);
 		}
 	}
 
@@ -956,14 +969,15 @@ class GridTable<T> extends GridTableBase<T> {
 		@INotificationService notificationService: INotificationService,
 		@IExecutionPlanService executionPlanService: IExecutionPlanService,
 		@IAccessibilityService accessibilityService: IAccessibilityService,
-		@IQuickInputService quickInputService: IQuickInputService
+		@IQuickInputService quickInputService: IQuickInputService,
+		@ITableService tableService: ITableService
 	) {
 		super(state, resultSet, {
 			actionOrientation: ActionsOrientation.VERTICAL,
 			inMemoryDataProcessing: true,
 			showActionBar: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.showActionBar,
 			inMemoryDataCountThreshold: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.inMemoryDataProcessingThreshold,
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService, tableService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 		this.providerId = this._runner.getProviderId();
 	}

@@ -11,7 +11,7 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
+import { IDataResource, rowHasColumnNameKeys } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, ResultSetSubset, ICellValue } from 'sql/workbench/services/query/common/query';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -37,7 +37,6 @@ import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
-import { values } from 'vs/base/common/collections';
 import { URI } from 'vs/base/common/uri';
 import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
 import { equals } from 'vs/base/common/arrays';
@@ -51,6 +50,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { ITableService } from 'sql/workbench/services/table/browser/tableService';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -194,7 +194,7 @@ function reorderGridData(source: IDataResource): void {
 	if (source.data.length > 0) {
 		let rowKeys = Object.keys(source.data[0]);
 		if (!equals(columnNames, rowKeys)) {
-			// SQL notebooks do not use columnName as key (instead use indices)
+			// Older SQL notebooks use indices as keys instead of the column name.
 			// Indicies indicate the row is ordered properly
 			// We must check the data to know if it is in index form
 			let notIndexOrderKeys = false;
@@ -244,12 +244,13 @@ class DataResourceTable extends GridTableBase<any> {
 		@INotificationService notificationService: INotificationService,
 		@IExecutionPlanService executionPlanService: IExecutionPlanService,
 		@IAccessibilityService accessibilityService: IAccessibilityService,
-		@IQuickInputService quickInputService: IQuickInputService
+		@IQuickInputService quickInputService: IQuickInputService,
+		@ITableService tableService: ITableService
 	) {
 		super(state, createResultSet(source), {
 			actionOrientation: ActionsOrientation.HORIZONTAL,
 			inMemoryDataProcessing: true
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService, tableService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel);
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 
@@ -369,19 +370,27 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	private transformSource(source: IDataResource): void {
-		this._rows = source.data.map(row => {
-			let rowData: azdata.DbCellValue[] = [];
-			Object.keys(row).forEach((val, index) => {
-				let displayValue = String(values(row)[index]);
-				// Since the columns[0] represents the row number, start at 1
-				rowData.push({
-					displayValue: displayValue,
-					isNull: false,
-					invariantCultureDisplayValue: displayValue
-				});
+		if (source.data.length > 0) {
+			let columns = source.schema.fields;
+			// Rows are either indexed by column name or ordinal number, so check for one column name to see if it uses that format
+			let useColumnNameKey = rowHasColumnNameKeys(source.data[0], source.schema.fields.map(field => field.name));
+			this._rows = source.data.map(row => {
+				let rowData: azdata.DbCellValue[] = [];
+				for (let index = 0; index < Object.keys(row).length; index++) {
+					let key = useColumnNameKey ? columns[index].name : index;
+					let displayValue = String(row[key]);
+					// Since the columns[0] represents the row number, start at 1
+					rowData.push({
+						displayValue: displayValue,
+						isNull: false,
+						invariantCultureDisplayValue: displayValue
+					});
+				}
+				return rowData;
 			});
-			return rowData;
-		});
+		} else {
+			this._rows = [];
+		}
 	}
 
 	public updateResultSet(resultSet: ResultSetSummary, rows: ICellValue[][]): void {
@@ -487,9 +496,12 @@ export class DataResourceDataProvider implements IGridDataProvider {
 			let connProviders = this.cellModel.notebookModel.getApplicableConnectionProviderIds(this.cellModel.notebookModel.selectedKernelDisplayName);
 			if (connProviders?.length > 0) {
 				provider = connProviders[0];
-			} else {
-				provider = mssqlProviderName;
 			}
+		}
+		if (!provider || !this._serializationService.isProviderRegistered(provider)) {
+			// Serializing notebook query results to file is agnostic of database engine since the data is already available in the notebook.
+			// If the provider doesn't have its own serializer we can let the mssql provider handle it.
+			provider = mssqlProviderName;
 		}
 		let formatSpecificParams = serializer.getBasicSaveParameters(format);
 		let formatAgnosticParams = <Partial<SerializeDataParams>>{

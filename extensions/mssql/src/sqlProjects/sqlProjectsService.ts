@@ -11,9 +11,9 @@ import * as contracts from '../contracts';
 import { AppContext } from '../appContext';
 import { ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
 import { ClientCapabilities } from 'vscode-languageclient';
-import { RequestType } from 'vscode-languageclient';
+import { BaseService } from '../baseService';
 
-export class SqlProjectsService implements mssql.ISqlProjectsService {
+export class SqlProjectsService extends BaseService implements mssql.ISqlProjectsService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
 		return class extends SqlProjectsService {
 			constructor(client: SqlOpsDataClient) {
@@ -29,7 +29,8 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		};
 	}
 
-	private constructor(context: AppContext, protected readonly client: SqlOpsDataClient) {
+	private constructor(context: AppContext, client: SqlOpsDataClient) {
+		super(client);
 		context.registerService(constants.SqlProjectsService, this);
 	}
 
@@ -274,8 +275,8 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	 * @param defaultValue Default value of the SQLCMD variable
 	 * @param value Value of the SQLCMD variable, with or without the $()
 	 */
-	public async addSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<azdata.ResultStatus> {
-		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue, value: value };
+	public async addSqlCmdVariable(projectUri: string, name: string, defaultValue: string): Promise<azdata.ResultStatus> {
+		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue };
 		return await this.runWithErrorHandling(contracts.AddSqlCmdVariableRequest.type, params);
 	}
 
@@ -296,8 +297,8 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	 * @param defaultValue Default value of the SQLCMD variable
 	 * @param value Value of the SQLCMD variable, with or without the $()
 	 */
-	public async updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<azdata.ResultStatus> {
-		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue, value: value };
+	public async updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string): Promise<azdata.ResultStatus> {
+		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue };
 		return await this.runWithErrorHandling(contracts.UpdateSqlCmdVariableRequest.type, params);
 	}
 
@@ -444,15 +445,5 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	public async moveNoneItem(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
 		return await this.runWithErrorHandling(contracts.MoveNoneItemRequest.type, params);
-	}
-
-	private async runWithErrorHandling<P, R, E, RO>(type: RequestType<P, R, E, RO>, params: P): Promise<R> {
-		try {
-			const result = await this.client.sendRequest(type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(type, e);
-			throw e;
-		}
 	}
 }

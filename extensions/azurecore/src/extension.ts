@@ -97,6 +97,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	const authLibrary: string = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.AuthenticationLibrarySection)
 		?? Constants.DefaultAuthLibrary;
 
+	const piiLogging = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.piiLogging, false)
+	if (piiLogging) {
+		void vscode.window.showWarningMessage(loc.piiWarning, loc.disable, loc.dismiss).then(async (value) => {
+			if (value === loc.disable) {
+				await vscode.workspace.getConfiguration(Constants.AzureSection).update(Constants.piiLogging, false, vscode.ConfigurationTarget.Global);
+			}
+		});
+
+	}
 	updatePiiLoggingLevel();
 
 	let eventEmitter: vscode.EventEmitter<azurecore.CacheEncryptionKeys>;
@@ -305,6 +314,9 @@ async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent): Pro
 		updatePiiLoggingLevel();
 	}
 	if (e.affectsConfiguration('azure.authenticationLibrary')) {
+		if (vscode.workspace.getConfiguration(Constants.AzureSection).get('authenticationLibrary') === 'ADAL') {
+			void vscode.window.showInformationMessage(loc.deprecatedOption);
+		}
 		await displayReloadAds();
 	}
 }
@@ -327,4 +339,3 @@ async function displayReloadAds(): Promise<boolean> {
 	}
 
 }
-

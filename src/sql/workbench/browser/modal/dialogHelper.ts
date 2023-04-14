@@ -10,6 +10,8 @@ import * as types from 'vs/base/common/types';
 import * as azdata from 'azdata';
 import { wrapStringWithNewLine } from 'sql/workbench/common/sqlWorkbenchUtils';
 
+export const requiredIndicatorSpan = 'span.required-indicator';
+
 export function appendRow(container: HTMLElement, label: string, labelClass: string, cellContainerClass: string, rowContainerClass?: string | Array<string>, showRequiredIndicator: boolean = false, title?: string, titleMaxWidth?: number): HTMLElement {
 	let rowContainer = append(container, $('tr'));
 	if (rowContainerClass) {
@@ -29,10 +31,7 @@ export function appendRow(container: HTMLElement, label: string, labelClass: str
 
 	append(labelContainer, $('div')).innerText = label;
 	if (showRequiredIndicator) {
-		const indicator = append(labelContainer, $('span.required-indicator'));
-		indicator.innerText = '*';
-		indicator.style.color = 'red';
-		indicator.style.marginLeft = '5px';
+		appendRequiredIndicator(labelContainer);
 	}
 	let inputCellContainer = append(rowContainer, $(`td.${cellContainerClass}`));
 
@@ -80,4 +79,21 @@ export function getCategoryName(categories: azdata.CategoryValue[], categoryDisp
 		}
 	});
 	return categoryName;
+}
+
+export function appendRequiredIndicator(labelContainer: HTMLElement): HTMLElement {
+	const indicator = append(labelContainer, $(requiredIndicatorSpan));
+	indicator.innerText = '*';
+	indicator.style.color = 'red';
+	indicator.style.marginLeft = '5px';
+	return indicator;
+}
+
+export function getOptionContainerByName(parentContainer: HTMLElement, optionName: string): HTMLElement | undefined {
+	for (let i = 0; i < parentContainer.childElementCount; i++) {
+		if (parentContainer.children.item(i).classList.contains(`option-${optionName}`)) {
+			return parentContainer.children.item(i).children.item(0).children.item(0) as HTMLElement;
+		}
+	}
+	return undefined;
 }

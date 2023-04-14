@@ -11493,6 +11493,7 @@
 			"notebook.toolbarIcon": "Notebook: Symbole der Markdownsymbolleiste",
 			"notebookFindMatchHighlight": "Farbe der anderen Suchergebnisse. Die Farbe darf nicht deckend sein, weil sie sonst die zugrunde liegenden Dekorationen verdeckt.",
 			"notebookFindRangeHighlight": "Farbe des Bereichs, der die Suche eingrenzt. Die Farbe darf nicht deckend sein, damit sie nicht die zugrunde liegenden Dekorationen verdeckt.",
+			"queryEditorNullBackground": "Die Hintergrundfarbe für NULL-Werte im Ergebnisraster des Abfrage-Editors.",
 			"tileBorder": "Die Rahmenfarbe von Kacheln.",
 			"tileBoxShadow": "Die Schattenfarbe des Kachelfelds."
 		},
@@ -12895,6 +12896,7 @@
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
 			"serverGroup.autoExpand": "Servergruppen im Objekt-Explorer-Viewlet automatisch erweitern",
 			"serverGroup.colors": "Farbpalette für die Servergruppe, die im Objekt-Explorer-Viewlet verwendet wird.",
+			"serverTree.nodeExpansionTimeout": "Timeout in Sekunden für das Erweitern eines Knotens in der Serveransicht",
 			"serverTree.useAsyncServerTree": "(Vorschau) Verwenden Sie die neue asynchrone Serverstruktur für die Serveransicht und das Verbindungsdialogfeld. Sie bietet Unterstützung für neue Features wie die dynamische Knotenfilterung."
 		},
 		"sql/workbench/contrib/preferences/browser/sqlSettingsLayout": {
@@ -13434,6 +13436,7 @@
 			"connection.neverShowUnsupportedVersionWarning": "Nicht mehr anzeigen",
 			"connection.noAzureAccount": "Fehler beim Abrufen des Azure-Kontotokens für die Verbindung.",
 			"connection.refreshAzureTokenFailure": "Fehler beim Aktualisieren des Azure-Kontotokens für die Verbindung.",
+			"connection.unknownProvider": "Unbekannter Anbieter \"{0}\"",
 			"connection.unsupportedServerVersionWarning": "Die Serverversion wird von Azure Data Studio nicht unterstützt. Sie können dennoch eine Verbindung damit herstellen, aber einige Features in Azure Data Studio funktionieren möglicherweise nicht wie erwartet.",
 			"connectionDialog.connectionProviderNotSupported": "Die Erweiterung, die den Anbietertyp „{0}“ unterstützt, ist derzeit nicht installiert. Möchten Sie die Erweiterungen anzeigen?",
 			"connectionManagementService.noProviderForUri": "Der Anbieter für URI konnte nicht gefunden werden: {0}",
@@ -13450,7 +13453,8 @@
 			"connection.azureTenantDropdownLabel": "Azure AD-Mandant",
 			"connectionName": "Name (optional)",
 			"connectionWidget.AddAzureAccount": "Konto hinzufügen...",
-			"connectionWidget.ConnectionStringError": "Fehler beim Analysieren der Verbindungszeichenfolge.",
+			"connectionWidget.ConnectionStringError": "Fehler beim Analysieren der Verbindungszeichenfolge. {0}",
+			"connectionWidget.ConnectionStringUndefined": "Es wurden keine Verbindungsinformationen zurückgegeben.",
 			"connectionWidget.Error": "Fehler",
 			"connectionWidget.connectionString": "Verbindungszeichenfolge",
 			"connectionWidget.invalidAzureAccount": "Sie müssen ein Konto auswählen.",
@@ -13688,7 +13692,8 @@
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
 			"OeSessionFailedError": "Fehler beim Erstellen der Objekt-Explorer-Sitzung.",
-			"nodeExpansionError": "Mehrere Fehler:"
+			"nodeExpansionError": "Mehrere Fehler:",
+			"nodeExpansionTimeout": "Timeout bei der Knotenerweiterung für Knoten {0} für Anbieter {1}"
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim": {
 			"firewallCanceled": "Firewalldialogfeld abgebrochen",
@@ -13953,6 +13958,9 @@
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanInput": {
 			"epCompare.executionPlanEditorName": "ExecutionPlan"
+		},
+		"sql/workbench/contrib/editData/browser/editDataGridPanel": {
+			"editData.cellWithNullCharMessage": "Diese Zelle enthält das Unicode-Zeichen für NULL, das derzeit nicht für die Bearbeitung unterstützt wird."
 		}
 	}
 }

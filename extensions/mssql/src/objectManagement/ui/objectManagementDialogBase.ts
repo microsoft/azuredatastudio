@@ -106,7 +106,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	}
 
 	protected get objectInfo(): ObjectInfoType {
-		return this._viewInfo?.objectInfo;
+		return this._viewInfo.objectInfo;
 	}
 
 	protected get originalObjectInfo(): ObjectInfoType {
@@ -200,13 +200,13 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 
 	protected async runValidation(showErrorMessage: boolean = true): Promise<boolean> {
 		const errors = await this.validateInput();
-		if (errors.length > 0 && (this.dialogObject.message || showErrorMessage)) {
+		if (errors.length > 0 && (this.dialogObject.message?.text || showErrorMessage)) {
 			this.dialogObject.message = {
 				text: errors.join(EOL),
 				level: azdata.window.MessageLevel.Error
 			};
 		} else {
-			this.dialogObject.message = { text: '' };
+			this.dialogObject.message = undefined;
 		}
 		return errors.length === 0;
 	}
@@ -288,14 +288,17 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	protected createDropdown(ariaLabel: string, values: string[], value: string | undefined, enabled: boolean = true, width: number = DefaultInputWidth): azdata.DropDownComponent {
 		// Automatically add an empty item to the beginning of the list if the current value is not specified.
 		// This is needed when no meaningful default value can be provided.
+		// Create a new array so that the original array isn't modified.
+		const dropdownValues = [];
+		dropdownValues.push(...values);
 		if (!value) {
-			values.unshift('');
+			dropdownValues.unshift('');
 		}
 		return this.modelView.modelBuilder.dropDown().withProps({
 			ariaLabel: ariaLabel,
-			values: values,
+			values: dropdownValues,
 			value: value,
-			width: DefaultInputWidth,
+			width: width,
 			enabled: enabled
 		}).component();
 	}

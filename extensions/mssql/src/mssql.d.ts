@@ -242,6 +242,7 @@ declare module 'mssql' {
 		getOptionsFromProfile(profilePath: string): Thenable<DacFxOptionsResult>;
 		validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<ValidateStreamingJobResult>;
 		parseTSqlScript(filePath: string, databaseSchemaProvider: string): Thenable<ParseTSqlScriptResult>;
+		savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<azdata.ResultStatus>;
 	}
 
 	export interface DacFxResult extends azdata.ResultStatus {
@@ -490,9 +491,8 @@ declare module 'mssql' {
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 * @param name Name of the SQLCMD variable
 		 * @param defaultValue Default value of the SQLCMD variable
-		 * @param value Value of the SQLCMD variable, with or without the $()
 		 */
-		addSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<azdata.ResultStatus>;
+		addSqlCmdVariable(projectUri: string, name: string, defaultValue: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Delete a SQLCMD variable from a project
@@ -506,9 +506,8 @@ declare module 'mssql' {
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 * @param name Name of the SQLCMD variable
 		 * @param defaultValue Default value of the SQLCMD variable
-		 * @param value Value of the SQLCMD variable, with or without the $()
 		 */
-		updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<azdata.ResultStatus>;
+		updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Add a SQL object script to a project
@@ -570,7 +569,7 @@ declare module 'mssql' {
 		getSqlCmdVariables(projectUri: string): Promise<GetSqlCmdVariablesResult>;
 
 		/**
-		 * getSqlObjectScripts
+		 * Get all the SQL object scripts in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
 		getSqlObjectScripts(projectUri: string): Promise<GetScriptsResult>;
@@ -708,7 +707,7 @@ declare module 'mssql' {
 	}
 
 	interface UserDatabaseReference extends DatabaseReference {
-		databaseVariable: SqlCmdVariable;
+		databaseVariable?: SqlCmdVariable;
 		serverVariable?: SqlCmdVariable;
 	}
 
@@ -726,13 +725,8 @@ declare module 'mssql' {
 	}
 
 	export const enum SystemDatabase {
-		master = 0,
-		msdb = 1
-	}
-
-	export const enum ProjectType {
-		sdkStyle = 0,
-		legacyStyle = 1
+		Master = 0,
+		MSDB = 1
 	}
 
 	export interface SqlCmdVariable {

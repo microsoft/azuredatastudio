@@ -493,7 +493,8 @@
         {
           "command": "mssql.designTable",
           "when": "connectionProvider == MSSQL && nodeType == Table && nodeSubType != LedgerDropped",
-          "group": "0_query@3"
+          "group": "0_query@3",
+          "isDefault": true
         },
         {
           "command": "mssql.newTable",
@@ -513,7 +514,8 @@
         {
           "command": "mssql.objectProperties",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
-          "group": "0_query@1"
+          "group": "0_query@1",
+          "isDefault": true
         },
         {
           "command": "mssql.deleteObject",
@@ -835,6 +837,7 @@
           "groupName": "%mssql.connectionOptions.groupName.source%",
           "valueType": "string",
           "defaultValue": null,
+          "placeholder": "%mssql.connectionOptions.serverName.placeholder%",
           "objectType": null,
           "categoryValues": null,
           "isRequired": true,
@@ -1048,7 +1051,8 @@
               "dependentOptionActions": [
                 {
                   "optionName": "attestationProtocol",
-                  "action": "hide"
+                  "action": "hide",
+                  "required": true
                 }
               ]
             }
@@ -1089,7 +1093,8 @@
               "dependentOptionActions": [
                 {
                   "optionName": "enclaveAttestationUrl",
-                  "action": "hide"
+                  "action": "hide",
+                  "required": true
                 }
               ]
             }
@@ -1192,20 +1197,6 @@
           "isRequired": false,
           "isArray": false,
           "showOnConnectionDialog": true
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "attachedDBFileName",
-          "displayName": "%mssql.connectionOptions.attachedDBFileName.displayName%",
-          "description": "%mssql.connectionOptions.attachedDBFileName.description%",
-          "groupName": "%mssql.connectionOptions.groupName.source%",
-          "valueType": "string",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
         },
         {
           "specialValueType": null,
@@ -1366,8 +1357,8 @@
           "isIdentity": false,
           "name": "attachDbFilename",
           "displayName": "%mssql.connectionOptions.attachDbFilename.displayName%",
-          "description": null,
-          "groupName": null,
+          "description": "%mssql.connectionOptions.attachDbFilename.description%",
+          "groupName": "%mssql.connectionOptions.groupName.source%",
           "valueType": "string",
           "defaultValue": null,
           "objectType": null,

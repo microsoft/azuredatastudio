@@ -11,8 +11,9 @@ import * as Utils from '../utils';
 import { ClientCapabilities } from 'vscode-languageclient';
 import * as azdata from 'azdata';
 import * as contracts from '../contracts';
+import { BaseService } from '../baseService';
 
-export class SchemaCompareService implements mssql.ISchemaCompareService {
+export class SchemaCompareService extends BaseService implements mssql.ISchemaCompareService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
 		return class extends SchemaCompareService {
 			constructor(client: SqlOpsDataClient) {
@@ -28,106 +29,53 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 		};
 	}
 
-	private constructor(context: AppContext, protected readonly client: SqlOpsDataClient) {
+	private constructor(context: AppContext, client: SqlOpsDataClient) {
+		super(client);
 		context.registerService(constants.SchemaCompareService, this);
 	}
 
-	public schemaCompare(operationId: string, sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, targetEndpointInfo: mssql.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: mssql.DeploymentOptions): Thenable<mssql.SchemaCompareResult> {
+	public schemaCompare(operationId: string, sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, targetEndpointInfo: mssql.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: mssql.DeploymentOptions): Promise<mssql.SchemaCompareResult> {
 		const params: contracts.SchemaCompareParams = { operationId: operationId, sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, deploymentOptions: deploymentOptions };
-		return this.client.sendRequest(contracts.SchemaCompareRequest.type, params).then(
-			undefined,
-			e => {
-				this.client.logFailedRequest(contracts.SchemaCompareRequest.type, e);
-				return Promise.reject(e)
-			}
-		);
+		return this.runWithErrorHandling(contracts.SchemaCompareRequest.type, params);
 	}
 
-	public schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+	public schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Promise<azdata.ResultStatus> {
 		const params: contracts.SchemaCompareGenerateScriptParams = { operationId: operationId, targetServerName: targetServerName, targetDatabaseName: targetDatabaseName, taskExecutionMode: taskExecutionMode };
-		return this.client.sendRequest(contracts.SchemaCompareGenerateScriptRequest.type, params).then(
-			undefined,
-			e => {
-				this.client.logFailedRequest(contracts.SchemaCompareGenerateScriptRequest.type, e);
-				return Promise.reject(e)
-			}
-		);
+		return this.runWithErrorHandling(contracts.SchemaCompareGenerateScriptRequest.type, params);
 	}
 
-	public schemaComparePublishDatabaseChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+	public schemaComparePublishDatabaseChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Promise<azdata.ResultStatus> {
 		const params: contracts.SchemaComparePublishDatabaseChangesParams = { operationId: operationId, targetServerName: targetServerName, targetDatabaseName: targetDatabaseName, taskExecutionMode: taskExecutionMode };
-		return this.client.sendRequest(contracts.SchemaComparePublishDatabaseChangesRequest.type, params).then(
-			undefined,
-			e => {
-				this.client.logFailedRequest(contracts.SchemaComparePublishDatabaseChangesRequest.type, e);
-				return Promise.reject(e)
-			}
-		);
+		return this.runWithErrorHandling(contracts.SchemaComparePublishDatabaseChangesRequest.type, params);
 	}
 
-	public schemaComparePublishProjectChanges(operationId: string, targetProjectPath: string, targetFolderStructure: mssql.ExtractTarget, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaComparePublishProjectResult> {
+	public schemaComparePublishProjectChanges(operationId: string, targetProjectPath: string, targetFolderStructure: mssql.ExtractTarget, taskExecutionMode: azdata.TaskExecutionMode): Promise<mssql.SchemaComparePublishProjectResult> {
 		const params: contracts.SchemaComparePublishProjectChangesParams = { operationId: operationId, targetProjectPath: targetProjectPath, targetFolderStructure: targetFolderStructure, taskExecutionMode: taskExecutionMode };
-		return this.client.sendRequest(contracts.SchemaComparePublishProjectChangesRequest.type, params).then(
-			undefined,
-			(e: any) => {
-				this.client.logFailedRequest(contracts.SchemaComparePublishProjectChangesRequest.type, e);
-				return Promise.reject(e)
-			}
-		);
+		return this.runWithErrorHandling(contracts.SchemaComparePublishProjectChangesRequest.type, params);
 	}
 
-	public schemaCompareGetDefaultOptions(): Thenable<mssql.SchemaCompareOptionsResult> {
+	public schemaCompareGetDefaultOptions(): Promise<mssql.SchemaCompareOptionsResult> {
 		const params: contracts.SchemaCompareGetOptionsParams = {};
-		return this.client.sendRequest(contracts.SchemaCompareGetDefaultOptionsRequest.type, params).then(
-			undefined,
-			e => {
-				this.client.logFailedRequest(contracts.SchemaCompareGetDefaultOptionsRequest.type, e);
-				return Promise.reject(e)
-			}
-		);
+		return this.runWithErrorHandling(contracts.SchemaCompareGetDefaultOptionsRequest.type, params);
 	}
 
-	public schemaCompareIncludeExcludeNode(operationId: string, diffEntry: mssql.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaCompareIncludeExcludeResult> {
+	public schemaCompareIncludeExcludeNode(operationId: string, diffEntry: mssql.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Promise<mssql.SchemaCompareIncludeExcludeResult> {
 		const params: contracts.SchemaCompareNodeParams = { operationId: operationId, diffEntry, includeRequest, taskExecutionMode: taskExecutionMode };
-		return this.client.sendRequest(contracts.SchemaCompareIncludeExcludeNodeRequest.type, params).then(
-			undefined,
-			e => {
-				this.client.logFailedRequest(contracts.SchemaCompareIncludeExcludeNodeRequest.type, e);
-				return Promise.reject(e)
-			}
-		);
+		return this.runWithErrorHandling(contracts.SchemaCompareIncludeExcludeNodeRequest.type, params);
 	}
 
-	public schemaCompareOpenScmp(filePath: string): Thenable<mssql.SchemaCompareOpenScmpResult> {
+	public schemaCompareOpenScmp(filePath: string): Promise<mssql.SchemaCompareOpenScmpResult> {
 		const params: contracts.SchemaCompareOpenScmpParams = { filePath: filePath };
-		return this.client.sendRequest(contracts.SchemaCompareOpenScmpRequest.type, params).then(
-			undefined,
-			e => {
-				this.client.logFailedRequest(contracts.SchemaCompareOpenScmpRequest.type, e);
-				return Promise.reject(e)
-			}
-		);
+		return this.runWithErrorHandling(contracts.SchemaCompareOpenScmpRequest.type, params);
 	}
 
-	public schemaCompareSaveScmp(sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, targetEndpointInfo: mssql.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: mssql.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: mssql.SchemaCompareObjectId[], excludedTargetObjects: mssql.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> {
+	public schemaCompareSaveScmp(sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, targetEndpointInfo: mssql.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: mssql.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: mssql.SchemaCompareObjectId[], excludedTargetObjects: mssql.SchemaCompareObjectId[]): Promise<azdata.ResultStatus> {
 		const params: contracts.SchemaCompareSaveScmpParams = { sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, deploymentOptions: deploymentOptions, scmpFilePath: scmpFilePath, excludedSourceObjects: excludedSourceObjects, excludedTargetObjects: excludedTargetObjects };
-		return this.client.sendRequest(contracts.SchemaCompareSaveScmpRequest.type, params).then(
-			undefined,
-			e => {
-				this.client.logFailedRequest(contracts.SchemaCompareSaveScmpRequest.type, e);
-				return Promise.reject(e)
-			}
-		);
+		return this.runWithErrorHandling(contracts.SchemaCompareSaveScmpRequest.type, params);
 	}
 
-	public schemaCompareCancel(operationId: string): Thenable<azdata.ResultStatus> {
+	public schemaCompareCancel(operationId: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SchemaCompareCancelParams = { operationId: operationId };
-		return this.client.sendRequest(contracts.SchemaCompareCancellationRequest.type, params).then(
-			undefined,
-			e => {
-				this.client.logFailedRequest(contracts.SchemaCompareCancellationRequest.type, e);
-				return Promise.reject(e)
-			}
-		);
+		return this.runWithErrorHandling(contracts.SchemaCompareCancellationRequest.type, params);
 	}
 }

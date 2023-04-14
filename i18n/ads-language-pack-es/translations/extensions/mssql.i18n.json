@@ -22,8 +22,11 @@
 		"dist/localizedConstants": {
 			"mssql.failedToFindAccount": "No se pudo encontrar la cuenta de Azure {0} al ejecutar la actualización del token",
 			"mssql.failedToFindTenants": "No se pudo encontrar el inquilino '{0}' en la cuenta '{1}' al actualizar el token de seguridad",
+			"mssql.noConvertResult": "No se ha devuelto ningún resultado de la solicitud de conversión de Notebook",
+			"mssql.noDocumentFound": "No se ha encontrado ningún documento para el URI {0}",
 			"mssql.tokenRefreshFailed": "Error al actualizar el token de AAD {0}, vuelva a conectarse para habilitar {0}",
-			"mssql.tokenRefreshFailedNoSecurityToken": "Error al actualizar el token del editor; la función de autocompletar se deshabilitará hasta que el editor se desconecte y vuelva a conectarse"
+			"mssql.tokenRefreshFailedNoSecurityToken": "Error al actualizar el token del editor; la función de autocompletar se deshabilitará hasta que el editor se desconecte y vuelva a conectarse",
+			"mssql.unsupportedPlatform": "Plataforma no admitida {0}"
 		},
 		"dist/main": {
 			"mssql.errorConvertingToNotebook": "Error al convertir el documento de SQL a Notebook; {0}.",
@@ -31,11 +34,15 @@
 			"mssql.searchServers": "Buscar nombres de servidor"
 		},
 		"dist/objectManagement/localizedConstants": {
+			"objectManagement.ColumnDisplayName": "columna",
+			"objectManagement.DatabaseDisplayName": "base de datos",
 			"objectManagement.LoginTypeDisplayName": "inicio de sesión",
 			"objectManagement.LoginTypeDisplayNameInTitle": "Iniciar sesión",
 			"objectManagement.OkText": "Aceptar",
+			"objectManagement.TableDisplayName": "tabla",
 			"objectManagement.UserDisplayName": "usuario",
 			"objectManagement.UserTypeDisplayNameInTitle": "Usuario",
+			"objectManagement.ViewDisplayName": "Ver",
 			"objectManagement.advancedSectionHeader": "Opciones avanzadas",
 			"objectManagement.blankPasswordConfirmation": "La creación de un inicio de sesión con una contraseña en blanco presenta un riesgo de seguridad. ¿Está seguro de que desea continuar?",
 			"objectManagement.confirmPasswordLabel": "Confirmar contraseña",
@@ -65,9 +72,11 @@
 			"objectManagement.login.sqlAuthSectionHeader": "Autenticación de SQL",
 			"objectManagement.login.sqlAuthenticationType": "Autenticación de SQL",
 			"objectManagement.login.windowsAuthenticationType": "Autenticación de Windows",
+			"objectManagement.loginNotSelectedError": "No se ha seleccionado el inicio de sesión.",
 			"objectManagement.nameCannotBeEmptyError": "El nombre no puede estar vacío.",
 			"objectManagement.nameLabel": "Nombre",
 			"objectManagement.newObjectDialogTitle": "{0} - Nuevo (Versión preliminar)",
+			"objectManagement.noConnectionUriError": "No se pudo recuperar la información de conexión. Vuelva a conectarse e inténtelo de nuevo.",
 			"objectManagement.objectPropertiesDialogTitle": "{0} - {1} (Versión preliminar)",
 			"objectManagement.openNewObjectDialogError": "Error al abrir el nuevo cuadro de diálogo {0}. {1}",
 			"objectManagement.openObjectPropertiesDialogError": "Error al abrir el cuadro de diálogo de propiedades para {0}: {1}. {2}",
@@ -75,6 +84,9 @@
 			"objectManagement.passwordLabel": "Contraseña",
 			"objectManagement.passwordsNotMatchError": "La contraseña debe coincidir con la contraseña de confirmación.",
 			"objectManagement.refreshOEError": "Error al actualizar el explorador de objetos. {0}",
+			"objectManagement.renameObjectDialogTitle": "Escriba un nombre nuevo",
+			"objectManagement.renameObjectError": "Error al cambiar el nombre de {0} '{1}' a '{2}'. {3}",
+			"objectManagement.renameObjectOperationName": "Cambie el nombre de {0} '{1}' a '{2}'",
 			"objectManagement.selectedLabel": "Seleccionado",
 			"objectManagement.updateObjectOperationName": "Actualizar {0} \"{1}\"",
 			"objectManagement.user.containedUser": "Usuario contenido",
@@ -165,7 +177,7 @@
 			"mssql.connectionOptions.enclaveAttestationProtocol.description": "Especifica un protocolo para la atestación de un enclave de servidor empleado con Always Encrypted con enclaves seguros.",
 			"mssql.connectionOptions.enclaveAttestationProtocol.displayName": "Protocolo de atestación",
 			"mssql.connectionOptions.enclaveAttestationUrl.description": "Especifica un punto de conexión para la atestación de un enclave de servidor empleado con Always Encrypted con enclaves seguros.",
-			"mssql.connectionOptions.enclaveAttestationUrl.displayName": "Dirección URL de atestación del enclave",
+			"mssql.connectionOptions.enclaveAttestationUrl.displayName": "URL de atestación",
 			"mssql.connectionOptions.encrypt.categoryValues.false": "Optional (False)",
 			"mssql.connectionOptions.encrypt.categoryValues.strict": "Strict",
 			"mssql.connectionOptions.encrypt.categoryValues.true": "Mandatory (True)",
@@ -203,7 +215,7 @@
 			"mssql.connectionOptions.port.displayName": "Puerto",
 			"mssql.connectionOptions.replication.description": "Utilizado por SQL Server en replicación",
 			"mssql.connectionOptions.replication.displayName": "Replicación",
-			"mssql.connectionOptions.secureEnclaves.description": "Habilita o deshabilita enclaves seguros para la conexión",
+			"mssql.connectionOptions.secureEnclaves.description": "Habilitar o deshabilitar enclaves seguros para la conexión",
 			"mssql.connectionOptions.secureEnclaves.displayName": "Enclaves seguros",
 			"mssql.connectionOptions.serverName.description": "Nombre de la instancia de SQL Server",
 			"mssql.connectionOptions.serverName.displayName": "Servidor",
@@ -300,7 +312,8 @@
 			"title.newServerRole": "Nuevo rol de servidor",
 			"title.newTable": "Nueva tabla",
 			"title.newUser": "Nuevo usuario",
-			"title.objectProperties": "Propiedades",
+			"title.objectProperties": "Propiedades (versión preliminar)",
+			"title.renameObject": "Renombrar",
 			"title.searchServers": "Buscar: Servidores",
 			"title.showLogFile": "Mostrar archivo de registro"
 		}

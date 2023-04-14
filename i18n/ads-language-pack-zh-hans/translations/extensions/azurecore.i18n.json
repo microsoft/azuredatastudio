@@ -153,6 +153,7 @@
 		},
 		"dist/localizedConstants": {
 			"azure.azureResourcesGridTitle": "Azure 资源(预览)",
+			"azure.credStoreSaveFailedError": "无法在凭据存储中保存令牌缓存的密钥，这可能会导致 Azure 访问令牌持久性问题和连接不稳定。SqlTools 可能已达到 Windows 上的凭据存储限制，请清除至少 2 个以 Windows 凭据管理器中的“Microsoft.SqlTools|”开头的凭据，然后重新加载。",
 			"azure.unableToOpenAzureLink": "无法打开链接，缺少所需的值",
 			"azurecore.australiacentral": "澳大利亚中部",
 			"azurecore.australiacentral2": "澳大利亚中部 2",
@@ -168,6 +169,7 @@
 			"azurecore.centralindia": "印度中部",
 			"azurecore.centralus": "美国中部",
 			"azurecore.centraluseuap": "美国中部 EUAP",
+			"azurecore.deprecated": "警告: ADAL 已弃用，并计划在将来的版本中删除。请改用 MSAL。",
 			"azurecore.eastasia": "东亚",
 			"azurecore.eastus": "美国东部",
 			"azurecore.eastus2": "美国东部 2",

@@ -894,6 +894,10 @@ Die folgende Liste der übersprungenen Standardbefehle wird abgeschnitten, wenn 
         <source xml:lang="en">Color of the range limiting the search. The color must not be opaque so as not to hide underlying decorations.</source>
         <target state="translated">Farbe des Bereichs, der die Suche eingrenzt. Die Farbe darf nicht deckend sein, damit sie nicht die zugrunde liegenden Dekorationen verdeckt.</target>
       </trans-unit>
+      <trans-unit id="queryEditorNullBackground">
+        <source xml:lang="en">The background color for null values in the query editor results grid.</source>
+        <target state="translated">Die Hintergrundfarbe für NULL-Werte im Ergebnisraster des Abfrage-Editors.</target>
+      </trans-unit>
       <trans-unit id="tileBorder">
         <source xml:lang="en">The border color of tiles</source>
         <target state="translated">Die Rahmenfarbe von Kacheln.</target>
@@ -3493,6 +3497,14 @@ Die folgende Liste der übersprungenen Standardbefehle wird abgeschnitten, wenn 
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/editData/browser/editDataGridPanel" source-language="en" datatype="plaintext" target-language="de">
+    <body>
+      <trans-unit id="editData.cellWithNullCharMessage">
+        <source xml:lang="en">This cell contains the Unicode null character which is currently not supported for editing.</source>
+        <target state="translated">Diese Zelle enthält das Unicode-Zeichen für NULL, das derzeit nicht für die Bearbeitung unterstützt wird.</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/editData/browser/gridActions" source-language="en" datatype="plaintext" target-language="de">
     <body>
       <trans-unit id="copySelection">
@@ -5784,7 +5796,7 @@ Fehler: {1}</target>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext" target-language="de">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error: {0}</source>
+        <source xml:lang="en">Copy failed with error {0}</source>
         <target state="translated">Fehler beim Kopieren: {0}</target>
       </trans-unit>
       <trans-unit id="notebook.showChart">
@@ -5838,6 +5850,10 @@ Fehler: {1}</target>
       <trans-unit id="serverGroup.colors">
         <source xml:lang="en">Server Group color palette used in the Object Explorer viewlet.</source>
         <target state="translated">Farbpalette für die Servergruppe, die im Objekt-Explorer-Viewlet verwendet wird.</target>
+      </trans-unit>
+      <trans-unit id="serverTree.nodeExpansionTimeout">
+        <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
+        <target state="translated">Timeout in Sekunden für das Erweitern eines Knotens in der Serveransicht</target>
       </trans-unit>
       <trans-unit id="serverTree.useAsyncServerTree">
         <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
@@ -7764,6 +7780,10 @@ Fehlermeldung: 1</target>
         <source xml:lang="en">Failed to refresh Azure account token for connection</source>
         <target state="translated">Fehler beim Aktualisieren des Azure-Kontotokens für die Verbindung.</target>
       </trans-unit>
+      <trans-unit id="connection.unknownProvider">
+        <source xml:lang="en">Unknown provider '{0}'</source>
+        <target state="translated">Unbekannter Anbieter "{0}"</target>
+      </trans-unit>
       <trans-unit id="connection.unsupportedServerVersionWarning">
         <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
         <target state="translated">Die Serverversion wird von Azure Data Studio nicht unterstützt. Sie können dennoch eine Verbindung damit herstellen, aber einige Features in Azure Data Studio funktionieren möglicherweise nicht wie erwartet.</target>
@@ -7825,8 +7845,12 @@ Fehlermeldung: 1</target>
         <target state="translated">Konto hinzufügen...</target>
       </trans-unit>
       <trans-unit id="connectionWidget.ConnectionStringError">
-        <source xml:lang="en">Failed to parse the connection string.</source>
-        <target state="translated">Fehler beim Analysieren der Verbindungszeichenfolge.</target>
+        <source xml:lang="en">Failed to parse the connection string. {0}</source>
+        <target state="translated">Fehler beim Analysieren der Verbindungszeichenfolge. {0}</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.ConnectionStringUndefined">
+        <source xml:lang="en">No connection info returned.</source>
+        <target state="translated">Es wurden keine Verbindungsinformationen zurückgegeben.</target>
       </trans-unit>
       <trans-unit id="connectionWidget.Error">
         <source xml:lang="en">Error</source>
@@ -8654,6 +8678,10 @@ Fehlermeldung: 1</target>
         <source xml:lang="en">Multiple errors:</source>
         <target state="translated">Mehrere Fehler:</target>
       </trans-unit>
+      <trans-unit id="nodeExpansionTimeout">
+        <source xml:lang="en">Node expansion timed out for node {0} for providers {1}</source>
+        <target state="translated">Timeout bei der Knotenerweiterung für Knoten {0} für Anbieter {1}</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim" source-language="en" datatype="plaintext" target-language="de">
@@ -8843,7 +8871,7 @@ Fehlermeldung: 1</target>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext" target-language="de">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error: {0}</source>
+        <source xml:lang="en">Copy failed with error {0}</source>
         <target state="translated">Fehler beim Kopieren: {0}</target>
       </trans-unit>
       <trans-unit id="elapsedBatchTime">

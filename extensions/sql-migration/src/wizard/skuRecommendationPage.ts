@@ -6,9 +6,10 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as utils from '../api/utils';
+import { MigrationTargetType } from '../api/utils';
 import * as contracts from '../service/contracts';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, MigrationTargetType, PerformanceDataSourceOptions, StateChangeEvent, AssessmentRuleId } from '../models/stateMachine';
+import { MigrationStateModel, PerformanceDataSourceOptions, StateChangeEvent, AssessmentRuleId } from '../models/stateMachine';
 import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
 import { SkuRecommendationResultsDialog } from '../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
 import { GetAzureRecommendationDialog } from '../dialog/skuRecommendationResults/getAzureRecommendationDialog';
@@ -18,10 +19,9 @@ import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as styles from '../constants/styles';
 import { SkuEditParametersDialog } from '../dialog/skuRecommendationResults/skuEditParametersDialog';
-import { logError, TelemetryViews } from '../telemetry';
+import { logError, TelemetryViews, TelemetryAction, sendSqlMigrationActionEvent, getTelemetryProps } from '../telemetry';
 import { TdeConfigurationDialog } from '../dialog/tdeConfiguration/tdeConfigurationDialog';
 import { TdeMigrationModel } from '../models/tdeModels';
-import * as os from 'os';
 import { getSourceConnectionProfile } from '../api/sqlUtils';
 
 export interface Product {
@@ -246,6 +246,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 
+		const learnMoreLink = this._view.modelBuilder.hyperlink()
+			.withProps({
+				label: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET_HELP,
+				ariaLabel: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET_HELP,
+				url: 'https://learn.microsoft.com/azure/azure-sql/azure-sql-iaas-vs-paas-what-is-overview',
+				showLinkIcon: true,
+			}).component();
+
 		this._rbg = this._view!.modelBuilder.radioCardGroup().withProps({
 			cards: [],
 			iconHeight: '35px',
@@ -354,7 +362,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			.component();
 
 		const component = this._view.modelBuilder.divContainer()
-			.withItems([chooseYourTargetText, this._rbgLoader])
+			.withItems([chooseYourTargetText, learnMoreLink, this._rbgLoader])
 			.component();
 		return component;
 	}
@@ -817,7 +825,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (this._matchWithEncryptedDatabases(encryptedDbFound)) {
 				this.migrationStateModel.tdeMigrationConfig = this._previousMiTdeMigrationConfig;
 			} else {
-				if (os.platform() !== 'win32') //Only available for windows for now.
+				if (!utils.isWindows()) //Only available for windows for now.
 					return;
 
 				//Set encrypted databases
@@ -842,6 +850,17 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _onTdeConfigClosed(): Thenable<void> {
 		const tdeMsg = (this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAdsConfirmed()) ? constants.TDE_WIZARD_MSG_TDE : constants.TDE_WIZARD_MSG_MANUAL;
 		this._tdedatabaseSelectedHelperText.value = constants.TDE_MSG_DATABASES_SELECTED(this.migrationStateModel.tdeMigrationConfig.getTdeEnabledDatabasesCount(), tdeMsg);
+
+		const tdeTelemetryAction = (this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAdsConfirmed()) ? TelemetryAction.TdeConfigurationUseADS : TelemetryAction.TdeConfigurationIgnoreADS;
+
+		sendSqlMigrationActionEvent(
+			TelemetryViews.TdeConfigurationDialog,
+			tdeTelemetryAction,
+			{
+				...getTelemetryProps(this.migrationStateModel)
+			},
+			{}
+		);
 
 		return this._tdeEditButton.focus();
 	}

@@ -766,6 +766,13 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			.component();
 
 		this.disposables.push(
+			this._serviceContextButton.onDidClick(
+				async () => {
+					const dialog = new SelectMigrationServiceDialog(this.serviceContextChangedEvent);
+					await dialog.initialize();
+				}));
+
+		this.disposables.push(
 			this.serviceContextChangedEvent.event(
 				async (e) => {
 					if (e.connectionId === await getSourceConnectionId()) {
@@ -775,12 +782,6 @@ export class DashboardTab extends TabBase<DashboardTab> {
 				}
 			));
 		await this.updateServiceContext(this._serviceContextButton);
-
-		this.disposables.push(
-			this._serviceContextButton.onDidClick(async () => {
-				const dialog = new SelectMigrationServiceDialog(this.serviceContextChangedEvent);
-				await dialog.initialize();
-			}));
 
 		return this._serviceContextButton;
 	}

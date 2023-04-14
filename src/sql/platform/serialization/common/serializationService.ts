@@ -49,6 +49,8 @@ export interface ISerializationService {
 
 	hasProvider(): boolean;
 
+	isProviderRegistered(providerId: string): boolean;
+
 	saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<azdata.SaveResultRequestResult>;
 
 	disabledSaveAs(): Thenable<azdata.SaveResultRequestResult>;
@@ -73,6 +75,10 @@ export class SerializationService implements ISerializationService {
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
+	}
+
+	public isProviderRegistered(providerId: string): boolean {
+		return this.providers.find(provider => provider.providerId.toUpperCase() === providerId.toUpperCase()) !== undefined;
 	}
 
 	public registerProvider(providerId: string, provider: azdata.SerializationProvider): void {

@@ -159,6 +159,15 @@
     <trans-unit id="azuredatastudio">
       <source xml:lang="en">Azure Data Studio</source>
     </trans-unit>
+    <trans-unit id="azuredatastudio.download">
+      <source xml:lang="en">Download</source>
+    </trans-unit>
+    <trans-unit id="azuredatastudio.downloadTooltip">
+      <source xml:lang="en">Download this extension from an external source</source>
+    </trans-unit>
+    <trans-unit id="azuredatastudio.installTooltip">
+      <source xml:lang="en">Install this extension</source>
+    </trans-unit>
     <trans-unit id="connectionDialogBrowseTree.context">
       <source xml:lang="en">The connection dialog's browse tree context menu</source>
     </trans-unit>
@@ -633,6 +642,9 @@ Default Skipped Commands:
     </trans-unit>
     <trans-unit id="notebookFindRangeHighlight">
       <source xml:lang="en">Color of the range limiting the search. The color must not be opaque so as not to hide underlying decorations.</source>
+    </trans-unit>
+    <trans-unit id="queryEditorNullBackground">
+      <source xml:lang="en">The background color for null values in the query editor results grid.</source>
     </trans-unit>
     <trans-unit id="tileBorder">
       <source xml:lang="en">The border color of tiles</source>
@@ -3897,6 +3909,9 @@ Error: {1}</source>
     <trans-unit id="newNotebookAction">
       <source xml:lang="en">New Notebook</source>
     </trans-unit>
+    <trans-unit id="newNotebookTask.newNotebook">
+      <source xml:lang="en">New Notebook</source>
+    </trans-unit>
     <trans-unit id="newViewLabel">
       <source xml:lang="en">Create New View</source>
     </trans-unit>
@@ -4171,6 +4186,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="serverGroup.colors">
       <source xml:lang="en">Server Group color palette used in the Object Explorer viewlet.</source>
+    </trans-unit>
+    <trans-unit id="serverTree.configuration.title">
+      <source xml:lang="en">Server Tree</source>
     </trans-unit>
     <trans-unit id="serverTree.nodeExpansionTimeout">
       <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
@@ -5317,18 +5335,18 @@ Error Message: {1}</source>
     <trans-unit id="addAccountFailedGenericMessage">
       <source xml:lang="en">Adding account failed, check Azure Accounts log for more info.</source>
     </trans-unit>
-    <trans-unit id="addAccountFailedMessage">
-      <source xml:lang="en">{0}</source>
-    </trans-unit>
     <trans-unit id="loggingIn">
       <source xml:lang="en">Adding account...</source>
+    </trans-unit>
+    <trans-unit id="refreshAccountFailedGenericMessage">
+      <source xml:lang="en">Refreshing account failed, check Azure Accounts log for more info.</source>
     </trans-unit>
     <trans-unit id="refreshCanceled">
       <source xml:lang="en">Refresh account was canceled by the user</source>
     </trans-unit>
     <trans-unit id="refreshFailed">
-      <source xml:lang="en">0 
-Error Message: 1</source>
+      <source xml:lang="en">{0} 
+Error Message: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/accountManagement/browser/accountPickerImpl" source-language="en" datatype="plaintext"><body>
@@ -5559,6 +5577,9 @@ Error Message: 1</source>
     <trans-unit id="connection.refreshAzureTokenFailure">
       <source xml:lang="en">Failed to refresh Azure account token for connection</source>
     </trans-unit>
+    <trans-unit id="connection.unknownProvider">
+      <source xml:lang="en">Unknown provider '{0}'</source>
+    </trans-unit>
     <trans-unit id="connection.unsupportedServerVersionWarning">
       <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
     </trans-unit>
@@ -5604,7 +5625,10 @@ Error Message: 1</source>
       <source xml:lang="en">Add an account...</source>
     </trans-unit>
     <trans-unit id="connectionWidget.ConnectionStringError">
-      <source xml:lang="en">Failed to parse the connection string.</source>
+      <source xml:lang="en">Failed to parse the connection string. {0}</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.ConnectionStringUndefined">
+      <source xml:lang="en">No connection info returned.</source>
     </trans-unit>
     <trans-unit id="connectionWidget.Error">
       <source xml:lang="en">Error</source>
@@ -6192,6 +6216,15 @@ Error Message: 1</source>
     <trans-unit id="nodeExpansionTimeout">
       <source xml:lang="en">Node expansion timed out for node {0} for providers {1}</source>
     </trans-unit>
+    <trans-unit id="objectExplorerMissingConnectionForSession">
+      <source xml:lang="en">Timeout waiting for session {0} to be created for connection "{1}". This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection "{1}"</source>
+    </trans-unit>
+    <trans-unit id="objectExplorerMissingSession">
+      <source xml:lang="en">Timed out waiting for session {0} to be created. This has probably happened because OE service did not recieve a response for createNewSession from the provider.</source>
+    </trans-unit>
+    <trans-unit id="objectExplorerSessionIdMissing">
+      <source xml:lang="en">The session ID returned by provider "{0}" for connection "{1}" is invalid.</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim" source-language="en" datatype="plaintext"><body>
     <trans-unit id="firewallCanceled">
@@ -6213,6 +6246,11 @@ Error Message: 1</source>
     </trans-unit>
     <trans-unit id="treeCreation.regTreeAriaLabel">
       <source xml:lang="en">Servers</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/treeUpdateUtils" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="objectExplorerTimeout">
+      <source xml:lang="en">Object Explorer expansion timed out for '{0}'</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/profiler/browser/profilerColumnEditorDialog" source-language="en" datatype="plaintext"><body>

@@ -7,6 +7,7 @@
 import { INetworkModule, NetworkRequestOptions, NetworkResponse } from '@azure/msal-common';
 import * as http from 'http';
 import * as https from 'https';
+import { TextEncoder } from 'util';
 import { NetworkUtils } from './networkUtils';
 
 /**
@@ -14,7 +15,9 @@ import { NetworkUtils } from './networkUtils';
  */
 export enum HttpMethod {
 	GET = 'get',
-	POST = 'post'
+	POST = 'post',
+	PUT = 'put',
+	DELETE = 'delete'
 }
 
 export enum HttpStatus {
@@ -81,6 +84,40 @@ export class HttpClient implements INetworkModule {
 			return networkRequestViaHttps(url, HttpMethod.POST, options, this.customAgentOptions as https.AgentOptions, cancellationToken);
 		}
 	}
+
+	/**
+	 * Http Put request
+	 * @param url
+	 * @param options
+	 */
+	async sendPutRequestAsync<T>(
+		url: string,
+		options?: NetworkRequestOptions,
+		cancellationToken?: number
+	): Promise<NetworkResponse<T>> {
+		if (this.proxyUrl) {
+			return networkRequestViaProxy(url, this.proxyUrl, HttpMethod.PUT, options, this.customAgentOptions as http.AgentOptions, cancellationToken);
+		} else {
+			return networkRequestViaHttps(url, HttpMethod.PUT, options, this.customAgentOptions as https.AgentOptions, cancellationToken);
+		}
+	}
+
+	/**
+	 * Http Delete request
+	 * @param url
+	 * @param options
+	 */
+	async sendDeleteRequestAsync<T>(
+		url: string,
+		options?: NetworkRequestOptions
+	): Promise<NetworkResponse<T>> {
+		if (this.proxyUrl) {
+			return networkRequestViaProxy(url, this.proxyUrl, HttpMethod.DELETE, options, this.customAgentOptions as http.AgentOptions);
+		} else {
+			return networkRequestViaHttps(url, HttpMethod.DELETE, options, this.customAgentOptions as https.AgentOptions);
+		}
+	}
+
 }
 
 const networkRequestViaProxy = <T>(
@@ -114,10 +151,11 @@ const networkRequestViaProxy = <T>(
 
 	// compose a request string for the socket
 	let postRequestStringContent: string = '';
-	if (httpMethod === HttpMethod.POST) {
-		const body = options?.body || '';
+	if (httpMethod === HttpMethod.POST || httpMethod === HttpMethod.PUT) {
+		// Note: Text Encoder is necessary here because otherwise it was not able to handle Chinese characters in table names.
+		const body = (new TextEncoder()).encode(JSON.stringify(options?.body || ''));
 		postRequestStringContent =
-			'Content-Type: application/x-www-form-urlencoded\r\n' +
+			'Content-Type: application/json\r\n' +
 			`Content-Length: ${body.length}\r\n` +
 			`\r\n${body}`;
 	}
@@ -247,7 +285,9 @@ const networkRequestViaHttps = <T>(
 	timeout?: number
 ): Promise<NetworkResponse<T>> => {
 	const isPostRequest = httpMethod === HttpMethod.POST;
-	const body: string = options?.body || '';
+	const isPutRequest = httpMethod === HttpMethod.PUT;
+	// Note: Text Encoder is necessary here because otherwise it was not able to handle Chinese characters in table names.
+	const body = (new TextEncoder()).encode(JSON.stringify(options?.body || ''));
 	const url = new URL(urlString);
 	const optionHeaders = options?.headers || {} as Record<string, string>;
 	let customOptions: https.RequestOptions = {
@@ -264,7 +304,7 @@ const networkRequestViaHttps = <T>(
 		customOptions.agent = new https.Agent(agentOptions);
 	}
 
-	if (isPostRequest) {
+	if (isPostRequest || isPutRequest) {
 		// needed for post request to work
 		customOptions.headers = {
 			...customOptions.headers,
@@ -282,7 +322,7 @@ const networkRequestViaHttps = <T>(
 			});
 		}
 
-		if (isPostRequest) {
+		if (isPostRequest || isPutRequest) {
 			request.write(body);
 		}
 

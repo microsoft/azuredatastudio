@@ -352,6 +352,7 @@ export class UpdateProjectFromDatabaseDialog {
 	private createConnectionButton(view: azdata.ModelView) {
 		this.connectionButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.selectConnection,
+			title: constants.selectConnection,
 			iconPath: IconPathHelper.selectConnection,
 			height: '20px',
 			width: '20px'
@@ -412,6 +413,7 @@ export class UpdateProjectFromDatabaseDialog {
 	private createBrowseFileButton(view: azdata.ModelView): azdata.ButtonComponent {
 		const browseFolderButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.browseButtonText,
+			title: constants.browseButtonText,
 			iconPath: IconPathHelper.folder_blue,
 			height: '18px',
 			width: '18px'
@@ -479,20 +481,24 @@ export class UpdateProjectFromDatabaseDialog {
 		await this.compareActionRadioButton.updateProperties({ checked: true });
 		this.action = UpdateProjectAction.Compare;
 
-		this.compareActionRadioButton.onDidClick(async () => {
-			this.action = UpdateProjectAction.Compare;
-			this.tryEnableUpdateButton();
+		this.compareActionRadioButton.onDidChangeCheckedState((checked) => {
+			if (checked) {
+				this.action = UpdateProjectAction.Compare;
+				this.tryEnableUpdateButton();
+			}
 		});
 
-		this.updateActionRadioButton.onDidClick(async () => {
-			this.action = UpdateProjectAction.Update;
-			this.tryEnableUpdateButton();
+		this.updateActionRadioButton.onDidChangeCheckedState((checked) => {
+			if (checked) {
+				this.action = UpdateProjectAction.Update;
+				this.tryEnableUpdateButton();
+			}
 		});
 
 		let radioButtons = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withItems([this.compareActionRadioButton, this.updateActionRadioButton])
-			.withProps({ ariaRole: 'radiogroup' })
+			.withProps({ ariaRole: 'radiogroup', ariaLabel: constants.actionLabel })
 			.component();
 
 		const actionLabel = view.modelBuilder.text().withProps({
