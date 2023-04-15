@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+/* eslint-disable no-console */
 
 import { forwardRef, NgModule, ComponentFactoryResolver, Inject, ApplicationRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -107,6 +108,7 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 		}
 
 		ngDoBootstrap(appRef: ApplicationRef) {
+			console.log("called ngDoBootstrap");
 			const factoryWrapper: any = this._resolver.resolveComponentFactory(NotebookEditorComponent);
 			factoryWrapper.factory.selector = this.selector;
 			appRef.bootstrap(factoryWrapper);

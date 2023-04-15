@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+/* eslint-disable no-console */
+
 import { NgModuleRef, PlatformRef, Provider, enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { IInstantiationService, _util, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
@@ -29,6 +31,7 @@ export function providerIterator(service: IInstantiationService): Provider[] {
 function createUniqueSelector(selector: string): string {
 	let num: number;
 	if (selectorCounter.has(selector)) {
+		console.log("Has selectorCounter selector: " + selector);
 		num = selectorCounter.get(selector)!;
 	} else {
 		num = 0;
@@ -41,11 +44,13 @@ let platform: PlatformRef;
 
 export function bootstrapAngular<T>(accessor: ServicesAccessor, moduleType: IModuleFactory<T>, container: HTMLElement, selectorString: string, params: IBootstrapParams, input?: EditorInput, callbackSetModule?: (value: NgModuleRef<T>) => void): string {
 	// Create the uniqueSelectorString
+	const logService = accessor.get(ILogService);
 	let uniqueSelectorString = createUniqueSelector(selectorString);
+	logService.warn("before documentCreateElement");
 	let selector = document.createElement(uniqueSelectorString);
+	logService.warn("after documentCreateElement");
 	container.appendChild(selector);
 	const instantiationService = accessor.get(IInstantiationService);
-	const logService = accessor.get(ILogService);
 
 	if (!platform) {
 		instantiationService.invokeFunction((accessor) => {
@@ -58,6 +63,7 @@ export function bootstrapAngular<T>(accessor: ServicesAccessor, moduleType: IMod
 	}
 
 	platform.bootstrapModule(moduleType(params, uniqueSelectorString, instantiationService)).then(moduleRef => {
+		logService.warn("moduleRef bootstrapped");
 		if (input) {
 			input.onWillDispose(() => {
 				moduleRef.destroy();

@@ -577,6 +577,7 @@ abstract class AbstractCloseAllAction extends Action {
 
 		for (const { editor, groupId } of this.editorService.getEditors(EditorsOrder.SEQUENTIAL, { excludeSticky: this.excludeSticky })) {
 			if (!editor.isDirty() || editor.isSaving()) {
+				console.log("Editor dirty or is saving");
 				continue; // only interested in dirty editors that are not in the process of saving
 			}
 
@@ -612,6 +613,7 @@ abstract class AbstractCloseAllAction extends Action {
 
 		// 1.) Show default file based dialog
 		if (dirtyEditorsWithDefaultConfirm.size > 0) {
+			console.log("default file based dialog save shown");
 			const editors = Array.from(dirtyEditorsWithDefaultConfirm.values());
 
 			await this.revealDirtyEditors(editors); // help user make a decision by revealing editors
@@ -638,6 +640,8 @@ abstract class AbstractCloseAllAction extends Action {
 
 		// 2.) Show custom confirm based dialog
 		for (const [, editorIdentifiers] of dirtyEditorsWithCustomConfirm) {
+			console.log("custom file based dialog save shown");
+
 			const editors = Array.from(editorIdentifiers.values());
 
 			await this.revealDirtyEditors(editors); // help user make a decision by revealing editors
@@ -675,6 +679,7 @@ abstract class AbstractCloseAllAction extends Action {
 		// save or revert and still reports dirty, the editor part makes
 		// sure to bring up another confirm dialog for those editors
 		// specifically.
+		console.log("BeforeDoCloseAll called");
 		return this.doCloseAll();
 	}
 
@@ -700,6 +705,7 @@ abstract class AbstractCloseAllAction extends Action {
 
 	protected async doCloseAll(): Promise<void> {
 		await Promise.all(this.groupsToClose.map(group => group.closeAllEditors({ excludeSticky: this.excludeSticky })));
+		console.log("doCloseAll called");
 	}
 }
 
