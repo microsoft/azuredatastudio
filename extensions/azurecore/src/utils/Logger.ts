@@ -64,7 +64,7 @@ export class Logger {
 	 * @param stringsToShorten Set of strings to shorten
 	 * @param vals Any other values to add on to the end of the log message
 	 */
-	static piiSanitized(msg: any, objsToSanitize: { name: string, objOrArray: unknown | unknown[] }[], stringsToShorten: { name: string, value: string }[], ...vals: any[]) {
+	static piiSanitized(msg: any, objsToSanitize: { name: string, objOrArray: any }[], stringsToShorten: { name: string, value: string }[], ...vals: any[]) {
 		if (this.piiLogging) {
 			msg = [
 				msg,
