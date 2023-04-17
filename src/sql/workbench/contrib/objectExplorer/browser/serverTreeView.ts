@@ -226,6 +226,10 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		// Add connection profile to parent group and update group children. Then reveal and expand the new connection
 		this._register(this._connectionManagementService.onConnectionProfileCreated(async (newConnection) => {
 			if (this._tree instanceof AsyncServerTree) {
+				// If a connection is added to an empty tree, there won't be any input set. So set the input here
+				if (!this._tree.getInput()) {
+					this._tree.setInput(TreeUpdateUtils.getTreeInput(this._connectionManagementService));
+				}
 				const connectionParentGroup = this._tree.getElementById(newConnection.groupId) as ConnectionProfileGroup;
 				if (connectionParentGroup) {
 					const matchingConnectionIndex = connectionParentGroup.connections.findIndex((connection) => connection.matches(newConnection));
