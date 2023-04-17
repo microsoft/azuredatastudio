@@ -31,3 +31,8 @@ export interface IProjectReferenceSettings extends IUserDatabaseReferenceSetting
 	projectName: string;
 	projectGuid: string;
 }
+
+export interface INugetPackageReferenceSettings extends IUserDatabaseReferenceSettings {
+	packageName: string;
+	packageVersion: string;
+}
