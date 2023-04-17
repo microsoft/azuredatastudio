@@ -220,14 +220,122 @@
           "objectType": null,
           "categoryValues": [
             {
-              "displayName": null,
-              "name": "Disabled"
+              "displayName": "%cms.disabled%",
+              "name": "disabled"
             },
             {
-              "displayName": null,
-              "name": "Enabled"
+              "displayName": "%cms.enabled%",
+              "name": "enabled"
             }
           ],
+          "isRequired": false,
+          "isArray": false,
+          "onSelectionChange": [
+            {
+              "values": [
+                "disabled",
+                ""
+              ],
+              "dependentOptionActions": [
+                {
+                  "optionName": "secureEnclaves",
+                  "action": "hide"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
+          "name": "secureEnclaves",
+          "displayName": "%cms.connectionOptions.secureEnclaves.displayName%",
+          "description": "%cms.connectionOptions.secureEnclaves.description%",
+          "groupName": "%cms.connectionOptions.groupName.security%",
+          "valueType": "category",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": [
+            {
+              "displayName": "%cms.disabled%",
+              "name": "disabled"
+            },
+            {
+              "displayName": "%cms.enabled%",
+              "name": "enabled"
+            }
+          ],
+          "isRequired": false,
+          "isArray": false,
+          "onSelectionChange": [
+            {
+              "values": [
+                "disabled",
+                ""
+              ],
+              "dependentOptionActions": [
+                {
+                  "optionName": "attestationProtocol",
+                  "action": "hide",
+                  "required": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
+          "name": "attestationProtocol",
+          "displayName": "%cms.connectionOptions.enclaveAttestationProtocol.displayName%",
+          "description": "%cms.connectionOptions.enclaveAttestationProtocol.description%",
+          "groupName": "%cms.connectionOptions.groupName.security%",
+          "valueType": "category",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": [
+            {
+              "displayName": "%cms.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS%",
+              "name": "hgs"
+            },
+            {
+              "displayName": "%cms.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS%",
+              "name": "aas"
+            },
+            {
+              "displayName": "%cms.connectionOptions.enclaveAttestationProtocol.categoryValues.None%",
+              "name": "none"
+            }
+          ],
+          "isRequired": false,
+          "isArray": false,
+          "onSelectionChange": [
+            {
+              "values": [
+                "none",
+                ""
+              ],
+              "dependentOptionActions": [
+                {
+                  "optionName": "enclaveAttestationUrl",
+                  "action": "hide",
+                  "required": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
+          "name": "enclaveAttestationUrl",
+          "displayName": "%cms.connectionOptions.enclaveAttestationUrl.displayName%",
+          "description": "%cms.connectionOptions.enclaveAttestationUrl.description%",
+          "groupName": "%cms.connectionOptions.groupName.security%",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
           "isRequired": false,
           "isArray": false
         },
@@ -301,20 +409,6 @@
           "isRequired": false,
           "isArray": false,
           "showOnConnectionDialog": true
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "attachedDBFileName",
-          "displayName": "%cms.connectionOptions.attachedDBFileName.displayName%",
-          "description": "%cms.connectionOptions.attachedDBFileName.description%",
-          "groupName": "%cms.connectionOptions.groupName.source%",
-          "valueType": "string",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
         },
         {
           "specialValueType": null,
@@ -475,8 +569,8 @@
           "isIdentity": false,
           "name": "attachDbFilename",
           "displayName": "%cms.connectionOptions.attachDbFilename.displayName%",
-          "description": null,
-          "groupName": null,
+          "description": "%cms.connectionOptions.attachDbFilename.description%",
+          "groupName": "%cms.connectionOptions.groupName.source%",
           "valueType": "string",
           "defaultValue": null,
           "objectType": null,
