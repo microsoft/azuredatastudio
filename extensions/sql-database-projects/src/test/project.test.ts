@@ -862,7 +862,7 @@ describe('Project: database references', function (): void {
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to testPackage');
 		should(project.databaseReferences[0].referenceName).equal('testPackage', 'project.databaseReferences[0].databaseName should be testPackage');
 
-		// try to add reference to testProject again
+		// try to add reference to testPackage again
 		await testUtils.shouldThrowSpecificError(async () => await project.addNugetPackageReference(nupkgReference), constants.databaseReferenceAlreadyExists);
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after trying to add a reference to testPackage again');
 	});
