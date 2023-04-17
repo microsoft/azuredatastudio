@@ -552,13 +552,13 @@
         },
         {
           "command": "mssql.createDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Server && config.workbench.enablePreviewFeatures",
-          "group": "0_query@3"
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && config.workbench.enablePreviewFeatures",
+          "group": "0_query@1"
         },
         {
           "command": "mssql.deleteDatabase",
           "when": "connectionProvider == MSSQL && nodeType == Database && config.workbench.enablePreviewFeatures",
-          "group": "0_query@3"
+          "group": "0_query@2"
         },
         {
           "command": "mssql.enableGroupBySchema",

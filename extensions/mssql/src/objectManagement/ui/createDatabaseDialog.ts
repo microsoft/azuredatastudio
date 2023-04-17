@@ -10,7 +10,7 @@ import { NodeType } from '../constants';
 
 export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.Database, ObjectManagement.CreateDatabaseViewInfo> {
 	constructor(objectManagementService: IObjectManagementService, connectionUri: string, objectExplorerContext?: azdata.ObjectExplorerContext) {
-		super(NodeType.Server, undefined, objectManagementService, connectionUri, true, undefined, objectExplorerContext);
+		super(NodeType.Database, undefined, objectManagementService, connectionUri, true, undefined, objectExplorerContext);
 	}
 
 	protected override async onConfirmation(): Promise<boolean> {
