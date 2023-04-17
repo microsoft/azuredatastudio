@@ -7,7 +7,8 @@
 import { INetworkModule, NetworkRequestOptions, NetworkResponse } from '@azure/msal-common';
 import * as http from 'http';
 import * as https from 'https';
-import { NetworkUtils } from './networkUtils';
+import { TextEncoder } from 'util';
+import { getNetworkResponse, urlToHttpOptions } from './networkUtils';
 
 /**
  * http methods
@@ -151,9 +152,10 @@ const networkRequestViaProxy = <T>(
 	// compose a request string for the socket
 	let postRequestStringContent: string = '';
 	if (httpMethod === HttpMethod.POST || httpMethod === HttpMethod.PUT) {
-		const body = options?.body || '';
+		// Note: Text Encoder is necessary here because otherwise it was not able to handle Chinese characters in table names.
+		const body = (new TextEncoder()).encode(JSON.stringify(options?.body || ''));
 		postRequestStringContent =
-			'Content-Type: application/x-www-form-urlencoded\r\n' +
+			'Content-Type: application/json\r\n' +
 			`Content-Length: ${body.length}\r\n` +
 			`\r\n${body}`;
 	}
@@ -245,7 +247,7 @@ const networkRequestViaProxy = <T>(
 				});
 
 				const parsedHeaders = Object.fromEntries(entries) as Record<string, string>;
-				const networkResponse = NetworkUtils.getNetworkResponse(
+				const networkResponse = getNetworkResponse(
 					parsedHeaders,
 					parseBody(httpStatusCode, statusMessage, parsedHeaders, body) as T,
 					httpStatusCode
@@ -284,13 +286,14 @@ const networkRequestViaHttps = <T>(
 ): Promise<NetworkResponse<T>> => {
 	const isPostRequest = httpMethod === HttpMethod.POST;
 	const isPutRequest = httpMethod === HttpMethod.PUT;
-	const body: string = options?.body || '';
+	// Note: Text Encoder is necessary here because otherwise it was not able to handle Chinese characters in table names.
+	const body = (new TextEncoder()).encode(JSON.stringify(options?.body || ''));
 	const url = new URL(urlString);
 	const optionHeaders = options?.headers || {} as Record<string, string>;
 	let customOptions: https.RequestOptions = {
 		method: httpMethod,
 		headers: optionHeaders,
-		...NetworkUtils.urlToHttpOptions(url)
+		...urlToHttpOptions(url)
 	};
 
 	if (timeout) {
@@ -319,7 +322,7 @@ const networkRequestViaHttps = <T>(
 			});
 		}
 
-		if (isPostRequest) {
+		if (isPostRequest || isPutRequest) {
 			request.write(body);
 		}
 
@@ -340,7 +343,7 @@ const networkRequestViaHttps = <T>(
 				const dataBody = Buffer.concat([...data]).toString();
 
 				const parsedHeaders = headers as Record<string, string>;
-				const networkResponse = NetworkUtils.getNetworkResponse(
+				const networkResponse = getNetworkResponse(
 					parsedHeaders,
 					parseBody(statusCode, statusMessage, parsedHeaders, dataBody) as T,
 					statusCode

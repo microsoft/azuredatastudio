@@ -260,7 +260,7 @@ export async function runResourceQuery<T extends azureResource.AzureGraphResourc
 					skipToken: skipToken
 				}
 			});
-			const resources: T[] = response.data;
+			const resources: T[] = response.data as T[];
 			totalProcessed += resources.length;
 			allResources.push(...resources);
 			if (response.skipToken && totalProcessed < response.totalRecords) {
@@ -501,7 +501,7 @@ export async function createResourceGroup(account: AzureAccount, subscription: a
 	const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
 	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.PUT, requestBody, ignoreErrors, host);
 	return {
-		resourceGroup: response?.response?.data,
+		resourceGroup: response?.response?.body,
 		errors: response.errors ? response.errors : []
 	};
 }
@@ -511,8 +511,8 @@ export async function getStorageAccountAccessKey(account: AzureAccount, subscrip
 	const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
 	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.POST, undefined, ignoreErrors, host);
 	return {
-		keyName1: response?.response?.data?.keys[0].value ?? '',
-		keyName2: response?.response?.data?.keys[0].value ?? '',
+		keyName1: response?.response?.body?.keys[0].value ?? '',
+		keyName2: response?.response?.body?.keys[0].value ?? '',
 		errors: response.errors ? response.errors : []
 	};
 }

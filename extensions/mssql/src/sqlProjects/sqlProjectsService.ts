@@ -8,12 +8,12 @@ import * as constants from '../constants';
 import * as Utils from '../utils';
 import * as azdata from 'azdata';
 import * as contracts from '../contracts';
-import { AppContext } from '../appContext';
-import { ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
-import { ClientCapabilities } from 'vscode-languageclient';
-import { RequestType } from 'vscode-languageclient';
 
-export class SqlProjectsService implements mssql.ISqlProjectsService {
+import { AppContext } from '../appContext';
+import { BaseService, ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
+import { ClientCapabilities } from 'vscode-languageclient';
+
+export class SqlProjectsService extends BaseService implements mssql.ISqlProjectsService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
 		return class extends SqlProjectsService {
 			constructor(client: SqlOpsDataClient) {
@@ -29,7 +29,8 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		};
 	}
 
-	private constructor(context: AppContext, protected readonly client: SqlOpsDataClient) {
+	private constructor(context: AppContext, client: SqlOpsDataClient) {
+		super(client);
 		context.registerService(constants.SqlProjectsService, this);
 	}
 
@@ -74,6 +75,21 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	public async addSystemDatabaseReference(projectUri: string, systemDatabase: mssql.SystemDatabase, suppressMissingDependencies: boolean, databaseLiteral?: string): Promise<azdata.ResultStatus> {
 		const params: contracts.AddSystemDatabaseReferenceParams = { projectUri: projectUri, systemDatabase: systemDatabase, suppressMissingDependencies: suppressMissingDependencies, databaseLiteral: databaseLiteral };
 		return await this.runWithErrorHandling(contracts.AddSystemDatabaseReferenceRequest.type, params);
+	}
+
+	/**
+	 * Add a nuget package database reference to a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param packageName Name of the referenced nuget package
+	 * @param packageVersion Version of the referenced nuget package
+	 * @param suppressMissingDependencies Whether to suppress missing dependencies
+	 * @param databaseVariable SQLCMD variable name for specifying the other database this reference is to, if different from that of the current project
+	 * @param serverVariable SQLCMD variable name for specifying the other server this reference is to, if different from that of the current project. If this is set, DatabaseVariable must also be set.
+	 * @param databaseLiteral Literal name used to reference another database in the same server, if not using SQLCMD variables
+	 */
+	public async addNugetPackageReference(projectUri: string, packageName: string, packageVersion: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Promise<azdata.ResultStatus> {
+		const params: contracts.AddNugetPackageReferenceParams = { projectUri: projectUri, packageName: packageName, packageVersion: packageVersion, suppressMissingDependencies: suppressMissingDependencies, databaseVariable: databaseVariable, serverVariable: serverVariable, databaseLiteral: databaseLiteral };
+		return await this.runWithErrorHandling(contracts.AddNugetPackageReferenceRequest.type, params);
 	}
 
 	/**
@@ -444,15 +460,5 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	public async moveNoneItem(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
 		return await this.runWithErrorHandling(contracts.MoveNoneItemRequest.type, params);
-	}
-
-	private async runWithErrorHandling<P, R, E, RO>(type: RequestType<P, R, E, RO>, params: P): Promise<R> {
-		try {
-			const result = await this.client.sendRequest(type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(type, e);
-			throw e;
-		}
 	}
 }

@@ -44,6 +44,9 @@ import { CONNECTIONS_SORT_BY_CONFIG_KEY } from 'sql/platform/connection/common/c
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { debounce } from 'vs/base/common/decorators';
 import { ActionRunner } from 'vs/base/common/actions';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
+import { USE_ASYNC_SERVER_TREE_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export const CONTEXT_SERVER_TREE_VIEW = new RawContextKey<ServerTreeViewView>('serverTreeView.view', ServerTreeViewView.all);
 export const CONTEXT_SERVER_TREE_HAS_CONNECTIONS = new RawContextKey<boolean>('serverTreeView.hasConnections', false);
@@ -73,7 +76,9 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IKeybindingService private _keybindingService: IKeybindingService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IHostService private _hostService: IHostService,
+		@INotificationService private _notificationService: INotificationService
 	) {
 		super();
 		this._hasConnectionsKey = CONTEXT_SERVER_TREE_HAS_CONNECTIONS.bindTo(contextKeyService);
@@ -87,6 +92,26 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			await this.handleOnCapabilitiesRegistered();
 		});
 		this.registerCommands();
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration(USE_ASYNC_SERVER_TREE_CONFIG)) {
+				this._notificationService.prompt(
+					Severity.Info,
+					localize('serverTreeViewChangeNotification', "Server tree has changed. Please reload the window to see the changes."),
+					[{
+						label: localize('serverTreeViewChangeNotification.reload', "Reload"),
+						run: () => {
+							this._hostService.reload();
+						}
+					}, {
+						label: localize('serverTreeViewChangeNotification.doNotReload', "Don't Reload"),
+						run: () => { }
+					}],
+					{
+						sticky: true
+					}
+				);
+			}
+		}));
 	}
 
 	@debounce(50)
@@ -228,7 +253,12 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			if (this._tree instanceof AsyncServerTree) {
 				const connectionParentGroup = this._tree.getElementById(newConnection.groupId) as ConnectionProfileGroup;
 				if (connectionParentGroup) {
-					connectionParentGroup.connections.push(newConnection);
+					const matchingConnectionIndex = connectionParentGroup.connections.findIndex((connection) => connection.matches(newConnection));
+					if (matchingConnectionIndex !== -1) {
+						connectionParentGroup.connections[matchingConnectionIndex] = newConnection;
+					} else {
+						connectionParentGroup.connections.push(newConnection);
+					}
 					newConnection.parent = connectionParentGroup;
 					newConnection.groupId = connectionParentGroup.id;
 					await this._tree.updateChildren(connectionParentGroup);
@@ -415,7 +445,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				if (profile) {
 					newProfile = profile;
 				}
-				groups.forEach(group => group.dispose());
 			}
 
 			const currentSelections = this._tree!.getSelection();

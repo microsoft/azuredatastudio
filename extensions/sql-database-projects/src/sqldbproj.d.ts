@@ -216,6 +216,11 @@ declare module 'sqldbproj' {
 		getDatabaseDefaultCollation(): string;
 
 		/**
+		 * Type of .sqlproj file, either "SdkStyle" or "LegacyStyle"
+		 */
+		readonly sqlProjStyleName: string;
+
+		/**
 		 * Path where dacpac is output to after a successful build
 		 */
 		readonly dacpacOutputPath: string;
@@ -243,7 +248,7 @@ declare module 'sqldbproj' {
 		/**
 		 * SqlCmd variables and their values
 		 */
-		readonly sqlCmdVariables: Record<string, string>;
+		readonly sqlCmdVariables: Map<string, string>;
 
 		/**
 		 * Pre-deployment scripts in this project

@@ -426,11 +426,12 @@ declare module 'vscode-mssql' {
 		importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		createProjectFromDatabase(databaseName: string, targetFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, extractTarget: ExtractTarget, taskExecutionMode: TaskExecutionMode, includePermissions?: boolean): Thenable<DacFxResult>;
-		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
-		generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
+		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: TaskExecutionMode, sqlCommandVariableValues?: Map<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
+		generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode, sqlCommandVariableValues?: Map<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 		getOptionsFromProfile(profilePath: string): Thenable<DacFxOptionsResult>;
 		validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<ValidateStreamingJobResult>;
+		savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Map<string, string>, deploymentOptions?: DeploymentOptions): Thenable<ResultStatus>;
 	}
 
 	/**
@@ -1104,6 +1105,14 @@ declare module 'vscode-mssql' {
 
 	export interface SchemaCompareOptionsResult extends ResultStatus {
 		defaultDeploymentOptions: DeploymentOptions;
+	}
+
+	export interface SavePublishProfileParams {
+		profilePath: string;
+		databaseName: string;
+		connectionString: string;
+		sqlCommandVariableValues?: Record<string, string>;
+		deploymentOptions?: DeploymentOptions;
 	}
 
 	//#region ISqlProjectsService

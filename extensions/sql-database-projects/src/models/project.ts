@@ -44,7 +44,7 @@ export class Project implements ISqlProject {
 	private _folders: FileProjectEntry[] = [];
 	private _dataSources: DataSource[] = [];
 	private _databaseReferences: IDatabaseReferenceProjectEntry[] = [];
-	private _sqlCmdVariables: Record<string, string> = {};
+	private _sqlCmdVariables: Map<string, string> = new Map();
 	private _preDeployScripts: FileProjectEntry[] = [];
 	private _postDeployScripts: FileProjectEntry[] = [];
 	private _noneDeployScripts: FileProjectEntry[] = [];
@@ -97,7 +97,7 @@ export class Project implements ISqlProject {
 		return this._databaseReferences;
 	}
 
-	public get sqlCmdVariables(): Record<string, string> {
+	public get sqlCmdVariables(): Map<string, string> {
 		return this._sqlCmdVariables;
 	}
 
@@ -115,6 +115,10 @@ export class Project implements ISqlProject {
 
 	public get sqlProjStyle(): ProjectType {
 		return this._sqlProjStyle;
+	}
+
+	public get sqlProjStyleName(): string {
+		return this.sqlProjStyle === ProjectType.SdkStyle ? 'SdkStyle' : 'LegacyStyle';
 	}
 
 	public get isCrossPlatformCompatible(): boolean {
@@ -263,10 +267,10 @@ export class Project implements ISqlProject {
 			throw new Error(constants.errorReadingProject(constants.sqlCmdVariables, this.projectFilePath, sqlcmdVariablesResult.errorMessage));
 		}
 
-		this._sqlCmdVariables = {};
+		this._sqlCmdVariables = new Map();
 
 		for (const variable of sqlcmdVariablesResult.sqlCmdVariables) {
-			this._sqlCmdVariables[variable.varName] = variable.defaultValue; // store the default value that's specified in the .sqlproj
+			this._sqlCmdVariables.set(variable.varName, variable.defaultValue); // store the default value that's specified in the .sqlproj
 		}
 	}
 
@@ -431,12 +435,13 @@ export class Project implements ISqlProject {
 	private resetProject(): void {
 		this._files = [];
 		this._databaseReferences = [];
-		this._sqlCmdVariables = {};
+		this._sqlCmdVariables = new Map();
 		this._preDeployScripts = [];
 		this._postDeployScripts = [];
 		this._noneDeployScripts = [];
 		this._outputPath = '';
 		this._configuration = Configuration.Debug;
+		this._publishProfiles = [];
 	}
 
 	public async updateProjectForCrossPlatform(): Promise<void> {
@@ -494,18 +499,23 @@ export class Project implements ISqlProject {
 
 	//#region SQL object scripts
 
-	public async addSqlObjectScript(relativePath: string): Promise<void> {
+	public async addSqlObjectScript(relativePath: string, reloadAfter: boolean = true): Promise<void> {
 		const result = await this.sqlProjService.addSqlObjectScript(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
-		await this.readFilesInProject();
-		await this.readFolders();
+		if (reloadAfter) {
+			await this.readFilesInProject();
+			await this.readFolders();
+		}
 	}
 
 	public async addSqlObjectScripts(relativePaths: string[]): Promise<void> {
 		for (const path of relativePaths) {
-			await this.addSqlObjectScript(path);
+			await this.addSqlObjectScript(path, false /* reloadAfter */);
 		}
+
+		await this.readFilesInProject();
+		await this.readFolders();
 	}
 
 	public async deleteSqlObjectScript(relativePath: string): Promise<void> {
@@ -833,7 +843,8 @@ export class Project implements ISqlProject {
 	 * @param defaultValue
 	 */
 	public async addSqlCmdVariable(name: string, defaultValue: string): Promise<void> {
-		await this.sqlProjService.addSqlCmdVariable(this.projectFilePath, name, defaultValue);
+		const result = await this.sqlProjService.addSqlCmdVariable(this.projectFilePath, name, defaultValue);
+		this.throwIfFailed(result);
 		await this.readSqlCmdVariables();
 	}
 
@@ -843,7 +854,8 @@ export class Project implements ISqlProject {
 	 * @param defaultValue
 	 */
 	public async updateSqlCmdVariable(name: string, defaultValue: string): Promise<void> {
-		await this.sqlProjService.updateSqlCmdVariable(this.projectFilePath, name, defaultValue);
+		const result = await this.sqlProjService.updateSqlCmdVariable(this.projectFilePath, name, defaultValue);
+		this.throwIfFailed(result);
 		await this.readSqlCmdVariables();
 	}
 
