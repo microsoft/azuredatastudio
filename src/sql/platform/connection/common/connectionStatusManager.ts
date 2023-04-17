@@ -7,7 +7,6 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import * as ConnectionUtils from 'sql/platform/connection/common/utils';
 import { StopWatch } from 'vs/base/common/stopwatch';
 import { ILogService } from 'vs/platform/log/common/log';
 import * as Utils from 'sql/platform/connection/common/utils';
@@ -85,19 +84,11 @@ export class ConnectionStatusManager {
 		return connectionInfoForId ? connectionInfoForId.connectionProfile : undefined;
 	}
 
-	private isNonPurposeUri(uri: string): boolean {
-		return uri.startsWith(ConnectionUtils.uriPrefixes.connection)
-			|| uri.startsWith(ConnectionUtils.uriPrefixes.dashboard)
-			|| uri.startsWith(ConnectionUtils.uriPrefixes.insights)
-			|| uri.startsWith(ConnectionUtils.uriPrefixes.notebook);
-	}
-
 	public addConnection(connection: IConnectionProfile, id: string): ConnectionManagementInfo {
 		this._logService.info(`Adding connection ${id}`);
-		// Generated Purpose URIs are used in areas where the same connection profile is expected for callbacks,
-		// Editor URIs such as Query Editor do not have this purpose, so they can have a new ID
-		// (in order not to retrieve the base connection profile, which may be different if a user changes the database).
-		if (!this.isNonPurposeUri(id) && this.findConnectionByProfileId(connection.id) !== undefined) {
+
+		// Need to change the connection id in order for findConnectionById to work properly (for different URIs with their own profiles).
+		if (this.findConnectionByProfileId(connection.id) !== undefined) {
 			connection.id = generateUuid();
 		}
 

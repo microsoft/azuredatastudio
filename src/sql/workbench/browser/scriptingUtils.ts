@@ -48,7 +48,7 @@ export async function scriptSelect(connectionProfile: IConnectionProfile, metada
 		let paramDetails = getScriptingParamDetails(connectionService, connectionResult, metadata)!;
 		const result = await scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails);
 		if (result && result.script) {
-			const owner = await queryEditorService.newSqlEditor({ initalContent: result.script }, connectionProfile?.providerName);
+			const owner = await queryEditorService.newSqlEditor({ initalContent: result.script }, connectionProfile?.providerName, connectionResult);
 			// Connect our editor to the input connection
 			let options: IConnectionCompletionOptions = {
 				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.executeQuery, input: owner },
@@ -75,7 +75,7 @@ export async function scriptEditSelect(connectionProfile: IConnectionProfile, me
 		let paramDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
 		const result = await scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails!);
 		if (result && result.script) {
-			const owner = await queryEditorService.newEditDataEditor(metadata.schema, metadata.name, result.script);
+			const owner = await queryEditorService.newEditDataEditor(metadata.schema, metadata.name, result.script, connectionResult);
 			// Connect our editor
 			let options: IConnectionCompletionOptions = {
 				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: owner },

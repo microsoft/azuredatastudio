@@ -44,6 +44,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		private _sql: UntitledTextEditorInput,
 		private _queryString: string,
 		private _results: EditDataResultsInput,
+		private _initialConnectionUri: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@INotificationService private notificationService: INotificationService
@@ -205,6 +206,9 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	public override dispose(): void {
 		// Dispose our edit session then disconnect our input
 		this._queryModelService.disposeEdit(this.uri).then(() => {
+			if (this._initialConnectionUri) {
+				this._connectionManagementService.disconnect(this._initialConnectionUri);
+			}
 			return this._connectionManagementService.disconnectEditor(this, true);
 		});
 		this._queryModelService.disposeQuery(this.uri);

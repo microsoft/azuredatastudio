@@ -27,10 +27,13 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 
 	public static readonly ID = UNTITLED_QUERY_EDITOR_TYPEID;
 
+	private originalConnectionUri: string;
+
 	constructor(
 		description: string | undefined,
 		text: UntitledTextEditorInput,
 		results: QueryResultsInput,
+		initialConnectionUri: string,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
 		@IConfigurationService configurationService: IConfigurationService,
@@ -39,6 +42,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 		@IEditorResolverService private readonly editorResolverService: IEditorResolverService
 	) {
 		super(description, text, results, connectionManagementService, queryModelService, configurationService, instantiationService);
+		this.originalConnectionUri = initialConnectionUri;
 		// Set the mode explicitely to stop the auto language detection service from changing the mode unexpectedly.
 		// the auto language detection service won't do the language change only if the mode is explicitely set.
 		// if the mode (e.g. kusto, sql) do not exist for whatever reason, we will default it to sql.
@@ -120,5 +124,12 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 	override get capabilities(): EditorInputCapabilities {
 		// Subclasses need to explicitly opt-in to being untitled.
 		return EditorInputCapabilities.Untitled;
+	}
+
+	override dispose() {
+		if (this.originalConnectionUri) {
+			this.connectionManagementService.disconnect(this.originalConnectionUri);
+		}
+		super.dispose();
 	}
 }
