@@ -15,8 +15,9 @@ export class AlreadyInitializedError extends Error {
 
 }
 
+type DbMap = { [key: string]: string };
 export class FileDatabase {
-	private db: { [key: string]: string } = {};
+	private db: DbMap = {};
 	private isDirty = false;
 	private isSaving = false;
 	private isInitialized = false;
@@ -106,7 +107,7 @@ export class FileDatabase {
 		}
 
 		try {
-			this.db = JSON.parse(fileContents);
+			this.db = JSON.parse(fileContents) as DbMap;
 		} catch (ex) {
 			Logger.error(`Error occurred when reading file database contents as JSON, ADAL cache will be reset: ${ex}`);
 			await this.createFile();

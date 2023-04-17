@@ -892,19 +892,22 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							: undefined!;
 				this._sourceHelpText.value = constants.SQL_SOURCE_DETAILS(
 					this.migrationStateModel._authenticationType,
-					connectionProfile.serverName);
+					connectionProfile.serverName,
+					isSqlDbTarget);
 
 				this._sqlSourceUsernameInput.value = username;
 				this._sqlSourcePassword.value = (await getSourceConnectionCredentials()).password;
 
-				this._windowsUserAccountText.value =
-					this.migrationStateModel._databaseBackup.networkShares[0]?.windowsUser
-					?? this.migrationStateModel.savedInfo?.networkShares[0]?.windowsUser
-					?? '';
-				this._passwordText.value =
-					this.migrationStateModel._databaseBackup.networkShares[0]?.password
-					?? this.migrationStateModel.savedInfo?.networkShares[0]?.password
-					?? '';
+				const networkShares = this.migrationStateModel._databaseBackup?.networkShares?.length > 0
+					? this.migrationStateModel._databaseBackup?.networkShares
+					: this.migrationStateModel.savedInfo?.networkShares ?? [];
+
+				const networkShare = networkShares?.length > 0
+					? networkShares[0]
+					: undefined;
+
+				this._windowsUserAccountText.value = networkShare?.windowsUser ?? '';
+				this._passwordText.value = networkShare?.password ?? '';
 
 				this._networkShareTargetDatabaseNames = [];
 				this._networkShareLocations = [];
@@ -1207,7 +1210,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 										let uniqueBackupLocations = [...new Set(backupLocations)];
 
-										if (uniqueBackupLocations.length !== backupLocations.length) {
+										if (!isSqlDbTarget && uniqueBackupLocations.length !== backupLocations.length) {
 											this.wizard.message = {
 												level: azdata.window.MessageLevel.Warning,
 												text: constants.DATABASE_BACKUP_BLOB_FOLDER_STRUCTURE_WARNING,
@@ -1240,7 +1243,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 										let uniqueBackupLocations = [...new Set(backupLocations)];
 
-										if (uniqueBackupLocations.length !== backupLocations.length) {
+										if (!isSqlDbTarget && uniqueBackupLocations.length !== backupLocations.length) {
 											this.wizard.message = {
 												level: azdata.window.MessageLevel.Warning,
 												text: constants.DATABASE_BACKUP_BLOB_FOLDER_STRUCTURE_WARNING,
@@ -1379,13 +1382,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						break;
 					case NetworkContainerType.NETWORK_SHARE:
 						// All network share migrations use the same storage account
-						const storageAccount = this.migrationStateModel._databaseBackup.networkShares[0]?.storageAccount;
-						const storageKey = (await getStorageAccountAccessKeys(
-							this.migrationStateModel._azureAccount,
-							this.migrationStateModel._databaseBackup.subscription,
-							storageAccount)).keyName1;
-						for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
-							this.migrationStateModel._databaseBackup.networkShares[i].storageKey = storageKey;
+						if (this.migrationStateModel._databaseBackup.networkShares?.length > 0) {
+							const storageAccount = this.migrationStateModel._databaseBackup.networkShares[0]?.storageAccount;
+							const storageKey = (await getStorageAccountAccessKeys(
+								this.migrationStateModel._azureAccount,
+								this.migrationStateModel._databaseBackup.subscription,
+								storageAccount)).keyName1;
+							for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
+								this.migrationStateModel._databaseBackup.networkShares[i].storageKey = storageKey;
+							}
 						}
 						break;
 				}
@@ -1652,6 +1657,32 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	private _migrationTableSelectionContainer(): azdata.FlexContainer {
+		const tableMappingHeader = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_TABLE_SELECTION_LABEL,
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: { ...styles.SECTION_HEADER_CSS }
+			}).component();
+
+		const tableMappingText = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_TABLE_SELECTION_DESCRIPTION,
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: { ...styles.BODY_CSS }
+			}).component();
+
+		const tableMappingInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				text: constants.DATABASE_SCHEMA_MIGRATION_HELP,
+				style: 'information',
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: { ...styles.BODY_CSS, 'margin': '5px 0 0 0' },
+				links: [
+					{ text: constants.DATABASE_SCHEMA_MIGRATION_DACPAC_EXTENSION, url: 'https://learn.microsoft.com/sql/azure-data-studio/extensions/sql-server-dacpac-extension' },
+					{ text: constants.DATABASE_SCHEMA_MIGRATION_PROJECTS_EXTENSION, url: 'https://learn.microsoft.com/sql/azure-data-studio/extensions/sql-database-project-extension' },
+				]
+			}).component();
+
 		this._refreshButton = this._view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
@@ -1735,6 +1766,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		return this._view.modelBuilder.flexContainer()
 			.withItems([
+				tableMappingHeader,
+				tableMappingText,
+				tableMappingInfoBox,
 				this._refreshLoading,
 				this._databaseTable])
 			.withLayout({ flexFlow: 'column' })

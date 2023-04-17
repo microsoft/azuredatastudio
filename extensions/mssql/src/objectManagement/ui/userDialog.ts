@@ -88,6 +88,10 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		}, 100);
 	}
 
+	protected async generateScript(): Promise<string> {
+		return this.objectManagementService.scriptUser(this.contextId, this.objectInfo);
+	}
+
 	private initializeGeneralSection(): void {
 		this.nameInput = this.modelView.modelBuilder.inputBox().withProps({
 			ariaLabel: localizedConstants.NameText,

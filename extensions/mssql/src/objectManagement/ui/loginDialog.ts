@@ -114,6 +114,10 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		this.formContainer.addItems(sections);
 	}
 
+	protected async generateScript(): Promise<string> {
+		return this.objectManagementService.scriptLogin(this.contextId, this.objectInfo);
+	}
+
 	private initializeGeneralSection(): void {
 		this.nameInput = this.modelView.modelBuilder.inputBox().withProps({
 			ariaLabel: localizedConstants.NameText,
