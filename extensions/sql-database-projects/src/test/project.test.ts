@@ -645,7 +645,7 @@ describe('Project: database references', function (): void {
 		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 		let project = await Project.openProject(projFilePath);
 
-		// add database reference to a different database on a different server
+		// add database reference to the same database
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 		should(project.sqlCmdVariables.size).equal(0, `There should be no sqlcmd variables to start with. Actual: ${project.sqlCmdVariables.size}`);
 		await project.addProjectReference({
@@ -665,7 +665,7 @@ describe('Project: database references', function (): void {
 		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 		let project = await Project.openProject(projFilePath);
 
-		// add database reference to a different database on a different server
+		// add database reference to a different database on the same different server
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 		should(project.sqlCmdVariables.size).equal(0, 'There should be no sqlcmd variables to start with');
 		await project.addProjectReference({
@@ -705,6 +705,45 @@ describe('Project: database references', function (): void {
 		should(project.databaseReferences[0].referenceName).equal('project1', 'The database reference should be project1');
 		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
 		should(project.sqlCmdVariables.size).equal(2, `There should be two new sqlcmd variables added. Actual: ${project.sqlCmdVariables.size}`);
+	});
+
+	it.only('Should add a nupkg reference to the same database correctly', async function (): Promise<void> {
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newSdkStyleProjectSdkNodeBaseline);
+		let project = await Project.openProject(projFilePath);
+
+		// add database reference to the same database
+		should(project.sqlProjStyle).equal(ProjectType.SdkStyle, 'Project should be SDK-style');
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+		should(project.sqlCmdVariables.size).equal(0, `There should be no sqlcmd variables to start with. Actual: ${project.sqlCmdVariables.size}`);
+		await project.addNugetPackageReference({
+			packageName: 'testPackage',
+			packageVersion: '1.0.1',
+			suppressMissingDependenciesErrors: false
+		});
+
+		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to project1');
+		should(project.databaseReferences[0].referenceName).equal('testPackage', 'The database reference should be project1');
+		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
+		should(project.sqlCmdVariables.size).equal(0, `There should be no sqlcmd variables added. Actual: ${project.sqlCmdVariables.size}`);
+	});
+
+	it('Should throw an error trying to add a nupkg reference to legacy style project', async function (): Promise<void> {
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
+		let project = await Project.openProject(projFilePath);
+
+		// add database reference to the same database
+		should(project.sqlProjStyle).equal(ProjectType.LegacyStyle, 'Project should be legacy-style');
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+		should(project.sqlCmdVariables.size).equal(0, `There should be no sqlcmd variables to start with. Actual: ${project.sqlCmdVariables.size}`);
+		await testUtils.shouldThrowSpecificError(async () => await project.addNugetPackageReference({
+			packageName: 'testPackage',
+			packageVersion: '1.0.1',
+			suppressMissingDependenciesErrors: false
+		}),
+			`Error adding database reference to testPackage. Error: Nuget package database references are not supported for the project ${project.projectFilePath}`
+		);
+
+		should(project.databaseReferences.length).equal(0, 'There should not have been any database reference added');
 	});
 
 	it('Should not allow adding duplicate dacpac references', async function (): Promise<void> {
