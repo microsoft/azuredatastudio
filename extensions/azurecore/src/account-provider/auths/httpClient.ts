@@ -8,7 +8,7 @@ import { INetworkModule, NetworkRequestOptions, NetworkResponse } from '@azure/m
 import * as http from 'http';
 import * as https from 'https';
 import { TextEncoder } from 'util';
-import { NetworkUtils } from './networkUtils';
+import { getNetworkResponse, urlToHttpOptions } from './networkUtils';
 
 /**
  * http methods
@@ -247,7 +247,7 @@ const networkRequestViaProxy = <T>(
 				});
 
 				const parsedHeaders = Object.fromEntries(entries) as Record<string, string>;
-				const networkResponse = NetworkUtils.getNetworkResponse(
+				const networkResponse = getNetworkResponse(
 					parsedHeaders,
 					parseBody(httpStatusCode, statusMessage, parsedHeaders, body) as T,
 					httpStatusCode
@@ -293,7 +293,7 @@ const networkRequestViaHttps = <T>(
 	let customOptions: https.RequestOptions = {
 		method: httpMethod,
 		headers: optionHeaders,
-		...NetworkUtils.urlToHttpOptions(url)
+		...urlToHttpOptions(url)
 	};
 
 	if (timeout) {
@@ -343,7 +343,7 @@ const networkRequestViaHttps = <T>(
 				const dataBody = Buffer.concat([...data]).toString();
 
 				const parsedHeaders = headers as Record<string, string>;
-				const networkResponse = NetworkUtils.getNetworkResponse(
+				const networkResponse = getNetworkResponse(
 					parsedHeaders,
 					parseBody(statusCode, statusMessage, parsedHeaders, dataBody) as T,
 					statusCode

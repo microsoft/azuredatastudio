@@ -837,6 +837,7 @@
           "groupName": "%mssql.connectionOptions.groupName.source%",
           "valueType": "string",
           "defaultValue": null,
+          "placeholder": "%mssql.connectionOptions.serverName.placeholder%",
           "objectType": null,
           "categoryValues": null,
           "isRequired": true,
@@ -1200,20 +1201,6 @@
         {
           "specialValueType": null,
           "isIdentity": false,
-          "name": "attachedDBFileName",
-          "displayName": "%mssql.connectionOptions.attachedDBFileName.displayName%",
-          "description": "%mssql.connectionOptions.attachedDBFileName.description%",
-          "groupName": "%mssql.connectionOptions.groupName.source%",
-          "valueType": "string",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
           "name": "contextConnection",
           "displayName": "%mssql.connectionOptions.contextConnection.displayName%",
           "description": "%mssql.connectionOptions.contextConnection.description%",
@@ -1370,8 +1357,8 @@
           "isIdentity": false,
           "name": "attachDbFilename",
           "displayName": "%mssql.connectionOptions.attachDbFilename.displayName%",
-          "description": null,
-          "groupName": null,
+          "description": "%mssql.connectionOptions.attachDbFilename.description%",
+          "groupName": "%mssql.connectionOptions.groupName.source%",
           "valueType": "string",
           "defaultValue": null,
           "objectType": null,
@@ -1455,7 +1442,7 @@
   "dependencies": {
     "@microsoft/ads-extension-telemetry": "^3.0.1",
     "@microsoft/ads-service-downloader": "^1.2.1",
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.3.2",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.3.4",
     "find-remove": "1.2.1",
     "vscode-languageclient": "5.2.1",
     "vscode-nls": "^4.0.0"
