@@ -14,6 +14,7 @@ import { AccountsClearTokenCacheCommand, AuthLibrary } from '../../constants';
 import { Logger } from '../../utils/Logger';
 import { FileEncryptionHelper } from './fileEncryptionHelper';
 import { CacheEncryptionKeys } from 'azurecore';
+import { Token } from '../auths/azureAuth';
 
 export class MsalCachePluginProvider {
 	constructor(
@@ -37,6 +38,14 @@ export class MsalCachePluginProvider {
 		await this._fileEncryptionHelper.init();
 	}
 
+	public async encryptToken(accessToken: Token): Promise<string> {
+		return await this._fileEncryptionHelper.fileSaver(JSON.stringify(accessToken));
+	}
+
+	public async decryptToken(encryptedToken: string): Promise<Token> {
+		return JSON.parse(await this._fileEncryptionHelper.fileOpener(encryptedToken, false));
+	}
+
 	public getCacheEncryptionKeys(): CacheEncryptionKeys {
 		return this._fileEncryptionHelper.getEncryptionKeys();
 	}
@@ -47,7 +56,7 @@ export class MsalCachePluginProvider {
 			await this.waitAndLock(lockFilePath);
 			try {
 				const cache = await fsPromises.readFile(this._msalFilePath, { encoding: 'utf8' });
-				const decryptedData = await this._fileEncryptionHelper.fileOpener(cache!);
+				const decryptedData = await this._fileEncryptionHelper.fileOpener(cache!, true);
 				try {
 					cacheContext.tokenCache.deserialize(decryptedData);
 				} catch (e) {

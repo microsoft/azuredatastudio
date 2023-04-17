@@ -2407,6 +2407,12 @@ declare module 'azdata' {
 		export function getAccountSecurityToken(account: Account, tenantId: string, resource: AzureResource): Thenable<AccountSecurityToken | undefined>;
 
 		/**
+		 * Encrypts access token retrieved for MSAL library.
+		 * @param token Access token to be encrypted.
+		 */
+		export function encryptAccountSecurityToken(token: AccountSecurityToken): Promise<string>;
+
+		/**
 		 * An {@link vscode.Event} which fires when the accounts have changed.
 		 */
 		export const onDidChangeAccounts: vscode.Event<DidChangeAccountsParams>;
@@ -2627,6 +2633,13 @@ declare module 'azdata' {
 		 * @return Promise to return a security token object
 		 */
 		getAccountSecurityToken(account: Account, tenant: string, resource: AzureResource): Thenable<accounts.AccountSecurityToken | undefined>;
+
+		/**
+		 * Encrypts security token using MSAL encryption keys for storage purposes
+		 * @param token Access Token to be encrypted.
+		 * @return Promise to return a encrypted security token object
+		 */
+		encryptAccountSecurityToken(token: accounts.AccountSecurityToken): Promise<string>;
 
 		/**
 		 * Prompts the user to enter account information.

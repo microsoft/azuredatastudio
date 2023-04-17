@@ -26,7 +26,7 @@ import * as qs from 'qs';
 import { AzureAuthError } from './azureAuthError';
 import { AccountInfo, AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
 import { HttpClient } from './httpClient';
-import { getProxyEnabledHttpClient } from '../../utils';
+import { getProxyEnabledHttpClient, getTenantIgnoreList, updateTenantIgnoreList } from '../../utils';
 import { errorToPromptFailedResult } from './networkUtils';
 const localize = nls.loadMessageBundle();
 
@@ -315,13 +315,20 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * (i.e. expired token, wrong scope, etc.), sends a request for a new token using the refresh token
 	 * @param accountId
 	 * @param azureResource
-	 * @returns The authentication result, including the access token
+	 * @returns The authentication result, including the access token.
+	 * This function returns 'null' instead of 'undefined' by design as the same is returned by MSAL APIs in the flow (e.g. acquireTokenSilent).
 	 */
 	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource, tenantId: string): Promise<AuthenticationResult | azdata.PromptFailedResult | null> {
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 
 		if (!resource) {
 			Logger.error(`Unable to find Azure resource ${azureResource}`);
+			return null;
+		}
+
+		// The user wants to ignore this tenant.
+		if (getTenantIgnoreList().includes(tenantId)) {
+			Logger.info(`Tenant ${tenantId} found in the ignore list, authentication will not be attempted.`);
 			return null;
 		}
 
@@ -341,14 +348,14 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 
 		// construct request
-		// forceRefresh needs to be set true here in order to fetch the correct token for non-full tenants, due to this issue
+		// forceRefresh needs to be set true here in order to fetch the correct token, due to this issue
 		// https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/3687
+		// Even for full tenants, access token is often received expired - force refresh is necessary when token expires.
 		const tokenRequest = {
 			account: account,
 			authority: `${this.loginEndpointUrl}${tenantId}`,
 			scopes: newScope,
-			// Force Refresh when tenant is NOT full tenant or organizational id that this account belongs to.
-			forceRefresh: tenantId !== account.tenantId
+			forceRefresh: true
 		};
 		try {
 			return await this.clientApplication.acquireTokenSilent(tokenRequest);
@@ -644,23 +651,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 		if (!tenant.displayName && !tenant.id) {
 			throw new Error('Tenant did not have display name or id');
 		}
-
-		const getTenantConfigurationSet = (): Set<string> => {
-			const configuration = vscode.workspace.getConfiguration(Constants.AzureTenantConfigSection);
-			let values: string[] = configuration.get('filter') ?? [];
-			return new Set<string>(values);
-		};
+		const tenantIgnoreList = getTenantIgnoreList();
 
 		// The user wants to ignore this tenant.
-		if (getTenantConfigurationSet().has(tenant.id)) {
+		if (tenantIgnoreList.includes(tenant.id)) {
 			Logger.info(`Tenant ${tenant.id} found in the ignore list, authentication will not be attempted.`);
 			return false;
 		}
-
-		const updateTenantConfigurationSet = async (set: Set<string>): Promise<void> => {
-			const configuration = vscode.workspace.getConfiguration('azure.tenant.config');
-			await configuration.update('filter', Array.from(set), vscode.ConfigurationTarget.Global);
-		};
 
 		interface ConsentMessageItem extends vscode.MessageItem {
 			booleanResult: boolean;
@@ -682,9 +679,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 			title: localize('azurecore.consentDialog.ignore', "Ignore Tenant"),
 			booleanResult: false,
 			action: async (tenantId: string) => {
-				let set = getTenantConfigurationSet();
-				set.add(tenantId);
-				await updateTenantConfigurationSet(set);
+				tenantIgnoreList.push(tenantId);
+				await updateTenantIgnoreList(tenantIgnoreList);
 			}
 
 		};

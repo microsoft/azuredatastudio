@@ -14,6 +14,7 @@ import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Event, Emitter } from 'vs/base/common/event';
 import { values } from 'vs/base/common/collections';
 import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { MSAL_AUTH_LIBRARY } from 'sql/workbench/services/accountManagement/utils';
 
 type ProviderAndAccount = { provider: azdata.AccountProvider, account: azdata.Account };
 
@@ -63,11 +64,9 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		this._proxy.$accountUpdated(updatedAccount);
 	}
 
-
-	public $getAllAccounts(): Thenable<azdata.Account[]> {
-		return this.getAllProvidersAndAccounts().then(providersAndAccounts => {
-			return providersAndAccounts.map(providerAndAccount => providerAndAccount.account);
-		});
+	public async $getAllAccounts(): Promise<azdata.Account[]> {
+		let providersAndAccounts = await this.getAllProvidersAndAccounts();
+		return providersAndAccounts.map(providerAndAccount => providerAndAccount.account);
 	}
 
 	private async getAllProvidersAndAccounts(): Promise<ProviderAndAccount[]> {
@@ -94,32 +93,45 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		return resultProviderAndAccounts;
 	}
 
-	public override $getSecurityToken(account: azdata.Account, resource: azdata.AzureResource = AzureResource.ResourceManagement): Thenable<{}> {
-		return this.getAllProvidersAndAccounts().then(providerAndAccounts => {
-			const providerAndAccount = providerAndAccounts.find(providerAndAccount => providerAndAccount.account.key.accountId === account.key.accountId);
-			if (providerAndAccount) {
-				return providerAndAccount.provider.getSecurityToken(account, resource);
-			}
-			throw new Error(`Account ${account.key.accountId} not found.`);
-		});
+	public override async $getSecurityToken(account: azdata.Account, resource: azdata.AzureResource = AzureResource.ResourceManagement): Promise<{}> {
+		let providerAndAccounts = await this.getAllProvidersAndAccounts();
+		const providerAndAccount = providerAndAccounts.find(providerAndAccount => providerAndAccount.account.key.accountId === account.key.accountId);
+		if (providerAndAccount) {
+			return providerAndAccount.provider.getSecurityToken(account, resource);
+		}
+		throw new Error(`Account ${account.key.accountId} not found.`);
 	}
 
-	public override $getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource = AzureResource.ResourceManagement): Thenable<azdata.accounts.AccountSecurityToken> {
-		return this.getAllProvidersAndAccounts().then(providerAndAccounts => {
-			const providerAndAccount = providerAndAccounts.find(providerAndAccount => providerAndAccount.account.key.accountId === account.key.accountId);
-			if (providerAndAccount) {
-				return providerAndAccount.provider.getAccountSecurityToken(account, tenant, resource);
+	public override async $getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource = AzureResource.ResourceManagement): Promise<azdata.accounts.AccountSecurityToken> {
+		let providerAndAccounts = await this.getAllProvidersAndAccounts();
+		let identifier = resource.toString() + '|' + tenant;
+		const providerAndAccount = providerAndAccounts.find(providerAndAccount => providerAndAccount.account.key.accountId === account.key.accountId);
+		if (providerAndAccount) {
+			let originalToken: azdata.accounts.AccountSecurityToken | undefined
+				= account.properties.tokenMap?.[identifier]
+					? Object.assign(account.properties.tokenMap[identifier]) : undefined;
+			let token = await providerAndAccount.provider.getAccountSecurityToken(account, tenant, resource);
+			// Cache access token to reduce AAD requests when working with MSAL Authentication Library
+			if (tenant && token && account.key.authLibrary === MSAL_AUTH_LIBRARY) {
+				if (!account.properties.tokenMap) {
+					account.properties.tokenMap = {};
+				}
+				account.properties.tokenMap[identifier] = await providerAndAccount.provider.encryptAccountSecurityToken(token);
+				if (!originalToken || originalToken.token !== token.token) {
+					this._proxy.$accountUpdated(account);
+				}
 			}
-			throw new Error(`Account ${account.key.accountId} not found.`);
-		});
+			return token;
+		}
+		throw Error(`Account ${account.key.accountId} not found.`);
 	}
 
 	public get onDidChangeAccounts(): Event<azdata.DidChangeAccountsParams> {
 		return this._onDidChangeAccounts.event;
 	}
 
-	public override $accountsChanged(handle: number, accounts: azdata.Account[]): Thenable<void> {
-		return Promise.resolve(this._onDidChangeAccounts.fire({ accounts: accounts }));
+	public override async $accountsChanged(handle: number, accounts: azdata.Account[]): Promise<void> {
+		return this._onDidChangeAccounts.fire({ accounts: accounts });
 	}
 
 	public $registerAccountProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Disposable {

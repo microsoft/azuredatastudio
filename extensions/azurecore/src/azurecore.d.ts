@@ -35,8 +35,11 @@ declare module 'azurecore' {
 		/**
 		 * Auth type of azure used to authenticate this account.
 		 */
-		azureAuthType?: AzureAuthType
+		azureAuthType?: AzureAuthType;
 
+		/**
+		 * Provider settings for account.
+		 */
 		providerSettings: AzureAccountProviderMetadata;
 
 		/**
@@ -54,6 +57,14 @@ declare module 'azurecore' {
 		 */
 		tenants: Tenant[];
 
+		/**
+		 * Access tokens for this account mapped with tenant Id.
+		 */
+		tokenMap?: AccessTokenTenantMap;
+	}
+
+	export interface AccessTokenTenantMap {
+		[tenantId: string]: string | undefined;
 	}
 
 	export const enum AzureAuthType {

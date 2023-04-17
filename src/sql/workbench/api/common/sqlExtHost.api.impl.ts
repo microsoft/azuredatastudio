@@ -179,6 +179,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				getAccountSecurityToken(account: azdata.Account, tenant: string, resource?: azdata.AzureResource): Thenable<azdata.accounts.AccountSecurityToken> {
 					return extHostAccountManagement.$getAccountSecurityToken(account, tenant, resource);
 				},
+				encryptAccountSecurityToken(token: azdata.accounts.AccountSecurityToken): Promise<string> {
+					return extHostAccountManagement.$encryptAccountSecurityToken(token);
+				},
 				onDidChangeAccounts(listener: (e: azdata.DidChangeAccountsParams) => void, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostAccountManagement.onDidChangeAccounts(listener, thisArgs, disposables);
 				}

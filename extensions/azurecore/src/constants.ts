@@ -37,6 +37,8 @@ export const TenantSection = 'tenant';
 
 export const AzureTenantConfigSection = AzureSection + '.' + TenantSection + '.' + ConfigSection;
 
+export const Filter = 'filter';
+
 export const NoSystemKeyChainSection = 'noSystemKeychain';
 
 export const oldMsalCacheFileName = 'azureTokenCacheMsal-azure_publicCloud';

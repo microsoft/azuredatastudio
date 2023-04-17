@@ -21,6 +21,7 @@ import { AzureAuthCodeGrant } from './auths/azureAuthCodeGrant';
 import { AzureDeviceCode } from './auths/azureDeviceCode';
 import { filterAccounts } from '../azureResource/utils';
 import * as Constants from '../constants';
+import { MsalCachePluginProvider } from './utils/msalCachePlugin';
 
 const localize = nls.loadMessageBundle();
 
@@ -35,6 +36,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		tokenCache: SimpleTokenCache,
 		context: vscode.ExtensionContext,
 		clientApplication: PublicClientApplication,
+		private readonly msalCacheProvider: MsalCachePluginProvider,
 		uriEventHandler: vscode.EventEmitter<vscode.Uri>,
 		private readonly authLibrary: string,
 		private readonly forceDeviceCode: boolean = false
@@ -144,8 +146,22 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		await this.initCompletePromise;
 		const azureAuth = this.getAuthMethod(account);
 		if (azureAuth) {
+			let identifier = resource.toString() + '|' + tenantId;
 			Logger.piiSanitized(`Getting account security token for ${JSON.stringify(account.key)} (tenant ${tenantId}). Auth Method = ${azureAuth.userFriendlyName}`, [], []);
 			if (this.authLibrary === Constants.AuthLibrary.MSAL) {
+				// Fetch cached token from account properties if token is available and valid.
+				if (account.properties.tokenMap?.[identifier]) {
+					let encryptedAccessToken = account.properties.tokenMap[identifier];
+					try {
+						let accessToken = await this.msalCacheProvider.decryptToken(encryptedAccessToken!);
+						if (this.isValidToken(accessToken)) {
+							return accessToken;
+						}
+					} catch (e) {
+						// Log decrypt error and move on to fetching fresh access token.
+						Logger.info(`Decrypting access token failed with error: ${e}, fetching new access token.`);
+					}
+				}
 				tenantId = tenantId || account.properties.owningTenant.id;
 				let authResult = await azureAuth.getTokenMsal(account.key.accountId, resource, tenantId);
 				if (this.isAuthenticationResult(authResult) && authResult.account && authResult.account.idTokenClaims) {
@@ -155,6 +171,16 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 						tokenType: authResult.tokenType,
 						expiresOn: authResult.account.idTokenClaims.exp
 					};
+					// Add to account's token cache
+					if (!account.properties.tokenMap) {
+						account.properties.tokenMap = {};
+					}
+					try {
+						let encryptedAccessToken = await this.msalCacheProvider.encryptToken(token);
+						account.properties.tokenMap[identifier] = encryptedAccessToken;
+					} catch (e) {
+						Logger.info(`Could not encrypt access token, `)
+					}
 					return token;
 				} else {
 					Logger.error(`MSAL: getToken call failed`);
@@ -172,8 +198,18 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 			account.isStale = true;
 			Logger.error(`_getAccountSecurityToken: Authentication method not found for account ${account.displayInfo.displayName}`);
 			throw Error('Failed to get authentication method, please remove and re-add the account');
-
 		}
+	}
+
+	encryptAccountSecurityToken(token: Token): Promise<string> {
+		return this._encryptAccountSecurityToken(token);
+	}
+
+	private async _encryptAccountSecurityToken(token: Token): Promise<string> {
+		if (this.authLibrary === Constants.AuthLibrary.MSAL) {
+			return await this.msalCacheProvider.encryptToken(token);
+		}
+		throw Error(`Encryption of token not supported for ADAL.`);
 	}
 
 	private isAuthenticationResult(result: AuthenticationResult | azdata.ProviderError | null): result is AuthenticationResult {
@@ -192,6 +228,10 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		}
 	}
 
+	private isValidToken(accessToken: Token): boolean {
+		const currentTime = new Date().getTime() / 1000;
+		return (accessToken && Number(accessToken.expiresOn) - currentTime > 2 * 60); // threshold = 2 mins
+	}
 
 	private async _getSecurityToken(account: AzureAccount, resource: azdata.AzureResource): Promise<MultiTenantTokenResponse | undefined> {
 		void vscode.window.showInformationMessage(localize('azure.deprecatedGetSecurityToken', "A call was made to azdata.accounts.getSecurityToken, this method is deprecated and will be removed in future releases. Please use getAccountSecurityToken instead."));
