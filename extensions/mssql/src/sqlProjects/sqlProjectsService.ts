@@ -84,8 +84,7 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	 * @param packageVersion Version of the referenced nuget package
 	 * @param suppressMissingDependencies Whether to suppress missing dependencies
 	 * @param databaseVariable SQLCMD variable name for specifying the other database this reference is to, if different from that of the current project
-	 * @param serverVariable SQLCMD variable name for specifying the other server this reference is to, if different from that of the current project.
-		 If this is set, DatabaseVariable must also be set.
+	 * @param serverVariable SQLCMD variable name for specifying the other server this reference is to, if different from that of the current project. If this is set, DatabaseVariable must also be set.
 	 * @param databaseLiteral Literal name used to reference another database in the same server, if not using SQLCMD variables
 	 */
 	public async addNugetPackageReference(projectUri: string, packageName: string, packageVersion: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Promise<azdata.ResultStatus> {
