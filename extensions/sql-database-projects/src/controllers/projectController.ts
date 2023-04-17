@@ -1821,7 +1821,7 @@ export class ProjectsController {
 		}
 
 		// Publish the changes (retrieved from the cache by operationId)
-		const publishResult = await this.schemaComparePublishProjectChanges(operationId, target.projectFilePath, target.folderStructure);
+		const publishResult = await this.schemaComparePublishProjectChanges(operationId, target.projectFilePath, target.extractTarget);
 
 		if (publishResult.success) {
 			void vscode.window.showInformationMessage(constants.applySuccess);
