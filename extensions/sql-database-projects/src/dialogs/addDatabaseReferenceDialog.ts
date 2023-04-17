@@ -211,8 +211,10 @@ export class AddDatabaseReferenceDialog {
 				label: constants.projectLabel
 			}).component();
 
-		this.projectRadioButton.onDidClick(() => {
-			this.projectRadioButtonClick();
+		this.projectRadioButton.onDidChangeCheckedState((checked) => {
+			if (checked) {
+				this.projectRadioButtonClick();
+			}
 		});
 
 		this.systemDatabaseRadioButton = this.view!.modelBuilder.radioButton()
@@ -221,8 +223,10 @@ export class AddDatabaseReferenceDialog {
 				label: constants.systemDatabase
 			}).component();
 
-		this.systemDatabaseRadioButton.onDidClick(() => {
-			this.systemDbRadioButtonClick();
+		this.systemDatabaseRadioButton.onDidChangeCheckedState((checked) => {
+			if (checked) {
+				this.systemDbRadioButtonClick();
+			}
 		});
 
 		const dacpacRadioButton = this.view!.modelBuilder.radioButton()
@@ -231,8 +235,10 @@ export class AddDatabaseReferenceDialog {
 				label: constants.dacpacText
 			}).component();
 
-		dacpacRadioButton.onDidClick(() => {
-			this.dacpacRadioButtonClick();
+		dacpacRadioButton.onDidChangeCheckedState((checked) => {
+			if (checked) {
+				this.dacpacRadioButtonClick();
+			}
 		});
 
 		const nupkgRadioButton = this.view!.modelBuilder.radioButton()

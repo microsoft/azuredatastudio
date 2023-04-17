@@ -515,7 +515,7 @@ export interface DeployParams {
 	packageFilePath: string;
 	databaseName: string;
 	upgradeExisting: boolean;
-	sqlCommandVariableValues?: Record<string, string>;
+	sqlCommandVariableValues?: Map<string, string>;
 	deploymentOptions?: mssql.DeploymentOptions;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
@@ -524,7 +524,7 @@ export interface DeployParams {
 export interface GenerateDeployScriptParams {
 	packageFilePath: string;
 	databaseName: string;
-	sqlCommandVariableValues?: Record<string, string>;
+	sqlCommandVariableValues?: Map<string, string>;
 	deploymentOptions?: mssql.DeploymentOptions
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
@@ -549,6 +549,14 @@ export interface ValidateStreamingJobParams {
 export interface ParseTSqlScriptParams {
 	filePath: string;
 	databaseSchemaProvider: string;
+}
+
+export interface SavePublishProfileParams {
+	profilePath: string;
+	databaseName: string;
+	connectionString: string;
+	sqlCommandVariableValues?: Map<string, string>;
+	deploymentOptions?: mssql.DeploymentOptions;
 }
 
 export namespace ExportRequest {
@@ -585,6 +593,10 @@ export namespace ValidateStreamingJobRequest {
 
 export namespace ParseTSqlScriptRequest {
 	export const type = new RequestType<ParseTSqlScriptParams, mssql.ParseTSqlScriptResult, void, void>('dacfx/parseTSqlScript');
+}
+
+export namespace SavePublishProfileRequest {
+	export const type = new RequestType<SavePublishProfileParams, azdata.ResultStatus, void, void>('dacfx/savePublishProfile');
 }
 
 // ------------------------------- </ DacFx > ------------------------------------
@@ -778,6 +790,10 @@ export namespace AddSystemDatabaseReferenceRequest {
 	export const type = new RequestType<AddSystemDatabaseReferenceParams, azdata.ResultStatus, void, void>('sqlprojects/addSystemDatabaseReference');
 }
 
+export namespace AddNugetPackageReferenceRequest {
+	export const type = new RequestType<AddNugetPackageReferenceParams, azdata.ResultStatus, void, void>('sqlprojects/addNugetPackageReference');
+}
+
 export namespace DeleteDatabaseReferenceRequest {
 	export const type = new RequestType<DeleteDatabaseReferenceParams, azdata.ResultStatus, void, void>('sqlprojects/deleteDatabaseReference');
 }
@@ -825,6 +841,18 @@ export interface AddDacpacReferenceParams extends AddUserDatabaseReferenceParams
 	 * Path to the .dacpac file
 	 */
 	dacpacPath: string;
+}
+
+export interface AddNugetPackageReferenceParams extends AddUserDatabaseReferenceParams {
+	/**
+	 * NuGet package name
+	 */
+	packageName: string;
+
+	/**
+	 * NuGet package version
+	 */
+	packageVersion: string;
 }
 
 export interface AddDatabaseReferenceParams extends SqlProjectParams {
@@ -1526,6 +1554,15 @@ export namespace CreateLoginRequest {
 	export const type = new RequestType<CreateLoginRequestParams, void, void, void>('objectManagement/createLogin');
 }
 
+export interface ScriptLoginRequestParams {
+	contextId: string;
+	login: mssql.ObjectManagement.Login;
+}
+
+export namespace ScriptLoginRequest {
+	export const type = new RequestType<ScriptLoginRequestParams, string, void, void>('objectManagement/scriptLogin');
+}
+
 export interface UpdateLoginRequestParams {
 	contextId: string;
 	login: mssql.ObjectManagement.Login;
@@ -1562,6 +1599,15 @@ export interface CreateUserRequestParams {
 
 export namespace CreateUserRequest {
 	export const type = new RequestType<CreateUserRequestParams, void, void, void>('objectManagement/createUser');
+}
+
+export interface ScriptUserRequestParams {
+	contextId: string;
+	user: mssql.ObjectManagement.User;
+}
+
+export namespace ScriptUserRequest {
+	export const type = new RequestType<ScriptUserRequestParams, string, void, void>('objectManagement/scriptUser');
 }
 
 export interface UpdateUserRequestParams {

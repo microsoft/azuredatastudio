@@ -39,11 +39,11 @@ export class DacFxTestService implements mssql.IDacFxService {
 		this.dacfxResult.operationId = importOperationId;
 		return Promise.resolve(this.dacfxResult);
 	}
-	deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>): Promise<mssql.DacFxResult> {
+	deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Map<string, string>): Promise<mssql.DacFxResult> {
 		this.dacfxResult.operationId = deployOperationId;
 		return Promise.resolve(this.dacfxResult);
 	}
-	generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>): Promise<mssql.DacFxResult> {
+	generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Map<string, string>): Promise<mssql.DacFxResult> {
 		this.dacfxResult.operationId = generateScript;
 		return Promise.resolve(this.dacfxResult);
 	}
@@ -88,5 +88,9 @@ export class DacFxTestService implements mssql.IDacFxService {
 	}
 	parseTSqlScript(filePath: string, databaseSchemaProvider: string): Thenable<mssql.ParseTSqlScriptResult> {
 		return Promise.resolve({ containsCreateTableStatement: true });
+	}
+
+	savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Map<string, string>): Thenable<azdata.ResultStatus> {
+		return Promise.resolve(this.dacfxResult);
 	}
 }

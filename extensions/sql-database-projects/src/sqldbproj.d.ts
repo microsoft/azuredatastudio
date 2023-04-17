@@ -248,7 +248,7 @@ declare module 'sqldbproj' {
 		/**
 		 * SqlCmd variables and their values
 		 */
-		readonly sqlCmdVariables: Record<string, string>;
+		readonly sqlCmdVariables: Map<string, string>;
 
 		/**
 		 * Pre-deployment scripts in this project

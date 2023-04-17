@@ -22,6 +22,11 @@ export const mockDacFxResult = {
 	report: ''
 };
 
+export const mockSavePublishResult = {
+	success: true,
+	errorMessage: ''
+};
+
 /* Get the deployment options sample model */
 export function getDeploymentOptions(): mssql.DeploymentOptions {
 	const sampleDesc = 'Sample Description text';
@@ -47,16 +52,17 @@ export const mockDacFxOptionsResult: mssql.DacFxOptionsResult = {
 };
 
 export class MockDacFxService implements mssql.IDacFxService {
-	public exportBacpac(_: string, __: string, ___: string, ____: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
-	public importBacpac(_: string, __: string, ___: string, ____: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
-	public extractDacpac(_: string, __: string, ___: string, ____: string, _____: string, ______: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
-	public createProjectFromDatabase(_: string, __: string, ___: string, ____: string, _____: string, ______: mssql.ExtractTarget, _______: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
-	public deployDacpac(_: string, __: string, ___: boolean, ____: string, _____: azdata.TaskExecutionMode, ______?: Record<string, string>): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
-	public generateDeployScript(_: string, __: string, ___: string, ____: azdata.TaskExecutionMode, ______?: Record<string, string>): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
-	public generateDeployPlan(_: string, __: string, ___: string, ____: azdata.TaskExecutionMode): Thenable<mssql.GenerateDeployPlanResult> { return Promise.resolve(mockDacFxResult); }
-	public getOptionsFromProfile(_: string): Thenable<mssql.DacFxOptionsResult> { return Promise.resolve(mockDacFxOptionsResult); }
-	public validateStreamingJob(_: string, __: string): Thenable<mssql.ValidateStreamingJobResult> { return Promise.resolve(mockDacFxResult); }
-	public parseTSqlScript(_: string, __: string): Thenable<mssql.ParseTSqlScriptResult> { return Promise.resolve({ containsCreateTableStatement: true }); }
+	public exportBacpac(_databaseName: string, _packageFilePath: string, _ownerUri: string, _taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
+	public importBacpac(_packageFilePath: string, _databaseName: string, _ownerUri: string, _taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
+	public extractDacpac(_databaseName: string, _packageFilePath: string, _applicationName: string, _applicationVersion: string, _ownerUri: string, _taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
+	public createProjectFromDatabase(_databaseName: string, _targetFilePath: string, _applicationName: string, _applicationVersion: string, _ownerUri: string, _extractTarget: mssql.ExtractTarget, _taskExecutionMode: azdata.TaskExecutionMode, _includePermissions?: boolean): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
+	public deployDacpac(_packageFilePath: string, _targetDatabaseName: string, _upgradeExisting: boolean, _ownerUri: string, _taskExecutionMode: azdata.TaskExecutionMode, _sqlCommandVariableValues?: Map<string, string>, _deploymentOptions?: mssql.DeploymentOptions): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
+	public generateDeployScript(_packageFilePath: string, _targetDatabaseName: string, _ownerUri: string, _taskExecutionMode: azdata.TaskExecutionMode, _sqlCommandVariableValues?: Map<string, string>, _deploymentOptions?: mssql.DeploymentOptions): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
+	public generateDeployPlan(_packageFilePath: string, _targetDatabaseName: string, _ownerUri: string, _taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.GenerateDeployPlanResult> { return Promise.resolve(mockDacFxResult); }
+	public getOptionsFromProfile(_profilePath: string): Thenable<mssql.DacFxOptionsResult> { return Promise.resolve(mockDacFxOptionsResult); }
+	public validateStreamingJob(_packageFilePath: string, _createStreamingJobTsql: string): Thenable<mssql.ValidateStreamingJobResult> { return Promise.resolve(mockDacFxResult); }
+	public parseTSqlScript(_filePath: string, _databaseSchemaProvider: string): Thenable<mssql.ParseTSqlScriptResult> { return Promise.resolve({ containsCreateTableStatement: true }); }
+	public savePublishProfile(_profilePath: string, _databaseName: string, _connectionString: string, _sqlCommandVariableValues?: Map<string, string>, _deploymentOptions?: mssql.DeploymentOptions): Thenable<azdata.ResultStatus> { return Promise.resolve(mockSavePublishResult); }
 }
 
 export function createContext(): TestContext {

@@ -25,7 +25,7 @@ import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
 import { ShellCommandOptions } from '../tools/shellExecutionHelper';
 import { BuildHelper } from '../tools/buildHelper';
-import { readPublishProfile } from '../models/publishProfile/publishProfile';
+import { readPublishProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
@@ -225,17 +225,17 @@ export class ProjectsController {
 		if (projectTypeId === constants.edgeSqlDatabaseProjectTypeId) {
 			const project = await Project.openProject(newProjFilePath);
 
-			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.table), 'DataTable.sql', { 'OBJECT_NAME': 'DataTable' });
-			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.dataSource), 'EdgeHubInputDataSource.sql', { 'OBJECT_NAME': 'EdgeHubInputDataSource', 'LOCATION': 'edgehub://' });
-			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.dataSource), 'SqlOutputDataSource.sql', { 'OBJECT_NAME': 'SqlOutputDataSource', 'LOCATION': 'sqlserver://tcp:.,1433' });
-			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.fileFormat), 'StreamFileFormat.sql', { 'OBJECT_NAME': 'StreamFileFormat' });
-			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStream), 'EdgeHubInputStream.sql', { 'OBJECT_NAME': 'EdgeHubInputStream', 'DATA_SOURCE_NAME': 'EdgeHubInputDataSource', 'LOCATION': 'input', 'OPTIONS': ',\n\tFILE_FORMAT = StreamFileFormat' });
-			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStream), 'SqlOutputStream.sql', { 'OBJECT_NAME': 'SqlOutputStream', 'DATA_SOURCE_NAME': 'SqlOutputDataSource', 'LOCATION': 'TSQLStreaming.dbo.DataTable', 'OPTIONS': '' });
-			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStreamingJob), 'EdgeStreamingJob.sql', { 'OBJECT_NAME': 'EdgeStreamingJob' });
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.table), 'DataTable.sql', new Map([['OBJECT_NAME', 'DataTable']]));
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.dataSource), 'EdgeHubInputDataSource.sql', new Map([['OBJECT_NAME', 'EdgeHubInputDataSource'], ['LOCATION', 'edgehub://']]));
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.dataSource), 'SqlOutputDataSource.sql', new Map([['OBJECT_NAME', 'SqlOutputDataSource'], ['LOCATION', 'sqlserver://tcp:.,1433']]));
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.fileFormat), 'StreamFileFormat.sql', new Map([['OBJECT_NAME', 'StreamFileFormat']]));
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStream), 'EdgeHubInputStream.sql', new Map([['OBJECT_NAME', 'EdgeHubInputStream'], ['DATA_SOURCE_NAME', 'EdgeHubInputDataSource'], ['LOCATION', 'input'], ['OPTIONS', ',\n\tFILE_FORMAT = StreamFileFormat']]));
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStream), 'SqlOutputStream.sql', new Map([['OBJECT_NAME', 'SqlOutputStream'], ['DATA_SOURCE_NAME', 'SqlOutputDataSource'], ['LOCATION', 'TSQLStreaming.dbo.DataTable'], ['OPTIONS', '']]));
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStreamingJob), 'EdgeStreamingJob.sql', new Map([['OBJECT_NAME', 'EdgeStreamingJob']]));
 		}
 	}
 
-	private async addFileToProjectFromTemplate(project: ISqlProject, itemType: templates.ProjectScriptType, relativePath: string, expansionMacros: Record<string, string>): Promise<string> {
+	private async addFileToProjectFromTemplate(project: ISqlProject, itemType: templates.ProjectScriptType, relativePath: string, expansionMacros: Map<string, string>): Promise<string> {
 		const newFileText = templates.macroExpansion(itemType.templateScript, expansionMacros);
 		const absolutePath = path.join(project.projectFolderPath, relativePath)
 		await utils.ensureFileExists(absolutePath, newFileText);
@@ -445,6 +445,7 @@ export class ProjectsController {
 			publishDatabaseDialog.publishToContainer = async (proj, prof) => this.publishToDockerContainer(proj, prof);
 			publishDatabaseDialog.generateScript = async (proj, prof) => this.publishOrScriptProject(proj, prof, false);
 			publishDatabaseDialog.readPublishProfile = async (profileUri) => readPublishProfile(profileUri);
+			publishDatabaseDialog.savePublishProfile = async (profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions) => savePublishProfile(profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions);
 
 			publishDatabaseDialog.openDialog();
 
@@ -586,7 +587,7 @@ export class ProjectsController {
 		const timeToPublish = actionEndTime - actionStartTime;
 		telemetryProps.actionDuration = timeToPublish.toString();
 		telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
-		telemetryProps.sqlcmdVariablesCount = Object.keys(project.sqlCmdVariables).length.toString();
+		telemetryProps.sqlcmdVariablesCount = project.sqlCmdVariables.size.toString();
 		telemetryProps.projectTargetPLatform = project.getProjectTargetVersion();
 
 		const currentPublishIndex = this.publishInfo.findIndex(d => d.startDate === currentPublishTimeInfo);
@@ -749,7 +750,7 @@ export class ProjectsController {
 		}
 
 		try {
-			const absolutePath = await this.addFileToProjectFromTemplate(project, itemType, relativeFilePath, { 'OBJECT_NAME': itemObjectName });
+			const absolutePath = await this.addFileToProjectFromTemplate(project, itemType, relativeFilePath, new Map([['OBJECT_NAME', itemObjectName]]));
 
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addItemFromTree)
 				.withAdditionalProperties(telemetryProps)
@@ -820,6 +821,7 @@ export class ProjectsController {
 					await project.excludePostDeploymentScript(fileEntry.relativePath);
 					break;
 				case constants.DatabaseProjectItemType.noneFile:
+				case constants.DatabaseProjectItemType.publishProfile:
 					await project.excludeNoneItem(fileEntry.relativePath);
 					break;
 				default:
@@ -879,6 +881,7 @@ export class ProjectsController {
 						await project.deletePostDeploymentScript(node.entryKey);
 						break;
 					case constants.DatabaseProjectItemType.noneFile:
+					case constants.DatabaseProjectItemType.publishProfile:
 						await project.deleteNoneItem(node.entryKey);
 						break;
 					default:
@@ -903,13 +906,21 @@ export class ProjectsController {
 		const node = context.element as BaseProjectTreeItem;
 		const project = await this.getProjectFromContext(node);
 		const file = this.getFileProjectEntry(project, node);
+		const baseName = path.basename(node.friendlyName);
+		let fileExtension: string;
+
+		if (utils.isPublishProfile(baseName)) {
+			fileExtension = constants.publishProfileExtension;
+		} else {
+			fileExtension = constants.sqlFileExtension;
+		}
 
 		// need to use quickpick because input box isn't supported in treeviews
 		// https://github.com/microsoft/vscode/issues/117502 and https://github.com/microsoft/vscode/issues/97190
 		const newFileName = await vscode.window.showInputBox(
 			{
 				title: constants.enterNewName,
-				value: path.basename(node.friendlyName, constants.sqlFileExtension),
+				value: path.basename(baseName, fileExtension),
 				ignoreFocusOut: true,
 				validateInput: async (value) => {
 					return await this.fileAlreadyExists(value, file?.fsUri.fsPath!) ? constants.fileAlreadyExists(value) : undefined;
@@ -920,7 +931,7 @@ export class ProjectsController {
 			return;
 		}
 
-		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(file?.relativePath!)), `${newFileName}.sql`);
+		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(file?.relativePath!)), `${newFileName}${fileExtension}`);
 
 		const renameResult = await project.move(node, newFilePath);
 
@@ -946,7 +957,7 @@ export class ProjectsController {
 		const node = context.element as SqlCmdVariableTreeItem;
 		const project = await this.getProjectFromContext(node);
 		const variableName = node.friendlyName;
-		const originalValue = project.sqlCmdVariables[variableName];
+		const originalValue = project.sqlCmdVariables.get(variableName);
 
 		const newValue = await vscode.window.showInputBox(
 			{
@@ -975,7 +986,7 @@ export class ProjectsController {
 				title: constants.enterNewSqlCmdVariableName,
 				ignoreFocusOut: true,
 				validateInput: (value) => {
-					return this.sqlCmdVariableNameAlreadyExists(value, project) ? constants.sqlcmdVariableAlreadyExists : undefined;
+					return project.sqlCmdVariables.has(value) ? constants.sqlcmdVariableAlreadyExists : undefined;
 				}
 			});
 
@@ -995,10 +1006,6 @@ export class ProjectsController {
 
 		await project.addSqlCmdVariable(variableName, defaultValue);
 		this.refreshProjectsTree(context);
-	}
-
-	private sqlCmdVariableNameAlreadyExists(newVariableName: string, project: Project): boolean {
-		return Object.keys(project.sqlCmdVariables).findIndex(v => v === newVariableName) !== -1;
 	}
 
 	private getDatabaseReference(project: Project, context: BaseProjectTreeItem): IDatabaseReferenceProjectEntry | undefined {
@@ -1810,7 +1817,7 @@ export class ProjectsController {
 		}
 
 		// Publish the changes (retrieved from the cache by operationId)
-		const publishResult = await this.schemaComparePublishProjectChanges(operationId, target.projectFilePath, target.folderStructure);
+		const publishResult = await this.schemaComparePublishProjectChanges(operationId, target.projectFilePath, target.extractTarget);
 
 		if (publishResult.success) {
 			void vscode.window.showInformationMessage(constants.applySuccess);
