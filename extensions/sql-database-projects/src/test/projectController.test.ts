@@ -302,8 +302,8 @@ describe('ProjectsController', function (): void {
 				should(proj.databaseReferences.length).equal(0, 'All database references should have been deleted');
 			});
 
-			it.only('Should exclude nested ProjectEntry from node', async function (): Promise<void> {
-				let proj = await testUtils.createTestProject(this.test, templates.newSqlProjectTemplate);
+			it('Should exclude nested ProjectEntry from node', async function (): Promise<void> {
+				let proj = await testUtils.createTestSqlProject(this.test);
 				const setupResult = await setupDeleteExcludeTest(proj);
 				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1], preDeployEntry = setupResult[2], postDeployEntry = setupResult[3], noneEntry = setupResult[4];
 
