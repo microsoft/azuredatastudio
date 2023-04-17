@@ -398,12 +398,14 @@ export class AddDatabaseReferenceDialog {
 	private createNupkgFormComponentGroup(): azdataType.FormComponentGroup {
 		this.nupkgNameTextbox = this.view!.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.nupkgText,
-			placeHolder: constants.nupkgNamePlaceholder
+			placeHolder: constants.nupkgNamePlaceholder,
+			required: true
 		}).component();
 
 		this.nupkgVersionTextbox = this.view!.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.version,
-			placeHolder: constants.versionPlaceholder
+			placeHolder: constants.versionPlaceholder,
+			required: true
 		}).component();
 
 		return {
