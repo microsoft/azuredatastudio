@@ -45,7 +45,7 @@ export function urlToHttpOptions(url: URL): https.RequestOptions {
  * @param err The error to convert into a PromptFailedResult
  * @returns The PromptFailedResult object
  */
-export function errorToParseFailedResult(err: any): azdata.PromptFailedResult {
+export function errorToPromptFailedResult(err: any): azdata.PromptFailedResult {
 	return {
 		canceled: false,
 		name: err.name as string,

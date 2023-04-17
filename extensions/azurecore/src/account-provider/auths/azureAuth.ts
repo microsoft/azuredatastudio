@@ -27,7 +27,7 @@ import { AzureAuthError } from './azureAuthError';
 import { AccountInfo, AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
 import { HttpClient } from './httpClient';
 import { getProxyEnabledHttpClient } from '../../utils';
-import { errorToParseFailedResult } from './networkUtils';
+import { errorToPromptFailedResult } from './networkUtils';
 const localize = nls.loadMessageBundle();
 
 export abstract class AzureAuth implements vscode.Disposable {
@@ -146,14 +146,14 @@ export abstract class AzureAuth implements vscode.Disposable {
 				}
 				Logger.error(ex.originalMessageAndException);
 			} else {
-				const promptFailedResult = errorToParseFailedResult(ex);
+				const promptFailedResult = errorToPromptFailedResult(ex);
 				if (promptFailedResult.errorMessage) {
 					loginComplete?.reject(new AzureAuthError(promptFailedResult.errorMessage, promptFailedResult.errorMessage, undefined));
 					return promptFailedResult;
 				}
 				Logger.error(ex);
 			}
-			return errorToParseFailedResult(ex);
+			return errorToPromptFailedResult(ex);
 		}
 	}
 
@@ -365,7 +365,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				if (e.name === 'ClientAuthError') {
 					Logger.verbose('[ClientAuthError] Failed to silently acquire token');
 				}
-				return errorToParseFailedResult(e);
+				return errorToPromptFailedResult(e);
 			}
 		}
 	}
