@@ -790,6 +790,10 @@ export namespace AddSystemDatabaseReferenceRequest {
 	export const type = new RequestType<AddSystemDatabaseReferenceParams, azdata.ResultStatus, void, void>('sqlprojects/addSystemDatabaseReference');
 }
 
+export namespace AddNugetPackageReferenceRequest {
+	export const type = new RequestType<AddNugetPackageReferenceParams, azdata.ResultStatus, void, void>('sqlprojects/addNugetPackageReference');
+}
+
 export namespace DeleteDatabaseReferenceRequest {
 	export const type = new RequestType<DeleteDatabaseReferenceParams, azdata.ResultStatus, void, void>('sqlprojects/deleteDatabaseReference');
 }
@@ -837,6 +841,18 @@ export interface AddDacpacReferenceParams extends AddUserDatabaseReferenceParams
 	 * Path to the .dacpac file
 	 */
 	dacpacPath: string;
+}
+
+export interface AddNugetPackageReferenceParams extends AddUserDatabaseReferenceParams {
+	/**
+	 * NuGet package name
+	 */
+	packageName: string;
+
+	/**
+	 * NuGet package version
+	 */
+	packageVersion: string;
 }
 
 export interface AddDatabaseReferenceParams extends SqlProjectParams {
