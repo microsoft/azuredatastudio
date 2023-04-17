@@ -845,12 +845,12 @@ export interface AddDacpacReferenceParams extends AddUserDatabaseReferenceParams
 
 export interface AddNugetPackageReferenceParams extends AddUserDatabaseReferenceParams {
 	/**
-	 * Name of NuGet package
+	 * NuGet package name
 	 */
 	packageName: string;
 
 	/**
-	 * Version of NuGet package
+	 * NuGet package version
 	 */
 	packageVersion: string;
 }
