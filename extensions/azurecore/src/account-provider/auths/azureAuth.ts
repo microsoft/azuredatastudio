@@ -715,7 +715,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	//#region data modeling
 
 	public createAccount(tokenClaims: TokenClaims, key: string, tenants: Tenant[]): AzureAccount {
-		Logger.verbose(`Token Claims acccount: ${tokenClaims.name}, TID: ${tokenClaims.tid}`);
+		Logger.verbose(`Token Claims acccount: ${tokenClaims.preferred_username}, TID: ${tokenClaims.tid}`);
 		tenants.forEach((tenant) => {
 			Logger.verbose(`Tenant ID: ${tenant.id}, Tenant Name: ${tenant.displayName}`);
 		});
