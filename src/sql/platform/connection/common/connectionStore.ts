@@ -181,10 +181,8 @@ export class ConnectionStore {
 	}
 
 	public getProfileWithoutPassword(conn: IConnectionProfile): ConnectionProfile {
-		let savedConn = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, conn);
-		let newSavedConn = savedConn.withoutPassword();
-		savedConn.dispose();
-		return newSavedConn;
+		const savedConn = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, conn);
+		return savedConn.withoutPassword();
 	}
 
 	/**
@@ -229,9 +227,7 @@ export class ConnectionStore {
 
 		list.unshift(savedProfile);
 
-		const profiles = list.filter(n => n !== undefined).map(c => c.toIConnectionProfile());
-		list.forEach(c => c.dispose());
-		return profiles;
+		return list.filter(n => n !== undefined).map(c => c.toIConnectionProfile());
 	}
 
 	private removeFromConnectionList(conn: IConnectionProfile, list: ConnectionProfile[]): IConnectionProfile[] {
