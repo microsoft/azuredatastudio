@@ -481,14 +481,18 @@ export class UpdateProjectFromDatabaseDialog {
 		await this.compareActionRadioButton.updateProperties({ checked: true });
 		this.action = UpdateProjectAction.Compare;
 
-		this.compareActionRadioButton.onDidClick(async () => {
-			this.action = UpdateProjectAction.Compare;
-			this.tryEnableUpdateButton();
+		this.compareActionRadioButton.onDidChangeCheckedState((checked) => {
+			if (checked) {
+				this.action = UpdateProjectAction.Compare;
+				this.tryEnableUpdateButton();
+			}
 		});
 
-		this.updateActionRadioButton.onDidClick(async () => {
-			this.action = UpdateProjectAction.Update;
-			this.tryEnableUpdateButton();
+		this.updateActionRadioButton.onDidChangeCheckedState((checked) => {
+			if (checked) {
+				this.action = UpdateProjectAction.Update;
+				this.tryEnableUpdateButton();
+			}
 		});
 
 		let radioButtons = view.modelBuilder.flexContainer()
