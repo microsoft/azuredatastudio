@@ -14,7 +14,7 @@ import { promises as fs } from 'fs';
 import { Project } from '../models/project';
 import { exists, convertSlashesForSqlProj, getPlatformSafeFileEntryPath, systemDatabaseToString } from '../common/utils';
 import { Uri, window } from 'vscode';
-import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { IDacpacReferenceSettings, INugetPackageReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { ItemType } from 'sqldbproj';
 import { SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry, DacpacReferenceProjectEntry } from '../models/projectEntry';
 import { ProjectType, SystemDatabase } from 'mssql';
@@ -707,7 +707,7 @@ describe('Project: database references', function (): void {
 		should(project.sqlCmdVariables.size).equal(2, `There should be two new sqlcmd variables added. Actual: ${project.sqlCmdVariables.size}`);
 	});
 
-	it.only('Should add a nupkg reference to the same database correctly', async function (): Promise<void> {
+	it('Should add a nupkg reference to the same database correctly', async function (): Promise<void> {
 		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newSdkStyleProjectSdkNodeBaseline);
 		let project = await Project.openProject(projFilePath);
 
@@ -725,6 +725,50 @@ describe('Project: database references', function (): void {
 		should(project.databaseReferences[0].referenceName).equal('testPackage', 'The database reference should be project1');
 		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
 		should(project.sqlCmdVariables.size).equal(0, `There should be no sqlcmd variables added. Actual: ${project.sqlCmdVariables.size}`);
+	});
+
+	it('Should add a nupkg reference to a different database in the same server correctly', async function (): Promise<void> {
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newSdkStyleProjectSdkNodeBaseline);
+		let project = await Project.openProject(projFilePath);
+
+		// add database reference to a different database on the same different server
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+		should(project.sqlCmdVariables.size).equal(0, 'There should be no sqlcmd variables to start with');
+		await project.addNugetPackageReference({
+			packageName: 'testPackage',
+			packageVersion: '1.0.1',
+			databaseName: 'testdbName',
+			databaseVariable: 'testdb',
+			suppressMissingDependenciesErrors: false
+		});
+
+		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to testPackage');
+		should(project.databaseReferences[0].referenceName).equal('testPackage', 'The database reference should be testPackage');
+		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
+		should(project.sqlCmdVariables.size).equal(1, `There should be one new sqlcmd variable added. Actual: ${project.sqlCmdVariables.size}`);
+	});
+
+	it('Should add a nupkg reference to a different database in a different server correctly', async function (): Promise<void> {
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newSdkStyleProjectSdkNodeBaseline);
+		let project = await Project.openProject(projFilePath);
+
+		// add database reference to a different database on a different server
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+		should(project.sqlCmdVariables.size).equal(0, 'There should be no sqlcmd variables to start with');
+		await project.addNugetPackageReference({
+			packageName: 'testPackage',
+			packageVersion: '1.0.1',
+			databaseName: 'testdbName',
+			databaseVariable: 'testdb',
+			serverName: 'otherServerName',
+			serverVariable: 'otherServer',
+			suppressMissingDependenciesErrors: false
+		});
+
+		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to testPackage');
+		should(project.databaseReferences[0].referenceName).equal('testPackage', 'The database reference should be testPackage');
+		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
+		should(project.sqlCmdVariables.size).equal(2, `There should be two new sqlcmd variables added. Actual: ${project.sqlCmdVariables.size}`);
 	});
 
 	it('Should throw an error trying to add a nupkg reference to legacy style project', async function (): Promise<void> {
@@ -800,6 +844,27 @@ describe('Project: database references', function (): void {
 		// try to add reference to testProject again
 		await testUtils.shouldThrowSpecificError(async () => await project.addProjectReference(projectReference), constants.databaseReferenceAlreadyExists);
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after trying to add a reference to testProject again');
+	});
+
+	it.only('Should not allow adding duplicate nupkg references', async function (): Promise<void> {
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newSdkStyleProjectSdkNodeBaseline);
+		let project = await Project.openProject(projFilePath);
+
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+
+		const nupkgReference: INugetPackageReferenceSettings = {
+			packageName: 'testPackage',
+			packageVersion: '1.0.0',
+			suppressMissingDependenciesErrors: false
+		};
+		await project.addNugetPackageReference(nupkgReference);
+
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to testPackage');
+		should(project.databaseReferences[0].referenceName).equal('testPackage', 'project.databaseReferences[0].databaseName should be testPackage');
+
+		// try to add reference to testProject again
+		await testUtils.shouldThrowSpecificError(async () => await project.addNugetPackageReference(nupkgReference), constants.databaseReferenceAlreadyExists);
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after trying to add a reference to testPackage again');
 	});
 
 	it('Should handle trying to add duplicate database references when slashes are different direction', async function (): Promise<void> {
