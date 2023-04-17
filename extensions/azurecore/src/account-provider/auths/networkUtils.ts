@@ -10,7 +10,7 @@ import * as https from 'https';
 export function getNetworkResponse<Body>(headers: Record<string, string>, body: Body, statusCode: number): NetworkResponse<Body> {
 	return {
 		headers: headers,
-		body: body,
+		data: body,
 		status: statusCode
 	};
 }

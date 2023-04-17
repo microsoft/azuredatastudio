@@ -171,7 +171,7 @@ export async function getLocations(appContext: AppContext, account?: AzureAccoun
 		const path = `/subscriptions/${subscription.id}/locations?api-version=2020-01-01`;
 		const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
 		const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors, host);
-		result.locations.push(...response.response.body.value);
+		result.locations.push(...response.response.data.value);
 		result.errors.push(...response.errors);
 	} catch (err) {
 		const error = new Error(localize('azure.accounts.getLocations.queryError', "Error fetching locations for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}",
@@ -448,8 +448,8 @@ export async function makeHttpRequest(account: AzureAccount, subscription: azure
 	} else if (response.status < 200 || response.status > 299) {
 		let errorMessage: string[] = [];
 		errorMessage.push(response.status.toString());
-		if (response.body && response.body.error) {
-			errorMessage.push(`${response.body.error.code} : ${response.body.error.message}`);
+		if (response.data && response.data.error) {
+			errorMessage.push(`${response.data.error.code} : ${response.data.error.message}`);
 		}
 		const error = new Error(errorMessage.join(EOL));
 		if (!ignoreErrors) {
@@ -468,7 +468,7 @@ export async function getManagedDatabases(account: AzureAccount, subscription: a
 	const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
 	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors, host);
 	return {
-		databases: response?.response?.body?.value ?? [],
+		databases: response?.response?.data?.value ?? [],
 		errors: response.errors ? response.errors : []
 	};
 }
@@ -478,7 +478,7 @@ export async function getBlobContainers(account: AzureAccount, subscription: azu
 	const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
 	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors, host);
 	return {
-		blobContainers: response?.response?.body?.value ?? [],
+		blobContainers: response?.response?.data?.value ?? [],
 		errors: response.errors ? response.errors : []
 	};
 }
@@ -488,7 +488,7 @@ export async function getFileShares(account: AzureAccount, subscription: azureRe
 	const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
 	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors, host);
 	return {
-		fileShares: response?.response?.body?.value ?? [],
+		fileShares: response?.response?.data?.value ?? [],
 		errors: response.errors ? response.errors : []
 	};
 }
@@ -501,7 +501,7 @@ export async function createResourceGroup(account: AzureAccount, subscription: a
 	const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
 	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.PUT, requestBody, ignoreErrors, host);
 	return {
-		resourceGroup: response?.response?.body,
+		resourceGroup: response?.response?.data,
 		errors: response.errors ? response.errors : []
 	};
 }
@@ -511,8 +511,8 @@ export async function getStorageAccountAccessKey(account: AzureAccount, subscrip
 	const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
 	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.POST, undefined, ignoreErrors, host);
 	return {
-		keyName1: response?.response?.body?.keys[0].value ?? '',
-		keyName2: response?.response?.body?.keys[0].value ?? '',
+		keyName1: response?.response?.data?.keys[0].value ?? '',
+		keyName2: response?.response?.data?.keys[0].value ?? '',
 		errors: response.errors ? response.errors : []
 	};
 }

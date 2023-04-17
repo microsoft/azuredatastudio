@@ -257,7 +257,7 @@ const networkRequestViaProxy = <T>(
 				if (((httpStatusCode < HttpStatus.SUCCESS_RANGE_START) || (httpStatusCode > HttpStatus.SUCCESS_RANGE_END)) &&
 					// do not destroy the request for the device code flow
 					// @ts-ignore
-					networkResponse.body['error'] !== HttpClient.AUTHORIZATION_PENDING) {
+					networkResponse.data['error'] !== HttpClient.AUTHORIZATION_PENDING) {
 					request.destroy();
 				}
 				resolve(networkResponse);
@@ -352,7 +352,7 @@ const networkRequestViaHttps = <T>(
 				if (((statusCode < HttpStatus.SUCCESS_RANGE_START) || (statusCode > HttpStatus.SUCCESS_RANGE_END)) &&
 					// do not destroy the request for the device code flow
 					// @ts-ignore
-					networkResponse.body['error'] !== HttpClient.AUTHORIZATION_PENDING) {
+					networkResponse.data['error'] !== HttpClient.AUTHORIZATION_PENDING) {
 					request.destroy();
 				}
 				resolve(networkResponse);
