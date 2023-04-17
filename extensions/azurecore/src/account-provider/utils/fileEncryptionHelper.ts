@@ -26,23 +26,22 @@ export class FileEncryptionHelper {
 	private _algorithm: string;
 	private _bufferEncoding: BufferEncoding;
 	private _binaryEncoding: crypto.HexBase64BinaryEncoding;
+	private _ivCredId = `${this._fileName}-iv`;
+	private _keyCredId = `${this._fileName}-key`;
 	private _ivBuffer: Buffer | undefined;
 	private _keyBuffer: Buffer | undefined;
 
 	public async init(): Promise<void> {
 
-		const ivCredId = `${this._fileName}-iv`;
-		const keyCredId = `${this._fileName}-key`;
-
-		const iv = await this.readEncryptionKey(ivCredId);
-		const key = await this.readEncryptionKey(keyCredId);
+		const iv = await this.readEncryptionKey(this._ivCredId);
+		const key = await this.readEncryptionKey(this._keyCredId);
 
 		if (!iv || !key) {
 			this._ivBuffer = crypto.randomBytes(16);
 			this._keyBuffer = crypto.randomBytes(32);
 
-			if (!await this.saveEncryptionKey(ivCredId, this._ivBuffer.toString(this._bufferEncoding))
-				|| !await this.saveEncryptionKey(keyCredId, this._keyBuffer.toString(this._bufferEncoding))) {
+			if (!await this.saveEncryptionKey(this._ivCredId, this._ivBuffer.toString(this._bufferEncoding))
+				|| !await this.saveEncryptionKey(this._keyCredId, this._keyBuffer.toString(this._bufferEncoding))) {
 				Logger.error(`Encryption keys could not be saved in credential store, this will cause access token persistence issues.`);
 				await this.showCredSaveErrorOnWindows();
 			}
@@ -81,24 +80,41 @@ export class FileEncryptionHelper {
 	}
 
 	fileOpener = async (content: string): Promise<string> => {
-		if (!this._keyBuffer || !this._ivBuffer) {
-			await this.init();
-		}
-		let plaintext = content;
-		const decipherIv = crypto.createDecipheriv(this._algorithm, this._keyBuffer!, this._ivBuffer!);
-		if (this._authLibrary === AuthLibrary.ADAL) {
-			const split = content.split('%');
-			if (split.length !== 2) {
-				throw new Error('File didn\'t contain the auth tag.');
+		try {
+			if (!this._keyBuffer || !this._ivBuffer) {
+				await this.init();
 			}
-			(decipherIv as crypto.DecipherGCM).setAuthTag(Buffer.from(split[1], this._binaryEncoding));
-			plaintext = split[0];
+			let plaintext = content;
+			const decipherIv = crypto.createDecipheriv(this._algorithm, this._keyBuffer!, this._ivBuffer!);
+			if (this._authLibrary === AuthLibrary.ADAL) {
+				const split = content.split('%');
+				if (split.length !== 2) {
+					throw new Error('File didn\'t contain the auth tag.');
+				}
+				(decipherIv as crypto.DecipherGCM).setAuthTag(Buffer.from(split[1], this._binaryEncoding));
+				plaintext = split[0];
+			}
+			return `${decipherIv.update(plaintext, this._binaryEncoding, 'utf8')}${decipherIv.final('utf8')}`;
+		} catch (ex) {
+			Logger.error(`FileEncryptionHelper: Error occurred when decrypting data, IV/KEY will be reset: ${ex}`);
+			// Reset IV/Keys if crypto cannot encrypt/decrypt data.
+			// This could be a possible case of corruption of expected iv/key combination
+			await this.deleteEncryptionKey(this._ivCredId);
+			await this.deleteEncryptionKey(this._keyCredId);
+			this._ivBuffer = undefined;
+			this._keyBuffer = undefined;
+			await this.init();
+			// Throw error so cache file can be reset to empty.
+			throw new Error(`Decryption failed with error: ${ex}`);
 		}
-		return `${decipherIv.update(plaintext, this._binaryEncoding, 'utf8')}${decipherIv.final('utf8')}`;
 	}
 
 	protected async readEncryptionKey(credentialId: string): Promise<string | undefined> {
 		return (await this._credentialService.readCredential(credentialId))?.password;
+	}
+
+	protected async deleteEncryptionKey(credentialId: string): Promise<boolean> {
+		return (await this._credentialService.deleteCredential(credentialId));
 	}
 
 	protected async saveEncryptionKey(credentialId: string, password: string): Promise<boolean> {

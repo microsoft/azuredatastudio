@@ -260,7 +260,7 @@ export async function runResourceQuery<T extends azureResource.AzureGraphResourc
 					skipToken: skipToken
 				}
 			});
-			const resources: T[] = response.data;
+			const resources: T[] = response.data as T[];
 			totalProcessed += resources.length;
 			allResources.push(...resources);
 			if (response.skipToken && totalProcessed < response.totalRecords) {
