@@ -30,16 +30,13 @@ export class PublishDatabaseDialog {
 	public dialog: azdataType.window.Dialog;
 	public publishTab: azdataType.window.DialogTab;
 	private targetConnectionTextBox: azdataType.InputBoxComponent | undefined;
-	private dataSourcesFormComponent: azdataType.FormComponent | undefined;
 	private dataSourcesDropDown: azdataType.DropDownComponent | undefined;
 	private targetDatabaseDropDown: azdataType.DropDownComponent | undefined;
 	private targetDatabaseTextBox: azdataType.TextComponent | undefined;
 	private selectConnectionButton: azdataType.ButtonComponent | undefined;
-	private connectionsRadioButton: azdataType.RadioButtonComponent | undefined;
 	private existingServerRadioButton: azdataType.RadioButtonComponent | undefined;
 	private dockerServerRadioButton: azdataType.RadioButtonComponent | undefined;
 	private eulaCheckBox: azdataType.CheckBoxComponent | undefined;
-	private dataSourcesRadioButton: azdataType.RadioButtonComponent | undefined;
 	private sqlCmdVariablesTable: azdataType.DeclarativeTableComponent | undefined;
 	private sqlCmdVariablesFormComponentGroup: azdataType.FormComponentGroup | undefined;
 	private revertSqlCmdVarsButton: azdataType.ButtonComponent | undefined;
@@ -120,11 +117,7 @@ export class PublishDatabaseDialog {
 	private initializePublishTab(): void {
 		this.publishTab.registerContent(async view => {
 			const flexRadioButtonsModel = this.createPublishTypeRadioButtons(view);
-			// TODO : enable using this when data source creation is enabled
-			this.createRadioButtons(view);
 			await this.createLocalDbInfoRow(view);
-
-			this.dataSourcesFormComponent = this.createDataSourcesFormComponent(view);
 
 			this.sqlCmdVariablesTable = this.createSqlCmdTable(view);
 			this.revertSqlCmdVarsButton = this.createRevertSqlCmdVarsButton(view);
@@ -354,46 +347,6 @@ export class PublishDatabaseDialog {
 		return this.serverName!;
 	}
 
-	private createRadioButtons(view: azdataType.ModelView): azdataType.Component {
-		this.connectionsRadioButton = view.modelBuilder.radioButton()
-			.withProps({
-				name: 'connection',
-				label: constants.connectionRadioButtonLabel
-			}).component();
-
-		this.connectionsRadioButton.checked = true;
-		this.connectionsRadioButton.onDidClick(() => {
-			this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.dataSourcesFormComponent);
-			// TODO: fix this when data sources are enabled again
-			// this.formBuilder!.insertFormItem(<azdata.FormComponent>this.targetConnectionTextBox, 2);
-			this.connectionIsDataSource = false;
-			this.targetDatabaseDropDown!.value = this.getDefaultDatabaseName();
-		});
-
-		this.dataSourcesRadioButton = view.modelBuilder.radioButton()
-			.withProps({
-				name: 'connection',
-				label: constants.dataSourceRadioButtonLabel
-			}).component();
-
-		this.dataSourcesRadioButton.onDidClick(() => {
-			// TODO: fix this when data sources are enabled again
-			// this.formBuilder!.removeFormItem(<azdata.FormComponent>this.targetConnectionTextBox);
-			this.formBuilder!.insertFormItem(<azdataType.FormComponent>this.dataSourcesFormComponent, 2);
-			this.connectionIsDataSource = true;
-
-			this.setDatabaseToSelectedDataSourceDatabase();
-		});
-
-		let flexRadioButtonsModel: azdataType.FlexContainer = view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'column' })
-			.withItems([this.connectionsRadioButton, this.dataSourcesRadioButton])
-			.withProps({ ariaRole: 'radiogroup' })
-			.component();
-
-		return flexRadioButtonsModel;
-	}
-
 	private createPublishTypeRadioButtons(view: azdataType.ModelView): azdataType.Component {
 		const name = getPublishServerName(this.project.getProjectTargetVersion());
 		const publishToLabel = view.modelBuilder.text().withProps({
@@ -485,54 +438,6 @@ export class PublishDatabaseDialog {
 		});
 
 		return this.targetConnectionTextBox;
-	}
-
-	private createDataSourcesFormComponent(view: azdataType.ModelView): azdataType.FormComponent {
-		if (this.project.dataSources.length > 0) {
-			return this.createDataSourcesDropdown(view);
-		} else {
-			const noDataSourcesText = view.modelBuilder.text().withProps({ value: constants.noDataSourcesText }).component();
-			return {
-				title: constants.dataSourceDropdownTitle,
-				component: noDataSourcesText
-			};
-		}
-	}
-
-	private createDataSourcesDropdown(view: azdataType.ModelView): azdataType.FormComponent {
-		let dataSourcesValues: DataSourceDropdownValue[] = [];
-
-		this.project.dataSources.filter(d => d instanceof SqlConnectionDataSource).forEach(dataSource => {
-			const dbName: string = (dataSource as SqlConnectionDataSource).database;
-			const displayName: string = `${dataSource.name}`;
-			dataSourcesValues.push({
-				displayName: displayName,
-				name: dataSource.name,
-				dataSource: dataSource as SqlConnectionDataSource,
-				database: dbName
-			});
-		});
-
-		this.dataSourcesDropDown = view.modelBuilder.dropDown().withProps({
-			values: dataSourcesValues,
-		}).component();
-
-
-		this.dataSourcesDropDown.onValueChanged(() => {
-			this.setDatabaseToSelectedDataSourceDatabase();
-			this.tryEnableGenerateScriptAndPublishButtons();
-		});
-
-		return {
-			title: constants.dataSourceDropdownTitle,
-			component: this.dataSourcesDropDown
-		};
-	}
-
-	private setDatabaseToSelectedDataSourceDatabase(): void {
-		if ((<DataSourceDropdownValue>this.dataSourcesDropDown!.value)?.database) {
-			this.targetDatabaseDropDown!.value = (<DataSourceDropdownValue>this.dataSourcesDropDown!.value).database;
-		}
 	}
 
 	private createProfileSection(view: azdataType.ModelView): azdataType.FlexContainer {
