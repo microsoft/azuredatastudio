@@ -136,7 +136,7 @@ steps:
     displayName: Run core integration tests
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
-# {{SQL CARBON TODO}} Reenable "Run Extension Unit Tests (Continue on Error)" and "Run Extension Unit Tests (Fail on Error)"
+# {{SQL CARBON TODO}} Reenable "Run Extension Unit Tests (Continue on Error)" and "Run Extension Unit Tests (Fail on Error)" and "Archive Logs"
   # - script: |
   #     # Figure out the full absolute path of the product we just built
   #     # including the remote server and configure the unit tests
@@ -166,19 +166,19 @@ steps:
   #   displayName: Run Extension Unit Tests (Fail on Error)
   #   condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'false')))
 
-  - bash: |
-      set -e
-      mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-x64
-      cd /tmp
-      for folder in adsuser*/
-      do
-      folder=${folder%/}
-      # Only archive directories we want for debugging purposes
-      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder/User $folder/logs
-      done
-    displayName: Archive Logs
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+  # - bash: |
+  #     set -e
+  #     mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-x64
+  #     cd /tmp
+  #     for folder in adsuser*/
+  #     do
+  #     folder=${folder%/}
+  #     # Only archive directories we want for debugging purposes
+  #     tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder/User $folder/logs
+  #     done
+  #   displayName: Archive Logs
+  #   continueOnError: true
+  #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   # {{SQL CARBON TODO}} - Reenable
   # - script: |
