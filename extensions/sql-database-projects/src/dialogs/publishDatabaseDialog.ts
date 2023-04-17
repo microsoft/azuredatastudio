@@ -53,7 +53,7 @@ export class PublishDatabaseDialog {
 	private existingServerSelected: boolean = true;
 	private connectionId: string | undefined;
 	private connectionIsDataSource: boolean | undefined;
-	private sqlCmdVars: Record<string, string> | undefined;
+	private sqlCmdVars: Map<string, string> | undefined;
 	private deploymentOptions: DeploymentOptions | undefined;
 	private profileUsed: boolean = false;
 	private serverName: string | undefined;
@@ -70,7 +70,7 @@ export class PublishDatabaseDialog {
 	public publishToContainer: ((proj: Project, profile: IPublishToDockerSettings) => any) | undefined;
 	public generateScript: ((proj: Project, profile: ISqlProjectPublishSettings) => any) | undefined;
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
-	public savePublishProfile: ((profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions) => any) | undefined;
+	public savePublishProfile: ((profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Map<string, string>, deploymentOptions?: DeploymentOptions) => any) | undefined;
 
 	constructor(private project: Project) {
 		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.publishDialogName, 'sqlProjectPublishDialog');
@@ -190,7 +190,7 @@ export class PublishDatabaseDialog {
 				});
 
 			// add SQLCMD variables table if the project has any
-			if (Object.keys(this.project.sqlCmdVariables).length > 0) {
+			if (this.project.sqlCmdVariables.size > 0) {
 				this.formBuilder.addFormItem(this.sqlCmdVariablesFormComponentGroup);
 			}
 
@@ -311,9 +311,9 @@ export class PublishDatabaseDialog {
 		return this.deploymentOptions;
 	}
 
-	public getSqlCmdVariablesForPublish(): Record<string, string> {
+	public getSqlCmdVariablesForPublish(): Map<string, string> {
 		// get SQLCMD variables from table
-		let sqlCmdVariables = { ...this.sqlCmdVars };
+		let sqlCmdVariables = this.sqlCmdVars ?? new Map();
 		return sqlCmdVariables;
 	}
 
@@ -681,9 +681,9 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		table.onDataChanged(() => {
-			this.sqlCmdVars = {};
+			this.sqlCmdVars = new Map();
 			table.dataValues?.forEach((row) => {
-				(<Record<string, string>>this.sqlCmdVars)[<string>row[0].value] = <string>row[1].value;
+				this.sqlCmdVars?.set(<string>row[0].value, <string>row[1].value);
 			});
 
 			this.updateRevertSqlCmdVarsButtonState();
@@ -708,7 +708,7 @@ export class PublishDatabaseDialog {
 		loadSqlCmdVarsButton.onDidClick(async () => {
 			for (const varName in this.sqlCmdVars) {
 
-				this.sqlCmdVars[varName] = this.getDefaultSqlCmdValue(varName);
+				this.sqlCmdVars.set(varName, this.getDefaultSqlCmdValue(varName));
 			}
 
 			const data = this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars!);
@@ -729,7 +729,7 @@ export class PublishDatabaseDialog {
 	 * @returns value defined in the sqlproj file, or blank string if not defined
 	 */
 	private getDefaultSqlCmdValue(varName: string): string {
-		return Object.keys(this.project.sqlCmdVariables).includes(varName) ? this.project.sqlCmdVariables[varName] : '';
+		return this.project.sqlCmdVariables.get(varName) ?? '';
 	}
 
 	private createSelectConnectionButton(view: azdataType.ModelView): azdataType.Component {
@@ -804,18 +804,18 @@ export class PublishDatabaseDialog {
 				// set options coming from the publish profiles to deployment options
 				this.setDeploymentOptions(result.options);
 
-				if (Object.keys(result.sqlCmdVariables).length) {
+				if ((<Map<string, string>>result.sqlCmdVariables).size) {
 					// add SQLCMD Variables table if it wasn't there before and the profile had sqlcmd variables
-					if (Object.keys(this.project.sqlCmdVariables).length === 0 && Object.keys(<Record<string, string>>this.sqlCmdVars).length === 0) {
+					if (this.project.sqlCmdVariables.size === 0 && this.sqlCmdVars?.size === 0) {
 						this.formBuilder?.addFormItem(<azdataType.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup);
 					}
-				} else if (Object.keys(this.project.sqlCmdVariables).length === 0) {
+				} else if (this.project.sqlCmdVariables.size === 0) {
 					// remove the table if there are no SQLCMD variables in the project and loaded profile
 					this.formBuilder?.removeFormItem(<azdataType.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup);
 				}
 
 				for (let key in result.sqlCmdVariables) {
-					(<Record<string, string>>this.sqlCmdVars)[key] = result.sqlCmdVariables[key];
+					this.sqlCmdVars?.set(key, result.sqlCmdVariableColumn.get(key));
 				}
 
 				this.updateRevertSqlCmdVarsButtonState();
@@ -880,10 +880,10 @@ export class PublishDatabaseDialog {
 		return saveProfileAsButton;
 	}
 
-	private convertSqlCmdVarsToTableFormat(sqlCmdVars: Record<string, string>): azdataType.DeclarativeTableCellValue[][] {
+	private convertSqlCmdVarsToTableFormat(sqlCmdVars: Map<string, string>): azdataType.DeclarativeTableCellValue[][] {
 		let data = [];
 		for (let key in sqlCmdVars) {
-			data.push([{ value: key }, { value: sqlCmdVars[key] }]);
+			data.push([{ value: key }, { value: sqlCmdVars.get(key)! }]);
 		}
 
 		return data;
@@ -901,7 +901,7 @@ export class PublishDatabaseDialog {
 		let revertButtonEnabled = false;
 
 		for (const varName in this.sqlCmdVars) {
-			if (this.sqlCmdVars![varName] !== this.getDefaultSqlCmdValue(varName)) {
+			if (this.sqlCmdVars!.get(varName) !== this.getDefaultSqlCmdValue(varName)) {
 				revertButtonEnabled = true;
 				break;
 			}
@@ -936,7 +936,7 @@ export class PublishDatabaseDialog {
 
 	private allSqlCmdVariablesFilled(): boolean {
 		for (let key in this.sqlCmdVars) {
-			if (this.sqlCmdVars[key] === '' || this.sqlCmdVars[key] === undefined) {
+			if (this.sqlCmdVars.get(key) === '' || this.sqlCmdVars.get(key) === undefined) {
 				return false;
 			}
 		}

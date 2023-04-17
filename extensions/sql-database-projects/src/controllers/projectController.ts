@@ -225,17 +225,17 @@ export class ProjectsController {
 		if (projectTypeId === constants.edgeSqlDatabaseProjectTypeId) {
 			const project = await Project.openProject(newProjFilePath);
 
-			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.table), 'DataTable.sql', { 'OBJECT_NAME': 'DataTable' });
-			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.dataSource), 'EdgeHubInputDataSource.sql', { 'OBJECT_NAME': 'EdgeHubInputDataSource', 'LOCATION': 'edgehub://' });
-			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.dataSource), 'SqlOutputDataSource.sql', { 'OBJECT_NAME': 'SqlOutputDataSource', 'LOCATION': 'sqlserver://tcp:.,1433' });
-			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.fileFormat), 'StreamFileFormat.sql', { 'OBJECT_NAME': 'StreamFileFormat' });
-			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStream), 'EdgeHubInputStream.sql', { 'OBJECT_NAME': 'EdgeHubInputStream', 'DATA_SOURCE_NAME': 'EdgeHubInputDataSource', 'LOCATION': 'input', 'OPTIONS': ',\n\tFILE_FORMAT = StreamFileFormat' });
-			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStream), 'SqlOutputStream.sql', { 'OBJECT_NAME': 'SqlOutputStream', 'DATA_SOURCE_NAME': 'SqlOutputDataSource', 'LOCATION': 'TSQLStreaming.dbo.DataTable', 'OPTIONS': '' });
-			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStreamingJob), 'EdgeStreamingJob.sql', { 'OBJECT_NAME': 'EdgeStreamingJob' });
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.table), 'DataTable.sql', new Map([['OBJECT_NAME', 'DataTable']]));
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.dataSource), 'EdgeHubInputDataSource.sql', new Map([['OBJECT_NAME', 'EdgeHubInputDataSource'], ['LOCATION', 'edgehub://']]));
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.dataSource), 'SqlOutputDataSource.sql', new Map([['OBJECT_NAME', 'SqlOutputDataSource'], ['LOCATION', 'sqlserver://tcp:.,1433']]));
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.fileFormat), 'StreamFileFormat.sql', new Map([['OBJECT_NAME', 'StreamFileFormat']]));
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStream), 'EdgeHubInputStream.sql', new Map([['OBJECT_NAME', 'EdgeHubInputStream'], ['DATA_SOURCE_NAME', 'EdgeHubInputDataSource'], ['LOCATION', 'input'], ['OPTIONS', ',\n\tFILE_FORMAT = StreamFileFormat']]));
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStream), 'SqlOutputStream.sql', new Map([['OBJECT_NAME', 'SqlOutputStream'], ['DATA_SOURCE_NAME', 'SqlOutputDataSource'], ['LOCATION', 'TSQLStreaming.dbo.DataTable'], ['OPTIONS', '']]));
+			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStreamingJob), 'EdgeStreamingJob.sql', new Map([['OBJECT_NAME', 'EdgeStreamingJob']]));
 		}
 	}
 
-	private async addFileToProjectFromTemplate(project: ISqlProject, itemType: templates.ProjectScriptType, relativePath: string, expansionMacros: Record<string, string>): Promise<string> {
+	private async addFileToProjectFromTemplate(project: ISqlProject, itemType: templates.ProjectScriptType, relativePath: string, expansionMacros: Map<string, string>): Promise<string> {
 		const newFileText = templates.macroExpansion(itemType.templateScript, expansionMacros);
 		const absolutePath = path.join(project.projectFolderPath, relativePath)
 		await utils.ensureFileExists(absolutePath, newFileText);
@@ -587,7 +587,7 @@ export class ProjectsController {
 		const timeToPublish = actionEndTime - actionStartTime;
 		telemetryProps.actionDuration = timeToPublish.toString();
 		telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
-		telemetryProps.sqlcmdVariablesCount = Object.keys(project.sqlCmdVariables).length.toString();
+		telemetryProps.sqlcmdVariablesCount = project.sqlCmdVariables.size.toString();
 		telemetryProps.projectTargetPLatform = project.getProjectTargetVersion();
 
 		const currentPublishIndex = this.publishInfo.findIndex(d => d.startDate === currentPublishTimeInfo);
@@ -750,7 +750,7 @@ export class ProjectsController {
 		}
 
 		try {
-			const absolutePath = await this.addFileToProjectFromTemplate(project, itemType, relativeFilePath, { 'OBJECT_NAME': itemObjectName });
+			const absolutePath = await this.addFileToProjectFromTemplate(project, itemType, relativeFilePath, new Map([['OBJECT_NAME', itemObjectName]]));
 
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addItemFromTree)
 				.withAdditionalProperties(telemetryProps)
@@ -957,7 +957,7 @@ export class ProjectsController {
 		const node = context.element as SqlCmdVariableTreeItem;
 		const project = await this.getProjectFromContext(node);
 		const variableName = node.friendlyName;
-		const originalValue = project.sqlCmdVariables[variableName];
+		const originalValue = project.sqlCmdVariables.get(variableName);
 
 		const newValue = await vscode.window.showInputBox(
 			{
@@ -986,7 +986,7 @@ export class ProjectsController {
 				title: constants.enterNewSqlCmdVariableName,
 				ignoreFocusOut: true,
 				validateInput: (value) => {
-					return this.sqlCmdVariableNameAlreadyExists(value, project) ? constants.sqlcmdVariableAlreadyExists : undefined;
+					return project.sqlCmdVariables.has(value) ? constants.sqlcmdVariableAlreadyExists : undefined;
 				}
 			});
 
@@ -1006,10 +1006,6 @@ export class ProjectsController {
 
 		await project.addSqlCmdVariable(variableName, defaultValue);
 		this.refreshProjectsTree(context);
-	}
-
-	private sqlCmdVariableNameAlreadyExists(newVariableName: string, project: Project): boolean {
-		return Object.keys(project.sqlCmdVariables).findIndex(v => v === newVariableName) !== -1;
 	}
 
 	private getDatabaseReference(project: Project, context: BaseProjectTreeItem): IDatabaseReferenceProjectEntry | undefined {
