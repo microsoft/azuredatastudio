@@ -15,7 +15,7 @@ import { IconPathHelper } from '../common/iconHelper';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { Deferred } from '../common/promise';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { SystemDatabase } from 'mssql';
+import { ProjectType, SystemDatabase } from 'mssql';
 import { DbServerValues, ensureSetOrDefined, populateResultWithVars } from './utils';
 
 export enum ReferenceType {
@@ -264,9 +264,16 @@ export class AddDatabaseReferenceDialog {
 			this.projectRadioButton.enabled = false;
 		}
 
+		const radioButtons = [this.projectRadioButton, this.systemDatabaseRadioButton, dacpacRadioButton];
+
+		// only add the nupkg radio button for SDK-style projects
+		if (this.project.sqlProjStyle === ProjectType.SdkStyle) {
+			radioButtons.push(nupkgRadioButton);
+		}
+
 		let flexRadioButtonsModel: azdataType.FlexContainer = this.view!.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
-			.withItems([this.projectRadioButton, this.systemDatabaseRadioButton, dacpacRadioButton, nupkgRadioButton])
+			.withItems(radioButtons)
 			.withProps({ ariaRole: 'radiogroup', ariaLabel: constants.referenceRadioButtonsGroupTitle })
 			.component();
 
