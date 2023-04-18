@@ -85,7 +85,7 @@ suite('SQL QueryAction Tests', () => {
 		testQueryInputState = TypeMoq.Mock.ofType(QueryEditorState, TypeMoq.MockBehavior.Strict);
 		testQueryInputState.setup(x => x.isActualExecutionPlanMode).returns(() => false);
 
-		testQueryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
+		testQueryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		testQueryInput.setup(x => x.uri).returns(() => testUri);
 		testQueryInput.setup(x => x.runQuery(undefined)).callback(() => { calledRunQueryOnInput = true; });
 		testQueryInput.setup(x => x.state).returns(() => testQueryInputState.object);
