@@ -4,14 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { DefaultInputWidth, ObjectManagementDialogBase } from './objectManagementDialogBase';
+import { DefaultInputWidth, ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { AlterLoginDocUrl, AuthenticationType, CreateLoginDocUrl, NodeType, PublicServerRoleName } from '../constants';
+import { AlterLoginDocUrl, AuthenticationType, CreateLoginDocUrl, PublicServerRoleName } from '../constants';
 import { getAuthenticationTypeByDisplayName, getAuthenticationTypeDisplayName, isValidSQLPassword } from '../utils';
 
 export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Login, ObjectManagement.LoginViewInfo> {
-
 	private generalSection: azdata.GroupContainer;
 	private sqlAuthSection: azdata.GroupContainer;
 	private serverRoleSection: azdata.GroupContainer;
@@ -32,8 +31,12 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 	private enabledCheckbox: azdata.CheckBoxComponent;
 	private lockedOutCheckbox: azdata.CheckBoxComponent;
 
-	constructor(objectManagementService: IObjectManagementService, connectionUri: string, isNewObject: boolean, name?: string, objectExplorerContext?: azdata.ObjectExplorerContext) {
-		super(NodeType.Login, isNewObject ? CreateLoginDocUrl : AlterLoginDocUrl, objectManagementService, connectionUri, isNewObject, name, objectExplorerContext);
+	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
+		super(objectManagementService, options);
+	}
+
+	protected override get docUrl(): string {
+		return this.options.isNewObject ? CreateLoginDocUrl : AlterLoginDocUrl
 	}
 
 	protected override async onConfirmation(): Promise<boolean> {
@@ -61,7 +64,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 
 			if (this.objectInfo.password && (this.objectInfo.enforcePasswordPolicy || !this.viewInfo.supportAdvancedPasswordOptions)
 				&& !isValidSQLPassword(this.objectInfo.password, this.objectInfo.name)
-				&& (this.isNewObject || this.objectInfo.password !== this.originalObjectInfo.password)) {
+				&& (this.options.isNewObject || this.objectInfo.password !== this.originalObjectInfo.password)) {
 				errors.push(localizedConstants.InvalidPasswordError);
 			}
 
@@ -76,22 +79,8 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		return errors;
 	}
 
-	protected async onComplete(): Promise<void> {
-		if (this.isNewObject) {
-			await this.objectManagementService.create(this.contextId, this.objectInfo);
-		} else {
-			await this.objectManagementService.updateLogin(this.contextId, this.objectInfo);
-		}
-	}
-
-	protected async disposeView(): Promise<void> {
-		await this.objectManagementService.disposeLoginView(this.contextId);
-	}
-
-	protected async initializeData(): Promise<ObjectManagement.LoginViewInfo> {
-		const viewInfo = await this.objectManagementService.initializeLoginView(this.connectionUri, this.contextId, this.isNewObject, this.objectName);
-		viewInfo.objectInfo.password = viewInfo.objectInfo.password ?? '';
-		return viewInfo;
+	protected override postInitializeData(): void {
+		this.objectInfo.password = this.objectInfo.password ?? '';
 	}
 
 	protected async initializeUI(): Promise<void> {
@@ -99,7 +88,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		this.initializeGeneralSection();
 		sections.push(this.generalSection);
 
-		if (this.isNewObject || this.objectInfo.authenticationType === 'Sql') {
+		if (this.options.isNewObject || this.objectInfo.authenticationType === 'Sql') {
 			this.initializeSqlAuthSection();
 			sections.push(this.sqlAuthSection);
 		}
@@ -114,14 +103,10 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		this.formContainer.addItems(sections);
 	}
 
-	protected async generateScript(): Promise<string> {
-		return this.objectManagementService.scriptLogin(this.contextId, this.objectInfo);
-	}
-
 	private initializeGeneralSection(): void {
 		this.nameInput = this.modelView.modelBuilder.inputBox().withProps({
 			ariaLabel: localizedConstants.NameText,
-			enabled: this.isNewObject,
+			enabled: this.options.isNewObject,
 			value: this.objectInfo.name,
 			width: DefaultInputWidth
 		}).component();
@@ -142,7 +127,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		if (this.viewInfo.supportAADAuthentication) {
 			authTypes.push(localizedConstants.AADAuthenticationTypeDisplayText);
 		}
-		this.authTypeDropdown = this.createDropdown(localizedConstants.AuthTypeText, authTypes, getAuthenticationTypeDisplayName(this.objectInfo.authenticationType), this.isNewObject);
+		this.authTypeDropdown = this.createDropdown(localizedConstants.AuthTypeText, authTypes, getAuthenticationTypeDisplayName(this.objectInfo.authenticationType), this.options.isNewObject);
 		this.disposables.push(this.authTypeDropdown.onValueChanged(async () => {
 			this.objectInfo.authenticationType = getAuthenticationTypeByDisplayName(<string>this.authTypeDropdown.value);
 			this.setViewByAuthenticationType();
@@ -175,7 +160,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		const confirmPasswordRow = this.createLabelInputContainer(localizedConstants.ConfirmPasswordText, this.confirmPasswordInput);
 		items.push(passwordRow, confirmPasswordRow);
 
-		if (!this.isNewObject) {
+		if (!this.options.isNewObject) {
 			this.specifyOldPasswordCheckbox = this.createCheckbox(localizedConstants.SpecifyOldPasswordText);
 			this.oldPasswordInput = this.createPasswordInputBox(localizedConstants.OldPasswordText, '', false);
 			const oldPasswordRow = this.createLabelInputContainer(localizedConstants.OldPasswordText, this.oldPasswordInput);
@@ -222,7 +207,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 				this.onObjectValueChange();
 			}));
 			items.push(this.enforcePasswordPolicyCheckbox, this.enforcePasswordExpirationCheckbox, this.mustChangePasswordCheckbox);
-			if (!this.isNewObject) {
+			if (!this.options.isNewObject) {
 				this.lockedOutCheckbox = this.createCheckbox(localizedConstants.LoginLockedOutText, this.objectInfo.isLockedOut, this.viewInfo.canEditLockedOutState);
 				items.push(this.lockedOutCheckbox);
 				this.disposables.push(this.lockedOutCheckbox.onChanged(() => {

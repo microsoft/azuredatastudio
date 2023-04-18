@@ -16,7 +16,7 @@ import { NodeType, TelemetryActions, TelemetryViews } from '../constants';
 import {
 	CreateObjectOperationDisplayName, HelpText, LoadingDialogText,
 	NameText,
-	NewObjectDialogTitle, ObjectPropertiesDialogTitle, OkText, ScriptError, ScriptGeneratedText, ScriptText, SelectedText, UpdateObjectOperationDisplayName
+	NewObjectDialogTitle, NoScriptGeneratedErrorMessage, ObjectPropertiesDialogTitle, OkText, ScriptError, ScriptGeneratedText, ScriptText, SelectedText, UpdateObjectOperationDisplayName
 } from '../localizedConstants';
 import { deepClone, getNodeTypeDisplayName, refreshNode } from '../utils';
 import { TelemetryReporter } from '../../telemetry';
@@ -38,10 +38,22 @@ function getDialogName(type: NodeType, isNewObject: boolean): string {
 	return isNewObject ? `New${type}` : `${type}Properties`
 }
 
+export interface ObjectManagementDialogOptions {
+	connectionUri: string;
+	database?: string;
+	objectType: NodeType;
+	isNewObject: boolean;
+	parentUrn: string;
+	objectUrn?: string;
+	objectExplorerContext?: azdata.ObjectExplorerContext;
+	width?: azdata.window.DialogWidth;
+	objectName?: string;
+}
+
 export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectManagement.SqlObject, ViewInfoType extends ObjectManagement.ObjectViewInfo<ObjectInfoType>> {
 	protected readonly disposables: vscode.Disposable[] = [];
 	protected readonly dialogObject: azdata.window.Dialog;
-	protected readonly contextId: string;
+	private _contextId: string;
 	private _viewInfo: ViewInfoType;
 	private _originalObjectInfo: ObjectInfoType;
 	private _modelView: azdata.ModelView;
@@ -50,28 +62,22 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	private _helpButton: azdata.window.Button;
 	private _scriptButton: azdata.window.Button;
 
-	constructor(private readonly objectType: NodeType,
-		docUrl: string,
-		protected readonly objectManagementService: IObjectManagementService,
-		protected readonly connectionUri: string,
-		protected isNewObject: boolean,
-		protected readonly objectName: string = '',
-		protected readonly objectExplorerContext?: azdata.ObjectExplorerContext,
-		dialogWidth: azdata.window.DialogWidth = 'narrow') {
-		const objectTypeDisplayName = getNodeTypeDisplayName(objectType, true);
-		const dialogTitle = isNewObject ? NewObjectDialogTitle(objectTypeDisplayName) : ObjectPropertiesDialogTitle(objectTypeDisplayName, objectName);
-		this.dialogObject = azdata.window.createModelViewDialog(dialogTitle, getDialogName(objectType, isNewObject), dialogWidth);
+	constructor(protected readonly objectManagementService: IObjectManagementService, protected readonly options: ObjectManagementDialogOptions) {
+		this.options.width = this.options.width || 'narrow';
+		const objectTypeDisplayName = getNodeTypeDisplayName(options.objectType, true);
+		const dialogTitle = options.isNewObject ? NewObjectDialogTitle(objectTypeDisplayName) : ObjectPropertiesDialogTitle(objectTypeDisplayName, options.objectName);
+		this.dialogObject = azdata.window.createModelViewDialog(dialogTitle, getDialogName(options.objectType, options.isNewObject), options.width);
 		this.dialogObject.okButton.label = OkText;
 		this.disposables.push(this.dialogObject.onClosed(async (reason: azdata.window.CloseReason) => { await this.dispose(reason); }));
 		this._helpButton = azdata.window.createButton(HelpText, 'left');
 		this.disposables.push(this._helpButton.onClick(async () => {
-			await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(docUrl));
+			await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(this.docUrl));
 		}));
 		this._scriptButton = azdata.window.createButton(ScriptText, 'left');
 		this.disposables.push(this._scriptButton.onClick(async () => { await this.onScriptButtonClick(); }));
 		this.dialogObject.customButtons = [this._helpButton, this._scriptButton];
 		this.updateLoadingStatus(true);
-		this.contextId = generateUuid();
+		this._contextId = generateUuid();
 		this.dialogObject.registerCloseValidator(async (): Promise<boolean> => {
 			const confirmed = await this.onConfirmation();
 			if (!confirmed) {
@@ -81,18 +87,13 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		});
 	}
 
-	protected abstract initializeData(): Promise<ViewInfoType>;
 	protected abstract initializeUI(): Promise<void>;
-	protected abstract onComplete(): Promise<void>;
-	protected async onDispose(): Promise<void> { }
 	protected abstract validateInput(): Promise<string[]>;
-	protected abstract generateScript(): Promise<string>;
+	protected abstract get docUrl(): string;
 
-	/**
-	 * Dispose the information related to this view in the backend service.
-	 */
-	protected abstract disposeView(): Promise<void>;
+	protected postInitializeData(): void {
 
+	}
 	protected onObjectValueChange(): void {
 		this.dialogObject.okButton.enabled = this.isDirty;
 	}
@@ -141,28 +142,28 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				});
 			}));
 			azdata.window.openDialog(this.dialogObject);
-			this._viewInfo = await this.initializeData();
+			await this.initializeData();
 			await initializeViewPromise;
 			await this.initializeUI();
 			this._originalObjectInfo = deepClone(this.objectInfo);
-			const typeDisplayName = getNodeTypeDisplayName(this.objectType);
+			const typeDisplayName = getNodeTypeDisplayName(this.options.objectType);
 			this.dialogObject.registerOperation({
-				displayName: this.isNewObject ? CreateObjectOperationDisplayName(typeDisplayName)
-					: UpdateObjectOperationDisplayName(typeDisplayName, this.objectName),
+				displayName: this.options.isNewObject ? CreateObjectOperationDisplayName(typeDisplayName)
+					: UpdateObjectOperationDisplayName(typeDisplayName, this.options.objectName),
 				description: '',
 				isCancelable: false,
 				operation: async (operation: azdata.BackgroundOperation): Promise<void> => {
-					const actionName = this.isNewObject ? TelemetryActions.CreateObject : TelemetryActions.UpdateObject;
+					const actionName = this.options.isNewObject ? TelemetryActions.CreateObject : TelemetryActions.UpdateObject;
 					try {
 						if (JSON.stringify(this.objectInfo) !== JSON.stringify(this._originalObjectInfo)) {
 							const startTime = Date.now();
-							await this.onComplete();
-							if (this.isNewObject && this.objectExplorerContext) {
-								await refreshNode(this.objectExplorerContext);
+							await this.objectManagementService.save(this._contextId, this.objectInfo);
+							if (this.options.isNewObject && this.options.objectExplorerContext) {
+								await refreshNode(this.options.objectExplorerContext);
 							}
 
 							TelemetryReporter.sendTelemetryEvent(actionName, {
-								objectType: this.objectType
+								objectType: this.options.objectType
 							}, {
 								elapsedTimeMs: Date.now() - startTime
 							});
@@ -172,7 +173,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 					catch (err) {
 						operation.updateStatus(azdata.TaskStatus.Failed, getErrorMessage(err));
 						TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, actionName, err).withAdditionalProperties({
-							objectType: this.objectType
+							objectType: this.options.objectType
 						}).send();
 					} finally {
 						await this.disposeView();
@@ -181,9 +182,9 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			});
 			this.updateLoadingStatus(false);
 		} catch (err) {
-			const actionName = this.isNewObject ? TelemetryActions.OpenNewObjectDialog : TelemetryActions.OpenPropertiesDialog;
+			const actionName = this.options.isNewObject ? TelemetryActions.OpenNewObjectDialog : TelemetryActions.OpenPropertiesDialog;
 			TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, actionName, err).withAdditionalProperties({
-				objectType: this.objectType
+				objectType: this.options.objectType
 			}).send();
 			void vscode.window.showErrorMessage(getErrorMessage(err));
 			azdata.window.closeDialog(this.dialogObject);
@@ -191,11 +192,20 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	}
 
 	private async dispose(reason: azdata.window.CloseReason): Promise<void> {
-		await this.onDispose();
 		this.disposables.forEach(disposable => disposable.dispose());
 		if (reason !== 'ok') {
 			await this.disposeView();
 		}
+	}
+
+	private async disposeView(): Promise<void> {
+		await this.objectManagementService.disposeView(this._contextId);
+	}
+
+	private async initializeData(): Promise<void> {
+		const viewInfo = await this.objectManagementService.initializeView(this._contextId, this.options.objectType, this.options.connectionUri, this.options.database, this.options.isNewObject, this.options.parentUrn, this.options.objectUrn);
+		this._viewInfo = viewInfo as ViewInfoType;
+		this.postInitializeData();
 	}
 
 	protected async runValidation(showErrorMessage: boolean = true): Promise<boolean> {
@@ -335,7 +345,10 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			if (!isValid) {
 				return;
 			}
-			const script = await this.generateScript();
+			const script = await this.objectManagementService.script(this._contextId, this.objectInfo);
+			if (!script) {
+				throw new Error(NoScriptGeneratedErrorMessage);
+			}
 			await azdata.queryeditor.openQueryDocument({ content: script }, providerId);
 			this.dialogObject.message = {
 				text: ScriptGeneratedText,

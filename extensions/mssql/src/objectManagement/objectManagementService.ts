@@ -11,7 +11,7 @@ import { BaseService, ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-clie
 import { ObjectManagement, IObjectManagementService } from 'mssql';
 import { ClientCapabilities } from 'vscode-languageclient';
 import { AppContext } from '../appContext';
-import { AuthenticationType, UserType } from './constants';
+import { AuthenticationType, NodeType, UserType } from './constants';
 
 export class ObjectManagementService extends BaseService implements IObjectManagementService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
@@ -29,59 +29,29 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		};
 	}
 
+	async initializeView(contextId: string, objectType: ObjectManagement.NodeType, connectionUri: string, database: string, isNewObject: boolean, parentUrn: string, objectUrn: string): Promise<ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
+		const params: contracts.InitializeViewRequestParams = { connectionUri, contextId, isNewObject, objectType, database, parentUrn, objectUrn };
+		return this.runWithErrorHandling(contracts.InitializeViewRequest.type, params);
+	}
+
 	private constructor(context: AppContext, client: SqlOpsDataClient) {
 		super(client);
 		context.registerService(constants.ObjectManagementService, this);
 	}
 
-	async initializeLoginView(connectionUri: string, contextId: string, isNewObject: boolean, name: string | undefined): Promise<ObjectManagement.LoginViewInfo> {
-		const params: contracts.InitializeLoginViewRequestParams = { connectionUri, contextId, isNewObject, name };
-		return this.runWithErrorHandling(contracts.InitializeLoginViewRequest.type, params);
+	async save(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
+		const params: contracts.SaveObjectRequestParams = { contextId, object };
+		return this.runWithErrorHandling(contracts.SaveObjectRequest.type, params);
 	}
 
-	async createLogin(contextId: string, login: ObjectManagement.Login): Promise<void> {
-		const params: contracts.CreateLoginRequestParams = { contextId, login };
-		return this.runWithErrorHandling(contracts.CreateLoginRequest.type, params);
+	async script(contextId: string, object: ObjectManagement.SqlObject): Promise<string> {
+		const params: contracts.ScriptObjectRequestParams = { contextId, object };
+		return this.runWithErrorHandling(contracts.ScriptObjectRequest.type, params);
 	}
 
-	async updateLogin(contextId: string, login: ObjectManagement.Login): Promise<void> {
-		const params: contracts.UpdateLoginRequestParams = { contextId, login };
-		return this.runWithErrorHandling(contracts.UpdateLoginRequest.type, params);
-	}
-
-	async scriptLogin(contextId: string, login: ObjectManagement.Login): Promise<string> {
-		const params: contracts.ScriptLoginRequestParams = { contextId, login };
-		return this.runWithErrorHandling(contracts.ScriptLoginRequest.type, params);
-	}
-
-	async disposeLoginView(contextId: string): Promise<void> {
-		const params: contracts.DisposeLoginViewRequestParams = { contextId };
-		return this.runWithErrorHandling(contracts.DisposeLoginViewRequest.type, params);
-	}
-
-	async initializeUserView(connectionUri: string, database: string, contextId: string, isNewObject: boolean, name: string | undefined): Promise<ObjectManagement.UserViewInfo> {
-		const params: contracts.InitializeUserViewRequestParams = { connectionUri, database, contextId, isNewObject, name };
-		return this.runWithErrorHandling(contracts.InitializeUserViewRequest.type, params);
-	}
-
-	async createUser(contextId: string, user: ObjectManagement.User): Promise<void> {
-		const params: contracts.CreateUserRequestParams = { contextId, user };
-		return this.runWithErrorHandling(contracts.CreateUserRequest.type, params);
-	}
-
-	async updateUser(contextId: string, user: ObjectManagement.User): Promise<void> {
-		const params: contracts.UpdateUserRequestParams = { contextId, user };
-		return this.runWithErrorHandling(contracts.UpdateUserRequest.type, params);
-	}
-
-	async scriptUser(contextId: string, user: ObjectManagement.User): Promise<string> {
-		const params: contracts.ScriptUserRequestParams = { contextId, user };
-		return this.runWithErrorHandling(contracts.ScriptUserRequest.type, params);
-	}
-
-	async disposeUserView(contextId: string): Promise<void> {
-		const params: contracts.DisposeUserViewRequestParams = { contextId };
-		return this.runWithErrorHandling(contracts.DisposeUserViewRequest.type, params);
+	async disposeView(contextId: string): Promise<void> {
+		const params: contracts.DisposeViewRequestParams = { contextId };
+		return this.runWithErrorHandling(contracts.DisposeViewRequest.type, params);
 	}
 
 	async rename(connectionUri: string, objectUrn: string, newName: string): Promise<void> {
@@ -92,176 +62,39 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		const params: contracts.DropObjectRequestParams = { connectionUri, objectUrn };
 		return this.runWithErrorHandling(contracts.DropObjectRequest.type, params);
 	}
-	create(contextId: string, object: ObjectManagement.SqlObject): Thenable<void> {
-		const params: contracts.CreateObjectRequestParams = { contextId, object };
-		return this.client.sendRequest(contracts.CreateObjectRequest.type, params).then(
-			r => { },
-			e => {
-				this.client.logFailedRequest(contracts.CreateObjectRequest.type, e);
-				return Promise.reject(e);
-			}
-		);
-	}
 }
 
 export class TestObjectManagementService implements IObjectManagementService {
-	initializeLoginView(connectionUri: string, contextId: string, isNewObject: boolean, name: string | undefined): Promise<ObjectManagement.LoginViewInfo> {
-		return new Promise((resolve, reject) => {
-			setTimeout(() => {
-				const serverRoles = ['sysadmin', 'public', 'bulkadmin', 'dbcreator', 'diskadmin', 'processadmin', 'securityadmin', 'serveradmin'];
-				const languages = ['<default>', 'English'];
-				const databases = ['master', 'db1', 'db2'];
-				let login: ObjectManagement.LoginViewInfo;
-				if (isNewObject) {
-					login = <ObjectManagement.LoginViewInfo>{
-						objectInfo: {
-							name: '',
-							authenticationType: AuthenticationType.Sql,
-							enforcePasswordPolicy: true,
-							enforcePasswordExpiration: true,
-							mustChangePassword: true,
-							defaultDatabase: 'master',
-							defaultLanguage: '<default>',
-							serverRoles: ['public', 'bulkadmin'],
-							connectPermission: true,
-							isEnabled: true,
-							isLockedOut: false
-						},
-						supportAADAuthentication: true,
-						supportSQLAuthentication: true,
-						supportWindowsAuthentication: true,
-						supportAdvancedOptions: true,
-						supportAdvancedPasswordOptions: true,
-						canEditLockedOutState: false,
-						languages: languages,
-						databases: databases,
-						serverRoles: serverRoles
-					};
-				} else {
-					login = <ObjectManagement.LoginViewInfo>{
-						objectInfo: {
-							name: name,
-							authenticationType: AuthenticationType.Sql,
-							enforcePasswordPolicy: true,
-							enforcePasswordExpiration: true,
-							mustChangePassword: true,
-							defaultDatabase: 'master',
-							defaultLanguage: '<default>',
-							serverRoles: ['public'],
-							connectPermission: true,
-							isEnabled: true,
-							isLockedOut: false,
-							password: '******************'
-						},
-						supportAADAuthentication: true,
-						supportSQLAuthentication: true,
-						supportWindowsAuthentication: true,
-						supportAdvancedOptions: true,
-						supportAdvancedPasswordOptions: true,
-						canEditLockedOutState: false,
-						languages: languages,
-						databases: databases,
-						serverRoles: serverRoles
-					};
-				}
-				resolve(login);
-			}, 3000);
-		});
+	initializeView(contextId: string, objectType: ObjectManagement.NodeType, connectionUri: string, database: string, isNewObject: boolean, parentUrn: string, objectUrn: string): Thenable<ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
+		if (objectType === NodeType.ServerLevelLogin) {
+			return Promise.resolve(this.getLoginView(isNewObject, objectUrn));
+		} else if (objectType === NodeType.User) {
+			return Promise.resolve(this.getUserView(isNewObject, objectUrn));
+		}
+		else {
+			throw Error('Not implemented');
+		}
 	}
-	async createLogin(contextId: string, login: ObjectManagement.Login): Promise<void> {
+	save(contextId: string, object: ObjectManagement.SqlObject): Thenable<void> {
 		return new Promise((resolve, reject) => {
 			setTimeout(() => {
 				resolve();
 			}, 3000);
 		});
 	}
-	async updateLogin(contextId: string, login: ObjectManagement.Login): Promise<void> {
-		return new Promise((resolve, reject) => {
-			setTimeout(() => {
-				resolve();
-			}, 3000);
-		});
-	}
-	async scriptLogin(contextId: string, login: ObjectManagement.Login): Promise<string> {
+	script(contextId: string, object: ObjectManagement.SqlObject): Thenable<string> {
 		return new Promise((resolve, reject) => {
 			setTimeout(() => {
 				resolve('test script');
 			}, 1000);
 		});
 	}
-	async disposeLoginView(contextId: string): Promise<void> {
-	}
-	async initializeUserView(connectionUri: string, database: string, contextId: string, isNewObject: boolean, name: string): Promise<ObjectManagement.UserViewInfo> {
+	disposeView(contextId: string): Thenable<void> {
 		return new Promise((resolve, reject) => {
 			setTimeout(() => {
-				let viewInfo: ObjectManagement.UserViewInfo;
-				const languages = ['<default>', 'English'];
-				const schemas = ['dbo', 'sys', 'alanren'];
-				const logins = ['sa', 'alanren', 'alanren@microsoft.com'];
-				const databaseRoles = ['dbmanager', 'loginmanager', 'bulkadmin', 'sysadmin', 'tablemanager', 'viewmanager'];
-
-				if (isNewObject) {
-					viewInfo = {
-						objectInfo: <ObjectManagement.User>{
-							name: '',
-							type: UserType.WithLogin,
-							defaultSchema: 'dbo',
-							defaultLanguage: '<default>',
-							authenticationType: AuthenticationType.Sql,
-							loginName: 'sa',
-							ownedSchemas: [],
-							databaseRoles: [],
-							password: ''
-						},
-						languages: languages,
-						schemas: schemas,
-						logins: logins,
-						databaseRoles: databaseRoles,
-						supportContainedUser: true,
-						supportAADAuthentication: true,
-						supportSQLAuthentication: true,
-						supportWindowsAuthentication: true
-					};
-				} else {
-					viewInfo = {
-						objectInfo: <ObjectManagement.User>{
-							name: name,
-							type: UserType.WithLogin,
-							defaultSchema: 'dbo',
-							defaultLanguage: '<default>',
-							loginName: 'sa',
-							authenticationType: AuthenticationType.Sql,
-							ownedSchemas: ['dbo'],
-							databaseRoles: ['dbmanager', 'bulkadmin']
-						},
-						languages: languages,
-						schemas: schemas,
-						logins: logins,
-						databaseRoles: databaseRoles,
-						supportContainedUser: true,
-						supportAADAuthentication: true,
-						supportSQLAuthentication: true,
-						supportWindowsAuthentication: true
-					};
-				}
-				resolve(viewInfo);
-			}, 3000);
+				resolve();
+			}, 100);
 		});
-	}
-	async createUser(contextId: string, user: ObjectManagement.User): Promise<void> {
-		return this.delayAndResolve();
-	}
-	async updateUser(contextId: string, login: ObjectManagement.User): Promise<void> {
-		return this.delayAndResolve();
-	}
-	async scriptUser(contextId: string, login: ObjectManagement.User): Promise<string> {
-		return new Promise((resolve, reject) => {
-			setTimeout(() => {
-				reject('generate script for user not supported');
-			}, 1000);
-		});
-	}
-	async disposeUserView(contextId: string): Promise<void> {
 	}
 	async rename(connectionUri: string, objectUrn: string, newName: string): Promise<void> {
 		return this.delayAndResolve();
@@ -271,6 +104,118 @@ export class TestObjectManagementService implements IObjectManagementService {
 	}
 	async create(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
 		return this.delayAndResolve();
+	}
+	private getLoginView(isNewObject: boolean, name: string): ObjectManagement.LoginViewInfo {
+		const serverRoles = ['sysadmin', 'public', 'bulkadmin', 'dbcreator', 'diskadmin', 'processadmin', 'securityadmin', 'serveradmin'];
+		const languages = ['<default>', 'English'];
+		const databases = ['master', 'db1', 'db2'];
+		let login: ObjectManagement.LoginViewInfo;
+		if (isNewObject) {
+			login = <ObjectManagement.LoginViewInfo>{
+				objectInfo: {
+					name: '',
+					authenticationType: AuthenticationType.Sql,
+					enforcePasswordPolicy: true,
+					enforcePasswordExpiration: true,
+					mustChangePassword: true,
+					defaultDatabase: 'master',
+					defaultLanguage: '<default>',
+					serverRoles: ['public', 'bulkadmin'],
+					connectPermission: true,
+					isEnabled: true,
+					isLockedOut: false
+				},
+				supportAADAuthentication: true,
+				supportSQLAuthentication: true,
+				supportWindowsAuthentication: true,
+				supportAdvancedOptions: true,
+				supportAdvancedPasswordOptions: true,
+				canEditLockedOutState: false,
+				languages: languages,
+				databases: databases,
+				serverRoles: serverRoles
+			};
+		} else {
+			login = <ObjectManagement.LoginViewInfo>{
+				objectInfo: {
+					name: name,
+					authenticationType: AuthenticationType.Sql,
+					enforcePasswordPolicy: true,
+					enforcePasswordExpiration: true,
+					mustChangePassword: true,
+					defaultDatabase: 'master',
+					defaultLanguage: '<default>',
+					serverRoles: ['public'],
+					connectPermission: true,
+					isEnabled: true,
+					isLockedOut: false,
+					password: '******************'
+				},
+				supportAADAuthentication: true,
+				supportSQLAuthentication: true,
+				supportWindowsAuthentication: true,
+				supportAdvancedOptions: true,
+				supportAdvancedPasswordOptions: true,
+				canEditLockedOutState: false,
+				languages: languages,
+				databases: databases,
+				serverRoles: serverRoles
+			};
+		}
+		return login;
+	}
+	private getUserView(isNewObject: boolean, name: string): ObjectManagement.UserViewInfo {
+		let viewInfo: ObjectManagement.UserViewInfo;
+		const languages = ['<default>', 'English'];
+		const schemas = ['dbo', 'sys', 'alanren'];
+		const logins = ['sa', 'alanren', 'alanren@microsoft.com'];
+		const databaseRoles = ['dbmanager', 'loginmanager', 'bulkadmin', 'sysadmin', 'tablemanager', 'viewmanager'];
+
+		if (isNewObject) {
+			viewInfo = {
+				objectInfo: <ObjectManagement.User>{
+					name: '',
+					type: UserType.WithLogin,
+					defaultSchema: 'dbo',
+					defaultLanguage: '<default>',
+					authenticationType: AuthenticationType.Sql,
+					loginName: 'sa',
+					ownedSchemas: [],
+					databaseRoles: [],
+					password: ''
+				},
+				languages: languages,
+				schemas: schemas,
+				logins: logins,
+				databaseRoles: databaseRoles,
+				supportContainedUser: true,
+				supportAADAuthentication: true,
+				supportSQLAuthentication: true,
+				supportWindowsAuthentication: true
+			};
+		} else {
+			viewInfo = {
+				objectInfo: <ObjectManagement.User>{
+					name: name,
+					type: UserType.WithLogin,
+					defaultSchema: 'dbo',
+					defaultLanguage: '<default>',
+					loginName: 'sa',
+					authenticationType: AuthenticationType.Sql,
+					ownedSchemas: ['dbo'],
+					databaseRoles: ['dbmanager', 'bulkadmin']
+				},
+				languages: languages,
+				schemas: schemas,
+				logins: logins,
+				databaseRoles: databaseRoles,
+				supportContainedUser: true,
+				supportAADAuthentication: true,
+				supportSQLAuthentication: true,
+				supportWindowsAuthentication: true
+			};
+		}
+		return viewInfo;
 	}
 	private delayAndResolve(): Promise<void> {
 		return new Promise((resolve, reject) => {

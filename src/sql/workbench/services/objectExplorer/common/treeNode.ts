@@ -171,7 +171,8 @@ export class TreeNode {
 			label: this.label,
 			isLeaf: this.isAlwaysLeaf,
 			metadata: this.metadata,
-			errorMessage: this.errorStateMessage
+			errorMessage: this.errorStateMessage,
+			objectType: this.objectType
 		};
 	}
 

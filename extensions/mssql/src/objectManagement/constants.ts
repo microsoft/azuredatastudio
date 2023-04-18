@@ -9,10 +9,18 @@
 export enum NodeType {
 	Column = 'Column',
 	Database = 'Database',
-	Login = 'ServerLevelLogin',
+	ServerLevelLogin = 'ServerLevelLogin',
 	Table = 'Table',
 	User = 'User',
 	View = 'View'
+}
+
+/**
+ * The folder types in object explorer.
+ */
+export enum FolderType {
+	ServerLevelLogins = 'ServerLevelLogins',
+	Users = 'Users'
 }
 
 export const PublicServerRoleName = 'public';

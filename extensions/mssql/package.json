@@ -73,14 +73,9 @@
         "title": "%title.changeNotebookConnection%"
       },
       {
-        "command": "mssql.newLogin",
+        "command": "mssql.newObject",
         "category": "MSSQL",
-        "title": "%title.newLogin%"
-      },
-      {
-        "command": "mssql.newUser",
-        "category": "MSSQL",
-        "title": "%title.newUser%"
+        "title": "%title.newObject%"
       },
       {
         "command": "mssql.objectProperties",
@@ -469,11 +464,7 @@
           "when": "false"
         },
         {
-          "command": "mssql.newLogin",
-          "when": "false"
-        },
-        {
-          "command": "mssql.newUser",
+          "command": "mssql.newObject",
           "when": "false"
         },
         {
@@ -502,13 +493,8 @@
           "group": "0_query@1"
         },
         {
-          "command": "mssql.newLogin",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ServerLevelLogins && config.workbench.enablePreviewFeatures",
-          "group": "0_query@1"
-        },
-        {
-          "command": "mssql.newUser",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Users && config.workbench.enablePreviewFeatures",
+          "command": "mssql.newObject",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users)$/ && config.workbench.enablePreviewFeatures",
           "group": "0_query@1"
         },
         {
@@ -553,13 +539,8 @@
           "group": "connection@1"
         },
         {
-          "command": "mssql.newLogin",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ServerLevelLogins && config.workbench.enablePreviewFeatures",
-          "group": "connection@1"
-        },
-        {
-          "command": "mssql.newUser",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Users && config.workbench.enablePreviewFeatures",
+          "command": "mssql.newObject",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users)$/ && config.workbench.enablePreviewFeatures",
           "group": "connection@1"
         },
         {

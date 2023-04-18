@@ -55,7 +55,7 @@ export async function refreshNode(context: azdata.ObjectExplorerContext): Promis
 
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
 	switch (type) {
-		case NodeType.Login:
+		case NodeType.ServerLevelLogin:
 			return inTitle ? LoginTypeDisplayNameInTitle : LoginTypeDisplayName;
 		case NodeType.User:
 			return inTitle ? UserTypeDisplayNameInTitle : UserTypeDisplayName;
