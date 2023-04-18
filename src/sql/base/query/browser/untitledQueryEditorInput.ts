@@ -33,7 +33,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 		description: string | undefined,
 		text: UntitledTextEditorInput,
 		results: QueryResultsInput,
-		initialConnectionUri: string,
+		initialConnectionUri: string | undefined,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
 		@IConfigurationService configurationService: IConfigurationService,

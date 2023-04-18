@@ -311,12 +311,13 @@ suite('SQL QueryEditor Tests', () => {
 				'',
 				fileInput,
 				undefined,
+				undefined,
 				connectionManagementService.object,
 				queryModelService.object,
 				configurationService.object,
 				testinstantiationService,
 				undefined,
-				undefined
+				undefined,
 			);
 		});
 

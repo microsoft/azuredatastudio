@@ -187,7 +187,7 @@ suite('Query Input Factory', () => {
 		const newsqlEditorStub = sinon.stub(queryeditorservice, 'newSqlEditor').callsFake(() => {
 			const untitledInput = instantiationService.createInstance(UntitledTextEditorInput, untitledService.create());
 			const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, untitledInput.resource.toString());
-			let queryInput = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, queryResultsInput);
+			let queryInput = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, queryResultsInput, undefined);
 			return Promise.resolve(queryInput);
 		});
 		const input = instantiationService.createInstance(UntitledTextEditorInput, untitledService.create());
@@ -319,7 +319,7 @@ suite('Query Input Factory', () => {
 		const newsqlEditorStub = sinon.stub(queryeditorservice, 'newSqlEditor').callsFake(() => {
 			const untitledInput = instantiationService.createInstance(UntitledTextEditorInput, untitledService.create());
 			const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, untitledInput.resource.toString());
-			let queryInput = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, queryResultsInput);
+			let queryInput = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, queryResultsInput, undefined);
 			return Promise.resolve(queryInput);
 		});
 		const response = queryEditorLanguageAssociation.convertInput(input);
@@ -349,7 +349,7 @@ class MockEditorService extends TestEditorService {
 			const accessor = workbenchinstantiationService.createInstance(ServiceAccessor);
 			const service = accessor.untitledTextEditorService;
 			const untitledInput = instantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: URI.file('/test/file') }));
-			this.__activeEditor = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, undefined);
+			this.__activeEditor = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, undefined, undefined);
 		}
 	}
 }

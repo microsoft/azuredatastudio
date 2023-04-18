@@ -15,6 +15,7 @@ import * as nls from 'vs/nls';
 import { values } from 'vs/base/common/collections';
 import { Schemas } from 'vs/base/common/network';
 import { generateUuid } from 'vs/base/common/uuid';
+import * as ConnectionUtils from 'sql/platform/connection/common/utils';
 
 export class ConnectionStatusManager {
 
@@ -84,11 +85,20 @@ export class ConnectionStatusManager {
 		return connectionInfoForId ? connectionInfoForId.connectionProfile : undefined;
 	}
 
+	private isNonPurposeUri(uri: string): boolean {
+		return uri.startsWith(ConnectionUtils.uriPrefixes.connection)
+			|| uri.startsWith(ConnectionUtils.uriPrefixes.dashboard)
+			|| uri.startsWith(ConnectionUtils.uriPrefixes.insights)
+			|| uri.startsWith(ConnectionUtils.uriPrefixes.notebook);
+	}
+
 	public addConnection(connection: IConnectionProfile, id: string): ConnectionManagementInfo {
 		this._logService.info(`Adding connection ${id}`);
 
-		// Need to change the connection id in order for findConnectionById to work properly (for different URIs with their own profiles).
-		if (this.findConnectionByProfileId(connection.id) !== undefined) {
+		// Generated Purpose URIs are used in areas where the same connection profile id is expected for callbacks,
+		// Editor URIs such as Query Editor do not have this purpose, so they can have a new ID
+		// (in order not to retrieve the base connection profile, which may be different if a user changes the database).
+		if (!this.isNonPurposeUri(id) && this.findConnectionByProfileId(connection.id) !== undefined) {
 			connection.id = generateUuid();
 		}
 
