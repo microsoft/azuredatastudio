@@ -9,7 +9,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { TextResourceEditorModel } from 'vs/workbench/common/editor/textResourceEditorModel';
 import * as editorCommon from 'vs/editor/common/editorCommon';
 
-import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
+import { AbstractTextCodeEditor } from 'vs/workbench/browser/parts/editor/textCodeEditor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -23,6 +23,7 @@ import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfiguration';
+import { IFileService } from 'vs/platform/files/common/files';
 
 class ProfilerResourceCodeEditor extends CodeEditorWidget {
 
@@ -38,7 +39,7 @@ class ProfilerResourceCodeEditor extends CodeEditorWidget {
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
  */
-export class ProfilerResourceEditor extends BaseTextEditor<editorCommon.ICodeEditorViewState> {
+export class ProfilerResourceEditor extends AbstractTextCodeEditor<editorCommon.ICodeEditorViewState> {
 
 	public static ID = 'profiler.editors.textEditor';
 	constructor(
@@ -48,14 +49,16 @@ export class ProfilerResourceEditor extends BaseTextEditor<editorCommon.ICodeEdi
 		@ITextResourceConfigurationService configurationService: ITextResourceConfigurationService,
 		@IThemeService themeService: IThemeService,
 		@IEditorService editorService: IEditorService,
-		@IEditorGroupsService editorGroupService: IEditorGroupsService
-
+		@IEditorGroupsService editorGroupService: IEditorGroupsService,
+		@IFileService fileService: IFileService
 	) {
-		super(ProfilerResourceEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, editorService, editorGroupService);
+		super(ProfilerResourceEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, editorService, editorGroupService, fileService);
 	}
 
 	public override createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
-		return this.instantiationService.createInstance(ProfilerResourceCodeEditor, parent, configuration, {});
+		this.editorControl = this.instantiationService.createInstance(ProfilerResourceCodeEditor, parent, configuration, {});
+
+		return this.editorControl;
 	}
 
 	protected override getConfigurationOverrides(): IEditorOptions {

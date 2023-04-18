@@ -24,7 +24,7 @@ export interface IWorkbenchAssignmentService extends IAssignmentService {
 class MementoKeyValueStorage implements IKeyValueStorage {
 	private mementoObj: MementoObject;
 	constructor(private memento: Memento) {
-		this.mementoObj = memento.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE);
+		this.mementoObj = memento.getMemento(StorageScope.APPLICATION, StorageTarget.MACHINE);
 	}
 
 	async getValue<T>(key: string, defaultValue?: T | undefined): Promise<T | undefined> {
@@ -49,7 +49,6 @@ class WorkbenchAssignmentServiceTelemetry implements IExperimentationTelemetry {
 		return this._lastAssignmentContext?.split(';');
 	}
 
-	// __GDPR__COMMON__ "VSCode.ABExp.Features" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 	// __GDPR__COMMON__ "abexp.assignmentcontext" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 	setSharedProperty(name: string, value: string): void {
 		if (name === this.productService.tasConfig?.assignmentContextTelemetryPropertyName) {

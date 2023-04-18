@@ -21,6 +21,7 @@ import { Code } from './code';
 import { Terminal } from './terminal';
 import { Notebook } from './notebook';
 import { Localization } from './localization';
+import { Task } from './task';
 
 // {{SQL CARBON EDIT}}
 import { ConnectionDialog } from './sql/connectionDialog';
@@ -59,6 +60,7 @@ export class Workbench {
 	readonly terminal: Terminal;
 	readonly notebook: Notebook;
 	readonly localization: Localization;
+	readonly task: Task;
 
 	// {{SQL CARBON EDIT}}
 	readonly connectionDialog: ConnectionDialog;
@@ -74,7 +76,7 @@ export class Workbench {
 	readonly taskPanel: TaskPanel;
 	// {{END}}
 
-	constructor(code: Code, userDataPath: string) {
+	constructor(code: Code) {
 		this.editors = new Editors(code);
 		this.quickinput = new QuickInput(code);
 		this.quickaccess = new QuickAccess(code, this.editors, this.quickinput);
@@ -87,7 +89,7 @@ export class Workbench {
 		this.debug = new Debug(code, this.quickaccess, this.editors, this.editor);
 		this.statusbar = new StatusBar(code);
 		this.problems = new Problems(code, this.quickaccess);
-		this.settingsEditor = new SettingsEditor(code, userDataPath, this.editors, this.editor, this.quickaccess);
+		this.settingsEditor = new SettingsEditor(code, this.editors, this.editor, this.quickaccess);
 		this.keybindingsEditor = new KeybindingsEditor(code);
 		this.terminal = new Terminal(code, this.quickaccess, this.quickinput);
 		// {{SQL CARBON EDIT}}
@@ -105,5 +107,6 @@ export class Workbench {
 		// {{END}}
 		this.notebook = new Notebook(this.quickaccess, this.quickinput, code);
 		this.localization = new Localization(code);
+		this.task = new Task(code, this.editor, this.editors, this.quickaccess, this.quickinput, this.terminal);
 	}
 }

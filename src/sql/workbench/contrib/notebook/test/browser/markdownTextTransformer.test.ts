@@ -33,7 +33,7 @@ import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testComm
 import { Range } from 'vs/editor/common/core/range';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { TestAccessibilityService } from 'vs/platform/accessibility/test/common/testAccessibilityService';
-import { LanguageId } from 'vs/editor/common/languages';
+import { LanguageId } from 'vs/editor/common/encodedTokenAttributes';
 
 suite.skip('MarkdownTextTransformer', () => {
 	let markdownTextTransformer: MarkdownTextTransformer;

@@ -29,7 +29,7 @@ import { IExtHostDocumentsAndEditors } from 'vs/workbench/api/common/extHostDocu
 import { Extension, IExtHostExtensionService } from 'vs/workbench/api/common/extHostExtensionService';
 import { ExtHostFileSystem } from 'vs/workbench/api/common/extHostFileSystem';
 import { ExtHostFileSystemEventService } from 'vs/workbench/api/common/extHostFileSystemEventService';
-import { ExtHostLanguageFeatures, InlineCompletionController } from 'vs/workbench/api/common/extHostLanguageFeatures';
+import { ExtHostLanguageFeatures } from 'vs/workbench/api/common/extHostLanguageFeatures';
 import { ExtHostLanguages } from 'vs/workbench/api/common/extHostLanguages';
 import { ExtHostMessageService } from 'vs/workbench/api/common/extHostMessageService';
 import { IExtHostOutputService } from 'vs/workbench/api/common/extHostOutput';
@@ -51,14 +51,14 @@ import { ProxyIdentifier } from 'vs/workbench/services/extensions/common/proxyId
 import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/common/extensionDescriptionRegistry';
 import type * as vscode from 'vscode';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { values } from 'vs/base/common/collections';
+import { values } from 'vs/base/common/collections'; // {{SQL CARBON EDIT}}
 import { ExtHostEditorInsets } from 'vs/workbench/api/common/extHostCodeInsets';
 import { ExtHostLabelService } from 'vs/workbench/api/common/extHostLabelService';
 import { getRemoteName } from 'vs/platform/remote/common/remoteHosts';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IExtHostDecorations } from 'vs/workbench/api/common/extHostDecorations';
 import { IExtHostTask } from 'vs/workbench/api/common/extHostTask';
-// import { IExtHostDebugService } from 'vs/workbench/api/common/extHostDebugService'; {{SQL CARBON EDIT}}
+// import { IExtHostDebugService } from 'vs/workbench/api/common/extHostDebugService'; {{SQL CARBON EDIT}} - Unused import
 import { IExtHostSearch } from 'vs/workbench/api/common/extHostSearch';
 import { ILoggerService, ILogService } from 'vs/platform/log/common/log';
 import { IURITransformerService } from 'vs/workbench/api/common/extHostUriTransformerService';
@@ -89,12 +89,12 @@ import { Schemas } from 'vs/base/common/network';
 import { matchesScheme } from 'vs/platform/opener/common/opener';
 import { ExtHostNotebookEditors } from 'vs/workbench/api/common/extHostNotebookEditors';
 import { ExtHostNotebookDocuments } from 'vs/workbench/api/common/extHostNotebookDocuments';
-// import { ExtHostInteractive } from 'vs/workbench/api/common/extHostInteractive'; {{SQL CARBON EDIT}} Remove until we need it
+// import { ExtHostInteractive } from 'vs/workbench/api/common/extHostInteractive'; {{SQL CARBON EDIT}} - Unused import
 import { combinedDisposable } from 'vs/base/common/lifecycle';
 import { checkProposedApiEnabled, ExtensionIdentifierSet, isProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
 import { DebugConfigurationProviderTriggerKind } from 'vs/workbench/contrib/debug/common/debug';
-import { ExtHostNotebookProxyKernels } from 'vs/workbench/api/common/extHostNotebookProxyKernels';
-import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES, CONFIG_WORKBENCH_USEVSCODENOTEBOOKS } from 'sql/workbench/common/constants';
+import { equalsIgnoreCase } from 'vs/base/common/strings';
+import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES, CONFIG_WORKBENCH_USEVSCODENOTEBOOKS } from 'sql/workbench/common/constants'; // {{SQL CARBON EDIT}}
 
 export interface IExtensionRegistries {
 	mine: ExtensionDescriptionRegistry;
@@ -160,9 +160,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostDocumentSaveParticipant = rpcProtocol.set(ExtHostContext.ExtHostDocumentSaveParticipant, new ExtHostDocumentSaveParticipant(extHostLogService, extHostDocuments, rpcProtocol.getProxy(MainContext.MainThreadBulkEdits)));
 	const extHostNotebook = rpcProtocol.set(ExtHostContext.ExtHostNotebook, new ExtHostNotebookController(rpcProtocol, extHostCommands, extHostDocumentsAndEditors, extHostDocuments, extensionStoragePaths));
 	const extHostNotebookDocuments = rpcProtocol.set(ExtHostContext.ExtHostNotebookDocuments, new ExtHostNotebookDocuments(extHostNotebook));
-	const extHostNotebookEditors = rpcProtocol.set(ExtHostContext.ExtHostNotebookEditors, new ExtHostNotebookEditors(extHostLogService, rpcProtocol, extHostNotebook));
+	const extHostNotebookEditors = rpcProtocol.set(ExtHostContext.ExtHostNotebookEditors, new ExtHostNotebookEditors(extHostLogService, extHostNotebook));
 	const extHostNotebookKernels = rpcProtocol.set(ExtHostContext.ExtHostNotebookKernels, new ExtHostNotebookKernels(rpcProtocol, initData, extHostNotebook, extHostCommands, extHostLogService));
-	const extHostNotebookProxyKernels = rpcProtocol.set(ExtHostContext.ExtHostNotebookProxyKernels, new ExtHostNotebookProxyKernels(rpcProtocol, extHostNotebookKernels, extHostLogService));
 	const extHostNotebookRenderers = rpcProtocol.set(ExtHostContext.ExtHostNotebookRenderers, new ExtHostNotebookRenderers(rpcProtocol, extHostNotebook));
 	const extHostEditors = rpcProtocol.set(ExtHostContext.ExtHostEditors, new ExtHostEditors(rpcProtocol, extHostDocumentsAndEditors));
 	const extHostTreeViews = rpcProtocol.set(ExtHostContext.ExtHostTreeViews, new ExtHostTreeViews(rpcProtocol.getProxy(MainContext.MainThreadTreeViews), extHostCommands, extHostLogService));
@@ -186,7 +185,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostWebviewViews = rpcProtocol.set(ExtHostContext.ExtHostWebviewViews, new ExtHostWebviewViews(rpcProtocol, extHostWebviews));
 	const extHostTesting = rpcProtocol.set(ExtHostContext.ExtHostTesting, new ExtHostTesting(rpcProtocol, extHostCommands));
 	const extHostUriOpeners = rpcProtocol.set(ExtHostContext.ExtHostUriOpeners, new ExtHostUriOpeners(rpcProtocol));
-	// rpcProtocol.set(ExtHostContext.ExtHostInteractive, new ExtHostInteractive(rpcProtocol, extHostNotebook, extHostDocumentsAndEditors, extHostCommands)); {{SQL CARBON EDIT}} Disable interactive stuff until we need it
+	// rpcProtocol.set(ExtHostContext.ExtHostInteractive, new ExtHostInteractive(rpcProtocol, extHostNotebook, extHostDocumentsAndEditors, extHostCommands, extHostLogService)); {{SQL CARBON EDIT}} Disable interactive stuff until we need it
 
 	// Check that no named customers are missing
 	// {{SQL CARBON EDIT}} filter out the services we don't expose
@@ -411,6 +410,11 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 
 		const extensions: typeof vscode.extensions = {
 			getExtension(extensionId: string, includeFromDifferentExtensionHosts?: boolean): vscode.Extension<any> | undefined {
+				if (equalsIgnoreCase(extensionId, 'ms-vscode.references-view')) {
+					extHostApiDeprecation.report(`The extension 'ms-vscode.references-view' has been renamed.`, extension, `Use 'vscode.references-view' instead.`);
+					extensionId = 'vscode.references-view';
+				}
+
 				if (!isProposedApiEnabled(extension, 'extensionsAny')) {
 					includeFromDifferentExtensionHosts = false;
 				}
@@ -469,10 +473,15 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				return extHostLanguages.changeLanguage(document.uri, languageId);
 			},
 			match(selector: vscode.DocumentSelector, document: vscode.TextDocument): number {
-				return score(typeConverters.LanguageSelector.from(selector), document.uri, document.languageId, true, document.notebook?.notebookType);
+				const notebook = extHostDocuments.getDocumentData(document.uri)?.notebook;
+				return score(typeConverters.LanguageSelector.from(selector), document.uri, document.languageId, true, notebook?.uri, notebook?.notebookType);
 			},
 			registerCodeActionsProvider(selector: vscode.DocumentSelector, provider: vscode.CodeActionProvider, metadata?: vscode.CodeActionProviderMetadata): vscode.Disposable {
 				return extHostLanguageFeatures.registerCodeActionProvider(extension, checkSelector(selector), provider, metadata);
+			},
+			registerDocumentPasteEditProvider(selector: vscode.DocumentSelector, provider: vscode.DocumentPasteEditProvider, metadata: vscode.DocumentPasteProviderMetadata): vscode.Disposable {
+				checkProposedApiEnabled(extension, 'documentPaste');
+				return extHostLanguageFeatures.registerDocumentPasteEditProvider(extension, checkSelector(selector), provider, metadata);
 			},
 			registerCodeLensProvider(selector: vscode.DocumentSelector, provider: vscode.CodeLensProvider): vscode.Disposable {
 				return extHostLanguageFeatures.registerCodeLensProvider(extension, checkSelector(selector), provider);
@@ -541,7 +550,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				return extHostLanguageFeatures.registerCompletionItemProvider(extension, checkSelector(selector), provider, triggerCharacters);
 			},
 			registerInlineCompletionItemProvider(selector: vscode.DocumentSelector, provider: vscode.InlineCompletionItemProvider): vscode.Disposable {
-				checkProposedApiEnabled(extension, 'inlineCompletions');
+				if (provider.handleDidShowCompletionItem) {
+					checkProposedApiEnabled(extension, 'inlineCompletionsAdditions');
+				}
 				return extHostLanguageFeatures.registerInlineCompletionsProvider(extension, checkSelector(selector), provider);
 			},
 			registerInlineCompletionItemProviderNew(selector: vscode.DocumentSelector, provider: vscode.InlineCompletionItemProviderNew): vscode.Disposable {
@@ -582,9 +593,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			createLanguageStatusItem(id: string, selector: vscode.DocumentSelector): vscode.LanguageStatusItem {
 				return extHostLanguages.createLanguageStatusItem(extension, id, selector);
 			},
-			registerDocumentOnDropProvider(selector: vscode.DocumentSelector, provider: vscode.DocumentOnDropProvider): vscode.Disposable {
-				checkProposedApiEnabled(extension, 'textEditorDrop');
-				return extHostLanguageFeatures.registerDocumentOnDropProvider(extension, selector, provider);
+			registerDocumentDropEditProvider(selector: vscode.DocumentSelector, provider: vscode.DocumentDropEditProvider): vscode.Disposable {
+				return extHostLanguageFeatures.registerDocumentOnDropEditProvider(extension, selector, provider);
 			}
 		};
 
@@ -672,9 +682,6 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				return extHostQuickOpen.showWorkspaceFolderPick(options);
 			},
 			showInputBox(options?: vscode.InputBoxOptions, token?: vscode.CancellationToken) {
-				if (options?.validateInput2) {
-					checkProposedApiEnabled(extension, 'inputBoxSeverity');
-				}
 				return extHostQuickOpen.showInput(options, token);
 			},
 			showOpenDialog(options) {
@@ -809,10 +816,6 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			get tabGroups(): vscode.TabGroups {
 				return extHostEditorTabs.tabGroups;
 			},
-			getInlineCompletionItemController<T extends vscode.InlineCompletionItem>(provider: vscode.InlineCompletionItemProvider<T>): vscode.InlineCompletionController<T> {
-				checkProposedApiEnabled(extension, 'inlineCompletions');
-				return InlineCompletionController.get(provider);
-			},
 		};
 
 		// namespace: workspace
@@ -878,7 +881,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				return extHostWorkspace.saveAll(includeUntitled);
 			},
 			applyEdit(edit: vscode.WorkspaceEdit): Thenable<boolean> {
-				return extHostBulkEdits.applyWorkspaceEdit(edit);
+				return extHostBulkEdits.applyWorkspaceEdit(edit, extension);
 			},
 			createFileSystemWatcher: (pattern, ignoreCreate, ignoreChange, ignoreDelete): vscode.FileSystemWatcher => {
 				return extHostFileSystemEvent.createFileSystemWatcher(extHostWorkspace, extension, pattern, ignoreCreate, ignoreChange, ignoreDelete);
@@ -1199,20 +1202,12 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			registerNotebookCellStatusBarItemProvider: (notebookType: string, provider: vscode.NotebookCellStatusBarItemProvider) => {
 				return extHostNotebook.registerNotebookCellStatusBarItemProvider(extension, notebookType, provider);
 			},
-			createNotebookEditorDecorationType(options: vscode.NotebookDecorationRenderOptions): vscode.NotebookEditorDecorationType {
-				checkProposedApiEnabled(extension, 'notebookEditorDecorationType');
-				return extHostNotebookEditors.createNotebookEditorDecorationType(options);
-			},
 			createRendererMessaging(rendererId) {
 				return extHostNotebookRenderers.createRendererMessaging(extension, rendererId);
 			},
 			onDidChangeNotebookCellExecutionState(listener, thisArgs?, disposables?) {
 				checkProposedApiEnabled(extension, 'notebookCellExecutionState');
 				return extHostNotebookKernels.onDidChangeNotebookCellExecutionState(listener, thisArgs, disposables);
-			},
-			createNotebookProxyController(id: string, notebookType: string, label: string, handler: () => vscode.NotebookController | string | Thenable<vscode.NotebookController | string>) {
-				checkProposedApiEnabled(extension, 'notebookProxyController');
-				return extHostNotebookProxyKernels.createNotebookProxyController(extension, id, notebookType, label, handler);
 			}
 		};
 
@@ -1297,7 +1292,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			FunctionBreakpoint: extHostTypes.FunctionBreakpoint,
 			InlineCompletionItem: extHostTypes.InlineSuggestion,
 			InlineCompletionItemNew: extHostTypes.InlineSuggestionNew,
-			InlineCompletionList: extHostTypes.InlineSuggestions,
+			InlineCompletionList: extHostTypes.InlineSuggestionList,
 			InlineCompletionListNew: extHostTypes.InlineSuggestionsNew,
 			Hover: extHostTypes.Hover,
 			IndentAction: languageConfiguration.IndentAction,
@@ -1325,7 +1320,6 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			SignatureHelpTriggerKind: extHostTypes.SignatureHelpTriggerKind,
 			SignatureInformation: extHostTypes.SignatureInformation,
 			SnippetString: extHostTypes.SnippetString,
-			SnippetTextEdit: extHostTypes.SnippetTextEdit,
 			SourceBreakpoint: extHostTypes.SourceBreakpoint,
 			StandardTokenType: extHostTypes.StandardTokenType,
 			StatusBarAlignment: extHostTypes.StatusBarAlignment,
@@ -1357,6 +1351,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			ViewColumn: extHostTypes.ViewColumn,
 			WorkspaceEdit: extHostTypes.WorkspaceEdit,
 			// proposed api types
+			DocumentDropEdit: extHostTypes.DocumentDropEdit,
+			DocumentPasteEdit: extHostTypes.DocumentPasteEdit,
 			InlayHint: extHostTypes.InlayHint,
 			InlayHintLabelPart: extHostTypes.InlayHintLabelPart,
 			InlayHintKind: extHostTypes.InlayHintKind,
@@ -1377,6 +1373,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			NotebookCellOutputItem: extHostTypes.NotebookCellOutputItem,
 			NotebookCellStatusBarItem: extHostTypes.NotebookCellStatusBarItem,
 			NotebookControllerAffinity: extHostTypes.NotebookControllerAffinity,
+			NotebookEdit: extHostTypes.NotebookEdit,
 			PortAttributes: extHostTypes.PortAttributes,
 			LinkedEditingRanges: extHostTypes.LinkedEditingRanges,
 			TestResultState: extHostTypes.TestResultState,
@@ -1398,11 +1395,14 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			InputBoxValidationSeverity: extHostTypes.InputBoxValidationSeverity,
 			TabInputText: extHostTypes.TextTabInput,
 			TabInputTextDiff: extHostTypes.TextDiffTabInput,
+			TabInputTextMerge: extHostTypes.TextMergeTabInput,
 			TabInputCustom: extHostTypes.CustomEditorTabInput,
 			TabInputNotebook: extHostTypes.NotebookEditorTabInput,
 			TabInputNotebookDiff: extHostTypes.NotebookDiffEditorTabInput,
 			TabInputWebview: extHostTypes.WebviewEditorTabInput,
-			TabInputTerminal: extHostTypes.TerminalEditorTabInput
+			TabInputTerminal: extHostTypes.TerminalEditorTabInput,
+			TabInputInteractiveWindow: extHostTypes.InteractiveWindowInput,
+			TerminalExitReason: extHostTypes.TerminalExitReason
 		};
 	};
 }

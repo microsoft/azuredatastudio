@@ -7,31 +7,28 @@ import { getZoomFactor } from 'vs/base/browser/browser';
 import { $, addDisposableListener, append, EventType, hide, prepend, show } from 'vs/base/browser/dom';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
-import { ILabelService } from 'vs/platform/label/common/label';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { INativeWorkbenchEnvironmentService } from 'vs/workbench/services/environment/electron-sandbox/environmentService';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { isMacintosh, isWindows, isLinux } from 'vs/base/common/platform';
-import { IMenuService } from 'vs/platform/actions/common/actions';
+import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { TitlebarPart as BrowserTitleBarPart } from 'vs/workbench/browser/parts/titlebar/titlebarPart';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
-import { IProductService } from 'vs/platform/product/common/productService';
 import { INativeHostService } from 'vs/platform/native/electron-sandbox/native';
-import { getTitleBarStyle } from 'vs/platform/window/common/window';
+import { getTitleBarStyle, useWindowControlsOverlay } from 'vs/platform/window/common/window';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Codicon } from 'vs/base/common/codicons';
 import { NativeMenubarControl } from 'vs/workbench/electron-sandbox/parts/titlebar/menubarControl';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { IHoverService } from 'vs/workbench/services/hover/browser/hover';
 
 export class TitlebarPart extends BrowserTitleBarPart {
 	private maxRestoreControl: HTMLElement | undefined;
 	private dragRegion: HTMLElement | undefined;
 	private resizer: HTMLElement | undefined;
 	private cachedWindowControlStyles: { bgColor: string; fgColor: string } | undefined;
+	private cachedWindowControlHeight: number | undefined;
 
 	private getMacTitlebarSize() {
 		const osVersion = this.environmentService.os.release;
@@ -42,7 +39,13 @@ export class TitlebarPart extends BrowserTitleBarPart {
 		return 22;
 	}
 
-	override get minimumHeight(): number { return isMacintosh ? this.getMacTitlebarSize() / getZoomFactor() : super.minimumHeight; }
+	override get minimumHeight(): number {
+		if (!isMacintosh) {
+			return super.minimumHeight;
+		}
+
+		return (this.isCommandCenterVisible ? 35 : this.getMacTitlebarSize()) / (this.useCounterZoom ? getZoomFactor() : 1);
+	}
 	override get maximumHeight(): number { return this.minimumHeight; }
 
 	protected override readonly environmentService: INativeWorkbenchEnvironmentService;
@@ -50,22 +53,18 @@ export class TitlebarPart extends BrowserTitleBarPart {
 	constructor(
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IEditorService editorService: IEditorService,
 		@INativeWorkbenchEnvironmentService environmentService: INativeWorkbenchEnvironmentService,
-		@IWorkspaceContextService contextService: IWorkspaceContextService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IThemeService themeService: IThemeService,
-		@ILabelService labelService: ILabelService,
 		@IStorageService storageService: IStorageService,
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IMenuService menuService: IMenuService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IHostService hostService: IHostService,
-		@IProductService productService: IProductService,
 		@INativeHostService private readonly nativeHostService: INativeHostService,
-		@IKeybindingService keybindingService: IKeybindingService,
+		@IHoverService hoverService: IHoverService,
 	) {
-		super(contextMenuService, configurationService, editorService, environmentService, contextService, instantiationService, themeService, labelService, storageService, layoutService, menuService, contextKeyService, hostService, productService, keybindingService);
+		super(contextMenuService, configurationService, environmentService, instantiationService, themeService, storageService, layoutService, menuService, contextKeyService, hostService, hoverService);
 
 		this.environmentService = environmentService;
 	}
@@ -168,7 +167,7 @@ export class TitlebarPart extends BrowserTitleBarPart {
 
 		// Window Controls (Native Windows/Linux)
 		const hasWindowControlsOverlay = typeof (navigator as any).windowControlsOverlay !== 'undefined';
-		if (!isMacintosh && getTitleBarStyle(this.configurationService) !== 'native' && !hasWindowControlsOverlay && this.windowControls) {
+		if (!isMacintosh && getTitleBarStyle(this.configurationService) !== 'native' && hasWindowControlsOverlay && this.windowControls) { // {{SQL CARBON EDIT}} Removes '!' before hasWindowControlsOverlay
 			// Minimize
 			const minimizeIcon = append(this.windowControls, $('div.window-icon.window-minimize' + Codicon.chromeMinimize.cssSelector));
 			this._register(addDisposableListener(minimizeIcon, EventType.CLICK, e => {
@@ -199,6 +198,19 @@ export class TitlebarPart extends BrowserTitleBarPart {
 			this.onDidChangeWindowMaximized(this.layoutService.isWindowMaximized());
 		}
 
+		// Window System Context Menu
+		// See https://github.com/electron/electron/issues/24893
+		if (isWindows && getTitleBarStyle(this.configurationService) === 'custom') {
+			this._register(this.nativeHostService.onDidTriggerSystemContextMenu(({ windowId, x, y }) => {
+				if (this.nativeHostService.windowId !== windowId) {
+					return;
+				}
+
+				const zoomFactor = getZoomFactor();
+				this.onContextMenu(new MouseEvent('mouseup', { clientX: x / zoomFactor, clientY: y / zoomFactor }), MenuId.TitleBarContext);
+			}));
+		}
+
 		return ret;
 	}
 
@@ -206,11 +218,23 @@ export class TitlebarPart extends BrowserTitleBarPart {
 		super.updateStyles();
 
 		// WCO styles only supported on Windows currently
-		if (isWindows) {
+		if (useWindowControlsOverlay(this.configurationService, this.environmentService)) {
 			if (!this.cachedWindowControlStyles ||
 				this.cachedWindowControlStyles.bgColor !== this.element.style.backgroundColor ||
 				this.cachedWindowControlStyles.fgColor !== this.element.style.color) {
-				this.nativeHostService.updateTitleBarOverlay(this.element.style.backgroundColor, this.element.style.color);
+				this.nativeHostService.updateTitleBarOverlay({ backgroundColor: this.element.style.backgroundColor, foregroundColor: this.element.style.color });
+			}
+		}
+	}
+
+	override layout(width: number, height: number): void {
+		super.layout(width, height);
+
+		if (useWindowControlsOverlay(this.configurationService, this.environmentService)) {
+			const newHeight = Math.trunc(this.element.clientHeight * getZoomFactor());
+			if (newHeight !== this.cachedWindowControlHeight) {
+				this.cachedWindowControlHeight = newHeight;
+				this.nativeHostService.updateTitleBarOverlay({ height: newHeight });
 			}
 		}
 	}

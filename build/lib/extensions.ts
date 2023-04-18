@@ -9,7 +9,7 @@ import * as cp from 'child_process';
 import * as glob from 'glob';
 import * as gulp from 'gulp';
 import * as path from 'path';
-import * as through2 from 'through2';
+import * as through2 from 'through2'
 import got from 'got';
 import { Stream } from 'stream';
 import * as File from 'vinyl';
@@ -285,6 +285,7 @@ const excludedExtensions = [
 	'ms-vscode.node-debug',
 	'ms-vscode.node-debug2',
 	'vscode-custom-editor-tests',
+	'vscode-notebook-tests',
 	'integration-tests', // {{SQL CARBON EDIT}}
 ];
 
@@ -476,7 +477,7 @@ export function scanBuiltinExtensions(extensionsRoot: string, exclude: string[] 
 			if (!fs.existsSync(packageJSONPath)) {
 				continue;
 			}
-			let packageJSON = JSON.parse(fs.readFileSync(packageJSONPath).toString('utf8'));
+			const packageJSON = JSON.parse(fs.readFileSync(packageJSONPath).toString('utf8'));
 			if (!isWebExtension(packageJSON)) {
 				continue;
 			}
@@ -549,7 +550,7 @@ export function translatePackageJSON(packageJSON: string, packageNLSPath: string
 	const CharCode_PC = '%'.charCodeAt(0);
 	const packageNls: NLSFormat = JSON.parse(fs.readFileSync(packageNLSPath).toString());
 	const translate = (obj: any) => {
-		for (let key in obj) {
+		for (const key in obj) {
 			const val = obj[key];
 			if (Array.isArray(val)) {
 				val.forEach(translate);
@@ -575,6 +576,7 @@ const esbuildMediaScripts = [
 	'markdown-language-features/esbuild-preview.js',
 	'markdown-math/esbuild.js',
 	'notebook-renderers/esbuild.js',
+	'ipynb/esbuild.js',
 	'simple-browser/esbuild-preview.js',
 ];
 
@@ -588,7 +590,7 @@ export async function webpackExtensions(taskName: string, isWatch: boolean, webp
 		function addConfig(configOrFn: webpack.Configuration | Function) {
 			let config;
 			if (typeof configOrFn === 'function') {
-				config = configOrFn({}, {});
+				config = (configOrFn as Function)({}, {});
 				webpackConfigs.push(config);
 			} else {
 				config = configOrFn;

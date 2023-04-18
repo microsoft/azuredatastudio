@@ -584,7 +584,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 	private createMenuItem(commandId: string): MenuItemAction {
 		const command = MenuRegistry.getCommand(commandId);
-		return this.instantiationService.createInstance(MenuItemAction, command, undefined, { shouldForwardArgs: true });
+		return this.instantiationService.createInstance(MenuItemAction, command, undefined, { shouldForwardArgs: true }, undefined);
 	}
 
 

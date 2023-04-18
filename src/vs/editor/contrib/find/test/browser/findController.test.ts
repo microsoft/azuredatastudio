@@ -48,7 +48,7 @@ export class TestFindController extends CommonFindController {
 			this.hasFocus = true;
 		}
 
-		let inputFocused = opts.shouldFocus === FindStartFocusAction.FocusFindInput;
+		const inputFocused = opts.shouldFocus === FindStartFocusAction.FocusFindInput;
 		this._findInputFocused.set(inputFocused);
 	}
 }
@@ -80,8 +80,8 @@ suite.skip('FindController', async () => { // {{SQL CARBON EDIT}} Skip suite
 		isNew: () => false,
 		flush: () => { return Promise.resolve(); },
 		keys: () => [],
-		logStorage: () => { },
-		migrate: () => { throw new Error(); }
+		log: () => { },
+		switch: () => { throw new Error(); }
 	} as IStorageService);
 
 	if (platform.isMacintosh) {
@@ -511,8 +511,8 @@ suite.skip('FindController query options persistence', async () => { // {{SQL CA
 		isNew: () => false,
 		flush: () => { return Promise.resolve(); },
 		keys: () => [],
-		logStorage: () => { },
-		migrate: () => { throw new Error(); }
+		log: () => { },
+		switch: () => { throw new Error(); }
 	} as IStorageService);
 
 	test('matchCase', async () => {

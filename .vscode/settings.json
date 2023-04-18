@@ -67,6 +67,13 @@
 		}
 	],
 	"git.ignoreLimitWarning": true,
+	"git.branchProtection": [
+		"main",
+		"release/*"
+	],
+	"git.branchProtectionPrompt": "alwaysCommitToNewBranch",
+	"git.branchRandomName.enable": true,
+	"git.mergeEditor": true,
 	"remote.extensionKind": {
 		"msjsdiag.debugger-for-chrome": "workspace"
 	},

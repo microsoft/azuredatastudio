@@ -26,7 +26,7 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import { SerializableObjectWithBuffers } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys'; // {{SQL CARBON EDIT}} Log extension contributed actions
+// import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys'; // {{SQL CARBON EDIT}} Log extension contributed actions
 
 interface CommandHandler {
 	callback: Function;
@@ -49,7 +49,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 	private readonly _apiCommands = new Map<string, ApiCommand>();
 	#telemetry: MainThreadTelemetryShape;
 
-	protected readonly _mainThreadTelemetryProxy: MainThreadTelemetryShape; // {{SQL CARBON EDIT}} Log extension contributed actions
+	// protected readonly _mainThreadTelemetryProxy: MainThreadTelemetryShape; // {{SQL CARBON EDIT}} This was replaced by #telemetry
 	private readonly _logService: ILogService;
 	private readonly _argumentProcessors: ArgumentProcessor[];
 
@@ -60,7 +60,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		@ILogService logService: ILogService
 	) {
 		this.#proxy = extHostRpc.getProxy(MainContext.MainThreadCommands);
-		this._mainThreadTelemetryProxy = extHostRpc.getProxy(MainContext.MainThreadTelemetry); // {{SQL CARBON EDIT}} Log extension contributed actions
+		// this._mainThreadTelemetryProxy = extHostRpc.getProxy(MainContext.MainThreadTelemetry); // {{SQL CARBON EDIT}} This was replaced by line above
 		this._logService = logService;
 		this.#telemetry = extHostRpc.getProxy(MainContext.MainThreadTelemetry);
 		this.converter = new CommandsConverter(
@@ -172,14 +172,19 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 	private async _doExecuteCommand<T>(id: string, args: any[], retry: boolean): Promise<T> {
 
 		if (this._commands.has(id)) {
+			/*
 			// {{SQL CARBON EDIT}} Log ext-contributed commands (which never get send to the main thread if called from the ext host).
 			// Only logging here to avoid double-logging for command executions coming from core (which are already logged)
 			if (!id.startsWith('_')) { // Commands starting with _ are internal commands which generally aren't useful to us currently
 				this._mainThreadTelemetryProxy.$publicLog(TelemetryKeys.EventName.Action, { properties: { action: TelemetryKeys.TelemetryAction.adsCommandExecuted, view: TelemetryKeys.TelemetryView.ExtensionHost, target: id } });
 			}
+			*/
 
-			// we stay inside the extension host and support
-			// to pass any kind of parameters around
+			// - We stay inside the extension host and support
+			// 	 to pass any kind of parameters around.
+			// - We still emit the corresponding activation event
+			//   BUT we don't await that event
+			this.#proxy.$fireCommandActivationEvent(id);
 			return this._executeContributedCommand<T>(id, args, false);
 
 		} else {
@@ -215,7 +220,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 			} catch (e) {
 				// Rerun the command when it wasn't known, had arguments, and when retry
 				// is enabled. We do this because the command might be registered inside
-				// the extension host now and can therfore accept the arguments as-is.
+				// the extension host now and can therefore accept the arguments as-is.
 				if (e instanceof Error && e.message === '$executeCommand:retry') {
 					return this._doExecuteCommand(id, args, false);
 				} else {
@@ -231,7 +236,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 			throw new Error('Unknown command');
 		}
 		this._reportTelemetry(command, id);
-		let { callback, thisArg, description } = command;
+		const { callback, thisArg, description } = command;
 		if (description) {
 			for (let i = 0; i < description.args.length; i++) {
 				try {
@@ -313,8 +318,8 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 
 	$getContributedCommandHandlerDescriptions(): Promise<{ [id: string]: string | ICommandHandlerDescriptionDto }> {
 		const result: { [id: string]: string | ICommandHandlerDescription } = Object.create(null);
-		for (let [id, command] of this._commands) {
-			let { description } = command;
+		for (const [id, command] of this._commands) {
+			const { description } = command;
 			if (description) {
 				result[id] = description;
 			}

@@ -23,6 +23,10 @@ export class ErrorHandler {
 		this.unexpectedErrorHandler = function (e: any) {
 			setTimeout(() => {
 				if (e.stack) {
+					if (ErrorNoTelemetry.isErrorNoTelemetry(e)) {
+						throw new ErrorNoTelemetry(e.message + '\n\n' + e.stack);
+					}
+
 					throw new Error(e.message + '\n\n' + e.stack);
 				}
 
@@ -95,13 +99,14 @@ export interface SerializedError {
 	readonly name: string;
 	readonly message: string;
 	readonly stack: string;
+	readonly noTelemetry: boolean;
 }
 
 export function transformErrorForSerialization(error: Error): SerializedError;
 export function transformErrorForSerialization(error: any): any;
 export function transformErrorForSerialization(error: any): any {
 	if (error instanceof Error) {
-		let { name, message } = error;
+		const { name, message } = error;
 		let errorCode = (<any>error).errorCode; // {{SQL CARBON EDIT}} Add error code to retain more information
 		const stack: string = (<any>error).stacktrace || (<any>error).stack;
 		return {
@@ -236,24 +241,27 @@ export class ExpectedError extends Error {
  * Error that when thrown won't be logged in telemetry as an unhandled error.
  */
 export class ErrorNoTelemetry extends Error {
+	override readonly name: string;
 
-	public static fromError(err: any): ErrorNoTelemetry {
-		if (err && err instanceof ErrorNoTelemetry) {
+	constructor(msg?: string) {
+		super(msg);
+		this.name = 'ErrorNoTelemetry';
+	}
+
+	public static fromError(err: Error): ErrorNoTelemetry {
+		if (err instanceof ErrorNoTelemetry) {
 			return err;
 		}
 
-		if (err && err instanceof Error) {
-			const result = new ErrorNoTelemetry();
-			result.name = err.name;
-			result.message = err.message;
-			result.stack = err.stack;
-			return result;
-		}
-
-		return new ErrorNoTelemetry(err);
+		const result = new ErrorNoTelemetry();
+		result.message = err.message;
+		result.stack = err.stack;
+		return result;
 	}
 
-	readonly logTelemetry = false;
+	public static isErrorNoTelemetry(err: Error): err is ErrorNoTelemetry {
+		return err.name === 'ErrorNoTelemetry';
+	}
 }
 
 /**
@@ -262,8 +270,8 @@ export class ErrorNoTelemetry extends Error {
  * Only catch this error to recover gracefully from bugs.
  */
 export class BugIndicatingError extends Error {
-	constructor(message: string) {
-		super(message);
+	constructor(message?: string) {
+		super(message || 'An unexpected bug occurred.');
 		Object.setPrototypeOf(this, BugIndicatingError.prototype);
 
 		// Because we know for sure only buggy code throws this,

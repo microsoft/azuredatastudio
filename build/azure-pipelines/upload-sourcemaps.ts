@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as path from 'path';
 import * as es from 'event-stream';
 import * as Vinyl from 'vinyl';

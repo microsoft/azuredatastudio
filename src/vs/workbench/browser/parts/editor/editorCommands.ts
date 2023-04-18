@@ -968,10 +968,12 @@ function registerCloseEditorCommands() {
 			]);
 
 			type WorkbenchEditorReopenClassification = {
-				scheme: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-				ext: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-				from: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-				to: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+				owner: 'rebornix';
+				comment: 'Identify how a document is reopened';
+				scheme: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'File system provider scheme for the resource' };
+				ext: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'File extension for the resource' };
+				from: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'The editor view type the resource is switched from' };
+				to: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'The editor view type the resource is switched to' };
 			};
 
 			type WorkbenchEditorReopenEvent = {
@@ -1150,7 +1152,7 @@ function registerSplitEditorInGroupCommands(): void {
 		constructor() {
 			super({
 				id: TOGGLE_SPLIT_EDITOR_IN_GROUP_LAYOUT,
-				title: { value: localize('toggleSplitEditorInGroupLayout', "Toggle Split Editor in Group Layout"), original: 'Toggle Split Editor in Group Layout' },
+				title: { value: localize('toggleSplitEditorInGroupLayout', "Toggle Layout of Split Editor in Group"), original: 'Toggle Layout of Split Editor in Group' },
 				category: CATEGORIES.View,
 				precondition: SideBySideEditorActiveContext,
 				f1: true
@@ -1280,9 +1282,7 @@ function registerOtherEditorCommands(): void {
 		const editorGroupService = accessor.get(IEditorGroupsService);
 
 		const { group } = resolveCommandsContext(editorGroupService, getCommandsContext(resourceOrContext, context));
-		if (group) {
-			group.lock(locked ?? !group.isLocked);
-		}
+		group?.lock(locked ?? !group.isLocked);
 	}
 
 	registerAction2(class extends Action2 {

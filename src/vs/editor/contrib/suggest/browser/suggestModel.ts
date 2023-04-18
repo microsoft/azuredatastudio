@@ -44,11 +44,13 @@ export interface ISuggestEvent {
 	readonly isFrozen: boolean;
 	readonly auto: boolean;
 	readonly shy: boolean;
+	readonly noSelect: boolean;
 }
 
 export interface SuggestTriggerContext {
 	readonly auto: boolean;
 	readonly shy: boolean;
+	readonly noSelect: boolean;
 	readonly triggerKind?: CompletionTriggerKind;
 	readonly triggerCharacter?: string;
 }
@@ -82,14 +84,16 @@ export class LineContext {
 	readonly leadingWord: IWordAtPosition;
 	readonly auto: boolean;
 	readonly shy: boolean;
+	readonly noSelect: boolean;
 
-	constructor(model: ITextModel, position: Position, auto: boolean, shy: boolean) {
+	constructor(model: ITextModel, position: Position, auto: boolean, shy: boolean, noSelect: boolean) {
 		this.leadingLineContent = model.getLineContent(position.lineNumber).substr(0, position.column - 1);
 		this.leadingWord = model.getWordUntilPosition(position);
 		this.lineNumber = position.lineNumber;
 		this.column = position.column;
 		this.auto = auto;
 		this.shy = shy;
+		this.noSelect = noSelect;
 	}
 }
 
@@ -274,7 +278,7 @@ export class SuggestModel implements IDisposable {
 				const existing = this._completionModel
 					? { items: this._completionModel.adopt(supports), clipboardText: this._completionModel.clipboardText }
 					: undefined;
-				this.trigger({ auto: true, shy: false, triggerCharacter: lastChar }, Boolean(this._completionModel), supports, existing);
+				this.trigger({ auto: true, shy: false, noSelect: false, triggerCharacter: lastChar }, Boolean(this._completionModel), supports, existing);
 			}
 		};
 
@@ -309,7 +313,7 @@ export class SuggestModel implements IDisposable {
 			if (!this._editor.hasModel() || !this._languageFeaturesService.completionProvider.has(this._editor.getModel())) {
 				this.cancel();
 			} else {
-				this.trigger({ auto: this._state === State.Auto, shy: false }, true);
+				this.trigger({ auto: this._state === State.Auto, shy: false, noSelect: false }, true);
 			}
 		}
 	}
@@ -408,7 +412,7 @@ export class SuggestModel implements IDisposable {
 			}
 
 			// we made it till here -> trigger now
-			this.trigger({ auto: true, shy: false });
+			this.trigger({ auto: true, shy: false, noSelect: false });
 
 		}, this._editor.getOption(EditorOption.quickSuggestionsDelay));
 	}
@@ -428,7 +432,7 @@ export class SuggestModel implements IDisposable {
 			}
 			const model = this._editor.getModel();
 			const position = this._editor.getPosition();
-			const ctx = new LineContext(model, position, this._state === State.Auto, false);
+			const ctx = new LineContext(model, position, this._state === State.Auto, false, false);
 			this._onNewContext(ctx);
 		});
 	}
@@ -440,7 +444,7 @@ export class SuggestModel implements IDisposable {
 
 		const model = this._editor.getModel();
 		const auto = context.auto;
-		const ctx = new LineContext(model, this._editor.getPosition(), auto, context.shy);
+		const ctx = new LineContext(model, this._editor.getPosition(), auto, context.shy, context.noSelect);
 
 		// Cancel previous requests, change state & update UI
 		this.cancel(retrigger);
@@ -515,7 +519,7 @@ export class SuggestModel implements IDisposable {
 				items = items.concat(existing.items).sort(cmpFn);
 			}
 
-			const ctx = new LineContext(model, this._editor.getPosition(), auto, context.shy);
+			const ctx = new LineContext(model, this._editor.getPosition(), auto, context.shy, context.noSelect);
 			this._completionModel = new CompletionModel(items, this._context!.column, {
 				leadingLineContent: ctx.leadingLineContent,
 				characterCountDelta: ctx.column - this._context!.column
@@ -551,7 +555,7 @@ export class SuggestModel implements IDisposable {
 			type DurationsClassification = {
 				owner: 'jrieken';
 				comment: 'Completions performance numbers';
-				data: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth' };
+				data: { comment: 'Durations per source and overall'; classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth' };
 			};
 			this._telemetryService.publicLog2<Durations, DurationsClassification>('suggest.durations.json', { data: JSON.stringify(durations) });
 			this._logService.debug('suggest.durations.json', durations);
@@ -625,7 +629,7 @@ export class SuggestModel implements IDisposable {
 		if (ctx.column < this._context.column) {
 			// typed -> moved cursor LEFT -> retrigger if still on a word
 			if (ctx.leadingWord.word) {
-				this.trigger({ auto: this._context.auto, shy: false }, true);
+				this.trigger({ auto: this._context.auto, shy: false, noSelect: false }, true);
 			} else {
 				this.cancel();
 			}
@@ -643,11 +647,11 @@ export class SuggestModel implements IDisposable {
 			// Select those providers have not contributed to this completion model and re-trigger completions for
 			// them. Also adopt the existing items and merge them into the new completion model
 			const inactiveProvider = new Set(this._languageFeaturesService.completionProvider.all(this._editor.getModel()!));
-			for (let provider of this._completionModel.allProvider) {
+			for (const provider of this._completionModel.allProvider) {
 				inactiveProvider.delete(provider);
 			}
 			const items = this._completionModel.adopt(new Set());
-			this.trigger({ auto: this._context.auto, shy: false }, true, inactiveProvider, { items, clipboardText: this._completionModel.clipboardText });
+			this.trigger({ auto: this._context.auto, shy: false, noSelect: false }, true, inactiveProvider, { items, clipboardText: this._completionModel.clipboardText });
 			return;
 		}
 
@@ -655,11 +659,11 @@ export class SuggestModel implements IDisposable {
 			// typed -> moved cursor RIGHT & incomple model & still on a word -> retrigger
 			const { incomplete } = this._completionModel;
 			const items = this._completionModel.adopt(incomplete);
-			this.trigger({ auto: this._state === State.Auto, shy: false, triggerKind: CompletionTriggerKind.TriggerForIncompleteCompletions }, true, incomplete, { items, clipboardText: this._completionModel.clipboardText });
+			this.trigger({ auto: this._state === State.Auto, shy: false, noSelect: false, triggerKind: CompletionTriggerKind.TriggerForIncompleteCompletions }, true, incomplete, { items, clipboardText: this._completionModel.clipboardText });
 
 		} else {
 			// typed -> moved cursor RIGHT -> update UI
-			let oldLineContext = this._completionModel.lineContext;
+			const oldLineContext = this._completionModel.lineContext;
 			let isFrozen = false;
 
 			this._completionModel.lineContext = {
@@ -671,7 +675,7 @@ export class SuggestModel implements IDisposable {
 
 				if (LineContext.shouldAutoTrigger(this._editor) && this._context.leadingWord.endColumn < ctx.leadingWord.startColumn) {
 					// retrigger when heading into a new word
-					this.trigger({ auto: this._context.auto, shy: false }, true);
+					this.trigger({ auto: this._context.auto, shy: false, noSelect: false }, true);
 					return;
 				}
 
@@ -698,6 +702,7 @@ export class SuggestModel implements IDisposable {
 				completionModel: this._completionModel,
 				auto: this._context.auto,
 				shy: this._context.shy,
+				noSelect: this._context.noSelect,
 				isFrozen,
 			});
 		}

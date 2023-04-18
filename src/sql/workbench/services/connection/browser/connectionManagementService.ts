@@ -123,7 +123,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this._connectionStatusManager = _instantiationService.createInstance(ConnectionStatusManager);
 		if (this._storageService) {
 			this._mementoContext = new Memento(ConnectionManagementService.CONNECTION_MEMENTO, this._storageService);
-			this._mementoObj = this._mementoContext.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE);
+			this._mementoObj = this._mementoContext.getMemento(StorageScope.APPLICATION, StorageTarget.MACHINE);
 		}
 
 		this.initializeConnectionProvidersMap();
