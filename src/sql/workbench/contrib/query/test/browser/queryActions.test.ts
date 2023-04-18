@@ -198,7 +198,7 @@ suite('SQL QueryAction Tests', () => {
 		let queryInputState = TypeMoq.Mock.ofType(QueryEditorState, TypeMoq.MockBehavior.Loose);
 		queryInputState.setup(x => x.isActualExecutionPlanMode).returns(() => false);
 
-		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
+		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		queryInput.setup(x => x.uri).returns(() => testUri);
 		queryInput.setup(x => x.runQuery(undefined)).callback(() => {
 			countCalledRunQuery++;
@@ -253,7 +253,7 @@ suite('SQL QueryAction Tests', () => {
 		let queryInputState = TypeMoq.Mock.ofType(QueryEditorState, TypeMoq.MockBehavior.Loose);
 		queryInputState.setup(x => x.isActualExecutionPlanMode).returns(() => false);
 
-		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Loose, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
+		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Loose, undefined, fileInput, undefined, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		queryInput.setup(x => x.uri).returns(() => testUri);
 		queryInput.setup(x => x.runQuery(TypeMoq.It.isAny())).callback((selection: IRange) => {
 			runQuerySelection = selection;
