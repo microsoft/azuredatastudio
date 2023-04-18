@@ -846,7 +846,7 @@ describe('Project: database references', function (): void {
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after trying to add a reference to testProject again');
 	});
 
-	it.only('Should not allow adding duplicate nupkg references', async function (): Promise<void> {
+	it('Should not allow adding duplicate nupkg references', async function (): Promise<void> {
 		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newSdkStyleProjectSdkNodeBaseline);
 		let project = await Project.openProject(projFilePath);
 
