@@ -535,6 +535,12 @@ export class AddDatabaseReferenceDialog {
 					this.databaseVariableTextbox!.value = dacpacName ? `${dacpacName}` : '';
 					break;
 				}
+				case ReferenceType.nupkg: {
+					const nupkgName = this.nupkgNameTextbox!.value ? path.parse(this.nupkgNameTextbox!.value!).name : '';
+					this.databaseNameTextbox!.value = nupkgName;
+					this.databaseVariableTextbox!.value = nupkgName ? `${nupkgName}` : '';
+					break;
+				}
 			}
 		}
 	}
@@ -672,6 +678,10 @@ export class AddDatabaseReferenceDialog {
 				this.dialog.okButton.enabled = this.dacpacRequiredFieldsFilled();
 				break;
 			}
+			case ReferenceType.nupkg: {
+				this.dialog.okButton.enabled = this.nupkgRequiredFieldsFilled();
+				break;
+			}
 		}
 	}
 
@@ -686,6 +696,14 @@ export class AddDatabaseReferenceDialog {
 	private projectRequiredFieldsFilled(): boolean {
 		return !!this.projectDropdown?.value &&
 			((this.locationDropdown?.value === constants.sameDatabase)
+				|| (this.locationDropdown?.value === constants.differentDbSameServer && this.differentDatabaseSameServerRequiredFieldsFilled())
+				|| ((this.locationDropdown?.value === constants.differentDbDifferentServer && this.differentDatabaseDifferentServerRequiredFieldsFilled())));
+	}
+
+	private nupkgRequiredFieldsFilled(): boolean {
+		return !!this.nupkgNameTextbox?.value
+			&& !!this.nupkgVersionTextbox?.value
+			&& ((this.locationDropdown?.value === constants.sameDatabase)
 				|| (this.locationDropdown?.value === constants.differentDbSameServer && this.differentDatabaseSameServerRequiredFieldsFilled())
 				|| ((this.locationDropdown?.value === constants.differentDbDifferentServer && this.differentDatabaseDifferentServerRequiredFieldsFilled())));
 	}
