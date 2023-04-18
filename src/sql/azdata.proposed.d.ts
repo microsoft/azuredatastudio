@@ -1776,11 +1776,6 @@ declare module 'azdata' {
 		ariaLive?: AriaLiveValue
 	}
 
-	/**
-	 * Supported values for aria-live accessibility attribute
-	 */
-	export type AriaLiveValue = 'polite' | 'assertive' | 'off';
-
 	export interface ContainerProperties extends ComponentProperties {
 		/**
 		 * Corresponds to the aria-live accessibility attribute for this component
