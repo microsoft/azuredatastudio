@@ -14,9 +14,9 @@ import { promises as fs } from 'fs';
 import { Uri, window } from 'vscode';
 import { EntryType, IDatabaseReferenceProjectEntry, ISqlProject, ItemType } from 'sqldbproj';
 import { DataSource } from './dataSources/dataSources';
-import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
+import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings, INugetPackageReferenceSettings, IUserDatabaseReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { DacpacReferenceProjectEntry, FileProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabaseReferenceProjectEntry } from './projectEntry';
+import { DacpacReferenceProjectEntry, FileProjectEntry, NugetPackageReferenceProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabaseReferenceProjectEntry } from './projectEntry';
 import { ResultStatus } from 'azdata';
 import { BaseProjectTreeItem } from './tree/baseTreeItem';
 import { NoneNode, PostDeployNode, PreDeployNode, PublishProfileNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
@@ -44,7 +44,7 @@ export class Project implements ISqlProject {
 	private _folders: FileProjectEntry[] = [];
 	private _dataSources: DataSource[] = [];
 	private _databaseReferences: IDatabaseReferenceProjectEntry[] = [];
-	private _sqlCmdVariables: Record<string, string> = {};
+	private _sqlCmdVariables: Map<string, string> = new Map();
 	private _preDeployScripts: FileProjectEntry[] = [];
 	private _postDeployScripts: FileProjectEntry[] = [];
 	private _noneDeployScripts: FileProjectEntry[] = [];
@@ -97,7 +97,7 @@ export class Project implements ISqlProject {
 		return this._databaseReferences;
 	}
 
-	public get sqlCmdVariables(): Record<string, string> {
+	public get sqlCmdVariables(): Map<string, string> {
 		return this._sqlCmdVariables;
 	}
 
@@ -267,10 +267,10 @@ export class Project implements ISqlProject {
 			throw new Error(constants.errorReadingProject(constants.sqlCmdVariables, this.projectFilePath, sqlcmdVariablesResult.errorMessage));
 		}
 
-		this._sqlCmdVariables = {};
+		this._sqlCmdVariables = new Map();
 
 		for (const variable of sqlcmdVariablesResult.sqlCmdVariables) {
-			this._sqlCmdVariables[variable.varName] = variable.defaultValue; // store the default value that's specified in the .sqlproj
+			this._sqlCmdVariables.set(variable.varName, variable.defaultValue); // store the default value that's specified in the .sqlproj
 		}
 	}
 
@@ -428,6 +428,20 @@ export class Project implements ISqlProject {
 				systemDbReference.databaseVariableLiteralName,
 				systemDbReference.suppressMissingDependencies));
 		}
+
+		for (const nupkgReference of databaseReferencesResult.nugetPackageReferences) {
+			this._databaseReferences.push(new NugetPackageReferenceProjectEntry({
+				packageName: nupkgReference.packageName,
+				packageVersion: nupkgReference.packageVersion,
+				suppressMissingDependenciesErrors: nupkgReference.suppressMissingDependencies,
+
+				databaseVariableLiteralValue: nupkgReference.databaseVariableLiteralName,
+				databaseName: nupkgReference.databaseVariable?.varName,
+				databaseVariable: nupkgReference.databaseVariable?.value,
+				serverName: nupkgReference.serverVariable?.varName,
+				serverVariable: nupkgReference.serverVariable?.value
+			}));
+		}
 	}
 
 	//#endregion
@@ -435,7 +449,7 @@ export class Project implements ISqlProject {
 	private resetProject(): void {
 		this._files = [];
 		this._databaseReferences = [];
-		this._sqlCmdVariables = {};
+		this._sqlCmdVariables = new Map();
 		this._preDeployScripts = [];
 		this._postDeployScripts = [];
 		this._noneDeployScripts = [];
@@ -781,7 +795,12 @@ export class Project implements ISqlProject {
 		await this.addUserDatabaseReference(settings, projectReferenceEntry);
 	}
 
-	private async addUserDatabaseReference(settings: IProjectReferenceSettings | IDacpacReferenceSettings, reference: SqlProjectReferenceProjectEntry | DacpacReferenceProjectEntry): Promise<void> {
+	public async addNugetPackageReference(settings: INugetPackageReferenceSettings): Promise<void> {
+		const nupkgReferenceEntry = new NugetPackageReferenceProjectEntry(settings);
+		await this.addUserDatabaseReference(settings, nupkgReferenceEntry);
+	}
+
+	private async addUserDatabaseReference(settings: IUserDatabaseReferenceSettings, reference: SqlProjectReferenceProjectEntry | DacpacReferenceProjectEntry | NugetPackageReferenceProjectEntry): Promise<void> {
 		// check if reference to this database already exists
 		if (this.databaseReferenceExists(reference)) {
 			throw new Error(constants.databaseReferenceAlreadyExists);
@@ -806,9 +825,12 @@ export class Project implements ISqlProject {
 		if (reference instanceof SqlProjectReferenceProjectEntry) {
 			referenceName = (<IProjectReferenceSettings>settings).projectName;
 			result = await this.sqlProjService.addSqlProjectReference(this.projectFilePath, reference.pathForSqlProj(), reference.projectGuid, settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
-		} else { // dacpac
+		} else if (reference instanceof DacpacReferenceProjectEntry) {
 			referenceName = (<IDacpacReferenceSettings>settings).dacpacFileLocation.fsPath;
 			result = await this.sqlProjService.addDacpacReference(this.projectFilePath, reference.pathForSqlProj(), settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
+		} else {// nupkg reference
+			referenceName = (<INugetPackageReferenceSettings>settings).packageName;
+			result = await this.sqlProjService.addNugetPackageReference(this.projectFilePath, reference.packageName, (<INugetPackageReferenceSettings>settings).packageVersion, settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
 		}
 
 		if (!result.success && result.errorMessage) {
@@ -843,7 +865,8 @@ export class Project implements ISqlProject {
 	 * @param defaultValue
 	 */
 	public async addSqlCmdVariable(name: string, defaultValue: string): Promise<void> {
-		await this.sqlProjService.addSqlCmdVariable(this.projectFilePath, name, defaultValue);
+		const result = await this.sqlProjService.addSqlCmdVariable(this.projectFilePath, name, defaultValue);
+		this.throwIfFailed(result);
 		await this.readSqlCmdVariables();
 	}
 
@@ -853,7 +876,8 @@ export class Project implements ISqlProject {
 	 * @param defaultValue
 	 */
 	public async updateSqlCmdVariable(name: string, defaultValue: string): Promise<void> {
-		await this.sqlProjService.updateSqlCmdVariable(this.projectFilePath, name, defaultValue);
+		const result = await this.sqlProjService.updateSqlCmdVariable(this.projectFilePath, name, defaultValue);
+		this.throwIfFailed(result);
 		await this.readSqlCmdVariables();
 	}
 

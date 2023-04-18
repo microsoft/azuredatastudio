@@ -515,7 +515,7 @@ export interface DeployParams {
 	packageFilePath: string;
 	databaseName: string;
 	upgradeExisting: boolean;
-	sqlCommandVariableValues?: Record<string, string>;
+	sqlCommandVariableValues?: Map<string, string>;
 	deploymentOptions?: mssql.DeploymentOptions;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
@@ -524,7 +524,7 @@ export interface DeployParams {
 export interface GenerateDeployScriptParams {
 	packageFilePath: string;
 	databaseName: string;
-	sqlCommandVariableValues?: Record<string, string>;
+	sqlCommandVariableValues?: Map<string, string>;
 	deploymentOptions?: mssql.DeploymentOptions
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
@@ -555,7 +555,7 @@ export interface SavePublishProfileParams {
 	profilePath: string;
 	databaseName: string;
 	connectionString: string;
-	sqlCommandVariableValues?: Record<string, string>;
+	sqlCommandVariableValues?: Map<string, string>;
 	deploymentOptions?: mssql.DeploymentOptions;
 }
 
@@ -790,6 +790,10 @@ export namespace AddSystemDatabaseReferenceRequest {
 	export const type = new RequestType<AddSystemDatabaseReferenceParams, azdata.ResultStatus, void, void>('sqlprojects/addSystemDatabaseReference');
 }
 
+export namespace AddNugetPackageReferenceRequest {
+	export const type = new RequestType<AddNugetPackageReferenceParams, azdata.ResultStatus, void, void>('sqlprojects/addNugetPackageReference');
+}
+
 export namespace DeleteDatabaseReferenceRequest {
 	export const type = new RequestType<DeleteDatabaseReferenceParams, azdata.ResultStatus, void, void>('sqlprojects/deleteDatabaseReference');
 }
@@ -837,6 +841,18 @@ export interface AddDacpacReferenceParams extends AddUserDatabaseReferenceParams
 	 * Path to the .dacpac file
 	 */
 	dacpacPath: string;
+}
+
+export interface AddNugetPackageReferenceParams extends AddUserDatabaseReferenceParams {
+	/**
+	 * NuGet package name
+	 */
+	packageName: string;
+
+	/**
+	 * NuGet package version
+	 */
+	packageVersion: string;
 }
 
 export interface AddDatabaseReferenceParams extends SqlProjectParams {

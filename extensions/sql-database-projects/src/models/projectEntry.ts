@@ -5,7 +5,7 @@
 
 import * as path from 'path';
 import * as utils from '../common/utils';
-import { IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
+import { IDacpacReferenceSettings, INugetPackageReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { EntryType, IDatabaseReferenceProjectEntry, IFileProjectEntry, IProjectEntry } from 'sqldbproj';
 import { Uri } from 'vscode';
 
@@ -121,6 +121,37 @@ export class SqlProjectReferenceProjectEntry extends FileProjectEntry implements
 	public override pathForSqlProj(): string {
 		// need to remove the leading slash from path for build to work on Windows
 		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
+	}
+}
+
+export class NugetPackageReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
+	databaseSqlCmdVariableValue?: string;
+	databaseSqlCmdVariableName?: string;
+	databaseVariableLiteralValue?: string;
+	serverSqlCmdVariableName?: string;
+	serverSqlCmdVariableValue?: string;
+	suppressMissingDependenciesErrors: boolean;
+	packageName: string;
+
+	constructor(settings: INugetPackageReferenceSettings) {
+		super(Uri.file(settings.packageName), /* relativePath doesn't get set for database references */ '', EntryType.DatabaseReference);
+		this.packageName = settings.packageName;
+		this.suppressMissingDependenciesErrors = settings.suppressMissingDependenciesErrors;
+
+		this.databaseVariableLiteralValue = settings.databaseVariableLiteralValue;
+		this.databaseSqlCmdVariableName = settings.databaseName;
+		this.databaseSqlCmdVariableValue = settings.databaseVariable;
+
+		this.serverSqlCmdVariableName = settings.serverName;
+		this.serverSqlCmdVariableValue = settings.serverVariable;
+	}
+
+	public get referenceName(): string {
+		return this.packageName;
+	}
+
+	public override pathForSqlProj(): string {
+		return this.packageName;
 	}
 }
 
