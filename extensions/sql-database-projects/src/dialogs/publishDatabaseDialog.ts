@@ -706,7 +706,7 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		loadSqlCmdVarsButton.onDidClick(async () => {
-			for (const [key, _value] of this.sqlCmdVars!) {
+			for (const key of this.sqlCmdVars!.keys()) {
 
 				this.sqlCmdVars!.set(key, this.getDefaultSqlCmdValue(key));
 			}
@@ -900,7 +900,7 @@ export class PublishDatabaseDialog {
 
 		let revertButtonEnabled = false;
 
-		for (const [key, _value] of this.sqlCmdVars!) {
+		for (const key of this.sqlCmdVars!.keys()) {
 			if (this.sqlCmdVars!.get(key) !== this.getDefaultSqlCmdValue(key)) {
 				revertButtonEnabled = true;
 				break;
