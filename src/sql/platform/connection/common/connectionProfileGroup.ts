@@ -157,28 +157,40 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 		});
 	}
 
+	/**
+	 * Remove the given connections from the group.
+	 */
 	public removeConnections(connections: ConnectionProfile[]): void {
-		connections.forEach((conn) => {
-			this._childConnections = this._childConnections.filter((curConn) => { return curConn.id !== conn.id; });
-		});
+		const connectionIdsToRemove = connections.map(conn => conn.id);
+		this._childConnections = this._childConnections.filter((conn) => { return !connectionIdsToRemove.includes(conn.id); });
 	}
 
+	/**
+	 * Gets the matching connection from the group if it exists
+	 */
 	public getMatchingConnection(connection: ConnectionProfile): ConnectionProfile | undefined {
 		return this._childConnections.find((conn) => connection.matches(conn));
 	}
 
-	public addConnection(connection: ConnectionProfile): void {
+	/**
+	 * Adds the given connection to the group if it doesn't already exist, otherwise replaces the matching connection.
+	 */
+	public addOrReplaceConnection(connection: ConnectionProfile): void {
 		const matchingConnection = this.getMatchingConnection(connection);
 		connection.parent = this;
 		connection.groupId = this.id;
 		if (matchingConnection) {
-			const matchingConnectionIndex = this._childConnections.indexOf(matchingConnection);
-			this._childConnections[matchingConnectionIndex] = connection;
+			this.replaceConnection(connection, matchingConnection.id);
 		} else {
 			this._childConnections.push(connection);
 		}
 	}
 
+	/**
+	 * Replaces the connection with the given id with the given connection
+	 * @param connection The connection to replace with
+	 * @param oldConnectionId The id of the existing connection to replace
+	 */
 	public replaceConnection(connection: ConnectionProfile, oldConnectionId: string): void {
 		const oldConnectionIndex = this._childConnections.findIndex((conn) => conn.id === oldConnectionId);
 		if (oldConnectionIndex !== -1) {

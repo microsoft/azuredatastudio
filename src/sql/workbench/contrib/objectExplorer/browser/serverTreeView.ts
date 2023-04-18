@@ -228,7 +228,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			if (this._tree instanceof AsyncServerTree) {
 				const connectionParentGroup = this._tree.getElementById(newConnection.groupId) as ConnectionProfileGroup;
 				if (connectionParentGroup) {
-					connectionParentGroup.addConnection(newConnection);
+					connectionParentGroup.addOrReplaceConnection(newConnection);
 					await this._tree.updateChildren(connectionParentGroup);
 					await this._tree.revealSelectFocusElement(newConnection);
 					await this._tree.expand(newConnection);
@@ -271,7 +271,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 					oldProfileParent.removeConnections([oldProfile]);
 					await this._tree.updateChildren(oldProfileParent);
 					const newProfileParent = <ConnectionProfileGroup>this._tree.getElementById(e.profile.groupId);
-					newProfileParent.addConnection(e.profile);
+					newProfileParent.addOrReplaceConnection(e.profile);
 					await this._tree.updateChildren(newProfileParent);
 					await this._tree.revealSelectFocusElement(e.profile);
 					await this._tree.expand(e.profile);
@@ -297,7 +297,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 					await this._tree.updateChildren(oldParent);
 				}
 				if (newParent) {
-					newParent.addConnection(movedConnection);
+					newParent.addOrReplaceConnection(movedConnection);
 					await this._tree.updateChildren(newParent);
 				}
 				const newConnection = this._tree.getElementById(movedConnection.id);
@@ -324,7 +324,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				if (!parent) {
 					parent = this._tree.getInput(); // If the parent is not found then add the group to the root.
 				}
-				parent.children.push(e);
+				parent.addGroups([e]);
 				e.parent = parent;
 				e.parentId = parent.id;
 				await this._tree.updateChildren(parent);
