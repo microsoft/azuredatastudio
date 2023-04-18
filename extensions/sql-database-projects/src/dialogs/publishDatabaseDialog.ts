@@ -655,7 +655,7 @@ export class PublishDatabaseDialog {
 	}
 
 	private createSqlCmdTable(view: azdataType.ModelView): azdataType.DeclarativeTableComponent {
-		this.sqlCmdVars = { ...this.project.sqlCmdVariables };
+		this.sqlCmdVars = this.project.sqlCmdVariables;
 
 		const table = view.modelBuilder.declarativeTable().withProps({
 			ariaLabel: constants.sqlCmdVariables,
@@ -706,9 +706,9 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		loadSqlCmdVarsButton.onDidClick(async () => {
-			for (const varName in this.sqlCmdVars) {
+			for (const [key, _value] of this.sqlCmdVars!) {
 
-				this.sqlCmdVars.set(varName, this.getDefaultSqlCmdValue(varName));
+				this.sqlCmdVars!.set(key, this.getDefaultSqlCmdValue(key));
 			}
 
 			const data = this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars!);
@@ -882,8 +882,8 @@ export class PublishDatabaseDialog {
 
 	private convertSqlCmdVarsToTableFormat(sqlCmdVars: Map<string, string>): azdataType.DeclarativeTableCellValue[][] {
 		let data = [];
-		for (let key in sqlCmdVars) {
-			data.push([{ value: key }, { value: sqlCmdVars.get(key)! }]);
+		for (let [key, value] of sqlCmdVars) {
+			data.push([{ value: key }, { value: value! }]);
 		}
 
 		return data;
@@ -900,8 +900,8 @@ export class PublishDatabaseDialog {
 
 		let revertButtonEnabled = false;
 
-		for (const varName in this.sqlCmdVars) {
-			if (this.sqlCmdVars!.get(varName) !== this.getDefaultSqlCmdValue(varName)) {
+		for (const [key, _value] of this.sqlCmdVars!) {
+			if (this.sqlCmdVars!.get(key) !== this.getDefaultSqlCmdValue(key)) {
 				revertButtonEnabled = true;
 				break;
 			}
