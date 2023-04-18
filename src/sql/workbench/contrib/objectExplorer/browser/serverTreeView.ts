@@ -251,6 +251,14 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		// Add connection profile to parent group and update group children. Then reveal and expand the new connection
 		this._register(this._connectionManagementService.onConnectionProfileCreated(async (newConnection) => {
 			if (this._tree instanceof AsyncServerTree) {
+				/**
+				 * On a fresh install of ads, the default group in connection tree is not created until the first conneciton is
+				 * created. In that case, the tree input is null and this handles that edge case. When we find the tree input undefined,
+				 * we get the default group and set it as the tree input so that the new connection can be added to it.
+				 */
+				if (!this._tree.getInput()) {
+					this._tree.setInput(TreeUpdateUtils.getTreeInput(this._connectionManagementService));
+				}
 				const connectionParentGroup = this._tree.getElementById(newConnection.groupId) as ConnectionProfileGroup;
 				if (connectionParentGroup) {
 					connectionParentGroup.addOrReplaceConnection(newConnection);
@@ -345,6 +353,14 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 
 		this._register(this._connectionManagementService.onConnectionProfileGroupCreated(async (e) => {
 			if (this._tree instanceof AsyncServerTree) {
+				/**
+				 * On a fresh install of ads, the default group in connection tree is not created until the first conneciton is
+				 * created. In that case, the tree input is null and this handles that edge case. When we find the tree input undefined,
+				 * we get the default group and set it as the tree input so that the new connection group can be added to it.
+				 */
+				if (!this._tree.getInput()) {
+					this._tree.setInput(TreeUpdateUtils.getTreeInput(this._connectionManagementService));
+				}
 				let parent = <ConnectionProfileGroup>this._tree.getElementById(e.parentId);
 				if (!parent) {
 					parent = this._tree.getInput(); // If the parent is not found then add the group to the root.
