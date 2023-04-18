@@ -68,22 +68,37 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 
 	// Set connection info to connection status bar
 	private _setConnectionText(connectionProfile: IConnectionProfile): void {
-		let text: string = connectionProfile.serverName;
-		if (text) {
-			if (connectionProfile.databaseName && connectionProfile.databaseName !== '') {
-				text = text + ' : ' + connectionProfile.databaseName;
-			} else {
-				text = text + ' : ' + '<default>';
+		let text: string = undefined;
+		let fullEditorText: string = this.connectionManagementService.getEditorConnectionProfileTitle(connectionProfile);
+		if (fullEditorText.length === 0) {
+			text = connectionProfile.serverName;
+			if (text) {
+				if (connectionProfile.databaseName && connectionProfile.databaseName !== '') {
+					text = text + ' : ' + connectionProfile.databaseName;
+				} else {
+					text = text + ' : ' + '<default>';
+				}
 			}
 		}
-
-		let tooltip: string =
-			'Server: ' + connectionProfile.serverName + '\r\n' +
-			'Database: ' + (connectionProfile.databaseName ? connectionProfile.databaseName : '<default>') + '\r\n';
-
-		if (connectionProfile.userName && connectionProfile.userName !== '') {
-			tooltip = tooltip + 'Login: ' + connectionProfile.userName + '\r\n';
+		else {
+			text = fullEditorText;
 		}
+
+		let tooltip: string = undefined;
+
+		if (!fullEditorText) {
+			tooltip = 'Server: ' + connectionProfile.serverName + '\r\n' +
+				'Database: ' + (connectionProfile.databaseName ? connectionProfile.databaseName : '<default>') + '\r\n';
+
+			if (connectionProfile.userName && connectionProfile.userName !== '') {
+				tooltip = tooltip + 'Login: ' + connectionProfile.userName + '\r\n';
+			}
+		}
+		else {
+			// It is difficult to have every possible option that is different displayed as above with consistent naming, therefore the tooltip will show the full string.
+			tooltip = fullEditorText;
+		}
+
 
 		this.statusItem.update({
 			name: this.name,
