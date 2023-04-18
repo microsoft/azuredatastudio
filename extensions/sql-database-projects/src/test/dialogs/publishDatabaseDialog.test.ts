@@ -83,10 +83,10 @@ describe('Publish Database Dialog', () => {
 			databaseName: 'MockDatabaseName',
 			serverName: 'MockServer',
 			connectionUri: 'Mock|Connection|Uri',
-			sqlCmdVariables: {
-				'ProdDatabaseName': 'MyProdDatabase',
-				'BackupDatabaseName': 'MyBackupDatabase'
-			},
+			sqlCmdVariables: new Map([
+				['ProdDatabaseName', 'MyProdDatabase'],
+				['BackupDatabaseName', 'MyBackupDatabase']
+			]),
 			deploymentOptions: mockDacFxOptionsResult.deploymentOptions,
 			profileUsed: false
 		};
@@ -100,10 +100,10 @@ describe('Publish Database Dialog', () => {
 			databaseName: 'MockDatabaseName',
 			serverName: 'MockServer',
 			connectionUri: 'Mock|Connection|Uri',
-			sqlCmdVariables: {
-				'ProdDatabaseName': 'MyProdDatabase',
-				'BackupDatabaseName': 'MyBackupDatabase'
-			},
+			sqlCmdVariables: new Map([
+				['ProdDatabaseName', 'MyProdDatabase'],
+				['BackupDatabaseName', 'MyBackupDatabase']
+			]),
 			deploymentOptions: mockDacFxOptionsResult.deploymentOptions,
 			profileUsed: false
 		};
@@ -128,10 +128,10 @@ describe('Publish Database Dialog', () => {
 				databaseName: 'MockDatabaseName',
 				serverName: 'localhost',
 				connectionUri: '',
-				sqlCmdVariables: {
-					'ProdDatabaseName': 'MyProdDatabase',
-					'BackupDatabaseName': 'MyBackupDatabase'
-				},
+				sqlCmdVariables: new Map([
+					['ProdDatabaseName', 'MyProdDatabase'],
+					['BackupDatabaseName', 'MyBackupDatabase']
+				]),
 				deploymentOptions: mockDacFxOptionsResult.deploymentOptions,
 				profileUsed: false
 			}

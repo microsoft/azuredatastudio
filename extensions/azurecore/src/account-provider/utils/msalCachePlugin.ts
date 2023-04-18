@@ -53,8 +53,8 @@ export class MsalCachePluginProvider {
 				} catch (e) {
 					// Handle deserialization error in cache file in case file gets corrupted.
 					// Clearing cache here will ensure account is marked stale so re-authentication can be triggered.
-					Logger.verbose(`MsalCachePlugin: Error occurred when trying to read cache file, file contents will be cleared: ${e.message}`);
-					await fsPromises.writeFile(this._msalFilePath, '', { encoding: 'utf8' });
+					Logger.verbose(`MsalCachePlugin: Error occurred when trying to read cache file, file will be deleted: ${e.message}`);
+					await fsPromises.unlink(this._msalFilePath);
 				}
 				Logger.verbose(`MsalCachePlugin: Token read from cache successfully.`);
 			} catch (e) {
@@ -64,8 +64,8 @@ export class MsalCachePluginProvider {
 				}
 				else {
 					Logger.error(`MsalCachePlugin: Failed to read from cache file: ${e}`);
-					Logger.verbose(`MsalCachePlugin: Error occurred when trying to read cache file, file contents will be cleared: ${e.message}`);
-					await fsPromises.writeFile(this._msalFilePath, '', { encoding: 'utf8' });
+					Logger.verbose(`MsalCachePlugin: Error occurred when trying to read cache file, file will be deleted: ${e.message}`);
+					await fsPromises.unlink(this._msalFilePath);
 				}
 			} finally {
 				lockFile.unlockSync(lockFilePath);
