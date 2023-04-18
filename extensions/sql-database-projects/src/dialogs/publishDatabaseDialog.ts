@@ -882,7 +882,7 @@ export class PublishDatabaseDialog {
 
 	private convertSqlCmdVarsToTableFormat(sqlCmdVars: Map<string, string>): azdataType.DeclarativeTableCellValue[][] {
 		let data = [];
-		for (let [key, value] of sqlCmdVars) {
+		for (const [key, value] of sqlCmdVars) {
 			data.push([{ value: key }, { value: value! }]);
 		}
 
