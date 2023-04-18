@@ -209,6 +209,13 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		return errors.length === 0;
 	}
 
+	protected createLabelTextContainer(label: string, text: string): azdata.FlexContainer {
+		const labelComponent = this.modelView.modelBuilder.text().withProps({ CSSStyles: { 'padding-right': '20px' }, value: label }).component();
+		const textComponent = this.modelView.modelBuilder.text().withProps({ value: text }).component();
+		const row = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent, textComponent], { flex: '0 1 auto' }).component();
+		return row;
+	}
+
 	protected createLabelInputContainer(label: string, input: azdata.InputBoxComponent | azdata.DropDownComponent): azdata.FlexContainer {
 		const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth, value: label, requiredIndicator: input.required }).component();
 		const row = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent, input]).component();

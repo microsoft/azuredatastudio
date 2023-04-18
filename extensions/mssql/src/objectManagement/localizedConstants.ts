@@ -15,6 +15,7 @@ export const TableTypeDisplayName: string = localize('objectManagement.TableDisp
 export const ViewTypeDisplayName: string = localize('objectManagement.ViewDisplayName', "view");
 export const ColumnTypeDisplayName: string = localize('objectManagement.ColumnDisplayName', "column");
 export const DatabaseTypeDisplayName: string = localize('objectManagement.DatabaseDisplayName', "database");
+export const DatabaseTypeDisplayNameInTitle: string = localize('objectManagement.DatabaseDisplayNameInTitle', "Database");
 
 // Shared Strings
 export const HelpText: string = localize('objectManagement.helpText', "Help");
@@ -165,3 +166,11 @@ export const DefaultSchemaText = localize('objectManagement.user.defaultSchemaLa
 export const LoginText = localize('objectManagement.user.loginLabel', "Login");
 export const OwnedSchemaSectionHeader = localize('objectManagement.user.ownedSchemasLabel', "Owned Schemas");
 export const MembershipSectionHeader = localize('objectManagement.user.membershipLabel', "Membership");
+
+// Create Database
+
+// Delete Database
+export const DeleteDatabaseTitle = localize('admin.DeleteDatabaseTitle', "Delete Database");
+export const DatabaseNameLabel = localize('admin.databaseNameLabel', "Database Name:");
+export const CloseConnectionsCheckboxLabel = localize('admin.closeConnectionsCheckboxLabel', "Close existing connections");
+export const DeleteBackupsCheckboxLabel = localize('admin.deleteBackupsCheckboxLabel', "Delete backup and restore history information for database");

@@ -1171,6 +1171,8 @@ declare module 'mssql' {
 		}
 
 		export interface DeleteDatabaseViewInfo extends ObjectViewInfo<Database> {
+			closeConnections?: boolean;
+			deleteBackups?: boolean;
 		}
 	}
 

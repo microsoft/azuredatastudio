@@ -7,20 +7,27 @@ import * as azdata from 'azdata';
 import { ObjectManagementDialogBase } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { NodeType } from '../constants';
+import path = require('path');
+import * as localizedConstants from '../localizedConstants';
 
 export class DeleteDatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.Database, ObjectManagement.DeleteDatabaseViewInfo> {
-	constructor(objectManagementService: IObjectManagementService, connectionUri: string, objectExplorerContext?: azdata.ObjectExplorerContext) {
-		super(NodeType.Database, undefined, objectManagementService, connectionUri, false, undefined, objectExplorerContext);
+	private readonly _model: ObjectManagement.DeleteDatabaseViewInfo;
+
+	constructor(objectManagementService: IObjectManagementService, connectionUri: string, objectExplorerContext: azdata.ObjectExplorerContext) {
+		super(NodeType.Database, undefined, objectManagementService, connectionUri, false, localizedConstants.DeleteDatabaseTitle, objectExplorerContext);
+		this._model = {
+			objectInfo: {
+				name: path.basename(objectExplorerContext.nodeInfo?.nodePath)
+			}
+		}
 	}
 
 	protected override async onConfirmation(): Promise<boolean> {
-		return false;
+		return true;
 	}
 
 	protected async validateInput(): Promise<string[]> {
-		const errors: string[] = [];
-
-		return errors;
+		return [];
 	}
 
 	protected async onComplete(): Promise<void> {
@@ -36,15 +43,15 @@ export class DeleteDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 	}
 
 	protected async initializeData(): Promise<ObjectManagement.DeleteDatabaseViewInfo> {
-		// const viewInfo = await this.objectManagementService.initializeLoginView(this.connectionUri, this.contextId, this.isNewObject, this.objectName);
-		// viewInfo.objectInfo.password = viewInfo.objectInfo.password ?? '';
-		// return viewInfo;
-		return undefined;
+		return this._model;
 	}
 
 	protected async initializeUI(): Promise<void> {
-		const sections: azdata.Component[] = [];
+		let databaseLabelComponent = this.createLabelTextContainer(localizedConstants.DatabaseNameLabel, this._model.objectInfo.name);
+		let deleteBackupCheckbox = this.createCheckbox(localizedConstants.DeleteBackupsCheckboxLabel, false, true);
+		let closeConnectionsCheckbox = this.createCheckbox(localizedConstants.CloseConnectionsCheckboxLabel, false, true);
 
+		let sections = [databaseLabelComponent, deleteBackupCheckbox, closeConnectionsCheckbox];
 		this.formContainer.addItems(sections);
 	}
 }
