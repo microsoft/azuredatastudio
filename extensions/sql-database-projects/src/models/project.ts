@@ -14,9 +14,9 @@ import { promises as fs } from 'fs';
 import { Uri, window } from 'vscode';
 import { EntryType, IDatabaseReferenceProjectEntry, ISqlProject, ItemType } from 'sqldbproj';
 import { DataSource } from './dataSources/dataSources';
-import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
+import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings, INugetPackageReferenceSettings, IUserDatabaseReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { DacpacReferenceProjectEntry, FileProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabaseReferenceProjectEntry } from './projectEntry';
+import { DacpacReferenceProjectEntry, FileProjectEntry, NugetPackageReferenceProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabaseReferenceProjectEntry } from './projectEntry';
 import { ResultStatus } from 'azdata';
 import { BaseProjectTreeItem } from './tree/baseTreeItem';
 import { NoneNode, PostDeployNode, PreDeployNode, PublishProfileNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
@@ -428,6 +428,20 @@ export class Project implements ISqlProject {
 				systemDbReference.databaseVariableLiteralName,
 				systemDbReference.suppressMissingDependencies));
 		}
+
+		for (const nupkgReference of databaseReferencesResult.nugetPackageReferences) {
+			this._databaseReferences.push(new NugetPackageReferenceProjectEntry({
+				packageName: nupkgReference.packageName,
+				packageVersion: nupkgReference.packageVersion,
+				suppressMissingDependenciesErrors: nupkgReference.suppressMissingDependencies,
+
+				databaseVariableLiteralValue: nupkgReference.databaseVariableLiteralName,
+				databaseName: nupkgReference.databaseVariable?.varName,
+				databaseVariable: nupkgReference.databaseVariable?.value,
+				serverName: nupkgReference.serverVariable?.varName,
+				serverVariable: nupkgReference.serverVariable?.value
+			}));
+		}
 	}
 
 	//#endregion
@@ -781,7 +795,12 @@ export class Project implements ISqlProject {
 		await this.addUserDatabaseReference(settings, projectReferenceEntry);
 	}
 
-	private async addUserDatabaseReference(settings: IProjectReferenceSettings | IDacpacReferenceSettings, reference: SqlProjectReferenceProjectEntry | DacpacReferenceProjectEntry): Promise<void> {
+	public async addNugetPackageReference(settings: INugetPackageReferenceSettings): Promise<void> {
+		const nupkgReferenceEntry = new NugetPackageReferenceProjectEntry(settings);
+		await this.addUserDatabaseReference(settings, nupkgReferenceEntry);
+	}
+
+	private async addUserDatabaseReference(settings: IUserDatabaseReferenceSettings, reference: SqlProjectReferenceProjectEntry | DacpacReferenceProjectEntry | NugetPackageReferenceProjectEntry): Promise<void> {
 		// check if reference to this database already exists
 		if (this.databaseReferenceExists(reference)) {
 			throw new Error(constants.databaseReferenceAlreadyExists);
@@ -806,9 +825,12 @@ export class Project implements ISqlProject {
 		if (reference instanceof SqlProjectReferenceProjectEntry) {
 			referenceName = (<IProjectReferenceSettings>settings).projectName;
 			result = await this.sqlProjService.addSqlProjectReference(this.projectFilePath, reference.pathForSqlProj(), reference.projectGuid, settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
-		} else { // dacpac
+		} else if (reference instanceof DacpacReferenceProjectEntry) {
 			referenceName = (<IDacpacReferenceSettings>settings).dacpacFileLocation.fsPath;
 			result = await this.sqlProjService.addDacpacReference(this.projectFilePath, reference.pathForSqlProj(), settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
+		} else {// nupkg reference
+			referenceName = (<INugetPackageReferenceSettings>settings).packageName;
+			result = await this.sqlProjService.addNugetPackageReference(this.projectFilePath, reference.packageName, (<INugetPackageReferenceSettings>settings).packageVersion, settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
 		}
 
 		if (!result.success && result.errorMessage) {

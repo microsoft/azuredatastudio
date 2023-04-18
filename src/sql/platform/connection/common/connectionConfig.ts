@@ -71,6 +71,51 @@ export class ConnectionConfig {
 	}
 
 	/**
+	 * Checks to make sure that the profile that is being edited is not identical to another profile.
+	 */
+	public isDuplicateEdit(profile: IConnectionProfile, matcher: ProfileMatcher = ConnectionProfile.matchesProfile): Promise<boolean> {
+		let profiles = deepClone(this.configurationService.inspect<IConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).userValue as IConnectionProfileStore[]);
+		if (!profiles) {
+			profiles = [];
+		}
+
+		return this.addGroupFromProfile(profile).then(groupId => {
+			let connectionProfile = this.getConnectionProfileInstance(profile, groupId);
+			// Profile to be stored during an edit, used to check for duplicate profile edits.
+			let firstMatchProfile = undefined;
+
+			profiles.find(value => {
+				const providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
+				const match = matcher(providerConnectionProfile, connectionProfile);
+				// If we have a profile match, and the matcher is an edit, we must store this match.
+				if (match && (matcher.toString() !== ConnectionProfile.matchesProfile.toString())) {
+					firstMatchProfile = value;
+				}
+				return match;
+			});
+
+			// If a profile edit, we must now check to see it does not match the other profiles available.
+			if (firstMatchProfile) {
+				// Copy over profile list so that we can remove the actual profile we want to edit.
+				const index = profiles.indexOf(firstMatchProfile);
+				if (index > -1) {
+					profiles.splice(index, 1);
+				}
+
+				// Use the regular profile matching here to find if edit is duplicate.
+				let matchesExistingProfile = profiles.find(value => {
+					const providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
+					const match = ConnectionProfile.matchesProfile(providerConnectionProfile, connectionProfile);
+					return match;
+				});
+
+				return Promise.resolve(matchesExistingProfile !== undefined);
+			}
+			return Promise.resolve(false);
+		});
+	}
+
+	/**
 	 * Add a new connection to the connection config.
 	 */
 	public addConnection(profile: IConnectionProfile, matcher: ProfileMatcher = ConnectionProfile.matchesProfile): Promise<IConnectionProfile> {
@@ -317,8 +362,16 @@ export class ConnectionConfig {
 			p.options.database === profile.options.database &&
 			p.options.server === profile.options.server &&
 			p.options.user === profile.options.user &&
-			p.groupId === newGroupID);
+			p.options.connectionName === profile.options.connectionName &&
+			p.groupId === newGroupID &&
+			this.checkIfNonDefaultOptionsMatch(p, profile));
 		return existingProfile === undefined;
+	}
+
+	private checkIfNonDefaultOptionsMatch(profileStore: IConnectionProfileStore, profile: ConnectionProfile): boolean {
+		let tempProfile = ConnectionProfile.createFromStoredProfile(profileStore, this._capabilitiesService);
+		let result = profile.getNonDefaultOptionsString() === tempProfile.getNonDefaultOptionsString();
+		return result;
 	}
 
 	/**

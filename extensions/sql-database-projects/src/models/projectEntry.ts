@@ -5,7 +5,7 @@
 
 import * as path from 'path';
 import * as utils from '../common/utils';
-import { IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
+import { IDacpacReferenceSettings, INugetPackageReferenceSettings, IProjectReferenceSettings, IUserDatabaseReferenceSettings } from './IDatabaseReferenceSettings';
 import { EntryType, IDatabaseReferenceProjectEntry, IFileProjectEntry, IProjectEntry } from 'sqldbproj';
 import { Uri } from 'vscode';
 
@@ -43,7 +43,7 @@ export class FileProjectEntry extends ProjectEntry implements IFileProjectEntry 
 	}
 }
 
-export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
+abstract class UserDatabaseReferenceProjectEntry extends FileProjectEntry {
 	databaseSqlCmdVariableValue?: string;
 	databaseSqlCmdVariableName?: string;
 	databaseVariableLiteralValue?: string;
@@ -51,16 +51,21 @@ export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDa
 	serverSqlCmdVariableValue?: string;
 	suppressMissingDependenciesErrors: boolean;
 
-	constructor(settings: IDacpacReferenceSettings) {
-		super(settings.dacpacFileLocation, /* relativePath doesn't get set for database references */ '', EntryType.DatabaseReference);
+	constructor(settings: IUserDatabaseReferenceSettings, uri: Uri) {
+		super(uri, /* relativePath doesn't get set for database references */ '', EntryType.DatabaseReference);
 		this.suppressMissingDependenciesErrors = settings.suppressMissingDependenciesErrors;
-
 		this.databaseVariableLiteralValue = settings.databaseVariableLiteralValue;
 		this.databaseSqlCmdVariableName = settings.databaseName;
 		this.databaseSqlCmdVariableValue = settings.databaseVariable;
 
 		this.serverSqlCmdVariableName = settings.serverName;
 		this.serverSqlCmdVariableValue = settings.serverVariable;
+	}
+}
+
+export class DacpacReferenceProjectEntry extends UserDatabaseReferenceProjectEntry implements IDatabaseReferenceProjectEntry {
+	constructor(settings: IDacpacReferenceSettings) {
+		super(settings, settings.dacpacFileLocation,);
 	}
 
 	/**
@@ -89,29 +94,15 @@ export class SystemDatabaseReferenceProjectEntry extends FileProjectEntry implem
 	}
 }
 
-export class SqlProjectReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
+export class SqlProjectReferenceProjectEntry extends UserDatabaseReferenceProjectEntry implements IDatabaseReferenceProjectEntry {
 	public projectName: string;
 	public projectGuid: string;
-	public databaseVariableLiteralValue?: string;
-	public databaseSqlCmdVariableName?: string;
-	public databaseSqlCmdVariableValue?: string;
-	public serverSqlCmdVariableName?: string;
-	public serverSqlCmdVariableValue?: string;
-	public suppressMissingDependenciesErrors: boolean;
 
 	constructor(settings: IProjectReferenceSettings) {
-		super(settings.projectRelativePath!, /* relativePath doesn't get set for database references */ '', EntryType.DatabaseReference);
+		super(settings, settings.projectRelativePath!);
 
 		this.projectName = settings.projectName;
 		this.projectGuid = settings.projectGuid;
-		this.suppressMissingDependenciesErrors = settings.suppressMissingDependenciesErrors;
-
-		this.databaseVariableLiteralValue = settings.databaseVariableLiteralValue;
-		this.databaseSqlCmdVariableName = settings.databaseName;
-		this.databaseSqlCmdVariableValue = settings.databaseVariable;
-
-		this.serverSqlCmdVariableName = settings.serverName;
-		this.serverSqlCmdVariableValue = settings.serverVariable;
 	}
 
 	public get referenceName(): string {
@@ -121,6 +112,23 @@ export class SqlProjectReferenceProjectEntry extends FileProjectEntry implements
 	public override pathForSqlProj(): string {
 		// need to remove the leading slash from path for build to work on Windows
 		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
+	}
+}
+
+export class NugetPackageReferenceProjectEntry extends UserDatabaseReferenceProjectEntry implements IDatabaseReferenceProjectEntry {
+	packageName: string;
+
+	constructor(settings: INugetPackageReferenceSettings) {
+		super(settings, Uri.file(settings.packageName));
+		this.packageName = settings.packageName;
+	}
+
+	public get referenceName(): string {
+		return this.packageName;
+	}
+
+	public override pathForSqlProj(): string {
+		return this.packageName;
 	}
 }
 

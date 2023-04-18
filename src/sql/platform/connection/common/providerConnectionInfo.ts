@@ -8,7 +8,7 @@ import { isString } from 'vs/base/common/types';
 import * as azdata from 'azdata';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
+import { ConnectionOptionSpecialType } from 'sql/platform/connection/common/interfaces';
 import { localize } from 'vs/nls';
 
 type SettableProperty = 'serverName' | 'authenticationType' | 'databaseName' | 'password' | 'connectionName' | 'userName';
@@ -29,7 +29,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 			this.providerName = isString(model) ? model : 'providerName' in model ? model.providerName : model.providerId;
 
 			if (!isString(model)) {
-				if (model.options && this.serverCapabilities) {
+				if (model.options && this.hasServerCapabilities()) {
 					this.serverCapabilities.connectionOptions.forEach(option => {
 						let value = model.options[option.name];
 						this.options[option.name] = value;
@@ -136,7 +136,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 
 	private getServerInfo() {
 		let title = '';
-		if (this.serverCapabilities) {
+		if (this.hasServerCapabilities()) {
 			title = this.serverName;
 			// Only show database name if the provider supports it.
 			if (this.serverCapabilities.connectionOptions?.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
@@ -153,7 +153,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 	public get title(): string {
 		let label = '';
 
-		if (this.serverCapabilities) {
+		if (this.hasServerCapabilities()) {
 			if (this.connectionName) {
 				label = this.connectionName;
 			} else {
@@ -161,7 +161,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 			}
 		}
 		// The provider capabilities are registered at the same time at load time, we can assume all providers are registered as long as the collection is not empty.
-		else if (Object.keys(this.capabilitiesService.providers).length > 0) {
+		else if (this.hasLoaded()) {
 			return localize('connection.unsupported', "Unsupported connection");
 		} else {
 			return localize('loading', "Loading...");
@@ -169,13 +169,25 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 		return label;
 	}
 
+	public hasServerCapabilities(): boolean {
+		return (this.serverCapabilities !== undefined);
+	}
+
+	public hasLoaded(): boolean {
+		return Object.keys(this.capabilitiesService.providers).length > 0;
+	}
+
 	public get serverInfo(): string {
-		return this.getServerInfo();
+		let value = this.getServerInfo();
+		if (this.serverCapabilities?.useFullOptions) {
+			value += this.getNonDefaultOptionsString();
+		}
+		return value;
 	}
 
 	public isPasswordRequired(): boolean {
 		// if there is no provider capabilities metadata assume a password is not required
-		if (!this.serverCapabilities) {
+		if (!this.hasServerCapabilities()) {
 			return false;
 		}
 
@@ -198,16 +210,23 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 
 	/**
 	 * Returns a key derived the connections options (providerName, authenticationType, serverName, databaseName, userName, groupid)
+	 * and all the other properties if useFullOptions is enabled for the provider.
 	 * This key uniquely identifies a connection in a group
 	 * Example: "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
+	 * @param getOriginalOptions will return the original URI format regardless if useFullOptions was set or not. (used for retrieving passwords)
 	 */
-	public getOptionsKey(): string {
+	public getOptionsKey(getOriginalOptions?: boolean): string {
+		let useFullOptions = false;
 		let idNames = [];
-		if (this.serverCapabilities) {
+		if (this.hasServerCapabilities()) {
+			useFullOptions = this.serverCapabilities.useFullOptions;
 			idNames = this.serverCapabilities.connectionOptions.map(o => {
-				if ((o.specialValueType || o.isIdentity)
-					&& o.specialValueType !== ConnectionOptionSpecialType.password
-					&& o.specialValueType !== ConnectionOptionSpecialType.connectionName) {
+				// All options enabled, use every property besides password.
+				let newProperty = useFullOptions && o.specialValueType !== ConnectionOptionSpecialType.password && !getOriginalOptions;
+				// Fallback to original base IsIdentity properties otherwise.
+				let originalProperty = (o.specialValueType || o.isIdentity) && o.specialValueType !== ConnectionOptionSpecialType.password
+					&& o.specialValueType !== ConnectionOptionSpecialType.connectionName;
+				if (newProperty || originalProperty) {
 					return o.name;
 				} else {
 					return undefined;
@@ -226,12 +245,43 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 		let idValues: string[] = [];
 		for (let index = 0; index < idNames.length; index++) {
 			let value = this.options[idNames[index]!];
-			value = value ? value : '';
-			idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
+			// If we're using the new URI format, we do not include any values that are empty or are default.
+			let isFullOptions = useFullOptions && !getOriginalOptions;
+			if (isFullOptions) {
+				let finalValue = undefined;
+				let options = this.serverCapabilities.connectionOptions.filter(value => value.name === idNames[index]!);
+				if (options.length > 0 && value) {
+					finalValue = value !== options[0].defaultValue ? value : undefined;
+				}
+				value = finalValue;
+			}
+			else {
+				value = value ? value : '';
+			}
+			if ((isFullOptions && value !== undefined) || !isFullOptions) {
+				idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
+			}
 		}
 
 		return ProviderConnectionInfo.ProviderPropertyName + ProviderConnectionInfo.nameValueSeparator +
 			this.providerName + ProviderConnectionInfo.idSeparator + idValues.join(ProviderConnectionInfo.idSeparator);
+	}
+
+	/**
+	 * Returns a more readable version of the options key intended for display areas, replaces the regular separators with display separators
+	 * @param optionsKey options key in the original format.
+	 */
+	public static getDisplayOptionsKey(optionsKey: string) {
+		let ids: string[] = optionsKey.split(ProviderConnectionInfo.idSeparator);
+		ids = ids.map(id => {
+			let idParts = id.split(ProviderConnectionInfo.nameValueSeparator);
+			let result = idParts[0] + ProviderConnectionInfo.displayNameValueSeparator;
+			if (idParts.length >= 2) {
+				result += idParts.slice(1).join(ProviderConnectionInfo.nameValueSeparator);
+			}
+			return result;
+		});
+		return ids.join(ProviderConnectionInfo.displayIdSeparator);
 	}
 
 	public static getProviderFromOptionsKey(optionsKey: string) {
@@ -249,7 +299,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 	}
 
 	public getSpecialTypeOptionName(type: string): string | undefined {
-		if (this.serverCapabilities) {
+		if (this.hasServerCapabilities()) {
 			let optionMetadata = this.serverCapabilities.connectionOptions.find(o => o.specialValueType === type);
 			return !!optionMetadata ? optionMetadata.name : undefined;
 		} else {
@@ -265,7 +315,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 	}
 
 	public get authenticationTypeDisplayName(): string {
-		let optionMetadata = this.serverCapabilities ? this.serverCapabilities.connectionOptions.find(o => o.specialValueType === ConnectionOptionSpecialType.authType) : undefined;
+		let optionMetadata = this.hasServerCapabilities() ? this.serverCapabilities.connectionOptions.find(o => o.specialValueType === ConnectionOptionSpecialType.authType) : undefined;
 		let authType = this.authenticationType;
 		let displayName: string = authType;
 
@@ -291,27 +341,67 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 		return ':';
 	}
 
-	public get titleParts(): string[] {
-		let parts: string[] = [];
-		// Always put these three on top. TODO: maybe only for MSSQL?
-		parts.push(this.serverName);
-		parts.push(this.databaseName);
-		parts.push(this.authenticationTypeDisplayName);
+	public static get displayIdSeparator(): string {
+		return '; ';
+	}
 
-		if (this.serverCapabilities) {
+	public static get displayNameValueSeparator(): string {
+		return '=';
+	}
+
+
+	/**
+	 * Get all non specialValueType (or if distinct connections share same connection name, everything but connectionName and password).
+	 * Also allows for getting the non default options for this profile. (this function is used for changing the title).
+	 * @param needSpecial include all the special options key besides connection name or password in case we have multiple
+	 * distinct connections sharing the same connection name.
+	 * @param getNonDefault get only the non default options (for individual connections) to be used for identfying different properties
+	 * among connections sharing the same title.
+	 */
+	public getConnectionOptionsList(needSpecial: boolean, getNonDefault: boolean): azdata.ConnectionOption[] {
+		let connectionOptions: azdata.ConnectionOption[] = [];
+
+		if (this.hasServerCapabilities()) {
 			this.serverCapabilities.connectionOptions.forEach(element => {
-				if (element.specialValueType !== ConnectionOptionSpecialType.serverName &&
+				if (((!needSpecial && element.specialValueType !== ConnectionOptionSpecialType.serverName &&
 					element.specialValueType !== ConnectionOptionSpecialType.databaseName &&
 					element.specialValueType !== ConnectionOptionSpecialType.authType &&
-					element.specialValueType !== ConnectionOptionSpecialType.password &&
+					element.specialValueType !== ConnectionOptionSpecialType.userName) || needSpecial) &&
 					element.specialValueType !== ConnectionOptionSpecialType.connectionName &&
-					element.isIdentity && element.valueType === ServiceOptionType.string) {
-					let value = this.getOptionValue(element.name);
-					if (value) {
-						parts.push(value);
+					element.specialValueType !== ConnectionOptionSpecialType.password) {
+					if (getNonDefault) {
+						let value = this.getOptionValue(element.name);
+						if (value && value !== element.defaultValue) {
+							connectionOptions.push(element);
+						}
+					}
+					else {
+						connectionOptions.push(element);
 					}
 				}
 			});
+		}
+		//Need to sort for consistency.
+		connectionOptions.sort();
+		return connectionOptions;
+	}
+
+	/**
+	 * Append all non default options to tooltip string if useFullOptions is enabled.
+	 */
+	public getNonDefaultOptionsString(): string {
+		let parts: string = "";
+		let nonDefaultOptions = this.getConnectionOptionsList(false, true);
+		nonDefaultOptions.forEach(element => {
+			let value = this.getOptionValue(element.name);
+			if (parts.length === 0) {
+				parts = " (";
+			}
+			let addValue = element.name + ProviderConnectionInfo.displayNameValueSeparator + `${value}`;
+			parts += parts === " (" ? addValue : (ProviderConnectionInfo.displayIdSeparator + addValue);
+		});
+		if (parts.length > 0) {
+			parts += ")";
 		}
 
 		return parts;
