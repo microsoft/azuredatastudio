@@ -12,7 +12,7 @@ import * as utils from '../common/utils';
 import { Project } from '../models/project';
 import { cssStyles } from '../common/uiConstants';
 import { IconPathHelper } from '../common/iconHelper';
-import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings, INugetPackageReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { Deferred } from '../common/promise';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { ProjectType, SystemDatabase } from 'mssql';
@@ -54,7 +54,7 @@ export class AddDatabaseReferenceDialog {
 	private toDispose: vscode.Disposable[] = [];
 	private initDialogComplete: Deferred = new Deferred();
 
-	public addReference: ((proj: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings) => any) | undefined;
+	public addReference: ((proj: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings | INugetPackageReferenceSettings) => any) | undefined;
 
 	constructor(private project: Project) {
 		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.addDatabaseReferenceDialogName, 'addDatabaseReferencesDialog');
@@ -155,7 +155,7 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	public async addReferenceClick(): Promise<void> {
-		let referenceSettings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings;
+		let referenceSettings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings | INugetPackageReferenceSettings;
 
 		if (this.currentReferenceType === ReferenceType.systemDb) {
 			const systemDbRef: ISystemDatabaseReferenceSettings = {
@@ -175,7 +175,7 @@ export class AddDatabaseReferenceDialog {
 				};
 
 				referenceSettings = projRef;
-			} else { // this.currentReferenceType === ReferenceType.dacpac
+			} else if (this.currentReferenceType === ReferenceType.dacpac) {
 				const dacpacRef: IDacpacReferenceSettings = {
 					databaseName: ensureSetOrDefined(this.databaseNameTextbox?.value),
 					dacpacFileLocation: vscode.Uri.file(<string>this.dacpacTextbox?.value),
@@ -183,6 +183,14 @@ export class AddDatabaseReferenceDialog {
 				};
 
 				referenceSettings = dacpacRef;
+			} else { // this.currentReferenceType === ReferenceType.nupkg
+				const nupkgRef: INugetPackageReferenceSettings = {
+					packageName: <string>this.nupkgNameTextbox?.value,
+					packageVersion: <string>this.nupkgVersionTextbox?.value,
+					suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
+				}
+
+				referenceSettings = nupkgRef;
 			}
 
 			const dbServerValues: DbServerValues = {
