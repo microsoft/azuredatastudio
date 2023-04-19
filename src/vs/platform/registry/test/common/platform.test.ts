@@ -26,7 +26,7 @@ suite('Platform / Registry', () => {
 
 	test('registry - knows, as', function () {
 
-		const ext = {};
+		let ext = {};
 
 		Registry.add('knows,as', ext);
 

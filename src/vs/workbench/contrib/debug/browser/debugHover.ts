@@ -77,7 +77,7 @@ export class DebugHoverWidget implements IContentWidget {
 	private tree!: AsyncDataTree<IExpression, IExpression, any>;
 	private showAtPosition: Position | null;
 	private positionPreference: ContentWidgetPositionPreference[];
-	private readonly highlightDecorations = this.editor.createDecorationsCollection();
+	private highlightDecorations: string[];
 	private complexValueContainer!: HTMLElement;
 	private complexValueTitle!: HTMLElement;
 	private valueContainer!: HTMLElement;
@@ -96,6 +96,7 @@ export class DebugHoverWidget implements IContentWidget {
 
 		this._isVisible = false;
 		this.showAtPosition = null;
+		this.highlightDecorations = [];
 		this.positionPreference = [ContentWidgetPositionPreference.ABOVE, ContentWidgetPositionPreference.BELOW];
 	}
 
@@ -116,6 +117,8 @@ export class DebugHoverWidget implements IContentWidget {
 			horizontalScrolling: true,
 			useShadows: false,
 			keyboardNavigationLabelProvider: { getKeyboardNavigationLabel: (e: IExpression) => e.name },
+			filterOnType: false,
+			simpleKeyboardNavigation: true,
 			overrideStyles: {
 				listBackground: editorHoverBackground
 			}
@@ -261,7 +264,7 @@ export class DebugHoverWidget implements IContentWidget {
 		}
 
 		if (rng) {
-			this.highlightDecorations.set([{
+			this.highlightDecorations = this.editor.deltaDecorations(this.highlightDecorations, [{
 				range: rng,
 				options: DebugHoverWidget._HOVER_HIGHLIGHT_DECORATION_OPTIONS
 			}]);
@@ -348,7 +351,8 @@ export class DebugHoverWidget implements IContentWidget {
 			this.editor.focus();
 		}
 		this._isVisible = false;
-		this.highlightDecorations.clear();
+		this.editor.deltaDecorations(this.highlightDecorations, []);
+		this.highlightDecorations = [];
 		this.editor.layoutContentWidget(this);
 		this.positionPreference = [ContentWidgetPositionPreference.ABOVE, ContentWidgetPositionPreference.BELOW];
 	}

@@ -7,13 +7,13 @@ import * as nls from 'vs/nls';
 
 import { IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 
-export interface ITaskEntry extends IQuickPickItem {
+export interface TaskEntry extends IQuickPickItem {
 	sort?: string;
 	autoDetect: boolean;
 	content: string;
 }
 
-const dotnetBuild: ITaskEntry = {
+const dotnetBuild: TaskEntry = {
 	id: 'dotnetCore',
 	label: '.NET Core',
 	sort: 'NET Core',
@@ -47,7 +47,7 @@ const dotnetBuild: ITaskEntry = {
 	].join('\n')
 };
 
-const msbuild: ITaskEntry = {
+const msbuild: TaskEntry = {
 	id: 'msbuild',
 	label: 'MSBuild',
 	autoDetect: false,
@@ -82,7 +82,7 @@ const msbuild: ITaskEntry = {
 	].join('\n')
 };
 
-const command: ITaskEntry = {
+const command: TaskEntry = {
 	id: 'externalCommand',
 	label: 'Others',
 	autoDetect: false,
@@ -103,7 +103,7 @@ const command: ITaskEntry = {
 	].join('\n')
 };
 
-const maven: ITaskEntry = {
+const maven: TaskEntry = {
 	id: 'maven',
 	label: 'maven',
 	sort: 'MVN',
@@ -132,8 +132,8 @@ const maven: ITaskEntry = {
 	].join('\n')
 };
 
-let _templates: ITaskEntry[] | null = null;
-export function getTemplates(): ITaskEntry[] {
+let _templates: TaskEntry[] | null = null;
+export function getTemplates(): TaskEntry[] {
 	if (!_templates) {
 		_templates = [dotnetBuild, msbuild, maven].sort((a, b) => {
 			return (a.sort || a.label).localeCompare(b.sort || b.label);

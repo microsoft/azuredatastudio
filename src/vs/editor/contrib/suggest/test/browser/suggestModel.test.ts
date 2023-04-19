@@ -15,8 +15,7 @@ import { Selection } from 'vs/editor/common/core/selection';
 import { Handler } from 'vs/editor/common/editorCommon';
 import { ITextModel } from 'vs/editor/common/model';
 import { TextModel } from 'vs/editor/common/model/textModel';
-import { CompletionItemKind, CompletionItemProvider, CompletionList, CompletionTriggerKind, EncodedTokenizationResult, IState, TokenizationRegistry } from 'vs/editor/common/languages';
-import { MetadataConsts } from 'vs/editor/common/encodedTokenAttributes';
+import { CompletionItemKind, CompletionItemProvider, CompletionList, CompletionTriggerKind, EncodedTokenizationResult, IState, MetadataConsts, TokenizationRegistry } from 'vs/editor/common/languages';
 import { ILanguageConfigurationService } from 'vs/editor/common/languages/languageConfigurationRegistry';
 import { NullState } from 'vs/editor/common/languages/nullTokenize';
 import { ILanguageService } from 'vs/editor/common/languages/language';
@@ -200,7 +199,7 @@ suite('SuggestModel - TriggerAndCancelOracle', function () {
 	let disposables: DisposableStore;
 	let model: TextModel;
 	const languageFeaturesService = new LanguageFeaturesService();
-	const registry = languageFeaturesService.completionProvider;
+	let registry = languageFeaturesService.completionProvider;
 
 	setup(function () {
 		disposables = new DisposableStore();
@@ -253,7 +252,7 @@ suite('SuggestModel - TriggerAndCancelOracle', function () {
 			return Promise.all([
 
 				assertEvent(model.onDidTrigger, function () {
-					model.trigger({ auto: true, shy: false, noSelect: false });
+					model.trigger({ auto: true, shy: false });
 				}, function (event) {
 					assert.strictEqual(event.auto, true);
 
@@ -265,13 +264,13 @@ suite('SuggestModel - TriggerAndCancelOracle', function () {
 				}),
 
 				assertEvent(model.onDidTrigger, function () {
-					model.trigger({ auto: true, shy: false, noSelect: false });
+					model.trigger({ auto: true, shy: false });
 				}, function (event) {
 					assert.strictEqual(event.auto, true);
 				}),
 
 				assertEvent(model.onDidTrigger, function () {
-					model.trigger({ auto: false, shy: false, noSelect: false });
+					model.trigger({ auto: false, shy: false });
 				}, function (event) {
 					assert.strictEqual(event.auto, false);
 				})
@@ -287,12 +286,12 @@ suite('SuggestModel - TriggerAndCancelOracle', function () {
 		return withOracle(model => {
 			return Promise.all([
 				assertEvent(model.onDidCancel, function () {
-					model.trigger({ auto: true, shy: false, noSelect: false });
+					model.trigger({ auto: true, shy: false });
 				}, function (event) {
 					assert.strictEqual(event.retrigger, false);
 				}),
 				assertEvent(model.onDidSuggest, function () {
-					model.trigger({ auto: false, shy: false, noSelect: false });
+					model.trigger({ auto: false, shy: false });
 				}, function (event) {
 					assert.strictEqual(event.auto, false);
 					assert.strictEqual(event.isFrozen, false);
@@ -343,7 +342,7 @@ suite('SuggestModel - TriggerAndCancelOracle', function () {
 
 			return assertEvent(model.onDidSuggest, () => {
 				// make sure completionModel starts here!
-				model.trigger({ auto: true, shy: false, noSelect: false });
+				model.trigger({ auto: true, shy: false });
 			}, event => {
 
 				return assertEvent(model.onDidSuggest, () => {
@@ -443,7 +442,7 @@ suite('SuggestModel - TriggerAndCancelOracle', function () {
 			editor.setPosition({ lineNumber: 1, column: 3 });
 
 			return assertEvent(model.onDidSuggest, () => {
-				model.trigger({ auto: false, shy: false, noSelect: false });
+				model.trigger({ auto: false, shy: false });
 			}, event => {
 				assert.strictEqual(event.auto, false);
 				assert.strictEqual(event.isFrozen, false);
@@ -468,7 +467,7 @@ suite('SuggestModel - TriggerAndCancelOracle', function () {
 			editor.setPosition({ lineNumber: 1, column: 3 });
 
 			return assertEvent(model.onDidSuggest, () => {
-				model.trigger({ auto: false, shy: false, noSelect: false });
+				model.trigger({ auto: false, shy: false });
 			}, event => {
 				assert.strictEqual(event.auto, false);
 				assert.strictEqual(event.isFrozen, false);
@@ -505,7 +504,7 @@ suite('SuggestModel - TriggerAndCancelOracle', function () {
 			editor.setPosition({ lineNumber: 1, column: 4 });
 
 			return assertEvent(model.onDidSuggest, () => {
-				model.trigger({ auto: false, shy: false, noSelect: false });
+				model.trigger({ auto: false, shy: false });
 			}, event => {
 				assert.strictEqual(event.auto, false);
 				assert.strictEqual(event.completionModel.incomplete.size, 1);
@@ -542,7 +541,7 @@ suite('SuggestModel - TriggerAndCancelOracle', function () {
 			editor.setPosition({ lineNumber: 1, column: 4 });
 
 			return assertEvent(model.onDidSuggest, () => {
-				model.trigger({ auto: false, shy: false, noSelect: false });
+				model.trigger({ auto: false, shy: false });
 			}, event => {
 				assert.strictEqual(event.auto, false);
 				assert.strictEqual(event.completionModel.incomplete.size, 1);
@@ -701,7 +700,7 @@ suite('SuggestModel - TriggerAndCancelOracle', function () {
 
 			await assertEvent(sugget.onDidSuggest, () => {
 				editor.setPosition({ lineNumber: 1, column: 3 });
-				sugget.trigger({ auto: false, shy: false, noSelect: false });
+				sugget.trigger({ auto: false, shy: false });
 			}, event => {
 
 				assert.strictEqual(event.completionModel.items.length, 1);
@@ -807,6 +806,7 @@ suite('SuggestModel - TriggerAndCancelOracle', function () {
 		});
 	});
 
+
 	test('Trigger (full) completions when (incomplete) completions are already active #99504', function () {
 
 		let countA = 0;
@@ -870,77 +870,6 @@ suite('SuggestModel - TriggerAndCancelOracle', function () {
 
 				assert.strictEqual(countA, 1); // should we keep the suggestions from the "active" provider?, Yes! See: #106573
 				assert.strictEqual(countB, 2);
-			});
-		});
-	});
-
-	test('registerCompletionItemProvider with letters as trigger characters block other completion items to show up #127815', async function () {
-
-		disposables.add(registry.register({ scheme: 'test' }, {
-			triggerCharacters: ['a'], // {{SQL CARBON TODO}} 3/17 Needed to specify 'a' as a trigger character
-			provideCompletionItems(doc, pos) {
-				return {
-					suggestions: [{
-						kind: CompletionItemKind.Class,
-						label: 'AAAA',
-						insertText: 'WordTriggerA',
-						range: new Range(pos.lineNumber, pos.column, pos.lineNumber, pos.column)
-					}],
-				};
-			}
-		}));
-		disposables.add(registry.register({ scheme: 'test' }, {
-			triggerCharacters: ['a', '.'],
-			provideCompletionItems(doc, pos) {
-				return {
-					suggestions: [{
-						kind: CompletionItemKind.Class,
-						label: 'AAAA',
-						insertText: 'AutoTriggerA',
-						range: new Range(pos.lineNumber, pos.column, pos.lineNumber, pos.column)
-					}],
-				};
-			},
-		}));
-
-		return withOracle(async (model, editor) => {
-
-			await assertEvent(model.onDidSuggest, () => {
-				editor.setValue('');
-				editor.setSelection(new Selection(1, 1, 1, 1));
-				editor.trigger('keyboard', Handler.Type, { text: '.' });
-
-			}, event => {
-				assert.strictEqual(event.auto, true);
-				assert.strictEqual(event.completionModel.items.length, 1);
-			});
-
-
-			editor.getModel().setValue('');
-
-			await assertEvent(model.onDidSuggest, () => {
-				editor.setValue('');
-				editor.setSelection(new Selection(1, 1, 1, 1));
-				editor.trigger('keyboard', Handler.Type, { text: 'a' });
-
-			}, event => {
-				assert.strictEqual(event.auto, true);
-				assert.strictEqual(event.completionModel.items.length, 2);
-			});
-		});
-	});
-
-	test('noSelect-flag makes it from request to suggest event', function () {
-
-		disposables.add(registry.register({ scheme: 'test' }, alwaysSomethingSupport));
-
-		return withOracle((model, editor) => {
-			return assertEvent(model.onDidSuggest, () => {
-				model.trigger({ auto: false, noSelect: true, shy: false });
-			}, event => {
-				assert.strictEqual(event.noSelect, true);
-				assert.strictEqual(event.auto, false);
-				assert.strictEqual(event.shy, false);
 			});
 		});
 	});

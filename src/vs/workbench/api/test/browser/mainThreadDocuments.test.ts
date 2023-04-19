@@ -40,7 +40,7 @@ suite('BoundModelReferenceCollection', function () {
 
 	test('max size', function () {
 
-		const disposed: number[] = [];
+		let disposed: number[] = [];
 
 		col.add(
 			URI.parse('test://farboo'),
@@ -76,7 +76,7 @@ suite('BoundModelReferenceCollection', function () {
 		col.dispose();
 		col = new BoundModelReferenceCollection(extUri, 10000, 10000, 2);
 
-		const disposed: number[] = [];
+		let disposed: number[] = [];
 
 		col.add(
 			URI.parse('test://xxxxxxx'),

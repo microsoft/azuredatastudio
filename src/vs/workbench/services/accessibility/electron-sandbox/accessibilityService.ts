@@ -22,7 +22,6 @@ interface AccessibilityMetrics {
 	enabled: boolean;
 }
 type AccessibilityMetricsClassification = {
-	owner: 'isidorn';
 	enabled: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
 };
 

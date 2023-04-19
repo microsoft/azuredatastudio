@@ -38,19 +38,19 @@ suite('network', () => {
 	});
 
 	(isWeb ? test.skip : test)('FileAccess: query and fragment is dropped (native)', () => {
-		const originalFileUri = URI.file('network.test.ts').with({ query: 'foo=bar', fragment: 'something' });
-		const browserUri = FileAccess.asBrowserUri(originalFileUri);
+		let originalFileUri = URI.file('network.test.ts').with({ query: 'foo=bar', fragment: 'something' });
+		let browserUri = FileAccess.asBrowserUri(originalFileUri);
 		assert.strictEqual(browserUri.query, '');
 		assert.strictEqual(browserUri.fragment, '');
 	});
 
 	(isWeb ? test.skip : test)('FileAccess: query and fragment is kept if URI is already of same scheme (native)', () => {
-		const originalFileUri = URI.file('network.test.ts').with({ query: 'foo=bar', fragment: 'something' });
-		const browserUri = FileAccess.asBrowserUri(originalFileUri.with({ scheme: Schemas.vscodeFileResource }));
+		let originalFileUri = URI.file('network.test.ts').with({ query: 'foo=bar', fragment: 'something' });
+		let browserUri = FileAccess.asBrowserUri(originalFileUri.with({ scheme: Schemas.vscodeFileResource }));
 		assert.strictEqual(browserUri.query, 'foo=bar');
 		assert.strictEqual(browserUri.fragment, 'something');
 
-		const fileUri = FileAccess.asFileUri(originalFileUri);
+		let fileUri = FileAccess.asFileUri(originalFileUri);
 		assert.strictEqual(fileUri.query, 'foo=bar');
 		assert.strictEqual(fileUri.fragment, 'something');
 	});

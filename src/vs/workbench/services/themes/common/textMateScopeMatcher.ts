@@ -28,7 +28,7 @@ export function createMatchers<T>(selector: string, matchesName: (names: string[
 			}
 			token = tokenizer.next();
 		}
-		const matcher = parseConjunction();
+		let matcher = parseConjunction();
 		if (matcher) {
 			results.push({ matcher, priority });
 		}
@@ -119,7 +119,7 @@ function isIdentifier(token: string | null): token is string {
 }
 
 function newTokenizer(input: string): { next: () => string | null } {
-	const regex = /([LR]:|[\w\.:][\w\.:\-]*|[\,\|\-\(\)])/g;
+	let regex = /([LR]:|[\w\.:][\w\.:\-]*|[\,\|\-\(\)])/g;
 	let match = regex.exec(input);
 	return {
 		next: () => {

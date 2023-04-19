@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
-import { ISnippetsService } from 'vs/workbench/contrib/snippets/browser/snippets';
+import { ISnippetsService } from 'vs/workbench/contrib/snippets/browser/snippets.contribution';
 import { Snippet, SnippetSource } from 'vs/workbench/contrib/snippets/browser/snippetsFile';
 import { IQuickPickItem, IQuickInputService, QuickPickInput } from 'vs/platform/quickinput/common/quickInput';
 import { Codicon } from 'vs/base/common/codicons';
@@ -27,7 +27,7 @@ export async function pickSnippet(accessor: ServicesAccessor, languageIdOrSnippe
 		snippets = (await snippetService.getSnippets(languageIdOrSnippets, { includeDisabledSnippets: true, includeNoPrefixSnippets: true }));
 	}
 
-	snippets.sort((a, b) => a.snippetSource - b.snippetSource);
+	snippets.sort(Snippet.compare);
 
 	const makeSnippetPicks = () => {
 		const result: QuickPickInput<ISnippetPick>[] = [];
@@ -87,9 +87,6 @@ export async function pickSnippet(accessor: ServicesAccessor, languageIdOrSnippe
 		picker.items = makeSnippetPicks();
 	});
 	picker.items = makeSnippetPicks();
-	if (!picker.items.length) {
-		picker.validationMessage = nls.localize('pick.noSnippetAvailable', "No snippet available");
-	}
 	picker.show();
 
 	// wait for an item to be picked or the picker to become hidden

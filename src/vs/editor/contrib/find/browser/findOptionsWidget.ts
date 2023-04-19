@@ -113,7 +113,7 @@ export class FindOptionsWidget extends Widget implements IOverlayWidget {
 			}
 		}));
 
-		this._register(dom.addDisposableListener(this._domNode, dom.EventType.MOUSE_LEAVE, (e) => this._onMouseLeave()));
+		this._register(dom.addDisposableNonBubblingMouseOutListener(this._domNode, (e) => this._onMouseOut()));
 		this._register(dom.addDisposableListener(this._domNode, 'mouseover', (e) => this._onMouseOver()));
 
 		this._applyTheme(themeService.getColorTheme());
@@ -121,7 +121,7 @@ export class FindOptionsWidget extends Widget implements IOverlayWidget {
 	}
 
 	private _keybindingLabelFor(actionId: string): string {
-		const kb = this._keybindingService.lookupKeybinding(actionId);
+		let kb = this._keybindingService.lookupKeybinding(actionId);
 		if (!kb) {
 			return '';
 		}
@@ -160,7 +160,7 @@ export class FindOptionsWidget extends Widget implements IOverlayWidget {
 		this._hideSoon.schedule();
 	}
 
-	private _onMouseLeave(): void {
+	private _onMouseOut(): void {
 		this._hideSoon.schedule();
 	}
 
@@ -187,7 +187,7 @@ export class FindOptionsWidget extends Widget implements IOverlayWidget {
 	}
 
 	private _applyTheme(theme: IColorTheme) {
-		const inputStyles = {
+		let inputStyles = {
 			inputActiveOptionBorder: theme.getColor(inputActiveOptionBorder),
 			inputActiveOptionForeground: theme.getColor(inputActiveOptionForeground),
 			inputActiveOptionBackground: theme.getColor(inputActiveOptionBackground)

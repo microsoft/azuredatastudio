@@ -34,7 +34,7 @@ suite('Editor - Range decorations', () => {
 	let model: TextModel;
 	let text: string;
 	let testObject: RangeHighlightDecorations;
-	const modelsToDispose: TextModel[] = [];
+	let modelsToDispose: TextModel[] = [];
 
 	setup(() => {
 		disposables = new DisposableStore();
@@ -137,21 +137,21 @@ suite('Editor - Range decorations', () => {
 	});
 
 	function prepareActiveEditor(resource: string): TextModel {
-		const model = aModel(URI.file(resource));
+		let model = aModel(URI.file(resource));
 		codeEditor.setModel(model);
 		return model;
 	}
 
 	function aModel(resource: URI, content: string = text): TextModel {
-		const model = createTextModel(content, undefined, undefined, resource);
+		let model = createTextModel(content, undefined, undefined, resource);
 		modelsToDispose.push(model);
 		return model;
 	}
 
 	function rangeHighlightDecorations(m: TextModel): IRange[] {
-		const rangeHighlights: IRange[] = [];
+		let rangeHighlights: IRange[] = [];
 
-		for (const dec of m.getAllDecorations()) {
+		for (let dec of m.getAllDecorations()) {
 			if (dec.options.className === 'rangeHighlight') {
 				rangeHighlights.push(dec.range);
 			}

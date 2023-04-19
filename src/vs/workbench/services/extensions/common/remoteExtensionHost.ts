@@ -28,6 +28,7 @@ import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/
 import { parseExtensionDevOptions } from 'vs/workbench/services/extensions/common/extensionDevOptions';
 import { createMessageOfType, isMessageOfType, MessageType, IExtensionHostInitData, UIKind } from 'vs/workbench/services/extensions/common/extensionHostProtocol';
 import { ExtensionHostExtensions, ExtensionHostLogFileName, IExtensionHost, RemoteRunningLocation } from 'vs/workbench/services/extensions/common/extensions';
+import { ILifecycleService } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { Extensions, IOutputChannelRegistry } from 'vs/workbench/services/output/common/output';
 
 export interface IRemoteExtensionHostInitData {
@@ -67,6 +68,7 @@ export class RemoteExtensionHost extends Disposable implements IExtensionHost {
 		@IWorkspaceContextService private readonly _contextService: IWorkspaceContextService,
 		@IWorkbenchEnvironmentService private readonly _environmentService: IWorkbenchEnvironmentService,
 		@ITelemetryService private readonly _telemetryService: ITelemetryService,
+		@ILifecycleService private readonly _lifecycleService: ILifecycleService,
 		@ILogService private readonly _logService: ILogService,
 		@ILabelService private readonly _labelService: ILabelService,
 		@IRemoteAuthorityResolverService private readonly remoteAuthorityResolverService: IRemoteAuthorityResolverService,
@@ -80,6 +82,8 @@ export class RemoteExtensionHost extends Disposable implements IExtensionHost {
 		this._hasLostConnection = false;
 		this._terminating = false;
 
+		this._register(this._lifecycleService.onDidShutdown(() => this.dispose()));
+
 		const devOpts = parseExtensionDevOptions(this._environmentService);
 		this._isExtensionDevHost = devOpts.isExtensionDevHost;
 	}
@@ -87,7 +91,6 @@ export class RemoteExtensionHost extends Disposable implements IExtensionHost {
 	public start(): Promise<IMessagePassingProtocol> {
 		const options: IConnectionOptions = {
 			commit: this._productService.commit,
-			quality: this._productService.quality,
 			socketFactory: this._socketFactory,
 			addressProvider: {
 				getAddress: async () => {
@@ -125,7 +128,7 @@ export class RemoteExtensionHost extends Disposable implements IExtensionHost {
 
 			return connectRemoteAgentExtensionHost(options, startParams).then(result => {
 				this._register(result);
-				const { protocol, debugPort, reconnectionToken } = result;
+				let { protocol, debugPort, reconnectionToken } = result;
 				const isExtensionDevelopmentDebug = typeof debugPort === 'number';
 				if (debugOk && this._environmentService.isExtensionDevelopment && this._environmentService.debugExtensionHost.debugId && debugPort) {
 					this._extensionHostDebugService.attachSession(this._environmentService.debugExtensionHost.debugId, debugPort, this._initDataProvider.remoteAuthority);
@@ -145,7 +148,7 @@ export class RemoteExtensionHost extends Disposable implements IExtensionHost {
 				// 2) wait for the incoming `initialized` event.
 				return new Promise<IMessagePassingProtocol>((resolve, reject) => {
 
-					const handle = setTimeout(() => {
+					let handle = setTimeout(() => {
 						reject('The remote extenion host took longer than 60s to send its ready message.');
 					}, 60 * 1000);
 
@@ -240,10 +243,6 @@ export class RemoteExtensionHost extends Disposable implements IExtensionHost {
 				authority: this._initDataProvider.remoteAuthority,
 				connectionData: remoteInitData.connectionData
 			},
-			consoleForward: {
-				includeStack: false,
-				logNative: Boolean(this._environmentService.debugExtensionHost.debugId)
-			},
 			allExtensions: deltaExtensions.toAdd,
 			myExtensions: deltaExtensions.myToAdd,
 			telemetryInfo,
@@ -271,16 +270,12 @@ export class RemoteExtensionHost extends Disposable implements IExtensionHost {
 		if (this._protocol) {
 			// Send the extension host a request to terminate itself
 			// (graceful termination)
-			// setTimeout(() => {
-			// console.log(`SENDING TERMINATE TO REMOTE EXT HOST!`);
 			const socket = this._protocol.getSocket();
 			this._protocol.send(createMessageOfType(MessageType.Terminate));
 			this._protocol.sendDisconnect();
 			this._protocol.dispose();
-			// this._protocol.drain();
 			socket.end();
 			this._protocol = null;
-			// }, 1000);
 		}
 	}
 }

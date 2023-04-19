@@ -10,7 +10,7 @@ import { ITaskSystem } from 'vs/workbench/contrib/tasks/common/taskSystem';
 import { ExecutionEngine } from 'vs/workbench/contrib/tasks/common/tasks';
 import * as TaskConfig from '../common/taskConfiguration';
 import { AbstractTaskService } from 'vs/workbench/contrib/tasks/browser/abstractTaskService';
-import { ITaskFilter, ITaskService } from 'vs/workbench/contrib/tasks/common/taskService';
+import { TaskFilter, ITaskService } from 'vs/workbench/contrib/tasks/common/taskService';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { TerminalTaskSystem } from 'vs/workbench/contrib/tasks/browser/terminalTaskSystem';
 import { IConfirmationResult, IDialogService } from 'vs/platform/dialogs/common/dialogs';
@@ -44,11 +44,10 @@ import { ITaskService as ISqlTaskService } from 'sql/workbench/services/tasks/co
 import { IWorkspaceTrustManagementService, IWorkspaceTrustRequestService } from 'vs/platform/workspace/common/workspaceTrust';
 import { ITerminalProfileResolverService } from 'vs/workbench/contrib/terminal/common/terminal';
 import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 
-interface IWorkspaceFolderConfigurationResult {
+interface WorkspaceFolderConfigurationResult {
 	workspaceFolder: IWorkspaceFolder;
-	config: TaskConfig.IExternalTaskRunnerConfiguration | undefined;
+	config: TaskConfig.ExternalTaskRunnerConfiguration | undefined;
 	hasErrors: boolean;
 }
 
@@ -86,7 +85,6 @@ export class TaskService extends AbstractTaskService {
 		@IWorkspaceTrustRequestService workspaceTrustRequestService: IWorkspaceTrustRequestService,
 		@IWorkspaceTrustManagementService workspaceTrustManagementService: IWorkspaceTrustManagementService,
 		@ILogService logService: ILogService,
-		@IThemeService themeService: IThemeService,
 		@ISqlTaskService sqlTaskService: ISqlTaskService) { // {{SQL CARBON EDIT}})
 		super(configurationService,
 			markerService,
@@ -120,16 +118,15 @@ export class TaskService extends AbstractTaskService {
 			workspaceTrustRequestService,
 			workspaceTrustManagementService,
 			logService,
-			themeService,
 			sqlTaskService); // {{SQL CARBON EDIT}}
 		this._register(lifecycleService.onBeforeShutdown(event => event.veto(this.beforeShutdown(), 'veto.tasks')));
 	}
 
-	protected _getTaskSystem(): ITaskSystem {
+	protected getTaskSystem(): ITaskSystem {
 		if (this._taskSystem) {
 			return this._taskSystem;
 		}
-		this._taskSystem = this._createTerminalTaskSystem();
+		this._taskSystem = this.createTerminalTaskSystem();
 		this._taskSystemListener = this._taskSystem!.onDidStateChange((event) => {
 			if (this._taskSystem) {
 				this._taskRunningState.set(this._taskSystem.isActiveSync());
@@ -139,8 +136,8 @@ export class TaskService extends AbstractTaskService {
 		return this._taskSystem;
 	}
 
-	protected _computeLegacyConfiguration(workspaceFolder: IWorkspaceFolder): Promise<IWorkspaceFolderConfigurationResult> {
-		const { config, hasParseErrors } = this._getConfiguration(workspaceFolder);
+	protected computeLegacyConfiguration(workspaceFolder: IWorkspaceFolder): Promise<WorkspaceFolderConfigurationResult> {
+		let { config, hasParseErrors } = this.getConfiguration(workspaceFolder);
 		if (hasParseErrors) {
 			return Promise.resolve({ workspaceFolder: workspaceFolder, hasErrors: true, config: undefined });
 		}
@@ -151,9 +148,9 @@ export class TaskService extends AbstractTaskService {
 		}
 	}
 
-	protected _versionAndEngineCompatible(filter?: ITaskFilter): boolean {
-		const range = filter && filter.version ? filter.version : undefined;
-		const engine = this.executionEngine;
+	protected versionAndEngineCompatible(filter?: TaskFilter): boolean {
+		let range = filter && filter.version ? filter.version : undefined;
+		let engine = this.executionEngine;
 
 		return (range === undefined) || ((semver.satisfies('0.1.0', range) && engine === ExecutionEngine.Process) || (semver.satisfies('2.0.0', range) && engine === ExecutionEngine.Terminal));
 	}
@@ -175,7 +172,7 @@ export class TaskService extends AbstractTaskService {
 		if (this._taskSystem.canAutoTerminate()) {
 			terminatePromise = Promise.resolve({ confirmed: true });
 		} else {
-			terminatePromise = this._dialogService.confirm({
+			terminatePromise = this.dialogService.confirm({
 				message: nls.localize('TaskSystem.runningTask', 'There is a task running. Do you want to terminate it?'),
 				primaryButton: nls.localize({ key: 'TaskSystem.terminateTask', comment: ['&& denotes a mnemonic'] }, "&&Terminate Task"),
 				type: 'question'
@@ -187,7 +184,7 @@ export class TaskService extends AbstractTaskService {
 				return this._taskSystem!.terminateAll().then((responses) => {
 					let success = true;
 					let code: number | undefined = undefined;
-					for (const response of responses) {
+					for (let response of responses) {
 						success = success && response.success;
 						// We only have a code in the old output runner which only has one task
 						// So we can use the first code.
@@ -197,10 +194,10 @@ export class TaskService extends AbstractTaskService {
 					}
 					if (success) {
 						this._taskSystem = undefined;
-						this._disposeTaskSystemListeners();
+						this.disposeTaskSystemListeners();
 						return false; // no veto
 					} else if (code && code === TerminateResponseCode.ProcessNotFound) {
-						return this._dialogService.confirm({
+						return this.dialogService.confirm({
 							message: nls.localize('TaskSystem.noProcess', 'The launched task doesn\'t exist anymore. If the task spawned background processes exiting VS Code might result in orphaned processes. To avoid this start the last background process with a wait flag.'),
 							primaryButton: nls.localize({ key: 'TaskSystem.exitAnyways', comment: ['&& denotes a mnemonic'] }, "&&Exit Anyways"),
 							type: 'info'

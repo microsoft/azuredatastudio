@@ -19,17 +19,17 @@ suite('Find', () => {
 		], {}, (editor) => {
 
 			// The cursor is at the very top, of the file, at the first ABC
-			const searchStringAtTop = getSelectionSearchString(editor);
+			let searchStringAtTop = getSelectionSearchString(editor);
 			assert.strictEqual(searchStringAtTop, 'ABC');
 
 			// Move cursor to the end of ABC
 			editor.setPosition(new Position(1, 3));
-			const searchStringAfterABC = getSelectionSearchString(editor);
+			let searchStringAfterABC = getSelectionSearchString(editor);
 			assert.strictEqual(searchStringAfterABC, 'ABC');
 
 			// Move cursor to DEF
 			editor.setPosition(new Position(1, 5));
-			const searchStringInsideDEF = getSelectionSearchString(editor);
+			let searchStringInsideDEF = getSelectionSearchString(editor);
 			assert.strictEqual(searchStringInsideDEF, 'DEF');
 
 		});
@@ -43,17 +43,17 @@ suite('Find', () => {
 
 			// Select A of ABC
 			editor.setSelection(new Range(1, 1, 1, 2));
-			const searchStringSelectionA = getSelectionSearchString(editor);
+			let searchStringSelectionA = getSelectionSearchString(editor);
 			assert.strictEqual(searchStringSelectionA, 'A');
 
 			// Select BC of ABC
 			editor.setSelection(new Range(1, 2, 1, 4));
-			const searchStringSelectionBC = getSelectionSearchString(editor);
+			let searchStringSelectionBC = getSelectionSearchString(editor);
 			assert.strictEqual(searchStringSelectionBC, 'BC');
 
 			// Select BC DE
 			editor.setSelection(new Range(1, 2, 1, 7));
-			const searchStringSelectionBCDE = getSelectionSearchString(editor);
+			let searchStringSelectionBCDE = getSelectionSearchString(editor);
 			assert.strictEqual(searchStringSelectionBCDE, 'BC DE');
 
 		});
@@ -67,17 +67,17 @@ suite('Find', () => {
 
 			// Select first line and newline
 			editor.setSelection(new Range(1, 1, 2, 1));
-			const searchStringSelectionWholeLine = getSelectionSearchString(editor);
+			let searchStringSelectionWholeLine = getSelectionSearchString(editor);
 			assert.strictEqual(searchStringSelectionWholeLine, null);
 
 			// Select first line and chunk of second
 			editor.setSelection(new Range(1, 1, 2, 4));
-			const searchStringSelectionTwoLines = getSelectionSearchString(editor);
+			let searchStringSelectionTwoLines = getSelectionSearchString(editor);
 			assert.strictEqual(searchStringSelectionTwoLines, null);
 
 			// Select end of first line newline and chunk of second
 			editor.setSelection(new Range(1, 7, 2, 4));
-			const searchStringSelectionSpanLines = getSelectionSearchString(editor);
+			let searchStringSelectionSpanLines = getSelectionSearchString(editor);
 			assert.strictEqual(searchStringSelectionSpanLines, null);
 
 		});

@@ -45,7 +45,7 @@ export class CursorMoveCommands {
 	}
 
 	public static moveToBeginningOfLine(viewModel: IViewModel, cursors: CursorState[], inSelectionMode: boolean): PartialCursorState[] {
-		const result: PartialCursorState[] = [];
+		let result: PartialCursorState[] = [];
 		for (let i = 0, len = cursors.length; i < len; i++) {
 			const cursor = cursors[i];
 			result[i] = this._moveToLineStart(viewModel, cursor, inSelectionMode);

@@ -11,7 +11,7 @@ import { IModelDecoration, ITextModel, PositionAffinity } from 'vs/editor/common
 import { IViewModelLines } from 'vs/editor/common/viewModel/viewModelLines';
 import { ICoordinatesConverter, InlineDecoration, InlineDecorationType, ViewModelDecoration } from 'vs/editor/common/viewModel';
 import { filterValidationDecorations } from 'vs/editor/common/config/editorOptions';
-import { StandardTokenType } from 'vs/editor/common/encodedTokenAttributes';
+import { StandardTokenType } from 'vs/editor/common/languages';
 
 export interface IDecorationsViewportData {
 	/**
@@ -100,21 +100,17 @@ export class ViewModelDecorations implements IDisposable {
 		let cacheIsValid = (this._cachedModelDecorationsResolver !== null);
 		cacheIsValid = cacheIsValid && (viewRange.equalsRange(this._cachedModelDecorationsResolverViewRange));
 		if (!cacheIsValid) {
-			this._cachedModelDecorationsResolver = this._getDecorationsInRange(viewRange);
+			this._cachedModelDecorationsResolver = this._getDecorationsViewportData(viewRange);
 			this._cachedModelDecorationsResolverViewRange = viewRange;
 		}
 		return this._cachedModelDecorationsResolver!;
 	}
 
-	public getInlineDecorationsOnLine(lineNumber: number): InlineDecoration[] {
-		const range = new Range(lineNumber, this._linesCollection.getViewLineMinColumn(lineNumber), lineNumber, this._linesCollection.getViewLineMaxColumn(lineNumber));
-		return this._getDecorationsInRange(range).inlineDecorations[0];
-	}
+	private _getDecorationsViewportData(viewportRange: Range): IDecorationsViewportData {
+		const modelDecorations = this._linesCollection.getDecorationsInRange(viewportRange, this.editorId, filterValidationDecorations(this.configuration.options));
 
-	private _getDecorationsInRange(viewRange: Range): IDecorationsViewportData {
-		const modelDecorations = this._linesCollection.getDecorationsInRange(viewRange, this.editorId, filterValidationDecorations(this.configuration.options));
-		const startLineNumber = viewRange.startLineNumber;
-		const endLineNumber = viewRange.endLineNumber;
+		const startLineNumber = viewportRange.startLineNumber;
+		const endLineNumber = viewportRange.endLineNumber;
 
 		const decorationsInViewport: ViewModelDecoration[] = [];
 		let decorationsInViewportLen = 0;

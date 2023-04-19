@@ -367,7 +367,9 @@ export class NotificationsToasts extends Themable implements INotificationsToast
 	}
 
 	private doHide(): void {
-		this.notificationsToastsContainer?.classList.remove('visible');
+		if (this.notificationsToastsContainer) {
+			this.notificationsToastsContainer.classList.remove('visible');
+		}
 
 		// Context Key
 		this.notificationsToastsVisibleContextKey.set(false);
@@ -523,7 +525,7 @@ export class NotificationsToasts extends Themable implements INotificationsToast
 	}
 
 	private computeMaxDimensions(): Dimension {
-		const maxWidth = NotificationsToasts.MAX_WIDTH;
+		let maxWidth = NotificationsToasts.MAX_WIDTH;
 
 		let availableWidth = maxWidth;
 		let availableHeight: number | undefined;

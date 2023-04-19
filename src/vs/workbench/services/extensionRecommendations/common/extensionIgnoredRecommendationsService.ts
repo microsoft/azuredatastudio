@@ -70,7 +70,7 @@ export class ExtensionIgnoredRecommendationsService extends Disposable implement
 	}
 
 	private onDidStorageChange(e: IStorageValueChangeEvent): void {
-		if (e.key === ignoredRecommendationsStorageKey && e.scope === StorageScope.PROFILE
+		if (e.key === ignoredRecommendationsStorageKey && e.scope === StorageScope.GLOBAL
 			&& this.ignoredRecommendationsValue !== this.getStoredIgnoredRecommendationsValue() /* This checks if current window changed the value or not */) {
 			this._ignoredRecommendationsValue = undefined;
 			this._globalIgnoredRecommendations = this.getCachedIgnoredRecommendations();
@@ -99,11 +99,11 @@ export class ExtensionIgnoredRecommendationsService extends Disposable implement
 	}
 
 	private getStoredIgnoredRecommendationsValue(): string {
-		return this.storageService.get(ignoredRecommendationsStorageKey, StorageScope.PROFILE, '[]');
+		return this.storageService.get(ignoredRecommendationsStorageKey, StorageScope.GLOBAL, '[]');
 	}
 
 	private setStoredIgnoredRecommendationsValue(value: string): void {
-		this.storageService.store(ignoredRecommendationsStorageKey, value, StorageScope.PROFILE, StorageTarget.USER);
+		this.storageService.store(ignoredRecommendationsStorageKey, value, StorageScope.GLOBAL, StorageTarget.USER);
 	}
 
 }

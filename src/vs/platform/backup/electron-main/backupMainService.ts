@@ -222,7 +222,7 @@ export class BackupMainService implements IBackupMainService {
 		const result: IWorkspaceBackupInfo[] = [];
 
 		// Validate Workspaces
-		for (const workspaceInfo of rootWorkspaces) {
+		for (let workspaceInfo of rootWorkspaces) {
 			const workspace = workspaceInfo.workspace;
 			if (!isWorkspaceIdentifier(workspace)) {
 				return []; // wrong format, skip all entries
@@ -258,7 +258,7 @@ export class BackupMainService implements IBackupMainService {
 
 		const result: IFolderBackupInfo[] = [];
 		const seenIds: Set<string> = new Set();
-		for (const folderInfo of folderWorkspaces) {
+		for (let folderInfo of folderWorkspaces) {
 			const folderURI = folderInfo.folderUri;
 			const key = this.backupUriComparer.getComparisonKey(folderURI);
 			if (!seenIds.has(key)) {
@@ -293,7 +293,7 @@ export class BackupMainService implements IBackupMainService {
 		const seenIds: Set<string> = new Set();
 
 		// Validate Empty Windows
-		for (const backupInfo of emptyWorkspaces) {
+		for (let backupInfo of emptyWorkspaces) {
 			const backupFolder = backupInfo.backupFolder;
 			if (typeof backupFolder !== 'string') {
 				return [];

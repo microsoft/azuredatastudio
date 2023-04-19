@@ -70,13 +70,12 @@ import { Codicon } from 'vs/base/common/codicons';
 import { restoreWalkthroughsConfigurationKey, RestoreWalkthroughsConfigurationValue } from 'vs/workbench/contrib/welcomeGettingStarted/browser/startupPage';
 import { GettingStartedDetailsRenderer } from 'vs/workbench/contrib/welcomeGettingStarted/browser/gettingStartedDetailsRenderer';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
-import { renderLabelWithIcons } from 'vs/base/browser/ui/iconLabel/iconLabels';
 
 const SLIDE_TRANSITION_TIME_MS = 250;
 const configurationKey = 'workbench.startupEditor';
 
-export const allWalkthroughsHiddenContext = new RawContextKey<boolean>('allWalkthroughsHidden', false);
-export const inWelcomeContext = new RawContextKey<boolean>('inWelcome', false);
+export const allWalkthroughsHiddenContext = new RawContextKey('allWalkthroughsHidden', false);
+export const inWelcomeContext = new RawContextKey('inWelcome', false);
 export const embedderIdentifierContext = new RawContextKey<string | undefined>('embedderIdentifier', undefined);
 
 export interface IWelcomePageStartEntry {
@@ -470,14 +469,14 @@ export class GettingStartedPage extends EditorPane {
 	}
 
 	private getHiddenCategories(): Set<string> {
-		return new Set(JSON.parse(this.storageService.get(hiddenEntriesConfigurationKey, StorageScope.PROFILE, '[]')));
+		return new Set(JSON.parse(this.storageService.get(hiddenEntriesConfigurationKey, StorageScope.GLOBAL, '[]')));
 	}
 
 	private setHiddenCategories(hidden: string[]) {
 		this.storageService.store(
 			hiddenEntriesConfigurationKey,
 			JSON.stringify(hidden),
-			StorageScope.PROFILE,
+			StorageScope.GLOBAL,
 			StorageTarget.USER);
 	}
 
@@ -530,7 +529,7 @@ export class GettingStartedPage extends EditorPane {
 			this.stepsContent.classList.remove('markdown');
 
 			const media = stepToExpand.media;
-			const webview = this.stepDisposables.add(this.webviewService.createWebviewElement({ id: this.webviewID, options: {}, contentOptions: {}, extension: undefined }));
+			const webview = this.stepDisposables.add(this.webviewService.createWebviewElement(this.webviewID, {}, {}, undefined));
 			webview.mountTo(this.stepMediaComponent);
 
 			webview.html = await this.detailsRenderer.renderSVG(media.path);
@@ -571,7 +570,7 @@ export class GettingStartedPage extends EditorPane {
 
 			const media = stepToExpand.media;
 
-			const webview = this.stepDisposables.add(this.webviewService.createWebviewElement({ id: this.webviewID, options: {}, contentOptions: { localResourceRoots: [media.root], allowScripts: true }, extension: undefined }));
+			const webview = this.stepDisposables.add(this.webviewService.createWebviewElement(this.webviewID, {}, { localResourceRoots: [media.root], allowScripts: true }, undefined));
 			webview.mountTo(this.stepMediaComponent);
 
 			const rawHTML = await this.detailsRenderer.renderMarkdown(media.path, media.base);
@@ -644,13 +643,8 @@ export class GettingStartedPage extends EditorPane {
 	}
 
 	async selectStepLoose(id: string) {
-		// Allow passing in id with a category appended or with just the id of the step
-		if (id.startsWith(`${this.editorInput.selectedCategory}#`)) {
-			this.selectStep(id);
-		} else {
-			const toSelect = this.editorInput.selectedCategory + '#' + id;
-			this.selectStep(toSelect);
-		}
+		const toSelect = this.editorInput.selectedCategory + '#' + id;
+		this.selectStep(toSelect);
 	}
 
 	private async selectStep(id: string | undefined, delayFocus = true, forceRebuild = false) {
@@ -801,9 +795,9 @@ export class GettingStartedPage extends EditorPane {
 				await this.gettingStartedService.installedExtensionsRegistered;
 				this.container.classList.remove('loading');
 				this.gettingStartedCategories = this.gettingStartedService.getWalkthroughs();
-				this.currentWalkthrough = this.gettingStartedCategories.find(category => category.id === this.editorInput.selectedCategory);
 			}
 
+			this.currentWalkthrough = this.gettingStartedCategories.find(category => category.id === this.editorInput.selectedCategory);
 			if (!this.currentWalkthrough) {
 				console.error('Could not restore to category ' + this.editorInput.selectedCategory + ' as it was not found');
 				this.editorInput.selectedCategory = undefined;
@@ -821,7 +815,7 @@ export class GettingStartedPage extends EditorPane {
 			this.buildTelemetryFooter(telemetryNotice);
 			footer.appendChild(telemetryNotice);
 		} else if (!this.productService.openToWelcomeMainPage && !someStepsComplete && !this.hasScrolledToFirstCategory) {
-			const firstSessionDateString = this.storageService.get(firstSessionDateStorageKey, StorageScope.APPLICATION) || new Date().toUTCString();
+			const firstSessionDateString = this.storageService.get(firstSessionDateStorageKey, StorageScope.GLOBAL) || new Date().toUTCString();
 			const daysSinceFirstSession = ((+new Date()) - (+new Date(firstSessionDateString))) / 1000 / 60 / 60 / 24;
 			const fistContentBehaviour = daysSinceFirstSession < 1 ? 'openToFirstCategory' : 'index';
 
@@ -969,7 +963,7 @@ export class GettingStartedPage extends EditorPane {
 
 			if (category.isFeatured) {
 				reset(featuredBadge, $('.featured', {}, $('span.featured-icon.codicon.codicon-star-empty')));
-				reset(descriptionContent, ...renderLabelWithIcons(category.description));
+				reset(descriptionContent, category.description);
 			}
 
 			return $('button.getting-started-category' + (category.isFeatured ? '.featured' : ''),
@@ -1158,7 +1152,7 @@ export class GettingStartedPage extends EditorPane {
 					this.storageService.store(
 						restoreWalkthroughsConfigurationKey,
 						JSON.stringify(restoreData),
-						StorageScope.PROFILE, StorageTarget.MACHINE);
+						StorageScope.GLOBAL, StorageTarget.MACHINE);
 					this.hostService.openWindow([{ folderUri: toOpen }]);
 				}
 			});
@@ -1193,7 +1187,7 @@ export class GettingStartedPage extends EditorPane {
 				if (isCommand) {
 					const keybindingLabel = this.getKeybindingLabel(command);
 					if (keybindingLabel) {
-						container.appendChild($('span.shortcut-message', {}, localize('gettingStarted.keyboardTip', 'Tip: Use keyboard shortcut '), $('span.keybinding', {}, keybindingLabel)));
+						container.appendChild($('span.shortcut-message', {}, 'Tip: Use keyboard shortcut ', $('span.keybinding', {}, keybindingLabel)));
 					}
 				}
 
@@ -1238,7 +1232,7 @@ export class GettingStartedPage extends EditorPane {
 				this.iconWidgetFor(category),
 				$('.category-description-container', {},
 					$('h2.category-title.max-lines-3', { 'x-category-title-for': category.id }, category.title),
-					$('.category-description.description.max-lines-3', { 'x-category-description-for': category.id }, ...renderLabelWithIcons(category.description))));
+					$('.category-description.description.max-lines-3', { 'x-category-description-for': category.id }, category.description)));
 
 		const stepListContainer = $('.step-list-container');
 

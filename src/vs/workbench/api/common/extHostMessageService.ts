@@ -56,7 +56,7 @@ export class ExtHostMessageService {
 			if (typeof command === 'string') {
 				commands.push({ title: command, handle, isCloseAffordance: false });
 			} else if (typeof command === 'object') {
-				const { title, isCloseAffordance } = command;
+				let { title, isCloseAffordance } = command;
 				commands.push({ title, isCloseAffordance: !!isCloseAffordance, handle });
 			} else {
 				this._logService.warn('Invalid message item:', command);

@@ -412,8 +412,7 @@ export class ViewLines extends ViewPart implements IVisibleLinesHost<ViewLine>, 
 			return null;
 		}
 
-		const visibleRanges: LineVisibleRanges[] = [];
-		let visibleRangesLen = 0;
+		let visibleRanges: LineVisibleRanges[] = [], visibleRangesLen = 0;
 		const domReadingContext = new DomReadingContext(this.domNode.domNode, this._textRangeRestingSpot);
 
 		let nextLineModelLineNumber: number = 0;

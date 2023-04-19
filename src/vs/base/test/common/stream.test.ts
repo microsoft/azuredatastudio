@@ -155,10 +155,10 @@ suite('Stream', () => {
 		res = stream.write('3');
 		assert.ok(!res);
 
-		const promise1 = stream.write('4');
+		let promise1 = stream.write('4');
 		assert.ok(promise1 instanceof Promise);
 
-		const promise2 = stream.write('5');
+		let promise2 = stream.write('5');
 		assert.ok(promise2 instanceof Promise);
 
 		let drained1 = false;

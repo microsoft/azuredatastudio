@@ -160,7 +160,7 @@ function getClassifier(): CharacterClassifier<CharacterClass> {
 			_classifier.set(FORCE_TERMINATION_CHARACTERS.charCodeAt(i), CharacterClass.ForceTermination);
 		}
 
-		const CANNOT_END_WITH_CHARACTERS = '.,;:';
+		const CANNOT_END_WITH_CHARACTERS = '.,;';
 		for (let i = 0; i < CANNOT_END_WITH_CHARACTERS.length; i++) {
 			_classifier.set(CANNOT_END_WITH_CHARACTERS.charCodeAt(i), CharacterClass.CannotEndIn);
 		}
@@ -258,15 +258,15 @@ export class LinkComputer {
 						case CharCode.CloseCurlyBrace:
 							chClass = (hasOpenCurlyBracket ? CharacterClass.None : CharacterClass.ForceTermination);
 							break;
-						/* The following three rules make it that ' or " or ` are allowed inside links if the link didn't begin with them */
+						/* The following three rules make it that ' or " or ` are allowed inside links if the link began with a different one */
 						case CharCode.SingleQuote:
-							chClass = (linkBeginChCode === CharCode.SingleQuote ? CharacterClass.ForceTermination : CharacterClass.None);
+							chClass = (linkBeginChCode === CharCode.DoubleQuote || linkBeginChCode === CharCode.BackTick) ? CharacterClass.None : CharacterClass.ForceTermination;
 							break;
 						case CharCode.DoubleQuote:
-							chClass = (linkBeginChCode === CharCode.DoubleQuote ? CharacterClass.ForceTermination : CharacterClass.None);
+							chClass = (linkBeginChCode === CharCode.SingleQuote || linkBeginChCode === CharCode.BackTick) ? CharacterClass.None : CharacterClass.ForceTermination;
 							break;
 						case CharCode.BackTick:
-							chClass = (linkBeginChCode === CharCode.BackTick ? CharacterClass.ForceTermination : CharacterClass.None);
+							chClass = (linkBeginChCode === CharCode.SingleQuote || linkBeginChCode === CharCode.DoubleQuote) ? CharacterClass.None : CharacterClass.ForceTermination;
 							break;
 						case CharCode.Asterisk:
 							// `*` terminates a link if the link began with `*`

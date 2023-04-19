@@ -10,6 +10,7 @@ import { Menu } from 'vs/base/browser/ui/menu/menu';
 import { ActionRunner, IRunEvent, WorkbenchActionExecutedClassification, WorkbenchActionExecutedEvent } from 'vs/base/common/actions';
 import { isCancellationError } from 'vs/base/common/errors';
 import { combinedDisposable, DisposableStore } from 'vs/base/common/lifecycle';
+import 'vs/css!./contextMenuHandler';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -49,7 +50,7 @@ export class ContextMenuHandler {
 
 		let menu: Menu | undefined;
 
-		const shadowRootElement = isHTMLElement(delegate.domForShadowRoot) ? delegate.domForShadowRoot : undefined;
+		let shadowRootElement = isHTMLElement(delegate.domForShadowRoot) ? delegate.domForShadowRoot : undefined;
 		this.contextViewService.showContextView({
 			getAnchor: () => delegate.getAnchor(),
 			canRelayout: false,
@@ -57,7 +58,7 @@ export class ContextMenuHandler {
 			anchorAxisAlignment: delegate.anchorAxisAlignment,
 
 			render: (container) => {
-				const className = delegate.getMenuClassName ? delegate.getMenuClassName() : '';
+				let className = delegate.getMenuClassName ? delegate.getMenuClassName() : '';
 
 				if (className) {
 					container.className += ' ' + className;
@@ -100,7 +101,7 @@ export class ContextMenuHandler {
 						return;
 					}
 
-					const event = new StandardMouseEvent(e);
+					let event = new StandardMouseEvent(e);
 					let element: HTMLElement | null = event.target;
 
 					// Don't do anything as we are likely creating a context menu
@@ -123,11 +124,15 @@ export class ContextMenuHandler {
 			},
 
 			focus: () => {
-				menu?.focus(!!delegate.autoSelectFirstItem);
+				if (menu) {
+					menu.focus(!!delegate.autoSelectFirstItem);
+				}
 			},
 
 			onHide: (didCancel?: boolean) => {
-				delegate.onHide?.(!!didCancel);
+				if (delegate.onHide) {
+					delegate.onHide(!!didCancel);
+				}
 
 				if (this.block) {
 					this.block.remove();

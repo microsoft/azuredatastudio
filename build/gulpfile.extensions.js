@@ -56,7 +56,6 @@ const compilations = [
 	'json-language-features/client/tsconfig.json',
 	'json-language-features/server/tsconfig.json',
 	'markdown-language-features/preview-src/tsconfig.json',
-	'markdown-language-features/server/tsconfig.json',
 	'markdown-language-features/tsconfig.json',
 	'markdown-math/tsconfig.json',
 	'merge-conflict/tsconfig.json',
@@ -64,13 +63,12 @@ const compilations = [
 	'npm/tsconfig.json',
 	'php-language-features/tsconfig.json',
 	'search-result/tsconfig.json',
-	'references-view/tsconfig.json',
 	'simple-browser/tsconfig.json',
 	'typescript-language-features/test-workspace/tsconfig.json',
 	'typescript-language-features/tsconfig.json',
 	'vscode-api-tests/tsconfig.json',
 	'vscode-colorize-tests/tsconfig.json',
-	'vscode-notebook-tests/tsconfig.json',
+	'vscode-custom-editor-tests/tsconfig.json',
 	'vscode-test-resolver/tsconfig.json'
 ];
 */
@@ -95,7 +93,7 @@ const tasks = compilations.map(function (tsconfigFile) {
 	const baseUrl = getBaseUrl(out);
 
 	let headerId, headerOut;
-	const index = relativeDirname.indexOf('/');
+	let index = relativeDirname.indexOf('/');
 	if (index < 0) {
 		headerId = 'microsoft.' + relativeDirname; // {{SQL CARBON EDIT}}
 		headerOut = 'out';
@@ -104,9 +102,9 @@ const tasks = compilations.map(function (tsconfigFile) {
 		headerOut = relativeDirname.substr(index + 1) + '/out';
 	}
 
-	function createPipeline(build, emitError, transpileOnly) {
+	function createPipeline(build, emitError) {
 		const nlsDev = require('vscode-nls-dev');
-		const tsb = require('./lib/tsb');
+		const tsb = require('gulp-tsb');
 		const sourcemaps = require('gulp-sourcemaps');
 
 		const reporter = createReporter('extensions');
@@ -114,7 +112,7 @@ const tasks = compilations.map(function (tsconfigFile) {
 		overrideOptions.inlineSources = Boolean(build);
 		overrideOptions.base = path.dirname(absolutePath);
 
-		const compilation = tsb.create(absolutePath, overrideOptions, { verbose: false, transpileOnly, transpileOnlyIncludesDts: transpileOnly }, err => reporter(err.toString()));
+		const compilation = tsb.create(absolutePath, overrideOptions, false, err => reporter(err.toString()));
 
 		const pipeline = function () {
 			const input = es.through();
@@ -156,16 +154,6 @@ const tasks = compilations.map(function (tsconfigFile) {
 
 	const cleanTask = task.define(`clean-extension-${name}`, util.rimraf(out));
 
-	const transpileTask = task.define(`transpile-extension:${name}`, task.series(cleanTask, () => {
-		const pipeline = createPipeline(false, true, true);
-		const nonts = gulp.src(src, srcOpts).pipe(filter(['**', '!**/*.ts']));
-		const input = es.merge(nonts, pipeline.tsProjectSrc());
-
-		return input
-			.pipe(pipeline())
-			.pipe(gulp.dest(out));
-	}));
-
 	const compileTask = task.define(`compile-extension:${name}`, task.series(cleanTask, () => {
 		const pipeline = createPipeline(false, true);
 		const nonts = gulp.src(src, srcOpts).pipe(filter(['**', '!**/*.ts']));
@@ -198,15 +186,11 @@ const tasks = compilations.map(function (tsconfigFile) {
 	}));
 
 	// Tasks
-	gulp.task(transpileTask);
 	gulp.task(compileTask);
 	gulp.task(watchTask);
 
-	return { transpileTask, compileTask, watchTask, compileBuildTask };
+	return { compileTask, watchTask, compileBuildTask };
 });
-
-const transpileExtensionsTask = task.define('transpile-extensions', task.parallel(...tasks.map(t => t.transpileTask)));
-gulp.task(transpileExtensionsTask);
 
 const compileExtensionsTask = task.define('compile-extensions', task.parallel(...tasks.map(t => t.compileTask)));
 gulp.task(compileExtensionsTask);
@@ -245,11 +229,7 @@ const compileExtensionsBuildTask = task.define('compile-extensions-build', task.
 ));
 
 gulp.task(compileExtensionsBuildTask);
-// {{SQL CARBON EDIT}} Needed to pass the "done" gulp callback function to fix "Did you roget to signal async completion" error
-gulp.task(task.define('extensions-ci', (done) => {
-	task.series(compileExtensionsBuildTask, compileExtensionMediaBuildTask);
-	done();
-}));
+gulp.task(task.define('extensions-ci', task.series(compileExtensionsBuildTask, compileExtensionMediaBuildTask)));
 
 exports.compileExtensionsBuildTask = compileExtensionsBuildTask;
 

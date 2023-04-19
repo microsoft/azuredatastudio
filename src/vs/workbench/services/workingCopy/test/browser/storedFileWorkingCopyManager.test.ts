@@ -598,7 +598,7 @@ suite('StoredFileWorkingCopyManager', () => {
 		const workingCopy = await manager.resolve(resource);
 		workingCopy.model?.updateContents('make dirty');
 
-		const canDisposePromise = manager.canDispose(workingCopy);
+		let canDisposePromise = manager.canDispose(workingCopy);
 		assert.ok(canDisposePromise instanceof Promise);
 
 		let canDispose = false;
@@ -613,7 +613,7 @@ suite('StoredFileWorkingCopyManager', () => {
 
 		assert.strictEqual(canDispose, true);
 
-		const canDispose2 = manager.canDispose(workingCopy);
+		let canDispose2 = manager.canDispose(workingCopy);
 		assert.strictEqual(canDispose2, true);
 	});
 

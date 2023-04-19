@@ -7,7 +7,7 @@ import { escapeRegExpCharacters } from 'vs/base/common/strings';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 import { Range } from 'vs/editor/common/core/range';
-import { IModelDecorationsChangeAccessor, ITextModel, TrackedRangeStickiness } from 'vs/editor/common/model';
+import { IModelDecorationsChangeAccessor, IModelDeltaDecoration, ITextModel, TrackedRangeStickiness } from 'vs/editor/common/model';
 import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
 import { FoldingModel, getNextFoldLine, getParentFoldLine, getPreviousFoldLine, setCollapseStateAtLevel, setCollapseStateForMatchingLines, setCollapseStateForRest, setCollapseStateLevelsDown, setCollapseStateLevelsUp, setCollapseStateUp } from 'vs/editor/contrib/folding/browser/foldingModel';
 import { FoldingRegion } from 'vs/editor/contrib/folding/browser/foldingRanges';
@@ -59,20 +59,18 @@ export class TestDecorationProvider {
 		return TestDecorationProvider.expandedDecoration;
 	}
 
-	changeDecorations<T>(callback: (changeAccessor: IModelDecorationsChangeAccessor) => T): (T | null) {
-		return this.model.changeDecorations(callback);
+	deltaDecorations(oldDecorations: string[], newDecorations: IModelDeltaDecoration[]): string[] {
+		return this.model.deltaDecorations(oldDecorations, newDecorations);
 	}
 
-	removeDecorations(decorationIds: string[]): void {
-		this.model.changeDecorations((changeAccessor) => {
-			changeAccessor.deltaDecorations(decorationIds, []);
-		});
+	changeDecorations<T>(callback: (changeAccessor: IModelDecorationsChangeAccessor) => T): (T | null) {
+		return this.model.changeDecorations(callback);
 	}
 
 	getDecorations(): ExpectedDecoration[] {
 		const decorations = this.model.getAllDecorations();
 		const res: ExpectedDecoration[] = [];
-		for (const decoration of decorations) {
+		for (let decoration of decorations) {
 			if (decoration.options === TestDecorationProvider.hiddenDecoration) {
 				res.push({ line: decoration.range.startLineNumber, type: 'hidden' });
 			} else if (decoration.options === TestDecorationProvider.collapsedDecoration) {
@@ -104,8 +102,8 @@ suite('Folding Model', () => {
 	}
 
 	function assertFoldedRanges(foldingModel: FoldingModel, expectedRegions: ExpectedRegion[], message?: string) {
-		const actualRanges: ExpectedRegion[] = [];
-		const actual = foldingModel.regions;
+		let actualRanges: ExpectedRegion[] = [];
+		let actual = foldingModel.regions;
 		for (let i = 0; i < actual.length; i++) {
 			if (actual.isCollapsed(i)) {
 				actualRanges.push(r(actual.getStartLineNumber(i), actual.getEndLineNumber(i)));
@@ -115,8 +113,8 @@ suite('Folding Model', () => {
 	}
 
 	function assertRanges(foldingModel: FoldingModel, expectedRegions: ExpectedRegion[], message?: string) {
-		const actualRanges: ExpectedRegion[] = [];
-		const actual = foldingModel.regions;
+		let actualRanges: ExpectedRegion[] = [];
+		let actual = foldingModel.regions;
 		for (let i = 0; i < actual.length; i++) {
 			actualRanges.push(r(actual.getStartLineNumber(i), actual.getEndLineNumber(i), actual.isCollapsed(i)));
 		}
@@ -133,7 +131,7 @@ suite('Folding Model', () => {
 	}
 
 	test('getRegionAtLine', () => {
-		const lines = [
+		let lines = [
 		/* 1*/	'/**',
 		/* 2*/	' * Comment',
 		/* 3*/	' */',
@@ -143,16 +141,16 @@ suite('Folding Model', () => {
 		/* 7*/	'  }',
 		/* 8*/	'}'];
 
-		const textModel = createTextModel(lines.join('\n'));
+		let textModel = createTextModel(lines.join('\n'));
 		try {
-			const foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
+			let foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
 
-			const ranges = computeRanges(textModel, false, undefined);
+			let ranges = computeRanges(textModel, false, undefined);
 			foldingModel.update(ranges);
 
-			const r1 = r(1, 3, false);
-			const r2 = r(4, 7, false);
-			const r3 = r(5, 6, false);
+			let r1 = r(1, 3, false);
+			let r2 = r(4, 7, false);
+			let r3 = r(5, 6, false);
 
 			assertRanges(foldingModel, [r1, r2, r3]);
 
@@ -172,7 +170,7 @@ suite('Folding Model', () => {
 	});
 
 	test('collapse', () => {
-		const lines = [
+		let lines = [
 		/* 1*/	'/**',
 		/* 2*/	' * Comment',
 		/* 3*/	' */',
@@ -182,16 +180,16 @@ suite('Folding Model', () => {
 		/* 7*/	'  }',
 		/* 8*/	'}'];
 
-		const textModel = createTextModel(lines.join('\n'));
+		let textModel = createTextModel(lines.join('\n'));
 		try {
-			const foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
+			let foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
 
-			const ranges = computeRanges(textModel, false, undefined);
+			let ranges = computeRanges(textModel, false, undefined);
 			foldingModel.update(ranges);
 
-			const r1 = r(1, 3, false);
-			const r2 = r(4, 7, false);
-			const r3 = r(5, 6, false);
+			let r1 = r(1, 3, false);
+			let r2 = r(4, 7, false);
+			let r3 = r(5, 6, false);
 
 			assertRanges(foldingModel, [r1, r2, r3]);
 
@@ -218,7 +216,7 @@ suite('Folding Model', () => {
 	});
 
 	test('update', () => {
-		const lines = [
+		let lines = [
 		/* 1*/	'/**',
 		/* 2*/	' * Comment',
 		/* 3*/	' */',
@@ -228,16 +226,16 @@ suite('Folding Model', () => {
 		/* 7*/	'  }',
 		/* 8*/	'}'];
 
-		const textModel = createTextModel(lines.join('\n'));
+		let textModel = createTextModel(lines.join('\n'));
 		try {
-			const foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
+			let foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
 
-			const ranges = computeRanges(textModel, false, undefined);
+			let ranges = computeRanges(textModel, false, undefined);
 			foldingModel.update(ranges);
 
-			const r1 = r(1, 3, false);
-			const r2 = r(4, 7, false);
-			const r3 = r(5, 6, false);
+			let r1 = r(1, 3, false);
+			let r2 = r(4, 7, false);
+			let r3 = r(5, 6, false);
 
 			assertRanges(foldingModel, [r1, r2, r3]);
 			foldingModel.toggleCollapseState([foldingModel.getRegionAtLine(2)!, foldingModel.getRegionAtLine(5)!]);
@@ -253,7 +251,7 @@ suite('Folding Model', () => {
 	});
 
 	test('delete', () => {
-		const lines = [
+		let lines = [
 		/* 1*/	'function foo() {',
 		/* 2*/	'  switch (x) {',
 		/* 3*/	'    case 1:',
@@ -268,18 +266,18 @@ suite('Folding Model', () => {
 		/* 12*/	'  }',
 		/* 13*/	'}'];
 
-		const textModel = createTextModel(lines.join('\n'));
+		let textModel = createTextModel(lines.join('\n'));
 		try {
-			const foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
+			let foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
 
-			const ranges = computeRanges(textModel, false, undefined);
+			let ranges = computeRanges(textModel, false, undefined);
 			foldingModel.update(ranges);
 
-			const r1 = r(1, 12, false);
-			const r2 = r(2, 11, false);
-			const r3 = r(3, 5, false);
-			const r4 = r(6, 8, false);
-			const r5 = r(9, 11, false);
+			let r1 = r(1, 12, false);
+			let r2 = r(2, 11, false);
+			let r3 = r(3, 5, false);
+			let r4 = r(6, 8, false);
+			let r5 = r(9, 11, false);
 
 			assertRanges(foldingModel, [r1, r2, r3, r4, r5]);
 			foldingModel.toggleCollapseState([foldingModel.getRegionAtLine(6)!]);
@@ -295,7 +293,7 @@ suite('Folding Model', () => {
 	});
 
 	test('getRegionsInside', () => {
-		const lines = [
+		let lines = [
 		/* 1*/	'/**',
 		/* 2*/	' * Comment',
 		/* 3*/	' */',
@@ -305,21 +303,21 @@ suite('Folding Model', () => {
 		/* 7*/	'  }',
 		/* 8*/	'}'];
 
-		const textModel = createTextModel(lines.join('\n'));
+		let textModel = createTextModel(lines.join('\n'));
 		try {
-			const foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
+			let foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
 
-			const ranges = computeRanges(textModel, false, undefined);
+			let ranges = computeRanges(textModel, false, undefined);
 			foldingModel.update(ranges);
 
-			const r1 = r(1, 3, false);
-			const r2 = r(4, 7, false);
-			const r3 = r(5, 6, false);
+			let r1 = r(1, 3, false);
+			let r2 = r(4, 7, false);
+			let r3 = r(5, 6, false);
 
 			assertRanges(foldingModel, [r1, r2, r3]);
-			const region1 = foldingModel.getRegionAtLine(r1.startLineNumber);
-			const region2 = foldingModel.getRegionAtLine(r2.startLineNumber);
-			const region3 = foldingModel.getRegionAtLine(r3.startLineNumber);
+			let region1 = foldingModel.getRegionAtLine(r1.startLineNumber);
+			let region2 = foldingModel.getRegionAtLine(r2.startLineNumber);
+			let region3 = foldingModel.getRegionAtLine(r3.startLineNumber);
 
 			assertRegions(foldingModel.getRegionsInside(null), [r1, r2, r3], '1');
 			assertRegions(foldingModel.getRegionsInside(region1), [], '2');
@@ -332,7 +330,7 @@ suite('Folding Model', () => {
 	});
 
 	test('getRegionsInsideWithLevel', () => {
-		const lines = [
+		let lines = [
 			/* 1*/	'//#region',
 			/* 2*/	'//#endregion',
 			/* 3*/	'class A {',
@@ -346,23 +344,23 @@ suite('Folding Model', () => {
 			/* 11*/	'  }',
 			/* 12*/	'}'];
 
-		const textModel = createTextModel(lines.join('\n'));
+		let textModel = createTextModel(lines.join('\n'));
 		try {
 
-			const foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
+			let foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
 
-			const ranges = computeRanges(textModel, false, { start: /^\/\/#region$/, end: /^\/\/#endregion$/ });
+			let ranges = computeRanges(textModel, false, { start: /^\/\/#region$/, end: /^\/\/#endregion$/ });
 			foldingModel.update(ranges);
 
-			const r1 = r(1, 2, false);
-			const r2 = r(3, 11, false);
-			const r3 = r(4, 10, false);
-			const r4 = r(5, 6, false);
-			const r5 = r(8, 9, false);
+			let r1 = r(1, 2, false);
+			let r2 = r(3, 11, false);
+			let r3 = r(4, 10, false);
+			let r4 = r(5, 6, false);
+			let r5 = r(8, 9, false);
 
-			const region1 = foldingModel.getRegionAtLine(r1.startLineNumber);
-			const region2 = foldingModel.getRegionAtLine(r2.startLineNumber);
-			const region3 = foldingModel.getRegionAtLine(r3.startLineNumber);
+			let region1 = foldingModel.getRegionAtLine(r1.startLineNumber);
+			let region2 = foldingModel.getRegionAtLine(r2.startLineNumber);
+			let region3 = foldingModel.getRegionAtLine(r3.startLineNumber);
 
 			assertRanges(foldingModel, [r1, r2, r3, r4, r5]);
 
@@ -384,7 +382,7 @@ suite('Folding Model', () => {
 	});
 
 	test('getRegionAtLine', () => {
-		const lines = [
+		let lines = [
 		/* 1*/	'//#region',
 		/* 2*/	'class A {',
 		/* 3*/	'  void foo() {',
@@ -397,17 +395,17 @@ suite('Folding Model', () => {
 		/* 10*/	'//#endregion',
 		/* 11*/	''];
 
-		const textModel = createTextModel(lines.join('\n'));
+		let textModel = createTextModel(lines.join('\n'));
 		try {
-			const foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
+			let foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
 
-			const ranges = computeRanges(textModel, false, { start: /^\/\/#region$/, end: /^\/\/#endregion$/ });
+			let ranges = computeRanges(textModel, false, { start: /^\/\/#region$/, end: /^\/\/#endregion$/ });
 			foldingModel.update(ranges);
 
-			const r1 = r(1, 10, false);
-			const r2 = r(2, 8, false);
-			const r3 = r(3, 7, false);
-			const r4 = r(4, 5, false);
+			let r1 = r(1, 10, false);
+			let r2 = r(2, 8, false);
+			let r3 = r(3, 7, false);
+			let r4 = r(4, 5, false);
 
 			assertRanges(foldingModel, [r1, r2, r3, r4]);
 
@@ -428,7 +426,7 @@ suite('Folding Model', () => {
 	});
 
 	test('setCollapseStateRecursivly', () => {
-		const lines = [
+		let lines = [
 		/* 1*/	'//#region',
 		/* 2*/	'//#endregion',
 		/* 3*/	'class A {',
@@ -443,18 +441,18 @@ suite('Folding Model', () => {
 		/* 12*/	'  }',
 		/* 13*/	'}'];
 
-		const textModel = createTextModel(lines.join('\n'));
+		let textModel = createTextModel(lines.join('\n'));
 		try {
-			const foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
+			let foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
 
-			const ranges = computeRanges(textModel, false, { start: /^\/\/#region$/, end: /^\/\/#endregion$/ });
+			let ranges = computeRanges(textModel, false, { start: /^\/\/#region$/, end: /^\/\/#endregion$/ });
 			foldingModel.update(ranges);
 
-			const r1 = r(1, 2, false);
-			const r2 = r(3, 12, false);
-			const r3 = r(4, 11, false);
-			const r4 = r(5, 6, false);
-			const r5 = r(9, 10, false);
+			let r1 = r(1, 2, false);
+			let r2 = r(3, 12, false);
+			let r3 = r(4, 11, false);
+			let r4 = r(5, 6, false);
+			let r5 = r(9, 10, false);
 			assertRanges(foldingModel, [r1, r2, r3, r4, r5]);
 
 			setCollapseStateLevelsDown(foldingModel, true, Number.MAX_VALUE, [4]);
@@ -481,7 +479,7 @@ suite('Folding Model', () => {
 	});
 
 	test('setCollapseStateAtLevel', () => {
-		const lines = [
+		let lines = [
 		/* 1*/	'//#region',
 		/* 2*/	'//#endregion',
 		/* 3*/	'class A {',
@@ -499,19 +497,19 @@ suite('Folding Model', () => {
 		/* 15*/	'  //#endregion',
 		/* 16*/	'}'];
 
-		const textModel = createTextModel(lines.join('\n'));
+		let textModel = createTextModel(lines.join('\n'));
 		try {
-			const foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
+			let foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
 
-			const ranges = computeRanges(textModel, false, { start: /^\s*\/\/#region$/, end: /^\s*\/\/#endregion$/ });
+			let ranges = computeRanges(textModel, false, { start: /^\s*\/\/#region$/, end: /^\s*\/\/#endregion$/ });
 			foldingModel.update(ranges);
 
-			const r1 = r(1, 2, false);
-			const r2 = r(3, 15, false);
-			const r3 = r(4, 11, false);
-			const r4 = r(5, 6, false);
-			const r5 = r(9, 10, false);
-			const r6 = r(13, 15, false);
+			let r1 = r(1, 2, false);
+			let r2 = r(3, 15, false);
+			let r3 = r(4, 11, false);
+			let r4 = r(5, 6, false);
+			let r5 = r(9, 10, false);
+			let r6 = r(13, 15, false);
 			assertRanges(foldingModel, [r1, r2, r3, r4, r5, r6]);
 
 			setCollapseStateAtLevel(foldingModel, 1, true, []);
@@ -540,7 +538,7 @@ suite('Folding Model', () => {
 	});
 
 	test('setCollapseStateLevelsDown', () => {
-		const lines = [
+		let lines = [
 		/* 1*/	'//#region',
 		/* 2*/	'//#endregion',
 		/* 3*/	'class A {',
@@ -555,18 +553,18 @@ suite('Folding Model', () => {
 		/* 12*/	'  }',
 		/* 13*/	'}'];
 
-		const textModel = createTextModel(lines.join('\n'));
+		let textModel = createTextModel(lines.join('\n'));
 		try {
-			const foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
+			let foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
 
-			const ranges = computeRanges(textModel, false, { start: /^\/\/#region$/, end: /^\/\/#endregion$/ });
+			let ranges = computeRanges(textModel, false, { start: /^\/\/#region$/, end: /^\/\/#endregion$/ });
 			foldingModel.update(ranges);
 
-			const r1 = r(1, 2, false);
-			const r2 = r(3, 12, false);
-			const r3 = r(4, 11, false);
-			const r4 = r(5, 6, false);
-			const r5 = r(9, 10, false);
+			let r1 = r(1, 2, false);
+			let r2 = r(3, 12, false);
+			let r3 = r(4, 11, false);
+			let r4 = r(5, 6, false);
+			let r5 = r(9, 10, false);
 			assertRanges(foldingModel, [r1, r2, r3, r4, r5]);
 
 			setCollapseStateLevelsDown(foldingModel, true, 1, [4]);
@@ -592,7 +590,7 @@ suite('Folding Model', () => {
 	});
 
 	test('setCollapseStateLevelsUp', () => {
-		const lines = [
+		let lines = [
 		/* 1*/	'//#region',
 		/* 2*/	'//#endregion',
 		/* 3*/	'class A {',
@@ -607,18 +605,18 @@ suite('Folding Model', () => {
 		/* 12*/	'  }',
 		/* 13*/	'}'];
 
-		const textModel = createTextModel(lines.join('\n'));
+		let textModel = createTextModel(lines.join('\n'));
 		try {
-			const foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
+			let foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
 
-			const ranges = computeRanges(textModel, false, { start: /^\/\/#region$/, end: /^\/\/#endregion$/ });
+			let ranges = computeRanges(textModel, false, { start: /^\/\/#region$/, end: /^\/\/#endregion$/ });
 			foldingModel.update(ranges);
 
-			const r1 = r(1, 2, false);
-			const r2 = r(3, 12, false);
-			const r3 = r(4, 11, false);
-			const r4 = r(5, 6, false);
-			const r5 = r(9, 10, false);
+			let r1 = r(1, 2, false);
+			let r2 = r(3, 12, false);
+			let r3 = r(4, 11, false);
+			let r4 = r(5, 6, false);
+			let r5 = r(9, 10, false);
 			assertRanges(foldingModel, [r1, r2, r3, r4, r5]);
 
 			setCollapseStateLevelsUp(foldingModel, true, 1, [4]);
@@ -639,7 +637,7 @@ suite('Folding Model', () => {
 	});
 
 	test('setCollapseStateUp', () => {
-		const lines = [
+		let lines = [
 		/* 1*/	'//#region',
 		/* 2*/	'//#endregion',
 		/* 3*/	'class A {',
@@ -654,18 +652,18 @@ suite('Folding Model', () => {
 		/* 12*/	'  }',
 		/* 13*/	'}'];
 
-		const textModel = createTextModel(lines.join('\n'));
+		let textModel = createTextModel(lines.join('\n'));
 		try {
-			const foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
+			let foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
 
-			const ranges = computeRanges(textModel, false, { start: /^\/\/#region$/, end: /^\/\/#endregion$/ });
+			let ranges = computeRanges(textModel, false, { start: /^\/\/#region$/, end: /^\/\/#endregion$/ });
 			foldingModel.update(ranges);
 
-			const r1 = r(1, 2, false);
-			const r2 = r(3, 12, false);
-			const r3 = r(4, 11, false);
-			const r4 = r(5, 6, false);
-			const r5 = r(9, 10, false);
+			let r1 = r(1, 2, false);
+			let r2 = r(3, 12, false);
+			let r3 = r(4, 11, false);
+			let r4 = r(5, 6, false);
+			let r5 = r(9, 10, false);
 			assertRanges(foldingModel, [r1, r2, r3, r4, r5]);
 
 			setCollapseStateUp(foldingModel, true, [5]);
@@ -684,7 +682,7 @@ suite('Folding Model', () => {
 
 
 	test('setCollapseStateForMatchingLines', () => {
-		const lines = [
+		let lines = [
 		/* 1*/	'/**',
 		/* 2*/	' * the class',
 		/* 3*/	' */',
@@ -699,21 +697,21 @@ suite('Folding Model', () => {
 		/* 12*/	'  }',
 		/* 13*/	'}'];
 
-		const textModel = createTextModel(lines.join('\n'));
+		let textModel = createTextModel(lines.join('\n'));
 		try {
-			const foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
+			let foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
 
-			const ranges = computeRanges(textModel, false, { start: /^\/\/#region$/, end: /^\/\/#endregion$/ });
+			let ranges = computeRanges(textModel, false, { start: /^\/\/#region$/, end: /^\/\/#endregion$/ });
 			foldingModel.update(ranges);
 
-			const r1 = r(1, 3, false);
-			const r2 = r(4, 12, false);
-			const r3 = r(5, 7, false);
-			const r4 = r(8, 11, false);
-			const r5 = r(9, 11, false);
+			let r1 = r(1, 3, false);
+			let r2 = r(4, 12, false);
+			let r3 = r(5, 7, false);
+			let r4 = r(8, 11, false);
+			let r5 = r(9, 11, false);
 			assertRanges(foldingModel, [r1, r2, r3, r4, r5]);
 
-			const regExp = new RegExp('^\\s*' + escapeRegExpCharacters('/*'));
+			let regExp = new RegExp('^\\s*' + escapeRegExpCharacters('/*'));
 			setCollapseStateForMatchingLines(foldingModel, regExp, true);
 			assertFoldedRanges(foldingModel, [r1, r3, r5], '1');
 		} finally {
@@ -724,7 +722,7 @@ suite('Folding Model', () => {
 
 
 	test('setCollapseStateForRest', () => {
-		const lines = [
+		let lines = [
 		/* 1*/	'//#region',
 		/* 2*/	'//#endregion',
 		/* 3*/	'class A {',
@@ -739,18 +737,18 @@ suite('Folding Model', () => {
 		/* 12*/	'  }',
 		/* 13*/	'}'];
 
-		const textModel = createTextModel(lines.join('\n'));
+		let textModel = createTextModel(lines.join('\n'));
 		try {
-			const foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
+			let foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
 
-			const ranges = computeRanges(textModel, false, { start: /^\/\/#region$/, end: /^\/\/#endregion$/ });
+			let ranges = computeRanges(textModel, false, { start: /^\/\/#region$/, end: /^\/\/#endregion$/ });
 			foldingModel.update(ranges);
 
-			const r1 = r(1, 2, false);
-			const r2 = r(3, 12, false);
-			const r3 = r(4, 11, false);
-			const r4 = r(5, 6, false);
-			const r5 = r(9, 10, false);
+			let r1 = r(1, 2, false);
+			let r2 = r(3, 12, false);
+			let r3 = r(4, 11, false);
+			let r4 = r(5, 6, false);
+			let r5 = r(9, 10, false);
 			assertRanges(foldingModel, [r1, r2, r3, r4, r5]);
 
 			setCollapseStateForRest(foldingModel, true, [5]);
@@ -773,7 +771,7 @@ suite('Folding Model', () => {
 
 
 	test('folding decoration', () => {
-		const lines = [
+		let lines = [
 		/* 1*/	'class A {',
 		/* 2*/	'  void foo() {',
 		/* 3*/	'    if (true) {',
@@ -782,16 +780,16 @@ suite('Folding Model', () => {
 		/* 6*/	'  }',
 		/* 7*/	'}'];
 
-		const textModel = createTextModel(lines.join('\n'));
+		let textModel = createTextModel(lines.join('\n'));
 		try {
-			const foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
+			let foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
 
-			const ranges = computeRanges(textModel, false, undefined);
+			let ranges = computeRanges(textModel, false, undefined);
 			foldingModel.update(ranges);
 
-			const r1 = r(1, 6, false);
-			const r2 = r(2, 5, false);
-			const r3 = r(3, 4, false);
+			let r1 = r(1, 6, false);
+			let r2 = r(2, 5, false);
+			let r3 = r(3, 4, false);
 
 			assertRanges(foldingModel, [r1, r2, r3]);
 			assertDecorations(foldingModel, [d(1, 'expanded'), d(2, 'expanded'), d(3, 'expanded')]);
@@ -834,7 +832,7 @@ suite('Folding Model', () => {
 	});
 
 	test('fold jumping', () => {
-		const lines = [
+		let lines = [
 			/* 1*/	'class A {',
 			/* 2*/	'  void foo() {',
 			/* 3*/	'    if (1) {',
@@ -850,19 +848,19 @@ suite('Folding Model', () => {
 			/* 13*/	'}'
 		];
 
-		const textModel = createTextModel(lines.join('\n'));
+		let textModel = createTextModel(lines.join('\n'));
 		try {
-			const foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
+			let foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
 
-			const ranges = computeRanges(textModel, false, undefined);
+			let ranges = computeRanges(textModel, false, undefined);
 			foldingModel.update(ranges);
 
-			const r1 = r(1, 12, false);
-			const r2 = r(2, 11, false);
-			const r3 = r(3, 4, false);
-			const r4 = r(5, 8, false);
-			const r5 = r(6, 7, false);
-			const r6 = r(9, 10, false);
+			let r1 = r(1, 12, false);
+			let r2 = r(2, 11, false);
+			let r3 = r(3, 4, false);
+			let r4 = r(5, 8, false);
+			let r5 = r(6, 7, false);
+			let r6 = r(9, 10, false);
 			assertRanges(foldingModel, [r1, r2, r3, r4, r5, r6]);
 
 			// Test jump to parent.
@@ -898,7 +896,7 @@ suite('Folding Model', () => {
 	});
 
 	test('fold jumping issue #129503', () => {
-		const lines = [
+		let lines = [
 			/* 1*/	'',
 			/* 2*/	'if True:',
 			/* 3*/	'  print(1)',
@@ -907,15 +905,15 @@ suite('Folding Model', () => {
 			/* 6*/	''
 		];
 
-		const textModel = createTextModel(lines.join('\n'));
+		let textModel = createTextModel(lines.join('\n'));
 		try {
-			const foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
+			let foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
 
-			const ranges = computeRanges(textModel, false, undefined);
+			let ranges = computeRanges(textModel, false, undefined);
 			foldingModel.update(ranges);
 
-			const r1 = r(2, 3, false);
-			const r2 = r(4, 6, false);
+			let r1 = r(2, 3, false);
+			let r2 = r(4, 6, false);
 			assertRanges(foldingModel, [r1, r2]);
 
 			// Test jump to next.

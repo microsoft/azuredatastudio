@@ -163,7 +163,7 @@ export class UnicodeHighlighter extends Disposable implements IEditorContributio
 			allowedCodePoints: Object.keys(options.allowedCharacters).map(c => c.codePointAt(0)!),
 			allowedLocales: Object.keys(options.allowedLocales).map(locale => {
 				if (locale === '_os') {
-					const osLocale = new Intl.NumberFormat().resolvedOptions().locale;
+					let osLocale = new Intl.NumberFormat().resolvedOptions().locale;
 					return osLocale;
 				} else if (locale === '_vscode') {
 					return platform.language;
@@ -179,9 +179,9 @@ export class UnicodeHighlighter extends Disposable implements IEditorContributio
 		}
 	}
 
-	public getDecorationInfo(decoration: IModelDecoration): UnicodeHighlighterDecorationInfo | null {
+	public getDecorationInfo(decorationId: string): UnicodeHighlighterDecorationInfo | null {
 		if (this._highlighter) {
-			return this._highlighter.getDecorationInfo(decoration);
+			return this._highlighter.getDecorationInfo(decorationId);
 		}
 		return null;
 	}
@@ -214,7 +214,7 @@ function resolveOptions(trusted: boolean, options: InternalUnicodeHighlightOptio
 class DocumentUnicodeHighlighter extends Disposable {
 	private readonly _model: ITextModel = this._editor.getModel();
 	private readonly _updateSoon: RunOnceScheduler;
-	private _decorations = this._editor.createDecorationsCollection();
+	private _decorationIds = new Set<string>();
 
 	constructor(
 		private readonly _editor: IActiveCodeEditor,
@@ -233,7 +233,7 @@ class DocumentUnicodeHighlighter extends Disposable {
 	}
 
 	public override dispose() {
-		this._decorations.clear();
+		this._decorationIds = new Set(this._model.deltaDecorations(Array.from(this._decorationIds), []));
 		super.dispose();
 	}
 
@@ -243,7 +243,7 @@ class DocumentUnicodeHighlighter extends Disposable {
 		}
 
 		if (!this._model.mightContainNonBasicASCII()) {
-			this._decorations.clear();
+			this._decorationIds = new Set(this._editor.deltaDecorations(Array.from(this._decorationIds), []));
 			return;
 		}
 
@@ -271,21 +271,31 @@ class DocumentUnicodeHighlighter extends Disposable {
 						});
 					}
 				}
-				this._decorations.set(decorations);
+				this._decorationIds = new Set(this._editor.deltaDecorations(
+					Array.from(this._decorationIds),
+					decorations
+				));
 			});
 	}
 
-	public getDecorationInfo(decoration: IModelDecoration): UnicodeHighlighterDecorationInfo | null {
-		if (!this._decorations.has(decoration)) {
+	public getDecorationInfo(decorationId: string): UnicodeHighlighterDecorationInfo | null {
+		if (!this._decorationIds.has(decorationId)) {
 			return null;
 		}
 		const model = this._editor.getModel();
+		const range = model.getDecorationRange(decorationId)!;
+		const decoration = {
+			range: range,
+			options: Decorations.instance.getDecorationFromOptions(this._options),
+			id: decorationId,
+			ownerId: 0,
+		};
 		if (
 			!isModelDecorationVisible(model, decoration)
 		) {
 			return null;
 		}
-		const text = model.getValueInRange(decoration.range);
+		const text = model.getValueInRange(range);
 		return {
 			reason: computeReason(text, this._options)!,
 			inComment: isModelDecorationInComment(model, decoration),
@@ -298,7 +308,7 @@ class ViewportUnicodeHighlighter extends Disposable {
 
 	private readonly _model: ITextModel = this._editor.getModel();
 	private readonly _updateSoon: RunOnceScheduler;
-	private readonly _decorations = this._editor.createDecorationsCollection();
+	private _decorationIds = new Set<string>();
 
 	constructor(
 		private readonly _editor: IActiveCodeEditor,
@@ -326,7 +336,7 @@ class ViewportUnicodeHighlighter extends Disposable {
 	}
 
 	public override dispose() {
-		this._decorations.clear();
+		this._decorationIds = new Set(this._model.deltaDecorations(Array.from(this._decorationIds), []));
 		super.dispose();
 	}
 
@@ -336,7 +346,7 @@ class ViewportUnicodeHighlighter extends Disposable {
 		}
 
 		if (!this._model.mightContainNonBasicASCII()) {
-			this._decorations.clear();
+			this._decorationIds = new Set(this._editor.deltaDecorations(Array.from(this._decorationIds), []));
 			return;
 		}
 
@@ -369,15 +379,22 @@ class ViewportUnicodeHighlighter extends Disposable {
 		}
 		this._updateState(totalResult);
 
-		this._decorations.set(decorations);
+		this._decorationIds = new Set(this._editor.deltaDecorations(Array.from(this._decorationIds), decorations));
 	}
 
-	public getDecorationInfo(decoration: IModelDecoration): UnicodeHighlighterDecorationInfo | null {
-		if (!this._decorations.has(decoration)) {
+	public getDecorationInfo(decorationId: string): UnicodeHighlighterDecorationInfo | null {
+		if (!this._decorationIds.has(decorationId)) {
 			return null;
 		}
 		const model = this._editor.getModel();
-		const text = model.getValueInRange(decoration.range);
+		const range = model.getDecorationRange(decorationId)!;
+		const text = model.getValueInRange(range);
+		const decoration = {
+			range: range,
+			options: Decorations.instance.getDecorationFromOptions(this._options),
+			id: decorationId,
+			ownerId: 0,
+		};
 		if (!isModelDecorationVisible(model, decoration)) {
 			return null;
 		}
@@ -432,7 +449,7 @@ export class UnicodeHighlighterHoverParticipant implements IEditorHoverParticipa
 		let index = 300;
 		for (const d of lineDecorations) {
 
-			const highlightInfo = unicodeHighlighter.getDecorationInfo(d);
+			const highlightInfo = unicodeHighlighter.getDecorationInfo(d.id);
 			if (!highlightInfo) {
 				continue;
 			}
@@ -563,7 +580,7 @@ export class DisableHighlightingInCommentsAction extends EditorAction implements
 	}
 
 	public async run(accessor: ServicesAccessor | undefined, editor: ICodeEditor, args: any): Promise<void> {
-		const configurationService = accessor?.get(IConfigurationService);
+		let configurationService = accessor?.get(IConfigurationService);
 		if (configurationService) {
 			this.runAction(configurationService);
 		}
@@ -587,7 +604,7 @@ export class DisableHighlightingInStringsAction extends EditorAction implements 
 	}
 
 	public async run(accessor: ServicesAccessor | undefined, editor: ICodeEditor, args: any): Promise<void> {
-		const configurationService = accessor?.get(IConfigurationService);
+		let configurationService = accessor?.get(IConfigurationService);
 		if (configurationService) {
 			this.runAction(configurationService);
 		}
@@ -611,7 +628,7 @@ export class DisableHighlightingOfAmbiguousCharactersAction extends EditorAction
 	}
 
 	public async run(accessor: ServicesAccessor | undefined, editor: ICodeEditor, args: any): Promise<void> {
-		const configurationService = accessor?.get(IConfigurationService);
+		let configurationService = accessor?.get(IConfigurationService);
 		if (configurationService) {
 			this.runAction(configurationService);
 		}
@@ -635,7 +652,7 @@ export class DisableHighlightingOfInvisibleCharactersAction extends EditorAction
 	}
 
 	public async run(accessor: ServicesAccessor | undefined, editor: ICodeEditor, args: any): Promise<void> {
-		const configurationService = accessor?.get(IConfigurationService);
+		let configurationService = accessor?.get(IConfigurationService);
 		if (configurationService) {
 			this.runAction(configurationService);
 		}
@@ -659,7 +676,7 @@ export class DisableHighlightingOfNonBasicAsciiCharactersAction extends EditorAc
 	}
 
 	public async run(accessor: ServicesAccessor | undefined, editor: ICodeEditor, args: any): Promise<void> {
-		const configurationService = accessor?.get(IConfigurationService);
+		let configurationService = accessor?.get(IConfigurationService);
 		if (configurationService) {
 			this.runAction(configurationService);
 		}

@@ -14,9 +14,6 @@ import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace
 import { ILogService } from 'vs/platform/log/common/log';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkbenchFileService } from 'vs/workbench/services/files/common/files';
-import { normalizeWatcherPattern } from 'vs/platform/files/common/watcher';
-import { GLOBSTAR } from 'vs/base/common/glob';
-import { rtrim } from 'vs/base/common/strings';
 
 @extHostNamedCustomer(MainContext.MainThreadFileSystem)
 export class MainThreadFileSystem implements MainThreadFileSystemShape {
@@ -37,7 +34,7 @@ export class MainThreadFileSystem implements MainThreadFileSystemShape {
 
 		const infoProxy = extHostContext.getProxy(ExtHostContext.ExtHostFileSystemInfo);
 
-		for (const entry of _fileService.listCapabilities()) {
+		for (let entry of _fileService.listCapabilities()) {
 			infoProxy.$acceptProviderInfos(URI.from({ scheme: entry.scheme, path: '/dummy' }), entry.capabilities);
 		}
 		this._disposables.add(_fileService.onDidChangeFileSystemProviderRegistrations(e => infoProxy.$acceptProviderInfos(URI.from({ scheme: e.scheme, path: '/dummy' }), e.provider?.capabilities ?? null)));
@@ -166,34 +163,17 @@ export class MainThreadFileSystem implements MainThreadFileSystemShape {
 		return this._fileService.activateProvider(scheme);
 	}
 
-	async $watch(extensionId: string, session: number, resource: UriComponents, unvalidatedOpts: IWatchOptions): Promise<void> {
+	$watch(extensionId: string, session: number, resource: UriComponents, opts: IWatchOptions): void {
 		const uri = URI.revive(resource);
-		const workspaceFolder = this._contextService.getWorkspaceFolder(uri);
-
-		const opts = { ...unvalidatedOpts };
-
-		// Convert a recursive watcher to a flat watcher if the path
-		// turns out to not be a folder. Recursive watching is only
-		// possible on folders, so we help all file watchers by checking
-		// early.
-		if (opts.recursive) {
-			try {
-				const stat = await this._fileService.stat(uri);
-				if (!stat.isDirectory) {
-					opts.recursive = false;
-				}
-			} catch (error) {
-				this._logService.error(`MainThreadFileSystem#$watch(): failed to stat a resource for file watching (extension: ${extensionId}, path: ${uri.toString(true)}, recursive: ${opts.recursive}, session: ${session}): ${error}`);
-			}
-		}
+		const isInsideWorkspace = this._contextService.isInsideWorkspace(uri);
 
 		// Refuse to watch anything that is already watched via
 		// our workspace watchers in case the request is a
 		// recursive file watcher.
 		// Still allow for non-recursive watch requests as a way
-		// to bypass configured exclude rules though
+		// to bypass configured exlcude rules though
 		// (see https://github.com/microsoft/vscode/issues/146066)
-		if (workspaceFolder && opts.recursive) {
+		if (isInsideWorkspace && opts.recursive) {
 			this._logService.trace(`MainThreadFileSystem#$watch(): ignoring request to start watching because path is inside workspace (extension: ${extensionId}, path: ${uri.toString(true)}, recursive: ${opts.recursive}, session: ${session})`);
 			return;
 		}
@@ -220,12 +200,7 @@ export class MainThreadFileSystem implements MainThreadFileSystemShape {
 		// excluded via `files.watcherExclude`. As such, we configure
 		// to include each configured exclude pattern so that only those
 		// events are reported that are otherwise excluded.
-		// However, we cannot just use the pattern as is, because a pattern
-		// such as `bar` for a exclude, will work to exclude any of
-		// `<workspace path>/bar` but will not work as include for files within
-		// `bar` unless a suffix of `/**` if added.
-		// (https://github.com/microsoft/vscode/issues/148245)
-		else if (workspaceFolder) {
+		else if (isInsideWorkspace) {
 			const config = this._configurationService.getValue<IFilesConfiguration>();
 			if (config.files?.watcherExclude) {
 				for (const key in config.files.watcherExclude) {
@@ -234,8 +209,7 @@ export class MainThreadFileSystem implements MainThreadFileSystemShape {
 							opts.includes = [];
 						}
 
-						const includePattern = `${rtrim(key, '/')}/${GLOBSTAR}`;
-						opts.includes.push(normalizeWatcherPattern(workspaceFolder.uri.fsPath, includePattern));
+						opts.includes.push(key);
 					}
 				}
 			}

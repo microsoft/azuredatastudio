@@ -34,9 +34,9 @@ export class KeyboardLayoutPickerContribution extends Disposable implements IWor
 
 		const name = nls.localize('status.workbench.keyboardLayout', "Keyboard Layout");
 
-		const layout = this.keyboardLayoutService.getCurrentKeyboardLayout();
+		let layout = this.keyboardLayoutService.getCurrentKeyboardLayout();
 		if (layout) {
-			const layoutInfo = parseKeyboardLayoutDescription(layout);
+			let layoutInfo = parseKeyboardLayoutDescription(layout);
 			const text = nls.localize('keyboardLayout', "Layout: {0}", layoutInfo.label);
 
 			this.pickerElement.value = this.statusbarService.addEntry(
@@ -52,8 +52,8 @@ export class KeyboardLayoutPickerContribution extends Disposable implements IWor
 		}
 
 		this._register(this.keyboardLayoutService.onDidChangeKeyboardLayout(() => {
-			const layout = this.keyboardLayoutService.getCurrentKeyboardLayout();
-			const layoutInfo = parseKeyboardLayoutDescription(layout);
+			let layout = this.keyboardLayoutService.getCurrentKeyboardLayout();
+			let layoutInfo = parseKeyboardLayoutDescription(layout);
 
 			if (this.pickerElement.value) {
 				const text = nls.localize('keyboardLayout', "Layout: {0}", layoutInfo.label);
@@ -119,10 +119,10 @@ export class KeyboardLayoutPickerAction extends Action {
 	}
 
 	override async run(): Promise<void> {
-		const layouts = this.keyboardLayoutService.getAllKeyboardLayouts();
-		const currentLayout = this.keyboardLayoutService.getCurrentKeyboardLayout();
-		const layoutConfig = this.configurationService.getValue('keyboard.layout');
-		const isAutoDetect = layoutConfig === 'autodetect';
+		let layouts = this.keyboardLayoutService.getAllKeyboardLayouts();
+		let currentLayout = this.keyboardLayoutService.getCurrentKeyboardLayout();
+		let layoutConfig = this.configurationService.getValue('keyboard.layout');
+		let isAutoDetect = layoutConfig === 'autodetect';
 
 		const picks: QuickPickInput[] = layouts.map(layout => {
 			const picked = !isAutoDetect && areKeyboardLayoutsEqual(currentLayout, layout);
@@ -143,7 +143,7 @@ export class KeyboardLayoutPickerAction extends Action {
 			picks.unshift({ type: 'separator', label: nls.localize('layoutPicks', "Keyboard Layouts ({0})", platform) });
 		}
 
-		const configureKeyboardLayout: IQuickPickItem = { label: nls.localize('configureKeyboardLayout', "Configure Keyboard Layout") };
+		let configureKeyboardLayout: IQuickPickItem = { label: nls.localize('configureKeyboardLayout', "Configure Keyboard Layout") };
 
 		picks.unshift(configureKeyboardLayout);
 

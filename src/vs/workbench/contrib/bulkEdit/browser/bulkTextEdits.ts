@@ -19,20 +19,15 @@ import { ResourceMap } from 'vs/base/common/map';
 import { IModelService } from 'vs/editor/common/services/model';
 import { ResourceTextEdit } from 'vs/editor/browser/services/bulkEditService';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { SnippetController2 } from 'vs/editor/contrib/snippet/browser/snippetController2';
-import { SnippetParser } from 'vs/editor/contrib/snippet/browser/snippetParser';
-import { ISnippetEdit } from 'vs/editor/contrib/snippet/browser/snippetSession';
 
 type ValidationResult = { canApply: true } | { canApply: false; reason: URI };
-
-type ISingleSnippetEditOperation = ISingleEditOperation & { insertAsSnippet?: boolean };
 
 class ModelEditTask implements IDisposable {
 
 	readonly model: ITextModel;
 
 	private _expectedModelVersionId: number | undefined;
-	protected _edits: ISingleSnippetEditOperation[];
+	protected _edits: ISingleEditOperation[];
 	protected _newEol: EndOfLineSequence | undefined;
 
 	constructor(private readonly _modelReference: IReference<IResolvedTextEditorModel>) {
@@ -80,7 +75,7 @@ class ModelEditTask implements IDisposable {
 		} else {
 			range = Range.lift(textEdit.range);
 		}
-		this._edits.push({ ...EditOperation.replaceMove(range, textEdit.text), insertAsSnippet: textEdit.insertAsSnippet });
+		this._edits.push(EditOperation.replaceMove(range, textEdit.text));
 	}
 
 	validate(): ValidationResult {
@@ -96,28 +91,12 @@ class ModelEditTask implements IDisposable {
 
 	apply(): void {
 		if (this._edits.length > 0) {
-			this._edits = this._edits
-				.map(this._transformSnippetStringToInsertText, this) // no editor -> no snippet mode
-				.sort((a, b) => Range.compareRangesUsingStarts(a.range, b.range));
+			this._edits = this._edits.sort((a, b) => Range.compareRangesUsingStarts(a.range, b.range));
 			this.model.pushEditOperations(null, this._edits, () => null);
 		}
 		if (this._newEol !== undefined) {
 			this.model.pushEOL(this._newEol);
 		}
-	}
-
-	protected _transformSnippetStringToInsertText(edit: ISingleSnippetEditOperation): ISingleSnippetEditOperation {
-		// transform a snippet edit (and only those) into a normal text edit
-		// for that we need to parse the snippet and get its actual text, e.g without placeholder
-		// or variable syntaxes
-		if (!edit.insertAsSnippet) {
-			return edit;
-		}
-		if (!edit.text) {
-			return edit;
-		}
-		const text = new SnippetParser().text(edit.text);
-		return { ...edit, insertAsSnippet: false, text };
 	}
 }
 
@@ -144,27 +123,8 @@ class EditorEditTask extends ModelEditTask {
 		}
 
 		if (this._edits.length > 0) {
-			const snippetCtrl = SnippetController2.get(this._editor);
-			if (snippetCtrl && this._edits.some(edit => edit.insertAsSnippet)) {
-				// some edit is a snippet edit -> use snippet controller and ISnippetEdits
-				const snippetEdits: ISnippetEdit[] = [];
-				for (const edit of this._edits) {
-					if (edit.range && edit.text !== null) {
-						snippetEdits.push({
-							range: Range.lift(edit.range),
-							template: edit.insertAsSnippet ? edit.text : SnippetParser.escape(edit.text)
-						});
-					}
-				}
-				snippetCtrl.apply(snippetEdits);
-
-			} else {
-				// normal edit
-				this._edits = this._edits
-					.map(this._transformSnippetStringToInsertText, this) // mixed edits (snippet and normal) -> no snippet mode
-					.sort((a, b) => Range.compareRangesUsingStarts(a.range, b.range));
-				this._editor.executeEdits('', this._edits);
-			}
+			this._edits = this._edits.sort((a, b) => Range.compareRangesUsingStarts(a.range, b.range));
+			this._editor.executeEdits('', this._edits);
 		}
 		if (this._newEol !== undefined) {
 			if (this._editor.hasModel()) {
@@ -210,9 +170,9 @@ export class BulkTextEdits {
 	private _validateBeforePrepare(): void {
 		// First check if loaded models were not changed in the meantime
 		for (const array of this._edits.values()) {
-			for (const edit of array) {
+			for (let edit of array) {
 				if (typeof edit.versionId === 'number') {
-					const model = this._modelService.getModel(edit.resource);
+					let model = this._modelService.getModel(edit.resource);
 					if (model && model.getVersionId() !== edit.versionId) {
 						// model changed in the meantime
 						throw new Error(`${model.uri.toString()} has changed in the meantime`);
@@ -227,7 +187,7 @@ export class BulkTextEdits {
 		const tasks: ModelEditTask[] = [];
 		const promises: Promise<any>[] = [];
 
-		for (const [key, value] of this._edits) {
+		for (let [key, value] of this._edits) {
 			const promise = this._textModelResolverService.createModelReference(key).then(async ref => {
 				let task: ModelEditTask;
 				let makeMinimal = false;
@@ -239,12 +199,12 @@ export class BulkTextEdits {
 				}
 
 				for (const edit of value) {
-					if (makeMinimal && !edit.textEdit.insertAsSnippet) {
+					if (makeMinimal) {
 						const newEdits = await this._editorWorker.computeMoreMinimalEdits(edit.resource, [edit.textEdit]);
 						if (!newEdits) {
 							task.addEdit(edit);
 						} else {
-							for (const moreMinialEdit of newEdits) {
+							for (let moreMinialEdit of newEdits) {
 								task.addEdit(new ResourceTextEdit(edit.resource, moreMinialEdit, edit.versionId, edit.metadata));
 							}
 						}

@@ -37,11 +37,11 @@ export class SelectionClipboard extends Disposable implements IEditorContributio
 				}
 			}));
 
-			const setSelectionToClipboard = this._register(new RunOnceScheduler(() => {
+			let setSelectionToClipboard = this._register(new RunOnceScheduler(() => {
 				if (!editor.hasModel()) {
 					return;
 				}
-				const model = editor.getModel();
+				let model = editor.getModel();
 				let selections = editor.getSelections();
 				selections = selections.slice(0);
 				selections.sort(Range.compareRangesUsingStarts);
@@ -61,12 +61,12 @@ export class SelectionClipboard extends Disposable implements IEditorContributio
 					return;
 				}
 
-				const result: string[] = [];
+				let result: string[] = [];
 				for (const sel of selections) {
 					result.push(model.getValueInRange(sel, EndOfLinePreference.TextDefined));
 				}
 
-				const textToCopy = result.join(model.getEOL());
+				let textToCopy = result.join(model.getEOL());
 				clipboardService.writeText(textToCopy, 'selection');
 			}, 100));
 

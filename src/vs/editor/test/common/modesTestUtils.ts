@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { LineTokens } from 'vs/editor/common/tokens/lineTokens';
-import { StandardTokenType, MetadataConsts } from 'vs/editor/common/encodedTokenAttributes';
+import { MetadataConsts, StandardTokenType } from 'vs/editor/common/languages';
 import { ScopedLineTokens, createScopedLineTokens } from 'vs/editor/common/languages/supports';
 import { LanguageIdCodec } from 'vs/editor/common/services/languagesRegistry';
 
@@ -14,14 +14,14 @@ export interface TokenText {
 }
 
 export function createFakeScopedLineTokens(rawTokens: TokenText[]): ScopedLineTokens {
-	const tokens = new Uint32Array(rawTokens.length << 1);
+	let tokens = new Uint32Array(rawTokens.length << 1);
 	let line = '';
 
 	for (let i = 0, len = rawTokens.length; i < len; i++) {
-		const rawToken = rawTokens[i];
+		let rawToken = rawTokens[i];
 
-		const startOffset = line.length;
-		const metadata = (
+		let startOffset = line.length;
+		let metadata = (
 			(rawToken.type << MetadataConsts.TOKEN_TYPE_OFFSET)
 		) >>> 0;
 

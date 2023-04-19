@@ -496,7 +496,6 @@ export class GitHubServer implements IGitHubServer {
 
 				/* __GDPR__
 					"session" : {
-						"owner": "TylerLeonhardt",
 						"isEdu": { "classification": "NonIdentifiableDemographicInfo", "purpose": "FeatureInsight" }
 					}
 				*/
@@ -531,7 +530,6 @@ export class GitHubServer implements IGitHubServer {
 
 			/* __GDPR__
 				"ghe-session" : {
-					"owner": "TylerLeonhardt",
 					"version": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 				}
 			*/
@@ -603,7 +601,6 @@ export class GitHubEnterpriseServer implements IGitHubServer {
 
 			/* __GDPR__
 				"ghe-session" : {
-					"owner": "TylerLeonhardt",
 					"version": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 				}
 			*/

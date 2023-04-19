@@ -58,7 +58,7 @@ export class JSONValidationExtensionPoint {
 						collector.error(nls.localize('invalid.fileMatch', "'configuration.jsonValidation.fileMatch' must be defined as a string or an array of strings."));
 						return;
 					}
-					const uri = extension.url;
+					let uri = extension.url;
 					if (!isString(uri)) {
 						collector.error(nls.localize('invalid.url', "'configuration.jsonValidation.url' must be a URL or relative path"));
 						return;

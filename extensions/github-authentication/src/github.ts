@@ -153,7 +153,8 @@ export class GitHubAuthenticationProvider implements vscode.AuthenticationProvid
 		const scopesSeen = new Set<string>();
 		const sessionPromises = sessionData.map(async (session: SessionData) => {
 			// For GitHub scope list, order doesn't matter so we immediately sort the scopes
-			const scopesStr = [...session.scopes].sort().join(' ');
+			const sortedScopes = session.scopes.sort();
+			const scopesStr = sortedScopes.join(' ');
 			if (scopesSeen.has(scopesStr)) {
 				return undefined;
 			}
@@ -180,9 +181,7 @@ export class GitHubAuthenticationProvider implements vscode.AuthenticationProvid
 						: userInfo?.accountName ?? '<unknown>',
 					id: session.account?.id ?? userInfo?.id ?? '<unknown>'
 				},
-				// we set this to session.scopes to maintain the original order of the scopes requested
-				// by the extension that called getSession()
-				scopes: session.scopes,
+				scopes: sortedScopes,
 				accessToken: session.accessToken
 			};
 		});
@@ -209,25 +208,22 @@ export class GitHubAuthenticationProvider implements vscode.AuthenticationProvid
 
 	public async createSession(scopes: string[]): Promise<vscode.AuthenticationSession> {
 		try {
-			// For GitHub scope list, order doesn't matter so we use a sorted scope to determine
-			// if we've got a session already.
-			const sortedScopes = [...scopes].sort();
+			// For GitHub scope list, order doesn't matter so we immediately sort the scopes
+			const sortedScopes = scopes.sort();
 
 			/* __GDPR__
 				"login" : {
-					"owner": "TylerLeonhardt",
-					"comment": "Used to determine how much usage the GitHub Auth Provider gets.",
-					"scopes": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight", "comment": "Used to determine what scope combinations are being requested." }
+					"scopes": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
 				}
 			*/
 			this._telemetryReporter?.sendTelemetryEvent('login', {
-				scopes: JSON.stringify(scopes),
+				scopes: JSON.stringify(sortedScopes),
 			});
 
 
 			const scopeString = sortedScopes.join(' ');
 			const token = await this._githubServer.login(scopeString);
-			const session = await this.tokenToSession(token, scopes);
+			const session = await this.tokenToSession(token, sortedScopes);
 			this.afterSessionLoad(session);
 
 			const sessions = await this._sessionsPromise;
@@ -248,14 +244,14 @@ export class GitHubAuthenticationProvider implements vscode.AuthenticationProvid
 			// If login was cancelled, do not notify user.
 			if (e === 'Cancelled' || e.message === 'Cancelled') {
 				/* __GDPR__
-					"loginCancelled" : { "owner": "TylerLeonhardt", "comment": "Used to determine how often users cancel the login flow." }
+					"loginCancelled" : { }
 				*/
 				this._telemetryReporter?.sendTelemetryEvent('loginCancelled');
 				throw e;
 			}
 
 			/* __GDPR__
-				"loginFailed" : { "owner": "TylerLeonhardt", "comment": "Used to determine how often users run into an error login flow." }
+				"loginFailed" : { }
 			*/
 			this._telemetryReporter?.sendTelemetryEvent('loginFailed');
 
@@ -278,7 +274,7 @@ export class GitHubAuthenticationProvider implements vscode.AuthenticationProvid
 	public async removeSession(id: string) {
 		try {
 			/* __GDPR__
-				"logout" : { "owner": "TylerLeonhardt", "comment": "Used to determine how often users log out of an account." }
+				"logout" : { }
 			*/
 			this._telemetryReporter?.sendTelemetryEvent('logout');
 
@@ -298,7 +294,7 @@ export class GitHubAuthenticationProvider implements vscode.AuthenticationProvid
 			}
 		} catch (e) {
 			/* __GDPR__
-				"logoutFailed" : { "owner": "TylerLeonhardt", "comment": "Used to determine how often logging out of an account fails." }
+				"logoutFailed" : { }
 			*/
 			this._telemetryReporter?.sendTelemetryEvent('logoutFailed');
 

@@ -15,7 +15,6 @@ import { Client, ISocket, PersistentProtocol, SocketCloseEventType } from 'vs/ba
 import { ILogService } from 'vs/platform/log/common/log';
 import { RemoteAgentConnectionContext } from 'vs/platform/remote/common/remoteAgentEnvironment';
 import { RemoteAuthorityResolverError } from 'vs/platform/remote/common/remoteAuthorityResolver';
-import { getRemoteServerRootPath } from 'vs/platform/remote/common/remoteHosts';
 import { ISignService } from 'vs/platform/sign/common/sign';
 
 const RECONNECT_TIMEOUT = 30 * 1000 /* 30s */;
@@ -71,7 +70,6 @@ export type HandshakeMessage = AuthRequest | SignRequest | ConnectionTypeRequest
 
 interface ISimpleConnectionOptions {
 	commit: string | undefined;
-	quality: string | undefined;
 	host: string;
 	port: number;
 	connectionToken: string | undefined;
@@ -87,7 +85,7 @@ export interface IConnectCallback {
 }
 
 export interface ISocketFactory {
-	connect(host: string, port: number, path: string, query: string, debugLabel: string, callback: IConnectCallback): void;
+	connect(host: string, port: number, query: string, debugLabel: string, callback: IConnectCallback): void;
 }
 
 function createTimeoutCancellation(millis: number): CancellationToken {
@@ -190,9 +188,9 @@ function readOneControlMessage<T>(protocol: PersistentProtocol, timeoutCancellat
 	return result.promise;
 }
 
-function createSocket(logService: ILogService, socketFactory: ISocketFactory, host: string, port: number, path: string, query: string, debugLabel: string, timeoutCancellationToken: CancellationToken): Promise<ISocket> {
+function createSocket(logService: ILogService, socketFactory: ISocketFactory, host: string, port: number, query: string, debugLabel: string, timeoutCancellationToken: CancellationToken): Promise<ISocket> {
 	const result = new PromiseWithTimeout<ISocket>(timeoutCancellationToken);
-	socketFactory.connect(host, port, path, query, debugLabel, (err: any, socket: ISocket | undefined) => {
+	socketFactory.connect(host, port, query, debugLabel, (err: any, socket: ISocket | undefined) => {
 		if (result.didTimeout) {
 			if (err) {
 				logService.error(err);
@@ -233,7 +231,7 @@ async function connectToRemoteExtensionHostAgent(options: ISimpleConnectionOptio
 
 	let socket: ISocket;
 	try {
-		socket = await createSocket(options.logService, options.socketFactory, options.host, options.port, getRemoteServerRootPath(options), `reconnectionToken=${options.reconnectionToken}&reconnection=${options.reconnectionProtocol ? 'true' : 'false'}`, `renderer-${connectionTypeToString(connectionType)}-${options.reconnectionToken}`, timeoutCancellationToken);
+		socket = await createSocket(options.logService, options.socketFactory, options.host, options.port, `reconnectionToken=${options.reconnectionToken}&reconnection=${options.reconnectionProtocol ? 'true' : 'false'}`, `renderer-${connectionTypeToString(connectionType)}-${options.reconnectionToken}`, timeoutCancellationToken);
 	} catch (error) {
 		options.logService.error(`${logPrefix} socketFactory.connect() failed or timed out. Error:`);
 		options.logService.error(error);
@@ -382,7 +380,6 @@ async function doConnectRemoteAgentTunnel(options: ISimpleConnectionOptions, sta
 
 export interface IConnectionOptions {
 	commit: string | undefined;
-	quality: string | undefined;
 	socketFactory: ISocketFactory;
 	addressProvider: IAddressProvider;
 	signService: ISignService;
@@ -394,7 +391,6 @@ async function resolveConnectionOptions(options: IConnectionOptions, reconnectio
 	const { host, port, connectionToken } = await options.addressProvider.getAddress();
 	return {
 		commit: options.commit,
-		quality: options.quality,
 		host: host,
 		port: port,
 		connectionToken: connectionToken,
@@ -417,48 +413,30 @@ export interface IAddressProvider {
 }
 
 export async function connectRemoteAgentManagement(options: IConnectionOptions, remoteAuthority: string, clientId: string): Promise<ManagementPersistentConnection> {
-	return createInitialConnection(
-		options,
-		async (simpleOptions) => {
-			const { protocol } = await doConnectRemoteAgentManagement(simpleOptions, CancellationToken.None);
-			return new ManagementPersistentConnection(options, remoteAuthority, clientId, simpleOptions.reconnectionToken, protocol);
-		}
-	);
+	try {
+		const reconnectionToken = generateUuid();
+		const simpleOptions = await resolveConnectionOptions(options, reconnectionToken, null);
+		const { protocol } = await doConnectRemoteAgentManagement(simpleOptions, CancellationToken.None);
+		return new ManagementPersistentConnection(options, remoteAuthority, clientId, reconnectionToken, protocol);
+	} catch (err) {
+		options.logService.error(`[remote-connection] An error occurred in the very first connect attempt, it will be treated as a permanent error! Error:`);
+		options.logService.error(err);
+		PersistentConnection.triggerPermanentFailure(0, 0, RemoteAuthorityResolverError.isHandled(err));
+		throw err;
+	}
 }
 
 export async function connectRemoteAgentExtensionHost(options: IConnectionOptions, startArguments: IRemoteExtensionHostStartParams): Promise<ExtensionHostPersistentConnection> {
-	return createInitialConnection(
-		options,
-		async (simpleOptions) => {
-			const { protocol, debugPort } = await doConnectRemoteAgentExtensionHost(simpleOptions, startArguments, CancellationToken.None);
-			return new ExtensionHostPersistentConnection(options, startArguments, simpleOptions.reconnectionToken, protocol, debugPort);
-		}
-	);
-}
-
-/**
- * Will attempt to connect 5 times. If it fails 5 consecutive times, it will give up.
- */
-async function createInitialConnection<T extends PersistentConnection>(options: IConnectionOptions, connectionFactory: (simpleOptions: ISimpleConnectionOptions) => Promise<T>): Promise<T> {
-	const MAX_ATTEMPTS = 5;
-
-	for (let attempt = 1; ; attempt++) {
-		try {
-			const reconnectionToken = generateUuid();
-			const simpleOptions = await resolveConnectionOptions(options, reconnectionToken, null);
-			const result = await connectionFactory(simpleOptions);
-			return result;
-		} catch (err) {
-			if (attempt < MAX_ATTEMPTS) {
-				options.logService.error(`[remote-connection][attempt ${attempt}] An error occurred in initial connection! Will retry... Error:`);
-				options.logService.error(err);
-			} else {
-				options.logService.error(`[remote-connection][attempt ${attempt}]  An error occurred in initial connection! It will be treated as a permanent error. Error:`);
-				options.logService.error(err);
-				PersistentConnection.triggerPermanentFailure(0, 0, RemoteAuthorityResolverError.isHandled(err));
-				throw err;
-			}
-		}
+	try {
+		const reconnectionToken = generateUuid();
+		const simpleOptions = await resolveConnectionOptions(options, reconnectionToken, null);
+		const { protocol, debugPort } = await doConnectRemoteAgentExtensionHost(simpleOptions, startArguments, CancellationToken.None);
+		return new ExtensionHostPersistentConnection(options, startArguments, reconnectionToken, protocol, debugPort);
+	} catch (err) {
+		options.logService.error(`[remote-connection] An error occurred in the very first connect attempt, it will be treated as a permanent error! Error:`);
+		options.logService.error(err);
+		PersistentConnection.triggerPermanentFailure(0, 0, RemoteAuthorityResolverError.isHandled(err));
+		throw err;
 	}
 }
 

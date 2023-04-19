@@ -6,7 +6,6 @@
 import { QuickInput } from './quickinput';
 import { Code } from './code';
 import { QuickAccess } from './quickaccess';
-import { IElement } from './driver';
 
 export enum Selector {
 	TerminalView = `#terminal`,
@@ -25,8 +24,7 @@ export enum Selector {
 	Tabs = '.tabs-list .monaco-list-row',
 	SplitButton = '.editor .codicon-split-horizontal',
 	XtermSplitIndex0 = '#terminal .terminal-groups-container .split-view-view:nth-child(1) .terminal-wrapper',
-	XtermSplitIndex1 = '#terminal .terminal-groups-container .split-view-view:nth-child(2) .terminal-wrapper',
-	Hide = '.hide'
+	XtermSplitIndex1 = '#terminal .terminal-groups-container .split-view-view:nth-child(2) .terminal-wrapper'
 }
 
 /**
@@ -38,8 +36,7 @@ export enum TerminalCommandIdWithValue {
 	ChangeIcon = 'workbench.action.terminal.changeIcon',
 	NewWithProfile = 'workbench.action.terminal.newWithProfile',
 	SelectDefaultProfile = 'workbench.action.terminal.selectDefaultShell',
-	AttachToSession = 'workbench.action.terminal.attachToSession',
-	WriteDataToTerminal = 'workbench.action.terminal.writeDataToTerminal'
+	AttachToSession = 'workbench.action.terminal.attachToSession'
 }
 
 /**
@@ -78,30 +75,15 @@ export class Terminal {
 
 	constructor(private code: Code, private quickaccess: QuickAccess, private quickinput: QuickInput) { }
 
-	async runCommand(commandId: TerminalCommandId, expectedLocation?: 'editor' | 'panel'): Promise<void> {
+	async runCommand(commandId: TerminalCommandId): Promise<void> {
 		const keepOpen = commandId === TerminalCommandId.Join;
 		await this.quickaccess.runCommand(commandId, keepOpen);
 		if (keepOpen) {
 			await this.code.dispatchKeybinding('enter');
 			await this.quickinput.waitForQuickInputClosed();
 		}
-		switch (commandId) {
-			case TerminalCommandId.Show:
-			case TerminalCommandId.CreateNewEditor:
-			case TerminalCommandId.CreateNew:
-			case TerminalCommandId.NewWithProfile:
-				await this._waitForTerminal(expectedLocation === 'editor' || commandId === TerminalCommandId.CreateNewEditor ? 'editor' : 'panel');
-				break;
-			case TerminalCommandId.KillAll:
-				// HACK: Attempt to kill all terminals to clean things up, this is known to be flaky
-				// but the reason why isn't known. This is typically called in the after each hook,
-				// Since it's not actually required that all terminals are killed just continue on
-				// after 2 seconds.
-				await Promise.race([
-					this.code.waitForElements(Selector.Xterm, true, e => e.length === 0),
-					new Promise<void>(r => setTimeout(r, 2000))
-				]);
-				break;
+		if (commandId === TerminalCommandId.Show || commandId === TerminalCommandId.CreateNewEditor || commandId === TerminalCommandId.CreateNew || commandId === TerminalCommandId.NewWithProfile) {
+			return await this._waitForTerminal(commandId === TerminalCommandId.CreateNewEditor ? 'editor' : 'panel');
 		}
 	}
 
@@ -121,9 +103,6 @@ export class Terminal {
 		}
 		await this.code.dispatchKeybinding(altKey ? 'Alt+Enter' : 'enter');
 		await this.quickinput.waitForQuickInputClosed();
-		if (commandId === TerminalCommandIdWithValue.NewWithProfile) {
-			await this._waitForTerminal();
-		}
 	}
 
 	async runCommandInTerminal(commandText: string, skipEnter?: boolean): Promise<void> {
@@ -135,11 +114,11 @@ export class Terminal {
 
 	/**
 	 * Creates a terminal using the new terminal command.
-	 * @param expectedLocation The location to check the terminal for, defaults to panel.
+	 * @param location The location to check the terminal for, defaults to panel.
 	 */
-	async createTerminal(expectedLocation?: 'editor' | 'panel'): Promise<void> {
-		await this.runCommand(TerminalCommandId.CreateNew, expectedLocation);
-		await this._waitForTerminal(expectedLocation);
+	async createTerminal(location?: 'editor' | 'panel'): Promise<void> {
+		await this.runCommand(TerminalCommandId.CreateNew);
+		await this._waitForTerminal(location);
 	}
 
 	async assertEditorGroupCount(count: number): Promise<void> {
@@ -162,11 +141,11 @@ export class Terminal {
 		let index = 0;
 		while (index < expectedCount) {
 			for (let groupIndex = 0; groupIndex < expectedGroups.length; groupIndex++) {
-				const terminalsInGroup = expectedGroups[groupIndex].length;
+				let terminalsInGroup = expectedGroups[groupIndex].length;
 				let indexInGroup = 0;
 				const isSplit = terminalsInGroup > 1;
 				while (indexInGroup < terminalsInGroup) {
-					const instance = expectedGroups[groupIndex][indexInGroup];
+					let instance = expectedGroups[groupIndex][indexInGroup];
 					const nameRegex = instance.name && isSplit ? new RegExp('\\s*[├┌└]\\s*' + instance.name) : instance.name ? new RegExp(/^\s*/ + instance.name) : undefined;
 					await this.assertTabExpected(undefined, index, nameRegex, instance.icon, instance.color, instance.description);
 					indexInGroup++;
@@ -176,16 +155,20 @@ export class Terminal {
 		}
 	}
 
+	async assertShellIntegrationActivated(): Promise<void> {
+		await this.waitForTerminalText(buffer => buffer.some(e => e.includes('Shell integration activated')));
+	}
+
 	async getTerminalGroups(): Promise<TerminalGroup[]> {
 		const tabCount = (await this.code.waitForElements(Selector.Tabs, true)).length;
 		const groups: TerminalGroup[] = [];
 		for (let i = 0; i < tabCount; i++) {
 			const title = await this.code.waitForElement(`${Selector.Tabs}[data-index="${i}"] ${Selector.TabsEntry}`, e => e?.textContent?.length ? e?.textContent?.length > 1 : false);
-			const description: IElement | undefined = await this.code.waitForElement(`${Selector.Tabs}[data-index="${i}"] ${Selector.TabsEntry} ${Selector.Description}`, () => true);
+			const description = await this.code.waitForElement(`${Selector.Tabs}[data-index="${i}"] ${Selector.TabsEntry} ${Selector.Description}`, e => e?.textContent?.length ? e?.textContent?.length > 1 : false);
 
 			const label: TerminalLabel = {
 				name: title.textContent.replace(/^[├┌└]\s*/, ''),
-				description: description?.textContent
+				description: description.textContent
 			};
 			// It's a new group if the the tab does not start with ├ or └
 			if (title.textContent.match(/^[├└]/)) {
@@ -234,18 +217,14 @@ export class Terminal {
 		await this.code.waitForElement(Selector.TerminalView, result => result === undefined);
 	}
 
-	async assertCommandDecorations(expectedCounts?: ICommandDecorationCounts, customIcon?: { updatedIcon: string; count: number }, showDecorations?: 'both' | 'gutter' | 'overviewRuler' | 'never'): Promise<void> {
+	async assertCommandDecorations(expectedCounts?: ICommandDecorationCounts, customConfig?: { updatedIcon: string; count: number }): Promise<void> {
 		if (expectedCounts) {
-			const placeholderSelector = showDecorations === 'overviewRuler' ? `${Selector.CommandDecorationPlaceholder}${Selector.Hide}` : Selector.CommandDecorationPlaceholder;
-			await this.code.waitForElements(placeholderSelector, true, decorations => decorations && decorations.length === expectedCounts.placeholder);
-			const successSelector = showDecorations === 'overviewRuler' ? `${Selector.CommandDecorationSuccess}${Selector.Hide}` : Selector.CommandDecorationSuccess;
-			await this.code.waitForElements(successSelector, true, decorations => decorations && decorations.length === expectedCounts.success);
-			const errorSelector = showDecorations === 'overviewRuler' ? `${Selector.CommandDecorationError}${Selector.Hide}` : Selector.CommandDecorationError;
-			await this.code.waitForElements(errorSelector, true, decorations => decorations && decorations.length === expectedCounts.error);
+			await this.code.waitForElements(Selector.CommandDecorationPlaceholder, true, decorations => decorations && decorations.length === expectedCounts.placeholder);
+			await this.code.waitForElements(Selector.CommandDecorationSuccess, true, decorations => decorations && decorations.length === expectedCounts.success);
+			await this.code.waitForElements(Selector.CommandDecorationError, true, decorations => decorations && decorations.length === expectedCounts.error);
 		}
-
-		if (customIcon) {
-			await this.code.waitForElements(`.terminal-command-decoration.codicon-${customIcon.updatedIcon}`, true, decorations => decorations && decorations.length === customIcon.count);
+		if (customConfig) {
+			await this.code.waitForElements(`.terminal-command-decoration.codicon-${customConfig.updatedIcon}`, true, decorations => decorations && decorations.length === customConfig.count);
 		}
 	}
 
@@ -282,10 +261,10 @@ export class Terminal {
 
 	/**
 	 * Waits for the terminal to be focused and to contain content.
-	 * @param expectedLocation The location to check the terminal for, defaults to panel.
+	 * @param location The location to check the terminal for, defaults to panel.
 	 */
-	private async _waitForTerminal(expectedLocation?: 'editor' | 'panel'): Promise<void> {
+	private async _waitForTerminal(location?: 'editor' | 'panel'): Promise<void> {
 		await this.code.waitForElement(Selector.XtermFocused);
-		await this.code.waitForTerminalBuffer(expectedLocation === 'editor' ? Selector.XtermEditor : Selector.Xterm, lines => lines.some(line => line.length > 0));
+		await this.code.waitForTerminalBuffer(location === 'editor' ? Selector.XtermEditor : Selector.Xterm, lines => lines.some(line => line.length > 0));
 	}
 }

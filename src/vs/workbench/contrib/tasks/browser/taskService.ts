@@ -7,19 +7,19 @@ import * as nls from 'vs/nls';
 import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
 import { ITaskSystem } from 'vs/workbench/contrib/tasks/common/taskSystem';
 import { ExecutionEngine } from 'vs/workbench/contrib/tasks/common/tasks';
-import { AbstractTaskService, IWorkspaceFolderConfigurationResult } from 'vs/workbench/contrib/tasks/browser/abstractTaskService';
-import { ITaskFilter, ITaskService } from 'vs/workbench/contrib/tasks/common/taskService';
+import { AbstractTaskService, WorkspaceFolderConfigurationResult } from 'vs/workbench/contrib/tasks/browser/abstractTaskService';
+import { TaskFilter, ITaskService } from 'vs/workbench/contrib/tasks/common/taskService';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 
 export class TaskService extends AbstractTaskService {
 	private static readonly ProcessTaskSystemSupportMessage = nls.localize('taskService.processTaskSystem', 'Process task system is not support in the web.');
 
-	protected _getTaskSystem(): ITaskSystem {
+	protected getTaskSystem(): ITaskSystem {
 		if (this._taskSystem) {
 			return this._taskSystem;
 		}
 		if (this.executionEngine === ExecutionEngine.Terminal) {
-			this._taskSystem = this._createTerminalTaskSystem();
+			this._taskSystem = this.createTerminalTaskSystem();
 		} else {
 			throw new Error(TaskService.ProcessTaskSystemSupportMessage);
 		}
@@ -32,11 +32,11 @@ export class TaskService extends AbstractTaskService {
 		return this._taskSystem!;
 	}
 
-	protected _computeLegacyConfiguration(workspaceFolder: IWorkspaceFolder): Promise<IWorkspaceFolderConfigurationResult> {
+	protected computeLegacyConfiguration(workspaceFolder: IWorkspaceFolder): Promise<WorkspaceFolderConfigurationResult> {
 		throw new Error(TaskService.ProcessTaskSystemSupportMessage);
 	}
 
-	protected _versionAndEngineCompatible(filter?: ITaskFilter): boolean {
+	protected versionAndEngineCompatible(filter?: TaskFilter): boolean {
 		return this.executionEngine === ExecutionEngine.Terminal;
 	}
 }

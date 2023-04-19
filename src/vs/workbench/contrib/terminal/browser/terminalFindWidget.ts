@@ -7,14 +7,12 @@ import { SimpleFindWidget } from 'vs/workbench/contrib/codeEditor/browser/find/s
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { FindReplaceState } from 'vs/editor/contrib/find/browser/findState';
-import { ITerminalGroupService, ITerminalService, IXtermTerminal } from 'vs/workbench/contrib/terminal/browser/terminal';
+import { ITerminalGroupService, ITerminalService } from 'vs/workbench/contrib/terminal/browser/terminal';
 import { TerminalContextKeys } from 'vs/workbench/contrib/terminal/common/terminalContextKey';
 import { TerminalLocation } from 'vs/platform/terminal/common/terminal';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { Event } from 'vs/base/common/event';
-import { ISearchOptions } from 'xterm-addon-search';
 
 export class TerminalFindWidget extends SimpleFindWidget {
 	protected _findInputFocused: IContextKey<boolean>;
@@ -52,24 +50,23 @@ export class TerminalFindWidget extends SimpleFindWidget {
 	}
 
 	find(previous: boolean, update?: boolean) {
-		const xterm = this._terminalService.activeInstance?.xterm;
-		if (!xterm) {
+		const instance = this._terminalService.activeInstance;
+		if (!instance) {
 			return;
 		}
 		if (previous) {
-			this._findPreviousWithEvent(xterm, this.inputValue, { regex: this._getRegexValue(), wholeWord: this._getWholeWordValue(), caseSensitive: this._getCaseSensitiveValue(), incremental: update });
+			instance.xterm?.findPrevious(this.inputValue, { regex: this._getRegexValue(), wholeWord: this._getWholeWordValue(), caseSensitive: this._getCaseSensitiveValue(), incremental: update });
 		} else {
-			this._findNextWithEvent(xterm, this.inputValue, { regex: this._getRegexValue(), wholeWord: this._getWholeWordValue(), caseSensitive: this._getCaseSensitiveValue() });
+			instance.xterm?.findNext(this.inputValue, { regex: this._getRegexValue(), wholeWord: this._getWholeWordValue(), caseSensitive: this._getCaseSensitiveValue() });
 		}
 	}
 
 	override reveal(initialInput?: string): void {
-		const xterm = this._terminalService.activeInstance?.xterm;
-		if (xterm && this.inputValue && this.inputValue !== '') {
+		const instance = this._terminalService.activeInstance;
+		if (instance && this.inputValue && this.inputValue !== '') {
 			// trigger highlight all matches
-			this._findPreviousWithEvent(xterm, this.inputValue, { incremental: true, regex: this._getRegexValue(), wholeWord: this._getWholeWordValue(), caseSensitive: this._getCaseSensitiveValue() }).then(foundMatch => {
+			instance.xterm?.findPrevious(this.inputValue, { incremental: true, regex: this._getRegexValue(), wholeWord: this._getWholeWordValue(), caseSensitive: this._getCaseSensitiveValue() }).then(foundMatch => {
 				this.updateButtons(foundMatch);
-				this._register(Event.once(xterm.onDidChangeSelection)(() => xterm.clearActiveSearchDecoration()));
 			});
 		}
 		this.updateButtons(false);
@@ -112,9 +109,9 @@ export class TerminalFindWidget extends SimpleFindWidget {
 
 	protected _onInputChanged() {
 		// Ignore input changes for now
-		const xterm = this._terminalService.activeInstance?.xterm;
-		if (xterm) {
-			this._findPreviousWithEvent(xterm, this.inputValue, { regex: this._getRegexValue(), wholeWord: this._getWholeWordValue(), caseSensitive: this._getCaseSensitiveValue(), incremental: true }).then(foundMatch => {
+		const instance = this._terminalService.activeInstance;
+		if (instance?.xterm) {
+			instance.xterm.findPrevious(this.inputValue, { regex: this._getRegexValue(), wholeWord: this._getWholeWordValue(), caseSensitive: this._getCaseSensitiveValue(), incremental: true }).then(foundMatch => {
 				this.updateButtons(foundMatch);
 			});
 		}
@@ -123,7 +120,9 @@ export class TerminalFindWidget extends SimpleFindWidget {
 
 	protected _onFocusTrackerFocus() {
 		const instance = this._terminalService.activeInstance;
-		instance?.notifyFindWidgetFocusChanged(true);
+		if (instance) {
+			instance.notifyFindWidgetFocusChanged(true);
+		}
 		this._findWidgetFocused.set(true);
 	}
 
@@ -131,7 +130,6 @@ export class TerminalFindWidget extends SimpleFindWidget {
 		const instance = this._terminalService.activeInstance;
 		if (instance) {
 			instance.notifyFindWidgetFocusChanged(false);
-			instance.xterm?.clearActiveSearchDecoration();
 		}
 		this._findWidgetFocused.reset();
 	}
@@ -150,24 +148,7 @@ export class TerminalFindWidget extends SimpleFindWidget {
 			if (instance.hasSelection()) {
 				instance.clearSelection();
 			}
-			const xterm = instance.xterm;
-			if (xterm) {
-				this._findPreviousWithEvent(xterm, this.inputValue, { regex: this._getRegexValue(), wholeWord: this._getWholeWordValue(), caseSensitive: this._getCaseSensitiveValue() });
-			}
+			instance.xterm?.findPrevious(this.inputValue, { regex: this._getRegexValue(), wholeWord: this._getWholeWordValue(), caseSensitive: this._getCaseSensitiveValue() });
 		}
-	}
-
-	private async _findNextWithEvent(xterm: IXtermTerminal, term: string, options: ISearchOptions): Promise<boolean> {
-		return xterm.findNext(term, options).then(foundMatch => {
-			this._register(Event.once(xterm.onDidChangeSelection)(() => xterm.clearActiveSearchDecoration()));
-			return foundMatch;
-		});
-	}
-
-	private async _findPreviousWithEvent(xterm: IXtermTerminal, term: string, options: ISearchOptions): Promise<boolean> {
-		return xterm.findPrevious(term, options).then(foundMatch => {
-			this._register(Event.once(xterm.onDidChangeSelection)(() => xterm.clearActiveSearchDecoration()));
-			return foundMatch;
-		});
 	}
 }

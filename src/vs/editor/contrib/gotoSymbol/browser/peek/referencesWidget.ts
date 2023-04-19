@@ -68,7 +68,7 @@ class DecorationsManager implements IDisposable {
 		if (!model) {
 			return;
 		}
-		for (const ref of this._model.references) {
+		for (let ref of this._model.references) {
 			if (ref.uri.toString() === model.uri.toString()) {
 				this._addDecorations(ref.parent);
 				return;
@@ -86,7 +86,7 @@ class DecorationsManager implements IDisposable {
 		const newDecorationsActualIndex: number[] = [];
 
 		for (let i = 0, len = reference.children.length; i < len; i++) {
-			const oneReference = reference.children[i];
+			let oneReference = reference.children[i];
 			if (this._decorationIgnoreSet.has(oneReference.id)) {
 				continue;
 			}
@@ -100,12 +100,10 @@ class DecorationsManager implements IDisposable {
 			newDecorationsActualIndex.push(i);
 		}
 
-		this._editor.changeDecorations((changeAccessor) => {
-			const decorations = changeAccessor.deltaDecorations([], newDecorations);
-			for (let i = 0; i < decorations.length; i++) {
-				this._decorations.set(decorations[i], reference.children[newDecorationsActualIndex[i]]);
-			}
-		});
+		const decorations = this._editor.deltaDecorations([], newDecorations);
+		for (let i = 0; i < decorations.length; i++) {
+			this._decorations.set(decorations[i], reference.children[newDecorationsActualIndex[i]]);
+		}
 	}
 
 	private _onDecorationChanged(): void {
@@ -116,7 +114,7 @@ class DecorationsManager implements IDisposable {
 			return;
 		}
 
-		for (const [decorationId, reference] of this._decorations) {
+		for (let [decorationId, reference] of this._decorations) {
 
 			const newRange = model.getDecorationRange(decorationId);
 
@@ -153,11 +151,11 @@ class DecorationsManager implements IDisposable {
 		for (let i = 0, len = toRemove.length; i < len; i++) {
 			this._decorations.delete(toRemove[i]);
 		}
-		this._editor.removeDecorations(toRemove);
+		this._editor.deltaDecorations(toRemove, []);
 	}
 
 	removeDecorations(): void {
-		this._editor.removeDecorations([...this._decorations.keys()]);
+		this._editor.deltaDecorations([...this._decorations.keys()], []);
 		this._decorations.clear();
 	}
 }
@@ -297,7 +295,7 @@ export class ReferenceWidget extends peekView.PeekViewWidget {
 
 		// editor
 		this._previewContainer = dom.append(containerElement, dom.$('div.preview.inline'));
-		const options: IEditorOptions = {
+		let options: IEditorOptions = {
 			scrollBeyondLastLine: false,
 			scrollbar: {
 				verticalScrollbarSize: 14,
@@ -382,7 +380,7 @@ export class ReferenceWidget extends peekView.PeekViewWidget {
 		}, undefined));
 
 		// listen on selection and focus
-		const onEvent = (element: any, kind: 'show' | 'goto' | 'side') => {
+		let onEvent = (element: any, kind: 'show' | 'goto' | 'side') => {
 			if (element instanceof OneReference) {
 				if (kind === 'show') {
 					this._revealReference(element, false);

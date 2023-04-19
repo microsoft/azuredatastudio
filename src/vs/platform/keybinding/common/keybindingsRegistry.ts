@@ -130,8 +130,7 @@ class KeybindingsRegistryImpl implements IKeybindingsRegistry {
 	}
 
 	public setExtensionKeybindings(rules: IExtensionKeybindingRule[]): void {
-		const result: IKeybindingItem[] = [];
-		let keybindingsLen = 0;
+		let result: IKeybindingItem[] = [], keybindingsLen = 0;
 		for (const rule of rules) {
 			if (rule.keybinding.length > 0) {
 				result[keybindingsLen++] = {

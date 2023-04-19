@@ -15,10 +15,10 @@ suite('SkipList', function () {
 		assert.strictEqual(list.size, expected.length);
 		assert.deepStrictEqual([...list.values()], expected);
 
-		const valuesFromEntries = [...list.entries()].map(entry => entry[1]);
+		let valuesFromEntries = [...list.entries()].map(entry => entry[1]);
 		assert.deepStrictEqual(valuesFromEntries, expected);
 
-		const valuesFromIter = [...list].map(entry => entry[1]);
+		let valuesFromIter = [...list].map(entry => entry[1]);
 		assert.deepStrictEqual(valuesFromIter, expected);
 
 		let i = 0;
@@ -32,10 +32,10 @@ suite('SkipList', function () {
 		assert.strictEqual(list.size, expected.length);
 		assert.deepStrictEqual([...list.keys()], expected);
 
-		const keysFromEntries = [...list.entries()].map(entry => entry[0]);
+		let keysFromEntries = [...list.entries()].map(entry => entry[0]);
 		assert.deepStrictEqual(keysFromEntries, expected);
 
-		const keysFromIter = [...list].map(entry => entry[0]);
+		let keysFromIter = [...list].map(entry => entry[0]);
 		assert.deepStrictEqual(keysFromIter, expected);
 
 		let i = 0;
@@ -46,7 +46,7 @@ suite('SkipList', function () {
 	}
 
 	test('set/get/delete', function () {
-		const list = new SkipList<number, number>((a, b) => a - b);
+		let list = new SkipList<number, number>((a, b) => a - b);
 
 		assert.strictEqual(list.get(3), undefined);
 		list.set(3, 1);
@@ -74,7 +74,7 @@ suite('SkipList', function () {
 	});
 
 	test('Figure 3', function () {
-		const list = new SkipList<number, boolean>((a, b) => a - b);
+		let list = new SkipList<number, boolean>((a, b) => a - b);
 		list.set(3, true);
 		list.set(6, true);
 		list.set(7, true);
@@ -92,7 +92,7 @@ suite('SkipList', function () {
 	});
 
 	test('capacity max', function () {
-		const list = new SkipList<number, boolean>((a, b) => a - b, 10);
+		let list = new SkipList<number, boolean>((a, b) => a - b, 10);
 		list.set(1, true);
 		list.set(2, true);
 		list.set(3, true);
@@ -132,7 +132,7 @@ suite('SkipList', function () {
 	}
 
 	function delArraySorted(array: number[], element: number) {
-		const idx = binarySearch(array, element, cmp);
+		let idx = binarySearch(array, element, cmp);
 		if (idx >= 0) {
 			// array = array.slice(0, idx).concat(array.slice(idx));
 			array.splice(idx, 1);
@@ -147,13 +147,13 @@ suite('SkipList', function () {
 		const max = 2 ** 16;
 		const values = new Set<number>();
 		for (let i = 0; i < max; i++) {
-			const value = Math.floor(Math.random() * max);
+			let value = Math.floor(Math.random() * max);
 			values.add(value);
 		}
 		console.log(values.size);
 
 		// init
-		const list = new SkipList<number, boolean>(cmp, max);
+		let list = new SkipList<number, boolean>(cmp, max);
 		let sw = new StopWatch(true);
 		values.forEach(value => list.set(value, true));
 		sw.stop();
@@ -166,9 +166,9 @@ suite('SkipList', function () {
 
 		// get
 		sw = new StopWatch(true);
-		const someValues = [...values].slice(0, values.size / 4);
+		let someValues = [...values].slice(0, values.size / 4);
 		someValues.forEach(key => {
-			const value = list.get(key); // find
+			let value = list.get(key); // find
 			console.assert(value, '[LIST] must have ' + key);
 			list.get(-key); // miss
 		});
@@ -176,7 +176,7 @@ suite('SkipList', function () {
 		console.log(`[LIST] retrieve ${sw.elapsed()}ms (${(sw.elapsed() / (someValues.length * 2)).toPrecision(4)}ms/op)`);
 		sw = new StopWatch(true);
 		someValues.forEach(key => {
-			const idx = binarySearch(array, key, cmp); // find
+			let idx = binarySearch(array, key, cmp); // find
 			console.assert(idx >= 0, '[ARRAY] must have ' + key);
 			binarySearch(array, -key, cmp); // miss
 		});

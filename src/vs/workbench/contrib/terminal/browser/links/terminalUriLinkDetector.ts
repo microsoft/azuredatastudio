@@ -17,14 +17,17 @@ const enum Constants {
 	 * The maximum number of links in a line to resolve against the file system. This limit is put
 	 * in place to avoid sending excessive data when remote connections are in place.
 	 */
-	MaxResolvedLinksInLine = 10
+	MaxResolvedLinksInLine = 10,
+
+	/**
+	 * The maximum length of a link to resolve against the file system. This limit is put in place
+	 * to avoid sending excessive data when remote connections are in place.
+	 */
+	MaxResolvedLinkLength = 1024,
 }
 
 export class TerminalUriLinkDetector implements ITerminalLinkDetector {
 	static id = 'uri';
-
-	// 2048 is the maximum URL length
-	readonly maxLinkLength = 2048;
 
 	constructor(
 		readonly xterm: Terminal,
@@ -46,7 +49,7 @@ export class TerminalUriLinkDetector implements ITerminalLinkDetector {
 
 			// Check if the link is within the mouse position
 			const uri = computedLink.url
-				? (typeof computedLink.url === 'string' ? URI.parse(this._excludeLineAndColSuffix(computedLink.url)) : computedLink.url)
+				? (typeof computedLink.url === 'string' ? URI.parse(computedLink.url) : computedLink.url)
 				: undefined;
 
 			if (!uri) {
@@ -54,11 +57,6 @@ export class TerminalUriLinkDetector implements ITerminalLinkDetector {
 			}
 
 			const text = computedLink.url?.toString() || '';
-
-			// Don't try resolve any links of excessive length
-			if (text.length > this.maxLinkLength) {
-				continue;
-			}
 
 			// Handle non-file scheme links
 			if (uri.scheme !== Schemas.file) {
@@ -68,6 +66,11 @@ export class TerminalUriLinkDetector implements ITerminalLinkDetector {
 					bufferRange,
 					type: TerminalBuiltinLinkType.Url
 				});
+				continue;
+			}
+
+			// Don't try resolve any links of excessive length
+			if (text.length > Constants.MaxResolvedLinkLength) {
 				continue;
 			}
 
@@ -91,8 +94,7 @@ export class TerminalUriLinkDetector implements ITerminalLinkDetector {
 					type = TerminalBuiltinLinkType.LocalFile;
 				}
 				links.push({
-					// Use computedLink.url if it's a string to retain the line/col suffix
-					text: typeof computedLink.url === 'string' ? computedLink.url : linkStat.link,
+					text: linkStat.link,
 					uri: linkStat.uri,
 					bufferRange,
 					type
@@ -116,10 +118,6 @@ export class TerminalUriLinkDetector implements ITerminalLinkDetector {
 			}
 		}
 		return false;
-	}
-
-	private _excludeLineAndColSuffix(path: string): string {
-		return path.replace(/:\d+(:\d+)?$/, '');
 	}
 }
 

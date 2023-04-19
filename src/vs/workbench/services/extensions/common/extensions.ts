@@ -157,7 +157,7 @@ export interface IExtensionHost {
 	readonly extensions: ExtensionHostExtensions;
 	readonly onExit: Event<[number, string | null]>;
 
-	start(): Promise<IMessagePassingProtocol>;
+	start(): Promise<IMessagePassingProtocol> | null;
 	getInspectPort(): number | undefined;
 	enableInspectPort(): Promise<boolean>;
 	dispose(): void;
@@ -324,7 +324,7 @@ export class ExtensionIdentifierSet implements Set<ExtensionIdentifier> {
 	}
 
 	*entries(): IterableIterator<[ExtensionIdentifier, ExtensionIdentifier]> {
-		for (const [_key, value] of this._map) {
+		for (let [_key, value] of this._map) {
 			yield [value, value];
 		}
 	}

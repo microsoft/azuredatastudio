@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { URI, UriComponents } from 'vs/base/common/uri';
-import { ILogService } from 'vs/platform/log/common/log';
 import { ExtHostInteractiveShape, IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ApiCommand, ApiCommandArgument, ApiCommandResult, ExtHostCommands } from 'vs/workbench/api/common/extHostCommands';
 import { ExtHostDocumentsAndEditors } from 'vs/workbench/api/common/extHostDocumentsAndEditors';
@@ -16,8 +15,7 @@ export class ExtHostInteractive implements ExtHostInteractiveShape {
 		mainContext: IMainContext,
 		private _extHostNotebooks: ExtHostNotebookController,
 		private _textDocumentsAndEditors: ExtHostDocumentsAndEditors,
-		private _commands: ExtHostCommands,
-		_logService: ILogService
+		private _commands: ExtHostCommands
 	) {
 		const openApiCommand = new ApiCommand(
 			'interactive.open',
@@ -30,13 +28,10 @@ export class ExtHostInteractive implements ExtHostInteractiveShape {
 				new ApiCommandArgument('title', 'Interactive editor title', v => true, v => v)
 			],
 			new ApiCommandResult<{ notebookUri: UriComponents; inputUri: UriComponents; notebookEditorId?: string }, { notebookUri: URI; inputUri: URI; notebookEditor?: NotebookEditor }>('Notebook and input URI', (v: { notebookUri: UriComponents; inputUri: UriComponents; notebookEditorId?: string }) => {
-				_logService.debug('[ExtHostInteractive] open iw with notebook editor id', v.notebookEditorId);
 				if (v.notebookEditorId !== undefined) {
 					const editor = this._extHostNotebooks.getEditorById(v.notebookEditorId);
-					_logService.debug('[ExtHostInteractive] notebook editor found', editor.id);
 					return { notebookUri: URI.revive(v.notebookUri), inputUri: URI.revive(v.inputUri), notebookEditor: editor.apiEditor };
 				}
-				_logService.debug('[ExtHostInteractive] notebook editor not found, uris for the interactive document', v.notebookUri, v.inputUri);
 				return { notebookUri: URI.revive(v.notebookUri), inputUri: URI.revive(v.inputUri) };
 			})
 		);

@@ -4,28 +4,29 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IBulkEditService, ResourceEdit, ResourceFileEdit, ResourceTextEdit } from 'vs/editor/browser/services/bulkEditService';
-import { IWorkspaceEditDto, MainThreadBulkEditsShape, MainContext, reviveWorkspaceEditDto } from 'vs/workbench/api/common/extHost.protocol';
+import { IWorkspaceEditDto, MainThreadBulkEditsShape, MainContext, WorkspaceEditType } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { ILogService } from 'vs/platform/log/common/log';
+import { revive } from 'vs/base/common/marshalling';
 import { ResourceNotebookCellEdit } from 'vs/workbench/contrib/bulkEdit/browser/bulkCellEdits';
+import { NotebookDto } from 'vs/workbench/api/browser/mainThreadNotebookDto';
 
-export function reviveWorkspaceEditDto2(data: IWorkspaceEditDto): ResourceEdit[] {
-	const edits = reviveWorkspaceEditDto(data)?.edits;
-	if (!edits) {
+export function reviveWorkspaceEditDto2(data: IWorkspaceEditDto | undefined): ResourceEdit[] {
+	if (!data?.edits) {
 		return [];
 	}
-	return edits.map(edit => {
-		if (ResourceTextEdit.is(edit)) {
-			return ResourceTextEdit.lift(edit);
+
+	const result: ResourceEdit[] = [];
+	for (let edit of revive<IWorkspaceEditDto>(data).edits) {
+		if (edit._type === WorkspaceEditType.File) {
+			result.push(new ResourceFileEdit(edit.oldUri, edit.newUri, edit.options, edit.metadata));
+		} else if (edit._type === WorkspaceEditType.Text) {
+			result.push(new ResourceTextEdit(edit.resource, edit.edit, edit.modelVersionId, edit.metadata));
+		} else if (edit._type === WorkspaceEditType.Cell) {
+			result.push(new ResourceNotebookCellEdit(edit.resource, NotebookDto.fromCellEditOperationDto(edit.edit), edit.notebookVersionId, edit.metadata));
 		}
-		if (ResourceFileEdit.is(edit)) {
-			return ResourceFileEdit.lift(edit);
-		}
-		if (ResourceNotebookCellEdit.is(edit)) {
-			return ResourceNotebookCellEdit.lift(edit);
-		}
-		throw new Error('Unsupported edit');
-	});
+	}
+	return result;
 }
 
 @extHostNamedCustomer(MainContext.MainThreadBulkEdits)

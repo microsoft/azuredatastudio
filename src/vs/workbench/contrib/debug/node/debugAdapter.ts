@@ -259,7 +259,9 @@ export class ExecutableDebugAdapter extends StreamDebugAdapter {
 				// });
 				this.serverProcess.stderr!.on('data', (data: string) => {
 					const channel = outputService.getChannel(ExtensionsChannelId);
-					channel?.append(sanitize(data));
+					if (channel) {
+						channel.append(sanitize(data));
+					}
 				});
 			} else {
 				this.serverProcess.stderr!.resume();

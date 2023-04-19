@@ -97,16 +97,16 @@ suite('SnippetParser', () => {
 	function assertMarker(input: TextmateSnippet | Marker[] | string, ...ctors: Function[]) {
 		let marker: Marker[];
 		if (input instanceof TextmateSnippet) {
-			marker = [...input.children];
+			marker = input.children;
 		} else if (typeof input === 'string') {
 			const p = new SnippetParser();
 			marker = p.parse(input).children;
 		} else {
-			marker = [...input];
+			marker = input;
 		}
 		while (marker.length > 0) {
-			const m = marker.pop();
-			const ctor = ctors.pop()!;
+			let m = marker.pop();
+			let ctor = ctors.pop()!;
 			assert.ok(m instanceof ctor);
 		}
 		assert.strictEqual(marker.length, ctors.length);
@@ -164,8 +164,8 @@ suite('SnippetParser', () => {
 
 		assertTextAndMarker('foo${1:bar\\}${2:foo}}', 'foobar}foo', Text, Placeholder);
 
-		const [, placeholder] = new SnippetParser().parse('foo${1:bar\\}${2:foo}}').children;
-		const { children } = (<Placeholder>placeholder);
+		let [, placeholder] = new SnippetParser().parse('foo${1:bar\\}${2:foo}}').children;
+		let { children } = (<Placeholder>placeholder);
 
 		assert.strictEqual((<Placeholder>placeholder).index, 1);
 		assert.ok(children[0] instanceof Text);
@@ -273,13 +273,12 @@ suite('SnippetParser', () => {
 		assertTextAndMarker('${1|one,two,three,|}', '${1|one,two,three,|}', Text);
 		assertTextAndMarker('${1|one,', '${1|one,', Text);
 
-		const snippet = new SnippetParser().parse('${1|one,two,three|}');
-		const expected: ((m: Marker) => boolean)[] = [
-			m => m instanceof Placeholder,
-			m => m instanceof Choice && m.options.length === 3 && m.options.every(x => x instanceof Text),
-		];
+		const p = new SnippetParser();
+		const snippet = p.parse('${1|one,two,three|}');
+		assertMarker(snippet, Placeholder);
+		const expected = [Placeholder, Text, Text, Text];
 		snippet.walk(marker => {
-			assert.ok(expected.shift()!(marker));
+			assert.strictEqual(marker, expected.shift());
 			return true;
 		});
 	});
@@ -397,7 +396,7 @@ suite('SnippetParser', () => {
 	});
 
 	test('Parser, transform example', () => {
-		const { children } = new SnippetParser().parse('${1:name} : ${2:type}${3/\\s:=(.*)/${1:+ :=}${1}/};\n$0');
+		let { children } = new SnippetParser().parse('${1:name} : ${2:type}${3/\\s:=(.*)/${1:+ :=}${1}/};\n$0');
 
 		//${1:name}
 		assert.ok(children[0] instanceof Placeholder);
@@ -418,7 +417,7 @@ suite('SnippetParser', () => {
 		assert.ok(children[3] instanceof Placeholder);
 		assert.strictEqual(children[3].children.length, 0);
 		assert.notStrictEqual((<Placeholder>children[3]).transform, undefined);
-		const transform = (<Placeholder>children[3]).transform!;
+		let transform = (<Placeholder>children[3]).transform!;
 		assert.deepStrictEqual(transform.regexp, /\s:=(.*)/);
 		assert.strictEqual(transform.children.length, 2);
 		assert.ok(transform.children[0] instanceof FormatString);
@@ -530,8 +529,8 @@ suite('SnippetParser', () => {
 	});
 
 	test('TextmateSnippet#enclosingPlaceholders', () => {
-		const snippet = new SnippetParser().parse('This ${1:is ${2:nested}}$0', true);
-		const [first, second] = snippet.placeholders;
+		let snippet = new SnippetParser().parse('This ${1:is ${2:nested}}$0', true);
+		let [first, second] = snippet.placeholders;
 
 		assert.deepStrictEqual(snippet.enclosingPlaceholders(first), []);
 		assert.deepStrictEqual(snippet.enclosingPlaceholders(second), [first]);
@@ -571,7 +570,7 @@ suite('SnippetParser', () => {
 	});
 
 	test('TextmateSnippet#replace 1/2', function () {
-		const snippet = new SnippetParser().parse('aaa${1:bbb${2:ccc}}$0', true);
+		let snippet = new SnippetParser().parse('aaa${1:bbb${2:ccc}}$0', true);
 
 		assert.strictEqual(snippet.placeholders.length, 3);
 		const [, second] = snippet.placeholders;
@@ -581,7 +580,7 @@ suite('SnippetParser', () => {
 		assert.strictEqual(enclosing.length, 1);
 		assert.strictEqual(enclosing[0].index, 1);
 
-		const nested = new SnippetParser().parse('ddd$1eee$0', true);
+		let nested = new SnippetParser().parse('ddd$1eee$0', true);
 		snippet.replace(second, nested.children);
 
 		assert.strictEqual(snippet.toString(), 'aaabbbdddeee');
@@ -598,13 +597,13 @@ suite('SnippetParser', () => {
 	});
 
 	test('TextmateSnippet#replace 2/2', function () {
-		const snippet = new SnippetParser().parse('aaa${1:bbb${2:ccc}}$0', true);
+		let snippet = new SnippetParser().parse('aaa${1:bbb${2:ccc}}$0', true);
 
 		assert.strictEqual(snippet.placeholders.length, 3);
 		const [, second] = snippet.placeholders;
 		assert.strictEqual(second.index, 2);
 
-		const nested = new SnippetParser().parse('dddeee$0', true);
+		let nested = new SnippetParser().parse('dddeee$0', true);
 		snippet.replace(second, nested.children);
 
 		assert.strictEqual(snippet.toString(), 'aaabbbdddeee');
@@ -719,14 +718,14 @@ suite('SnippetParser', () => {
 	});
 
 	test('Variable transformation doesn\'t work if undefined variables are used in the same snippet #51769', function () {
-		const transform = new Transform();
+		let transform = new Transform();
 		transform.appendChild(new Text('bar'));
 		transform.regexp = new RegExp('foo', 'gi');
 		assert.strictEqual(transform.toTextmateString(), '/foo/bar/ig');
 	});
 
 	test('Snippet parser freeze #53144', function () {
-		const snippet = new SnippetParser().parse('${1/(void$)|(.+)/${1:?-\treturn nil;}/}');
+		let snippet = new SnippetParser().parse('${1/(void$)|(.+)/${1:?-\treturn nil;}/}');
 		assertMarker(snippet, Placeholder);
 	});
 
@@ -735,7 +734,7 @@ suite('SnippetParser', () => {
 	});
 
 	test('Mirroring sequence of nested placeholders not selected properly on backjumping #58736', function () {
-		const snippet = new SnippetParser().parse('${3:nest1 ${1:nest2 ${2:nest3}}} $3');
+		let snippet = new SnippetParser().parse('${3:nest1 ${1:nest2 ${2:nest3}}} $3');
 		assert.strictEqual(snippet.children.length, 3);
 		assert.ok(snippet.children[0] instanceof Placeholder);
 		assert.ok(snippet.children[1] instanceof Text);
@@ -756,20 +755,20 @@ suite('SnippetParser', () => {
 			}
 			assert.ok(found);
 		}
-		const [, , clone] = snippet.children;
+		let [, , clone] = snippet.children;
 		assertParent(clone);
 	});
 
 	test('Backspace can\'t be escaped in snippet variable transforms #65412', function () {
 
-		const snippet = new SnippetParser().parse('namespace ${TM_DIRECTORY/[\\/]/\\\\/g};');
+		let snippet = new SnippetParser().parse('namespace ${TM_DIRECTORY/[\\/]/\\\\/g};');
 		assertMarker(snippet, Text, Variable, Text);
 	});
 
 	test('Snippet cannot escape closing bracket inside conditional insertion variable replacement #78883', function () {
 
-		const snippet = new SnippetParser().parse('${TM_DIRECTORY/(.+)/${1:+import { hello \\} from world}/}');
-		const variable = <Variable>snippet.children[0];
+		let snippet = new SnippetParser().parse('${TM_DIRECTORY/(.+)/${1:+import { hello \\} from world}/}');
+		let variable = <Variable>snippet.children[0];
 		assert.strictEqual(snippet.children.length, 1);
 		assert.ok(variable instanceof Variable);
 		assert.ok(variable.transform);
@@ -781,8 +780,8 @@ suite('SnippetParser', () => {
 
 	test('Snippet escape backslashes inside conditional insertion variable replacement #80394', function () {
 
-		const snippet = new SnippetParser().parse('${CURRENT_YEAR/(.+)/${1:+\\\\}/}');
-		const variable = <Variable>snippet.children[0];
+		let snippet = new SnippetParser().parse('${CURRENT_YEAR/(.+)/${1:+\\\\}/}');
+		let variable = <Variable>snippet.children[0];
 		assert.strictEqual(snippet.children.length, 1);
 		assert.ok(variable instanceof Variable);
 		assert.ok(variable.transform);

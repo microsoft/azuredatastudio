@@ -9,8 +9,7 @@ import { Position } from 'vs/editor/common/core/position';
 import { Range } from 'vs/editor/common/core/range';
 import { IFoundBracket } from 'vs/editor/common/textModelBracketPairs';
 import { TextModel } from 'vs/editor/common/model/textModel';
-import { ITokenizationSupport, TokenizationRegistry, EncodedTokenizationResult } from 'vs/editor/common/languages';
-import { StandardTokenType, MetadataConsts } from 'vs/editor/common/encodedTokenAttributes';
+import { ITokenizationSupport, MetadataConsts, TokenizationRegistry, StandardTokenType, EncodedTokenizationResult } from 'vs/editor/common/languages';
 import { CharacterPair } from 'vs/editor/common/languages/languageConfiguration';
 import { ILanguageConfigurationService } from 'vs/editor/common/languages/languageConfigurationRegistry';
 import { NullState } from 'vs/editor/common/languages/nullTokenize';
@@ -54,10 +53,10 @@ suite('TextModelWithTokens', () => {
 			};
 		}
 
-		const charIsBracket: { [char: string]: boolean } = {};
-		const charIsOpenBracket: { [char: string]: boolean } = {};
-		const openForChar: { [char: string]: string } = {};
-		const closeForChar: { [char: string]: string } = {};
+		let charIsBracket: { [char: string]: boolean } = {};
+		let charIsOpenBracket: { [char: string]: boolean } = {};
+		let openForChar: { [char: string]: string } = {};
+		let closeForChar: { [char: string]: string } = {};
 		brackets.forEach((b) => {
 			charIsBracket[b[0]] = true;
 			charIsBracket[b[1]] = true;
@@ -72,12 +71,12 @@ suite('TextModelWithTokens', () => {
 			closeForChar[b[1]] = b[1];
 		});
 
-		const expectedBrackets: IFoundBracket[] = [];
+		let expectedBrackets: IFoundBracket[] = [];
 		for (let lineIndex = 0; lineIndex < contents.length; lineIndex++) {
-			const lineText = contents[lineIndex];
+			let lineText = contents[lineIndex];
 
 			for (let charIndex = 0; charIndex < lineText.length; charIndex++) {
-				const ch = lineText.charAt(charIndex);
+				let ch = lineText.charAt(charIndex);
 				if (charIsBracket[ch]) {
 					expectedBrackets.push({
 						bracketInfo: languageConfigurationService.getLanguageConfiguration(languageId).bracketsNew.getBracketInfo(ch)!,
@@ -94,7 +93,7 @@ suite('TextModelWithTokens', () => {
 			let expectedBracketIndex = expectedBrackets.length - 1;
 			let currentExpectedBracket = expectedBracketIndex >= 0 ? expectedBrackets[expectedBracketIndex] : null;
 			for (let lineNumber = contents.length; lineNumber >= 1; lineNumber--) {
-				const lineText = contents[lineNumber - 1];
+				let lineText = contents[lineNumber - 1];
 
 				for (let column = lineText.length + 1; column >= 1; column--) {
 
@@ -105,7 +104,7 @@ suite('TextModelWithTokens', () => {
 						}
 					}
 
-					const actual = model.bracketPairs.findPrevBracket({
+					let actual = model.bracketPairs.findPrevBracket({
 						lineNumber: lineNumber,
 						column: column
 					});
@@ -120,7 +119,7 @@ suite('TextModelWithTokens', () => {
 			let expectedBracketIndex = 0;
 			let currentExpectedBracket = expectedBracketIndex < expectedBrackets.length ? expectedBrackets[expectedBracketIndex] : null;
 			for (let lineNumber = 1; lineNumber <= contents.length; lineNumber++) {
-				const lineText = contents[lineNumber - 1];
+				let lineText = contents[lineNumber - 1];
 
 				for (let column = 1; column <= lineText.length + 1; column++) {
 
@@ -131,7 +130,7 @@ suite('TextModelWithTokens', () => {
 						}
 					}
 
-					const actual = model.bracketPairs.findNextBracket({
+					let actual = model.bracketPairs.findNextBracket({
 						lineNumber: lineNumber,
 						column: column
 					});
@@ -163,7 +162,9 @@ function assertIsNotBracket(model: TextModel, lineNumber: number, column: number
 function assertIsBracket(model: TextModel, testPosition: Position, expected: [Range, Range]): void {
 	expected.sort(Range.compareRangesUsingStarts);
 	const actual = model.bracketPairs.matchBracket(testPosition);
-	actual?.sort(Range.compareRangesUsingStarts);
+	if (actual) {
+		actual.sort(Range.compareRangesUsingStarts);
+	}
 	assert.deepStrictEqual(actual, expected, 'matches brackets at ' + testPosition);
 }
 
@@ -253,15 +254,15 @@ suite('TextModelWithTokens - bracket matching', () => {
 			[new Position(5, 5), new Range(5, 4, 5, 5), new Range(1, 11, 1, 12)],
 		];
 
-		const isABracket: { [lineNumber: number]: { [col: number]: boolean } } = { 1: {}, 2: {}, 3: {}, 4: {}, 5: {} };
+		let isABracket: { [lineNumber: number]: { [col: number]: boolean } } = { 1: {}, 2: {}, 3: {}, 4: {}, 5: {} };
 		for (let i = 0, len = brackets.length; i < len; i++) {
-			const [testPos, b1, b2] = brackets[i];
+			let [testPos, b1, b2] = brackets[i];
 			assertIsBracket(model, testPos, [b1, b2]);
 			isABracket[testPos.lineNumber][testPos.column] = true;
 		}
 
 		for (let i = 1, len = model.getLineCount(); i <= len; i++) {
-			const line = model.getLineContent(i);
+			let line = model.getLineContent(i);
 			for (let j = 1, lenJ = line.length + 1; j <= lenJ; j++) {
 				if (!isABracket[i].hasOwnProperty(<any>j)) {
 					assertIsNotBracket(model, i, j);
@@ -539,19 +540,19 @@ suite('TextModelWithTokens regression tests', () => {
 			if (forceTokenization) {
 				model.tokenization.forceTokenization(lineNumber);
 			}
-			const _actual = model.tokenization.getLineTokens(lineNumber).inflate();
+			let _actual = model.tokenization.getLineTokens(lineNumber).inflate();
 			interface ISimpleViewToken {
 				endIndex: number;
 				foreground: number;
 			}
-			const actual: ISimpleViewToken[] = [];
+			let actual: ISimpleViewToken[] = [];
 			for (let i = 0, len = _actual.getCount(); i < len; i++) {
 				actual[i] = {
 					endIndex: _actual.getEndOffset(i),
 					foreground: _actual.getForeground(i)
 				};
 			}
-			const decode = (token: TestLineToken) => {
+			let decode = (token: TestLineToken) => {
 				return {
 					endIndex: token.endIndex,
 					foreground: token.getForeground()
@@ -568,8 +569,8 @@ suite('TextModelWithTokens regression tests', () => {
 			getInitialState: () => NullState,
 			tokenize: undefined!,
 			tokenizeEncoded: (line, hasEOL, state) => {
-				const myId = ++_tokenId;
-				const tokens = new Uint32Array(2);
+				let myId = ++_tokenId;
+				let tokens = new Uint32Array(2);
 				tokens[0] = 0;
 				tokens[1] = (
 					myId << MetadataConsts.FOREGROUND_OFFSET
@@ -578,10 +579,10 @@ suite('TextModelWithTokens regression tests', () => {
 			}
 		};
 
-		const registration1 = TokenizationRegistry.register(LANG_ID1, tokenizationSupport);
-		const registration2 = TokenizationRegistry.register(LANG_ID2, tokenizationSupport);
+		let registration1 = TokenizationRegistry.register(LANG_ID1, tokenizationSupport);
+		let registration2 = TokenizationRegistry.register(LANG_ID2, tokenizationSupport);
 
-		const model = createTextModel('A model with\ntwo lines');
+		let model = createTextModel('A model with\ntwo lines');
 
 		assertViewLineTokens(model, 1, true, [createViewLineToken(12, 1)]);
 		assertViewLineTokens(model, 2, true, [createViewLineToken(9, 1)]);
@@ -601,7 +602,7 @@ suite('TextModelWithTokens regression tests', () => {
 		registration2.dispose();
 
 		function createViewLineToken(endIndex: number, foreground: number): TestLineToken {
-			const metadata = (
+			let metadata = (
 				(foreground << MetadataConsts.FOREGROUND_OFFSET)
 			) >>> 0;
 			return new TestLineToken(endIndex, metadata);
@@ -678,7 +679,7 @@ suite('TextModelWithTokens regression tests', () => {
 			getInitialState: () => NullState,
 			tokenize: undefined!,
 			tokenizeEncoded: (line, hasEOL, state) => {
-				const tokens = new Uint32Array(2);
+				let tokens = new Uint32Array(2);
 				tokens[0] = 0;
 				tokens[1] = (
 					encodedInnerMode << MetadataConsts.LANGUAGEID_OFFSET
@@ -706,13 +707,13 @@ suite('TextModel.getLineIndentGuide', () => {
 		const languageService = instantiationService.get(ILanguageService);
 		disposables.add(languageService.registerLanguage({ id: languageId }));
 
-		const text = lines.map(l => l[4]).join('\n');
-		const model = disposables.add(instantiateTextModel(instantiationService, text, languageId));
+		let text = lines.map(l => l[4]).join('\n');
+		let model = disposables.add(instantiateTextModel(instantiationService, text, languageId));
 		model.updateOptions({ tabSize: tabSize });
 
-		const actualIndents = model.guides.getLinesIndentGuides(1, model.getLineCount());
+		let actualIndents = model.guides.getLinesIndentGuides(1, model.getLineCount());
 
-		const actual: [number, number, number, number, string][] = [];
+		let actual: [number, number, number, number, string][] = [];
 		for (let line = 1; line <= model.getLineCount(); line++) {
 			const activeIndentGuide = model.guides.getActiveIndentGuide(line, 1, model.getLineCount());
 			actual[line - 1] = [actualIndents[line - 1], activeIndentGuide.startLineNumber, activeIndentGuide.endLineNumber, activeIndentGuide.indent, model.getLineContent(line)];
@@ -880,7 +881,7 @@ suite('TextModel.getLineIndentGuide', () => {
 	});
 
 	test('issue #49173', () => {
-		const model = createTextModel([
+		let model = createTextModel([
 			'class A {',
 			'	public m1(): void {',
 			'	}',

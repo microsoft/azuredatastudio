@@ -25,7 +25,7 @@ export class DragAndDropCommand implements ICommand {
 	}
 
 	public getEditOperations(model: ITextModel, builder: IEditOperationBuilder): void {
-		const text = model.getValueInRange(this.selection);
+		let text = model.getValueInRange(this.selection);
 		if (!this.copy) {
 			builder.addEditOperation(this.selection, null);
 		}

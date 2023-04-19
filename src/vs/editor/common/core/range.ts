@@ -227,10 +227,10 @@ export class Range {
 		let resultStartColumn = a.startColumn;
 		let resultEndLineNumber = a.endLineNumber;
 		let resultEndColumn = a.endColumn;
-		const otherStartLineNumber = b.startLineNumber;
-		const otherStartColumn = b.startColumn;
-		const otherEndLineNumber = b.endLineNumber;
-		const otherEndColumn = b.endColumn;
+		let otherStartLineNumber = b.startLineNumber;
+		let otherStartColumn = b.startColumn;
+		let otherEndLineNumber = b.endLineNumber;
+		let otherEndColumn = b.endColumn;
 
 		if (resultStartLineNumber < otherStartLineNumber) {
 			resultStartLineNumber = otherStartLineNumber;

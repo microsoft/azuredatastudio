@@ -7,9 +7,7 @@ import { Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { RemoteAuthorities } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
-import { IProductService } from 'vs/platform/product/common/productService';
 import { IRemoteAuthorityResolverService, IRemoteConnectionData, ResolvedAuthority, ResolverResult } from 'vs/platform/remote/common/remoteAuthorityResolver';
-import { getRemoteServerRootPath, parseAuthorityWithOptionalPort } from 'vs/platform/remote/common/remoteHosts';
 
 export class RemoteAuthorityResolverService extends Disposable implements IRemoteAuthorityResolverService {
 
@@ -22,7 +20,7 @@ export class RemoteAuthorityResolverService extends Disposable implements IRemot
 	private readonly _connectionToken: string | undefined;
 	private readonly _connectionTokens: Map<string, string>;
 
-	constructor(@IProductService productService: IProductService, connectionToken: string | undefined, resourceUriProvider: ((uri: URI) => URI) | undefined) {
+	constructor(connectionToken: string | undefined, resourceUriProvider: ((uri: URI) => URI) | undefined) {
 		super();
 		this._cache = new Map<string, ResolverResult>();
 		this._connectionToken = connectionToken;
@@ -30,7 +28,6 @@ export class RemoteAuthorityResolverService extends Disposable implements IRemot
 		if (resourceUriProvider) {
 			RemoteAuthorities.setDelegate(resourceUriProvider);
 		}
-		RemoteAuthorities.setServerRootPath(getRemoteServerRootPath(productService));
 	}
 
 	async resolveAuthority(authority: string): Promise<ResolverResult> {
@@ -62,9 +59,12 @@ export class RemoteAuthorityResolverService extends Disposable implements IRemot
 
 	private _doResolveAuthority(authority: string): ResolverResult {
 		const connectionToken = this._connectionTokens.get(authority) || this._connectionToken;
-		const defaultPort = (/^https:/.test(window.location.href) ? 443 : 80);
-		const { host, port } = parseAuthorityWithOptionalPort(authority, defaultPort);
-		return { authority: { authority, host: host, port: port, connectionToken } };
+		if (authority.indexOf(':') >= 0) {
+			const pieces = authority.split(':');
+			return { authority: { authority, host: pieces[0], port: parseInt(pieces[1], 10), connectionToken } };
+		}
+		const port = (/^https:/.test(window.location.href) ? 443 : 80);
+		return { authority: { authority, host: authority, port: port, connectionToken } };
 	}
 
 	_clearResolvedAuthority(authority: string): void {

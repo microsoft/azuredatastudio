@@ -26,7 +26,7 @@ const reporter = createReporter();
 
 function getTypeScriptCompilerOptions(src: string): ts.CompilerOptions {
 	const rootDir = path.join(__dirname, `../../${src}`);
-	const options: ts.CompilerOptions = {};
+	let options: ts.CompilerOptions = {};
 	options.verbose = false;
 	options.sourceMap = true;
 	if (process.env['VSCODE_NO_SOURCEMAP']) { // To be used by developers in a hurry
@@ -39,8 +39,8 @@ function getTypeScriptCompilerOptions(src: string): ts.CompilerOptions {
 	return options;
 }
 
-function createCompile(src: string, build: boolean, emitError: boolean, transpileOnly: boolean) {
-	const tsb = require('./tsb') as typeof import('./tsb');
+function createCompile(src: string, build: boolean, emitError?: boolean) {
+	const tsb = require('gulp-tsb') as typeof import('gulp-tsb');
 	const sourcemaps = require('gulp-sourcemaps') as typeof import('gulp-sourcemaps');
 
 
@@ -80,7 +80,7 @@ function createCompile(src: string, build: boolean, emitError: boolean, transpil
 			.pipe(noDeclarationsFilter)
 			.pipe(build ? nls.nls() : es.through())
 			.pipe(noDeclarationsFilter.restore)
-			.pipe(transpileOnly ? es.through() : sourcemaps.write('.', {
+			.pipe(sourcemaps.write('.', {
 				addComment: false,
 				includeContent: !!build,
 				sourceRoot: overrideOptions.sourceRoot
@@ -96,19 +96,6 @@ function createCompile(src: string, build: boolean, emitError: boolean, transpil
 	return pipeline;
 }
 
-export function transpileTask(src: string, out: string): () => NodeJS.ReadWriteStream {
-
-	return function () {
-
-		const transpile = createCompile(src, false, true, true);
-		const srcPipe = gulp.src(`${src}/**`, { base: `${src}` });
-
-		return srcPipe
-			.pipe(transpile())
-			.pipe(gulp.dest(out));
-	};
-}
-
 export function compileTask(src: string, out: string, build: boolean): () => NodeJS.ReadWriteStream {
 
 	return function () {
@@ -117,9 +104,9 @@ export function compileTask(src: string, out: string, build: boolean): () => Nod
 			throw new Error('compilation requires 4GB of RAM');
 		}
 
-		const compile = createCompile(src, build, true, false);
+		const compile = createCompile(src, build, true);
 		const srcPipe = gulp.src(`${src}/**`, { base: `${src}` });
-		const generator = new MonacoGenerator(false);
+		let generator = new MonacoGenerator(false);
 		if (src === 'src') {
 			generator.execute();
 		}
@@ -134,12 +121,12 @@ export function compileTask(src: string, out: string, build: boolean): () => Nod
 export function watchTask(out: string, build: boolean): () => NodeJS.ReadWriteStream {
 
 	return function () {
-		const compile = createCompile('src', build, false, false);
+		const compile = createCompile('src', build);
 
 		const src = gulp.src('src/**', { base: 'src' });
 		const watchSrc = watch('src/**', { base: 'src', readDelay: 200 });
 
-		const generator = new MonacoGenerator(true);
+		let generator = new MonacoGenerator(true);
 		generator.execute();
 
 		return watchSrc
@@ -163,7 +150,7 @@ class MonacoGenerator {
 		this._isWatch = isWatch;
 		this.stream = es.through();
 		this._watchedFiles = {};
-		const onWillReadFile = (moduleId: string, filePath: string) => {
+		let onWillReadFile = (moduleId: string, filePath: string) => {
 			if (!this._isWatch) {
 				return;
 			}
@@ -205,7 +192,7 @@ class MonacoGenerator {
 	}
 
 	private _run(): monacodts.IMonacoDeclarationResult | null {
-		const r = monacodts.run3(this._declarationResolver);
+		let r = monacodts.run3(this._declarationResolver);
 		if (!r && !this._isWatch) {
 			// The build must always be able to generate the monaco.d.ts
 			throw new Error(`monaco.d.ts generation error - Cannot continue`);
@@ -238,16 +225,6 @@ class MonacoGenerator {
 }
 
 function generateApiProposalNames() {
-	let eol: string;
-
-	try {
-		const src = fs.readFileSync('src/vs/workbench/services/extensions/common/extensionsApiProposals.ts', 'utf-8');
-		const match = /\r?\n/m.exec(src);
-		eol = match ? match[0] : os.EOL;
-	} catch {
-		eol = os.EOL;
-	}
-
 	const pattern = /vscode\.proposed\.([a-zA-Z]+)\.d\.ts$/;
 	const proposalNames = new Set<string>();
 
@@ -276,7 +253,7 @@ function generateApiProposalNames() {
 				'});',
 				'export type ApiProposalName = keyof typeof allApiProposals;',
 				'',
-			].join(eol);
+			].join(os.EOL);
 
 			this.emit('data', new File({
 				path: 'vs/workbench/services/extensions/common/extensionsApiProposals.ts',

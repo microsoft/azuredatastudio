@@ -15,12 +15,13 @@ import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/ext
 import { INotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { INotebookEditorService } from 'vs/workbench/contrib/notebook/browser/notebookEditorService';
 import { INotebookCellExecution, INotebookExecutionStateService } from 'vs/workbench/contrib/notebook/common/notebookExecutionStateService';
-import { INotebookKernel, INotebookKernelChangeEvent, INotebookKernelService } from 'vs/workbench/contrib/notebook/common/notebookKernelService';
+import { IResolvedNotebookKernel, INotebookKernelChangeEvent, INotebookKernelService, NotebookKernelType } from 'vs/workbench/contrib/notebook/common/notebookKernelService';
 import { SerializableObjectWithBuffers } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { ExtHostContext, ExtHostNotebookKernelsShape, ICellExecuteUpdateDto, ICellExecutionCompleteDto, INotebookKernelDto2, MainContext, MainThreadNotebookKernelsShape } from '../common/extHost.protocol';
-import { INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
 
-abstract class MainThreadKernel implements INotebookKernel {
+abstract class MainThreadKernel implements IResolvedNotebookKernel {
+	readonly type: NotebookKernelType.Resolved = NotebookKernelType.Resolved;
+
 	private readonly _onDidChange = new Emitter<INotebookKernelChangeEvent>();
 	private readonly preloads: { uri: URI; provides: string[] }[];
 	readonly onDidChange: Event<INotebookKernelChangeEvent> = this._onDidChange.event;
@@ -113,7 +114,6 @@ export class MainThreadNotebookKernels implements MainThreadNotebookKernelsShape
 		@ILanguageService private readonly _languageService: ILanguageService,
 		@INotebookKernelService private readonly _notebookKernelService: INotebookKernelService,
 		@INotebookExecutionStateService private readonly _notebookExecutionStateService: INotebookExecutionStateService,
-		@INotebookService private readonly _notebookService: INotebookService,
 		@INotebookEditorService notebookEditorService: INotebookEditorService
 	) {
 		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostNotebookKernels);
@@ -136,7 +136,7 @@ export class MainThreadNotebookKernels implements MainThreadNotebookKernelsShape
 
 	dispose(): void {
 		this._disposables.dispose();
-		for (const [, registration] of this._kernels.values()) {
+		for (let [, registration] of this._kernels.values()) {
 			registration.dispose();
 		}
 	}
@@ -153,7 +153,7 @@ export class MainThreadNotebookKernels implements MainThreadNotebookKernelsShape
 			if (!selected) {
 				return;
 			}
-			for (const [handle, candidate] of this._kernels) {
+			for (let [handle, candidate] of this._kernels) {
 				if (candidate[0] === selected) {
 					this._proxy.$acceptKernelMessageFromRenderer(handle, editor.getId(), e.message);
 					break;
@@ -248,16 +248,7 @@ export class MainThreadNotebookKernels implements MainThreadNotebookKernelsShape
 
 	$createExecution(handle: number, controllerId: string, rawUri: UriComponents, cellHandle: number): void {
 		const uri = URI.revive(rawUri);
-		const notebook = this._notebookService.getNotebookTextModel(uri);
-		if (!notebook) {
-			throw new Error(`Notebook not found: ${uri.toString()}`);
-		}
-
-		const kernel = this._notebookKernelService.getMatchingKernel(notebook);
-		if (!kernel.selected || kernel.selected.id !== controllerId) {
-			throw new Error(`Kernel is not selected: ${kernel.selected?.id} !== ${controllerId}`);
-		}
-		const execution = this._notebookExecutionStateService.createCellExecution(uri, cellHandle);
+		const execution = this._notebookExecutionStateService.createCellExecution(controllerId, uri, cellHandle);
 		execution.confirm();
 		this._executions.set(handle, execution);
 	}
@@ -266,7 +257,9 @@ export class MainThreadNotebookKernels implements MainThreadNotebookKernelsShape
 		const updates = data.value;
 		try {
 			const execution = this._executions.get(handle);
-			execution?.update(updates.map(NotebookDto.fromCellExecuteUpdateDto));
+			if (execution) {
+				execution.update(updates.map(NotebookDto.fromCellExecuteUpdateDto));
+			}
 		} catch (e) {
 			onUnexpectedError(e);
 		}
@@ -275,7 +268,9 @@ export class MainThreadNotebookKernels implements MainThreadNotebookKernelsShape
 	$completeExecution(handle: number, data: SerializableObjectWithBuffers<ICellExecutionCompleteDto>): void {
 		try {
 			const execution = this._executions.get(handle);
-			execution?.complete(NotebookDto.fromCellExecuteCompleteDto(data.value));
+			if (execution) {
+				execution.complete(NotebookDto.fromCellExecuteCompleteDto(data.value));
+			}
 		} catch (e) {
 			onUnexpectedError(e);
 		} finally {

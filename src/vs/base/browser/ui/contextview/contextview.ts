@@ -206,7 +206,7 @@ export class ContextView extends Disposable {
 		this.view.className = 'context-view';
 		this.view.style.top = '0px';
 		this.view.style.left = '0px';
-		this.view.style.zIndex = '2575';
+		this.view.style.zIndex = '2500';
 		this.view.style.position = this.useFixedPosition ? 'fixed' : 'absolute';
 		DOM.show(this.view);
 
@@ -220,7 +220,9 @@ export class ContextView extends Disposable {
 		this.doLayout();
 
 		// Focus
-		this.delegate.focus?.();
+		if (this.delegate.focus) {
+			this.delegate.focus();
+		}
 	}
 
 	getViewElement(): HTMLElement {
@@ -251,25 +253,20 @@ export class ContextView extends Disposable {
 		}
 
 		// Get anchor
-		const anchor = this.delegate!.getAnchor();
+		let anchor = this.delegate!.getAnchor();
 
 		// Compute around
 		let around: IView;
 
 		// Get the element's position and size (to anchor the view)
 		if (DOM.isHTMLElement(anchor)) {
-			const elementPosition = DOM.getDomNodePagePosition(anchor);
-
-			// In areas where zoom is applied to the element or its ancestors, we need to adjust the size of the element
-			// e.g. The title bar has counter zoom behavior meaning it applies the inverse of zoom level.
-			// Window Zoom Level: 1.5, Title Bar Zoom: 1/1.5, Size Multiplier: 1.5
-			const zoom = DOM.getDomNodeZoomLevel(anchor);
+			let elementPosition = DOM.getDomNodePagePosition(anchor);
 
 			around = {
-				top: elementPosition.top * zoom,
-				left: elementPosition.left * zoom,
-				width: elementPosition.width * zoom,
-				height: elementPosition.height * zoom
+				top: elementPosition.top,
+				left: elementPosition.left,
+				width: elementPosition.width,
+				height: elementPosition.height
 			};
 		} else {
 			around = {
@@ -362,7 +359,7 @@ export class ContextView extends Disposable {
 	}
 }
 
-const SHADOW_ROOT_CSS = /* css */ `
+let SHADOW_ROOT_CSS = /* css */ `
 	:host {
 		all: initial; /* 1st rule so subsequent properties are reset. */
 	}

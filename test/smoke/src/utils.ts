@@ -88,14 +88,9 @@ export function installDiagnosticsHandler(logger: Logger, appFn?: () => Applicat
 }
 
 let logsCounter = 1;
-let crashCounter = 1;
 
 export function suiteLogsPath(options: ApplicationOptions, suiteName: string): string {
 	return join(dirname(options.logsPath), `${logsCounter++}_suite_${suiteName.replace(/[^a-z0-9\-]/ig, '_')}`);
-}
-
-export function suiteCrashPath(options: ApplicationOptions, suiteName: string): string {
-	return join(dirname(options.crashesPath), `${crashCounter++}_suite_${suiteName.replace(/[^a-z0-9\-]/ig, '_')}`);
 }
 
 function installAppBeforeHandler(optionsTransform?: (opts: ApplicationOptions) => ApplicationOptions) {
@@ -104,8 +99,7 @@ function installAppBeforeHandler(optionsTransform?: (opts: ApplicationOptions) =
 
 		this.app = createApp({
 			...this.defaultOptions,
-			logsPath: suiteLogsPath(this.defaultOptions, suiteName),
-			crashesPath: suiteCrashPath(this.defaultOptions, suiteName)
+			logsPath: suiteLogsPath(this.defaultOptions, suiteName)
 		}, optionsTransform);
 		await this.app.start();
 	});

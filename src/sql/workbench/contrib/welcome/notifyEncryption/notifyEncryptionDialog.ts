@@ -43,11 +43,11 @@ export class NotifyEncryptionDialog extends ErrorMessageDialog {
 	}
 
 	public override open(): void {
-		if (this._storageService.get(NotifyEncryptionDialog.NOTIFY_ENCRYPT_SHOWN, StorageScope.APPLICATION)) {
+		if (this._storageService.get(NotifyEncryptionDialog.NOTIFY_ENCRYPT_SHOWN, StorageScope.GLOBAL)) {
 			return;
 		}
 
-		this._storageService.store(NotifyEncryptionDialog.NOTIFY_ENCRYPT_SHOWN, true, StorageScope.APPLICATION, StorageTarget.MACHINE);
+		this._storageService.store(NotifyEncryptionDialog.NOTIFY_ENCRYPT_SHOWN, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
 
 		if (!this._connectionManagementService.getConnections()?.some(conn => conn.providerName === mssqlProviderName)) {
 			return;

@@ -7,22 +7,18 @@ import { Emitter, Event, PauseableEmitter } from 'vs/base/common/event';
 import { Iterable } from 'vs/base/common/iterator';
 import { DisposableStore, IDisposable, MutableDisposable } from 'vs/base/common/lifecycle';
 import { TernarySearchTree } from 'vs/base/common/map';
-import { MarshalledObject } from 'vs/base/common/marshalling';
-import { MarshalledId } from 'vs/base/common/marshallingIds';
-import { cloneAndChange, distinct } from 'vs/base/common/objects';
-import { URI } from 'vs/base/common/uri';
+import { distinct } from 'vs/base/common/objects';
 import { localize } from 'vs/nls';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ContextKeyExpression, ContextKeyInfo, IContext, IContextKey, IContextKeyChangeEvent, IContextKeyService, IContextKeyServiceTarget, IReadableSet, RawContextKey, SET_CONTEXT_COMMAND_ID } from 'vs/platform/contextkey/common/contextkey';
-import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 
 const KEYBINDING_CONTEXT_ATTR = 'data-keybinding-context';
 
 export class Context implements IContext {
 
 	protected _parent: Context | null;
-	protected _value: Record<string, any>;
+	protected _value: { [key: string]: any };
 	protected _id: number;
 
 	constructor(id: number, parent: Context | null) {
@@ -30,10 +26,6 @@ export class Context implements IContext {
 		this._parent = parent;
 		this._value = Object.create(null);
 		this._value['_contextId'] = id;
-	}
-
-	public get value(): Record<string, any> {
-		return { ...this._value };
 	}
 
 	public setValue(key: string, value: any): boolean {
@@ -66,7 +58,7 @@ export class Context implements IContext {
 		this._parent = parent;
 	}
 
-	public collectAllValues(): Record<string, any> {
+	public collectAllValues(): { [key: string]: any } {
 		let result = this._parent ? this._parent.collectAllValues() : Object.create(null);
 		result = { ...result, ...this._value };
 		delete result['_contextId'];
@@ -190,7 +182,6 @@ class ConfigAwareContextValuesContainer extends Context {
 	}
 }
 
-//class ContextKey<T extends ContextKeyValue> implements IContextKey<T> {
 class ContextKey<T> implements IContextKey<T> {
 
 	private _service: AbstractContextKeyService;
@@ -226,9 +217,6 @@ class SimpleContextKeyChangeEvent implements IContextKeyChangeEvent {
 	affectsSome(keys: IReadableSet<string>): boolean {
 		return keys.has(this.key);
 	}
-	allKeysContainedIn(keys: IReadableSet<string>): boolean {
-		return this.affectsSome(keys);
-	}
 }
 
 class ArrayContextKeyChangeEvent implements IContextKeyChangeEvent {
@@ -240,9 +228,6 @@ class ArrayContextKeyChangeEvent implements IContextKeyChangeEvent {
 			}
 		}
 		return false;
-	}
-	allKeysContainedIn(keys: IReadableSet<string>): boolean {
-		return this.keys.every(key => keys.has(key));
 	}
 }
 
@@ -256,13 +241,6 @@ class CompositeContextKeyChangeEvent implements IContextKeyChangeEvent {
 		}
 		return false;
 	}
-	allKeysContainedIn(keys: IReadableSet<string>): boolean {
-		return this.events.every(evt => evt.allKeysContainedIn(keys));
-	}
-}
-
-function allEventKeysInContext(event: IContextKeyChangeEvent, context: Record<string, any>): boolean {
-	return event.allKeysContainedIn(new Set(Object.keys(context)));
 }
 
 export abstract class AbstractContextKeyService implements IContextKeyService {
@@ -285,7 +263,6 @@ export abstract class AbstractContextKeyService implements IContextKeyService {
 
 	abstract dispose(): void;
 
-	//public createKey<T extends ContextKeyValue>(key: string, defaultValue: T | undefined): IContextKey<T> {
 	public createKey<T>(key: string, defaultValue: T | undefined): IContextKey<T> {
 		if (this._isDisposed) {
 			throw new Error(`AbstractContextKeyService has been disposed`);
@@ -416,7 +393,7 @@ export class ContextKeyService extends AbstractContextKeyService implements ICon
 		if (this._isDisposed) {
 			throw new Error(`ContextKeyService has been disposed`);
 		}
-		const id = (++this._lastContextId);
+		let id = (++this._lastContextId);
 		this._contexts.set(id, new Context(id, this.getContextValuesContainer(parentContextId)));
 		return id;
 	}
@@ -458,14 +435,7 @@ class ScopedContextKeyService extends AbstractContextKeyService {
 
 	private _updateParentChangeListener(): void {
 		// Forward parent events to this listener. Parent will change.
-		this._parentChangeListener.value = this._parent.onDidChangeContext(e => {
-			const thisContainer = this._parent.getContextValuesContainer(this._myContextId);
-			const thisContextValues = thisContainer.value;
-
-			if (!allEventKeysInContext(e, thisContextValues)) {
-				this._onDidChangeContext.fire(e);
-			}
-		});
+		this._parentChangeListener.value = this._parent.onDidChangeContext(this._onDidChangeContext.fire, this._onDidChangeContext);
 	}
 
 	public dispose(): void {
@@ -550,7 +520,6 @@ class OverlayContextKeyService implements IContextKeyService {
 		this.parent.bufferChangeEvents(callback);
 	}
 
-	//createKey<T extends ContextKeyValue>(): IContextKey<T> {
 	createKey<T>(): IContextKey<T> {
 		throw new Error('Not supported.');
 	}
@@ -605,23 +574,9 @@ function findContextAttr(domNode: IContextKeyServiceTarget | null): number {
 	return 0;
 }
 
-export function setContext(accessor: ServicesAccessor, contextKey: any, contextValue: any) {
-	accessor.get(IContextKeyService).createKey(String(contextKey), stringifyURIs(contextValue));
-}
-
-function stringifyURIs(contextValue: any): any {
-	return cloneAndChange(contextValue, (obj) => {
-		if (typeof obj === 'object' && (<MarshalledObject>obj).$mid === MarshalledId.Uri) {
-			return URI.revive(obj).toString();
-		}
-		if (obj instanceof URI) {
-			return obj.toString();
-		}
-		return undefined;
-	});
-}
-
-CommandsRegistry.registerCommand(SET_CONTEXT_COMMAND_ID, setContext);
+CommandsRegistry.registerCommand(SET_CONTEXT_COMMAND_ID, function (accessor, contextKey: any, contextValue: any) {
+	accessor.get(IContextKeyService).createKey(String(contextKey), contextValue);
+});
 
 CommandsRegistry.registerCommand({
 	id: 'getContextKeyInfo',
@@ -637,7 +592,7 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand('_generateContextKeyInfo', function () {
 	const result: ContextKeyInfo[] = [];
 	const seen = new Set<string>();
-	for (const info of RawContextKey.all()) {
+	for (let info of RawContextKey.all()) {
 		if (!seen.has(info.key)) {
 			seen.add(info.key);
 			result.push(info);

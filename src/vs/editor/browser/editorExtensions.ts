@@ -338,10 +338,8 @@ export abstract class EditorAction extends EditorCommand {
 
 	protected reportTelemetry(accessor: ServicesAccessor, editor: ICodeEditor) {
 		type EditorActionInvokedClassification = {
-			owner: 'alexdima';
-			comment: 'An editor action has been invoked.';
-			name: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'The label of the action that was invoked.' };
-			id: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'The identifier of the action that was invoked.' };
+			name: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+			id: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
 		};
 		type EditorActionInvokedEvent = {
 			name: string;

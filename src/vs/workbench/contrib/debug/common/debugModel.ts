@@ -7,7 +7,6 @@ import { distinct, lastIndex } from 'vs/base/common/arrays';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { decodeBase64, encodeBase64, VSBuffer } from 'vs/base/common/buffer';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
-import { stringHash } from 'vs/base/common/hash';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { mixin } from 'vs/base/common/objects';
@@ -352,7 +351,7 @@ export class Scope extends ExpressionContainer implements IScope {
 
 	constructor(
 		stackFrame: IStackFrame,
-		id: number,
+		index: number,
 		public readonly name: string,
 		reference: number,
 		public expensive: boolean,
@@ -360,7 +359,7 @@ export class Scope extends ExpressionContainer implements IScope {
 		indexedVariables?: number,
 		public readonly range?: IRange
 	) {
-		super(stackFrame.thread.session, stackFrame.thread.threadId, reference, `scope:${name}:${id}`, namedVariables, indexedVariables);
+		super(stackFrame.thread.session, stackFrame.thread.threadId, reference, `scope:${name}:${index}`, namedVariables, indexedVariables);
 	}
 
 	override toString(): string {
@@ -418,17 +417,12 @@ export class StackFrame implements IStackFrame {
 					return [];
 				}
 
-				const usedIds = new Set<number>();
+				const scopeNameIndexes = new Map<string, number>();
 				return response.body.scopes.map(rs => {
-					// form the id based on the name and location so that it's the
-					// same across multiple pauses to retain expansion state
-					let id = 0;
-					do {
-						id = stringHash(`${rs.name}:${rs.line}:${rs.column}`, id);
-					} while (usedIds.has(id));
-
-					usedIds.add(id);
-					return new Scope(this, id, rs.name, rs.variablesReference, rs.expensive, rs.namedVariables, rs.indexedVariables,
+					const previousIndex = scopeNameIndexes.get(rs.name);
+					const index = typeof previousIndex === 'number' ? previousIndex + 1 : 0;
+					scopeNameIndexes.set(rs.name, index);
+					return new Scope(this, index, rs.name, rs.variablesReference, rs.expensive, rs.namedVariables, rs.indexedVariables,
 						rs.line && rs.column && rs.endLine && rs.endColumn ? new Range(rs.line, rs.column, rs.endLine, rs.endColumn) : undefined);
 
 				});
@@ -1244,31 +1238,7 @@ export class DebugModel implements IDebugModel {
 		}
 	}
 
-	/**
-	 * Update the call stack and notify the call stack view that changes have occurred.
-	 */
-	async fetchCallstack(thread: IThread, levels?: number): Promise<void> {
-
-		if ((<Thread>thread).reachedEndOfCallStack) {
-			return;
-		}
-
-		const totalFrames = thread.stoppedDetails?.totalFrames;
-		const remainingFrames = (typeof totalFrames === 'number') ? (totalFrames - thread.getCallStack().length) : undefined;
-
-		if (!levels || (remainingFrames && levels > remainingFrames)) {
-			levels = remainingFrames;
-		}
-
-		if (levels && levels > 0) {
-			await (<Thread>thread).fetchCallStack(levels);
-			this._onDidChangeCallStack.fire();
-		}
-
-		return;
-	}
-
-	refreshTopOfCallstack(thread: Thread): { topCallStack: Promise<void>; wholeCallStack: Promise<void> } {
+	fetchCallStack(thread: Thread): { topCallStack: Promise<void>; wholeCallStack: Promise<void> } {
 		if (thread.session.capabilities.supportsDelayedStackTraceLoading) {
 			// For improved performance load the first stack frame and then load the rest async.
 			let topCallStack = Promise.resolve();

@@ -5,9 +5,8 @@
 
 declare module 'vscode' {
 
-	// https://github.com/microsoft/vscode/issues/147248
+	// https://github.com/microsoft/vscode/issues/106744
 
-	/** @deprecated */
 	interface NotebookDocumentBackup {
 		/**
 		 * Unique identifier for the backup.
@@ -25,12 +24,10 @@ declare module 'vscode' {
 		delete(): void;
 	}
 
-	/** @deprecated */
 	interface NotebookDocumentBackupContext {
 		readonly destination: Uri;
 	}
 
-	/** @deprecated */
 	interface NotebookDocumentOpenContext {
 		readonly backupId?: string;
 		readonly untitledDocumentData?: Uint8Array;
@@ -38,8 +35,6 @@ declare module 'vscode' {
 
 	// todo@API use openNotebookDOCUMENT to align with openCustomDocument etc?
 	// todo@API rename to NotebookDocumentContentProvider
-	/** @deprecated */
-
 	export interface NotebookContentProvider {
 
 		readonly options?: NotebookDocumentContentOptions;
@@ -47,7 +42,7 @@ declare module 'vscode' {
 
 		/**
 		 * Content providers should always use {@link FileSystemProvider file system providers} to
-		 * resolve the raw content for `uri` as the resource is not necessarily a file on disk.
+		 * resolve the raw content for `uri` as the resouce is not necessarily a file on disk.
 		 */
 		openNotebook(uri: Uri, openContext: NotebookDocumentOpenContext, token: CancellationToken): NotebookData | Thenable<NotebookData>;
 
@@ -65,7 +60,6 @@ declare module 'vscode' {
 
 		// TODO@api use NotebookDocumentFilter instead of just notebookType:string?
 		// TODO@API options duplicates the more powerful variant on NotebookContentProvider
-		/** @deprecated */
 		export function registerNotebookContentProvider(notebookType: string, provider: NotebookContentProvider, options?: NotebookDocumentContentOptions): Disposable;
 	}
 }

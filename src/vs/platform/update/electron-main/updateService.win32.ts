@@ -47,6 +47,14 @@ function getUpdateType(): UpdateType {
 	return _updateType;
 }
 
+function validateUpdateModeValue(value: string | undefined): 'none' | 'manual' | 'start' | 'default' | undefined {
+	if (value === 'none' || value === 'manual' || value === 'start' || value === 'default') {
+		return value;
+	} else {
+		return undefined;
+	}
+}
+
 export class Win32UpdateService extends AbstractUpdateService {
 
 	private availableUpdate: IAvailableUpdate | undefined;
@@ -71,13 +79,24 @@ export class Win32UpdateService extends AbstractUpdateService {
 		super(lifecycleMainService, configurationService, environmentMainService, requestService, logService, productService);
 	}
 
-	override async initialize(): Promise<void> {
-		if (this.productService.target === 'user' && await this.nativeHostMainService.isAdmin(undefined)) {
-			this.logService.info('update#ctor - updates are disabled due to running as Admin in user setup');
-			return;
+	protected override async getUpdateMode(): Promise<'none' | 'manual' | 'start' | 'default'> {
+		if (this.productService.win32RegValueName) {
+			const policyKey = `Software\\Policies\\Microsoft\\${this.productService.win32RegValueName}`;
+			const [hklm, hkcu] = await Promise.all([
+				this.nativeHostMainService.windowsGetStringRegKey(undefined, 'HKEY_LOCAL_MACHINE', policyKey, 'UpdateMode').then(validateUpdateModeValue),
+				this.nativeHostMainService.windowsGetStringRegKey(undefined, 'HKEY_CURRENT_USER', policyKey, 'UpdateMode').then(validateUpdateModeValue)
+			]);
+
+			if (hklm) {
+				this.logService.info(`update#getUpdateMode: 'UpdateMode' policy defined in 'HKLM\\${policyKey}':`, hklm);
+				return hklm;
+			} else if (hkcu) {
+				this.logService.info(`update#getUpdateMode: 'UpdateMode' policy defined in 'HKCU\\${policyKey}':`, hkcu);
+				return hkcu;
+			}
 		}
 
-		super.initialize();
+		return await super.getUpdateMode();
 	}
 
 	protected buildUpdateFeedUrl(quality: string): string | undefined {
@@ -250,27 +269,5 @@ export class Win32UpdateService extends AbstractUpdateService {
 
 	protected override getUpdateType(): UpdateType {
 		return getUpdateType();
-	}
-
-	override async _applySpecificUpdate(packagePath: string): Promise<void> {
-		if (this.state.type !== StateType.Idle) {
-			return;
-		}
-
-		const fastUpdatesEnabled = this.configurationService.getValue('update.enableWindowsBackgroundUpdates');
-		const update: IUpdate = { version: 'unknown', productVersion: 'unknown', supportsFastUpdate: !!fastUpdatesEnabled };
-
-		this.setState(State.Downloading(update));
-		this.availableUpdate = { packagePath };
-
-		if (fastUpdatesEnabled) {
-			if (this.productService.target === 'user') {
-				this.doApplyUpdate();
-			} else {
-				this.setState(State.Downloaded(update));
-			}
-		} else {
-			this.setState(State.Ready(update));
-		}
 	}
 }

@@ -181,7 +181,7 @@ class SimpleWorkerProtocol {
 			return;
 		}
 
-		const reply = this._pendingReplies[replyMessage.seq];
+		let reply = this._pendingReplies[replyMessage.seq];
 		delete this._pendingReplies[replyMessage.seq];
 
 		if (replyMessage.err) {
@@ -200,8 +200,8 @@ class SimpleWorkerProtocol {
 	}
 
 	private _handleRequestMessage(requestMessage: RequestMessage): void {
-		const req = requestMessage.req;
-		const result = this._handler.handleMessage(requestMessage.method, requestMessage.args);
+		let req = requestMessage.req;
+		let result = this._handler.handleMessage(requestMessage.method, requestMessage.args);
 		result.then((r) => {
 			this._send(new ReplyMessage(this._workerId, req, r, undefined));
 		}, (e) => {
@@ -239,7 +239,7 @@ class SimpleWorkerProtocol {
 	}
 
 	private _send(msg: Message): void {
-		const transfer: ArrayBuffer[] = [];
+		let transfer: ArrayBuffer[] = [];
 		if (msg.type === MessageType.Request) {
 			for (let i = 0; i < msg.args.length; i++) {
 				if (msg.args[i] instanceof ArrayBuffer) {
@@ -283,7 +283,9 @@ export class SimpleWorkerClient<W extends object, H extends object> extends Disp
 			(err: any) => {
 				// in Firefox, web workers fail lazily :(
 				// we will reject the proxy
-				lazyProxyReject?.(err);
+				if (lazyProxyReject) {
+					lazyProxyReject(err);
+				}
 			}
 		));
 
@@ -406,7 +408,7 @@ function createProxyObject<T extends object>(
 		};
 	};
 
-	const result = {} as T;
+	let result = {} as T;
 	for (const methodName of methodNames) {
 		if (propertyIsDynamicEvent(methodName)) {
 			(<any>result)[methodName] = createProxyDynamicEvent(methodName);

@@ -48,12 +48,12 @@ class StoredCounter {
 	constructor(@IStorageService private readonly _storageService: IStorageService, private readonly _key: string) { }
 
 	get value() {
-		return this._storageService.getNumber(this._key, StorageScope.PROFILE, 0);
+		return this._storageService.getNumber(this._key, StorageScope.GLOBAL, 0);
 	}
 
 	increment(): number {
 		const n = this.value + 1;
-		this._storageService.store(this._key, n, StorageScope.PROFILE, StorageTarget.MACHINE);
+		this._storageService.store(this._key, n, StorageScope.GLOBAL, StorageTarget.MACHINE);
 		return n;
 	}
 }
@@ -117,7 +117,7 @@ class EditorStatusContribution implements IWorkbenchContribution {
 	}
 
 	private _restoreState(): void {
-		const raw = this._storageService.get(EditorStatusContribution._keyDedicatedItems, StorageScope.PROFILE, '[]');
+		const raw = this._storageService.get(EditorStatusContribution._keyDedicatedItems, StorageScope.GLOBAL, '[]');
 		try {
 			const ids = <string[]>JSON.parse(raw);
 			this._dedicated = new Set(ids);
@@ -128,10 +128,10 @@ class EditorStatusContribution implements IWorkbenchContribution {
 
 	private _storeState(): void {
 		if (this._dedicated.size === 0) {
-			this._storageService.remove(EditorStatusContribution._keyDedicatedItems, StorageScope.PROFILE);
+			this._storageService.remove(EditorStatusContribution._keyDedicatedItems, StorageScope.GLOBAL);
 		} else {
 			const raw = JSON.stringify(Array.from(this._dedicated.keys()));
-			this._storageService.store(EditorStatusContribution._keyDedicatedItems, raw, StorageScope.PROFILE, StorageTarget.USER);
+			this._storageService.store(EditorStatusContribution._keyDedicatedItems, raw, StorageScope.GLOBAL, StorageTarget.USER);
 		}
 	}
 
@@ -144,7 +144,7 @@ class EditorStatusContribution implements IWorkbenchContribution {
 		const all = this._languageStatusService.getLanguageStatus(editor.getModel());
 		const combined: ILanguageStatus[] = [];
 		const dedicated: ILanguageStatus[] = [];
-		for (const item of all) {
+		for (let item of all) {
 			if (this._dedicated.has(item.id)) {
 				dedicated.push(item);
 			}
@@ -344,7 +344,7 @@ class EditorStatusContribution implements IWorkbenchContribution {
 	}
 
 	private _renderTextPlus(target: HTMLElement, text: string, store: DisposableStore): void {
-		for (const node of parseLinkedText(text).nodes) {
+		for (let node of parseLinkedText(text).nodes) {
 			if (typeof node === 'string') {
 				const parts = renderLabelWithIcons(node);
 				dom.append(target, ...parts);
@@ -398,19 +398,13 @@ registerAction2(class extends Action2 {
 	constructor() {
 		super({
 			id: 'editor.inlayHints.Reset',
-			title: {
-				value: localize('reset', 'Reset Language Status Interaction Counter'),
-				original: 'Reset Language Status Interaction Counter'
-			},
-			category: {
-				value: localize('cat', 'View'),
-				original: 'View'
-			},
+			title: localize('reset', 'Reset Language Status Interaction Counter'),
+			category: localize('cat', 'View'),
 			f1: true
 		});
 	}
 
 	run(accessor: ServicesAccessor): void {
-		accessor.get(IStorageService).remove('languageStatus.interactCount', StorageScope.PROFILE);
+		accessor.get(IStorageService).remove('languageStatus.interactCount', StorageScope.GLOBAL);
 	}
 });

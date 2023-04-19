@@ -19,11 +19,11 @@ suite('ResourceTree', function () {
 		tree.add(URI.file('/foo/bar.txt'), 'bar contents');
 		assert.strictEqual(tree.root.childrenCount, 1);
 
-		const foo = tree.root.get('foo')!;
+		let foo = tree.root.get('foo')!;
 		assert(foo);
 		assert.strictEqual(foo.childrenCount, 1);
 
-		const bar = foo.get('bar.txt')!;
+		let bar = foo.get('bar.txt')!;
 		assert(bar);
 		assert.strictEqual(bar.element, 'bar contents');
 

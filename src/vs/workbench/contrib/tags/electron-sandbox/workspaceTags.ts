@@ -67,7 +67,7 @@ export class WorkspaceTags implements IWorkbenchContribution {
 			value = 'Unknown';
 		}
 
-		this.telemetryService.publicLog2<{ edition: string }, { owner: 'sbatten'; comment: 'Information about the Windows edition.'; edition: { classification: 'SystemMetaData'; purpose: 'BusinessInsight'; comment: 'The Windows edition.' } }>('windowsEdition', { edition: value });
+		this.telemetryService.publicLog2<{ edition: string }, { edition: { classification: 'SystemMetaData'; purpose: 'BusinessInsight' } }>('windowsEdition', { edition: value });
 	}
 
 	private async getWorkspaceInformation(): Promise<IWorkspaceInformation> {
@@ -89,7 +89,6 @@ export class WorkspaceTags implements IWorkbenchContribution {
 	private reportWorkspaceTags(tags: Tags): void {
 		/* __GDPR__
 			"workspce.tags" : {
-				"owner": "lramos15",
 				"${include}": [
 					"${WorkspaceTags}"
 				]
@@ -117,7 +116,6 @@ export class WorkspaceTags implements IWorkbenchContribution {
 			set.forEach(item => list.push(item));
 			/* __GDPR__
 				"workspace.remotes" : {
-					"owner": "lramos15",
 					"domains" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 				}
 			*/
@@ -194,7 +192,6 @@ export class WorkspaceTags implements IWorkbenchContribution {
 			if (Object.keys(tags).length) {
 				/* __GDPR__
 					"workspace.azure" : {
-						"owner": "lramos15",
 						"${include}": [
 							"${AzureTags}"
 						]

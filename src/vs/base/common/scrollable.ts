@@ -268,7 +268,9 @@ export class Scrollable extends Disposable {
 		this._setState(newState, Boolean(this._smoothScrolling));
 
 		// Validate outstanding animated scroll position target
-		this._smoothScrolling?.acceptScrollDimensions(this._state);
+		if (this._smoothScrolling) {
+			this._smoothScrolling.acceptScrollDimensions(this._state);
+		}
 	}
 
 	/**

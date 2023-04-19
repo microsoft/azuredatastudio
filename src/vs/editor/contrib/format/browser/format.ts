@@ -167,9 +167,9 @@ export async function formatDocumentRangesWithProvider(
 	}
 
 	// make sure that ranges don't overlap nor touch each other
-	const ranges: Range[] = [];
+	let ranges: Range[] = [];
 	let len = 0;
-	for (const range of asArray(rangeOrRanges).sort(Range.compareRangesUsingStarts)) {
+	for (let range of asArray(rangeOrRanges).sort(Range.compareRangesUsingStarts)) {
 		if (len > 0 && Range.areIntersectingOrTouching(ranges[len - 1], range)) {
 			ranges[len - 1] = Range.fromPositions(ranges[len - 1].getStartPosition(), range.getEndPosition());
 		} else {
@@ -196,8 +196,8 @@ export async function formatDocumentRangesWithProvider(
 			return false;
 		}
 		// fallback to a complete check [O(n^2)]
-		for (const edit of a) {
-			for (const otherEdit of b) {
+		for (let edit of a) {
+			for (let otherEdit of b) {
 				if (Range.intersectRanges(edit.range, otherEdit.range)) {
 					return true;
 				}
@@ -209,7 +209,7 @@ export async function formatDocumentRangesWithProvider(
 	const allEdits: TextEdit[] = [];
 	const rawEditsList: TextEdit[][] = [];
 	try {
-		for (const range of ranges) {
+		for (let range of ranges) {
 			if (cts.token.isCancellationRequested) {
 				return true;
 			}
@@ -238,7 +238,7 @@ export async function formatDocumentRangesWithProvider(
 			}
 		}
 
-		for (const rawEdits of rawEditsList) {
+		for (let rawEdits of rawEditsList) {
 			if (cts.token.isCancellationRequested) {
 				return true;
 			}
@@ -387,7 +387,7 @@ export async function getDocumentRangeFormattingEditsUntilResult(
 
 	const providers = languageFeaturesService.documentRangeFormattingEditProvider.ordered(model);
 	for (const provider of providers) {
-		const rawEdits = await Promise.resolve(provider.provideDocumentRangeFormattingEdits(model, range, options, token)).catch(onUnexpectedExternalError);
+		let rawEdits = await Promise.resolve(provider.provideDocumentRangeFormattingEdits(model, range, options, token)).catch(onUnexpectedExternalError);
 		if (isNonEmptyArray(rawEdits)) {
 			return await workerService.computeMoreMinimalEdits(model.uri, rawEdits);
 		}
@@ -405,7 +405,7 @@ export async function getDocumentFormattingEditsUntilResult(
 
 	const providers = getRealAndSyntheticDocumentFormattersOrdered(languageFeaturesService.documentFormattingEditProvider, languageFeaturesService.documentRangeFormattingEditProvider, model);
 	for (const provider of providers) {
-		const rawEdits = await Promise.resolve(provider.provideDocumentFormattingEdits(model, options, token)).catch(onUnexpectedExternalError);
+		let rawEdits = await Promise.resolve(provider.provideDocumentFormattingEdits(model, options, token)).catch(onUnexpectedExternalError);
 		if (isNonEmptyArray(rawEdits)) {
 			return await workerService.computeMoreMinimalEdits(model.uri, rawEdits);
 		}

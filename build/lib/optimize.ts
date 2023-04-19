@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+'use strict';
+
 import * as es from 'event-stream';
 import * as gulp from 'gulp';
 import * as concat from 'gulp-concat';
@@ -41,67 +43,40 @@ export function loaderConfig() {
 
 const IS_OUR_COPYRIGHT_REGEXP = /Copyright \(C\) Microsoft Corporation/i;
 
-function loaderPlugin(src: string, base: string, amdModuleId: string | undefined): NodeJS.ReadWriteStream {
-	return (
-		gulp
-			.src(src, { base })
-			.pipe(es.through(function (data: VinylFile) {
-				if (amdModuleId) {
-					let contents = data.contents.toString('utf8');
-					contents = contents.replace(/^define\(/m, `define("${amdModuleId}",`);
-					data.contents = Buffer.from(contents);
-				}
-				this.emit('data', data);
-			}))
-	);
-}
-
 function loader(src: string, bundledFileHeader: string, bundleLoader: boolean, externalLoaderInfo?: any): NodeJS.ReadWriteStream {
-	let loaderStream = gulp.src(`${src}/vs/loader.js`, { base: `${src}` });
+	let sources = [
+		`${src}/vs/loader.js`
+	];
 	if (bundleLoader) {
-		loaderStream = es.merge(
-			loaderStream,
-			loaderPlugin(`${src}/vs/css.js`, `${src}`, 'vs/css'),
-			loaderPlugin(`${src}/vs/nls.js`, `${src}`, 'vs/nls'),
-		);
+		sources = sources.concat([
+			`${src}/vs/css.js`,
+			`${src}/vs/nls.js`
+		]);
 	}
 
-	const files: VinylFile[] = [];
-	const order = (f: VinylFile) => {
-		if (f.path.endsWith('loader.js')) {
-			return 0;
-		}
-		if (f.path.endsWith('css.js')) {
-			return 1;
-		}
-		if (f.path.endsWith('nls.js')) {
-			return 2;
-		}
-		return 3;
-	};
-
+	let isFirst = true;
 	return (
-		loaderStream
+		gulp
+			.src(sources, { base: `${src}` })
 			.pipe(es.through(function (data) {
-				files.push(data);
+				if (isFirst) {
+					isFirst = false;
+					this.emit('data', new VinylFile({
+						path: 'fake',
+						base: '.',
+						contents: Buffer.from(bundledFileHeader)
+					}));
+					this.emit('data', data);
+				} else {
+					this.emit('data', data);
+				}
 			}, function () {
-				files.sort((a, b) => {
-					return order(a) - order(b);
-				});
-				files.unshift(new VinylFile({
-					path: 'fake',
-					base: '.',
-					contents: Buffer.from(bundledFileHeader)
-				}));
 				if (externalLoaderInfo !== undefined) {
-					files.push(new VinylFile({
+					this.emit('data', new VinylFile({
 						path: 'fake2',
 						base: '.',
 						contents: Buffer.from(`require.config(${JSON.stringify(externalLoaderInfo, undefined, 2)});`)
 					}));
-				}
-				for (const file of files) {
-					this.emit('data', file);
 				}
 				this.emit('end');
 			}))

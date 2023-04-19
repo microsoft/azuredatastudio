@@ -63,10 +63,10 @@ class DocumentSymbolBreadcrumbsSource implements IBreadcrumbsDataSource<Document
 		if (!item) {
 			return [];
 		}
-		const chain: Array<OutlineGroup | OutlineElement> = [];
+		let chain: Array<OutlineGroup | OutlineElement> = [];
 		while (item) {
 			chain.push(item);
-			const parent: any = item.parent;
+			let parent: any = item.parent;
 			if (parent instanceof OutlineModel) {
 				break;
 			}
@@ -75,9 +75,9 @@ class DocumentSymbolBreadcrumbsSource implements IBreadcrumbsDataSource<Document
 			}
 			item = parent;
 		}
-		const result: Array<OutlineGroup | OutlineElement> = [];
+		let result: Array<OutlineGroup | OutlineElement> = [];
 		for (let i = chain.length - 1; i >= 0; i--) {
-			const element = chain[i];
+			let element = chain[i];
 			if (this._isFiltered(element)) {
 				break;
 			}
@@ -239,7 +239,7 @@ class DocumentSymbolsOutline implements IOutline<DocumentSymbolItem> {
 
 		const { symbol } = entry;
 		this._editor.revealRangeInCenterIfOutsideViewport(symbol.range, ScrollType.Smooth);
-		const decorationsCollection = this._editor.createDecorationsCollection([{
+		const ids = this._editor.deltaDecorations([], [{
 			range: symbol.range,
 			options: {
 				description: 'document-symbols-outline-range-highlight',
@@ -247,7 +247,7 @@ class DocumentSymbolsOutline implements IOutline<DocumentSymbolItem> {
 				isWholeLine: true
 			}
 		}]);
-		return toDisposable(() => decorationsCollection.clear());
+		return toDisposable(() => this._editor.deltaDecorations(ids, []));
 	}
 
 	captureViewState(): IDisposable {
@@ -282,7 +282,7 @@ class DocumentSymbolsOutline implements IOutline<DocumentSymbolItem> {
 		this._outlineDisposables.add(toDisposable(() => cts.dispose(true)));
 
 		try {
-			const model = await this._outlineModelService.getOrCreate(buffer, cts.token);
+			let model = await this._outlineModelService.getOrCreate(buffer, cts.token);
 			if (cts.token.isCancellationRequested) {
 				// cancelled -> do nothing
 				return;
@@ -403,7 +403,8 @@ class DocumentSymbolsOutlineCreator implements IOutlineCreator<IEditorPane, Docu
 	readonly dispose: () => void;
 
 	constructor(
-		@IOutlineService outlineService: IOutlineService
+		@IOutlineService outlineService: IOutlineService,
+		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 	) {
 		const reg = outlineService.registerOutlineCreator(this);
 		this.dispose = () => reg.dispose();
@@ -426,7 +427,7 @@ class DocumentSymbolsOutlineCreator implements IOutlineCreator<IEditorPane, Docu
 			return undefined;
 		}
 		const firstLoadBarrier = new Barrier();
-		const result = editor.invokeWithinContext(accessor => accessor.get(IInstantiationService).createInstance(DocumentSymbolsOutline, editor!, target, firstLoadBarrier));
+		const result = this._instantiationService.createInstance(DocumentSymbolsOutline, editor, target, firstLoadBarrier);
 		await firstLoadBarrier.wait();
 		return result;
 	}

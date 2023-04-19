@@ -10,20 +10,12 @@ interface IDisposable {
 	dispose(): void;
 }
 
-interface HtmlRenderingHook {
-	/**
-	 * Invoked after the output item has been rendered but before it has been appended to the document.
-	 *
-	 * @return A new `HTMLElement` or `undefined` to continue using the provided element.
-	 */
-	postRender(outputItem: OutputItem, element: HTMLElement): HTMLElement | undefined;
-}
-
 function clearContainer(container: HTMLElement) {
 	while (container.firstChild) {
 		container.removeChild(container.firstChild);
 	}
 }
+
 
 function renderImage(outputInfo: OutputItem, element: HTMLElement): IDisposable {
 	const blob = new Blob([outputInfo.data()], { type: outputInfo.mime });
@@ -72,17 +64,12 @@ const domEval = (container: Element) => {
 	}
 };
 
-function renderHTML(outputInfo: OutputItem, container: HTMLElement, hooks: Iterable<HtmlRenderingHook>): void {
+function renderHTML(outputInfo: OutputItem, container: HTMLElement): void {
 	clearContainer(container);
-	let element: HTMLElement = document.createElement('div');
 	const htmlContent = outputInfo.text();
+	const element = document.createElement('div');
 	const trustedHtml = ttPolicy?.createHTML(htmlContent) ?? htmlContent;
 	element.innerHTML = trustedHtml as string;
-
-	for (const hook of hooks) {
-		element = hook.postRender(outputInfo, element) ?? element;
-	}
-
 	container.appendChild(element);
 	domEval(element);
 }
@@ -180,8 +167,6 @@ function renderText(outputInfo: OutputItem, container: HTMLElement, ctx: Rendere
 
 export const activate: ActivationFunction<void> = (ctx) => {
 	const disposables = new Map<string, IDisposable>();
-	const htmlHooks = new Set<HtmlRenderingHook>();
-
 	const latestContext = ctx as (RendererContext<void> & { readonly settings: { readonly lineLimit: number } });
 
 	const style = document.createElement('style');
@@ -225,7 +210,6 @@ export const activate: ActivationFunction<void> = (ctx) => {
 	}
 	`;
 	document.body.appendChild(style);
-
 	return {
 		renderOutputItem: (outputInfo, element) => {
 			switch (outputInfo.mime) {
@@ -236,7 +220,7 @@ export const activate: ActivationFunction<void> = (ctx) => {
 							return;
 						}
 
-						renderHTML(outputInfo, element, htmlHooks);
+						renderHTML(outputInfo, element);
 					}
 					break;
 				case 'application/javascript':
@@ -283,6 +267,8 @@ export const activate: ActivationFunction<void> = (ctx) => {
 				default:
 					break;
 			}
+
+
 		},
 		disposeOutputItem: (id: string | undefined) => {
 			if (id) {
@@ -290,14 +276,6 @@ export const activate: ActivationFunction<void> = (ctx) => {
 			} else {
 				disposables.forEach(d => d.dispose());
 			}
-		},
-		experimental_registerHtmlRenderingHook: (hook: HtmlRenderingHook): IDisposable => {
-			htmlHooks.add(hook);
-			return {
-				dispose: () => {
-					htmlHooks.delete(hook);
-				}
-			};
 		}
 	};
 };

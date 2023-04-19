@@ -3,25 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Application, Terminal, TerminalCommandId, TerminalCommandIdWithValue, SettingsEditor } from '../../../../automation';
-import { setTerminalTestSettings } from './terminal-helpers';
+import { Application, Terminal, TerminalCommandId, TerminalCommandIdWithValue } from '../../../../automation';
 
 export function setup() {
 	describe('Terminal Editors', () => {
-		let app: Application;
 		let terminal: Terminal;
-		let settingsEditor: SettingsEditor;
-
+		let app: Application;
 		// Acquire automation API
 		before(async function () {
 			app = this.app as Application;
 			terminal = app.workbench.terminal;
-			settingsEditor = app.workbench.settingsEditor;
-			await setTerminalTestSettings(app);
-		});
-
-		after(async function () {
-			await settingsEditor.clearUserSettings();
 		});
 
 		it('should update color of the tab', async () => {
@@ -75,14 +66,13 @@ export function setup() {
 			await terminal.assertEditorGroupCount(1);
 		});
 
-		it('should create a terminal in the editor area by default', async () => {
+		it.skip('should create a terminal in the editor area by default', async () => {
 			await app.workbench.settingsEditor.addUserSetting('terminal.integrated.defaultLocation', '"editor"');
 			// Close the settings editor
 			await app.workbench.quickaccess.runCommand('workbench.action.closeAllEditors');
 			await terminal.createTerminal('editor');
 			await terminal.assertEditorGroupCount(1);
 			await terminal.assertTerminalViewHidden();
-			await app.workbench.settingsEditor.clearUserSettings();
 		});
 	});
 }

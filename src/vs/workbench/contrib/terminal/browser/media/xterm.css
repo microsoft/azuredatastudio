@@ -40,7 +40,6 @@
  */
 
 .xterm {
-	cursor: text;
 	position: relative;
 	user-select: none;
 	-ms-user-select: none;
@@ -129,6 +128,10 @@
 	line-height: normal;
 }
 
+.xterm {
+	cursor: text;
+}
+
 .xterm.enable-mouse-events {
 	/* When mouse events are enabled (eg. tmux), revert to the standard pointer cursor */
 	cursor: default;
@@ -185,10 +188,4 @@
 	position: absolute;
 	top: 0;
 	right: 0;
-	pointer-events: none;
-}
-
-.xterm-decoration-top {
-	z-index: 2;
-	position: relative;
 }

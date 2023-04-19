@@ -121,7 +121,7 @@ export class BlockCommentCommand implements ICommand {
 	}
 
 	public static _createRemoveBlockCommentOperations(r: Range, startToken: string, endToken: string): ISingleEditOperation[] {
-		const res: ISingleEditOperation[] = [];
+		let res: ISingleEditOperation[] = [];
 
 		if (!Range.isEmpty(r)) {
 			// Remove block comment start
@@ -147,7 +147,7 @@ export class BlockCommentCommand implements ICommand {
 	}
 
 	public static _createAddBlockCommentOperations(r: Range, startToken: string, endToken: string, insertSpace: boolean): ISingleEditOperation[] {
-		const res: ISingleEditOperation[] = [];
+		let res: ISingleEditOperation[] = [];
 
 		if (!Range.isEmpty(r)) {
 			// Insert block comment start

@@ -258,12 +258,7 @@ export class DiskFileSystemProvider extends AbstractDiskFileSystemProvider imple
 	private readonly mapHandleToLock = new Map<number, IDisposable>();
 
 	private readonly writeHandles = new Map<number, URI>();
-
-	private static canFlush: boolean = true;
-
-	static configureFlushOnWrite(enabled: boolean): void {
-		DiskFileSystemProvider.canFlush = enabled;
-	}
+	private canFlush: boolean = true;
 
 	async open(resource: URI, opts: IFileOpenOptions): Promise<number> {
 		const filePath = this.toFilePath(resource);
@@ -394,13 +389,13 @@ export class DiskFileSystemProvider extends AbstractDiskFileSystemProvider imple
 
 			// If a handle is closed that was used for writing, ensure
 			// to flush the contents to disk if possible.
-			if (this.writeHandles.delete(fd) && DiskFileSystemProvider.canFlush) {
+			if (this.writeHandles.delete(fd) && this.canFlush) {
 				try {
 					await Promises.fdatasync(fd); // https://github.com/microsoft/vscode/issues/9589
 				} catch (error) {
 					// In some exotic setups it is well possible that node fails to sync
 					// In that case we disable flushing and log the error to our logger
-					DiskFileSystemProvider.configureFlushOnWrite(false);
+					this.canFlush = false;
 					this.logService.error(error);
 				}
 			}

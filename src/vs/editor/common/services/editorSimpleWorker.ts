@@ -11,7 +11,7 @@ import { IRequestHandler } from 'vs/base/common/worker/simpleWorker';
 import { IPosition, Position } from 'vs/editor/common/core/position';
 import { IRange, Range } from 'vs/editor/common/core/range';
 import { DiffComputer, IChange, IDiffComputationResult } from 'vs/editor/common/diff/diffComputer';
-import { EndOfLineSequence, ITextModel } from 'vs/editor/common/model';
+import { EndOfLineSequence } from 'vs/editor/common/model';
 import { IMirrorTextModel, IModelChangedEvent, MirrorTextModel as BaseMirrorModel } from 'vs/editor/common/model/mirrorTextModel';
 import { ensureValidWordDefinition, getWordAtText, IWordAtPosition } from 'vs/editor/common/core/wordHelper';
 import { IInplaceReplaceSupportResult, ILink, TextEdit } from 'vs/editor/common/languages';
@@ -388,12 +388,8 @@ export class EditorSimpleWorker implements IRequestHandler, IDisposable {
 			return null;
 		}
 
-		return EditorSimpleWorker.computeDiff(original, modified, ignoreTrimWhitespace, maxComputationTime);
-	}
-
-	public static computeDiff(originalTextModel: ICommonModel | ITextModel, modifiedTextModel: ICommonModel | ITextModel, ignoreTrimWhitespace: boolean, maxComputationTime: number): IDiffComputationResult | null {
-		const originalLines = originalTextModel.getLinesContent();
-		const modifiedLines = modifiedTextModel.getLinesContent();
+		const originalLines = original.getLinesContent();
+		const modifiedLines = modified.getLinesContent();
 		const diffComputer = new DiffComputer(originalLines, modifiedLines, {
 			shouldComputeCharChanges: true,
 			shouldPostProcessCharChanges: true,
@@ -403,7 +399,7 @@ export class EditorSimpleWorker implements IRequestHandler, IDisposable {
 		});
 
 		const diffResult = diffComputer.computeDiff();
-		const identical = (diffResult.changes.length > 0 ? false : this._modelsAreIdentical(originalTextModel, modifiedTextModel));
+		const identical = (diffResult.changes.length > 0 ? false : this._modelsAreIdentical(original, modified));
 		return {
 			quitEarly: diffResult.quitEarly,
 			identical: identical,
@@ -411,7 +407,7 @@ export class EditorSimpleWorker implements IRequestHandler, IDisposable {
 		};
 	}
 
-	private static _modelsAreIdentical(original: ICommonModel | ITextModel, modified: ICommonModel | ITextModel): boolean {
+	private _modelsAreIdentical(original: ICommonModel, modified: ICommonModel): boolean {
 		const originalLineCount = original.getLineCount();
 		const modifiedLineCount = modified.getLineCount();
 		if (originalLineCount !== modifiedLineCount) {
@@ -543,13 +539,13 @@ export class EditorSimpleWorker implements IRequestHandler, IDisposable {
 		const wordDefRegExp = new RegExp(wordDef, wordDefFlags);
 		const seen = new Set<string>();
 
-		outer: for (const url of modelUrls) {
+		outer: for (let url of modelUrls) {
 			const model = this._getModel(url);
 			if (!model) {
 				continue;
 			}
 
-			for (const word of model.words(wordDefRegExp)) {
+			for (let word of model.words(wordDefRegExp)) {
 				if (word === leadingWord || !isNaN(Number(word))) {
 					continue;
 				}

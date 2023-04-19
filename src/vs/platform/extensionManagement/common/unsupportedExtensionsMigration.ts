@@ -20,25 +20,18 @@ import { ILogService } from 'vs/platform/log/common/log';
 export async function migrateUnsupportedExtensions(extensionManagementService: IExtensionManagementService, galleryService: IExtensionGalleryService, extensionStorageService: IExtensionStorageService, extensionEnablementService: IGlobalExtensionEnablementService, logService: ILogService): Promise<void> {
 	try {
 		const extensionsControlManifest = await extensionManagementService.getExtensionsControlManifest();
-		if (!extensionsControlManifest.deprecated) {
+		if (!extensionsControlManifest.unsupportedPreReleaseExtensions) {
 			return;
 		}
 		const installed = await extensionManagementService.getInstalled(ExtensionType.User);
-		for (const [unsupportedExtensionId, deprecated] of Object.entries(extensionsControlManifest.deprecated)) {
-			if (!deprecated?.extension) {
-				continue;
-			}
-			const { id: preReleaseExtensionId, autoMigrate, preRelease } = deprecated.extension;
-			if (!autoMigrate) {
-				continue;
-			}
+		for (const [unsupportedExtensionId, { id: preReleaseExtensionId, migrateStorage }] of Object.entries(extensionsControlManifest.unsupportedPreReleaseExtensions)) {
 			const unsupportedExtension = installed.find(i => areSameExtensions(i.identifier, { id: unsupportedExtensionId }));
 			// Unsupported Extension is not installed
 			if (!unsupportedExtension) {
 				continue;
 			}
 
-			const gallery = (await galleryService.getExtensions([{ id: preReleaseExtensionId, preRelease }], { targetPlatform: await extensionManagementService.getTargetPlatform(), compatible: true }, CancellationToken.None))[0];
+			const gallery = (await galleryService.getExtensions([{ id: preReleaseExtensionId, preRelease: true }], { targetPlatform: await extensionManagementService.getTargetPlatform(), compatible: true }, CancellationToken.None))[0];
 			if (!gallery) {
 				logService.info(`Skipping migrating '${unsupportedExtension.identifier.id}' extension because, the comaptible target '${preReleaseExtensionId}' extension is not found`);
 				continue;
@@ -59,7 +52,7 @@ export async function migrateUnsupportedExtensions(extensionManagementService: I
 						await extensionEnablementService.disableExtension(preReleaseExtension.identifier);
 						logService.info(`Disabled the pre-release extension '${preReleaseExtension.identifier.id}' because the unsupported extension '${unsupportedExtension.identifier.id}' is disabled`);
 					}
-					if (autoMigrate.storage) {
+					if (migrateStorage) {
 						extensionStorageService.addToMigrationList(getExtensionId(unsupportedExtension.manifest.publisher, unsupportedExtension.manifest.name), getExtensionId(preReleaseExtension.manifest.publisher, preReleaseExtension.manifest.name));
 						logService.info(`Added pre-release extension to the storage migration list`);
 					}

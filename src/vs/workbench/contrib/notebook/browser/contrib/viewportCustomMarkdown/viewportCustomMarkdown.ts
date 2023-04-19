@@ -70,7 +70,7 @@ class NotebookViewportContribution extends Disposable implements INotebookEditor
 			return;
 		}
 
-		const visibleRanges = this._notebookEditor.getVisibleRangesPlusViewportAboveAndBelow();
+		const visibleRanges = this._notebookEditor.getVisibleRangesPlusViewportBelow();
 		cellRangesToIndexes(visibleRanges).forEach(index => {
 			const cell = this._notebookEditor.cellAt(index);
 

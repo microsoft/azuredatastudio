@@ -7,6 +7,7 @@ import { DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import { getNotebookEditorFromEditorPane, INotebookEditor, INotebookEditorOptions } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { INotebookEditorService } from 'vs/workbench/contrib/notebook/browser/notebookEditorService';
 import { ExtHostContext, ExtHostNotebookEditorsShape, ICellEditOperationDto, INotebookDocumentShowOptions, INotebookEditorViewColumnInfo, MainThreadNotebookEditorsShape, NotebookEditorRevealType } from '../common/extHost.protocol';
+import { INotebookDecorationRenderOptions } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { ICellRange } from 'vs/workbench/contrib/notebook/common/notebookRange';
 import { ILogService } from 'vs/platform/log/common/log';
 import { URI, UriComponents } from 'vs/base/common/uri';
@@ -85,7 +86,7 @@ export class MainThreadNotebookEditors implements MainThreadNotebookEditorsShape
 
 	private _updateEditorViewColumns(): void {
 		const result: INotebookEditorViewColumnInfo = Object.create(null);
-		for (const editorPane of this._editorService.visibleEditorPanes) {
+		for (let editorPane of this._editorService.visibleEditorPanes) {
 			const candidate = getNotebookEditorFromEditorPane(editorPane);
 			if (candidate && this._mainThreadEditors.has(candidate.getId())) {
 				result[candidate.getId()] = editorGroupToColumn(this._editorGroupService, editorPane.group);
@@ -132,7 +133,7 @@ export class MainThreadNotebookEditors implements MainThreadNotebookEditorsShape
 		if (notebookEditor) {
 			return notebookEditor.getId();
 		} else {
-			throw new Error(`Notebook Editor creation failure for document ${resource}`);
+			throw new Error(`Notebook Editor creation failure for documenet ${resource}`);
 		}
 	}
 
@@ -161,6 +162,22 @@ export class MainThreadNotebookEditors implements MainThreadNotebookEditorsShape
 				return notebookEditor.revealInCenterIfOutsideViewport(cell);
 			case NotebookEditorRevealType.AtTop:
 				return notebookEditor.revealInViewAtTop(cell);
+		}
+	}
+
+	$registerNotebookEditorDecorationType(key: string, options: INotebookDecorationRenderOptions): void {
+		this._notebookEditorService.registerEditorDecorationType(key, options);
+	}
+
+	$removeNotebookEditorDecorationType(key: string): void {
+		this._notebookEditorService.removeEditorDecorationType(key);
+	}
+
+	$trySetDecorations(id: string, range: ICellRange, key: string): void {
+		const editor = this._notebookEditorService.getNotebookEditor(id);
+		if (editor) {
+			const notebookEditor = editor as INotebookEditor;
+			notebookEditor.setEditorDecorations(key, range);
 		}
 	}
 

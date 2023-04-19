@@ -7,7 +7,7 @@ import { createScanner, Node, parse, ParseError, ParseErrorCode, ParseOptions, p
 import { getParseErrorMessage } from 'vs/base/common/jsonErrorMessages';
 
 function assertKinds(text: string, ...kinds: SyntaxKind[]): void {
-	const scanner = createScanner(text);
+	let scanner = createScanner(text);
 	let kind: SyntaxKind;
 	while ((kind = scanner.scan()) !== SyntaxKind.EOF) {
 		assert.strictEqual(kind, kinds.shift());
@@ -15,15 +15,15 @@ function assertKinds(text: string, ...kinds: SyntaxKind[]): void {
 	assert.strictEqual(kinds.length, 0);
 }
 function assertScanError(text: string, expectedKind: SyntaxKind, scanError: ScanError): void {
-	const scanner = createScanner(text);
+	let scanner = createScanner(text);
 	scanner.scan();
 	assert.strictEqual(scanner.getToken(), expectedKind);
 	assert.strictEqual(scanner.getTokenError(), scanError);
 }
 
 function assertValidParse(input: string, expected: any, options?: ParseOptions): void {
-	const errors: ParseError[] = [];
-	const actual = parse(input, errors, options);
+	let errors: ParseError[] = [];
+	let actual = parse(input, errors, options);
 
 	if (errors.length !== 0) {
 		assert(false, getParseErrorMessage(errors[0].error));
@@ -32,21 +32,21 @@ function assertValidParse(input: string, expected: any, options?: ParseOptions):
 }
 
 function assertInvalidParse(input: string, expected: any, options?: ParseOptions): void {
-	const errors: ParseError[] = [];
-	const actual = parse(input, errors, options);
+	let errors: ParseError[] = [];
+	let actual = parse(input, errors, options);
 
 	assert(errors.length > 0);
 	assert.deepStrictEqual(actual, expected);
 }
 
 function assertTree(input: string, expected: any, expectedErrors: number[] = [], options?: ParseOptions): void {
-	const errors: ParseError[] = [];
-	const actual = parseTree(input, errors, options);
+	let errors: ParseError[] = [];
+	let actual = parseTree(input, errors, options);
 
 	assert.deepStrictEqual(errors.map(e => e.error, expected), expectedErrors);
-	const checkParent = (node: Node) => {
+	let checkParent = (node: Node) => {
 		if (node.children) {
-			for (const child of node.children) {
+			for (let child of node.children) {
 				assert.strictEqual(node, child.parent);
 				delete (<any>child).parent; // delete to avoid recursion in deep equal
 				checkParent(child);
@@ -216,7 +216,7 @@ suite('JSON', () => {
 	});
 
 	test('parse: disallow commments', () => {
-		const options = { disallowComments: true };
+		let options = { disallowComments: true };
 
 		assertValidParse('[ 1, 2, null, "foo" ]', [1, 2, null, 'foo'], options);
 		assertValidParse('{ "hello": [], "world": {} }', { hello: [], world: {} }, options);

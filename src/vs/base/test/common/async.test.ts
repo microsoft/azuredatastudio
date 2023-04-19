@@ -15,11 +15,11 @@ suite('Async', () => {
 	suite('cancelablePromise', function () {
 		test('set token, don\'t wait for inner promise', function () {
 			let canceled = 0;
-			const promise = async.createCancelablePromise(token => {
+			let promise = async.createCancelablePromise(token => {
 				token.onCancellationRequested(_ => { canceled += 1; });
 				return new Promise(resolve => { /*never*/ });
 			});
-			const result = promise.then(_ => assert.ok(false), err => {
+			let result = promise.then(_ => assert.ok(false), err => {
 				assert.strictEqual(canceled, 1);
 				assert.ok(isCancellationError(err));
 			});
@@ -30,11 +30,11 @@ suite('Async', () => {
 
 		test('cancel despite inner promise being resolved', function () {
 			let canceled = 0;
-			const promise = async.createCancelablePromise(token => {
+			let promise = async.createCancelablePromise(token => {
 				token.onCancellationRequested(_ => { canceled += 1; });
 				return Promise.resolve(1234);
 			});
-			const result = promise.then(_ => assert.ok(false), err => {
+			let result = promise.then(_ => assert.ok(false), err => {
 				assert.strictEqual(canceled, 1);
 				assert.ok(isCancellationError(err));
 			});
@@ -88,11 +88,11 @@ suite('Async', () => {
 		});
 
 		test('get inner result', async function () {
-			const promise = async.createCancelablePromise(token => {
+			let promise = async.createCancelablePromise(token => {
 				return async.timeout(12).then(_ => 1234);
 			});
 
-			const result = await promise;
+			let result = await promise;
 			assert.strictEqual(result, 1234);
 		});
 	});
@@ -100,11 +100,11 @@ suite('Async', () => {
 	suite('Throttler', function () {
 		test('non async', function () {
 			let count = 0;
-			const factory = () => {
+			let factory = () => {
 				return Promise.resolve(++count);
 			};
 
-			const throttler = new async.Throttler();
+			let throttler = new async.Throttler();
 
 			return Promise.all([
 				throttler.queue(factory).then((result) => { assert.strictEqual(result, 1); }),
@@ -117,9 +117,9 @@ suite('Async', () => {
 
 		test('async', () => {
 			let count = 0;
-			const factory = () => async.timeout(0).then(() => ++count);
+			let factory = () => async.timeout(0).then(() => ++count);
 
-			const throttler = new async.Throttler();
+			let throttler = new async.Throttler();
 
 			return Promise.all([
 				throttler.queue(factory).then((result) => { assert.strictEqual(result, 1); }),
@@ -139,13 +139,13 @@ suite('Async', () => {
 		});
 
 		test('last factory should be the one getting called', function () {
-			const factoryFactory = (n: number) => () => {
+			let factoryFactory = (n: number) => () => {
 				return async.timeout(0).then(() => n);
 			};
 
-			const throttler = new async.Throttler();
+			let throttler = new async.Throttler();
 
-			const promises: Promise<any>[] = [];
+			let promises: Promise<any>[] = [];
 
 			promises.push(throttler.queue(factoryFactory(1)).then((n) => { assert.strictEqual(n, 1); }));
 			promises.push(throttler.queue(factoryFactory(2)).then((n) => { assert.strictEqual(n, 3); }));
@@ -158,12 +158,12 @@ suite('Async', () => {
 	suite('Delayer', function () {
 		test('simple', () => {
 			let count = 0;
-			const factory = () => {
+			let factory = () => {
 				return Promise.resolve(++count);
 			};
 
-			const delayer = new async.Delayer(0);
-			const promises: Promise<any>[] = [];
+			let delayer = new async.Delayer(0);
+			let promises: Promise<any>[] = [];
 
 			assert(!delayer.isTriggered());
 
@@ -183,12 +183,12 @@ suite('Async', () => {
 
 		test('microtask delay simple', () => {
 			let count = 0;
-			const factory = () => {
+			let factory = () => {
 				return Promise.resolve(++count);
 			};
 
-			const delayer = new async.Delayer(async.MicrotaskDelay);
-			const promises: Promise<any>[] = [];
+			let delayer = new async.Delayer(async.MicrotaskDelay);
+			let promises: Promise<any>[] = [];
 
 			assert(!delayer.isTriggered());
 
@@ -223,11 +223,11 @@ suite('Async', () => {
 
 		test('simple cancel', function () {
 			let count = 0;
-			const factory = () => {
+			let factory = () => {
 				return Promise.resolve(++count);
 			};
 
-			const delayer = new async.Delayer(0);
+			let delayer = new async.Delayer(0);
 
 			assert(!delayer.isTriggered());
 
@@ -246,11 +246,11 @@ suite('Async', () => {
 
 		test('simple cancel microtask', function () {
 			let count = 0;
-			const factory = () => {
+			let factory = () => {
 				return Promise.resolve(++count);
 			};
 
-			const delayer = new async.Delayer(async.MicrotaskDelay);
+			let delayer = new async.Delayer(async.MicrotaskDelay);
 
 			assert(!delayer.isTriggered());
 
@@ -269,12 +269,12 @@ suite('Async', () => {
 
 		test('cancel should cancel all calls to trigger', function () {
 			let count = 0;
-			const factory = () => {
+			let factory = () => {
 				return Promise.resolve(++count);
 			};
 
-			const delayer = new async.Delayer(0);
-			const promises: Promise<any>[] = [];
+			let delayer = new async.Delayer(0);
+			let promises: Promise<any>[] = [];
 
 			assert(!delayer.isTriggered());
 
@@ -296,11 +296,11 @@ suite('Async', () => {
 
 		test('trigger, cancel, then trigger again', function () {
 			let count = 0;
-			const factory = () => {
+			let factory = () => {
 				return Promise.resolve(++count);
 			};
 
-			const delayer = new async.Delayer(0);
+			let delayer = new async.Delayer(0);
 			let promises: Promise<any>[] = [];
 
 			assert(!delayer.isTriggered());
@@ -346,12 +346,12 @@ suite('Async', () => {
 		});
 
 		test('last task should be the one getting called', function () {
-			const factoryFactory = (n: number) => () => {
+			let factoryFactory = (n: number) => () => {
 				return Promise.resolve(n);
 			};
 
-			const delayer = new async.Delayer(0);
-			const promises: Promise<any>[] = [];
+			let delayer = new async.Delayer(0);
+			let promises: Promise<any>[] = [];
 
 			assert(!delayer.isTriggered());
 
@@ -371,7 +371,7 @@ suite('Async', () => {
 
 	suite('sequence', () => {
 		test('simple', () => {
-			const factoryFactory = (n: number) => () => {
+			let factoryFactory = (n: number) => () => {
 				return Promise.resolve(n);
 			};
 
@@ -394,7 +394,7 @@ suite('Async', () => {
 
 	suite('Limiter', () => {
 		test('sync', function () {
-			const factoryFactory = (n: number) => () => {
+			let factoryFactory = (n: number) => () => {
 				return Promise.resolve(n);
 			};
 
@@ -418,7 +418,7 @@ suite('Async', () => {
 		});
 
 		test('async', function () {
-			const factoryFactory = (n: number) => () => async.timeout(0).then(() => n);
+			let factoryFactory = (n: number) => () => async.timeout(0).then(() => n);
 
 			let limiter = new async.Limiter(1);
 			let promises: Promise<any>[] = [];
@@ -440,15 +440,15 @@ suite('Async', () => {
 
 		test('assert degree of paralellism', function () {
 			let activePromises = 0;
-			const factoryFactory = (n: number) => () => {
+			let factoryFactory = (n: number) => () => {
 				activePromises++;
 				assert(activePromises < 6);
 				return async.timeout(0).then(() => { activePromises--; return n; });
 			};
 
-			const limiter = new async.Limiter(5);
+			let limiter = new async.Limiter(5);
 
-			const promises: Promise<any>[] = [];
+			let promises: Promise<any>[] = [];
 			[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].forEach(n => promises.push(limiter.queue(factoryFactory(n))));
 
 			return Promise.all(promises).then((res) => {
@@ -460,13 +460,13 @@ suite('Async', () => {
 
 	suite('Queue', () => {
 		test('simple', function () {
-			const queue = new async.Queue();
+			let queue = new async.Queue();
 
 			let syncPromise = false;
-			const f1 = () => Promise.resolve(true).then(() => syncPromise = true);
+			let f1 = () => Promise.resolve(true).then(() => syncPromise = true);
 
 			let asyncPromise = false;
-			const f2 = () => async.timeout(10).then(() => asyncPromise = true);
+			let f2 = () => async.timeout(10).then(() => asyncPromise = true);
 
 			assert.strictEqual(queue.size, 0);
 
@@ -483,15 +483,15 @@ suite('Async', () => {
 		});
 
 		test('order is kept', function () {
-			const queue = new async.Queue();
+			let queue = new async.Queue();
 
-			const res: number[] = [];
+			let res: number[] = [];
 
-			const f1 = () => Promise.resolve(true).then(() => res.push(1));
-			const f2 = () => async.timeout(10).then(() => res.push(2));
-			const f3 = () => Promise.resolve(true).then(() => res.push(3));
-			const f4 = () => async.timeout(20).then(() => res.push(4));
-			const f5 = () => async.timeout(0).then(() => res.push(5));
+			let f1 = () => Promise.resolve(true).then(() => res.push(1));
+			let f2 = () => async.timeout(10).then(() => res.push(2));
+			let f3 = () => Promise.resolve(true).then(() => res.push(3));
+			let f4 = () => async.timeout(20).then(() => res.push(4));
+			let f5 = () => async.timeout(0).then(() => res.push(5));
 
 			queue.queue(f1);
 			queue.queue(f2);
@@ -507,16 +507,16 @@ suite('Async', () => {
 		});
 
 		test('errors bubble individually but not cause stop', function () {
-			const queue = new async.Queue();
+			let queue = new async.Queue();
 
-			const res: number[] = [];
+			let res: number[] = [];
 			let error = false;
 
-			const f1 = () => Promise.resolve(true).then(() => res.push(1));
-			const f2 = () => async.timeout(10).then(() => res.push(2));
-			const f3 = () => Promise.resolve(true).then(() => Promise.reject(new Error('error')));
-			const f4 = () => async.timeout(20).then(() => res.push(4));
-			const f5 = () => async.timeout(0).then(() => res.push(5));
+			let f1 = () => Promise.resolve(true).then(() => res.push(1));
+			let f2 = () => async.timeout(10).then(() => res.push(2));
+			let f3 = () => Promise.resolve(true).then(() => Promise.reject(new Error('error')));
+			let f4 = () => async.timeout(20).then(() => res.push(4));
+			let f5 = () => async.timeout(0).then(() => res.push(5));
 
 			queue.queue(f1);
 			queue.queue(f2);
@@ -532,15 +532,15 @@ suite('Async', () => {
 		});
 
 		test('order is kept (chained)', function () {
-			const queue = new async.Queue();
+			let queue = new async.Queue();
 
-			const res: number[] = [];
+			let res: number[] = [];
 
-			const f1 = () => Promise.resolve(true).then(() => res.push(1));
-			const f2 = () => async.timeout(10).then(() => res.push(2));
-			const f3 = () => Promise.resolve(true).then(() => res.push(3));
-			const f4 = () => async.timeout(20).then(() => res.push(4));
-			const f5 = () => async.timeout(0).then(() => res.push(5));
+			let f1 = () => Promise.resolve(true).then(() => res.push(1));
+			let f2 = () => async.timeout(10).then(() => res.push(2));
+			let f3 = () => Promise.resolve(true).then(() => res.push(3));
+			let f4 = () => async.timeout(20).then(() => res.push(4));
+			let f5 = () => async.timeout(0).then(() => res.push(5));
 
 			return queue.queue(f1).then(() => {
 				return queue.queue(f2).then(() => {
@@ -560,16 +560,16 @@ suite('Async', () => {
 		});
 
 		test('events', async function () {
-			const queue = new async.Queue();
+			let queue = new async.Queue();
 
 			let drained = false;
 			const onDrained = Event.toPromise(queue.onDrained).then(() => drained = true);
 
-			const res: number[] = [];
+			let res: number[] = [];
 
-			const f1 = () => async.timeout(10).then(() => res.push(2));
-			const f2 = () => async.timeout(20).then(() => res.push(4));
-			const f3 = () => async.timeout(0).then(() => res.push(5));
+			let f1 = () => async.timeout(10).then(() => res.push(2));
+			let f2 = () => async.timeout(20).then(() => res.push(4));
+			let f3 = () => async.timeout(0).then(() => res.push(5));
 
 			const q1 = queue.queue(f1);
 			const q2 = queue.queue(f2);
@@ -589,7 +589,7 @@ suite('Async', () => {
 
 	suite('ResourceQueue', () => {
 		test('simple', async function () {
-			const queue = new async.ResourceQueue();
+			let queue = new async.ResourceQueue();
 
 			await queue.whenDrained(); // returns immediately since empty
 
@@ -651,7 +651,7 @@ suite('Async', () => {
 		});
 
 		test('error case', async () => {
-			const expectedError = new Error('fail');
+			let expectedError = new Error('fail');
 			try {
 				await async.retry(() => {
 					return Promise.reject(expectedError);
@@ -727,13 +727,13 @@ suite('Async', () => {
 
 			// next finishes after async.timeout
 			let firstDone = false;
-			const firstRes = sequentializer.setNext(() => async.timeout(2).then(() => { firstDone = true; return; }));
+			let firstRes = sequentializer.setNext(() => async.timeout(2).then(() => { firstDone = true; return; }));
 
 			let secondDone = false;
-			const secondRes = sequentializer.setNext(() => async.timeout(3).then(() => { secondDone = true; return; }));
+			let secondRes = sequentializer.setNext(() => async.timeout(3).then(() => { secondDone = true; return; }));
 
 			let thirdDone = false;
-			const thirdRes = sequentializer.setNext(() => async.timeout(4).then(() => { thirdDone = true; return; }));
+			let thirdRes = sequentializer.setNext(() => async.timeout(4).then(() => { thirdDone = true; return; }));
 
 			await Promise.all([firstRes, secondRes, thirdRes]);
 			assert.ok(pendingDone);
@@ -1177,7 +1177,7 @@ suite('Async', () => {
 		});
 
 		test('do not accept too much work', async () => {
-			const handled: number[] = [];
+			let handled: number[] = [];
 			const handler = (units: readonly number[]) => handled.push(...units);
 
 			const worker = new async.ThrottledWorker<number>({
@@ -1203,7 +1203,7 @@ suite('Async', () => {
 		});
 
 		test('do not accept too much work (account for max chunk size', async () => {
-			const handled: number[] = [];
+			let handled: number[] = [];
 			const handler = (units: readonly number[]) => handled.push(...units);
 
 			const worker = new async.ThrottledWorker<number>({
@@ -1222,7 +1222,7 @@ suite('Async', () => {
 		});
 
 		test('disposed', async () => {
-			const handled: number[] = [];
+			let handled: number[] = [];
 			const handler = (units: readonly number[]) => handled.push(...units);
 
 			const worker = new async.ThrottledWorker<number>({

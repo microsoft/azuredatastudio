@@ -16,7 +16,7 @@ import { CursorChangeReason, ICursorSelectionChangedEvent } from 'vs/editor/comm
 import { CursorMoveCommands } from 'vs/editor/common/cursor/cursorMoveCommands';
 import { Range } from 'vs/editor/common/core/range';
 import { Selection } from 'vs/editor/common/core/selection';
-import { IEditorContribution, IEditorDecorationsCollection, ScrollType } from 'vs/editor/common/editorCommon';
+import { IEditorContribution, ScrollType } from 'vs/editor/common/editorCommon';
 import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
 import { FindMatch, ITextModel, OverviewRulerLane, TrackedRangeStickiness, MinimapPosition } from 'vs/editor/common/model';
 import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
@@ -173,7 +173,7 @@ class InsertCursorAtEndOfEachLineSelected extends EditorAction {
 		}
 
 		for (let i = selection.startLineNumber; i < selection.endLineNumber; i++) {
-			const currentLineMaxColumn = model.getLineMaxColumn(i);
+			let currentLineMaxColumn = model.getLineMaxColumn(i);
 			result.push(new Selection(i, currentLineMaxColumn, i, currentLineMaxColumn));
 		}
 		if (selection.endColumn > 1) {
@@ -190,7 +190,7 @@ class InsertCursorAtEndOfEachLineSelected extends EditorAction {
 		const selections = editor.getSelections();
 		const viewModel = editor._getViewModel();
 		const previousCursorState = viewModel.getCursorStates();
-		const newSelections: Selection[] = [];
+		let newSelections: Selection[] = [];
 		selections.forEach((sel) => this.getCursorsForSelection(sel, model, newSelections));
 
 		if (newSelections.length > 0) {
@@ -219,7 +219,7 @@ class InsertCursorAtEndOfLineSelected extends EditorAction {
 		const selections = editor.getSelections();
 		const lineCount = editor.getModel().getLineCount();
 
-		const newSelections: Selection[] = [];
+		let newSelections: Selection[] = [];
 		for (let i = selections[0].startLineNumber; i <= lineCount; i++) {
 			newSelections.push(new Selection(i, selections[0].startColumn, i, selections[0].endColumn));
 		}
@@ -251,7 +251,7 @@ class InsertCursorAtTopOfLineSelected extends EditorAction {
 
 		const selections = editor.getSelections();
 
-		const newSelections: Selection[] = [];
+		let newSelections: Selection[] = [];
 		for (let i = selections[0].startLineNumber; i >= 1; i--) {
 			newSelections.push(new Selection(i, selections[0].startColumn, i, selections[0].endColumn));
 		}
@@ -570,7 +570,7 @@ export class MultiCursorSelectionController extends Disposable implements IEdito
 				const selectionsContainSameText = modelRangesContainSameText(this._editor.getModel(), allSelections, matchCase);
 				if (!selectionsContainSameText) {
 					const model = this._editor.getModel();
-					const resultingSelections: Selection[] = [];
+					let resultingSelections: Selection[] = [];
 					for (let i = 0, len = allSelections.length; i < len; i++) {
 						resultingSelections[i] = this._expandEmptyToWord(model, allSelections[i]);
 					}
@@ -846,7 +846,7 @@ export class SelectionHighlighter extends Disposable implements IEditorContribut
 
 	private readonly editor: ICodeEditor;
 	private _isEnabled: boolean;
-	private readonly _decorations: IEditorDecorationsCollection;
+	private decorations: string[];
 	private readonly updateSoon: RunOnceScheduler;
 	private state: SelectionHighlighterState | null;
 
@@ -857,7 +857,7 @@ export class SelectionHighlighter extends Disposable implements IEditorContribut
 		super();
 		this.editor = editor;
 		this._isEnabled = editor.getOption(EditorOption.selectionHighlight);
-		this._decorations = editor.createDecorationsCollection();
+		this.decorations = [];
 		this.updateSoon = this._register(new RunOnceScheduler(() => this._update(), 300));
 		this.state = null;
 
@@ -986,7 +986,7 @@ export class SelectionHighlighter extends Disposable implements IEditorContribut
 		this.state = newState;
 
 		if (!this.state) {
-			this._decorations.clear();
+			this.decorations = this.editor.deltaDecorations(this.decorations, []);
 			return;
 		}
 
@@ -1042,7 +1042,7 @@ export class SelectionHighlighter extends Disposable implements IEditorContribut
 			};
 		});
 
-		this._decorations.set(decorations);
+		this.decorations = this.editor.deltaDecorations(this.decorations, decorations);
 	}
 
 	private static readonly _SELECTION_HIGHLIGHT_OVERVIEW = ModelDecorationOptions.register({

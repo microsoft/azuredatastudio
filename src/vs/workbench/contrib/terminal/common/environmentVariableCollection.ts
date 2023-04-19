@@ -10,9 +10,7 @@ import { VariableResolver } from 'vs/workbench/contrib/terminal/common/terminalE
 export class MergedEnvironmentVariableCollection implements IMergedEnvironmentVariableCollection {
 	readonly map: Map<string, IExtensionOwnedEnvironmentVariableMutator[]> = new Map();
 
-	constructor(
-		readonly collections: ReadonlyMap<string, IEnvironmentVariableCollection>
-	) {
+	constructor(collections: Map<string, IEnvironmentVariableCollection>) {
 		collections.forEach((collection, extensionIdentifier) => {
 			const it = collection.map.entries();
 			let next = it.next();

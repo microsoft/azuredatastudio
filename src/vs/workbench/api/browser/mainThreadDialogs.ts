@@ -6,6 +6,7 @@
 import { URI } from 'vs/base/common/uri';
 import { MainThreadDiaglogsShape, MainContext, MainThreadDialogOpenOptions, MainThreadDialogSaveOptions } from '../common/extHost.protocol';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { forEach } from 'vs/base/common/collections';
 import { IFileDialogService, IOpenDialogOptions, ISaveDialogOptions } from 'vs/platform/dialogs/common/dialogs';
 
 @extHostNamedCustomer(MainContext.MainThreadDialogs)
@@ -50,9 +51,7 @@ export class MainThreadDialogs implements MainThreadDiaglogsShape {
 		};
 		if (options?.filters) {
 			result.filters = [];
-			for (const [key, value] of Object.entries(options.filters)) {
-				result.filters!.push({ name: key, extensions: value });
-			}
+			forEach(options.filters, entry => result.filters!.push({ name: entry.key, extensions: entry.value }));
 		}
 		return result;
 	}
@@ -65,9 +64,7 @@ export class MainThreadDialogs implements MainThreadDiaglogsShape {
 		};
 		if (options?.filters) {
 			result.filters = [];
-			for (const [key, value] of Object.entries(options.filters)) {
-				result.filters.push({ name: key, extensions: value });
-			}
+			forEach(options.filters, entry => result.filters!.push({ name: entry.key, extensions: entry.value }));
 		}
 		return result;
 	}

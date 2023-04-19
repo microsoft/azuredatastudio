@@ -82,8 +82,7 @@ export class DialogMainService implements IDialogMainService {
 		const dialogOptions: OpenDialogOptions = {
 			title: options.title,
 			buttonLabel: options.buttonLabel,
-			filters: options.filters,
-			defaultPath: options.defaultPath
+			filters: options.filters
 		};
 
 		// Ensure properties

@@ -74,7 +74,7 @@ suite('extractSelection', () => {
 	test('extractSelection returns original withSelection URI', async () => {
 		let uri = URI.parse('file:///some/file.js');
 
-		const uriWithSelection = withSelection(URI.parse('file:///some/file.js'), { startLineNumber: 73, startColumn: 84, endLineNumber: 83, endColumn: 52 });
+		let uriWithSelection = withSelection(URI.parse('file:///some/file.js'), { startLineNumber: 73, startColumn: 84, endLineNumber: 83, endColumn: 52 });
 		assert.strictEqual(uri.toString(), extractSelection(uriWithSelection).uri.toString());
 
 		uri = URI.parse('file:///some/file.js');

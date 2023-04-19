@@ -27,7 +27,6 @@ const WIN_PATH = new RegExp(`(${WIN_ABSOLUTE_PATH.source}|${WIN_RELATIVE_PATH.so
 const POSIX_PATH = /((?:\~|\.)?(?:\/[\w\.-]*)+)/;
 const LINE_COLUMN = /(?:\:([\d]+))?(?:\:([\d]+))?/;
 const PATH_LINK_REGEX = new RegExp(`${platform.isWindows ? WIN_PATH.source : POSIX_PATH.source}${LINE_COLUMN.source}`, 'g');
-const LINE_COLUMN_REGEX = /:([\d]+)(?::([\d]+))?$/;
 
 const MAX_LENGTH = 2000;
 
@@ -105,17 +104,7 @@ export class LinkDetector {
 	private createWebLink(url: string): Node {
 		const link = this.createLink(url);
 
-		let uri = URI.parse(url);
-		// if the URI ends with something like `foo.js:12:3`, parse
-		// that into a fragment to reveal that location (#150702)
-		const lineCol = LINE_COLUMN_REGEX.exec(uri.path);
-		if (lineCol) {
-			uri = uri.with({
-				path: uri.path.slice(0, lineCol.index),
-				fragment: `L${lineCol[0].slice(1)}`
-			});
-		}
-
+		const uri = URI.parse(url);
 		this.decorateLink(link, uri, async () => {
 
 			if (uri.scheme === Schemas.file) {
@@ -130,13 +119,7 @@ export class LinkDetector {
 					return;
 				}
 
-				await this.editorService.openEditor({
-					resource: fileUri,
-					options: {
-						pinned: true,
-						selection: lineCol ? { startLineNumber: +lineCol[1], startColumn: +lineCol[2] } : undefined,
-					},
-				});
+				await this.editorService.openEditor({ resource: fileUri, options: { pinned: true } });
 				return;
 			}
 

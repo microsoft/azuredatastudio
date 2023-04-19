@@ -32,10 +32,8 @@ import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/com
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 
 type IgnoreRecommendationClassification = {
-	owner: 'sandy081';
-	comment: 'Report when a recommendation is ignored';
-	recommendationReason: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; isMeasurement: true; comment: 'Reason why extension is recommended' };
-	extensionId: { classification: 'PublicNonPersonalData'; purpose: 'FeatureInsight'; comment: 'Id of the extension recommendation that is being ignored' };
+	recommendationReason: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; isMeasurement: true };
+	extensionId: { classification: 'PublicNonPersonalData'; purpose: 'FeatureInsight' };
 };
 
 export class ExtensionRecommendationsService extends Disposable implements IExtensionRecommendationsService {
@@ -246,7 +244,6 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 				if (recommendationReason) {
 					/* __GDPR__
 						"extensionGallery:install:recommendations" : {
-							"owner": "sandy081",
 							"recommendationReason": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
 							"${include}": [
 								"${GalleryExtensionTelemetryData}"

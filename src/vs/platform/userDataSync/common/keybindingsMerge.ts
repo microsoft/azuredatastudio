@@ -39,7 +39,7 @@ export async function merge(localContent: string, remoteContent: string, baseCon
 
 	const userbindings: string[] = [...local, ...remote, ...(base || [])].map(keybinding => keybinding.key);
 	const normalizedKeys = await userDataSyncUtilService.resolveUserBindings(userbindings);
-	const keybindingsMergeResult = computeMergeResultByKeybinding(local, remote, base, normalizedKeys);
+	let keybindingsMergeResult = computeMergeResultByKeybinding(local, remote, base, normalizedKeys);
 
 	if (!keybindingsMergeResult.hasLocalForwarded && !keybindingsMergeResult.hasRemoteForwarded) {
 		// No changes found between local and remote.

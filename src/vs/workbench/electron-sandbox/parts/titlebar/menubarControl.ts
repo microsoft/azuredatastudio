@@ -104,9 +104,9 @@ export class NativeMenubarControl extends MenubarControl {
 	}
 
 	private populateMenuItems(menu: IMenu, menuToPopulate: IMenubarMenu, keybindings: { [id: string]: IMenubarKeybinding | undefined }) {
-		const groups = menu.getActions();
+		let groups = menu.getActions();
 
-		for (const group of groups) {
+		for (let group of groups) {
 			const [, actions] = group;
 
 			actions.forEach(menuItem => {
@@ -128,7 +128,7 @@ export class NativeMenubarControl extends MenubarControl {
 					this.populateMenuItems(menuToDispose, submenu, keybindings);
 
 					if (submenu.items.length > 0) {
-						const menubarSubmenuItem: IMenubarMenuItemSubmenu = {
+						let menubarSubmenuItem: IMenubarMenuItemSubmenu = {
 							id: menuItem.id,
 							label: title,
 							submenu: submenu
@@ -144,7 +144,7 @@ export class NativeMenubarControl extends MenubarControl {
 						menuToPopulate.items.push(...actions);
 					}
 
-					const menubarMenuItem: IMenubarMenuItemAction = {
+					let menubarMenuItem: IMenubarMenuItemAction = {
 						id: menuItem.id,
 						label: title
 					};

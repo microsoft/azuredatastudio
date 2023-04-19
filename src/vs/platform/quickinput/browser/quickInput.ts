@@ -84,10 +84,10 @@ export class QuickInputService extends Themable implements IQuickInputService {
 			...options
 		}));
 
-		controller.layout(host.dimension, host.offset.quickPickTop);
+		controller.layout(host.dimension, host.offset?.top ?? 0);
 
 		// Layout changes
-		this._register(host.onDidLayout(dimension => controller.layout(dimension, host.offset.quickPickTop)));
+		this._register(host.onDidLayout(dimension => controller.layout(dimension, host.offset?.top ?? 0)));
 
 		// Context keys
 		this._register(controller.onShow(() => this.resetContextKeys()));
@@ -113,7 +113,9 @@ export class QuickInputService extends Themable implements IQuickInputService {
 
 		this.resetContextKeys();
 
-		key?.set(true);
+		if (key) {
+			key.set(true);
+		}
 	}
 
 	private resetContextKeys() {

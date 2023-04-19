@@ -52,7 +52,7 @@ export default class MergeConflictCodeLensProvider implements vscode.CodeLensPro
 			return null;
 		}
 
-		const conflicts = await this.tracker.getConflicts(document);
+		let conflicts = await this.tracker.getConflicts(document);
 		const conflictsCount = conflicts?.length ?? 0;
 		vscode.commands.executeCommand('setContext', 'mergeConflictsCount', conflictsCount);
 
@@ -60,28 +60,28 @@ export default class MergeConflictCodeLensProvider implements vscode.CodeLensPro
 			return null;
 		}
 
-		const items: vscode.CodeLens[] = [];
+		let items: vscode.CodeLens[] = [];
 
 		conflicts.forEach(conflict => {
-			const acceptCurrentCommand: vscode.Command = {
+			let acceptCurrentCommand: vscode.Command = {
 				command: 'merge-conflict.accept.current',
 				title: localize('acceptCurrentChange', 'Accept Current Change'),
 				arguments: ['known-conflict', conflict]
 			};
 
-			const acceptIncomingCommand: vscode.Command = {
+			let acceptIncomingCommand: vscode.Command = {
 				command: 'merge-conflict.accept.incoming',
 				title: localize('acceptIncomingChange', 'Accept Incoming Change'),
 				arguments: ['known-conflict', conflict]
 			};
 
-			const acceptBothCommand: vscode.Command = {
+			let acceptBothCommand: vscode.Command = {
 				command: 'merge-conflict.accept.both',
 				title: localize('acceptBothChanges', 'Accept Both Changes'),
 				arguments: ['known-conflict', conflict]
 			};
 
-			const diffCommand: vscode.Command = {
+			let diffCommand: vscode.Command = {
 				command: 'merge-conflict.compare',
 				title: localize('compareChanges', 'Compare Changes'),
 				arguments: [conflict]

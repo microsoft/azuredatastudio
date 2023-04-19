@@ -14,13 +14,13 @@ import { Marker, RelatedInformation, ResourceMarkers } from 'vs/workbench/contri
 import { MarkersView } from 'vs/workbench/contrib/markers/browser/markersView';
 import { MenuId, registerAction2, Action2 } from 'vs/platform/actions/common/actions';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { MarkersViewMode, Markers, MarkersContextKeys } from 'vs/workbench/contrib/markers/common/markers';
+import Constants from 'vs/workbench/contrib/markers/browser/constants';
 import Messages from 'vs/workbench/contrib/markers/browser/messages';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { IMarkersView } from 'vs/workbench/contrib/markers/browser/markers';
+import { ActivityUpdater, IMarkersView } from 'vs/workbench/contrib/markers/browser/markers';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { Disposable, IDisposable, MutableDisposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment, IStatusbarEntry } from 'vs/workbench/services/statusbar/browser/statusbar';
 import { IMarkerService, MarkerStatistics } from 'vs/platform/markers/common/markers';
 import { ViewContainer, IViewContainersRegistry, Extensions as ViewContainerExtensions, ViewContainerLocation, IViewsRegistry, IViewsService } from 'vs/workbench/common/views';
@@ -31,54 +31,53 @@ import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation
 import { Codicon } from 'vs/base/common/codicons';
 import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
 import { ViewAction } from 'vs/workbench/browser/parts/views/viewPane';
-import { IActivityService, NumberBadge } from 'vs/workbench/services/activity/common/activity';
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: Markers.MARKER_OPEN_ACTION_ID,
+	id: Constants.MARKER_OPEN_ACTION_ID,
 	weight: KeybindingWeight.WorkbenchContrib,
-	when: ContextKeyExpr.and(MarkersContextKeys.MarkerFocusContextKey),
+	when: ContextKeyExpr.and(Constants.MarkerFocusContextKey),
 	primary: KeyCode.Enter,
 	mac: {
 		primary: KeyCode.Enter,
 		secondary: [KeyMod.CtrlCmd | KeyCode.DownArrow]
 	},
 	handler: (accessor, args: any) => {
-		const markersView = accessor.get(IViewsService).getActiveViewWithId<MarkersView>(Markers.MARKERS_VIEW_ID)!;
+		const markersView = accessor.get(IViewsService).getActiveViewWithId<MarkersView>(Constants.MARKERS_VIEW_ID)!;
 		markersView.openFileAtElement(markersView.getFocusElement(), false, false, true);
 	}
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: Markers.MARKER_OPEN_SIDE_ACTION_ID,
+	id: Constants.MARKER_OPEN_SIDE_ACTION_ID,
 	weight: KeybindingWeight.WorkbenchContrib,
-	when: ContextKeyExpr.and(MarkersContextKeys.MarkerFocusContextKey),
+	when: ContextKeyExpr.and(Constants.MarkerFocusContextKey),
 	primary: KeyMod.CtrlCmd | KeyCode.Enter,
 	mac: {
 		primary: KeyMod.WinCtrl | KeyCode.Enter
 	},
 	handler: (accessor, args: any) => {
-		const markersView = accessor.get(IViewsService).getActiveViewWithId<MarkersView>(Markers.MARKERS_VIEW_ID)!;
+		const markersView = accessor.get(IViewsService).getActiveViewWithId<MarkersView>(Constants.MARKERS_VIEW_ID)!;
 		markersView.openFileAtElement(markersView.getFocusElement(), false, true, true);
 	}
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: Markers.MARKER_SHOW_PANEL_ID,
+	id: Constants.MARKER_SHOW_PANEL_ID,
 	weight: KeybindingWeight.WorkbenchContrib,
 	when: undefined,
 	primary: undefined,
 	handler: async (accessor, args: any) => {
-		await accessor.get(IViewsService).openView(Markers.MARKERS_VIEW_ID);
+		await accessor.get(IViewsService).openView(Constants.MARKERS_VIEW_ID);
 	}
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: Markers.MARKER_SHOW_QUICK_FIX,
+	id: Constants.MARKER_SHOW_QUICK_FIX,
 	weight: KeybindingWeight.WorkbenchContrib,
-	when: MarkersContextKeys.MarkerFocusContextKey,
+	when: Constants.MarkerFocusContextKey,
 	primary: KeyMod.CtrlCmd | KeyCode.Period,
 	handler: (accessor, args: any) => {
-		const markersView = accessor.get(IViewsService).getActiveViewWithId<MarkersView>(Markers.MARKERS_VIEW_ID)!;
+		const markersView = accessor.get(IViewsService).getActiveViewWithId<MarkersView>(Constants.MARKERS_VIEW_ID)!;
 		const focusedElement = markersView.getFocusElement();
 		if (focusedElement instanceof Marker) {
 			markersView.showQuickFixes(focusedElement);
@@ -97,12 +96,6 @@ Registry.as<IConfigurationRegistry>(Extensions.Configuration).registerConfigurat
 			'description': Messages.PROBLEMS_PANEL_CONFIGURATION_AUTO_REVEAL,
 			'type': 'boolean',
 			'default': true
-		},
-		'problems.defaultViewMode': {
-			'description': Messages.PROBLEMS_PANEL_CONFIGURATION_VIEW_MODE,
-			'type': 'string',
-			'default': 'tree',
-			'enum': ['table', 'tree'],
 		},
 		'problems.showCurrentInStatus': {
 			'description': Messages.PROBLEMS_PANEL_CONFIGURATION_SHOW_CURRENT_STATUS,
@@ -126,17 +119,17 @@ const markersViewIcon = registerIcon('markers-view-icon', Codicon.warning, local
 
 // markers view container
 const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
-	id: Markers.MARKERS_CONTAINER_ID,
+	id: Constants.MARKERS_CONTAINER_ID,
 	title: Messages.MARKERS_PANEL_TITLE_PROBLEMS,
 	icon: markersViewIcon,
 	hideIfEmpty: true,
 	order: 0,
-	ctorDescriptor: new SyncDescriptor(ViewPaneContainer, [Markers.MARKERS_CONTAINER_ID, { mergeViewWithContainerWhenSingleView: true, donotShowContainerTitleWhenMergedWithContainer: true }]),
-	storageId: Markers.MARKERS_VIEW_STORAGE_ID,
+	ctorDescriptor: new SyncDescriptor(ViewPaneContainer, [Constants.MARKERS_CONTAINER_ID, { mergeViewWithContainerWhenSingleView: true, donotShowContainerTitleWhenMergedWithContainer: true }]),
+	storageId: Constants.MARKERS_VIEW_STORAGE_ID,
 }, ViewContainerLocation.Panel, { donotRegisterOpenCommand: true });
 
 Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{
-	id: Markers.MARKERS_VIEW_ID,
+	id: Constants.MARKERS_VIEW_ID,
 	containerIcon: markersViewIcon,
 	name: Messages.MARKERS_PANEL_TITLE_PROBLEMS,
 	canToggleVisibility: false,
@@ -152,50 +145,9 @@ Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews
 
 // workbench
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
+workbenchRegistry.registerWorkbenchContribution(ActivityUpdater, LifecyclePhase.Restored);
 
 // actions
-registerAction2(class extends ViewAction<IMarkersView> {
-	constructor() {
-		super({
-			id: `workbench.actions.table.${Markers.MARKERS_VIEW_ID}.viewAsTree`,
-			title: localize('viewAsTree', "View as Tree"),
-			menu: {
-				id: MenuId.ViewTitle,
-				when: ContextKeyExpr.and(ContextKeyExpr.equals('view', Markers.MARKERS_VIEW_ID), MarkersContextKeys.MarkersViewModeContextKey.isEqualTo(MarkersViewMode.Table)),
-				group: 'navigation',
-				order: 3
-			},
-			icon: Codicon.listTree,
-			viewId: Markers.MARKERS_VIEW_ID
-		});
-	}
-
-	async runInView(serviceAccessor: ServicesAccessor, view: IMarkersView): Promise<void> {
-		view.setViewMode(MarkersViewMode.Tree);
-	}
-});
-
-registerAction2(class extends ViewAction<IMarkersView> {
-	constructor() {
-		super({
-			id: `workbench.actions.table.${Markers.MARKERS_VIEW_ID}.viewAsTable`,
-			title: localize('viewAsTable', "View as Table"),
-			menu: {
-				id: MenuId.ViewTitle,
-				when: ContextKeyExpr.and(ContextKeyExpr.equals('view', Markers.MARKERS_VIEW_ID), MarkersContextKeys.MarkersViewModeContextKey.isEqualTo(MarkersViewMode.Tree)),
-				group: 'navigation',
-				order: 3
-			},
-			icon: Codicon.listFlat,
-			viewId: Markers.MARKERS_VIEW_ID
-		});
-	}
-
-	async runInView(serviceAccessor: ServicesAccessor, view: IMarkersView): Promise<void> {
-		view.setViewMode(MarkersViewMode.Table);
-	}
-});
-
 registerAction2(class extends Action2 {
 	constructor() {
 		super({
@@ -206,15 +158,15 @@ registerAction2(class extends Action2 {
 		});
 	}
 	async run(accessor: ServicesAccessor): Promise<void> {
-		accessor.get(IViewsService).openView(Markers.MARKERS_VIEW_ID, true);
+		accessor.get(IViewsService).openView(Constants.MARKERS_VIEW_ID, true);
 	}
 });
 
 registerAction2(class extends ViewAction<IMarkersView> {
 	constructor() {
-		const when = ContextKeyExpr.and(FocusedViewContext.isEqualTo(Markers.MARKERS_VIEW_ID), MarkersContextKeys.MarkersTreeVisibilityContextKey, MarkersContextKeys.RelatedInformationFocusContextKey.toNegated());
+		const when = ContextKeyExpr.and(FocusedViewContext.isEqualTo(Constants.MARKERS_VIEW_ID), Constants.MarkersTreeVisibilityContextKey, Constants.RelatedInformationFocusContextKey.toNegated());
 		super({
-			id: Markers.MARKER_COPY_ACTION_ID,
+			id: Constants.MARKER_COPY_ACTION_ID,
 			title: { value: localize('copyMarker', "Copy"), original: 'Copy' },
 			menu: {
 				id: MenuId.ProblemsPanelContext,
@@ -226,7 +178,7 @@ registerAction2(class extends ViewAction<IMarkersView> {
 				primary: KeyMod.CtrlCmd | KeyCode.KeyC,
 				when
 			},
-			viewId: Markers.MARKERS_VIEW_ID
+			viewId: Constants.MARKERS_VIEW_ID
 		});
 	}
 	async runInView(serviceAccessor: ServicesAccessor, markersView: IMarkersView): Promise<void> {
@@ -254,14 +206,14 @@ registerAction2(class extends ViewAction<IMarkersView> {
 registerAction2(class extends ViewAction<IMarkersView> {
 	constructor() {
 		super({
-			id: Markers.MARKER_COPY_MESSAGE_ACTION_ID,
+			id: Constants.MARKER_COPY_MESSAGE_ACTION_ID,
 			title: { value: localize('copyMessage', "Copy Message"), original: 'Copy Message' },
 			menu: {
 				id: MenuId.ProblemsPanelContext,
-				when: MarkersContextKeys.MarkerFocusContextKey,
+				when: Constants.MarkerFocusContextKey,
 				group: 'navigation'
 			},
-			viewId: Markers.MARKERS_VIEW_ID
+			viewId: Constants.MARKERS_VIEW_ID
 		});
 	}
 	async runInView(serviceAccessor: ServicesAccessor, markersView: IMarkersView): Promise<void> {
@@ -276,14 +228,14 @@ registerAction2(class extends ViewAction<IMarkersView> {
 registerAction2(class extends ViewAction<IMarkersView> {
 	constructor() {
 		super({
-			id: Markers.RELATED_INFORMATION_COPY_MESSAGE_ACTION_ID,
+			id: Constants.RELATED_INFORMATION_COPY_MESSAGE_ACTION_ID,
 			title: { value: localize('copyMessage', "Copy Message"), original: 'Copy Message' },
 			menu: {
 				id: MenuId.ProblemsPanelContext,
-				when: MarkersContextKeys.RelatedInformationFocusContextKey,
+				when: Constants.RelatedInformationFocusContextKey,
 				group: 'navigation'
 			},
-			viewId: Markers.MARKERS_VIEW_ID
+			viewId: Constants.MARKERS_VIEW_ID
 		});
 	}
 	async runInView(serviceAccessor: ServicesAccessor, markersView: IMarkersView): Promise<void> {
@@ -298,14 +250,14 @@ registerAction2(class extends ViewAction<IMarkersView> {
 registerAction2(class extends ViewAction<IMarkersView> {
 	constructor() {
 		super({
-			id: Markers.FOCUS_PROBLEMS_FROM_FILTER,
+			id: Constants.FOCUS_PROBLEMS_FROM_FILTER,
 			title: localize('focusProblemsList', "Focus problems view"),
 			keybinding: {
-				when: MarkersContextKeys.MarkerViewFilterFocusContextKey,
+				when: Constants.MarkerViewFilterFocusContextKey,
 				weight: KeybindingWeight.WorkbenchContrib,
 				primary: KeyMod.CtrlCmd | KeyCode.DownArrow
 			},
-			viewId: Markers.MARKERS_VIEW_ID
+			viewId: Constants.MARKERS_VIEW_ID
 		});
 	}
 	async runInView(serviceAccessor: ServicesAccessor, markersView: IMarkersView): Promise<void> {
@@ -316,14 +268,14 @@ registerAction2(class extends ViewAction<IMarkersView> {
 registerAction2(class extends ViewAction<IMarkersView> {
 	constructor() {
 		super({
-			id: Markers.MARKERS_VIEW_FOCUS_FILTER,
+			id: Constants.MARKERS_VIEW_FOCUS_FILTER,
 			title: localize('focusProblemsFilter', "Focus problems filter"),
 			keybinding: {
-				when: FocusedViewContext.isEqualTo(Markers.MARKERS_VIEW_ID),
+				when: FocusedViewContext.isEqualTo(Constants.MARKERS_VIEW_ID),
 				weight: KeybindingWeight.WorkbenchContrib,
 				primary: KeyMod.CtrlCmd | KeyCode.KeyF
 			},
-			viewId: Markers.MARKERS_VIEW_ID
+			viewId: Constants.MARKERS_VIEW_ID
 		});
 	}
 	async runInView(serviceAccessor: ServicesAccessor, markersView: IMarkersView): Promise<void> {
@@ -334,14 +286,14 @@ registerAction2(class extends ViewAction<IMarkersView> {
 registerAction2(class extends ViewAction<IMarkersView> {
 	constructor() {
 		super({
-			id: Markers.MARKERS_VIEW_SHOW_MULTILINE_MESSAGE,
+			id: Constants.MARKERS_VIEW_SHOW_MULTILINE_MESSAGE,
 			title: { value: localize('show multiline', "Show message in multiple lines"), original: 'Problems: Show message in multiple lines' },
 			category: localize('problems', "Problems"),
 			menu: {
 				id: MenuId.CommandPalette,
-				when: ContextKeyExpr.has(getVisbileViewContextKey(Markers.MARKERS_VIEW_ID))
+				when: ContextKeyExpr.has(getVisbileViewContextKey(Constants.MARKERS_VIEW_ID))
 			},
-			viewId: Markers.MARKERS_VIEW_ID
+			viewId: Constants.MARKERS_VIEW_ID
 		});
 	}
 	async runInView(serviceAccessor: ServicesAccessor, markersView: IMarkersView): Promise<void> {
@@ -352,14 +304,14 @@ registerAction2(class extends ViewAction<IMarkersView> {
 registerAction2(class extends ViewAction<IMarkersView> {
 	constructor() {
 		super({
-			id: Markers.MARKERS_VIEW_SHOW_SINGLELINE_MESSAGE,
+			id: Constants.MARKERS_VIEW_SHOW_SINGLELINE_MESSAGE,
 			title: { value: localize('show singleline', "Show message in single line"), original: 'Problems: Show message in single line' },
 			category: localize('problems', "Problems"),
 			menu: {
 				id: MenuId.CommandPalette,
-				when: ContextKeyExpr.has(getVisbileViewContextKey(Markers.MARKERS_VIEW_ID))
+				when: ContextKeyExpr.has(getVisbileViewContextKey(Constants.MARKERS_VIEW_ID))
 			},
-			viewId: Markers.MARKERS_VIEW_ID
+			viewId: Constants.MARKERS_VIEW_ID
 		});
 	}
 	async runInView(serviceAccessor: ServicesAccessor, markersView: IMarkersView): Promise<void> {
@@ -370,15 +322,15 @@ registerAction2(class extends ViewAction<IMarkersView> {
 registerAction2(class extends ViewAction<IMarkersView> {
 	constructor() {
 		super({
-			id: Markers.MARKERS_VIEW_CLEAR_FILTER_TEXT,
+			id: Constants.MARKERS_VIEW_CLEAR_FILTER_TEXT,
 			title: localize('clearFiltersText', "Clear filters text"),
 			category: localize('problems', "Problems"),
 			keybinding: {
-				when: MarkersContextKeys.MarkerViewFilterFocusContextKey,
+				when: Constants.MarkerViewFilterFocusContextKey,
 				weight: KeybindingWeight.WorkbenchContrib,
 				primary: KeyCode.Escape
 			},
-			viewId: Markers.MARKERS_VIEW_ID
+			viewId: Constants.MARKERS_VIEW_ID
 		});
 	}
 	async runInView(serviceAccessor: ServicesAccessor, markersView: IMarkersView): Promise<void> {
@@ -389,16 +341,16 @@ registerAction2(class extends ViewAction<IMarkersView> {
 registerAction2(class extends ViewAction<IMarkersView> {
 	constructor() {
 		super({
-			id: `workbench.actions.treeView.${Markers.MARKERS_VIEW_ID}.collapseAll`,
+			id: `workbench.actions.treeView.${Constants.MARKERS_VIEW_ID}.collapseAll`,
 			title: localize('collapseAll', "Collapse All"),
 			menu: {
 				id: MenuId.ViewTitle,
-				when: ContextKeyExpr.and(ContextKeyExpr.equals('view', Markers.MARKERS_VIEW_ID), MarkersContextKeys.MarkersViewModeContextKey.isEqualTo(MarkersViewMode.Tree)),
+				when: ContextKeyExpr.equals('view', Constants.MARKERS_VIEW_ID),
 				group: 'navigation',
 				order: 2,
 			},
 			icon: Codicon.collapseAll,
-			viewId: Markers.MARKERS_VIEW_ID
+			viewId: Constants.MARKERS_VIEW_ID
 		});
 	}
 	async runInView(serviceAccessor: ServicesAccessor, view: IMarkersView): Promise<void> {
@@ -409,11 +361,11 @@ registerAction2(class extends ViewAction<IMarkersView> {
 registerAction2(class extends Action2 {
 	constructor() {
 		super({
-			id: `workbench.actions.treeView.${Markers.MARKERS_VIEW_ID}.filter`,
+			id: `workbench.actions.treeView.${Constants.MARKERS_VIEW_ID}.filter`,
 			title: localize('filter', "Filter"),
 			menu: {
 				id: MenuId.ViewTitle,
-				when: ContextKeyExpr.and(ContextKeyExpr.equals('view', Markers.MARKERS_VIEW_ID), MarkersContextKeys.MarkersViewSmallLayoutContextKey.negate()),
+				when: ContextKeyExpr.and(ContextKeyExpr.equals('view', Constants.MARKERS_VIEW_ID), Constants.MarkersViewSmallLayoutContextKey.negate()),
 				group: 'navigation',
 				order: 1,
 			},
@@ -425,16 +377,16 @@ registerAction2(class extends Action2 {
 registerAction2(class extends Action2 {
 	constructor() {
 		super({
-			id: Markers.TOGGLE_MARKERS_VIEW_ACTION_ID,
+			id: Constants.TOGGLE_MARKERS_VIEW_ACTION_ID,
 			title: Messages.MARKERS_PANEL_TOGGLE_LABEL,
 		});
 	}
 	async run(accessor: ServicesAccessor): Promise<void> {
 		const viewsService = accessor.get(IViewsService);
-		if (viewsService.isViewVisible(Markers.MARKERS_VIEW_ID)) {
-			viewsService.closeView(Markers.MARKERS_VIEW_ID);
+		if (viewsService.isViewVisible(Constants.MARKERS_VIEW_ID)) {
+			viewsService.closeView(Constants.MARKERS_VIEW_ID);
 		} else {
-			viewsService.openView(Markers.MARKERS_VIEW_ID, true);
+			viewsService.openView(Constants.MARKERS_VIEW_ID, true);
 		}
 	}
 });
@@ -514,26 +466,3 @@ class MarkersStatusBarContributions extends Disposable implements IWorkbenchCont
 }
 
 workbenchRegistry.registerWorkbenchContribution(MarkersStatusBarContributions, LifecyclePhase.Restored);
-
-class ActivityUpdater extends Disposable implements IWorkbenchContribution {
-
-	private readonly activity = this._register(new MutableDisposable<IDisposable>());
-
-	constructor(
-		@IActivityService private readonly activityService: IActivityService,
-		@IMarkerService private readonly markerService: IMarkerService
-	) {
-		super();
-		this._register(this.markerService.onMarkerChanged(() => this.updateBadge()));
-		this.updateBadge();
-	}
-
-	private updateBadge(): void {
-		const { errors, warnings, infos } = this.markerService.getStatistics();
-		const total = errors + warnings + infos;
-		const message = localize('totalProblems', 'Total {0} Problems', total);
-		this.activity.value = this.activityService.showViewActivity(Markers.MARKERS_VIEW_ID, { badge: new NumberBadge(total, () => message) });
-	}
-}
-
-workbenchRegistry.registerWorkbenchContribution(ActivityUpdater, LifecyclePhase.Restored);

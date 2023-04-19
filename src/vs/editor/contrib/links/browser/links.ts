@@ -163,16 +163,14 @@ export class LinkDetector extends Disposable implements IEditorContribution {
 			}
 		}
 
-		this.editor.changeDecorations((changeAccessor) => {
-			const decorations = changeAccessor.deltaDecorations(oldDecorations, newDecorations);
+		const decorations = this.editor.deltaDecorations(oldDecorations, newDecorations);
 
-			this.currentOccurrences = {};
-			this.activeLinkDecorationId = null;
-			for (let i = 0, len = decorations.length; i < len; i++) {
-				const occurence = new LinkOccurrence(links[i], decorations[i]);
-				this.currentOccurrences[occurence.decorationId] = occurence;
-			}
-		});
+		this.currentOccurrences = {};
+		this.activeLinkDecorationId = null;
+		for (let i = 0, len = decorations.length; i < len; i++) {
+			const occurence = new LinkOccurrence(links[i], decorations[i]);
+			this.currentOccurrences[occurence.decorationId] = occurence;
+		}
 	}
 
 	private _onEditorMouseMove(mouseEvent: ClickLinkMouseEvent, withKey: ClickLinkKeyboardEvent | null): void {
@@ -248,7 +246,7 @@ export class LinkDetector extends Disposable implements IEditorContribution {
 				}
 			}
 
-			return this.openerService.open(uri, { openToSide, fromUserGesture, allowContributedOpeners: true, allowCommands: true, fromWorkspace: true });
+			return this.openerService.open(uri, { openToSide, fromUserGesture, allowContributedOpeners: true, allowCommands: true });
 
 		}, err => {
 			const messageOrError =

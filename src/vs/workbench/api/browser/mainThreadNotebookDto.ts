@@ -96,7 +96,6 @@ export namespace NotebookDto {
 		if (data.editType === CellExecutionUpdateType.Output) {
 			return {
 				editType: data.editType,
-				cellHandle: data.cellHandle,
 				append: data.append,
 				outputs: data.outputs.map(fromNotebookOutputDto)
 			};

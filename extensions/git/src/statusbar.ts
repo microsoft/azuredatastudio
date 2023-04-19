@@ -24,8 +24,7 @@ class CheckoutStatusBar {
 
 	get command(): Command | undefined {
 		const rebasing = !!this.repository.rebaseCommit;
-		const isBranchProtected = this.repository.isBranchProtected();
-		const title = `${isBranchProtected ? '$(lock)' : '$(git-branch)'} ${this.repository.headLabel}${rebasing ? ` (${localize('rebasing', 'Rebasing')})` : ''}`;
+		const title = `$(git-branch) ${this.repository.headLabel}${rebasing ? ` (${localize('rebasing', 'Rebasing')})` : ''}`;
 
 		return {
 			command: 'git.checkout',
@@ -145,7 +144,10 @@ class SyncStatusBar {
 					text += this.repository.syncLabel;
 				}
 
-				command = 'git.sync';
+				const config = workspace.getConfiguration('git', Uri.file(this.repository.root));
+				const rebaseWhenSync = config.get<string>('rebaseWhenSync');
+
+				command = rebaseWhenSync ? 'git.syncRebase' : 'git.sync';
 				tooltip = this.repository.syncTooltip;
 			} else {
 				icon = '$(cloud-upload)';

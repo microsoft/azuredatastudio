@@ -157,7 +157,7 @@ export class WalkThroughPart extends EditorPane {
 		this.content.addEventListener('click', event => {
 			for (let node = event.target as HTMLElement; node; node = node.parentNode as HTMLElement) {
 				if (node instanceof HTMLAnchorElement && node.href) {
-					const baseElement = window.document.getElementsByTagName('base')[0] || window.location;
+					let baseElement = window.document.getElementsByTagName('base')[0] || window.location;
 					if (baseElement && node.href.indexOf(baseElement.href) >= 0 && node.hash) {
 						const scrollTarget = this.content.querySelector(node.hash);
 						const innerContent = this.content.firstElementChild;
@@ -291,7 +291,9 @@ export class WalkThroughPart extends EditorPane {
 					this.updateSizeClasses();
 					this.decorateContent();
 					this.contentDisposables.push(this.keybindingService.onDidUpdateKeybindings(() => this.decorateContent()));
-					input.onReady?.(this.content.firstElementChild as HTMLElement, store);
+					if (input.onReady) {
+						input.onReady(this.content.firstElementChild as HTMLElement, store);
+					}
 					this.scrollbar.scanDomNode();
 					this.loadTextEditorViewState(input);
 					this.updatedScrollPosition();
@@ -369,7 +371,9 @@ export class WalkThroughPart extends EditorPane {
 						this.multiCursorModifier();
 					}
 				}));
-				input.onReady?.(innerContent, store);
+				if (input.onReady) {
+					input.onReady(innerContent, store);
+				}
 				this.scrollbar.scanDomNode();
 				this.loadTextEditorViewState(input);
 				this.updatedScrollPosition();

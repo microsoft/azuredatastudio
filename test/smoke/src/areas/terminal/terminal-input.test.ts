@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Application, Terminal, SettingsEditor } from '../../../../automation';
-import { setTerminalTestSettings } from './terminal-helpers';
 
 export function setup() {
 	describe('Terminal Input', () => {
@@ -16,11 +15,6 @@ export function setup() {
 			const app = this.app as Application;
 			terminal = app.workbench.terminal;
 			settingsEditor = app.workbench.settingsEditor;
-			await setTerminalTestSettings(app);
-		});
-
-		after(async function () {
-			await settingsEditor.clearUserSettings();
 		});
 
 		describe('Auto replies', function () {
@@ -36,6 +30,12 @@ export function setup() {
 				// on a new line to avoid cursor move/line switching sequences
 				await terminal.runCommandInTerminal(`"\r${text}`, true);
 			}
+
+			it.skip('should automatically reply to default "Terminate batch job (Y/N)"', async () => { // TODO: #139076
+				await terminal.createTerminal();
+				await writeTextForAutoReply('Terminate batch job (Y/N)?');
+				await terminal.waitForTerminalText(buffer => buffer.some(line => line.match(/\?.*Y/)));
+			});
 
 			it('should automatically reply to a custom entry', async () => {
 				await settingsEditor.addUserSetting('terminal.integrated.autoReplies', '{ "foo": "bar" }');
