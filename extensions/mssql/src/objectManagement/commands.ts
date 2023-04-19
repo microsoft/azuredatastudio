@@ -140,7 +140,7 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 		operation: async (operation) => {
 			try {
 				const startTime = Date.now();
-				await service.drop(connectionUri, context.nodeInfo!.metadata!.urn);
+				await service.drop(connectionUri, context.nodeInfo.nodeType as NodeType, context.nodeInfo!.metadata!.urn);
 				TelemetryReporter.sendTelemetryEvent(TelemetryActions.DeleteObject, {
 					objectType: context.nodeInfo!.nodeType
 				}, {
@@ -192,7 +192,7 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 		operation: async (operation) => {
 			try {
 				const startTime = Date.now();
-				await service.rename(connectionUri, context.nodeInfo!.metadata!.urn, newName);
+				await service.rename(connectionUri, context.nodeInfo.nodeType as NodeType, context.nodeInfo!.metadata!.urn, newName);
 				TelemetryReporter.sendTelemetryEvent(TelemetryActions.RenameObject, {
 					objectType: context.nodeInfo!.nodeType
 				}, {

@@ -1578,6 +1578,7 @@ export interface RenameObjectRequestParams {
 	connectionUri: string;
 	newName: string;
 	objectUrn: string;
+	objectType: mssql.ObjectManagement.NodeType;
 }
 
 export namespace RenameObjectRequest {
@@ -1587,6 +1588,7 @@ export namespace RenameObjectRequest {
 export interface DropObjectRequestParams {
 	connectionUri: string;
 	objectUrn: string;
+	objectType: mssql.ObjectManagement.NodeType;
 }
 
 export namespace DropObjectRequest {

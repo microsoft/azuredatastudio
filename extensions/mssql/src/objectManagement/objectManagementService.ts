@@ -54,12 +54,12 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		return this.runWithErrorHandling(contracts.DisposeViewRequest.type, params);
 	}
 
-	async rename(connectionUri: string, objectUrn: string, newName: string): Promise<void> {
-		const params: contracts.RenameObjectRequestParams = { connectionUri, objectUrn, newName };
+	async rename(connectionUri: string, objectType: NodeType, objectUrn: string, newName: string): Promise<void> {
+		const params: contracts.RenameObjectRequestParams = { connectionUri, objectUrn, newName, objectType };
 		return this.runWithErrorHandling(contracts.RenameObjectRequest.type, params);
 	}
-	async drop(connectionUri: string, objectUrn: string): Promise<void> {
-		const params: contracts.DropObjectRequestParams = { connectionUri, objectUrn };
+	async drop(connectionUri: string, objectType: NodeType, objectUrn: string): Promise<void> {
+		const params: contracts.DropObjectRequestParams = { connectionUri, objectUrn, objectType };
 		return this.runWithErrorHandling(contracts.DropObjectRequest.type, params);
 	}
 }
@@ -96,13 +96,10 @@ export class TestObjectManagementService implements IObjectManagementService {
 			}, 100);
 		});
 	}
-	async rename(connectionUri: string, objectUrn: string, newName: string): Promise<void> {
+	async rename(connectionUri: string, objectType: NodeType, objectUrn: string, newName: string): Promise<void> {
 		return this.delayAndResolve();
 	}
-	async drop(connectionUri: string, objectUrn: string): Promise<void> {
-		return this.delayAndResolve();
-	}
-	async create(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
+	async drop(connectionUri: string, objectType: NodeType, objectUrn: string): Promise<void> {
 		return this.delayAndResolve();
 	}
 	private getLoginView(isNewObject: boolean, name: string): ObjectManagement.LoginViewInfo {
