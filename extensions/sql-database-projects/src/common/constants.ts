@@ -155,7 +155,7 @@ export const dontUseProfile = localize('dontUseProfile', "Don't use profile");
 export const browseForProfileWithIcon = `$(folder) ${localize('browseForProfile', "Browse for profile")}`;
 export const chooseAction = localize('chooseAction', "Choose action");
 export const chooseSqlcmdVarsToModify = localize('chooseSqlcmdVarsToModify', "Choose SQLCMD variables to modify");
-export const enterNewValueForVar = (varName: string) => localize('enterNewValueForVar', "Enter new value for variable '{0}'", varName);
+export const enterNewValueForVar = (varName: string) => localize('enterNewValueForVar', "Enter new default value for variable '{0}'", varName);
 export const enterNewSqlCmdVariableName = localize('enterNewSqlCmdVariableName', "Enter new SQLCMD Variable name");
 export const enterNewSqlCmdVariableDefaultValue = (varName: string) => localize('enterNewSqlCmdVariableDefaultValue', "Enter default value for SQLCMD variable '{0}'", varName);
 export const sqlcmdVariableAlreadyExists = localize('sqlcmdVariableAlreadyExists', "A SQLCMD Variable with the same name already exists in this project");
