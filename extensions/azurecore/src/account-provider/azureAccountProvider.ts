@@ -169,7 +169,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 						key: authResult.account.homeAccountId,
 						token: authResult.accessToken,
 						tokenType: authResult.tokenType,
-						expiresOn: authResult.account.idTokenClaims.exp
+						expiresOn: authResult.account.idTokenClaims.exp!
 					};
 					// Add to account's token cache
 					if (!account.properties.tokenMap) {
@@ -230,7 +230,8 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 	private isValidToken(accessToken: Token): boolean {
 		const currentTime = new Date().getTime() / 1000;
-		return (accessToken && Number(accessToken.expiresOn) - currentTime > 2 * 60); // threshold = 2 mins
+		return (accessToken && accessToken.expiresOn !== undefined
+			&& Number(accessToken.expiresOn) - currentTime > 2 * 60); // threshold = 2 mins
 	}
 
 	private async _getSecurityToken(account: AzureAccount, resource: azdata.AzureResource): Promise<MultiTenantTokenResponse | undefined> {
