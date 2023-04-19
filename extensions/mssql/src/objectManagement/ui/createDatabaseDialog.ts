@@ -29,7 +29,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		if (!this.objectInfo.name) {
 			errors.push(localizedConstants.NameCannotBeEmptyError);
 		}
-		if (this._model.databaseNames.some(name => name.toLowerCase() === this.objectInfo.name)) {
+		if (this._model.databaseNames.some(name => name.toLowerCase() === this.objectInfo.name.toLowerCase())) {
 			errors.push(localizedConstants.DatabaseExistsError(this.objectInfo.name));
 		}
 		return errors;
@@ -59,7 +59,8 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 
 	protected async initializeUI(): Promise<void> {
 		let generalSection = this.initializeGeneralSection();
-		this.formContainer.addItems([generalSection]);
+		let advancedSection = this.initializeAdvancedSection();
+		this.formContainer.addItems([generalSection, advancedSection]);
 	}
 
 	private initializeGeneralSection(): azdata.GroupContainer {
@@ -86,5 +87,9 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 			ownerContainer,
 			collationContainer,
 		], false);
+	}
+
+	private initializeAdvancedSection(): azdata.GroupContainer {
+		return this.createGroup(localizedConstants.AdvancedSectionHeader, [], true, true);
 	}
 }
