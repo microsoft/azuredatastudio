@@ -612,7 +612,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	protected set messagesElementVisible(visible: boolean) {
 		if (visible) {
 			if (this._useDefaultMessageBoxLocation) {
-				// only do the append when the messageElement doesn't have parent element.
+				// To avoid stealing focus from the user, only reset the keyboard focus when the message is not currently visible.
 				if (!this._messageElement!.parentNode) {
 					DOM.prepend(this._modalContent!, this._messageElement!);
 					this.setInitialFocusedElement();
