@@ -612,10 +612,8 @@ export abstract class Modal extends Disposable implements IThemable {
 	protected set messagesElementVisible(visible: boolean) {
 		if (visible) {
 			if (this._useDefaultMessageBoxLocation) {
-				if (!this._messageElement!.parentNode) {
-					DOM.prepend(this._modalContent!, this._messageElement!);
-					this.setInitialFocusedElement();
-				}
+				DOM.prepend(this._modalContent!, this._messageElement!);
+				this.setInitialFocusedElement();
 			}
 		} else {
 			// only do the removal when the messageElement has parent element.
