@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nb } from 'azdata';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { mssqlProviderName, mysqlProviderName, pgsqlProviderName } from 'sql/platform/connection/common/constants';
 import { localize } from 'vs/nls';
 
 export interface FutureInternal extends nb.IFuture {
@@ -14,6 +14,8 @@ export interface FutureInternal extends nb.IFuture {
 export namespace notebookConstants {
 	export const SQL = 'SQL';
 	export const SQL_CONNECTION_PROVIDER = mssqlProviderName;
+	export const MYSQL_CONNECTION_PROVIDER = mysqlProviderName;
+	export const PGSQL_CONNECTION_PROVIDER = pgsqlProviderName;
 	export const sqlKernel: string = localize('sqlKernel', "SQL");
 	export const sqlKernelSpec: nb.IKernelSpec = ({
 		name: sqlKernel,
