@@ -27,7 +27,7 @@ import { ShellCommandOptions } from '../tools/shellExecutionHelper';
 import { BuildHelper } from '../tools/buildHelper';
 import { readPublishProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
-import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings, INugetPackageReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 import { UpdateProjectFromDatabaseDialog } from '../dialogs/updateProjectFromDatabaseDialog';
@@ -65,7 +65,7 @@ export enum TaskExecutionMode {
 	executeAndScript = 2
 }
 
-export type AddDatabaseReferenceSettings = ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings;
+export type AddDatabaseReferenceSettings = ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings | INugetPackageReferenceSettings;
 
 interface FileWatcherStatus {
 	fileWatcher: vscode.FileSystemWatcher;
@@ -1193,11 +1193,13 @@ export class ProjectsController {
 				await project.addProjectReference(projectReferenceSettings);
 			} else if ((<ISystemDatabaseReferenceSettings>settings).systemDb !== undefined) {
 				await project.addSystemDatabaseReference(<ISystemDatabaseReferenceSettings>settings);
-			} else {
+			} else if ((<IDacpacReferenceSettings>settings).dacpacFileLocation !== undefined) {
 				// update dacpacFileLocation to relative path to project file
 				const dacpacRefSettings = settings as IDacpacReferenceSettings;
 				dacpacRefSettings.dacpacFileLocation = vscode.Uri.file(path.relative(project.projectFolderPath, dacpacRefSettings.dacpacFileLocation.fsPath));
 				await project.addDatabaseReference(dacpacRefSettings);
+			} else {
+				await project.addNugetPackageReference(<INugetPackageReferenceSettings>settings);
 			}
 
 			this.refreshProjectsTree(context);
