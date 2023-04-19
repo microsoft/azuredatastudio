@@ -63,7 +63,7 @@ export function parseVersion(version: string): IParsedVersion | null {
 		};
 	}
 
-	let m = version.match(VERSION_REGEXP);
+	const m = version.match(VERSION_REGEXP);
 	if (!m) {
 		return null;
 	}
@@ -85,12 +85,12 @@ export function normalizeVersion(version: IParsedVersion | null): INormalizedVer
 		return null;
 	}
 
-	let majorBase = version.majorBase,
-		majorMustEqual = version.majorMustEqual,
-		minorBase = version.minorBase,
-		minorMustEqual = version.minorMustEqual,
-		patchBase = version.patchBase,
-		patchMustEqual = version.patchMustEqual;
+	const majorBase = version.majorBase;
+	const majorMustEqual = version.majorMustEqual;
+	const minorBase = version.minorBase;
+	let minorMustEqual = version.minorMustEqual;
+	const patchBase = version.patchBase;
+	let patchMustEqual = version.patchMustEqual;
 
 	if (version.hasCaret) {
 		if (majorBase === 0) {
@@ -148,14 +148,14 @@ export function isValidVersion(_inputVersion: string | INormalizedVersion, _inpu
 		return false;
 	}
 
-	let majorBase = version.majorBase;
-	let minorBase = version.minorBase;
-	let patchBase = version.patchBase;
+	const majorBase = version.majorBase;
+	const minorBase = version.minorBase;
+	const patchBase = version.patchBase;
 
 	let desiredMajorBase = desiredVersion.majorBase;
 	let desiredMinorBase = desiredVersion.minorBase;
 	let desiredPatchBase = desiredVersion.patchBase;
-	let desiredNotBefore = desiredVersion.notBefore;
+	const desiredNotBefore = desiredVersion.notBefore;
 
 	let majorMustEqual = desiredVersion.majorMustEqual;
 	let minorMustEqual = desiredVersion.minorMustEqual;
@@ -357,7 +357,7 @@ export function isEngineValid(engine: string, version: string, date: ProductDate
 // {{SQL CARBON EDIT}} Add vs code version so we can compare both engines
 function isVersionValid(currentVersion: string, date: ProductDate, requestedVersion: string, parseError: string, notCompatibleError: string, notices: string[] = []): boolean {
 
-	let desiredVersion = normalizeVersion(parseVersion(requestedVersion));
+	const desiredVersion = normalizeVersion(parseVersion(requestedVersion));
 	if (!desiredVersion) {
 		notices.push(parseError); // {{SQL CARBON EDIT}} ADS-specific error messages
 		return false;

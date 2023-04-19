@@ -67,7 +67,7 @@ export class AccountManagementService implements IAccountManagementService {
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		this._mementoContext = new Memento(AccountManagementService.ACCOUNT_MEMENTO, this._storageService);
-		const mementoObj = this._mementoContext.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE);
+		const mementoObj = this._mementoContext.getMemento(StorageScope.APPLICATION, StorageTarget.MACHINE);
 		this._accountStore = this._instantiationService.createInstance(AccountStore, mementoObj);
 
 		// Setup the event emitters
