@@ -9,18 +9,15 @@ import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { CreateDatabaseDocUrl, NodeType } from '../constants';
 import * as localizedConstants from '../localizedConstants';
 
+const DefaultValue = '<default>';
+
 export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.Database, ObjectManagement.CreateDatabaseViewInfo> {
-	private readonly _model: ObjectManagement.CreateDatabaseViewInfo;
+	private _model: ObjectManagement.CreateDatabaseViewInfo;
 
 	private _nameInput: azdata.InputBoxComponent;
 
 	constructor(objectManagementService: IObjectManagementService, connectionUri: string, objectExplorerContext: azdata.ObjectExplorerContext) {
 		super(NodeType.Database, CreateDatabaseDocUrl, objectManagementService, connectionUri, true, localizedConstants.CreateDatabaseTitle, objectExplorerContext);
-		this._model = {
-			objectInfo: {
-				name: undefined
-			}
-		}
 	}
 
 	protected override async onConfirmation(): Promise<boolean> {
@@ -31,6 +28,9 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		const errors: string[] = [];
 		if (!this.objectInfo.name) {
 			errors.push(localizedConstants.NameCannotBeEmptyError);
+		}
+		if (this._model.databaseNames.some(name => name.toLowerCase() === this.objectInfo.name)) {
+			errors.push(localizedConstants.DatabaseExistsError(this.objectInfo.name));
 		}
 		return errors;
 	}
@@ -43,6 +43,17 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 	}
 
 	protected async initializeData(): Promise<ObjectManagement.CreateDatabaseViewInfo> {
+		let databaseNames = ['TestDB'];
+		let loginNames = ['sa', 'TestLogin'];
+		let collationNames = ['SQL_Latin1_General_CP1_CI_AS', 'French_CI_AS', 'Modern_Spanish_CI_AS'];
+		this._model = {
+			objectInfo: {
+				name: undefined
+			},
+			databaseNames,
+			loginNames,
+			collationNames
+		}
 		return this._model;
 	}
 
@@ -54,7 +65,6 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 	private initializeGeneralSection(): azdata.GroupContainer {
 		this._nameInput = this.modelView.modelBuilder.inputBox().withProps({
 			ariaLabel: localizedConstants.NameText,
-			enabled: this.isNewObject,
 			value: this.objectInfo.name,
 			width: DefaultInputWidth
 		}).component();
@@ -65,8 +75,16 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		}));
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this._nameInput);
 
+		let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, [DefaultValue, ...this._model.loginNames], DefaultValue);
+		const ownerContainer = this.createLabelInputContainer(localizedConstants.OwnerText, ownerDropbox);
+
+		let collationDropbox = this.createDropdown(localizedConstants.CollationText, [DefaultValue, ...this._model.collationNames], DefaultValue);
+		const collationContainer = this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox);
+
 		return this.createGroup(localizedConstants.GeneralSectionHeader, [
-			nameContainer
+			nameContainer,
+			ownerContainer,
+			collationContainer,
 		], false);
 	}
 }

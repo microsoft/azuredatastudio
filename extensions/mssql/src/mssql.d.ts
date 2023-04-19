@@ -1168,6 +1168,9 @@ declare module 'mssql' {
 		}
 
 		export interface CreateDatabaseViewInfo extends ObjectViewInfo<Database> {
+			databaseNames: string[];
+			loginNames: string[];
+			collationNames: string[];
 		}
 
 		export interface DeleteDatabaseViewInfo extends ObjectViewInfo<Database> {

@@ -135,6 +135,9 @@ export const PasswordCannotBeEmptyError = localize('objectManagement.passwordCan
 export const PasswordsNotMatchError = localize('objectManagement.passwordsNotMatchError', "Password must match the confirm password.");
 export const InvalidPasswordError = localize('objectManagement.invalidPasswordError', "Password doesn't meet the complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy");
 export const LoginNotSelectedError = localize('objectManagement.loginNotSelectedError', "Login is not selected.");
+export const DatabaseExistsError = (dbName: string) => localize('objectManagement.databaseExistsError', "Database '{0}' already exists. Choose a different database name.", dbName);
+export const OwnerText = localize('objectManagement.ownerLabel', "Owner");
+export const CollationText = localize('objectManagement.collationLabel', "Collation");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");
@@ -168,10 +171,10 @@ export const OwnedSchemaSectionHeader = localize('objectManagement.user.ownedSch
 export const MembershipSectionHeader = localize('objectManagement.user.membershipLabel', "Membership");
 
 // Create Database
-export const CreateDatabaseTitle = localize('admin.createDatabaseTitle', "Create Database");
+export const CreateDatabaseTitle = localize('objectManagement.createDatabaseTitle', "Create Database");
 
 // Delete Database
-export const DeleteDatabaseTitle = localize('admin.deleteDatabaseTitle', "Delete Database");
-export const DatabaseNameLabel = localize('admin.databaseNameLabel', "Database");
-export const CloseConnectionsCheckboxLabel = localize('admin.closeConnectionsCheckboxLabel', "Close existing connections");
-export const DeleteBackupsCheckboxLabel = localize('admin.deleteBackupsCheckboxLabel', "Delete backup and restore history information for database");
+export const DeleteDatabaseTitle = localize('objectManagement.deleteDatabaseTitle', "Delete Database");
+export const DatabaseNameLabel = localize('objectManagement.databaseNameLabel', "Database");
+export const CloseConnectionsCheckboxLabel = localize('objectManagement.closeConnectionsCheckboxLabel', "Close existing connections");
+export const DeleteBackupsCheckboxLabel = localize('objectManagement.deleteBackupsCheckboxLabel', "Delete backup and restore history information for database");
