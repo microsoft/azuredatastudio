@@ -95,7 +95,7 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 			isNewObject: false,
 			database: context.connectionProfile!.databaseName!,
 			objectType: context.nodeInfo.nodeType as NodeType,
-			objectName: '',
+			objectName: context.nodeInfo.label,
 			parentUrn: parentUrn,
 			objectUrn: context.nodeInfo!.metadata!.urn,
 			objectExplorerContext: context
