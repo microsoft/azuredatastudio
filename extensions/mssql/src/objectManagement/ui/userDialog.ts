@@ -6,7 +6,7 @@ import * as azdata from 'azdata';
 import { DefaultInputWidth, ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { AlterUserDocUrl, AuthenticationType, CreateUserDocUrl, UserType } from '../constants';
+import { AlterUserDocUrl, CreateUserDocUrl } from '../constants';
 import { getAuthenticationTypeByDisplayName, getAuthenticationTypeDisplayName, getUserTypeByDisplayName, getUserTypeDisplayName, isValidSQLPassword } from '../utils';
 
 export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User, ObjectManagement.UserViewInfo> {
@@ -48,7 +48,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		if (!this.objectInfo.name) {
 			errors.push(localizedConstants.NameCannotBeEmptyError);
 		}
-		if (this.objectInfo.type === UserType.Contained && this.objectInfo.authenticationType === AuthenticationType.Sql) {
+		if (this.objectInfo.type === ObjectManagement.UserType.Contained && this.objectInfo.authenticationType === ObjectManagement.AuthenticationType.Sql) {
 			if (!this.objectInfo.password) {
 				errors.push(localizedConstants.PasswordCannotBeEmptyError);
 			}
@@ -59,7 +59,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 				&& (this.options.isNewObject || this.objectInfo.password !== this.originalObjectInfo.password)) {
 				errors.push(localizedConstants.InvalidPasswordError);
 			}
-		} else if (this.objectInfo.type === UserType.WithLogin) {
+		} else if (this.objectInfo.type === ObjectManagement.UserType.WithLogin) {
 			if (!this.objectInfo.loginName) {
 				errors.push(localizedConstants.LoginNotSelectedError);
 			}

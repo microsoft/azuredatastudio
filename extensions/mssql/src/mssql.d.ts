@@ -879,7 +879,7 @@ declare module 'mssql' {
 		/**
 		 * Object types.
 		 */
-		export enum NodeType {
+		export const enum NodeType {
 			Column = "Column",
 			Database = "Database",
 			ServerLevelLogin = "ServerLevelLogin",
@@ -976,7 +976,7 @@ declare module 'mssql' {
 		/**
 		 * The authentication types.
 		 */
-		export enum AuthenticationType {
+		export const enum AuthenticationType {
 			Windows = 'Windows',
 			Sql = 'Sql',
 			AzureActiveDirectory = 'AAD'
@@ -1099,7 +1099,7 @@ declare module 'mssql' {
 		/**
 		 * User types.
 		 */
-		export enum UserType {
+		export const enum UserType {
 			/**
 			 * User with a server level login.
 			 */

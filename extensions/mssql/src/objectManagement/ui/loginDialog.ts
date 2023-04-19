@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import { DefaultInputWidth, ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { AlterLoginDocUrl, AuthenticationType, CreateLoginDocUrl, PublicServerRoleName } from '../constants';
+import { AlterLoginDocUrl, CreateLoginDocUrl, PublicServerRoleName } from '../constants';
 import { getAuthenticationTypeByDisplayName, getAuthenticationTypeDisplayName, isValidSQLPassword } from '../utils';
 
 export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Login, ObjectManagement.LoginViewInfo> {
@@ -43,7 +43,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		// Empty password is only allowed when advanced password options are supported and the password policy check is off.
 		// To match the SSMS behavior, a warning is shown to the user.
 		if (this.viewInfo.supportAdvancedPasswordOptions
-			&& this.objectInfo.authenticationType === AuthenticationType.Sql
+			&& this.objectInfo.authenticationType === ObjectManagement.AuthenticationType.Sql
 			&& !this.objectInfo.password
 			&& !this.objectInfo.enforcePasswordPolicy) {
 			const result = await vscode.window.showWarningMessage(localizedConstants.BlankPasswordConfirmationText, { modal: true }, localizedConstants.YesText);
@@ -57,7 +57,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		if (!this.objectInfo.name) {
 			errors.push(localizedConstants.NameCannotBeEmptyError);
 		}
-		if (this.objectInfo.authenticationType === AuthenticationType.Sql) {
+		if (this.objectInfo.authenticationType === ObjectManagement.AuthenticationType.Sql) {
 			if (!this.objectInfo.password && !(this.viewInfo.supportAdvancedPasswordOptions && !this.objectInfo.enforcePasswordPolicy)) {
 				errors.push(localizedConstants.PasswordCannotBeEmptyError);
 			}

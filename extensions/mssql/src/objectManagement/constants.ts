@@ -4,64 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 
 /**
- * The object types in object explorer's node context.
- */
-export enum NodeType {
-	Column = 'Column',
-	Database = 'Database',
-	ServerLevelLogin = 'ServerLevelLogin',
-	Table = 'Table',
-	User = 'User',
-	View = 'View'
-}
-
-/**
  * The folder types in object explorer.
  */
-export enum FolderType {
+export const enum FolderType {
 	ServerLevelLogins = 'ServerLevelLogins',
 	Users = 'Users'
 }
 
 export const PublicServerRoleName = 'public';
 
-/**
- * User types.
- */
-export enum UserType {
-	/**
-	 * User with a server level login.
-	 */
-	WithLogin = 'WithLogin',
-	/**
-	 * User based on a Windows user/group that has no login, but can connect to the Database Engine through membership in a Windows group.
-	 */
-	WithWindowsGroupLogin = 'WithWindowsGroupLogin',
-	/**
-	 * Contained user, authentication is done within the database.
-	 */
-	Contained = 'Contained',
-	/**
-	 * User that cannot authenticate.
-	 */
-	NoConnectAccess = 'NoConnectAccess'
-}
-
-/**
- * The authentication types.
- */
-export enum AuthenticationType {
-	Windows = 'Windows',
-	Sql = 'Sql',
-	AzureActiveDirectory = 'AAD'
-}
-
 export const CreateUserDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/create-user-transact-sql';
 export const AlterUserDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/alter-user-transact-sql';
 export const CreateLoginDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/create-login-transact-sql';
 export const AlterLoginDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/alter-login-transact-sql';
 
-export enum TelemetryActions {
+export const enum TelemetryActions {
 	CreateObject = 'CreateObject',
 	DeleteObject = 'DeleteObject',
 	OpenNewObjectDialog = 'OpenNewObjectDialog',
@@ -70,6 +27,4 @@ export enum TelemetryActions {
 	UpdateObject = 'UpdateObject'
 }
 
-export enum TelemetryViews {
-	ObjectManagement = 'ObjectManagement'
-}
+export const ObjectManagementViewName = 'ObjectManagement';

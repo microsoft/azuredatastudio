@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 import { LoginDialog } from './ui/loginDialog';
 import { TestObjectManagementService } from './objectManagementService';
 import { getErrorMessage } from '../utils';
-import { FolderType, NodeType, TelemetryActions, TelemetryViews } from './constants';
+import { FolderType, TelemetryActions, ObjectManagementViewName } from './constants';
 import * as localizedConstants from './localizedConstants';
 import { UserDialog } from './ui/userDialog';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
@@ -48,13 +48,13 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 	if (!connectionUri) {
 		return;
 	}
-	let newObjectType: NodeType;
+	let newObjectType: ObjectManagement.NodeType;
 	switch (context.nodeInfo!.objectType) {
 		case FolderType.ServerLevelLogins:
-			newObjectType = NodeType.ServerLevelLogin;
+			newObjectType = ObjectManagement.NodeType.ServerLevelLogin;
 			break;
 		case FolderType.Users:
-			newObjectType = NodeType.User;
+			newObjectType = ObjectManagement.NodeType.User;
 			break;
 		default:
 			throw new Error(`Unsupported folder type: ${context.nodeInfo!.objectType}`);
@@ -75,7 +75,7 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 		await dialog.open();
 	}
 	catch (err) {
-		TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, TelemetryActions.OpenNewObjectDialog, err).withAdditionalProperties({
+		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenNewObjectDialog, err).withAdditionalProperties({
 			objectType: context.nodeInfo!.nodeType
 		}).send();
 		await vscode.window.showErrorMessage(localizedConstants.OpenNewObjectDialogError(localizedConstants.LoginTypeDisplayName, getErrorMessage(err)));
@@ -94,7 +94,7 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 			connectionUri: connectionUri,
 			isNewObject: false,
 			database: context.connectionProfile!.databaseName!,
-			objectType: context.nodeInfo.nodeType as NodeType,
+			objectType: context.nodeInfo.nodeType as ObjectManagement.NodeType,
 			objectName: context.nodeInfo.label,
 			parentUrn: parentUrn,
 			objectUrn: context.nodeInfo!.metadata!.urn,
@@ -104,7 +104,7 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		await dialog.open();
 	}
 	catch (err) {
-		TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, TelemetryActions.OpenPropertiesDialog, err).withAdditionalProperties({
+		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenPropertiesDialog, err).withAdditionalProperties({
 			objectType: context.nodeInfo!.nodeType
 		}).send();
 		await vscode.window.showErrorMessage(localizedConstants.OpenObjectPropertiesDialogError(nodeTypeDisplayName, context.nodeInfo!.label, getErrorMessage(err)));
@@ -118,7 +118,7 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 	}
 	let additionalConfirmationMessage: string | undefined = undefined;
 	switch (context.nodeInfo!.nodeType) {
-		case NodeType.ServerLevelLogin:
+		case ObjectManagement.NodeType.ServerLevelLogin:
 			additionalConfirmationMessage = localizedConstants.DeleteLoginConfirmationText;
 			break;
 		default:
@@ -140,7 +140,7 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 		operation: async (operation) => {
 			try {
 				const startTime = Date.now();
-				await service.drop(connectionUri, context.nodeInfo.nodeType as NodeType, context.nodeInfo!.metadata!.urn);
+				await service.drop(connectionUri, context.nodeInfo.nodeType as ObjectManagement.NodeType, context.nodeInfo!.metadata!.urn);
 				TelemetryReporter.sendTelemetryEvent(TelemetryActions.DeleteObject, {
 					objectType: context.nodeInfo!.nodeType
 				}, {
@@ -149,7 +149,7 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 			}
 			catch (err) {
 				operation.updateStatus(azdata.TaskStatus.Failed, localizedConstants.DeleteObjectError(nodeTypeDisplayName, context.nodeInfo!.label, getErrorMessage(err)));
-				TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, TelemetryActions.DeleteObject, err).withAdditionalProperties({
+				TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.DeleteObject, err).withAdditionalProperties({
 					objectType: context.nodeInfo!.nodeType
 				}).send();
 				return;
@@ -192,7 +192,7 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 		operation: async (operation) => {
 			try {
 				const startTime = Date.now();
-				await service.rename(connectionUri, context.nodeInfo.nodeType as NodeType, context.nodeInfo!.metadata!.urn, newName);
+				await service.rename(connectionUri, context.nodeInfo.nodeType as ObjectManagement.NodeType, context.nodeInfo!.metadata!.urn, newName);
 				TelemetryReporter.sendTelemetryEvent(TelemetryActions.RenameObject, {
 					objectType: context.nodeInfo!.nodeType
 				}, {
@@ -201,7 +201,7 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 			}
 			catch (err) {
 				operation.updateStatus(azdata.TaskStatus.Failed, localizedConstants.RenameObjectError(nodeTypeDisplayName, originalName, newName, getErrorMessage(err)));
-				TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, TelemetryActions.RenameObject, err).withAdditionalProperties({
+				TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.RenameObject, err).withAdditionalProperties({
 					objectType: context.nodeInfo!.nodeType
 				}).send();
 				return;
@@ -214,9 +214,9 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 
 function getDialog(service: IObjectManagementService, dialogOptions: ObjectManagementDialogOptions): ObjectManagementDialogBase<ObjectManagement.SqlObject, ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
 	switch (dialogOptions.objectType) {
-		case NodeType.ServerLevelLogin:
+		case ObjectManagement.NodeType.ServerLevelLogin:
 			return new LoginDialog(service, dialogOptions);
-		case NodeType.User:
+		case ObjectManagement.NodeType.User:
 			return new UserDialog(service, dialogOptions);
 		default:
 			throw new Error(`Unsupported object type: ${dialogOptions.objectType}`);

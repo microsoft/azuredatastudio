@@ -11,7 +11,6 @@ import { BaseService, ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-clie
 import { ObjectManagement, IObjectManagementService } from 'mssql';
 import { ClientCapabilities } from 'vscode-languageclient';
 import { AppContext } from '../appContext';
-import { AuthenticationType, NodeType, UserType } from './constants';
 
 export class ObjectManagementService extends BaseService implements IObjectManagementService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
@@ -54,11 +53,11 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		return this.runWithErrorHandling(contracts.DisposeViewRequest.type, params);
 	}
 
-	async rename(connectionUri: string, objectType: NodeType, objectUrn: string, newName: string): Promise<void> {
+	async rename(connectionUri: string, objectType: ObjectManagement.NodeType, objectUrn: string, newName: string): Promise<void> {
 		const params: contracts.RenameObjectRequestParams = { connectionUri, objectUrn, newName, objectType };
 		return this.runWithErrorHandling(contracts.RenameObjectRequest.type, params);
 	}
-	async drop(connectionUri: string, objectType: NodeType, objectUrn: string): Promise<void> {
+	async drop(connectionUri: string, objectType: ObjectManagement.NodeType, objectUrn: string): Promise<void> {
 		const params: contracts.DropObjectRequestParams = { connectionUri, objectUrn, objectType };
 		return this.runWithErrorHandling(contracts.DropObjectRequest.type, params);
 	}
@@ -66,9 +65,9 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 
 export class TestObjectManagementService implements IObjectManagementService {
 	initializeView(contextId: string, objectType: ObjectManagement.NodeType, connectionUri: string, database: string, isNewObject: boolean, parentUrn: string, objectUrn: string): Thenable<ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
-		if (objectType === NodeType.ServerLevelLogin) {
+		if (objectType === ObjectManagement.NodeType.ServerLevelLogin) {
 			return Promise.resolve(this.getLoginView(isNewObject, objectUrn));
-		} else if (objectType === NodeType.User) {
+		} else if (objectType === ObjectManagement.NodeType.User) {
 			return Promise.resolve(this.getUserView(isNewObject, objectUrn));
 		}
 		else {
@@ -96,10 +95,10 @@ export class TestObjectManagementService implements IObjectManagementService {
 			}, 100);
 		});
 	}
-	async rename(connectionUri: string, objectType: NodeType, objectUrn: string, newName: string): Promise<void> {
+	async rename(connectionUri: string, objectType: ObjectManagement.NodeType, objectUrn: string, newName: string): Promise<void> {
 		return this.delayAndResolve();
 	}
-	async drop(connectionUri: string, objectType: NodeType, objectUrn: string): Promise<void> {
+	async drop(connectionUri: string, objectType: ObjectManagement.NodeType, objectUrn: string): Promise<void> {
 		return this.delayAndResolve();
 	}
 	private getLoginView(isNewObject: boolean, name: string): ObjectManagement.LoginViewInfo {
@@ -111,7 +110,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 			login = <ObjectManagement.LoginViewInfo>{
 				objectInfo: {
 					name: '',
-					authenticationType: AuthenticationType.Sql,
+					authenticationType: ObjectManagement.AuthenticationType.Sql,
 					enforcePasswordPolicy: true,
 					enforcePasswordExpiration: true,
 					mustChangePassword: true,
@@ -136,7 +135,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 			login = <ObjectManagement.LoginViewInfo>{
 				objectInfo: {
 					name: name,
-					authenticationType: AuthenticationType.Sql,
+					authenticationType: ObjectManagement.AuthenticationType.Sql,
 					enforcePasswordPolicy: true,
 					enforcePasswordExpiration: true,
 					mustChangePassword: true,
@@ -172,10 +171,10 @@ export class TestObjectManagementService implements IObjectManagementService {
 			viewInfo = {
 				objectInfo: <ObjectManagement.User>{
 					name: '',
-					type: UserType.WithLogin,
+					type: ObjectManagement.UserType.WithLogin,
 					defaultSchema: 'dbo',
 					defaultLanguage: '<default>',
-					authenticationType: AuthenticationType.Sql,
+					authenticationType: ObjectManagement.AuthenticationType.Sql,
 					loginName: 'sa',
 					ownedSchemas: [],
 					databaseRoles: [],
@@ -194,11 +193,11 @@ export class TestObjectManagementService implements IObjectManagementService {
 			viewInfo = {
 				objectInfo: <ObjectManagement.User>{
 					name: name,
-					type: UserType.WithLogin,
+					type: ObjectManagement.UserType.WithLogin,
 					defaultSchema: 'dbo',
 					defaultLanguage: '<default>',
 					loginName: 'sa',
-					authenticationType: AuthenticationType.Sql,
+					authenticationType: ObjectManagement.AuthenticationType.Sql,
 					ownedSchemas: ['dbo'],
 					databaseRoles: ['dbmanager', 'bulkadmin']
 				},

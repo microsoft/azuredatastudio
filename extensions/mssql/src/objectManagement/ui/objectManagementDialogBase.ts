@@ -12,7 +12,7 @@ import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { generateUuid } from 'vscode-languageclient/lib/utils/uuid';
 import { getErrorMessage } from '../../utils';
-import { NodeType, TelemetryActions, TelemetryViews } from '../constants';
+import { TelemetryActions, ObjectManagementViewName } from '../constants';
 import {
 	CreateObjectOperationDisplayName, HelpText, LoadingDialogText,
 	NameText,
@@ -34,14 +34,14 @@ export function getTableHeight(rowCount: number, minRowCount: number = DefaultTa
 	return Math.min(Math.max(rowCount, minRowCount) * TableRowHeight + TableColumnHeaderHeight, maxHeight);
 }
 
-function getDialogName(type: NodeType, isNewObject: boolean): string {
+function getDialogName(type: ObjectManagement.NodeType, isNewObject: boolean): string {
 	return isNewObject ? `New${type}` : `${type}Properties`
 }
 
 export interface ObjectManagementDialogOptions {
 	connectionUri: string;
 	database?: string;
-	objectType: NodeType;
+	objectType: ObjectManagement.NodeType;
 	isNewObject: boolean;
 	parentUrn: string;
 	objectUrn?: string;
@@ -172,7 +172,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 					}
 					catch (err) {
 						operation.updateStatus(azdata.TaskStatus.Failed, getErrorMessage(err));
-						TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, actionName, err).withAdditionalProperties({
+						TelemetryReporter.createErrorEvent2(ObjectManagementViewName, actionName, err).withAdditionalProperties({
 							objectType: this.options.objectType
 						}).send();
 					} finally {
@@ -183,7 +183,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			this.updateLoadingStatus(false);
 		} catch (err) {
 			const actionName = this.options.isNewObject ? TelemetryActions.OpenNewObjectDialog : TelemetryActions.OpenPropertiesDialog;
-			TelemetryReporter.createErrorEvent2(TelemetryViews.ObjectManagement, actionName, err).withAdditionalProperties({
+			TelemetryReporter.createErrorEvent2(ObjectManagementViewName, actionName, err).withAdditionalProperties({
 				objectType: this.options.objectType
 			}).send();
 			void vscode.window.showErrorMessage(getErrorMessage(err));
