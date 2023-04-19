@@ -16,7 +16,7 @@ import { NodeType, TelemetryActions, TelemetryViews } from '../constants';
 import {
 	CreateObjectOperationDisplayName, HelpText, LoadingDialogText,
 	NameText,
-	NewObjectDialogTitle, NoScriptGeneratedErrorMessage, ObjectPropertiesDialogTitle, OkText, ScriptError, ScriptGeneratedText, ScriptText, SelectedText, UpdateObjectOperationDisplayName
+	NewObjectDialogTitle, NoActionScriptedMessage, ObjectPropertiesDialogTitle, OkText, ScriptError, ScriptGeneratedText, ScriptText, SelectedText, UpdateObjectOperationDisplayName
 } from '../localizedConstants';
 import { deepClone, getNodeTypeDisplayName, refreshNode } from '../utils';
 import { TelemetryReporter } from '../../telemetry';
@@ -345,13 +345,16 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			if (!isValid) {
 				return;
 			}
+			let message: string;
 			const script = await this.objectManagementService.script(this._contextId, this.objectInfo);
-			if (!script) {
-				throw new Error(NoScriptGeneratedErrorMessage);
+			if (script) {
+				message = ScriptGeneratedText;
+				await azdata.queryeditor.openQueryDocument({ content: script }, providerId);
+			} else {
+				message = NoActionScriptedMessage;
 			}
-			await azdata.queryeditor.openQueryDocument({ content: script }, providerId);
 			this.dialogObject.message = {
-				text: ScriptGeneratedText,
+				text: message,
 				level: azdata.window.MessageLevel.Information
 			};
 		} catch (err) {
