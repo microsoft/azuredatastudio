@@ -171,18 +171,23 @@
   dependencies:
     "@azure/msal-common" "^7.4.1"
 
+"@azure/msal-common@^12.1.0":
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/@azure/msal-common/-/msal-common-12.1.0.tgz#e253a4912a359193c52c570a1e2585cfd0213bff"
+  integrity sha512-9RUiv0evSHvYtvF7r9ksShw9FgCeT6Rf6JB/SOMbMzI0VySZDUBSE+0b9e7DgL2Ph8wSARIh3m8c5pCK9TRY3w==
+
 "@azure/msal-common@^7.0.0", "@azure/msal-common@^7.4.1":
   version "7.4.1"
   resolved "https://registry.npmjs.org/@azure/msal-common/-/msal-common-7.4.1.tgz"
   integrity sha512-zxcxg9pRdgGTS5mrRJeQvwA8aIjD8qSGzaAiz5SeTVkyhtjB0AeFnAcvBOKHv/TkswWNfYKpERxsXOAKXkXk0w==
 
 "@azure/msal-node@^1.10.0":
-  version "1.14.0"
-  resolved "https://registry.npmjs.org/@azure/msal-node/-/msal-node-1.14.0.tgz"
-  integrity sha512-3XB7FuHLhmGBjw7bxuz1LCHOXQgmNIO3J56tlbOjuJcyJtd4aBCgnYIXNKLed3uRcQNHEO0mlg24I4iGxAV/UA==
+  version "1.17.1"
+  resolved "https://registry.yarnpkg.com/@azure/msal-node/-/msal-node-1.17.1.tgz#8b6b373e5cdba30ef108043e1ab39b05597cf55c"
+  integrity sha512-1lC80yV+Y/gHqkYJ21Qy1Ej/cI/Kt1JcdY0xiM7/+mcEuBAkArR9B1YMY538PMZ5GfyVlYkCHYh/N0CBD5FJlQ==
   dependencies:
-    "@azure/msal-common" "^7.4.1"
-    jsonwebtoken "^8.5.1"
+    "@azure/msal-common" "^12.1.0"
+    jsonwebtoken "^9.0.0"
     uuid "^8.3.0"
 
 "@azure/storage-blob@^12.13.0":
@@ -2171,7 +2176,7 @@ jsonfile@^6.0.1:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
-jsonwebtoken@9.0.0, jsonwebtoken@^8.5.1:
+jsonwebtoken@9.0.0, jsonwebtoken@^9.0.0:
   version "9.0.0"
   resolved "https://registry.yarnpkg.com/jsonwebtoken/-/jsonwebtoken-9.0.0.tgz#d0faf9ba1cc3a56255fe49c0961a67e520c1926d"
   integrity sha512-tuGfYXxkQGDPnLJ7SibiQgVgeDgfbPq2k2ICcbgqW8WxWLBAxKQM/ZCu/IT8SOSwmaYl4dpTFCW5xZv7YbbWUw==
