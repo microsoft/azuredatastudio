@@ -473,7 +473,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				}
 			});
 
-			const data = tenantResponse.body;
+			const data = tenantResponse.data;
 			if (data.error) {
 				Logger.error(`Error fetching tenants :${data.error.code} - ${data.error.message}`);
 				throw new Error(`${data.error.code} - ${data.error.message}`);
