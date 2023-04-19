@@ -53,6 +53,8 @@ export const CreateUserDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/sta
 export const AlterUserDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/alter-user-transact-sql';
 export const CreateLoginDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/create-login-transact-sql';
 export const AlterLoginDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/alter-login-transact-sql';
+export const CreateDatabaseDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/create-database-transact-sql';
+export const DropDatabaseDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/drop-database-transact-sql';
 
 export enum TelemetryActions {
 	CreateObject = 'CreateObject',

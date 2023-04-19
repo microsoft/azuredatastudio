@@ -168,9 +168,10 @@ export const OwnedSchemaSectionHeader = localize('objectManagement.user.ownedSch
 export const MembershipSectionHeader = localize('objectManagement.user.membershipLabel', "Membership");
 
 // Create Database
+export const CreateDatabaseTitle = localize('admin.createDatabaseTitle', "Create Database");
 
 // Delete Database
-export const DeleteDatabaseTitle = localize('admin.DeleteDatabaseTitle', "Delete Database");
+export const DeleteDatabaseTitle = localize('admin.deleteDatabaseTitle', "Delete Database");
 export const DatabaseNameLabel = localize('admin.databaseNameLabel', "Database");
 export const CloseConnectionsCheckboxLabel = localize('admin.closeConnectionsCheckboxLabel', "Close existing connections");
 export const DeleteBackupsCheckboxLabel = localize('admin.deleteBackupsCheckboxLabel', "Delete backup and restore history information for database");

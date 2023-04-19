@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
-import { NodeType } from '../constants';
+import { DropDatabaseDocUrl, NodeType } from '../constants';
 import path = require('path');
 import * as localizedConstants from '../localizedConstants';
 
@@ -14,7 +14,7 @@ export class DeleteDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 	private readonly _model: ObjectManagement.DeleteDatabaseViewInfo;
 
 	constructor(objectManagementService: IObjectManagementService, connectionUri: string, objectExplorerContext: azdata.ObjectExplorerContext) {
-		super(NodeType.Database, undefined, objectManagementService, connectionUri, false, localizedConstants.DeleteDatabaseTitle, objectExplorerContext);
+		super(NodeType.Database, DropDatabaseDocUrl, objectManagementService, connectionUri, false, localizedConstants.DeleteDatabaseTitle, objectExplorerContext);
 		this._model = {
 			objectInfo: {
 				name: path.basename(objectExplorerContext.nodeInfo?.nodePath)
@@ -31,15 +31,10 @@ export class DeleteDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 	}
 
 	protected async onComplete(): Promise<void> {
-		// if (this.isNewObject) {
-		// 	await this.objectManagementService.createLogin(this.contextId, this.objectInfo);
-		// } else {
-		// 	await this.objectManagementService.updateLogin(this.contextId, this.objectInfo);
-		// }
+		// Execute delete database command
 	}
 
 	protected async disposeView(): Promise<void> {
-		// await this.objectManagementService.disposeLoginView(this.contextId);
 	}
 
 	protected async initializeData(): Promise<ObjectManagement.DeleteDatabaseViewInfo> {
