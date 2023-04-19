@@ -26,7 +26,7 @@ import { IExtensionDescription } from 'vs/platform/extensions/common/extensions'
 import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
-import { DataTransferDTO } from 'vs/workbench/api/common/shared/dataTransfer';
+import { DataTransferDTO } from 'vs/workbench/api/common/extHost.protocol';
 
 export abstract class ExtHostAzureBlobShape {
 	public $createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse> { throw ni(); }
@@ -794,7 +794,7 @@ export interface ExtHostModelViewShape {
 
 export interface ExtHostModelViewTreeViewsShape {
 	$getChildren(treeViewId: string, treeItemHandle?: string): Promise<ITreeComponentItem[]>;
-	$handleDrop(destinationViewId: string, treeDataTransfer: DataTransferDTO, targetHandle: string | undefined, token: vscode.CancellationToken, operationUuid?: string, sourceViewId?: string, sourceTreeItemHandles?: string[]): Promise<void>;
+	$handleDrop(destinationViewId: string, requestId: number, treeDataTransfer: DataTransferDTO, targetHandle: string | undefined, token: vscode.CancellationToken, operationUuid?: string, sourceViewId?: string, sourceTreeItemHandles?: string[]): Promise<void>;
 	$handleDrag(sourceViewId: string, sourceTreeItemHandles: string[], operationUuid: string, token: vscode.CancellationToken): Promise<DataTransferDTO | undefined>;
 
 	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }, extension: IExtensionDescription): azdata.TreeComponentView<any>;
