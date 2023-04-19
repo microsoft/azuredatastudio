@@ -881,7 +881,7 @@ declare module 'mssql' {
 		 */
 		export enum NodeType {
 			Column = "Column",
-			Database = 'Database',
+			Database = "Database",
 			ServerLevelLogin = "ServerLevelLogin",
 			Table = "Table",
 			User = "User",
