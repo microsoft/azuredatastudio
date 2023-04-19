@@ -47,11 +47,12 @@ export class DeleteDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 	}
 
 	protected async initializeUI(): Promise<void> {
-		let databaseLabelComponent = this.createLabelTextContainer(localizedConstants.DatabaseNameLabel, this._model.objectInfo.name);
+		let databaseInputComponent = this.createInputBox(this._model.objectInfo.name, this._model.objectInfo.name, false);
+		let inputWithLabel = this.createLabelInputContainer(localizedConstants.DatabaseNameLabel, databaseInputComponent);
 		let deleteBackupCheckbox = this.createCheckbox(localizedConstants.DeleteBackupsCheckboxLabel, false, true);
 		let closeConnectionsCheckbox = this.createCheckbox(localizedConstants.CloseConnectionsCheckboxLabel, false, true);
 
-		let sections = [databaseLabelComponent, deleteBackupCheckbox, closeConnectionsCheckbox];
+		let sections = [inputWithLabel, deleteBackupCheckbox, closeConnectionsCheckbox];
 		this.formContainer.addItems(sections);
 	}
 }
