@@ -39,7 +39,6 @@ import * as editorCommon from 'vs/editor/common/editorCommon';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IDiffEditorConstructionOptions } from 'vs/editor/browser/editorBrowser';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 const fixedEditorPadding = {
 	top: 12,
@@ -123,8 +122,7 @@ class PropertyHeader extends Disposable {
 		@IKeybindingService readonly keybindingService: IKeybindingService,
 		@INotificationService readonly notificationService: INotificationService,
 		@IMenuService readonly menuService: IMenuService,
-		@IContextKeyService readonly contextKeyService: IContextKeyService,
-		@IThemeService readonly themeService: IThemeService,
+		@IContextKeyService readonly contextKeyService: IContextKeyService
 	) {
 		super();
 	}
@@ -156,7 +154,7 @@ class PropertyHeader extends Disposable {
 		this._toolbar = new ToolBar(cellToolbarContainer, this.contextMenuService, {
 			actionViewItemProvider: action => {
 				if (action instanceof MenuItemAction) {
-					const item = new CodiconActionViewItem(action, undefined, this.keybindingService, this.notificationService, this.contextKeyService, this.themeService, this.contextMenuService);
+					const item = new CodiconActionViewItem(action, this.keybindingService, this.notificationService, this.contextKeyService);
 					return item;
 				}
 

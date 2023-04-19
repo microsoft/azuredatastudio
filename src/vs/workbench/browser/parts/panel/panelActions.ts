@@ -26,8 +26,7 @@ import { ICommandActionTitle } from 'vs/platform/action/common/action';
 const maximizeIcon = registerIcon('panel-maximize', Codicon.chevronUp, localize('maximizeIcon', 'Icon to maximize a panel.'));
 const restoreIcon = registerIcon('panel-restore', Codicon.chevronDown, localize('restoreIcon', 'Icon to restore a panel.'));
 const closeIcon = registerIcon('panel-close', Codicon.close, localize('closeIcon', 'Icon to close a panel.'));
-const panelIcon = registerIcon('panel-layout-icon', Codicon.layoutPanel, localize('togglePanelOffIcon', 'Icon to toggle the panel off when it is on.'));
-const panelOffIcon = registerIcon('panel-layout-icon-off', Codicon.layoutPanelOff, localize('togglePanelOnIcon', 'Icon to toggle the panel on when it is off.'));
+const panelIcon = registerIcon('panel-layout-icon', Codicon.layoutPanel, localize('togglePanelIcon', 'Icon to toggle the panel.'));
 
 export class TogglePanelAction extends Action {
 
@@ -69,7 +68,7 @@ class FocusPanelAction extends Action {
 		}
 
 		// Focus into active panel
-		const panel = this.paneCompositeService.getActivePaneComposite(ViewContainerLocation.Panel);
+		let panel = this.paneCompositeService.getActivePaneComposite(ViewContainerLocation.Panel);
 		if (panel) {
 			panel.focus();
 		}
@@ -422,7 +421,7 @@ MenuRegistry.appendMenuItems([
 			group: '2_workbench_layout',
 			command: {
 				id: TogglePanelAction.ID,
-				title: localize({ key: 'miPanel', comment: ['&& denotes a mnemonic'] }, "&&Panel"),
+				title: localize({ key: 'miShowPanel', comment: ['&& denotes a mnemonic'] }, "Show &&Panel"),
 				toggled: PanelVisibleContext
 			},
 			order: 5
@@ -433,7 +432,7 @@ MenuRegistry.appendMenuItems([
 			group: '0_workbench_layout',
 			command: {
 				id: TogglePanelAction.ID,
-				title: localize('miPanelNoMnemonic', "Panel"),
+				title: localize('miShowPanelNoMnemonic', "Show Panel"),
 				toggled: PanelVisibleContext
 			},
 			order: 4
@@ -445,8 +444,8 @@ MenuRegistry.appendMenuItems([
 			command: {
 				id: TogglePanelAction.ID,
 				title: localize('togglePanel', "Toggle Panel"),
-				icon: panelOffIcon,
-				toggled: { condition: PanelVisibleContext, icon: panelIcon }
+				icon: panelIcon,
+				toggled: PanelVisibleContext
 			},
 			when: ContextKeyExpr.or(ContextKeyExpr.equals('config.workbench.layoutControl.type', 'toggles'), ContextKeyExpr.equals('config.workbench.layoutControl.type', 'both')),
 			order: 1

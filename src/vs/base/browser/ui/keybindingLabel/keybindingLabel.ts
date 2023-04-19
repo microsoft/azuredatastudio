@@ -89,7 +89,7 @@ export class KeybindingLabel implements IThemable {
 		this.clear();
 
 		if (this.keybinding) {
-			const [firstPart, chordPart] = this.keybinding.getParts();
+			let [firstPart, chordPart] = this.keybinding.getParts();
 			if (firstPart) {
 				this.renderPart(this.domNode, firstPart, this.matches ? this.matches.firstPart : null);
 			}

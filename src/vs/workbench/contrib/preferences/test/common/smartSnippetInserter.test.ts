@@ -11,10 +11,10 @@ import { Position } from 'vs/editor/common/core/position';
 suite('SmartSnippetInserter', () => {
 
 	function testSmartSnippetInserter(text: string[], runner: (assert: (desiredPos: Position, pos: Position, prepend: string, append: string) => void) => void): void {
-		const model = createTextModel(text.join('\n'));
+		let model = createTextModel(text.join('\n'));
 		runner((desiredPos, pos, prepend, append) => {
-			const actual = SmartSnippetInserter.insertSnippet(model, desiredPos);
-			const expected = {
+			let actual = SmartSnippetInserter.insertSnippet(model, desiredPos);
+			let expected = {
 				position: pos,
 				prepend,
 				append

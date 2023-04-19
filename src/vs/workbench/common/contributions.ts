@@ -98,9 +98,9 @@ class WorkbenchContributionsRegistry implements IWorkbenchContributionsRegistry 
 				// for the Eventually-phase we instantiate contributions
 				// only when idle. this might take a few idle-busy-cycles
 				// but will finish within the timeouts
-				const forcedTimeout = 3000;
+				let forcedTimeout = 3000;
 				let i = 0;
-				const instantiateSome = (idle: IdleDeadline) => {
+				let instantiateSome = (idle: IdleDeadline) => {
 					while (i < toBeInstantiated.length) {
 						const ctor = toBeInstantiated[i++];
 						this.safeCreateInstance(instantiationService, ctor); // catch error so that other contributions are still considered

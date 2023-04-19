@@ -26,32 +26,31 @@ export class RequestChannel implements IServerChannel {
 		throw new Error('Invalid listen');
 	}
 
-	call(context: any, command: string, args?: any, token: CancellationToken = CancellationToken.None): Promise<any> {
+	call(context: any, command: string, args?: any): Promise<any> {
 		switch (command) {
-			case 'request': return this.service.request(args[0], token)
+			case 'request': return this.service.request(args[0], CancellationToken.None)
 				.then(async ({ res, stream }) => {
 					const buffer = await streamToBuffer(stream);
 					return <RequestResponse>[{ statusCode: res.statusCode, headers: res.headers }, buffer];
 				});
-			case 'resolveProxy': return this.service.resolveProxy(args[0]);
 		}
 		throw new Error('Invalid call');
 	}
 }
 
-export class RequestChannelClient implements IRequestService {
+export class RequestChannelClient {
 
 	declare readonly _serviceBrand: undefined;
 
 	constructor(private readonly channel: IChannel) { }
 
 	async request(options: IRequestOptions, token: CancellationToken): Promise<IRequestContext> {
-		const [res, buffer] = await this.channel.call<RequestResponse>('request', [options], token);
-		return { res, stream: bufferToStream(buffer) };
+		return RequestChannelClient.request(this.channel, options, token);
 	}
 
-	async resolveProxy(url: string): Promise<string | undefined> {
-		return this.channel.call<string | undefined>('resolveProxy', [url]);
+	static async request(channel: IChannel, options: IRequestOptions, token: CancellationToken): Promise<IRequestContext> {
+		const [res, buffer] = await channel.call<RequestResponse>('request', [options]);
+		return { res, stream: bufferToStream(buffer) };
 	}
 
 }

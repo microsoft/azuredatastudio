@@ -115,7 +115,7 @@ function configureModuleLoading(extensionService: ExtHostExtensionService, looku
 					modulesCache.set(ext, cache = {});
 				}
 				if (!cache[request]) {
-					const mod = modules.default;
+					let mod = modules.default;
 					cache[request] = <any>{ ...mod }; // Copy to work around #93167.
 				}
 				return cache[request];

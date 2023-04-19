@@ -22,7 +22,6 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IUriIdentityService } from 'vs/platform/uriIdentity/common/uriIdentity';
-import { IUserDataProfilesService } from 'vs/platform/userDataProfile/common/userDataProfile';
 import { AbstractInitializer, AbstractSynchroniser, IAcceptResult, IMergeResult, IResourcePreview } from 'vs/platform/userDataSync/common/abstractSynchronizer';
 import { IMergeResult as IExtensionMergeResult, merge } from 'vs/platform/userDataSync/common/extensionsMerge';
 import { IIgnoredExtensionsManagementService } from 'vs/platform/userDataSync/common/ignoredExtensions';
@@ -81,7 +80,6 @@ export class ExtensionsSynchroniser extends AbstractSynchroniser implements IUse
 	protected readonly version: number = 5;
 
 	private readonly previewResource: URI = this.extUri.joinPath(this.syncPreviewFolder, 'extensions.json');
-	private readonly baseResource: URI = this.previewResource.with({ scheme: USER_DATA_SYNC_SCHEME, authority: 'base' });
 	private readonly localResource: URI = this.previewResource.with({ scheme: USER_DATA_SYNC_SCHEME, authority: 'local' });
 	private readonly remoteResource: URI = this.previewResource.with({ scheme: USER_DATA_SYNC_SCHEME, authority: 'remote' });
 	private readonly acceptedResource: URI = this.previewResource.with({ scheme: USER_DATA_SYNC_SCHEME, authority: 'accepted' });
@@ -135,13 +133,10 @@ export class ExtensionsSynchroniser extends AbstractSynchroniser implements IUse
 			remoteChange: remote !== null ? Change.Modified : Change.None,
 		};
 
-		const localContent = this.stringify(localExtensions, false);
 		return [{
 			skippedExtensions,
-			baseResource: this.baseResource,
-			baseContent: lastSyncExtensions ? this.stringify(lastSyncExtensions, false) : localContent,
 			localResource: this.localResource,
-			localContent,
+			localContent: this.stringify(localExtensions, false),
 			localExtensions,
 			remoteResource: this.remoteResource,
 			remoteContent: remoteExtensions ? this.stringify(remoteExtensions, false) : null,
@@ -251,7 +246,7 @@ export class ExtensionsSynchroniser extends AbstractSynchroniser implements IUse
 
 	protected async applyResult(remoteUserData: IRemoteUserData, lastSyncUserData: IRemoteUserData | null, resourcePreviews: [IExtensionResourcePreview, IExtensionResourceMergeResult][], force: boolean): Promise<void> {
 		let { skippedExtensions, localExtensions } = resourcePreviews[0][0];
-		const { local, remote, localChange, remoteChange } = resourcePreviews[0][1];
+		let { local, remote, localChange, remoteChange } = resourcePreviews[0][1];
 
 		if (localChange === Change.None && remoteChange === Change.None) {
 			this.logService.info(`${this.syncResourceLogLabel}: No changes found during synchronizing extensions.`);
@@ -290,11 +285,7 @@ export class ExtensionsSynchroniser extends AbstractSynchroniser implements IUse
 			return this.stringify(localExtensions, true);
 		}
 
-		if (this.extUri.isEqual(this.remoteResource, uri)
-			|| this.extUri.isEqual(this.baseResource, uri)
-			|| this.extUri.isEqual(this.localResource, uri)
-			|| this.extUri.isEqual(this.acceptedResource, uri)
-		) {
+		if (this.extUri.isEqual(this.remoteResource, uri) || this.extUri.isEqual(this.localResource, uri) || this.extUri.isEqual(this.acceptedResource, uri)) {
 			const content = await this.resolvePreviewContent(uri);
 			return content ? this.stringify(JSON.parse(content), true) : content;
 		}
@@ -516,12 +507,11 @@ export abstract class AbstractExtensionsInitializer extends AbstractInitializer 
 		@IExtensionManagementService protected readonly extensionManagementService: IExtensionManagementService,
 		@IIgnoredExtensionsManagementService private readonly ignoredExtensionsManagementService: IIgnoredExtensionsManagementService,
 		@IFileService fileService: IFileService,
-		@IUserDataProfilesService userDataProfilesService: IUserDataProfilesService,
 		@IEnvironmentService environmentService: IEnvironmentService,
 		@ILogService logService: ILogService,
 		@IUriIdentityService uriIdentityService: IUriIdentityService,
 	) {
-		super(SyncResource.Extensions, userDataProfilesService, environmentService, logService, fileService, uriIdentityService);
+		super(SyncResource.Extensions, environmentService, logService, fileService, uriIdentityService);
 	}
 
 	protected async parseExtensions(remoteUserData: IRemoteUserData): Promise<ISyncExtension[] | null> {

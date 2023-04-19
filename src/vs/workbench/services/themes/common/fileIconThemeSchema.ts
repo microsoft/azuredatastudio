@@ -235,6 +235,6 @@ const schema: IJSONSchema = {
 };
 
 export function registerFileIconThemeSchemas() {
-	const schemaRegistry = Registry.as<IJSONContributionRegistry>(JSONExtensions.JSONContribution);
+	let schemaRegistry = Registry.as<IJSONContributionRegistry>(JSONExtensions.JSONContribution);
 	schemaRegistry.registerSchema(schemaId, schema);
 }

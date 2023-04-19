@@ -100,8 +100,6 @@ export class TabsTitleControl extends TitleControl {
 
 	private static readonly TAB_HEIGHT = 35;
 
-	private static readonly DRAG_OVER_OPEN_TAB_THRESHOLD = 1500;
-
 	private static readonly MOUSE_WHEEL_EVENT_THRESHOLD = 150;
 	private static readonly MOUSE_WHEEL_DISTANCE_THRESHOLD = 1.5;
 
@@ -915,15 +913,6 @@ export class TabsTitleControl extends TitleControl {
 				this.updateDropFeedback(tab, true, index);
 			},
 
-			onDragOver: (_, dragDuration) => {
-				if (dragDuration >= TabsTitleControl.DRAG_OVER_OPEN_TAB_THRESHOLD) {
-					const draggedOverTab = this.group.getEditorByIndex(index);
-					if (draggedOverTab && this.group.activeEditor !== draggedOverTab) {
-						this.group.openEditor(draggedOverTab, { preserveFocus: true });
-					}
-				}
-			},
-
 			onDragLeave: () => {
 				tab.classList.remove('dragged-over');
 				this.updateDropFeedback(tab, false, index);
@@ -1176,9 +1165,9 @@ export class TabsTitleControl extends TitleControl {
 			tabContainer.classList.toggle(`sticky-${option}`, isTabSticky && options.pinnedTabSizing === option);
 		}
 
-		// If not wrapping tabs, sticky compact/shrink tabs need a position to remain at their location
+		// Sticky compact/shrink tabs need a position to remain at their location
 		// when scrolling to stay in view (requirement for position: sticky)
-		if (!options.wrapTabs && isTabSticky && options.pinnedTabSizing !== 'normal') {
+		if (isTabSticky && options.pinnedTabSizing !== 'normal') {
 			let stickyTabWidth = 0;
 			switch (options.pinnedTabSizing) {
 				case 'compact':
@@ -1959,14 +1948,9 @@ registerThemingParticipant((theme, collector) => {
 	const activeContrastBorderColor = theme.getColor(activeContrastBorder);
 	if (activeContrastBorderColor) {
 		collector.addRule(`
-			.monaco-workbench .part.editor > .content .editor-group-container.active > .title .tabs-container > .tab.active,
-			.monaco-workbench .part.editor > .content .editor-group-container.active > .title .tabs-container > .tab.active:hover  {
+			.monaco-workbench .part.editor > .content .editor-group-container > .title .tabs-container > .tab.active,
+			.monaco-workbench .part.editor > .content .editor-group-container > .title .tabs-container > .tab.active:hover  {
 				outline: 1px solid;
-				outline-offset: -5px;
-			}
-
-			.monaco-workbench .part.editor > .content .editor-group-container > .title .tabs-container > .tab.active {
-				outline: 1px dotted;
 				outline-offset: -5px;
 			}
 

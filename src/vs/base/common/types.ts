@@ -47,9 +47,18 @@ export function isObject(obj: unknown): obj is Object {
  * @returns whether the provided parameter is of type `Buffer` or Uint8Array dervived type
  */
 export function isTypedArray(obj: unknown): obj is Object {
-	const TypedArray = Object.getPrototypeOf(Uint8Array);
 	return typeof obj === 'object'
-		&& obj instanceof TypedArray;
+		&& (obj instanceof Uint8Array ||
+			obj instanceof Uint16Array ||
+			obj instanceof Uint32Array ||
+			obj instanceof Float32Array ||
+			obj instanceof Float64Array ||
+			obj instanceof Int8Array ||
+			obj instanceof Int16Array ||
+			obj instanceof Int32Array ||
+			obj instanceof BigInt64Array ||
+			obj instanceof BigUint64Array ||
+			obj instanceof Uint8ClampedArray);
 }
 
 /**
@@ -145,7 +154,7 @@ export function isEmptyObject(obj: unknown): obj is object {
 		return false;
 	}
 
-	for (const key in obj) {
+	for (let key in obj) {
 		if (hasOwnProperty.call(obj, key)) {
 			return false;
 		}
@@ -229,7 +238,7 @@ export function createProxyObject<T extends object>(methodNames: string[], invok
 		};
 	};
 
-	const result = {} as T;
+	let result = {} as T;
 	for (const methodName of methodNames) {
 		(<any>result)[methodName] = createProxyMethod(methodName);
 	}

@@ -27,14 +27,12 @@ export class CommentFormActions implements IDisposable {
 		this._buttonElements.forEach(b => b.remove());
 
 		const groups = menu.getActions({ shouldForwardArgs: true });
-		let isPrimary: boolean = true;
 		for (const group of groups) {
 			const [, actions] = group;
 
 			this._actions = actions;
-			for (const action of actions) {
-				const button = new Button(this.container, { secondary: !isPrimary });
-				isPrimary = false;
+			actions.forEach(action => {
+				const button = new Button(this.container);
 				this._buttonElements.push(button.element);
 
 				this._toDispose.add(button);
@@ -43,13 +41,13 @@ export class CommentFormActions implements IDisposable {
 
 				button.enabled = action.enabled;
 				button.label = action.label;
-			}
+			});
 		}
 	}
 
 	triggerDefaultAction() {
 		if (this._actions.length) {
-			const lastAction = this._actions[0];
+			let lastAction = this._actions[0];
 
 			if (lastAction.enabled) {
 				this.actionHandler(lastAction);

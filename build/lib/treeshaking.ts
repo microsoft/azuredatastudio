@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+'use strict';
+
 import * as fs from 'fs';
 import * as path from 'path';
 import type * as ts from 'typescript';
@@ -71,7 +73,7 @@ function printDiagnostics(options: ITreeShakingOptions, diagnostics: ReadonlyArr
 			result += `${path.join(options.sourcesRoot, diag.file.fileName)}`;
 		}
 		if (diag.file && diag.start) {
-			const location = diag.file.getLineAndCharacterOfPosition(diag.start);
+			let location = diag.file.getLineAndCharacterOfPosition(diag.start);
 			result += `:${location.line + 1}:${location.character}`;
 		}
 		result += ` - ` + JSON.stringify(diag.messageText);
@@ -142,8 +144,6 @@ function discoverAndReadFiles(ts: typeof import('typescript'), options: ITreeSha
 	const queue: string[] = [];
 
 	const enqueue = (moduleId: string) => {
-		// To make the treeshaker work on windows...
-		moduleId = moduleId.replace(/\\/g, '/');
 		if (in_queue[moduleId]) {
 			return;
 		}
@@ -216,7 +216,7 @@ function processLibFiles(ts: typeof import('typescript'), options: ITreeShakingO
 
 			// precess dependencies and "recurse"
 			const info = ts.preProcessFile(sourceText);
-			for (const ref of info.libReferenceDirectives) {
+			for (let ref of info.libReferenceDirectives) {
 				stack.push(ref.fileName);
 			}
 		}
@@ -306,12 +306,6 @@ function getColor(node: ts.Node): NodeColor {
 }
 function setColor(node: ts.Node, color: NodeColor): void {
 	(<any>node).$$$color = color;
-}
-function markNeededSourceFile(node: ts.SourceFile): void {
-	(<any>node).$$$neededSourceFile = true;
-}
-function isNeededSourceFile(node: ts.SourceFile): boolean {
-	return Boolean((<any>node).$$$neededSourceFile);
 }
 function nodeOrParentIsBlack(node: ts.Node): boolean {
 	while (node) {
@@ -455,20 +449,6 @@ function markNodes(ts: typeof import('typescript'), languageService: ts.Language
 		});
 	}
 
-	/**
-	 * Return the parent of `node` which is an ImportDeclaration
-	 */
-	function findParentImportDeclaration(node: ts.Declaration): ts.ImportDeclaration | null {
-		let _node: ts.Node = node;
-		do {
-			if (ts.isImportDeclaration(_node)) {
-				return _node;
-			}
-			_node = _node.parent;
-		} while (_node);
-		return null;
-	}
-
 	function enqueue_gray(node: ts.Node): void {
 		if (nodeOrParentIsBlack(node) || getColor(node) === NodeColor.Gray) {
 			return;
@@ -551,8 +531,6 @@ function markNodes(ts: typeof import('typescript'), languageService: ts.Language
 			console.warn(`Cannot find source file ${filename}`);
 			return;
 		}
-		// This source file should survive even if it is empty
-		markNeededSourceFile(sourceFile);
 		enqueue_black(sourceFile);
 	}
 
@@ -612,10 +590,6 @@ function markNodes(ts: typeof import('typescript'), languageService: ts.Language
 			const [symbol, symbolImportNode] = getRealNodeSymbol(ts, checker, node);
 			if (symbolImportNode) {
 				setColor(symbolImportNode, NodeColor.Black);
-				const importDeclarationNode = findParentImportDeclaration(symbolImportNode);
-				if (importDeclarationNode && ts.isStringLiteral(importDeclarationNode.moduleSpecifier)) {
-					enqueueImport(importDeclarationNode, importDeclarationNode.moduleSpecifier.text);
-				}
 			}
 
 			if (isSymbolWithDeclarations(symbol) && !nodeIsInItsOwnDeclaration(nodeSourceFile, node, symbol)) {
@@ -655,7 +629,7 @@ function markNodes(ts: typeof import('typescript'), languageService: ts.Language
 
 						// queue the heritage clauses
 						if (declaration.heritageClauses) {
-							for (const heritageClause of declaration.heritageClauses) {
+							for (let heritageClause of declaration.heritageClauses) {
 								enqueue_black(heritageClause);
 							}
 						}
@@ -708,7 +682,7 @@ function generateResult(ts: typeof import('typescript'), languageService: ts.Lan
 		throw new Error('Could not get program from language service');
 	}
 
-	const result: ITreeShakingResult = {};
+	let result: ITreeShakingResult = {};
 	const writeFile = (filePath: string, contents: string): void => {
 		result[filePath] = contents;
 	};
@@ -726,7 +700,7 @@ function generateResult(ts: typeof import('typescript'), languageService: ts.Lan
 			return;
 		}
 
-		const text = sourceFile.text;
+		let text = sourceFile.text;
 		let result = '';
 
 		function keep(node: ts.Node): void {
@@ -760,7 +734,7 @@ function generateResult(ts: typeof import('typescript'), languageService: ts.Lan
 							return keep(node);
 						}
 					} else {
-						const survivingImports: string[] = [];
+						let survivingImports: string[] = [];
 						for (const importNode of node.importClause.namedBindings.elements) {
 							if (getColor(importNode) === NodeColor.Black) {
 								survivingImports.push(importNode.getFullText(sourceFile));
@@ -788,7 +762,7 @@ function generateResult(ts: typeof import('typescript'), languageService: ts.Lan
 
 			if (ts.isExportDeclaration(node)) {
 				if (node.exportClause && node.moduleSpecifier && ts.isNamedExports(node.exportClause)) {
-					const survivingExports: string[] = [];
+					let survivingExports: string[] = [];
 					for (const exportSpecifier of node.exportClause.elements) {
 						if (getColor(exportSpecifier) === NodeColor.Black) {
 							survivingExports.push(exportSpecifier.getFullText(sourceFile));
@@ -811,8 +785,8 @@ function generateResult(ts: typeof import('typescript'), languageService: ts.Lan
 						continue;
 					}
 
-					const pos = member.pos - node.pos;
-					const end = member.end - node.pos;
+					let pos = member.pos - node.pos;
+					let end = member.end - node.pos;
 					toWrite = toWrite.substring(0, pos) + toWrite.substring(end);
 				}
 				return write(toWrite);
@@ -828,21 +802,11 @@ function generateResult(ts: typeof import('typescript'), languageService: ts.Lan
 
 		if (getColor(sourceFile) !== NodeColor.Black) {
 			if (!nodeOrChildIsBlack(sourceFile)) {
-				// none of the elements are reachable
-				if (isNeededSourceFile(sourceFile)) {
-					// this source file must be written, even if nothing is used from it
-					// because there is an import somewhere for it.
-					// However, TS complains with empty files with the error "x" is not a module,
-					// so we will export a dummy variable
-					result = 'export const __dummy = 0;';
-				} else {
-					// don't write this file at all!
-					return;
-				}
-			} else {
-				sourceFile.forEachChild(writeMarkedNodes);
-				result += sourceFile.endOfFileToken.getFullText(sourceFile);
+				// none of the elements are reachable => don't write this file at all!
+				return;
 			}
+			sourceFile.forEachChild(writeMarkedNodes);
+			result += sourceFile.endOfFileToken.getFullText(sourceFile);
 		} else {
 			result = text;
 		}

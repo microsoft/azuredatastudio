@@ -17,7 +17,6 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { TelemetryLevel } from 'vs/platform/telemetry/common/telemetry';
 import { getTelemetryLevel, supportsTelemetry } from 'vs/platform/telemetry/common/telemetryUtils';
 import { RemoteAuthorities } from 'vs/base/common/network';
-import { getRemoteServerRootPath } from 'vs/platform/remote/common/remoteHosts';
 
 export const WEB_EXTENSION_RESOURCE_END_POINT = 'web-extension-resource';
 
@@ -50,7 +49,6 @@ export abstract class AbstractExtensionResourceLoaderService implements IExtensi
 
 	readonly _serviceBrand: undefined;
 
-	private readonly _webExtensionResourceEndPoint: string;
 	private readonly _extensionGalleryResourceUrlTemplate: string | undefined;
 	private readonly _extensionGalleryAuthority: string | undefined;
 
@@ -61,7 +59,6 @@ export abstract class AbstractExtensionResourceLoaderService implements IExtensi
 		private readonly _environmentService: IEnvironmentService,
 		private readonly _configurationService: IConfigurationService,
 	) {
-		this._webExtensionResourceEndPoint = `${getRemoteServerRootPath(_productService)}/${WEB_EXTENSION_RESOURCE_END_POINT}/`;
 		if (_productService.extensionsGallery) {
 			this._extensionGalleryResourceUrlTemplate = _productService.extensionsGallery.resourceUrlTemplate;
 			this._extensionGalleryAuthority = this._extensionGalleryResourceUrlTemplate ? this._getExtensionGalleryAuthority(URI.parse(this._extensionGalleryResourceUrlTemplate)) : undefined;
@@ -118,7 +115,7 @@ export abstract class AbstractExtensionResourceLoaderService implements IExtensi
 	}
 
 	protected _isWebExtensionResourceEndPoint(uri: URI): boolean {
-		return uri.path.startsWith(this._webExtensionResourceEndPoint);
+		return uri.path.startsWith(`/${WEB_EXTENSION_RESOURCE_END_POINT}/`);
 	}
 
 }

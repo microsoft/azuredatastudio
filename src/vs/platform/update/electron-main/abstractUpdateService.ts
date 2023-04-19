@@ -19,9 +19,7 @@ export function createUpdateURL(platform: string, quality: string, productServic
 }
 
 export type UpdateNotAvailableClassification = {
-	owner: 'joaomoreno';
-	explicit: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; isMeasurement: true; comment: 'Whether the user has manually checked for updates, or this was an automatic check.' };
-	comment: 'This is used to understand how often VS Code pings the update server for an update and there\'s none available.';
+	explicit: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; isMeasurement: true };
 };
 
 export abstract class AbstractUpdateService implements IUpdateService {
@@ -74,7 +72,7 @@ export abstract class AbstractUpdateService implements IUpdateService {
 			return;
 		}
 
-		const updateMode = this.getUpdateMode();
+		const updateMode = await this.getUpdateMode();
 		const quality = this.getProductQuality(updateMode);
 
 		if (!quality) {
@@ -106,7 +104,7 @@ export abstract class AbstractUpdateService implements IUpdateService {
 		}
 	}
 
-	protected getUpdateMode(): 'none' | 'manual' | 'start' | 'default' {
+	protected async getUpdateMode(): Promise<'none' | 'manual' | 'start' | 'default'> {
 		return getMigratedSettingValue<'none' | 'manual' | 'start' | 'default'>(this.configurationService, 'update.mode', 'update.channel');
 	}
 
@@ -199,10 +197,6 @@ export abstract class AbstractUpdateService implements IUpdateService {
 		// The update server replies with 204 (No Content) when no
 		// update is available - that's all we want to know.
 		return context.res.statusCode === 204;
-	}
-
-	async _applySpecificUpdate(packagePath: string): Promise<void> {
-		// noop
 	}
 
 	protected getUpdateType(): UpdateType {

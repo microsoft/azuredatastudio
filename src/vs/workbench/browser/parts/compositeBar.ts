@@ -79,7 +79,9 @@ export class CompositeDragAndDrop implements ICompositeDragAndDrop {
 				}
 
 				this.openComposite(newContainer.id, true).then(composite => {
-					composite?.openView(viewToMove.id, true);
+					if (composite) {
+						composite.openView(viewToMove.id, true);
+					}
 				});
 			}
 		}
@@ -299,7 +301,9 @@ export class CompositeBar extends Widget implements ICompositeBar {
 	}
 
 	focus(index?: number): void {
-		this.compositeSwitcherBar?.focus(index);
+		if (this.compositeSwitcherBar) {
+			this.compositeSwitcherBar.focus(index);
+		}
 	}
 
 	recomputeSizes(): void {
@@ -503,7 +507,7 @@ export class CompositeBar extends Widget implements ICompositeBar {
 
 		// Ensure we are not showing more composites than we have height for
 		let maxVisible = compositesToShow.length;
-		const totalComposites = compositesToShow.length;
+		let totalComposites = compositesToShow.length;
 		let size = 0;
 		const limit = this.options.orientation === ActionsOrientation.VERTICAL ? this.dimension.height : this.dimension.width;
 

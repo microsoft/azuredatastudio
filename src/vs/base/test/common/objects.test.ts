@@ -5,12 +5,12 @@
 import * as assert from 'assert';
 import * as objects from 'vs/base/common/objects';
 
-const check = (one: any, other: any, msg: string) => {
+let check = (one: any, other: any, msg: string) => {
 	assert(objects.equals(one, other), msg);
 	assert(objects.equals(other, one), '[reverse] ' + msg);
 };
 
-const checkNot = (one: any, other: any, msg: string) => {
+let checkNot = (one: any, other: any, msg: string) => {
 	assert(!objects.equals(one, other), msg);
 	assert(!objects.equals(other, one), '[reverse] ' + msg);
 };
@@ -55,7 +55,7 @@ suite('Objects', () => {
 
 	test('mixin - array', function () {
 
-		const foo: any = {};
+		let foo: any = {};
 		objects.mixin(foo, { bar: [1, 2, 3] });
 
 		assert(foo.bar);
@@ -67,11 +67,11 @@ suite('Objects', () => {
 	});
 
 	test('mixin - no overwrite', function () {
-		const foo: any = {
+		let foo: any = {
 			bar: '123'
 		};
 
-		const bar: any = {
+		let bar: any = {
 			bar: '456'
 		};
 
@@ -81,8 +81,8 @@ suite('Objects', () => {
 	});
 
 	test('cloneAndChange', () => {
-		const o1 = { something: 'hello' };
-		const o = {
+		let o1 = { something: 'hello' };
+		let o = {
 			o1: o1,
 			o2: o1
 		};
@@ -90,21 +90,21 @@ suite('Objects', () => {
 	});
 
 	test('safeStringify', () => {
-		const obj1: any = {
+		let obj1: any = {
 			friend: null
 		};
 
-		const obj2: any = {
+		let obj2: any = {
 			friend: null
 		};
 
 		obj1.friend = obj2;
 		obj2.friend = obj1;
 
-		const arr: any = [1];
+		let arr: any = [1];
 		arr.push(arr);
 
-		const circular: any = {
+		let circular: any = {
 			a: 42,
 			b: null,
 			c: [
@@ -119,7 +119,7 @@ suite('Objects', () => {
 		circular.b = circular;
 		circular.d = arr;
 
-		const result = objects.safeStringify(circular);
+		let result = objects.safeStringify(circular);
 
 		assert.deepStrictEqual(JSON.parse(result), {
 			a: 42,
@@ -137,7 +137,7 @@ suite('Objects', () => {
 	});
 
 	test('distinct', () => {
-		const base = {
+		let base = {
 			one: 'one',
 			two: 2,
 			three: {

@@ -19,7 +19,7 @@ import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService
 import { EditorOption } from 'vs/editor/common/config/editorOptions';
 import { IPosition, Position } from 'vs/editor/common/core/position';
 import { IRange, Range } from 'vs/editor/common/core/range';
-import { IEditorContribution, IEditorDecorationsCollection } from 'vs/editor/common/editorCommon';
+import { IEditorContribution } from 'vs/editor/common/editorCommon';
 import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
 import { IModelDeltaDecoration, ITextModel, TrackedRangeStickiness } from 'vs/editor/common/model';
 import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
@@ -70,9 +70,7 @@ export class LinkedEditingContribution extends Disposable implements IEditorCont
 	private _currentRequestPosition: Position | null;
 	private _currentRequestModelVersion: number | null;
 
-	private _currentDecorations: IEditorDecorationsCollection; // The one at index 0 is the reference one
-	private _syncRangesToken: number = 0;
-
+	private _currentDecorations: string[]; // The one at index 0 is the reference one
 	private _languageWordPattern: RegExp | null;
 	private _currentWordPattern: RegExp | null;
 	private _ignoreChangeEvent: boolean;
@@ -93,7 +91,7 @@ export class LinkedEditingContribution extends Disposable implements IEditorCont
 		this._visibleContextKey = CONTEXT_ONTYPE_RENAME_INPUT_VISIBLE.bindTo(contextKeyService);
 		this._debounceInformation = languageFeatureDebounceService.for(this._providers, 'Linked Editing', { min: 200 });
 
-		this._currentDecorations = this._editor.createDecorationsCollection();
+		this._currentDecorations = [];
 		this._languageWordPattern = null;
 		this._currentWordPattern = null;
 		this._ignoreChangeEvent = false;
@@ -149,8 +147,8 @@ export class LinkedEditingContribution extends Disposable implements IEditorCont
 			this._rangeUpdateTriggerPromise = rangeUpdateScheduler.trigger(() => this.updateRanges(), this._debounceDuration ?? this._debounceInformation.get(model));
 		};
 		const rangeSyncScheduler = new Delayer(0);
-		const triggerRangeSync = (token: number) => {
-			this._rangeSyncTriggerPromise = rangeSyncScheduler.trigger(() => this._syncRanges(token));
+		const triggerRangeSync = (decorations: string[]) => {
+			this._rangeSyncTriggerPromise = rangeSyncScheduler.trigger(() => this._syncRanges(decorations));
 		};
 		this._localToDispose.add(this._editor.onDidChangeCursorPosition(() => {
 			triggerRangeUpdate();
@@ -158,9 +156,9 @@ export class LinkedEditingContribution extends Disposable implements IEditorCont
 		this._localToDispose.add(this._editor.onDidChangeModelContent((e) => {
 			if (!this._ignoreChangeEvent) {
 				if (this._currentDecorations.length > 0) {
-					const referenceRange = this._currentDecorations.getRange(0);
+					const referenceRange = model.getDecorationRange(this._currentDecorations[0]);
 					if (referenceRange && e.changes.every(c => referenceRange.intersectRanges(c.range))) {
-						triggerRangeSync(this._syncRangesToken);
+						triggerRangeSync(this._currentDecorations);
 						return;
 					}
 				}
@@ -176,15 +174,15 @@ export class LinkedEditingContribution extends Disposable implements IEditorCont
 		this.updateRanges();
 	}
 
-	private _syncRanges(token: number): void {
+	private _syncRanges(decorations: string[]): void {
 		// dalayed invocation, make sure we're still on
-		if (!this._editor.hasModel() || token !== this._syncRangesToken || this._currentDecorations.length === 0) {
+		if (!this._editor.hasModel() || decorations !== this._currentDecorations || decorations.length === 0) {
 			// nothing to do
 			return;
 		}
 
 		const model = this._editor.getModel();
-		const referenceRange = this._currentDecorations.getRange(0);
+		const referenceRange = model.getDecorationRange(decorations[0]);
 
 		if (!referenceRange || referenceRange.startLineNumber !== referenceRange.endLineNumber) {
 			return this.clearRanges();
@@ -199,9 +197,9 @@ export class LinkedEditingContribution extends Disposable implements IEditorCont
 			}
 		}
 
-		const edits: ISingleEditOperation[] = [];
-		for (let i = 1, len = this._currentDecorations.length; i < len; i++) {
-			const mirrorRange = this._currentDecorations.getRange(i);
+		let edits: ISingleEditOperation[] = [];
+		for (let i = 1, len = decorations.length; i < len; i++) {
+			const mirrorRange = model.getDecorationRange(decorations[i]);
 			if (!mirrorRange) {
 				continue;
 			}
@@ -257,7 +255,7 @@ export class LinkedEditingContribution extends Disposable implements IEditorCont
 
 	public clearRanges(): void {
 		this._visibleContextKey.set(false);
-		this._currentDecorations.clear();
+		this._currentDecorations = this._editor.deltaDecorations(this._currentDecorations, []);
 		if (this._currentRequest) {
 			this._currentRequest.cancel();
 			this._currentRequest = null;
@@ -292,8 +290,8 @@ export class LinkedEditingContribution extends Disposable implements IEditorCont
 			if (position.equals(this._currentRequestPosition)) {
 				return; // same position
 			}
-			if (this._currentDecorations.length > 0) {
-				const range = this._currentDecorations.getRange(0);
+			if (this._currentDecorations && this._currentDecorations.length > 0) {
+				const range = model.getDecorationRange(this._currentDecorations[0]);
 				if (range && range.containsPosition(position)) {
 					return; // just moving inside the existing primary range
 				}
@@ -343,8 +341,7 @@ export class LinkedEditingContribution extends Disposable implements IEditorCont
 
 				const decorations: IModelDeltaDecoration[] = ranges.map(range => ({ range: range, options: LinkedEditingContribution.DECORATION }));
 				this._visibleContextKey.set(true);
-				this._currentDecorations.set(decorations);
-				this._syncRangesToken++; // cancel any pending syncRanges call
+				this._currentDecorations = this._editor.deltaDecorations(this._currentDecorations, decorations);
 			} catch (err) {
 				if (!isCancellationError(err)) {
 					onUnexpectedError(err);

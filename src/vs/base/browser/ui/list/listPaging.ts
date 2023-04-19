@@ -12,7 +12,7 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IThemable } from 'vs/base/common/styler';
 import 'vs/css!./list';
 import { IListContextMenuEvent, IListEvent, IListMouseEvent, IListRenderer, IListVirtualDelegate } from './list';
-import { IListAccessibilityProvider, IListOptions, IListOptionsUpdate, IListStyles, List, TypeNavigationMode } from './listWidget';
+import { IListAccessibilityProvider, IListOptions, IListOptionsUpdate, IListStyles, List } from './listWidget';
 
 export interface IPagedRenderer<TElement, TTemplateData> extends IListRenderer<TElement, TTemplateData> {
 	renderPlaceholder(index: number, templateData: TTemplateData): void;
@@ -95,8 +95,8 @@ class PagedAccessibilityProvider<T> implements IListAccessibilityProvider<number
 }
 
 export interface IPagedListOptions<T> {
-	readonly typeNavigationEnabled?: boolean;
-	readonly typeNavigationMode?: TypeNavigationMode;
+	readonly enableKeyboardNavigation?: boolean;
+	readonly automaticKeyboardNavigation?: boolean;
 	readonly ariaLabel?: string;
 	readonly keyboardSupport?: boolean;
 	readonly multipleSelectionSupport?: boolean;
@@ -282,8 +282,8 @@ export class PagedList<T> implements IThemable, IDisposable {
 		this.list.layout(height, width);
 	}
 
-	triggerTypeNavigation(): void {
-		this.list.triggerTypeNavigation();
+	toggleKeyboardNavigation(): void {
+		this.list.toggleKeyboardNavigation();
 	}
 
 	reveal(index: number, relativeTop?: number): void {

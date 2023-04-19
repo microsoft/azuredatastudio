@@ -22,8 +22,6 @@ import { ISharedProcessWorkerConfiguration } from 'vs/platform/sharedProcess/com
 import { IThemeMainService } from 'vs/platform/theme/electron-main/themeMainService';
 import { WindowError } from 'vs/platform/window/electron-main/window';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
-import { IUserDataProfilesService } from 'vs/platform/userDataProfile/common/userDataProfile';
-import { IPolicyService } from 'vs/platform/policy/common/policy';
 
 export class SharedProcess extends Disposable implements ISharedProcess {
 
@@ -39,10 +37,8 @@ export class SharedProcess extends Disposable implements ISharedProcess {
 		private readonly machineId: string,
 		private userEnv: IProcessEnvironment,
 		@IEnvironmentMainService private readonly environmentMainService: IEnvironmentMainService,
-		@IUserDataProfilesService private readonly userDataProfilesService: IUserDataProfilesService,
 		@ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService,
 		@ILogService private readonly logService: ILogService,
-		@IPolicyService private readonly policyService: IPolicyService,
 		@IThemeMainService private readonly themeMainService: IThemeMainService,
 		@IProtocolMainService private readonly protocolMainService: IProtocolMainService
 	) {
@@ -242,12 +238,10 @@ export class SharedProcess extends Disposable implements ISharedProcess {
 			appRoot: this.environmentMainService.appRoot,
 			codeCachePath: this.environmentMainService.codeCachePath,
 			backupWorkspacesPath: this.environmentMainService.backupWorkspacesPath,
-			profiles: this.userDataProfilesService.profiles,
 			userEnv: this.userEnv,
 			args: this.environmentMainService.args,
 			logLevel: this.logService.getLevel(),
-			product,
-			policiesData: this.policyService.serialize()
+			product
 		});
 
 		// Load with config

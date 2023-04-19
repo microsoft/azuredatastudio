@@ -50,7 +50,7 @@ const JSCHARDET_TO_ICONV_ENCODINGS: { [name: string]: string } = {
 };
 
 export function detectEncoding(buffer: Buffer): string | null {
-	const result = detectEncodingByBOM(buffer);
+	let result = detectEncodingByBOM(buffer);
 
 	if (result) {
 		return result;

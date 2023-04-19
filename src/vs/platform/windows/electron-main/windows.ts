@@ -22,7 +22,6 @@ export interface IWindowsMainService {
 
 	readonly onDidOpenWindow: Event<ICodeWindow>;
 	readonly onDidSignalReadyWindow: Event<ICodeWindow>;
-	readonly onDidTriggerSystemContextMenu: Event<{ window: ICodeWindow; x: number; y: number }>;
 	readonly onDidDestroyWindow: Event<ICodeWindow>;
 
 	open(openConfig: IOpenConfiguration): ICodeWindow[];
@@ -85,7 +84,6 @@ export interface IOpenConfiguration extends IBaseOpenConfiguration {
 	readonly forceReuseWindow?: boolean;
 	readonly forceEmpty?: boolean;
 	readonly diffMode?: boolean;
-	readonly mergeMode?: boolean;
 	addMode?: boolean;
 	readonly gotoLineMode?: boolean;
 	readonly initialStartup?: boolean;

@@ -59,7 +59,7 @@ export class EnvironmentVariableInfoWidget extends Widget implements ITerminalWi
 				}
 			});
 		});
-		this.onmouseleave(this._domNode, () => {
+		this.onnonbubblingmouseout(this._domNode, () => {
 			scheduler.cancel();
 			this._mouseMoveListener?.dispose();
 		});

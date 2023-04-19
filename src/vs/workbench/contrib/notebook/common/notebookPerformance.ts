@@ -3,23 +3,39 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { URI } from 'vs/base/common/uri';
+
 export type PerfName = 'startTime' | 'extensionActivated' | 'inputLoaded' | 'webviewCommLoaded' | 'customMarkdownLoaded' | 'editorLoaded';
 
 type PerformanceMark = { [key in PerfName]?: number };
 
-export class NotebookPerfMarks {
-	private _marks: PerformanceMark = {};
+const perfMarks = new Map<string, PerformanceMark>();
 
-	get value(): PerformanceMark {
-		return { ...this._marks };
-	}
-
-	mark(name: PerfName): void {
-		if (this._marks[name]) {
+export function mark(resource: URI, name: PerfName): void {
+	const key = resource.toString();
+	if (!perfMarks.has(key)) {
+		const perfMark: PerformanceMark = {};
+		perfMark[name] = Date.now();
+		perfMarks.set(key, perfMark);
+	} else {
+		if (perfMarks.get(key)![name]) {
 			console.error(`Skipping overwrite of notebook perf value: ${name}`);
 			return;
 		}
-
-		this._marks[name] = Date.now();
+		perfMarks.get(key)![name] = Date.now();
 	}
+}
+
+export function clearMarks(resource: URI): void {
+	const key = resource.toString();
+
+	perfMarks.delete(key);
+}
+
+export function getAndClearMarks(resource: URI): PerformanceMark | null {
+	const key = resource.toString();
+
+	const perfMark = perfMarks.get(key) || null;
+	perfMarks.delete(key);
+	return perfMark;
 }

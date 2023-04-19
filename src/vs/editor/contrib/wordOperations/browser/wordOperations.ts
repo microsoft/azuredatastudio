@@ -369,7 +369,7 @@ export abstract class DeleteWordCommand extends EditorCommand {
 
 export class DeleteWordLeftCommand extends DeleteWordCommand {
 	protected _delete(ctx: DeleteWordContext, wordNavigationType: WordNavigationType): Range {
-		const r = WordOperations.deleteWordLeft(ctx, wordNavigationType);
+		let r = WordOperations.deleteWordLeft(ctx, wordNavigationType);
 		if (r) {
 			return r;
 		}
@@ -379,7 +379,7 @@ export class DeleteWordLeftCommand extends DeleteWordCommand {
 
 export class DeleteWordRightCommand extends DeleteWordCommand {
 	protected _delete(ctx: DeleteWordContext, wordNavigationType: WordNavigationType): Range {
-		const r = WordOperations.deleteWordRight(ctx, wordNavigationType);
+		let r = WordOperations.deleteWordRight(ctx, wordNavigationType);
 		if (r) {
 			return r;
 		}

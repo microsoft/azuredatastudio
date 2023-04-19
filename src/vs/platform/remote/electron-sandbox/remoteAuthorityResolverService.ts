@@ -8,9 +8,7 @@ import { Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { RemoteAuthorities } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
-import { IProductService } from 'vs/platform/product/common/productService';
 import { IRemoteAuthorityResolverService, IRemoteConnectionData, ResolvedAuthority, ResolvedOptions, ResolverResult } from 'vs/platform/remote/common/remoteAuthorityResolver';
-import { getRemoteServerRootPath } from 'vs/platform/remote/common/remoteHosts';
 
 class PendingPromise<I, R> {
 	public readonly promise: Promise<R>;
@@ -50,14 +48,12 @@ export class RemoteAuthorityResolverService extends Disposable implements IRemot
 	private readonly _canonicalURIRequests: Map<string, PendingPromise<URI, URI>>;
 	private _canonicalURIProvider: ((uri: URI) => Promise<URI>) | null;
 
-	constructor(@IProductService productService: IProductService) {
+	constructor() {
 		super();
 		this._resolveAuthorityRequests = new Map<string, PendingPromise<string, ResolverResult>>();
 		this._connectionTokens = new Map<string, string>();
 		this._canonicalURIRequests = new Map<string, PendingPromise<URI, URI>>();
 		this._canonicalURIProvider = null;
-
-		RemoteAuthorities.setServerRootPath(getRemoteServerRootPath(productService));
 	}
 
 	resolveAuthority(authority: string): Promise<ResolverResult> {
@@ -71,7 +67,9 @@ export class RemoteAuthorityResolverService extends Disposable implements IRemot
 		const key = uri.toString();
 		if (!this._canonicalURIRequests.has(key)) {
 			const request = new PendingPromise<URI, URI>(uri);
-			this._canonicalURIProvider?.(request.input).then((uri) => request.resolve(uri), (err) => request.reject(err));
+			if (this._canonicalURIProvider) {
+				this._canonicalURIProvider(request.input).then((uri) => request.resolve(uri), (err) => request.reject(err));
+			}
 			this._canonicalURIRequests.set(key, request);
 		}
 		return this._canonicalURIRequests.get(key)!.promise;

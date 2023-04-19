@@ -14,7 +14,7 @@ import { localize } from 'vs/nls';
 import { StorageScope, IStorageService, StorageTarget } from 'vs/platform/storage/common/storage';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { ImportantExtensionTip } from 'vs/base/common/product';
-import { IStringDictionary } from 'vs/base/common/collections';
+import { forEach, IStringDictionary } from 'vs/base/common/collections';
 import { ITextModel } from 'vs/editor/common/model';
 import { Schemas } from 'vs/base/common/network';
 import { basename, extname } from 'vs/base/common/resources';
@@ -37,10 +37,8 @@ import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 
 type FileExtensionSuggestionClassification = {
-	owner: 'sandy081';
-	comment: 'Response information when a file based reccommendation is suggested';
-	userReaction: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'User reaction after showing the recommendation prompt. Eg., install, cancel, show, neverShowAgain' };
-	fileExtension: { classification: 'PublicNonPersonalData'; purpose: 'FeatureInsight'; comment: 'Extension of the file for which an extension is being recommended.' };
+	userReaction: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+	fileExtension: { classification: 'PublicNonPersonalData'; purpose: 'FeatureInsight' };
 };
 
 const promptedRecommendationsStorageKey = 'fileBasedRecommendations/promptedRecommendations';
@@ -115,10 +113,10 @@ export class FileBasedRecommendations extends ExtensionRecommendations {
 		this.tasExperimentService = tasExperimentService;
 
 		if (productService.extensionTips) {
-			Object.entries(productService.extensionTips).forEach(([key, value]) => this.extensionTips.set(key.toLowerCase(), value));
+			forEach(productService.extensionTips, ({ key, value }) => this.extensionTips.set(key.toLowerCase(), value));
 		}
 		if (productService.extensionImportantTips) {
-			Object.entries(productService.extensionImportantTips).forEach(([key, value]) => this.importantExtensionTips.set(key.toLowerCase(), value));
+			forEach(productService.extensionImportantTips, ({ key, value }) => this.importantExtensionTips.set(key.toLowerCase(), value));
 		}
 	}
 
@@ -153,7 +151,7 @@ export class FileBasedRecommendations extends ExtensionRecommendations {
 		const cachedRecommendations = this.getCachedRecommendations();
 		const now = Date.now();
 		// Retire existing recommendations if they are older than a week or are not part of this.productService.extensionTips anymore
-		Object.entries(cachedRecommendations).forEach(([key, value]) => {
+		forEach(cachedRecommendations, ({ key, value }) => {
 			const diff = (now - value) / milliSecondsInADay;
 			if (diff <= 7 && allRecommendations.indexOf(key) > -1) {
 				this.fileBasedRecommendations.set(key.toLowerCase(), { recommendedTime: value });
@@ -210,7 +208,7 @@ export class FileBasedRecommendations extends ExtensionRecommendations {
 				}
 				return false;
 			});
-		const languageName: string | null = importantRecommendations.length ? this.languageService.getLanguageName(language) : null;
+		let languageName: string | null = importantRecommendations.length ? this.languageService.getLanguageName(language) : null;
 
 		const fileBasedRecommendations: string[] = [...importantRecommendations];
 		for (let [pattern, extensionIds] of this.fileBasedRecommendationsByPattern) {
@@ -287,23 +285,23 @@ export class FileBasedRecommendations extends ExtensionRecommendations {
 	}
 
 	private getPromptedRecommendations(): IStringDictionary<string[]> {
-		return JSON.parse(this.storageService.get(promptedRecommendationsStorageKey, StorageScope.PROFILE, '{}'));
+		return JSON.parse(this.storageService.get(promptedRecommendationsStorageKey, StorageScope.GLOBAL, '{}'));
 	}
 
 	private addToPromptedRecommendations(exeName: string, extensions: string[]) {
 		const promptedRecommendations = this.getPromptedRecommendations();
 		promptedRecommendations[exeName] = extensions;
-		this.storageService.store(promptedRecommendationsStorageKey, JSON.stringify(promptedRecommendations), StorageScope.PROFILE, StorageTarget.USER);
+		this.storageService.store(promptedRecommendationsStorageKey, JSON.stringify(promptedRecommendations), StorageScope.GLOBAL, StorageTarget.USER);
 	}
 
 	private getPromptedFileExtensions(): string[] {
-		return JSON.parse(this.storageService.get(promptedFileExtensionsStorageKey, StorageScope.PROFILE, '[]'));
+		return JSON.parse(this.storageService.get(promptedFileExtensionsStorageKey, StorageScope.GLOBAL, '[]'));
 	}
 
 	private addToPromptedFileExtensions(fileExtension: string) {
 		const promptedFileExtensions = this.getPromptedFileExtensions();
 		promptedFileExtensions.push(fileExtension);
-		this.storageService.store(promptedFileExtensionsStorageKey, JSON.stringify(distinct(promptedFileExtensions)), StorageScope.PROFILE, StorageTarget.USER);
+		this.storageService.store(promptedFileExtensionsStorageKey, JSON.stringify(distinct(promptedFileExtensions)), StorageScope.GLOBAL, StorageTarget.USER);
 	}
 
 	private async promptRecommendedExtensionForFileExtension(uri: URI, fileExtension: string, installed: IExtension[]): Promise<void> {
@@ -322,7 +320,7 @@ export class FileBasedRecommendations extends ExtensionRecommendations {
 			return;
 		}
 
-		const fileExtensionSuggestionIgnoreList = <string[]>JSON.parse(this.storageService.get('extensionsAssistant/fileExtensionsSuggestionIgnore', StorageScope.PROFILE, '[]'));
+		const fileExtensionSuggestionIgnoreList = <string[]>JSON.parse(this.storageService.get('extensionsAssistant/fileExtensionsSuggestionIgnore', StorageScope.GLOBAL, '[]'));
 		if (fileExtensionSuggestionIgnoreList.indexOf(fileExtension) > -1) {
 			return;
 		}
@@ -365,7 +363,7 @@ export class FileBasedRecommendations extends ExtensionRecommendations {
 					this.storageService.store(
 						'extensionsAssistant/fileExtensionsSuggestionIgnore',
 						JSON.stringify(fileExtensionSuggestionIgnoreList),
-						StorageScope.PROFILE,
+						StorageScope.GLOBAL,
 						StorageTarget.USER);
 					this.telemetryService.publicLog2<{ userReaction: string; fileExtension: string }, FileExtensionSuggestionClassification>('fileExtensionSuggestion:popup', { userReaction: 'neverShowAgain', fileExtension });
 				}
@@ -395,12 +393,12 @@ export class FileBasedRecommendations extends ExtensionRecommendations {
 	}
 
 	private getCachedRecommendations(): IStringDictionary<number> {
-		let storedRecommendations = JSON.parse(this.storageService.get(recommendationsStorageKey, StorageScope.PROFILE, '[]'));
+		let storedRecommendations = JSON.parse(this.storageService.get(recommendationsStorageKey, StorageScope.GLOBAL, '[]'));
 		if (Array.isArray(storedRecommendations)) {
 			storedRecommendations = storedRecommendations.reduce((result, id) => { result[id] = Date.now(); return result; }, <IStringDictionary<number>>{});
 		}
 		const result: IStringDictionary<number> = {};
-		Object.entries(storedRecommendations).forEach(([key, value]) => {
+		forEach(storedRecommendations, ({ key, value }) => {
 			if (typeof value === 'number') {
 				result[key.toLowerCase()] = value;
 			}
@@ -411,6 +409,6 @@ export class FileBasedRecommendations extends ExtensionRecommendations {
 	private storeCachedRecommendations(): void {
 		const storedRecommendations: IStringDictionary<number> = {};
 		this.fileBasedRecommendations.forEach((value, key) => storedRecommendations[key] = value.recommendedTime);
-		this.storageService.store(recommendationsStorageKey, JSON.stringify(storedRecommendations), StorageScope.PROFILE, StorageTarget.MACHINE);
+		this.storageService.store(recommendationsStorageKey, JSON.stringify(storedRecommendations), StorageScope.GLOBAL, StorageTarget.MACHINE);
 	}
 }

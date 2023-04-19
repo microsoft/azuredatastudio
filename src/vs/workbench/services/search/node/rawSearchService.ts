@@ -334,7 +334,9 @@ export class SearchService implements IRawSearchService {
 	private doSearch(engine: ISearchEngine<IRawFileMatch>, progressCallback: IFileProgressCallback, batchSize: number, token?: CancellationToken): Promise<ISearchEngineSuccess> {
 		return new Promise<ISearchEngineSuccess>((c, e) => {
 			let batch: IRawFileMatch[] = [];
-			token?.onCancellationRequested(() => engine.cancel());
+			if (token) {
+				token.onCancellationRequested(() => engine.cancel());
+			}
 
 			engine.search((match) => {
 				if (match) {

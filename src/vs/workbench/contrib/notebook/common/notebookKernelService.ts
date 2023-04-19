@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IAction } from 'vs/base/common/actions';
 import { Event } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
@@ -32,7 +31,13 @@ export interface INotebookKernelChangeEvent {
 	hasExecutionOrder?: true;
 }
 
-export interface INotebookKernel {
+export const enum NotebookKernelType {
+	Resolved,
+	Proxy = 1
+}
+
+export interface IResolvedNotebookKernel {
+	readonly type: NotebookKernelType.Resolved;
 	readonly id: string;
 	readonly viewType: string;
 	readonly onDidChange: Event<Readonly<INotebookKernelChangeEvent>>;
@@ -64,12 +69,23 @@ export interface INotebookProxyKernelChangeEvent extends INotebookKernelChangeEv
 	connectionState?: true;
 }
 
-export interface ISourceAction {
-	readonly action: IAction;
-	readonly onDidChangeState: Event<void>;
-	execution: Promise<void> | undefined;
-	runAction: () => Promise<void>;
+export interface INotebookProxyKernel {
+	readonly type: NotebookKernelType.Proxy;
+	readonly id: string;
+	readonly viewType: string;
+	readonly extension: ExtensionIdentifier;
+	readonly preloadProvides: string[];
+	readonly onDidChange: Event<Readonly<INotebookProxyKernelChangeEvent>>;
+	label: string;
+	description?: string;
+	detail?: string;
+	kind?: string;
+	supportedLanguages: string[];
+	connectionState: ProxyKernelState;
+	resolveKernel(uri: URI): Promise<string | null>;
 }
+
+export type INotebookKernel = IResolvedNotebookKernel | INotebookProxyKernel;
 
 export interface INotebookTextModelLike { uri: URI; viewType: string }
 
@@ -82,6 +98,7 @@ export interface INotebookKernelService {
 	readonly onDidRemoveKernel: Event<INotebookKernel>;
 	readonly onDidChangeSelectedNotebooks: Event<ISelectedNotebooksChangeEvent>;
 	readonly onDidChangeNotebookAffinity: Event<void>;
+
 	registerKernel(kernel: INotebookKernel): IDisposable;
 
 	getMatchingKernel(notebook: INotebookTextModelLike): INotebookKernelMatchResult;
@@ -103,13 +120,15 @@ export interface INotebookKernelService {
 	preselectKernelForNotebook(kernel: INotebookKernel, notebook: INotebookTextModelLike): void;
 
 	/**
+	 * Bind a notebook type to a kernel.
+	 * @param viewType
+	 * @param kernel
+	 */
+	selectKernelForNotebookType(kernel: INotebookKernel, viewType: string): void;
+
+	/**
 	 * Set a perference of a kernel for a certain notebook. Higher values win, `undefined` removes the preference
 	 */
 	updateKernelNotebookAffinity(kernel: INotebookKernel, notebook: URI, preference: number | undefined): void;
 
-	//#region Kernel source actions
-	readonly onDidChangeSourceActions: Event<void>;
-	getSourceActions(): ISourceAction[];
-	getRunningSourceActions(): ISourceAction[];
-	//#endregion
 }

@@ -640,14 +640,18 @@ export class ChannelClient implements IChannelClient, IDisposable {
 			case RequestType.Promise:
 			case RequestType.EventListen: {
 				const msgLength = this.send([request.type, request.id, request.channelName, request.name], request.arg);
-				this.logger?.logOutgoing(msgLength, request.id, RequestInitiator.LocalSide, `${requestTypeToStr(request.type)}: ${request.channelName}.${request.name}`, request.arg);
+				if (this.logger) {
+					this.logger.logOutgoing(msgLength, request.id, RequestInitiator.LocalSide, `${requestTypeToStr(request.type)}: ${request.channelName}.${request.name}`, request.arg);
+				}
 				return;
 			}
 
 			case RequestType.PromiseCancel:
 			case RequestType.EventDispose: {
 				const msgLength = this.send([request.type, request.id]);
-				this.logger?.logOutgoing(msgLength, request.id, RequestInitiator.LocalSide, requestTypeToStr(request.type));
+				if (this.logger) {
+					this.logger.logOutgoing(msgLength, request.id, RequestInitiator.LocalSide, requestTypeToStr(request.type));
+				}
 				return;
 			}
 		}
@@ -678,14 +682,18 @@ export class ChannelClient implements IChannelClient, IDisposable {
 
 		switch (type) {
 			case ResponseType.Initialize:
-				this.logger?.logIncoming(message.byteLength, 0, RequestInitiator.LocalSide, responseTypeToStr(type));
+				if (this.logger) {
+					this.logger.logIncoming(message.byteLength, 0, RequestInitiator.LocalSide, responseTypeToStr(type));
+				}
 				return this.onResponse({ type: header[0] });
 
 			case ResponseType.PromiseSuccess:
 			case ResponseType.PromiseError:
 			case ResponseType.EventFire:
 			case ResponseType.PromiseErrorObj:
-				this.logger?.logIncoming(message.byteLength, header[1], RequestInitiator.LocalSide, responseTypeToStr(type), body);
+				if (this.logger) {
+					this.logger.logIncoming(message.byteLength, header[1], RequestInitiator.LocalSide, responseTypeToStr(type), body);
+				}
 				return this.onResponse({ type: header[0], id: header[1], data: body });
 		}
 	}
@@ -699,7 +707,9 @@ export class ChannelClient implements IChannelClient, IDisposable {
 
 		const handler = this.handlers.get(response.id);
 
-		handler?.(response);
+		if (handler) {
+			handler(response);
+		}
 	}
 
 	@memoize
@@ -806,7 +816,7 @@ export class IPCServer<TContext = string> implements IChannelServer<TContext>, I
 
 				if (isFunction(routerOrClientFilter)) {
 					// when no router is provided, we go random client picking
-					const connection = getRandomElement(that.connections.filter(routerOrClientFilter));
+					let connection = getRandomElement(that.connections.filter(routerOrClientFilter));
 
 					connectionPromise = connection
 						// if we found a client, let's call on it
@@ -1171,7 +1181,7 @@ function prettyWithoutArrays(data: any): any {
 		return data;
 	}
 	if (data && typeof data === 'object' && typeof data.toString === 'function') {
-		const result = data.toString();
+		let result = data.toString();
 		if (result !== '[object Object]') {
 			return result;
 		}

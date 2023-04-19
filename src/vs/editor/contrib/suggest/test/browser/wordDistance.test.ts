@@ -30,7 +30,7 @@ import { ILanguageService } from 'vs/editor/common/languages/language';
 suite('suggest, word distance', function () {
 
 	let distance: WordDistance;
-	const disposables = new DisposableStore();
+	let disposables = new DisposableStore();
 
 	setup(async function () {
 		const languageId = 'bracketMode';
@@ -53,14 +53,14 @@ suite('suggest, word distance', function () {
 		editor.updateOptions({ suggest: { localityBonus: true } });
 		editor.setPosition({ lineNumber: 2, column: 2 });
 
-		const modelService = new class extends mock<IModelService>() {
+		let modelService = new class extends mock<IModelService>() {
 			override onModelRemoved = Event.None;
 			override getModel(uri: URI) {
 				return uri.toString() === model.uri.toString() ? model : null;
 			}
 		};
 
-		const service = new class extends EditorWorkerService {
+		let service = new class extends EditorWorkerService {
 
 			private _worker = new EditorSimpleWorker(new class extends mock<IEditorWorkerHost>() { }, null);
 

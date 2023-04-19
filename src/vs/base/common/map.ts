@@ -371,13 +371,13 @@ export class TernarySearchTree<K, V> {
 		if (keys) {
 			const arr = keys.slice(0);
 			shuffle(arr);
-			for (const k of arr) {
+			for (let k of arr) {
 				this.set(k, (<V>values));
 			}
 		} else {
 			const arr = (<[K, V][]>values).slice(0);
 			shuffle(arr);
-			for (const entry of arr) {
+			for (let entry of arr) {
 				this.set(entry[0], entry[1]);
 			}
 		}
@@ -715,28 +715,22 @@ export class TernarySearchTree<K, V> {
 		yield* this._entries(this._root);
 	}
 
-	private _entries(node: TernarySearchTreeNode<K, V> | undefined): IterableIterator<[K, V]> {
-		const result: [K, V][] = [];
-		this._dfsEntries(node, result);
-		return result[Symbol.iterator]();
-	}
-
-	private _dfsEntries(node: TernarySearchTreeNode<K, V> | undefined, bucket: [K, V][]) {
+	private *_entries(node: TernarySearchTreeNode<K, V> | undefined): IterableIterator<[K, V]> {
 		// DFS
 		if (!node) {
 			return;
 		}
 		if (node.left) {
-			this._dfsEntries(node.left, bucket);
+			yield* this._entries(node.left);
 		}
 		if (node.value) {
-			bucket.push([node.key!, node.value]);
+			yield [node.key!, node.value];
 		}
 		if (node.mid) {
-			this._dfsEntries(node.mid, bucket);
+			yield* this._entries(node.mid);
 		}
 		if (node.right) {
-			this._dfsEntries(node.right, bucket);
+			yield* this._entries(node.right);
 		}
 	}
 
@@ -825,31 +819,31 @@ export class ResourceMap<T> implements Map<URI, T> {
 		if (typeof thisArg !== 'undefined') {
 			clb = clb.bind(thisArg);
 		}
-		for (const [_, entry] of this.map) {
+		for (let [_, entry] of this.map) {
 			clb(entry.value, entry.uri, <any>this);
 		}
 	}
 
 	*values(): IterableIterator<T> {
-		for (const entry of this.map.values()) {
+		for (let entry of this.map.values()) {
 			yield entry.value;
 		}
 	}
 
 	*keys(): IterableIterator<URI> {
-		for (const entry of this.map.values()) {
+		for (let entry of this.map.values()) {
 			yield entry.uri;
 		}
 	}
 
 	*entries(): IterableIterator<[URI, T]> {
-		for (const entry of this.map.values()) {
+		for (let entry of this.map.values()) {
 			yield [entry.uri, entry.value];
 		}
 	}
 
 	*[Symbol.iterator](): IterableIterator<[URI, T]> {
-		for (const [, entry] of this.map) {
+		for (let [, entry] of this.map) {
 			yield [entry.uri, entry.value];
 		}
 	}

@@ -12,7 +12,6 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 
-/* eslint-disable */
 /**
  * Resolves the given file path using the VS ConfigurationResolver service, replacing macros such as
  * ${workspaceRoot} with their expected values and then testing each path to see if it exists. It will
@@ -59,4 +58,3 @@ export async function resolveQueryFilePath(services: ServicesAccessor, filePath?
 
 	throw Error(localize('insightsDidNotFindResolvedFile', "Could not find query file at any of the following paths :\n {0}", resolvedFileUris.map(uri => uri.fsPath).join('\n')));
 }
-/* eslint-enable */

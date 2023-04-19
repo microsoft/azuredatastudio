@@ -205,7 +205,6 @@ john.doe@mail.com
 1580811030
 1580811031
 8e5a374372b8393906c7e380dbb09349c5385554
-main,branch
 This is a commit message.\x00`;
 
 			assert.deepStrictEqual(parseGitCommits(GIT_OUTPUT_SINGLE_PARENT), [{
@@ -216,7 +215,6 @@ This is a commit message.\x00`;
 				authorName: 'John Doe',
 				authorEmail: 'john.doe@mail.com',
 				commitDate: new Date(1580811031000),
-				refNames: ['main', 'branch'],
 			}]);
 		});
 
@@ -227,7 +225,6 @@ john.doe@mail.com
 1580811030
 1580811031
 8e5a374372b8393906c7e380dbb09349c5385554 df27d8c75b129ab9b178b386077da2822101b217
-main
 This is a commit message.\x00`;
 
 			assert.deepStrictEqual(parseGitCommits(GIT_OUTPUT_MULTIPLE_PARENTS), [{
@@ -238,7 +235,6 @@ This is a commit message.\x00`;
 				authorName: 'John Doe',
 				authorEmail: 'john.doe@mail.com',
 				commitDate: new Date(1580811031000),
-				refNames: ['main'],
 			}]);
 		});
 
@@ -249,7 +245,6 @@ john.doe@mail.com
 1580811030
 1580811031
 
-main
 This is a commit message.\x00`;
 
 			assert.deepStrictEqual(parseGitCommits(GIT_OUTPUT_NO_PARENTS), [{
@@ -260,7 +255,6 @@ This is a commit message.\x00`;
 				authorName: 'John Doe',
 				authorEmail: 'john.doe@mail.com',
 				commitDate: new Date(1580811031000),
-				refNames: ['main'],
 			}]);
 		});
 	});

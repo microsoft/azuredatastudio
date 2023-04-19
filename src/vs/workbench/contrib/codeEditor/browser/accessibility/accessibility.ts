@@ -177,7 +177,7 @@ class AccessibilityHelpWidget extends Widget implements IOverlayWidget {
 	}
 
 	private _descriptionForCommand(commandId: string, msg: string, noKbMsg: string): string {
-		const kb = this._keybindingService.lookupKeybinding(commandId);
+		let kb = this._keybindingService.lookupKeybinding(commandId);
 		if (kb) {
 			return strings.format(msg, kb.getAriaLabel());
 		}
@@ -265,7 +265,7 @@ class AccessibilityHelpWidget extends Widget implements IOverlayWidget {
 	}
 
 	private _layout(): void {
-		const editorLayout = this._editor.getLayoutInfo();
+		let editorLayout = this._editor.getLayoutInfo();
 
 		const width = Math.min(editorLayout.width - 40, AccessibilityHelpWidget.WIDTH);
 		const height = Math.min(editorLayout.height - 40, AccessibilityHelpWidget.HEIGHT);

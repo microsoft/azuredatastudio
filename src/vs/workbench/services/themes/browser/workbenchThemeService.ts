@@ -48,7 +48,6 @@ const DEFAULT_COLOR_THEME_ID = 'vs sql-theme-carbon-themes-light_carbon-json'; /
 const DEFAULT_LIGHT_COLOR_THEME_ID = 'vs vscode-theme-defaults-themes-light_plus-json';
 
 const PERSISTED_OS_COLOR_SCHEME = 'osColorScheme';
-const PERSISTED_OS_COLOR_SCHEME_SCOPE = StorageScope.APPLICATION; // the OS scheme depends on settings in the OS
 
 const defaultThemeExtensionId = 'sql-theme-carbon';// {{SQL CARBON EDIT}}
 
@@ -153,7 +152,7 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 		// the preferred color scheme (high contrast, light, dark) has changed since the last start
 		const preferredColorScheme = this.getPreferredColorScheme();
 
-		if (preferredColorScheme && themeData?.type !== preferredColorScheme && this.storageService.get(PERSISTED_OS_COLOR_SCHEME, PERSISTED_OS_COLOR_SCHEME_SCOPE) !== preferredColorScheme) {
+		if (preferredColorScheme && themeData?.type !== preferredColorScheme && this.storageService.get(PERSISTED_OS_COLOR_SCHEME, StorageScope.GLOBAL) !== preferredColorScheme) {
 			themeData = ColorThemeData.createUnloadedThemeForThemeType(preferredColorScheme);
 		}
 		if (!themeData) {
@@ -217,9 +216,9 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 			const theme = this.colorThemeRegistry.findThemeBySettingsId(this.settings.colorTheme, fallbackTheme);
 
 			const preferredColorScheme = this.getPreferredColorScheme();
-			const prevScheme = this.storageService.get(PERSISTED_OS_COLOR_SCHEME, PERSISTED_OS_COLOR_SCHEME_SCOPE);
+			const prevScheme = this.storageService.get(PERSISTED_OS_COLOR_SCHEME, StorageScope.GLOBAL);
 			if (preferredColorScheme !== prevScheme) {
-				this.storageService.store(PERSISTED_OS_COLOR_SCHEME, preferredColorScheme, PERSISTED_OS_COLOR_SCHEME_SCOPE, StorageTarget.USER);
+				this.storageService.store(PERSISTED_OS_COLOR_SCHEME, preferredColorScheme, StorageScope.GLOBAL, StorageTarget.USER);
 				if (preferredColorScheme && theme?.type !== preferredColorScheme) {
 					return this.applyPreferredColorTheme(preferredColorScheme);
 				}
@@ -380,9 +379,9 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 
 	private async handlePreferredSchemeUpdated() {
 		const scheme = this.getPreferredColorScheme();
-		const prevScheme = this.storageService.get(PERSISTED_OS_COLOR_SCHEME, PERSISTED_OS_COLOR_SCHEME_SCOPE);
+		const prevScheme = this.storageService.get(PERSISTED_OS_COLOR_SCHEME, StorageScope.GLOBAL);
 		if (scheme !== prevScheme) {
-			this.storageService.store(PERSISTED_OS_COLOR_SCHEME, scheme, PERSISTED_OS_COLOR_SCHEME_SCOPE, StorageTarget.MACHINE);
+			this.storageService.store(PERSISTED_OS_COLOR_SCHEME, scheme, StorageScope.GLOBAL, StorageTarget.MACHINE);
 			if (scheme) {
 				if (!prevScheme) {
 					// remember the theme before scheme switching
@@ -587,13 +586,11 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 			const key = themeType + themeData.extensionId;
 			if (!this.themeExtensionsActivated.get(key)) {
 				type ActivatePluginClassification = {
-					owner: 'aeschli';
-					comment: 'An event is fired when an color theme extension is first used as it provides the currently shown color theme.';
-					id: { classification: 'PublicNonPersonalData'; purpose: 'FeatureInsight'; comment: 'The extension id.' };
-					name: { classification: 'PublicNonPersonalData'; purpose: 'FeatureInsight'; comment: 'The extension name.' };
-					isBuiltin: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; isMeasurement: true; comment: 'Whether the extension is a built-in extension.' };
-					publisherDisplayName: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'The extension publisher id.' };
-					themeId: { classification: 'PublicNonPersonalData'; purpose: 'FeatureInsight'; comment: 'The id of the theme that triggered the first extension use.' };
+					id: { classification: 'PublicNonPersonalData'; purpose: 'FeatureInsight' };
+					name: { classification: 'PublicNonPersonalData'; purpose: 'FeatureInsight' };
+					isBuiltin: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; isMeasurement: true };
+					publisherDisplayName: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+					themeId: { classification: 'PublicNonPersonalData'; purpose: 'FeatureInsight' };
 				};
 				type ActivatePluginEvent = {
 					id: string;

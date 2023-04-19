@@ -9,9 +9,9 @@
 	position: absolute;
 	top: -45px;
 	right: 18px;
-	width: var(--notebook-find-width);
+	width: 318px;
 	max-width: calc(100% - 28px - 28px - 8px);
-	padding:0 var(--notebook-find-horizontal-padding);
+	pointer-events: none;
 	transition: top 200ms linear;
 	visibility: hidden;
 }
@@ -157,7 +157,4 @@
 .monaco-workbench .simple-fr-find-part .monaco-inputbox > .ibwrapper > .input,
 .monaco-workbench .simple-fr-replace-part .monaco-inputbox > .ibwrapper > .input {
 	height: 24px;
-}
-.monaco-workbench .simple-fr-find-part-wrapper .monaco-sash {
-	left: 0 !important;
 }

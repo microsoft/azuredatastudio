@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { VSBuffer } from 'vs/base/common/buffer';
 import { Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { MessageBoxOptions, MessageBoxReturnValue, MouseInputEvent, OpenDevToolsOptions, OpenDialogOptions, OpenDialogReturnValue, SaveDialogOptions, SaveDialogReturnValue } from 'vs/base/parts/sandbox/common/electronTypes';
@@ -55,8 +54,6 @@ export interface ICommonNativeHostService {
 
 	readonly onDidChangePassword: Event<{ service: string; account: string }>;
 
-	readonly onDidTriggerSystemContextMenu: Event<{ windowId: number; x: number; y: number }>;
-
 	// Window
 	getWindows(): Promise<IOpenedWindow[]>;
 	getWindowCount(): Promise<number>;
@@ -74,7 +71,7 @@ export interface ICommonNativeHostService {
 	unmaximizeWindow(): Promise<void>;
 	minimizeWindow(): Promise<void>;
 
-	updateTitleBarOverlay(options: { height?: number; backgroundColor?: string; foregroundColor?: string }): Promise<void>;
+	updateTitleBarOverlay(backgroundColor: string, foregroundColor: string): Promise<void>;
 
 	setMinimumSize(width: number | undefined, height: number | undefined): Promise<void>;
 
@@ -125,8 +122,8 @@ export interface ICommonNativeHostService {
 	readClipboardFindText(): Promise<string>;
 	writeClipboardFindText(text: string): Promise<void>;
 	writeClipboardData(data: any, type?: 'selection' | 'clipboard'): Promise<void>;	// {{SQL CARBON EDIT}}
-	writeClipboardBuffer(format: string, buffer: VSBuffer, type?: 'selection' | 'clipboard'): Promise<void>;
-	readClipboardBuffer(format: string): Promise<VSBuffer>;
+	writeClipboardBuffer(format: string, buffer: Uint8Array, type?: 'selection' | 'clipboard'): Promise<void>;
+	readClipboardBuffer(format: string): Promise<Uint8Array>;
 	hasClipboard(format: string, type?: 'selection' | 'clipboard'): Promise<boolean>;
 
 	// macOS Touchbar

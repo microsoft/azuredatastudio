@@ -16,6 +16,10 @@ export function log(...args: any[]): void {
 	console.log.apply(console, ['git:', ...args]);
 }
 
+export function logTimestamp(): string {
+	return `[${new Date().toISOString()}]`;
+}
+
 export interface IDisposable {
 	dispose(): void;
 }
@@ -51,7 +55,9 @@ export function anyEvent<T>(...events: Event<T>[]): Event<T> {
 	return (listener: (e: T) => any, thisArgs?: any, disposables?: Disposable[]) => {
 		const result = combinedDisposable(events.map(event => event(i => listener.call(thisArgs, i))));
 
-		disposables?.push(result);
+		if (disposables) {
+			disposables.push(result);
+		}
 
 		return result;
 	};
@@ -87,7 +93,7 @@ export function eventToPromise<T>(event: Event<T>): Promise<T> {
 }
 
 export function once(fn: (...args: any[]) => any): (...args: any[]) => any {
-	const didRun = false;
+	let didRun = false;
 
 	return (...args) => {
 		if (didRun) {
@@ -217,11 +223,11 @@ export async function grep(filename: string, pattern: RegExp): Promise<boolean> 
 export function readBytes(stream: Readable, bytes: number): Promise<Buffer> {
 	return new Promise<Buffer>((complete, error) => {
 		let done = false;
-		const buffer = Buffer.allocUnsafe(bytes);
+		let buffer = Buffer.allocUnsafe(bytes);
 		let bytesRead = 0;
 
 		stream.on('data', (data: Buffer) => {
-			const bytesToRead = Math.min(bytes - bytesRead, data.length);
+			let bytesToRead = Math.min(bytes - bytesRead, data.length);
 			data.copy(buffer, bytesRead, 0, bytesToRead);
 			bytesRead += bytesToRead;
 

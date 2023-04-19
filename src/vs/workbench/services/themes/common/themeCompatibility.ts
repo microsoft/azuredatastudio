@@ -19,21 +19,21 @@ function addSettingMapping(settingId: string, colorId: string) {
 }
 
 export function convertSettings(oldSettings: ITextMateThemingRule[], result: { textMateRules: ITextMateThemingRule[]; colors: IColorMap }): void {
-	for (const rule of oldSettings) {
+	for (let rule of oldSettings) {
 		result.textMateRules.push(rule);
 		if (!rule.scope) {
-			const settings = rule.settings;
+			let settings = rule.settings;
 			if (!settings) {
 				rule.settings = {};
 			} else {
 				for (const settingKey in settings) {
 					const key = <keyof typeof settings>settingKey;
-					const mappings = settingToColorIdMapping[key];
+					let mappings = settingToColorIdMapping[key];
 					if (mappings) {
-						const colorHex = settings[key];
+						let colorHex = settings[key];
 						if (typeof colorHex === 'string') {
-							const color = Color.fromHex(colorHex);
-							for (const colorId of mappings) {
+							let color = Color.fromHex(colorHex);
+							for (let colorId of mappings) {
 								result.colors[colorId] = color;
 							}
 						}

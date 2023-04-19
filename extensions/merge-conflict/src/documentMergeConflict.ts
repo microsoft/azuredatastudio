@@ -45,11 +45,11 @@ export class DocumentMergeConflict implements interfaces.IDocumentMergeConflict 
 		// ]
 		if (type === interfaces.CommitType.Current) {
 			// Replace [ Conflict Range ] with [ Current Content ]
-			const content = document.getText(this.current.content);
+			let content = document.getText(this.current.content);
 			this.replaceRangeWithContent(content, edit);
 		}
 		else if (type === interfaces.CommitType.Incoming) {
-			const content = document.getText(this.incoming.content);
+			let content = document.getText(this.incoming.content);
 			this.replaceRangeWithContent(content, edit);
 		}
 		else if (type === interfaces.CommitType.Both) {

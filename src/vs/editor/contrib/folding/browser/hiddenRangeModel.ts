@@ -11,7 +11,7 @@ import { IRange, Range } from 'vs/editor/common/core/range';
 import { Selection } from 'vs/editor/common/core/selection';
 import { IModelContentChangedEvent } from 'vs/editor/common/textModelEvents';
 import { countEOL } from 'vs/editor/common/core/eolCounter';
-import { FoldingModel } from 'vs/editor/contrib/folding/browser/foldingModel';
+import { CollapseMemento, FoldingModel } from 'vs/editor/contrib/folding/browser/foldingModel';
 
 export class HiddenRangeModel {
 
@@ -43,21 +43,21 @@ export class HiddenRangeModel {
 
 	private updateHiddenRanges(): void {
 		let updateHiddenAreas = false;
-		const newHiddenAreas: IRange[] = [];
+		let newHiddenAreas: IRange[] = [];
 		let i = 0; // index into hidden
 		let k = 0;
 
 		let lastCollapsedStart = Number.MAX_VALUE;
 		let lastCollapsedEnd = -1;
 
-		const ranges = this._foldingModel.regions;
+		let ranges = this._foldingModel.regions;
 		for (; i < ranges.length; i++) {
 			if (!ranges.isCollapsed(i)) {
 				continue;
 			}
 
-			const startLineNumber = ranges.getStartLineNumber(i) + 1; // the first line is not hidden
-			const endLineNumber = ranges.getEndLineNumber(i);
+			let startLineNumber = ranges.getStartLineNumber(i) + 1; // the first line is not hidden
+			let endLineNumber = ranges.getEndLineNumber(i);
 			if (lastCollapsedStart <= startLineNumber && endLineNumber <= lastCollapsedEnd) {
 				// ignore ranges contained in collapsed regions
 				continue;
@@ -79,6 +79,28 @@ export class HiddenRangeModel {
 		}
 	}
 
+	public applyMemento(state: CollapseMemento): boolean {
+		if (!Array.isArray(state) || state.length === 0) {
+			return false;
+		}
+		let hiddenRanges: IRange[] = [];
+		for (let r of state) {
+			if (!r.startLineNumber || !r.endLineNumber) {
+				return false;
+			}
+			hiddenRanges.push(new Range(r.startLineNumber + 1, 1, r.endLineNumber, 1));
+		}
+		this.applyHiddenRanges(hiddenRanges);
+		return true;
+	}
+
+	/**
+	 * Collapse state memento, for persistence only, only used if folding model is not yet initialized
+	 */
+	public getMemento(): CollapseMemento {
+		return this._hiddenRanges.map(r => ({ startLineNumber: r.startLineNumber - 1, endLineNumber: r.endLineNumber }));
+	}
+
 	private applyHiddenRanges(newHiddenAreas: IRange[]) {
 		this._hiddenRanges = newHiddenAreas;
 		this._hasLineChanges = false;
@@ -95,10 +117,10 @@ export class HiddenRangeModel {
 
 	public adjustSelections(selections: Selection[]): boolean {
 		let hasChanges = false;
-		const editorModel = this._foldingModel.textModel;
+		let editorModel = this._foldingModel.textModel;
 		let lastRange: IRange | null = null;
 
-		const adjustLine = (line: number) => {
+		let adjustLine = (line: number) => {
 			if (!lastRange || !isInside(line, lastRange)) {
 				lastRange = findRange(this._hiddenRanges, line);
 			}
@@ -109,12 +131,12 @@ export class HiddenRangeModel {
 		};
 		for (let i = 0, len = selections.length; i < len; i++) {
 			let selection = selections[i];
-			const adjustedStartLine = adjustLine(selection.startLineNumber);
+			let adjustedStartLine = adjustLine(selection.startLineNumber);
 			if (adjustedStartLine) {
 				selection = selection.setStartPosition(adjustedStartLine, editorModel.getLineMaxColumn(adjustedStartLine));
 				hasChanges = true;
 			}
-			const adjustedEndLine = adjustLine(selection.endLineNumber);
+			let adjustedEndLine = adjustLine(selection.endLineNumber);
 			if (adjustedEndLine) {
 				selection = selection.setEndPosition(adjustedEndLine, editorModel.getLineMaxColumn(adjustedEndLine));
 				hasChanges = true;
@@ -141,7 +163,7 @@ function isInside(line: number, range: IRange) {
 	return line >= range.startLineNumber && line <= range.endLineNumber;
 }
 function findRange(ranges: IRange[], line: number): IRange | null {
-	const i = findFirstInSorted(ranges, r => line < r.startLineNumber) - 1;
+	let i = findFirstInSorted(ranges, r => line < r.startLineNumber) - 1;
 	if (i >= 0 && ranges[i].endLineNumber >= line) {
 		return ranges[i];
 	}

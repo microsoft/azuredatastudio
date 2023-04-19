@@ -15,7 +15,6 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { INativeEnvironmentService } from 'vs/platform/environment/common/environment';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IIPCObjectUrl, IProtocolMainService } from 'vs/platform/protocol/electron-main/protocol';
-import { IUserDataProfilesService } from 'vs/platform/userDataProfile/common/userDataProfile';
 
 type ProtocolCallback = { (result: string | Electron.FilePathWithHeaders | { error: number }): void };
 
@@ -28,7 +27,6 @@ export class ProtocolMainService extends Disposable implements IProtocolMainServ
 
 	constructor(
 		@INativeEnvironmentService environmentService: INativeEnvironmentService,
-		@IUserDataProfilesService userDataProfilesService: IUserDataProfilesService,
 		@ILogService private readonly logService: ILogService
 	) {
 		super();
@@ -39,7 +37,7 @@ export class ProtocolMainService extends Disposable implements IProtocolMainServ
 		// - storage    : all files in global and workspace storage (https://github.com/microsoft/vscode/issues/116735)
 		this.addValidFileRoot(environmentService.appRoot);
 		this.addValidFileRoot(environmentService.extensionsPath);
-		this.addValidFileRoot(userDataProfilesService.defaultProfile.globalStorageHome.fsPath);
+		this.addValidFileRoot(environmentService.globalStorageHome.fsPath);
 		this.addValidFileRoot(environmentService.workspaceStorageHome.fsPath);
 
 		// Handle protocols

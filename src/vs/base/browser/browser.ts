@@ -71,7 +71,9 @@ class DevicePixelRatioMonitor extends Disposable {
 	}
 
 	private _handleChange(fireEvent: boolean): void {
-		this._mediaQueryList?.removeEventListener('change', this._listener);
+		if (this._mediaQueryList) {
+			this._mediaQueryList.removeEventListener('change', this._listener);
+		}
 
 		this._mediaQueryList = matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
 		this._mediaQueryList.addEventListener('change', this._listener);

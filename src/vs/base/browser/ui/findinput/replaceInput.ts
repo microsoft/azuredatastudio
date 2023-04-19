@@ -189,10 +189,10 @@ export class ReplaceInput extends Widget {
 		}
 
 		// Arrow-Key support to navigate between options
-		const indexes = [this.preserveCase.domNode];
+		let indexes = [this.preserveCase.domNode];
 		this.onkeydown(this.domNode, (event: IKeyboardEvent) => {
 			if (event.equals(KeyCode.LeftArrow) || event.equals(KeyCode.RightArrow) || event.equals(KeyCode.Escape)) {
-				const index = indexes.indexOf(<HTMLElement>document.activeElement);
+				let index = indexes.indexOf(<HTMLElement>document.activeElement);
 				if (index >= 0) {
 					let newIndex: number = -1;
 					if (event.equals(KeyCode.RightArrow)) {
@@ -218,14 +218,16 @@ export class ReplaceInput extends Widget {
 		});
 
 
-		const controls = document.createElement('div');
+		let controls = document.createElement('div');
 		controls.className = 'controls';
 		controls.style.display = this._showOptionButtons ? 'block' : 'none';
 		controls.appendChild(this.preserveCase.domNode);
 
 		this.domNode.appendChild(controls);
 
-		parent?.appendChild(this.domNode);
+		if (parent) {
+			parent.appendChild(this.domNode);
+		}
 
 		this.onkeydown(this.inputBox.inputElement, (e) => this._onKeyDown.fire(e));
 		this.onkeyup(this.inputBox.inputElement, (e) => this._onKeyUp.fire(e));
@@ -359,7 +361,9 @@ export class ReplaceInput extends Widget {
 	}
 
 	public showMessage(message: InputBoxMessage): void {
-		this.inputBox?.showMessage(message);
+		if (this.inputBox) {
+			this.inputBox.showMessage(message);
+		}
 	}
 
 	public clearMessage(): void {

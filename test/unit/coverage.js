@@ -37,7 +37,7 @@ exports.createReport = function (isSingle) {
 	const coverageMap = iLibCoverage.createCoverageMap(global.__coverage__);
 	return mapStore.transformCoverage(coverageMap).then((transformed) => {
 		// Paths come out all broken
-		const newData = Object.create(null);
+		let newData = Object.create(null);
 		Object.keys(transformed.data).forEach((file) => {
 			const entry = transformed.data[file];
 			const fixedPath = fixPath(entry.path);
@@ -53,7 +53,7 @@ exports.createReport = function (isSingle) {
 		});
 		const tree = context.getTree('flat');
 
-		const reports = [];
+		let reports = [];
 		if (isSingle) {
 			reports.push(iReports.create('lcovonly'));
 			reports.push(iReports.create('json')); // {{SQL CARBON EDIT}} add json for code coverage merging

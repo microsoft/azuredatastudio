@@ -85,8 +85,6 @@ export class SymbolNavigationAnchor {
 
 export abstract class SymbolNavigationAction extends EditorAction {
 
-	private static _activeAlternativeCommands = new Set<string>();
-
 	readonly configuration: SymbolNavigationActionConfig;
 
 	constructor(configuration: SymbolNavigationActionConfig, opts: IActionOptions) {
@@ -121,7 +119,7 @@ export abstract class SymbolNavigationAction extends EditorAction {
 			let altAction: IEditorAction | null | undefined;
 			if (references.referenceAt(model.uri, position)) {
 				const altActionId = this._getAlternativeCommand(editor);
-				if (!SymbolNavigationAction._activeAlternativeCommands.has(altActionId) && _goToActionIds.has(altActionId)) {
+				if (altActionId !== this.id && _goToActionIds.has(altActionId)) {
 					altAction = editor.getAction(altActionId);
 				}
 			}
@@ -136,10 +134,7 @@ export abstract class SymbolNavigationAction extends EditorAction {
 				}
 			} else if (referenceCount === 1 && altAction) {
 				// already at the only result, run alternative
-				SymbolNavigationAction._activeAlternativeCommands.add(this.id);
-				altAction.run().finally(() => {
-					SymbolNavigationAction._activeAlternativeCommands.delete(this.id);
-				});
+				altAction.run();
 
 			} else {
 				// normal results handling
@@ -218,10 +213,10 @@ export abstract class SymbolNavigationAction extends EditorAction {
 
 		if (highlight) {
 			const modelNow = targetEditor.getModel();
-			const decorations = targetEditor.createDecorationsCollection([{ range, options: { description: 'symbol-navigate-action-highlight', className: 'symbolHighlight' } }]);
+			const ids = targetEditor.deltaDecorations([], [{ range, options: { description: 'symbol-navigate-action-highlight', className: 'symbolHighlight' } }]);
 			setTimeout(() => {
 				if (targetEditor.getModel() === modelNow) {
-					decorations.clear();
+					targetEditor.deltaDecorations(ids, []);
 				}
 			}, 350);
 		}

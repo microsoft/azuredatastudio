@@ -62,7 +62,7 @@ const nullContext = {
 
 suite('Configuration Resolver Service', () => {
 	let configurationResolverService: IConfigurationResolverService | null;
-	const envVariables: { [key: string]: string } = { key1: 'Value for key1', key2: 'Value for key2' };
+	let envVariables: { [key: string]: string } = { key1: 'Value for key1', key2: 'Value for key2' };
 	let environmentService: MockWorkbenchEnvironmentService;
 	let mockCommandService: MockCommandService;
 	let editorService: TestEditorServiceWithActiveEditor;
@@ -218,7 +218,7 @@ suite('Configuration Resolver Service', () => {
 	});
 
 	test('substitute one configuration variable', async () => {
-		const configurationService: IConfigurationService = new TestConfigurationService({
+		let configurationService: IConfigurationService = new TestConfigurationService({
 			editor: {
 				fontFamily: 'foo'
 			},
@@ -229,23 +229,24 @@ suite('Configuration Resolver Service', () => {
 			}
 		});
 
-		const service = new TestConfigurationResolverService(nullContext, Promise.resolve(environmentService.userEnv), new TestEditorServiceWithActiveEditor(), configurationService, mockCommandService, new TestContextService(), quickInputService, labelService, pathService, extensionService);
+		let service = new TestConfigurationResolverService(nullContext, Promise.resolve(environmentService.userEnv), new TestEditorServiceWithActiveEditor(), configurationService, mockCommandService, new TestContextService(), quickInputService, labelService, pathService, extensionService);
 		assert.strictEqual(await service.resolveAsync(workspace, 'abc ${config:editor.fontFamily} xyz'), 'abc foo xyz');
 	});
 
 	test('substitute configuration variable with undefined workspace folder', async () => {
-		const configurationService: IConfigurationService = new TestConfigurationService({
+		let configurationService: IConfigurationService = new TestConfigurationService({
 			editor: {
 				fontFamily: 'foo'
 			}
 		});
 
-		const service = new TestConfigurationResolverService(nullContext, Promise.resolve(environmentService.userEnv), new TestEditorServiceWithActiveEditor(), configurationService, mockCommandService, new TestContextService(), quickInputService, labelService, pathService, extensionService);
+		let service = new TestConfigurationResolverService(nullContext, Promise.resolve(environmentService.userEnv), new TestEditorServiceWithActiveEditor(), configurationService, mockCommandService, new TestContextService(), quickInputService, labelService, pathService, extensionService);
 		assert.strictEqual(await service.resolveAsync(undefined, 'abc ${config:editor.fontFamily} xyz'), 'abc foo xyz');
 	});
 
 	test('substitute many configuration variables', async () => {
-		const configurationService = new TestConfigurationService({
+		let configurationService: IConfigurationService;
+		configurationService = new TestConfigurationService({
 			editor: {
 				fontFamily: 'foo'
 			},
@@ -256,12 +257,13 @@ suite('Configuration Resolver Service', () => {
 			}
 		});
 
-		const service = new TestConfigurationResolverService(nullContext, Promise.resolve(environmentService.userEnv), new TestEditorServiceWithActiveEditor(), configurationService, mockCommandService, new TestContextService(), quickInputService, labelService, pathService, extensionService);
+		let service = new TestConfigurationResolverService(nullContext, Promise.resolve(environmentService.userEnv), new TestEditorServiceWithActiveEditor(), configurationService, mockCommandService, new TestContextService(), quickInputService, labelService, pathService, extensionService);
 		assert.strictEqual(await service.resolveAsync(workspace, 'abc ${config:editor.fontFamily} ${config:terminal.integrated.fontFamily} xyz'), 'abc foo bar xyz');
 	});
 
 	test('substitute one env variable and a configuration variable', async () => {
-		const configurationService = new TestConfigurationService({
+		let configurationService: IConfigurationService;
+		configurationService = new TestConfigurationService({
 			editor: {
 				fontFamily: 'foo'
 			},
@@ -272,7 +274,7 @@ suite('Configuration Resolver Service', () => {
 			}
 		});
 
-		const service = new TestConfigurationResolverService(nullContext, Promise.resolve(environmentService.userEnv), new TestEditorServiceWithActiveEditor(), configurationService, mockCommandService, new TestContextService(), quickInputService, labelService, pathService, extensionService);
+		let service = new TestConfigurationResolverService(nullContext, Promise.resolve(environmentService.userEnv), new TestEditorServiceWithActiveEditor(), configurationService, mockCommandService, new TestContextService(), quickInputService, labelService, pathService, extensionService);
 		if (platform.isWindows) {
 			assert.strictEqual(await service.resolveAsync(workspace, 'abc ${config:editor.fontFamily} ${workspaceFolder} ${env:key1} xyz'), 'abc foo \\VSCode\\workspaceLocation Value for key1 xyz');
 		} else {
@@ -281,7 +283,8 @@ suite('Configuration Resolver Service', () => {
 	});
 
 	test('substitute many env variable and a configuration variable', async () => {
-		const configurationService = new TestConfigurationService({
+		let configurationService: IConfigurationService;
+		configurationService = new TestConfigurationService({
 			editor: {
 				fontFamily: 'foo'
 			},
@@ -292,7 +295,7 @@ suite('Configuration Resolver Service', () => {
 			}
 		});
 
-		const service = new TestConfigurationResolverService(nullContext, Promise.resolve(environmentService.userEnv), new TestEditorServiceWithActiveEditor(), configurationService, mockCommandService, new TestContextService(), quickInputService, labelService, pathService, extensionService);
+		let service = new TestConfigurationResolverService(nullContext, Promise.resolve(environmentService.userEnv), new TestEditorServiceWithActiveEditor(), configurationService, mockCommandService, new TestContextService(), quickInputService, labelService, pathService, extensionService);
 		if (platform.isWindows) {
 			assert.strictEqual(await service.resolveAsync(workspace, '${config:editor.fontFamily} ${config:terminal.integrated.fontFamily} ${workspaceFolder} - ${workspaceFolder} ${env:key1} - ${env:key2}'), 'foo bar \\VSCode\\workspaceLocation - \\VSCode\\workspaceLocation Value for key1 - Value for key2');
 		} else {
@@ -301,7 +304,8 @@ suite('Configuration Resolver Service', () => {
 	});
 
 	test('mixed types of configuration variables', async () => {
-		const configurationService = new TestConfigurationService({
+		let configurationService: IConfigurationService;
+		configurationService = new TestConfigurationService({
 			editor: {
 				fontFamily: 'foo',
 				lineNumbers: 123,
@@ -325,28 +329,30 @@ suite('Configuration Resolver Service', () => {
 			}
 		});
 
-		const service = new TestConfigurationResolverService(nullContext, Promise.resolve(environmentService.userEnv), new TestEditorServiceWithActiveEditor(), configurationService, mockCommandService, new TestContextService(), quickInputService, labelService, pathService, extensionService);
+		let service = new TestConfigurationResolverService(nullContext, Promise.resolve(environmentService.userEnv), new TestEditorServiceWithActiveEditor(), configurationService, mockCommandService, new TestContextService(), quickInputService, labelService, pathService, extensionService);
 		assert.strictEqual(await service.resolveAsync(workspace, 'abc ${config:editor.fontFamily} ${config:editor.lineNumbers} ${config:editor.insertSpaces} xyz'), 'abc foo 123 false xyz');
 	});
 
 	test('uses original variable as fallback', async () => {
-		const configurationService = new TestConfigurationService({
+		let configurationService: IConfigurationService;
+		configurationService = new TestConfigurationService({
 			editor: {}
 		});
 
-		const service = new TestConfigurationResolverService(nullContext, Promise.resolve(environmentService.userEnv), new TestEditorServiceWithActiveEditor(), configurationService, mockCommandService, new TestContextService(), quickInputService, labelService, pathService, extensionService);
+		let service = new TestConfigurationResolverService(nullContext, Promise.resolve(environmentService.userEnv), new TestEditorServiceWithActiveEditor(), configurationService, mockCommandService, new TestContextService(), quickInputService, labelService, pathService, extensionService);
 		assert.strictEqual(await service.resolveAsync(workspace, 'abc ${unknownVariable} xyz'), 'abc ${unknownVariable} xyz');
 		assert.strictEqual(await service.resolveAsync(workspace, 'abc ${env:unknownVariable} xyz'), 'abc  xyz');
 	});
 
 	test('configuration variables with invalid accessor', () => {
-		const configurationService = new TestConfigurationService({
+		let configurationService: IConfigurationService;
+		configurationService = new TestConfigurationService({
 			editor: {
 				fontFamily: 'foo'
 			}
 		});
 
-		const service = new TestConfigurationResolverService(nullContext, Promise.resolve(environmentService.userEnv), new TestEditorServiceWithActiveEditor(), configurationService, mockCommandService, new TestContextService(), quickInputService, labelService, pathService, extensionService);
+		let service = new TestConfigurationResolverService(nullContext, Promise.resolve(environmentService.userEnv), new TestEditorServiceWithActiveEditor(), configurationService, mockCommandService, new TestContextService(), quickInputService, labelService, pathService, extensionService);
 
 		assert.rejects(async () => await service.resolveAsync(workspace, 'abc ${env} xyz'));
 		assert.rejects(async () => await service.resolveAsync(workspace, 'abc ${env:} xyz'));
@@ -692,9 +698,6 @@ class MockLabelService implements ILabelService {
 		throw new Error('Method not implemented.');
 	}
 	registerFormatter(formatter: ResourceLabelFormatter): IDisposable {
-		throw new Error('Method not implemented.');
-	}
-	registerCachedFormatter(formatter: ResourceLabelFormatter): IDisposable {
 		throw new Error('Method not implemented.');
 	}
 	onDidChangeFormatters: Event<IFormatterChangeEvent> = new Emitter<IFormatterChangeEvent>().event;

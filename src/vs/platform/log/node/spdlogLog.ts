@@ -57,7 +57,9 @@ export class SpdLogLogger extends AbstractMessageLogger implements ILogger {
 		this.setLevel(level);
 		this._loggerCreationPromise = this._createSpdLogLogger(name, filepath, rotating, donotUseFormatters);
 		this._register(this.onDidChangeLogLevel(level => {
-			this._logger?.setLevel(level);
+			if (this._logger) {
+				this._logger.setLevel(level);
+			}
 		}));
 	}
 

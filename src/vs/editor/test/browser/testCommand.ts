@@ -54,8 +54,8 @@ export function testCommand(
  * Extract edit operations if command `command` were to execute on model `model`
  */
 export function getEditOperation(model: ITextModel, command: ICommand): ISingleEditOperation[] {
-	const operations: ISingleEditOperation[] = [];
-	const editOperationBuilder: IEditOperationBuilder = {
+	let operations: ISingleEditOperation[] = [];
+	let editOperationBuilder: IEditOperationBuilder = {
 		addEditOperation: (range: IRange, text: string, forceMoveMarkers: boolean = false) => {
 			operations.push({
 				range: range,

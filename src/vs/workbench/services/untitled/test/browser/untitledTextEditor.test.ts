@@ -495,7 +495,7 @@ suite('Untitled text editors', () => {
 		assert.strictEqual(counter, 7);
 
 		function createSingleEditOp(text: string, positionLineNumber: number, positionColumn: number, selectionLineNumber: number = positionLineNumber, selectionColumn: number = positionColumn): ISingleEditOperation {
-			const range = new Range(
+			let range = new Range(
 				selectionLineNumber,
 				selectionColumn,
 				positionLineNumber,

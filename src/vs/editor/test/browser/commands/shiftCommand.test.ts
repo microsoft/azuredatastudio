@@ -867,7 +867,7 @@ suite('Editor Commands - ShiftCommand', () => {
 
 	test('bug #16815:Shift+Tab doesn\'t go back to tabstop', () => {
 
-		const repeatStr = (str: string, cnt: number): string => {
+		let repeatStr = (str: string, cnt: number): string => {
 			let r = '';
 			for (let i = 0; i < cnt; i++) {
 				r += str;
@@ -875,9 +875,9 @@ suite('Editor Commands - ShiftCommand', () => {
 			return r;
 		};
 
-		const testOutdent = (tabSize: number, indentSize: number, insertSpaces: boolean, lineText: string, expectedIndents: number) => {
+		let testOutdent = (tabSize: number, indentSize: number, insertSpaces: boolean, lineText: string, expectedIndents: number) => {
 			const oneIndent = insertSpaces ? repeatStr(' ', indentSize) : '\t';
-			const expectedIndent = repeatStr(oneIndent, expectedIndents);
+			let expectedIndent = repeatStr(oneIndent, expectedIndents);
 			if (lineText.length > 0) {
 				_assertUnshiftCommand(tabSize, indentSize, insertSpaces, [lineText + 'aaa'], [createSingleEditOp(expectedIndent, 1, 1, 1, lineText.length + 1)]);
 			} else {
@@ -885,13 +885,13 @@ suite('Editor Commands - ShiftCommand', () => {
 			}
 		};
 
-		const testIndent = (tabSize: number, indentSize: number, insertSpaces: boolean, lineText: string, expectedIndents: number) => {
+		let testIndent = (tabSize: number, indentSize: number, insertSpaces: boolean, lineText: string, expectedIndents: number) => {
 			const oneIndent = insertSpaces ? repeatStr(' ', indentSize) : '\t';
-			const expectedIndent = repeatStr(oneIndent, expectedIndents);
+			let expectedIndent = repeatStr(oneIndent, expectedIndents);
 			_assertShiftCommand(tabSize, indentSize, insertSpaces, [lineText + 'aaa'], [createSingleEditOp(expectedIndent, 1, 1, 1, lineText.length + 1)]);
 		};
 
-		const testIndentation = (tabSize: number, indentSize: number, lineText: string, expectedOnOutdent: number, expectedOnIndent: number) => {
+		let testIndentation = (tabSize: number, indentSize: number, lineText: string, expectedOnOutdent: number, expectedOnIndent: number) => {
 			testOutdent(tabSize, indentSize, true, lineText, expectedOnOutdent);
 			testOutdent(tabSize, indentSize, false, lineText, expectedOnOutdent);
 
@@ -960,7 +960,7 @@ suite('Editor Commands - ShiftCommand', () => {
 
 		function _assertUnshiftCommand(tabSize: number, indentSize: number, insertSpaces: boolean, text: string[], expected: ISingleEditOperation[]): void {
 			return withEditorModel(text, (model) => {
-				const op = new ShiftCommand(new Selection(1, 1, text.length + 1, 1), {
+				let op = new ShiftCommand(new Selection(1, 1, text.length + 1, 1), {
 					isUnshift: true,
 					tabSize: tabSize,
 					indentSize: indentSize,
@@ -968,14 +968,14 @@ suite('Editor Commands - ShiftCommand', () => {
 					useTabStops: true,
 					autoIndent: EditorAutoIndentStrategy.Full,
 				}, new TestLanguageConfigurationService());
-				const actual = getEditOperation(model, op);
+				let actual = getEditOperation(model, op);
 				assert.deepStrictEqual(actual, expected);
 			});
 		}
 
 		function _assertShiftCommand(tabSize: number, indentSize: number, insertSpaces: boolean, text: string[], expected: ISingleEditOperation[]): void {
 			return withEditorModel(text, (model) => {
-				const op = new ShiftCommand(new Selection(1, 1, text.length + 1, 1), {
+				let op = new ShiftCommand(new Selection(1, 1, text.length + 1, 1), {
 					isUnshift: false,
 					tabSize: tabSize,
 					indentSize: indentSize,
@@ -983,7 +983,7 @@ suite('Editor Commands - ShiftCommand', () => {
 					useTabStops: true,
 					autoIndent: EditorAutoIndentStrategy.Full,
 				}, new TestLanguageConfigurationService());
-				const actual = getEditOperation(model, op);
+				let actual = getEditOperation(model, op);
 				assert.deepStrictEqual(actual, expected);
 			});
 		}

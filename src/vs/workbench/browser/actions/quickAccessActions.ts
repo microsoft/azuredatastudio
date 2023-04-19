@@ -141,8 +141,9 @@ registerAction2(class QuickAccessAction extends Action2 {
 			},
 			f1: true,
 			menu: {
-				id: MenuId.CommandCenter,
-				order: 100
+				id: MenuId.TitleMenuQuickPick,
+				group: '1/workspaceNav',
+				order: 1
 			}
 		});
 	}

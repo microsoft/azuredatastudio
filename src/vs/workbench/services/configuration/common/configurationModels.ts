@@ -98,8 +98,6 @@ export class Configuration extends BaseConfiguration {
 
 	constructor(
 		defaults: ConfigurationModel,
-		policy: ConfigurationModel,
-		application: ConfigurationModel,
 		localUser: ConfigurationModel,
 		remoteUser: ConfigurationModel,
 		workspaceConfiguration: ConfigurationModel,
@@ -107,7 +105,7 @@ export class Configuration extends BaseConfiguration {
 		memoryConfiguration: ConfigurationModel,
 		memoryConfigurationByResource: ResourceMap<ConfigurationModel>,
 		private readonly _workspace?: Workspace) {
-		super(defaults, policy, application, localUser, remoteUser, workspaceConfiguration, folders, memoryConfiguration, memoryConfigurationByResource);
+		super(defaults, localUser, remoteUser, workspaceConfiguration, folders, memoryConfiguration, memoryConfigurationByResource);
 	}
 
 	override getValue(key: string | undefined, overrides: IConfigurationOverrides = {}): any {

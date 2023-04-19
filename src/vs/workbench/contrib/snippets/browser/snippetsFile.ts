@@ -4,10 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { parse as jsonParse, getNodeType } from 'vs/base/common/json';
+import { forEach } from 'vs/base/common/collections';
 import { localize } from 'vs/nls';
 import { extname, basename } from 'vs/base/common/path';
 import { SnippetParser, Variable, Placeholder, Text } from 'vs/editor/contrib/snippet/browser/snippetParser';
 import { KnownSnippetVariableNames } from 'vs/editor/contrib/snippet/browser/snippetVariables';
+import { isFalsyOrWhitespace } from 'vs/base/common/strings';
 import { URI } from 'vs/base/common/uri';
 import { IFileService } from 'vs/platform/files/common/files';
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
@@ -43,7 +45,7 @@ class SnippetBodyInsights {
 		// check snippet...
 		const textmateSnippet = new SnippetParser().parse(body, false);
 
-		const placeholders = new Map<string, number>();
+		let placeholders = new Map<string, number>();
 		let placeholderMax = 0;
 		for (const placeholder of textmateSnippet.placeholders) {
 			placeholderMax = Math.max(placeholderMax, placeholder.index);
@@ -58,7 +60,7 @@ class SnippetBodyInsights {
 			this.isTrivial = last instanceof Placeholder && last.isFinalTabstop;
 		}
 
-		const stack = [...textmateSnippet.children];
+		let stack = [...textmateSnippet.children];
 		while (stack.length > 0) {
 			const marker = stack.shift()!;
 			if (marker instanceof Variable) {
@@ -105,7 +107,6 @@ export class Snippet {
 	readonly prefixLow: string;
 
 	constructor(
-		readonly isFileTemplate: boolean,
 		readonly scopes: string[],
 		readonly name: string,
 		readonly prefix: string,
@@ -113,7 +114,7 @@ export class Snippet {
 		readonly body: string,
 		readonly source: string,
 		readonly snippetSource: SnippetSource,
-		readonly snippetIdentifier: string,
+		readonly snippetIdentifier?: string,
 		readonly extensionId?: ExtensionIdentifier,
 	) {
 		this.prefixLow = prefix.toLowerCase();
@@ -139,13 +140,30 @@ export class Snippet {
 	get usesSelection(): boolean {
 		return this._bodyInsights.value.usesSelectionVariable;
 	}
+
+	static compare(a: Snippet, b: Snippet): number {
+		if (a.snippetSource < b.snippetSource) {
+			return -1;
+		} else if (a.snippetSource > b.snippetSource) {
+			return 1;
+		} else if (a.source < b.source) {
+			return -1;
+		} else if (a.source > b.source) {
+			return 1;
+		} else if (a.name > b.name) {
+			return 1;
+		} else if (a.name < b.name) {
+			return -1;
+		} else {
+			return 0;
+		}
+	}
 }
 
 
 interface JsonSerializedSnippet {
-	isFileTemplate?: boolean;
 	body: string | string[];
-	scope?: string;
+	scope: string;
 	prefix: string | string[] | undefined;
 	description: string;
 }
@@ -178,7 +196,7 @@ export class SnippetFile {
 		public defaultScopes: string[] | undefined,
 		private readonly _extension: IExtensionDescription | undefined,
 		private readonly _fileService: IFileService,
-		private readonly _extensionResourceLoaderService: IExtensionResourceLoaderService,
+		private readonly _extensionResourceLoaderService: IExtensionResourceLoaderService
 	) {
 		this.isGlobalSnippets = extname(location.path) === '.code-snippets';
 		this.isUserSnippets = !this._extension;
@@ -218,7 +236,7 @@ export class SnippetFile {
 			}
 		}
 
-		const idx = selector.lastIndexOf('.');
+		let idx = selector.lastIndexOf('.');
 		if (idx >= 0) {
 			this._scopeSelect(selector.substring(0, idx), bucket);
 		}
@@ -238,15 +256,17 @@ export class SnippetFile {
 			this._loadPromise = Promise.resolve(this._load()).then(content => {
 				const data = <JsonSerializedSnippets>jsonParse(content);
 				if (getNodeType(data) === 'object') {
-					for (const [name, scopeOrTemplate] of Object.entries(data)) {
+					forEach(data, entry => {
+						const { key: name, value: scopeOrTemplate } = entry;
 						if (isJsonSerializedSnippet(scopeOrTemplate)) {
 							this._parseSnippet(name, scopeOrTemplate, this.data);
 						} else {
-							for (const [name, template] of Object.entries(scopeOrTemplate)) {
+							forEach(scopeOrTemplate, entry => {
+								const { key: name, value: template } = entry;
 								this._parseSnippet(name, template, this.data);
-							}
+							});
 						}
-					}
+					});
 				}
 				return this;
 			});
@@ -261,7 +281,7 @@ export class SnippetFile {
 
 	private _parseSnippet(name: string, snippet: JsonSerializedSnippet, bucket: Snippet[]): void {
 
-		let { isFileTemplate, prefix, body, description } = snippet;
+		let { prefix, body, description } = snippet;
 
 		if (!prefix) {
 			prefix = '';
@@ -282,7 +302,7 @@ export class SnippetFile {
 		if (this.defaultScopes) {
 			scopes = this.defaultScopes;
 		} else if (typeof snippet.scope === 'string') {
-			scopes = snippet.scope.split(',').map(s => s.trim()).filter(Boolean);
+			scopes = snippet.scope.split(',').map(s => s.trim()).filter(s => !isFalsyOrWhitespace(s));
 		} else {
 			scopes = [];
 		}
@@ -306,7 +326,6 @@ export class SnippetFile {
 
 		for (const _prefix of Array.isArray(prefix) ? prefix : Iterable.single(prefix)) {
 			bucket.push(new Snippet(
-				Boolean(isFileTemplate),
 				scopes,
 				name,
 				_prefix,
@@ -314,7 +333,7 @@ export class SnippetFile {
 				body,
 				source,
 				this.source,
-				this._extension ? `${relativePath(this._extension.extensionLocation, this.location)}/${name}` : `${basename(this.location.path)}/${name}`,
+				this._extension && `${relativePath(this._extension.extensionLocation, this.location)}/${name}`,
 				this._extension?.identifier,
 			));
 		}

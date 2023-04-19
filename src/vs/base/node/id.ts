@@ -55,7 +55,7 @@ export const virtualMachineHint: { value(): number } = new class {
 			let interfaceCount = 0;
 
 			const interfaces = networkInterfaces();
-			for (const name in interfaces) {
+			for (let name in interfaces) {
 				const networkInterface = interfaces[name];
 				if (networkInterface) {
 					for (const { mac, internal } of networkInterface) {

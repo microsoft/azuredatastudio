@@ -81,7 +81,7 @@ export const CommandsRegistry: ICommandRegistry = new class implements ICommandR
 		// add argument validation if rich command metadata is provided
 		if (idOrCommand.description) {
 			const constraints: Array<TypeConstraint | undefined> = [];
-			for (const arg of idOrCommand.description.args) {
+			for (let arg of idOrCommand.description.args) {
 				constraints.push(arg.constraint);
 			}
 			const actualHandler = idOrCommand.handler;
@@ -100,9 +100,9 @@ export const CommandsRegistry: ICommandRegistry = new class implements ICommandR
 			this._commands.set(id, commands);
 		}
 
-		const removeFn = commands.unshift(idOrCommand);
+		let removeFn = commands.unshift(idOrCommand);
 
-		const ret = toDisposable(() => {
+		let ret = toDisposable(() => {
 			removeFn();
 			const command = this._commands.get(id);
 			if (command?.isEmpty()) {

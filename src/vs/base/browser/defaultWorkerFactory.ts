@@ -86,11 +86,15 @@ class WebWorker implements IWorker {
 	}
 
 	public postMessage(message: any, transfer: Transferable[]): void {
-		this.worker?.then(w => w.postMessage(message, transfer));
+		if (this.worker) {
+			this.worker.then(w => w.postMessage(message, transfer));
+		}
 	}
 
 	public dispose(): void {
-		this.worker?.then(w => w.terminate());
+		if (this.worker) {
+			this.worker.then(w => w.terminate());
+		}
 		this.worker = null;
 	}
 }
@@ -108,7 +112,7 @@ export class DefaultWorkerFactory implements IWorkerFactory {
 	}
 
 	public create(moduleId: string, onMessageCallback: IWorkerCallback, onErrorCallback: (err: any) => void): IWorker {
-		const workerId = (++DefaultWorkerFactory.LAST_WORKER_ID);
+		let workerId = (++DefaultWorkerFactory.LAST_WORKER_ID);
 
 		if (this._webWorkerFailedBeforeError) {
 			throw this._webWorkerFailedBeforeError;

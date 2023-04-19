@@ -101,7 +101,7 @@ suite('Workbench parts', () => {
 	}
 
 	let fixture: HTMLElement;
-	const fixtureId = 'workbench-part-fixture';
+	let fixtureId = 'workbench-part-fixture';
 
 	setup(() => {
 		fixture = document.createElement('div');
@@ -114,7 +114,7 @@ suite('Workbench parts', () => {
 	});
 
 	test('Creation', () => {
-		const b = document.createElement('div');
+		let b = document.createElement('div');
 		document.getElementById(fixtureId)!.appendChild(b);
 		hide(b);
 
@@ -124,7 +124,7 @@ suite('Workbench parts', () => {
 		assert.strictEqual(part.getId(), 'myPart');
 
 		// Memento
-		let memento = part.getMemento(StorageScope.PROFILE, StorageTarget.MACHINE) as any;
+		let memento = part.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE) as any;
 		assert(memento);
 		memento.foo = 'bar';
 		memento.bar = [1, 2, 3];
@@ -134,7 +134,7 @@ suite('Workbench parts', () => {
 		// Re-Create to assert memento contents
 		part = new MyPart(b);
 
-		memento = part.getMemento(StorageScope.PROFILE, StorageTarget.MACHINE);
+		memento = part.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE);
 		assert(memento);
 		assert.strictEqual(memento.foo, 'bar');
 		assert.strictEqual(memento.bar.length, 3);
@@ -145,17 +145,17 @@ suite('Workbench parts', () => {
 
 		part.saveState();
 		part = new MyPart(b);
-		memento = part.getMemento(StorageScope.PROFILE, StorageTarget.MACHINE);
+		memento = part.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE);
 		assert(memento);
 		assert.strictEqual(isEmptyObject(memento), true);
 	});
 
 	test('Part Layout with Title and Content', function () {
-		const b = document.createElement('div');
+		let b = document.createElement('div');
 		document.getElementById(fixtureId)!.appendChild(b);
 		hide(b);
 
-		const part = new MyPart2();
+		let part = new MyPart2();
 		part.create(b);
 
 		assert(document.getElementById('myPart.title'));
@@ -163,11 +163,11 @@ suite('Workbench parts', () => {
 	});
 
 	test('Part Layout with Content only', function () {
-		const b = document.createElement('div');
+		let b = document.createElement('div');
 		document.getElementById(fixtureId)!.appendChild(b);
 		hide(b);
 
-		const part = new MyPart3();
+		let part = new MyPart3();
 		part.create(b);
 
 		assert(!document.getElementById('myPart.title'));

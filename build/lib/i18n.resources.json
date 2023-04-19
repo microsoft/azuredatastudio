@@ -119,11 +119,7 @@
 			"project": "vscode-workbench"
 		},
 		{
-			"name": "vs/workbench/contrib/mergeEditor",
-			"project": "vscode-workbench"
-		},
-		{
-			"name": "vs/workbench/contrib/localization",
+			"name": "vs/workbench/contrib/localizations",
 			"project": "vscode-workbench"
 		},
 		{
@@ -279,10 +275,6 @@
 			"project": "vscode-workbench"
 		},
 		{
-			"name": "vs/workbench/contrib/editSessions",
-			"project": "vscode-workbench"
-		},
-		{
 			"name": "vs/workbench/contrib/views",
 			"project": "vscode-workbench"
 		},
@@ -292,14 +284,6 @@
 		},
 		{
 			"name": "vs/workbench/contrib/audioCues",
-			"project": "vscode-workbench"
-		},
-		{
-			"name": "vs/workbench/contrib/deprecatedExtensionMigrator",
-			"project": "vscode-workbench"
-		},
-		{
-			"name": "vs/workbench/contrib/bracketPairColorizer2Telemetry",
 			"project": "vscode-workbench"
 		},
 		{
@@ -439,10 +423,6 @@
 			"project": "vscode-workbench"
 		},
 		{
-			"name": "vs/workbench/services/editSessions",
-			"project": "vscode-workbench"
-		},
-		{
 			"name": "vs/workbench/services/views",
 			"project": "vscode-workbench"
 		},
@@ -471,11 +451,11 @@
 			"project": "vscode-workbench"
 		},
 		{
-			"name": "vs/workbench/contrib/userDataProfile",
+			"name": "vs/workbench/contrib/profiles",
 			"project": "vscode-profiles"
 		},
 		{
-			"name": "vs/workbench/services/userDataProfile",
+			"name": "vs/workbench/services/profiles",
 			"project": "vscode-profiles"
 		}
 	]

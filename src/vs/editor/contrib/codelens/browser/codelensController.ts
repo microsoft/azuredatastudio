@@ -121,7 +121,7 @@ export class CodeLensContribution implements IEditorContribution {
 
 		//
 		this._editor.changeViewZones(accessor => {
-			for (const lens of this._lenses) {
+			for (let lens of this._lenses) {
 				lens.updateHeight(codeLensHeight, accessor);
 			}
 		});
@@ -172,7 +172,7 @@ export class CodeLensContribution implements IEditorContribution {
 
 		for (const provider of this._languageFeaturesService.codeLensProvider.all(model)) {
 			if (typeof provider.onDidChange === 'function') {
-				const registration = provider.onDidChange(() => scheduler.schedule());
+				let registration = provider.onDidChange(() => scheduler.schedule());
 				this._localToDispose.add(registration);
 			}
 		}
@@ -209,7 +209,7 @@ export class CodeLensContribution implements IEditorContribution {
 		this._localToDispose.add(this._editor.onDidChangeModelContent(() => {
 			this._editor.changeDecorations(decorationsAccessor => {
 				this._editor.changeViewZones(viewZonesAccessor => {
-					const toDispose: CodeLensWidget[] = [];
+					let toDispose: CodeLensWidget[] = [];
 					let lastLensLineNumber: number = -1;
 
 					this._lenses.forEach((lens) => {
@@ -224,7 +224,7 @@ export class CodeLensContribution implements IEditorContribution {
 						}
 					});
 
-					const helper = new CodeLensHelper();
+					let helper = new CodeLensHelper();
 					toDispose.forEach((l) => {
 						l.dispose(helper, viewZonesAccessor);
 						this._lenses.splice(this._lenses.indexOf(l), 1);
@@ -271,7 +271,7 @@ export class CodeLensContribution implements IEditorContribution {
 			}
 			if (target?.tagName === 'A') {
 				for (const lens of this._lenses) {
-					const command = lens.getCommand(target as HTMLLinkElement);
+					let command = lens.getCommand(target as HTMLLinkElement);
 					if (command) {
 						this._commandService.executeCommand(command.id, ...(command.arguments || [])).catch(err => this._notificationService.error(err));
 						break;
@@ -298,12 +298,12 @@ export class CodeLensContribution implements IEditorContribution {
 			return;
 		}
 
-		const maxLineNumber = this._editor.getModel().getLineCount();
-		const groups: CodeLensItem[][] = [];
+		let maxLineNumber = this._editor.getModel().getLineCount();
+		let groups: CodeLensItem[][] = [];
 		let lastGroup: CodeLensItem[] | undefined;
 
-		for (const symbol of symbols.lenses) {
-			const line = symbol.symbol.range.startLineNumber;
+		for (let symbol of symbols.lenses) {
+			let line = symbol.symbol.range.startLineNumber;
 			if (line < 1 || line > maxLineNumber) {
 				// invalid code lens
 				continue;
@@ -329,8 +329,8 @@ export class CodeLensContribution implements IEditorContribution {
 
 				while (groupsIndex < groups.length && codeLensIndex < this._lenses.length) {
 
-					const symbolsLineNumber = groups[groupsIndex][0].symbol.range.startLineNumber;
-					const codeLensLineNumber = this._lenses[codeLensIndex].getLineNumber();
+					let symbolsLineNumber = groups[groupsIndex][0].symbol.range.startLineNumber;
+					let codeLensLineNumber = this._lenses[codeLensIndex].getLineNumber();
 
 					if (codeLensLineNumber < symbolsLineNumber) {
 						this._lenses[codeLensIndex].dispose(helper, viewZoneAccessor);

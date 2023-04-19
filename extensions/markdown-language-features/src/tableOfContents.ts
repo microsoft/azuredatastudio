@@ -4,15 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { ILogger } from './logging';
-import { IMdParser } from './markdownEngine';
-import { githubSlugifier, Slug, Slugifier } from './slugify';
-import { getLine, ITextDocument } from './types/textDocument';
-import { Disposable } from './util/dispose';
+import { MarkdownEngine } from './markdownEngine';
+import { githubSlugifier, Slug } from './slugify';
 import { isMarkdownFile } from './util/file';
-import { Schemes } from './util/schemes';
-import { MdDocumentInfoCache } from './util/workspaceCache';
-import { IMdWorkspace } from './workspace';
+import { SkinnyTextDocument } from './workspaceContents';
 
 export interface TocEntry {
 	readonly slug: Slug;
@@ -66,39 +61,35 @@ export interface TocEntry {
 
 export class TableOfContents {
 
-	public static async create(parser: IMdParser, document: ITextDocument,): Promise<TableOfContents> {
-		const entries = await this.buildToc(parser, document);
-		return new TableOfContents(entries, parser.slugifier);
+	public static async create(engine: MarkdownEngine, document: SkinnyTextDocument,): Promise<TableOfContents> {
+		const entries = await this.buildToc(engine, document);
+		return new TableOfContents(entries);
 	}
 
-	public static async createForDocumentOrNotebook(parser: IMdParser, document: ITextDocument): Promise<TableOfContents> {
-		if (document.uri.scheme === Schemes.notebookCell) {
+	public static async createForDocumentOrNotebook(engine: MarkdownEngine, document: SkinnyTextDocument): Promise<TableOfContents> {
+		if (document.uri.scheme === 'vscode-notebook-cell') {
 			const notebook = vscode.workspace.notebookDocuments
 				.find(notebook => notebook.getCells().some(cell => cell.document === document));
 
 			if (notebook) {
-				return TableOfContents.createForNotebook(parser, notebook);
+				const entries: TocEntry[] = [];
+
+				for (const cell of notebook.getCells()) {
+					if (cell.kind === vscode.NotebookCellKind.Markup && isMarkdownFile(cell.document)) {
+						entries.push(...(await this.buildToc(engine, cell.document)));
+					}
+				}
+
+				return new TableOfContents(entries);
 			}
 		}
 
-		return this.create(parser, document);
+		return this.create(engine, document);
 	}
 
-	public static async createForNotebook(parser: IMdParser, notebook: vscode.NotebookDocument): Promise<TableOfContents> {
-		const entries: TocEntry[] = [];
-
-		for (const cell of notebook.getCells()) {
-			if (cell.kind === vscode.NotebookCellKind.Markup && isMarkdownFile(cell.document)) {
-				entries.push(...(await this.buildToc(parser, cell.document)));
-			}
-		}
-
-		return new TableOfContents(entries, parser.slugifier);
-	}
-
-	private static async buildToc(parser: IMdParser, document: ITextDocument): Promise<TocEntry[]> {
+	private static async buildToc(engine: MarkdownEngine, document: SkinnyTextDocument): Promise<TocEntry[]> {
 		const toc: TocEntry[] = [];
-		const tokens = await parser.tokenize(document);
+		const tokens = await engine.parse(document);
 
 		const existingSlugEntries = new Map<string, { count: number }>();
 
@@ -108,26 +99,26 @@ export class TableOfContents {
 			}
 
 			const lineNumber = heading.map[0];
-			const line = getLine(document, lineNumber);
+			const line = document.lineAt(lineNumber);
 
-			let slug = parser.slugifier.fromHeading(line);
+			let slug = githubSlugifier.fromHeading(line.text);
 			const existingSlugEntry = existingSlugEntries.get(slug.value);
 			if (existingSlugEntry) {
 				++existingSlugEntry.count;
-				slug = parser.slugifier.fromHeading(slug.value + '-' + existingSlugEntry.count);
+				slug = githubSlugifier.fromHeading(slug.value + '-' + existingSlugEntry.count);
 			} else {
 				existingSlugEntries.set(slug.value, { count: 0 });
 			}
 
 			const headerLocation = new vscode.Location(document.uri,
-				new vscode.Range(lineNumber, 0, lineNumber, line.length));
+				new vscode.Range(lineNumber, 0, lineNumber, line.text.length));
 
 			const headerTextLocation = new vscode.Location(document.uri,
-				new vscode.Range(lineNumber, line.match(/^#+\s*/)?.[0].length ?? 0, lineNumber, line.length - (line.match(/\s*#*$/)?.[0].length ?? 0)));
+				new vscode.Range(lineNumber, line.text.match(/^#+\s*/)?.[0].length ?? 0, lineNumber, line.text.length - (line.text.match(/\s*#*$/)?.[0].length ?? 0)));
 
 			toc.push({
 				slug,
-				text: TableOfContents.getHeaderText(line),
+				text: TableOfContents.getHeaderText(line.text),
 				level: TableOfContents.getHeaderLevel(heading.markup),
 				line: lineNumber,
 				sectionLocation: headerLocation, // Populated in next steps
@@ -151,7 +142,7 @@ export class TableOfContents {
 				sectionLocation: new vscode.Location(document.uri,
 					new vscode.Range(
 						entry.sectionLocation.range.start,
-						new vscode.Position(endLine, getLine(document, endLine).length)))
+						new vscode.Position(endLine, document.lineAt(endLine).text.length)))
 			};
 		});
 	}
@@ -170,44 +161,12 @@ export class TableOfContents {
 		return header.replace(/^\s*#+\s*(.*?)(\s+#+)?$/, (_, word) => word.trim());
 	}
 
-	public static readonly empty = new TableOfContents([], githubSlugifier);
-
 	private constructor(
 		public readonly entries: readonly TocEntry[],
-		private readonly slugifier: Slugifier,
 	) { }
 
 	public lookup(fragment: string): TocEntry | undefined {
-		const slug = this.slugifier.fromHeading(fragment);
+		const slug = githubSlugifier.fromHeading(fragment);
 		return this.entries.find(entry => entry.slug.equals(slug));
-	}
-}
-
-export class MdTableOfContentsProvider extends Disposable {
-
-	private readonly _cache: MdDocumentInfoCache<TableOfContents>;
-
-	constructor(
-		private readonly parser: IMdParser,
-		workspace: IMdWorkspace,
-		private readonly logger: ILogger,
-	) {
-		super();
-		this._cache = this._register(new MdDocumentInfoCache<TableOfContents>(workspace, doc => {
-			this.logger.verbose('TableOfContentsProvider', `create - ${doc.uri}`);
-			return TableOfContents.create(parser, doc);
-		}));
-	}
-
-	public async get(resource: vscode.Uri): Promise<TableOfContents> {
-		return await this._cache.get(resource) ?? TableOfContents.empty;
-	}
-
-	public getForDocument(doc: ITextDocument): Promise<TableOfContents> {
-		return this._cache.getForDocument(doc);
-	}
-
-	public createForNotebook(notebook: vscode.NotebookDocument): Promise<TableOfContents> {
-		return TableOfContents.createForNotebook(this.parser, notebook);
 	}
 }

@@ -45,7 +45,7 @@ export class CommentThreadHeader<T = IRange> extends Disposable {
 	}
 
 	protected _fillHead(): void {
-		const titleElement = dom.append(this._headElement, dom.$('.review-title'));
+		let titleElement = dom.append(this._headElement, dom.$('.review-title'));
 
 		this._headingLabel = dom.append(titleElement, dom.$('span.filename'));
 		this.createThreadLabel();

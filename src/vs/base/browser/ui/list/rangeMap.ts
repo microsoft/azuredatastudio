@@ -21,7 +21,7 @@ export interface IRangedGroup {
 export function groupIntersect(range: IRange, groups: IRangedGroup[]): IRangedGroup[] {
 	const result: IRangedGroup[] = [];
 
-	for (const r of groups) {
+	for (let r of groups) {
 		if (range.start >= r.range.end) {
 			continue;
 		}
@@ -62,7 +62,7 @@ export function consolidate(groups: IRangedGroup[]): IRangedGroup[] {
 	const result: IRangedGroup[] = [];
 	let previousGroup: IRangedGroup | null = null;
 
-	for (const group of groups) {
+	for (let group of groups) {
 		const start = group.range.start;
 		const end = group.range.end;
 		const size = group.size;
@@ -138,7 +138,7 @@ export class RangeMap {
 		let index = 0;
 		let size = 0;
 
-		for (const group of this.groups) {
+		for (let group of this.groups) {
 			const count = group.range.end - group.range.start;
 			const newSize = size + (count * group.size);
 
@@ -172,7 +172,7 @@ export class RangeMap {
 		let position = 0;
 		let count = 0;
 
-		for (const group of this.groups) {
+		for (let group of this.groups) {
 			const groupCount = group.range.end - group.range.start;
 			const newCount = count + groupCount;
 

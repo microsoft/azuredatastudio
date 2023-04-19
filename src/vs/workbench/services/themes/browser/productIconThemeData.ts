@@ -13,7 +13,7 @@ import { getParseErrorMessage } from 'vs/base/common/jsonErrorMessages';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { DEFAULT_PRODUCT_ICON_THEME_SETTING_VALUE } from 'vs/workbench/services/themes/common/themeConfiguration';
 import { fontIdRegex, fontWeightRegex, fontStyleRegex, fontFormatRegex } from 'vs/workbench/services/themes/common/productIconThemeSchema';
-import { isObject, isString } from 'vs/base/common/types';
+import { isString } from 'vs/base/common/types';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IconDefinition, getIconRegistry, IconContribution, IconFontDefinition, IconFontSource } from 'vs/platform/theme/common/iconRegistry';
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';
@@ -107,14 +107,14 @@ export class ProductIconThemeData implements IWorkbenchProductIconTheme {
 	}
 
 	static fromStorageData(storageService: IStorageService): ProductIconThemeData | undefined {
-		const input = storageService.get(ProductIconThemeData.STORAGE_KEY, StorageScope.PROFILE);
+		const input = storageService.get(ProductIconThemeData.STORAGE_KEY, StorageScope.GLOBAL);
 		if (!input) {
 			return undefined;
 		}
 		try {
-			const data = JSON.parse(input);
+			let data = JSON.parse(input);
 			const theme = new ProductIconThemeData('', '', '');
-			for (const key in data) {
+			for (let key in data) {
 				switch (key) {
 					case 'id':
 					case 'label':
@@ -132,24 +132,6 @@ export class ProductIconThemeData implements IWorkbenchProductIconTheme {
 						break;
 				}
 			}
-			const { iconDefinitions, iconFontDefinitions } = data;
-			if (Array.isArray(iconDefinitions) && isObject(iconFontDefinitions)) {
-				const restoredIconDefinitions = new Map<string, IconDefinition>();
-				for (const entry of iconDefinitions) {
-					const { id, fontCharacter, fontId } = entry;
-					if (isString(id) && isString(fontCharacter)) {
-						if (isString(fontId)) {
-							const iconFontDefinition = IconFontDefinition.fromJSONObject(iconFontDefinitions[fontId]);
-							if (iconFontDefinition) {
-								restoredIconDefinitions.set(id, { fontCharacter, font: { id: fontId, definition: iconFontDefinition } });
-							}
-						} else {
-							restoredIconDefinitions.set(id, { fontCharacter });
-						}
-					}
-				}
-				theme.iconThemeDocument = { iconDefinitions: restoredIconDefinitions };
-			}
 			return theme;
 		} catch (e) {
 			return undefined;
@@ -157,15 +139,6 @@ export class ProductIconThemeData implements IWorkbenchProductIconTheme {
 	}
 
 	toStorage(storageService: IStorageService) {
-		const iconDefinitions = [];
-		const iconFontDefinitions: { [id: string]: IconFontDefinition } = {};
-		for (const entry of this.iconThemeDocument.iconDefinitions.entries()) {
-			const font = entry[1].font;
-			iconDefinitions.push({ id: entry[0], fontCharacter: entry[1].fontCharacter, fontId: font?.id });
-			if (font && iconFontDefinitions[font.id] === undefined) {
-				iconFontDefinitions[font.id] = IconFontDefinition.toJSONObject(font.definition);
-			}
-		}
 		const data = JSON.stringify({
 			id: this.id,
 			label: this.label,
@@ -174,10 +147,8 @@ export class ProductIconThemeData implements IWorkbenchProductIconTheme {
 			styleSheetContent: this.styleSheetContent,
 			watch: this.watch,
 			extensionData: ExtensionData.toJSONObject(this.extensionData),
-			iconDefinitions,
-			iconFontDefinitions
 		});
-		storageService.store(ProductIconThemeData.STORAGE_KEY, data, StorageScope.PROFILE, StorageTarget.MACHINE);
+		storageService.store(ProductIconThemeData.STORAGE_KEY, data, StorageScope.GLOBAL, StorageTarget.MACHINE);
 	}
 }
 
@@ -188,7 +159,7 @@ interface ProductIconThemeDocument {
 function _loadProductIconThemeDocument(fileService: IExtensionResourceLoaderService, location: URI, warnings: string[]): Promise<ProductIconThemeDocument> {
 	return fileService.readExtensionResource(location).then((content) => {
 		const parseErrors: Json.ParseError[] = [];
-		const contentValue = Json.parse(content, parseErrors);
+		let contentValue = Json.parse(content, parseErrors);
 		if (parseErrors.length > 0) {
 			return Promise.reject(new Error(nls.localize('error.cannotparseicontheme', "Problems parsing product icons file: {0}", parseErrors.map(e => getParseErrorMessage(e.error)).join(', '))));
 		} else if (Json.getNodeType(contentValue) !== 'object') {

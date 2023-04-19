@@ -20,10 +20,7 @@ export interface IExtensionDescriptionDelta {
 export interface IExtensionHostInitData {
 	version: string;
 	commit?: string;
-	/**
-	 * When set to `0`, no polling for the parent process still running will happen.
-	 */
-	parentPid: number | 0;
+	parentPid: number;
 	environment: IEnvironment;
 	workspace?: IStaticWorkspaceData | null;
 	allExtensions: IExtensionDescription[];
@@ -34,7 +31,6 @@ export interface IExtensionHostInitData {
 	logFile: URI;
 	autoStart: boolean;
 	remote: { isRemote: boolean; authority: string | undefined; connectionData: IRemoteConnectionData | null };
-	consoleForward: { includeStack: boolean; logNative: boolean };
 	uiKind: UIKind;
 	messagePorts?: ReadonlyMap<string, MessagePortLike>;
 	vscodeVersion: string; // {{SQL CARBON EDIT}} add vscode version
@@ -127,9 +123,4 @@ export function isMessageOfType(message: VSBuffer, type: MessageType): boolean {
 		case 3: return type === MessageType.Terminate;
 		default: return false;
 	}
-}
-
-export const enum NativeLogMarkers {
-	Start = 'START_NATIVE_LOG',
-	End = 'END_NATIVE_LOG',
 }

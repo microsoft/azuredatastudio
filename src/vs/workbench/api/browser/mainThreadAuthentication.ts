@@ -70,7 +70,7 @@ export class MainThreadAuthenticationProvider extends Disposable implements IAut
 		quickPick.onDidAccept(() => {
 			const updatedAllowedList = quickPick.items
 				.map(i => (i as TrustedExtensionsQuickPickItem).extension);
-			this.storageService.store(`${this.id}-${accountName}`, JSON.stringify(updatedAllowedList), StorageScope.APPLICATION, StorageTarget.USER);
+			this.storageService.store(`${this.id}-${accountName}`, JSON.stringify(updatedAllowedList), StorageScope.GLOBAL, StorageTarget.USER);
 
 			quickPick.dispose();
 		});
@@ -116,7 +116,7 @@ export class MainThreadAuthenticationProvider extends Disposable implements IAut
 			const removeSessionPromises = sessions.map(session => this.removeSession(session.id));
 			await Promise.all(removeSessionPromises);
 			removeAccountUsage(this.storageService, this.id, accountName);
-			this.storageService.remove(`${this.id}-${accountName}`, StorageScope.APPLICATION);
+			this.storageService.remove(`${this.id}-${accountName}`, StorageScope.GLOBAL);
 		}
 	}
 
@@ -201,7 +201,7 @@ export class MainThreadAuthentication extends Disposable implements MainThreadAu
 
 	private async setTrustedExtensionAndAccountPreference(providerId: string, accountName: string, extensionId: string, extensionName: string, sessionId: string): Promise<void> {
 		this.authenticationService.updatedAllowedExtension(providerId, accountName, extensionId, extensionName, true);
-		this.storageService.store(`${extensionName}-${providerId}`, sessionId, StorageScope.APPLICATION, StorageTarget.MACHINE);
+		this.storageService.store(`${extensionName}-${providerId}`, sessionId, StorageScope.GLOBAL, StorageTarget.MACHINE);
 
 	}
 
@@ -210,6 +210,9 @@ export class MainThreadAuthentication extends Disposable implements MainThreadAu
 		const supportsMultipleAccounts = this.authenticationService.supportsMultipleAccounts(providerId);
 
 		// Error cases
+		if (options.forceNewSession && !sessions.length) {
+			throw new Error('No existing sessions found.');
+		}
 		if (options.forceNewSession && options.createIfNone) {
 			throw new Error('Invalid combination of options. Please remove one of the following: forceNewSession, createIfNone');
 		}
@@ -224,9 +227,9 @@ export class MainThreadAuthentication extends Disposable implements MainThreadAu
 		if (!options.forceNewSession && sessions.length) {
 			if (supportsMultipleAccounts) {
 				if (options.clearSessionPreference) {
-					this.storageService.remove(`${extensionName}-${providerId}`, StorageScope.APPLICATION);
+					this.storageService.remove(`${extensionName}-${providerId}`, StorageScope.GLOBAL);
 				} else {
-					const existingSessionPreference = this.storageService.get(`${extensionName}-${providerId}`, StorageScope.APPLICATION);
+					const existingSessionPreference = this.storageService.get(`${extensionName}-${providerId}`, StorageScope.GLOBAL);
 					if (existingSessionPreference) {
 						const matchingSession = sessions.find(session => session.id === existingSessionPreference);
 						if (matchingSession && this.authenticationService.isAccessAllowed(providerId, matchingSession.account.label, extensionId)) {
@@ -244,11 +247,7 @@ export class MainThreadAuthentication extends Disposable implements MainThreadAu
 		if (options.createIfNone || options.forceNewSession) {
 			const providerName = this.authenticationService.getLabel(providerId);
 			const detail = (typeof options.forceNewSession === 'object') ? options.forceNewSession!.detail : undefined;
-
-			// We only want to show the "recreating session" prompt if we are using forceNewSession & there are sessions
-			// that we will be "forcing through".
-			const recreatingSession = !!(options.forceNewSession && sessions.length);
-			const isAllowed = await this.loginPrompt(providerName, extensionName, recreatingSession, detail);
+			const isAllowed = await this.loginPrompt(providerName, extensionName, !!options.forceNewSession, detail);
 			if (!isAllowed) {
 				throw new Error('User did not consent to login.');
 			}
@@ -274,10 +273,8 @@ export class MainThreadAuthentication extends Disposable implements MainThreadAu
 
 		if (session) {
 			type AuthProviderUsageClassification = {
-				owner: 'TylerLeonhardt';
-				comment: 'Used to see which extensions are using which providers';
-				extensionId: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'The extension id.' };
-				providerId: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'The provider id.' };
+				extensionId: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+				providerId: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
 			};
 			this.telemetryService.publicLog2<{ extensionId: string; providerId: string }, AuthProviderUsageClassification>('authentication.providerUsage', { providerId, extensionId });
 

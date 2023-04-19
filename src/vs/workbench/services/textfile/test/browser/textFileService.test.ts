@@ -143,7 +143,7 @@ suite('Files - TextFileService', () => {
 			extensions: ['.one', '.two']
 		});
 
-		const suggested = accessor.textFileService.suggestFilename('shleem', 'Untitled-1');
+		let suggested = accessor.textFileService.suggestFilename('shleem', 'Untitled-1');
 		assert.strictEqual(suggested, 'Untitled-1');
 		registration.dispose();
 	});
@@ -155,7 +155,7 @@ suite('Files - TextFileService', () => {
 			filenames: ['plumbus']
 		});
 
-		const suggested = accessor.textFileService.suggestFilename('plumbus1', 'Untitled-1');
+		let suggested = accessor.textFileService.suggestFilename('plumbus1', 'Untitled-1');
 		assert.strictEqual(suggested, 'Untitled-1.shleem');
 		registration.dispose();
 	});
@@ -166,7 +166,7 @@ suite('Files - TextFileService', () => {
 			filenames: ['plumbus', 'shleem', 'gazorpazorp']
 		});
 
-		const suggested = accessor.textFileService.suggestFilename('plumbus2', 'Untitled-1');
+		let suggested = accessor.textFileService.suggestFilename('plumbus2', 'Untitled-1');
 		assert.strictEqual(suggested, 'plumbus');
 		registration.dispose();
 	});

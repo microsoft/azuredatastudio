@@ -80,7 +80,7 @@ registerAction2(class extends Action2 {
 				const edits: ResourceTextEdit[] = [];
 
 				if (formatEdits) {
-					for (const edit of formatEdits) {
+					for (let edit of formatEdits) {
 						edits.push(new ResourceTextEdit(model.uri, edit, model.getVersionId()));
 					}
 

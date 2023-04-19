@@ -103,7 +103,9 @@ export class NativeExtHostSearch extends ExtHostSearch {
 	}
 
 	override $clearCache(cacheKey: string): Promise<void> {
-		this._internalFileSearchProvider?.clearCache(cacheKey);
+		if (this._internalFileSearchProvider) {
+			this._internalFileSearchProvider.clearCache(cacheKey);
+		}
 
 		return super.$clearCache(cacheKey);
 	}

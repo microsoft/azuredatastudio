@@ -152,7 +152,7 @@ export class MarkerList {
 			return false;
 		}
 
-		const oldIdx = this._nextIdx;
+		let oldIdx = this._nextIdx;
 		if (this._nextIdx === -1) {
 			this._initIdx(model, position, fwd);
 		} else if (fwd) {
@@ -210,7 +210,7 @@ class MarkerNavigationService implements IMarkerNavigationService, IMarkerListPr
 	}
 
 	getMarkerList(resource: URI | undefined): MarkerList {
-		for (const provider of this._provider) {
+		for (let provider of this._provider) {
 			const result = provider.getMarkerList(resource);
 			if (result) {
 				return result;

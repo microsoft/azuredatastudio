@@ -8,7 +8,7 @@ import { RuntimeEnvironment } from '../jsonServer';
 
 export function formatError(message: string, err: any): string {
 	if (err instanceof Error) {
-		const error = <Error>err;
+		let error = <Error>err;
 		return `${message}: ${error.message}\n${error.stack}`;
 	} else if (typeof err === 'string') {
 		return `${message}: ${err}`;
@@ -47,7 +47,7 @@ export function runSafe<T, E>(runtime: RuntimeEnvironment, func: () => T, errorV
 				resolve(cancelValue());
 			} else {
 				try {
-					const result = func();
+					let result = func();
 					if (token.isCancellationRequested) {
 						resolve(cancelValue());
 						return;

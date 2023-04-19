@@ -3,20 +3,22 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { WorkbenchListAutomaticKeyboardNavigationKey } from 'vs/platform/list/browser/listService';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
+
+export const WorkbenchListSupportsKeyboardNavigation = new RawContextKey<boolean>('listSupportsKeyboardNavigation', true);
+export const WorkbenchListAutomaticKeyboardNavigation = new RawContextKey<boolean>(WorkbenchListAutomaticKeyboardNavigationKey, true);
 
 export class ListContext implements IWorkbenchContribution {
 
 	constructor(
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
-		contextKeyService.createKey<boolean>('listSupportsTypeNavigation', true);
-
-		// @deprecated in favor of listSupportsTypeNavigation
-		contextKeyService.createKey('listSupportsKeyboardNavigation', true);
+		WorkbenchListSupportsKeyboardNavigation.bindTo(contextKeyService);
+		WorkbenchListAutomaticKeyboardNavigation.bindTo(contextKeyService);
 	}
 }
 

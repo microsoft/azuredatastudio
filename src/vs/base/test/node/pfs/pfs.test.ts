@@ -11,10 +11,8 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import { randomPath } from 'vs/base/common/extpath';
 import { join, sep } from 'vs/base/common/path';
 import { isWindows } from 'vs/base/common/platform';
-import { configureFlushOnWrite, Promises, RimRafMode, rimrafSync, SymlinkSupport, writeFileSync } from 'vs/base/node/pfs';
+import { Promises, RimRafMode, rimrafSync, SymlinkSupport, writeFileSync } from 'vs/base/node/pfs';
 import { flakySuite, getPathFromAmdModule, getRandomTestPath } from 'vs/base/test/node/testUtils';
-
-configureFlushOnWrite(false); // speed up all unit tests by disabling flush on write
 
 flakySuite('PFS', function () {
 
@@ -370,36 +368,24 @@ flakySuite('PFS', function () {
 		const smallData = 'Hello World';
 		const bigData = (new Array(100 * 1024)).join('Large String\n');
 
-		return testWriteFile(smallData, smallData, bigData, bigData);
-	});
-
-	test('writeFile (string) - flush on write', async () => {
-		configureFlushOnWrite(true);
-		try {
-			const smallData = 'Hello World';
-			const bigData = (new Array(100 * 1024)).join('Large String\n');
-
-			return await testWriteFile(smallData, smallData, bigData, bigData);
-		} finally {
-			configureFlushOnWrite(false);
-		}
+		return testWriteFileAndFlush(smallData, smallData, bigData, bigData);
 	});
 
 	test('writeFile (Buffer)', async () => {
 		const smallData = 'Hello World';
 		const bigData = (new Array(100 * 1024)).join('Large String\n');
 
-		return testWriteFile(Buffer.from(smallData), smallData, Buffer.from(bigData), bigData);
+		return testWriteFileAndFlush(Buffer.from(smallData), smallData, Buffer.from(bigData), bigData);
 	});
 
 	test('writeFile (UInt8Array)', async () => {
 		const smallData = 'Hello World';
 		const bigData = (new Array(100 * 1024)).join('Large String\n');
 
-		return testWriteFile(VSBuffer.fromString(smallData).buffer, smallData, VSBuffer.fromString(bigData).buffer, bigData);
+		return testWriteFileAndFlush(VSBuffer.fromString(smallData).buffer, smallData, VSBuffer.fromString(bigData).buffer, bigData);
 	});
 
-	async function testWriteFile(
+	async function testWriteFileAndFlush(
 		smallData: string | Buffer | Uint8Array,
 		smallDataValue: string,
 		bigData: string | Buffer | Uint8Array,

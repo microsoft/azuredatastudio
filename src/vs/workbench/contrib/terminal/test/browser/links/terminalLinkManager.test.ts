@@ -81,11 +81,7 @@ suite('TerminalLinkManager', () => {
 		instantiationService.stub(IViewDescriptorService, viewDescriptorService);
 
 		xterm = new Terminal({ cols: 80, rows: 30 });
-		linkManager = instantiationService.createInstance(TestLinkManager, xterm, upcastPartial<ITerminalProcessManager>({
-			async getInitialCwd() {
-				return '';
-			}
-		}), {
+		linkManager = instantiationService.createInstance(TestLinkManager, xterm, upcastPartial<ITerminalProcessManager>({}), {
 			get<T extends TerminalCapability>(capability: T): ITerminalCapabilityImplMap[T] | undefined {
 				return undefined;
 			}

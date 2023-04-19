@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vscode';
-import { ITerminalEnvironmentProvider } from '../terminal';
 import { toDisposable } from '../util';
 import * as path from 'path';
 import * as http from 'http';
@@ -28,7 +27,7 @@ export interface IIPCHandler {
 	handle(request: any): Promise<any>;
 }
 
-export async function createIPCServer(context?: string): Promise<IPCServer> {
+export async function createIPCServer(context?: string): Promise<IIPCServer> {
 	const server = http.createServer();
 	const hash = crypto.createHash('sha1');
 
@@ -66,7 +65,7 @@ export interface IIPCServer extends Disposable {
 	registerHandler(name: string, handler: IIPCHandler): Disposable;
 }
 
-export class IPCServer implements IIPCServer, ITerminalEnvironmentProvider, Disposable {
+class IPCServer implements IIPCServer, Disposable {
 
 	private handlers = new Map<string, IIPCHandler>();
 	get ipcHandlePath(): string { return this._ipcHandlePath; }
@@ -108,10 +107,6 @@ export class IPCServer implements IIPCServer, ITerminalEnvironmentProvider, Disp
 	}
 
 	getEnv(): { [key: string]: string } {
-		return { VSCODE_GIT_IPC_HANDLE: this.ipcHandlePath };
-	}
-
-	getTerminalEnv(): { [key: string]: string } {
 		return { VSCODE_GIT_IPC_HANDLE: this.ipcHandlePath };
 	}
 

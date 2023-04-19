@@ -180,7 +180,7 @@ configurationExtPoint.setHandler((extensions, { added, removed }) => {
 
 	function handleConfiguration(node: IConfigurationNode, extension: IExtensionPointUser<any>): IConfigurationNode[] {
 		const configurations: IConfigurationNode[] = [];
-		const configuration = objects.deepClone(node);
+		let configuration = objects.deepClone(node);
 
 		if (configuration.title && (typeof configuration.title !== 'string')) {
 			extension.collector.error(nls.localize('invalid.title', "'configuration.title' must be a string"));
@@ -197,15 +197,14 @@ configurationExtPoint.setHandler((extensions, { added, removed }) => {
 	}
 
 	function validateProperties(configuration: IConfigurationNode, extension: IExtensionPointUser<any>): void {
-		const properties = configuration.properties;
+		let properties = configuration.properties;
 		if (properties) {
 			if (typeof properties !== 'object') {
 				extension.collector.error(nls.localize('invalid.properties', "'configuration.properties' must be an object"));
 				configuration.properties = {};
 			}
-			for (const key in properties) {
-				const propertyConfiguration = properties[key];
-				const message = validateProperty(key, propertyConfiguration);
+			for (let key in properties) {
+				const message = validateProperty(key);
 				if (message) {
 					delete properties[key];
 					extension.collector.warn(message);
@@ -216,6 +215,7 @@ configurationExtPoint.setHandler((extensions, { added, removed }) => {
 					extension.collector.warn(nls.localize('config.property.duplicate', "Cannot register '{0}'. This property is already registered.", key));
 					continue;
 				}
+				const propertyConfiguration = properties[key];
 				if (!isObject(propertyConfiguration)) {
 					delete properties[key];
 					extension.collector.error(nls.localize('invalid.property', "configuration.properties property '{0}' must be an object", key));
@@ -241,10 +241,10 @@ configurationExtPoint.setHandler((extensions, { added, removed }) => {
 				}
 			}
 		}
-		const subNodes = configuration.allOf;
+		let subNodes = configuration.allOf;
 		if (subNodes) {
 			extension.collector.error(nls.localize('invalid.allOf', "'configuration.allOf' is deprecated and should no longer be used. Instead, pass multiple configuration sections as an array to the 'configuration' contribution point."));
-			for (const node of subNodes) {
+			for (let node of subNodes) {
 				validateProperties(node, extension);
 			}
 		}
@@ -252,7 +252,7 @@ configurationExtPoint.setHandler((extensions, { added, removed }) => {
 
 	if (added.length) {
 		const addedConfigurations: IConfigurationNode[] = [];
-		for (const extension of added) {
+		for (let extension of added) {
 			const configurations: IConfigurationNode[] = [];
 			const value = <IConfigurationNode | IConfigurationNode[]>extension.value;
 			if (Array.isArray(value)) {

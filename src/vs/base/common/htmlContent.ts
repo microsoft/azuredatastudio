@@ -139,10 +139,6 @@ export function escapeMarkdownSyntaxTokens(text: string): string {
 	return text.replace(/[\\`*_{}[\]()#+\-!]/g, '\\$&');
 }
 
-export function escapeDoubleQuotes(input: string) {
-	return input.replace(/"/g, '&quot;');
-}
-
 export function removeMarkdownEscapes(text: string): string {
 	if (!text) {
 		return text;

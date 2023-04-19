@@ -46,7 +46,6 @@ $stages = @(
 	if ($env:VSCODE_BUILD_STAGE_WINDOWS -eq 'True') { 'Windows' }
 	if ($env:VSCODE_BUILD_STAGE_LINUX -eq 'True') { 'Linux' }
 	if ($env:VSCODE_BUILD_STAGE_MACOS -eq 'True') { 'macOS' }
-	if ($env:VSCODE_BUILD_STAGE_WEB -eq 'True') { 'Web' }
 )
 
 do {

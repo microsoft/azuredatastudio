@@ -993,10 +993,6 @@ export class HistoryService extends Disposable implements IHistoryService {
 			try {
 				const entriesParsed: ISerializedEditorHistoryEntry[] = JSON.parse(entriesRaw);
 				for (const entryParsed of entriesParsed) {
-					if (!entryParsed.editor || !entryParsed.editor.resource) {
-						continue; // unexpected data format
-					}
-
 					try {
 						entries.push({
 							...entryParsed.editor,
@@ -1364,7 +1360,7 @@ export class EditorNavigationStack extends Disposable {
 			return;
 		}
 
-		const entryLabels: string[] = [];
+		let entryLabels: string[] = [];
 		for (const entry of this.stack) {
 			if (typeof entry.selection?.log === 'function') {
 				entryLabels.push(`- group: ${entry.groupId}, editor: ${entry.editor.resource?.toString()}, selection: ${entry.selection.log()}`);
@@ -1578,7 +1574,7 @@ ${entryLabels.join('\n')}
 		const newStackEntry: IEditorNavigationStackEntry = { groupId, editor, selection };
 
 		// Replace at current position
-		const removedEntries: IEditorNavigationStackEntry[] = [];
+		let removedEntries: IEditorNavigationStackEntry[] = [];
 		if (replace) {
 			if (this.current) {
 				removedEntries.push(this.current);

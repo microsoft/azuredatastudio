@@ -22,7 +22,7 @@ class SimpleLinkComputerTarget implements ILinkComputerTarget {
 }
 
 function myComputeLinks(lines: string[]): ILink[] {
-	const target = new SimpleLinkComputerTarget(lines);
+	let target = new SimpleLinkComputerTarget(lines);
 	return computeLinks(target);
 }
 
@@ -48,7 +48,7 @@ function assertLink(text: string, extractedLink: string): void {
 		}
 	}
 
-	const r = myComputeLinks([text]);
+	let r = myComputeLinks([text]);
 	assert.deepStrictEqual(r, [{
 		range: {
 			startLineNumber: 1,
@@ -63,7 +63,7 @@ function assertLink(text: string, extractedLink: string): void {
 suite('Editor Modes - Link Computer', () => {
 
 	test('Null model', () => {
-		const r = computeLinks(null);
+		let r = computeLinks(null);
 		assert.deepStrictEqual(r, []);
 	});
 
@@ -249,20 +249,6 @@ suite('Editor Modes - Link Computer', () => {
 		assertLink(
 			'aa  https://zh.wikipedia.org/wiki/“常凯申”误译事件 aa',
 			'    https://zh.wikipedia.org/wiki/“常凯申”误译事件   '
-		);
-	});
-
-	test('issue #150905: Colon after bare hyperlink is treated as its part', () => {
-		assertLink(
-			'https://site.web/page.html: blah blah blah',
-			'https://site.web/page.html                '
-		);
-	});
-
-	test('issue #151631: Link parsing stoped where comments include a single quote ', () => {
-		assertLink(
-			`aa https://regexper.com/#%2F''%2F aa`,
-			`   https://regexper.com/#%2F''%2F   `,
 		);
 	});
 });

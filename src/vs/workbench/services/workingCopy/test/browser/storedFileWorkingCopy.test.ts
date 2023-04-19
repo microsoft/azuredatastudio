@@ -17,7 +17,6 @@ import { FileChangesEvent, FileChangeType, FileOperationError, FileOperationResu
 import { SaveReason, SaveSourceRegistry } from 'vs/workbench/common/editor';
 import { Promises } from 'vs/base/common/async';
 import { consumeReadable, consumeStream, isReadableStream } from 'vs/base/common/stream';
-import { runWithFakedTimers } from 'vs/base/test/common/timeTravelScheduler';
 
 export class TestStoredFileWorkingCopyModel extends Disposable implements IStoredFileWorkingCopyModel {
 
@@ -94,7 +93,7 @@ suite('StoredFileWorkingCopy', function () {
 	const factory = new TestStoredFileWorkingCopyModelFactory();
 
 	let disposables: DisposableStore;
-	const resource = URI.file('test/resource');
+	let resource = URI.file('test/resource');
 	let instantiationService: IInstantiationService;
 	let accessor: TestServiceAccessor;
 	let workingCopy: StoredFileWorkingCopy<TestStoredFileWorkingCopyModel>;
@@ -127,23 +126,21 @@ suite('StoredFileWorkingCopy', function () {
 	});
 
 	test('orphaned tracking', async () => {
-		runWithFakedTimers({}, async () => {
-			assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), false);
+		assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), false);
 
-			let onDidChangeOrphanedPromise = Event.toPromise(workingCopy.onDidChangeOrphaned);
-			accessor.fileService.notExistsSet.set(resource, true);
-			accessor.fileService.fireFileChanges(new FileChangesEvent([{ resource, type: FileChangeType.DELETED }], false));
+		let onDidChangeOrphanedPromise = Event.toPromise(workingCopy.onDidChangeOrphaned);
+		accessor.fileService.notExistsSet.set(resource, true);
+		accessor.fileService.fireFileChanges(new FileChangesEvent([{ resource, type: FileChangeType.DELETED }], false));
 
-			await onDidChangeOrphanedPromise;
-			assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), true);
+		await onDidChangeOrphanedPromise;
+		assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), true);
 
-			onDidChangeOrphanedPromise = Event.toPromise(workingCopy.onDidChangeOrphaned);
-			accessor.fileService.notExistsSet.delete(resource);
-			accessor.fileService.fireFileChanges(new FileChangesEvent([{ resource, type: FileChangeType.ADDED }], false));
+		onDidChangeOrphanedPromise = Event.toPromise(workingCopy.onDidChangeOrphaned);
+		accessor.fileService.notExistsSet.delete(resource);
+		accessor.fileService.fireFileChanges(new FileChangesEvent([{ resource, type: FileChangeType.ADDED }], false));
 
-			await onDidChangeOrphanedPromise;
-			assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), false);
-		});
+		await onDidChangeOrphanedPromise;
+		assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), false);
 	});
 
 	test('dirty', async () => {
@@ -297,60 +294,56 @@ suite('StoredFileWorkingCopy', function () {
 	});
 
 	test('resolve (with backup, preserves metadata and orphaned state)', async () => {
-		runWithFakedTimers({}, async () => {
-			await workingCopy.resolve({ contents: bufferToStream(VSBuffer.fromString('hello backup')) });
+		await workingCopy.resolve({ contents: bufferToStream(VSBuffer.fromString('hello backup')) });
 
-			const orphanedPromise = Event.toPromise(workingCopy.onDidChangeOrphaned);
+		const orphanedPromise = Event.toPromise(workingCopy.onDidChangeOrphaned);
 
-			accessor.fileService.notExistsSet.set(resource, true);
-			accessor.fileService.fireFileChanges(new FileChangesEvent([{ resource, type: FileChangeType.DELETED }], false));
+		accessor.fileService.notExistsSet.set(resource, true);
+		accessor.fileService.fireFileChanges(new FileChangesEvent([{ resource, type: FileChangeType.DELETED }], false));
 
-			await orphanedPromise;
-			assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), true);
+		await orphanedPromise;
+		assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), true);
 
-			const backup = await workingCopy.backup(CancellationToken.None);
-			await accessor.workingCopyBackupService.backup(workingCopy, backup.content, undefined, backup.meta);
+		const backup = await workingCopy.backup(CancellationToken.None);
+		await accessor.workingCopyBackupService.backup(workingCopy, backup.content, undefined, backup.meta);
 
-			assert.strictEqual(accessor.workingCopyBackupService.hasBackupSync(workingCopy), true);
+		assert.strictEqual(accessor.workingCopyBackupService.hasBackupSync(workingCopy), true);
 
-			workingCopy.dispose();
+		workingCopy.dispose();
 
-			workingCopy = createWorkingCopy();
-			await workingCopy.resolve();
+		workingCopy = createWorkingCopy();
+		await workingCopy.resolve();
 
-			assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), true);
+		assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), true);
 
-			const backup2 = await workingCopy.backup(CancellationToken.None);
-			assert.deepStrictEqual(backup.meta, backup2.meta);
-		});
+		const backup2 = await workingCopy.backup(CancellationToken.None);
+		assert.deepStrictEqual(backup.meta, backup2.meta);
 	});
 
 	test('resolve (updates orphaned state accordingly)', async () => {
-		runWithFakedTimers({}, async () => {
+		await workingCopy.resolve();
+
+		const orphanedPromise = Event.toPromise(workingCopy.onDidChangeOrphaned);
+
+		accessor.fileService.notExistsSet.set(resource, true);
+		accessor.fileService.fireFileChanges(new FileChangesEvent([{ resource, type: FileChangeType.DELETED }], false));
+
+		await orphanedPromise;
+		assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), true);
+
+		// resolving clears orphaned state when successful
+		accessor.fileService.notExistsSet.delete(resource);
+		await workingCopy.resolve({ forceReadFromFile: true });
+		assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), false);
+
+		// resolving adds orphaned state when fail to read
+		try {
+			accessor.fileService.readShouldThrowError = new FileOperationError('file not found', FileOperationResult.FILE_NOT_FOUND);
 			await workingCopy.resolve();
-
-			const orphanedPromise = Event.toPromise(workingCopy.onDidChangeOrphaned);
-
-			accessor.fileService.notExistsSet.set(resource, true);
-			accessor.fileService.fireFileChanges(new FileChangesEvent([{ resource, type: FileChangeType.DELETED }], false));
-
-			await orphanedPromise;
 			assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), true);
-
-			// resolving clears orphaned state when successful
-			accessor.fileService.notExistsSet.delete(resource);
-			await workingCopy.resolve({ forceReadFromFile: true });
-			assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), false);
-
-			// resolving adds orphaned state when fail to read
-			try {
-				accessor.fileService.readShouldThrowError = new FileOperationError('file not found', FileOperationResult.FILE_NOT_FOUND);
-				await workingCopy.resolve();
-				assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), true);
-			} finally {
-				accessor.fileService.readShouldThrowError = undefined;
-			}
-		});
+		} finally {
+			accessor.fileService.readShouldThrowError = undefined;
+		}
 	});
 
 	test('resolve (FILE_NOT_MODIFIED_SINCE can be handled for resolved working copies)', async () => {
@@ -430,7 +423,7 @@ suite('StoredFileWorkingCopy', function () {
 		assert.strictEqual(backupContents, 'hello backup');
 	});
 
-	test('save (no errors) - simple', async () => {
+	test('save (no errors)', async () => {
 		let savedCounter = 0;
 		let lastSaveEvent: IStoredFileWorkingCopySaveEvent | undefined = undefined;
 		workingCopy.onDidSave(e => {
@@ -460,49 +453,21 @@ suite('StoredFileWorkingCopy', function () {
 		assert.ok(lastSaveEvent!.stat);
 		assert.ok(isStoredFileWorkingCopySaveEvent(lastSaveEvent!));
 		assert.strictEqual(workingCopy.model?.pushedStackElement, true);
-	});
-
-	test('save (no errors) - save reason', async () => {
-		let savedCounter = 0;
-		let lastSaveEvent: IStoredFileWorkingCopySaveEvent | undefined = undefined;
-		workingCopy.onDidSave(e => {
-			savedCounter++;
-			lastSaveEvent = e;
-		});
-
-		let saveErrorCounter = 0;
-		workingCopy.onDidSaveError(() => {
-			saveErrorCounter++;
-		});
 
 		// save reason
-		await workingCopy.resolve();
 		workingCopy.model?.updateContents('hello save');
 
 		const source = SaveSourceRegistry.registerSource('testSource', 'Hello Save');
 		await workingCopy.save({ reason: SaveReason.AUTO, source });
 
-		assert.strictEqual(savedCounter, 1);
+		assert.strictEqual(savedCounter, 2);
 		assert.strictEqual(saveErrorCounter, 0);
 		assert.strictEqual(workingCopy.isDirty(), false);
-		assert.strictEqual((lastSaveEvent! as IStoredFileWorkingCopySaveEvent).reason, SaveReason.AUTO);
-		assert.strictEqual((lastSaveEvent! as IStoredFileWorkingCopySaveEvent).source, source);
-	});
-
-	test('save (no errors) - multiple', async () => {
-		let savedCounter = 0;
-		workingCopy.onDidSave(e => {
-			savedCounter++;
-		});
-
-		let saveErrorCounter = 0;
-		workingCopy.onDidSaveError(() => {
-			saveErrorCounter++;
-		});
+		assert.strictEqual((lastSaveEvent as IStoredFileWorkingCopySaveEvent).reason, SaveReason.AUTO);
+		assert.strictEqual((lastSaveEvent as IStoredFileWorkingCopySaveEvent).source, source);
 
 		// multiple saves in parallel are fine and result
 		// in a single save when content does not change
-		await workingCopy.resolve();
 		workingCopy.model?.updateContents('hello save');
 		await Promises.settled([
 			workingCopy.save({ reason: SaveReason.AUTO }),
@@ -510,104 +475,49 @@ suite('StoredFileWorkingCopy', function () {
 			workingCopy.save({ reason: SaveReason.WINDOW_CHANGE })
 		]);
 
-		assert.strictEqual(savedCounter, 1);
+		assert.strictEqual(savedCounter, 3);
 		assert.strictEqual(saveErrorCounter, 0);
 		assert.strictEqual(workingCopy.isDirty(), false);
-	});
-
-	test('save (no errors) - multiple, cancellation', async () => {
-		let savedCounter = 0;
-		workingCopy.onDidSave(e => {
-			savedCounter++;
-		});
-
-		let saveErrorCounter = 0;
-		workingCopy.onDidSaveError(() => {
-			saveErrorCounter++;
-		});
 
 		// multiple saves in parallel are fine and result
 		// in just one save operation (the second one
 		// cancels the first)
-		await workingCopy.resolve();
 		workingCopy.model?.updateContents('hello save');
 		const firstSave = workingCopy.save();
 		workingCopy.model?.updateContents('hello save more');
 		const secondSave = workingCopy.save();
 
 		await Promises.settled([firstSave, secondSave]);
-		assert.strictEqual(savedCounter, 1);
+		assert.strictEqual(savedCounter, 4);
 		assert.strictEqual(saveErrorCounter, 0);
 		assert.strictEqual(workingCopy.isDirty(), false);
-	});
-
-	test('save (no errors) - not forced but not dirty', async () => {
-		let savedCounter = 0;
-		workingCopy.onDidSave(e => {
-			savedCounter++;
-		});
-
-		let saveErrorCounter = 0;
-		workingCopy.onDidSaveError(() => {
-			saveErrorCounter++;
-		});
 
 		// no save when not forced and not dirty
-		await workingCopy.resolve();
 		await workingCopy.save();
-		assert.strictEqual(savedCounter, 0);
+		assert.strictEqual(savedCounter, 4);
 		assert.strictEqual(saveErrorCounter, 0);
 		assert.strictEqual(workingCopy.isDirty(), false);
-	});
-
-	test('save (no errors) - forced but not dirty', async () => {
-		let savedCounter = 0;
-		workingCopy.onDidSave(e => {
-			savedCounter++;
-		});
-
-		let saveErrorCounter = 0;
-		workingCopy.onDidSaveError(() => {
-			saveErrorCounter++;
-		});
 
 		// save when forced even when not dirty
-		await workingCopy.resolve();
 		await workingCopy.save({ force: true });
-		assert.strictEqual(savedCounter, 1);
+		assert.strictEqual(savedCounter, 5);
 		assert.strictEqual(saveErrorCounter, 0);
 		assert.strictEqual(workingCopy.isDirty(), false);
-	});
 
-	test('save (no errors) - save clears orphaned', async () => {
-		runWithFakedTimers({}, async () => {
-			let savedCounter = 0;
-			workingCopy.onDidSave(e => {
-				savedCounter++;
-			});
+		// save clears orphaned
+		const orphanedPromise = Event.toPromise(workingCopy.onDidChangeOrphaned);
 
-			let saveErrorCounter = 0;
-			workingCopy.onDidSaveError(() => {
-				saveErrorCounter++;
-			});
+		accessor.fileService.notExistsSet.set(resource, true);
+		accessor.fileService.fireFileChanges(new FileChangesEvent([{ resource, type: FileChangeType.DELETED }], false));
 
-			await workingCopy.resolve();
+		await orphanedPromise;
+		assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), true);
 
-			// save clears orphaned
-			const orphanedPromise = Event.toPromise(workingCopy.onDidChangeOrphaned);
-
-			accessor.fileService.notExistsSet.set(resource, true);
-			accessor.fileService.fireFileChanges(new FileChangesEvent([{ resource, type: FileChangeType.DELETED }], false));
-
-			await orphanedPromise;
-			assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), true);
-
-			await workingCopy.save({ force: true });
-			assert.strictEqual(savedCounter, 1);
-			assert.strictEqual(saveErrorCounter, 0);
-			assert.strictEqual(workingCopy.isDirty(), false);
-			assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), false);
-		});
+		await workingCopy.save({ force: true });
+		assert.strictEqual(savedCounter, 6);
+		assert.strictEqual(saveErrorCounter, 0);
+		assert.strictEqual(workingCopy.isDirty(), false);
+		assert.strictEqual(workingCopy.hasState(StoredFileWorkingCopyState.ORPHAN), false);
 	});
 
 	test('save (errors)', async () => {

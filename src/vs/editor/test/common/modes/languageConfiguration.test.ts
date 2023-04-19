@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { StandardTokenType } from 'vs/editor/common/encodedTokenAttributes';
+import { StandardTokenType } from 'vs/editor/common/languages';
 import { StandardAutoClosingPairConditional } from 'vs/editor/common/languages/languageConfiguration';
 import { TestLanguageConfigurationService } from 'vs/editor/test/common/modes/testLanguageConfigurationService';
 
 suite('StandardAutoClosingPairConditional', () => {
 
 	test('Missing notIn', () => {
-		const v = new StandardAutoClosingPairConditional({ open: '{', close: '}' });
+		let v = new StandardAutoClosingPairConditional({ open: '{', close: '}' });
 		assert.strictEqual(v.isOK(StandardTokenType.Other), true);
 		assert.strictEqual(v.isOK(StandardTokenType.Comment), true);
 		assert.strictEqual(v.isOK(StandardTokenType.String), true);
@@ -19,7 +19,7 @@ suite('StandardAutoClosingPairConditional', () => {
 	});
 
 	test('Empty notIn', () => {
-		const v = new StandardAutoClosingPairConditional({ open: '{', close: '}', notIn: [] });
+		let v = new StandardAutoClosingPairConditional({ open: '{', close: '}', notIn: [] });
 		assert.strictEqual(v.isOK(StandardTokenType.Other), true);
 		assert.strictEqual(v.isOK(StandardTokenType.Comment), true);
 		assert.strictEqual(v.isOK(StandardTokenType.String), true);
@@ -27,7 +27,7 @@ suite('StandardAutoClosingPairConditional', () => {
 	});
 
 	test('Invalid notIn', () => {
-		const v = new StandardAutoClosingPairConditional({ open: '{', close: '}', notIn: ['bla'] });
+		let v = new StandardAutoClosingPairConditional({ open: '{', close: '}', notIn: ['bla'] });
 		assert.strictEqual(v.isOK(StandardTokenType.Other), true);
 		assert.strictEqual(v.isOK(StandardTokenType.Comment), true);
 		assert.strictEqual(v.isOK(StandardTokenType.String), true);
@@ -35,7 +35,7 @@ suite('StandardAutoClosingPairConditional', () => {
 	});
 
 	test('notIn in strings', () => {
-		const v = new StandardAutoClosingPairConditional({ open: '{', close: '}', notIn: ['string'] });
+		let v = new StandardAutoClosingPairConditional({ open: '{', close: '}', notIn: ['string'] });
 		assert.strictEqual(v.isOK(StandardTokenType.Other), true);
 		assert.strictEqual(v.isOK(StandardTokenType.Comment), true);
 		assert.strictEqual(v.isOK(StandardTokenType.String), false);
@@ -43,7 +43,7 @@ suite('StandardAutoClosingPairConditional', () => {
 	});
 
 	test('notIn in comments', () => {
-		const v = new StandardAutoClosingPairConditional({ open: '{', close: '}', notIn: ['comment'] });
+		let v = new StandardAutoClosingPairConditional({ open: '{', close: '}', notIn: ['comment'] });
 		assert.strictEqual(v.isOK(StandardTokenType.Other), true);
 		assert.strictEqual(v.isOK(StandardTokenType.Comment), false);
 		assert.strictEqual(v.isOK(StandardTokenType.String), true);
@@ -51,7 +51,7 @@ suite('StandardAutoClosingPairConditional', () => {
 	});
 
 	test('notIn in regex', () => {
-		const v = new StandardAutoClosingPairConditional({ open: '{', close: '}', notIn: ['regex'] });
+		let v = new StandardAutoClosingPairConditional({ open: '{', close: '}', notIn: ['regex'] });
 		assert.strictEqual(v.isOK(StandardTokenType.Other), true);
 		assert.strictEqual(v.isOK(StandardTokenType.Comment), true);
 		assert.strictEqual(v.isOK(StandardTokenType.String), true);
@@ -59,7 +59,7 @@ suite('StandardAutoClosingPairConditional', () => {
 	});
 
 	test('notIn in strings nor comments', () => {
-		const v = new StandardAutoClosingPairConditional({ open: '{', close: '}', notIn: ['string', 'comment'] });
+		let v = new StandardAutoClosingPairConditional({ open: '{', close: '}', notIn: ['string', 'comment'] });
 		assert.strictEqual(v.isOK(StandardTokenType.Other), true);
 		assert.strictEqual(v.isOK(StandardTokenType.Comment), false);
 		assert.strictEqual(v.isOK(StandardTokenType.String), false);
@@ -67,7 +67,7 @@ suite('StandardAutoClosingPairConditional', () => {
 	});
 
 	test('notIn in strings nor regex', () => {
-		const v = new StandardAutoClosingPairConditional({ open: '{', close: '}', notIn: ['string', 'regex'] });
+		let v = new StandardAutoClosingPairConditional({ open: '{', close: '}', notIn: ['string', 'regex'] });
 		assert.strictEqual(v.isOK(StandardTokenType.Other), true);
 		assert.strictEqual(v.isOK(StandardTokenType.Comment), true);
 		assert.strictEqual(v.isOK(StandardTokenType.String), false);
@@ -75,7 +75,7 @@ suite('StandardAutoClosingPairConditional', () => {
 	});
 
 	test('notIn in comments nor regex', () => {
-		const v = new StandardAutoClosingPairConditional({ open: '{', close: '}', notIn: ['comment', 'regex'] });
+		let v = new StandardAutoClosingPairConditional({ open: '{', close: '}', notIn: ['comment', 'regex'] });
 		assert.strictEqual(v.isOK(StandardTokenType.Other), true);
 		assert.strictEqual(v.isOK(StandardTokenType.Comment), false);
 		assert.strictEqual(v.isOK(StandardTokenType.String), true);
@@ -83,7 +83,7 @@ suite('StandardAutoClosingPairConditional', () => {
 	});
 
 	test('notIn in strings, comments nor regex', () => {
-		const v = new StandardAutoClosingPairConditional({ open: '{', close: '}', notIn: ['string', 'comment', 'regex'] });
+		let v = new StandardAutoClosingPairConditional({ open: '{', close: '}', notIn: ['string', 'comment', 'regex'] });
 		assert.strictEqual(v.isOK(StandardTokenType.Other), true);
 		assert.strictEqual(v.isOK(StandardTokenType.Comment), false);
 		assert.strictEqual(v.isOK(StandardTokenType.String), false);

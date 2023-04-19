@@ -27,7 +27,6 @@ import { streamToBuffer } from 'vs/base/common/buffer';
 import { IProductConfiguration } from 'vs/base/common/product';
 import { isString } from 'vs/base/common/types';
 import { CharCode } from 'vs/base/common/charCode';
-import { getRemoteServerRootPath } from 'vs/platform/remote/common/remoteHosts';
 
 const textMimeType = {
 	'.html': 'text/html',
@@ -98,7 +97,6 @@ export class WebClientServer {
 
 	private readonly _staticRoute: string;
 	private readonly _callbackRoute: string;
-	private readonly _webExtensionRoute: string;
 
 	constructor(
 		private readonly _connectionToken: ServerConnectionToken,
@@ -108,10 +106,9 @@ export class WebClientServer {
 		@IProductService private readonly _productService: IProductService,
 	) {
 		this._webExtensionResourceUrlTemplate = this._productService.extensionsGallery?.resourceUrlTemplate ? URI.parse(this._productService.extensionsGallery.resourceUrlTemplate) : undefined;
-		const serverRootPath = getRemoteServerRootPath(_productService);
-		this._staticRoute = `${serverRootPath}/static`;
-		this._callbackRoute = `${serverRootPath}/callback`;
-		this._webExtensionRoute = `${serverRootPath}/web-extension-resource`;
+		const qualityAndCommit = `${_productService.quality ?? 'oss'}-${_productService.commit ?? 'dev'}`;
+		this._staticRoute = `/${qualityAndCommit}/static`;
+		this._callbackRoute = `/${qualityAndCommit}/callback`;
 	}
 
 	/**
@@ -133,7 +130,7 @@ export class WebClientServer {
 				// callback support
 				return this._handleCallback(res);
 			}
-			if (pathname.startsWith(this._webExtensionRoute) && pathname.charCodeAt(this._webExtensionRoute.length) === CharCode.Slash) {
+			if (/^\/web-extension-resource\//.test(pathname)) {
 				// extension resource support
 				return this._handleWebExtensionResource(req, res, parsedUrl);
 			}
@@ -179,7 +176,7 @@ export class WebClientServer {
 
 		// Strip `/web-extension-resource/` from the path
 		const normalizedPathname = decodeURIComponent(parsedUrl.pathname!); // support paths that are uri-encoded (e.g. spaces => %20)
-		const path = normalize(normalizedPathname.substring(this._webExtensionRoute.length + 1));
+		const path = normalize(normalizedPathname.substr('/web-extension-resource/'.length));
 		const uri = URI.parse(path).with({
 			scheme: this._webExtensionResourceUrlTemplate.scheme,
 			authority: path.substring(0, path.indexOf('/')),
@@ -255,7 +252,7 @@ export class WebClientServer {
 			);
 
 			const newQuery = Object.create(null);
-			for (const key in parsedUrl.query) {
+			for (let key in parsedUrl.query) {
 				if (key !== connectionTokenQueryName) {
 					newQuery[key] = parsedUrl.query[key];
 				}
@@ -267,12 +264,11 @@ export class WebClientServer {
 			return res.end();
 		}
 
-		const getFirstHeader = (headerName: string) => {
-			const val = req.headers[headerName];
-			return Array.isArray(val) ? val[0] : val;
-		};
-
-		const remoteAuthority = getFirstHeader('x-original-host') || getFirstHeader('x-forwarded-host') || req.headers.host;
+		let originalHost = req.headers['x-original-host'];
+		if (Array.isArray(originalHost)) {
+			originalHost = originalHost[0];
+		}
+		const remoteAuthority = originalHost || req.headers.host;
 		if (!remoteAuthority) {
 			return serveError(req, res, 400, `Bad request.`);
 		}
@@ -314,19 +310,17 @@ export class WebClientServer {
 					'resourceUrlTemplate': this._webExtensionResourceUrlTemplate.with({
 						scheme: 'http',
 						authority: remoteAuthority,
-						path: `${this._webExtensionRoute}/${this._webExtensionResourceUrlTemplate.authority}${this._webExtensionResourceUrlTemplate.path}`
+						path: `web-extension-resource/${this._webExtensionResourceUrlTemplate.authority}${this._webExtensionResourceUrlTemplate.path}`
 					}).toString(true)
 				} : undefined
 			},
 			callbackRoute: this._callbackRoute
 		};
 
-		const nlsBaseUrl = this._productService.extensionsGallery?.nlsBaseUrl;
 		const values: { [key: string]: string } = {
 			WORKBENCH_WEB_CONFIGURATION: asJSON(workbenchWebConfiguration),
 			WORKBENCH_AUTH_SESSION: authSessionInfo ? asJSON(authSessionInfo) : '',
 			WORKBENCH_WEB_BASE_URL: this._staticRoute,
-			WORKBENCH_NLS_BASE_URL: nlsBaseUrl ? `${nlsBaseUrl}${!nlsBaseUrl.endsWith('/') ? '/' : ''}${this._productService.commit}/${this._productService.version}/` : '',
 		};
 
 

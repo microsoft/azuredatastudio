@@ -34,9 +34,9 @@ export class CommandNavigationAddon extends Disposable implements ICommandTracke
 
 	activate(terminal: Terminal): void {
 		this._terminal = terminal;
-		this._register(this._terminal.onData(() => {
+		this._terminal.onData(() => {
 			this._currentMarker = Boundary.Bottom;
-		}));
+		});
 	}
 
 	constructor(
@@ -73,8 +73,6 @@ export class CommandNavigationAddon extends Disposable implements ICommandTracke
 		// Clear the current marker so successive focus/selection actions are performed from the
 		// bottom of the buffer
 		this._currentMarker = Boundary.Bottom;
-		this._navigationDecoration?.dispose();
-		this._navigationDecoration = undefined;
 		this._selectionStart = null;
 	}
 
@@ -112,7 +110,6 @@ export class CommandNavigationAddon extends Disposable implements ICommandTracke
 		if (markerIndex < 0) {
 			this._currentMarker = Boundary.Top;
 			this._terminal.scrollToTop();
-			this.clearMarker();
 			return;
 		}
 
@@ -154,7 +151,6 @@ export class CommandNavigationAddon extends Disposable implements ICommandTracke
 		if (markerIndex >= this._getCommandMarkers().length) {
 			this._currentMarker = Boundary.Bottom;
 			this._terminal.scrollToBottom();
-			this.clearMarker();
 			return;
 		}
 
@@ -182,14 +178,12 @@ export class CommandNavigationAddon extends Disposable implements ICommandTracke
 		});
 		this._navigationDecoration = decoration;
 		if (decoration) {
-			let renderedElement: HTMLElement | undefined;
-
+			let isRendered = false;
 			decoration.onRender(element => {
-				if (!renderedElement) {
-					renderedElement = element;
-					element.classList.add('terminal-scroll-highlight', 'terminal-scroll-highlight-outline');
-					if (this._terminal?.element) {
-						element.style.marginLeft = `-${getComputedStyle(this._terminal.element).paddingLeft}`;
+				if (!isRendered) {
+					// TODO: Remove when https://github.com/xtermjs/xterm.js/issues/3686 is fixed
+					if (!element.classList.contains('xterm-decoration-overview-ruler')) {
+						element.classList.add('terminal-scroll-highlight');
 					}
 				}
 			});
@@ -200,9 +194,7 @@ export class CommandNavigationAddon extends Disposable implements ICommandTracke
 			});
 			// Number picked to align with symbol highlight in the editor
 			timeout(350).then(() => {
-				if (renderedElement) {
-					renderedElement.classList.remove('terminal-scroll-highlight-outline');
-				}
+				decoration.dispose();
 			});
 		}
 	}

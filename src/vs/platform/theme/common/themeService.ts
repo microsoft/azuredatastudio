@@ -48,7 +48,7 @@ export namespace ThemeIcon {
 		if (!match) {
 			return undefined;
 		}
-		const [, name] = match;
+		let [, name] = match;
 		return { id: name };
 	}
 
@@ -230,7 +230,7 @@ class ThemingRegistry implements IThemingRegistry {
 	}
 }
 
-const themingRegistry = new ThemingRegistry();
+let themingRegistry = new ThemingRegistry();
 platform.Registry.add(Extensions.ThemingContribution, themingRegistry);
 
 export function registerThemingParticipant(participant: IThemingParticipant): IDisposable {

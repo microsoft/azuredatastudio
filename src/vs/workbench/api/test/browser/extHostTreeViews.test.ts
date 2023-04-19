@@ -19,7 +19,6 @@ import { TreeItemCollapsibleState, ITreeItem, IRevealOptions } from 'vs/workbenc
 import { NullLogService } from 'vs/platform/log/common/log';
 import type { IDisposable } from 'vs/base/common/lifecycle';
 import { nullExtensionDescription as extensionsDescription } from 'vs/workbench/services/extensions/common/extensions';
-import { runWithFakedTimers } from 'vs/base/test/common/timeTravelScheduler';
 
 suite.skip('ExtHostTreeView', function () { // {{SQL CARBON EDIT}} Skip suite
 
@@ -65,11 +64,11 @@ suite.skip('ExtHostTreeView', function () { // {{SQL CARBON EDIT}} Skip suite
 		labels = {};
 		nodes = {};
 
-		const rpcProtocol = new TestRPCProtocol();
+		let rpcProtocol = new TestRPCProtocol();
 		// Use IInstantiationService to get typechecking when instantiating
 		let inst: IInstantiationService;
 		{
-			const instantiationService = new TestInstantiationService();
+			let instantiationService = new TestInstantiationService();
 			inst = instantiationService;
 		}
 
@@ -251,17 +250,15 @@ suite.skip('ExtHostTreeView', function () { // {{SQL CARBON EDIT}} Skip suite
 	});
 
 	async function runWithEventMerging(action: (resolve: () => void) => void) {
-		await runWithFakedTimers({}, async () => {
-			await new Promise<void>((resolve) => {
-				let subscription: IDisposable | undefined = undefined;
-				subscription = target.onRefresh.event(() => {
-					subscription!.dispose();
-					resolve();
-				});
-				onDidChangeTreeNode.fire(getNode('b'));
+		await new Promise<void>((resolve) => {
+			let subscription: IDisposable | undefined = undefined;
+			subscription = target.onRefresh.event(() => {
+				subscription!.dispose();
+				resolve();
 			});
-			await new Promise<void>(action);
+			onDidChangeTreeNode.fire(getNode('b'));
 		});
+		await new Promise<void>(action);
 	}
 
 	test('refresh parent and child node trigger refresh only on parent - scenario 1', async () => {
@@ -738,7 +735,7 @@ suite.skip('ExtHostTreeView', function () { // {{SQL CARBON EDIT}} Skip suite
 		if (!key) {
 			return Object.keys(tree);
 		}
-		const treeElement = getTreeElement(key);
+		let treeElement = getTreeElement(key);
 		if (treeElement) {
 			return Object.keys(treeElement);
 		}

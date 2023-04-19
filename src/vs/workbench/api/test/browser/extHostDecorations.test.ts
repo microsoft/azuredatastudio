@@ -18,7 +18,7 @@ suite('ExtHostDecorations', function () {
 
 	let mainThreadShape: MainThreadDecorationsShape;
 	let extHostDecorations: ExtHostDecorations;
-	const providers = new Set<number>();
+	let providers = new Set<number>();
 
 	setup(function () {
 

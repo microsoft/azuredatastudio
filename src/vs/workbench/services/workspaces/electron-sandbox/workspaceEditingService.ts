@@ -20,6 +20,7 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { INativeWorkbenchEnvironmentService } from 'vs/workbench/services/environment/electron-sandbox/environmentService';
 import { ILifecycleService, ShutdownReason } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { IFileDialogService, IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
@@ -31,9 +32,6 @@ import { mnemonicButtonLabel } from 'vs/base/common/labels';
 import { WorkingCopyBackupService } from 'vs/workbench/services/workingCopy/common/workingCopyBackupService';
 import { IUriIdentityService } from 'vs/platform/uriIdentity/common/uriIdentity';
 import { IWorkspaceTrustManagementService } from 'vs/platform/workspace/common/workspaceTrust';
-import { IWorkbenchConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
-import { IUserDataProfilesService } from 'vs/platform/userDataProfile/common/userDataProfile';
-import { IUserDataProfileService } from 'vs/workbench/services/userDataProfile/common/userDataProfile';
 
 export class NativeWorkspaceEditingService extends AbstractWorkspaceEditingService {
 
@@ -41,7 +39,7 @@ export class NativeWorkspaceEditingService extends AbstractWorkspaceEditingServi
 		@IJSONEditingService jsonEditingService: IJSONEditingService,
 		@IWorkspaceContextService contextService: WorkspaceService,
 		@INativeHostService private nativeHostService: INativeHostService,
-		@IWorkbenchConfigurationService configurationService: IWorkbenchConfigurationService,
+		@IConfigurationService configurationService: IConfigurationService,
 		@IStorageService private storageService: IStorageService,
 		// @IExtensionService private extensionService: IExtensionService, {{SQL CARBON EDIT}} Remove unused
 		@IWorkingCopyBackupService private workingCopyBackupService: IWorkingCopyBackupService,
@@ -57,11 +55,9 @@ export class NativeWorkspaceEditingService extends AbstractWorkspaceEditingServi
 		@ILabelService private readonly labelService: ILabelService,
 		@IHostService hostService: IHostService,
 		@IUriIdentityService uriIdentityService: IUriIdentityService,
-		@IWorkspaceTrustManagementService workspaceTrustManagementService: IWorkspaceTrustManagementService,
-		@IUserDataProfilesService userDataProfilesService: IUserDataProfilesService,
-		@IUserDataProfileService userDataProfileService: IUserDataProfileService,
+		@IWorkspaceTrustManagementService workspaceTrustManagementService: IWorkspaceTrustManagementService
 	) {
-		super(jsonEditingService, contextService, configurationService, notificationService, commandService, fileService, textFileService, workspacesService, environmentService, fileDialogService, dialogService, hostService, uriIdentityService, workspaceTrustManagementService, userDataProfilesService, userDataProfileService);
+		super(jsonEditingService, contextService, configurationService, notificationService, commandService, fileService, textFileService, workspacesService, environmentService, fileDialogService, dialogService, hostService, uriIdentityService, workspaceTrustManagementService);
 
 		this.registerListeners();
 	}
@@ -168,7 +164,7 @@ export class NativeWorkspaceEditingService extends AbstractWorkspaceEditingServi
 		if (result) {
 
 			// Migrate storage to new workspace
-			await this.storageService.switch(result.workspace, true /* preserve data */);
+			await this.storageService.migrate(result.workspace);
 
 			// Reinitialize backup service
 			if (this.workingCopyBackupService instanceof WorkingCopyBackupService) {

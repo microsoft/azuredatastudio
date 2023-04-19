@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Token, TokenizationResult, EncodedTokenizationResult, IState } from 'vs/editor/common/languages';
-import { LanguageId, FontStyle, ColorId, StandardTokenType, MetadataConsts } from 'vs/editor/common/encodedTokenAttributes';
+import { Token, TokenizationResult, EncodedTokenizationResult, ColorId, FontStyle, IState, LanguageId, MetadataConsts, StandardTokenType } from 'vs/editor/common/languages';
 
 export const NullState: IState = new class implements IState {
 	public clone(): IState {

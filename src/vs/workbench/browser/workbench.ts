@@ -190,14 +190,17 @@ export class Workbench extends Layout {
 		//
 		// NOTE: Please do NOT register services here. Use `registerSingleton()`
 		//       from `workbench.common.main.ts` if the service is shared between
-		//       desktop and web or `workbench.desktop.main.ts` if the service
-		//       is desktop only.
+		//       native and web or `workbench.sandbox.main.ts` if the service
+		//       is native only.
+		//
+		//       DO NOT add services to `workbench.desktop.main.ts`, always add
+		//       to `workbench.sandbox.main.ts` to support our Electron sandbox
 		//
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 		// All Contributed Services
 		const contributedServices = getSingletonServiceDescriptors();
-		for (const [id, descriptor] of contributedServices) {
+		for (let [id, descriptor] of contributedServices) {
 			serviceCollection.set(id, descriptor);
 		}
 
@@ -283,7 +286,7 @@ export class Workbench extends Layout {
 	}
 
 	private restoreFontInfo(storageService: IStorageService, configurationService: IConfigurationService): void {
-		const storedFontInfoRaw = storageService.get('editorFontInfo', StorageScope.APPLICATION);
+		const storedFontInfoRaw = storageService.get('editorFontInfo', StorageScope.GLOBAL);
 		if (storedFontInfoRaw) {
 			try {
 				const storedFontInfo = JSON.parse(storedFontInfoRaw);
@@ -301,7 +304,7 @@ export class Workbench extends Layout {
 	private storeFontInfo(storageService: IStorageService): void {
 		const serializedFontInfo = FontMeasurements.serializeFontInfo();
 		if (serializedFontInfo) {
-			storageService.store('editorFontInfo', JSON.stringify(serializedFontInfo), StorageScope.APPLICATION, StorageTarget.MACHINE);
+			storageService.store('editorFontInfo', JSON.stringify(serializedFontInfo), StorageScope.GLOBAL, StorageTarget.MACHINE);
 		}
 	}
 
@@ -407,7 +410,7 @@ export class Workbench extends Layout {
 		}
 
 		// Transition into restored phase after layout has restored
-		// but do not wait indefinitely on this to account for slow
+		// but do not wait indefinitly on this to account for slow
 		// editors restoring. Since the workbench is fully functional
 		// even when the visible editors have not resolved, we still
 		// want contributions on the `Restored` phase to work before

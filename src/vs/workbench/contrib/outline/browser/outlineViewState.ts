@@ -68,7 +68,7 @@ export class OutlineViewState {
 	}
 
 	restore(storageService: IStorageService): void {
-		const raw = storageService.get('outline/state', StorageScope.WORKSPACE);
+		let raw = storageService.get('outline/state', StorageScope.WORKSPACE);
 		if (!raw) {
 			return;
 		}

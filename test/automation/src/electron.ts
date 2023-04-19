@@ -19,7 +19,7 @@ export interface IElectronConfiguration {
 }
 
 export async function resolveElectronConfiguration(options: LaunchOptions): Promise<IElectronConfiguration> {
-	const { codePath, workspacePath, extensionsPath, userDataDir, remote, logger, logsPath, crashesPath, extraArgs } = options;
+	const { codePath, workspacePath, extensionsPath, userDataDir, remote, logger, logsPath, extraArgs } = options;
 	const env = { ...process.env };
 
 	const args = [
@@ -30,7 +30,7 @@ export async function resolveElectronConfiguration(options: LaunchOptions): Prom
 		'--no-cached-data',
 		'--disable-updates',
 		'--disable-keytar',
-		`--crash-reporter-directory=${crashesPath}`,
+		'--disable-crash-reporter',
 		'--disable-workspace-trust',
 		`--extensions-dir=${extensionsPath}`,
 		`--user-data-dir=${userDataDir}`,
@@ -42,11 +42,7 @@ export async function resolveElectronConfiguration(options: LaunchOptions): Prom
 	}
 
 	if (process.platform === 'linux') {
-		// --disable-dev-shm-usage: when run on docker containers where size of /dev/shm
-		// partition < 64MB which causes OOM failure for chromium compositor that uses
-		// this partition for shared memory.
-		// Refs https://github.com/microsoft/vscode/issues/152143
-		args.push('--disable-dev-shm-usage');
+		args.push('--disable-gpu'); // Linux has trouble in VMs to render properly with GPU enabled
 	}
 
 	if (remote) {

@@ -851,7 +851,7 @@ export class LcsDiff {
 				change.modifiedStart++;
 			}
 
-			const mergedChangeArr: Array<DiffChange | null> = [null];
+			let mergedChangeArr: Array<DiffChange | null> = [null];
 			if (i < changes.length - 1 && this.ChangesOverlap(changes[i], changes[i + 1], mergedChangeArr)) {
 				changes[i] = mergedChangeArr[0]!;
 				changes.splice(i + 1, 1);
@@ -1047,7 +1047,7 @@ export class LcsDiff {
 	 * @returns The concatenated list
 	 */
 	private ConcatenateChanges(left: DiffChange[], right: DiffChange[]): DiffChange[] {
-		const mergedChangeArr: DiffChange[] = [];
+		let mergedChangeArr: DiffChange[] = [];
 
 		if (left.length === 0 || right.length === 0) {
 			return (right.length > 0) ? right : left;

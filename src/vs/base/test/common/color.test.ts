@@ -9,7 +9,7 @@ import { Color, HSLA, HSVA, RGBA } from 'vs/base/common/color';
 suite('Color', () => {
 
 	test('isLighterColor', () => {
-		const color1 = new Color(new HSLA(60, 1, 0.5, 1)), color2 = new Color(new HSLA(0, 0, 0.753, 1));
+		let color1 = new Color(new HSLA(60, 1, 0.5, 1)), color2 = new Color(new HSLA(0, 0, 0.753, 1));
 
 		assert.ok(color1.isLighterThan(color2));
 
@@ -18,7 +18,7 @@ suite('Color', () => {
 	});
 
 	test('getLighterColor', () => {
-		const color1 = new Color(new HSLA(60, 1, 0.5, 1)), color2 = new Color(new HSLA(0, 0, 0.753, 1));
+		let color1 = new Color(new HSLA(60, 1, 0.5, 1)), color2 = new Color(new HSLA(0, 0, 0.753, 1));
 
 		assert.deepStrictEqual(color1.hsla, Color.getLighterColor(color1, color2).hsla);
 		assert.deepStrictEqual(new HSLA(0, 0, 0.916, 1), Color.getLighterColor(color2, color1).hsla);
@@ -29,14 +29,14 @@ suite('Color', () => {
 	});
 
 	test('isDarkerColor', () => {
-		const color1 = new Color(new HSLA(60, 1, 0.5, 1)), color2 = new Color(new HSLA(0, 0, 0.753, 1));
+		let color1 = new Color(new HSLA(60, 1, 0.5, 1)), color2 = new Color(new HSLA(0, 0, 0.753, 1));
 
 		assert.ok(color2.isDarkerThan(color1));
 
 	});
 
 	test('getDarkerColor', () => {
-		const color1 = new Color(new HSLA(60, 1, 0.5, 1)), color2 = new Color(new HSLA(0, 0, 0.753, 1));
+		let color1 = new Color(new HSLA(60, 1, 0.5, 1)), color2 = new Color(new HSLA(0, 0, 0.753, 1));
 
 		assert.deepStrictEqual(color2.hsla, Color.getDarkerColor(color2, color1).hsla);
 		assert.deepStrictEqual(new HSLA(60, 1, 0.392, 1), Color.getDarkerColor(color1, color2).hsla);

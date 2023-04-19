@@ -4,7 +4,9 @@ pool:
 trigger:
   branches:
     include: ["main", "release/*"]
-pr: none
+pr:
+  branches:
+    include: ["main", "release/*"]
 
 steps:
   - task: NodeTool@0

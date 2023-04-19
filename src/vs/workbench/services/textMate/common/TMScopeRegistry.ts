@@ -6,7 +6,7 @@
 import * as resources from 'vs/base/common/resources';
 import { URI } from 'vs/base/common/uri';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { LanguageId, StandardTokenType } from 'vs/editor/common/encodedTokenAttributes';
+import { StandardTokenType, LanguageId } from 'vs/editor/common/languages';
 
 export interface IValidGrammarDefinition {
 	location: URI;

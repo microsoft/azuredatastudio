@@ -47,7 +47,7 @@ export class InlineCompletionsModel extends Disposable implements GhostTextWidge
 	private readonly debounceValue = this.debounceService.for(
 		this.languageFeaturesService.inlineCompletionsProvider,
 		'InlineCompletionsDebounce',
-		{ min: 50, max: 50 }
+		{ min: 50, max: 200 }
 	);
 
 	constructor(
@@ -217,7 +217,7 @@ export class InlineCompletionsSession extends BaseGhostTextWidgetModel {
 	private readonly updateOperation = this._register(new MutableDisposable<UpdateOperation>());
 
 	private readonly updateSoon = this._register(new RunOnceScheduler(() => {
-		const triggerKind = this.initialTriggerKind;
+		let triggerKind = this.initialTriggerKind;
 		// All subsequent triggers are automatic.
 		this.initialTriggerKind = InlineCompletionTriggerKind.Automatic;
 		return this.update(triggerKind);
@@ -243,7 +243,9 @@ export class InlineCompletionsSession extends BaseGhostTextWidgetModel {
 				lastCompletionItem = currentCompletion.sourceInlineCompletion;
 
 				const provider = currentCompletion.sourceProvider;
-				provider.handleItemDidShow?.(currentCompletion.sourceInlineCompletions, lastCompletionItem);
+				if (provider.handleItemDidShow) {
+					provider.handleItemDidShow(currentCompletion.sourceInlineCompletions, lastCompletionItem);
+				}
 			}
 		}));
 
@@ -577,21 +579,18 @@ export class SynchronizedInlineCompletionsCache extends Disposable {
 	) {
 		super();
 
-		const decorationIds = editor.changeDecorations((changeAccessor) => {
-			return changeAccessor.deltaDecorations(
-				[],
-				completionsSource.items.map(i => ({
-					range: i.range,
-					options: {
-						description: 'inline-completion-tracking-range'
-					},
-				}))
-			);
-		});
-
+		const decorationIds = editor.deltaDecorations(
+			[],
+			completionsSource.items.map(i => ({
+				range: i.range,
+				options: {
+					description: 'inline-completion-tracking-range'
+				},
+			}))
+		);
 		this._register(toDisposable(() => {
 			this.isDisposing = true;
-			editor.removeDecorations(decorationIds);
+			editor.deltaDecorations(decorationIds, []);
 		}));
 
 		this.completions = completionsSource.items.map((c, idx) => new CachedInlineCompletion(c, decorationIds[idx]));
@@ -699,7 +698,7 @@ export async function provideInlineCompletions(
 		}
 
 		for (const item of completions.items) {
-			let range = item.range ? Range.lift(item.range) : defaultReplaceRange;
+			const range = item.range ? Range.lift(item.range) : defaultReplaceRange;
 
 			if (range.startLineNumber !== range.endLineNumber) {
 				// Ignore invalid ranges.
@@ -724,12 +723,6 @@ export async function provideInlineCompletions(
 						model,
 						languageConfigurationService
 					);
-
-					// Modify range depending on if brackets are added or removed
-					const diff = insertText.length - item.insertText.length;
-					if (diff !== 0) {
-						range = new Range(range.startLineNumber, range.startColumn, range.endLineNumber, range.endColumn + diff);
-					}
 				}
 
 				snippetInfo = undefined;

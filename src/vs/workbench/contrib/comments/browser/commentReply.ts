@@ -17,7 +17,6 @@ import { ILanguageService } from 'vs/editor/common/languages/language';
 import { ITextModel } from 'vs/editor/common/model';
 import { IModelService } from 'vs/editor/common/services/model';
 import * as nls from 'vs/nls';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { editorForeground, resolveColorValue } from 'vs/platform/theme/common/colorRegistry';
@@ -59,12 +58,11 @@ export class CommentReply<T extends IRange | ICellRange> extends Disposable {
 		@ILanguageService private languageService: ILanguageService,
 		@IModelService private modelService: IModelService,
 		@IThemeService private themeService: IThemeService,
-		@IConfigurationService configurationService: IConfigurationService
 	) {
 		super();
 
 		this.form = dom.append(container, dom.$('.comment-form'));
-		this.commentEditor = this._register(this._scopedInstatiationService.createInstance(SimpleCommentEditor, this.form, SimpleCommentEditor.getEditorOptions(configurationService), this._parentThread));
+		this.commentEditor = this._register(this._scopedInstatiationService.createInstance(SimpleCommentEditor, this.form, SimpleCommentEditor.getEditorOptions(), this._parentThread));
 		this.commentEditorIsEmpty = CommentContextKeys.commentIsEmpty.bindTo(this._contextKeyService);
 		this.commentEditorIsEmpty.set(!this._pendingComment);
 
@@ -76,7 +74,7 @@ export class CommentReply<T extends IRange | ICellRange> extends Disposable {
 		});
 
 		let resource = URI.parse(`${COMMENT_SCHEME}://${this._commentThread.extensionId}/commentinput-${modeId}.md?${params}`); // TODO. Remove params once extensions adopt authority.
-		const commentController = this.commentService.getCommentController(owner);
+		let commentController = this.commentService.getCommentController(owner);
 		if (commentController) {
 			resource = resource.with({ authority: commentController.id });
 		}
@@ -125,7 +123,7 @@ export class CommentReply<T extends IRange | ICellRange> extends Disposable {
 	}
 
 	public getPendingComment(): string | null {
-		const model = this.commentEditor.getModel();
+		let model = this.commentEditor.getModel();
 
 		if (model && model.getValueLength() > 0) { // checking length is cheap
 			return model.getValue();
@@ -193,7 +191,7 @@ export class CommentReply<T extends IRange | ICellRange> extends Disposable {
 				}
 			}];
 
-			this.commentEditor.setDecorationsByType('review-zone-widget', COMMENTEDITOR_DECORATION_KEY, decorations);
+			this.commentEditor.setDecorations('review-zone-widget', COMMENTEDITOR_DECORATION_KEY, decorations);
 		}
 	}
 
@@ -207,9 +205,9 @@ export class CommentReply<T extends IRange | ICellRange> extends Disposable {
 		}));
 
 		this._commentThreadDisposables.push(commentEditor.getModel()!.onDidChangeContent(() => {
-			const modelContent = commentEditor.getValue();
+			let modelContent = commentEditor.getValue();
 			if (this._commentThread.input && this._commentThread.input.uri === commentEditor.getModel()!.uri && this._commentThread.input.value !== modelContent) {
-				const newInput: languages.CommentInput = this._commentThread.input;
+				let newInput: languages.CommentInput = this._commentThread.input;
 				newInput.value = modelContent;
 				this._commentThread.input = newInput;
 			}
@@ -217,9 +215,9 @@ export class CommentReply<T extends IRange | ICellRange> extends Disposable {
 		}));
 
 		this._commentThreadDisposables.push(this._commentThread.onDidChangeInput(input => {
-			const thread = this._commentThread;
-			const model = commentEditor.getModel();
-			if (thread.input && model && (thread.input.uri !== model.uri)) {
+			let thread = this._commentThread;
+
+			if (thread.input && thread.input.uri !== commentEditor.getModel()!.uri) {
 				return;
 			}
 			if (!input) {
@@ -252,7 +250,9 @@ export class CommentReply<T extends IRange | ICellRange> extends Disposable {
 		}));
 
 		this._commentFormActions = new CommentFormActions(container, async (action: IAction) => {
-			this._actionRunDelegate?.();
+			if (this._actionRunDelegate) {
+				this._actionRunDelegate();
+			}
 
 			action.run({
 				thread: this._commentThread,
@@ -266,22 +266,11 @@ export class CommentReply<T extends IRange | ICellRange> extends Disposable {
 		this._commentFormActions.setActions(menu);
 	}
 
-	private get isReplyExpanded(): boolean {
-		return this.form.classList.contains('expand');
-	}
-
 	private expandReplyArea() {
-		if (!this.isReplyExpanded) {
+		if (!this.form.classList.contains('expand')) {
 			this.form.classList.add('expand');
 			this.commentEditor.focus();
 			this.commentEditor.layout();
-		}
-	}
-
-	private clearAndExpandReplyArea() {
-		if (!this.isReplyExpanded) {
-			this.commentEditor.setValue('');
-			this.expandReplyArea();
 		}
 	}
 
@@ -299,8 +288,8 @@ export class CommentReply<T extends IRange | ICellRange> extends Disposable {
 
 		this._reviewThreadReplyButton.textContent = this._commentOptions?.prompt || nls.localize('reply', "Reply...");
 		// bind click/escape actions for reviewThreadReplyButton and textArea
-		this._register(dom.addDisposableListener(this._reviewThreadReplyButton, 'click', _ => this.clearAndExpandReplyArea()));
-		this._register(dom.addDisposableListener(this._reviewThreadReplyButton, 'focus', _ => this.clearAndExpandReplyArea()));
+		this._register(dom.addDisposableListener(this._reviewThreadReplyButton, 'click', _ => this.expandReplyArea()));
+		this._register(dom.addDisposableListener(this._reviewThreadReplyButton, 'focus', _ => this.expandReplyArea()));
 
 		commentEditor.onDidBlurEditorWidget(() => {
 			if (commentEditor.getModel()!.getValueLength() === 0 && commentForm.classList.contains('expand')) {

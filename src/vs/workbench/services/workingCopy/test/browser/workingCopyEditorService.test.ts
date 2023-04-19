@@ -18,7 +18,7 @@ import { TestWorkingCopy } from 'vs/workbench/test/common/workbenchTestServices'
 
 suite('WorkingCopyEditorService', () => {
 
-	const disposables = new DisposableStore();
+	let disposables = new DisposableStore();
 
 	setup(() => {
 		disposables.add(registerTestResourceEditor());

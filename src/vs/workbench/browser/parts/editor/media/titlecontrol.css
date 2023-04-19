@@ -5,10 +5,6 @@
 
 /* Editor Label */
 
-.monaco-workbench .part.editor > .content .editor-group-container > .title {
-	cursor: pointer;
-}
-
 .monaco-workbench .part.editor > .content .editor-group-container > .title .title-label,
 .monaco-workbench .part.editor > .content .editor-group-container > .title .tabs-container > .tab .tab-label {
 	white-space: nowrap;
@@ -39,6 +35,10 @@
 }
 
 /* Drag and Drop */
+
+.monaco-workbench .part.editor > .content .editor-group-container > .title {
+	cursor: grab;
+}
 
 .monaco-editor-group-drag-image {
 	display: inline-block;

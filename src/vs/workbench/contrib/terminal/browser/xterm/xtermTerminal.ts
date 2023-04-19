@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import type { IBuffer, IMarker, ITheme, RendererType, Terminal as RawXtermTerminal } from 'xterm';
+import type { IBuffer, ITheme, RendererType, Terminal as RawXtermTerminal } from 'xterm';
 import type { ISearchOptions, SearchAddon as SearchAddonType } from 'xterm-addon-search';
 import type { Unicode11Addon as Unicode11AddonType } from 'xterm-addon-unicode11';
 import type { WebglAddon as WebglAddonType } from 'xterm-addon-webgl';
@@ -16,7 +16,7 @@ import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import { IShellIntegration, TerminalLocation, TerminalSettingId } from 'vs/platform/terminal/common/terminal';
 import { ITerminalFont, TERMINAL_VIEW_ID } from 'vs/workbench/contrib/terminal/common/terminal';
 import { isSafari } from 'vs/base/browser/browser';
-import { ICommandTracker, IInternalXtermTerminal, IXtermTerminal } from 'vs/workbench/contrib/terminal/browser/terminal';
+import { ICommandTracker, IXtermTerminal } from 'vs/workbench/contrib/terminal/browser/terminal';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { TerminalStorageKeys } from 'vs/workbench/contrib/terminal/common/terminalStorageKeys';
@@ -27,15 +27,13 @@ import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeServic
 import { IViewDescriptorService, ViewContainerLocation } from 'vs/workbench/common/views';
 import { editorBackground } from 'vs/platform/theme/common/colorRegistry';
 import { PANEL_BACKGROUND, SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
-import { TERMINAL_FOREGROUND_COLOR, TERMINAL_BACKGROUND_COLOR, TERMINAL_CURSOR_FOREGROUND_COLOR, TERMINAL_CURSOR_BACKGROUND_COLOR, ansiColorIdentifiers, TERMINAL_SELECTION_BACKGROUND_COLOR, TERMINAL_FIND_MATCH_BACKGROUND_COLOR, TERMINAL_FIND_MATCH_HIGHLIGHT_BACKGROUND_COLOR, TERMINAL_FIND_MATCH_BORDER_COLOR, TERMINAL_OVERVIEW_RULER_FIND_MATCH_FOREGROUND_COLOR, TERMINAL_FIND_MATCH_HIGHLIGHT_BORDER_COLOR, TERMINAL_OVERVIEW_RULER_CURSOR_FOREGROUND_COLOR, TERMINAL_SELECTION_FOREGROUND_COLOR } from 'vs/workbench/contrib/terminal/common/terminalColorRegistry';
+import { TERMINAL_FOREGROUND_COLOR, TERMINAL_BACKGROUND_COLOR, TERMINAL_CURSOR_FOREGROUND_COLOR, TERMINAL_CURSOR_BACKGROUND_COLOR, ansiColorIdentifiers, TERMINAL_SELECTION_BACKGROUND_COLOR, TERMINAL_FIND_MATCH_BACKGROUND_COLOR, TERMINAL_FIND_MATCH_HIGHLIGHT_BACKGROUND_COLOR, TERMINAL_FIND_MATCH_BORDER_COLOR, TERMINAL_OVERVIEW_RULER_FIND_MATCH_FOREGROUND_COLOR, TERMINAL_FIND_MATCH_HIGHLIGHT_BORDER_COLOR, TERMINAL_OVERVIEW_RULER_CURSOR_FOREGROUND_COLOR } from 'vs/workbench/contrib/terminal/common/terminalColorRegistry';
 import { Color } from 'vs/base/common/color';
 import { ShellIntegrationAddon } from 'vs/platform/terminal/common/xterm/shellIntegrationAddon';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DecorationAddon } from 'vs/workbench/contrib/terminal/browser/xterm/decorationAddon';
-import { ITerminalCapabilityStore, ITerminalCommand, TerminalCapability } from 'vs/platform/terminal/common/capabilities/capabilities';
+import { ITerminalCapabilityStore, ITerminalCommand } from 'vs/platform/terminal/common/capabilities/capabilities';
 import { Emitter } from 'vs/base/common/event';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IGenericMarkProperties } from 'vs/platform/terminal/common/terminalProcess';
 
 // How long in milliseconds should an average frame take to render for a notification to appear
 // which suggests the fallback DOM-based renderer
@@ -51,7 +49,7 @@ let SerializeAddon: typeof SerializeAddonType;
  * Wraps the xterm object with additional functionality. Interaction with the backing process is out
  * of the scope of this class.
  */
-export class XtermTerminal extends DisposableStore implements IXtermTerminal, IInternalXtermTerminal {
+export class XtermTerminal extends DisposableStore implements IXtermTerminal {
 	/** The raw xterm.js instance */
 	readonly raw: RawXtermTerminal;
 
@@ -62,7 +60,7 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
 	// Always on addons
 	private _commandNavigationAddon: CommandNavigationAddon;
 	private _shellIntegrationAddon: ShellIntegrationAddon;
-	private _decorationAddon: DecorationAddon;
+	private _decorationAddon: DecorationAddon | undefined;
 
 	// Optional addons
 	private _searchAddon?: SearchAddonType;
@@ -75,10 +73,9 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
 
 	private readonly _onDidRequestRunCommand = new Emitter<{ command: ITerminalCommand; copyAsHtml?: boolean }>();
 	readonly onDidRequestRunCommand = this._onDidRequestRunCommand.event;
+
 	private readonly _onDidChangeFindResults = new Emitter<{ resultIndex: number; resultCount: number } | undefined>();
 	readonly onDidChangeFindResults = this._onDidChangeFindResults.event;
-	private readonly _onDidChangeSelection = new Emitter<void>();
-	readonly onDidChangeSelection = this._onDidChangeSelection.event;
 
 	get commandTracker(): ICommandTracker { return this._commandNavigationAddon; }
 	get shellIntegration(): IShellIntegration { return this._shellIntegrationAddon; }
@@ -100,15 +97,13 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
 		rows: number,
 		location: TerminalLocation,
 		private readonly _capabilities: ITerminalCapabilityStore,
-		disableShellIntegrationReporting: boolean,
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@ILogService private readonly _logService: ILogService,
 		@INotificationService private readonly _notificationService: INotificationService,
 		@IStorageService private readonly _storageService: IStorageService,
 		@IThemeService private readonly _themeService: IThemeService,
-		@IViewDescriptorService private readonly _viewDescriptorService: IViewDescriptorService,
-		@ITelemetryService private readonly _telemetryService: ITelemetryService
+		@IViewDescriptorService private readonly _viewDescriptorService: IViewDescriptorService
 	) {
 		super();
 		this.target = location;
@@ -156,33 +151,32 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
 			if (e.affectsConfiguration(TerminalSettingId.UnicodeVersion)) {
 				this._updateUnicodeVersion();
 			}
+			if (e.affectsConfiguration(TerminalSettingId.ShellIntegrationDecorationsEnabled) ||
+				e.affectsConfiguration(TerminalSettingId.ShellIntegrationEnabled)) {
+				this._updateDecorationAddon();
+			}
 		}));
 
 		this.add(this._themeService.onDidColorThemeChange(theme => this._updateTheme(theme)));
 		this.add(this._viewDescriptorService.onDidChangeLocation(({ views }) => {
 			if (views.some(v => v.id === TERMINAL_VIEW_ID)) {
 				this._updateTheme();
-				this._decorationAddon.refreshLayouts();
+				this._decorationAddon?.refreshLayouts();
 			}
 		}));
-
-		// Refire events
-		this.add(this.raw.onSelectionChange(() => this._onDidChangeSelection.fire()));
 
 		// Load addons
 		this._updateUnicodeVersion();
 		this._commandNavigationAddon = this._instantiationService.createInstance(CommandNavigationAddon, _capabilities);
 		this.raw.loadAddon(this._commandNavigationAddon);
+		this._shellIntegrationAddon = this._instantiationService.createInstance(ShellIntegrationAddon);
+		this.raw.loadAddon(this._shellIntegrationAddon);
+		this._updateDecorationAddon();
+	}
+	private _createDecorationAddon(): void {
 		this._decorationAddon = this._instantiationService.createInstance(DecorationAddon, this._capabilities);
 		this._decorationAddon.onDidRequestRunCommand(e => this._onDidRequestRunCommand.fire(e));
 		this.raw.loadAddon(this._decorationAddon);
-		//this._shellIntegrationAddon = this._instantiationService.createInstance(ShellIntegrationAddon, disableShellIntegrationReporting, this._telemetryService); // {{SQL CARBON EDIT}}
-		this._shellIntegrationAddon = new ShellIntegrationAddon(disableShellIntegrationReporting, this._telemetryService, this._logService); // {{SQL CARBON EDIT}}
-		this.raw.loadAddon(this._shellIntegrationAddon);
-	}
-
-	addDecoration(marker: IMarker, properties: IGenericMarkProperties): void {
-		this._capabilities.get(TerminalCapability.CommandDetection)?.handleGenericCommand({ genericMarkProperties: properties, marker });
 	}
 
 	async getSelectionAsHtml(command?: ITerminalCommand): Promise<string> {
@@ -256,8 +250,9 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
 	}
 
 	clearDecorations(): void {
-		this._decorationAddon?.clearDecorations();
+		this._decorationAddon?.clearDecorations(true);
 	}
+
 
 	forceRefresh() {
 		this._core.viewport?._innerRefresh();
@@ -292,7 +287,6 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
 		// The mapping is as follows:
 		// - findMatch -> activeMatch
 		// - findMatchHighlight -> match
-		const terminalBackground = theme.getColor(TERMINAL_BACKGROUND_COLOR) || theme.getColor(PANEL_BACKGROUND);
 		const findMatchBackground = theme.getColor(TERMINAL_FIND_MATCH_BACKGROUND_COLOR);
 		const findMatchBorder = theme.getColor(TERMINAL_FIND_MATCH_BORDER_COLOR);
 		const findMatchOverviewRuler = theme.getColor(TERMINAL_OVERVIEW_RULER_CURSOR_FOREGROUND_COLOR);
@@ -300,11 +294,10 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
 		const findMatchHighlightBorder = theme.getColor(TERMINAL_FIND_MATCH_HIGHLIGHT_BORDER_COLOR);
 		const findMatchHighlightOverviewRuler = theme.getColor(TERMINAL_OVERVIEW_RULER_FIND_MATCH_FOREGROUND_COLOR);
 		searchOptions.decorations = {
-			activeMatchBackground: findMatchBackground?.toString(),
+			activeMatchBackground: findMatchBackground?.toString() || 'transparent',
 			activeMatchBorder: findMatchBorder?.toString() || 'transparent',
 			activeMatchColorOverviewRuler: findMatchOverviewRuler?.toString() || 'transparent',
-			// decoration bgs don't support the alpha channel so blend it with the regular bg
-			matchBackground: terminalBackground ? findMatchHighlightBackground?.blend(terminalBackground).toString() : undefined,
+			matchBackground: findMatchHighlightBackground?.toString() || 'transparent',
 			matchBorder: findMatchHighlightBorder?.toString() || 'transparent',
 			matchOverviewRuler: findMatchHighlightOverviewRuler?.toString() || 'transparent'
 		};
@@ -326,10 +319,6 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
 
 	clearSearchDecorations(): void {
 		this._searchAddon?.clearDecorations();
-	}
-
-	clearActiveSearchDecoration(): void {
-		this._searchAddon?.clearActiveDecoration();
 	}
 
 	getFont(): ITerminalFont {
@@ -394,10 +383,8 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
 
 	clearBuffer(): void {
 		this.raw.clear();
-		// xterm.js does not clear the first prompt, so trigger these to simulate
-		// the prompt being written
-		this._capabilities.get(TerminalCapability.CommandDetection)?.handlePromptStart();
-		this._capabilities.get(TerminalCapability.CommandDetection)?.handleCommandStart();
+		// hack so that the next placeholder shows
+		this._decorationAddon?.registerCommandDecoration({ marker: this.raw.registerMarker(0), hasOutput: false, timestamp: Date.now(), getOutput: () => { return undefined; }, command: '' }, true);
 	}
 
 	private _setCursorBlink(blink: boolean): void {
@@ -450,7 +437,7 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
 			// }, 5000);
 		} catch (e) {
 			this._logService.warn(`Webgl could not be loaded. Falling back to the canvas renderer type.`, e);
-			const neverMeasureRenderTime = this._storageService.getBoolean(TerminalStorageKeys.NeverMeasureRenderTime, StorageScope.APPLICATION, false);
+			const neverMeasureRenderTime = this._storageService.getBoolean(TerminalStorageKeys.NeverMeasureRenderTime, StorageScope.GLOBAL, false);
 			// if it's already set to dom, no need to measure render time
 			if (!neverMeasureRenderTime && this._configHelper.config.gpuAcceleration !== 'off') {
 				this._measureRenderTime();
@@ -527,7 +514,7 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
 						{
 							label: localize('dontShowAgain', "Don't Show Again"),
 							isSecondary: true,
-							run: () => this._storageService.store(TerminalStorageKeys.NeverMeasureRenderTime, true, StorageScope.APPLICATION, StorageTarget.MACHINE)
+							run: () => this._storageService.store(TerminalStorageKeys.NeverMeasureRenderTime, true, StorageScope.GLOBAL, StorageTarget.MACHINE)
 						} as IPromptChoice
 					];
 					this._notificationService.prompt(
@@ -566,16 +553,14 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
 		}
 		const cursorColor = theme.getColor(TERMINAL_CURSOR_FOREGROUND_COLOR) || foregroundColor;
 		const cursorAccentColor = theme.getColor(TERMINAL_CURSOR_BACKGROUND_COLOR) || backgroundColor;
-		const selectionBackgroundColor = theme.getColor(TERMINAL_SELECTION_BACKGROUND_COLOR);
-		const selectionForegroundColor = theme.getColor(TERMINAL_SELECTION_FOREGROUND_COLOR) || undefined;
+		const selectionColor = theme.getColor(TERMINAL_SELECTION_BACKGROUND_COLOR);
 
 		return {
-			background: backgroundColor?.toString(),
-			foreground: foregroundColor?.toString(),
-			cursor: cursorColor?.toString(),
-			cursorAccent: cursorAccentColor?.toString(),
-			selection: selectionBackgroundColor?.toString(),
-			selectionForeground: selectionForegroundColor?.toString(),
+			background: backgroundColor ? backgroundColor.toString() : undefined,
+			foreground: foregroundColor ? foregroundColor.toString() : undefined,
+			cursor: cursorColor ? cursorColor.toString() : undefined,
+			cursorAccent: cursorAccentColor ? cursorAccentColor.toString() : undefined,
+			selection: selectionColor ? selectionColor.toString() : undefined,
 			black: theme.getColor(ansiColorIdentifiers[0])?.toString(),
 			red: theme.getColor(ansiColorIdentifiers[1])?.toString(),
 			green: theme.getColor(ansiColorIdentifiers[2])?.toString(),
@@ -610,8 +595,16 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	_writeText(data: string): void {
-		this.raw.write(data);
+	private _updateDecorationAddon(): void {
+		if (this._configHelper.config.shellIntegration?.enabled && this._configHelper.config.shellIntegration.decorationsEnabled) {
+			if (!this._decorationAddon) {
+				this._createDecorationAddon();
+			}
+			return;
+		}
+		if (this._decorationAddon) {
+			this._decorationAddon.dispose();
+			this._decorationAddon = undefined;
+		}
 	}
 }

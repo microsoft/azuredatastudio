@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as assert from 'assert';
+import assert = require('assert');
 import { DisposableStore, disposeOnReturn } from 'vs/base/common/lifecycle';
 import { Position } from 'vs/editor/common/core/position';
 import { Range } from 'vs/editor/common/core/range';
@@ -197,7 +197,7 @@ class AnnotatedDocument {
 		const numbers = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
 
 		let text = '';
-		const offsetPositions = new Map<number, number>();
+		let offsetPositions = new Map<number, number>();
 
 		let offset = 0;
 		for (let i = 0; i < src.length; i++) {
@@ -213,7 +213,7 @@ class AnnotatedDocument {
 		this.text = text;
 
 		const mapper = new PositionOffsetTransformer(this.text);
-		const positions = new Map<number, Position>();
+		let positions = new Map<number, Position>();
 		for (const [idx, offset] of offsetPositions.entries()) {
 			positions.set(idx, mapper.getPosition(offset));
 		}

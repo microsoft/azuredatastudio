@@ -10,7 +10,6 @@ import { IModelDecorationOptions, OverviewRulerLane } from 'vs/editor/common/mod
 import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
 import { registerColor } from 'vs/platform/theme/common/colorRegistry';
 import { themeColorFromId } from 'vs/platform/theme/common/themeService';
-import { IEditorDecorationsCollection } from 'vs/editor/common/editorCommon';
 
 const overviewRulerDefault = new Color(new RGBA(197, 197, 197, 1));
 
@@ -20,13 +19,12 @@ export class CommentGlyphWidget {
 	public static description = 'comment-glyph-widget';
 	private _lineNumber!: number;
 	private _editor: ICodeEditor;
-	private readonly _commentsDecorations: IEditorDecorationsCollection;
+	private commentsDecorations: string[] = [];
 	private _commentsOptions: ModelDecorationOptions;
 
 	constructor(editor: ICodeEditor, lineNumber: number) {
 		this._commentsOptions = this.createDecorationOptions();
 		this._editor = editor;
-		this._commentsDecorations = this._editor.createDecorationsCollection();
 		this.setLineNumber(lineNumber);
 	}
 
@@ -46,7 +44,7 @@ export class CommentGlyphWidget {
 
 	setLineNumber(lineNumber: number): void {
 		this._lineNumber = lineNumber;
-		const commentsDecorations = [{
+		let commentsDecorations = [{
 			range: {
 				startLineNumber: lineNumber, startColumn: 1,
 				endLineNumber: lineNumber, endColumn: 1
@@ -54,11 +52,13 @@ export class CommentGlyphWidget {
 			options: this._commentsOptions
 		}];
 
-		this._commentsDecorations.set(commentsDecorations);
+		this.commentsDecorations = this._editor.deltaDecorations(this.commentsDecorations, commentsDecorations);
 	}
 
 	getPosition(): IContentWidgetPosition {
-		const range = (this._commentsDecorations.length > 0 ? this._commentsDecorations.getRange(0) : null);
+		const range = this._editor.hasModel() && this.commentsDecorations && this.commentsDecorations.length
+			? this._editor.getModel().getDecorationRange(this.commentsDecorations[0])
+			: null;
 
 		return {
 			position: {
@@ -70,6 +70,8 @@ export class CommentGlyphWidget {
 	}
 
 	dispose() {
-		this._commentsDecorations.clear();
+		if (this.commentsDecorations) {
+			this._editor.deltaDecorations(this.commentsDecorations, []);
+		}
 	}
 }

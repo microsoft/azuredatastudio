@@ -7,7 +7,17 @@ import { workspace } from 'vscode';
 import { RemoteSourceProvider, RemoteSource } from './typings/git-base';
 import { getOctokit } from './auth';
 import { Octokit } from '@octokit/rest';
-import { getRepositoryFromQuery, getRepositoryFromUrl } from './util';
+
+function getRepositoryFromUrl(url: string): { owner: string; repo: string } | undefined {
+	const match = /^https:\/\/github\.com\/([^/]+)\/([^/]+)\.git/i.exec(url)
+		|| /^git@github\.com:([^/]+)\/([^/]+)\.git/i.exec(url);
+	return match ? { owner: match[1], repo: match[2] } : undefined;
+}
+
+function getRepositoryFromQuery(query: string): { owner: string; repo: string } | undefined {
+	const match = /^([^/]+)\/([^/]+)$/i.exec(query);
+	return match ? { owner: match[1], repo: match[2] } : undefined;
+}
 
 function asRemoteSource(raw: any): RemoteSource {
 	const protocol = workspace.getConfiguration('github').get<'https' | 'ssh'>('gitProtocol');
@@ -97,7 +107,7 @@ export class GithubRemoteSourceProvider implements RemoteSourceProvider {
 		let page = 1;
 
 		while (true) {
-			const res = await octokit.repos.listBranches({ ...repository, per_page: 100, page });
+			let res = await octokit.repos.listBranches({ ...repository, per_page: 100, page });
 
 			if (res.data.length === 0) {
 				break;

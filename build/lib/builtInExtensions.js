@@ -98,12 +98,12 @@ function writeControlFile(control) {
     fs.writeFileSync(controlFilePath, JSON.stringify(control, null, 2));
 }
 function getBuiltInExtensions() {
-    log('Synchronizing built-in extensions...');
+    log('Syncronizing built-in extensions...');
     log(`You can manage built-in extensions with the ${ansiColors.cyan('--builtin')} flag`);
     const control = readControlFile();
     const streams = [];
     for (const extension of [...builtInExtensions, ...webBuiltInExtensions]) {
-        const controlState = control[extension.name] || 'marketplace';
+        let controlState = control[extension.name] || 'marketplace';
         control[extension.name] = controlState;
         streams.push(syncExtension(extension, controlState));
     }

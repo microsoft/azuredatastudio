@@ -10,7 +10,6 @@ import { mark } from 'vs/base/common/performance';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { InMemoryStorageDatabase, IStorage, Storage } from 'vs/base/parts/storage/common/storage';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { isUserDataProfile, IUserDataProfile } from 'vs/platform/userDataProfile/common/userDataProfile';
 import { IAnyWorkspaceIdentifier } from 'vs/platform/workspace/common/workspace';
 
 export const IS_NEW_KEY = '__$__isNewStorageMarker';
@@ -32,7 +31,7 @@ export enum WillSaveStateReason {
 }
 
 export interface IWillSaveStateEvent {
-	readonly reason: WillSaveStateReason;
+	reason: WillSaveStateReason;
 }
 
 export interface IStorageService {
@@ -69,7 +68,7 @@ export interface IStorageService {
 	 * the provided `defaultValue` if the element is `null` or `undefined`.
 	 *
 	 * @param scope allows to define the scope of the storage operation
-	 * to either the current workspace only, all workspaces or all profiles.
+	 * to either the current workspace only or all workspaces.
 	 */
 	get(key: string, scope: StorageScope, fallbackValue: string): string;
 	get(key: string, scope: StorageScope, fallbackValue?: string): string | undefined;
@@ -80,7 +79,7 @@ export interface IStorageService {
 	 * The element will be converted to a `boolean`.
 	 *
 	 * @param scope allows to define the scope of the storage operation
-	 * to either the current workspace only, all workspaces or all profiles.
+	 * to either the current workspace only or all workspaces.
 	 */
 	getBoolean(key: string, scope: StorageScope, fallbackValue: boolean): boolean;
 	getBoolean(key: string, scope: StorageScope, fallbackValue?: boolean): boolean | undefined;
@@ -92,7 +91,7 @@ export interface IStorageService {
 	 * base of `10`.
 	 *
 	 * @param scope allows to define the scope of the storage operation
-	 * to either the current workspace only, all workspaces or all profiles.
+	 * to either the current workspace only or all workspaces.
 	 */
 	getNumber(key: string, scope: StorageScope, fallbackValue: number): number;
 	getNumber(key: string, scope: StorageScope, fallbackValue?: number): number | undefined;
@@ -103,7 +102,7 @@ export interface IStorageService {
 	 * remove the entry under the key.
 	 *
 	 * @param scope allows to define the scope of the storage operation
-	 * to either the current workspace only, all workspaces or all profiles.
+	 * to either the current workspace only or all workspaces.
 	 *
 	 * @param target allows to define the target of the storage operation
 	 * to either the current machine or user.
@@ -114,8 +113,7 @@ export interface IStorageService {
 	 * Delete an element stored under the provided key from storage.
 	 *
 	 * The scope argument allows to define the scope of the storage
-	 * operation to either the current workspace only, all workspaces
-	 * or all profiles.
+	 * operation to either the current workspace only or all workspaces.
 	 */
 	remove(key: string, scope: StorageScope): void;
 
@@ -128,7 +126,7 @@ export interface IStorageService {
 	 * will be excluded from the results.
 	 *
 	 * @param scope allows to define the scope for the keys
-	 * to either the current workspace only, all workspaces or all profiles.
+	 * to either the current workspace only or all workspaces.
 	 *
 	 * @param target allows to define the target for the keys
 	 * to either the current machine or user.
@@ -138,13 +136,12 @@ export interface IStorageService {
 	/**
 	 * Log the contents of the storage to the console.
 	 */
-	log(): void;
+	logStorage(): void;
 
 	/**
-	 * Switch storage to another workspace or profile. Optionally preserve the
-	 * current data to the new storage.
+	 * Migrate the storage contents to another workspace.
 	 */
-	switch(to: IAnyWorkspaceIdentifier | IUserDataProfile, preserveData: boolean): Promise<void>;
+	migrate(toWorkspace: IAnyWorkspaceIdentifier): Promise<void>;
 
 	/**
 	 * Whether the storage for the given scope was created during this session or
@@ -166,19 +163,14 @@ export interface IStorageService {
 export const enum StorageScope {
 
 	/**
-	 * The stored data will be scoped to all workspaces across all profiles.
+	 * The stored data will be scoped to all workspaces.
 	 */
-	APPLICATION = -1,
-
-	/**
-	 * The stored data will be scoped to all workspaces of the same profile.
-	 */
-	PROFILE = 0,
+	GLOBAL,
 
 	/**
 	 * The stored data will be scoped to the current workspace.
 	 */
-	WORKSPACE = 1
+	WORKSPACE
 }
 
 export const enum StorageTarget {
@@ -310,16 +302,10 @@ export abstract class AbstractStorageService extends Disposable implements IStor
 		if (key === TARGET_KEY) {
 
 			// Clear our cached version which is now out of date
-			switch (scope) {
-				case StorageScope.APPLICATION:
-					this._applicationKeyTargets = undefined;
-					break;
-				case StorageScope.PROFILE:
-					this._profileKeyTargets = undefined;
-					break;
-				case StorageScope.WORKSPACE:
-					this._workspaceKeyTargets = undefined;
-					break;
+			if (scope === StorageScope.GLOBAL) {
+				this._globalKeyTargets = undefined;
+			} else if (scope === StorageScope.WORKSPACE) {
+				this._workspaceKeyTargets = undefined;
 			}
 
 			// Emit as `didChangeTarget` event
@@ -445,33 +431,17 @@ export abstract class AbstractStorageService extends Disposable implements IStor
 		return this._workspaceKeyTargets;
 	}
 
-	private _profileKeyTargets: IKeyTargets | undefined = undefined;
-	private get profileKeyTargets(): IKeyTargets {
-		if (!this._profileKeyTargets) {
-			this._profileKeyTargets = this.loadKeyTargets(StorageScope.PROFILE);
+	private _globalKeyTargets: IKeyTargets | undefined = undefined;
+	private get globalKeyTargets(): IKeyTargets {
+		if (!this._globalKeyTargets) {
+			this._globalKeyTargets = this.loadKeyTargets(StorageScope.GLOBAL);
 		}
 
-		return this._profileKeyTargets;
-	}
-
-	private _applicationKeyTargets: IKeyTargets | undefined = undefined;
-	private get applicationKeyTargets(): IKeyTargets {
-		if (!this._applicationKeyTargets) {
-			this._applicationKeyTargets = this.loadKeyTargets(StorageScope.APPLICATION);
-		}
-
-		return this._applicationKeyTargets;
+		return this._globalKeyTargets;
 	}
 
 	private getKeyTargets(scope: StorageScope): IKeyTargets {
-		switch (scope) {
-			case StorageScope.APPLICATION:
-				return this.applicationKeyTargets;
-			case StorageScope.PROFILE:
-				return this.profileKeyTargets;
-			default:
-				return this.workspaceKeyTargets;
-		}
+		return scope === StorageScope.GLOBAL ? this.globalKeyTargets : this.workspaceKeyTargets;
 	}
 
 	private loadKeyTargets(scope: StorageScope): { [key: string]: StorageTarget } {
@@ -496,8 +466,7 @@ export abstract class AbstractStorageService extends Disposable implements IStor
 		// Signal event to collect changes
 		this._onWillSaveState.fire({ reason });
 
-		const applicationStorage = this.getStorage(StorageScope.APPLICATION);
-		const profileStorage = this.getStorage(StorageScope.PROFILE);
+		const globalStorage = this.getStorage(StorageScope.GLOBAL);
 		const workspaceStorage = this.getStorage(StorageScope.WORKSPACE);
 
 		switch (reason) {
@@ -505,8 +474,7 @@ export abstract class AbstractStorageService extends Disposable implements IStor
 			// Unspecific reason: just wait when data is flushed
 			case WillSaveStateReason.NONE:
 				await Promises.settled([
-					applicationStorage?.whenFlushed() ?? Promise.resolve(),
-					profileStorage?.whenFlushed() ?? Promise.resolve(),
+					globalStorage?.whenFlushed() ?? Promise.resolve(),
 					workspaceStorage?.whenFlushed() ?? Promise.resolve()
 				]);
 				break;
@@ -515,82 +483,23 @@ export abstract class AbstractStorageService extends Disposable implements IStor
 			// and not hit any delays that might be there
 			case WillSaveStateReason.SHUTDOWN:
 				await Promises.settled([
-					applicationStorage?.flush(0) ?? Promise.resolve(),
-					profileStorage?.flush(0) ?? Promise.resolve(),
+					globalStorage?.flush(0) ?? Promise.resolve(),
 					workspaceStorage?.flush(0) ?? Promise.resolve()
 				]);
 				break;
 		}
 	}
 
-	async log(): Promise<void> {
-		const applicationItems = this.getStorage(StorageScope.APPLICATION)?.items ?? new Map<string, string>();
-		const profileItems = this.getStorage(StorageScope.PROFILE)?.items ?? new Map<string, string>();
+	async logStorage(): Promise<void> {
+		const globalItems = this.getStorage(StorageScope.GLOBAL)?.items ?? new Map<string, string>();
 		const workspaceItems = this.getStorage(StorageScope.WORKSPACE)?.items ?? new Map<string, string>();
 
 		return logStorage(
-			applicationItems,
-			profileItems,
+			globalItems,
 			workspaceItems,
-			this.getLogDetails(StorageScope.APPLICATION) ?? '',
-			this.getLogDetails(StorageScope.PROFILE) ?? '',
+			this.getLogDetails(StorageScope.GLOBAL) ?? '',
 			this.getLogDetails(StorageScope.WORKSPACE) ?? ''
 		);
-	}
-
-	async switch(to: IAnyWorkspaceIdentifier | IUserDataProfile, preserveData: boolean): Promise<void> {
-
-		// Signal as event so that clients can store data before we switch
-		this.emitWillSaveState(WillSaveStateReason.NONE);
-
-		if (isUserDataProfile(to)) {
-			return this.switchToProfile(to, preserveData);
-		}
-
-		return this.switchToWorkspace(to, preserveData);
-	}
-
-	protected canSwitchProfile(from: IUserDataProfile, to: IUserDataProfile): boolean {
-		if (from.id === to.id) {
-			return false; // both profiles are same
-		}
-
-		if (isProfileUsingDefaultStorage(to) && isProfileUsingDefaultStorage(from)) {
-			return false; // both profiles are using default
-		}
-
-		return true;
-	}
-
-	protected switchData(oldStorage: Map<string, string>, newStorage: IStorage, scope: StorageScope, preserveData: boolean): void {
-		this.withPausedEmitters(() => {
-
-			// Copy over previous keys if `preserveData`
-			if (preserveData) {
-				for (const [key, value] of oldStorage) {
-					newStorage.set(key, value);
-				}
-			}
-
-			// Otherwise signal storage keys that have changed
-			else {
-				const handledkeys = new Set<string>();
-				for (const [key, oldValue] of oldStorage) {
-					handledkeys.add(key);
-
-					const newValue = newStorage.get(key);
-					if (newValue !== oldValue) {
-						this.emitDidChangeValue(scope, key);
-					}
-				}
-
-				for (const [key] of newStorage.items) {
-					if (!handledkeys.has(key)) {
-						this.emitDidChangeValue(scope, key);
-					}
-				}
-			}
-		});
 	}
 
 	// --- abstract
@@ -601,62 +510,37 @@ export abstract class AbstractStorageService extends Disposable implements IStor
 
 	protected abstract getLogDetails(scope: StorageScope): string | undefined;
 
-	protected abstract switchToProfile(toProfile: IUserDataProfile, preserveData: boolean): Promise<void>;
-	protected abstract switchToWorkspace(toWorkspace: IAnyWorkspaceIdentifier | IUserDataProfile, preserveData: boolean): Promise<void>;
-}
-
-export function isProfileUsingDefaultStorage(profile: IUserDataProfile): boolean {
-	return profile.isDefault || !!profile.useDefaultFlags?.uiState;
+	abstract migrate(toWorkspace: IAnyWorkspaceIdentifier): Promise<void>;
 }
 
 export class InMemoryStorageService extends AbstractStorageService {
 
-	private readonly applicationStorage = this._register(new Storage(new InMemoryStorageDatabase()));
-	private readonly profileStorage = this._register(new Storage(new InMemoryStorageDatabase()));
+	private readonly globalStorage = this._register(new Storage(new InMemoryStorageDatabase()));
 	private readonly workspaceStorage = this._register(new Storage(new InMemoryStorageDatabase()));
 
 	constructor() {
 		super();
 
 		this._register(this.workspaceStorage.onDidChangeStorage(key => this.emitDidChangeValue(StorageScope.WORKSPACE, key)));
-		this._register(this.profileStorage.onDidChangeStorage(key => this.emitDidChangeValue(StorageScope.PROFILE, key)));
-		this._register(this.applicationStorage.onDidChangeStorage(key => this.emitDidChangeValue(StorageScope.APPLICATION, key)));
+		this._register(this.globalStorage.onDidChangeStorage(key => this.emitDidChangeValue(StorageScope.GLOBAL, key)));
 	}
 
 	protected getStorage(scope: StorageScope): IStorage {
-		switch (scope) {
-			case StorageScope.APPLICATION:
-				return this.applicationStorage;
-			case StorageScope.PROFILE:
-				return this.profileStorage;
-			default:
-				return this.workspaceStorage;
-		}
+		return scope === StorageScope.GLOBAL ? this.globalStorage : this.workspaceStorage;
 	}
 
 	protected getLogDetails(scope: StorageScope): string | undefined {
-		switch (scope) {
-			case StorageScope.APPLICATION:
-				return 'inMemory (application)';
-			case StorageScope.PROFILE:
-				return 'inMemory (profile)';
-			default:
-				return 'inMemory (workspace)';
-		}
+		return scope === StorageScope.GLOBAL ? 'inMemory (global)' : 'inMemory (workspace)';
 	}
 
 	protected async doInitialize(): Promise<void> { }
 
-	protected async switchToProfile(): Promise<void> {
-		// no-op when in-memory
-	}
-
-	protected async switchToWorkspace(): Promise<void> {
-		// no-op when in-memory
+	async migrate(toWorkspace: IAnyWorkspaceIdentifier): Promise<void> {
+		// not supported
 	}
 }
 
-export async function logStorage(application: Map<string, string>, profile: Map<string, string>, workspace: Map<string, string>, applicationPath: string, profilePath: string, workspacePath: string): Promise<void> {
+export async function logStorage(global: Map<string, string>, workspace: Map<string, string>, globalPath: string, workspacePath: string): Promise<void> {
 	const safeParse = (value: string) => {
 		try {
 			return JSON.parse(value);
@@ -665,18 +549,11 @@ export async function logStorage(application: Map<string, string>, profile: Map<
 		}
 	};
 
-	const applicationItems = new Map<string, string>();
-	const applicationItemsParsed = new Map<string, string>();
-	application.forEach((value, key) => {
-		applicationItems.set(key, value);
-		applicationItemsParsed.set(key, safeParse(value));
-	});
-
-	const profileItems = new Map<string, string>();
-	const profileItemsParsed = new Map<string, string>();
-	profile.forEach((value, key) => {
-		profileItems.set(key, value);
-		profileItemsParsed.set(key, safeParse(value));
+	const globalItems = new Map<string, string>();
+	const globalItemsParsed = new Map<string, string>();
+	global.forEach((value, key) => {
+		globalItems.set(key, value);
+		globalItemsParsed.set(key, safeParse(value));
 	});
 
 	const workspaceItems = new Map<string, string>();
@@ -686,34 +563,18 @@ export async function logStorage(application: Map<string, string>, profile: Map<
 		workspaceItemsParsed.set(key, safeParse(value));
 	});
 
-	if (applicationPath !== profilePath) {
-		console.group(`Storage: Application (path: ${applicationPath})`);
-	} else {
-		console.group(`Storage: Application & Profile (path: ${applicationPath}, default profile)`);
-	}
-	const applicationValues: { key: string; value: string }[] = [];
-	applicationItems.forEach((value, key) => {
-		applicationValues.push({ key, value });
+	console.group(`Storage: Global (path: ${globalPath})`);
+	let globalValues: { key: string; value: string }[] = [];
+	globalItems.forEach((value, key) => {
+		globalValues.push({ key, value });
 	});
-	console.table(applicationValues);
+	console.table(globalValues);
 	console.groupEnd();
 
-	console.log(applicationItemsParsed);
-
-	if (applicationPath !== profilePath) {
-		console.group(`Storage: Profile (path: ${profilePath}, profile specific)`);
-		const profileValues: { key: string; value: string }[] = [];
-		profileItems.forEach((value, key) => {
-			profileValues.push({ key, value });
-		});
-		console.table(profileValues);
-		console.groupEnd();
-
-		console.log(profileItemsParsed);
-	}
+	console.log(globalItemsParsed);
 
 	console.group(`Storage: Workspace (path: ${workspacePath})`);
-	const workspaceValues: { key: string; value: string }[] = [];
+	let workspaceValues: { key: string; value: string }[] = [];
 	workspaceItems.forEach((value, key) => {
 		workspaceValues.push({ key, value });
 	});

@@ -79,12 +79,13 @@ const schema: IJSONSchema = {
 		},
 		iconDefinitions: {
 			description: nls.localize('schema.iconDefinitions', 'Association of icon name to a font character.'),
-			$ref: iconsSchemaId
+			$ref: iconsSchemaId,
+			additionalProperties: false
 		}
 	}
 };
 
 export function registerProductIconThemeSchemas() {
-	const schemaRegistry = Registry.as<IJSONContributionRegistry>(JSONExtensions.JSONContribution);
+	let schemaRegistry = Registry.as<IJSONContributionRegistry>(JSONExtensions.JSONContribution);
 	schemaRegistry.registerSchema(schemaId, schema);
 }

@@ -66,10 +66,10 @@ function doCreateTest(description: string, inputStr: string, expectedStr: string
 	let cursorOffset: number = 0;
 	let cursorLength: number = 0;
 
-	const container = document.createElement('div');
+	let container = document.createElement('div');
 	container.className = 'container';
 
-	const title = document.createElement('div');
+	let title = document.createElement('div');
 	title.className = 'title';
 
 	const inputStrStrong = document.createElement('strong');
@@ -80,17 +80,17 @@ function doCreateTest(description: string, inputStr: string, expectedStr: string
 
 	container.appendChild(title);
 
-	const startBtn = document.createElement('button');
+	let startBtn = document.createElement('button');
 	startBtn.innerText = 'Start';
 	container.appendChild(startBtn);
 
 
-	const input = document.createElement('textarea');
+	let input = document.createElement('textarea');
 	input.setAttribute('rows', '10');
 	input.setAttribute('cols', '40');
 	container.appendChild(input);
 
-	const model = new SingleLineTestModel('some  text');
+	let model = new SingleLineTestModel('some  text');
 
 	const textAreaInputHost: ITextAreaInputHost = {
 		getDataToCopy: () => {
@@ -112,35 +112,35 @@ function doCreateTest(description: string, inputStr: string, expectedStr: string
 		}
 	};
 
-	const handler = new TextAreaInput(textAreaInputHost, new TextAreaWrapper(input), platform.OS, browser);
+	let handler = new TextAreaInput(textAreaInputHost, new TextAreaWrapper(input), platform.OS, browser);
 
-	const output = document.createElement('pre');
+	let output = document.createElement('pre');
 	output.className = 'output';
 	container.appendChild(output);
 
-	const check = document.createElement('pre');
+	let check = document.createElement('pre');
 	check.className = 'check';
 	container.appendChild(check);
 
-	const br = document.createElement('br');
+	let br = document.createElement('br');
 	br.style.clear = 'both';
 	container.appendChild(br);
 
-	const view = new TestView(model);
+	let view = new TestView(model);
 
-	const updatePosition = (off: number, len: number) => {
+	let updatePosition = (off: number, len: number) => {
 		cursorOffset = off;
 		cursorLength = len;
 		handler.writeScreenReaderContent('selection changed');
 		handler.focusTextArea();
 	};
 
-	const updateModelAndPosition = (text: string, off: number, len: number) => {
+	let updateModelAndPosition = (text: string, off: number, len: number) => {
 		model._setText(text);
 		updatePosition(off, len);
 		view.paint(output);
 
-		const expected = 'some ' + expectedStr + ' text';
+		let expected = 'some ' + expectedStr + ' text';
 		if (text === expected) {
 			check.innerText = '[GOOD]';
 			check.className = 'check good';
@@ -153,10 +153,10 @@ function doCreateTest(description: string, inputStr: string, expectedStr: string
 
 	handler.onType((e) => {
 		console.log('type text: ' + e.text + ', replaceCharCnt: ' + e.replacePrevCharCnt);
-		const text = model.getModelLineContent(1);
-		const preText = text.substring(0, cursorOffset - e.replacePrevCharCnt);
-		const postText = text.substring(cursorOffset + cursorLength);
-		const midText = e.text;
+		let text = model.getModelLineContent(1);
+		let preText = text.substring(0, cursorOffset - e.replacePrevCharCnt);
+		let postText = text.substring(cursorOffset + cursorLength);
+		let midText = e.text;
 
 		updateModelAndPosition(preText + midText + postText, (preText + midText).length, 0);
 	});

@@ -7,6 +7,7 @@ import { distinct } from 'vs/base/common/arrays';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStringDictionary } from 'vs/base/common/collections';
 import { CancellationError, getErrorMessage, isCancellationError } from 'vs/base/common/errors';
+import { getOrDefault } from 'vs/base/common/objects';
 import { IPager } from 'vs/base/common/paging';
 import { isWeb, platform } from 'vs/base/common/platform';
 import { arch } from 'vs/base/common/process';
@@ -15,7 +16,7 @@ import { URI } from 'vs/base/common/uri';
 import { IRequestContext, IRequestOptions } from 'vs/base/parts/request/common/request';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { getFallbackTargetPlarforms, getTargetPlatform, IExtensionGalleryService, IExtensionIdentifier, IExtensionInfo, IGalleryExtension, IGalleryExtensionAsset, IGalleryExtensionAssets, IGalleryExtensionVersion, InstallOperation, IQueryOptions, IExtensionsControlManifest, isNotWebExtensionInWebTargetPlatform, isTargetPlatformCompatible, ITranslation, SortBy, SortOrder, StatisticType, toTargetPlatform, WEB_EXTENSION_TAG, IExtensionQueryOptions, IDeprecationInfo } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { getFallbackTargetPlarforms, getTargetPlatform, IExtensionGalleryService, IExtensionIdentifier, IExtensionInfo, IGalleryExtension, IGalleryExtensionAsset, IGalleryExtensionAssets, IGalleryExtensionVersion, InstallOperation, IQueryOptions, IExtensionsControlManifest, isNotWebExtensionInWebTargetPlatform, isTargetPlatformCompatible, ITranslation, SortBy, SortOrder, StatisticType, toTargetPlatform, WEB_EXTENSION_TAG, IExtensionQueryOptions } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { adoptToGalleryExtensionId, areSameExtensions, getGalleryExtensionId, getGalleryExtensionTelemetryData } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { ExtensionsPolicy, ExtensionsPolicyKey, IExtensionManifest, TargetPlatform } from 'vs/platform/extensions/common/extensions';
 import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator';
@@ -206,8 +207,7 @@ const PropertyType = {
 	// {{SQL CARBON EDIT}}
 	AzDataEngine: 'Microsoft.AzDataEngine',
 	LocalizedLanguages: 'Microsoft.VisualStudio.Code.LocalizedLanguages',
-	WebExtension: 'Microsoft.VisualStudio.Code.WebExtension',
-	SponsorLink: 'Microsoft.VisualStudio.Code.SponsorLink'
+	WebExtension: 'Microsoft.VisualStudio.Code.WebExtension'
 };
 
 interface ICriterium {
@@ -240,22 +240,19 @@ const DefaultQueryState: IQueryState = {
 
 /* {{SQL CARBON EDIT}} Remove unused
 type GalleryServiceQueryClassification = {
-	owner: 'sandy081';
-	comment: 'Information about Marketplace query and its response';
-	readonly filterTypes: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'Filter types used in the query.' };
-	readonly flags: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'Flags passed in the query.' };
-	readonly sortBy: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'sorted by option passed in the query' };
-	readonly sortOrder: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'sort order option passed in the query' };
-	readonly pageNumber: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'requested page number in the query' };
-	readonly duration: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; 'isMeasurement': true; comment: 'amount of time taken by the query request' };
-	readonly success: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'whether the query reques is success or not' };
-	readonly requestBodySize: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'size of the request body' };
-	readonly responseBodySize?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'size of the response body' };
-	readonly statusCode?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'status code of the response' };
-	readonly errorCode?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'error code of the response' };
-	readonly count?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'total number of extensions matching the query' };
-	readonly source?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'source that requested this query, eg., recommendations, viewlet' };
-	readonly searchTextLength?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'length of the search text in the query' };
+	readonly filterTypes: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+	readonly flags: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+	readonly sortBy: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+	readonly sortOrder: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+	readonly pageNumber: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+	readonly duration: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; 'isMeasurement': true };
+	readonly success: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+	readonly requestBodySize: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+	readonly responseBodySize?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+	readonly statusCode?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+	readonly errorCode?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+	readonly count?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+	readonly source?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
 };
 */
 
@@ -266,7 +263,6 @@ type QueryTelemetryData = {
 	readonly sortOrder: string;
 	readonly pageNumber: string;
 	readonly source?: string;
-	readonly searchTextLength?: number;
 };
 
 /* {{SQL CARBON EDIT}} Remove unused
@@ -281,10 +277,8 @@ type GalleryServiceQueryEvent = QueryTelemetryData & {
 };
 
 type GalleryServiceAdditionalQueryClassification = {
-	owner: 'sandy081';
-	comment: 'Response information about the additional query to the Marketplace for fetching all versions to get release version';
-	readonly duration: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; 'isMeasurement': true; comment: 'Amount of time taken by the additional query' };
-	readonly count: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'Total number of extensions returned by this additional query' };
+	readonly duration: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; 'isMeasurement': true };
+	readonly count: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
 };
 
 type GalleryServiceAdditionalQueryEvent = {
@@ -362,8 +356,7 @@ class Query {
 			sortBy: String(this.sortBy),
 			sortOrder: String(this.sortOrder),
 			pageNumber: String(this.pageNumber),
-			source: this.state.source,
-			searchTextLength: this.searchText.length
+			source: this.state.source
 		};
 	}
 }
@@ -464,10 +457,6 @@ function getLocalizedLanguages(version: IRawGalleryExtensionVersion): string[] {
 	return value ? value.split(',') : [];
 }
 
-function getSponsorLink(version: IRawGalleryExtensionVersion): string | undefined {
-	return version.properties?.find(p => p.key === PropertyType.SponsorLink)?.value;
-}
-
 function getIsPreview(flags: string): boolean {
 	return flags.indexOf('preview') !== -1;
 }
@@ -561,7 +550,6 @@ function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGaller
 		publisher: galleryExtension.publisher.publisherName,
 		publisherDisplayName: galleryExtension.publisher.displayName,
 		publisherDomain: galleryExtension.publisher.domain ? { link: galleryExtension.publisher.domain, verified: !!galleryExtension.publisher.isDomainVerified } : undefined,
-		publisherSponsorLink: getSponsorLink(latestVersion),
 		description: galleryExtension.shortDescription || '',
 		installCount: getStatistic(galleryExtension.statistics, 'install'),
 		rating: getStatistic(galleryExtension.statistics, 'averagerating'),
@@ -588,22 +576,11 @@ function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGaller
 	};
 }
 
+type PreReleaseMigrationInfo = { id: string; displayName: string; migrateStorage?: boolean; engine?: string };
 interface IRawExtensionsControlManifest {
 	malicious: string[];
-	migrateToPreRelease?: IStringDictionary<{
-		id: string;
-		displayName: string;
-		migrateStorage?: boolean;
-		engine?: string;
-	}>;
-	deprecated?: IStringDictionary<boolean | {
-		disallowInstall?: boolean;
-		extension?: {
-			id: string;
-			displayName: string;
-		};
-		settings?: string[];
-	}>;
+	unsupported?: IStringDictionary<boolean | { preReleaseExtension: { id: string; displayName: string } }>;
+	migrateToPreRelease?: IStringDictionary<PreReleaseMigrationInfo>;
 }
 
 abstract class AbstractExtensionGalleryService implements IExtensionGalleryService {
@@ -628,14 +605,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		const config = productService.extensionsGallery;
 		this.extensionsGalleryUrl = config && config.serviceUrl;
 		this.extensionsControlUrl = config && config.controlUrl;
-		this.commonHeadersPromise = resolveMarketplaceHeaders(
-			productService.version,
-			productService,
-			this.environmentService,
-			this.configurationService,
-			this.fileService,
-			storageService,
-			this.telemetryService);
+		this.commonHeadersPromise = resolveMarketplaceHeaders(productService.version, productService, this.environmentService, this.configurationService, this.fileService, storageService);
 	}
 
 	private api(path = ''): string {
@@ -737,13 +707,8 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		}
 
 		if (compatible) {
-			try {
-				const engine = await this.getEngine(rawGalleryExtensionVersion);
-				if (!isEngineValid(engine, this.productService.version, this.productService.date)) {
-					return false;
-				}
-			} catch (error) {
-				this.logService.error(`Error while getting the engine for the version ${rawGalleryExtensionVersion.version}.`, getErrorMessage(error));
+			const engine = await this.getEngine(rawGalleryExtensionVersion);
+			if (!isEngineValid(engine, this.productService.version, this.productService.date)) {
 				return false;
 			}
 		}
@@ -757,7 +722,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		}
 
 		let text = options.text || '';
-		const pageSize = options.pageSize ?? 50;
+		const pageSize = getOrDefault(options, o => o.pageSize, 50);
 
 		let query = new Query()
 			.withPage(1, pageSize);
@@ -1093,7 +1058,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 			'Content-Type': 'application/json',
 			'Accept': 'application/json;api-version=3.0-preview.1',
 			'Accept-Encoding': 'gzip',
-			'Content-Length': String(data.length),
+			'Content-Length': String(data.length)
 		};
 
 		const context = await this.requestService.request({
@@ -1152,7 +1117,6 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		const startTime = new Date().getTime();
 		/* __GDPR__
 			"galleryService:downloadVSIX" : {
-				"owner": "sandy081",
 				"duration": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true },
 				"${include}": [
 					"${GalleryExtensionTelemetryData}"
@@ -1287,10 +1251,8 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 
 			const message = getErrorMessage(err);
 			type GalleryServiceCDNFallbackClassification = {
-				owner: 'sandy081';
-				comment: 'Fallback request information when the primary asset request to CDN fails';
-				url: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'asset url that failed' };
-				message: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'error message' };
+				url: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+				message: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
 			};
 			type GalleryServiceCDNFallbackEvent = {
 				url: string;
@@ -1363,7 +1325,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		}
 
 		if (!this.extensionsControlUrl) {
-			return { malicious: [], deprecated: {} };
+			return { malicious: [] };
 		}
 
 		const context = await this.requestService.request({ type: 'GET', url: this.extensionsControlUrl }, CancellationToken.None);
@@ -1373,36 +1335,30 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 
 		const result = await asJson<IRawExtensionsControlManifest>(context);
 		const malicious: IExtensionIdentifier[] = [];
-		const deprecated: IStringDictionary<IDeprecationInfo> = {};
+		const unsupportedPreReleaseExtensions: IStringDictionary<{ id: string; displayName: string; migrateStorage?: boolean }> = {};
+
 		if (result) {
 			for (const id of result.malicious) {
 				malicious.push({ id });
 			}
-			if (result.migrateToPreRelease) {
-				for (const [unsupportedPreReleaseExtensionId, preReleaseExtensionInfo] of Object.entries(result.migrateToPreRelease)) {
-					if (!preReleaseExtensionInfo.engine || isEngineValid(preReleaseExtensionInfo.engine, this.productService.version, this.productService.date)) {
-						deprecated[unsupportedPreReleaseExtensionId.toLowerCase()] = {
-							disallowInstall: true,
-							extension: {
-								id: preReleaseExtensionInfo.id,
-								displayName: preReleaseExtensionInfo.displayName,
-								autoMigrate: { storage: !!preReleaseExtensionInfo.migrateStorage },
-								preRelease: true
-							}
-						};
+			if (result.unsupported) {
+				for (const extensionId of Object.keys(result.unsupported)) {
+					const value = result.unsupported[extensionId];
+					if (!isBoolean(value)) {
+						unsupportedPreReleaseExtensions[extensionId.toLowerCase()] = value.preReleaseExtension;
 					}
 				}
 			}
-			if (result.deprecated) {
-				for (const [deprecatedExtensionId, deprecationInfo] of Object.entries(result.deprecated)) {
-					if (deprecationInfo) {
-						deprecated[deprecatedExtensionId.toLowerCase()] = isBoolean(deprecationInfo) ? {} : deprecationInfo;
+			if (result.migrateToPreRelease) {
+				for (const [unsupportedPreReleaseExtensionId, preReleaseExtensionInfo] of Object.entries(result.migrateToPreRelease)) {
+					if (!preReleaseExtensionInfo.engine || isEngineValid(preReleaseExtensionInfo.engine, this.productService.version, this.productService.date)) {
+						unsupportedPreReleaseExtensions[unsupportedPreReleaseExtensionId.toLowerCase()] = preReleaseExtensionInfo;
 					}
 				}
 			}
 		}
 
-		return { malicious, deprecated };
+		return { malicious, unsupportedPreReleaseExtensions };
 	}
 }
 

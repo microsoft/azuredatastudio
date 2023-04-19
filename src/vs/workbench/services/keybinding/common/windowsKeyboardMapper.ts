@@ -183,11 +183,11 @@ export class WindowsKeyboardMapper implements IKeyboardMapper {
 			}
 		}
 
-		const producesLetter: boolean[] = [];
+		let producesLetter: boolean[] = [];
 		let producesLetters = false;
 
 		this._codeInfo = [];
-		for (const strCode in rawMappings) {
+		for (let strCode in rawMappings) {
 			if (rawMappings.hasOwnProperty(strCode)) {
 				const scanCode = ScanCodeUtils.toEnum(strCode);
 				if (scanCode === ScanCode.None) {
@@ -323,9 +323,9 @@ export class WindowsKeyboardMapper implements IKeyboardMapper {
 	}
 
 	public dumpDebugInfo(): string {
-		const result: string[] = [];
+		let result: string[] = [];
 
-		const immutableSamples = [
+		let immutableSamples = [
 			ScanCode.ArrowUp,
 			ScanCode.Numpad0
 		];

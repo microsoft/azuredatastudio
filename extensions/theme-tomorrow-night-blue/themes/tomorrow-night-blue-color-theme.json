@@ -65,7 +65,7 @@
 			}
 		},
 		{
-			"scope": ["meta.embedded", "source.groovy.embedded", "meta.jsx.children"],
+			"scope": ["meta.embedded", "source.groovy.embedded"],
 			"settings": {
 				//"background": "#002451",
 				"foreground": "#FFFFFF"

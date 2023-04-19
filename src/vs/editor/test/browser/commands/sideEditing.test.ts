@@ -20,7 +20,7 @@ function testCommand(lines: string[], selections: Selection[], edits: ISingleEdi
 
 		assert.deepStrictEqual(model.getLinesContent(), expectedLines);
 
-		const actualSelections = viewModel.getSelections();
+		let actualSelections = viewModel.getSelections();
 		assert.deepStrictEqual(actualSelections.map(s => s.toString()), expectedSelections.map(s => s.toString()));
 
 	});

@@ -14,13 +14,6 @@ class MissingStoresError extends Error {
 	}
 }
 
-export class DBClosedError extends Error {
-	readonly code = 'DBClosed';
-	constructor(dbName: string) {
-		super(`IndexedDB database '${dbName}' is closed.`);
-	}
-}
-
 export class IndexedDB {
 
 	static async create(name: string, version: number | undefined, stores: string[]): Promise<IndexedDB> {
@@ -28,7 +21,7 @@ export class IndexedDB {
 		return new IndexedDB(database, name);
 	}
 
-	private static async openDatabase(name: string, version: number | undefined, stores: string[]): Promise<IDBDatabase> {
+	static async openDatabase(name: string, version: number | undefined, stores: string[]): Promise<IDBDatabase> {
 		mark(`code/willOpenDatabase/${name}`);
 		try {
 			return await IndexedDB.doOpenDatabase(name, version, stores);
@@ -116,7 +109,7 @@ export class IndexedDB {
 	runInTransaction<T>(store: string, transactionMode: IDBTransactionMode, dbRequestFn: (store: IDBObjectStore) => IDBRequest<T>): Promise<T>;
 	async runInTransaction<T>(store: string, transactionMode: IDBTransactionMode, dbRequestFn: (store: IDBObjectStore) => IDBRequest<T> | IDBRequest<T>[]): Promise<T | T[]> {
 		if (!this.database) {
-			throw new DBClosedError(this.name);
+			throw new Error(`IndexedDB database '${this.name}' is not opened.`);
 		}
 		const transaction = this.database.transaction(store, transactionMode);
 		this.pendingTransactions.push(transaction);
@@ -135,7 +128,7 @@ export class IndexedDB {
 
 	async getKeyValues<V>(store: string, isValid: (value: unknown) => value is V): Promise<Map<string, V>> {
 		if (!this.database) {
-			throw new DBClosedError(this.name);
+			throw new Error(`IndexedDB database '${this.name}' is not opened.`);
 		}
 		const transaction = this.database.transaction(store, 'readonly');
 		this.pendingTransactions.push(transaction);

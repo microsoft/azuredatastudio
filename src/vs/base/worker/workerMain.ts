@@ -76,21 +76,17 @@
 		});
 	}
 
-	function configureAMDLoader() {
-		require.config({
-			baseUrl: monacoBaseUrl,
-			catchError: true,
-			trustedTypesPolicy,
-			amdModulesPattern: /^vs\//
-		});
-	}
-
-	function loadCode(moduleId: string) {
+	const loadCode = function (moduleId: string) {
 		loadAMDLoader().then(() => {
-			configureAMDLoader();
+			require.config({
+				baseUrl: monacoBaseUrl,
+				catchError: true,
+				trustedTypesPolicy,
+				amdModulesPattern: /^vs\//
+			});
 			require([moduleId], function (ws) {
 				setTimeout(function () {
-					const messageHandler = ws.create((msg: any, transfer?: Transferable[]) => {
+					let messageHandler = ws.create((msg: any, transfer?: Transferable[]) => {
 						(<any>self).postMessage(msg, transfer);
 					}, null);
 
@@ -101,17 +97,10 @@
 				}, 0);
 			});
 		});
-	}
-
-	// If the loader is already defined, configure it immediately
-	// This helps in the bundled case, where we must load nls files
-	// and they need a correct baseUrl to be loaded.
-	if (typeof (<any>self).define === 'function' && (<any>self).define.amd) {
-		configureAMDLoader();
-	}
+	};
 
 	let isFirstMessage = true;
-	const beforeReadyMessages: MessageEvent[] = [];
+	let beforeReadyMessages: MessageEvent[] = [];
 	self.onmessage = (message: MessageEvent) => {
 		if (!isFirstMessage) {
 			beforeReadyMessages.push(message);

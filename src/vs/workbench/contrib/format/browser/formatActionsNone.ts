@@ -68,10 +68,9 @@ registerEditorAction(class FormatDocumentMultipleAction extends EditorAction {
 			const res = await dialogService.show(
 				Severity.Info,
 				message,
-				[nls.localize('install.formatter', "Install Formatter..."), nls.localize('cancel', "Cancel")],
-				{ cancelId: 1 }
+				[nls.localize('cancel', "Cancel"), nls.localize('install.formatter', "Install Formatter...")]
 			);
-			if (res.choice !== 1) {
+			if (res.choice === 1) {
 				showExtensionQuery(paneCompositeService, `category:formatters ${langName}`);
 			}
 		}

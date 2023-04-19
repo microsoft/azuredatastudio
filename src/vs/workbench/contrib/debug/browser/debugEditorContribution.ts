@@ -12,8 +12,7 @@ import { setProperty } from 'vs/base/common/jsonEdit';
 import { Constants } from 'vs/base/common/uint';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IKeyboardEvent, StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { InlineValueContext } from 'vs/editor/common/languages';
-import { StandardTokenType } from 'vs/editor/common/encodedTokenAttributes';
+import { InlineValueContext, StandardTokenType } from 'vs/editor/common/languages';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { distinct, flatten } from 'vs/base/common/arrays';
 import { onUnexpectedExternalError } from 'vs/base/common/errors';
@@ -222,7 +221,7 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 	private configurationWidget: FloatingClickWidget | undefined;
 	private altListener: IDisposable | undefined;
 	private altPressed = false;
-	private oldDecorations = this.editor.createDecorationsCollection();
+	private oldDecorations: string[] = [];
 	private readonly debounceInfo: IFeatureDebounceInformation;
 
 	constructor(
@@ -606,7 +605,7 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 	private get removeInlineValuesScheduler(): RunOnceScheduler {
 		return new RunOnceScheduler(
 			() => {
-				this.oldDecorations.clear();
+				this.oldDecorations = this.editor.deltaDecorations(this.oldDecorations, []);
 			},
 			100
 		);
@@ -760,7 +759,7 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 				decoration => `${decoration.range.startLineNumber}:${decoration?.options.after?.content}`);
 		}
 
-		this.oldDecorations.set(allDecorations);
+		this.oldDecorations = this.editor.deltaDecorations(this.oldDecorations, allDecorations);
 	}
 
 	dispose(): void {
@@ -772,6 +771,6 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 		}
 		this.toDispose = dispose(this.toDispose);
 
-		this.oldDecorations.clear();
+		this.oldDecorations = this.editor.deltaDecorations(this.oldDecorations, []);
 	}
 }

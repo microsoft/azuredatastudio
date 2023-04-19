@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import { LineTokens } from 'vs/editor/common/tokens/lineTokens';
 import { Range } from 'vs/editor/common/core/range';
 import { computeIndentLevel } from 'vs/editor/common/model/utils';
-import { MetadataConsts } from 'vs/editor/common/encodedTokenAttributes';
+import { MetadataConsts } from 'vs/editor/common/languages';
 import { TestLineToken, TestLineTokenFactory } from 'vs/editor/test/common/core/testLineToken';
 import { createTextModel } from 'vs/editor/test/common/testTextModel';
 
@@ -18,22 +18,22 @@ interface ILineEdit {
 }
 
 function assertLineTokens(__actual: LineTokens, _expected: TestToken[]): void {
-	const tmp = TestToken.toTokens(_expected);
+	let tmp = TestToken.toTokens(_expected);
 	LineTokens.convertToEndOffset(tmp, __actual.getLineContent().length);
-	const expected = TestLineTokenFactory.inflateArr(tmp);
-	const _actual = __actual.inflate();
+	let expected = TestLineTokenFactory.inflateArr(tmp);
+	let _actual = __actual.inflate();
 	interface ITestToken {
 		endIndex: number;
 		type: string;
 	}
-	const actual: ITestToken[] = [];
+	let actual: ITestToken[] = [];
 	for (let i = 0, len = _actual.getCount(); i < len; i++) {
 		actual[i] = {
 			endIndex: _actual.getEndOffset(i),
 			type: _actual.getClassName(i)
 		};
 	}
-	const decode = (token: TestLineToken) => {
+	let decode = (token: TestLineToken) => {
 		return {
 			endIndex: token.endIndex,
 			type: token.getType()
@@ -44,7 +44,7 @@ function assertLineTokens(__actual: LineTokens, _expected: TestToken[]): void {
 
 suite('ModelLine - getIndentLevel', () => {
 	function assertIndentLevel(text: string, expected: number, tabSize: number = 4): void {
-		const actual = computeIndentLevel(text, tabSize);
+		let actual = computeIndentLevel(text, tabSize);
 		assert.strictEqual(actual, expected, text);
 	}
 
@@ -80,10 +80,10 @@ class TestToken {
 		if (tokens === null) {
 			return null;
 		}
-		const tokensLen = tokens.length;
-		const result = new Uint32Array((tokensLen << 1));
+		let tokensLen = tokens.length;
+		let result = new Uint32Array((tokensLen << 1));
 		for (let i = 0; i < tokensLen; i++) {
-			const token = tokens[i];
+			let token = tokens[i];
 			result[(i << 1)] = token.startOffset;
 			result[(i << 1) + 1] = (
 				token.color << MetadataConsts.FOREGROUND_OFFSET

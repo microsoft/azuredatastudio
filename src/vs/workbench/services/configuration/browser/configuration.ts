@@ -9,7 +9,7 @@ import * as errors from 'vs/base/common/errors';
 import { Disposable, IDisposable, dispose, toDisposable, MutableDisposable, combinedDisposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { FileChangeType, FileChangesEvent, IFileService, whenProviderRegistered, FileOperationError, FileOperationResult, FileOperation, FileOperationEvent } from 'vs/platform/files/common/files';
-import { ConfigurationModel, ConfigurationModelParser, ConfigurationParseOptions, UserSettings } from 'vs/platform/configuration/common/configurationModels';
+import { ConfigurationModel, ConfigurationModelParser, ConfigurationParseOptions, DefaultConfigurationModel, UserSettings } from 'vs/platform/configuration/common/configurationModels';
 import { WorkspaceConfigurationModelParser, StandaloneConfigurationModelParser } from 'vs/workbench/services/configuration/common/configurationModels';
 import { TASKS_CONFIGURATION_KEY, FOLDER_SETTINGS_NAME, LAUNCH_CONFIGURATION_KEY, IConfigurationCache, ConfigurationKey, REMOTE_MACHINE_SCOPES, FOLDER_SCOPES, WORKSPACE_SCOPES } from 'vs/workbench/services/configuration/common/configuration';
 import { IStoredWorkspaceFolder } from 'vs/platform/workspaces/common/workspaces';
@@ -26,15 +26,17 @@ import { joinPath } from 'vs/base/common/resources';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IBrowserWorkbenchEnvironmentService } from 'vs/workbench/services/environment/browser/environmentService';
 import { isObject } from 'vs/base/common/types';
-import { DefaultConfiguration as BaseDefaultConfiguration } from 'vs/platform/configuration/common/configurations';
 
-export class DefaultConfiguration extends BaseDefaultConfiguration {
+export class DefaultConfiguration extends Disposable {
 
 	static readonly DEFAULT_OVERRIDES_CACHE_EXISTS_KEY = 'DefaultOverridesCacheExists';
 
 	private readonly configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
 	private cachedConfigurationDefaultsOverrides: IStringDictionary<any> = {};
 	private readonly cacheKey: ConfigurationKey = { type: 'defaults', key: 'configurationDefaultsOverrides' };
+
+	private readonly _onDidChangeConfiguration = this._register(new Emitter<{ defaults: ConfigurationModel; properties: string[] }>());
+	readonly onDidChangeConfiguration = this._onDidChangeConfiguration.event;
 
 	private updateCache: boolean = false;
 
@@ -48,20 +50,27 @@ export class DefaultConfiguration extends BaseDefaultConfiguration {
 		}
 	}
 
-	protected override getConfigurationDefaultOverrides(): IStringDictionary<any> {
-		return this.cachedConfigurationDefaultsOverrides;
+	private _configurationModel: ConfigurationModel | undefined;
+	get configurationModel(): ConfigurationModel {
+		if (!this._configurationModel) {
+			this._configurationModel = new DefaultConfigurationModel(this.cachedConfigurationDefaultsOverrides);
+		}
+		return this._configurationModel;
 	}
 
-	override async initialize(): Promise<ConfigurationModel> {
+	async initialize(): Promise<ConfigurationModel> {
 		await this.initializeCachedConfigurationDefaultsOverrides();
-		return super.initialize();
+		this._configurationModel = undefined;
+		this._register(this.configurationRegistry.onDidUpdateConfiguration(({ properties, defaultsOverrides }) => this.onDidUpdateConfiguration(properties, defaultsOverrides)));
+		return this.configurationModel;
 	}
 
-	override reload(): ConfigurationModel {
+	reload(): ConfigurationModel {
 		this.updateCache = true;
 		this.cachedConfigurationDefaultsOverrides = {};
+		this._configurationModel = undefined;
 		this.updateCachedConfigurationDefaultsOverrides();
-		return super.reload();
+		return this.configurationModel;
 	}
 
 	private initiaizeCachedConfigurationDefaultsOverridesPromise: Promise<void> | undefined;
@@ -83,8 +92,9 @@ export class DefaultConfiguration extends BaseDefaultConfiguration {
 		return this.initiaizeCachedConfigurationDefaultsOverridesPromise;
 	}
 
-	protected override onDidUpdateConfiguration(properties: string[], defaultsOverrides?: boolean): void {
-		super.onDidUpdateConfiguration(properties, defaultsOverrides);
+	private onDidUpdateConfiguration(properties: string[], defaultsOverrides?: boolean): void {
+		this._configurationModel = undefined;
+		this._onDidChangeConfiguration.fire({ defaults: this.configurationModel, properties });
 		if (defaultsOverrides) {
 			this.updateCachedConfigurationDefaultsOverrides();
 		}
@@ -119,17 +129,15 @@ export class UserConfiguration extends Disposable {
 	private readonly _onDidChangeConfiguration: Emitter<ConfigurationModel> = this._register(new Emitter<ConfigurationModel>());
 	readonly onDidChangeConfiguration: Event<ConfigurationModel> = this._onDidChangeConfiguration.event;
 
-	private readonly userConfiguration = this._register(new MutableDisposable<UserSettings | FileServiceBasedConfiguration>());
-	private readonly userConfigurationChangeDisposable = this._register(new MutableDisposable<IDisposable>());
+	private readonly userConfiguration: MutableDisposable<UserSettings | FileServiceBasedConfiguration> = this._register(new MutableDisposable<UserSettings | FileServiceBasedConfiguration>());
 	private readonly reloadConfigurationScheduler: RunOnceScheduler;
 
-	private configurationParseOptions: ConfigurationParseOptions;
+	private readonly configurationParseOptions: ConfigurationParseOptions;
 
 	get hasTasksLoaded(): boolean { return this.userConfiguration.value instanceof FileServiceBasedConfiguration; }
 
 	constructor(
-		private settingsResource: URI,
-		private tasksResource: URI | undefined,
+		private readonly userSettingsResource: URI,
 		scopes: ConfigurationScope[] | undefined,
 		private readonly fileService: IFileService,
 		private readonly uriIdentityService: IUriIdentityService,
@@ -137,27 +145,9 @@ export class UserConfiguration extends Disposable {
 	) {
 		super();
 		this.configurationParseOptions = { scopes, skipRestricted: false };
-		this.userConfiguration.value = new UserSettings(settingsResource, scopes, uriIdentityService.extUri, this.fileService);
-		this.userConfigurationChangeDisposable.value = this.userConfiguration.value.onDidChange(() => this.reloadConfigurationScheduler.schedule());
-		this.reloadConfigurationScheduler = this._register(new RunOnceScheduler(() => this.userConfiguration.value!.loadConfiguration().then(configurationModel => this._onDidChangeConfiguration.fire(configurationModel)), 50));
-	}
-
-	async reset(settingsResource: URI, tasksResource: URI | undefined, scopes: ConfigurationScope[] | undefined): Promise<ConfigurationModel> {
-		this.settingsResource = settingsResource;
-		this.tasksResource = tasksResource;
-		this.configurationParseOptions = { scopes, skipRestricted: false };
-		const folder = this.uriIdentityService.extUri.dirname(this.settingsResource);
-		const standAloneConfigurationResources: [string, URI][] = this.tasksResource ? [[TASKS_CONFIGURATION_KEY, this.tasksResource]] : [];
-		const fileServiceBasedConfiguration = new FileServiceBasedConfiguration(folder.toString(), this.settingsResource, standAloneConfigurationResources, this.configurationParseOptions, this.fileService, this.uriIdentityService, this.logService);
-		const configurationModel = await fileServiceBasedConfiguration.loadConfiguration();
-		this.userConfiguration.value = fileServiceBasedConfiguration;
-
-		// Check for value because userConfiguration might have been disposed.
-		if (this.userConfigurationChangeDisposable.value) {
-			this.userConfigurationChangeDisposable.value = this.userConfiguration.value.onDidChange(() => this.reloadConfigurationScheduler.schedule());
-		}
-
-		return configurationModel;
+		this.userConfiguration.value = new UserSettings(this.userSettingsResource, scopes, uriIdentityService.extUri, this.fileService);
+		this._register(this.userConfiguration.value.onDidChange(() => this.reloadConfigurationScheduler.schedule()));
+		this.reloadConfigurationScheduler = this._register(new RunOnceScheduler(() => this.reload().then(configurationModel => this._onDidChangeConfiguration.fire(configurationModel)), 50));
 	}
 
 	async initialize(): Promise<ConfigurationModel> {
@@ -168,7 +158,19 @@ export class UserConfiguration extends Disposable {
 		if (this.hasTasksLoaded) {
 			return this.userConfiguration.value!.loadConfiguration();
 		}
-		return this.reset(this.settingsResource, this.tasksResource, this.configurationParseOptions.scopes);
+
+		const folder = this.uriIdentityService.extUri.dirname(this.userSettingsResource);
+		const standAloneConfigurationResources: [string, URI][] = [TASKS_CONFIGURATION_KEY].map(name => ([name, this.uriIdentityService.extUri.joinPath(folder, `${name}.json`)]));
+		const fileServiceBasedConfiguration = new FileServiceBasedConfiguration(folder.toString(), this.userSettingsResource, standAloneConfigurationResources, this.configurationParseOptions, this.fileService, this.uriIdentityService, this.logService);
+		const configurationModel = await fileServiceBasedConfiguration.loadConfiguration();
+		this.userConfiguration.value = fileServiceBasedConfiguration;
+
+		// Check for value because userConfiguration might have been disposed.
+		if (this.userConfiguration.value) {
+			this._register(this.userConfiguration.value.onDidChange(() => this.reloadConfigurationScheduler.schedule()));
+		}
+
+		return configurationModel;
 	}
 
 	reparse(): ConfigurationModel {

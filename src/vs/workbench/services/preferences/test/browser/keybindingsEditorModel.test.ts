@@ -711,7 +711,7 @@ suite('KeybindingsEditorModel', () => {
 			const { ctrlKey, shiftKey, altKey, metaKey } = part.modifiers || { ctrlKey: false, shiftKey: false, altKey: false, metaKey: false };
 			return new SimpleKeybinding(ctrlKey!, shiftKey!, altKey!, metaKey!, part.keyCode);
 		};
-		const parts: SimpleKeybinding[] = [];
+		let parts: SimpleKeybinding[] = [];
 		if (firstPart) {
 			parts.push(aSimpleKeybinding(firstPart));
 			if (chordPart) {

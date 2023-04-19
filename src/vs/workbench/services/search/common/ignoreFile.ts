@@ -10,25 +10,8 @@ export class IgnoreFile {
 
 	private isPathIgnored: (path: string, isDir: boolean, parent?: IgnoreFile) => boolean;
 
-	constructor(
-		contents: string,
-		private readonly location: string,
-		private readonly parent?: IgnoreFile) {
-		if (location[location.length - 1] === '\\') {
-			throw Error('Unexpected path format, do not use trailing backslashes');
-		}
-		if (location[location.length - 1] !== '/') {
-			location += '/';
-		}
-		this.isPathIgnored = this.parseIgnoreFile(contents, this.location, this.parent);
-	}
-
-	/**
-	 * Updates the contents of the ignorefile. Preservering the location and parent
-	 * @param contents The new contents of the gitignore file
-	 */
-	updateContents(contents: string) {
-		this.isPathIgnored = this.parseIgnoreFile(contents, this.location, this.parent);
+	constructor(contents: string, location: string, parent?: IgnoreFile) {
+		this.isPathIgnored = this.parseIgnoreFile(contents, location, parent);
 	}
 
 	/**

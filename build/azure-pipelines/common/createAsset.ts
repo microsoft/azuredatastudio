@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+'use strict';
+
 import * as fs from 'fs';
 import { Readable } from 'stream';
 import * as crypto from 'crypto';

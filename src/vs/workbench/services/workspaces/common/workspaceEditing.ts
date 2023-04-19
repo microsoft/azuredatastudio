@@ -33,28 +33,28 @@ export interface IWorkspaceEditingService {
 	updateFolders(index: number, deleteCount?: number, foldersToAdd?: IWorkspaceFolderCreationData[], donotNotifyError?: boolean): Promise<void>;
 
 	/**
-	 * Enters the workspace with the provided path.
+	 * enters the workspace with the provided path.
 	 */
 	enterWorkspace(path: URI): Promise<void>;
 
 	/**
-	 * Creates a new workspace with the provided folders and opens it. if path is provided
+	 * creates a new workspace with the provided folders and opens it. if path is provided
 	 * the workspace will be saved into that location.
 	 */
 	createAndEnterWorkspace(folders: IWorkspaceFolderCreationData[], path?: URI): Promise<void>;
 
 	/**
-	 * Saves the current workspace to the provided path and opens it. requires a workspace to be opened.
+	 * saves the current workspace to the provided path and opens it. requires a workspace to be opened.
 	 */
 	saveAndEnterWorkspace(path: URI): Promise<void>;
 
 	/**
-	 * Copies current workspace settings to the target workspace.
+	 * copies current workspace settings to the target workspace.
 	 */
 	copyWorkspaceSettings(toWorkspace: IWorkspaceIdentifier): Promise<void>;
 
 	/**
-	 * Picks a new workspace path
+	 * picks a new workspace path
 	 */
 	pickNewWorkspacePath(): Promise<URI | undefined>;
 }

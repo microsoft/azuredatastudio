@@ -128,9 +128,6 @@ export class NativeWorkbenchEnvironmentService extends AbstractNativeEnvironment
 	get filesToDiff(): IPath[] | undefined { return this.configuration.filesToDiff; }
 
 	@memoize
-	get filesToMerge(): IPath[] | undefined { return this.configuration.filesToMerge; }
-
-	@memoize
 	get filesToWait(): IPathsToWaitFor | undefined { return this.configuration.filesToWait; }
 
 	constructor(

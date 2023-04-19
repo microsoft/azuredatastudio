@@ -13,7 +13,7 @@ import * as platform from 'vs/base/common/platform';
 function extractKeyCode(e: KeyboardEvent): KeyCode {
 	if (e.charCode) {
 		// "keypress" events mostly
-		const char = String.fromCharCode(e.charCode).toUpperCase();
+		let char = String.fromCharCode(e.charCode).toUpperCase();
 		return KeyCodeUtils.fromString(char);
 	}
 
@@ -77,7 +77,7 @@ const shiftKeyMod = KeyMod.Shift;
 const metaKeyMod = (platform.isMacintosh ? KeyMod.CtrlCmd : KeyMod.WinCtrl);
 
 export function printKeyboardEvent(e: KeyboardEvent): string {
-	const modifiers: string[] = [];
+	let modifiers: string[] = [];
 	if (e.ctrlKey) {
 		modifiers.push(`ctrl`);
 	}
@@ -94,7 +94,7 @@ export function printKeyboardEvent(e: KeyboardEvent): string {
 }
 
 export function printStandardKeyboardEvent(e: StandardKeyboardEvent): string {
-	const modifiers: string[] = [];
+	let modifiers: string[] = [];
 	if (e.ctrlKey) {
 		modifiers.push(`ctrl`);
 	}
@@ -128,7 +128,7 @@ export class StandardKeyboardEvent implements IKeyboardEvent {
 	private _asRuntimeKeybinding: SimpleKeybinding;
 
 	constructor(source: KeyboardEvent) {
-		const e = source;
+		let e = source;
 
 		this.browserEvent = e;
 		this.target = <HTMLElement>e.target;

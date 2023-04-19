@@ -193,8 +193,7 @@ export class WorkingCopyHistoryTracker extends Disposable implements IWorkbenchC
 	private shouldTrackHistory(resource: URI, stat: IFileStatWithMetadata): boolean {
 		if (
 			resource.scheme !== this.pathService.defaultUriScheme && 	// track history for all workspace resources
-			resource.scheme !== Schemas.vscodeUserData &&				// track history for all settings
-			resource.scheme !== Schemas.inMemory	 					// track history for tests that use in-memory
+			resource.scheme !== Schemas.vscodeUserData					// track history for all settings
 		) {
 			return false; // do not support unknown resources
 		}

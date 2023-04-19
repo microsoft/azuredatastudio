@@ -141,7 +141,7 @@ export class MacExternalTerminalService extends ExternalTerminalService implemen
 					'-w', dir,
 				];
 
-				for (const a of args) {
+				for (let a of args) {
 					osaArgs.push('-a');
 					osaArgs.push(a);
 				}
@@ -150,7 +150,7 @@ export class MacExternalTerminalService extends ExternalTerminalService implemen
 					// merge environment variables into a copy of the process.env
 					const env = Object.assign({}, getSanitizedEnvironment(process), envVars);
 
-					for (const key in env) {
+					for (let key in env) {
 						const value = env[key];
 						if (value === null) {
 							osaArgs.push('-u');
@@ -218,7 +218,7 @@ export class LinuxExternalTerminalService extends ExternalTerminalService implem
 
 		return new Promise<number | undefined>((resolve, reject) => {
 
-			const termArgs: string[] = [];
+			let termArgs: string[] = [];
 			//termArgs.push('--title');
 			//termArgs.push(`"${TERMINAL_TITLE}"`);
 			execPromise.then(exec => {
@@ -332,7 +332,7 @@ function improveError(err: Error & { errno?: string; path?: string }): Error {
  */
 function quote(args: string[]): string {
 	let r = '';
-	for (const a of args) {
+	for (let a of args) {
 		if (a.indexOf(' ') >= 0) {
 			r += '"' + a + '"';
 		} else {
