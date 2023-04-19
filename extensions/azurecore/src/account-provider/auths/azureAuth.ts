@@ -27,7 +27,7 @@ import { AzureAuthError } from './azureAuthError';
 import { AccountInfo, AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
 import { HttpClient } from './httpClient';
 import { getProxyEnabledHttpClient } from '../../utils';
-
+import { errorToPromptFailedResult } from './networkUtils';
 const localize = nls.loadMessageBundle();
 
 export abstract class AzureAuth implements vscode.Disposable {
@@ -146,22 +146,14 @@ export abstract class AzureAuth implements vscode.Disposable {
 				}
 				Logger.error(ex.originalMessageAndException);
 			} else {
-				const message = ex.errorMessage || ex.message;
-				if (message) {
-					loginComplete?.reject(new AzureAuthError(message, message, undefined));
-					return {
-						canceled: false,
-						errorCode: ex.errorCode,
-						errorMessage: message
-					};
+				const promptFailedResult = errorToPromptFailedResult(ex);
+				if (promptFailedResult.errorMessage) {
+					loginComplete?.reject(new AzureAuthError(promptFailedResult.errorMessage, promptFailedResult.errorMessage, undefined));
+					return promptFailedResult;
 				}
 				Logger.error(ex);
 			}
-			return {
-				canceled: false,
-				errorCode: ex.errorCode,
-				errorMessage: ex.errorMessage || ex.message
-			};
+			return errorToPromptFailedResult(ex);
 		}
 	}
 
@@ -373,12 +365,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				if (e.name === 'ClientAuthError') {
 					Logger.verbose('[ClientAuthError] Failed to silently acquire token');
 				}
-				return {
-					canceled: false,
-					name: e.name,
-					errorCode: e.errorCode,
-					errorMessage: e.errorMessage || e.message
-				}
+				return errorToPromptFailedResult(e);
 			}
 		}
 	}
@@ -486,7 +473,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				}
 			});
 
-			const data = tenantResponse.body;
+			const data = tenantResponse.data;
 			if (data.error) {
 				Logger.error(`Error fetching tenants :${data.error.code} - ${data.error.message}`);
 				throw new Error(`${data.error.code} - ${data.error.message}`);
@@ -610,10 +597,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 				Logger.error('No access token found');
 				return undefined;
 			}
-			const accessToken: AccessToken = JSON.parse(accessTokenString);
+			const accessToken: AccessToken = JSON.parse(accessTokenString) as AccessToken;
 			let refreshToken: RefreshToken | undefined = undefined;
 			if (refreshTokenString) {
-				refreshToken = JSON.parse(refreshTokenString);
+				refreshToken = JSON.parse(refreshTokenString) as RefreshToken;
 			}
 			Logger.piiSanitized('GetSavedToken ', [{ name: 'access', objOrArray: accessToken }, { name: 'refresh', objOrArray: refreshToken }], [], `expiresOn=${expiresOn}`);
 			return {

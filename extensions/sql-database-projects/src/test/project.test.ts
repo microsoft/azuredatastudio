@@ -14,7 +14,7 @@ import { promises as fs } from 'fs';
 import { Project } from '../models/project';
 import { exists, convertSlashesForSqlProj, getPlatformSafeFileEntryPath, systemDatabaseToString } from '../common/utils';
 import { Uri, window } from 'vscode';
-import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { IDacpacReferenceSettings, INugetPackageReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { ItemType } from 'sqldbproj';
 import { SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry, DacpacReferenceProjectEntry } from '../models/projectEntry';
 import { ProjectType, SystemDatabase } from 'mssql';
@@ -48,9 +48,9 @@ describe('Project: sqlproj content operations', function (): void {
 			'Views\\User']);
 
 		// SqlCmdVariables
-		should(Object.keys(project.sqlCmdVariables).length).equal(2);
-		should(project.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
-		should(project.sqlCmdVariables['BackupDatabaseName']).equal('MyBackupDatabase');
+		should(project.sqlCmdVariables.size).equal(2);
+		should(project.sqlCmdVariables.get('ProdDatabaseName')).equal('MyProdDatabase');
+		should(project.sqlCmdVariables.get('BackupDatabaseName')).equal('MyBackupDatabase');
 
 		// Database references
 		// should only have one database reference even though there are two master.dacpac references (1 for ADS and 1 for SSDT)
@@ -645,9 +645,9 @@ describe('Project: database references', function (): void {
 		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 		let project = await Project.openProject(projFilePath);
 
-		// add database reference to a different database on a different server
+		// add database reference to the same database
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
-		should(Object.keys(project.sqlCmdVariables).length).equal(0, `There should be no sqlcmd variables to start with. Actual: ${Object.keys(project.sqlCmdVariables).length}`);
+		should(project.sqlCmdVariables.size).equal(0, `There should be no sqlcmd variables to start with. Actual: ${project.sqlCmdVariables.size}`);
 		await project.addProjectReference({
 			projectName: 'project1',
 			projectGuid: '',
@@ -658,16 +658,16 @@ describe('Project: database references', function (): void {
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to project1');
 		should(project.databaseReferences[0].referenceName).equal('project1', 'The database reference should be project1');
 		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
-		should(Object.keys(project.sqlCmdVariables).length).equal(0, `There should be no sqlcmd variables added. Actual: ${Object.keys(project.sqlCmdVariables).length}`);
+		should(project.sqlCmdVariables.size).equal(0, `There should be no sqlcmd variables added. Actual: ${project.sqlCmdVariables.size}`);
 	});
 
 	it('Should add a project reference to a different database in the same server correctly', async function (): Promise<void> {
 		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 		let project = await Project.openProject(projFilePath);
 
-		// add database reference to a different database on a different server
+		// add database reference to a different database on the same different server
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
-		should(Object.keys(project.sqlCmdVariables).length).equal(0, 'There should be no sqlcmd variables to start with');
+		should(project.sqlCmdVariables.size).equal(0, 'There should be no sqlcmd variables to start with');
 		await project.addProjectReference({
 			projectName: 'project1',
 			projectGuid: '',
@@ -680,7 +680,7 @@ describe('Project: database references', function (): void {
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to project1');
 		should(project.databaseReferences[0].referenceName).equal('project1', 'The database reference should be project1');
 		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
-		should(Object.keys(project.sqlCmdVariables).length).equal(1, `There should be one new sqlcmd variable added. Actual: ${Object.keys(project.sqlCmdVariables).length}`);
+		should(project.sqlCmdVariables.size).equal(1, `There should be one new sqlcmd variable added. Actual: ${project.sqlCmdVariables.size}`);
 	});
 
 	it('Should add a project reference to a different database in a different server correctly', async function (): Promise<void> {
@@ -689,7 +689,7 @@ describe('Project: database references', function (): void {
 
 		// add database reference to a different database on a different server
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
-		should(Object.keys(project.sqlCmdVariables).length).equal(0, 'There should be no sqlcmd variables to start with');
+		should(project.sqlCmdVariables.size).equal(0, 'There should be no sqlcmd variables to start with');
 		await project.addProjectReference({
 			projectName: 'project1',
 			projectGuid: '',
@@ -704,7 +704,90 @@ describe('Project: database references', function (): void {
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to project1');
 		should(project.databaseReferences[0].referenceName).equal('project1', 'The database reference should be project1');
 		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
-		should(Object.keys(project.sqlCmdVariables).length).equal(2, `There should be two new sqlcmd variables added. Actual: ${Object.keys(project.sqlCmdVariables).length}`);
+		should(project.sqlCmdVariables.size).equal(2, `There should be two new sqlcmd variables added. Actual: ${project.sqlCmdVariables.size}`);
+	});
+
+	it('Should add a nupkg reference to the same database correctly', async function (): Promise<void> {
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newSdkStyleProjectSdkNodeBaseline);
+		let project = await Project.openProject(projFilePath);
+
+		// add database reference to the same database
+		should(project.sqlProjStyle).equal(ProjectType.SdkStyle, 'Project should be SDK-style');
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+		should(project.sqlCmdVariables.size).equal(0, `There should be no sqlcmd variables to start with. Actual: ${project.sqlCmdVariables.size}`);
+		await project.addNugetPackageReference({
+			packageName: 'testPackage',
+			packageVersion: '1.0.1',
+			suppressMissingDependenciesErrors: false
+		});
+
+		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to project1');
+		should(project.databaseReferences[0].referenceName).equal('testPackage', 'The database reference should be project1');
+		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
+		should(project.sqlCmdVariables.size).equal(0, `There should be no sqlcmd variables added. Actual: ${project.sqlCmdVariables.size}`);
+	});
+
+	it('Should add a nupkg reference to a different database in the same server correctly', async function (): Promise<void> {
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newSdkStyleProjectSdkNodeBaseline);
+		let project = await Project.openProject(projFilePath);
+
+		// add database reference to a different database on the same different server
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+		should(project.sqlCmdVariables.size).equal(0, 'There should be no sqlcmd variables to start with');
+		await project.addNugetPackageReference({
+			packageName: 'testPackage',
+			packageVersion: '1.0.1',
+			databaseName: 'testdbName',
+			databaseVariable: 'testdb',
+			suppressMissingDependenciesErrors: false
+		});
+
+		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to testPackage');
+		should(project.databaseReferences[0].referenceName).equal('testPackage', 'The database reference should be testPackage');
+		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
+		should(project.sqlCmdVariables.size).equal(1, `There should be one new sqlcmd variable added. Actual: ${project.sqlCmdVariables.size}`);
+	});
+
+	it('Should add a nupkg reference to a different database in a different server correctly', async function (): Promise<void> {
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newSdkStyleProjectSdkNodeBaseline);
+		let project = await Project.openProject(projFilePath);
+
+		// add database reference to a different database on a different server
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+		should(project.sqlCmdVariables.size).equal(0, 'There should be no sqlcmd variables to start with');
+		await project.addNugetPackageReference({
+			packageName: 'testPackage',
+			packageVersion: '1.0.1',
+			databaseName: 'testdbName',
+			databaseVariable: 'testdb',
+			serverName: 'otherServerName',
+			serverVariable: 'otherServer',
+			suppressMissingDependenciesErrors: false
+		});
+
+		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to testPackage');
+		should(project.databaseReferences[0].referenceName).equal('testPackage', 'The database reference should be testPackage');
+		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
+		should(project.sqlCmdVariables.size).equal(2, `There should be two new sqlcmd variables added. Actual: ${project.sqlCmdVariables.size}`);
+	});
+
+	it('Should throw an error trying to add a nupkg reference to legacy style project', async function (): Promise<void> {
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
+		let project = await Project.openProject(projFilePath);
+
+		// add database reference to the same database
+		should(project.sqlProjStyle).equal(ProjectType.LegacyStyle, 'Project should be legacy-style');
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+		should(project.sqlCmdVariables.size).equal(0, `There should be no sqlcmd variables to start with. Actual: ${project.sqlCmdVariables.size}`);
+		await testUtils.shouldThrowSpecificError(async () => await project.addNugetPackageReference({
+			packageName: 'testPackage',
+			packageVersion: '1.0.1',
+			suppressMissingDependenciesErrors: false
+		}),
+			`Error adding database reference to testPackage. Error: Nuget package database references are not supported for the project ${project.projectFilePath}`
+		);
+
+		should(project.databaseReferences.length).equal(0, 'There should not have been any database reference added');
 	});
 
 	it('Should not allow adding duplicate dacpac references', async function (): Promise<void> {
@@ -763,6 +846,27 @@ describe('Project: database references', function (): void {
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after trying to add a reference to testProject again');
 	});
 
+	it('Should not allow adding duplicate nupkg references', async function (): Promise<void> {
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newSdkStyleProjectSdkNodeBaseline);
+		let project = await Project.openProject(projFilePath);
+
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+
+		const nupkgReference: INugetPackageReferenceSettings = {
+			packageName: 'testPackage',
+			packageVersion: '1.0.0',
+			suppressMissingDependenciesErrors: false
+		};
+		await project.addNugetPackageReference(nupkgReference);
+
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to testPackage');
+		should(project.databaseReferences[0].referenceName).equal('testPackage', 'project.databaseReferences[0].databaseName should be testPackage');
+
+		// try to add reference to testPackage again
+		await testUtils.shouldThrowSpecificError(async () => await project.addNugetPackageReference(nupkgReference), constants.databaseReferenceAlreadyExists);
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after trying to add a reference to testPackage again');
+	});
+
 	it('Should handle trying to add duplicate database references when slashes are different direction', async function (): Promise<void> {
 		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 		let project = await Project.openProject(projFilePath);
@@ -803,7 +907,7 @@ describe('Project: database references', function (): void {
 		});
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to test3');
 		should(project.databaseReferences[0].referenceName).equal('test3', 'The database reference should be test3');
-		should(Object.keys(project.sqlCmdVariables).length).equal(2, 'There should be 2 sqlcmdvars after adding the dacpac reference');
+		should(project.sqlCmdVariables.size).equal(2, 'There should be 2 sqlcmdvars after adding the dacpac reference');
 
 		// make sure reference to test3.dacpac and SQLCMD variables were added
 		let projFileText = (await fs.readFile(projFilePath)).toString();
@@ -815,7 +919,7 @@ describe('Project: database references', function (): void {
 		// delete reference
 		await project.deleteDatabaseReferenceByEntry(project.databaseReferences[0]);
 		should(project.databaseReferences.length).equal(0, 'There should be no database references after deleting');
-		should(Object.keys(project.sqlCmdVariables).length).equal(2, 'There should still be 2 sqlcmdvars after deleting the dacpac reference');
+		should(project.sqlCmdVariables.size).equal(2, 'There should still be 2 sqlcmdvars after deleting the dacpac reference');
 
 		// add reference to the same dacpac again but with different values for the sqlcmd variables
 		await project.addDatabaseReference({
@@ -828,7 +932,7 @@ describe('Project: database references', function (): void {
 		});
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to test3');
 		should(project.databaseReferences[0].referenceName).equal('test3', 'The database reference should be test3');
-		should(Object.keys(project.sqlCmdVariables).length).equal(2, 'There should still be 2 sqlcmdvars after adding the dacpac reference again with different sqlcmdvar values');
+		should(project.sqlCmdVariables.size).equal(2, 'There should still be 2 sqlcmdvars after adding the dacpac reference again with different sqlcmdvar values');
 
 		projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql('<SqlCmdVariable Include="test3Db">');
@@ -850,7 +954,7 @@ describe('Project: add SQLCMD Variables', function (): void {
 	it('Should update .sqlproj with new sqlcmd variables', async function (): Promise<void> {
 		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openProjectFileBaseline);
 		let project = await Project.openProject(projFilePath);
-		should(Object.keys(project.sqlCmdVariables).length).equal(2, 'The project should have 2 sqlcmd variables when opened');
+		should(project.sqlCmdVariables.size).equal(2, 'The project should have 2 sqlcmd variables when opened');
 
 		// add a new variable
 		await project.addSqlCmdVariable('TestDatabaseName', 'TestDb');
@@ -858,9 +962,9 @@ describe('Project: add SQLCMD Variables', function (): void {
 		// update value of an existing sqlcmd variable
 		await project.updateSqlCmdVariable('ProdDatabaseName', 'NewProdName');
 
-		should(Object.keys(project.sqlCmdVariables).length).equal(3, 'There should be 3 sqlcmd variables after adding TestDatabaseName');
-		should(project.sqlCmdVariables['TestDatabaseName']).equal('TestDb', 'Value of TestDatabaseName should be TestDb');
-		should(project.sqlCmdVariables['ProdDatabaseName']).equal('NewProdName', 'ProdDatabaseName value should have been updated to the new value');
+		should(project.sqlCmdVariables.size).equal(3, 'There should be 3 sqlcmd variables after adding TestDatabaseName');
+		should(project.sqlCmdVariables.get('TestDatabaseName')).equal('TestDb', 'Value of TestDatabaseName should be TestDb');
+		should(project.sqlCmdVariables.get('ProdDatabaseName')).equal('NewProdName', 'ProdDatabaseName value should have been updated to the new value');
 	});
 });
 

@@ -163,7 +163,7 @@ export async function getPublishDatabaseSettings(project: ISqlProject, promptFor
 	// project file (if they exist)
 	let sqlCmdVariables = Object.assign({}, project.sqlCmdVariables, publishProfile?.sqlCmdVariables);
 
-	if (Object.keys(sqlCmdVariables).length > 0) {
+	if (sqlCmdVariables.size > 0) {
 		// Continually loop here, allowing the user to modify SQLCMD variables one
 		// at a time until they're done (either by selecting the "Done" option or
 		// escaping out of the quick pick dialog). Users can modify each variable
@@ -173,7 +173,7 @@ export async function getPublishDatabaseSettings(project: ISqlProject, promptFor
 			const quickPickItems = Object.keys(sqlCmdVariables).map(key => {
 				return {
 					label: key,
-					description: sqlCmdVariables[key],
+					description: sqlCmdVariables.get(key),
 					key: key
 				} as vscode.QuickPickItem & { key?: string, isResetAllVars?: boolean, isDone?: boolean };
 			});
@@ -192,12 +192,12 @@ export async function getPublishDatabaseSettings(project: ISqlProject, promptFor
 				const newValue = await vscode.window.showInputBox(
 					{
 						title: constants.enterNewValueForVar(sqlCmd.key),
-						value: sqlCmdVariables[sqlCmd.key],
+						value: sqlCmdVariables.get(sqlCmd.key),
 						ignoreFocusOut: true
 					}
 				);
 				if (newValue) {
-					sqlCmdVariables[sqlCmd.key] = newValue;
+					sqlCmdVariables.set(sqlCmd.key, newValue);
 				}
 			} else if (sqlCmd.isResetAllVars) {
 				sqlCmdVariables = Object.assign({}, project.sqlCmdVariables, publishProfile?.sqlCmdVariables);
