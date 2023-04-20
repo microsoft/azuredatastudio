@@ -230,6 +230,11 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		}).component();
 	}
 
+	protected createCheckboxInputContainer(checkbox: azdata.CheckBoxComponent, input: azdata.InputBoxComponent | azdata.DropDownComponent): azdata.FlexContainer {
+		const row = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([checkbox, input]).component();
+		return row;
+	}
+
 	protected createPasswordInputBox(ariaLabel: string, value: string = '', enabled: boolean = true, width: number = DefaultInputWidth): azdata.InputBoxComponent {
 		return this.createInputBox(ariaLabel, value, enabled, 'password', width);
 	}

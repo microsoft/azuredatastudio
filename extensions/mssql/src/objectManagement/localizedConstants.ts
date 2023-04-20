@@ -127,6 +127,7 @@ export const NameText = localize('objectManagement.nameLabel', "Name");
 export const SelectedText = localize('objectManagement.selectedLabel', "Selected");
 export const GeneralSectionHeader = localize('objectManagement.generalSectionHeader', "General");
 export const AdvancedSectionHeader = localize('objectManagement.advancedSectionHeader', "Advanced");
+export const OptionsSectionHeader = localize('objectManagement.optionsSectionHeader', "Options");
 export const PasswordText = localize('objectManagement.passwordLabel', "Password");
 export const ConfirmPasswordText = localize('objectManagement.confirmPasswordLabel', "Confirm password");
 export const EnabledText = localize('objectManagement.enabledLabel', "Enabled");
@@ -138,6 +139,9 @@ export const LoginNotSelectedError = localize('objectManagement.loginNotSelected
 export const DatabaseExistsError = (dbName: string) => localize('objectManagement.databaseExistsError', "Database '{0}' already exists. Choose a different database name.", dbName);
 export const OwnerText = localize('objectManagement.ownerLabel', "Owner");
 export const CollationText = localize('objectManagement.collationLabel', "Collation");
+export const RecoveryModelText = localize('objectManagement.recoveryModelLabel', "Recovery Model");
+export const CompatibilityLevelText = localize('objectManagement.compatibilityLevelLabel', "Compatibility Level");
+export const ContainmentTypeText = localize('objectManagement.containmentTypeLabel', "Containment Type");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");

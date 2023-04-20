@@ -1165,12 +1165,18 @@ declare module 'mssql' {
 
 		export interface Database extends SqlObject {
 			name: string;
+			owner?: string;
+			collationName?: string;
+			recoveryModel?: string;
+			compatibilityLevel?: string;
+			containmentType?: string;
 		}
 
 		export interface CreateDatabaseViewInfo extends ObjectViewInfo<Database> {
 			databaseNames: string[];
 			loginNames: string[];
 			collationNames: string[];
+			compatibilityLevels: string[];
 		}
 
 		export interface DeleteDatabaseViewInfo extends ObjectViewInfo<Database> {

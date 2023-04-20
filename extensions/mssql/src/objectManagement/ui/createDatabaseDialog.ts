@@ -43,24 +43,27 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 	}
 
 	protected async initializeData(): Promise<ObjectManagement.CreateDatabaseViewInfo> {
+		// TODO: Replace with real data
 		let databaseNames = ['TestDB'];
 		let loginNames = ['sa', 'TestLogin'];
 		let collationNames = ['SQL_Latin1_General_CP1_CI_AS', 'French_CI_AS', 'Modern_Spanish_CI_AS'];
+		let compatibilityLevels = ['SQL Server 2019 (150)', 'SQL Server 2017 (140)', 'SQL Server 2016 (130)'];
 		this._model = {
 			objectInfo: {
 				name: undefined
 			},
 			databaseNames,
 			loginNames,
-			collationNames
+			collationNames,
+			compatibilityLevels
 		}
 		return this._model;
 	}
 
 	protected async initializeUI(): Promise<void> {
 		let generalSection = this.initializeGeneralSection();
-		let advancedSection = this.initializeAdvancedSection();
-		this.formContainer.addItems([generalSection, advancedSection]);
+		let optionsSection = this.initializeOptionsSection();
+		this.formContainer.addItems([generalSection, optionsSection]);
 	}
 
 	private initializeGeneralSection(): azdata.GroupContainer {
@@ -80,17 +83,27 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, [DefaultValue, ...this._model.loginNames], DefaultValue);
 		const ownerContainer = this.createLabelInputContainer(localizedConstants.OwnerText, ownerDropbox);
 
-		let collationDropbox = this.createDropdown(localizedConstants.CollationText, [DefaultValue, ...this._model.collationNames], DefaultValue);
-		const collationContainer = this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox);
-
 		return this.createGroup(localizedConstants.GeneralSectionHeader, [
 			nameContainer,
 			ownerContainer,
-			collationContainer,
 		], false);
 	}
 
-	private initializeAdvancedSection(): azdata.GroupContainer {
-		return this.createGroup(localizedConstants.AdvancedSectionHeader, [], true, true);
+	private initializeOptionsSection(): azdata.GroupContainer {
+		let collationDropbox = this.createDropdown(localizedConstants.CollationText, [DefaultValue, ...this._model.collationNames], DefaultValue);
+		const collationContainer = this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox);
+
+		let recoveryOptions = ['Simple', 'Bulk-logged', 'Full'];
+		let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, recoveryOptions, recoveryOptions[0]);
+		const recoveryContainer = this.createLabelInputContainer(localizedConstants.RecoveryModelText, recoveryDropbox);
+
+		let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, this._model.compatibilityLevels, this._model.compatibilityLevels[0]);
+		const compatibilityContainer = this.createLabelInputContainer(localizedConstants.CompatibilityLevelText, compatibilityDropbox);
+
+		let containmentOptions = ['None', 'Partial'];
+		let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, containmentOptions, containmentOptions[0]);
+		const containmentContainer = this.createLabelInputContainer(localizedConstants.ContainmentTypeText, containmentDropbox);
+
+		return this.createGroup(localizedConstants.OptionsSectionHeader, [collationContainer, recoveryContainer, compatibilityContainer, containmentContainer], true, true);
 	}
 }
