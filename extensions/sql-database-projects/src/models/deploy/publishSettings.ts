@@ -16,7 +16,7 @@ export interface ISqlProjectPublishSettings {
 	databaseName: string;
 	serverName: string;
 	connectionUri: string;
-	sqlCmdVariables?: Record<string, string>;
+	sqlCmdVariables?: Map<string, string>;
 	deploymentOptions?: DeploymentOptions;
 	profileUsed?: boolean;
 }

@@ -3,12 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
-import { INetworkModule, NetworkRequestOptions, NetworkResponse } from '@azure/msal-common';
 import * as http from 'http';
 import * as https from 'https';
 import { TextEncoder } from 'util';
-import { getNetworkResponse, urlToHttpOptions } from './networkUtils';
+import { getNetworkResponse, NetworkRequestOptions, NetworkResponse, urlToHttpOptions } from './networkUtils';
 
 /**
  * http methods
@@ -39,7 +37,7 @@ export enum ProxyStatus {
 /**
  * This class implements the API for network requests.
  */
-export class HttpClient implements INetworkModule {
+export class HttpClient {
 	private proxyUrl: string;
 	private customAgentOptions: http.AgentOptions | https.AgentOptions;
 	static readonly AUTHORIZATION_PENDING: string = 'authorization_pending';
@@ -59,12 +57,13 @@ export class HttpClient implements INetworkModule {
 	 */
 	async sendGetRequestAsync<T>(
 		url: string,
-		options?: NetworkRequestOptions
+		options?: NetworkRequestOptions,
+		cancellationToken?: number | undefined
 	): Promise<NetworkResponse<T>> {
 		if (this.proxyUrl) {
-			return networkRequestViaProxy(url, this.proxyUrl, HttpMethod.GET, options, this.customAgentOptions as http.AgentOptions);
+			return networkRequestViaProxy(url, this.proxyUrl, HttpMethod.GET, options, this.customAgentOptions as http.AgentOptions, cancellationToken);
 		} else {
-			return networkRequestViaHttps(url, HttpMethod.GET, options, this.customAgentOptions as https.AgentOptions);
+			return networkRequestViaHttps(url, HttpMethod.GET, options, this.customAgentOptions as https.AgentOptions, cancellationToken);
 		}
 	}
 
@@ -257,7 +256,7 @@ const networkRequestViaProxy = <T>(
 				if (((httpStatusCode < HttpStatus.SUCCESS_RANGE_START) || (httpStatusCode > HttpStatus.SUCCESS_RANGE_END)) &&
 					// do not destroy the request for the device code flow
 					// @ts-ignore
-					networkResponse.body['error'] !== HttpClient.AUTHORIZATION_PENDING) {
+					networkResponse.data['error'] !== HttpClient.AUTHORIZATION_PENDING) {
 					request.destroy();
 				}
 				resolve(networkResponse);
@@ -352,7 +351,7 @@ const networkRequestViaHttps = <T>(
 				if (((statusCode < HttpStatus.SUCCESS_RANGE_START) || (statusCode > HttpStatus.SUCCESS_RANGE_END)) &&
 					// do not destroy the request for the device code flow
 					// @ts-ignore
-					networkResponse.body['error'] !== HttpClient.AUTHORIZATION_PENDING) {
+					networkResponse.data['error'] !== HttpClient.AUTHORIZATION_PENDING) {
 					request.destroy();
 				}
 				resolve(networkResponse);

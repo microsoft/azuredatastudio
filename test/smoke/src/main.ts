@@ -27,20 +27,8 @@ import { setup as setupDataStatusbarTests } from './areas/statusbar/statusbar.te
 import { setup as setupDataExtensionTests } from './areas/extensions/extensions.test';
 import { setup as setupDataMultirootTests } from './areas/multiroot/multiroot.test';
 import { setup as setupDataLocalizationTests } from './areas/workbench/localization.test';
-import { setup as setupLaunchTests } from './areas/workbench/launch.test';*/
-
-const testDataPath = path.join(os.tmpdir(), 'vscsmoke');
-if (fs.existsSync(testDataPath)) {
-	rimraf.sync(testDataPath);
-}
-fs.mkdirSync(testDataPath);
-process.once('exit', () => {
-	try {
-		rimraf.sync(testDataPath);
-	} catch {
-		// noop
-	}
-});
+import { setup as setupLaunchTests } from './areas/workbench/launch.test';
+import { setup as setupTaskTests } from './areas/task/task.test';*/
 
 const [, , ...args] = process.argv;
 const opts = minimist(args, {
@@ -63,6 +51,85 @@ const opts = minimist(args, {
 	],
 	default: {
 		verbose: false
+	}
+}) as {
+	verbose?: boolean;
+	remote?: boolean;
+	headless?: boolean;
+	web?: boolean;
+	tracing?: boolean;
+	build?: string;
+	'stable-build'?: string;
+	browser?: string;
+	electronArgs?: string;
+};
+
+const logsRootPath = (() => {
+	const logsParentPath = path.join(rootPath, '.build', 'logs');
+
+	let logsName: string;
+	if (opts.web) {
+		logsName = 'smoke-tests-browser';
+	} else if (opts.remote) {
+		logsName = 'smoke-tests-remote';
+	} else {
+		logsName = 'smoke-tests-electron';
+	}
+
+	return path.join(logsParentPath, logsName);
+})();
+
+const crashesRootPath = (() => {
+	const crashesParentPath = path.join(rootPath, '.build', 'crashes');
+
+	let crashesName: string;
+	if (opts.web) {
+		crashesName = 'smoke-tests-browser';
+	} else if (opts.remote) {
+		crashesName = 'smoke-tests-remote';
+	} else {
+		crashesName = 'smoke-tests-electron';
+	}
+
+	return path.join(crashesParentPath, crashesName);
+})();
+
+const logger = createLogger();
+
+function createLogger(): Logger {
+	const loggers: Logger[] = [];
+
+	// Log to console if verbose
+	if (opts.verbose) {
+		loggers.push(new ConsoleLogger());
+	}
+
+	// Prepare logs rot path
+	fs.rmSync(logsRootPath, { recursive: true, force: true, maxRetries: 3 });
+	mkdirp.sync(logsRootPath);
+
+	// Always log to log file
+	loggers.push(new FileLogger(path.join(logsRootPath, 'smoke-test-runner.log')));
+
+	return new MultiLogger(loggers);
+}
+
+try {
+	gracefulify(fs);
+} catch (error) {
+	logger.log(`Error enabling graceful-fs: ${error}`);
+}
+
+const testDataPath = path.join(os.tmpdir(), 'vscsmoke');
+if (fs.existsSync(testDataPath)) {
+	rimraf.sync(testDataPath);
+}
+mkdirp.sync(testDataPath);
+process.once('exit', () => {
+	try {
+		rimraf.sync(testDataPath);
+	} catch {
+		// noop
 	}
 });
 
@@ -88,7 +155,10 @@ if (logPath) {
 }
 
 function fail(errorMessage): void {
-	console.error(errorMessage);
+	logger.log(errorMessage);
+	if (!opts.verbose) {
+		console.error(errorMessage);
+	}
 	process.exit(1);
 }
 
@@ -100,6 +170,27 @@ let version: string | undefined;
 function parseVersion(version: string): { major: number, minor: number, patch: number } {
 	const [, major, minor, patch] = /^(\d+)\.(\d+)\.(\d+)/.exec(version)!;
 	return { major: parseInt(major), minor: parseInt(minor), patch: parseInt(patch) };
+}
+
+function parseQuality(): Quality {
+	if (process.env.VSCODE_DEV === '1') {
+		return Quality.Dev;
+	}
+
+	const quality = process.env.VSCODE_QUALITY ?? '';
+
+	switch (quality) {
+		case 'stable':
+			return Quality.Stable;
+		case 'insider':
+			return Quality.Insiders;
+		case 'exploration':
+			return Quality.Exploration;
+		case 'oss':
+			return Quality.OSS;
+		default:
+			return Quality.Dev;
+	}
 }
 
 //
@@ -167,13 +258,7 @@ if (!opts.web) {
 		fail(`Can't find VSCode at ${electronPath}.`);
 	}
 
-	if (process.env.VSCODE_DEV === '1') {
-		quality = Quality.Dev;
-	} else if (electronPath.indexOf('Code - Insiders') >= 0 /* macOS/Windows */ || electronPath.indexOf('code-insiders') /* Linux */ >= 0) {
-		quality = Quality.Insiders;
-	} else {
-		quality = Quality.Stable;
-	}
+	quality = parseQuality();
 
 	console.log(`Running desktop smoke tests against ${electronPath}`);
 }
@@ -200,12 +285,10 @@ else {
 		console.log(`Running web smoke out of sources`);
 	}
 
-	if (process.env.VSCODE_DEV === '1') {
-		quality = Quality.Dev;
-	} else {
-		quality = Quality.Insiders;
-	}
+	quality = parseQuality();
 }
+
+logger.log(`VS Code product quality: ${quality}.`);
 
 const userDataDir = path.join(testDataPath, 'd');
 
@@ -317,11 +400,10 @@ function createOptions(): ApplicationOptions {
 		workspacePath,
 		userDataDir,
 		extensionsPath,
-		waitTime: parseInt(opts['wait-time'] || '0') || 20,
-		logger: new MultiLogger(loggers),
+		logger,
+		logsPath: path.join(logsRootPath, 'suite_unknown'),
+		crashesPath: path.join(crashesRootPath, 'suite_unknown'),
 		verbose: opts.verbose,
-		log,
-		screenshotsPath,
 		remote: opts.remote,
 		web: opts.web,
 		headless: opts.headless,
@@ -378,9 +460,9 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	setupDataLanguagesTests(opts);
 	setupDataEditorTests(opts);
 	setupDataStatusbarTests(opts);
-	setupDataExtensionTests(opts);
+	if (quality !== Quality.Dev) { setupExtensionTests(logger); }
 	if (!opts.web) { setupDataMultirootTests(opts); }
-	if (!opts.web) { setupDataLocalizationTests(opts); }
+	if (!opts.web && !opts.remote && quality !== Quality.Dev) { setupLocalizationTests(logger); }
 	if (!opts.web) { setupLaunchTests(); }
 	*/
 });

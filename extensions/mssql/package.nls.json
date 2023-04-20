@@ -183,11 +183,7 @@
 	"mssql.objectExplorer.enableGroupBySchemaTitle": "SQL Server: Enable Group By Schema",
 	"mssql.objectExplorer.disableGroupBySchemaTitle": "SQL Server: Disable Group By Schema",
 	"mssql.objectExplorer.expandTimeout": "The timeout in seconds for expanding a node in Object Explorer. The default value is 45 seconds.",
-	"title.newServerRole": "New Server Role",
-	"title.newLogin": "New Login",
-	"title.newDatabaseRole": "New Database Role",
-	"title.newApplicationRole": "New Application Role",
-	"title.newUser": "New User",
+	"title.newObject": "New",
 	"title.objectProperties": "Properties (Preview)",
 	"title.deleteObject": "Delete",
 	"title.renameObject": "Rename"

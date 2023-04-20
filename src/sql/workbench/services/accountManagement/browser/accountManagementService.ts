@@ -67,7 +67,7 @@ export class AccountManagementService implements IAccountManagementService {
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		this._mementoContext = new Memento(AccountManagementService.ACCOUNT_MEMENTO, this._storageService);
-		const mementoObj = this._mementoContext.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE);
+		const mementoObj = this._mementoContext.getMemento(StorageScope.APPLICATION, StorageTarget.MACHINE);
 		this._accountStore = this._instantiationService.createInstance(AccountStore, mementoObj);
 
 		// Setup the event emitters
@@ -361,8 +361,8 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @return Promise to return the security token
 	 */
 	public getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<azdata.accounts.AccountSecurityToken | undefined> {
-		return this.doWithProvider(account.key.providerId, provider => {
-			return Promise.resolve(provider.provider.getAccountSecurityToken(account, tenant, resource));
+		return this.doWithProvider(account.key.providerId, async provider => {
+			return await provider.provider.getAccountSecurityToken(account, tenant, resource);
 		});
 	}
 

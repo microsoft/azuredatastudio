@@ -11,7 +11,7 @@ import * as dom from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtils';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
-import { TestEditorGroupsService, TestEditorService, TestTextResourceConfigurationService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestEditorGroupsService, TestEditorService, TestFileService, TestTextResourceConfigurationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 
@@ -48,7 +48,8 @@ class CellEditorProviderStub extends stubs.CellEditorProviderStub {
 				new TestTextResourceConfigurationService(),
 				new TestThemeService(),
 				new TestEditorGroupsService(),
-				new TestEditorService()
+				new TestEditorService(),
+				new TestFileService()
 			);
 		}
 		if (this._editor) {
