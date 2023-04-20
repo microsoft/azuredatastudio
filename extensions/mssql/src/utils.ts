@@ -165,7 +165,7 @@ export function getAzureAuthenticationLibraryConfig(): string {
 export function getEnableSqlAuthenticationProviderConfig(): boolean {
 	const config = getConfiguration();
 	if (config) {
-		return config.get<boolean>(enableSqlAuthenticationProviderConfig, true); // disabled by default
+		return config.get<boolean>(enableSqlAuthenticationProviderConfig, true); // enabled by default
 	}
 	else {
 		return true;
