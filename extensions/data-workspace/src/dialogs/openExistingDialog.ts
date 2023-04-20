@@ -191,7 +191,7 @@ export class OpenExistingDialog extends DialogBase {
 		};
 
 		this.filePathTextBox = view.modelBuilder.inputBox().withProps({
-			ariaLabel: constants.LocationSelectorTitle,
+			ariaLabel: constants.ProjectFileTitle,
 			placeHolder: constants.ProjectFilePlaceholder,
 			required: true,
 			width: constants.DefaultInputWidth
