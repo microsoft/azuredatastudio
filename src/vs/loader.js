@@ -277,8 +277,10 @@ var AMDLoader;
                     return;
                 }
                 if (err.phase === 'factory') {
-                    console.error('The factory method of "' + err.moduleId + '" has thrown an exception');
+                    console.error('The factory function of "' + err.moduleId + '" has thrown an exception');
                     console.error(err);
+                    console.error('Here are the modules that depend on it:');
+                    console.error(err.neededBy);
                     return;
                 }
             }
@@ -288,6 +290,9 @@ var AMDLoader;
             }
             if (typeof options.isBuild !== 'boolean') {
                 options.isBuild = false;
+            }
+            if (typeof options.buildForceInvokeFactory !== 'object') {
+                options.buildForceInvokeFactory = {};
             }
             if (typeof options.paths !== 'object') {
                 options.paths = {};
@@ -534,6 +539,15 @@ var AMDLoader;
          */
         Configuration.prototype.isBuild = function () {
             return this.options.isBuild;
+        };
+        Configuration.prototype.shouldInvokeFactory = function (strModuleId) {
+            if (!this.options.isBuild) {
+                // outside of a build, all factories should be invoked
+                return true;
+            }
+            // during a build, only explicitly marked or anonymous modules get their factories invoked
+            return (this.options.buildForceInvokeFactory[strModuleId]
+                || AMDLoader.Utilities.isAnonymousModule(strModuleId));
         };
         /**
          * Test if module `moduleId` is expected to be defined multiple times
@@ -1182,7 +1196,7 @@ var AMDLoader;
             }
         };
         Module._invokeFactory = function (config, strModuleId, callback, dependenciesValues) {
-            if (config.isBuild() && !AMDLoader.Utilities.isAnonymousModule(strModuleId)) {
+            if (!config.shouldInvokeFactory(strModuleId)) {
                 return {
                     returnedValue: null,
                     producedError: null
@@ -1196,7 +1210,7 @@ var AMDLoader;
                 producedError: null
             };
         };
-        Module.prototype.complete = function (recorder, config, dependenciesValues) {
+        Module.prototype.complete = function (recorder, config, dependenciesValues, inversedependenciesProvider) {
             this._isComplete = true;
             var producedError = null;
             if (this._callback) {
@@ -1217,6 +1231,7 @@ var AMDLoader;
                 var err = AMDLoader.ensureError(producedError);
                 err.phase = 'factory';
                 err.moduleId = this.strId;
+                err.neededBy = inversedependenciesProvider(this.id);
                 this.error = err;
                 config.onError(err);
             }
@@ -1828,7 +1843,10 @@ var AMDLoader;
                     dependenciesValues[i] = null;
                 }
             }
-            module.complete(recorder, this._config, dependenciesValues);
+            var inversedependenciesProvider = function (moduleId) {
+                return (_this._inverseDependencies2[moduleId] || []).map(function (intModuleId) { return _this._moduleIdProvider.getStrModuleId(intModuleId); });
+            };
+            module.complete(recorder, this._config, dependenciesValues, inversedependenciesProvider);
             // Fetch and clear inverse dependencies
             var inverseDeps = this._inverseDependencies2[module.id];
             this._inverseDependencies2[module.id] = null;
