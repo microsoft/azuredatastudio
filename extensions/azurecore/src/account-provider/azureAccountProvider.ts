@@ -228,6 +228,11 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		}
 	}
 
+	/**
+	 * Validates if access token is still valid by checking it's expiration time has a threshold of atleast 2 mins.
+	 * @param accessToken Access token to be validated
+	 * @returns True if access token is valid.
+	 */
 	private isValidToken(accessToken: Token): boolean {
 		const currentTime = new Date().getTime() / 1000;
 		return (accessToken && accessToken.expiresOn !== undefined

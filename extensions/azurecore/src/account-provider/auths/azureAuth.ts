@@ -229,7 +229,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const cachedTokens = await this.getSavedTokenAdal(tenant, resource, account.key);
 
 		// Let's check to see if we can just use the cached tokens to return to the user
-		if (cachedTokens?.accessToken && cachedTokens?.expiresOn) {
+		if (cachedTokens) {
 			let expiry = Number(cachedTokens.expiresOn);
 			if (Number.isNaN(expiry)) {
 				Logger.error('Expiration time was not defined. This is expected on first launch');
