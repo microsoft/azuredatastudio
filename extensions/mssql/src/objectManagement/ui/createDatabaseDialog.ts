@@ -74,13 +74,18 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 			required: true
 		}).component();
 		this.disposables.push(this._nameInput.onTextChanged(async () => {
-			this.objectInfo.name = this._nameInput.value!;
+			this.objectInfo.name = this._nameInput.value;
 			this.onObjectValueChange();
 			await this.runValidation(false);
 		}));
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this._nameInput);
 
 		let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, [DefaultValue, ...this._model.loginNames], DefaultValue);
+		this.disposables.push(ownerDropbox.onValueChanged(async () => {
+			this.objectInfo.owner = ownerDropbox.value === DefaultValue ? undefined : ownerDropbox.value as string;
+			this.onObjectValueChange();
+			await this.runValidation(false);
+		}));
 		const ownerContainer = this.createLabelInputContainer(localizedConstants.OwnerText, ownerDropbox);
 
 		return this.createGroup(localizedConstants.GeneralSectionHeader, [
@@ -92,7 +97,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 	private initializeOptionsSection(): azdata.GroupContainer {
 		let collationDropbox = this.createDropdown(localizedConstants.CollationText, [DefaultValue, ...this._model.collationNames], DefaultValue);
 		this.disposables.push(collationDropbox.onValueChanged(async () => {
-			this.objectInfo.collationName = collationDropbox.value! as string;
+			this.objectInfo.collationName = collationDropbox.value === DefaultValue ? undefined : collationDropbox.value as string;
 			this.onObjectValueChange();
 			await this.runValidation(false);
 		}));
@@ -101,7 +106,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		let recoveryOptions = ['Simple', 'Bulk-logged', 'Full'];
 		let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, recoveryOptions, recoveryOptions[0]);
 		this.disposables.push(recoveryDropbox.onValueChanged(async () => {
-			this.objectInfo.recoveryModel = recoveryDropbox.value! as string;
+			this.objectInfo.recoveryModel = recoveryDropbox.value as string;
 			this.onObjectValueChange();
 			await this.runValidation(false);
 		}));
@@ -109,7 +114,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 
 		let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, this._model.compatibilityLevels, this._model.compatibilityLevels[0]);
 		this.disposables.push(compatibilityDropbox.onValueChanged(async () => {
-			this.objectInfo.compatibilityLevel = compatibilityDropbox.value! as string;
+			this.objectInfo.compatibilityLevel = compatibilityDropbox.value as string;
 			this.onObjectValueChange();
 			await this.runValidation(false);
 		}));
@@ -118,7 +123,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		let containmentOptions = ['None', 'Partial'];
 		let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, containmentOptions, containmentOptions[0]);
 		this.disposables.push(containmentDropbox.onValueChanged(async () => {
-			this.objectInfo.containmentType = containmentDropbox.value! as string;
+			this.objectInfo.containmentType = containmentDropbox.value as string;
 			this.onObjectValueChange();
 			await this.runValidation(false);
 		}));
