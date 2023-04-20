@@ -3,8 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SystemDatabase } from 'mssql';
 import { Uri } from 'vscode';
+import * as mssql from 'mssql';
+import * as vscodeMssql from 'vscode-mssql';
+
+export type SystemDatabase = mssql.SystemDatabase | vscodeMssql.SystemDatabase;
 
 export interface IDatabaseReferenceSettings {
 	databaseVariableLiteralValue?: string;

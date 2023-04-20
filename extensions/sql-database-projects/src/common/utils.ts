@@ -16,6 +16,7 @@ import * as fse from 'fs-extra';
 import * as which from 'which';
 import { promises as fs } from 'fs';
 import { ISqlProject, SqlTargetPlatform } from 'sqldbproj';
+import { SystemDatabase } from '../models/IDatabaseReferenceSettings';
 
 export interface ValidationResult {
 	errorMessage: string;
@@ -157,11 +158,19 @@ export function convertSlashesForSqlProj(filePath: string): string {
  * @param systemDb
  * @returns
  */
-export function systemDatabaseToString(systemDb: mssql.SystemDatabase): string {
-	if (systemDb === mssql.SystemDatabase.Master) {
+export function systemDatabaseToString(systemDb: SystemDatabase): string {
+	if (systemDb === mssql.SystemDatabase.Master || vscodeMssql.SystemDatabase.Master) {
 		return constants.master;
 	} else {
 		return constants.msdb;
+	}
+}
+
+export function getSystemDatabase(name: string): SystemDatabase {
+	if (getAzdataApi()) {
+		return name === constants.master ? mssql.SystemDatabase.Master : mssql.SystemDatabase.MSDB;
+	} else {
+		return name === constants.master ? vscodeMssql.SystemDatabase.Master : vscodeMssql.SystemDatabase.MSDB;
 	}
 }
 
@@ -315,15 +324,14 @@ export async function getSchemaCompareService(): Promise<ISchemaCompareService> 
 	}
 }
 
-export async function getSqlProjectsService(): Promise<mssql.ISqlProjectsService> {
+export async function getSqlProjectsService(): Promise<ISqlProjectsService> {
 	if (getAzdataApi()) {
 		const ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
 		const api = await ext.activate();
 		return api.sqlProjects;
 	} else {
-		throw new Error(constants.errorNotSupportedInVsCode('SqlProjectService'));
-		// const api = await getVscodeMssqlApi();
-		// return api.sqlProjects;
+		const api = await getVscodeMssqlApi();
+		return api.sqlProjects;
 	}
 }
 
