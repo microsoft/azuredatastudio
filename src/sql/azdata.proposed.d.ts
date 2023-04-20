@@ -663,23 +663,6 @@ declare module 'azdata' {
 		authLibrary?: string;
 	}
 
-	export interface AccountProvider {
-		/**
-		 * Encrypts security token using MSAL encryption keys for storage purposes
-		 * @param token Access Token to be encrypted.
-		 * @return Promise to return a encrypted security token object
-		 */
-		encryptAccountSecurityToken(token: accounts.AccountSecurityToken): Promise<string>;
-	}
-
-	export namespace accounts {
-		/**
-		 * Encrypts access token retrieved for MSAL library.
-		 * @param token Access token to be encrypted.
-		 */
-		export function encryptAccountSecurityToken(token: AccountSecurityToken): Promise<string>;
-	}
-
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location

@@ -28,6 +28,7 @@ import { AccountInfo, AuthenticationResult, InteractionRequiredAuthError, Public
 import { HttpClient } from './httpClient';
 import { getProxyEnabledHttpClient, getTenantIgnoreList, updateTenantIgnoreList } from '../../utils';
 import { errorToPromptFailedResult } from './networkUtils';
+import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
 const localize = nls.loadMessageBundle();
 
 export abstract class AzureAuth implements vscode.Disposable {
@@ -46,6 +47,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	constructor(
 		protected readonly metadata: AzureAccountProviderMetadata,
 		protected readonly tokenCache: SimpleTokenCache,
+		protected readonly msalCacheProvider: MsalCachePluginProvider,
 		protected readonly context: vscode.ExtensionContext,
 		protected clientApplication: PublicClientApplication,
 		protected readonly uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
@@ -471,7 +473,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	public async getTenantsMsal(token: string): Promise<Tenant[]> {
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
-			Logger.verbose('Fetching tenants with uri {0}', tenantUri);
+			Logger.verbose(`Fetching tenants with uri: ${tenantUri}`);
 			let tenantList: string[] = [];
 
 			const tenantResponse = await this.httpClient.sendGetRequestAsync<any>(tenantUri, {
@@ -520,7 +522,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	public async getTenantsAdal(token: AccessToken): Promise<Tenant[]> {
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
-			Logger.verbose('Fetching tenants with URI: {0}', tenantUri);
+			Logger.verbose(`Fetching tenants with uri: ${tenantUri}`);
 			let tenantList: string[] = [];
 			const tenantResponse = await this.makeGetRequest(tenantUri, token.token);
 			if (tenantResponse.status !== 200) {
@@ -825,6 +827,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 	public async deleteAllCacheMsal(): Promise<void> {
 		this.clientApplication.clearCache();
+		await this.msalCacheProvider.clearLocalCache();
 	}
 	public async deleteAllCacheAdal(): Promise<void> {
 		const results = await this.tokenCache.findCredentials('');
@@ -849,17 +852,18 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
-	public async deleteAccountCacheMsal(account: azdata.AccountKey): Promise<void> {
+	private async deleteAccountCacheMsal(accountKey: azdata.AccountKey): Promise<void> {
 		const tokenCache = this.clientApplication.getTokenCache();
-		let msalAccount: AccountInfo | null = await this.getAccountFromMsalCache(account.accountId);
+		let msalAccount: AccountInfo | null = await this.getAccountFromMsalCache(accountKey.accountId);
 		if (!msalAccount) {
-			Logger.error(`MSAL: Unable to find account ${account.accountId} for removal`);
-			throw Error(`Unable to find account ${account.accountId}`);
+			Logger.error(`MSAL: Unable to find account ${accountKey.accountId} for removal`);
+			throw Error(`Unable to find account ${accountKey.accountId}`);
 		}
 		await tokenCache.removeAccount(msalAccount);
+		await this.msalCacheProvider.clearAccountFromLocalCache(accountKey.accountId);
 	}
 
-	public async deleteAccountCacheAdal(account: azdata.AccountKey): Promise<void> {
+	private async deleteAccountCacheAdal(account: azdata.AccountKey): Promise<void> {
 		const results = await this.tokenCache.findCredentials(account.accountId);
 		if (!results) {
 			Logger.error('ADAL: Unable to find account for removal');
@@ -930,6 +934,16 @@ export interface Token extends AccountKey {
 	 * TokenType
 	 */
 	tokenType: string;
+
+	/**
+	 * Associated Tenant Id
+	 */
+	tenantId?: string;
+
+	/**
+	 * Resource to which token belongs to.
+	 */
+	resource?: azdata.AzureResource;
 }
 
 export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens

@@ -74,6 +74,10 @@ export const MSALCacheName = 'accessTokenCache';
 
 export const DefaultAuthLibrary = 'MSAL';
 
+export const LocalCacheSuffix = '.local';
+
+export const LockFileSuffix = '.lockfile';
+
 export enum BuiltInCommands {
 	SetContext = 'setContext'
 }

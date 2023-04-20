@@ -108,10 +108,6 @@ export class AccountProviderStub implements azdata.AccountProvider {
 		return Promise.resolve(undefined!);
 	}
 
-	encryptAccountSecurityToken(token: azdata.accounts.AccountSecurityToken): Promise<string> {
-		throw new Error('Method not implemented.');
-	}
-
 	initialize(storedAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
 		return Promise.resolve(storedAccounts);
 	}

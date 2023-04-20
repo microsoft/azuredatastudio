@@ -56,15 +56,6 @@ declare module 'azurecore' {
 		 * A list of tenants (aka directories) that the account belongs to
 		 */
 		tenants: Tenant[];
-
-		/**
-		 * Access tokens for this account mapped with tenant Id.
-		 */
-		tokenMap?: AccessTokenTenantMap;
-	}
-
-	export interface AccessTokenTenantMap {
-		[tenantId: string]: string | undefined;
 	}
 
 	export const enum AzureAuthType {

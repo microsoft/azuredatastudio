@@ -73,10 +73,10 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		const deviceCodeMethod: boolean = configuration.get<boolean>(Constants.AuthType.DeviceCode, false);
 
 		if (codeGrantMethod === true && !this.forceDeviceCode) {
-			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, tokenCache, context, uriEventHandler, this.clientApplication, this.authLibrary));
+			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, tokenCache, this.msalCacheProvider, context, uriEventHandler, this.clientApplication, this.authLibrary));
 		}
 		if (deviceCodeMethod === true || this.forceDeviceCode) {
-			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, tokenCache, context, uriEventHandler, this.clientApplication, this.authLibrary));
+			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, tokenCache, this.msalCacheProvider, context, uriEventHandler, this.clientApplication, this.authLibrary));
 		}
 		if (codeGrantMethod === false && deviceCodeMethod === false && !this.forceDeviceCode) {
 			console.error('No authentication methods selected');
@@ -146,21 +146,17 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		await this.initCompletePromise;
 		const azureAuth = this.getAuthMethod(account);
 		if (azureAuth) {
-			let identifier = resource.toString() + '|' + tenantId;
 			Logger.piiSanitized(`Getting account security token for ${JSON.stringify(account.key)} (tenant ${tenantId}). Auth Method = ${azureAuth.userFriendlyName}`, [], []);
 			if (this.authLibrary === Constants.AuthLibrary.MSAL) {
-				// Fetch cached token from account properties if token is available and valid.
-				if (account.properties.tokenMap?.[identifier]) {
-					let encryptedAccessToken = account.properties.tokenMap[identifier];
-					try {
-						let accessToken = await this.msalCacheProvider.decryptToken(encryptedAccessToken!);
-						if (this.isValidToken(accessToken)) {
-							return accessToken;
-						}
-					} catch (e) {
-						// Log decrypt error and move on to fetching fresh access token.
-						Logger.info(`Decrypting access token failed with error: ${e}, fetching new access token.`);
-					}
+				try {
+					// Fetch cached token from local cache if token is available and valid.
+					let accessToken = await this.msalCacheProvider.getTokenFromLocalCache(account.key.accountId, tenantId, resource);
+					if (this.isValidToken(accessToken)) {
+						return accessToken;
+					} // else fallback to fetching a new token.
+				} catch (e) {
+					// Log any error and move on to fetching fresh access token.
+					Logger.info(`Could not fetch access token from cache: ${e}, fetching new access token instead.`);
 				}
 				tenantId = tenantId || account.properties.owningTenant.id;
 				let authResult = await azureAuth.getTokenMsal(account.key.accountId, resource, tenantId);
@@ -169,17 +165,14 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 						key: authResult.account.homeAccountId,
 						token: authResult.accessToken,
 						tokenType: authResult.tokenType,
-						expiresOn: authResult.account.idTokenClaims.exp!
+						expiresOn: authResult.account.idTokenClaims.exp!,
+						tenantId: tenantId,
+						resource: resource
 					};
-					// Add to account's token cache
-					if (!account.properties.tokenMap) {
-						account.properties.tokenMap = {};
-					}
 					try {
-						let encryptedAccessToken = await this.msalCacheProvider.encryptToken(token);
-						account.properties.tokenMap[identifier] = encryptedAccessToken;
+						await this.msalCacheProvider.writeTokenToLocalCache(token);
 					} catch (e) {
-						Logger.info(`Could not encrypt access token, `)
+						Logger.error(`Could not save access token to local cache: ${e}, this might cause throttling of AAD requests.`);
 					}
 					return token;
 				} else {
@@ -199,17 +192,6 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 			Logger.error(`_getAccountSecurityToken: Authentication method not found for account ${account.displayInfo.displayName}`);
 			throw Error('Failed to get authentication method, please remove and re-add the account');
 		}
-	}
-
-	encryptAccountSecurityToken(token: Token): Promise<string> {
-		return this._encryptAccountSecurityToken(token);
-	}
-
-	private async _encryptAccountSecurityToken(token: Token): Promise<string> {
-		if (this.authLibrary === Constants.AuthLibrary.MSAL) {
-			return await this.msalCacheProvider.encryptToken(token);
-		}
-		throw Error(`Encryption of token not supported for ADAL.`);
 	}
 
 	private isAuthenticationResult(result: AuthenticationResult | azdata.ProviderError | null): result is AuthenticationResult {
@@ -233,9 +215,9 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	 * @param accessToken Access token to be validated
 	 * @returns True if access token is valid.
 	 */
-	private isValidToken(accessToken: Token): boolean {
+	private isValidToken(accessToken: Token | undefined): boolean {
 		const currentTime = new Date().getTime() / 1000;
-		return (accessToken && accessToken.expiresOn !== undefined
+		return (accessToken !== undefined && accessToken.expiresOn !== undefined
 			&& Number(accessToken.expiresOn) - currentTime > 2 * 60); // threshold = 2 mins
 	}
 
@@ -300,7 +282,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		return this.prompt();
 	}
 
-	clear(accountKey: azdata.AccountKey): Thenable<void> {
+	async clear(accountKey: azdata.AccountKey): Promise<void> {
 		return this._clear(accountKey);
 	}
 

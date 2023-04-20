@@ -14,7 +14,6 @@ import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Event, Emitter } from 'vs/base/common/event';
 import { values } from 'vs/base/common/collections';
 import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
-import { MSAL_AUTH_LIBRARY } from 'sql/workbench/services/accountManagement/utils';
 
 type ProviderAndAccount = { provider: azdata.AccountProvider, account: azdata.Account };
 
@@ -104,24 +103,9 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 
 	public override async $getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource = AzureResource.ResourceManagement): Promise<azdata.accounts.AccountSecurityToken> {
 		let providerAndAccounts = await this.getAllProvidersAndAccounts();
-		let identifier = resource.toString() + '|' + tenant;
 		const providerAndAccount = providerAndAccounts.find(providerAndAccount => providerAndAccount.account.key.accountId === account.key.accountId);
 		if (providerAndAccount) {
-			let originalToken: azdata.accounts.AccountSecurityToken | undefined
-				= account.properties.tokenMap?.[identifier]
-					? Object.assign(account.properties.tokenMap[identifier]) : undefined;
-			let token = await providerAndAccount.provider.getAccountSecurityToken(account, tenant, resource);
-			// Cache access token to reduce AAD requests when working with MSAL Authentication Library
-			if (tenant && token && account.key.authLibrary === MSAL_AUTH_LIBRARY) {
-				if (!account.properties.tokenMap) {
-					account.properties.tokenMap = {};
-				}
-				account.properties.tokenMap[identifier] = await providerAndAccount.provider.encryptAccountSecurityToken(token);
-				if (!originalToken || originalToken.token !== token.token) {
-					this._proxy.$accountUpdated(account);
-				}
-			}
-			return token;
+			return await providerAndAccount.provider.getAccountSecurityToken(account, tenant, resource);
 		}
 		throw Error(`Account ${account.key.accountId} not found.`);
 	}
