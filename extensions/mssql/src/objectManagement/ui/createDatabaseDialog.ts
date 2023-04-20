@@ -91,17 +91,37 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 
 	private initializeOptionsSection(): azdata.GroupContainer {
 		let collationDropbox = this.createDropdown(localizedConstants.CollationText, [DefaultValue, ...this._model.collationNames], DefaultValue);
+		this.disposables.push(collationDropbox.onValueChanged(async () => {
+			this.objectInfo.collationName = collationDropbox.value! as string;
+			this.onObjectValueChange();
+			await this.runValidation(false);
+		}));
 		const collationContainer = this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox);
 
 		let recoveryOptions = ['Simple', 'Bulk-logged', 'Full'];
 		let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, recoveryOptions, recoveryOptions[0]);
+		this.disposables.push(recoveryDropbox.onValueChanged(async () => {
+			this.objectInfo.recoveryModel = recoveryDropbox.value! as string;
+			this.onObjectValueChange();
+			await this.runValidation(false);
+		}));
 		const recoveryContainer = this.createLabelInputContainer(localizedConstants.RecoveryModelText, recoveryDropbox);
 
 		let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, this._model.compatibilityLevels, this._model.compatibilityLevels[0]);
+		this.disposables.push(compatibilityDropbox.onValueChanged(async () => {
+			this.objectInfo.compatibilityLevel = compatibilityDropbox.value! as string;
+			this.onObjectValueChange();
+			await this.runValidation(false);
+		}));
 		const compatibilityContainer = this.createLabelInputContainer(localizedConstants.CompatibilityLevelText, compatibilityDropbox);
 
 		let containmentOptions = ['None', 'Partial'];
 		let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, containmentOptions, containmentOptions[0]);
+		this.disposables.push(containmentDropbox.onValueChanged(async () => {
+			this.objectInfo.containmentType = containmentDropbox.value! as string;
+			this.onObjectValueChange();
+			await this.runValidation(false);
+		}));
 		const containmentContainer = this.createLabelInputContainer(localizedConstants.ContainmentTypeText, containmentDropbox);
 
 		return this.createGroup(localizedConstants.OptionsSectionHeader, [collationContainer, recoveryContainer, compatibilityContainer, containmentContainer], true, true);
