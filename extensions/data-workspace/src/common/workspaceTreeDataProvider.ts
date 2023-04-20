@@ -87,7 +87,7 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 
 			if (errorMessages.length > 0) {
 				for (let error of errorMessages) {
-					void vscode.window.showErrorMessage(projectFailedToLoad(path.basename(error.project.fsPath), error.errorMessage));
+					void vscode.window.showErrorMessage(projectFailedToLoad(path.basename(error.project.fsPath), error.errorMessage + (error.errorMessage.endsWith('.') ? '' : '.')));
 				}
 			}
 

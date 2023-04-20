@@ -14,7 +14,7 @@ export const SelectProjectFileActionName = localize('SelectProjectFileActionName
 export const AllProjectTypes = localize('AllProjectTypes', "All Project Types");
 export const ProviderNotFoundForProjectTypeError = (projectType: string): string => { return localize('UnknownProjectTypeError', "No provider was found for project type with id: '{0}'", projectType); };
 export const RestartConfirmation = localize('dataworkspace.restartConfirmation', "Azure Data Studio needs to be restarted for the project to be added to the workspace. Restart now?");
-export const projectFailedToLoad = (project: string, error: string) => { return localize('projectFailedToLoad', "Project '{0}' failed to load.  To view more details, [open the developer console](command:workbench.action.toggleDevTools): {1}", project, error) };
+export const projectFailedToLoad = (project: string, error: string) => { return localize('projectFailedToLoad', "Project '{0}' failed to load: {1}  To view more details, [open the developer console](command:workbench.action.toggleDevTools).", project, error) };
 export const fileDoesNotExist = (name: string): string => { return localize('fileDoesNotExist', "File '{0}' doesn't exist", name); };
 export const projectNameNull = localize('projectNameNull', "Project name is null");
 export const noPreviousData = (tableName: string): string => { return localize('noPreviousData', "Prior {0} for the current project will appear here, please run to see the results.", tableName); };
