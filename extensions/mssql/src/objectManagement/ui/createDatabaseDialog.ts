@@ -67,7 +67,8 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		this._nameInput = this.modelView.modelBuilder.inputBox().withProps({
 			ariaLabel: localizedConstants.NameText,
 			value: this.objectInfo.name,
-			width: DefaultInputWidth
+			width: DefaultInputWidth,
+			required: true
 		}).component();
 		this.disposables.push(this._nameInput.onTextChanged(async () => {
 			this.objectInfo.name = this._nameInput.value!;
