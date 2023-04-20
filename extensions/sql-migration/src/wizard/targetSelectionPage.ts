@@ -7,11 +7,12 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, MigrationTargetType, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as utils from '../api/utils';
+import { MigrationTargetType } from '../api/utils';
 import { azureResource } from 'azurecore';
 import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/azure';
 import { collectTargetDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
@@ -42,7 +43,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	private _targetPasswordInputBox!: azdata.InputBoxComponent;
 	private _testConectionButton!: azdata.ButtonComponent;
 	private _connectionResultsInfoBox!: azdata.InfoBoxComponent;
-	private _migrationTargetPlatform!: MigrationTargetType;
+	private _migrationTargetPlatform!: utils.MigrationTargetType;
 	private _serviceContext!: MigrationServiceContext;
 
 	constructor(
@@ -886,7 +887,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	private async populateTenantsDropdown(): Promise<void> {
 		try {
 			this._accountTenantDropdown.loading = true;
-			if (this.migrationStateModel._azureAccount?.isStale === false &&
+			if (!utils.isAccountTokenStale(this.migrationStateModel._azureAccount) &&
 				this.migrationStateModel._azureAccount?.properties?.tenants?.length > 0) {
 				this.migrationStateModel._accountTenants = utils.getAzureTenants(this.migrationStateModel._azureAccount);
 

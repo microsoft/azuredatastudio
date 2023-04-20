@@ -10,10 +10,10 @@ import * as vscode from 'vscode';
 import { Deferred } from '../../../common/promise';
 import { FilePicker } from '../../../ui/components/filePicker';
 import { createModelViewMock } from '@microsoft/azdata-test/out/mocks/azdata/modelView';
-import { StubButton } from '@microsoft/azdata-test/out/stubs/modelView/stubButton';
+import { StubButton } from '@microsoft/azdata-test/out/stubs/azdata/modelView';
 
 let filePicker: FilePicker;
-const initialPath = path.join('path', 'to', '.kube','config');
+const initialPath = path.join('path', 'to', '.kube', 'config');
 const newFileUri = vscode.Uri.file(path.join('path', 'to', 'new', '.kube', 'config'));
 describe('filePicker', function (): void {
 	beforeEach(async () => {

@@ -6,9 +6,10 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { IWorkspaceService } from './interfaces';
-import { dragAndDropNotSupported, onlyMovingOneFileIsSupported, ProjectsFailedToLoad, UnknownProjectsError } from './constants';
+import { dragAndDropNotSupported, onlyMovingOneFileIsSupported, projectFailedToLoad, UnknownProjectsError } from './constants';
 import { WorkspaceTreeItem } from 'dataworkspace';
 import { TelemetryReporter } from './telemetry';
+import { getErrorMessage } from './utils';
 import Logger from './logger';
 
 /**
@@ -54,7 +55,7 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 
 			const typeMetric: Record<string, number> = {};
 
-			let errorCount = 0;
+			let errorMessages: { project: vscode.Uri, errorMessage: string }[] = [];
 			for (const project of projects) {
 				try {
 					const projectProvider = await this._workspaceService.getProjectProvider(project);
@@ -79,13 +80,15 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 						});
 					});
 				} catch (e) {
-					errorCount++;
+					errorMessages.push({ project: project, errorMessage: getErrorMessage(e) });
 					console.error(e.message);
 				}
 			}
 
-			if (errorCount > 0) {
-				void vscode.window.showErrorMessage(ProjectsFailedToLoad);
+			if (errorMessages.length > 0) {
+				for (let error of errorMessages) {
+					void vscode.window.showErrorMessage(projectFailedToLoad(path.basename(error.project.fsPath), error.errorMessage + (error.errorMessage.endsWith('.') ? '' : '.')));
+				}
 			}
 
 			TelemetryReporter.sendMetricsEvent(typeMetric, 'OpenWorkspaceProjectTypes');
@@ -115,6 +118,14 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 	}
 
 	handleDrag(treeItems: readonly WorkspaceTreeItem[], dataTransfer: vscode.DataTransfer): void | Thenable<void> {
+		// Don't do anything if trying to drag the project node since it isn't supported. Because canSelectMany is set to false for WorkspaceTreeDataProvider,
+		// treeItems will only contain one treeItem, so we only need to check the first one in the list.
+		const relativePath = treeItems[0].element?.relativeProjectUri?.fsPath?.substring(1); // remove leading slash
+		const projBaseName = path.basename(treeItems[0].element?.projectFileUri?.fsPath, path.extname(treeItems[0].element?.projectFileUri?.fsPath));
+		if (relativePath === projBaseName) {
+			return;
+		}
+
 		dataTransfer.set('application/vnd.code.tree.WorkspaceTreeDataProvider', new vscode.DataTransferItem(treeItems.map(t => t.element)));
 	}
 

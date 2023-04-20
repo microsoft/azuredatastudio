@@ -46,6 +46,7 @@ else
 				compile-extension:azurecore \
 				compile-extension:cms \
 				compile-extension:dacpac \
+				compile-extension:datavirtualization \
 				compile-extension:import \
 				compile-extension:schema-compare \
 				compile-extension:machine-learning \
@@ -118,6 +119,11 @@ echo *****************************
 echo *** starting dacpac tests ***
 echo *****************************
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/dacpac --extensionTestsPath=$ROOT/extensions/dacpac/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+
+echo *****************************************
+echo *** starting datavirtualization tests ***
+echo *****************************************
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/datavirtualization --extensionTestsPath=$ROOT/extensions/datavirtualization/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 # {{SQL CARBON TODO}} - disable tests for this extension
 # echo ********************************************

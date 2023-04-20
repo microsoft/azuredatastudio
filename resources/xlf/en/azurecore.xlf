@@ -318,6 +318,9 @@
     <trans-unit id="azure.azureResourcesGridTitle">
       <source xml:lang="en">Azure Resources (Preview)</source>
     </trans-unit>
+    <trans-unit id="azure.credStoreSaveFailedError">
+      <source xml:lang="en">Keys for token cache could not be saved in credential store, this may cause Azure access token persistence issues and connection instabilities. It's likely that SqlTools has reached credential storage limit on Windows, please clear at least 2 credentials that start with "Microsoft.SqlTools|" in Windows Credential Manager and reload.</source>
+    </trans-unit>
     <trans-unit id="azure.unableToOpenAzureLink">
       <source xml:lang="en">Unable to open link, missing required values</source>
     </trans-unit>
@@ -362,6 +365,15 @@
     </trans-unit>
     <trans-unit id="azurecore.centraluseuap">
       <source xml:lang="en">Central US EUAP</source>
+    </trans-unit>
+    <trans-unit id="azurecore.deprecated">
+      <source xml:lang="en">Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL instead.</source>
+    </trans-unit>
+    <trans-unit id="azurecore.disable">
+      <source xml:lang="en">Disable</source>
+    </trans-unit>
+    <trans-unit id="azurecore.dismiss">
+      <source xml:lang="en">Dismiss</source>
     </trans-unit>
     <trans-unit id="azurecore.eastasia">
       <source xml:lang="en">East Asia</source>
@@ -425,6 +437,9 @@
     </trans-unit>
     <trans-unit id="azurecore.norwaywest">
       <source xml:lang="en">Norway West</source>
+    </trans-unit>
+    <trans-unit id="azurecore.piiLogging.warning">
+      <source xml:lang="en">Warning: Azure PII Logging is enabled. Enabling this option allows personally identifiable information to be logged and should only be used for debugging purposes.</source>
     </trans-unit>
     <trans-unit id="azurecore.postgresServer">
       <source xml:lang="en">Azure Database for PostgreSQL server</source>

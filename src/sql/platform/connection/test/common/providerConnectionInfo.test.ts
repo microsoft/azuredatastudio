@@ -33,7 +33,6 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	};
 
 	setup(() => {
-		let capabilities: azdata.DataProtocolServerCapabilities[] = [];
 		let connectionProvider: azdata.ConnectionOption[] = [
 			{
 				name: 'connectionName',
@@ -125,8 +124,8 @@ suite('SQL ProviderConnectionInfo tests', () => {
 			providerId: mssqlProviderName,
 			displayName: 'MSSQL',
 			connectionOptions: connectionProvider,
+			useFullOptions: true
 		};
-		capabilities.push(msSQLCapabilities);
 		capabilitiesService = new TestCapabilitiesService();
 		capabilitiesService.capabilities[mssqlProviderName] = { connection: msSQLCapabilities };
 	});
@@ -230,15 +229,37 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	});
 
 	test('getOptionsKey should create a valid unique id', () => {
+		// Test the new option key format
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
-		// **IMPORTANT** This should NEVER change without thorough review and consideration of side effects. This key controls
-		//				 things like how passwords are saved, which means if its changed then serious side effects will occur.
-		let expectedId = 'providerName:MSSQL|authenticationType:|databaseName:database|serverName:new server|userName:user';
+		let expectedId = 'providerName:MSSQL|connectionName:name|databaseName:database|serverName:new server|userName:user';
 		let id = conn.getOptionsKey();
+		assert.strictEqual(id, expectedId);
+
+		// Test for original options key (used for retrieving passwords and as a fallback for unsupported providers)
+		// **IMPORTANT** The original format option key should NEVER change without thorough review and consideration of side effects. This version of the key controls
+		//				 things like how passwords are saved, which means if its changed then serious side effects will occur.
+		expectedId = 'providerName:MSSQL|authenticationType:|databaseName:database|serverName:new server|userName:user';
+		id = conn.getOptionsKey(true);
 		assert.strictEqual(id, expectedId);
 	});
 
-	test('getOptionsKey should create the same ID regardless of optional options', () => {
+	test('getOptionsKey should return original formatted ID if useFullOptions is not supported', () => {
+		// Test the new option key format
+		let originalCapabilitiesConnection = capabilitiesService.capabilities[mssqlProviderName].connection;
+		originalCapabilitiesConnection.useFullOptions = false;
+		let newCapabilitiesService = new TestCapabilitiesService();
+		newCapabilitiesService.capabilities[mssqlProviderName] = { connection: originalCapabilitiesConnection }
+		let conn = new ProviderConnectionInfo(newCapabilitiesService, connectionProfile);
+		let expectedId = 'providerName:MSSQL|authenticationType:|databaseName:database|serverName:new server|userName:user';
+		let id = conn.getOptionsKey();
+		assert.strictEqual(id, expectedId);
+
+		// Should be the same when getOriginalOptions is true.
+		id = conn.getOptionsKey(true);
+		assert.strictEqual(id, expectedId);
+	});
+
+	test('getOptionsKey should create different keys based on optional options', () => {
 		const conn1 = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
 		let id1 = conn1.getOptionsKey();
 
@@ -248,6 +269,19 @@ suite('SQL ProviderConnectionInfo tests', () => {
 		const conn2 = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
 		const id2 = conn2.getOptionsKey();
 
+		assert.notEqual(id1, id2);
+	});
+
+	test('getOptionsKey should have the same key if original options is used', () => {
+		const conn1 = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
+		let id1 = conn1.getOptionsKey(true);
+
+		connectionProfile.options = {
+			'encrypt': true
+		};
+		const conn2 = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
+		const id2 = conn2.getOptionsKey(true);
+
 		assert.strictEqual(id1, id2);
 	});
 
@@ -256,16 +290,6 @@ suite('SQL ProviderConnectionInfo tests', () => {
 		let conn2 = new ProviderConnectionInfo(capabilitiesService, Object.assign({}, connectionProfile, { serverName: connectionProfile.serverName + '1' }));
 
 		assert.notStrictEqual(conn.getOptionsKey(), conn2.getOptionsKey());
-	});
-
-	test('titleParts should return server, database and auth type as first items', () => {
-		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
-		let titleParts = conn.titleParts;
-		assert.strictEqual(titleParts.length, 4);
-		assert.strictEqual(titleParts[0], connectionProfile.serverName);
-		assert.strictEqual(titleParts[1], connectionProfile.databaseName);
-		assert.strictEqual(titleParts[2], connectionProfile.authenticationType);
-		assert.strictEqual(titleParts[3], connectionProfile.userName);
 	});
 
 	test('getProviderFromOptionsKey should return the provider name from the options key successfully', () => {

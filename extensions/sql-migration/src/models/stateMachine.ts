@@ -13,7 +13,7 @@ import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
-import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBackupFileNameWithoutFolder } from '../api/utils';
+import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBackupFileNameWithoutFolder, MigrationTargetType } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getSourceConnectionUri, getTrustServerCertificateValue, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel } from './loginMigrationModel';
@@ -57,12 +57,6 @@ export enum ServiceTier {
 	BusinessCritical = 'BusinessCritical',
 }
 
-export enum MigrationTargetType {
-	SQLVM = 'AzureSqlVirtualMachine',
-	SQLMI = 'AzureSqlManagedInstance',
-	SQLDB = 'AzureSqlDatabase'
-}
-
 export enum MigrationSourceAuthenticationType {
 	Integrated = 'WindowsAuthentication',
 	Sql = 'SqlAuthentication'
@@ -101,7 +95,7 @@ export enum Page {
 export enum WizardEntryPoint {
 	Default = 'Default',
 	SaveAndClose = 'SaveAndClose',
-	RetryMigration = 'RetryMigration',
+	RestartMigration = 'RestartMigration',
 }
 
 export enum PerformanceDataSourceOptions {
@@ -266,7 +260,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _skuEnableElastic!: boolean;
 
 	public refreshDatabaseBackupPage!: boolean;
-	public retryMigration!: boolean;
+	public restartMigration!: boolean;
 	public resumeAssessment!: boolean;
 	public savedInfo!: SavedInfo;
 	public closedPage!: number;
@@ -947,7 +941,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async startTdeMigration(
 		accessToken: string,
-		reportUpdate: (dbName: string, succeeded: boolean, message: string) => Promise<void>): Promise<OperationResult<TdeMigrationDbResult[]>> {
+		reportUpdate: (dbName: string, succeeded: boolean, message: string, statusCode: string) => Promise<void>): Promise<OperationResult<TdeMigrationDbResult[]>> {
 
 		const tdeEnabledDatabases = this.tdeMigrationConfig.getTdeEnabledDatabases();
 		const connectionString = await getSourceConnectionString();
@@ -1127,8 +1121,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				let wizardEntryPoint = WizardEntryPoint.Default;
 				if (this.resumeAssessment) {
 					wizardEntryPoint = WizardEntryPoint.SaveAndClose;
-				} else if (this.retryMigration) {
-					wizardEntryPoint = WizardEntryPoint.RetryMigration;
+				} else if (this.restartMigration) {
+					wizardEntryPoint = WizardEntryPoint.RestartMigration;
 				}
 				if (response.status === 201 || response.status === 200) {
 					sendSqlMigrationActionEvent(
@@ -1173,7 +1167,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			finally {
 				// kill existing data collection if user start migration
 				await this.refreshPerfDataCollection();
-				if ((!this.resumeAssessment || this.retryMigration) && this._perfDataCollectionIsCollecting) {
+				if ((!this.resumeAssessment || this.restartMigration) && this._perfDataCollectionIsCollecting) {
 					void this.stopPerfDataCollection();
 					void vscode.window.showInformationMessage(
 						constants.AZURE_RECOMMENDATION_STOP_POPUP);
@@ -1334,14 +1328,17 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			case MigrationTargetType.SQLMI:
 				const sqlMi = this._targetServerInstance as SqlManagedInstance;
 				this._targetServerName = sqlMi.properties.fullyQualifiedDomainName;
+				break;
 			case MigrationTargetType.SQLDB:
 				const sqlDb = this._targetServerInstance as AzureSqlDatabaseServer;
 				this._targetServerName = sqlDb.properties.fullyQualifiedDomainName;
+				break;
 			case MigrationTargetType.SQLVM:
 				// For sqlvm, we need to use ip address from the network interface to connect to the server
 				const sqlVm = this._targetServerInstance as SqlVMServer;
 				const networkInterfaces = Array.from(sqlVm.networkInterfaces.values());
 				this._targetServerName = NetworkInterfaceModel.getIpAddress(networkInterfaces);
+				break;
 		}
 	}
 

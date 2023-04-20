@@ -5,7 +5,6 @@
 
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as azdata from 'azdata';
 import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult, GetBlobsResult, GetStorageAccountAccessKeyResult, AzureAccount, azureResource, AzureAccountProviderMetadata } from 'azurecore';
 import { EOL } from 'os';
@@ -18,8 +17,18 @@ import { AzureResourceGroupService } from './providers/resourceGroup/resourceGro
 import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
 import providerSettings from '../account-provider/providerSettings';
 import * as Constants from '../constants';
+import { getProxyEnabledHttpClient } from '../utils';
+import { HttpClient } from '../account-provider/auths/httpClient';
+import { NetworkRequestOptions } from '@azure/msal-common';
 
 const localize = nls.loadMessageBundle();
+
+export interface HttpClientResponse {
+	body: any;
+	headers: any;
+	status: Number;
+	error: any;
+}
 
 function getErrorMessage(error: Error | string): string {
 	return (error instanceof Error) ? error.message : error;
@@ -251,7 +260,7 @@ export async function runResourceQuery<T extends azureResource.AzureGraphResourc
 					skipToken: skipToken
 				}
 			});
-			const resources: T[] = response.data;
+			const resources: T[] = response.data as T[];
 			totalProcessed += resources.length;
 			allResources.push(...resources);
 			if (response.skipToken && totalProcessed < response.totalRecords) {
@@ -341,6 +350,7 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
  */
 export async function makeHttpRequest(account: AzureAccount, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors: boolean = false, host: string = 'https://management.azure.com', requestHeaders: { [key: string]: string } = {}): Promise<AzureRestResponse> {
 	const result: AzureRestResponse = { response: {}, errors: [] };
+	const httpClient: HttpClient = getProxyEnabledHttpClient();
 
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
 		const error = new Error(invalidAzureAccount);
@@ -380,15 +390,15 @@ export async function makeHttpRequest(account: AzureAccount, subscription: azure
 		return result;
 	}
 
-	const reqHeaders = {
+	let reqHeaders = {
 		'Content-Type': 'application/json',
 		'Authorization': `Bearer ${securityToken.token}`,
 		...requestHeaders
-	};
+	}
 
-	const config: AxiosRequestConfig = {
+	let networkRequestOptions: NetworkRequestOptions = {
 		headers: reqHeaders,
-		validateStatus: () => true // Never throw
+		body: requestBody
 	};
 
 	// Adding '/' if path does not begin with it.
@@ -403,19 +413,23 @@ export async function makeHttpRequest(account: AzureAccount, subscription: azure
 		requestUrl = `${account.properties.providerSettings.settings.armResource.endpoint}${path}`;
 	}
 
-	let response: AxiosResponse | undefined;
+	let response;
 	switch (requestType) {
 		case HttpRequestMethod.GET:
-			response = await axios.get(requestUrl, config);
+			response = await httpClient.sendGetRequestAsync<any>(requestUrl, {
+				headers: reqHeaders
+			});
 			break;
 		case HttpRequestMethod.POST:
-			response = await axios.post(requestUrl, requestBody, config);
+			response = await httpClient.sendPostRequestAsync<HttpClientResponse>(requestUrl, networkRequestOptions);
 			break;
 		case HttpRequestMethod.PUT:
-			response = await axios.put(requestUrl, requestBody, config);
+			response = await httpClient.sendPutRequestAsync<HttpClientResponse>(requestUrl, networkRequestOptions);
 			break;
 		case HttpRequestMethod.DELETE:
-			response = await axios.delete(requestUrl, config);
+			response = await httpClient.sendDeleteRequestAsync<any>(requestUrl, {
+				headers: reqHeaders
+			});
 			break;
 		default:
 			const error = new Error(`Unknown RequestType "${requestType}"`);
@@ -434,7 +448,6 @@ export async function makeHttpRequest(account: AzureAccount, subscription: azure
 	} else if (response.status < 200 || response.status > 299) {
 		let errorMessage: string[] = [];
 		errorMessage.push(response.status.toString());
-		errorMessage.push(response.statusText);
 		if (response.data && response.data.error) {
 			errorMessage.push(`${response.data.error.code} : ${response.data.error.message}`);
 		}

@@ -50,6 +50,14 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <source xml:lang="en">Failed to find tenant '{0}' in account '{1}' when refreshing security token</source>
         <target state="translated">Non è stato possibile trovare il tenant '{0}' nell'account '{1}' durante l'aggiornamento del token di sicurezza</target>
       </trans-unit>
+      <trans-unit id="mssql.noConvertResult">
+        <source xml:lang="en">No result returned from Notebook convert request</source>
+        <target state="translated">Nessun risultato restituito dalla richiesta di conversione del notebook</target>
+      </trans-unit>
+      <trans-unit id="mssql.noDocumentFound">
+        <source xml:lang="en">No document found for URI {0}</source>
+        <target state="translated">Non sono stati trovati documenti per l'URI {0}</target>
+      </trans-unit>
       <trans-unit id="mssql.tokenRefreshFailed">
         <source xml:lang="en">{0} AAD token refresh failed, please reconnect to enable {0}</source>
         <target state="translated">{0} l'aggiornamento del token AAD non è riuscito. Riconnettersi per abilitare {0}</target>
@@ -57,6 +65,10 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
       <trans-unit id="mssql.tokenRefreshFailedNoSecurityToken">
         <source xml:lang="en">Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected</source>
         <target state="translated">L'aggiornamento del token dell'editor non è riuscito. Il completamento automatico verrà disabilitato fino a quando l’editor non verrà disconnesso e riconnesso</target>
+      </trans-unit>
+      <trans-unit id="mssql.unsupportedPlatform">
+        <source xml:lang="en">Unsupported platform {0}</source>
+        <target state="translated">La piattaforma {0} non è supportata</target>
       </trans-unit>
     </body>
   </file>
@@ -78,6 +90,14 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
   </file>
   <file original="extensions/mssql/dist/objectManagement/localizedConstants" source-language="en" datatype="plaintext" target-language="it">
     <body>
+      <trans-unit id="objectManagement.ColumnDisplayName">
+        <source xml:lang="en">column</source>
+        <target state="translated">colonna</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.DatabaseDisplayName">
+        <source xml:lang="en">database</source>
+        <target state="translated">database</target>
+      </trans-unit>
       <trans-unit id="objectManagement.LoginTypeDisplayName">
         <source xml:lang="en">login</source>
         <target state="translated">accesso</target>
@@ -90,6 +110,10 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <source xml:lang="en">OK</source>
         <target state="translated">OK</target>
       </trans-unit>
+      <trans-unit id="objectManagement.TableDisplayName">
+        <source xml:lang="en">table</source>
+        <target state="translated">tabella</target>
+      </trans-unit>
       <trans-unit id="objectManagement.UserDisplayName">
         <source xml:lang="en">user</source>
         <target state="translated">utente</target>
@@ -97,6 +121,10 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
       <trans-unit id="objectManagement.UserTypeDisplayNameInTitle">
         <source xml:lang="en">User</source>
         <target state="translated">Utente</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ViewDisplayName">
+        <source xml:lang="en">view</source>
+        <target state="translated">visualizza</target>
       </trans-unit>
       <trans-unit id="objectManagement.advancedSectionHeader">
         <source xml:lang="en">Advanced</source>
@@ -218,6 +246,10 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <source xml:lang="en">Windows Authentication</source>
         <target state="translated">Autenticazione di Windows</target>
       </trans-unit>
+      <trans-unit id="objectManagement.loginNotSelectedError">
+        <source xml:lang="en">Login is not selected.</source>
+        <target state="translated">L'account di accesso non è selezionato.</target>
+      </trans-unit>
       <trans-unit id="objectManagement.nameCannotBeEmptyError">
         <source xml:lang="en">Name cannot be empty.</source>
         <target state="translated">Il nome non può essere vuoto.</target>
@@ -230,6 +262,10 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <source xml:lang="en">{0} - New (Preview)</source>
         <note>{0} object type.</note>
         <target state="translated">{0} - Nuovo (anteprima)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.noConnectionUriError">
+        <source xml:lang="en">Failed to retrieve the connection information, please reconnect and try again.</source>
+        <target state="translated">Non è stato possibile recuperare le informazioni sulla connessione. Riconnettersi e riprovare.</target>
       </trans-unit>
       <trans-unit id="objectManagement.objectPropertiesDialogTitle">
         <source xml:lang="en">{0} - {1} (Preview)</source>
@@ -262,6 +298,20 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <source xml:lang="en">An error occurred while while refreshing the object explorer. {0}</source>
         <note>{0}: error message.</note>
         <target state="translated">Errore durante l'aggiornamento di Esplora oggetti. {0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectDialogTitle">
+        <source xml:lang="en">Enter new name</source>
+        <target state="translated">Immetti un nuovo nome</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectError">
+        <source xml:lang="en">An error occurred while renaming {0} '{1}' to '{2}'. {3}</source>
+        <note>{0} object type, {1}: original name, {2}: new name, {3}: error message.</note>
+        <target state="translated">Errore durante la ridenominazione di {0} '{1}' in '{2}'. {3}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectOperationName">
+        <source xml:lang="en">Rename {0} '{1}' to '{2}'</source>
+        <note>{0} object type, {1}: original name, {2}: new name</note>
+        <target state="translated">Rinomina {0} '{1}' in '{2}'</target>
       </trans-unit>
       <trans-unit id="objectManagement.selectedLabel">
         <source xml:lang="en">Selected</source>
@@ -601,7 +651,7 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <target state="translated">Specifica un protocollo per l'attestazione di un enclave lato server usato con Always Encrypted con enclave sicuri</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.displayName">
-        <source xml:lang="en">Attestation Protocol</source>
+        <source xml:lang="en">Attestation protocol</source>
         <target state="translated">Protocollo di attestazione</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.description">
@@ -609,8 +659,8 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <target state="translated">Specifica un endpoint per l'attestazione di un enclave lato server usato con Always Encrypted con enclavi sicuri</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
-        <source xml:lang="en">Enclave Attestation URL</source>
-        <target state="translated">URL di attestazione enclave</target>
+        <source xml:lang="en">Attestation URL</source>
+        <target state="translated">URL di attestazione</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.false">
         <source xml:lang="en">Optional (False)</source>
@@ -761,11 +811,11 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <target state="translated">Replica</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.secureEnclaves.description">
-        <source xml:lang="en">Enables or disables Secure Enclaves for the connection</source>
-        <target state="translated">Abilita o disabilita gli enclave sicuri per la connessione</target>
+        <source xml:lang="en">Enables or disables Secure enclaves for the connection</source>
+        <target state="translated">Abilita o disabilita enclave sicuri per la connessione</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.secureEnclaves.displayName">
-        <source xml:lang="en">Secure Enclaves</source>
+        <source xml:lang="en">Secure enclaves</source>
         <target state="translated">Enclave sicuri</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.description">
@@ -814,7 +864,7 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
       </trans-unit>
       <trans-unit id="mssql.enableSqlAuthenticationProvider">
         <source xml:lang="en">Enables use of the Sql Authentication Provider for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens. This option is only supported for 'MSAL' Azure Authentication Library. Azure Data Studio is required to be relaunched when the value is changed.</source>
-        <target state="new">Enables use of the Sql Authentication Provider for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens. This option is only supported for 'MSAL' Azure Authentication Library. Azure Data Studio is required to be relaunched when the value is changed.</target>
+        <target state="translated">Abilita l'uso del provider di autenticazione SQL per la modalità di autenticazione 'Active Directory Interactive' quando l'utente seleziona l'autenticazione 'AzureMFA'. Abilita l'integrazione dell'endpoint risorse lato server durante il recupero dei token di accesso. Questa opzione è supportata solo per la libreria di autenticazione di Azure 'MSAL'. ll riavvio di Azure Data Studio è obbligatorio quando il valore viene modificato.</target>
       </trans-unit>
       <trans-unit id="mssql.enabled">
         <source xml:lang="en">Enabled</source>
@@ -942,11 +992,11 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
       </trans-unit>
       <trans-unit id="mssql.parallelMessageProcessing">
         <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</source>
-        <target state="new">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</target>
+        <target state="translated">[Experimental] Indica se le richieste al servizio strumenti di SQL devono essere gestite in parallelo. Questa funzionalità è stata introdotta per individuare i problemi che potrebbero verificarsi durante la gestione di tutte le richieste in parallelo. Il valore predefinito è false. Il riavvio di Azure Data Studio è obbligatorio quando il valore viene modificato.</target>
       </trans-unit>
       <trans-unit id="mssql.piiLogging">
         <source xml:lang="en">[Optional] Should Personally Identifiable Information (PII) be logged in the log file.</source>
-        <target state="new">[Optional] Should Personally Identifiable Information (PII) be logged in the log file.</target>
+        <target state="translated">[Facoltativo] Indicare se le informazioni personali devono essere registrate nel file di log.</target>
       </trans-unit>
       <trans-unit id="mssql.provider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>
@@ -1149,8 +1199,12 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <target state="translated">Nuovo utente</target>
       </trans-unit>
       <trans-unit id="title.objectProperties">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">Proprietà</target>
+        <source xml:lang="en">Properties (Preview)</source>
+        <target state="translated">Proprietà (anteprima)</target>
+      </trans-unit>
+      <trans-unit id="title.renameObject">
+        <source xml:lang="en">Rename</source>
+        <target state="translated">Rinomina</target>
       </trans-unit>
       <trans-unit id="title.searchServers">
         <source xml:lang="en">Search: Servers</source>

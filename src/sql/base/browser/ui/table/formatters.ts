@@ -85,7 +85,7 @@ export function hyperLinkFormatter(row: number | undefined, cell: any | undefine
 /**
  * Format all text to replace all new lines with spaces and performs HTML entity encoding
  */
-export function textFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
+export function textFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined, addClasses?: string): string | { text: string, addClasses: string } {
 	let cellClasses = 'grid-cell-value-container';
 	let valueToDisplay = '';
 	let titleValue = '';
@@ -122,7 +122,13 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 		titleValue = valueToDisplay;
 	}
 
-	return `<span title="${titleValue}" style="${cellStyle}" class="${cellClasses}">${valueToDisplay}</span>`;
+	const formattedValue = `<span title="${titleValue}" style="${cellStyle}" class="${cellClasses}">${valueToDisplay}</span>`;
+
+	if (addClasses) {
+		return { text: formattedValue, addClasses: addClasses };
+	}
+
+	return formattedValue;
 }
 
 function getCellDisplayValue(cellValue: string): string {
@@ -132,7 +138,7 @@ function getCellDisplayValue(cellValue: string): string {
 }
 
 
-export function iconCssFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
+export function iconCssFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string | { text: string, addClasses: string } {
 	if (isCssIconCellValue(value)) {
 		return `<div role="image" title="${escape(value.title ?? '')}" aria-label="${escape(value.title ?? '')}" class="grid-cell-value-container icon codicon slick-icon-cell-content ${value.iconCssClass}"></div>`;
 	}

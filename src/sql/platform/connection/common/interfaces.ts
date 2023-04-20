@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
 export type ProfileMatcher = (a: IConnectionProfile, b: IConnectionProfile) => boolean;
 
 export interface IConnectionProfile extends azdata.IConnectionProfile {
-	getOptionsKey(): string;
+	getOptionsKey(getOriginalOptions?: boolean): string;
 	matches(profile: azdata.IConnectionProfile): boolean;
 }
 

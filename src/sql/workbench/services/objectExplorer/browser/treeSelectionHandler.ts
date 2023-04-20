@@ -11,9 +11,10 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 // import { IProgressRunner, IProgressService } from 'vs/platform/progress/common/progress';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
-import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 
 export interface ObjectExplorerRequestStatus {
 	inProgress: boolean;
@@ -54,14 +55,14 @@ export class TreeSelectionHandler {
 	/**
 	 * Handle selection of tree element
 	 */
-	public onTreeSelect(event: any, tree: AsyncServerTree | ITree, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, capabilitiesService: ICapabilitiesService, connectionCompleteCallback: () => void) {
+	public onTreeSelect(event: any, tree: AsyncServerTree | ITree, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, capabilitiesService: ICapabilitiesService, connectionCompleteCallback: () => void, doubleClickHandler: (node: ServerTreeElement) => void) {
 		let sendSelectionEvent = ((event: any, selection: any, isDoubleClick: boolean, userInteraction: boolean, requestStatus: ObjectExplorerRequestStatus | undefined = undefined) => {
 			// userInteraction: defensive - don't touch this something else is handling it.
 			if (userInteraction === true && this._lastClicked && this._lastClicked[0] === selection[0]) {
 				this._lastClicked = undefined;
 			}
 			if (!TreeUpdateUtils.isInDragAndDrop) {
-				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, capabilitiesService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback, requestStatus);
+				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, capabilitiesService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback, requestStatus, doubleClickHandler).catch(onUnexpectedError);
 			}
 		});
 
@@ -110,63 +111,65 @@ export class TreeSelectionHandler {
 	 * @param tree
 	 * @param connectionCompleteCallback A function that gets called after a connection is established due to the selection, if needed
 	 * @param requestStatus Used to identify if a new session should be created or not to avoid creating back to back sessions
+	 * @param doubleClickHandler
 	 */
-	private handleTreeItemSelected(connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, capabilitiesService: ICapabilitiesService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: AsyncServerTree | ITree, connectionCompleteCallback: () => void, requestStatus: ObjectExplorerRequestStatus | undefined): void {
+	private async handleTreeItemSelected(connectionManagementService: IConnectionManagementService,
+		objectExplorerService: IObjectExplorerService,
+		capabilitiesService: ICapabilitiesService,
+		isDoubleClick: boolean,
+		isKeyboard: boolean,
+		selection: any[],
+		tree: AsyncServerTree | ITree,
+		connectionCompleteCallback: () => void,
+		requestStatus: ObjectExplorerRequestStatus | undefined,
+		doubleClickHandler: (node: ServerTreeElement) => void): Promise<void> {
+		if (!selection || selection.length === 0) {
+			return;
+		}
+		const selectedNode = selection[0];
+		if (selectedNode instanceof ConnectionProfile && !capabilitiesService.getCapabilities(selectedNode.providerName)) {
+			connectionManagementService.handleUnsupportedProvider(selectedNode.providerName).catch(onUnexpectedError);
+			return;
+		}
+
 		if (tree instanceof AsyncServerTree) {
-			if (selection && selection.length > 0 && (selection[0] instanceof ConnectionProfile)) {
-				if (!capabilitiesService.getCapabilities(selection[0].providerName)) {
-					connectionManagementService.handleUnsupportedProvider(selection[0].providerName).catch(onUnexpectedError);
-					return;
-				}
+			if (selectedNode instanceof ConnectionProfile) {
 				this.onTreeActionStateChange(true);
 			}
 		} else {
-			let connectionProfile: ConnectionProfile | undefined = undefined;
-			let options: IConnectionCompletionOptions = {
-				params: undefined,
-				saveTheConnection: true,
-				showConnectionDialogOnError: true,
-				showFirewallRuleOnError: true,
-				showDashboard: isDoubleClick // only show the dashboard if the action is double click
-			};
-			if (selection && selection.length > 0 && (selection[0] instanceof ConnectionProfile)) {
-				connectionProfile = <ConnectionProfile>selection[0];
-				if (!capabilitiesService.getCapabilities(connectionProfile.providerName)) {
-					connectionManagementService.handleUnsupportedProvider(connectionProfile.providerName).catch(onUnexpectedError);
-					return;
-				}
-
-				if (connectionProfile) {
+			if (selectedNode instanceof TreeNode || selectedNode instanceof ConnectionProfile || selectedNode instanceof ConnectionProfileGroup) {
+				if (isDoubleClick) {
+					doubleClickHandler(selectedNode);
+				} else if (selectedNode instanceof ConnectionProfile) {
+					let options: IConnectionCompletionOptions = {
+						params: undefined,
+						saveTheConnection: true,
+						showConnectionDialogOnError: true,
+						showFirewallRuleOnError: true,
+						showDashboard: false
+					};
 					this.onTreeActionStateChange(true);
 
-					TreeUpdateUtils.connectAndCreateOeSession(connectionProfile, options, connectionManagementService, objectExplorerService, tree, requestStatus).then(sessionCreated => {
+					try {
+						const sessionCreated = await TreeUpdateUtils.connectAndCreateOeSession(selectedNode, options, connectionManagementService, objectExplorerService, tree, requestStatus);
 						// Clears request status object that was created when the first timeout callback is executed.
 						if (this._requestStatus) {
 							this._requestStatus = undefined;
 						}
-
 						if (!sessionCreated) {
 							this.onTreeActionStateChange(false);
 						}
 						if (connectionCompleteCallback) {
 							connectionCompleteCallback();
 						}
-					}, error => {
+					} catch (error) {
 						this.onTreeActionStateChange(false);
-					});
-				}
-			} else if (isDoubleClick && selection && selection.length > 0 && (selection[0] instanceof TreeNode)) {
-				let treeNode = selection[0];
-				if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
-					connectionProfile = TreeUpdateUtils.getConnectionProfile(treeNode);
-					if (connectionProfile) {
-						connectionManagementService.showDashboard(connectionProfile);
 					}
 				}
 			}
 
 			if (isKeyboard) {
-				tree.toggleExpansion(selection[0]);
+				tree.toggleExpansion(selectedNode);
 			}
 		}
 	}

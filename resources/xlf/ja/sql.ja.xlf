@@ -894,6 +894,10 @@ Default Skipped Commands:
         <source xml:lang="en">Color of the range limiting the search. The color must not be opaque so as not to hide underlying decorations.</source>
         <target state="translated">検索を制限する範囲の色。この色は、基本装飾が非表示にならないよう不透明にすることはできません。</target>
       </trans-unit>
+      <trans-unit id="queryEditorNullBackground">
+        <source xml:lang="en">The background color for null values in the query editor results grid.</source>
+        <target state="translated">クエリ エディターの結果グリッドの null 値の背景色。</target>
+      </trans-unit>
       <trans-unit id="tileBorder">
         <source xml:lang="en">The border color of tiles</source>
         <target state="translated">タイルの境界線の色</target>
@@ -3493,6 +3497,14 @@ Default Skipped Commands:
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/editData/browser/editDataGridPanel" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="editData.cellWithNullCharMessage">
+        <source xml:lang="en">This cell contains the Unicode null character which is currently not supported for editing.</source>
+        <target state="translated">このセルには、現在編集がサポートされていない Unicode NULL 文字が含まれています。</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/editData/browser/gridActions" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="copySelection">
@@ -5784,8 +5796,8 @@ Error: {1}</source>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error: {0}</source>
-        <target state="translated">コピーに失敗しました。エラー: {0}</target>
+        <source xml:lang="en">Copy failed with error {0}</source>
+        <target state="translated">エラー {0} でコピーに失敗しました</target>
       </trans-unit>
       <trans-unit id="notebook.showChart">
         <source xml:lang="en">Show chart</source>
@@ -5838,6 +5850,10 @@ Error: {1}</source>
       <trans-unit id="serverGroup.colors">
         <source xml:lang="en">Server Group color palette used in the Object Explorer viewlet.</source>
         <target state="translated">オブジェクト エクスプローラー ビューレットで使用するサーバー グループ カラー パレット。</target>
+      </trans-unit>
+      <trans-unit id="serverTree.nodeExpansionTimeout">
+        <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
+        <target state="translated">[サーバー] ビューでノードを展開する際のタイムアウト (秒)</target>
       </trans-unit>
       <trans-unit id="serverTree.useAsyncServerTree">
         <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
@@ -7764,6 +7780,10 @@ Error Message: 1</source>
         <source xml:lang="en">Failed to refresh Azure account token for connection</source>
         <target state="translated">接続用の Azure アカウント トークンの更新に失敗しました</target>
       </trans-unit>
+      <trans-unit id="connection.unknownProvider">
+        <source xml:lang="en">Unknown provider '{0}'</source>
+        <target state="translated">不明なプロバイダー '{0}'</target>
+      </trans-unit>
       <trans-unit id="connection.unsupportedServerVersionWarning">
         <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
         <target state="translated">サーバー バージョンが Azure Data Studio でサポートされていません。接続できますが、Azure Data Studio の一部の機能が適切に機能しない可能性があります。</target>
@@ -7825,8 +7845,12 @@ Error Message: 1</source>
         <target state="translated">アカウントを追加する...</target>
       </trans-unit>
       <trans-unit id="connectionWidget.ConnectionStringError">
-        <source xml:lang="en">Failed to parse the connection string.</source>
-        <target state="translated">接続文字列を解析できませんでした。</target>
+        <source xml:lang="en">Failed to parse the connection string. {0}</source>
+        <target state="translated">接続文字列を解析できませんでした。 {0}</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.ConnectionStringUndefined">
+        <source xml:lang="en">No connection info returned.</source>
+        <target state="translated">接続情報が返されませんでした。</target>
       </trans-unit>
       <trans-unit id="connectionWidget.Error">
         <source xml:lang="en">Error</source>
@@ -8047,11 +8071,11 @@ Error Message: 1</source>
     <body>
       <trans-unit id="executionPlanService.ensureCapabilitiesRegistered">
         <source xml:lang="en">Provider with id {0} was not registered after 30 seconds.</source>
-        <target state="new">Provider with id {0} was not registered after 30 seconds.</target>
+        <target state="translated">ID {0} を持つプロバイダーは 30 秒後に登録されませんでした。</target>
       </trans-unit>
       <trans-unit id="executionPlanService.ensureFileExtensionHandlerRegistered">
         <source xml:lang="en">Execution plan provider which supports file format '{0}' was not registered after 30 seconds.</source>
-        <target state="new">Execution plan provider which supports file format '{0}' was not registered after 30 seconds.</target>
+        <target state="translated">ファイル形式 '{0}' をサポートする実行プラン プロバイダーは、30 秒後に登録されませんでした。</target>
       </trans-unit>
       <trans-unit id="noHandlerRegistered">
         <source xml:lang="en">No valid execution plan handler is registered</source>
@@ -8654,6 +8678,10 @@ Error Message: 1</source>
         <source xml:lang="en">Multiple errors:</source>
         <target state="translated">複数のエラー:</target>
       </trans-unit>
+      <trans-unit id="nodeExpansionTimeout">
+        <source xml:lang="en">Node expansion timed out for node {0} for providers {1}</source>
+        <target state="translated">プロバイダー {1} のノード {0} のノード拡張がタイムアウトしました</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim" source-language="en" datatype="plaintext" target-language="ja">
@@ -8843,8 +8871,8 @@ Error Message: 1</source>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error: {0}</source>
-        <target state="translated">コピーに失敗しました。エラー: {0}</target>
+        <source xml:lang="en">Copy failed with error {0}</source>
+        <target state="translated">エラー {0} でコピーに失敗しました</target>
       </trans-unit>
       <trans-unit id="elapsedBatchTime">
         <source xml:lang="en">Batch execution time: {0}</source>

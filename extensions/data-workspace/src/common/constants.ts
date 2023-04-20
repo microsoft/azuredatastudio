@@ -14,7 +14,7 @@ export const SelectProjectFileActionName = localize('SelectProjectFileActionName
 export const AllProjectTypes = localize('AllProjectTypes', "All Project Types");
 export const ProviderNotFoundForProjectTypeError = (projectType: string): string => { return localize('UnknownProjectTypeError', "No provider was found for project type with id: '{0}'", projectType); };
 export const RestartConfirmation = localize('dataworkspace.restartConfirmation', "Azure Data Studio needs to be restarted for the project to be added to the workspace. Restart now?");
-export const ProjectsFailedToLoad = localize('dataworkspace.projectsFailedToLoad', "Some projects failed to load. To view more details, [open the developer console](command:workbench.action.toggleDevTools)");
+export const projectFailedToLoad = (project: string, error: string) => { return localize('projectFailedToLoad', "Project '{0}' failed to load: {1}  To view more details, [open the developer console](command:workbench.action.toggleDevTools).", project, error) };
 export const fileDoesNotExist = (name: string): string => { return localize('fileDoesNotExist', "File '{0}' doesn't exist", name); };
 export const projectNameNull = localize('projectNameNull', "Project name is null");
 export const noPreviousData = (tableName: string): string => { return localize('noPreviousData', "Prior {0} for the current project will appear here, please run to see the results.", tableName); };
@@ -67,7 +67,7 @@ export const whitespaceFilenameErrorMessage = localize('whitespaceFilenameErrorM
 export const invalidFileCharsErrorMessage = localize('invalidFileCharsErrorMessage', "Invalid file characters");
 export const reservedWindowsFilenameErrorMessage = localize('reservedWindowsFilenameErrorMessage', "This file name is reserved for use by Windows. Choose another name and try again");
 export const reservedValueErrorMessage = localize('reservedValueErrorMessage', "Reserved file name. Choose another name and try again");
-export const trailingWhitespaceErrorMessage = localize('trailingWhitespaceErrorMessage', "File name cannot end with a whitespace");
+export const trailingWhitespaceErrorMessage = localize('trailingWhitespaceErrorMessage', "File name cannot start or end with whitespace");
 export const tooLongFilenameErrorMessage = localize('tooLongFilenameErrorMessage', "File name cannot be over 255 characters");
 
 //Open Existing Dialog

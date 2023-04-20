@@ -96,7 +96,7 @@ class AzdataExtensionBookContributionProvider extends Disposable implements Book
 		vscode.extensions.onDidChange(async () => {
 			const currentContributions = this.getCurrentContributions();
 			const existingContributions = this._contributions || undefined;
-			if (!arrays.equals(existingContributions, currentContributions, BookContributions.equal)) {
+			if (!existingContributions || !arrays.equals(existingContributions, currentContributions, BookContributions.equal)) {
 				await this.unregisterCommands();
 				this._contributions = currentContributions;
 				await this.registerCommands();

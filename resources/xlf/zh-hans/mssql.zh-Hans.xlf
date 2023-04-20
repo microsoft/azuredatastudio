@@ -50,6 +50,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Failed to find tenant '{0}' in account '{1}' when refreshing security token</source>
         <target state="translated">刷新安全令牌时，在帐户 \"{1}\" 中找不到租户 \"{0}\"</target>
       </trans-unit>
+      <trans-unit id="mssql.noConvertResult">
+        <source xml:lang="en">No result returned from Notebook convert request</source>
+        <target state="translated">笔记本转换请求未返回任何结果</target>
+      </trans-unit>
+      <trans-unit id="mssql.noDocumentFound">
+        <source xml:lang="en">No document found for URI {0}</source>
+        <target state="translated">找不到 URI {0} 文档</target>
+      </trans-unit>
       <trans-unit id="mssql.tokenRefreshFailed">
         <source xml:lang="en">{0} AAD token refresh failed, please reconnect to enable {0}</source>
         <target state="translated">{0} AAD 令牌刷新失败，请重新连接以启用 {0}</target>
@@ -57,6 +65,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="mssql.tokenRefreshFailedNoSecurityToken">
         <source xml:lang="en">Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected</source>
         <target state="translated">编辑器令牌刷新失败，自动完成将被禁用，直到编辑器断开连接并重新连接</target>
+      </trans-unit>
+      <trans-unit id="mssql.unsupportedPlatform">
+        <source xml:lang="en">Unsupported platform {0}</source>
+        <target state="translated">不受支持的平台 {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -78,6 +90,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
   </file>
   <file original="extensions/mssql/dist/objectManagement/localizedConstants" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
+      <trans-unit id="objectManagement.ColumnDisplayName">
+        <source xml:lang="en">column</source>
+        <target state="translated">列</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.DatabaseDisplayName">
+        <source xml:lang="en">database</source>
+        <target state="translated">数据库</target>
+      </trans-unit>
       <trans-unit id="objectManagement.LoginTypeDisplayName">
         <source xml:lang="en">login</source>
         <target state="translated">登录名</target>
@@ -90,6 +110,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">OK</source>
         <target state="translated">确定</target>
       </trans-unit>
+      <trans-unit id="objectManagement.TableDisplayName">
+        <source xml:lang="en">table</source>
+        <target state="translated">表</target>
+      </trans-unit>
       <trans-unit id="objectManagement.UserDisplayName">
         <source xml:lang="en">user</source>
         <target state="translated">用户</target>
@@ -97,6 +121,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.UserTypeDisplayNameInTitle">
         <source xml:lang="en">User</source>
         <target state="translated">用户</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ViewDisplayName">
+        <source xml:lang="en">view</source>
+        <target state="translated">视图</target>
       </trans-unit>
       <trans-unit id="objectManagement.advancedSectionHeader">
         <source xml:lang="en">Advanced</source>
@@ -218,6 +246,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Windows Authentication</source>
         <target state="translated">Windows 身份验证</target>
       </trans-unit>
+      <trans-unit id="objectManagement.loginNotSelectedError">
+        <source xml:lang="en">Login is not selected.</source>
+        <target state="translated">未选择登录名。</target>
+      </trans-unit>
       <trans-unit id="objectManagement.nameCannotBeEmptyError">
         <source xml:lang="en">Name cannot be empty.</source>
         <target state="translated">名称不能为空。</target>
@@ -230,6 +262,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">{0} - New (Preview)</source>
         <note>{0} object type.</note>
         <target state="translated">{0}–新建(预览)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.noConnectionUriError">
+        <source xml:lang="en">Failed to retrieve the connection information, please reconnect and try again.</source>
+        <target state="translated">无法检索连接信息，请重新连接，然后重试。</target>
       </trans-unit>
       <trans-unit id="objectManagement.objectPropertiesDialogTitle">
         <source xml:lang="en">{0} - {1} (Preview)</source>
@@ -262,6 +298,20 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">An error occurred while while refreshing the object explorer. {0}</source>
         <note>{0}: error message.</note>
         <target state="translated">刷新对象资源管理器时出错。{0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectDialogTitle">
+        <source xml:lang="en">Enter new name</source>
+        <target state="translated">输入新名称</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectError">
+        <source xml:lang="en">An error occurred while renaming {0} '{1}' to '{2}'. {3}</source>
+        <note>{0} object type, {1}: original name, {2}: new name, {3}: error message.</note>
+        <target state="translated">将 {0} "{1}" 重命名为 "{2}" 时出错。 {3}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectOperationName">
+        <source xml:lang="en">Rename {0} '{1}' to '{2}'</source>
+        <note>{0} object type, {1}: original name, {2}: new name</note>
+        <target state="translated">将 {0} "{1}" 重命名为 "{2}"</target>
       </trans-unit>
       <trans-unit id="objectManagement.selectedLabel">
         <source xml:lang="en">Selected</source>
@@ -601,7 +651,7 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">指定用于证明与具有安全 enclave 的 Always Encrypted 结合使用的服务器端 enclave 的协议</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.displayName">
-        <source xml:lang="en">Attestation Protocol</source>
+        <source xml:lang="en">Attestation protocol</source>
         <target state="translated">证明协议</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.description">
@@ -609,8 +659,8 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">指定用于证明与具有安全 enclave 的 Always Encrypted 结合使用的服务器端 enclave 的终结点</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
-        <source xml:lang="en">Enclave Attestation URL</source>
-        <target state="translated">Enclave 证明 URL</target>
+        <source xml:lang="en">Attestation URL</source>
+        <target state="translated">认证 URL</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.false">
         <source xml:lang="en">Optional (False)</source>
@@ -761,12 +811,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">副本</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.secureEnclaves.description">
-        <source xml:lang="en">Enables or disables Secure Enclaves for the connection</source>
-        <target state="translated">启用或禁用连接的安全 Enclave</target>
+        <source xml:lang="en">Enables or disables Secure enclaves for the connection</source>
+        <target state="translated">启用或禁用连接的安全 enclave</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.secureEnclaves.displayName">
-        <source xml:lang="en">Secure Enclaves</source>
-        <target state="translated">安全 Enclave</target>
+        <source xml:lang="en">Secure enclaves</source>
+        <target state="translated">安全 enclave</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.description">
         <source xml:lang="en">Name of the SQL Server instance</source>
@@ -1149,8 +1199,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">新用户</target>
       </trans-unit>
       <trans-unit id="title.objectProperties">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">属性</target>
+        <source xml:lang="en">Properties (Preview)</source>
+        <target state="translated">属性(预览版)</target>
+      </trans-unit>
+      <trans-unit id="title.renameObject">
+        <source xml:lang="en">Rename</source>
+        <target state="translated">重命名</target>
       </trans-unit>
       <trans-unit id="title.searchServers">
         <source xml:lang="en">Search: Servers</source>

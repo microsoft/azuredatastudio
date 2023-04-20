@@ -50,6 +50,14 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <source xml:lang="en">Failed to find tenant '{0}' in account '{1}' when refreshing security token</source>
         <target state="translated">Fehler beim Suchen des Mandanten „{0}“ im Konto „{1}“ beim Aktualisieren des Sicherheitstokens.</target>
       </trans-unit>
+      <trans-unit id="mssql.noConvertResult">
+        <source xml:lang="en">No result returned from Notebook convert request</source>
+        <target state="translated">Von der Notebook-Konvertierungsanforderung wurde kein Ergebnis zurückgegeben.</target>
+      </trans-unit>
+      <trans-unit id="mssql.noDocumentFound">
+        <source xml:lang="en">No document found for URI {0}</source>
+        <target state="translated">Kein Dokument für URI "{0}" gefunden.</target>
+      </trans-unit>
       <trans-unit id="mssql.tokenRefreshFailed">
         <source xml:lang="en">{0} AAD token refresh failed, please reconnect to enable {0}</source>
         <target state="translated">{0} AAD-Token konnte nicht aktualisiert werden, bitte stellen Sie die Verbindung erneut her, um {0} zu aktivieren.</target>
@@ -57,6 +65,10 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
       <trans-unit id="mssql.tokenRefreshFailedNoSecurityToken">
         <source xml:lang="en">Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected</source>
         <target state="translated">Fehler bei der Aktualisierung des Editor-Tokens, die automatische Vervollständigung wird deaktiviert, bis der Editor getrennt und die Verbindung erneut hergestellt wurde.</target>
+      </trans-unit>
+      <trans-unit id="mssql.unsupportedPlatform">
+        <source xml:lang="en">Unsupported platform {0}</source>
+        <target state="translated">Nicht unterstützte Plattform {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -78,6 +90,14 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
   </file>
   <file original="extensions/mssql/dist/objectManagement/localizedConstants" source-language="en" datatype="plaintext" target-language="de">
     <body>
+      <trans-unit id="objectManagement.ColumnDisplayName">
+        <source xml:lang="en">column</source>
+        <target state="translated">Spalte</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.DatabaseDisplayName">
+        <source xml:lang="en">database</source>
+        <target state="translated">Datenbank</target>
+      </trans-unit>
       <trans-unit id="objectManagement.LoginTypeDisplayName">
         <source xml:lang="en">login</source>
         <target state="translated">Anmeldename</target>
@@ -90,6 +110,10 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <source xml:lang="en">OK</source>
         <target state="translated">OK</target>
       </trans-unit>
+      <trans-unit id="objectManagement.TableDisplayName">
+        <source xml:lang="en">table</source>
+        <target state="translated">Tabelle</target>
+      </trans-unit>
       <trans-unit id="objectManagement.UserDisplayName">
         <source xml:lang="en">user</source>
         <target state="translated">Benutzer</target>
@@ -97,6 +121,10 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
       <trans-unit id="objectManagement.UserTypeDisplayNameInTitle">
         <source xml:lang="en">User</source>
         <target state="translated">Benutzer</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ViewDisplayName">
+        <source xml:lang="en">view</source>
+        <target state="translated">Ansicht</target>
       </trans-unit>
       <trans-unit id="objectManagement.advancedSectionHeader">
         <source xml:lang="en">Advanced</source>
@@ -218,6 +246,10 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <source xml:lang="en">Windows Authentication</source>
         <target state="translated">Windows-Authentifizierung</target>
       </trans-unit>
+      <trans-unit id="objectManagement.loginNotSelectedError">
+        <source xml:lang="en">Login is not selected.</source>
+        <target state="translated">Die Anmeldung ist nicht ausgewählt.</target>
+      </trans-unit>
       <trans-unit id="objectManagement.nameCannotBeEmptyError">
         <source xml:lang="en">Name cannot be empty.</source>
         <target state="translated">Das Namensfeld darf nicht leer bleiben.</target>
@@ -230,6 +262,10 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <source xml:lang="en">{0} - New (Preview)</source>
         <note>{0} object type.</note>
         <target state="translated">{0} – Neu (Vorschau)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.noConnectionUriError">
+        <source xml:lang="en">Failed to retrieve the connection information, please reconnect and try again.</source>
+        <target state="translated">Fehler beim Abrufen der Verbindungsinformationen. Stellen Sie die Verbindung wieder her, und versuchen Sie es noch einmal.</target>
       </trans-unit>
       <trans-unit id="objectManagement.objectPropertiesDialogTitle">
         <source xml:lang="en">{0} - {1} (Preview)</source>
@@ -262,6 +298,20 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <source xml:lang="en">An error occurred while while refreshing the object explorer. {0}</source>
         <note>{0}: error message.</note>
         <target state="translated">Fehler beim Aktualisieren des Objekt-Explorers. {0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectDialogTitle">
+        <source xml:lang="en">Enter new name</source>
+        <target state="translated">Neuen Namen eingeben</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectError">
+        <source xml:lang="en">An error occurred while renaming {0} '{1}' to '{2}'. {3}</source>
+        <note>{0} object type, {1}: original name, {2}: new name, {3}: error message.</note>
+        <target state="translated">Beim Umbenennen von {0} "{1}" in "{2}" ist ein Fehler aufgetreten. {3}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectOperationName">
+        <source xml:lang="en">Rename {0} '{1}' to '{2}'</source>
+        <note>{0} object type, {1}: original name, {2}: new name</note>
+        <target state="translated">{0} "{1}" in "{2}" umbenennen</target>
       </trans-unit>
       <trans-unit id="objectManagement.selectedLabel">
         <source xml:lang="en">Selected</source>
@@ -601,7 +651,7 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <target state="translated">Gibt ein Protokoll zum Nachweis einer serverseitigen Enclave an, die mit Always Encrypted für Secure Enclaves verwendet wird.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.displayName">
-        <source xml:lang="en">Attestation Protocol</source>
+        <source xml:lang="en">Attestation protocol</source>
         <target state="translated">Nachweisprotokoll</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.description">
@@ -609,8 +659,8 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <target state="translated">Gibt einen Endpunkt zum Nachweis einer serverseitigen Enclave an, die mit Always Encrypted für Secure Enclaves verwendet wird.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
-        <source xml:lang="en">Enclave Attestation URL</source>
-        <target state="translated">Enclave-Nachweis-URL</target>
+        <source xml:lang="en">Attestation URL</source>
+        <target state="translated">Nachweis-URL</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.false">
         <source xml:lang="en">Optional (False)</source>
@@ -761,11 +811,11 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <target state="translated">Replikation</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.secureEnclaves.description">
-        <source xml:lang="en">Enables or disables Secure Enclaves for the connection</source>
+        <source xml:lang="en">Enables or disables Secure enclaves for the connection</source>
         <target state="translated">Aktiviert oder deaktiviert sichere Enklaven für die Verbindung.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.secureEnclaves.displayName">
-        <source xml:lang="en">Secure Enclaves</source>
+        <source xml:lang="en">Secure enclaves</source>
         <target state="translated">Sichere Enklaven</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.description">
@@ -1149,8 +1199,12 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <target state="translated">Neuer Benutzer</target>
       </trans-unit>
       <trans-unit id="title.objectProperties">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">Eigenschaften</target>
+        <source xml:lang="en">Properties (Preview)</source>
+        <target state="translated">Eigenschaften (Vorschau)</target>
+      </trans-unit>
+      <trans-unit id="title.renameObject">
+        <source xml:lang="en">Rename</source>
+        <target state="translated">Umbenennen</target>
       </trans-unit>
       <trans-unit id="title.searchServers">
         <source xml:lang="en">Search: Servers</source>

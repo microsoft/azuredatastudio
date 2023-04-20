@@ -11493,6 +11493,7 @@
 			"notebook.toolbarIcon": "Записная книжка: значки панели инструментов Markdown",
 			"notebookFindMatchHighlight": "Цвет других совпадений при поиске. Цвет не должен быть непрозрачным, чтобы не скрыть расположенные ниже элементы оформления.",
 			"notebookFindRangeHighlight": "Цвет диапазона, ограничивающего поиск. Цвет не должен быть непрозрачным, чтобы не скрыть расположенные ниже элементы оформления.",
+			"queryEditorNullBackground": "Цвет фона для значений NULL в сетке результатов редактора запросов.",
 			"tileBorder": "Цвет границы плиток",
 			"tileBoxShadow": "Цвет тени для поля плитки"
 		},
@@ -12877,7 +12878,7 @@
 			"viewOptionsModal.title": "Настроить представление"
 		},
 		"sql/workbench/contrib/notebook/browser/outputs/gridOutput.component": {
-			"copyFailed": "Не удалось копировать. Ошибка: {0}",
+			"copyFailed": "Не удалось выполнить копирование. Ошибка: {0}",
 			"notebook.showChart": "Показать диаграмму",
 			"notebook.showTable": "Показать таблицу"
 		},
@@ -12895,6 +12896,7 @@
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
 			"serverGroup.autoExpand": "Автоматически разворачивать группы серверов во вьюлете обозревателя объектов.",
 			"serverGroup.colors": "Цветовая палитра группы серверов, используемых во вьюлете обозревателя объектов.",
+			"serverTree.nodeExpansionTimeout": "Время ожидания в секундах для расширения узла в представлении \"Серверы\".",
 			"serverTree.useAsyncServerTree": "(Предварительная версия.) Используйте новое дерево асинхронных серверов для представления серверов и диалогового окна подключения с поддержкой новых функций, таких как фильтрация динамических узлов."
 		},
 		"sql/workbench/contrib/preferences/browser/sqlSettingsLayout": {
@@ -13434,6 +13436,7 @@
 			"connection.neverShowUnsupportedVersionWarning": "Больше не показывать",
 			"connection.noAzureAccount": "Не удалось получить маркер учетной записи Azure для подключения",
 			"connection.refreshAzureTokenFailure": "Не удалось обновить маркер учетной записи Azure для подключения",
+			"connection.unknownProvider": "Неизвестный поставщик \"{0}\"",
 			"connection.unsupportedServerVersionWarning": "Azure Data Studio не поддерживает эту версию сервера; возможно, вы можете подключиться к ней, но некоторые функции Azure Data Studio могут работать не так, как ожидалось.",
 			"connectionDialog.connectionProviderNotSupported": "Расширение, которое поддерживает тип поставщика \"{0}\", сейчас не установлено. Вы хотите просмотреть расширения?",
 			"connectionManagementService.noProviderForUri": "Не найден поставщик для URI: {0}",
@@ -13450,7 +13453,8 @@
 			"connection.azureTenantDropdownLabel": "Клиент Azure AD",
 			"connectionName": "Имя (необязательно)",
 			"connectionWidget.AddAzureAccount": "Добавить учетную запись…",
-			"connectionWidget.ConnectionStringError": "Не удалось проанализировать строку подключения.",
+			"connectionWidget.ConnectionStringError": "Не удалось проанализировать строку подключения. {0}",
+			"connectionWidget.ConnectionStringUndefined": "Сведения о подключении не возвращены.",
 			"connectionWidget.Error": "Ошибка",
 			"connectionWidget.connectionString": "Строка подключения",
 			"connectionWidget.invalidAzureAccount": "Необходимо выбрать учетную запись",
@@ -13688,7 +13692,8 @@
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
 			"OeSessionFailedError": "Не удалось создать сеанс обозревателя объектов",
-			"nodeExpansionError": "Несколько ошибок:"
+			"nodeExpansionError": "Несколько ошибок:",
+			"nodeExpansionTimeout": "Истекло время ожидания расширения узла {0} для поставщиков {1}."
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim": {
 			"firewallCanceled": "Диалоговое окно брандмауэра отменено",
@@ -13743,7 +13748,7 @@
 			"updateCellFailed": "Сбой обновления ячейки: "
 		},
 		"sql/workbench/services/query/common/queryRunner": {
-			"copyFailed": "Не удалось копировать. Ошибка: {0}",
+			"copyFailed": "Не удалось выполнить копирование. Ошибка: {0}",
 			"elapsedBatchTime": "Время выполнения пакета: {0}",
 			"query.ExecutionFailedError": "Сбой выполнения из-за непредвиденной ошибки: {0} {1}",
 			"query.message.executionTime": "Общее время выполнения: {0}",
@@ -13953,6 +13958,9 @@
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanInput": {
 			"epCompare.executionPlanEditorName": "План_выполнения"
+		},
+		"sql/workbench/contrib/editData/browser/editDataGridPanel": {
+			"editData.cellWithNullCharMessage": "Эта ячейка содержит нуль-символ Юникода, который в настоящее время не поддерживается для редактирования."
 		}
 	}
 }

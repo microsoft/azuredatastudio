@@ -894,6 +894,10 @@ Commandes ignorées par défaut :
         <source xml:lang="en">Color of the range limiting the search. The color must not be opaque so as not to hide underlying decorations.</source>
         <target state="translated">Couleur de la plage limitant la recherche. La couleur ne doit pas être opaque pour ne pas masquer les ornements sous-jacents.</target>
       </trans-unit>
+      <trans-unit id="queryEditorNullBackground">
+        <source xml:lang="en">The background color for null values in the query editor results grid.</source>
+        <target state="translated">La couleur d'arrière-plan des valeurs nulles dans la grille de résultats de l'éditeur de requête.</target>
+      </trans-unit>
       <trans-unit id="tileBorder">
         <source xml:lang="en">The border color of tiles</source>
         <target state="translated">Couleur de bordure des vignettes</target>
@@ -3493,6 +3497,14 @@ Commandes ignorées par défaut :
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/editData/browser/editDataGridPanel" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="editData.cellWithNullCharMessage">
+        <source xml:lang="en">This cell contains the Unicode null character which is currently not supported for editing.</source>
+        <target state="translated">Cette cellule contient le caractère Unicode Nul qui n’est actuellement pas pris en charge pour la modification.</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/editData/browser/gridActions" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="copySelection">
@@ -5784,8 +5796,8 @@ Erreur : {1}</target>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error: {0}</source>
-        <target state="translated">La copie a échoué avec l’erreur : {0}</target>
+        <source xml:lang="en">Copy failed with error {0}</source>
+        <target state="translated">La copie a échoué avec l'erreur {0}</target>
       </trans-unit>
       <trans-unit id="notebook.showChart">
         <source xml:lang="en">Show chart</source>
@@ -5838,6 +5850,10 @@ Erreur : {1}</target>
       <trans-unit id="serverGroup.colors">
         <source xml:lang="en">Server Group color palette used in the Object Explorer viewlet.</source>
         <target state="translated">Palette de couleurs du groupe de serveurs utilisée dans la viewlet Explorateur d'objets.</target>
+      </trans-unit>
+      <trans-unit id="serverTree.nodeExpansionTimeout">
+        <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
+        <target state="translated">Délai d'attente en secondes pour développer un nœud dans la vue Serveurs</target>
       </trans-unit>
       <trans-unit id="serverTree.useAsyncServerTree">
         <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
@@ -7764,6 +7780,10 @@ Message d’erreur : 1</target>
         <source xml:lang="en">Failed to refresh Azure account token for connection</source>
         <target state="translated">L’actualisation d'un jeton de compte Azure pour la connexion a échoué.</target>
       </trans-unit>
+      <trans-unit id="connection.unknownProvider">
+        <source xml:lang="en">Unknown provider '{0}'</source>
+        <target state="translated">Fournisseur inconnu '{0}'</target>
+      </trans-unit>
       <trans-unit id="connection.unsupportedServerVersionWarning">
         <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
         <target state="translated">La version du serveur n’est pas prise en charge par Azure Data Studio, vous pouvez toujours vous y connecter mais certaines fonctionnalités de Azure Data Studio peuvent ne pas fonctionner comme prévu.</target>
@@ -7825,8 +7845,12 @@ Message d’erreur : 1</target>
         <target state="translated">Ajouter un compte...</target>
       </trans-unit>
       <trans-unit id="connectionWidget.ConnectionStringError">
-        <source xml:lang="en">Failed to parse the connection string.</source>
-        <target state="translated">Impossible d'analyser la chaîne de connexion.</target>
+        <source xml:lang="en">Failed to parse the connection string. {0}</source>
+        <target state="translated">Échec de l'analyse de la chaîne de connexion. {0}</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.ConnectionStringUndefined">
+        <source xml:lang="en">No connection info returned.</source>
+        <target state="translated">Aucune information de connexion renvoyée.</target>
       </trans-unit>
       <trans-unit id="connectionWidget.Error">
         <source xml:lang="en">Error</source>
@@ -8047,11 +8071,11 @@ Message d’erreur : 1</target>
     <body>
       <trans-unit id="executionPlanService.ensureCapabilitiesRegistered">
         <source xml:lang="en">Provider with id {0} was not registered after 30 seconds.</source>
-        <target state="new">Provider with id {0} was not registered after 30 seconds.</target>
+        <target state="translated">Le fournisseur avec l’ID {0} n’a pas été inscrit après 30 secondes.</target>
       </trans-unit>
       <trans-unit id="executionPlanService.ensureFileExtensionHandlerRegistered">
         <source xml:lang="en">Execution plan provider which supports file format '{0}' was not registered after 30 seconds.</source>
-        <target state="new">Execution plan provider which supports file format '{0}' was not registered after 30 seconds.</target>
+        <target state="translated">Le fournisseur de plan d’exécution qui prend en charge le format de fichier ’{0}’ n’a pas été inscrit après 30 secondes.</target>
       </trans-unit>
       <trans-unit id="noHandlerRegistered">
         <source xml:lang="en">No valid execution plan handler is registered</source>
@@ -8654,6 +8678,10 @@ Message d’erreur : 1</target>
         <source xml:lang="en">Multiple errors:</source>
         <target state="translated">Plusieurs erreurs :</target>
       </trans-unit>
+      <trans-unit id="nodeExpansionTimeout">
+        <source xml:lang="en">Node expansion timed out for node {0} for providers {1}</source>
+        <target state="translated">L'expansion du nœud a expiré pour le nœud {0} pour les fournisseurs {1}</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim" source-language="en" datatype="plaintext" target-language="fr">
@@ -8843,8 +8871,8 @@ Message d’erreur : 1</target>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error: {0}</source>
-        <target state="translated">La copie a échoué avec l’erreur : {0}</target>
+        <source xml:lang="en">Copy failed with error {0}</source>
+        <target state="translated">La copie a échoué avec l'erreur {0}</target>
       </trans-unit>
       <trans-unit id="elapsedBatchTime">
         <source xml:lang="en">Batch execution time: {0}</source>

@@ -98,5 +98,6 @@ export class OpenMssqlHdfsTableFromFileWizardCommand extends Command {
 function convertIConnectionProfile(profile: azdata.IConnectionProfile): azdata.connection.ConnectionProfile {
 	const connection = azdata.connection.ConnectionProfile.createFrom(profile.options);
 	connection.providerId = profile.providerName;
+	connection.databaseName = profile.databaseName;
 	return connection;
 }

@@ -33,10 +33,12 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { deepClone } from 'vs/base/common/objects';
 import { Event } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
-import * as DOM from 'vs/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { localize } from 'vs/nls';
+
+const cellWithNullCharMessage = localize('editData.cellWithNullCharMessage', "This cell contains the Unicode null character which is currently not supported for editing.");
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -79,12 +81,15 @@ export class EditDataGridPanel extends GridParentComponent {
 	// Prevent the cell submission function from being called multiple times.
 	private cellSubmitInProgress: boolean;
 
+	// Manually submit the cell after edit end if it's the null row.
+	private isInNullRow: boolean;
+
 	// Edit Data functions
 	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
 	public onCellEditEnd: (event: Slick.OnCellChangeEventArgs<any>) => void;
 	public onIsCellEditValid: (row: number, column: number, newValue: any) => boolean;
 	public onIsColumnEditable: (column: number) => boolean;
-	public overrideCellFn: (rowNumber, columnId, value?, data?) => string;
+	public overrideCellFn: (columnId, value?, data?) => string;
 	public loadDataFunction: (offset: number, count: number) => Promise<{}[]>;
 	public onBeforeAppendCell: (row: number, column: number) => string;
 	public onRefreshComplete: Promise<void>;
@@ -128,7 +133,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	onInit(): void {
 		const self = this;
 		this.baseInit();
-		this._register(DOM.addDisposableListener(this.nativeElement, DOM.EventType.KEY_DOWN, e => this.tryHandleKeyEvent(new StandardKeyboardEvent(e))));
 
 		// Add the subscription to the list of things to be disposed on destroy, or else on a new component init
 		// may get the "destroyed" object still getting called back.
@@ -190,9 +194,21 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 			// Store the value that was set
 			self.currentEditCellValue = event.item[event.cell];
+
+			// In case the last row is entered in, we need to wait to get the cell value after edit end
+			// so that we can add a row, submit the value and move down. (SlickGrid tries to go down immediately
+			// which fails, as we haven't added the new row yet).
+			if (self.isInNullRow) {
+				self.submitCurrentCellChange((result: EditUpdateCellResult) => {
+					self.table.grid.navigateDown();
+				},
+					(error: any) => {
+						self.notificationService.error(error);
+					}).catch(onUnexpectedError);
+			}
 		};
 
-		this.overrideCellFn = (rowNumber, columnId, value?, data?): string => {
+		this.overrideCellFn = (columnId, value?, data?): string => {
 			let returnVal = '';
 			// replace the line breaks with space since the edit text control cannot
 			// render line breaks and strips them, updating the value.
@@ -206,9 +222,12 @@ export class EditDataGridPanel extends GridParentComponent {
 				returnVal = '\'NULL\'';
 			}
 			else if (Services.DBCellValue.isDBCellValue(value)) {
+				// If a cell is not edited and retrieved direct from the SQL server, it would be in the form of a DBCellValue.
+				// We use the DBCellValue's displayValue as the text value.
 				returnVal = this.replaceLinebreaks(value.displayValue);
 			}
 			else if (typeof value === 'string') {
+				// Once a cell has been edited, the cell value will no longer be a DBCellValue until refresh.
 				returnVal = this.replaceLinebreaks(value);
 			}
 			return returnVal;
@@ -228,19 +247,30 @@ export class EditDataGridPanel extends GridParentComponent {
 		};
 
 		// Setup a function for generating a promise to lookup result subsets
+		// Function will be called upon refresh.
 		this.loadDataFunction = (offset: number, count: number): Promise<{}[]> => {
 			return self.dataService.getEditRows(offset, count).then(result => {
 				if (this.dataSet) {
+					let counter = 0;
 					let gridData = result.subset.map(r => {
+						// Newly added rows will have null values displayed as empty strings.
+						// Since it is currently impossible to add empty strings via edit data
+						// this must mean the empty strings on the newly added row are null values.
+						let isNewlyAddedRow = false;
+						if (this.isInNullRow && (counter === (count - 2))) {
+							isNewlyAddedRow = true;
+						}
 						let dataWithSchema = {};
 						// skip the first column since its a number column
 						for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
+							let isNewAddedNullCell = isNewlyAddedRow && r.cells[i - 1].displayValue === '';
 							dataWithSchema[this.dataSet.columnDefinitions[i].field] = {
 								displayValue: r.cells[i - 1].displayValue,
 								ariaLabel: escape(r.cells[i - 1].displayValue),
-								isNull: r.cells[i - 1].isNull
+								isNull: isNewAddedNullCell ? true : r.cells[i - 1].isNull
 							};
 						}
+						counter++;
 						return dataWithSchema;
 					});
 
@@ -256,9 +286,15 @@ export class EditDataGridPanel extends GridParentComponent {
 					if (gridData && gridData !== this.oldGridData) {
 						this.oldGridData = gridData;
 					}
+					if (this.isInNullRow) {
+						this.isInNullRow = false;
+					}
 					return gridData;
 				}
 				else {
+					if (this.isInNullRow) {
+						this.isInNullRow = false;
+					}
 					this.logService.error('Grid data is nonexistent, using last known good grid');
 					return this.oldGridData;
 				}
@@ -560,6 +596,10 @@ export class EditDataGridPanel extends GridParentComponent {
 			handled = true;
 		}
 
+		if (e.keyCode === KeyCode.Enter && this.isNullRow(this.currentCell.row)) {
+			this.isInNullRow = true;
+		}
+
 		return handled;
 	}
 
@@ -643,7 +683,8 @@ export class EditDataGridPanel extends GridParentComponent {
 					? self.rowIdMappings[self.currentCell.row]
 					: self.currentCell.row;
 
-				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, this.newlinePattern ? self.currentEditCellValue.replace('\u0000', this.newlinePattern) : self.currentEditCellValue);
+				let restoredValue = this.newlinePattern ? self.currentEditCellValue.replace(/\u0000/g, this.newlinePattern) : self.currentEditCellValue;
+				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, restoredValue);
 			}).then(
 				result => {
 					// last entered input is no longer needed as we have entered a valid input to commit.
@@ -943,15 +984,15 @@ export class EditDataGridPanel extends GridParentComponent {
 				this._textEditor.setValue(val);
 			}
 
-			loadValue(item, rowNumber): void {
-				const itemForDisplay = deepClone(item);
+			loadValue(item): void {
+				let itemForEdit = deepClone(item);
 				if (self.overrideCellFn) {
-					let overrideValue = self.overrideCellFn(rowNumber, this._args.column.id, itemForDisplay[this._args.column.id]);
+					let overrideValue = self.overrideCellFn(this._args.column.id, itemForEdit[this._args.column.id]);
 					if (overrideValue !== undefined) {
-						itemForDisplay[this._args.column.id] = overrideValue;
+						itemForEdit[this._args.column.id] = overrideValue;
 					}
 				}
-				this._textEditor.loadValue(itemForDisplay);
+				this._textEditor.loadValue(itemForEdit);
 			}
 
 			serializeValue(): string {
@@ -1110,7 +1151,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.onCellEditEnd(args);
 		});
 		this.table.grid.onBeforeEditCell.subscribe((e, args) => {
-			this.onBeforeEditCell(args);
+			return this.onBeforeEditCell(args);
 		});
 		// Subscribe to all active cell changes to be able to catch when we tab to the header on the next row
 		this.table.grid.onActiveCellChanged.subscribe((e, args) => {
@@ -1124,11 +1165,48 @@ export class EditDataGridPanel extends GridParentComponent {
 			// Since we need to return a string here, we are using calling a function instead of event emitter like other events handlers
 			return this.onBeforeAppendCell ? this.onBeforeAppendCell(args.row, args.cell) : undefined;
 		});
+		this.table.grid.onKeyDown.subscribe((e, args) => {
+			const evt = (e as JQuery.TriggeredEvent).originalEvent as KeyboardEvent;
+			const stdEvt = new StandardKeyboardEvent(evt);
+			this.tryHandleKeyEvent(stdEvt);
+		});
 	}
 
-	onBeforeEditCell(event: Slick.OnBeforeEditCellEventArgs<any>): void {
+	onBeforeEditCell(event: Slick.OnBeforeEditCellEventArgs<any>): boolean {
+		let result = true;
 		this.logService.debug('onBeforeEditCell called with grid: ' + event.grid + ' row: ' + event.row
 			+ ' cell: ' + event.cell + ' item: ' + event.item + ' column: ' + event.column);
+
+		let itemToEdit = event.item[event.cell];
+
+		if (Services.DBCellValue.isDBCellValue(itemToEdit)) {
+			// If a cell is not edited and retrieved direct from the SQL server, it would be in the form of a DBCellValue.
+			// We use it's displayValue to check if the cell contains unicode NULL and linebreaks.
+			result = !this.hasNullAndLinebreak(itemToEdit.displayValue)
+		}
+		else if (typeof itemToEdit === 'string' || (itemToEdit && itemToEdit.text)) {
+			// Once a cell has been edited, the cell value will no longer be a DBCellValue until refresh.
+			// In this case, just check directly if it's a string or if it's an item with .text, use the text.
+			if (itemToEdit.text) {
+				result = !this.hasNullAndLinebreak(itemToEdit.text);
+			} else {
+				result = !this.hasNullAndLinebreak(itemToEdit);
+			}
+		}
+
+		if (!result) {
+			this.notificationService.warn(cellWithNullCharMessage);
+		}
+
+		return result;
+	}
+
+	private hasNullAndLinebreak(inputString: string): boolean {
+		if (inputString) {
+			let linebreakMatch = inputString.match(/(\r\n|\n|\r)/);
+			return linebreakMatch?.length > 0 && inputString.indexOf('\u0000') !== -1;
+		}
+		return false;
 	}
 
 	handleInitializeTable(): void {
@@ -1146,7 +1224,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 
 	/*Formatter for Column*/
-	private getColumnFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
+	private getColumnFormatter(row: number | undefined, cell: number | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
 		let valueToDisplay = '';
 		let cellClasses = 'grid-cell-value-container';
 		/* tslint:disable:no-null-keyword */
@@ -1160,10 +1238,15 @@ export class EditDataGridPanel extends GridParentComponent {
 			valueToDisplay = '\'NULL\'';
 		}
 		else if (Services.DBCellValue.isDBCellValue(value)) {
+			// If a cell is not edited and retrieved direct from the SQL server, it would be in the form of a DBCellValue.
+			// We use it's displayValue and remove newlines for display purposes only.
 			valueToDisplay = (value.displayValue + '');
+			valueToDisplay = valueToDisplay.replace(/(\r\n|\n|\r)/g, '\u0000');
 			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
 		}
 		else if (typeof value === 'string' || (value && value.text)) {
+			// Once a cell has been edited, the cell value will no longer be a DBCellValue until refresh.
+			// In this case, use directly if it's a string or if it's an item with .text, use the text.
 			if (value.text) {
 				valueToDisplay = value.text;
 			} else {

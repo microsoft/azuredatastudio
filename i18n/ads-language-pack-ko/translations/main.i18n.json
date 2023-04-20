@@ -11493,6 +11493,7 @@
 			"notebook.toolbarIcon": "Notebook: Markdown 도구 모음 아이콘",
 			"notebookFindMatchHighlight": "기타 검색 일치 항목의 색입니다. 기본 장식을 숨기지 않도록 색은 불투명하지 않아야 합니다.",
 			"notebookFindRangeHighlight": "검색을 제한하는 범위의 색입니다. 기본 장식을 숨기지 않도록 색은 불투명하지 않아야 합니다.",
+			"queryEditorNullBackground": "쿼리 편집기 결과 표에서 null 값의 배경색입니다.",
 			"tileBorder": "타일의 테두리 색",
 			"tileBoxShadow": "타일 상자 그림자 색"
 		},
@@ -12877,7 +12878,7 @@
 			"viewOptionsModal.title": "보기 구성"
 		},
 		"sql/workbench/contrib/notebook/browser/outputs/gridOutput.component": {
-			"copyFailed": "복사하지 못했습니다(오류: {0}).",
+			"copyFailed": "{0} 오류를 나타내며 복사 실패",
 			"notebook.showChart": "차트 표시",
 			"notebook.showTable": "테이블 표시"
 		},
@@ -12895,6 +12896,7 @@
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
 			"serverGroup.autoExpand": "개체 탐색기 뷰렛에서 서버 그룹을 자동으로 확장합니다.",
 			"serverGroup.colors": "개체 탐색기 뷰렛에서 사용되는 서버 그룹 색상표입니다.",
+			"serverTree.nodeExpansionTimeout": "서버 보기에서 노드를 확장하는 데 대한 시간 제한(초)",
 			"serverTree.useAsyncServerTree": "(미리 보기) 동적 노드 필터링과 같은 새로운 기능 지원을 사용하여 서버 보기 및 연결 대화 상자에 새 비동기 서버 트리를 사용합니다."
 		},
 		"sql/workbench/contrib/preferences/browser/sqlSettingsLayout": {
@@ -13434,6 +13436,7 @@
 			"connection.neverShowUnsupportedVersionWarning": "다시 표시 안 함",
 			"connection.noAzureAccount": "연결을 위한 Azure 계정 토큰을 가져오지 못함",
 			"connection.refreshAzureTokenFailure": "연결을 위한 Azure 계정 토큰을 새로 고침하지 못함",
+			"connection.unknownProvider": "알 수 없는 공급자 '{0}'",
 			"connection.unsupportedServerVersionWarning": "서버 버전은 Azure Data Studio에서 지원되지 않으므로 계속 연결할 수 있지만 Azure Data Studio의 일부 기능이 예상대로 작동하지 않을 수 있습니다.",
 			"connectionDialog.connectionProviderNotSupported": "'{0}' 공급자 유형을 지원하는 확장이 현재 설치되어 있지 않습니다. 확장을 보시겠습니까?",
 			"connectionManagementService.noProviderForUri": "{0} URI에 대한 공급자를 찾을 수 없습니다.",
@@ -13450,7 +13453,8 @@
 			"connection.azureTenantDropdownLabel": "Azure AD 테넌트",
 			"connectionName": "이름(옵션)",
 			"connectionWidget.AddAzureAccount": "계정 추가...",
-			"connectionWidget.ConnectionStringError": "연결 문자열을 구문 분석하지 못했습니다.",
+			"connectionWidget.ConnectionStringError": "연결 문자열을 구문 분석하지 못했습니다. {0}",
+			"connectionWidget.ConnectionStringUndefined": "반환된 연결 정보가 없습니다.",
 			"connectionWidget.Error": "오류",
 			"connectionWidget.connectionString": "연결 문자열",
 			"connectionWidget.invalidAzureAccount": "계정을 선택해야 합니다.",
@@ -13512,8 +13516,8 @@
 			"warning": "경고"
 		},
 		"sql/workbench/services/executionPlan/common/executionPlanService": {
-			"executionPlanService.ensureCapabilitiesRegistered": "Provider with id {0} was not registered after 30 seconds.",
-			"executionPlanService.ensureFileExtensionHandlerRegistered": "Execution plan provider which supports file format '{0}' was not registered after 30 seconds.",
+			"executionPlanService.ensureCapabilitiesRegistered": "ID가 {0}인 공급자가 30초 후에 등록되지 않았습니다.",
+			"executionPlanService.ensureFileExtensionHandlerRegistered": "파일 형식 '{0}'을(를) 지원하는 실행 계획 공급자가 30초 후에 등록되지 않았습니다.",
 			"noHandlerRegistered": "유효한 실행 계획 처리기가 등록되지 않았습니다.",
 			"providerIdNotValidError": "ExecutionPlanService와 상호 작용하려면 유효한 공급자가 필요합니다.",
 			"selectExecutionPlanProvider": "실행 계획을 열 공급자 선택"
@@ -13688,7 +13692,8 @@
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
 			"OeSessionFailedError": "개체 탐색기 세션을 만들지 못함",
-			"nodeExpansionError": "여러 오류:"
+			"nodeExpansionError": "여러 오류:",
+			"nodeExpansionTimeout": "{1} 공급자의 {0} 노드에 대한 노드 확장 시간을 초과했습니다."
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim": {
 			"firewallCanceled": "방화벽 대화 상자를 취소함",
@@ -13743,7 +13748,7 @@
 			"updateCellFailed": "셀 업데이트 실패: "
 		},
 		"sql/workbench/services/query/common/queryRunner": {
-			"copyFailed": "복사하지 못했습니다(오류: {0}).",
+			"copyFailed": "{0} 오류를 나타내며 복사 실패",
 			"elapsedBatchTime": "일괄 처리 실행 시간: {0}",
 			"query.ExecutionFailedError": "예기치 않은 오류로 인해 실행하지 못했습니다. {0}\t{1}",
 			"query.message.executionTime": "총 실행 시간: {0}",
@@ -13953,6 +13958,9 @@
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanInput": {
 			"epCompare.executionPlanEditorName": "ExecutionPlan"
+		},
+		"sql/workbench/contrib/editData/browser/editDataGridPanel": {
+			"editData.cellWithNullCharMessage": "이 셀에는 현재 편집이 지원되지 않는 유니코드 null 문자가 포함되어 있습니다."
 		}
 	}
 }

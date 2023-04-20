@@ -22,8 +22,11 @@
 		"dist/localizedConstants": {
 			"mssql.failedToFindAccount": "Fehler beim Suchen des Azure-Kontos {0} beim Ausführen der Tokenaktualisierung.",
 			"mssql.failedToFindTenants": "Fehler beim Suchen des Mandanten „{0}“ im Konto „{1}“ beim Aktualisieren des Sicherheitstokens.",
+			"mssql.noConvertResult": "Von der Notebook-Konvertierungsanforderung wurde kein Ergebnis zurückgegeben.",
+			"mssql.noDocumentFound": "Kein Dokument für URI \"{0}\" gefunden.",
 			"mssql.tokenRefreshFailed": "{0} AAD-Token konnte nicht aktualisiert werden, bitte stellen Sie die Verbindung erneut her, um {0} zu aktivieren.",
-			"mssql.tokenRefreshFailedNoSecurityToken": "Fehler bei der Aktualisierung des Editor-Tokens, die automatische Vervollständigung wird deaktiviert, bis der Editor getrennt und die Verbindung erneut hergestellt wurde."
+			"mssql.tokenRefreshFailedNoSecurityToken": "Fehler bei der Aktualisierung des Editor-Tokens, die automatische Vervollständigung wird deaktiviert, bis der Editor getrennt und die Verbindung erneut hergestellt wurde.",
+			"mssql.unsupportedPlatform": "Nicht unterstützte Plattform {0}"
 		},
 		"dist/main": {
 			"mssql.errorConvertingToNotebook": "Fehler beim Konvertieren des SQL-Dokuments in ein Notebook: {0}",
@@ -31,11 +34,15 @@
 			"mssql.searchServers": "Servernamen suchen"
 		},
 		"dist/objectManagement/localizedConstants": {
+			"objectManagement.ColumnDisplayName": "Spalte",
+			"objectManagement.DatabaseDisplayName": "Datenbank",
 			"objectManagement.LoginTypeDisplayName": "Anmeldename",
 			"objectManagement.LoginTypeDisplayNameInTitle": "Anmelden",
 			"objectManagement.OkText": "OK",
+			"objectManagement.TableDisplayName": "Tabelle",
 			"objectManagement.UserDisplayName": "Benutzer",
 			"objectManagement.UserTypeDisplayNameInTitle": "Benutzer",
+			"objectManagement.ViewDisplayName": "Ansicht",
 			"objectManagement.advancedSectionHeader": "Erweitert",
 			"objectManagement.blankPasswordConfirmation": "Das Erstellen eines Anmeldenamens mit leerem Kennwort stellt ein Sicherheitsrisiko dar. Möchten Sie den Vorgang wirklich fortsetzen?",
 			"objectManagement.confirmPasswordLabel": "Kennwort bestätigen",
@@ -65,9 +72,11 @@
 			"objectManagement.login.sqlAuthSectionHeader": "SQL-Authentifizierung",
 			"objectManagement.login.sqlAuthenticationType": "SQL-Authentifizierung",
 			"objectManagement.login.windowsAuthenticationType": "Windows-Authentifizierung",
+			"objectManagement.loginNotSelectedError": "Die Anmeldung ist nicht ausgewählt.",
 			"objectManagement.nameCannotBeEmptyError": "Das Namensfeld darf nicht leer bleiben.",
 			"objectManagement.nameLabel": "Name",
 			"objectManagement.newObjectDialogTitle": "{0} – Neu (Vorschau)",
+			"objectManagement.noConnectionUriError": "Fehler beim Abrufen der Verbindungsinformationen. Stellen Sie die Verbindung wieder her, und versuchen Sie es noch einmal.",
 			"objectManagement.objectPropertiesDialogTitle": "{0} – {1} (Vorschau)",
 			"objectManagement.openNewObjectDialogError": "Fehler beim Öffnen des neuen {0}-Dialogfelds. {1}",
 			"objectManagement.openObjectPropertiesDialogError": "Fehler beim Öffnen des Eigenschaftendialogfelds für {0}: {1}. {2}",
@@ -75,6 +84,9 @@
 			"objectManagement.passwordLabel": "Kennwort",
 			"objectManagement.passwordsNotMatchError": "Das Kennwort muss mit dem Bestätigungskennwort übereinstimmen.",
 			"objectManagement.refreshOEError": "Fehler beim Aktualisieren des Objekt-Explorers. {0}",
+			"objectManagement.renameObjectDialogTitle": "Neuen Namen eingeben",
+			"objectManagement.renameObjectError": "Beim Umbenennen von {0} \"{1}\" in \"{2}\" ist ein Fehler aufgetreten. {3}",
+			"objectManagement.renameObjectOperationName": "{0} \"{1}\" in \"{2}\" umbenennen",
 			"objectManagement.selectedLabel": "Ausgewählt",
 			"objectManagement.updateObjectOperationName": "{0} „{1}“ aktualisieren",
 			"objectManagement.user.containedUser": "Enthaltener Benutzer",
@@ -165,7 +177,7 @@
 			"mssql.connectionOptions.enclaveAttestationProtocol.description": "Gibt ein Protokoll zum Nachweis einer serverseitigen Enclave an, die mit Always Encrypted für Secure Enclaves verwendet wird.",
 			"mssql.connectionOptions.enclaveAttestationProtocol.displayName": "Nachweisprotokoll",
 			"mssql.connectionOptions.enclaveAttestationUrl.description": "Gibt einen Endpunkt zum Nachweis einer serverseitigen Enclave an, die mit Always Encrypted für Secure Enclaves verwendet wird.",
-			"mssql.connectionOptions.enclaveAttestationUrl.displayName": "Enclave-Nachweis-URL",
+			"mssql.connectionOptions.enclaveAttestationUrl.displayName": "Nachweis-URL",
 			"mssql.connectionOptions.encrypt.categoryValues.false": "Optional (FALSCH)",
 			"mssql.connectionOptions.encrypt.categoryValues.strict": "Streng",
 			"mssql.connectionOptions.encrypt.categoryValues.true": "Obligatorisch (WAHR)",
@@ -300,7 +312,8 @@
 			"title.newServerRole": "Neue Serverrolle",
 			"title.newTable": "Neue Tabelle",
 			"title.newUser": "Neuer Benutzer",
-			"title.objectProperties": "Eigenschaften",
+			"title.objectProperties": "Eigenschaften (Vorschau)",
+			"title.renameObject": "Umbenennen",
 			"title.searchServers": "Suche: Server",
 			"title.showLogFile": "Protokolldatei anzeigen"
 		}

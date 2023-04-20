@@ -14,7 +14,7 @@ import { Project } from '../models/project';
 import { getPublishDatabaseSettings } from './publishDatabaseQuickpick';
 import { AzureSqlClient } from '../models/deploy/azureSqlClient';
 import { IAccount } from 'vscode-mssql';
-import { ISqlProjectPublishSettings } from 'sqldbproj';
+import { ISqlProjectPublishSettings } from '../models/deploy/publishSettings';
 
 /**
  * Create flow for Deploying a database using only VS Code-native APIs such as QuickPick

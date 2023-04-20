@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as path from 'path';
+import * as os from 'os';
 
 import * as Constants from './constants';
 import ContextProvider from './contextProvider';
@@ -25,6 +26,7 @@ import { registerTableDesignerCommands } from './tableDesigner/tableDesigner';
 // import { SqlNotebookController } from './sqlNotebook/sqlNotebookController';
 import { registerObjectManagementCommands } from './objectManagement/commands';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from './telemetry';
+import { noConvertResult, noDocumentFound, unsupportedPlatform } from './localizedConstants';
 
 const localize = nls.loadMessageBundle();
 
@@ -33,8 +35,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	let supported = await Utils.verifyPlatform();
 
 	if (!supported) {
-		void vscode.window.showErrorMessage('Unsupported platform');
-		return undefined;
+		const msg = unsupportedPlatform(os.platform());
+		void vscode.window.showErrorMessage(msg);
+		throw new Error(unsupportedPlatform(msg));
 	}
 
 	// ensure our log path exists
@@ -68,6 +71,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	context.subscriptions.push(vscode.commands.registerCommand('mssql.exportSqlAsNotebook', async (uri: vscode.Uri) => {
 		try {
 			const result = await appContext.getService<INotebookConvertService>(Constants.NotebookConvertService).convertSqlToNotebook(uri.toString());
+			if (!result) {
+				throw new Error(noConvertResult);
+			}
 			const title = findNextUntitledEditorName();
 			const untitledUri = vscode.Uri.parse(`untitled:${title}`);
 			await azdata.nb.showNotebookDocument(untitledUri, { initialContent: result.content });
@@ -82,7 +88,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 			// We use vscode.workspace.textDocuments here because the azdata.nb.notebookDocuments don't actually contain their contents
 			// (they're left out for perf purposes)
 			const doc = vscode.workspace.textDocuments.find(doc => doc.uri.toString() === uri.toString());
+			if (!doc) {
+				throw new Error(noDocumentFound(uri.toString()));
+			}
 			const result = await appContext.getService<INotebookConvertService>(Constants.NotebookConvertService).convertNotebookToSql(doc.getText());
+			if (!result) {
+				throw new Error(noConvertResult);
+			}
 			await azdata.queryeditor.openQueryDocument({ content: result.content });
 		} catch (err) {
 			void vscode.window.showErrorMessage(localize('mssql.errorConvertingToSQL', "An error occurred converting the Notebook document to SQL. Error : {0}", err.toString()));

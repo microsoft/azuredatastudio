@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as should from 'should';
 import { RadioOptionsGroup, RadioOptionsInfo } from '../../../ui/components/radioOptionsGroup';
 import { createModelViewMock } from '@microsoft/azdata-test/out/mocks/azdata/modelView';
-import { StubRadioButton } from '@microsoft/azdata-test/out/stubs/modelView/stubRadioButton';
+import { StubRadioButton } from '@microsoft/azdata-test/out/stubs/azdata/modelView';
 import * as loc from '../../../localizedConstants';
 
 

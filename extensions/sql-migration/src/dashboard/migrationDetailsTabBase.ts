@@ -8,14 +8,16 @@ import * as vscode from 'vscode';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationServiceContext } from '../models/migrationLocalStorage';
 import * as loc from '../constants/strings';
-import * as styles from '../constants/styles';
-import { DatabaseMigration } from '../api/azure';
+import { DatabaseMigration, deleteMigration, getMigrationErrors, retryMigration } from '../api/azure';
 import { TabBase } from './tabBase';
 import { MigrationCutoverDialogModel } from '../dialog/migrationCutover/migrationCutoverDialogModel';
 import { ConfirmCutoverDialog } from '../dialog/migrationCutover/confirmCutoverDialog';
-import { RetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDialog';
-import { MigrationTargetType } from '../models/stateMachine';
+import { RestartMigrationDialog } from '../dialog/restartMigration/restartMigrationDialog';
 import { DashboardStatusBar } from './DashboardStatusBar';
+import { canDeleteMigration, canRetryMigration } from '../constants/helper';
+import { logError, TelemetryViews } from '../telemetry';
+import { MenuCommands, MigrationTargetType } from '../api/utils';
+import { openRetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDialog';
 
 export const infoFieldLgWidth: string = '330px';
 export const infoFieldWidth: string = '250px';
@@ -23,9 +25,9 @@ export const infoFieldWidth: string = '250px';
 const statusImageSize: number = 14;
 
 export const MigrationTargetTypeName: loc.LookupTable<string> = {
-	[MigrationTargetType.SQLMI]: loc.AZURE_SQL_DATABASE_MANAGED_INSTANCE,
-	[MigrationTargetType.SQLVM]: loc.AZURE_SQL_DATABASE_VIRTUAL_MACHINE,
-	[MigrationTargetType.SQLDB]: loc.AZURE_SQL_DATABASE,
+	[MigrationTargetType.SQLMI]: loc.SQL_MANAGED_INSTANCE,
+	[MigrationTargetType.SQLVM]: loc.SQL_VIRTUAL_MACHINE,
+	[MigrationTargetType.SQLDB]: loc.SQL_DATABASE,
 };
 
 export interface InfoFieldSchema {
@@ -38,20 +40,22 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 	protected model!: MigrationCutoverDialogModel;
 	protected databaseLabel!: azdata.TextComponent;
 	protected serviceContext!: MigrationServiceContext;
-	protected openMigrationsListFcn!: () => Promise<void>;
+	protected openMigrationsListFcn!: (refresh?: boolean) => Promise<void>;
 	protected cutoverButton!: azdata.ButtonComponent;
 	protected refreshButton!: azdata.ButtonComponent;
 	protected cancelButton!: azdata.ButtonComponent;
+	protected deleteButton!: azdata.ButtonComponent;
 	protected refreshLoader!: azdata.LoadingComponent;
 	protected copyDatabaseMigrationDetails!: azdata.ButtonComponent;
 	protected newSupportRequest!: azdata.ButtonComponent;
 	protected retryButton!: azdata.ButtonComponent;
+	protected restartButton!: azdata.ButtonComponent;
 	protected summaryTextComponent: azdata.TextComponent[] = [];
 
 	public abstract create(
 		context: vscode.ExtensionContext,
 		view: azdata.ModelView,
-		openMigrationsListFcn: () => Promise<void>,
+		openMigrationsListFcn: (refresh?: boolean) => Promise<void>,
 		statusBar: DashboardStatusBar): Promise<T>;
 
 	protected abstract migrationInfoGrid(): Promise<azdata.FlexContainer>;
@@ -66,7 +70,7 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 		migration: DatabaseMigration): Promise<void> {
 		this.serviceContext = serviceContext;
 		this.model = new MigrationCutoverDialogModel(serviceContext, migration);
-		await this.refresh();
+		await this.refresh(true);
 	}
 
 	protected createBreadcrumbContainer(): azdata.FlexContainer {
@@ -186,6 +190,46 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 				});
 			}));
 
+		this.deleteButton = this.view.modelBuilder.button()
+			.withProps({
+				iconPath: IconPathHelper.discard,
+				iconHeight: '16px',
+				iconWidth: '16px',
+				label: loc.DELETE_MIGRATION,
+				height: buttonHeight,
+				enabled: false,
+			}).component();
+
+		this.disposables.push(
+			this.deleteButton.onDidClick(
+				async (e) => {
+					await this.statusBar.clearError();
+					try {
+						if (canDeleteMigration(this.model.migration)) {
+							const response = await vscode.window.showInformationMessage(
+								loc.DELETE_MIGRATION_CONFIRMATION,
+								{ modal: true },
+								loc.YES,
+								loc.NO);
+							if (response === loc.YES) {
+								await deleteMigration(
+									this.serviceContext.azureAccount!,
+									this.serviceContext.subscription!,
+									this.model.migration.id);
+								await this.openMigrationsListFcn(true);
+							}
+						} else {
+							await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_DELETE);
+							logError(TelemetryViews.MigrationDetailsTab, MenuCommands.DeleteMigration, "cannot delete migration");
+						}
+					} catch (e) {
+						await this.statusBar.showError(
+							loc.MIGRATION_DELETE_ERROR,
+							loc.MIGRATION_DELETE_ERROR,
+							e.message);
+						logError(TelemetryViews.MigrationDetailsTab, MenuCommands.DeleteMigration, e);
+					}
+				}));
 
 		this.retryButton = this.view.modelBuilder.button()
 			.withProps({
@@ -200,13 +244,53 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 		this.disposables.push(
 			this.retryButton.onDidClick(
 				async (e) => {
+					await this.statusBar.clearError();
+					if (canRetryMigration(this.model.migration)) {
+						const errorMessage = getMigrationErrors(this.model.migration);
+						await openRetryMigrationDialog(
+							errorMessage,
+							async () => {
+								try {
+									await retryMigration(
+										this.serviceContext.azureAccount!,
+										this.serviceContext.subscription!,
+										this.model.migration);
+									await this.refresh();
+								} catch (e) {
+									await this.statusBar.showError(
+										loc.MIGRATION_RETRY_ERROR,
+										loc.MIGRATION_RETRY_ERROR,
+										e.message);
+									logError(TelemetryViews.MigrationDetailsTab, MenuCommands.RetryMigration, e);
+								}
+							});
+					} else {
+						await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_RETRY);
+						logError(TelemetryViews.MigrationDetailsTab, MenuCommands.RetryMigration, "cannot retry migration");
+					}
+				}
+			));
+
+		this.restartButton = this.view.modelBuilder.button()
+			.withProps({
+				label: loc.RESTART_MIGRATION_WIZARD,
+				iconPath: IconPathHelper.retry,
+				enabled: false,
+				iconHeight: '16px',
+				iconWidth: '16px',
+				height: buttonHeight,
+			}).component();
+
+		this.disposables.push(
+			this.restartButton.onDidClick(
+				async (e) => {
 					await this.refresh();
-					const retryMigrationDialog = new RetryMigrationDialog(
+					const restartMigrationDialog = new RestartMigrationDialog(
 						this.context,
 						this.serviceContext,
 						this.model.migration,
 						this.serviceContextChangedEvent);
-					await retryMigrationDialog.openDialog();
+					await restartMigrationDialog.openDialog();
 				}
 			));
 
@@ -266,7 +350,9 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 		toolbarContainer.addToolbarItems([
 			<azdata.ToolbarComponent>{ component: this.cutoverButton },
 			<azdata.ToolbarComponent>{ component: this.cancelButton },
+			<azdata.ToolbarComponent>{ component: this.deleteButton },
 			<azdata.ToolbarComponent>{ component: this.retryButton },
+			<azdata.ToolbarComponent>{ component: this.restartButton },
 			<azdata.ToolbarComponent>{ component: this.copyDatabaseMigrationDetails, toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.newSupportRequest, toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.refreshLoader },
@@ -359,37 +445,55 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 		icon?: azdata.ImageComponent
 	}> {
 		const flexContainer = this.view.modelBuilder.flexContainer()
-			.withProps({
-				CSSStyles: {
-					'flex-direction': 'column',
-					'padding-right': '12px'
-				}
-			}).component();
+			.withProps({ CSSStyles: { 'flex-direction': 'row', } })
+			.component();
 
 		const labelComponent = this.view.modelBuilder.text()
 			.withProps({
 				value: label,
+				title: label,
+				width: '170px',
 				CSSStyles: {
-					...styles.LIGHT_LABEL_CSS,
-					'margin-bottom': '0',
+					'font-size': '13px',
+					'line-height': '18px',
+					'margin': '2px 0 2px 0',
+					'float': 'left',
+					'overflow': 'hidden',
+					'text-overflow': 'ellipsis',
+					'display': 'inline-block',
+					'white-space': 'nowrap',
 				}
 			}).component();
-		flexContainer.addItem(labelComponent);
+		flexContainer.addItem(labelComponent, { flex: '0 0 auto' });
+
+		const separatorComponent = this.view.modelBuilder.text()
+			.withProps({
+				value: ':',
+				title: ':',
+				width: '15px',
+				CSSStyles: {
+					'font-size': '13px',
+					'line-height': '18px',
+					'margin': '2px 0 2px 0',
+					'float': 'left',
+				}
+			}).component();
+		flexContainer.addItem(separatorComponent, { flex: '0 0 auto' });
 
 		const textComponent = this.view.modelBuilder.text()
 			.withProps({
 				value: value,
 				title: value,
-				description: value,
-				width: '100%',
+				width: '300px',
 				CSSStyles: {
 					'font-size': '13px',
 					'line-height': '18px',
-					'margin': '4px 0 12px',
+					'margin': '2px 15px 2px 0',
 					'overflow': 'hidden',
 					'text-overflow': 'ellipsis',
-					'max-width': '230px',
 					'display': 'inline-block',
+					'float': 'left',
+					'white-space': 'nowrap',
 				}
 			}).component();
 
@@ -404,25 +508,24 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 					width: statusImageSize,
 					title: value,
 					CSSStyles: {
-						'margin': '7px 3px 0 0',
+						'margin': '4px 4px 0 0',
 						'padding': '0'
 					}
 				}).component();
 
 			const iconTextComponent = this.view.modelBuilder.flexContainer()
-				.withItems([
-					iconComponent,
-					textComponent
-				]).withProps({
+				.withItems([iconComponent, textComponent])
+				.withProps({
 					CSSStyles: {
 						'margin': '0',
-						'padding': '0'
+						'padding': '0',
+						'height': '18px',
 					},
 					display: 'inline-flex'
 				}).component();
-			flexContainer.addItem(iconTextComponent);
+			flexContainer.addItem(iconTextComponent, { flex: '0 0 auto' });
 		} else {
-			flexContainer.addItem(textComponent);
+			flexContainer.addItem(textComponent, { flex: '0 0 auto' });
 		}
 
 		return {
@@ -433,7 +536,7 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 	}
 
 	protected async showMigrationErrors(migration: DatabaseMigration): Promise<void> {
-		const errorMessage = this.getMigrationErrors(migration);
+		const errorMessage = getMigrationErrors(migration);
 		if (errorMessage?.length > 0) {
 			await this.statusBar.showError(
 				loc.MIGRATION_ERROR_DETAILS_TITLE,
@@ -459,5 +562,14 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 
 	private _getMigrationDetails(): string {
 		return JSON.stringify(this.model.migration, undefined, 2);
+	}
+
+	protected _updateInfoFieldValue(info: InfoFieldSchema, value: string) {
+		info.text.value = value;
+		info.text.title = value;
+		info.text.description = value;
+		if (info.icon) {
+			info.icon.title = value;
+		}
 	}
 }

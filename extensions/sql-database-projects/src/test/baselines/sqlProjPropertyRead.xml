@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build">
+  <Sdk Name="Microsoft.Build.Sql" Version="0.1.9-preview" />
+  <PropertyGroup>
+    <Name>SdkStyle</Name>
+    <ProjectGuid>{BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <ModelCollation>1041, CI</ModelCollation>
+    <Configuration>Release</Configuration>
+    <Platform>x64</Platform>
+    <OutputPath>CustomOutputPath\Dacpacs\</OutputPath>
+    <DefaultCollation>Japanese_CI_AS</DefaultCollation>
+    <DatabaseSource>oneSource;twoSource;redSource;blueSource</DatabaseSource>
+  </PropertyGroup>
+  <Target Name="BeforeBuild">
+    <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json" />
+  </Target>
+</Project>

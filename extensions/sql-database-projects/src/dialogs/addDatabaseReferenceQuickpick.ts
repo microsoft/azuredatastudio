@@ -6,18 +6,14 @@
 import path = require('path');
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
-import { getSqlProjectsInWorkspace, isValidSqlCmdVariableName, removeSqlCmdVariableFormatting } from '../common/utils';
+import { getSqlProjectsInWorkspace, validateSqlCmdVariableName } from '../common/utils';
+import { DbServerValues, populateResultWithVars } from './utils';
 import { AddDatabaseReferenceSettings } from '../controllers/projectController';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { Project } from '../models/project';
 import { getSystemDatabase, getSystemDbOptions, promptDacpacLocation } from './addDatabaseReferenceDialog';
 
-interface DbServerValues {
-	dbName?: string,
-	dbVariable?: string,
-	serverName?: string,
-	serverVariable?: string
-}
+
 
 /**
  * Create flow for adding a database reference using only VS Code-native APIs such as QuickPick
@@ -93,10 +89,8 @@ async function addProjectReference(otherProjectsInWorkspace: vscode.Uri[]): Prom
 		// User cancelled
 		return;
 	}
-	referenceSettings.databaseName = dbServerValues.dbName;
-	referenceSettings.databaseVariable = dbServerValues.dbVariable;
-	referenceSettings.serverName = dbServerValues.serverName;
-	referenceSettings.serverVariable = dbServerValues.serverVariable;
+
+	populateResultWithVars(referenceSettings, dbServerValues);
 
 	// 7. Prompt suppress unresolved ref errors
 	const suppressErrors = await promptSuppressUnresolvedRefErrors();
@@ -124,7 +118,7 @@ async function addSystemDatabaseReference(project: Project): Promise<ISystemData
 	const suppressErrors = await promptSuppressUnresolvedRefErrors();
 
 	return {
-		databaseName: dbName,
+		databaseVariableLiteralValue: dbName,
 		systemDb: getSystemDatabase(selectedSystemDb),
 		suppressMissingDependenciesErrors: suppressErrors
 	};
@@ -181,14 +175,16 @@ async function addDacpacReference(project: Project): Promise<IDacpacReferenceSet
 	// 5. Prompt suppress unresolved ref errors
 	const suppressErrors = await promptSuppressUnresolvedRefErrors();
 
-	return {
-		databaseName: dbServerValues.dbName,
+	// 6. Construct result
+
+	const referenceSettings: IDacpacReferenceSettings = {
 		dacpacFileLocation: dacPacLocation,
-		databaseVariable: removeSqlCmdVariableFormatting(dbServerValues.dbVariable),
-		serverName: dbServerValues.serverName,
-		serverVariable: removeSqlCmdVariableFormatting(dbServerValues.serverVariable),
 		suppressMissingDependenciesErrors: suppressErrors
 	};
+
+	populateResultWithVars(referenceSettings, dbServerValues);
+
+	return referenceSettings;
 }
 
 async function promptLocation(): Promise<string | undefined> {
@@ -215,7 +211,7 @@ async function promptDbVar(defaultValue: string): Promise<string> {
 			title: constants.databaseVariable,
 			value: defaultValue,
 			validateInput: (value: string) => {
-				return isValidSqlCmdVariableName(value) ? '' : constants.notValidVariableName(value);
+				return validateSqlCmdVariableName(value) ?? '';
 			},
 			ignoreFocusOut: true
 		}) ?? '';
@@ -239,7 +235,7 @@ async function promptServerVar(): Promise<string> {
 			title: constants.serverVariable,
 			value: constants.otherSeverVariable,
 			validateInput: (value: string) => {
-				return isValidSqlCmdVariableName(value) ? '' : constants.notValidVariableName(value);
+				return validateSqlCmdVariableName(value) ?? '';
 			},
 			ignoreFocusOut: true
 		}) ?? '';

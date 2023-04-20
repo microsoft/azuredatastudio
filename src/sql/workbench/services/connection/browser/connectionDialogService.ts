@@ -270,6 +270,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			showFirewallRuleOnError: true
 		};
 
+		if (params && options.params === undefined) {
+			options.params = params;
+		}
 		try {
 			const connectionResult = await this._connectionManagementService.connectAndSaveProfile(connection, uri, options, params && params.input);
 			this._connecting = false;
@@ -343,11 +346,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			}
 		}
 		this._model.providerName = this._currentProviderType;
-		const previousModel = this._model;
 		this._model = new ConnectionProfile(this._capabilitiesService, this._model);
-		if (previousModel) {
-			previousModel.dispose();
-		}
 		if (this._inputModel && this._inputModel.options) {
 			this.uiController.showUiComponent(input.container,
 				this._inputModel.options.authTypeChanged);
@@ -364,10 +363,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private async handleFillInConnectionInputs(connectionInfo: IConnectionProfile): Promise<void> {
 		try {
 			const connectionWithPassword = await this.createModel(connectionInfo);
-
-			if (this._model) {
-				this._model.dispose();
-			}
 			this._model = connectionWithPassword;
 			this.uiController.fillInConnectionInputs(this._model);
 		}
@@ -387,9 +382,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	private async updateModelServerCapabilities(model: IConnectionProfile) {
-		if (this._model) {
-			this._model.dispose();
-		}
 		this._model = await this.createModel(model);
 		if (this._model.providerName) {
 			this._currentProviderType = this._model.providerName;
@@ -501,9 +493,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this._connectionDialog.onFillinConnectionInputs((input) => this.handleFillInConnectionInputs(input as IConnectionProfile));
 			this._connectionDialog.onResetConnection(() => this.handleProviderOnResetConnection());
 			this._connectionDialog.render();
-			this._connectionDialog.onClosed(() => {
-				this._model?.dispose();
-			});
 		}
 		this._connectionDialog.newConnectionParams = params;
 		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[this._currentProviderType]);
@@ -511,7 +500,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections(params.providers);
 		await this._connectionDialog.open(recentConnections.length > 0);
 		this.uiController.focusOnOpen();
-		recentConnections.forEach(conn => conn.dispose());
 	}
 
 	private showErrorDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string): void {

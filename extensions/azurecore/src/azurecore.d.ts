@@ -5,7 +5,7 @@
 
 declare module 'azurecore' {
 	import * as azdata from 'azdata';
-	import { TreeDataProvider } from 'vscode';
+	import * as vscode from 'vscode';
 	import { BlobItem } from '@azure/storage-blob';
 
 	/**
@@ -35,8 +35,11 @@ declare module 'azurecore' {
 		/**
 		 * Auth type of azure used to authenticate this account.
 		 */
-		azureAuthType?: AzureAuthType
+		azureAuthType?: AzureAuthType;
 
+		/**
+		 * Provider settings for account.
+		 */
 		providerSettings: AzureAccountProviderMetadata;
 
 		/**
@@ -53,7 +56,6 @@ declare module 'azurecore' {
 		 * A list of tenants (aka directories) that the account belongs to
 		 */
 		tenants: Tenant[];
-
 	}
 
 	export const enum AzureAuthType {
@@ -314,8 +316,17 @@ declare module 'azurecore' {
 		getRegionDisplayName(region?: string): string;
 		getProviderMetadataForAccount(account: AzureAccount): AzureAccountProviderMetadata;
 		provideResources(): azureResource.IAzureResourceProvider[];
-
 		runGraphQuery<T extends azureResource.AzureGraphResource>(account: AzureAccount, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors: boolean, query: string): Promise<ResourceQueryResult<T>>;
+		/**
+		 * Event emitted when MSAL cache encryption keys are updated in credential store.
+		 * Returns encryption keys used for encryption/decryption of MSAL cache that can be used
+		 * by connection providers to read/write to the same access token cache for stable connectivity.
+		 */
+		onEncryptionKeysUpdated: vscode.Event<CacheEncryptionKeys>;
+		/**
+		 * Fetches MSAL cache encryption keys currently in use.
+		 */
+		getEncryptionKeys(): Promise<CacheEncryptionKeys>;
 	}
 
 	export type GetSubscriptionsResult = { subscriptions: azureResource.AzureResourceSubscription[], errors: Error[] };
@@ -333,6 +344,7 @@ declare module 'azurecore' {
 	export type AzureRestResponse = { response: any, errors: Error[] };
 	export type GetBlobsResult = { blobs: azureResource.Blob[], errors: Error[] };
 	export type GetStorageAccountAccessKeyResult = { keyName1: string, keyName2: string, errors: Error[] };
+	export type CacheEncryptionKeys = { key: string; iv: string; }
 
 	export namespace azureResource {
 

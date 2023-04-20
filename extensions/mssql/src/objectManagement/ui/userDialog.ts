@@ -3,10 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { DefaultInputWidth, ObjectManagementDialogBase } from './objectManagementDialogBase';
+import { DefaultInputWidth, ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { AlterUserDocUrl, AuthenticationType, CreateUserDocUrl, NodeType, UserType } from '../constants';
+import { AlterUserDocUrl, CreateUserDocUrl } from '../constants';
 import { getAuthenticationTypeByDisplayName, getAuthenticationTypeDisplayName, getUserTypeByDisplayName, getUserTypeDisplayName, isValidSQLPassword } from '../utils';
 
 export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User, ObjectManagement.UserViewInfo> {
@@ -31,14 +31,16 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 	private ownedSchemaTable: azdata.TableComponent;
 	private membershipTable: azdata.TableComponent;
 
-	constructor(objectManagementService: IObjectManagementService, connectionUri: string, private readonly database: string, isNewObject: boolean, name?: string, objectExplorerContext?: azdata.ObjectExplorerContext) {
-		super(NodeType.User, isNewObject ? CreateUserDocUrl : AlterUserDocUrl, objectManagementService, connectionUri, isNewObject, name, objectExplorerContext);
+	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
+		super(objectManagementService, options);
 	}
 
-	protected async initializeData(): Promise<ObjectManagement.UserViewInfo> {
-		const viewInfo = await this.objectManagementService.initializeUserView(this.connectionUri, this.database, this.contextId, this.isNewObject, this.objectName);
-		viewInfo.objectInfo.password = viewInfo.objectInfo.password ?? '';
-		return viewInfo;
+	protected override get docUrl(): string {
+		return this.options.isNewObject ? CreateUserDocUrl : AlterUserDocUrl;
+	}
+
+	protected override postInitializeData(): void {
+		this.objectInfo.password = this.objectInfo.password ?? '';
 	}
 
 	protected async validateInput(): Promise<string[]> {
@@ -46,31 +48,23 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		if (!this.objectInfo.name) {
 			errors.push(localizedConstants.NameCannotBeEmptyError);
 		}
-		if (this.objectInfo.type === UserType.Contained && this.objectInfo.authenticationType === AuthenticationType.Sql) {
+		if (this.objectInfo.type === ObjectManagement.UserType.Contained && this.objectInfo.authenticationType === ObjectManagement.AuthenticationType.Sql) {
 			if (!this.objectInfo.password) {
 				errors.push(localizedConstants.PasswordCannotBeEmptyError);
 			}
 			if (this.objectInfo.password !== this.confirmPasswordInput.value) {
 				errors.push(localizedConstants.PasswordsNotMatchError);
 			}
-			if (!isValidSQLPassword(this.objectInfo.password, this.objectInfo.name)
-				&& (this.isNewObject || this.objectInfo.password !== this.originalObjectInfo.password)) {
+			if (!isValidSQLPassword(this.objectInfo.password!, this.objectInfo.name)
+				&& (this.options.isNewObject || this.objectInfo.password !== this.originalObjectInfo.password)) {
 				errors.push(localizedConstants.InvalidPasswordError);
+			}
+		} else if (this.objectInfo.type === ObjectManagement.UserType.WithLogin) {
+			if (!this.objectInfo.loginName) {
+				errors.push(localizedConstants.LoginNotSelectedError);
 			}
 		}
 		return errors;
-	}
-
-	protected async onComplete(): Promise<void> {
-		if (this.isNewObject) {
-			await this.objectManagementService.createUser(this.contextId, this.objectInfo);
-		} else {
-			await this.objectManagementService.updateUser(this.contextId, this.objectInfo);
-		}
-	}
-
-	protected async disposeView(): Promise<void> {
-		await this.objectManagementService.disposeUserView(this.contextId);
 	}
 
 	protected async initializeUI(): Promise<void> {
@@ -87,38 +81,26 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 	private initializeGeneralSection(): void {
 		this.nameInput = this.modelView.modelBuilder.inputBox().withProps({
 			ariaLabel: localizedConstants.NameText,
-			enabled: this.isNewObject,
+			enabled: this.options.isNewObject,
 			value: this.objectInfo.name,
 			width: DefaultInputWidth
 		}).component();
 		this.disposables.push(this.nameInput.onTextChanged(async () => {
-			this.objectInfo.name = this.nameInput.value;
+			this.objectInfo.name = this.nameInput.value!;
 			this.onObjectValueChange();
 			await this.runValidation(false);
 		}));
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
-
-		this.defaultSchemaDropdown = this.modelView.modelBuilder.dropDown().withProps({
-			ariaLabel: localizedConstants.DefaultSchemaText,
-			values: this.viewInfo.schemas,
-			value: this.objectInfo.defaultSchema,
-			width: DefaultInputWidth
-		}).component();
+		this.defaultSchemaDropdown = this.createDropdown(localizedConstants.DefaultSchemaText, this.viewInfo.schemas, this.objectInfo.defaultSchema!);
 		this.defaultSchemaContainer = this.createLabelInputContainer(localizedConstants.DefaultSchemaText, this.defaultSchemaDropdown);
 		this.disposables.push(this.defaultSchemaDropdown.onValueChanged(() => {
 			this.objectInfo.defaultSchema = <string>this.defaultSchemaDropdown.value;
 			this.onObjectValueChange();
 		}));
 
-		this.typeDropdown = this.modelView.modelBuilder.dropDown().withProps({
-			ariaLabel: localizedConstants.UserTypeText,
-			// only supporting user with login for initial preview
-			//values: [localizedConstants.UserWithLoginText, localizedConstants.UserWithWindowsGroupLoginText, localizedConstants.ContainedUserText, localizedConstants.UserWithNoConnectAccess],
-			values: [localizedConstants.UserWithLoginText],
-			value: getUserTypeDisplayName(this.objectInfo.type),
-			width: DefaultInputWidth,
-			enabled: this.isNewObject
-		}).component();
+		// only supporting user with login for initial preview
+		const userTypes = [localizedConstants.UserWithLoginText, localizedConstants.UserWithWindowsGroupLoginText, localizedConstants.ContainedUserText, localizedConstants.UserWithNoConnectAccess];
+		this.typeDropdown = this.createDropdown(localizedConstants.UserTypeText, userTypes, getUserTypeDisplayName(this.objectInfo.type), this.options.isNewObject);
 		this.disposables.push(this.typeDropdown.onValueChanged(async () => {
 			this.objectInfo.type = getUserTypeByDisplayName(<string>this.typeDropdown.value);
 			this.onObjectValueChange();
@@ -126,17 +108,11 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 			await this.runValidation(false);
 		}));
 		this.typeContainer = this.createLabelInputContainer(localizedConstants.UserTypeText, this.typeDropdown);
-
-		this.loginDropdown = this.modelView.modelBuilder.dropDown().withProps({
-			ariaLabel: localizedConstants.LoginText,
-			values: this.viewInfo.logins,
-			value: this.objectInfo.loginName,
-			width: DefaultInputWidth,
-			enabled: this.isNewObject
-		}).component();
-		this.disposables.push(this.loginDropdown.onValueChanged(() => {
+		this.loginDropdown = this.createDropdown(localizedConstants.LoginText, this.viewInfo.logins, this.objectInfo.loginName, this.options.isNewObject);
+		this.disposables.push(this.loginDropdown.onValueChanged(async () => {
 			this.objectInfo.loginName = <string>this.loginDropdown.value;
 			this.onObjectValueChange();
+			await this.runValidation(false);
 		}));
 		this.loginContainer = this.createLabelInputContainer(localizedConstants.LoginText, this.loginDropdown);
 
@@ -150,13 +126,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		if (this.viewInfo.supportAADAuthentication) {
 			authTypes.push(localizedConstants.AADAuthenticationTypeDisplayText);
 		}
-		this.authTypeDropdown = this.modelView.modelBuilder.dropDown().withProps({
-			ariaLabel: localizedConstants.AuthTypeText,
-			values: authTypes,
-			value: getAuthenticationTypeDisplayName(this.objectInfo.authenticationType),
-			width: DefaultInputWidth,
-			enabled: this.isNewObject
-		}).component();
+		this.authTypeDropdown = this.createDropdown(localizedConstants.AuthTypeText, authTypes, getAuthenticationTypeDisplayName(this.objectInfo.authenticationType), this.options.isNewObject);
 		this.authTypeContainer = this.createLabelInputContainer(localizedConstants.AuthTypeText, this.authTypeDropdown);
 		this.disposables.push(this.authTypeDropdown.onValueChanged(async () => {
 			this.objectInfo.authenticationType = getAuthenticationTypeByDisplayName(<string>this.authTypeDropdown.value);
@@ -204,12 +174,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 	}
 
 	private initializeAdvancedSection(): void {
-		this.defaultLanguageDropdown = this.modelView.modelBuilder.dropDown().withProps({
-			ariaLabel: localizedConstants.DefaultLanguageText,
-			values: this.viewInfo.languages,
-			value: this.objectInfo.defaultLanguage,
-			width: DefaultInputWidth
-		}).component();
+		this.defaultLanguageDropdown = this.createDropdown(localizedConstants.DefaultLanguageText, this.viewInfo.languages, this.objectInfo.defaultLanguage);
 		this.disposables.push(this.defaultLanguageDropdown.onValueChanged(() => {
 			this.objectInfo.defaultLanguage = <string>this.defaultLanguageDropdown.value;
 			this.onObjectValueChange();

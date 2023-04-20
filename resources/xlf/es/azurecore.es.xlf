@@ -465,6 +465,10 @@
         <source xml:lang="en">Azure Resources (Preview)</source>
         <target state="translated">Recursos de Azure (versión preliminar)</target>
       </trans-unit>
+      <trans-unit id="azure.credStoreSaveFailedError">
+        <source xml:lang="en">Keys for token cache could not be saved in credential store, this may cause Azure access token persistence issues and connection instabilities. It's likely that SqlTools has reached credential storage limit on Windows, please clear at least 2 credentials that start with "Microsoft.SqlTools|" in Windows Credential Manager and reload.</source>
+        <target state="translated">No se pudieron guardar las claves para la memoria caché de tokens en el almacén de credenciales. Esto puede provocar problemas de persistencia de tokens de acceso de Azure e inestabilidades de conexión. Es probable que SqlTools haya alcanzado el límite de almacenamiento de credenciales en Windows. Borre al menos 2 credenciales que empiecen con "Microsoft.SqlTools|" en el Administrador de credenciales de Windows y vuelva a cargar.</target>
+      </trans-unit>
       <trans-unit id="azure.unableToOpenAzureLink">
         <source xml:lang="en">Unable to open link, missing required values</source>
         <target state="translated">No se puede abrir el vínculo; faltan valores necesarios.</target>
@@ -524,6 +528,10 @@
       <trans-unit id="azurecore.centraluseuap">
         <source xml:lang="en">Central US EUAP</source>
         <target state="translated">EUAP del centro de EE. UU.</target>
+      </trans-unit>
+      <trans-unit id="azurecore.deprecated">
+        <source xml:lang="en">Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL instead.</source>
+        <target state="translated">Advertencia: ADAL está en desuso y está programado para quitarse en una versión futura. Use MSAL en su lugar.</target>
       </trans-unit>
       <trans-unit id="azurecore.eastasia">
         <source xml:lang="en">East Asia</source>

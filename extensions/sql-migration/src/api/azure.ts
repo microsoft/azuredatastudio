@@ -11,6 +11,7 @@ import { getSessionIdHeader } from './utils';
 import { URL } from 'url';
 import { MigrationSourceAuthenticationType, MigrationStateModel, NetworkShare } from '../models/stateMachine';
 import { NetworkInterface } from './dataModels/azure/networkInterfaceModel';
+import { EOL } from 'os';
 
 const ARM_MGMT_API_VERSION = '2021-04-01';
 const SQL_VM_API_VERSION = '2021-11-01-preview';
@@ -286,7 +287,11 @@ export async function getVMInstanceView(sqlVm: SqlVMServer, account: azdata.Acco
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
 
 	if (response.errors.length > 0) {
-		throw new Error(response.errors.toString());
+		const message = response.errors
+			.map(err => err.message)
+			.join(', ');
+		throw new Error(message);
+
 	}
 
 	return response.response.data;
@@ -299,7 +304,11 @@ export async function getAzureResourceGivenId(account: azdata.Account, subscript
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
 
 	if (response.errors.length > 0) {
-		throw new Error(response.errors.toString());
+		const message = response.errors
+			.map(err => err.message)
+			.join(', ');
+		throw new Error(message);
+
 	}
 
 	return response.response.data;
@@ -620,6 +629,33 @@ export async function stopMigration(account: azdata.Account, subscription: Subsc
 	}
 }
 
+export async function retryMigration(account: azdata.Account, subscription: Subscription, migration: DatabaseMigration): Promise<void> {
+	const api = await getAzureCoreAPI();
+	const path = encodeURI(`${migration.id}/retry?api-version=${DMSV2_API_VERSION}`);
+	const requestBody = { migrationOperationId: migration.properties.migrationOperationId };
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, requestBody, true, host);
+	if (response.errors.length > 0) {
+		const message = response.errors
+			.map(err => err.message)
+			.join(', ');
+		throw new Error(message);
+	}
+}
+
+export async function deleteMigration(account: azdata.Account, subscription: Subscription, migrationId: string): Promise<void> {
+	const api = await getAzureCoreAPI();
+	const path = encodeURI(`${migrationId}?api-version=${DMSV2_API_VERSION}`);
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.DELETE, undefined, true, host);
+	if (response.errors.length > 0) {
+		const message = response.errors
+			.map(err => err.message)
+			.join(', ');
+		throw new Error(message);
+	}
+}
+
 export async function getLocationDisplayName(location: string): Promise<string> {
 	const api = await getAzureCoreAPI();
 	return api.getRegionDisplayName(location);
@@ -771,7 +807,9 @@ export function sortResourceArrayByName(resourceArray: SortableAzureResources[])
 export function getMigrationTargetId(migration: DatabaseMigration): string {
 	// `${targetServerId}/providers/Microsoft.DataMigration/databaseMigrations/${targetDatabaseName}?api-version=${DMSV2_API_VERSION}`
 	const paths = migration.id.split('/providers/Microsoft.DataMigration/', 1);
-	return paths[0];
+	return paths?.length > 0
+		? paths[0]
+		: '';
 }
 
 export function getMigrationTargetName(migration: DatabaseMigration): string {
@@ -794,6 +832,27 @@ export function getResourceName(id: string): string {
 
 export function getBlobContainerId(resourceGroupId: string, storageAccountName: string, blobContainerName: string): string {
 	return `${resourceGroupId}/providers/Microsoft.Storage/storageAccounts/${storageAccountName}/blobServices/default/containers/${blobContainerName}`;
+}
+
+export function getMigrationErrors(migration: DatabaseMigration): string {
+	const errors = [];
+
+	if (migration?.properties) {
+		errors.push(migration.properties.provisioningError);
+		errors.push(migration.properties.migrationFailureError?.message);
+		errors.push(migration.properties.migrationStatusDetails?.fileUploadBlockingErrors ?? []);
+		errors.push(migration.properties.migrationStatusDetails?.restoreBlockingReason);
+		errors.push(migration.properties.migrationStatusDetails?.sqlDataCopyErrors);
+		errors.push(...migration.properties.migrationStatusDetails?.invalidFiles ?? []);
+		errors.push(migration.properties.migrationStatusWarnings?.completeRestoreErrorMessage);
+		errors.push(migration.properties.migrationStatusWarnings?.restoreBlockingReason);
+		errors.push(...migration.properties.migrationStatusDetails?.listOfCopyProgressDetails?.flatMap(cp => cp.errors) ?? []);
+	}
+
+	// remove undefined and duplicate error entries
+	return errors
+		.filter((e, i, arr) => e !== undefined && i === arr.indexOf(e))
+		.join(EOL);
 }
 
 export interface SqlMigrationServiceProperties {
@@ -890,6 +949,7 @@ export enum AzureResourceKind {
 	SQLDB = 'SqlDb',
 	SQLMI = 'SqlMi',
 	SQLVM = 'SqlVm',
+	ORACLETOSQLDB = "OracleToSqlDb",
 }
 
 export interface ValidateIrSqlDatabaseMigrationRequest {
@@ -987,6 +1047,7 @@ export interface DatabaseMigration {
 
 export interface DatabaseMigrationProperties {
 	scope: string;
+	kind: string;
 	provisioningState: 'Succeeded' | 'Failed' | 'Creating';
 	provisioningError: string;
 	migrationStatus: 'Canceled' | 'Canceling' | 'Completing' | 'Creating' | 'Failed' | 'InProgress' | 'ReadyForCutover' | 'Restoring' | 'Retriable' | 'Succeeded' | 'UploadingFullBackup' | 'UploadingLogBackup';
@@ -1022,6 +1083,22 @@ export interface MigrationStatusDetails {
 	invalidFiles: string[];
 	listOfCopyProgressDetails: CopyProgressDetail[];
 	sqlDataCopyErrors: string[];
+
+	// new fields
+	pendingDiffBackupsCount: number;
+	restorePercentCompleted: number;
+	currentRestoredSize: number;
+	currentRestorePlanSize: number;
+	lastUploadedFileName: string;
+	lastUploadedFileTime: string;
+	lastRestoredFileTime: string;
+	miRestoreState: "None" | "Initializing" | "NotStarted" | "SearchingBackups" | "Restoring" | "RestorePaused" | "RestoreCompleted" | "Waiting" | "CompletingMigration" | "Cancelled" | "Failed" | "Completed" | "Blocked";
+	detectedFiles: number;
+	queuedFiles: number;
+	skippedFiles: number;
+	restoringFiles: number;
+	restoredFiles: number;
+	unrestorableFiles: number;
 }
 
 export interface MigrationStatusWarnings {
@@ -1032,7 +1109,7 @@ export interface MigrationStatusWarnings {
 
 export interface CopyProgressDetail {
 	tableName: string;
-	status: 'PreparingForCopy' | 'Copying' | 'CopyFinished' | 'RebuildingIndexes' | 'Succeeded' | 'Failed' | 'Canceled',
+	status: 'PreparingForCopy' | 'Copying' | 'CopyFinished' | 'RebuildingIndexes' | 'Succeeded' | 'Failed' | 'Canceled';
 	parallelCopyType: string;
 	usedParallelCopies: number;
 	dataRead: number;
@@ -1040,7 +1117,7 @@ export interface CopyProgressDetail {
 	rowsRead: number;
 	rowsCopied: number;
 	copyStart: string;
-	copyThroughput: number,
+	copyThroughput: number;
 	copyDuration: number;
 	errors: string[];
 }
@@ -1062,22 +1139,30 @@ export interface ErrorInfo {
 
 export interface BackupSetInfo {
 	backupSetId: string;
-	firstLSN: string;
-	lastLSN: string;
-	backupType: string;
+	firstLSN: string;           // SHIR scenario only
+	lastLSN: string;            // SHIR scenario only
+	backupType: "Unknown" | "Database" | "TransactionLog" | "File" | "DifferentialDatabase" | "DifferentialFile" | "Partial" | "DifferentialPartial";
 	listOfBackupFiles: BackupFileInfo[];
-	backupStartDate: string;
-	backupFinishDate: string;
+	backupStartDate: string;    // SHIR scenario only
+	backupFinishDate: string;   // SHIR scenario only
 	isBackupRestored: boolean;
 	backupSize: number;
 	compressedBackupSize: number;
 	hasBackupChecksums: boolean;
 	familyCount: number;
+
+	// new fields
+	restoreStartDate: string;
+	restoreFinishDate: string;
+	restoreStatus: "None" | "Skipped" | "Queued" | "Restoring" | "Restored";
+	backupSizeMB: number;
+	numberOfStripes: number;
 }
 
 export interface SourceLocation {
 	fileShare?: DatabaseMigrationFileShare;
 	azureBlob?: DatabaseMigrationAzureBlob;
+	testConnectivity?: boolean;
 	fileStorageType: 'FileShare' | 'AzureBlob' | 'None';
 }
 
@@ -1088,6 +1173,7 @@ export interface TargetLocation {
 
 export interface BackupFileInfo {
 	fileName: string;
+	// fields below are only returned by SHIR scenarios
 	status: 'Arrived' | 'Uploading' | 'Uploaded' | 'Restoring' | 'Restored' | 'Canceled' | 'Ignored';
 	totalSize: number;
 	dataRead: number;
