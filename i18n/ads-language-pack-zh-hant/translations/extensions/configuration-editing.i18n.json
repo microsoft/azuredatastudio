@@ -44,7 +44,6 @@
 			"derivedDescription": "比對名稱相同但副檔名不同的同層級檔案。",
 			"derivedLabel": "依名稱排列且同層級的檔案",
 			"dirty": "當使用中編輯器具有未儲存變更的指示器",
-			"falseDescription": "停用模式。",
 			"fileDescription": "比對所有具特定副檔名的檔案。",
 			"fileLabel": "依副檔名排列的檔案",
 			"filesDescription": "比對所有具任何副檔名的檔案。",
@@ -61,8 +60,7 @@
 			"topFolderDescription": "比對具特定名稱的最上層資料夾。",
 			"topFolderLabel": "依名稱排列的資料夾 (最上層)",
 			"topFoldersDescription": "比對多個最上層資料夾。",
-			"topFoldersLabel": "具多個名稱的資料夾 (最上層)",
-			"trueDescription": "啟用模式。"
+			"topFoldersLabel": "具多個名稱的資料夾 (最上層)"
 		},
 		"package": {
 			"description": "在設定、啟動及延伸模組建議檔案等組態檔案中，提供進階 IntelliSense 及自動修正等功能。",

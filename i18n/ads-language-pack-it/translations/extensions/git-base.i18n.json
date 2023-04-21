@@ -10,7 +10,7 @@
 	"contents": {
 		"dist/remoteSource": {
 			"branch name": "Nome ramo",
-			"error": "$(error) Errore: {0}",
+			"error": "{0} Errore: {1}",
 			"none found": "Non sono stati trovati repository remoti.",
 			"pick url": "Scegliere un URL da cui eseguire la clonazione.",
 			"provide url": "Specificare l'URL del repository",
