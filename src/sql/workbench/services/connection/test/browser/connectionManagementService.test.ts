@@ -2134,28 +2134,52 @@ test('getEditorConnectionProfileTitle should return a correctly formatted title 
 	let expectedNonDefaultOption = ' (testOption1=test value; testOption2=50)';
 	assert.strictEqual(result, expectedNonDefaultOption, `Profile non default options contained incorrect options`);
 
-	// We should expect that the string contains the connection name and the server info (with all non default options appended).
-	let generatedProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, profile);
-	let profileServerInfo = generatedProfile.serverInfo;
+	// We should expect that the string contains the connection name only if defined, and if there is no other connection with the same title.
 	result = connectionManagementService.getEditorConnectionProfileTitle(profile);
 
-	assert.strictEqual(result, `${profile.connectionName}: ${profileServerInfo}`, `getEditorConnectionProfileTitle does not return the correct string for ${profile.connectionName}`);
+	assert.strictEqual(result, `${profile.connectionName}`, `getEditorConnectionProfileTitle does not return the correct string for ${profile.connectionName}`);
 
-	// We should expect that the string contains only the server info (with non default options) if there is no connection name.
+	// We should expect that the string contains only the server info (basic) if there is no connection name, and if there is no other connection with the same title.
 	profile.connectionName = undefined;
 
 	result = connectionManagementService.getEditorConnectionProfileTitle(profile);
 
+	let generatedProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, profile);
+	let profileServerInfo = generatedProfile.serverInfo.substring(0, generatedProfile.serverInfo.indexOf(expectedNonDefaultOption));
+
 	assert.strictEqual(result, `${profileServerInfo}`, `getEditorConnectionProfileTitle included a connection name when it shouldn't`);
 
-	// We should expect that the string only contains the server info without any non default options if no such options exist.
+	connectionStoreMock.setup(x => x.getRecentlyUsedConnections(undefined)).returns(() => {
+		return [generatedProfile];
+	});
+
+	// We should expect that the string only contains the server info (basic) if there is only default options, and another connection with similar title but non default options.
 	profile.options['testOption1'] = undefined;
 	profile.options['testOption2'] = undefined;
 	profile.options['testOption3'] = undefined;
 
 	result = connectionManagementService.getEditorConnectionProfileTitle(profile);
 
-	assert.notEqual(result, `${profileServerInfo}`, `getEditorConnectionProfileTitle included non default connection options when it shouldn't`);
+	assert.strictEqual(result, `${profileServerInfo}`, `getEditorConnectionProfileTitle included non default connection options when it shouldn't`);
+
+	//Reset profiles for next test and add secondary profile .
+	profile.options['testOption1'] = 'test value';
+	profile.options['testOption2'] = '50';
+	profile.options['testOption3'] = 'default';
+	generatedProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, profile);
+	profile.options['testOption1'] = undefined;
+	profile.options['testOption2'] = undefined;
+	profile.options['testOption3'] = undefined;
+	let emptyGeneratedProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, profile);
+
+	connectionStoreMock.setup(x => x.getRecentlyUsedConnections(undefined)).returns(() => {
+		return [generatedProfile, emptyGeneratedProfile];
+	});
+
+	// We should expect that the string contains the server info appended with non default options, if there's another connection with similar title that has only default options.
+	result = connectionManagementService.getEditorConnectionProfileTitle(generatedProfile);
+
+	assert.equal(result, `${generatedProfile.serverInfo}`, `getEditorConnectionProfileTitle did not include non default connection options when it should`);
 });
 
 export function createConnectionProfile(id: string, password?: string): ConnectionProfile {

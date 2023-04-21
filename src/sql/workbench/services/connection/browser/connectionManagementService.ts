@@ -717,13 +717,17 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (profile) {
 			let tempProfile = new ConnectionProfile(this._capabilitiesService, profile);
 			if (!getNonDefaultsOnly) {
+				let totalConnections = [];
 				let recentConnections = this.getRecentConnections();
-				let initialSearch = recentConnections.filter(inputProfile => inputProfile.matches(tempProfile));
+				if (recentConnections) {
+					totalConnections = totalConnections.concat(recentConnections);
+				}
+				let initialSearch = totalConnections.filter(inputProfile => inputProfile.matches(tempProfile));
 				if (initialSearch.length === 0) {
-					recentConnections.push(tempProfile);
+					totalConnections.push(tempProfile);
 				}
 				let containerGroup = new ConnectionProfileGroup('containerGroup');
-				containerGroup.addConnections(recentConnections);
+				containerGroup.addConnections(totalConnections);
 				TreeUpdateUtils.alterTreeChildrenTitles([containerGroup]);
 				let newConnectionTitles = containerGroup.connections;
 				let searchResult = newConnectionTitles.filter(inputProfile => inputProfile.matches(tempProfile));
