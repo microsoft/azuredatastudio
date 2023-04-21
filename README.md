@@ -59,8 +59,8 @@ Go to our [download page](https://aka.ms/getazuredatastudio) for more specific i
 [in-osx-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/darwin-arm64/insider
 
 Please visit our [download page](https://aka.ms/getazuredatastudio) for more specific installation instructions.
-Check out the [change log](https://github.com/Microsoft/azuredatastudio/blob/main/CHANGELOG.md) or [release notes](https://learn.microsoft.com/sql/azure-data-studio/release-notes-azure-data-studio?view=sql-server-ver16) for additional details of what's in the each release.
-The [Azure Data Studio documentation](https://learn.microsoft.com/sql/azure-data-studio/?view=sql-server-ver16) includes complete details on getting started, connection quickstarts, and feature tutorials.
+Check out the [change log](https://github.com/Microsoft/azuredatastudio/blob/main/CHANGELOG.md) or [release notes](https://learn.microsoft.com/sql/azure-data-studio/release-notes-azure-data-studio) for additional details of what's in the each release.
+The [Azure Data Studio documentation](https://learn.microsoft.com/sql/azure-data-studio) includes complete details on getting started, connection quickstarts, and feature tutorials.
 
 ## **Feature Highlights**
 
