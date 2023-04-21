@@ -104,11 +104,12 @@ function hasModifier(modifiers, kind) {
     return false;
 }
 function isStatic(ts, member) {
-    return hasModifier(member.modifiers, ts.SyntaxKind.StaticKeyword);
+    const modifiers = ts.canHaveModifiers(member) ? ts.getModifiers(member) : undefined;
+    return hasModifier(modifiers, ts.SyntaxKind.StaticKeyword);
 }
 function isDefaultExport(ts, declaration) {
-    return (hasModifier(declaration.modifiers, ts.SyntaxKind.DefaultKeyword)
-        && hasModifier(declaration.modifiers, ts.SyntaxKind.ExportKeyword));
+    const modifiers = ts.canHaveModifiers(declaration) ? ts.getModifiers(declaration) : undefined;
+    return hasModifier(modifiers, ts.SyntaxKind.DefaultKeyword) && hasModifier(modifiers, ts.SyntaxKind.ExportKeyword);
 }
 function getMassagedTopLevelDeclarationText(ts, sourceFile, declaration, importName, usage, enums) {
     let result = getNodeText(sourceFile, declaration);
