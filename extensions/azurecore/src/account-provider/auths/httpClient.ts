@@ -366,7 +366,7 @@ const networkRequestViaHttps = <T>(
 };
 
 /**
- * Check if extra parsing is needed on the repsonse from the server
+ * Check if extra parsing is needed on the response from the server
  * @param statusCode {number} the status code of the response from the server
  * @param statusMessage {string | undefined} the status message of the response from the server
  * @param headers {Record<string, string>} the headers of the response from the server
