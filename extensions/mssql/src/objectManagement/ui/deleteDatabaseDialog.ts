@@ -3,23 +3,27 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
-import { ObjectManagementDialogBase } from './objectManagementDialogBase';
+import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
-import { DropDatabaseDocUrl, NodeType } from '../constants';
+import { DropDatabaseDocUrl } from '../constants';
 import path = require('path');
 import * as localizedConstants from '../localizedConstants';
 
 export class DeleteDatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.Database, ObjectManagement.DeleteDatabaseViewInfo> {
 	private readonly _model: ObjectManagement.DeleteDatabaseViewInfo;
 
-	constructor(objectManagementService: IObjectManagementService, connectionUri: string, objectExplorerContext: azdata.ObjectExplorerContext) {
-		super(NodeType.Database, DropDatabaseDocUrl, objectManagementService, connectionUri, false, localizedConstants.DeleteDatabaseTitle, objectExplorerContext);
+	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
+		super(objectManagementService, options);
 		this._model = {
 			objectInfo: {
-				name: path.basename(objectExplorerContext.nodeInfo?.nodePath)
+				name: path.basename(options.objectExplorerContext?.nodeInfo?.nodePath)
 			}
 		}
+	}
+
+
+	protected override get docUrl(): string {
+		return DropDatabaseDocUrl;
 	}
 
 	protected override async onConfirmation(): Promise<boolean> {
@@ -32,13 +36,6 @@ export class DeleteDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 
 	protected async onComplete(): Promise<void> {
 		// Execute delete database command
-	}
-
-	protected async disposeView(): Promise<void> {
-	}
-
-	protected async initializeData(): Promise<ObjectManagement.DeleteDatabaseViewInfo> {
-		return this._model;
 	}
 
 	protected async initializeUI(): Promise<void> {

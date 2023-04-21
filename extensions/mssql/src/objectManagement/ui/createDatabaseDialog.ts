@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DefaultInputWidth, ObjectManagementDialogBase } from './objectManagementDialogBase';
+import { DefaultInputWidth, ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
-import { CreateDatabaseDocUrl, NodeType } from '../constants';
 import * as localizedConstants from '../localizedConstants';
+import { CreateDatabaseDocUrl } from '../constants';
 
 const DefaultValue = '<default>';
 
@@ -16,8 +16,27 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 
 	private _nameInput: azdata.InputBoxComponent;
 
-	constructor(objectManagementService: IObjectManagementService, connectionUri: string, objectExplorerContext: azdata.ObjectExplorerContext) {
-		super(NodeType.Database, CreateDatabaseDocUrl, objectManagementService, connectionUri, true, localizedConstants.CreateDatabaseTitle, objectExplorerContext);
+	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
+		super(objectManagementService, options);
+
+		// TODO: Replace with real data
+		let databaseNames = ['TestDB'];
+		let loginNames = ['sa', 'TestLogin'];
+		let collationNames = ['SQL_Latin1_General_CP1_CI_AS', 'French_CI_AS', 'Modern_Spanish_CI_AS'];
+		let compatibilityLevels = ['SQL Server 2019 (150)', 'SQL Server 2017 (140)', 'SQL Server 2016 (130)'];
+		this._model = {
+			objectInfo: {
+				name: undefined
+			},
+			databaseNames,
+			loginNames,
+			collationNames,
+			compatibilityLevels
+		}
+	}
+
+	protected override get docUrl(): string {
+		return CreateDatabaseDocUrl;
 	}
 
 	protected override async onConfirmation(): Promise<boolean> {
@@ -37,27 +56,6 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 
 	protected async onComplete(): Promise<void> {
 		// Execute create database command
-	}
-
-	protected async disposeView(): Promise<void> {
-	}
-
-	protected async initializeData(): Promise<ObjectManagement.CreateDatabaseViewInfo> {
-		// TODO: Replace with real data
-		let databaseNames = ['TestDB'];
-		let loginNames = ['sa', 'TestLogin'];
-		let collationNames = ['SQL_Latin1_General_CP1_CI_AS', 'French_CI_AS', 'Modern_Spanish_CI_AS'];
-		let compatibilityLevels = ['SQL Server 2019 (150)', 'SQL Server 2017 (140)', 'SQL Server 2016 (130)'];
-		this._model = {
-			objectInfo: {
-				name: undefined
-			},
-			databaseNames,
-			loginNames,
-			collationNames,
-			compatibilityLevels
-		}
-		return this._model;
 	}
 
 	protected async initializeUI(): Promise<void> {
