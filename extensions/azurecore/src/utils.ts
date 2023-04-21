@@ -136,8 +136,27 @@ export function getResourceTypeDisplayName(type: string): string {
 	}
 	return type;
 }
+
 function getHttpConfiguration(): vscode.WorkspaceConfiguration {
 	return vscode.workspace.getConfiguration(constants.httpConfigSectionName);
+}
+
+/**
+ * Gets tenants to be ignored.
+ * @returns Tenants configured in ignore list
+ */
+export function getTenantIgnoreList(): string[] {
+	const configuration = vscode.workspace.getConfiguration(constants.AzureTenantConfigSection);
+	return configuration.get(constants.Filter) ?? [];
+}
+
+/**
+ * Updates tenant ignore list in global settings.
+ * @param tenantIgnoreList Tenants to be configured in ignore list
+ */
+export async function updateTenantIgnoreList(tenantIgnoreList: string[]): Promise<void> {
+	const configuration = vscode.workspace.getConfiguration(constants.AzureTenantConfigSection);
+	await configuration.update(constants.Filter, tenantIgnoreList, vscode.ConfigurationTarget.Global);
 }
 
 export function getResourceTypeIcon(appContext: AppContext, type: string): string {
