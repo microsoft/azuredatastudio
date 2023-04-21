@@ -95,10 +95,6 @@ class BooleanPolicy extends BasePolicy {
     }
 }
 class IntPolicy extends BasePolicy {
-    constructor(name, category, minimumVersion, description, moduleName, defaultValue) {
-        super(PolicyType.StringEnum, name, category, minimumVersion, description, moduleName);
-        this.defaultValue = defaultValue;
-    }
     static from(name, category, minimumVersion, description, moduleName, settingNode) {
         const type = getStringProperty(settingNode, 'type');
         if (type !== 'number') {
@@ -109,6 +105,10 @@ class IntPolicy extends BasePolicy {
             throw new Error(`Missing required 'default' property.`);
         }
         return new IntPolicy(name, category, minimumVersion, description, moduleName, defaultValue);
+    }
+    constructor(name, category, minimumVersion, description, moduleName, defaultValue) {
+        super(PolicyType.StringEnum, name, category, minimumVersion, description, moduleName);
+        this.defaultValue = defaultValue;
     }
     renderADMXElements() {
         return [
@@ -139,11 +139,6 @@ class StringPolicy extends BasePolicy {
     }
 }
 class StringEnumPolicy extends BasePolicy {
-    constructor(name, category, minimumVersion, description, moduleName, enum_, enumDescriptions) {
-        super(PolicyType.StringEnum, name, category, minimumVersion, description, moduleName);
-        this.enum_ = enum_;
-        this.enumDescriptions = enumDescriptions;
-    }
     static from(name, category, minimumVersion, description, moduleName, settingNode) {
         const type = getStringProperty(settingNode, 'type');
         if (type !== 'string') {
@@ -164,6 +159,11 @@ class StringEnumPolicy extends BasePolicy {
             throw new Error(`Property 'enumDescriptions' should be localized.`);
         }
         return new StringEnumPolicy(name, category, minimumVersion, description, moduleName, enum_, enumDescriptions);
+    }
+    constructor(name, category, minimumVersion, description, moduleName, enum_, enumDescriptions) {
+        super(PolicyType.StringEnum, name, category, minimumVersion, description, moduleName);
+        this.enum_ = enum_;
+        this.enumDescriptions = enumDescriptions;
     }
     renderADMXElements() {
         return [
