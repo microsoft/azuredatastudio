@@ -1244,7 +1244,7 @@
           "description": "%mssql.connectionOptions.applicationName.description%",
           "groupName": "%mssql.connectionOptions.groupName.context%",
           "valueType": "string",
-          "defaultValue": null,
+          "defaultValue": "azdata",
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,

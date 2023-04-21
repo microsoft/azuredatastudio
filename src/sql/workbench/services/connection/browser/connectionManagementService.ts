@@ -57,6 +57,7 @@ import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensio
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import { PasswordChangeDialog } from 'sql/workbench/services/connection/browser/passwordChangeDialog';
+import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils'
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -716,7 +717,17 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (profile) {
 			let tempProfile = new ConnectionProfile(this._capabilitiesService, profile);
 			if (!getNonDefaultsOnly) {
-				result = tempProfile.getEditorFullTitleWithOptions();
+				let recentConnections = this.getRecentConnections();
+				let initialSearch = recentConnections.filter(inputProfile => inputProfile.matches(tempProfile));
+				if (initialSearch.length === 0) {
+					recentConnections.push(tempProfile);
+				}
+				let containerGroup = new ConnectionProfileGroup('containerGroup');
+				containerGroup.addConnections(recentConnections);
+				TreeUpdateUtils.alterTreeChildrenTitles([containerGroup]);
+				let newConnectionTitles = containerGroup.connections;
+				let searchResult = newConnectionTitles.filter(inputProfile => inputProfile.matches(tempProfile));
+				result = searchResult[0]?.title;
 			}
 			else {
 				result = tempProfile.getNonDefaultOptionsString();

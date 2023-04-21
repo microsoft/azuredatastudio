@@ -252,6 +252,9 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 				let options = this.serverCapabilities.connectionOptions.filter(value => value.name === idNames[index]!);
 				if (options.length > 0 && value) {
 					finalValue = value !== options[0].defaultValue ? value : undefined;
+					if (options[0].specialValueType === 'appName' && this.providerName === Constants.mssqlProviderName) {
+						finalValue = (value as string).startsWith('azdata') ? undefined : finalValue
+					}
 				}
 				value = finalValue;
 			}
