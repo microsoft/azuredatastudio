@@ -16,6 +16,7 @@ import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectRef
 import { Deferred } from '../common/promise';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { DbServerValues, ensureSetOrDefined, populateResultWithVars } from './utils';
+import { ProjectType } from 'mssql';
 
 export enum ReferenceType {
 	project,

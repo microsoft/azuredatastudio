@@ -7,3 +7,5 @@ import * as mssql from 'mssql';
 import * as vscodeMssql from 'vscode-mssql';
 
 export type ProjectType = mssql.ProjectType | vscodeMssql.ProjectType;
+export type GetScriptsResult = mssql.GetScriptsResult | vscodeMssql.GetScriptsResult;
+export type GetFoldersResult = mssql.GetFoldersResult | vscodeMssql.GetFoldersResult;

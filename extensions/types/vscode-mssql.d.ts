@@ -464,6 +464,19 @@ declare module 'vscode-mssql' {
 		addSqlProjectReference(projectUri: string, projectPath: string, projectGuid: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Promise<ResultStatus>;
 
 		/**
+		 * Add a nuget package database reference to a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param packageName Name of the referenced nuget package
+		 * @param packageVersion Version of the referenced nuget package
+		 * @param suppressMissingDependencies Whether to suppress missing dependencies
+		 * @param databaseVariable SQLCMD variable name for specifying the other database this reference is to, if different from that of the current project
+		 * @param serverVariable SQLCMD variable name for specifying the other server this reference is to, if different from that of the current project.
+			 If this is set, DatabaseVariable must also be set.
+		 * @param databaseLiteral Literal name used to reference another database in the same server, if not using SQLCMD variables
+		 */
+		addNugetPackageReference(projectUri: string, packageName: string, packageVersion: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Promise<ResultStatus>;
+
+		/**
 		 * Add a system database reference to a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 * @param systemDatabase Type of system database
@@ -786,6 +799,10 @@ declare module 'vscode-mssql' {
 		 * Array of SQL project references contained in the project
 		 */
 		sqlProjectReferences: SqlProjectReference[];
+		/**
+		 * Array of NuGet package references contained in the project
+		 */
+		 nugetPackageReferences: NugetPackageReference[];
 	}
 
 	export interface GetFoldersResult extends ResultStatus {
@@ -1158,6 +1175,11 @@ declare module 'vscode-mssql' {
 
 	export interface DacpacReference extends UserDatabaseReference {
 		dacpacPath: string;
+	}
+
+	export interface NugetPackageReference extends UserDatabaseReference {
+		packageName: string;
+		packageVersion: string;
 	}
 
 	export const enum SystemDatabase {

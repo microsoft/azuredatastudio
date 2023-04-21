@@ -8,6 +8,7 @@ import * as constants from '../constants';
 import * as Utils from '../utils';
 import * as azdata from 'azdata';
 import * as contracts from '../contracts';
+import * as vscodeMssql from 'vscode-mssql';
 
 import { AppContext } from '../appContext';
 import { BaseService, ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
@@ -446,7 +447,7 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	 * getNoneScripts
 	 * @param projectUri Absolute path of the project, including .sqlproj
 	 */
-	public async getNoneItems(projectUri: string): Promise<mssql.GetScriptsResult> {
+	public async getNoneItems(projectUri: string): Promise<mssql.GetScriptsResult | vscodeMssql.GetScriptsResult> {
 		const params: contracts.SqlProjectParams = { projectUri: projectUri };
 		return await this.runWithErrorHandling(contracts.GetNoneItemsRequest.type, params);
 	}
