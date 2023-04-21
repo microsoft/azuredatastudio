@@ -276,6 +276,24 @@ declare module 'azurecore' {
 		DELETE
 	}
 
+	/**
+	 * Custom version of NetworkResponse from @azure\msal-common\dist\network\NetworkManager.d.ts
+	 * with body renamed to data to avoid breaking changes with extensions. See
+	 * https://github.com/microsoft/azuredatastudio/pull/22761 for details.
+	 */
+	export type AzureNetworkResponse<T> = {
+		headers: Record<string, string>;
+		data: T;
+		status: number;
+	};
+
+	export interface HttpClientResponse<B> {
+		body: B;
+		headers: any;
+		status: Number;
+		error: any;
+	}
+
 	export interface IExtension {
 		/**
 		 * Gets the list of subscriptions for the specified AzureAccount
@@ -308,7 +326,7 @@ declare module 'azurecore' {
 		 * @param host Use this to override the host. The default host is https://management.azure.com
 		 * @param requestHeaders Provide additional request headers
 		 */
-		makeAzureRestRequest(account: AzureAccount, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors?: boolean, host?: string, requestHeaders?: { [key: string]: string }): Promise<AzureRestResponse>;
+		makeAzureRestRequest<B>(account: AzureAccount, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors?: boolean, host?: string, requestHeaders?: Record<string, string>): Promise<AzureRestResponse<B>>;
 		/**
 		 * Converts a region value (@see AzureRegion) into the localized Display Name
 		 * @param region The region value
@@ -339,9 +357,9 @@ declare module 'azurecore' {
 	export type GetStorageAccountResult = { resources: azureResource.AzureGraphResource[], errors: Error[] };
 	export type GetBlobContainersResult = { blobContainers: azureResource.BlobContainer[], errors: Error[] };
 	export type GetFileSharesResult = { fileShares: azureResource.FileShare[], errors: Error[] };
-	export type CreateResourceGroupResult = { resourceGroup: azureResource.AzureResourceResourceGroup, errors: Error[] };
+	export type CreateResourceGroupResult = { resourceGroup: azureResource.AzureResourceResourceGroup | undefined, errors: Error[] };
 	export type ResourceQueryResult<T extends azureResource.AzureGraphResource> = { resources: T[], errors: Error[] };
-	export type AzureRestResponse = { response: any, errors: Error[] };
+	export type AzureRestResponse<B> = { response: AzureNetworkResponse<B> | undefined, errors: Error[] };
 	export type GetBlobsResult = { blobs: azureResource.Blob[], errors: Error[] };
 	export type GetStorageAccountAccessKeyResult = { keyName1: string, keyName2: string, errors: Error[] };
 	export type CacheEncryptionKeys = { key: string; iv: string; }
