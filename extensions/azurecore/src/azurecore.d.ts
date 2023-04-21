@@ -35,8 +35,11 @@ declare module 'azurecore' {
 		/**
 		 * Auth type of azure used to authenticate this account.
 		 */
-		azureAuthType?: AzureAuthType
+		azureAuthType?: AzureAuthType;
 
+		/**
+		 * Provider settings for account.
+		 */
 		providerSettings: AzureAccountProviderMetadata;
 
 		/**
@@ -53,7 +56,6 @@ declare module 'azurecore' {
 		 * A list of tenants (aka directories) that the account belongs to
 		 */
 		tenants: Tenant[];
-
 	}
 
 	export const enum AzureAuthType {

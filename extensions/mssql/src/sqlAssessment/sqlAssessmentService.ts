@@ -4,15 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as mssql from 'mssql';
-import { AppContext } from '../appContext';
-import { SqlOpsDataClient, ISqlOpsFeature } from 'dataprotocol-client';
-import { ClientCapabilities } from 'vscode-languageclient';
-import * as constants from '../constants';
 import * as azdata from 'azdata';
 import * as contracts from '../contracts';
+import * as constants from '../constants';
 
+import { AppContext } from '../appContext';
+import { SqlOpsDataClient, ISqlOpsFeature, BaseService } from 'dataprotocol-client';
+import { ClientCapabilities } from 'vscode-languageclient';
 
-export class SqlAssessmentService implements mssql.ISqlAssessmentService {
+export class SqlAssessmentService extends BaseService implements mssql.ISqlAssessmentService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
 		return class extends SqlAssessmentService {
 			constructor(client: SqlOpsDataClient) {
@@ -27,38 +27,20 @@ export class SqlAssessmentService implements mssql.ISqlAssessmentService {
 		};
 	}
 
-	private constructor(context: AppContext, protected readonly client: SqlOpsDataClient) {
+	private constructor(context: AppContext, client: SqlOpsDataClient) {
+		super(client);
 		context.registerService(constants.SqlAssessmentService, this);
 	}
 	async assessmentInvoke(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult> {
 		let params: contracts.SqlAssessmentParams = { ownerUri: ownerUri, targetType: targetType };
-		try {
-			return await this.client.sendRequest(contracts.SqlAssessmentInvokeRequest.type, params);
-		}
-		catch (e) {
-			this.client.logFailedRequest(contracts.SqlAssessmentInvokeRequest.type, e);
-			throw e;
-		}
+		return this.runWithErrorHandling(contracts.SqlAssessmentInvokeRequest.type, params);
 	}
 	async getAssessmentItems(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult> {
 		let params: contracts.SqlAssessmentParams = { ownerUri: ownerUri, targetType: targetType };
-		try {
-			return await this.client.sendRequest(contracts.GetSqlAssessmentItemsRequest.type, params);
-		}
-		catch (e) {
-			this.client.logFailedRequest(contracts.GetSqlAssessmentItemsRequest.type, e);
-			throw e;
-		}
+		return this.runWithErrorHandling(contracts.GetSqlAssessmentItemsRequest.type, params);
 	}
 	async generateAssessmentScript(items: azdata.SqlAssessmentResultItem[], targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Promise<azdata.ResultStatus> {
 		let params: contracts.GenerateSqlAssessmentScriptParams = { items: items, targetServerName: targetServerName, targetDatabaseName: targetDatabaseName, taskExecutionMode: taskExecutionMode };
-		try {
-			return await this.client.sendRequest(contracts.GenerateSqlAssessmentScriptRequest.type, params);
-		}
-		catch (e) {
-			this.client.logFailedRequest(contracts.GenerateSqlAssessmentScriptRequest.type, e);
-			throw e;
-		}
+		return this.runWithErrorHandling(contracts.GenerateSqlAssessmentScriptRequest.type, params);
 	}
-
 }

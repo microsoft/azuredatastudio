@@ -7,7 +7,6 @@
 exports.dirs = [
 	'',
 	'build',
-	'build/lib/watch',
 	'extensions',
 	// {{SQL CARBON EDIT}} Add ADS extensions and remove VSCode ones
 	'extensions/admin-tool-ext-win',
@@ -34,6 +33,7 @@ exports.dirs = [
 	'extensions/json-language-features/server',
 	'extensions/kusto',
 	'extensions/machine-learning',
+	'extensions/markdown-language-features/server',
 	'extensions/markdown-language-features',
 	'extensions/markdown-math',
 	'extensions/merge-conflict',

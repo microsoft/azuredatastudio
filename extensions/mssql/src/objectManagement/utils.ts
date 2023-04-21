@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { getErrorMessage } from '../utils';
-import { AuthenticationType, NodeType, UserType } from './constants';
+import { ObjectManagement } from 'mssql';
 import { AADAuthenticationTypeDisplayText, ColumnTypeDisplayName, ContainedUserText, DatabaseTypeDisplayName, DatabaseTypeDisplayNameInTitle, LoginTypeDisplayName, LoginTypeDisplayNameInTitle, RefreshObjectExplorerError, SQLAuthenticationTypeDisplayText, TableTypeDisplayName, UserTypeDisplayName, UserTypeDisplayNameInTitle, UserWithLoginText, UserWithNoConnectAccess, UserWithWindowsGroupLoginText, ViewTypeDisplayName, WindowsAuthenticationTypeDisplayText } from './localizedConstants';
 
 export function deepClone<T>(obj: T): T {
@@ -55,70 +55,70 @@ export async function refreshNode(context: azdata.ObjectExplorerContext): Promis
 
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
 	switch (type) {
-		case NodeType.Login:
+		case ObjectManagement.NodeType.ServerLevelLogin:
 			return inTitle ? LoginTypeDisplayNameInTitle : LoginTypeDisplayName;
-		case NodeType.User:
+		case ObjectManagement.NodeType.User:
 			return inTitle ? UserTypeDisplayNameInTitle : UserTypeDisplayName;
-		case NodeType.Table:
+		case ObjectManagement.NodeType.Table:
 			return TableTypeDisplayName;
-		case NodeType.View:
+		case ObjectManagement.NodeType.View:
 			return ViewTypeDisplayName;
-		case NodeType.Column:
+		case ObjectManagement.NodeType.Column:
 			return ColumnTypeDisplayName;
-		case NodeType.Database:
+		case ObjectManagement.NodeType.Database:
 			return inTitle ? DatabaseTypeDisplayNameInTitle : DatabaseTypeDisplayName;
 		default:
 			throw new Error(`Unkown node type: ${type}`);
 	}
 }
 
-export function getAuthenticationTypeDisplayName(authType: AuthenticationType | undefined): string | undefined {
+export function getAuthenticationTypeDisplayName(authType: ObjectManagement.AuthenticationType | undefined): string | undefined {
 	if (authType === undefined) { return undefined; }
 
 	switch (authType) {
-		case AuthenticationType.Windows:
+		case ObjectManagement.AuthenticationType.Windows:
 			return WindowsAuthenticationTypeDisplayText;
-		case AuthenticationType.AzureActiveDirectory:
+		case ObjectManagement.AuthenticationType.AzureActiveDirectory:
 			return AADAuthenticationTypeDisplayText;
 		default:
 			return SQLAuthenticationTypeDisplayText;
 	}
 }
 
-export function getAuthenticationTypeByDisplayName(displayValue: string): AuthenticationType {
+export function getAuthenticationTypeByDisplayName(displayValue: string): ObjectManagement.AuthenticationType {
 	switch (displayValue) {
 		case WindowsAuthenticationTypeDisplayText:
-			return AuthenticationType.Windows;
+			return ObjectManagement.AuthenticationType.Windows;
 		case AADAuthenticationTypeDisplayText:
-			return AuthenticationType.AzureActiveDirectory;
+			return ObjectManagement.AuthenticationType.AzureActiveDirectory;
 		default:
-			return AuthenticationType.Sql;
+			return ObjectManagement.AuthenticationType.Sql;
 	}
 }
 
-export function getUserTypeDisplayName(userType: UserType): string {
+export function getUserTypeDisplayName(userType: ObjectManagement.UserType): string {
 	switch (userType) {
-		case UserType.WithLogin:
+		case ObjectManagement.UserType.WithLogin:
 			return UserWithLoginText;
-		case UserType.WithWindowsGroupLogin:
+		case ObjectManagement.UserType.WithWindowsGroupLogin:
 			return UserWithWindowsGroupLoginText;
-		case UserType.Contained:
+		case ObjectManagement.UserType.Contained:
 			return ContainedUserText;
 		default:
 			return UserWithNoConnectAccess;
 	}
 }
 
-export function getUserTypeByDisplayName(userTypeDisplayName: string): UserType {
+export function getUserTypeByDisplayName(userTypeDisplayName: string): ObjectManagement.UserType {
 	switch (userTypeDisplayName) {
 		case UserWithLoginText:
-			return UserType.WithLogin;
+			return ObjectManagement.UserType.WithLogin;
 		case UserWithWindowsGroupLoginText:
-			return UserType.WithWindowsGroupLogin;
+			return ObjectManagement.UserType.WithWindowsGroupLogin;
 		case ContainedUserText:
-			return UserType.Contained;
+			return ObjectManagement.UserType.Contained;
 		default:
-			return UserType.NoConnectAccess;
+			return ObjectManagement.UserType.NoConnectAccess;
 	}
 }
 

@@ -449,7 +449,7 @@ export class SavePlanFile extends Action {
 		const fileExtension = 'sqlplan'; //TODO: Get this extension from provider
 		let defaultUri: URI;
 
-		const lastUsedSavePath = this.storageService.get(SavePlanFile.LAST_USED_EXECUTION_PLAN_SAVE_PATH_STORAGE_KEY, StorageScope.GLOBAL);
+		const lastUsedSavePath = this.storageService.get(SavePlanFile.LAST_USED_EXECUTION_PLAN_SAVE_PATH_STORAGE_KEY, StorageScope.APPLICATION);
 
 		if (lastUsedSavePath) {
 			defaultUri = joinPath(URI.file(lastUsedSavePath), `${defaultFileName}.${fileExtension}`);
@@ -479,7 +479,7 @@ export class SavePlanFile extends Action {
 
 		if (destination) {
 			// Remember as last used save folder
-			this.storageService.store(SavePlanFile.LAST_USED_EXECUTION_PLAN_SAVE_PATH_STORAGE_KEY, dirname(destination).fsPath, StorageScope.GLOBAL, StorageTarget.MACHINE);
+			this.storageService.store(SavePlanFile.LAST_USED_EXECUTION_PLAN_SAVE_PATH_STORAGE_KEY, dirname(destination).fsPath, StorageScope.APPLICATION, StorageTarget.MACHINE);
 
 			// Perform save
 			await context.fileService.writeFile(destination, VSBuffer.fromString(context.model.graphFile.graphFileContent));

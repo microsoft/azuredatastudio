@@ -508,6 +508,14 @@ declare module 'azdata' {
 		 * @returns The new password that is returned from the operation or undefined if unsuccessful.
 		 */
 		export function openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined>;
+
+		/**
+		 * Gets the formatted title of the connection profile for display
+		 * @param profile The connection profile we want to get the full display info for (without non default options).
+		 * @param getNonDefaultsOnly Provide if you only want to get the non default options string (for some titles).
+		 * @returns The title formatted with connection name in front, server info in the middle, with non default options at the end.
+		 */
+		export function getEditorConnectionProfileTitle(profile: IConnectionProfile, getNonDefaultsOnly?: boolean): Thenable<string>;
 	}
 
 	/*
@@ -671,13 +679,13 @@ declare module 'azdata' {
 
 		/**
 		 * Enters the workspace with the provided path
-		 * @param workspacefile
+		 * @param workspaceFile
 		 */
 		export function enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 
 		/**
 		 * Saves and enters the workspace with the provided path
-		 * @param workspacefile
+		 * @param workspaceFile
 		 */
 		export function saveAndEnterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 	}
@@ -840,7 +848,7 @@ declare module 'azdata' {
 		 * Open a table designer window.
 		 * @param providerId The table designer provider Id.
 		 * @param tableInfo The table information. The object will be passed back to the table designer provider as the unique identifier for the table.
-		 * @param telemetryInfo: Optional Key-value pair containing any extra information that needs to be sent via telemetry
+		 * @param telemetryInfo Optional Key-value pair containing any extra information that needs to be sent via telemetry
 		 */
 		export function openTableDesigner(providerId: string, tableInfo: TableInfo, telemetryInfo?: { [key: string]: string }): Thenable<void>;
 
@@ -1767,11 +1775,6 @@ declare module 'azdata' {
 		 */
 		ariaLive?: AriaLiveValue
 	}
-
-	/**
-	 * Supported values for aria-live accessibility attribute
-	 */
-	export type AriaLiveValue = 'polite' | 'assertive' | 'off';
 
 	export interface ContainerProperties extends ComponentProperties {
 		/**
