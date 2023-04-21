@@ -666,6 +666,16 @@ export namespace GetSqlObjectScriptsRequest {
 	export const type = new RequestType<SqlProjectParams, mssql.GetScriptsResult, void, void>('sqlProjects/getSqlObjectScripts');
 }
 
+
+export namespace ExcludeFolderRequest {
+	export const type = new RequestType<FolderParams, azdata.ResultStatus, void, void>('sqlProjects/excludeFolder');
+}
+
+export namespace MoveFolderRequest {
+	export const type = new RequestType<MoveFolderParams, azdata.ResultStatus, void, void>('sqlProjects/moveFolder');
+}
+
+
 //#endregion
 
 //#endregion
@@ -908,6 +918,13 @@ export interface FolderParams extends SqlProjectParams {
 	 * Path of the folder, typically relative to the .sqlproj file
 	 */
 	path: string;
+}
+
+export interface MoveFolderParams extends FolderParams {
+	/**
+	 * Path of the folder, typically relative to the .sqlproj file
+	 */
+	destinationPath: string;
 }
 
 export interface CreateSqlProjectParams extends SqlProjectParams {
