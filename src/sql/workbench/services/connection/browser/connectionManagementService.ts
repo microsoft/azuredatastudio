@@ -1142,8 +1142,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		// We expect connectionProfile to be defined
 		if (connectionProfile && connectionProfile.authenticationType === Constants.AuthenticationType.AzureMFA) {
-			// We do not need to refresh token and reconnect for MSSQL Provider, if 'SQL Authentication Provider' setting is enabled.
+			// We do not need to reconnect for MSSQL Provider, if 'SQL Authentication Provider' setting is enabled.
+			// Update the token in case it needs refreshing/reauthentication.
 			if (connectionProfile.providerName === mssqlProviderName && this.getEnableSqlAuthenticationProviderConfig()) {
+				await this.fillInOrClearToken(connectionProfile);
 				return true;
 			}
 			const expiry = connectionProfile.options.expiresOn;
