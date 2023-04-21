@@ -20,7 +20,6 @@ import * as Constants from '../constants';
 import { getProxyEnabledHttpClient } from '../utils';
 import { HttpClient } from '../account-provider/auths/httpClient';
 import { NetworkRequestOptions } from '@azure/msal-common';
-import { TextEncoder } from 'util';
 
 const localize = nls.loadMessageBundle();
 
