@@ -389,7 +389,7 @@
       <source xml:lang="en">Enter new SQLCMD Variable name</source>
     </trans-unit>
     <trans-unit id="enterNewValueForVar">
-      <source xml:lang="en">Enter new value for variable '{0}'</source>
+      <source xml:lang="en">Enter new default value for variable '{0}'</source>
     </trans-unit>
     <trans-unit id="enterPassword">
       <source xml:lang="en">Enter {0} admin password</source>
@@ -648,6 +648,12 @@
     <trans-unit id="noneElements">
       <source xml:lang="en">None Elements</source>
     </trans-unit>
+    <trans-unit id="nupkgNamePlaceholder">
+      <source xml:lang="en">NuGet package name</source>
+    </trans-unit>
+    <trans-unit id="nupkgText">
+      <source xml:lang="en">Published data-tier application (.nupkg)</source>
+    </trans-unit>
     <trans-unit id="objectType">
       <source xml:lang="en">Object Type</source>
     </trans-unit>
@@ -726,6 +732,9 @@
     <trans-unit id="projectNamePlaceholderText">
       <source xml:lang="en">Enter project name</source>
     </trans-unit>
+    <trans-unit id="projectNeedsUpdatingForCrossPlat">
+      <source xml:lang="en">The targets, references, and system database references need to be updated to build the project '{0}'.</source>
+    </trans-unit>
     <trans-unit id="projectReferenceElement">
       <source xml:lang="en">Project reference</source>
     </trans-unit>
@@ -795,9 +804,6 @@
     <trans-unit id="reloadProject">
       <source xml:lang="en">Would you like to reload your database project?</source>
     </trans-unit>
-    <trans-unit id="reloadValuesFromProjectButtonTitle">
-      <source xml:lang="en">Reload values from project</source>
-    </trans-unit>
     <trans-unit id="reset">
       <source xml:lang="en">Reset</source>
     </trans-unit>
@@ -822,6 +828,9 @@
     <trans-unit id="retryWaitMessage">
       <source xml:lang="en">Waiting for {0} seconds before another attempt for operation '{1}'</source>
     </trans-unit>
+    <trans-unit id="revertSqlCmdVarsButtonTitle">
+      <source xml:lang="en">Revert values to project defaults</source>
+    </trans-unit>
     <trans-unit id="runViaNpx">
       <source xml:lang="en">Run via npx</source>
     </trans-unit>
@@ -830,6 +839,12 @@
     </trans-unit>
     <trans-unit id="sameDatabase">
       <source xml:lang="en">Same database</source>
+    </trans-unit>
+    <trans-unit id="save">
+      <source xml:lang="en">Save</source>
+    </trans-unit>
+    <trans-unit id="saveProfileAsButtonText">
+      <source xml:lang="en">Save Profile as...</source>
     </trans-unit>
     <trans-unit id="schema">
       <source xml:lang="en">Schema</source>
@@ -1029,8 +1044,11 @@
     <trans-unit id="updateProjectDatabaseReferencesForRoundTrip">
       <source xml:lang="en">The system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
     </trans-unit>
-    <trans-unit id="updateProjectForRoundTrip">
-      <source xml:lang="en">The targets, references, and system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+    <trans-unit id="updateProjectForCrossPlatform">
+      <source xml:lang="en">{0} If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+    </trans-unit>
+    <trans-unit id="updateProjectForCrossPlatformShort">
+      <source xml:lang="en">Update {0} for cross-platform support?</source>
     </trans-unit>
     <trans-unit id="updateProjectFromDatabaseDialogName">
       <source xml:lang="en">Update project from database</source>
@@ -1055,6 +1073,12 @@
     </trans-unit>
     <trans-unit id="valueCannotBeEmpty">
       <source xml:lang="en">Value cannot be empty</source>
+    </trans-unit>
+    <trans-unit id="version">
+      <source xml:lang="en">Version</source>
+    </trans-unit>
+    <trans-unit id="versionPlaceholder">
+      <source xml:lang="en">NuGet package version</source>
     </trans-unit>
     <trans-unit id="viewFriendlyName">
       <source xml:lang="en">View</source>
