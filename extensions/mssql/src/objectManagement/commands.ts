@@ -264,7 +264,7 @@ async function handleCreateDatabaseDialogCommand(context: azdata.ObjectExplorerC
 			objectType: context.nodeInfo.nodeType as ObjectManagement.NodeType,
 			objectName: context.nodeInfo.label,
 			parentUrn: parentUrn,
-			objectUrn: context.nodeInfo!.metadata!.urn,
+			objectUrn: context.nodeInfo!.metadata?.urn,
 			objectExplorerContext: context
 		};
 		const dialog = new CreateDatabaseDialog(service, options);
@@ -293,7 +293,7 @@ async function handleDeleteDatabaseDialogCommand(context: azdata.ObjectExplorerC
 			objectType: context.nodeInfo.nodeType as ObjectManagement.NodeType,
 			objectName: context.nodeInfo.label,
 			parentUrn: parentUrn,
-			objectUrn: context.nodeInfo!.metadata!.urn,
+			objectUrn: context.nodeInfo!.metadata?.urn,
 			objectExplorerContext: context
 		};
 		const dialog = new DeleteDatabaseDialog(service, options);
