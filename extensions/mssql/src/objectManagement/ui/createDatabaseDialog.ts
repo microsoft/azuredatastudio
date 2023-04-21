@@ -80,6 +80,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		}));
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this._nameInput);
 
+		// Hide Owner field for Azure SQL DB
 		let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, [DefaultValue, ...this._model.loginNames], DefaultValue);
 		this.disposables.push(ownerDropbox.onValueChanged(async () => {
 			this.objectInfo.owner = ownerDropbox.value === DefaultValue ? undefined : ownerDropbox.value as string;
@@ -103,6 +104,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		}));
 		const collationContainer = this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox);
 
+		// Hide Recovery Model for Azure SQL DB
 		let recoveryOptions = ['Simple', 'Bulk-logged', 'Full'];
 		let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, recoveryOptions, recoveryOptions[0]);
 		this.disposables.push(recoveryDropbox.onValueChanged(async () => {
@@ -120,6 +122,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		}));
 		const compatibilityContainer = this.createLabelInputContainer(localizedConstants.CompatibilityLevelText, compatibilityDropbox);
 
+		// Hide Containment Type for Azure SQL DB
 		let containmentOptions = ['None', 'Partial'];
 		let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, containmentOptions, containmentOptions[0]);
 		this.disposables.push(containmentDropbox.onValueChanged(async () => {

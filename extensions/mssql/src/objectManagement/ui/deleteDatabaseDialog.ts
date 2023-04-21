@@ -44,6 +44,8 @@ export class DeleteDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 	protected async initializeUI(): Promise<void> {
 		let databaseInputComponent = this.createInputBox(this._model.objectInfo.name, this._model.objectInfo.name, false);
 		let inputWithLabel = this.createLabelInputContainer(localizedConstants.DatabaseNameLabel, databaseInputComponent);
+
+		// Exclude options below for Azure SQL DB
 		let deleteBackupCheckbox = this.createCheckbox(localizedConstants.DeleteBackupsCheckboxLabel, false, true);
 		let closeConnectionsCheckbox = this.createCheckbox(localizedConstants.CloseConnectionsCheckboxLabel, false, true);
 
