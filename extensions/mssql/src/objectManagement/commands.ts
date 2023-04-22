@@ -18,7 +18,6 @@ import { getNodeTypeDisplayName, refreshParentNode } from './utils';
 import { TelemetryReporter } from '../telemetry';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './ui/objectManagementDialogBase';
 import { CreateDatabaseDialog } from './ui/createDatabaseDialog';
-import { DeleteDatabaseDialog } from './ui/deleteDatabaseDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
@@ -37,9 +36,6 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	}));
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.createDatabase', async (context: azdata.ObjectExplorerContext) => {
 		await handleCreateDatabaseDialogCommand(context, service);
-	}));
-	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.deleteDatabase', async (context: azdata.ObjectExplorerContext) => {
-		await handleDeleteDatabaseDialogCommand(context, service);
 	}));
 }
 
@@ -261,7 +257,7 @@ async function handleCreateDatabaseDialogCommand(context: azdata.ObjectExplorerC
 			connectionUri: connectionUri,
 			isNewObject: true,
 			database: context.connectionProfile!.databaseName!,
-			objectType: context.nodeInfo.nodeType as ObjectManagement.NodeType,
+			objectType: ObjectManagement.NodeType.Database,
 			objectName: context.nodeInfo.label,
 			parentUrn: parentUrn,
 			objectUrn: context.nodeInfo!.metadata?.urn,
@@ -275,34 +271,5 @@ async function handleCreateDatabaseDialogCommand(context: azdata.ObjectExplorerC
 			objectType: context.nodeInfo!.nodeType
 		}).send();
 		await vscode.window.showErrorMessage(localizedConstants.OpenCreateDatabaseDialogError(getErrorMessage(err)));
-	}
-}
-
-async function handleDeleteDatabaseDialogCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
-	const connectionUri = await getConnectionUri(context);
-	if (!connectionUri) {
-		return;
-	}
-
-	try {
-		const parentUrn = await getParentUrn(context);
-		const options: ObjectManagementDialogOptions = {
-			connectionUri: connectionUri,
-			isNewObject: false,
-			database: context.connectionProfile!.databaseName!,
-			objectType: context.nodeInfo.nodeType as ObjectManagement.NodeType,
-			objectName: context.nodeInfo.label,
-			parentUrn: parentUrn,
-			objectUrn: context.nodeInfo!.metadata?.urn,
-			objectExplorerContext: context
-		};
-		const dialog = new DeleteDatabaseDialog(service, options);
-		await dialog.open();
-	}
-	catch (err) {
-		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.DeleteDatabaseDialog, err).withAdditionalProperties({
-			objectType: context.nodeInfo!.nodeType
-		}).send();
-		await vscode.window.showErrorMessage(localizedConstants.OpenDeleteDatabaseDialogError(getErrorMessage(err)));
 	}
 }

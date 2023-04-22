@@ -1213,11 +1213,6 @@ declare module 'mssql' {
 			collationNames: string[];
 			compatibilityLevels: string[];
 		}
-
-		export interface DeleteDatabaseViewInfo extends ObjectViewInfo<Database> {
-			closeConnections?: boolean;
-			deleteBackups?: boolean;
-		}
 	}
 
 	export interface IObjectManagementService {

@@ -523,7 +523,7 @@
         },
         {
           "command": "mssql.deleteObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|Database)$/ && config.workbench.enablePreviewFeatures",
           "group": "0_query@2"
         },
         {
@@ -540,11 +540,6 @@
           "command": "mssql.createDatabase",
           "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && config.workbench.enablePreviewFeatures",
           "group": "0_query@1"
-        },
-        {
-          "command": "mssql.deleteDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Database && config.workbench.enablePreviewFeatures",
-          "group": "0_query@2"
         },
         {
           "command": "mssql.enableGroupBySchema",
@@ -578,7 +573,7 @@
         },
         {
           "command": "mssql.deleteObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|Database)$/ && config.workbench.enablePreviewFeatures",
           "group": "connection@2"
         },
         {
