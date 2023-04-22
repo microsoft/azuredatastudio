@@ -241,8 +241,7 @@ const cleanExtensionsBuildTask = task.define('clean-extensions-build', util.rimr
 const compileExtensionsBuildTask = task.define('compile-extensions-build', task.series(
 	cleanExtensionsBuildTask,
 	task.define('bundle-extensions-build', () => ext.packageLocalExtensionsStream(false).pipe(gulp.dest('.build'))),
-	// {{SQL CARBON EDIT}} - add { } around call to avoid async not called error
-	task.define('bundle-marketplace-extensions-build', () => { ext.packageMarketplaceExtensionsStream(false, product.extensionsGallery?.serviceUrl).pipe(gulp.dest('.build')) }),
+	task.define('bundle-marketplace-extensions-build', () => ext.packageMarketplaceExtensionsStream(false, product.extensionsGallery?.serviceUrl).pipe(gulp.dest('.build'))),
 ));
 
 gulp.task(compileExtensionsBuildTask);
@@ -285,7 +284,7 @@ gulp.task(packageLocalizationExtensionsTask);
 const compileLocalizationExtensionsBuildTask = task.define('compile-localization-extensions-build', task.series(
 	cleanExtensionsBuildTask,
 	compileExtensionsTask,
-	task.define('bundle-marketplace-extensions-build', () => { ext.packageMarketplaceExtensionsStream(false, product.extensionsGallery?.serviceUrl).pipe(gulp.dest('.build')) }),
+	task.define('bundle-marketplace-extensions-build', () => ext.packageMarketplaceExtensionsStream(false, product.extensionsGallery?.serviceUrl).pipe(gulp.dest('.build'))),
 	packageLocalizationExtensionsTask,
 ));
 
