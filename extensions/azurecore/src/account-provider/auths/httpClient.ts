@@ -383,7 +383,7 @@ const parseBody = (statusCode: number, statusMessage: string | undefined, header
 	 * Server error responses (500 - 599)
 	 */
 
-	let parsedBody;
+	let parsedBody: unknown;
 	try {
 		parsedBody = JSON.parse(body);
 	} catch (error) {
@@ -402,7 +402,7 @@ const parseBody = (statusCode: number, statusMessage: string | undefined, header
 
 		parsedBody = {
 			error: errorType,
-			error_description: `${errorDescriptionHelper} error occured.\nHttp status code: ${statusCode}\nHttp status message: ${statusMessage || 'Unknown'}\nHeaders: ${JSON.stringify(headers)}`
+			error_description: `${errorDescriptionHelper} error occurred.\nHttp status code: ${statusCode}\nHttp status message: ${statusMessage || 'Unknown'}\nHeaders: ${JSON.stringify(headers)}`
 		};
 	}
 
