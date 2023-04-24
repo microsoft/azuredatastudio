@@ -6,20 +6,6 @@
 import * as azdata from 'azdata';
 import * as https from 'https';
 
-export function getNetworkResponse<Body>(headers: Record<string, string>, body: Body, statusCode: number): NetworkResponse<Body> {
-	return {
-		headers: headers,
-		data: body,
-		status: statusCode
-	};
-}
-
-export declare type NetworkResponse<T> = {
-	headers: Record<string, string>;
-	data: T;
-	status: number;
-};
-
 export declare type NetworkRequestOptions = {
 	headers?: Record<string, string>;
 	body?: string;
