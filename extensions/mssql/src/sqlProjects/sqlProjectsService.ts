@@ -8,7 +8,6 @@ import * as constants from '../constants';
 import * as Utils from '../utils';
 import * as azdata from 'azdata';
 import * as contracts from '../contracts';
-import * as vscodeMssql from 'vscode-mssql';
 
 import { AppContext } from '../appContext';
 import { BaseService, ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
@@ -416,7 +415,7 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	/**
 	 * Add a SQL object script to a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
-	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param path Path of the script, including .sql and .publish.xml, relative to the .sqlproj
 	 */
 	public async addNoneItem(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
@@ -426,7 +425,7 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	/**
 	 * Delete a SQL object script from a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
-	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param path Path of the script, including .sql and .publish.xml, relative to the .sqlproj
 	 */
 	public async deleteNoneItem(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
@@ -436,7 +435,7 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	/**
 	 * Exclude a SQL object script from a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
-	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param path Path of the script, including .sql and .publish.xml, relative to the .sqlproj
 	 */
 	public async excludeNoneItem(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
@@ -447,7 +446,7 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	 * getNoneScripts
 	 * @param projectUri Absolute path of the project, including .sqlproj
 	 */
-	public async getNoneItems(projectUri: string): Promise<mssql.GetScriptsResult | vscodeMssql.GetScriptsResult> {
+	public async getNoneItems(projectUri: string): Promise<mssql.GetScriptsResult> {
 		const params: contracts.SqlProjectParams = { projectUri: projectUri };
 		return await this.runWithErrorHandling(contracts.GetNoneItemsRequest.type, params);
 	}
@@ -456,7 +455,7 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	 * Move a SQL object script in a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
 	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
-	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param path Path of the script, including .sql and .publish.xml, relative to the .sqlproj
 	 */
 	public async moveNoneItem(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
