@@ -233,10 +233,14 @@ const networkRequestViaProxy = <T>(
 
 					// check if the value of the header is supposed to be a JSON object
 					try {
+						// TODO: Investigate this - https://github.com/microsoft/azuredatastudio/issues/22835
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 						const object = JSON.parse(headerValue);
 
 						// if it is, then convert it from a string to a JSON object
 						if (object && (typeof object === 'object')) {
+							// TODO: Investigate this - https://github.com/microsoft/azuredatastudio/issues/22835
+							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 							headerValue = object;
 						}
 					} catch (e) {
