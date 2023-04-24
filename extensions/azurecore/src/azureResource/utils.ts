@@ -28,6 +28,7 @@ const localize = nls.loadMessageBundle();
  * Specialized version of the ErrorResponseBody that is required to have the error
  * information for easier typing support, without it how do we know it's an error
  * response?
+ * https://github.com/Azure/azure-sdk-for-js/blob/main/sdk/subscription/arm-subscriptions/src/models/index.ts#L180
  */
 export type ErrorResponseBodyWithError = Required<ErrorResponseBody>;
 
