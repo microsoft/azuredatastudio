@@ -5,7 +5,7 @@
 
 import * as should from 'should';
 import { AzureSqlClient } from '../../models/deploy/azureSqlClient';
-import { AzureAuthType, IAccount, IAzureAccountService, IAzureAccountSession, IAzureResourceService, azure } from 'vscode-mssql';
+import { IAccount, IAzureAccountService, IAzureAccountSession, IAzureResourceService, azure } from 'vscode-mssql';
 
 
 
@@ -24,7 +24,7 @@ export function createContext(): TestContext {
 		key: undefined!,
 		displayInfo: undefined!,
 		properties: {
-			azureAuthType: AzureAuthType.AuthCodeGrant,
+			azureAuthType: 0,
 			providerSettings: {
 				scopes: [],
 				displayName: '',
