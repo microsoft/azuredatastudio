@@ -85,6 +85,7 @@ export const GitRepoUrlTitle = localize('dataworkspace.gitRepoUrlTitle', "Git re
 export const GitRepoUrlPlaceholder = localize('dataworkspace.gitRepoUrlPlaceholder', "Enter remote git repository URL");
 export const LocalClonePathTitle = localize('dataworkspace.localClonePathTitle', "Local clone path");
 export const LocalClonePathPlaceholder = localize('dataworkspace.localClonePathPlaceholder', "Select location to clone repository locally");
+export const ProjectFileTitle = localize('dataworkspace.projectFileTitle', "Project file");
 
 // Workspace settings for saving new projects
 export const ProjectConfigurationKey = 'projects';

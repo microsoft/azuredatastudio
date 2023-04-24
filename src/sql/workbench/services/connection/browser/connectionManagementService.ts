@@ -58,6 +58,7 @@ import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import { PasswordChangeDialog } from 'sql/workbench/services/connection/browser/passwordChangeDialog';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils'
+import { enableSqlAuthenticationProviderConfig, mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -1156,6 +1157,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		// We expect connectionProfile to be defined
 		if (connectionProfile && connectionProfile.authenticationType === Constants.AuthenticationType.AzureMFA) {
+			// We do not need to reconnect for MSSQL Provider, if 'SQL Authentication Provider' setting is enabled.
+			// Update the token in case it needs refreshing/reauthentication.
+			if (connectionProfile.providerName === mssqlProviderName && this.getEnableSqlAuthenticationProviderConfig()) {
+				await this.fillInOrClearToken(connectionProfile);
+				return true;
+			}
 			const expiry = connectionProfile.options.expiresOn;
 			if (typeof expiry === 'number' && !Number.isNaN(expiry)) {
 				const currentTime = new Date().getTime() / 1000;
@@ -1187,8 +1194,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			}
 			return true;
 		}
-		else
+		else {
 			return false;
+		}
+	}
+
+	private getEnableSqlAuthenticationProviderConfig(): boolean {
+		return this._configurationService.getValue(enableSqlAuthenticationProviderConfig) ?? true;
 	}
 
 	// Request Senders
@@ -1613,10 +1625,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public async listDatabases(connectionUri: string): Promise<azdata.ListDatabasesResult | undefined> {
-		const self = this;
 		await this.refreshAzureAccountTokenIfNecessary(connectionUri);
-		if (self.isConnected(connectionUri)) {
-			return self.sendListDatabasesRequest(connectionUri);
+		if (this.isConnected(connectionUri)) {
+			return this.sendListDatabasesRequest(connectionUri);
 		}
 		return Promise.resolve(undefined);
 	}

@@ -116,14 +116,15 @@ export class MsalCachePluginProvider {
 	 */
 	public async writeTokenToLocalCache(token: Token): Promise<void> {
 		let updateCount = 0;
+		let indexToUpdate = -1;
 		let cache: LocalAccountCache;
 		cache = JSON.parse(await this.readCache(this._localCacheConfiguration)) as LocalAccountCache;
 		if (cache?.tokens) {
-			cache.tokens.forEach(t => {
+			cache.tokens.forEach((t, i) => {
 				if (t.key === token.key && t.tenantId === token.tenantId && t.resource === token.resource
 				) {
 					// Update token
-					t = token;
+					indexToUpdate = i;
 					updateCount++;
 				}
 			});
@@ -139,6 +140,9 @@ export class MsalCachePluginProvider {
 		}
 
 		if (updateCount === 1) {
+			if (indexToUpdate !== -1) {
+				cache.tokens[indexToUpdate] = token;
+			}
 			await this.writeCache(JSON.stringify(cache), this._localCacheConfiguration);
 		}
 		else {
