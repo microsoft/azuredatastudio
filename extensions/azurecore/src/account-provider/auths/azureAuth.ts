@@ -30,7 +30,6 @@ import { getProxyEnabledHttpClient, getTenantIgnoreList, updateTenantIgnoreList 
 import { errorToPromptFailedResult } from './networkUtils';
 import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
 import { AzureListOperationResponse, ErrorResponseBodyWithError, isErrorResponseBody as isErrorResponseBodyWithError } from '../../azureResource/utils';
-import { ErrorResponseBody } from '@azure/arm-subscriptions/esm/models';
 const localize = nls.loadMessageBundle();
 
 export abstract class AzureAuth implements vscode.Disposable {
